@@ -25,12 +25,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf32_length_from_utf8(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			String result;
+
+			result.resize_and_overwrite(requiredLength, [&](char32* buf, size_t) {
+				return simdutf::convert_utf8_to_utf32(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			String result(requiredLength, U'\0');
 
 			if (0 == simdutf::convert_utf8_to_utf32(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}
@@ -39,12 +51,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf32_length_from_utf16le(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			String result;
+
+			result.resize_and_overwrite(requiredLength, [&](char32* buf, size_t) {
+				return simdutf::convert_utf16le_to_utf32(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			String result(requiredLength, U'\0');
 
 			if (0 == simdutf::convert_utf16le_to_utf32(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}
@@ -74,12 +98,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf8_length_from_utf32(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			std::string result;
+
+			result.resize_and_overwrite(requiredLength, [&](char* buf, size_t) {
+				return simdutf::convert_utf32_to_utf8(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			std::string result(requiredLength, '\0');
 
 			if (0 == simdutf::convert_utf32_to_utf8(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}
@@ -88,12 +124,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf16_length_from_utf32(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			std::u16string result;
+
+			result.resize_and_overwrite(requiredLength, [&](char16* buf, size_t) {
+				return simdutf::convert_utf32_to_utf16le(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			std::u16string result(requiredLength, u'\0');
 
 			if (0 == simdutf::convert_utf32_to_utf16le(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}
@@ -107,12 +155,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf16_length_from_utf8(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			std::u16string result;
+
+			result.resize_and_overwrite(requiredLength, [&](char16* buf, size_t) {
+				return simdutf::convert_utf8_to_utf16le(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			std::u16string result(requiredLength, u'\0');
 
 			if (0 == simdutf::convert_utf8_to_utf16le(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}
@@ -121,12 +181,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf32_length_from_utf8(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			std::u32string result;
+
+			result.resize_and_overwrite(requiredLength, [&](char32* buf, size_t) {
+				return simdutf::convert_utf8_to_utf32(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			std::u32string result(requiredLength, u'\0');
 
 			if (0 == simdutf::convert_utf8_to_utf32(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}
@@ -135,12 +207,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf8_length_from_utf16le(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			std::string result;
+
+			result.resize_and_overwrite(requiredLength, [&](char* buf, size_t) {
+				return simdutf::convert_utf16le_to_utf8(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			std::string result(requiredLength, '\0');
 
 			if (0 == simdutf::convert_utf16le_to_utf8(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}
@@ -149,12 +233,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf32_length_from_utf16le(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			std::u32string result;
+
+			result.resize_and_overwrite(requiredLength, [&](char32* buf, size_t) {
+				return simdutf::convert_utf16le_to_utf32(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			std::u32string result(requiredLength, U'\0');
 
 			if (0 == simdutf::convert_utf16le_to_utf32(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}
@@ -163,12 +259,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf8_length_from_utf32(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			std::string result;
+
+			result.resize_and_overwrite(requiredLength, [&](char* buf, size_t) {
+				return simdutf::convert_utf32_to_utf8(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			std::string result(requiredLength, '\0');
 
 			if (0 == simdutf::convert_utf32_to_utf8(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}
@@ -177,12 +285,24 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf16_length_from_utf32(s.data(), s.size());
 
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			std::u16string result;
+
+			result.resize_and_overwrite(requiredLength, [&](char16* buf, size_t) {
+				return simdutf::convert_utf32_to_utf16le(s.data(), s.size(), buf);
+				});
+
+		# else
+
 			std::u16string result(requiredLength, u'\0');
 
 			if (0 == simdutf::convert_utf32_to_utf16le(s.data(), s.size(), result.data()))
 			{
 				return{};
 			}
+
+		# endif
 
 			return result;
 		}

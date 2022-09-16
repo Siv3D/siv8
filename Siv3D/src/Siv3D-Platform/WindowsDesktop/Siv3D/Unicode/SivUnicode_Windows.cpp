@@ -29,14 +29,13 @@ namespace s3d
 				s.data(), static_cast<int>(s.length()),
 				nullptr, 0, nullptr, nullptr);
 
-			std::string result(requiredLength, '\0');
+			std::string result;
 
-			if (requiredLength != ::WideCharToMultiByte(codePage, 0,
-				s.data(), static_cast<int>(s.length()),
-				result.data(), requiredLength, nullptr, nullptr))
-			{
-				return{};
-			}
+			result.resize_and_overwrite(requiredLength, [&](char* buf, size_t) {
+				return ::WideCharToMultiByte(codePage, 0,
+					s.data(), static_cast<int>(s.length()),
+					buf, requiredLength, nullptr, nullptr);
+				});
 
 			return result;
 		}
@@ -58,14 +57,13 @@ namespace s3d
 				return{};
 			}
 
-			std::u16string result(requiredLength, u'\0');
+			std::u16string result;
 
-			if (requiredLength != ::MultiByteToWideChar(codePage, 0,
-				s.data(), static_cast<int32>(s.length()),
-				static_cast<wchar_t*>(static_cast<void*>(result.data())), requiredLength))
-			{
-				return{};
-			}
+			result.resize_and_overwrite(requiredLength, [&](char16* buf, size_t) {
+				return ::MultiByteToWideChar(codePage, 0,
+					s.data(), static_cast<int32>(s.length()),
+					static_cast<wchar_t*>(static_cast<void*>(buf)), requiredLength);
+				});
 
 			return result;
 		}
@@ -94,12 +92,11 @@ namespace s3d
 		{
 			const size_t requiredLength = simdutf::utf16_length_from_utf32(s.data(), s.size());
 
-			std::wstring result(requiredLength, L'\0');
+			std::wstring result;
 
-			if (0 == simdutf::convert_utf32_to_utf16le(s.data(), s.size(), static_cast<char16*>(static_cast<void*>(result.data()))))
-			{
-				return{};
-			}
+			result.resize_and_overwrite(requiredLength, [&](wchar_t* buf, size_t) {
+				return simdutf::convert_utf32_to_utf16le(s.data(), s.size(), static_cast<char16*>(static_cast<void*>(buf)));
+				});
 
 			return result;
 		}
