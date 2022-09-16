@@ -15,6 +15,7 @@
 //
 //	プラットフォーム | Target platform
 //
+//	SIV3D_PLATFORM_NAME
 //	SIV3D_PLATFORM(WINDOWS)
 //	SIV3D_PLATFORM(MACOS)
 //	SIV3D_PLATFORM(LINUX)
@@ -62,6 +63,7 @@
 //
 //	命令セット | Intrinsics
 //
+//	SIV3D_INTRINSIC_TYPE
 //	SIV3D_INTRINSIC(SSE)
 //	SIV3D_INTRINSIC(NEON)
 // 
@@ -98,6 +100,7 @@
 //
 //	ビルド設定 | Build mode
 //
+//	SIV3D_BUILD_TYPE
 //	SIV3D_BUILD(DEBUG)
 //	SIV3D_BUILD(RELEASE)
 // 
@@ -125,6 +128,7 @@
 //
 //	コンパイラ | Compilers
 //
+//	SIV3D_COMPILER_NAME
 //	SIV3D_BUILD(MSVC)
 //	SIV3D_BUILD(APPLECLANG)
 //	SIV3D_BUILD(CLANG)
@@ -180,6 +184,7 @@
 //
 //	プロセッサ | Processors
 //
+//	SIV3D_CPU_TYPE
 //	SIV3D_CPU(X86_64)
 //	SIV3D_CPU(ARM32)
 //	SIV3D_CPU(ARM64)
@@ -219,6 +224,8 @@
 //
 //	ローカルシンボル | Local symbol
 //
+//	SIV3D_LOCAL_SYMBOL
+//
 //////////////////////////////////////////////////
 
 # if (SIV3D_COMPILER(APPLECLANG) || SIV3D_COMPILER(CLANG) || SIV3D_COMPILER(GCC))
@@ -231,10 +238,32 @@
 
 # endif
 
+//////////////////////////////////////////////////
+//
+//	vtable の最適化 | vtable optimization
+//
+//	SIV3D_NOVTABLE
+//
+//////////////////////////////////////////////////
+
+# if SIV3D_COMPILER(MSVC)
+
+	# define SIV3D_NOVTABLE __declspec(novtable)
+
+# else
+
+	# define SIV3D_NOVTABLE
+
+# endif
 
 //////////////////////////////////////////////////
 //
-//	コンパイラ拡張 | Compiler extensions
+//	警告の抑制 | Warning suppression
+//
+//	SIV3D_DISABLE_MSVC_WARNINGS_PUSH(warnings)
+//	SIV3D_DISABLE_MSVC_WARNINGS_POP()
+//	SIV3D_DISABLE_CLANG_WARNINGS_POP()
+//	SIV3D_DISABLE_GCC_WARNINGS_POP()
 //
 //////////////////////////////////////////////////
 
@@ -247,13 +276,10 @@
 	# define SIV3D_DISABLE_MSVC_WARNINGS_POP()			\
 			 __pragma(warning(pop))
 
-	# define SIV3D_NOVTABLE __declspec(novtable)
-
 # else
 
 	# define SIV3D_DISABLE_MSVC_WARNINGS_PUSH(warnings)
 	# define SIV3D_DISABLE_MSVC_WARNINGS_POP()
-	# define SIV3D_NOVTABLE
 
 # endif
 
@@ -286,6 +312,8 @@
 //
 //	実行ファイル埋め込みリソース | Embedded Resource
 //
+//	bool Platform::HasEmbeddedResource;
+// 
 //////////////////////////////////////////////////
 
 namespace s3d::Platform
