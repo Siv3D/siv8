@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{a546af7c-9291-449b-80d4-7b25b2e38761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{de815623-ac1d-4d1a-9eaa-2bbd82549e36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D">
+      <UniqueIdentifier>{25a30690-3072-4bfb-9d19-2f30dc40c37d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform">
+      <UniqueIdentifier>{5f3afd2d-f87f-4c3f-a467-e5c8c5a349a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty">
+      <UniqueIdentifier>{1bcc5ca4-0741-4299-ae24-4c86defdd305}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty-prebuilt">
+      <UniqueIdentifier>{a1a890a4-2a0a-44b8-8b6a-ce266204c274}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty">
+      <UniqueIdentifier>{45bcf599-e12c-4dfa-9588-f1a090af674e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Siv3D">
+      <UniqueIdentifier>{df8411fd-f669-4b9e-8247-86d6cc9ea89e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\OpenGL4">
+      <UniqueIdentifier>{26d80dd6-19f5-4709-9a31-955a8814c9fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop">
+      <UniqueIdentifier>{9e219e02-597a-4ce8-b09a-bc50b5bbc11c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\OpenGL4\Siv3D">
+      <UniqueIdentifier>{68f53a7e-71f1-4324-ba0c-9d65d2103d04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D">
+      <UniqueIdentifier>{159c61ec-2599-4e83-80c7-15edee8085be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Siv3D\Windows">
+      <UniqueIdentifier>{a1a26725-7d2c-4db4-b9cf-65ce196c298f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Windows.hpp">
+      <Filter>include\Siv3D\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Windows\MinWindows.hpp">
+      <Filter>include\Siv3D\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Windows\ComPtr.hpp">
+      <Filter>include\Siv3D\Windows</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
