@@ -28,3 +28,12 @@
 //----------------------------------------------------------------------------------------
 
 # pragma once 
+
+
+
+# if !defined(SIV3D_LIBRARY_BUILD)
+
+	// Windows + MSVC 用の静的リンクライブラリ | Static link libraries for Windows + MSVC 
+	# include <Siv3D/Windows/Libraries.hpp>
+
+# endif
