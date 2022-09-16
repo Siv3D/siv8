@@ -58,6 +58,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Console">
       <UniqueIdentifier>{ec86f6fc-6d4a-413d-b6f4-1e99576b9077}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Unicode">
+      <UniqueIdentifier>{01303661-e7f4-4b3b-bf24-87510f888404}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Siv3D\detail">
+      <UniqueIdentifier>{e1bb0de4-1fe7-43f2-adc6-4dbd1b98d259}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -114,6 +120,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Console</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Unicode.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -139,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp">
+      <Filter>src\Siv3D\Unicode</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

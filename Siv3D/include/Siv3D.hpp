@@ -59,7 +59,7 @@
 // 文字列 | String
 # include <Siv3D/String.hpp>
 
-// Unicode | Unicode
+// 文字コードの変換 | Character Code Conversion
 # include <Siv3D/Unicode.hpp>
 
 

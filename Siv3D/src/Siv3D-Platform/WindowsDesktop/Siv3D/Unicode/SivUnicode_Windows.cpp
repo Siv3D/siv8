@@ -31,9 +31,41 @@ namespace s3d
 
 			std::string result(requiredLength, '\0');
 
-			::WideCharToMultiByte(codePage, 0,
+			if (requiredLength != ::WideCharToMultiByte(codePage, 0,
 				s.data(), static_cast<int>(s.length()),
-				result.data(), requiredLength, nullptr, nullptr);
+				result.data(), requiredLength, nullptr, nullptr))
+			{
+				return{};
+			}
+
+			return result;
+		}
+
+		[[nodiscard]]
+		static std::u16string FromMultiByte(const std::string_view s, const uint32 codePage)
+		{
+			if (s.empty())
+			{
+				return{};
+			}
+
+			const int32 requiredLength = ::MultiByteToWideChar(codePage, 0,
+				s.data(), static_cast<int32>(s.length()),
+				nullptr, 0);
+
+			if (requiredLength == 0)
+			{
+				return{};
+			}
+
+			std::u16string result(requiredLength, u'\0');
+
+			if (requiredLength != ::MultiByteToWideChar(codePage, 0,
+				s.data(), static_cast<int32>(s.length()),
+				static_cast<wchar_t*>(static_cast<void*>(result.data())), requiredLength))
+			{
+				return{};
+			}
 
 			return result;
 		}
@@ -41,6 +73,18 @@ namespace s3d
 
 	namespace Unicode
 	{
+		String Widen(const std::string_view s)
+		{
+			return FromUTF16(detail::FromMultiByte(s, CP_ACP));
+		}
+
+		String FromWstring(const std::wstring_view s)
+		{
+			const char16* pSrc = static_cast<const char16*>(static_cast<const void*>(s.data()));
+			
+			return FromUTF16(std::u16string_view(pSrc, s.size()));
+		}
+
 		std::string Narrow(const StringView s)
 		{
 			return detail::ToMultiByte(ToWstring(s), CP_ACP);
@@ -48,11 +92,14 @@ namespace s3d
 
 		std::wstring ToWstring(const StringView s)
 		{
-			const size_t utf16Length = simdutf::utf16_length_from_utf32(s.data(), s.size());
+			const size_t requiredLength = simdutf::utf16_length_from_utf32(s.data(), s.size());
 
-			std::wstring result(utf16Length, L'\0');
+			std::wstring result(requiredLength, L'\0');
 
-			simdutf::convert_utf32_to_utf16le(s.data(), s.size(), static_cast<char16*>(static_cast<void*>(result.data())));
+			if (0 == simdutf::convert_utf32_to_utf16le(s.data(), s.size(), static_cast<char16*>(static_cast<void*>(result.data()))))
+			{
+				return{};
+			}
 
 			return result;
 		}
