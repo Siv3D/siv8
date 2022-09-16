@@ -172,7 +172,7 @@
 
 # endif
 
-# if (SIV3D_COMPILER(MSVC) && (_MSC_VER < 1934)) // 古い Visual Studio | Old MSVC
+# if (SIV3D_COMPILER(MSVC) && (_MSC_VER < 1934))
 
 	// Visual Studio のバージョンが古い場合、このエラーが発生します
 	// This error occures when your Visual Studio version is not up to date.
@@ -270,11 +270,11 @@
 # if SIV3D_COMPILER(MSVC)
 
     # define SIV3D_DISABLE_MSVC_WARNINGS_PUSH(warnings)	\
-			 __pragma(warning(push))					\
-			 __pragma(warning(disable: warnings))
+			 _Pragma(warning(push))						\
+			 _Pragma(warning(disable: warnings))
 
 	# define SIV3D_DISABLE_MSVC_WARNINGS_POP()			\
-			 __pragma(warning(pop))
+			 _Pragma(warning(pop))
 
 # else
 

@@ -29,6 +29,9 @@
 
 # pragma once 
 
+// Siv3D.hpp をインクルードすると定義されるマクロ
+# define SIV3D_INCLUDED
+
 //////////////////////////////////////////////////
 //
 //	ユーティリティ | Utilities
@@ -87,12 +90,9 @@
 //
 //////////////////////////////////////////////////
 
-# if !defined(SIV3D_LIBRARY_BUILD) && !defined(NO_S3D_USING)
+# if (!defined(SIV3D_LIBRARY_BUILD) && !defined(NO_S3D_USING))
 
-using namespace s3d;
-//using namespace std::literals;
+	using namespace s3d;
+	using namespace std::literals;
 
 # endif
-
-// Siv3D.hpp をインクルードすると定義されるマクロ
-# define SIV3D_INCLUDED
