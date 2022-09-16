@@ -180,6 +180,10 @@
 //
 //	プロセッサ | Processors
 //
+//	SIV3D_CPU(X86_64)
+//	SIV3D_CPU(ARM32)
+//	SIV3D_CPU(ARM64)
+// 
 //////////////////////////////////////////////////
 
 # define SIV3D_CPU(X) SIV3D_CPU_PRIVATE_DEFINITION_##X()
