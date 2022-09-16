@@ -13,13 +13,13 @@
 
 # if defined(_WIN32)
 
-# if defined(_WINDOWS_) && !defined(S3D_MINIMAL_WINDOWS_INCLUDE)
+# if (defined(_WINDOWS_) && !defined(S3D_MINIMAL_WINDOWS_INCLUDE))
 
 	# pragma message("You have included <Windows.h> before MinWindows.h")
 
 # endif
 
-	// MinWindows.hpp がインクルードされていると定義されるマクロ
+	// MinWindows.hpp をインクルードすると定義されるマクロ
 	# define S3D_MINIMAL_WINDOWS_INCLUDE
 
 	# ifndef STRICT

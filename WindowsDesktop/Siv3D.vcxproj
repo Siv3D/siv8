@@ -12,13 +12,33 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Common.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Console.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Platform.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\String.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\StringView.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Types.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Unicode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\ComPtr.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Libraries.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\MinWindows.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Windows.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Console\IConsole.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DComponent.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Unicode\SivUnicode_Windows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ConsoleBuffer\SivConsoleBuffer.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -54,13 +74,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\Siv3D\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\Siv3D\include;..\Siv3D\include\ThirdParty;..\Siv3D\src;..\Siv3D\src\Siv3D-Platform\WindowsDesktop;..\Siv3D\src\ThirdParty;$(IncludePath)</IncludePath>
     <OutDir>..\Siv3D\lib\Windows\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Debug\Intermediate\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\Siv3D\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\Siv3D\include;..\Siv3D\include\ThirdParty;..\Siv3D\src;..\Siv3D\src\Siv3D-Platform\WindowsDesktop;..\Siv3D\src\ThirdParty;$(IncludePath)</IncludePath>
     <OutDir>..\Siv3D\lib\Windows\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
   </PropertyGroup>

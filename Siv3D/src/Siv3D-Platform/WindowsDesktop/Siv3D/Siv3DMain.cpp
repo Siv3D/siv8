@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Windows/MinWindows.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 // ユーザによって定義される
 void Main();
@@ -17,6 +18,10 @@ void Main();
 // Windows アプリのエントリーポイント
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 {
+	using namespace s3d;
+
+	Siv3DEngine engine;
+
 	Main();
 
 	return 0;
