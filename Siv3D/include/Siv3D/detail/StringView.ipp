@@ -222,17 +222,41 @@ namespace s3d
 
 	constexpr bool StringView::contains(const value_type ch) const noexcept
 	{
+	# if defined(__cpp_lib_string_contains)
+
 		return m_view.contains(ch);
+
+	# else
+
+		return (m_view.find(ch) != StringView::npos);
+
+	# endif
 	}
 
 	constexpr bool StringView::contains(const value_type* s) const noexcept
 	{
+	# if defined(__cpp_lib_string_contains)
+
 		return m_view.contains(s);
+
+	# else
+
+		return (m_view.find(s) != StringView::npos);
+
+	# endif
 	}
 
 	constexpr bool StringView::contains(const StringView s) const noexcept
 	{
+	# if defined(__cpp_lib_string_contains)
+
 		return m_view.contains(s.m_view);
+
+	# else
+
+		return (m_view.find(s.m_view) != StringView::npos);
+
+	# endif
 	}
 
 	constexpr StringView::size_type StringView::indexOf(const StringView s, const size_type pos) const noexcept
