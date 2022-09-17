@@ -228,7 +228,7 @@
 //
 //////////////////////////////////////////////////
 
-# if (SIV3D_PLATFORM(WINDOWS))
+# if (SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS))
 
 	# define SIV3D_USE_MIMALLOC	1
 

@@ -25,6 +25,7 @@
 		F964E93028D54B6700CBA072 /* CConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F964E92E28D54B6700CBA072 /* CConsole.hpp */; };
 		F964E93428D54C4600CBA072 /* Siv3DMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E93328D54C4600CBA072 /* Siv3DMain.cpp */; };
 		F964E93728D54C9000CBA072 /* SivUnicode_macOS_Linux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E93628D54C9000CBA072 /* SivUnicode_macOS_Linux.cpp */; };
+		F9C2F2B228D5E3F40048ADAD /* libmimalloc-obj.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C2F2B128D5E3F40048ADAD /* libmimalloc-obj.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -92,6 +93,7 @@
 		F964E92E28D54B6700CBA072 /* CConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CConsole.hpp; sourceTree = "<group>"; };
 		F964E93328D54C4600CBA072 /* Siv3DMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DMain.cpp; sourceTree = "<group>"; };
 		F964E93628D54C9000CBA072 /* SivUnicode_macOS_Linux.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUnicode_macOS_Linux.cpp; sourceTree = "<group>"; };
+		F9C2F2B128D5E3F40048ADAD /* libmimalloc-obj.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libmimalloc-obj.a"; path = "../Siv3D/lib/macOS/mimalloc/libmimalloc-obj.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9C2F2B228D5E3F40048ADAD /* libmimalloc-obj.a in Frameworks */,
 				2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -116,6 +119,7 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F9C2F2B128D5E3F40048ADAD /* libmimalloc-obj.a */,
 				2C0475DB266CDF4100936095 /* libcurl.tbd */,
 				2C65277F265621DF003427EB /* CoreAudio.framework */,
 				2C533731264E0E9700CE0F1B /* AudioToolbox.framework */,
@@ -582,7 +586,10 @@
 				);
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = ../Siv3D/lib/macOS;
+				LIBRARY_SEARCH_PATHS = (
+					../Siv3D/lib/macOS,
+					../Siv3D/lib/macOS/mimalloc,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = NO;
@@ -642,7 +649,10 @@
 				);
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = ../Siv3D/lib/macOS;
+				LIBRARY_SEARCH_PATHS = (
+					../Siv3D/lib/macOS,
+					../Siv3D/lib/macOS/mimalloc,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
