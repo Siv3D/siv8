@@ -13,13 +13,14 @@
 
 # define ANKERL_NANOBENCH_IMPLEMENT
 # include <ThirdParty/nanobench/nanobench.h>
+using ankerl::nanobench::Bench;
+using ankerl::nanobench::doNotOptimizeAway;
 
 # define DOCTEST_CONFIG_IMPLEMENT
-# if SIV3D_COMPILER(APPLECLANG)
+# if SIV3D_COMPILER(APPLECLANG) // Xcode では色付けを無効化
 #   define DOCTEST_CONFIG_COLORS_NONE
 # endif
 # include <ThirdParty/doctest/doctest.h>
-
 
 void TestPlatform();
 
@@ -69,5 +70,5 @@ void TestPlatform()
 	Console << U"SIV3D_INTRINSIC_TYPE: " SIV3D_INTRINSIC_TYPE;
 	Console << U"SIV3D_BUILD_TYPE: " SIV3D_BUILD_TYPE;
 	Console << U"SIV3D_COMPILER_NAME: " SIV3D_COMPILER_NAME;
-	Console << U"SIV3D_CPU_TYPE: " SIV3D_CPU_TYPE;
+	Console << U"SIV3D_CPU_ARCHITECTURE: " SIV3D_CPU_ARCHITECTURE;
 }

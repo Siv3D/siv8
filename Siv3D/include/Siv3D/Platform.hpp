@@ -184,7 +184,7 @@
 //
 //	プロセッサ | Processors
 //
-//	SIV3D_CPU_TYPE
+//	SIV3D_CPU_ARCHITECTURE
 //	SIV3D_CPU(X86_64)
 //	SIV3D_CPU(ARM32)
 //	SIV3D_CPU(ARM64)
@@ -198,19 +198,19 @@
 
 # if (defined(__x86_64__) || defined(_M_X64)) // x86-64
 
-	# define SIV3D_CPU_TYPE	U"x86-64"
+	# define SIV3D_CPU_ARCHITECTURE	U"x86-64"
 	# undef	 SIV3D_CPU_PRIVATE_DEFINITION_X86_64
 	# define SIV3D_CPU_PRIVATE_DEFINITION_X86_64()	1
 
 # elif defined(__arm__) // ARM 32-bit
 
-	# define SIV3D_CPU_TYPE	U"ARM 32-bit"
+	# define SIV3D_CPU_ARCHITECTURE	U"ARM 32-bit"
 	# undef	 SIV3D_CPU_PRIVATE_DEFINITION_ARM32
 	# define SIV3D_CPU_PRIVATE_DEFINITION_ARM32()	1
 
 # elif defined(__aarch64__) // ARM64
 
-	# define SIV3D_CPU_TYPE	U"ARM64"
+	# define SIV3D_CPU_ARCHITECTURE	U"ARM64"
 	# undef	 SIV3D_CPU_PRIVATE_DEFINITION_ARM64
 	# define SIV3D_CPU_PRIVATE_DEFINITION_ARM64()	1
 
