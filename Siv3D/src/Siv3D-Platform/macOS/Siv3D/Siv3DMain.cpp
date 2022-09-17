@@ -18,7 +18,7 @@ int main(int, char**)
 {
 	using namespace s3d;
 	
-    std::clog << "OpenSiv3D for macOS\n";
+	std::clog << "OpenSiv3D for macOS\n";
 
 	Siv3DEngine engine;
 

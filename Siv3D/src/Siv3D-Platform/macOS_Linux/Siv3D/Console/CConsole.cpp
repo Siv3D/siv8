@@ -16,31 +16,16 @@ namespace s3d
 {
 	CConsole::CConsole()
 	{
-		//std::ios_base::sync_with_stdio(false);
+		std::ios_base::sync_with_stdio(false);
 	}
 
-	CConsole::~CConsole()
-	{
-		// do nothing
-	}
+	CConsole::~CConsole() {}
 
-	void CConsole::open()
-	{
-		// do nothing
-	}
+	void CConsole::open() {}
 
-	void CConsole::close()
-	{
-		// do nothing
-	}
+	void CConsole::close() {}
 
-	void CConsole::setSystemDefaultCodePage()
-	{
-		// do nothing
-	}
+	void CConsole::setSystemDefaultCodePage() {}
 
-	void CConsole::setUTF8CodePage()
-	{
-		// do nothing
-	}
+	void CConsole::setUTF8CodePage() {}
 }
