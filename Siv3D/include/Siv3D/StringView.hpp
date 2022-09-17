@@ -295,7 +295,7 @@ namespace s3d
 
 		friend constexpr std::strong_ordering operator <=>(const StringView& lhs, const StringView& rhs) noexcept
 		{
-			return (lhs.m_view <=> rhs.m_view);
+			return (lhs.compare(rhs) <=> 0);
 		}
 
 		friend std::ostream& operator <<(std::ostream& output, const StringView& value);
