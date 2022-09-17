@@ -221,6 +221,74 @@ TEST_CASE("Utility.hpp")
 	}
 }
 
+TEST_CASE("Memory.hpp")
+{
+	{
+		void* p = Malloc(256);
+		CHECK(IsAligned(p, MinAlignment));
+		Free(p);
+	}
+
+	{
+		constexpr size_t Alignment = (MinAlignment * 4);
+		void* p = AlignedAlloc(256, Alignment);
+		CHECK(IsAligned(p, Alignment));
+		AlignedFree(p);
+	}
+
+	{
+		Bench{}.run("Malloc(16)", [&]() {
+			void* p = Malloc(16);
+			doNotOptimizeAway(p);
+			Free(p);
+			});
+
+		Bench{}.run("Calloc(16, 1)", [&]() {
+			void* p = Calloc(16, 1);
+			doNotOptimizeAway(p);
+			Free(p);
+			});
+
+		Bench{}.run("AlignedAlloc(16, 16)", [&]() {
+			void* p = AlignedAlloc(16, 16);
+			doNotOptimizeAway(p);
+			AlignedFree(p);
+			});
+
+		Bench{}.run("AlignedAlloc(16, 4096)", [&]() {
+			void* p = AlignedAlloc(16, 4096);
+			doNotOptimizeAway(p);
+			AlignedFree(p);
+			});
+	}
+	
+	{
+		Bench{}.run("Malloc(16384)", [&]() {
+			void* p = Malloc(16384);
+			doNotOptimizeAway(p);
+			Free(p);
+			});
+
+		Bench{}.run("Calloc(16384, 1)", [&]() {
+			void* p = Calloc(16384, 1);
+			doNotOptimizeAway(p);
+			Free(p);
+			});
+
+		Bench{}.run("AlignedAlloc(16384, 16)", [&]() {
+			void* p = AlignedAlloc(16384, 16);
+			doNotOptimizeAway(p);
+			AlignedFree(p);
+			});
+
+		Bench{}.run("AlignedAlloc(16384, 4096)", [&]() {
+			void* p = AlignedAlloc(16384, 4096);
+			doNotOptimizeAway(p);
+			AlignedFree(p);
+			});
+	}
+}
+
 TEST_CASE("Unicode.hpp")
 {
 	const std::string utf8 = Unicode::ToUTF8(U"渋三次元");

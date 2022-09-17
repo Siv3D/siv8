@@ -256,6 +256,25 @@
 
 # endif
 
+
+//////////////////////////////////////////////////
+//
+//	アロケータへの修飾 | Allocator attributes
+//
+//	SIV3D_RESTRICT
+//
+//////////////////////////////////////////////////
+
+# if SIV3D_COMPILER(MSVC)
+
+	# define SIV3D_RESTRICT __declspec(allocator) __declspec(restrict)
+
+# else
+
+	# define SIV3D_RESTRICT
+
+# endif
+
 //////////////////////////////////////////////////
 //
 //	警告の抑制 | Warning suppression
