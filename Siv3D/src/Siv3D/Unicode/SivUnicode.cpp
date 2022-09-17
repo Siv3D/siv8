@@ -18,7 +18,48 @@ namespace s3d
 	{
 		String WidenAscii(const std::string_view asciiText)
 		{
-			return String(asciiText.begin(), asciiText.end());
+		# if defined(__cpp_lib_string_resize_and_overwrite)
+
+			String result;
+
+			result.resize_and_overwrite(asciiText.size(), [&](char32* buf, size_t n) -> size_t {
+
+					for (const char ch : asciiText)
+					{
+						if (static_cast<uint8>(ch) <= uint8{ 0x7F })
+						{
+							*buf++ = ch;
+						}
+						else
+						{
+							return 0;
+						}
+					}
+
+					return n;
+				});
+
+		# else
+
+			String result(asciiText.size(), U'\0');
+
+			char32* pDst = result.data();
+
+			for (const char ch : asciiText)
+			{
+				if (static_cast<uint8>(ch) <= uint8{ 0x7F })
+				{
+					*pDst++ = ch;
+				}
+				else
+				{
+					return{};
+				}
+			}
+
+		# endif
+
+			return result;
 		}
 
 		String FromUTF8(const std::string_view s)
@@ -80,16 +121,46 @@ namespace s3d
 
 		std::string NarrowAscii(const StringView asciiText)
 		{
-			std::string result(asciiText.length(), '\0');
+		# if defined(__cpp_lib_string_resize_and_overwrite)
 
-			const char32* pSrc = asciiText.data();
-			const char32* const pSrcEnd = (pSrc + asciiText.size());
+			std::string result;
+
+			result.resize_and_overwrite(asciiText.size(), [&](char* buf, size_t n) -> size_t {
+
+					for (const char32 ch : asciiText)
+					{
+						if (static_cast<uint32>(ch) <= 0x7Fu )
+						{
+							*buf++ = static_cast<char>(ch);
+						}
+						else
+						{
+							return 0;
+						}
+					}
+
+					return n;
+				});
+
+		# else
+
+			std::string result(asciiText.size(), '\0');
+
 			char* pDst = result.data();
 
-			while (pSrc != pSrcEnd)
+			for (const char32 ch : asciiText)
 			{
-				*pDst++ = static_cast<char>(*pSrc++);
+				if (static_cast<uint32>(ch) <= 0x7Fu)
+				{
+					*pDst++ = static_cast<char>(ch);
+				}
+				else
+				{
+					return{};
+				}
 			}
+
+		# endif
 
 			return result;
 		}
