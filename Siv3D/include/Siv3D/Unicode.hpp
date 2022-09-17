@@ -42,7 +42,7 @@
 
 namespace s3d
 {
-	using StringView = std::u32string_view;
+	class StringView;
 	using String = std::u32string;
 
 	/// @brief 文字コードの変換

@@ -37,7 +37,7 @@ namespace s3d
 
 		ConsoleBuffer& ConsoleBuffer::operator <<(const StringView s)
 		{
-			formatData->append(s);
+			formatData->append(s.data(), s.size());
 
 			return *this;
 		}

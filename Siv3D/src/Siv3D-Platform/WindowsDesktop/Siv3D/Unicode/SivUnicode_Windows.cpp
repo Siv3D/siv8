@@ -11,6 +11,7 @@
 
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/StringView.hpp>
 # include <ThirdParty/simdutf/simdutf.h>
 
 namespace s3d
