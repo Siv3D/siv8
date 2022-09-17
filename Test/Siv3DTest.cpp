@@ -24,17 +24,29 @@ using ankerl::nanobench::doNotOptimizeAway;
 
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4566)
 
-void TestPlatform();
-
 void RunTest()
 {
 	Console.open();
 
-	TestPlatform();
-
 	doctest::Context context;
 
 	context.run();
+}
+
+TEST_CASE("Platform.hpp")
+{
+	Console << U"SIV3D_PLATFORM_NAME: "	SIV3D_PLATFORM_NAME;
+	Console << U"SIV3D_CPU_ARCHITECTURE: " SIV3D_CPU_ARCHITECTURE;
+	Console << U"SIV3D_INTRINSIC_TYPE: " SIV3D_INTRINSIC_TYPE;
+	Console << U"SIV3D_COMPILER_NAME: " SIV3D_COMPILER_NAME;
+	Console << U"SIV3D_BUILD_TYPE: " SIV3D_BUILD_TYPE;
+}
+
+TEST_CASE("Version.hpp")
+{
+	Console << U"SIV3D_VERSION_SHORT_STRING: "	SIV3D_VERSION_SHORT_STRING;
+	Console << U"SIV3D_VERSION_STRING: " SIV3D_VERSION_STRING;
+	Console << U"SIV3D_VERSION_NAME: " SIV3D_VERSION_NAME;
 }
 
 TEST_CASE("Types.hpp")
@@ -145,7 +157,6 @@ TEST_CASE("Concepts.hpp")
 	CHECK(Concept::UniformRandomBitGenerator<EnumT> == false);
 	CHECK(Concept::UniformRandomBitGenerator<ScopedEnumT> == false);
 }
-
 
 TEST_CASE("Unicode.hpp")
 {
@@ -261,14 +272,6 @@ TEST_CASE("Unicode.hpp")
 	}
 }
 
-void TestPlatform()
-{
-	Console << U"SIV3D_PLATFORM_NAME: "	SIV3D_PLATFORM_NAME;
-	Console << U"SIV3D_CPU_ARCHITECTURE: " SIV3D_CPU_ARCHITECTURE;
-	Console << U"SIV3D_INTRINSIC_TYPE: " SIV3D_INTRINSIC_TYPE;
-	Console << U"SIV3D_COMPILER_NAME: " SIV3D_COMPILER_NAME;
-	Console << U"SIV3D_BUILD_TYPE: " SIV3D_BUILD_TYPE;
-}
 
 
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
