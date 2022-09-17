@@ -33,7 +33,6 @@ namespace s3d
 
 	/// @brief `Malloc()`, `Calloc()`, `Realloc()` で確保したメモリを解放します。
 	/// @param p 解放するメモリのポインタ
-	[[nodiscard]]
 	void Free(void* p) noexcept;
 
 	/// @brief アライメントを指定してメモリを確保します。
@@ -46,7 +45,6 @@ namespace s3d
 
 	/// @brief `AlignedAlloc()` で確保したメモリを解放します。
 	/// @param p 解放するメモリのポインタ
-	[[nodiscard]]
 	void AlignedFree(void* p) noexcept;
 
 	/// @brief ポインタが指定したサイズにアライメントされているかを返します。
