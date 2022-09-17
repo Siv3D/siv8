@@ -50,7 +50,7 @@ namespace s3d
 	{
 		/// @brief ASCII 文字列を String に変換します。
 		/// @param asciiText ASCII 文字で構成された文字列
-		/// @remark 入力文字数が少ない場合、Widen() 関数より高速に動作します。
+		/// @remark Windows 版では `Widen()` よりも高速に動作します。
 		/// @return 変換された文字列。入力が不正な場合は空の文字列
 		[[nodiscard]]
 		String WidenAscii(std::string_view asciiText);
@@ -87,7 +87,7 @@ namespace s3d
 
 		/// @brief ASCII 文字列を std::string に変換します。
 		/// @param asciiText ASCII 文字で構成された文字列
-		/// @remark 入力文字数が少ない場合、Narrow() 関数より高速に動作します。
+		/// @remark Windows 版では `Narrow()` よりも高速に動作します。
 		/// @return 変換された文字列。入力が不正な場合は空の文字列
 		[[nodiscard]]
 		std::string NarrowAscii(StringView asciiText);

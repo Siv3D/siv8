@@ -270,11 +270,11 @@
 # if SIV3D_COMPILER(MSVC)
 
     # define SIV3D_DISABLE_MSVC_WARNINGS_PUSH(warnings)	\
-			 _Pragma(warning(push))						\
-			 _Pragma(warning(disable: warnings))
+			 __pragma(warning(push))					\
+			 __pragma(warning(disable: warnings))
 
 	# define SIV3D_DISABLE_MSVC_WARNINGS_POP()			\
-			 _Pragma(warning(pop))
+			 __pragma(warning(pop))
 
 # else
 

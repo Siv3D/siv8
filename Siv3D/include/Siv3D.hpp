@@ -44,6 +44,8 @@
 // 基本型 | Types
 # include <Siv3D/Types.hpp>
 
+// コンセプト | Concepts
+# include <Siv3D/Concepts.hpp>
 
 
 
