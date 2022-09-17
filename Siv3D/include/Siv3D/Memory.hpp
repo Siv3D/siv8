@@ -11,6 +11,10 @@
 
 # pragma once
 # include <cstdlib>
+# include "Platform.hpp"
+# if SIV3D_USE_MIMALLOC
+#	include <ThirdParty/mimalloc/mimalloc.h>
+# endif
 
 namespace s3d
 {
@@ -29,7 +33,7 @@ namespace s3d
 	void* Calloc(size_t count, size_t size) noexcept;
 
 	[[nodiscard]]
-	void* Realloc(void* p, size_t newsize) noexcept;
+	void* Realloc(void* p, size_t newSize) noexcept;
 
 	/// @brief `Malloc()`, `Calloc()`, `Realloc()` で確保したメモリを解放します。
 	/// @param p 解放するメモリのポインタ
@@ -45,7 +49,7 @@ namespace s3d
 
 	/// @brief `AlignedAlloc()` で確保したメモリを解放します。
 	/// @param p 解放するメモリのポインタ
-	void AlignedFree(void* p) noexcept;
+	void AlignedFree(void* p, size_t alignment) noexcept;
 
 	/// @brief ポインタが指定したサイズにアライメントされているかを返します。
 	/// @param p アライメントを調べるポインタ

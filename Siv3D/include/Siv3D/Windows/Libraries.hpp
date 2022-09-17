@@ -10,11 +10,12 @@
 //-----------------------------------------------
 
 # pragma once
+# include "../Platform.hpp"
 
-# if (defined(_WIN32) && !defined(SIV3D_LIBRARY_BUILD))
+# if (SIV3D_PLATFORM(WINDOWS) && !defined(SIV3D_LIBRARY_BUILD))
 
 	// デバッグビルドの場合、ライブラリ名にサフィックスを付ける
-	# if defined(_DEBUG)
+	# if SIV3D_BUILD(DEBUG)
 	#	define SIV3D_DEBUG_LIB_SUFFIX(s) #s
 	# else
 	#	define SIV3D_DEBUG_LIB_SUFFIX(s)
@@ -23,6 +24,10 @@
 	# pragma comment (linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
 	# pragma comment (lib, "Siv3D" SIV3D_DEBUG_LIB_SUFFIX(_d))
 
+	# if (SIV3D_USE_MIMALLOC)
+	#	pragma comment (lib, "mimalloc/mimalloc-static" SIV3D_DEBUG_LIB_SUFFIX(_d))
+	# endif
+
 	# undef SIV3D_DEBUG_LIB_SUFFIX
 
-# endif // (defined(_WIN32) && !defined(SIV3D_LIBRARY_BUILD))
+# endif // (SIV3D_PLATFORM(WINDOWS) && !defined(SIV3D_LIBRARY_BUILD))

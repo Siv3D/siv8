@@ -343,9 +343,9 @@ use a 64-bit target such as x64, 64-bit ARM or 64-bit PPC.")
      * studio.
      */
     #if SIMDUTF_USING_LIBRARY
-    #define SIMDUTF_DLLIMPORTEXPORT __declspec(dllimport)
+    #define SIMDUTF_DLLIMPORTEXPORT
     #else
-    #define SIMDUTF_DLLIMPORTEXPORT __declspec(dllexport)
+    #define SIMDUTF_DLLIMPORTEXPORT
     #endif
 #else
     #define SIMDUTF_DLLIMPORTEXPORT

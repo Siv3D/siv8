@@ -8,6 +8,10 @@
 #include <string>
 #include <climits>
 
+# if defined(_WIN32)
+#   pragma warning (disable : 4310 4505)
+# endif
+
 // Useful for debugging purposes
 namespace simdutf {
 namespace {
@@ -1345,7 +1349,7 @@ namespace simd {
     simdutf_really_inline void store_ascii_as_utf16(char16_t * ptr) const {
       __m256i first = _mm256_cvtepu8_epi16(_mm256_castsi256_si128(*this));
       __m256i second = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(*this,1));
-      if (big_endian) {
+      if constexpr (big_endian) {
         const __m256i swap = _mm256_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14,
                                   17, 16, 19, 18, 21, 20, 23, 22, 25, 24, 27, 26, 29, 28, 31, 30);
         first = _mm256_shuffle_epi8(first, swap);
@@ -2207,7 +2211,7 @@ namespace simd {
     simdutf_really_inline void store_ascii_as_utf16(char16_t * p) const {
       __m128i first = _mm_cvtepu8_epi16(*this);
       __m128i second = _mm_cvtepu8_epi16(_mm_srli_si128(*this,8));
-      if (big_endian) {
+      if constexpr (big_endian) {
         const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
         first = _mm_shuffle_epi8(first, swap);
         second = _mm_shuffle_epi8(second, swap);
@@ -10076,7 +10080,7 @@ inline size_t convert_valid(const char32_t* buf, size_t len, char16_t* utf16_out
       word -= 0x10000;
       uint16_t high_surrogate = uint16_t(0xD800 + (word >> 10));
       uint16_t low_surrogate = uint16_t(0xDC00 + (word & 0x3FF));
-      if (big_endian) {
+      if constexpr (big_endian) {
         high_surrogate = utf16::swap_bytes(high_surrogate);
         low_surrogate = utf16::swap_bytes(low_surrogate);
       }
@@ -10122,7 +10126,7 @@ inline size_t convert(const char32_t* buf, size_t len, char16_t* utf16_output) {
       word -= 0x10000;
       uint16_t high_surrogate = uint16_t(0xD800 + (word >> 10));
       uint16_t low_surrogate = uint16_t(0xDC00 + (word & 0x3FF));
-      if (big_endian) {
+      if constexpr (big_endian) {
         high_surrogate = utf16::swap_bytes(high_surrogate);
         low_surrogate = utf16::swap_bytes(low_surrogate);
       }
@@ -10151,7 +10155,7 @@ inline result convert_with_errors(const char32_t* buf, size_t len, char16_t* utf
       word -= 0x10000;
       uint16_t high_surrogate = uint16_t(0xD800 + (word >> 10));
       uint16_t low_surrogate = uint16_t(0xDC00 + (word & 0x3FF));
-      if (big_endian) {
+      if constexpr (big_endian) {
         high_surrogate = utf16::swap_bytes(high_surrogate);
         low_surrogate = utf16::swap_bytes(low_surrogate);
       }
@@ -10191,7 +10195,7 @@ inline size_t convert_valid(const char16_t* buf, size_t len, char* utf8_output) 
     if (pos + 4 <= len) { // if it is safe to read 8 more bytes, check that they are ascii
       uint64_t v;
       ::memcpy(&v, data + pos, sizeof(uint64_t));
-      if (big_endian) v = (v >> 8) | (v << (64 - 8));
+      if constexpr (big_endian) v = (v >> 8) | (v << (64 - 8));
       if ((v & 0xFF80FF80FF80FF80) == 0) {
         size_t final_pos = pos + 4;
         while(pos < final_pos) {
@@ -10265,7 +10269,7 @@ inline size_t convert(const char16_t* buf, size_t len, char* utf8_output) {
     if (pos + 4 <= len) { // if it is safe to read 8 more bytes, check that they are ascii
       uint64_t v;
       ::memcpy(&v, data + pos, sizeof(uint64_t));
-      if (big_endian) v = (v >> 8) | (v << (64 - 8));
+      if constexpr (big_endian) v = (v >> 8) | (v << (64 - 8));
       if ((v & 0xFF80FF80FF80FF80) == 0) {
         size_t final_pos = pos + 4;
         while(pos < final_pos) {
@@ -10324,7 +10328,7 @@ inline result convert_with_errors(const char16_t* buf, size_t len, char* utf8_ou
     if (pos + 4 <= len) { // if it is safe to read 8 more bytes, check that they are ascii
       uint64_t v;
       ::memcpy(&v, data + pos, sizeof(uint64_t));
-      if (big_endian) v = (v >> 8) | (v << (64 - 8));
+      if constexpr (big_endian) v = (v >> 8) | (v << (64 - 8));
       if ((v & 0xFF80FF80FF80FF80) == 0) {
         size_t final_pos = pos + 4;
         while(pos < final_pos) {
@@ -10534,7 +10538,7 @@ inline size_t convert_valid(const char* buf, size_t len, char16_t* utf16_output)
       // a single UTF-16 word.
       if(pos + 1 >= len) { break; } // minimal bound checking
       uint16_t code_point = uint16_t(((leading_byte &0b00011111) << 6) | (data[pos + 1] &0b00111111));
-      if (big_endian) {
+      if constexpr (big_endian) {
         code_point = utf16::swap_bytes(uint16_t(code_point));
       }
       *utf16_output++ = char16_t(code_point);
@@ -10544,7 +10548,7 @@ inline size_t convert_valid(const char* buf, size_t len, char16_t* utf16_output)
       // a single UTF-16 word.
       if(pos + 2 >= len) { break; } // minimal bound checking
       uint16_t code_point = uint16_t(((leading_byte &0b00001111) << 12) | ((data[pos + 1] &0b00111111) << 6) | (data[pos + 2] &0b00111111));
-      if (big_endian) {
+      if constexpr (big_endian) {
         code_point = utf16::swap_bytes(uint16_t(code_point));
       }
       *utf16_output++ = char16_t(code_point);
@@ -10557,7 +10561,7 @@ inline size_t convert_valid(const char* buf, size_t len, char16_t* utf16_output)
       code_point -= 0x10000;
       uint16_t high_surrogate = uint16_t(0xD800 + (code_point >> 10));
       uint16_t low_surrogate = uint16_t(0xDC00 + (code_point & 0x3FF));
-      if (big_endian) {
+      if constexpr (big_endian) {
         high_surrogate = utf16::swap_bytes(high_surrogate);
         low_surrogate = utf16::swap_bytes(low_surrogate);
       }
@@ -10625,7 +10629,7 @@ inline size_t convert(const char* buf, size_t len, char16_t* utf16_output) {
       // range check
       uint32_t code_point = (leading_byte & 0b00011111) << 6 | (data[pos + 1] & 0b00111111);
       if (code_point < 0x80 || 0x7ff < code_point) { return 0; }
-      if (big_endian) {
+      if constexpr (big_endian) {
         code_point = uint32_t(utf16::swap_bytes(uint16_t(code_point)));
       }
       *utf16_output++ = char16_t(code_point);
@@ -10645,7 +10649,7 @@ inline size_t convert(const char* buf, size_t len, char16_t* utf16_output) {
           (0xd7ff < code_point && code_point < 0xe000)) {
         return 0;
       }
-      if (big_endian) {
+      if constexpr (big_endian) {
         code_point = uint32_t(utf16::swap_bytes(uint16_t(code_point)));
       }
       *utf16_output++ = char16_t(code_point);
@@ -10665,7 +10669,7 @@ inline size_t convert(const char* buf, size_t len, char16_t* utf16_output) {
       code_point -= 0x10000;
       uint16_t high_surrogate = uint16_t(0xD800 + (code_point >> 10));
       uint16_t low_surrogate = uint16_t(0xDC00 + (code_point & 0x3FF));
-      if (big_endian) {
+      if constexpr (big_endian) {
         high_surrogate = utf16::swap_bytes(high_surrogate);
         low_surrogate = utf16::swap_bytes(low_surrogate);
       }
@@ -10714,7 +10718,7 @@ inline result convert_with_errors(const char* buf, size_t len, char16_t* utf16_o
       // range check
       uint32_t code_point = (leading_byte & 0b00011111) << 6 | (data[pos + 1] & 0b00111111);
       if (code_point < 0x80 || 0x7ff < code_point) { return result(error_code::OVERLONG, pos); }
-      if (big_endian) {
+      if constexpr (big_endian) {
         code_point = uint32_t(utf16::swap_bytes(uint16_t(code_point)));
       }
       *utf16_output++ = char16_t(code_point);
@@ -10732,7 +10736,7 @@ inline result convert_with_errors(const char* buf, size_t len, char16_t* utf16_o
                    (data[pos + 2] & 0b00111111);
       if ((code_point < 0x800) || (0xffff < code_point)) { return result(error_code::OVERLONG, pos);}
       if (0xd7ff < code_point && code_point < 0xe000) { return result(error_code::SURROGATE, pos); }
-      if (big_endian) {
+      if constexpr (big_endian) {
         code_point = uint32_t(utf16::swap_bytes(uint16_t(code_point)));
       }
       *utf16_output++ = char16_t(code_point);
@@ -10753,7 +10757,7 @@ inline result convert_with_errors(const char* buf, size_t len, char16_t* utf16_o
       code_point -= 0x10000;
       uint16_t high_surrogate = uint16_t(0xD800 + (code_point >> 10));
       uint16_t low_surrogate = uint16_t(0xDC00 + (code_point & 0x3FF));
-      if (big_endian) {
+      if constexpr (big_endian) {
         high_surrogate = utf16::swap_bytes(high_surrogate);
         low_surrogate = utf16::swap_bytes(low_surrogate);
       }
@@ -15414,7 +15418,7 @@ const char16_t* avx2_validate_utf16(const char16_t* input, size_t size) {
         auto in0 = simd16<uint16_t>(input);
         auto in1 = simd16<uint16_t>(input + simd16<uint16_t>::ELEMENTS);
 
-        if (big_endian) {
+        if constexpr (big_endian) {
             in0 = in0.swap_bytes();
             in1 = in1.swap_bytes();
         }
@@ -15492,7 +15496,7 @@ const result avx2_validate_utf16_with_errors(const char16_t* input, size_t size)
         auto in0 = simd16<uint16_t>(input);
         auto in1 = simd16<uint16_t>(input + simd16<uint16_t>::ELEMENTS);
 
-        if (big_endian) {
+        if constexpr (big_endian) {
             in0 = in0.swap_bytes();
             in1 = in1.swap_bytes();
         }
@@ -15648,7 +15652,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
   if(((utf8_end_of_code_point_mask & 0xffff) == 0xffff)) {
     // We process the data in chunks of 16 bytes.
     __m256i ascii = _mm256_cvtepu8_epi16(in);
-    if (big_endian) {
+    if constexpr (big_endian) {
       const __m256i swap256 = _mm256_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14,
                                   17, 16, 19, 18, 21, 20, 23, 22, 25, 24, 27, 26, 29, 28, 31, 30);
       ascii = _mm256_shuffle_epi8(ascii, swap256);
@@ -15665,7 +15669,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
     const __m128i ascii = _mm_and_si128(perm, _mm_set1_epi16(0x7f));
     const __m128i highbyte = _mm_and_si128(perm, _mm_set1_epi16(0x1f00));
     __m128i composed = _mm_or_si128(ascii, _mm_srli_epi16(highbyte, 2));
-    if (big_endian) composed = _mm_shuffle_epi8(composed, swap);
+    if constexpr (big_endian) composed = _mm_shuffle_epi8(composed, swap);
     _mm_storeu_si128((__m128i *)utf16_output, composed);
     utf16_output += 8; // We wrote 16 bytes, 8 code points.
     return 16;
@@ -15686,7 +15690,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
     const __m128i composed =
         _mm_or_si128(_mm_or_si128(ascii, middlebyte_shifted), highbyte_shifted);
     __m128i composed_repacked = _mm_packus_epi32(composed, composed);
-    if (big_endian) composed_repacked = _mm_shuffle_epi8(composed_repacked, swap);
+    if constexpr (big_endian) composed_repacked = _mm_shuffle_epi8(composed_repacked, swap);
     _mm_storeu_si128((__m128i *)utf16_output, composed_repacked);
     utf16_output += 4;
     return 12;
@@ -15708,7 +15712,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
     const __m128i ascii = _mm_and_si128(perm, _mm_set1_epi16(0x7f));
     const __m128i highbyte = _mm_and_si128(perm, _mm_set1_epi16(0x1f00));
     __m128i composed = _mm_or_si128(ascii, _mm_srli_epi16(highbyte, 2));
-    if (big_endian) composed = _mm_shuffle_epi8(composed, swap);
+    if constexpr (big_endian) composed = _mm_shuffle_epi8(composed, swap);
     _mm_storeu_si128((__m128i *)utf16_output, composed);
     utf16_output += 6; // We wrote 12 bytes, 6 code points.
   } else if (idx < 145) {
@@ -15727,7 +15731,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
     const __m128i composed =
         _mm_or_si128(_mm_or_si128(ascii, middlebyte_shifted), highbyte_shifted);
     __m128i composed_repacked = _mm_packus_epi32(composed, composed);
-    if (big_endian) composed_repacked = _mm_shuffle_epi8(composed_repacked, swap);
+    if constexpr (big_endian) composed_repacked = _mm_shuffle_epi8(composed_repacked, swap);
     _mm_storeu_si128((__m128i *)utf16_output, composed_repacked);
     utf16_output += 4;
   } else if (idx < 209) {
@@ -15763,7 +15767,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
         _mm_or_si128(hightenbitsadd, lowtenbitsaddshifted);
     uint32_t basic_buffer[4];
     uint32_t basic_buffer_swap[4];
-    if (big_endian) {
+    if constexpr (big_endian) {
       _mm_storeu_si128((__m128i *)basic_buffer_swap, _mm_shuffle_epi8(composed, swap));
       surrogates = _mm_shuffle_epi8(surrogates, swap);
     }
@@ -15981,7 +15985,7 @@ std::pair<const char16_t*, char*> avx2_convert_utf16_to_utf8(const char16_t* buf
 
   while (buf + 16 + safety_margin <= end) {
     __m256i in = _mm256_loadu_si256((__m256i*)buf);
-    if (big_endian) {
+    if constexpr (big_endian) {
       const __m256i swap = _mm256_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14,
                                   17, 16, 19, 18, 21, 20, 23, 22, 25, 24, 27, 26, 29, 28, 31, 30);
       in = _mm256_shuffle_epi8(in, swap);
@@ -16224,7 +16228,7 @@ std::pair<result, char*> avx2_convert_utf16_to_utf8_with_errors(const char16_t* 
 
   while (buf + 16 + safety_margin <= end) {
     __m256i in = _mm256_loadu_si256((__m256i*)buf);
-    if (big_endian) {
+    if constexpr (big_endian) {
       const __m256i swap = _mm256_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14,
                                   17, 16, 19, 18, 21, 20, 23, 22, 25, 24, 27, 26, 29, 28, 31, 30);
       in = _mm256_shuffle_epi8(in, swap);
@@ -16511,7 +16515,7 @@ std::pair<const char16_t*, char32_t*> avx2_convert_utf16_to_utf32(const char16_t
 
   while (buf + 16 <= end) {
     __m256i in = _mm256_loadu_si256((__m256i*)buf);
-    if (big_endian) {
+    if constexpr (big_endian) {
       const __m256i swap = _mm256_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14,
                                   17, 16, 19, 18, 21, 20, 23, 22, 25, 24, 27, 26, 29, 28, 31, 30);
       in = _mm256_shuffle_epi8(in, swap);
@@ -16579,7 +16583,7 @@ std::pair<result, char32_t*> avx2_convert_utf16_to_utf32_with_errors(const char1
 
   while (buf + 16 <= end) {
     __m256i in = _mm256_loadu_si256((__m256i*)buf);
-    if (big_endian) {
+    if constexpr (big_endian) {
       const __m256i swap = _mm256_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14,
                                   17, 16, 19, 18, 21, 20, 23, 22, 25, 24, 27, 26, 29, 28, 31, 30);
       in = _mm256_shuffle_epi8(in, swap);
@@ -17141,7 +17145,7 @@ std::pair<const char32_t*, char16_t*> avx2_convert_utf32_to_utf16(const char32_t
       forbidden_bytemask = _mm256_or_si256(forbidden_bytemask, _mm256_cmpeq_epi32(_mm256_and_si256(in, v_f800), v_d800));
 
       __m128i utf16_packed = _mm_packus_epi32(_mm256_castsi256_si128(in),_mm256_extractf128_si256(in,1));
-      if (big_endian) {
+      if constexpr (big_endian) {
         const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
         utf16_packed = _mm_shuffle_epi8(utf16_packed, swap);
       }
@@ -17164,7 +17168,7 @@ std::pair<const char32_t*, char16_t*> avx2_convert_utf32_to_utf16(const char32_t
           word -= 0x10000;
           uint16_t high_surrogate = uint16_t(0xD800 + (word >> 10));
           uint16_t low_surrogate = uint16_t(0xDC00 + (word & 0x3FF));
-          if (big_endian) {
+          if constexpr (big_endian) {
             high_surrogate = uint16_t((high_surrogate >> 8) | (high_surrogate << 8));
             low_surrogate = uint16_t((low_surrogate >> 8) | (low_surrogate << 8));
           }
@@ -17209,7 +17213,7 @@ std::pair<result, char16_t*> avx2_convert_utf32_to_utf16_with_errors(const char3
       }
 
       __m128i utf16_packed = _mm_packus_epi32(_mm256_castsi256_si128(in),_mm256_extractf128_si256(in,1));
-      if (big_endian) {
+      if constexpr (big_endian) {
         const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
         utf16_packed = _mm_shuffle_epi8(utf16_packed, swap);
       }
@@ -17232,7 +17236,7 @@ std::pair<result, char16_t*> avx2_convert_utf32_to_utf16_with_errors(const char3
           word -= 0x10000;
           uint16_t high_surrogate = uint16_t(0xD800 + (word >> 10));
           uint16_t low_surrogate = uint16_t(0xDC00 + (word & 0x3FF));
-          if (big_endian) {
+          if constexpr (big_endian) {
             high_surrogate = uint16_t((high_surrogate >> 8) | (high_surrogate << 8));
             low_surrogate = uint16_t((low_surrogate >> 8) | (low_surrogate << 8));
           }
@@ -17506,10 +17510,10 @@ using namespace simd;
         // you might think that a for-loop would work, but under Visual Studio, it is not good enough.
         static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
             "We support either two or four chunks per 64-byte block.");
-        if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+        if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
           this->check_utf8_bytes(input.chunks[0], this->prev_input_block);
           this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-        } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+        } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
           this->check_utf8_bytes(input.chunks[0], this->prev_input_block);
           this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
           this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -17881,10 +17885,10 @@ using namespace simd;
           static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
               "We support either two or four chunks per 64-byte block.");
           auto zero = simd8<uint8_t>{uint8_t(0)};
-          if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+          if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-          } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+          } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
             this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -17944,10 +17948,10 @@ using namespace simd;
           static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
               "We support either two or four chunks per 64-byte block.");
           auto zero = simd8<uint8_t>{uint8_t(0)};
-          if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+          if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-          } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+          } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
             this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -18205,10 +18209,10 @@ using namespace simd;
           static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
               "We support either two or four chunks per 64-byte block.");
           auto zero = simd8<uint8_t>{uint8_t(0)};
-          if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+          if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-          } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+          } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
             this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -18267,10 +18271,10 @@ using namespace simd;
           static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
               "We support either two or four chunks per 64-byte block.");
           auto zero = simd8<uint8_t>{uint8_t(0)};
-          if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+          if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-          } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+          } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
             this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -18405,7 +18409,7 @@ simdutf_really_inline size_t count_code_points(const char16_t* in, size_t size) 
     size_t count = 0;
     for(;pos + 32 <= size; pos += 32) {
       simd16x32<uint16_t> input(reinterpret_cast<const uint16_t *>(in + pos));
-      if (big_endian) input.swap_bytes();
+      if constexpr (big_endian) input.swap_bytes();
       uint64_t not_pair = input.not_in_range(0xDC00, 0xDFFF);
       count += count_ones(not_pair) / 2;
     }
@@ -18419,7 +18423,7 @@ simdutf_really_inline size_t utf8_length_from_utf16(const char16_t* in, size_t s
     // This algorithm could no doubt be improved!
     for(;pos + 32 <= size; pos += 32) {
       simd16x32<uint16_t> input(reinterpret_cast<const uint16_t *>(in + pos));
-      if (big_endian) input.swap_bytes();
+      if constexpr (big_endian) input.swap_bytes();
       uint64_t ascii_mask = input.lteq(0x7F);
       uint64_t twobyte_mask = input.lteq(0x7FF);
       uint64_t not_pair_mask = input.not_in_range(0xD800, 0xDFFF);
@@ -18440,7 +18444,7 @@ simdutf_really_inline size_t utf32_length_from_utf16(const char16_t* in, size_t 
     size_t count = 0;
     for(;pos + 32 <= size; pos += 32) {
       simd16x32<uint16_t> input(reinterpret_cast<const uint16_t *>(in + pos));
-      if (big_endian) input.swap_bytes();
+      if constexpr (big_endian) input.swap_bytes();
       uint64_t not_pair = input.not_in_range(0xDC00, 0xDFFF);
       count += count_ones(not_pair) / 2;
     }
@@ -20739,7 +20743,7 @@ const char16_t* sse_validate_utf16(const char16_t* input, size_t size) {
         //    consists only the higher bytes.
         auto in0 = simd16<uint16_t>(input);
         auto in1 = simd16<uint16_t>(input + simd16<uint16_t>::SIZE / sizeof(char16_t));
-        if (big_endian) {
+        if constexpr (big_endian) {
             in0 = in0.swap_bytes();
             in1 = in1.swap_bytes();
         }
@@ -20817,7 +20821,7 @@ const result sse_validate_utf16_with_errors(const char16_t* input, size_t size) 
         auto in0 = simd16<uint16_t>(input);
         auto in1 = simd16<uint16_t>(input + simd16<uint16_t>::SIZE / sizeof(char16_t));
 
-        if (big_endian) {
+        if constexpr (big_endian) {
             in0 = in0.swap_bytes();
             in1 = in1.swap_bytes();
         }
@@ -20974,7 +20978,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
     // We process the data in chunks of 16 bytes.
     __m128i ascii_first = _mm_cvtepu8_epi16(in);
     __m128i ascii_second = _mm_cvtepu8_epi16(_mm_srli_si128(in,8));
-    if (big_endian) {
+    if constexpr (big_endian) {
       ascii_first = _mm_shuffle_epi8(ascii_first, swap);
       ascii_second = _mm_shuffle_epi8(ascii_second, swap);
     }
@@ -20991,7 +20995,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
     const __m128i ascii = _mm_and_si128(perm, _mm_set1_epi16(0x7f));
     const __m128i highbyte = _mm_and_si128(perm, _mm_set1_epi16(0x1f00));
     __m128i composed = _mm_or_si128(ascii, _mm_srli_epi16(highbyte, 2));
-    if (big_endian) composed = _mm_shuffle_epi8(composed, swap);
+    if constexpr (big_endian) composed = _mm_shuffle_epi8(composed, swap);
     _mm_storeu_si128((__m128i *)utf16_output, composed);
     utf16_output += 8; // We wrote 16 bytes, 8 code points.
     return 16;
@@ -21012,7 +21016,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
     const __m128i composed =
         _mm_or_si128(_mm_or_si128(ascii, middlebyte_shifted), highbyte_shifted);
     __m128i composed_repacked = _mm_packus_epi32(composed, composed);
-    if (big_endian) composed_repacked = _mm_shuffle_epi8(composed_repacked, swap);
+    if constexpr (big_endian) composed_repacked = _mm_shuffle_epi8(composed_repacked, swap);
     _mm_storeu_si128((__m128i *)utf16_output, composed_repacked);
     utf16_output += 4;
     return 12;
@@ -21035,7 +21039,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
     const __m128i ascii = _mm_and_si128(perm, _mm_set1_epi16(0x7f));
     const __m128i highbyte = _mm_and_si128(perm, _mm_set1_epi16(0x1f00));
     __m128i composed = _mm_or_si128(ascii, _mm_srli_epi16(highbyte, 2));
-    if (big_endian) composed = _mm_shuffle_epi8(composed, swap);
+    if constexpr (big_endian) composed = _mm_shuffle_epi8(composed, swap);
     _mm_storeu_si128((__m128i *)utf16_output, composed);
     utf16_output += 6; // We wrote 12 bytes, 6 code points.
   } else if (idx < 145) {
@@ -21054,7 +21058,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
     const __m128i composed =
         _mm_or_si128(_mm_or_si128(ascii, middlebyte_shifted), highbyte_shifted);
      __m128i composed_repacked = _mm_packus_epi32(composed, composed);
-    if (big_endian) composed_repacked = _mm_shuffle_epi8(composed_repacked, swap);
+    if constexpr (big_endian) composed_repacked = _mm_shuffle_epi8(composed_repacked, swap);
     _mm_storeu_si128((__m128i *)utf16_output, composed_repacked);
     utf16_output += 4;
   } else if (idx < 209) {
@@ -21090,7 +21094,7 @@ size_t convert_masked_utf8_to_utf16(const char *input,
         _mm_or_si128(hightenbitsadd, lowtenbitsaddshifted);
     uint32_t basic_buffer[4];
     uint32_t basic_buffer_swap[4];
-    if (big_endian) {
+    if constexpr (big_endian) {
       _mm_storeu_si128((__m128i *)basic_buffer_swap, _mm_shuffle_epi8(composed, swap));
       surrogates = _mm_shuffle_epi8(surrogates, swap);
     }
@@ -21311,7 +21315,7 @@ std::pair<const char16_t*, char*> sse_convert_utf16_to_utf8(const char16_t* buf,
   const __m128i v_c080 = _mm_set1_epi16((int16_t)0xc080);
   while (buf + 16 <= end) {
     __m128i in = _mm_loadu_si128((__m128i*)buf);
-    if (big_endian) {
+    if constexpr (big_endian) {
       const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
       in = _mm_shuffle_epi8(in, swap);
     }
@@ -21319,7 +21323,7 @@ std::pair<const char16_t*, char*> sse_convert_utf16_to_utf8(const char16_t* buf,
     const __m128i v_ff80 = _mm_set1_epi16((int16_t)0xff80);
     if(_mm_testz_si128(in, v_ff80)) { // ASCII fast path!!!!
         __m128i nextin = _mm_loadu_si128((__m128i*)buf+1);
-        if (big_endian) {
+        if constexpr (big_endian) {
           const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
           nextin = _mm_shuffle_epi8(nextin, swap);
         }
@@ -21550,7 +21554,7 @@ std::pair<result, char*> sse_convert_utf16_to_utf8_with_errors(const char16_t* b
 
   while (buf + 16 <= end) {
     __m128i in = _mm_loadu_si128((__m128i*)buf);
-    if (big_endian) {
+    if constexpr (big_endian) {
       const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
       in = _mm_shuffle_epi8(in, swap);
     }
@@ -21558,7 +21562,7 @@ std::pair<result, char*> sse_convert_utf16_to_utf8_with_errors(const char16_t* b
     const __m128i v_ff80 = _mm_set1_epi16((int16_t)0xff80);
     if(_mm_testz_si128(in, v_ff80)) { // ASCII fast path!!!!
         __m128i nextin = _mm_loadu_si128((__m128i*)buf+1);
-        if (big_endian) {
+        if constexpr (big_endian) {
           const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
           nextin = _mm_shuffle_epi8(nextin, swap);
         }
@@ -21835,7 +21839,7 @@ std::pair<const char16_t*, char32_t*> sse_convert_utf16_to_utf32(const char16_t*
   while (buf + 16 <= end) {
     __m128i in = _mm_loadu_si128((__m128i*)buf);
 
-    if (big_endian) {
+    if constexpr (big_endian) {
       const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
       in = _mm_shuffle_epi8(in, swap);
     }
@@ -21903,7 +21907,7 @@ std::pair<result, char32_t*> sse_convert_utf16_to_utf32_with_errors(const char16
   while (buf + 16 <= end) {
     __m128i in = _mm_loadu_si128((__m128i*)buf);
 
-    if (big_endian) {
+    if constexpr (big_endian) {
       const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
       in = _mm_shuffle_epi8(in, swap);
     }
@@ -22467,7 +22471,7 @@ std::pair<const char32_t*, char16_t*> sse_convert_utf32_to_utf16(const char32_t*
       const __m128i v_d800 = _mm_set1_epi16((uint16_t)0xd800);
       forbidden_bytemask = _mm_or_si128(forbidden_bytemask, _mm_cmpeq_epi16(_mm_and_si128(utf16_packed, v_f800), v_d800));
 
-      if (big_endian) {
+      if constexpr (big_endian) {
         const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
         utf16_packed = _mm_shuffle_epi8(utf16_packed, swap);
       }
@@ -22491,7 +22495,7 @@ std::pair<const char32_t*, char16_t*> sse_convert_utf32_to_utf16(const char32_t*
           word -= 0x10000;
           uint16_t high_surrogate = uint16_t(0xD800 + (word >> 10));
           uint16_t low_surrogate = uint16_t(0xDC00 + (word & 0x3FF));
-          if (big_endian) {
+          if constexpr (big_endian) {
             high_surrogate = uint16_t((high_surrogate >> 8) | (high_surrogate << 8));
             low_surrogate = uint16_t((low_surrogate >> 8) | (low_surrogate << 8));
           }
@@ -22536,7 +22540,7 @@ std::pair<result, char16_t*> sse_convert_utf32_to_utf16_with_errors(const char32
         return std::make_pair(result(error_code::SURROGATE, buf - start), utf16_output);
       }
 
-      if (big_endian) {
+      if constexpr (big_endian) {
         const __m128i swap = _mm_setr_epi8(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
         utf16_packed = _mm_shuffle_epi8(utf16_packed, swap);
       }
@@ -22560,7 +22564,7 @@ std::pair<result, char16_t*> sse_convert_utf32_to_utf16_with_errors(const char32
           word -= 0x10000;
           uint16_t high_surrogate = uint16_t(0xD800 + (word >> 10));
           uint16_t low_surrogate = uint16_t(0xDC00 + (word & 0x3FF));
-          if (big_endian) {
+          if constexpr (big_endian) {
             high_surrogate = uint16_t((high_surrogate >> 8) | (high_surrogate << 8));
             low_surrogate = uint16_t((low_surrogate >> 8) | (low_surrogate << 8));
           }
@@ -22835,10 +22839,10 @@ using namespace simd;
         // you might think that a for-loop would work, but under Visual Studio, it is not good enough.
         static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
             "We support either two or four chunks per 64-byte block.");
-        if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+        if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
           this->check_utf8_bytes(input.chunks[0], this->prev_input_block);
           this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-        } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+        } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
           this->check_utf8_bytes(input.chunks[0], this->prev_input_block);
           this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
           this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -23210,10 +23214,10 @@ using namespace simd;
           static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
               "We support either two or four chunks per 64-byte block.");
           auto zero = simd8<uint8_t>{uint8_t(0)};
-          if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+          if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-          } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+          } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
             this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -23273,10 +23277,10 @@ using namespace simd;
           static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
               "We support either two or four chunks per 64-byte block.");
           auto zero = simd8<uint8_t>{uint8_t(0)};
-          if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+          if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-          } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+          } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
             this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -23534,10 +23538,10 @@ using namespace simd;
           static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
               "We support either two or four chunks per 64-byte block.");
           auto zero = simd8<uint8_t>{uint8_t(0)};
-          if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+          if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-          } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+          } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
             this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -23596,10 +23600,10 @@ using namespace simd;
           static_assert((simd8x64<uint8_t>::NUM_CHUNKS == 2) || (simd8x64<uint8_t>::NUM_CHUNKS == 4),
               "We support either two or four chunks per 64-byte block.");
           auto zero = simd8<uint8_t>{uint8_t(0)};
-          if(simd8x64<uint8_t>::NUM_CHUNKS == 2) {
+          if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 2) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
-          } else if(simd8x64<uint8_t>::NUM_CHUNKS == 4) {
+          } else if constexpr (simd8x64<uint8_t>::NUM_CHUNKS == 4) {
             this->check_utf8_bytes(input.chunks[0], zero);
             this->check_utf8_bytes(input.chunks[1], input.chunks[0]);
             this->check_utf8_bytes(input.chunks[2], input.chunks[1]);
@@ -23734,7 +23738,7 @@ simdutf_really_inline size_t count_code_points(const char16_t* in, size_t size) 
     size_t count = 0;
     for(;pos + 32 <= size; pos += 32) {
       simd16x32<uint16_t> input(reinterpret_cast<const uint16_t *>(in + pos));
-      if (big_endian) input.swap_bytes();
+      if constexpr (big_endian) input.swap_bytes();
       uint64_t not_pair = input.not_in_range(0xDC00, 0xDFFF);
       count += count_ones(not_pair) / 2;
     }
@@ -23748,7 +23752,7 @@ simdutf_really_inline size_t utf8_length_from_utf16(const char16_t* in, size_t s
     // This algorithm could no doubt be improved!
     for(;pos + 32 <= size; pos += 32) {
       simd16x32<uint16_t> input(reinterpret_cast<const uint16_t *>(in + pos));
-      if (big_endian) input.swap_bytes();
+      if constexpr (big_endian) input.swap_bytes();
       uint64_t ascii_mask = input.lteq(0x7F);
       uint64_t twobyte_mask = input.lteq(0x7FF);
       uint64_t not_pair_mask = input.not_in_range(0xD800, 0xDFFF);
@@ -23769,7 +23773,7 @@ simdutf_really_inline size_t utf32_length_from_utf16(const char16_t* in, size_t 
     size_t count = 0;
     for(;pos + 32 <= size; pos += 32) {
       simd16x32<uint16_t> input(reinterpret_cast<const uint16_t *>(in + pos));
-      if (big_endian) input.swap_bytes();
+      if constexpr (big_endian) input.swap_bytes();
       uint64_t not_pair = input.not_in_range(0xDC00, 0xDFFF);
       count += count_ones(not_pair) / 2;
     }

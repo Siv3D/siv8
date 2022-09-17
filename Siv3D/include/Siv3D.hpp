@@ -125,12 +125,9 @@
 
 //// Null でないポインタ | Non-null pointer
 //# include <Siv3D/NonNull.hpp>
-//
+
 // メモリアロケーション | Memory allocation
 # include <Siv3D/Memory.hpp>
-//
-//// メモリアライメント対応アロケーター | Aligned allocator
-//# include <Siv3D/Allocator.hpp>
 
 //////////////////////////////////////////////////
 //

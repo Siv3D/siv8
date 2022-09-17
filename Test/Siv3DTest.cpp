@@ -223,6 +223,30 @@ TEST_CASE("Utility.hpp")
 
 TEST_CASE("Memory.hpp")
 {
+	const auto StressTest1 = []()
+	{
+		std::vector<std::string> vs;
+
+		for (size_t i = 0; i < 4096; ++i)
+		{
+			vs.push_back(std::string(32, 'a'));
+		}
+
+		return vs;
+	};
+
+	const auto StressTest2 = []()
+	{
+		std::vector<std::string> vs;
+
+		for (size_t i = 0; i < 4096; ++i)
+		{
+			vs.push_back(std::string(512, 'a'));
+		}
+
+		return vs;
+	};
+
 	{
 		void* p = Malloc(256);
 		CHECK(IsAligned(p, MinAlignment));
@@ -233,7 +257,7 @@ TEST_CASE("Memory.hpp")
 		constexpr size_t Alignment = (MinAlignment * 4);
 		void* p = AlignedAlloc(256, Alignment);
 		CHECK(IsAligned(p, Alignment));
-		AlignedFree(p);
+		AlignedFree(p, Alignment);
 	}
 
 	{
@@ -252,13 +276,13 @@ TEST_CASE("Memory.hpp")
 		Bench{}.run("AlignedAlloc(16, 16)", [&]() {
 			void* p = AlignedAlloc(16, 16);
 			doNotOptimizeAway(p);
-			AlignedFree(p);
+			AlignedFree(p, 16);
 			});
 
 		Bench{}.run("AlignedAlloc(16, 4096)", [&]() {
 			void* p = AlignedAlloc(16, 4096);
 			doNotOptimizeAway(p);
-			AlignedFree(p);
+			AlignedFree(p, 4096);
 			});
 	}
 	
@@ -278,13 +302,21 @@ TEST_CASE("Memory.hpp")
 		Bench{}.run("AlignedAlloc(16384, 16)", [&]() {
 			void* p = AlignedAlloc(16384, 16);
 			doNotOptimizeAway(p);
-			AlignedFree(p);
+			AlignedFree(p, 16);
 			});
 
 		Bench{}.run("AlignedAlloc(16384, 4096)", [&]() {
 			void* p = AlignedAlloc(16384, 4096);
 			doNotOptimizeAway(p);
-			AlignedFree(p);
+			AlignedFree(p, 4096);
+			});
+
+		Bench{}.run("StressTest1", [&]() {
+			doNotOptimizeAway(StressTest1());
+			});
+
+		Bench{}.run("StressTest2", [&]() {
+			doNotOptimizeAway(StressTest2());
 			});
 	}
 }

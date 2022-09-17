@@ -16,57 +16,105 @@ namespace s3d
 	SIV3D_RESTRICT
 	inline void* Malloc(const size_t size) noexcept
 	{
+	# if(SIV3D_USE_MIMALLOC)
+
+		return ::mi_malloc(size);
+
+	# else
+
 		return std::malloc(size);
+
+	# endif
 	}
 
 	SIV3D_RESTRICT
 	inline void* Calloc(const size_t count, const size_t size) noexcept
 	{
+	# if(SIV3D_USE_MIMALLOC)
+
+		return ::mi_calloc(count, size);
+
+	# else
+
 		return std::calloc(count, size);
+
+	# endif
 	}
 
-	inline void* Realloc(void* p, const size_t newsize) noexcept
+	inline void* Realloc(void* p, const size_t newSize) noexcept
 	{
-		return std::realloc(p, newsize);
+	# if(SIV3D_USE_MIMALLOC)
+
+		return ::mi_realloc(p, newSize);
+
+	# else
+
+		return std::realloc(p, newSize);
+
+	# endif
 	}
 
 	inline void Free(void* p) noexcept
 	{
+	# if(SIV3D_USE_MIMALLOC)
+
+		::mi_free(p);
+
+	# else
+
 		std::free(p);
+
+	# endif
 	}
 
 	SIV3D_RESTRICT
 	inline void* AlignedAlloc(const size_t size, size_t alignment) noexcept
 	{
-	# if SIV3D_PLATFORM(WINDOWS)
+	# if(SIV3D_USE_MIMALLOC)
 
-		return ::_aligned_malloc(size, alignment);
+		return ::mi_aligned_alloc(alignment, size);
 
 	# else
 
-		void* p = nullptr;
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			return ::_aligned_malloc(size, alignment);
+
+		# else
+
+			void* p = nullptr;
 		
-		alignment = ((alignment < MinAlignment) ? MinAlignment : alignment);
+			alignment = ((alignment < MinAlignment) ? MinAlignment : alignment);
 		
-		if (0 != ::posix_memalign(&p, alignment, size)) [[unlikely]]
-		{
-			return nullptr;
-		}
+			if (0 != ::posix_memalign(&p, alignment, size)) [[unlikely]]
+			{
+				return nullptr;
+			}
 		
-		return p;
+			return p;
+
+		# endif
 
 	# endif
 	}
 
-	inline void AlignedFree(void* p) noexcept
+	inline void AlignedFree(void* p, [[maybe_unused]] const size_t alignment) noexcept
 	{
-	# if SIV3D_PLATFORM(WINDOWS)
+	# if(SIV3D_USE_MIMALLOC)
 
-		::_aligned_free(p);
+		return ::mi_free_aligned(p, alignment);
 
 	# else
 
-		std::free(p);
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			::_aligned_free(p);
+
+		# else
+
+			std::free(p);
+
+		# endif
 
 	# endif
 	}

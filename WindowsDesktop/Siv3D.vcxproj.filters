@@ -70,6 +70,15 @@
     <Filter Include="include\ThirdParty\doctest">
       <UniqueIdentifier>{f21fab2c-3223-49bd-8f75-174f3dbe4ba9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\mimalloc">
+      <UniqueIdentifier>{c3e70e19-5f07-4989-a3c5-2c5c5768c323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory">
+      <UniqueIdentifier>{d0b44943-d154-46b6-bdf1-7e50e7243306}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty-prebuilt\mimalloc">
+      <UniqueIdentifier>{0b834ce8-3145-4d27-894b-0b8fcfd65814}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -153,6 +162,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Memory.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\mimalloc\mimalloc-new-delete.h">
+      <Filter>src\ThirdParty-prebuilt\mimalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h">
+      <Filter>include\ThirdParty\mimalloc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -181,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp">
       <Filter>src\Siv3D\Unicode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory\SivMemory.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
