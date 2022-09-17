@@ -52,7 +52,7 @@
 		2C8A2518264905F000A87808 /* libopusfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopusfile.a; path = ../Siv3D/lib/macOS/opus/libopusfile.a; sourceTree = "<group>"; };
 		2C8CA3B1261594D100BABD2D /* libwebp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebp.a; path = ../Siv3D/lib/macOS/libwebp/libwebp.a; sourceTree = "<group>"; };
 		2CA7F73D1CA7F3B100495647 /* libSiv3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3D.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; usesTabs = 1; };
+		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		2CC584882648250D00C33E9F /* libogg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg.a; path = ../Siv3D/lib/macOS/libogg/libogg.a; sourceTree = "<group>"; };
 		2CC5848A2648251400C33E9F /* libvorbisfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbisfile.a; path = ../Siv3D/lib/macOS/libvorbis/libvorbisfile.a; sourceTree = "<group>"; };
 		2CC5848B2648251500C33E9F /* libvorbis.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbis.a; path = ../Siv3D/lib/macOS/libvorbis/libvorbis.a; sourceTree = "<group>"; };
@@ -288,7 +288,6 @@
 			);
 			path = Siv3D;
 			sourceTree = "<group>";
-			usesTabs = 1;
 		};
 		F964E90328D548B000CBA072 /* Unicode */ = {
 			isa = PBXGroup;
