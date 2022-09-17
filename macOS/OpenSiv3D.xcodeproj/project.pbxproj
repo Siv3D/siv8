@@ -1,0 +1,909 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7F74E1CA7F43D00495647 /* Main.cpp */; };
+		2C48585024C1FBAE0034F68D /* Siv3DTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C48584B24C1FBAE0034F68D /* Siv3DTest.cpp */; };
+		2C8588EC1F929277000DA815 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2C8588EB1F929277000DA815 /* icon.icns */; };
+		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
+		F964E90F28D548B000CBA072 /* SivUnicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90428D548B000CBA072 /* SivUnicode.cpp */; };
+		F964E91028D548B000CBA072 /* Siv3DEngine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F964E90628D548B000CBA072 /* Siv3DEngine.hpp */; };
+		F964E91128D548B000CBA072 /* Siv3DComponent.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F964E90728D548B000CBA072 /* Siv3DComponent.hpp */; };
+		F964E91228D548B000CBA072 /* Siv3DEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90828D548B000CBA072 /* Siv3DEngine.cpp */; };
+		F964E91328D548B000CBA072 /* SivConsoleBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90A28D548B000CBA072 /* SivConsoleBuffer.cpp */; };
+		F964E91428D548B000CBA072 /* ConsoleFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90C28D548B000CBA072 /* ConsoleFactory.cpp */; };
+		F964E91528D548B000CBA072 /* IConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F964E90D28D548B000CBA072 /* IConsole.hpp */; };
+		F964E91628D548B000CBA072 /* SivConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90E28D548B000CBA072 /* SivConsole.cpp */; };
+		F964E92828D548CD00CBA072 /* simdutf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E92628D548CD00CBA072 /* simdutf.cpp */; };
+		F964E92928D548CD00CBA072 /* simdutf.h in Headers */ = {isa = PBXBuildFile; fileRef = F964E92728D548CD00CBA072 /* simdutf.h */; };
+		F964E92F28D54B6700CBA072 /* CConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E92D28D54B6700CBA072 /* CConsole.cpp */; };
+		F964E93028D54B6700CBA072 /* CConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F964E92E28D54B6700CBA072 /* CConsole.hpp */; };
+		F964E93428D54C4600CBA072 /* Siv3DMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E93328D54C4600CBA072 /* Siv3DMain.cpp */; };
+		F964E93728D54C9000CBA072 /* SivUnicode_macOS_Linux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E93628D54C9000CBA072 /* SivUnicode_macOS_Linux.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2C0475DB266CDF4100936095 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
+		2C1778B21CE0D5DB00BB8AD0 /* Siv3D-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Siv3D-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C1778BF1CE0D5DB00BB8AD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2C22E2C11FD5BAF0002735AB /* Siv3D-Test.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Siv3D-Test.entitlements"; sourceTree = SOURCE_ROOT; };
+		2C43C8D425C8464400D6D613 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../Siv3D/lib/macOS/freetype/libfreetype.a; sourceTree = "<group>"; };
+		2C44C0712649615100A5E72A /* libtiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtiff.a; path = ../Siv3D/lib/macOS/libtiff/libtiff.a; sourceTree = "<group>"; };
+		2C47B4A624E16BB9008D83BE /* Siv3DTest.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTest.hpp; sourceTree = "<group>"; };
+		2C47E59824AF3C7B0060E8A7 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
+		2C48584B24C1FBAE0034F68D /* Siv3DTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DTest.cpp; sourceTree = "<group>"; };
+		2C4A288F25F4F7D600FEACE4 /* libzlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzlib.a; path = ../Siv3D/lib/macOS/zlib/libzlib.a; sourceTree = "<group>"; };
+		2C4A289125F4F87100FEACE4 /* libopencv_imgproc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_imgproc.a; path = ../Siv3D/lib/macOS/opencv/libopencv_imgproc.a; sourceTree = "<group>"; };
+		2C4A289225F4F87100FEACE4 /* libopencv_objdetect.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_objdetect.a; path = ../Siv3D/lib/macOS/opencv/libopencv_objdetect.a; sourceTree = "<group>"; };
+		2C4A289325F4F87100FEACE4 /* libopencv_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_core.a; path = ../Siv3D/lib/macOS/opencv/libopencv_core.a; sourceTree = "<group>"; };
+		2C4A289425F4F87100FEACE4 /* libopencv_photo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_photo.a; path = ../Siv3D/lib/macOS/opencv/libopencv_photo.a; sourceTree = "<group>"; };
+		2C4A289925F4FA8100FEACE4 /* libopencv_videoio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_videoio.a; path = ../Siv3D/lib/macOS/opencv/libopencv_videoio.a; sourceTree = "<group>"; };
+		2C531EA424BA0CA000378977 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = ../Siv3D/lib/macOS/libpng/libpng16.a; sourceTree = "<group>"; };
+		2C533731264E0E9700CE0F1B /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		2C65277F265621DF003427EB /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		2C796EB025CA41DA0003B7EC /* libharfbuzz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libharfbuzz.a; path = ../Siv3D/lib/macOS/harfbuzz/libharfbuzz.a; sourceTree = "<group>"; };
+		2C7DE5DB26137A3B00D7F031 /* liblibgif.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblibgif.a; path = ../Siv3D/lib/macOS/libgif/liblibgif.a; sourceTree = "<group>"; };
+		2C8588EB1F929277000DA815 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
+		2C8A2518264905F000A87808 /* libopusfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopusfile.a; path = ../Siv3D/lib/macOS/opus/libopusfile.a; sourceTree = "<group>"; };
+		2C8CA3B1261594D100BABD2D /* libwebp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebp.a; path = ../Siv3D/lib/macOS/libwebp/libwebp.a; sourceTree = "<group>"; };
+		2CA7F73D1CA7F3B100495647 /* libSiv3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3D.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; usesTabs = 1; };
+		2CC584882648250D00C33E9F /* libogg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg.a; path = ../Siv3D/lib/macOS/libogg/libogg.a; sourceTree = "<group>"; };
+		2CC5848A2648251400C33E9F /* libvorbisfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbisfile.a; path = ../Siv3D/lib/macOS/libvorbis/libvorbisfile.a; sourceTree = "<group>"; };
+		2CC5848B2648251500C33E9F /* libvorbis.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbis.a; path = ../Siv3D/lib/macOS/libvorbis/libvorbis.a; sourceTree = "<group>"; };
+		2CC5848C2648251500C33E9F /* libvorbisenc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbisenc.a; path = ../Siv3D/lib/macOS/libvorbis/libvorbisenc.a; sourceTree = "<group>"; };
+		2CC584A62649027F00C33E9F /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopus.a; path = ../Siv3D/lib/macOS/opus/libopus.a; sourceTree = "<group>"; };
+		2CFC213225F732F100C51D0D /* libturbojpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libturbojpeg.a; path = "../Siv3D/lib/macOS/libjpeg-turbo/libturbojpeg.a"; sourceTree = "<group>"; };
+		2CFF581D25F7C09400B660AD /* libopencv_imgcodecs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_imgcodecs.a; path = ../Siv3D/lib/macOS/opencv/libopencv_imgcodecs.a; sourceTree = "<group>"; };
+		2CFF581F25F7C0B500B660AD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		2CFF582125F7C0E100B660AD /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		F964E8C528D5486500CBA072 /* Unicode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Unicode.hpp; sourceTree = "<group>"; };
+		F964E8C628D5486500CBA072 /* Platform.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Platform.hpp; sourceTree = "<group>"; };
+		F964E8C728D5486500CBA072 /* StringView.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringView.hpp; sourceTree = "<group>"; };
+		F964E8C828D5486500CBA072 /* Console.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Console.hpp; sourceTree = "<group>"; };
+		F964E8CA28D5486500CBA072 /* Unicode.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Unicode.ipp; sourceTree = "<group>"; };
+		F964E8CB28D5486500CBA072 /* String.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = String.hpp; sourceTree = "<group>"; };
+		F964E8CC28D5486500CBA072 /* Common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Common.hpp; sourceTree = "<group>"; };
+		F964E8CE28D5486500CBA072 /* Libraries.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Libraries.hpp; sourceTree = "<group>"; };
+		F964E8CF28D5486500CBA072 /* MinWindows.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MinWindows.hpp; sourceTree = "<group>"; };
+		F964E8D028D5486500CBA072 /* Windows.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Windows.hpp; sourceTree = "<group>"; };
+		F964E8D128D5486500CBA072 /* ComPtr.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ComPtr.hpp; sourceTree = "<group>"; };
+		F964E8D228D5486500CBA072 /* Types.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Types.hpp; sourceTree = "<group>"; };
+		F964E8D328D5486500CBA072 /* ConsoleBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ConsoleBuffer.hpp; sourceTree = "<group>"; };
+		F964E8D428D5486500CBA072 /* Siv3D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Siv3D.hpp; sourceTree = "<group>"; };
+		F964E8D728D5486500CBA072 /* doctest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = doctest.h; sourceTree = "<group>"; };
+		F964E8D928D5486500CBA072 /* nanobench.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nanobench.h; sourceTree = "<group>"; };
+		F964E90428D548B000CBA072 /* SivUnicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUnicode.cpp; sourceTree = "<group>"; };
+		F964E90628D548B000CBA072 /* Siv3DEngine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DEngine.hpp; sourceTree = "<group>"; };
+		F964E90728D548B000CBA072 /* Siv3DComponent.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DComponent.hpp; sourceTree = "<group>"; };
+		F964E90828D548B000CBA072 /* Siv3DEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DEngine.cpp; sourceTree = "<group>"; };
+		F964E90A28D548B000CBA072 /* SivConsoleBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivConsoleBuffer.cpp; sourceTree = "<group>"; };
+		F964E90C28D548B000CBA072 /* ConsoleFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleFactory.cpp; sourceTree = "<group>"; };
+		F964E90D28D548B000CBA072 /* IConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IConsole.hpp; sourceTree = "<group>"; };
+		F964E90E28D548B000CBA072 /* SivConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivConsole.cpp; sourceTree = "<group>"; };
+		F964E92628D548CD00CBA072 /* simdutf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simdutf.cpp; sourceTree = "<group>"; };
+		F964E92728D548CD00CBA072 /* simdutf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simdutf.h; sourceTree = "<group>"; };
+		F964E92D28D54B6700CBA072 /* CConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CConsole.cpp; sourceTree = "<group>"; };
+		F964E92E28D54B6700CBA072 /* CConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CConsole.hpp; sourceTree = "<group>"; };
+		F964E93328D54C4600CBA072 /* Siv3DMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DMain.cpp; sourceTree = "<group>"; };
+		F964E93628D54C9000CBA072 /* SivUnicode_macOS_Linux.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUnicode_macOS_Linux.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2C1778AF1CE0D5DB00BB8AD0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2CA7F73A1CA7F3B100495647 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2C15857F1F21FD87002687D2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2C0475DB266CDF4100936095 /* libcurl.tbd */,
+				2C65277F265621DF003427EB /* CoreAudio.framework */,
+				2C533731264E0E9700CE0F1B /* AudioToolbox.framework */,
+				2C44C0712649615100A5E72A /* libtiff.a */,
+				2C8A2518264905F000A87808 /* libopusfile.a */,
+				2CC584A62649027F00C33E9F /* libopus.a */,
+				2CC5848B2648251500C33E9F /* libvorbis.a */,
+				2CC5848C2648251500C33E9F /* libvorbisenc.a */,
+				2CC5848A2648251400C33E9F /* libvorbisfile.a */,
+				2CC584882648250D00C33E9F /* libogg.a */,
+				2C8CA3B1261594D100BABD2D /* libwebp.a */,
+				2C7DE5DB26137A3B00D7F031 /* liblibgif.a */,
+				2CFF582125F7C0E100B660AD /* CoreMedia.framework */,
+				2CFF581F25F7C0B500B660AD /* AVFoundation.framework */,
+				2CFF581D25F7C09400B660AD /* libopencv_imgcodecs.a */,
+				2CFC213225F732F100C51D0D /* libturbojpeg.a */,
+				2C4A289925F4FA8100FEACE4 /* libopencv_videoio.a */,
+				2C4A289325F4F87100FEACE4 /* libopencv_core.a */,
+				2C4A289125F4F87100FEACE4 /* libopencv_imgproc.a */,
+				2C4A289225F4F87100FEACE4 /* libopencv_objdetect.a */,
+				2C4A289425F4F87100FEACE4 /* libopencv_photo.a */,
+				2C4A288F25F4F7D600FEACE4 /* libzlib.a */,
+				2C796EB025CA41DA0003B7EC /* libharfbuzz.a */,
+				2C43C8D425C8464400D6D613 /* libfreetype.a */,
+				2C531EA424BA0CA000378977 /* libpng16.a */,
+				2C47E59824AF3C7B0060E8A7 /* libboost_filesystem.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2C46FDBA226EE90600828870 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				F964E90228D548B000CBA072 /* Siv3D */,
+				F964E91728D548C400CBA072 /* Siv3D-Platform */,
+				F964E92428D548CD00CBA072 /* ThirdParty */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		2C48584924C1FBAE0034F68D /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				2C47B4A624E16BB9008D83BE /* Siv3DTest.hpp */,
+				2C48584B24C1FBAE0034F68D /* Siv3DTest.cpp */,
+			);
+			name = Test;
+			path = ../Test;
+			sourceTree = "<group>";
+		};
+		2C6897DE2436064900C36C25 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				F964E8D428D5486500CBA072 /* Siv3D.hpp */,
+				F964E8C428D5486500CBA072 /* Siv3D */,
+				F964E8D528D5486500CBA072 /* ThirdParty */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2CA7F7321CA7F34200495647 = {
+			isa = PBXGroup;
+			children = (
+				2C8588EB1F929277000DA815 /* icon.icns */,
+				2C1778BF1CE0D5DB00BB8AD0 /* Info.plist */,
+				2CA7F7641CA7F44F00495647 /* Siv3D */,
+				2CA7F74D1CA7F43D00495647 /* macOS */,
+				2CA7F73E1CA7F3B100495647 /* Products */,
+				2C15857F1F21FD87002687D2 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		2CA7F73E1CA7F3B100495647 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2CA7F73D1CA7F3B100495647 /* libSiv3D.a */,
+				2C1778B21CE0D5DB00BB8AD0 /* Siv3D-Test.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2CA7F74D1CA7F43D00495647 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				2CA7F74E1CA7F43D00495647 /* Main.cpp */,
+				2C22E2C11FD5BAF0002735AB /* Siv3D-Test.entitlements */,
+				2C48584924C1FBAE0034F68D /* Test */,
+			);
+			name = macOS;
+			sourceTree = "<group>";
+		};
+		2CA7F7641CA7F44F00495647 /* Siv3D */ = {
+			isa = PBXGroup;
+			children = (
+				2C6897DE2436064900C36C25 /* include */,
+				2C46FDBA226EE90600828870 /* src */,
+			);
+			name = Siv3D;
+			path = ../Siv3D;
+			sourceTree = "<group>";
+		};
+		F964E8C428D5486500CBA072 /* Siv3D */ = {
+			isa = PBXGroup;
+			children = (
+				F964E8CC28D5486500CBA072 /* Common.hpp */,
+				F964E8C828D5486500CBA072 /* Console.hpp */,
+				F964E8D328D5486500CBA072 /* ConsoleBuffer.hpp */,
+				F964E8C628D5486500CBA072 /* Platform.hpp */,
+				F964E8CB28D5486500CBA072 /* String.hpp */,
+				F964E8C728D5486500CBA072 /* StringView.hpp */,
+				F964E8D228D5486500CBA072 /* Types.hpp */,
+				F964E8C528D5486500CBA072 /* Unicode.hpp */,
+				F964E8C928D5486500CBA072 /* detail */,
+				F964E8CD28D5486500CBA072 /* Windows */,
+			);
+			path = Siv3D;
+			sourceTree = "<group>";
+		};
+		F964E8C928D5486500CBA072 /* detail */ = {
+			isa = PBXGroup;
+			children = (
+				F964E8CA28D5486500CBA072 /* Unicode.ipp */,
+			);
+			path = detail;
+			sourceTree = "<group>";
+		};
+		F964E8CD28D5486500CBA072 /* Windows */ = {
+			isa = PBXGroup;
+			children = (
+				F964E8CE28D5486500CBA072 /* Libraries.hpp */,
+				F964E8CF28D5486500CBA072 /* MinWindows.hpp */,
+				F964E8D028D5486500CBA072 /* Windows.hpp */,
+				F964E8D128D5486500CBA072 /* ComPtr.hpp */,
+			);
+			path = Windows;
+			sourceTree = "<group>";
+		};
+		F964E8D528D5486500CBA072 /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				F964E8D628D5486500CBA072 /* doctest */,
+				F964E8D828D5486500CBA072 /* nanobench */,
+			);
+			path = ThirdParty;
+			sourceTree = "<group>";
+		};
+		F964E8D628D5486500CBA072 /* doctest */ = {
+			isa = PBXGroup;
+			children = (
+				F964E8D728D5486500CBA072 /* doctest.h */,
+			);
+			path = doctest;
+			sourceTree = "<group>";
+		};
+		F964E8D828D5486500CBA072 /* nanobench */ = {
+			isa = PBXGroup;
+			children = (
+				F964E8D928D5486500CBA072 /* nanobench.h */,
+			);
+			path = nanobench;
+			sourceTree = "<group>";
+		};
+		F964E90228D548B000CBA072 /* Siv3D */ = {
+			isa = PBXGroup;
+			children = (
+				F964E90B28D548B000CBA072 /* Console */,
+				F964E90928D548B000CBA072 /* ConsoleBuffer */,
+				F964E90528D548B000CBA072 /* Engine */,
+				F964E90328D548B000CBA072 /* Unicode */,
+			);
+			path = Siv3D;
+			sourceTree = "<group>";
+			usesTabs = 1;
+		};
+		F964E90328D548B000CBA072 /* Unicode */ = {
+			isa = PBXGroup;
+			children = (
+				F964E90428D548B000CBA072 /* SivUnicode.cpp */,
+			);
+			path = Unicode;
+			sourceTree = "<group>";
+		};
+		F964E90528D548B000CBA072 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				F964E90628D548B000CBA072 /* Siv3DEngine.hpp */,
+				F964E90728D548B000CBA072 /* Siv3DComponent.hpp */,
+				F964E90828D548B000CBA072 /* Siv3DEngine.cpp */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		F964E90928D548B000CBA072 /* ConsoleBuffer */ = {
+			isa = PBXGroup;
+			children = (
+				F964E90A28D548B000CBA072 /* SivConsoleBuffer.cpp */,
+			);
+			path = ConsoleBuffer;
+			sourceTree = "<group>";
+		};
+		F964E90B28D548B000CBA072 /* Console */ = {
+			isa = PBXGroup;
+			children = (
+				F964E90C28D548B000CBA072 /* ConsoleFactory.cpp */,
+				F964E90D28D548B000CBA072 /* IConsole.hpp */,
+				F964E90E28D548B000CBA072 /* SivConsole.cpp */,
+			);
+			path = Console;
+			sourceTree = "<group>";
+		};
+		F964E91728D548C400CBA072 /* Siv3D-Platform */ = {
+			isa = PBXGroup;
+			children = (
+				F964E93128D54C4600CBA072 /* macOS */,
+				F964E92A28D54B6700CBA072 /* macOS_Linux */,
+			);
+			path = "Siv3D-Platform";
+			sourceTree = "<group>";
+		};
+		F964E92428D548CD00CBA072 /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				F964E92528D548CD00CBA072 /* simdutf */,
+			);
+			path = ThirdParty;
+			sourceTree = "<group>";
+		};
+		F964E92528D548CD00CBA072 /* simdutf */ = {
+			isa = PBXGroup;
+			children = (
+				F964E92628D548CD00CBA072 /* simdutf.cpp */,
+				F964E92728D548CD00CBA072 /* simdutf.h */,
+			);
+			path = simdutf;
+			sourceTree = "<group>";
+		};
+		F964E92A28D54B6700CBA072 /* macOS_Linux */ = {
+			isa = PBXGroup;
+			children = (
+				F964E92B28D54B6700CBA072 /* Siv3D */,
+			);
+			path = macOS_Linux;
+			sourceTree = "<group>";
+		};
+		F964E92B28D54B6700CBA072 /* Siv3D */ = {
+			isa = PBXGroup;
+			children = (
+				F964E93528D54C9000CBA072 /* Unicode */,
+				F964E92C28D54B6700CBA072 /* Console */,
+			);
+			path = Siv3D;
+			sourceTree = "<group>";
+		};
+		F964E92C28D54B6700CBA072 /* Console */ = {
+			isa = PBXGroup;
+			children = (
+				F964E92D28D54B6700CBA072 /* CConsole.cpp */,
+				F964E92E28D54B6700CBA072 /* CConsole.hpp */,
+			);
+			path = Console;
+			sourceTree = "<group>";
+		};
+		F964E93128D54C4600CBA072 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				F964E93228D54C4600CBA072 /* Siv3D */,
+			);
+			path = macOS;
+			sourceTree = "<group>";
+		};
+		F964E93228D54C4600CBA072 /* Siv3D */ = {
+			isa = PBXGroup;
+			children = (
+				F964E93328D54C4600CBA072 /* Siv3DMain.cpp */,
+			);
+			path = Siv3D;
+			sourceTree = "<group>";
+		};
+		F964E93528D54C9000CBA072 /* Unicode */ = {
+			isa = PBXGroup;
+			children = (
+				F964E93628D54C9000CBA072 /* SivUnicode_macOS_Linux.cpp */,
+			);
+			path = Unicode;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		2CA7F73B1CA7F3B100495647 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F964E91128D548B000CBA072 /* Siv3DComponent.hpp in Headers */,
+				F964E91528D548B000CBA072 /* IConsole.hpp in Headers */,
+				F964E93028D54B6700CBA072 /* CConsole.hpp in Headers */,
+				F964E91028D548B000CBA072 /* Siv3DEngine.hpp in Headers */,
+				F964E92928D548CD00CBA072 /* simdutf.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		2C1778B11CE0D5DB00BB8AD0 /* Siv3D-Test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C1778C01CE0D5DB00BB8AD0 /* Build configuration list for PBXNativeTarget "Siv3D-Test" */;
+			buildPhases = (
+				2C1778AE1CE0D5DB00BB8AD0 /* Sources */,
+				2C1778AF1CE0D5DB00BB8AD0 /* Frameworks */,
+				2C1778B01CE0D5DB00BB8AD0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Siv3D-Test";
+			productName = "Siv3D-Test";
+			productReference = 2C1778B21CE0D5DB00BB8AD0 /* Siv3D-Test.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2CA7F73C1CA7F3B100495647 /* Siv3D */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2CA7F7411CA7F3B100495647 /* Build configuration list for PBXNativeTarget "Siv3D" */;
+			buildPhases = (
+				2CA7F7391CA7F3B100495647 /* Sources */,
+				2CA7F73A1CA7F3B100495647 /* Frameworks */,
+				2CA7F73B1CA7F3B100495647 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Siv3D;
+			productName = Siv3D;
+			productReference = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2CA7F7331CA7F34200495647 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1400;
+				TargetAttributes = {
+					2C1778B11CE0D5DB00BB8AD0 = {
+						CreatedOnToolsVersion = 7.3.1;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.Mac = {
+								enabled = 0;
+							};
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
+					};
+					2CA7F73C1CA7F3B100495647 = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 2CA7F7361CA7F34200495647 /* Build configuration list for PBXProject "OpenSiv3D" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2CA7F7321CA7F34200495647;
+			productRefGroup = 2CA7F73E1CA7F3B100495647 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2CA7F73C1CA7F3B100495647 /* Siv3D */,
+				2C1778B11CE0D5DB00BB8AD0 /* Siv3D-Test */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2C1778B01CE0D5DB00BB8AD0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C8588EC1F929277000DA815 /* icon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2C1778AE1CE0D5DB00BB8AD0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */,
+				2C48585024C1FBAE0034F68D /* Siv3DTest.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2CA7F7391CA7F3B100495647 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F964E92828D548CD00CBA072 /* simdutf.cpp in Sources */,
+				F964E92F28D54B6700CBA072 /* CConsole.cpp in Sources */,
+				F964E93728D54C9000CBA072 /* SivUnicode_macOS_Linux.cpp in Sources */,
+				F964E91328D548B000CBA072 /* SivConsoleBuffer.cpp in Sources */,
+				F964E90F28D548B000CBA072 /* SivUnicode.cpp in Sources */,
+				F964E93428D54C4600CBA072 /* Siv3DMain.cpp in Sources */,
+				F964E91628D548B000CBA072 /* SivConsole.cpp in Sources */,
+				F964E91428D548B000CBA072 /* ConsoleFactory.cpp in Sources */,
+				F964E91228D548B000CBA072 /* Siv3DEngine.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2C1778C11CE0D5DB00BB8AD0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++2a";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "Siv3D-Test.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/App/";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../Siv3D/include,
+					../Siv3D/include/ThirdParty,
+				);
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = ../Siv3D/lib/macOS;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				PRODUCT_BUNDLE_IDENTIFIER = "siv3d.Siv3D-Test";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Debug;
+		};
+		2C1778C21CE0D5DB00BB8AD0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++2a";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "Siv3D-Test.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/App/";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../Siv3D/include,
+					../Siv3D/include/ThirdParty,
+				);
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = ../Siv3D/lib/macOS;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				PRODUCT_BUNDLE_IDENTIFIER = "siv3d.Siv3D-Test";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Release;
+		};
+		2CA7F7371CA7F34200495647 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		2CA7F7381CA7F34200495647 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
+			};
+			name = Release;
+		};
+		2CA7F73F1CA7F3B100495647 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/../Siv3D/lib/macOS/";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					__MACOSX_CORE__,
+					_UNICODE,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../Siv3D/include,
+					../Siv3D/include/ThirdParty,
+					../Siv3D/src,
+					"../Siv3D/src/Siv3D-Platform/macOS",
+					"../Siv3D/src/Siv3D-Platform/macOS_Linux",
+					"../Siv3D/src/Siv3D-Platform/OpenGL4",
+					../Siv3D/src/ThirdParty,
+					../Siv3D/src/ThirdParty/asio,
+					../Siv3D/src/ThirdParty/freetype,
+					"../Siv3D/src/ThirdParty-prebuilt",
+					../Dependencies/boost_1_74_0,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility-inlines-hidden",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Debug;
+		};
+		2CA7F7401CA7F3B100495647 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/../Siv3D/lib/macOS/";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					__MACOSX_CORE__,
+					_UNICODE,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../Siv3D/include,
+					../Siv3D/include/ThirdParty,
+					../Siv3D/src,
+					"../Siv3D/src/Siv3D-Platform/macOS",
+					"../Siv3D/src/Siv3D-Platform/macOS_Linux",
+					"../Siv3D/src/Siv3D-Platform/OpenGL4",
+					../Siv3D/src/ThirdParty,
+					../Siv3D/src/ThirdParty/asio,
+					../Siv3D/src/ThirdParty/freetype,
+					"../Siv3D/src/ThirdParty-prebuilt",
+					../Dependencies/boost_1_74_0,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-fvisibility-inlines-hidden",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2C1778C01CE0D5DB00BB8AD0 /* Build configuration list for PBXNativeTarget "Siv3D-Test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C1778C11CE0D5DB00BB8AD0 /* Debug */,
+				2C1778C21CE0D5DB00BB8AD0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2CA7F7361CA7F34200495647 /* Build configuration list for PBXProject "OpenSiv3D" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2CA7F7371CA7F34200495647 /* Debug */,
+				2CA7F7381CA7F34200495647 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2CA7F7411CA7F3B100495647 /* Build configuration list for PBXNativeTarget "Siv3D" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2CA7F73F1CA7F3B100495647 /* Debug */,
+				2CA7F7401CA7F3B100495647 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2CA7F7331CA7F34200495647 /* Project object */;
+}

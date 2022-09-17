@@ -9,13 +9,17 @@
 //
 //-----------------------------------------------
 
+# include "Siv3DTest.hpp"
+
 # define ANKERL_NANOBENCH_IMPLEMENT
 # include <ThirdParty/nanobench/nanobench.h>
 
 # define DOCTEST_CONFIG_IMPLEMENT
+# if SIV3D_COMPILER(APPLECLANG)
+#   define DOCTEST_CONFIG_COLORS_NONE
+# endif
 # include <ThirdParty/doctest/doctest.h>
 
-# include "Siv3DTest.hpp"
 
 void TestPlatform();
 
