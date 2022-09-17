@@ -66,7 +66,7 @@ namespace s3d
 
 	# else
 
-		std::free(Ptr);
+		std::free(p);
 
 	# endif
 	}
