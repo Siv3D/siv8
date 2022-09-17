@@ -15,12 +15,12 @@ namespace s3d
 {
 	namespace Unicode
 	{
-		inline constexpr bool IsHighSurrogate(const char16 ch) noexcept
+		constexpr bool IsHighSurrogate(const char16 ch) noexcept
 		{
 			return ((0xD800 <= ch) && (ch <= 0xDBFF));
 		}
 
-		inline constexpr bool IsLowSurrogate(const char16 ch) noexcept
+		constexpr bool IsLowSurrogate(const char16 ch) noexcept
 		{
 			return ((0xDC00 <= ch) && (ch <= 0xDFFF));
 		}

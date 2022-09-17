@@ -125,6 +125,14 @@ TEST_CASE("Concepts.hpp")
 	CHECK(Concept::Scalar<EnumT> == true);
 	CHECK(Concept::Scalar<ScopedEnumT> == true);
 
+	CHECK(Concept::NonScalar<bool> == false);
+	CHECK(Concept::NonScalar<uint8> == false);
+	CHECK(Concept::NonScalar<int32> == false);
+	CHECK(Concept::NonScalar<float> == false);
+	CHECK(Concept::NonScalar<String> == true);
+	CHECK(Concept::NonScalar<EnumT> == false);
+	CHECK(Concept::NonScalar<ScopedEnumT> == false);
+
 	CHECK(Concept::Enum<bool> == false);
 	CHECK(Concept::Enum<uint8> == false);
 	CHECK(Concept::Enum<int32> == false);
@@ -156,6 +164,61 @@ TEST_CASE("Concepts.hpp")
 	CHECK(Concept::UniformRandomBitGenerator<String> == false);
 	CHECK(Concept::UniformRandomBitGenerator<EnumT> == false);
 	CHECK(Concept::UniformRandomBitGenerator<ScopedEnumT> == false);
+}
+
+TEST_CASE("Utility.hpp")
+{
+	CHECK(Min(-5, 5) == -5);
+	CHECK(Min(5, -5) == -5);
+	CHECK(Min(String(U"Aaa"), String(U"Bbb")) == U"Aaa");
+	CHECK(Min(String(U"Bbb"), String(U"Aaa")) == U"Aaa");
+	CHECK(Min<String>(U"Aaa", U"Bbb") == U"Aaa");
+	CHECK(Min<String>(U"Bbb", U"Aaa") == U"Aaa");
+
+	CHECK(Max(-5, 5) == 5);
+	CHECK(Max(5, -5) == 5);
+	CHECK(Max(String(U"Aaa"), String(U"Bbb")) == U"Bbb");
+	CHECK(Max(String(U"Bbb"), String(U"Aaa")) == U"Bbb");
+	CHECK(Max<String>(U"Aaa", U"Bbb") == U"Bbb");
+	CHECK(Max<String>(U"Bbb", U"Aaa") == U"Bbb");
+
+	CHECK(Clamp(-5, 0, 10) == 0);
+	CHECK(Clamp(0, 0, 10) == 0);
+	CHECK(Clamp(5, 0, 10) == 5);
+	CHECK(Clamp(10, 0, 10) == 10);
+	CHECK(Clamp(15, 0, 10) == 10);
+	CHECK(Clamp(String(U"A"), String(U"Aaa"), String(U"Bbb")) == U"Aaa");
+	CHECK(Clamp(String(U"Abb"), String(U"Aaa"), String(U"Bbb")) == U"Abb");
+	CHECK(Clamp(String(U"Ccc"), String(U"Aaa"), String(U"Bbb")) == U"Bbb");
+	CHECK(Clamp<String>(U"A", U"Aaa", U"Bbb") == U"Aaa");
+	CHECK(Clamp<String>(U"Abb", U"Aaa", U"Bbb") == U"Abb");
+	CHECK(Clamp<String>(U"Ccc", U"Aaa", U"Bbb") == U"Bbb");
+
+	CHECK(InRange(-5, 0, 10) == false);
+	CHECK(InRange(-1, 0, 10) == false);
+	CHECK(InRange(0, 0, 10) == true);
+	CHECK(InRange(1, 0, 10) == true);
+	CHECK(InRange(5, 0, 10) == true);
+	CHECK(InRange(9, 0, 10) == true);
+	CHECK(InRange(10, 0, 10) == true);
+	CHECK(InRange(11, 0, 10) == false);
+	CHECK(InRange(15, 0, 10) == false);
+
+	CHECK(InOpenRange(-5, 0, 10) == false);
+	CHECK(InOpenRange(-1, 0, 10) == false);
+	CHECK(InOpenRange(0, 0, 10) == false);
+	CHECK(InOpenRange(1, 0, 10) == true);
+	CHECK(InOpenRange(5, 0, 10) == true);
+	CHECK(InOpenRange(9, 0, 10) == true);
+	CHECK(InOpenRange(10, 0, 10) == false);
+	CHECK(InOpenRange(11, 0, 10) == false);
+	CHECK(InOpenRange(15, 0, 10) == false);
+
+	{
+		int a = rand(), b = rand();
+		Bench{}.run("utility - std", [&]() { doNotOptimizeAway(std::max(std::clamp(a, 0, 10), std::clamp(b, 0, 10))); });
+		Bench{}.run("utility - s3d", [&]() { doNotOptimizeAway(Max(Clamp(a, 0, 10), Clamp(b, 0, 10))); });
+	}
 }
 
 TEST_CASE("Unicode.hpp")

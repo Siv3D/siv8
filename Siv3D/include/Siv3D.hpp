@@ -50,6 +50,10 @@
 // コンセプト | Concepts
 # include <Siv3D/Concepts.hpp>
 
+// ユーティリティー | Utilities
+# include <Siv3D/Utility.hpp>
+
+
 //// プレースホルダー | Place holder
 //# include <Siv3D/PlaceHolder.hpp>
 //
@@ -73,9 +77,6 @@
 //
 //// メタ関数 | Meta
 //# include <Siv3D/Meta.hpp>
-//
-//// ユーティリティー | Utilities
-//# include <Siv3D/Utility.hpp>
 //
 //// ファンクター | Functor
 //# include <Siv3D/Functor.hpp>

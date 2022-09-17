@@ -162,13 +162,13 @@ namespace s3d
 		/// @param ch UTF-16 の文字要素
 		/// @return 上位サロゲートである場合 true, それ以外の場合は false
 		[[nodiscard]]
-		inline constexpr bool IsHighSurrogate(const char16 ch) noexcept;
+		constexpr bool IsHighSurrogate(const char16 ch) noexcept;
 
 		/// @brief 下位サロゲートであるかを返します
 		/// @param ch UTF-16 の文字要素
 		/// @return 下位サロゲートである場合 true, それ以外の場合は false
 		[[nodiscard]]
-		inline constexpr bool IsLowSurrogate(const char16 ch) noexcept;
+		constexpr bool IsLowSurrogate(const char16 ch) noexcept;
 	}
 }
 
