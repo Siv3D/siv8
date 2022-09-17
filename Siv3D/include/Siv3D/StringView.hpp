@@ -288,9 +288,15 @@ namespace s3d
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
-		friend constexpr bool operator ==(const StringView& lhs, const StringView& rhs) noexcept;
+		friend constexpr bool operator ==(const StringView& lhs, const StringView& rhs) noexcept
+		{
+			return (lhs.m_view == rhs.m_view);
+		}
 
-		friend constexpr std::strong_ordering operator <=>(const StringView& lhs, const StringView& rhs) noexcept;
+		friend constexpr std::strong_ordering operator <=>(const StringView& lhs, const StringView& rhs) noexcept
+		{
+			return (lhs.m_view <=> rhs.m_view);
+		}
 
 		friend std::ostream& operator <<(std::ostream& output, const StringView& value);
 

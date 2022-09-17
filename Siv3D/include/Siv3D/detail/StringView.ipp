@@ -228,7 +228,7 @@ namespace s3d
 
 	# else
 
-		return (m_view.find(ch) != StringView::npos);
+		return (m_view.find(ch) != npos);
 
 	# endif
 	}
@@ -241,7 +241,7 @@ namespace s3d
 
 	# else
 
-		return (m_view.find(s) != StringView::npos);
+		return (m_view.find(s) != npos);
 
 	# endif
 	}
@@ -254,7 +254,7 @@ namespace s3d
 
 	# else
 
-		return (m_view.find(s.m_view) != StringView::npos);
+		return (m_view.find(s.m_view) != npos);
 
 	# endif
 	}
