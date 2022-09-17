@@ -141,6 +141,11 @@ TEST_CASE("Unicode.hpp")
 		const std::string asciiShort = "Lorem ipsum dolor sit amet";
 		const std::string asciiLong = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
+		const String ascii32VeryShort = U"Siv3D";
+		const String ascii32Short = U"Lorem ipsum dolor sit amet";
+		const String ascii32Long = U"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+
 		Bench{}.run("Unicode::WidenAscii() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::WidenAscii(asciiVeryShort)); });
 		Bench{}.run("Unicode::WidenAscii() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::WidenAscii(asciiShort)); });
 		Bench{}.run("Unicode::WidenAscii() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::WidenAscii(asciiLong)); });
@@ -148,6 +153,14 @@ TEST_CASE("Unicode.hpp")
 		Bench{}.run("Unicode::Widen() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Widen(asciiVeryShort)); });
 		Bench{}.run("Unicode::Widen() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Widen(asciiShort)); });
 		Bench{}.run("Unicode::Widen() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::Widen(asciiLong)); });
+
+		Bench{}.run("Unicode::NarrowAscii() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::NarrowAscii(ascii32VeryShort)); });
+		Bench{}.run("Unicode::NarrowAscii() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::NarrowAscii(ascii32Short)); });
+		Bench{}.run("Unicode::NarrowAscii() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::NarrowAscii(ascii32Long)); });
+
+		Bench{}.run("Unicode::Narrow() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Narrow(ascii32VeryShort)); });
+		Bench{}.run("Unicode::Narrow() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Narrow(ascii32Short)); });
+		Bench{}.run("Unicode::Narrow() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::Narrow(ascii32Long)); });
 	}
 }
 

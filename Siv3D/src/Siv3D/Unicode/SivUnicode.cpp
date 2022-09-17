@@ -18,48 +18,81 @@ namespace s3d
 	{
 		String WidenAscii(const std::string_view asciiText)
 		{
-		# if defined(__cpp_lib_string_resize_and_overwrite)
+			const size_t requiredLength = asciiText.size();
 
-			String result;
-
-			result.resize_and_overwrite(asciiText.size(), [&](char32* buf, size_t n) -> size_t {
-
-					for (const char ch : asciiText)
-					{
-						if (static_cast<uint8>(ch) <= uint8{ 0x7F })
-						{
-							*buf++ = ch;
-						}
-						else
-						{
-							return 0;
-						}
-					}
-
-					return n;
-				});
-
-		# else
-
-			String result(asciiText.size(), U'\0');
-
-			char32* pDst = result.data();
-
-			for (const char ch : asciiText)
+			if (requiredLength < 32) // 短い文字列は非 SIMD
 			{
-				if (static_cast<uint8>(ch) <= uint8{ 0x7F })
+			# if defined(__cpp_lib_string_resize_and_overwrite)
+
+				String result;
+
+				result.resize_and_overwrite(asciiText.size(), [&](char32* buf, size_t n) -> size_t {
+
+						for (const char ch : asciiText)
+						{
+							if (static_cast<uint8>(ch) <= uint8{ 0x7F })
+							{
+								*buf++ = ch;
+							}
+							else
+							{
+								return 0;
+							}
+						}
+
+						return n;
+					});
+
+			# else
+
+				String result(asciiText.size(), U'\0');
+
+				char32* pDst = result.data();
+
+				for (const char ch : asciiText)
 				{
-					*pDst++ = ch;
+					if (static_cast<uint8>(ch) <= uint8{ 0x7F })
+					{
+						*pDst++ = ch;
+					}
+					else
+					{
+						return{};
+					}
 				}
-				else
+
+			# endif
+
+				return result;
+			}
+			else
+			{
+				if (not simdutf::validate_ascii(asciiText.data(), asciiText.size()))
 				{
 					return{};
 				}
+
+			# if defined(__cpp_lib_string_resize_and_overwrite)
+
+				String result;
+
+				result.resize_and_overwrite(requiredLength, [&](char32* buf, size_t) {
+					return simdutf::convert_utf8_to_utf32(asciiText.data(), asciiText.size(), buf);
+					});
+
+			# else
+
+				String result(requiredLength, U'\0');
+
+				if (0 == simdutf::convert_utf8_to_utf32(asciiText.data(), asciiText.size(), result.data()))
+				{
+					return{};
+				}
+
+			# endif
+
+				return result;
 			}
-
-		# endif
-
-			return result;
 		}
 
 		String FromUTF8(const std::string_view s)
