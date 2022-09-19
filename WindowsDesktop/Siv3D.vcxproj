@@ -16,10 +16,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Concepts.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Console.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Memory.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Unicode.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Utility.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Hash.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Memory.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Platform.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\String.hpp" />
@@ -35,6 +37,7 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\doctest\doctest.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\wyhash\wyhash.h" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Console\IConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DComponent.hpp" />
@@ -51,6 +54,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp" />
   </ItemGroup>

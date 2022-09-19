@@ -79,6 +79,12 @@
     <Filter Include="src\ThirdParty-prebuilt\mimalloc">
       <UniqueIdentifier>{0b834ce8-3145-4d27-894b-0b8fcfd65814}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\wyhash">
+      <UniqueIdentifier>{23ba272d-d549-4fca-bfe8-25646f7051f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\StringView">
+      <UniqueIdentifier>{36fd4e5c-a087-462b-a636-b0295904bfeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -171,6 +177,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\wyhash\wyhash.h">
+      <Filter>include\ThirdParty\wyhash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Hash.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -202,6 +217,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory\SivMemory.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp">
+      <Filter>src\Siv3D\StringView</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -87,8 +87,8 @@
 //// バイト | Byte
 //# include <Siv3D/Byte.hpp>
 //
-//// ハッシュ | Hash
-//# include <Siv3D/Hash.hpp>
+// ハッシュ | Hash
+# include <Siv3D/Hash.hpp>
 //
 //// 範囲 | Range
 //# include <Siv3D/Step.hpp>
