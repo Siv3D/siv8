@@ -343,7 +343,7 @@ namespace s3d
 	inline String& String::append(const StringViewIsh auto& s, const size_type pos, const size_type count)
 	{
 		const StringView sv = s;
-		return append(sv.sv.substr(pos, count));
+		return append(sv.substr(pos, count));
 	}
 
 	//////////////////////////////////////////////////
