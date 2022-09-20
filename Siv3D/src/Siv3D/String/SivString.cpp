@@ -17,6 +17,12 @@
 
 namespace s3d
 {
+	[[noreturn]]
+	static void ThrowSubstrViewXrange()
+	{
+		throw std::out_of_range{ "String::substrView(): index out of range" };
+	}
+
 	//////////////////////////////////////////////////
 	//
 	//	substr / substrView
@@ -32,7 +38,7 @@ namespace s3d
 	{
 		if (size() < offset)
 		{
-			throw std::out_of_range{ "String::substrView(): index out of range" };
+			ThrowSubstrViewXrange();
 		}
 
 		return StringView((m_string.data() + offset), Min(count, (m_string.size() - offset)));

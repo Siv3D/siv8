@@ -45,12 +45,12 @@ namespace s3d
 
 	std::ostream& operator <<(std::ostream& os, const StringView& value)
 	{
-		return (os << value.narrow());
+		return (os << Unicode::Narrow(value));
 	}
 
 	std::wostream& operator <<(std::wostream& os, const StringView& value)
 	{
-		return (os << value.toWstr());
+		return (os << Unicode::ToWstring(value));
 	}
 
 	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const StringView& value)

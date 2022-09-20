@@ -91,6 +91,9 @@
     <Filter Include="src\Siv3D\Hash">
       <UniqueIdentifier>{dfe627aa-9b33-417a-948c-d8301f7bfac9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Formatter">
+      <UniqueIdentifier>{d3b028f6-5460-46af-ab1e-686ef506d63e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -256,6 +259,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Hash\SivHash.cpp">
       <Filter>src\Siv3D\Hash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp">
+      <Filter>src\Siv3D\Formatter</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
