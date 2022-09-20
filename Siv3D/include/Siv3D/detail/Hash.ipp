@@ -16,6 +16,6 @@ namespace s3d
 	template <Concept::TriviallyCopyable TriviallyCopyable>
 	inline uint64 Hash(const TriviallyCopyable& data) noexcept
 	{
-		return ::wyhash(std::addressof(data), sizeof(data), 0, DefaultHashSecret);
+		return Hash(std::addressof(data), sizeof(data));
 	}
 }
