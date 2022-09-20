@@ -16,6 +16,18 @@ namespace s3d
 	constexpr FormatData::DecimalPlaces::DecimalPlaces(const int32 v) noexcept
 		: value{ v } {}
 
+	inline FormatData::FormatData(const char32* s)
+		: string{ s } {}
+
+	inline FormatData::FormatData(const StringView s)
+		: string{ s } {}
+
+	inline FormatData::FormatData(const String& s)
+		: string{ s } {}
+
+	inline FormatData::FormatData(String&& s) noexcept
+		: string{ std::move(s) } {}
+
 	constexpr FormatData::DecimalPlaces DecimalPlaces(const int32 width) noexcept
 	{
 		return FormatData::DecimalPlaces{ width };

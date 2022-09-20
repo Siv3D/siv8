@@ -30,7 +30,7 @@ namespace s3d
 		template <Concept::Formattable... Args>
 		inline void Console_impl::operator ()(const Args&... args) const
 		{
-			return write(Format(args..., U'\n'));
+			return writeln(args...);
 		}
 
 		template <Concept::Formattable Formattable>
