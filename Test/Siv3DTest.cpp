@@ -338,9 +338,9 @@ TEST_CASE("Hash.hpp")
 		Bench{}.run("std::hash - std::string short", [&]() { doNotOptimizeAway(std::hash<std::string>{}(sShort)); });
 		Bench{}.run("std::hash - std::string medium", [&]() { doNotOptimizeAway(std::hash<std::string>{}(sMedium)); });
 		Bench{}.run("std::hash - std::string long", [&]() { doNotOptimizeAway(std::hash<std::string>{}(sLong)); });
-		Bench{}.run("s3d::Hash - std::string short", [&]() { doNotOptimizeAway(Hash(sShort.data(), sShort.size())); });
-		Bench{}.run("s3d::Hash - std::string medium", [&]() { doNotOptimizeAway(Hash(sMedium.data(), sMedium.size())); });
-		Bench{}.run("s3d::Hash - std::string long", [&]() { doNotOptimizeAway(Hash(sLong.data(), sLong.size())); });
+		Bench{}.run("Hash - std::string short", [&]() { doNotOptimizeAway(Hash(sShort.data(), sShort.size())); });
+		Bench{}.run("Hash - std::string medium", [&]() { doNotOptimizeAway(Hash(sMedium.data(), sMedium.size())); });
+		Bench{}.run("Hash - std::string long", [&]() { doNotOptimizeAway(Hash(sLong.data(), sLong.size())); });
 	}
 
 	{
@@ -348,12 +348,12 @@ TEST_CASE("Hash.hpp")
 		const StringView sMedium = U"Hello, Siv3D!";
 		const StringView sLong = U"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-		Bench{}.run("std::hash - StringView short", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sShort)); });
-		Bench{}.run("std::hash - StringView medium", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sMedium)); });
-		Bench{}.run("std::hash - StringView long", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sLong)); });
-		Bench{}.run("s3d::Hash - StringView short", [&]() { doNotOptimizeAway(Hash(sShort.data(), sShort.size() * sizeof(char32))); });
-		Bench{}.run("s3d::Hash - StringView medium", [&]() { doNotOptimizeAway(Hash(sMedium.data(), sMedium.size() * sizeof(char32))); });
-		Bench{}.run("s3d::Hash - StringView long", [&]() { doNotOptimizeAway(Hash(sLong.data(), sLong.size() * sizeof(char32))); });
+		Bench{}.run("std::hash - u32string_view short", [&]() { doNotOptimizeAway(std::hash<std::u32string_view>{}(sShort.view())); });
+		Bench{}.run("std::hash - u32string_view medium", [&]() { doNotOptimizeAway(std::hash<std::u32string_view>{}(sMedium.view())); });
+		Bench{}.run("std::hash - u32string_view long", [&]() { doNotOptimizeAway(std::hash<std::u32string_view>{}(sLong.view())); });
+		Bench{}.run("Hash - StringView short", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sShort)); });
+		Bench{}.run("Hash - StringView medium", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sMedium)); });
+		Bench{}.run("Hash - StringView long", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sLong)); });
 	}
 
 	{
@@ -361,12 +361,9 @@ TEST_CASE("Hash.hpp")
 		const String sMedium = U"Hello, Siv3D!";
 		const String sLong = U"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-		Bench{}.run("std::hash - String short", [&]() { doNotOptimizeAway(std::hash<String>{}(sShort)); });
-		Bench{}.run("std::hash - String medium", [&]() { doNotOptimizeAway(std::hash<String>{}(sMedium)); });
-		Bench{}.run("std::hash - String long", [&]() { doNotOptimizeAway(std::hash<String>{}(sLong)); });
-		Bench{}.run("s3d::Hash - String short", [&]() { doNotOptimizeAway(Hash(sShort.data(), sShort.size() * sizeof(char32))); });
-		Bench{}.run("s3d::Hash - String medium", [&]() { doNotOptimizeAway(Hash(sMedium.data(), sMedium.size() * sizeof(char32))); });
-		Bench{}.run("s3d::Hash - String long", [&]() { doNotOptimizeAway(Hash(sLong.data(), sLong.size() * sizeof(char32))); });
+		Bench{}.run("Hash - StringView short", [&]() { doNotOptimizeAway(std::hash<String>{}(sShort)); });
+		Bench{}.run("Hash - StringView medium", [&]() { doNotOptimizeAway(std::hash<String>{}(sMedium)); });
+		Bench{}.run("Hash - StringView long", [&]() { doNotOptimizeAway(std::hash<String>{}(sLong)); });
 	}
 }
 

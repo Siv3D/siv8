@@ -79,14 +79,17 @@
     <Filter Include="src\ThirdParty-prebuilt\mimalloc">
       <UniqueIdentifier>{0b834ce8-3145-4d27-894b-0b8fcfd65814}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\ThirdParty\wyhash">
-      <UniqueIdentifier>{23ba272d-d549-4fca-bfe8-25646f7051f2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D\StringView">
       <UniqueIdentifier>{36fd4e5c-a087-462b-a636-b0295904bfeb}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\String">
       <UniqueIdentifier>{f958ccf6-ed49-4eda-a76c-421ad0381f71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\wyhash">
+      <UniqueIdentifier>{3e2b2d3a-4faa-45ba-b294-c0d04d2a6fc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Hash">
+      <UniqueIdentifier>{dfe627aa-9b33-417a-948c-d8301f7bfac9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -180,9 +183,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\ThirdParty\wyhash\wyhash.h">
-      <Filter>include\ThirdParty\wyhash</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Hash.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -191,6 +191,9 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp">
       <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\wyhash\wyhash.h">
+      <Filter>src\ThirdParty\wyhash</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp">
       <Filter>src\Siv3D\String</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Hash\SivHash.cpp">
+      <Filter>src\Siv3D\Hash</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
