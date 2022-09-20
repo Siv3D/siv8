@@ -81,6 +81,43 @@ namespace s3d
 
 	//////////////////////////////////////////////////
 	//
+	//	operator == / operator <=>
+	//
+	//////////////////////////////////////////////////
+
+	bool operator ==(const String& lhs, const String::value_type* rhs)
+	{
+		return (lhs.m_string == rhs);
+	}
+
+	std::strong_ordering operator <=>(const String& lhs, const String::value_type* rhs)
+	{
+		return (lhs.m_string.compare(rhs) <=> 0);
+	}
+
+	//////////////////////////////////////////////////
+	//
+	//	operator <<
+	//
+	//////////////////////////////////////////////////
+
+	std::ostream& operator <<(std::ostream& output, const String& value)
+	{
+		return (output << value.narrow());
+	}
+
+	std::wostream& operator <<(std::wostream& output, const String& value)
+	{
+		return (output << value.toWstr());
+	}
+
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const String& value)
+	{
+		return output.write(value.data(), value.size());
+	}
+
+	//////////////////////////////////////////////////
+	//
 	//	operator +
 	//
 	//////////////////////////////////////////////////
@@ -201,43 +238,6 @@ namespace s3d
 			lhs.append(rhs);
 			return std::move(rhs);
 		}
-	}
-
-	//////////////////////////////////////////////////
-	//
-	//	operator == / operator <=>
-	//
-	//////////////////////////////////////////////////
-
-	bool operator ==(const String& lhs, const String::value_type* rhs)
-	{
-		return (lhs.m_string == rhs);
-	}
-
-	std::strong_ordering operator <=>(const String& lhs, const String::value_type* rhs)
-	{
-		return (lhs.m_string <=> rhs);
-	}
-
-	//////////////////////////////////////////////////
-	//
-	//	operator <<
-	//
-	//////////////////////////////////////////////////
-
-	std::ostream& operator <<(std::ostream& output, const String& value)
-	{
-		return (output << value.narrow());
-	}
-
-	std::wostream& operator <<(std::wostream& output, const String& value)
-	{
-		return (output << value.toWstr());
-	}
-
-	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const String& value)
-	{
-		return output.write(value.data(), value.size());
 	}
 
 	//////////////////////////////////////////////////
