@@ -11,16 +11,21 @@
 		2C48585024C1FBAE0034F68D /* Siv3DTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C48584B24C1FBAE0034F68D /* Siv3DTest.cpp */; };
 		2C8588EC1F929277000DA815 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2C8588EB1F929277000DA815 /* icon.icns */; };
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
-		F964E90F28D548B000CBA072 /* SivUnicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90428D548B000CBA072 /* SivUnicode.cpp */; };
-		F964E91028D548B000CBA072 /* Siv3DEngine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F964E90628D548B000CBA072 /* Siv3DEngine.hpp */; };
-		F964E91128D548B000CBA072 /* Siv3DComponent.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F964E90728D548B000CBA072 /* Siv3DComponent.hpp */; };
-		F964E91228D548B000CBA072 /* Siv3DEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90828D548B000CBA072 /* Siv3DEngine.cpp */; };
-		F964E91328D548B000CBA072 /* SivConsoleBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90A28D548B000CBA072 /* SivConsoleBuffer.cpp */; };
-		F964E91428D548B000CBA072 /* ConsoleFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90C28D548B000CBA072 /* ConsoleFactory.cpp */; };
-		F964E91528D548B000CBA072 /* IConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F964E90D28D548B000CBA072 /* IConsole.hpp */; };
-		F964E91628D548B000CBA072 /* SivConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E90E28D548B000CBA072 /* SivConsole.cpp */; };
-		F964E92828D548CD00CBA072 /* simdutf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E92628D548CD00CBA072 /* simdutf.cpp */; };
-		F964E92928D548CD00CBA072 /* simdutf.h in Headers */ = {isa = PBXBuildFile; fileRef = F964E92728D548CD00CBA072 /* simdutf.h */; };
+		F960571D28DA203E002140EF /* SivUnicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F960570C28DA203E002140EF /* SivUnicode.cpp */; };
+		F960571E28DA203E002140EF /* SivHash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F960570E28DA203E002140EF /* SivHash.cpp */; };
+		F960571F28DA203E002140EF /* SivStringView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F960571028DA203E002140EF /* SivStringView.cpp */; };
+		F960572028DA203E002140EF /* SivString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F960571228DA203E002140EF /* SivString.cpp */; };
+		F960572128DA203E002140EF /* Siv3DEngine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F960571428DA203E002140EF /* Siv3DEngine.hpp */; };
+		F960572228DA203E002140EF /* Siv3DComponent.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F960571528DA203E002140EF /* Siv3DComponent.hpp */; };
+		F960572328DA203E002140EF /* Siv3DEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F960571628DA203E002140EF /* Siv3DEngine.cpp */; };
+		F960572428DA203E002140EF /* SivConsoleBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F960571828DA203E002140EF /* SivConsoleBuffer.cpp */; };
+		F960572528DA203E002140EF /* ConsoleFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F960571A28DA203E002140EF /* ConsoleFactory.cpp */; };
+		F960572628DA203E002140EF /* IConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F960571B28DA203E002140EF /* IConsole.hpp */; };
+		F960572728DA203E002140EF /* SivConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F960571C28DA203E002140EF /* SivConsole.cpp */; };
+		F960572E28DA2046002140EF /* simdutf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F960572A28DA2046002140EF /* simdutf.cpp */; };
+		F960572F28DA2046002140EF /* simdutf.h in Headers */ = {isa = PBXBuildFile; fileRef = F960572B28DA2046002140EF /* simdutf.h */; };
+		F960573028DA2046002140EF /* wyhash.h in Headers */ = {isa = PBXBuildFile; fileRef = F960572D28DA2046002140EF /* wyhash.h */; };
+		F960573328DA2053002140EF /* mimalloc-new-delete.h in Headers */ = {isa = PBXBuildFile; fileRef = F960573228DA2053002140EF /* mimalloc-new-delete.h */; };
 		F964E92F28D54B6700CBA072 /* CConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E92D28D54B6700CBA072 /* CConsole.cpp */; };
 		F964E93028D54B6700CBA072 /* CConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F964E92E28D54B6700CBA072 /* CConsole.hpp */; };
 		F964E93428D54C4600CBA072 /* Siv3DMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F964E93328D54C4600CBA072 /* Siv3DMain.cpp */; };
@@ -63,32 +68,47 @@
 		2CFF581D25F7C09400B660AD /* libopencv_imgcodecs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_imgcodecs.a; path = ../Siv3D/lib/macOS/opencv/libopencv_imgcodecs.a; sourceTree = "<group>"; };
 		2CFF581F25F7C0B500B660AD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2CFF582125F7C0E100B660AD /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		F964E8C528D5486500CBA072 /* Unicode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Unicode.hpp; sourceTree = "<group>"; };
-		F964E8C628D5486500CBA072 /* Platform.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Platform.hpp; sourceTree = "<group>"; };
-		F964E8C728D5486500CBA072 /* StringView.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringView.hpp; sourceTree = "<group>"; };
-		F964E8C828D5486500CBA072 /* Console.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Console.hpp; sourceTree = "<group>"; };
-		F964E8CA28D5486500CBA072 /* Unicode.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Unicode.ipp; sourceTree = "<group>"; };
-		F964E8CB28D5486500CBA072 /* String.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = String.hpp; sourceTree = "<group>"; };
-		F964E8CC28D5486500CBA072 /* Common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Common.hpp; sourceTree = "<group>"; };
-		F964E8CE28D5486500CBA072 /* Libraries.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Libraries.hpp; sourceTree = "<group>"; };
-		F964E8CF28D5486500CBA072 /* MinWindows.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MinWindows.hpp; sourceTree = "<group>"; };
-		F964E8D028D5486500CBA072 /* Windows.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Windows.hpp; sourceTree = "<group>"; };
-		F964E8D128D5486500CBA072 /* ComPtr.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ComPtr.hpp; sourceTree = "<group>"; };
-		F964E8D228D5486500CBA072 /* Types.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Types.hpp; sourceTree = "<group>"; };
-		F964E8D328D5486500CBA072 /* ConsoleBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ConsoleBuffer.hpp; sourceTree = "<group>"; };
+		F96056F128DA202E002140EF /* Concepts.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Concepts.hpp; sourceTree = "<group>"; };
+		F96056F228DA202E002140EF /* Hash.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Hash.hpp; sourceTree = "<group>"; };
+		F96056F328DA202E002140EF /* Utility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Utility.hpp; sourceTree = "<group>"; };
+		F96056F428DA202E002140EF /* Unicode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Unicode.hpp; sourceTree = "<group>"; };
+		F96056F528DA202E002140EF /* Platform.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Platform.hpp; sourceTree = "<group>"; };
+		F96056F628DA202E002140EF /* StringView.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringView.hpp; sourceTree = "<group>"; };
+		F96056F728DA202E002140EF /* Console.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Console.hpp; sourceTree = "<group>"; };
+		F96056F828DA202E002140EF /* Version.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Version.hpp; sourceTree = "<group>"; };
+		F96056FA28DA202E002140EF /* Memory.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Memory.ipp; sourceTree = "<group>"; };
+		F96056FB28DA202E002140EF /* String.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = String.ipp; sourceTree = "<group>"; };
+		F96056FC28DA202E002140EF /* StringView.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringView.ipp; sourceTree = "<group>"; };
+		F96056FD28DA202E002140EF /* Hash.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Hash.ipp; sourceTree = "<group>"; };
+		F96056FE28DA202E002140EF /* Utility.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Utility.ipp; sourceTree = "<group>"; };
+		F96056FF28DA202E002140EF /* Unicode.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Unicode.ipp; sourceTree = "<group>"; };
+		F960570028DA202E002140EF /* String.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = String.hpp; sourceTree = "<group>"; };
+		F960570128DA202E002140EF /* Memory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Memory.hpp; sourceTree = "<group>"; };
+		F960570228DA202E002140EF /* Common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Common.hpp; sourceTree = "<group>"; };
+		F960570428DA202E002140EF /* Libraries.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Libraries.hpp; sourceTree = "<group>"; };
+		F960570528DA202E002140EF /* MinWindows.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MinWindows.hpp; sourceTree = "<group>"; };
+		F960570628DA202E002140EF /* Windows.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Windows.hpp; sourceTree = "<group>"; };
+		F960570728DA202E002140EF /* ComPtr.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ComPtr.hpp; sourceTree = "<group>"; };
+		F960570828DA202E002140EF /* Types.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Types.hpp; sourceTree = "<group>"; };
+		F960570928DA202E002140EF /* ConsoleBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ConsoleBuffer.hpp; sourceTree = "<group>"; };
+		F960570C28DA203E002140EF /* SivUnicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUnicode.cpp; sourceTree = "<group>"; };
+		F960570E28DA203E002140EF /* SivHash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivHash.cpp; sourceTree = "<group>"; };
+		F960571028DA203E002140EF /* SivStringView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivStringView.cpp; sourceTree = "<group>"; };
+		F960571228DA203E002140EF /* SivString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivString.cpp; sourceTree = "<group>"; };
+		F960571428DA203E002140EF /* Siv3DEngine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DEngine.hpp; sourceTree = "<group>"; };
+		F960571528DA203E002140EF /* Siv3DComponent.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DComponent.hpp; sourceTree = "<group>"; };
+		F960571628DA203E002140EF /* Siv3DEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DEngine.cpp; sourceTree = "<group>"; };
+		F960571828DA203E002140EF /* SivConsoleBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivConsoleBuffer.cpp; sourceTree = "<group>"; };
+		F960571A28DA203E002140EF /* ConsoleFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleFactory.cpp; sourceTree = "<group>"; };
+		F960571B28DA203E002140EF /* IConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IConsole.hpp; sourceTree = "<group>"; };
+		F960571C28DA203E002140EF /* SivConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivConsole.cpp; sourceTree = "<group>"; };
+		F960572A28DA2046002140EF /* simdutf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simdutf.cpp; sourceTree = "<group>"; };
+		F960572B28DA2046002140EF /* simdutf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simdutf.h; sourceTree = "<group>"; };
+		F960572D28DA2046002140EF /* wyhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wyhash.h; sourceTree = "<group>"; };
+		F960573228DA2053002140EF /* mimalloc-new-delete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mimalloc-new-delete.h"; sourceTree = "<group>"; };
 		F964E8D428D5486500CBA072 /* Siv3D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Siv3D.hpp; sourceTree = "<group>"; };
 		F964E8D728D5486500CBA072 /* doctest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = doctest.h; sourceTree = "<group>"; };
 		F964E8D928D5486500CBA072 /* nanobench.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nanobench.h; sourceTree = "<group>"; };
-		F964E90428D548B000CBA072 /* SivUnicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUnicode.cpp; sourceTree = "<group>"; };
-		F964E90628D548B000CBA072 /* Siv3DEngine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DEngine.hpp; sourceTree = "<group>"; };
-		F964E90728D548B000CBA072 /* Siv3DComponent.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DComponent.hpp; sourceTree = "<group>"; };
-		F964E90828D548B000CBA072 /* Siv3DEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DEngine.cpp; sourceTree = "<group>"; };
-		F964E90A28D548B000CBA072 /* SivConsoleBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivConsoleBuffer.cpp; sourceTree = "<group>"; };
-		F964E90C28D548B000CBA072 /* ConsoleFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleFactory.cpp; sourceTree = "<group>"; };
-		F964E90D28D548B000CBA072 /* IConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IConsole.hpp; sourceTree = "<group>"; };
-		F964E90E28D548B000CBA072 /* SivConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivConsole.cpp; sourceTree = "<group>"; };
-		F964E92628D548CD00CBA072 /* simdutf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simdutf.cpp; sourceTree = "<group>"; };
-		F964E92728D548CD00CBA072 /* simdutf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simdutf.h; sourceTree = "<group>"; };
 		F964E92D28D54B6700CBA072 /* CConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CConsole.cpp; sourceTree = "<group>"; };
 		F964E92E28D54B6700CBA072 /* CConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CConsole.hpp; sourceTree = "<group>"; };
 		F964E93328D54C4600CBA072 /* Siv3DMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DMain.cpp; sourceTree = "<group>"; };
@@ -153,9 +173,10 @@
 		2C46FDBA226EE90600828870 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				F964E90228D548B000CBA072 /* Siv3D */,
+				F960573128DA2053002140EF /* mimalloc */,
+				F960572828DA2046002140EF /* ThirdParty */,
+				F960570A28DA203E002140EF /* Siv3D */,
 				F964E91728D548C400CBA072 /* Siv3D-Platform */,
-				F964E92428D548CD00CBA072 /* ThirdParty */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -173,8 +194,8 @@
 		2C6897DE2436064900C36C25 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				F96056F028DA202E002140EF /* Siv3D */,
 				F964E8D428D5486500CBA072 /* Siv3D.hpp */,
-				F964E8C428D5486500CBA072 /* Siv3D */,
 				F964E8D528D5486500CBA072 /* ThirdParty */,
 			);
 			path = include;
@@ -221,40 +242,159 @@
 			path = ../Siv3D;
 			sourceTree = "<group>";
 		};
-		F964E8C428D5486500CBA072 /* Siv3D */ = {
+		F96056F028DA202E002140EF /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
-				F964E8CC28D5486500CBA072 /* Common.hpp */,
-				F964E8C828D5486500CBA072 /* Console.hpp */,
-				F964E8D328D5486500CBA072 /* ConsoleBuffer.hpp */,
-				F964E8C628D5486500CBA072 /* Platform.hpp */,
-				F964E8CB28D5486500CBA072 /* String.hpp */,
-				F964E8C728D5486500CBA072 /* StringView.hpp */,
-				F964E8D228D5486500CBA072 /* Types.hpp */,
-				F964E8C528D5486500CBA072 /* Unicode.hpp */,
-				F964E8C928D5486500CBA072 /* detail */,
-				F964E8CD28D5486500CBA072 /* Windows */,
+				F96056F128DA202E002140EF /* Concepts.hpp */,
+				F96056F228DA202E002140EF /* Hash.hpp */,
+				F96056F328DA202E002140EF /* Utility.hpp */,
+				F96056F428DA202E002140EF /* Unicode.hpp */,
+				F96056F528DA202E002140EF /* Platform.hpp */,
+				F96056F628DA202E002140EF /* StringView.hpp */,
+				F96056F728DA202E002140EF /* Console.hpp */,
+				F96056F828DA202E002140EF /* Version.hpp */,
+				F96056F928DA202E002140EF /* detail */,
+				F960570028DA202E002140EF /* String.hpp */,
+				F960570128DA202E002140EF /* Memory.hpp */,
+				F960570228DA202E002140EF /* Common.hpp */,
+				F960570328DA202E002140EF /* Windows */,
+				F960570828DA202E002140EF /* Types.hpp */,
+				F960570928DA202E002140EF /* ConsoleBuffer.hpp */,
 			);
 			path = Siv3D;
 			sourceTree = "<group>";
 		};
-		F964E8C928D5486500CBA072 /* detail */ = {
+		F96056F928DA202E002140EF /* detail */ = {
 			isa = PBXGroup;
 			children = (
-				F964E8CA28D5486500CBA072 /* Unicode.ipp */,
+				F96056FA28DA202E002140EF /* Memory.ipp */,
+				F96056FB28DA202E002140EF /* String.ipp */,
+				F96056FC28DA202E002140EF /* StringView.ipp */,
+				F96056FD28DA202E002140EF /* Hash.ipp */,
+				F96056FE28DA202E002140EF /* Utility.ipp */,
+				F96056FF28DA202E002140EF /* Unicode.ipp */,
 			);
 			path = detail;
 			sourceTree = "<group>";
 		};
-		F964E8CD28D5486500CBA072 /* Windows */ = {
+		F960570328DA202E002140EF /* Windows */ = {
 			isa = PBXGroup;
 			children = (
-				F964E8CE28D5486500CBA072 /* Libraries.hpp */,
-				F964E8CF28D5486500CBA072 /* MinWindows.hpp */,
-				F964E8D028D5486500CBA072 /* Windows.hpp */,
-				F964E8D128D5486500CBA072 /* ComPtr.hpp */,
+				F960570428DA202E002140EF /* Libraries.hpp */,
+				F960570528DA202E002140EF /* MinWindows.hpp */,
+				F960570628DA202E002140EF /* Windows.hpp */,
+				F960570728DA202E002140EF /* ComPtr.hpp */,
 			);
 			path = Windows;
+			sourceTree = "<group>";
+		};
+		F960570A28DA203E002140EF /* Siv3D */ = {
+			isa = PBXGroup;
+			children = (
+				F960570B28DA203E002140EF /* Unicode */,
+				F960570D28DA203E002140EF /* Hash */,
+				F960570F28DA203E002140EF /* StringView */,
+				F960571128DA203E002140EF /* String */,
+				F960571328DA203E002140EF /* Engine */,
+				F960571728DA203E002140EF /* ConsoleBuffer */,
+				F960571928DA203E002140EF /* Console */,
+			);
+			path = Siv3D;
+			sourceTree = "<group>";
+		};
+		F960570B28DA203E002140EF /* Unicode */ = {
+			isa = PBXGroup;
+			children = (
+				F960570C28DA203E002140EF /* SivUnicode.cpp */,
+			);
+			path = Unicode;
+			sourceTree = "<group>";
+		};
+		F960570D28DA203E002140EF /* Hash */ = {
+			isa = PBXGroup;
+			children = (
+				F960570E28DA203E002140EF /* SivHash.cpp */,
+			);
+			path = Hash;
+			sourceTree = "<group>";
+		};
+		F960570F28DA203E002140EF /* StringView */ = {
+			isa = PBXGroup;
+			children = (
+				F960571028DA203E002140EF /* SivStringView.cpp */,
+			);
+			path = StringView;
+			sourceTree = "<group>";
+		};
+		F960571128DA203E002140EF /* String */ = {
+			isa = PBXGroup;
+			children = (
+				F960571228DA203E002140EF /* SivString.cpp */,
+			);
+			path = String;
+			sourceTree = "<group>";
+		};
+		F960571328DA203E002140EF /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				F960571428DA203E002140EF /* Siv3DEngine.hpp */,
+				F960571528DA203E002140EF /* Siv3DComponent.hpp */,
+				F960571628DA203E002140EF /* Siv3DEngine.cpp */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		F960571728DA203E002140EF /* ConsoleBuffer */ = {
+			isa = PBXGroup;
+			children = (
+				F960571828DA203E002140EF /* SivConsoleBuffer.cpp */,
+			);
+			path = ConsoleBuffer;
+			sourceTree = "<group>";
+		};
+		F960571928DA203E002140EF /* Console */ = {
+			isa = PBXGroup;
+			children = (
+				F960571A28DA203E002140EF /* ConsoleFactory.cpp */,
+				F960571B28DA203E002140EF /* IConsole.hpp */,
+				F960571C28DA203E002140EF /* SivConsole.cpp */,
+			);
+			path = Console;
+			sourceTree = "<group>";
+		};
+		F960572828DA2046002140EF /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				F960572928DA2046002140EF /* simdutf */,
+				F960572C28DA2046002140EF /* wyhash */,
+			);
+			path = ThirdParty;
+			sourceTree = "<group>";
+		};
+		F960572928DA2046002140EF /* simdutf */ = {
+			isa = PBXGroup;
+			children = (
+				F960572A28DA2046002140EF /* simdutf.cpp */,
+				F960572B28DA2046002140EF /* simdutf.h */,
+			);
+			path = simdutf;
+			sourceTree = "<group>";
+		};
+		F960572C28DA2046002140EF /* wyhash */ = {
+			isa = PBXGroup;
+			children = (
+				F960572D28DA2046002140EF /* wyhash.h */,
+			);
+			path = wyhash;
+			sourceTree = "<group>";
+		};
+		F960573128DA2053002140EF /* mimalloc */ = {
+			isa = PBXGroup;
+			children = (
+				F960573228DA2053002140EF /* mimalloc-new-delete.h */,
+			);
+			name = mimalloc;
+			path = "ThirdParty-prebuilt/mimalloc";
 			sourceTree = "<group>";
 		};
 		F964E8D528D5486500CBA072 /* ThirdParty */ = {
@@ -282,53 +422,6 @@
 			path = nanobench;
 			sourceTree = "<group>";
 		};
-		F964E90228D548B000CBA072 /* Siv3D */ = {
-			isa = PBXGroup;
-			children = (
-				F964E90B28D548B000CBA072 /* Console */,
-				F964E90928D548B000CBA072 /* ConsoleBuffer */,
-				F964E90528D548B000CBA072 /* Engine */,
-				F964E90328D548B000CBA072 /* Unicode */,
-			);
-			path = Siv3D;
-			sourceTree = "<group>";
-		};
-		F964E90328D548B000CBA072 /* Unicode */ = {
-			isa = PBXGroup;
-			children = (
-				F964E90428D548B000CBA072 /* SivUnicode.cpp */,
-			);
-			path = Unicode;
-			sourceTree = "<group>";
-		};
-		F964E90528D548B000CBA072 /* Engine */ = {
-			isa = PBXGroup;
-			children = (
-				F964E90628D548B000CBA072 /* Siv3DEngine.hpp */,
-				F964E90728D548B000CBA072 /* Siv3DComponent.hpp */,
-				F964E90828D548B000CBA072 /* Siv3DEngine.cpp */,
-			);
-			path = Engine;
-			sourceTree = "<group>";
-		};
-		F964E90928D548B000CBA072 /* ConsoleBuffer */ = {
-			isa = PBXGroup;
-			children = (
-				F964E90A28D548B000CBA072 /* SivConsoleBuffer.cpp */,
-			);
-			path = ConsoleBuffer;
-			sourceTree = "<group>";
-		};
-		F964E90B28D548B000CBA072 /* Console */ = {
-			isa = PBXGroup;
-			children = (
-				F964E90C28D548B000CBA072 /* ConsoleFactory.cpp */,
-				F964E90D28D548B000CBA072 /* IConsole.hpp */,
-				F964E90E28D548B000CBA072 /* SivConsole.cpp */,
-			);
-			path = Console;
-			sourceTree = "<group>";
-		};
 		F964E91728D548C400CBA072 /* Siv3D-Platform */ = {
 			isa = PBXGroup;
 			children = (
@@ -336,23 +429,6 @@
 				F964E92A28D54B6700CBA072 /* macOS_Linux */,
 			);
 			path = "Siv3D-Platform";
-			sourceTree = "<group>";
-		};
-		F964E92428D548CD00CBA072 /* ThirdParty */ = {
-			isa = PBXGroup;
-			children = (
-				F964E92528D548CD00CBA072 /* simdutf */,
-			);
-			path = ThirdParty;
-			sourceTree = "<group>";
-		};
-		F964E92528D548CD00CBA072 /* simdutf */ = {
-			isa = PBXGroup;
-			children = (
-				F964E92628D548CD00CBA072 /* simdutf.cpp */,
-				F964E92728D548CD00CBA072 /* simdutf.h */,
-			);
-			path = simdutf;
 			sourceTree = "<group>";
 		};
 		F964E92A28D54B6700CBA072 /* macOS_Linux */ = {
@@ -412,11 +488,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F964E91128D548B000CBA072 /* Siv3DComponent.hpp in Headers */,
-				F964E91528D548B000CBA072 /* IConsole.hpp in Headers */,
+				F960572228DA203E002140EF /* Siv3DComponent.hpp in Headers */,
+				F960572128DA203E002140EF /* Siv3DEngine.hpp in Headers */,
+				F960573028DA2046002140EF /* wyhash.h in Headers */,
+				F960572628DA203E002140EF /* IConsole.hpp in Headers */,
+				F960573328DA2053002140EF /* mimalloc-new-delete.h in Headers */,
 				F964E93028D54B6700CBA072 /* CConsole.hpp in Headers */,
-				F964E91028D548B000CBA072 /* Siv3DEngine.hpp in Headers */,
-				F964E92928D548CD00CBA072 /* simdutf.h in Headers */,
+				F960572F28DA2046002140EF /* simdutf.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,15 +603,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F964E92828D548CD00CBA072 /* simdutf.cpp in Sources */,
+				F960572E28DA2046002140EF /* simdutf.cpp in Sources */,
+				F960572728DA203E002140EF /* SivConsole.cpp in Sources */,
+				F960572528DA203E002140EF /* ConsoleFactory.cpp in Sources */,
+				F960571D28DA203E002140EF /* SivUnicode.cpp in Sources */,
 				F964E92F28D54B6700CBA072 /* CConsole.cpp in Sources */,
 				F964E93728D54C9000CBA072 /* SivUnicode_macOS_Linux.cpp in Sources */,
-				F964E91328D548B000CBA072 /* SivConsoleBuffer.cpp in Sources */,
-				F964E90F28D548B000CBA072 /* SivUnicode.cpp in Sources */,
+				F960571E28DA203E002140EF /* SivHash.cpp in Sources */,
+				F960571F28DA203E002140EF /* SivStringView.cpp in Sources */,
+				F960572028DA203E002140EF /* SivString.cpp in Sources */,
+				F960572428DA203E002140EF /* SivConsoleBuffer.cpp in Sources */,
 				F964E93428D54C4600CBA072 /* Siv3DMain.cpp in Sources */,
-				F964E91628D548B000CBA072 /* SivConsole.cpp in Sources */,
-				F964E91428D548B000CBA072 /* ConsoleFactory.cpp in Sources */,
-				F964E91228D548B000CBA072 /* Siv3DEngine.cpp in Sources */,
+				F960572328DA203E002140EF /* Siv3DEngine.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
