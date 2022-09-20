@@ -323,6 +323,13 @@ TEST_CASE("Memory.hpp")
 
 TEST_CASE("Hash.hpp")
 {
+	CHECK(std::hash<StringView>{}(U"") != std::hash<StringView>{}(U"S"));
+	CHECK(std::hash<StringView>{}(U"S") != std::hash<StringView>{}(U"Si"));
+	CHECK(std::hash<StringView>{}(U"Si") != std::hash<StringView>{}(U"Siv"));
+	CHECK(std::hash<StringView>{}(U"Siv") != std::hash<StringView>{}(U"Siv3"));
+	CHECK(std::hash<StringView>{}(U"Siv3") != std::hash<StringView>{}(U"Siv3D"));
+	CHECK(std::hash<StringView>{}(U"Siv3D") != std::hash<StringView>{}(U""));
+
 	{
 		const std::string sShort = "Siv3D";
 		const std::string sMedium = "Hello, Siv3D!";

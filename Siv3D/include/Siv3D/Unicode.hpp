@@ -43,7 +43,7 @@
 namespace s3d
 {
 	class StringView;
-	using String = std::u32string;
+	class String;
 
 	/// @brief 文字コードの変換
 	namespace Unicode

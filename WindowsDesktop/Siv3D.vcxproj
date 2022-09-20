@@ -18,6 +18,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Memory.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Unicode.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Utility.ipp" />
@@ -55,6 +56,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp" />
   </ItemGroup>

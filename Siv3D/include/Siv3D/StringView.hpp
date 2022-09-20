@@ -34,7 +34,7 @@ namespace s3d
 		using size_type					= typename string_view_type::size_type;
 		using difference_type			= typename string_view_type::difference_type;
 
-		static constexpr auto npos{ static_cast<size_type>(-1) };
+		static constexpr auto npos{ string_view_type::npos };
 
 		[[nodiscard]]
 		constexpr StringView() noexcept = default;
@@ -59,7 +59,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr StringView(std::u32string_view s) noexcept;
 
-		StringView(nullptr_t) = delete;
+		StringView(std::nullptr_t) = delete;
 
 		constexpr StringView& operator=(const StringView&) noexcept = default;
 
@@ -135,6 +135,9 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr StringView substr(size_type pos = 0, size_type n = npos) const;
+
+		[[nodiscard]]
+		constexpr string_view_type view() const noexcept;
 
 		[[nodiscard]]
 		constexpr int32 compare(StringView s) const noexcept;
@@ -321,6 +324,11 @@ namespace s3d
 	}
 
 	using FilePathView = StringView;
+
+	template <class SV>
+	concept StringViewIsh =
+		(std::is_convertible_v<const SV&, StringView> &&
+		not std::is_convertible_v<const SV&, const char32*>);
 }
 
 template <>

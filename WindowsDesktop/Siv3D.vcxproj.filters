@@ -85,6 +85,9 @@
     <Filter Include="src\Siv3D\StringView">
       <UniqueIdentifier>{36fd4e5c-a087-462b-a636-b0295904bfeb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\String">
+      <UniqueIdentifier>{f958ccf6-ed49-4eda-a76c-421ad0381f71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -186,6 +189,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -220,6 +226,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp">
       <Filter>src\Siv3D\StringView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp">
+      <Filter>src\Siv3D\String</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

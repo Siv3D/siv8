@@ -159,6 +159,11 @@ namespace s3d
 	{
 		return m_view.substr(pos, n);
 	}
+
+	constexpr StringView::string_view_type StringView::view() const noexcept
+	{
+		return m_view;
+	}
 	
 	constexpr int32 StringView::compare(const StringView s) const noexcept
 	{
