@@ -481,6 +481,26 @@ TEST_CASE("Unicode.hpp")
 	}
 }
 
+struct MyFormattableData
+{
+	int32 x;
+	friend void Formatter(FormatData&, const MyFormattableData&) {}
+};
+
+struct MyUnformattableData
+{
+	int32 x;
+};
+
+TEST_CASE("Formatter.hpp")
+{
+	CHECK(Concept::Formattable<bool>);
+	CHECK(Concept::Formattable<int32>);
+	CHECK(Concept::Formattable<StringView>);
+	CHECK(Concept::Formattable<String>);
+	CHECK(Concept::Formattable<MyFormattableData>);
+	CHECK(not Concept::Formattable<MyUnformattableData>);
+}
 
 
 SIV3D_DISABLE_MSVC_WARNINGS_POP()

@@ -72,6 +72,26 @@ namespace s3d
 		{
 			writeln(s);
 		}
+		
+		ConsoleBuffer Console_impl::operator <<(const char32* s) const
+		{
+			return ConsoleBuffer{ s };
+		}
+
+		ConsoleBuffer Console_impl::operator <<(const StringView s) const
+		{
+			return ConsoleBuffer{ s };
+		}
+
+		ConsoleBuffer Console_impl::operator <<(const String& s) const
+		{
+			return ConsoleBuffer{ s };
+		}
+
+		ConsoleBuffer Console_impl::operator <<(String&& s) const
+		{
+			return ConsoleBuffer{ std::move(s) };
+		}
 
 		void Console_impl::setSystemDefaultCodePage() const
 		{

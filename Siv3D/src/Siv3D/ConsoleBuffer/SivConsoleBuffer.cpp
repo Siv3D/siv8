@@ -17,16 +17,28 @@ namespace s3d
 	namespace detail
 	{
 		ConsoleBuffer::ConsoleBuffer()
-			: formatData{ std::make_unique<String>() } {}
+			: formatData{ std::make_unique<FormatData>() } {}
 
 		ConsoleBuffer::ConsoleBuffer(ConsoleBuffer&& other) noexcept
 			: formatData{ std::move(other.formatData) } {}
+
+		ConsoleBuffer::ConsoleBuffer(const char32* s)
+			: formatData{ std::make_unique<FormatData>(s) } {}
+
+		ConsoleBuffer::ConsoleBuffer(const StringView s)
+			: formatData{ std::make_unique<FormatData>(s) } {}
+
+		ConsoleBuffer::ConsoleBuffer(const String& s)
+			: formatData{ std::make_unique<FormatData>(s) } {}
+
+		ConsoleBuffer::ConsoleBuffer(String&& s)
+			: formatData{ std::make_unique<FormatData>(std::move(s)) } {}
 
 		ConsoleBuffer::~ConsoleBuffer()
 		{
 			if (formatData)
 			{
-				Console.writeln(*formatData);
+				Console.writeln(formatData->string);
 			}
 		}
 
@@ -37,8 +49,7 @@ namespace s3d
 
 		ConsoleBuffer& ConsoleBuffer::operator <<(const StringView s)
 		{
-			formatData->append(s.data(), s.size());
-
+			formatData->string.append(s);
 			return *this;
 		}
 

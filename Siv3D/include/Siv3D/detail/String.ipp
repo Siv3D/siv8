@@ -63,7 +63,7 @@ namespace s3d
 		: m_string{ std::move(s) } {}
 
 	inline String::String(const StringViewIsh auto& s)
-		: m_string(s) {}
+		: m_string{ StringView(s).view() } {}
 
 	inline String::String(const StringViewIsh auto s, const size_type pos, const size_type count)
 		: m_string(s, pos, count) {}

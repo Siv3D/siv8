@@ -220,6 +220,143 @@
 //# include <Siv3D/Obfuscation.hpp>
 
 
+//////////////////////////////////////////////////
+//
+//	文字列フォーマット | Formatting
+//
+//////////////////////////////////////////////////
+
+//// フォーマット (bool 型) | Format (bool)
+//# include <Siv3D/FormatBool.hpp>
+//
+//// フォーマット (整数型) | Format (integer)
+//# include <Siv3D/FormatInt.hpp>
+//
+//// フォーマット (浮動小数点数型) | Format (floating point)
+//# include <Siv3D/FormatFloat.hpp>
+
+// フォーマット用オブジェクト | Formatting object
+# include <Siv3D/FormatData.hpp>
+
+// フォーマット関数 | Formatter
+# include <Siv3D/Formatter.hpp>
+
+// 文字列フォーマット | Format
+# include <Siv3D/Format.hpp>
+
+//// 文字列フォーマットリテラル | Formatting literal
+//# include <Siv3D/FormatLiteral.hpp>
+//
+//// 文字列ユーティリティ | Formatting utilities
+//# include <Siv3D/FormatUtility.hpp>
+
+//////////////////////////////////////////////////
+//
+//	文字列パーサ | Parser
+//
+//////////////////////////////////////////////////
+
+//// 文字列 → bool 変換 | Text-to-bool conversion
+//# include <Siv3D/ParseBool.hpp>
+//
+//// 文字列 → 整数 変換 | Text-to-integer conversion
+//# include <Siv3D/ParseInt.hpp>
+//
+//// 文字列 → 浮動小数点数 変換 | Text-to-float conversion
+//# include <Siv3D/ParseFloat.hpp>
+//
+//// 文字列 → 値 変換 | Text-to-value conversion
+//# include <Siv3D/Parse.hpp>
+
+//////////////////////////////////////////////////
+//
+//	数値 | Number
+//
+//////////////////////////////////////////////////
+
+//// 数値 | Number
+//# include <Siv3D/Number.hpp>
+//
+//// 浮動小数点数 | Floating point
+//# include <Siv3D/FloatingPoint.hpp>
+//
+//// 128-bit 整数型 | 128-bit integer type
+//# include <Siv3D/Int128.hpp>
+//
+//// 多倍長整数 | Arbitrary precision integer type
+//# include <Siv3D/BigInt.hpp>
+//
+//// 多倍長浮動小数点数 | 100 decimal digits precision floating point type
+//# include <Siv3D/BigFloat.hpp>
+//
+//// 浮動小数点数型の共通型 | Common Float
+//# include <Siv3D/CommonFloat.hpp>
+
+//////////////////////////////////////////////////
+//
+//	時間と時刻 | Date and Time
+//
+//////////////////////////////////////////////////
+
+//// 時間の表現 | Duration
+//# include <Siv3D/Duration.hpp>
+//
+//// 曜日 | Day of week
+//# include <Siv3D/DayOfWeek.hpp>
+//
+//// 日付 | Date
+//# include <Siv3D/Date.hpp>
+//
+//// 日付と時刻 | Date and time
+//# include <Siv3D/DateTime.hpp>
+//
+//// 時間 | Time
+//# include <Siv3D/Time.hpp>
+
+//////////////////////////////////////////////////
+//
+//	タイマー | Timer
+//
+//////////////////////////////////////////////////
+
+//// 時刻提供インタフェース | Clock function interface
+//# include <Siv3D/ISteadyClock.hpp>
+//
+//// 経過時間の計測 | Stopwatch
+//# include <Siv3D/Stopwatch.hpp>
+//
+//// スピードを変更可能なストップウォッチ | Stopwatch with variable speed
+//# include <Siv3D/VariableSpeedStopwatch.hpp>
+//
+//// カウントダウンタイマー | Countdown timer
+//# include <Siv3D/Timer.hpp>
+
+//////////////////////////////////////////////////
+//
+//	プロファイラー | Profiler
+//
+//////////////////////////////////////////////////
+
+//// プロファイラー | Profiler
+//# include <Siv3D/Profiler.hpp>
+//
+//// 処理にかかった時間の測定 | Clock counter in milliseconds
+//# include <Siv3D/MillisecClock.hpp>
+//
+//// 処理にかかった時間の測定 | Clock counter in microseconds
+//# include <Siv3D/MicrosecClock.hpp>
+//
+//// Clock counter in CPU clocks | 処理にかかった CPU サイクル数の測定
+//# include <Siv3D/RDTSCClock.hpp>
+//
+//// 時間の測定 | Time profiler
+//# include <Siv3D/TimeProfiler.hpp>
+
+
+
+
+
+
 
 
 # include <Siv3D/ConsoleBuffer.hpp>

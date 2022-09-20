@@ -13,6 +13,7 @@
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Hash.hpp>
+# include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
@@ -36,6 +37,12 @@ namespace s3d
 		return Hash(m_view.data(), size_bytes());
 	}
 
+	//////////////////////////////////////////////////
+	//
+	//	operator <<
+	//
+	//////////////////////////////////////////////////
+
 	std::ostream& operator <<(std::ostream& os, const StringView& value)
 	{
 		return (os << value.narrow());
@@ -49,5 +56,16 @@ namespace s3d
 	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const StringView& value)
 	{
 		return os.write(value.data(), value.size());
+	}
+
+	//////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	//////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const StringView s)
+	{
+		formatData.string.append(s);
 	}
 }

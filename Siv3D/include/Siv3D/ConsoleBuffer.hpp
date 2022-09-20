@@ -11,7 +11,8 @@
 
 # pragma once
 # include <memory>
-# include "String.hpp"
+# include "FormatData.hpp"
+# include "Formatter.hpp"
 
 namespace s3d
 {
@@ -19,11 +20,19 @@ namespace s3d
 	{
 		struct ConsoleBuffer
 		{
-			std::unique_ptr<String> formatData;
+			std::unique_ptr<FormatData> formatData;
 
 			ConsoleBuffer();
 
 			ConsoleBuffer(ConsoleBuffer&& other) noexcept;
+
+			explicit ConsoleBuffer(const char32* s);
+
+			explicit ConsoleBuffer(StringView s);
+
+			explicit ConsoleBuffer(const String& s);
+
+			explicit ConsoleBuffer(String&& s);
 
 			~ConsoleBuffer();
 
@@ -33,13 +42,10 @@ namespace s3d
 
 			ConsoleBuffer& operator <<(const String& s);
 
-			//SIV3D_CONCEPT_FORMATTABLE
-			//ConsoleBuffer& operator <<(const Formattable& value)
-			//{
-			//	Formatter(*formatData, value);
-
-			//	return *this;
-			//}
+			template <Concept::Formattable Formattable>
+			ConsoleBuffer& operator <<(const Formattable& value);
 		};
 	}
 }
+
+# include "detail/ConsoleBuffer.ipp"

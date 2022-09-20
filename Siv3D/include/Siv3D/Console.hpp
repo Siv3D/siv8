@@ -10,7 +10,9 @@
 //-----------------------------------------------
 
 # pragma once
+# include <iostream>
 # include "ConsoleBuffer.hpp"
+# include "Format.hpp"
 
 namespace s3d
 {
@@ -38,86 +40,46 @@ namespace s3d
 
 			void operator ()(const String& s) const;
 
-			//template <Concept::Formattable... Args>
-			//void write(const Args&... args) const
-			//{
-			//	return write(Format(args...));
-			//}
+			template <Concept::Formattable... Args>
+			void write(const Args&... args) const;
 
-			//// Format できない値が Console.write() に渡されたときに発生するエラーです
-			//template <class... Args>
-			//void write(const Args&... args) const = delete;
+			// Format できない値が Console.write() に渡されたときに発生するエラーです
+			template <class... Args>
+			void write(const Args&... args) const = delete;
 
-			//template <Concept::Formattable... Args>
-			//void writeln(const Args&... args) const
-			//{
-			//	return write(Format(args..., U'\n'));
-			//}
+			template <Concept::Formattable... Args>
+			void writeln(const Args&... args) const;
 
-			//// Format できない値が Console.writeln() に渡されたときに発生するエラーです
-			//template <class... Args>
-			//void writeln(const Args&... args) const = delete;
+			// Format できない値が Console.writeln() に渡されたときに発生するエラーです
+			template <class... Args>
+			void writeln(const Args&... args) const = delete;
 
-			//template <Concept::Formattable... Args>
-			//void operator ()(const Args&... args) const
-			//{
-			//	return write(Format(args..., U'\n'));
-			//}
+			template <Concept::Formattable... Args>
+			void operator ()(const Args&... args) const;
 
-			//// Format できない値が Console() に渡されたときに発生するエラーです
-			//template <class... Args>
-			//void operator ()(const Args&... args) const = delete;
+			// Format できない値が Console() に渡されたときに発生するエラーです
+			template <class... Args>
+			void operator ()(const Args&... args) const = delete;
 
-			//SIV3D_CONCEPT_FORMATTABLE
-			//ConsoleBuffer operator <<(const Formattable& value) const
-			//{
-			//	ConsoleBuffer buf;
+			template <Concept::Formattable Formattable>
+			ConsoleBuffer operator <<(const Formattable& value) const;
 
-			//	Formatter(*buf.formatData, value);
+			ConsoleBuffer operator <<(const char32* s) const;
 
-			//	return buf;
-			//}
+			ConsoleBuffer operator <<(StringView s) const;
 
-			ConsoleBuffer operator <<(const String& value) const
-			{
-				ConsoleBuffer buf;
+			ConsoleBuffer operator <<(const String& s) const;
 
-				buf.formatData->append(value);
+			ConsoleBuffer operator <<(String&& s) const;
 
-				return buf;
-			}
+			template <class Type>
+			Type read() const;
 
 			//template <class Type>
-			//Type read() const
-			//{
-			//	open();
+			//Type readLine() const;
 
-			//	Type t;
-
-			//	std::cin >> t;
-
-			//	return t;
-			//}
-
-			//template <class Type>
-			//Type readLine() const
-			//{
-			//	open();
-
-			//	std::string s;
-
-			//	std::getline(std::cin, s);
-
-			//	return Parse<Type>(Unicode::Widen(s));
-			//}
-
-			//template <class Type>
-			//auto operator >>(Type& value) const
-			//{
-			//	value = read<Type>();
-
-			//	return *this;
-			//}
+			template <class Type>
+			Console_impl& operator >>(Type& value) const;
 
 			void setSystemDefaultCodePage() const;
 
@@ -131,3 +93,5 @@ namespace s3d
 		inline constexpr detail::Console_impl Console;
 	}
 }
+
+# include "detail/Console.ipp"

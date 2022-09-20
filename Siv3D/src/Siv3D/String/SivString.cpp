@@ -13,6 +13,7 @@
 # include <Siv3D/String.hpp>
 # include <Siv3D/Hash.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
@@ -93,27 +94,6 @@ namespace s3d
 	std::strong_ordering operator <=>(const String& lhs, const String::value_type* rhs)
 	{
 		return (lhs.m_string.compare(rhs) <=> 0);
-	}
-
-	//////////////////////////////////////////////////
-	//
-	//	operator <<
-	//
-	//////////////////////////////////////////////////
-
-	std::ostream& operator <<(std::ostream& output, const String& value)
-	{
-		return (output << value.narrow());
-	}
-
-	std::wostream& operator <<(std::wostream& output, const String& value)
-	{
-		return (output << value.toWstr());
-	}
-
-	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const String& value)
-	{
-		return output.write(value.data(), value.size());
 	}
 
 	//////////////////////////////////////////////////
@@ -242,6 +222,27 @@ namespace s3d
 
 	//////////////////////////////////////////////////
 	//
+	//	operator <<
+	//
+	//////////////////////////////////////////////////
+
+	std::ostream& operator <<(std::ostream& output, const String& value)
+	{
+		return (output << value.narrow());
+	}
+
+	std::wostream& operator <<(std::wostream& output, const String& value)
+	{
+		return (output << value.toWstr());
+	}
+
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const String& value)
+	{
+		return output.write(value.data(), value.size());
+	}
+
+	//////////////////////////////////////////////////
+	//
 	//	operator >>
 	//
 	//////////////////////////////////////////////////
@@ -260,6 +261,17 @@ namespace s3d
 		input >> s;
 		value = Unicode::FromWstring(s);
 		return input;
+	}
+
+	//////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	//////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const String& s)
+	{
+		formatData.string.append(s);
 	}
 
 	//////////////////////////////////////////////////
