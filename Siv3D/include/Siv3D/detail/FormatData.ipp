@@ -33,7 +33,7 @@ namespace s3d
 		return FormatData::DecimalPlaces{ width };
 	}
 
-	namespace Literals
+	inline namespace Literals
 	{
 		inline namespace DecimalPlaceLiterals
 		{
