@@ -192,8 +192,8 @@
 //
 //////////////////////////////////////////////////
 
-//// 文字 | Character
-//# include <Siv3D/Char.hpp>
+// 文字 | Character
+# include <Siv3D/Char.hpp>
 
 // 文字列ビュー | String view
 # include <Siv3D/StringView.hpp>
@@ -274,9 +274,9 @@
 //
 //////////////////////////////////////////////////
 
-//// 数値 | Number
-//# include <Siv3D/Number.hpp>
-//
+// 数値 | Number
+# include <Siv3D/Number.hpp>
+
 //// 浮動小数点数 | Floating point
 //# include <Siv3D/FloatingPoint.hpp>
 //

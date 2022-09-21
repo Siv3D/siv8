@@ -503,4 +503,42 @@ TEST_CASE("Formatter.hpp")
 }
 
 
+TEST_CASE("Format.hpp")
+{
+	CHECK(Format(Smallest<int32>) == U"-2147483648");
+	CHECK(Format(Largest<int32>) == U"2147483647");
+
+	CHECK(Format(Smallest<uint32>) == U"0");
+	CHECK(Format(Largest<uint32>) == U"4294967295");
+
+
+	CHECK(Format(0.0f) == U"0");
+	CHECK(Format(1.0f) == U"1");
+	CHECK(Format(-1.0f) == U"-1");
+	CHECK(Format(0.125f) == U"0.125");
+	CHECK(Format(Inf<float>) == U"inf");
+	CHECK(Format(-Inf<float>) == U"-inf");
+	CHECK(Format(SNaN<float>) == U"nan");
+	CHECK(Format(QNaN<float>) == U"nan");
+
+	CHECK(Format(0.0) == U"0");
+	CHECK(Format(1.0) == U"1");
+	CHECK(Format(-1.0) == U"-1");
+	CHECK(Format(0.125) == U"0.125");
+	CHECK(Format(Inf<double>) == U"inf");
+	CHECK(Format(-Inf<double>) == U"-inf");
+	CHECK(Format(SNaN<double>) == U"nan");
+	CHECK(Format(QNaN<double>) == U"nan");
+
+	CHECK(Format(0.0L) == U"0");
+	CHECK(Format(1.0L) == U"1");
+	CHECK(Format(-1.0L) == U"-1");
+	CHECK(Format(0.125L) == U"0.125");
+	CHECK(Format(Inf<long double>) == U"inf");
+	CHECK(Format(-Inf<long double>) == U"-inf");
+	CHECK(Format(SNaN<long double>) == U"nan");
+	CHECK(Format(QNaN<long double>) == U"nan");
+}
+
+
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
