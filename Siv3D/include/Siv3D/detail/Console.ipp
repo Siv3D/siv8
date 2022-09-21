@@ -60,7 +60,7 @@ namespace s3d
 		//}
 
 		template <class Type>
-		Console_impl& Console_impl::operator >>(Type& value) const
+		const Console_impl& Console_impl::operator >>(Type& value) const
 		{
 			value = read<Type>();
 			return *this;

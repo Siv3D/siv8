@@ -79,7 +79,7 @@ namespace s3d
 			//Type readLine() const;
 
 			template <class Type>
-			Console_impl& operator >>(Type& value) const;
+			const Console_impl& operator >>(Type& value) const;
 
 			void setSystemDefaultCodePage() const;
 

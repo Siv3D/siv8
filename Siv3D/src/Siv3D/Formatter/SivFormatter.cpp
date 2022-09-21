@@ -200,7 +200,8 @@ namespace s3d
 		{
 			formatData.string.append(GtS);
 		}
-		else if (std::is_eq(value))
+		//else if (std::is_eq(value))
+		else if (value == 0)
 		{
 			formatData.string.append(EqS);
 		}
