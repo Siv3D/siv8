@@ -97,6 +97,9 @@
     <Filter Include="src\ThirdParty\double-conversion">
       <UniqueIdentifier>{8c9f6620-aac2-41c1-adf3-331825ac0ed0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\pcg">
+      <UniqueIdentifier>{e702884a-43e2-4b67-ab51-e1289fc6b2d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -269,6 +272,18 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Char.ipp">
       <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_random.hpp">
+      <Filter>include\ThirdParty\pcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_uint128.hpp">
+      <Filter>include\ThirdParty\pcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_extras.hpp">
+      <Filter>include\ThirdParty\pcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PCG.hpp">
+      <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

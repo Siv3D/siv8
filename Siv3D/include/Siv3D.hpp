@@ -359,6 +359,64 @@
 
 
 
+
+
+
+
+//////////////////////////////////////////////////
+//
+//	乱数と分布 | Random and Distribution
+//
+//////////////////////////////////////////////////
+
+
+# include <Siv3D/PCG.hpp>
+
+//// 非決定的乱数生成器 | Non-deterministic random number generator
+//# include <Siv3D/HardwareRNG.hpp>
+//
+//// 擬似乱数発生器 | Pseudorandom number generator
+//# include <Siv3D/PRNG.hpp>
+//
+//// 乱数の分布 | Random number distribution
+//# include <Siv3D/Distribution.hpp>
+//
+//// 離散確率分布 | Discrete probability distribution
+//# include <Siv3D/DiscreteDistribution.hpp>
+//
+//// 乱数 | Random number
+//# include <Siv3D/Random.hpp>
+//
+//// シャッフル | Random shuffle
+//# include <Siv3D/Shuffle.hpp>
+//
+//// ランダムな時間 | Random duration
+//# include <Siv3D/RandomDuration.hpp>
+//
+//// ランダムな Point の作成 | Random Point generation
+//# include <Siv3D/RandomPoint.hpp>
+//
+//// ランダムな Vec2 の作成 | Random Vec2 generation
+//# include <Siv3D/RandomVec2.hpp>
+//
+//// ランダムな Vec3 の作成 | Random Vec3 generation
+//# include <Siv3D/RandomVec3.hpp>
+//
+//// ランダムな Vec4 の作成 | Random Vec4 generation
+//# include <Siv3D/RandomVec4.hpp>
+//
+//// ランダムな色の作成 | Random Color generation
+//# include <Siv3D/RandomColor.hpp>
+//
+//// ランダムなサンプリング | Random sampling
+//# include <Siv3D/Sample.hpp>
+//
+//// UUID | UUID
+//# include <Siv3D/UUIDValue.hpp>
+
+
+
+
 # include <Siv3D/ConsoleBuffer.hpp>
 # include <Siv3D/Console.hpp>
 
