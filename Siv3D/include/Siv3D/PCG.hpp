@@ -21,7 +21,7 @@ namespace s3d
 		{
 		public:
 
-			using engine_type	= ::pcg64;
+			using engine_type	= ::pcg64_oneseq;
 
 			using result_type	= engine_type::result_type;
 
