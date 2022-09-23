@@ -14,6 +14,28 @@
 # include <wchar.h>
 # include "Types.hpp"
 
+//////////////////////////////////////////////////
+//
+//	文字 | Character
+//
+//	bool IsASCII(char32 ch);
+//	bool IsDigit(char32 ch);
+//	bool IsLower(char32 ch);
+//	bool IsUpper(char32 ch);
+//	char32 ToLower(char32 ch);
+//	char32 ToUpper(char32 ch);
+//	bool IsAlpha(char32 ch);
+//	bool IsAlnum(char32 ch);
+//	bool IsXdigit(char32 ch);
+//	bool IsControl(char32 ch);
+//	bool IsBlank(char32 ch);
+//	bool IsSpace(char32 ch);
+//	bool IsPrint(char32 ch);
+//	int32 CaseInsensitiveCompare(char32 a, char32 b);
+//	bool CaseInsensitiveEquals(char32 a, char32 b);
+// 
+//////////////////////////////////////////////////
+
 /*
 # ASCII Table
 

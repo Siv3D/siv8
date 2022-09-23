@@ -12,6 +12,7 @@
 # pragma once
 # include <array>
 # include <ThirdParty/pcg/pcg_random.hpp>
+# include "Types.hpp"
 
 namespace s3d
 {
