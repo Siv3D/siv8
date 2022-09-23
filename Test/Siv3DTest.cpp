@@ -372,6 +372,54 @@ TEST_CASE("Hash.hpp")
 	}
 }
 
+
+TEST_CASE("Error.hpp")
+{
+	{
+		try
+		{
+			throw Error{};
+		}
+		catch (const Error& error)
+		{
+			CHECK(error.type() == U"Error");
+		}
+	}
+
+	{
+		try
+		{
+			throw ParseError{};
+		}
+		catch (const Error& error)
+		{
+			CHECK(error.type() == U"ParseError");
+		}
+	}
+
+	{
+		try
+		{
+			throw NotImplementedError{};
+		}
+		catch (const Error& error)
+		{
+			CHECK(error.type() == U"NotImplementedError");
+		}
+	}
+
+	{
+		try
+		{
+			throw EngineError{};
+		}
+		catch (const Error& error)
+		{
+			CHECK(error.type() == U"EngineError");
+		}
+	}
+}
+
 TEST_CASE("Unicode.hpp")
 {
 	const std::string utf8 = Unicode::ToUTF8(U"渋三次元");

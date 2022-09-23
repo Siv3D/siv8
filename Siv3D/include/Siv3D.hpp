@@ -53,7 +53,6 @@
 // ユーティリティー | Utilities
 # include <Siv3D/Utility.hpp>
 
-
 //// プレースホルダー | Place holder
 //# include <Siv3D/PlaceHolder.hpp>
 //
@@ -104,10 +103,10 @@
 //
 //// ユニーク・リソース | Unique resource
 //# include <Siv3D/UniqueResource.hpp>
-//
-//// エラー | Error
-//# include <Siv3D/Error.hpp>
-//
+
+// エラー | Error
+# include <Siv3D/Error.hpp>
+
 //// デマングル | Demangle
 //# include <Siv3D/Demangle.hpp>
 //
@@ -150,9 +149,9 @@
 //
 //////////////////////////////////////////////////
 
-//// 動的配列（一次元）| Array
-//# include <Siv3D/Array.hpp>
-//
+// 動的配列（一次元）| Array
+# include <Siv3D/Array.hpp>
+
 //// 動的配列（二次元）| 2D array
 //# include <Siv3D/Grid.hpp>
 //

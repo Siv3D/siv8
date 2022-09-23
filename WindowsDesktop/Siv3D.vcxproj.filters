@@ -100,6 +100,9 @@
     <Filter Include="include\ThirdParty\pcg">
       <UniqueIdentifier>{e702884a-43e2-4b67-ab51-e1289fc6b2d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Error">
+      <UniqueIdentifier>{b08ee016-996a-4a6a-8d29-b74c21bc767f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -288,6 +291,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PCG.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Error.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Error.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -355,6 +367,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\FloatFormatter.cpp">
       <Filter>src\Siv3D\Formatter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Error\SivError.cpp">
+      <Filter>src\Siv3D\Error</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
