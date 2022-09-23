@@ -25,6 +25,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Memory.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Number.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PCG.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Unicode.ipp" />
