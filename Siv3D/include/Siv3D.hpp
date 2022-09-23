@@ -255,16 +255,16 @@
 //
 //////////////////////////////////////////////////
 
-//// 文字列 → bool 変換 | Text-to-bool conversion
-//# include <Siv3D/ParseBool.hpp>
-//
-//// 文字列 → 整数 変換 | Text-to-integer conversion
+// 文字列 → bool 変換 | string to bool conversion
+# include <Siv3D/ParseBool.hpp>
+
+//// 文字列 → 整数 変換 | string to integer conversion
 //# include <Siv3D/ParseInt.hpp>
 //
-//// 文字列 → 浮動小数点数 変換 | Text-to-float conversion
+//// 文字列 → 浮動小数点数 変換 | string to float conversion
 //# include <Siv3D/ParseFloat.hpp>
 //
-//// 文字列 → 値 変換 | Text-to-value conversion
+//// 文字列 → 値 変換 | string to value conversion
 //# include <Siv3D/Parse.hpp>
 
 //////////////////////////////////////////////////

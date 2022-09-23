@@ -591,6 +591,50 @@ TEST_CASE("Format.hpp")
 	CHECK(Format(QNaN<long double>) == U"nan");
 }
 
+
+TEST_CASE("ParseBool.hpp")
+{
+	static_assert(ParseBool(U"true") == true);
+	static_assert(ParseBool(U"True") == true);
+	static_assert(ParseBool(U"TRUE") == true);
+
+	static_assert(ParseBool(U"false") == false);
+	static_assert(ParseBool(U"False") == false);
+	static_assert(ParseBool(U"FALSE") == false);
+
+	CHECK(ParseBool(U"true") == true);
+	CHECK(ParseBool(U"True") == true);
+	CHECK(ParseBool(U"TRUE") == true);
+	CHECK(ParseBool(U" true") == true);
+	CHECK(ParseBool(U"true ") == true);
+	CHECK(ParseBool(U"  true  ") == true);
+
+	CHECK(ParseBool(U"false") == false);
+	CHECK(ParseBool(U"False") == false);
+	CHECK(ParseBool(U"FALSE") == false);
+	CHECK(ParseBool(U" false") == false);
+	CHECK(ParseBool(U"false ") == false);
+	CHECK(ParseBool(U"  false  ") == false);
+
+	try
+	{
+		ParseBool(U"");
+	}
+	catch (const ParseError& error)
+	{
+		CHECK(error.what() == U"ParseBool(\"\") failed");
+	}
+
+	try
+	{
+		ParseBool(U"t");
+	}
+	catch (const ParseError& error)
+	{
+		CHECK(error.what() == U"ParseBool(\"t\") failed");
+	}
+}
+
 TEST_CASE("PCG.hpp")
 {
 	{

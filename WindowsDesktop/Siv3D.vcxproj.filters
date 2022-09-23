@@ -103,6 +103,9 @@
     <Filter Include="src\Siv3D\Error">
       <UniqueIdentifier>{b08ee016-996a-4a6a-8d29-b74c21bc767f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ParseBool">
+      <UniqueIdentifier>{3ff7b241-17a7-4dd3-8788-52747b4a1103}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -300,6 +303,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Error.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ParseBool.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Optional.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ParseBool.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -370,6 +382,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Error\SivError.cpp">
       <Filter>src\Siv3D\Error</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ParseBool\SivParseBool.cpp">
+      <Filter>src\Siv3D\ParseBool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
