@@ -40,10 +40,17 @@ TEST_CASE("Platform.hpp")
 	Console << U"SIV3D_INTRINSIC_TYPE: " SIV3D_INTRINSIC_TYPE;
 	Console << U"SIV3D_COMPILER_NAME: " SIV3D_COMPILER_NAME;
 	Console << U"SIV3D_BUILD_TYPE: " SIV3D_BUILD_TYPE;
+	Console << U"SIV3D_USE_MIMALLOC: " << SIV3D_USE_MIMALLOC;
+	Console << U"Platform::HasEmbeddedResource: " << Platform::HasEmbeddedResource;
 }
 
 TEST_CASE("Version.hpp")
 {
+	Console << U"SIV3D_VERSION_MAJOR: " << SIV3D_VERSION_MAJOR;
+	Console << U"SIV3D_VERSION_MINOR: " << SIV3D_VERSION_MINOR;
+	Console << U"SIV3D_VERSION_REVISION: " << SIV3D_VERSION_REVISION;
+	Console << U"SIV3D_VERSION_PRERELEASE_TAG: " << SIV3D_VERSION_PRERELEASE_TAG;
+	Console << U"SIV3D_VERSION: " << SIV3D_VERSION;
 	Console << U"SIV3D_VERSION_SHORT_STRING: "	SIV3D_VERSION_SHORT_STRING;
 	Console << U"SIV3D_VERSION_STRING: " SIV3D_VERSION_STRING;
 	Console << U"SIV3D_VERSION_NAME: " SIV3D_VERSION_NAME;
@@ -215,9 +222,9 @@ TEST_CASE("Utility.hpp")
 	CHECK(InOpenRange(15, 0, 10) == false);
 
 	{
-		int a = rand(), b = rand();
-		Bench{}.run("utility - std", [&]() { doNotOptimizeAway(std::max(std::clamp(a, 0, 10), std::clamp(b, 0, 10))); });
-		Bench{}.run("utility - s3d", [&]() { doNotOptimizeAway(Max(Clamp(a, 0, 10), Clamp(b, 0, 10))); });
+		int32 a = rand(), b = rand();
+		Bench{}.title("Utility").run("utility - std", [&]() { doNotOptimizeAway(std::max(std::clamp(a, 0, 10), std::clamp(b, 0, 10))); });
+		Bench{}.title("Utility").run("utility - s3d", [&]() { doNotOptimizeAway(Max(Clamp(a, 0, 10), Clamp(b, 0, 10))); });
 	}
 }
 
@@ -261,61 +268,59 @@ TEST_CASE("Memory.hpp")
 	}
 
 	{
-		Bench{}.run("Malloc(16)", [&]() {
+		Bench{}.title("Memory").run("Malloc(16)", [&]() {
 			void* p = Malloc(16);
 			doNotOptimizeAway(p);
 			Free(p);
 			});
 
-		Bench{}.run("Calloc(16, 1)", [&]() {
+		Bench{}.title("Memory").run("Calloc(16, 1)", [&]() {
 			void* p = Calloc(16, 1);
 			doNotOptimizeAway(p);
 			Free(p);
 			});
 
-		Bench{}.run("AlignedAlloc(16, 16)", [&]() {
+		Bench{}.title("Memory").run("AlignedAlloc(16, 16)", [&]() {
 			void* p = AlignedAlloc(16, 16);
 			doNotOptimizeAway(p);
 			AlignedFree(p, 16);
 			});
 
-		Bench{}.run("AlignedAlloc(16, 4096)", [&]() {
+		Bench{}.title("Memory").run("AlignedAlloc(16, 4096)", [&]() {
 			void* p = AlignedAlloc(16, 4096);
 			doNotOptimizeAway(p);
 			AlignedFree(p, 4096);
 			});
-	}
-	
-	{
-		Bench{}.run("Malloc(16384)", [&]() {
+
+		Bench{}.title("Memory").run("Malloc(16384)", [&]() {
 			void* p = Malloc(16384);
 			doNotOptimizeAway(p);
 			Free(p);
 			});
 
-		Bench{}.run("Calloc(16384, 1)", [&]() {
+		Bench{}.title("Memory").run("Calloc(16384, 1)", [&]() {
 			void* p = Calloc(16384, 1);
 			doNotOptimizeAway(p);
 			Free(p);
 			});
 
-		Bench{}.run("AlignedAlloc(16384, 16)", [&]() {
+		Bench{}.title("Memory").title("Memory").run("AlignedAlloc(16384, 16)", [&]() {
 			void* p = AlignedAlloc(16384, 16);
 			doNotOptimizeAway(p);
 			AlignedFree(p, 16);
 			});
 
-		Bench{}.run("AlignedAlloc(16384, 4096)", [&]() {
+		Bench{}.title("Memory").run("AlignedAlloc(16384, 4096)", [&]() {
 			void* p = AlignedAlloc(16384, 4096);
 			doNotOptimizeAway(p);
 			AlignedFree(p, 4096);
 			});
 
-		Bench{}.run("StressTest1", [&]() {
+		Bench{}.title("Memory").run("StressTest1", [&]() {
 			doNotOptimizeAway(StressTest1());
 			});
 
-		Bench{}.run("StressTest2", [&]() {
+		Bench{}.title("Memory").run("StressTest2", [&]() {
 			doNotOptimizeAway(StressTest2());
 			});
 	}
@@ -335,12 +340,12 @@ TEST_CASE("Hash.hpp")
 		const std::string sMedium = "Hello, Siv3D!";
 		const std::string sLong = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-		Bench{}.run("std::hash - std::string short", [&]() { doNotOptimizeAway(std::hash<std::string>{}(sShort)); });
-		Bench{}.run("std::hash - std::string medium", [&]() { doNotOptimizeAway(std::hash<std::string>{}(sMedium)); });
-		Bench{}.run("std::hash - std::string long", [&]() { doNotOptimizeAway(std::hash<std::string>{}(sLong)); });
-		Bench{}.run("Hash - std::string short", [&]() { doNotOptimizeAway(Hash(sShort.data(), sShort.size())); });
-		Bench{}.run("Hash - std::string medium", [&]() { doNotOptimizeAway(Hash(sMedium.data(), sMedium.size())); });
-		Bench{}.run("Hash - std::string long", [&]() { doNotOptimizeAway(Hash(sLong.data(), sLong.size())); });
+		Bench{}.title("Hash").run("std::hash - std::string short", [&]() { doNotOptimizeAway(std::hash<std::string>{}(sShort)); });
+		Bench{}.title("Hash").run("std::hash - std::string medium", [&]() { doNotOptimizeAway(std::hash<std::string>{}(sMedium)); });
+		Bench{}.title("Hash").run("std::hash - std::string long", [&]() { doNotOptimizeAway(std::hash<std::string>{}(sLong)); });
+		Bench{}.title("Hash").run("Hash - std::string short", [&]() { doNotOptimizeAway(Hash(sShort.data(), sShort.size())); });
+		Bench{}.title("Hash").run("Hash - std::string medium", [&]() { doNotOptimizeAway(Hash(sMedium.data(), sMedium.size())); });
+		Bench{}.title("Hash").run("Hash - std::string long", [&]() { doNotOptimizeAway(Hash(sLong.data(), sLong.size())); });
 	}
 
 	{
@@ -348,12 +353,12 @@ TEST_CASE("Hash.hpp")
 		const StringView sMedium = U"Hello, Siv3D!";
 		const StringView sLong = U"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-		Bench{}.run("std::hash - u32string_view short", [&]() { doNotOptimizeAway(std::hash<std::u32string_view>{}(sShort.view())); });
-		Bench{}.run("std::hash - u32string_view medium", [&]() { doNotOptimizeAway(std::hash<std::u32string_view>{}(sMedium.view())); });
-		Bench{}.run("std::hash - u32string_view long", [&]() { doNotOptimizeAway(std::hash<std::u32string_view>{}(sLong.view())); });
-		Bench{}.run("Hash - StringView short", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sShort)); });
-		Bench{}.run("Hash - StringView medium", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sMedium)); });
-		Bench{}.run("Hash - StringView long", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sLong)); });
+		Bench{}.title("Hash").run("std::hash - u32string_view short", [&]() { doNotOptimizeAway(std::hash<std::u32string_view>{}(sShort.view())); });
+		Bench{}.title("Hash").run("std::hash - u32string_view medium", [&]() { doNotOptimizeAway(std::hash<std::u32string_view>{}(sMedium.view())); });
+		Bench{}.title("Hash").run("std::hash - u32string_view long", [&]() { doNotOptimizeAway(std::hash<std::u32string_view>{}(sLong.view())); });
+		Bench{}.title("Hash").run("Hash - StringView short", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sShort)); });
+		Bench{}.title("Hash").run("Hash - StringView medium", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sMedium)); });
+		Bench{}.title("Hash").run("Hash - StringView long", [&]() { doNotOptimizeAway(std::hash<StringView>{}(sLong)); });
 	}
 
 	{
@@ -361,9 +366,9 @@ TEST_CASE("Hash.hpp")
 		const String sMedium = U"Hello, Siv3D!";
 		const String sLong = U"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-		Bench{}.run("Hash - StringView short", [&]() { doNotOptimizeAway(std::hash<String>{}(sShort)); });
-		Bench{}.run("Hash - StringView medium", [&]() { doNotOptimizeAway(std::hash<String>{}(sMedium)); });
-		Bench{}.run("Hash - StringView long", [&]() { doNotOptimizeAway(std::hash<String>{}(sLong)); });
+		Bench{}.title("Hash").run("Hash - String short", [&]() { doNotOptimizeAway(std::hash<String>{}(sShort)); });
+		Bench{}.title("Hash").run("Hash - String medium", [&]() { doNotOptimizeAway(std::hash<String>{}(sMedium)); });
+		Bench{}.title("Hash").run("Hash - String long", [&]() { doNotOptimizeAway(std::hash<String>{}(sLong)); });
 	}
 }
 
@@ -463,21 +468,21 @@ TEST_CASE("Unicode.hpp")
 		const String ascii32Long = U"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
 
-		Bench{}.run("Unicode::WidenAscii() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::WidenAscii(asciiVeryShort)); });
-		Bench{}.run("Unicode::WidenAscii() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::WidenAscii(asciiShort)); });
-		Bench{}.run("Unicode::WidenAscii() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::WidenAscii(asciiLong)); });
+		Bench{}.title("Unicode").run("Unicode::WidenAscii() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::WidenAscii(asciiVeryShort)); });
+		Bench{}.title("Unicode").run("Unicode::WidenAscii() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::WidenAscii(asciiShort)); });
+		Bench{}.title("Unicode").run("Unicode::WidenAscii() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::WidenAscii(asciiLong)); });
 
-		Bench{}.run("Unicode::Widen() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Widen(asciiVeryShort)); });
-		Bench{}.run("Unicode::Widen() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Widen(asciiShort)); });
-		Bench{}.run("Unicode::Widen() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::Widen(asciiLong)); });
+		Bench{}.title("Unicode").run("Unicode::Widen() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Widen(asciiVeryShort)); });
+		Bench{}.title("Unicode").run("Unicode::Widen() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Widen(asciiShort)); });
+		Bench{}.title("Unicode").run("Unicode::Widen() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::Widen(asciiLong)); });
 
-		Bench{}.run("Unicode::NarrowAscii() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::NarrowAscii(ascii32VeryShort)); });
-		Bench{}.run("Unicode::NarrowAscii() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::NarrowAscii(ascii32Short)); });
-		Bench{}.run("Unicode::NarrowAscii() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::NarrowAscii(ascii32Long)); });
+		Bench{}.title("Unicode").run("Unicode::NarrowAscii() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::NarrowAscii(ascii32VeryShort)); });
+		Bench{}.title("Unicode").run("Unicode::NarrowAscii() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::NarrowAscii(ascii32Short)); });
+		Bench{}.title("Unicode").run("Unicode::NarrowAscii() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::NarrowAscii(ascii32Long)); });
 
-		Bench{}.run("Unicode::Narrow() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Narrow(ascii32VeryShort)); });
-		Bench{}.run("Unicode::Narrow() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Narrow(ascii32Short)); });
-		Bench{}.run("Unicode::Narrow() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::Narrow(ascii32Long)); });
+		Bench{}.title("Unicode").run("Unicode::Narrow() - very short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Narrow(ascii32VeryShort)); });
+		Bench{}.title("Unicode").run("Unicode::Narrow() - short (ASCII)", [&]() { doNotOptimizeAway(Unicode::Narrow(ascii32Short)); });
+		Bench{}.title("Unicode").run("Unicode::Narrow() - long (ASCII)", [&]() { doNotOptimizeAway(Unicode::Narrow(ascii32Long)); });
 	}
 }
 
@@ -502,7 +507,6 @@ TEST_CASE("Formatter.hpp")
 	CHECK(not Concept::Formattable<MyUnformattableData>);
 }
 
-
 TEST_CASE("Format.hpp")
 {
 	CHECK(Format(Smallest<int32>) == U"-2147483648");
@@ -510,7 +514,6 @@ TEST_CASE("Format.hpp")
 
 	CHECK(Format(Smallest<uint32>) == U"0");
 	CHECK(Format(Largest<uint32>) == U"4294967295");
-
 
 	CHECK(Format(0.0f) == U"0");
 	CHECK(Format(1.0f) == U"1");
@@ -545,7 +548,7 @@ TEST_CASE("PCG.hpp")
 	{
 		uint64 buffer[1000]{};
 
-		Bench{}.run("PCG64", [&]() {
+		Bench{}.title("PCG").run("PCG64", [&]() {
 			PRNG::PCG64 rng;
 
 			for (size_t i = 0; i < std::size(buffer); ++i)
@@ -556,7 +559,7 @@ TEST_CASE("PCG.hpp")
 			doNotOptimizeAway(buffer);
 			});
 
-		Bench{}.run("std::mt19937_64", [&]() {
+		Bench{}.title("PCG").run("std::mt19937_64", [&]() {
 			std::mt19937_64 rng;
 
 			for (size_t i = 0; i < std::size(buffer); ++i)
