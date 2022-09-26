@@ -29,10 +29,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Number.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ParseBool.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PCG.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ScopeGuard.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Unicode.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Utility.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\YesNo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Error.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Format.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FormatData.hpp" />
@@ -44,9 +46,11 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ParseBool.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PCG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Platform.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScopeGuard.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\String.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Types.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Uncopyable.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Unicode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Utility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Version.hpp" />
@@ -54,6 +58,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Libraries.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\MinWindows.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Windows.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\YesNo.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\doctest\doctest.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h" />

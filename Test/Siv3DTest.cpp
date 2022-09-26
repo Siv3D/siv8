@@ -618,7 +618,7 @@ TEST_CASE("ParseBool.hpp")
 
 	try
 	{
-		ParseBool(U"");
+		(void)ParseBool(U"");
 	}
 	catch (const ParseError& error)
 	{
@@ -627,7 +627,7 @@ TEST_CASE("ParseBool.hpp")
 
 	try
 	{
-		ParseBool(U"t");
+		(void)ParseBool(U"t");
 	}
 	catch (const ParseError& error)
 	{

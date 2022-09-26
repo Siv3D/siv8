@@ -55,13 +55,13 @@
 
 //// プレースホルダー | Place holder
 //# include <Siv3D/PlaceHolder.hpp>
-//
-//// コピー禁止 Mixin | Non-copyable mixin
-//# include <Siv3D/Uncopyable.hpp>
-//
-//// YesNo タグ | Yes/No tag
-//# include <Siv3D/YesNo.hpp>
-//
+
+// コピー禁止 Mixin | Non-copyable mixin
+# include <Siv3D/Uncopyable.hpp>
+
+// YesNo タグ | Yes/No tag
+# include <Siv3D/YesNo.hpp>
+
 //// 定義済み YesNo タグ | Predefined Yes/No tag
 //# include <Siv3D/PredefinedYesNo.hpp>
 //
@@ -97,10 +97,10 @@
 //
 //// 無限リスト | Infinite list
 //# include <Siv3D/InfiniteList.hpp>
-//
-//// スコープ・ガード | Scope guard
-//# include <Siv3D/ScopeGuard.hpp>
-//
+
+// スコープ・ガード | Scope guard
+# include <Siv3D/ScopeGuard.hpp>
+
 //// ユニーク・リソース | Unique resource
 //# include <Siv3D/UniqueResource.hpp>
 
