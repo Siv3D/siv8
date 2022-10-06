@@ -9,7 +9,10 @@
 //
 //-----------------------------------------------
 
+# include <iostream>
 # include <Siv3D/Error.hpp>
+# include <Siv3D/String.hpp>
+# include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
@@ -31,5 +34,28 @@ namespace s3d
 		{
 			return{};
 		}
+	}
+
+	std::ostream& operator <<(std::ostream& os, const Error& value)
+	{
+		return (os << '[' << value.type() << "] " << value.what().narrow());
+	}
+
+	std::wostream& operator <<(std::wostream& os, const Error& value)
+	{
+		return (os << L'[' << value.type() << L"] " << value.what().toWstr());
+	}
+
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Error& value)
+	{
+		return os << (U'[' + value.type() + U"] " + value.what());
+	}
+
+	void Formatter(FormatData& formatData, const Error& value)
+	{
+		formatData.string.append(U"["_sv);
+		formatData.string.append(value.type());
+		formatData.string.append(U"] "_sv);
+		formatData.string.append(value.what());
 	}
 }

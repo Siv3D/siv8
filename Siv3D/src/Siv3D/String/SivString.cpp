@@ -232,19 +232,19 @@ namespace s3d
 	//
 	//////////////////////////////////////////////////
 
-	std::ostream& operator <<(std::ostream& output, const String& value)
+	std::ostream& operator <<(std::ostream& os, const String& value)
 	{
-		return (output << value.narrow());
+		return (os << value.narrow());
 	}
 
-	std::wostream& operator <<(std::wostream& output, const String& value)
+	std::wostream& operator <<(std::wostream& os, const String& value)
 	{
-		return (output << value.toWstr());
+		return (os << value.toWstr());
 	}
 
-	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const String& value)
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const String& value)
 	{
-		return output.write(value.data(), value.size());
+		return os.write(value.data(), value.size());
 	}
 
 	//////////////////////////////////////////////////
@@ -253,20 +253,20 @@ namespace s3d
 	//
 	//////////////////////////////////////////////////
 
-	std::istream& operator >>(std::istream& input, String& value)
+	std::istream& operator >>(std::istream& is, String& value)
 	{
 		std::string s;
-		input >> s;
+		is >> s;
 		value = Unicode::Widen(s);
-		return input;
+		return is;
 	}
 
-	std::wistream& operator >>(std::wistream& input, String& value)
+	std::wistream& operator >>(std::wistream& is, String& value)
 	{
 		std::wstring s;
-		input >> s;
+		is >> s;
 		value = Unicode::FromWstring(s);
-		return input;
+		return is;
 	}
 
 	//////////////////////////////////////////////////

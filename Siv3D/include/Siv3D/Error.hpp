@@ -39,11 +39,11 @@ namespace s3d
 		[[nodiscard]]
 		virtual StringView type() const noexcept;
 
-		friend std::ostream& operator <<(std::ostream& output, const Error& value);
+		friend std::ostream& operator <<(std::ostream& os, const Error& value);
 
-		friend std::wostream& operator <<(std::wostream& output, const Error& value);
+		friend std::wostream& operator <<(std::wostream& os, const Error& value);
 
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const Error& value);
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Error& value);
 
 		friend void Formatter(FormatData& formatData, const Error& value);
 

@@ -554,15 +554,15 @@ namespace s3d
 
 
 
-		friend std::ostream& operator <<(std::ostream& output, const String& value);
+		friend std::ostream& operator <<(std::ostream& os, const String& value);
 
-		friend std::wostream& operator <<(std::wostream& output, const String& value);
+		friend std::wostream& operator <<(std::wostream& os, const String& value);
 
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const String& value);
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const String& value);
 
-		friend std::istream& operator >>(std::istream& input, String& value);
+		friend std::istream& operator >>(std::istream& is, String& value);
 
-		friend std::wistream& operator >>(std::wistream& input, String& value);
+		friend std::wistream& operator >>(std::wistream& is, String& value);
 
 
 		friend void Formatter(FormatData& formatData, const String& s);

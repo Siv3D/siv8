@@ -122,8 +122,8 @@
 //
 //////////////////////////////////////////////////
 
-//// Null でないポインタ | Non-null pointer
-//# include <Siv3D/NonNull.hpp>
+// Null でないポインタ | Non-null pointer
+# include <Siv3D/NonNull.hpp>
 
 // メモリアロケーション | Memory allocation
 # include <Siv3D/Memory.hpp>
@@ -133,13 +133,13 @@
 //	Optional クラス | Optional
 //
 //////////////////////////////////////////////////
-//
-//// 無効値 | None_t
-//# include <Siv3D/None.hpp>
-//
-//// 無効値を持つ値 | Optional
-//# include <Siv3D/Optional.hpp>
-//
+
+// 無効値 | None_t
+# include <Siv3D/None.hpp>
+
+// 無効値を持つ値 | Optional
+# include <Siv3D/Optional.hpp>
+
 //// 特に指定しないことを表す無効値 | Representation of an unspecified value
 //# include <Siv3D/Unspecified.hpp>
 
@@ -369,11 +369,11 @@
 //////////////////////////////////////////////////
 
 
+// 非決定的乱数生成器 | Non-deterministic random number generator
+# include <Siv3D/HardwareRNG.hpp>
+
 # include <Siv3D/PCG.hpp>
 
-//// 非決定的乱数生成器 | Non-deterministic random number generator
-//# include <Siv3D/HardwareRNG.hpp>
-//
 //// 擬似乱数発生器 | Pseudorandom number generator
 //# include <Siv3D/PRNG.hpp>
 //

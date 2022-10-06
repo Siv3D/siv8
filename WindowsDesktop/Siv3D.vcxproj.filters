@@ -106,6 +106,9 @@
     <Filter Include="src\Siv3D\ParseBool">
       <UniqueIdentifier>{3ff7b241-17a7-4dd3-8788-52747b4a1103}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\None">
+      <UniqueIdentifier>{bc95b6d5-84e2-4f86-bb21-30d19bd68e6a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -327,6 +330,24 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ScopeGuard.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Random.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\HardwareRNG.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\HardwareRNG.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NonNull.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\NonNull.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\None.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -400,6 +421,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBool\SivParseBool.cpp">
       <Filter>src\Siv3D\ParseBool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\None\SivNone.cpp">
+      <Filter>src\Siv3D\None</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
