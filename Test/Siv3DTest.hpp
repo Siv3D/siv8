@@ -11,7 +11,5 @@
 
 # pragma once
 # include <Siv3D.hpp>
-using namespace s3d;
-//using namespace std::literals;
 
 void RunTest();
