@@ -25,10 +25,21 @@
     <Filter Include="include\Siv3D">
       <UniqueIdentifier>{df8411fd-f669-4b9e-8247-86d6cc9ea89e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop">
+      <UniqueIdentifier>{51bb9530-d733-4a66-9236-ac6e206ce4f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D">
+      <UniqueIdentifier>{a876d0d3-ce85-45c9-b6c2-6f8e79238fbf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
       <Filter>include</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

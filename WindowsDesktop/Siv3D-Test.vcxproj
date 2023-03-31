@@ -61,15 +61,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Intermediate\$(ProjectName)\Debug\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Debug\Intermediate\</IntDir>
-    <IncludePath>$(SolutionDir)\..\Siv3D\include;$(SolutionDir)\..\Siv3D\include\ThirdParty;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\..\Siv3D\lib\Windows;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\Siv3D\include;$(SolutionDir)..\Siv3D\include\ThirdParty;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Siv3D\lib\Windows;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)(debug)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
-    <IncludePath>$(SolutionDir)\..\Siv3D\include;$(SolutionDir)\..\Siv3D\include\ThirdParty;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\..\Siv3D\lib\Windows;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\Siv3D\include;$(SolutionDir)..\Siv3D\include\ThirdParty;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Siv3D\lib\Windows;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -80,9 +80,10 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,6 +93,9 @@
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(SolutionDir)App\"</Command>
     </PostBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>codepage.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -107,6 +111,7 @@
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -118,6 +123,9 @@
     <PostBuildEvent>
       <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(SolutionDir)App\"</Command>
     </PostBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>codepage.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
