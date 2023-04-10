@@ -31,15 +31,96 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D">
       <UniqueIdentifier>{a876d0d3-ce85-45c9-b6c2-6f8e79238fbf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Siv3D\Windows">
+      <UniqueIdentifier>{79a8ad77-0f46-4fe6-b5e4-67478d644055}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Console">
+      <UniqueIdentifier>{84b759db-1d58-4aee-8524-6fc143841374}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ConsoleBuffer">
+      <UniqueIdentifier>{566916c9-6328-4608-99c8-ccbd63e8692f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Engine">
+      <UniqueIdentifier>{5270b570-d1bb-4e7c-b63e-2dc0c3e25f36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Console">
+      <UniqueIdentifier>{7dfa73e3-847b-4565-a751-dca7c199a96a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Siv3D\detail">
+      <UniqueIdentifier>{08190171-0a02-476b-a8be-f4b3f03f5f90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Windows\ComPtr.hpp">
+      <Filter>include\Siv3D\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Libraries.hpp">
+      <Filter>include\Siv3D\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Windows\MinWindows.hpp">
+      <Filter>include\Siv3D\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Windows.hpp">
+      <Filter>include\Siv3D\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Platform.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CompilerVersion.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Version.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DComponent.hpp">
+      <Filter>src\Siv3D\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.hpp">
+      <Filter>src\Siv3D\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Console\IConsole.hpp">
+      <Filter>src\Siv3D\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Common.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Console.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Console.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConsoleBuffer.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp">
+      <Filter>src\Siv3D\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ConsoleBuffer\SivConsoleBuffer.cpp">
+      <Filter>src\Siv3D\ConsoleBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp">
+      <Filter>src\Siv3D\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp">
+      <Filter>src\Siv3D\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Console</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

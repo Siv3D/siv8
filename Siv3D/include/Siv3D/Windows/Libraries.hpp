@@ -1,0 +1,29 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+# include "../Platform.hpp"
+
+# if (SIV3D_PLATFORM(WINDOWS) && !defined(SIV3D_LIBRARY_BUILD))
+
+	// デバッグビルドの場合、ライブラリ名にサフィックスを付ける
+	# if SIV3D_BUILD(DEBUG)
+	#	define SIV3D_DEBUG_LIB_SUFFIX(s) #s
+	# else
+	#	define SIV3D_DEBUG_LIB_SUFFIX(s)
+	# endif
+
+	# pragma comment (linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+	# pragma comment (lib, "siv3d/Siv3D" SIV3D_DEBUG_LIB_SUFFIX(_d))
+
+	# undef SIV3D_DEBUG_LIB_SUFFIX
+
+# endif // (SIV3D_PLATFORM(WINDOWS) && !defined(SIV3D_LIBRARY_BUILD))

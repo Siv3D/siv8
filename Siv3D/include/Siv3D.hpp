@@ -29,5 +29,27 @@
 
 # pragma once 
 
-// Siv3D.hpp をインクルードすると定義されるマクロ
+// Siv3D.hpp をインクルードすると定義されるマクロ | Macro defined when including Siv3D.hpp
 # define SIV3D_INCLUDED
+
+
+# include <Siv3D/Platform.hpp>
+# include <Siv3D/CompilerVersion.hpp>
+# include <Siv3D/Version.hpp>
+
+# include <Siv3D/ConsoleBuffer.hpp>
+# include <Siv3D/Console.hpp>
+
+# if !defined(SIV3D_LIBRARY_BUILD) && SIV3D_PLATFORM(WINDOWS)
+
+	// Windows 用の静的リンクライブラリ | Static link libraries for Windows
+	# include <Siv3D/Windows/Libraries.hpp>
+
+# endif
+
+# if (!defined(SIV3D_LIBRARY_BUILD) && !defined(NO_S3D_USING))
+
+	using namespace s3d;
+	using namespace std::literals;
+
+# endif
