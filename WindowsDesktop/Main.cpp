@@ -6,6 +6,10 @@ void Main()
 	RunTest();
 	const char s[] = "あ";
 
+	std::string s2;
+
+	Clamp(s2, s2, s2);
+
 	std::cout << std::size(s) << '\n';
 	std::cout << "日本語🐈日本語\n";
 

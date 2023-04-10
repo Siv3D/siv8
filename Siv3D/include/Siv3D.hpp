@@ -34,6 +34,10 @@
 # include <Siv3D/CompilerVersion.hpp>
 # include <Siv3D/Version.hpp>
 
+# include <Siv3D/Types.hpp>
+# include <Siv3D/Concepts.hpp>
+# include <Siv3D/Utility.hpp>
+
 # include <Siv3D/ConsoleBuffer.hpp>
 # include <Siv3D/Console.hpp>
 

@@ -360,26 +360,3 @@
 	# define SIV3D_DISABLE_GCC_WARNINGS_POP()
 
 # endif
-
-//////////////////////////////////////////////////
-//
-//	実行ファイル埋め込みリソース | Embedded Resource
-//
-//	bool Platform::HasEmbeddedResource;
-// 
-//////////////////////////////////////////////////
-
-namespace s3d::Platform
-{
-# if SIV3D_PLATFORM(WINDOWS)
-
-	/// @brief ファイルを実行ファイルに埋め込み可能であるか | Whether the file can be embedded in the executable file
-	inline constexpr bool HasEmbeddedResource = true;
-
-# else // macOS, Linux
-
-	/// @brief ファイルを実行ファイルに埋め込み可能であるか | Whether the file can be embedded in the executable file
-	inline constexpr bool HasEmbeddedResource = false;
-
-# endif
-}

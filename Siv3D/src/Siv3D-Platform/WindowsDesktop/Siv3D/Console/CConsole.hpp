@@ -31,7 +31,7 @@ namespace s3d
 
 		FILE* m_fp = nullptr;
 
-		unsigned m_oldCodePage = 0;
+		uint32 m_oldCodePage = 0;
 
 		bool m_isOpen = false;
 	};
