@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include "YesNo.hpp"
 
 namespace s3d
 {

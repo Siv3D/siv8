@@ -30,13 +30,22 @@
 # pragma once 
 # define SIV3D_INCLUDED
 
+# include <Siv3D/Version.hpp>
 # include <Siv3D/Platform.hpp>
 # include <Siv3D/CompilerVersion.hpp>
-# include <Siv3D/Version.hpp>
-
 # include <Siv3D/Types.hpp>
 # include <Siv3D/Concepts.hpp>
+# include <Siv3D/Uncopyable.hpp>
+# include <Siv3D/YesNo.hpp>
+# include <Siv3D/PredefinedYesNo.hpp>
+# include <Siv3D/NamedParameter.hpp>
+# include <Siv3D/PredefinedNamedParameter.hpp>
+//# include <Siv3D/Indexed.hpp>
 # include <Siv3D/Utility.hpp>
+//# include <Siv3D/Endian.hpp>
+//# include <Siv3D/Byte.hpp>
+//# include <Siv3D/Hash.hpp>
+
 
 # include <Siv3D/ConsoleBuffer.hpp>
 # include <Siv3D/Console.hpp>

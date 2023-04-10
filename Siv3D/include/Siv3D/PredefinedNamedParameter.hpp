@@ -10,8 +10,9 @@
 //-----------------------------------------------
 
 # pragma once
+# include "NamedParameter.hpp"
 
-namespace s3d
+namespace s3d::Arg
 {
 
 }

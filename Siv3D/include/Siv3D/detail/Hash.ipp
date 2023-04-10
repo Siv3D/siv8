@@ -13,5 +13,9 @@
 
 namespace s3d
 {
-
+	template <Concept::TriviallyCopyable TriviallyCopyable>
+	inline uint64 Hash(const TriviallyCopyable& data) noexcept
+	{
+		return Hash(std::addressof(data), sizeof(data));
+	}
 }
