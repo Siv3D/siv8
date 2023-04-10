@@ -3,8 +3,7 @@
 
 void Main()
 {
-	Console.open();
-
+	RunTest();
 	const char s[] = "あ";
 
 	std::cout << std::size(s) << '\n';

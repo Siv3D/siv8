@@ -49,6 +49,12 @@
     <Filter Include="include\Siv3D\detail">
       <UniqueIdentifier>{08190171-0a02-476b-a8be-f4b3f03f5f90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\nanobench">
+      <UniqueIdentifier>{a23b1a70-8468-4c52-94c6-53bb01442644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\doctest">
+      <UniqueIdentifier>{2cf54ab0-bbfa-4808-bc12-56057da7de6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -101,6 +107,12 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConsoleBuffer.ipp">
       <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h">
+      <Filter>include\ThirdParty\nanobench</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\doctest\doctest.h">
+      <Filter>include\ThirdParty\doctest</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

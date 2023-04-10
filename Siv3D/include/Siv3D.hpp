@@ -28,10 +28,7 @@
 //----------------------------------------------------------------------------------------
 
 # pragma once 
-
-// Siv3D.hpp をインクルードすると定義されるマクロ | Macro defined when including Siv3D.hpp
 # define SIV3D_INCLUDED
-
 
 # include <Siv3D/Platform.hpp>
 # include <Siv3D/CompilerVersion.hpp>
