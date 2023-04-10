@@ -57,6 +57,7 @@ void Main()
 	const char s[] = "あ";
 
 	std::cout << std::size(s) << '\n';
+	std::cout << "日本語🐈日本語\n";
 
 	std::system("pause");
 
