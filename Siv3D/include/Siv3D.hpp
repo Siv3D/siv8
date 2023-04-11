@@ -56,7 +56,7 @@
 //# include <Siv3D/SIMD.hpp>
 
 //# include <Siv3D/NonNull.hpp>
-//# include <Siv3D/Memory.hpp>
+# include <Siv3D/Memory.hpp>
 //# include <Siv3D/Allocator.hpp>
 
 # include <Siv3D/Optional.hpp>
