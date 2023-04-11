@@ -13,9 +13,21 @@
 
 namespace s3d
 {
-	template <Concept::TriviallyCopyable TriviallyCopyable>
-	inline uint64 Hash(const TriviallyCopyable& data) noexcept
+	namespace wyhash
 	{
-		return Hash(std::addressof(data), sizeof(data));
+		template <Concept::TriviallyCopyable TriviallyCopyable>
+		inline uint64 Hash(const TriviallyCopyable& data) noexcept
+		{
+			return Hash(std::addressof(data), sizeof(data));
+		}
+	}
+
+	inline namespace xxHash3
+	{
+		template <Concept::TriviallyCopyable TriviallyCopyable>
+		inline uint64 Hash(const TriviallyCopyable& data) noexcept
+		{
+			return Hash(std::addressof(data), sizeof(data));
+		}
 	}
 }

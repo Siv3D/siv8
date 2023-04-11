@@ -44,7 +44,7 @@
 # include <Siv3D/Utility.hpp>
 //# include <Siv3D/Endian.hpp>
 //# include <Siv3D/Byte.hpp>
-//# include <Siv3D/Hash.hpp>
+# include <Siv3D/Hash.hpp>
 
 
 # include <Siv3D/ConsoleBuffer.hpp>

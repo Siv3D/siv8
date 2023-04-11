@@ -61,6 +61,9 @@
     <Filter Include="src\Siv3D\Hash">
       <UniqueIdentifier>{b932708b-3b68-4857-8b7e-1c9ee865dcf6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\xxHash">
+      <UniqueIdentifier>{df24fc8d-f5f3-4875-83f5-8e212a6e63c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -158,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp">
       <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\xxHash\xxhash.h">
+      <Filter>src\ThirdParty\xxHash</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
