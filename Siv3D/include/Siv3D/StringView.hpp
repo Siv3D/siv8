@@ -307,6 +307,8 @@ namespace s3d
 
 		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const StringView& value);
 
+		// friend void Formatter(FormatData& formatData, const StringView& s);
+
 	private:
 
 		string_view_type m_view;

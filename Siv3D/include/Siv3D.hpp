@@ -77,8 +77,8 @@
 
 # include <Siv3D/Char.hpp>
 # include <Siv3D/StringView.hpp>
-//# include <Siv3D/String.hpp>
-//# include <Siv3D/Unicode.hpp>
+# include <Siv3D/String.hpp>
+# include <Siv3D/Unicode.hpp>
 //# include <Siv3D/UnicodeConverter.hpp>
 //# include <Siv3D/LetterCase.hpp>
 //# include <Siv3D/MatchResults.hpp>

@@ -64,6 +64,12 @@
     <Filter Include="src\ThirdParty\xxHash">
       <UniqueIdentifier>{df24fc8d-f5f3-4875-83f5-8e212a6e63c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Unicode">
+      <UniqueIdentifier>{5496d209-7288-42a3-868d-18fb72808c21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\simdutf">
+      <UniqueIdentifier>{73056523-ab1a-4082-8f79-7a9843163b02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -180,6 +186,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\String.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Unicode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Unicode.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.h">
+      <Filter>src\ThirdParty\simdutf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -202,6 +223,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Hash\SivHash.cpp">
       <Filter>src\Siv3D\Hash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp">
+      <Filter>src\Siv3D\Unicode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp">
+      <Filter>src\ThirdParty\simdutf</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
