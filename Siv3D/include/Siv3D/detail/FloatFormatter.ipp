@@ -10,6 +10,16 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D.hpp>
 
-void RunTest();
+namespace s3d
+{
+	inline const char* FloatFormatter::data() const noexcept
+	{
+		return m_view.data();
+	}
+
+	inline size_t FloatFormatter::size() const noexcept
+	{
+		return m_view.size();
+	}
+}

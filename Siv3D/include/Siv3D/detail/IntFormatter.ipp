@@ -10,6 +10,16 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D.hpp>
 
-void RunTest();
+namespace s3d
+{
+	inline const char* IntFormatter::data() const noexcept
+	{
+		return m_str;
+	}
+
+	inline size_t IntFormatter::size() const noexcept
+	{
+		return static_cast<size_t>(m_buffer - m_str + BufferSize - 1);
+	}
+}

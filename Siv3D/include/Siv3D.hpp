@@ -88,9 +88,11 @@
 //# include <Siv3D/FormatBool.hpp>
 //# include <Siv3D/FormatInt.hpp>
 //# include <Siv3D/FormatFloat.hpp>
+# include <Siv3D/IntFormatter.hpp>
+# include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/Formatter.hpp>
-//# include <Siv3D/Format.hpp>
+# include <Siv3D/Format.hpp>
 //# include <Siv3D/FormatLiteral.hpp>
 //# include <Siv3D/FormatUtility.hpp>
 

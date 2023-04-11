@@ -5,5 +5,7 @@ void Main()
 {
 	RunTest();
 
+	Console << Format(1.2345);
+
 	std::system("pause");
 }
