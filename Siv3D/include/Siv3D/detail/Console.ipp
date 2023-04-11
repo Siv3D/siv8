@@ -15,31 +15,31 @@ namespace s3d
 {
 	namespace detail
 	{
-		//template <Concept::Formattable... Args>
-		//inline void Console_impl::write(const Args&... args) const
-		//{
-		//	return write(Format(args...));
-		//}
+		template <Concept::Formattable... Args>
+		inline void Console_impl::write(const Args&... args) const
+		{
+			return write(Format(args...));
+		}
 
-		//template <Concept::Formattable... Args>
-		//inline void Console_impl::writeln(const Args&... args) const
-		//{
-		//	return write(Format(args..., U'\n'));
-		//}
+		template <Concept::Formattable... Args>
+		inline void Console_impl::writeln(const Args&... args) const
+		{
+			return write(Format(args..., U'\n'));
+		}
 
-		//template <Concept::Formattable... Args>
-		//inline void Console_impl::operator ()(const Args&... args) const
-		//{
-		//	return writeln(args...);
-		//}
+		template <Concept::Formattable... Args>
+		inline void Console_impl::operator ()(const Args&... args) const
+		{
+			return writeln(args...);
+		}
 
-		//template <Concept::Formattable Formattable>
-		//inline ConsoleBuffer Console_impl::operator <<(const Formattable& value) const
-		//{
-		//	ConsoleBuffer buf;
-		//	Formatter(*buf.formatData, value);
-		//	return buf;
-		//}
+		template <Concept::Formattable Formattable>
+		inline ConsoleBuffer Console_impl::operator <<(const Formattable& value) const
+		{
+			ConsoleBuffer buf;
+			Formatter(*buf.formatData, value);
+			return buf;
+		}
 
 		//template <class Type>
 		//inline Type Console_impl::read() const

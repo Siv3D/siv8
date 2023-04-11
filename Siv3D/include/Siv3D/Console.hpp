@@ -39,29 +39,29 @@ namespace s3d
 
 			void operator ()(const String& s) const;
 
-			//template <Concept::Formattable... Args>
-			//void write(const Args&... args) const;
+			template <Concept::Formattable... Args>
+			void write(const Args&... args) const;
 
-			//// Format できない値が Console.write() に渡されたときに発生するエラーです
-			//template <class... Args>
-			//void write(const Args&... args) const = delete;
+			// Format できない値が Console.write() に渡されたときに発生するエラーです
+			template <class... Args>
+			void write(const Args&... args) const = delete;
 
-			//template <Concept::Formattable... Args>
-			//void writeln(const Args&... args) const;
+			template <Concept::Formattable... Args>
+			void writeln(const Args&... args) const;
 
-			//// Format できない値が Console.writeln() に渡されたときに発生するエラーです
-			//template <class... Args>
-			//void writeln(const Args&... args) const = delete;
+			// Format できない値が Console.writeln() に渡されたときに発生するエラーです
+			template <class... Args>
+			void writeln(const Args&... args) const = delete;
 
-			//template <Concept::Formattable... Args>
-			//void operator ()(const Args&... args) const;
+			template <Concept::Formattable... Args>
+			void operator ()(const Args&... args) const;
 
-			//// Format できない値が Console() に渡されたときに発生するエラーです
-			//template <class... Args>
-			//void operator ()(const Args&... args) const = delete;
+			// Format できない値が Console() に渡されたときに発生するエラーです
+			template <class... Args>
+			void operator ()(const Args&... args) const = delete;
 
-			//template <Concept::Formattable Formattable>
-			//ConsoleBuffer operator <<(const Formattable& value) const;
+			template <Concept::Formattable Formattable>
+			ConsoleBuffer operator <<(const Formattable& value) const;
 
 			ConsoleBuffer operator <<(const char32* s) const;
 

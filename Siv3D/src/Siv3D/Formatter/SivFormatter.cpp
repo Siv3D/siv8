@@ -57,12 +57,14 @@ namespace s3d
 	void Formatter(FormatData& formatData, const int32 value)
 	{
 		const IntFormatter buffer{ value };
+		
 		formatData.string.append(buffer.data(), (buffer.data() + buffer.size()));
 	}
 
 	void Formatter(FormatData& formatData, const uint32 value)
 	{
 		const IntFormatter buffer{ value };
+		
 		formatData.string.append(buffer.data(), (buffer.data() + buffer.size()));
 	}
 
@@ -93,12 +95,14 @@ namespace s3d
 	void Formatter(FormatData& formatData, const long long value)
 	{
 		const IntFormatter buffer{ static_cast<int64>(value) };
+		
 		formatData.string.append(buffer.data(), (buffer.data() + buffer.size()));
 	}
 
 	void Formatter(FormatData& formatData, const unsigned long long value)
 	{
 		const IntFormatter buffer{ static_cast<uint64>(value) };
+		
 		formatData.string.append(buffer.data(), (buffer.data() + buffer.size()));
 	}
 
@@ -160,53 +164,16 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const std::strong_ordering value)
 	{
-		if (std::is_lt(value))
-		{
-			formatData.string.append(LtS);
-		}
-		else if (std::is_gt(value))
-		{
-			formatData.string.append(GtS);
-		}
-		else
-		{
-			formatData.string.append(EqS);
-		}
+		Formatter(formatData, static_cast<std::weak_ordering>(value));
 	}
 
 	void Formatter(FormatData& formatData, const std::weak_ordering value)
 	{
-		if (std::is_lt(value))
-		{
-			formatData.string.append(LtS);
-		}
-		else if (std::is_gt(value))
-		{
-			formatData.string.append(GtS);
-		}
-		else
-		{
-			formatData.string.append(EqS);
-		}
+		formatData.string.append(std::is_lt(value) ? LtS : std::is_gt(value) ? GtS : EqS);
 	}
 
 	void Formatter(FormatData& formatData, const std::partial_ordering value)
 	{
-		if (std::is_lt(value))
-		{
-			formatData.string.append(LtS);
-		}
-		else if (std::is_gt(value))
-		{
-			formatData.string.append(GtS);
-		}
-		else if (std::is_eq(value))
-		{
-			formatData.string.append(EqS);
-		}
-		else
-		{
-			formatData.string.append(UnS);
-		}
+		formatData.string.append(std::is_lt(value) ? LtS : std::is_gt(value) ? GtS : std::is_eq(value) ? EqS : UnS);
 	}
 }
