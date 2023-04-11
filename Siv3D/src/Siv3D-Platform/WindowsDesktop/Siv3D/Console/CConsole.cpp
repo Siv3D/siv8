@@ -36,6 +36,7 @@ namespace s3d
 		m_oldCodePage = ::GetConsoleOutputCP();
 		::SetConsoleOutputCP(CP_UTF8);
 		
+		::setlocale(LC_ALL, ".utf8");
 		::freopen_s(&m_fp, "CONIN$",  "r", stdin);
 		::freopen_s(&m_fp, "CONOUT$", "w", stdout);
 		::freopen_s(&m_fp, "CONOUT$", "w", stderr);

@@ -54,11 +54,7 @@ namespace s3d
 		[[nodiscard]]
 		String WidenAscii(std::string_view asciiText);
 
-		/// @brief UTF-8 文字列を String に変換します。 | Converts a UTF-8 string to String.
-		/// @param s 変換する文字列 | The string to convert
-		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
-		/// @remark この関数は `FromUTF8()` と同じです。| This function is the same as `FromUTF8()`.
-		[[nodiscard]]
+		[[deprecated("Use StringView::FromUTF8() instead")]]
 		String Widen(std::string_view s);
 
 		/// @brief ワイド文字列を String に変換します。 | Converts a wide string to String.
@@ -91,11 +87,7 @@ namespace s3d
 		[[nodiscard]]
 		std::string NarrowAscii(StringView asciiText);
 
-		/// @brief String を std::string に変換します。 | Converts String to std::string.
-		/// @param s 変換する文字列 | The string to convert
-		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
-		/// @remark この関数は `ToUTF8()` と同じです。 | This function is the same as `ToUTF8()`.
-		[[nodiscard]]
+		[[deprecated("Use StringView::ToUTF8() instead")]]
 		std::string Narrow(StringView s);
 
 		/// @brief String を std::wstring に変換します。 | Converts String to std::wstring.

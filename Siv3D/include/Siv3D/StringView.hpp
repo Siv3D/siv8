@@ -13,6 +13,7 @@
 # include <string>
 # include <iterator>
 # include "Common.hpp"
+# include "Hash.hpp"
 
 namespace s3d
 {
@@ -271,20 +272,18 @@ namespace s3d
 		[[nodiscard]]
 		constexpr size_t lastIndexNotOfAny(const value_type* anyof, size_t pos = 0) const noexcept;
 
-		/// @brief 文字列を std::string に変換します。
-		/// @return 変換された文字列
-		[[nodiscard]]
+		[[deprecated("Use StringView::toUTF8() instead")]]
 		std::string narrow() const;
-
-		/// @brief 文字列を std::wstring に変換します。
-		/// @return 変換された文字列
-		[[nodiscard]]
-		std::wstring toWstr() const;
 
 		/// @brief 文字列を UTF-8 文字列に変換します。
 		/// @return 変換された文字列
 		[[nodiscard]]
 		std::string toUTF8() const;
+
+		/// @brief 文字列を std::wstring に変換します。
+		/// @return 変換された文字列
+		[[nodiscard]]
+		std::wstring toWstr() const;
 
 		/// @brief 文字列のハッシュを返します。
 		/// @return 文字列のハッシュ

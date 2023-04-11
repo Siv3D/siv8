@@ -31,13 +31,13 @@ namespace s3d
 			return ::wyhash(data, size, seed, DefaultHashSecret);
 		}
 
-		uint64 Hash(const void* data, const size_t size, const uint64 seed, const uint64* secret) noexcept
+		uint64 Hash(const void* data, const size_t size, const uint64 seed, const uint64(&secret)[4]) noexcept
 		{
 			return ::wyhash(data, size, seed, secret);
 		}
 	}
 
-	inline namespace xxHash3
+	namespace xxHash3
 	{
 		uint64 Hash(const void* data, const size_t size) noexcept
 		{
@@ -49,7 +49,7 @@ namespace s3d
 			return SIV3D_XXH3_64bits_withSeed(data, size, seed);
 		}
 
-		uint64 Hash(const void* data, const size_t size, const uint64 seed, const uint64* secret) noexcept
+		uint64 Hash(const void* data, const size_t size, const uint64 seed, const uint64(&secret)[4]) noexcept
 		{
 			return SIV3D_XXH3_64bits_withSecretandSeed(data, size, secret, (sizeof(uint64) * 4), seed);
 		}

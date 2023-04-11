@@ -354,14 +354,19 @@ namespace s3d
 		return m_view.find_last_not_of(anyof, pos);
 	}
 
+	inline uint64 StringView::hash() const noexcept
+	{
+		return Hash(m_view.data(), size_bytes());
+	}
+
 	constexpr void swap(StringView& a, StringView& b) noexcept
 	{
 		a.swap(b);
 	}
 
-	inline namespace Literals
+	namespace Literals
 	{
-		inline namespace StringViewLiterals
+		namespace StringViewLiterals
 		{
 			constexpr StringView operator ""_sv(const char32_t* s, const size_t length) noexcept
 			{

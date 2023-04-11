@@ -41,7 +41,7 @@ namespace s3d
 		/// @param secret シークレット値 | Secret value
 		/// @remark secret は 4 つの uint64 値の配列でなければなりません。 | secret must be an array of 4 uint64 values.
 		/// @return ハッシュ値 | Hash value
-		uint64 Hash(const void* data, size_t size, uint64 seed, const uint64* secret) noexcept;
+		uint64 Hash(const void* data, size_t size, uint64 seed, const uint64(&secret)[4]) noexcept;
 
 		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
 		/// @tparam TriviallyCopyable TriviallyCopyable 型 | TriviallyCopyable type
@@ -73,7 +73,7 @@ namespace s3d
 		/// @param secret シークレット値 | Secret value
 		/// @remark secret は 4 つの uint64 値の配列でなければなりません。 | secret must be an array of 4 uint64 values.
 		/// @return ハッシュ値 | Hash value
-		uint64 Hash(const void* data, size_t size, uint64 seed, const uint64* secret) noexcept;
+		uint64 Hash(const void* data, size_t size, uint64 seed, const uint64(&secret)[4]) noexcept;
 
 		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
 		/// @tparam TriviallyCopyable TriviallyCopyable 型 | TriviallyCopyable type

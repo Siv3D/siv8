@@ -97,6 +97,25 @@ namespace s3d
 			}
 		}
 
+		String FromWstring(const std::wstring_view s)
+		{
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			static_assert(sizeof(wchar_t) == 2);
+
+			const char16* pSrc = static_cast<const char16*>(static_cast<const void*>(s.data()));
+
+			return FromUTF16(std::u16string_view(pSrc, s.size()));
+
+		# else
+
+			static_assert(sizeof(wchar_t) == 4);
+
+			return String(s.begin(), s.end());
+
+		# endif
+		}
+
 		String FromUTF8(const std::string_view s)
 		{
 			const size_t requiredLength = simdutf::utf32_length_from_utf8(s.data(), s.size());
@@ -198,6 +217,31 @@ namespace s3d
 		# endif
 
 			return result;
+		}
+
+		std::wstring ToWstring(const StringView s)
+		{
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			static_assert(sizeof(wchar_t) == 2);
+			
+			const size_t requiredLength = simdutf::utf16_length_from_utf32(s.data(), s.size());
+
+			std::wstring result;
+
+			result.resize_and_overwrite(requiredLength, [&](wchar_t* buf, size_t) {
+				return simdutf::convert_utf32_to_utf16le(s.data(), s.size(), static_cast<char16*>(static_cast<void*>(buf)));
+				});
+
+			return result;
+
+		# else
+
+			static_assert(sizeof(wchar_t) == 4);
+
+			return std::wstring(s.begin(), s.end());
+
+		# endif
 		}
 
 		std::string ToUTF8(const StringView s)

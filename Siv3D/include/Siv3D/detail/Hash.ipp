@@ -22,7 +22,7 @@ namespace s3d
 		}
 	}
 
-	inline namespace xxHash3
+	namespace xxHash3
 	{
 		template <Concept::TriviallyCopyable TriviallyCopyable>
 		inline uint64 Hash(const TriviallyCopyable& data) noexcept

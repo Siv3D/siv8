@@ -13,13 +13,13 @@
 
 namespace s3d
 {
-	//namespace detail
-	//{
-	//	template <Concept::Formattable Formattable>
-	//	inline ConsoleBuffer& ConsoleBuffer::operator <<(const Formattable& value)
-	//	{
-	//		Formatter(*formatData, value);
-	//		return *this;
-	//	}
-	//}
+	namespace detail
+	{
+		template <Concept::Formattable Formattable>
+		inline ConsoleBuffer& ConsoleBuffer::operator <<(const Formattable& value)
+		{
+			Formatter(*formatData, value);
+			return *this;
+		}
+	}
 }

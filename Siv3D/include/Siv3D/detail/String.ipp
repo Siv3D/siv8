@@ -867,6 +867,17 @@ namespace s3d
 
 	//////////////////////////////////////////////////
 	//
+	//	hash
+	//
+	//////////////////////////////////////////////////
+
+	inline uint64 String::hash() const noexcept
+	{
+		return Hash(m_string.data(), size_bytes());
+	}
+
+	//////////////////////////////////////////////////
+	//
 	//	swap
 	//
 	//////////////////////////////////////////////////
@@ -882,9 +893,9 @@ namespace s3d
 	//
 	//////////////////////////////////////////////////
 
-	inline namespace Literals
+	namespace Literals
 	{
-		inline namespace StringLiterals
+		namespace StringLiterals
 		{
 			inline String operator ""_s(const char32_t* s, const size_t length)
 			{

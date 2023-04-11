@@ -21,23 +21,23 @@ namespace s3d
 		{
 			void open() const;
 
-			//void write(const char32_t* s) const;
+			void write(const char32* s) const;
 
-			//void write(StringView s) const;
+			void write(StringView s) const;
 
-			//void write(const String& s) const;
+			void write(const String& s) const;
 
-			//void writeln(const char32_t* s) const;
+			void writeln(const char32* s) const;
 
-			//void writeln(StringView s) const;
+			void writeln(StringView s) const;
 
-			//void writeln(const String& s) const;
+			void writeln(const String& s) const;
 
-			//void operator ()(const char32_t* s) const;
+			void operator ()(const char32* s) const;
 
-			//void operator ()(StringView s) const;
+			void operator ()(StringView s) const;
 
-			//void operator ()(const String& s) const;
+			void operator ()(const String& s) const;
 
 			//template <Concept::Formattable... Args>
 			//void write(const Args&... args) const;
@@ -63,13 +63,13 @@ namespace s3d
 			//template <Concept::Formattable Formattable>
 			//ConsoleBuffer operator <<(const Formattable& value) const;
 
-			//ConsoleBuffer operator <<(const char32* s) const;
+			ConsoleBuffer operator <<(const char32* s) const;
 
-			//ConsoleBuffer operator <<(StringView s) const;
+			ConsoleBuffer operator <<(StringView s) const;
 
-			//ConsoleBuffer operator <<(const String& s) const;
+			ConsoleBuffer operator <<(const String& s) const;
 
-			//ConsoleBuffer operator <<(String&& s) const;
+			ConsoleBuffer operator <<(String&& s) const;
 
 			//template <class Type>
 			//Type read() const;
