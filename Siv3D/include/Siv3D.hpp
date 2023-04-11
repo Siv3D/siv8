@@ -45,6 +45,59 @@
 //# include <Siv3D/Endian.hpp>
 //# include <Siv3D/Byte.hpp>
 # include <Siv3D/Hash.hpp>
+//# include <Siv3D/Step.hpp>
+//# include <Siv3D/Step2D.hpp>
+//# include <Siv3D/InfiniteList.hpp>
+//# include <Siv3D/ScopeGuard.hpp>
+//# include <Siv3D/UniqueResource.hpp>
+//# include <Siv3D/Error.hpp>
+//# include <Siv3D/Demangle.hpp>
+//# include <Siv3D/KahanSummation.hpp>
+//# include <Siv3D/SIMD.hpp>
+
+//# include <Siv3D/NonNull.hpp>
+//# include <Siv3D/Memory.hpp>
+//# include <Siv3D/Allocator.hpp>
+
+# include <Siv3D/Optional.hpp>
+
+
+//# include <Siv3D/Array.hpp>
+//# include <Siv3D/Grid.hpp>
+//# include <Siv3D/HeterogeneousLookupHelper.hpp>
+//# include <Siv3D/OrderedTable.hpp>
+//# include <Siv3D/HashTable.hpp>
+//# include <Siv3D/HashSet.hpp>
+//# include <Siv3D/KDTree.hpp>
+//# include <Siv3D/DisjointSet.hpp>
+
+//# include <Siv3D/Threading.hpp>
+//# include <Siv3D/AsyncTask.hpp>
+//# include <Siv3D/ChildProcess.hpp>
+
+# include <Siv3D/Char.hpp>
+# include <Siv3D/StringView.hpp>
+//# include <Siv3D/String.hpp>
+//# include <Siv3D/Unicode.hpp>
+//# include <Siv3D/UnicodeConverter.hpp>
+//# include <Siv3D/LetterCase.hpp>
+//# include <Siv3D/MatchResults.hpp>
+//# include <Siv3D/RegExp.hpp>
+//# include <Siv3D/Obfuscation.hpp>
+
+//# include <Siv3D/FormatBool.hpp>
+//# include <Siv3D/FormatInt.hpp>
+//# include <Siv3D/FormatFloat.hpp>
+//# include <Siv3D/FormatData.hpp>
+//# include <Siv3D/Formatter.hpp>
+//# include <Siv3D/Format.hpp>
+//# include <Siv3D/FormatLiteral.hpp>
+//# include <Siv3D/FormatUtility.hpp>
+
+//# include <Siv3D/ParseBool.hpp>
+//# include <Siv3D/ParseInt.hpp>
+//# include <Siv3D/ParseFloat.hpp>
+//# include <Siv3D/Parse.hpp>
 
 
 # include <Siv3D/ConsoleBuffer.hpp>

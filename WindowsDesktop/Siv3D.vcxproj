@@ -12,21 +12,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Char.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Common.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CompilerVersion.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Concepts.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Console.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Char.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Console.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConsoleBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Utility.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\YesNo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Hash.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NamedParameter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Optional.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Platform.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedNamedParameter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedYesNo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\StringView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Types.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Uncopyable.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Utility.hpp" />
