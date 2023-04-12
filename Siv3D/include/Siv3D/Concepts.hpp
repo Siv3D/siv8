@@ -75,5 +75,10 @@ namespace s3d
 		/// @tparam Type 型 | Type
 		template <class Type>
 		concept UniformRandomBitGenerator = (std::invocable<Type&> && std::unsigned_integral<std::invoke_result_t<Type&>>);
+
+		/// @brief ポインタ型のコンセプト | Pointer type concept
+		/// @tparam Type 型 | Type
+		template <class Type>
+		concept Pointer = std::is_pointer_v<Type>;
 	}
 }

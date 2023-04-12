@@ -48,16 +48,15 @@
 //# include <Siv3D/Step.hpp>
 //# include <Siv3D/Step2D.hpp>
 //# include <Siv3D/InfiniteList.hpp>
-//# include <Siv3D/ScopeGuard.hpp>
-//# include <Siv3D/UniqueResource.hpp>
+# include <Siv3D/ScopeExit.hpp>
+# include <Siv3D/UniqueResource.hpp>
 //# include <Siv3D/Error.hpp>
 //# include <Siv3D/Demangle.hpp>
 //# include <Siv3D/KahanSummation.hpp>
 //# include <Siv3D/SIMD.hpp>
 
-//# include <Siv3D/NonNull.hpp>
+# include <Siv3D/NonNull.hpp>
 # include <Siv3D/Memory.hpp>
-//# include <Siv3D/Allocator.hpp>
 
 # include <Siv3D/Optional.hpp>
 
