@@ -103,6 +103,9 @@
     <Filter Include="src\Siv3D\FormatData">
       <UniqueIdentifier>{06e95f34-d42b-4032-8d9e-ceebf2caa1c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\FloatToString">
+      <UniqueIdentifier>{f6e5e7ec-7e06-4868-b292-1fab3ae0f46a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -403,6 +406,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\FormatData\SivFormatData.cpp">
       <Filter>src\Siv3D\FormatData</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FloatToString\SivFloatToString.cpp">
+      <Filter>src\Siv3D\FloatToString</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -30,7 +30,7 @@ namespace s3d
 
 	private:
 
-		static constexpr size_t FormatFloatBufferSize = 384;
+		static constexpr size_t FormatFloatBufferSize = 328;
 
 		char m_buffer[FormatFloatBufferSize];
 

@@ -26,61 +26,61 @@ namespace s3d
 	String ToString(bool value) = delete;
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(int8 value);
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(uint8 value);
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(int16 value);
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(uint16 value);
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(int32 value);
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(uint32 value);
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(long value);
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(unsigned long value);
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(long long value);
 
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToString(unsigned long long value);
@@ -95,81 +95,81 @@ namespace s3d
 	String ToBaseN(bool value, int32 radix, LetterCase letterCase = LetterCase::Upper) = delete;
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(int8 value, int32 radix, LetterCase letterCase = LetterCase::Upper);
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(uint8 value, int32 radix, LetterCase letterCase = LetterCase::Upper);
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(int16 value, int32 radix, LetterCase letterCase = LetterCase::Upper);
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(uint16 value, int32 radix, LetterCase letterCase = LetterCase::Upper);
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(int32 value, int32 radix, LetterCase letterCase = LetterCase::Upper);
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(uint32 value, int32 radix, LetterCase letterCase = LetterCase::Upper);
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(long value, int32 radix, LetterCase letterCase = LetterCase::Upper);
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(unsigned long value, int32 radix, LetterCase letterCase = LetterCase::Upper);
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(long long value, int32 radix, LetterCase letterCase = LetterCase::Upper);
 
 	/// @brief 整数を指定した基数の文字列に変換します。 | Converts an integer to a string in the specified radix.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @param radix 基数 | Radix
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBaseN(unsigned long long value, int32 radix, LetterCase letterCase = LetterCase::Upper);
@@ -181,7 +181,7 @@ namespace s3d
 	//////////////////////////////////////////////////
 
 	/// @brief 整数を 2 進数の文字列に変換します。 | Converts an integer to a binary string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToBinary(Concept::Integral auto value);
@@ -193,7 +193,7 @@ namespace s3d
 	//////////////////////////////////////////////////
 
 	/// @brief 整数を 8 進数の文字列に変換します。 | Converts an integer to an octal string.
-	/// @param value 整数 | Integer
+	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToOctal(Concept::Integral auto value);
@@ -205,8 +205,8 @@ namespace s3d
 	//////////////////////////////////////////////////
 
 	/// @brief 整数を 16 進数の文字列に変換します。 | Converts an integer to a hexadecimal string.
-	/// @param value 整数 | Integer
-	/// @param letterCase 大文字小文字 | Upper or lower case
+	/// @param value 変換する値 | The value to convert
+	/// @param letterCase 大文字か小文字か | Whether to use uppercase or lowercase letters
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToHex(Concept::Integral auto value, LetterCase letterCase = LetterCase::Upper);

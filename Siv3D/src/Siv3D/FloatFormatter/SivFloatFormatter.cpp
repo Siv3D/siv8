@@ -30,7 +30,7 @@ namespace s3d
 		{
 			const int length = builder.position();
 			const char* p = builder.Finalize();
-			const char* end = p + length;
+			const char* end = (p + length);
 
 			if ((not fixed) && (decimalPlace != 0))
 			{
@@ -45,7 +45,7 @@ namespace s3d
 				}
 			}
 
-			if ((end - p) == 2 && (p[0] == '-') && (p[1] == '0'))
+			if (((end - p) == 2) && (p[0] == '-') && (p[1] == '0'))
 			{
 				++p;
 			}
