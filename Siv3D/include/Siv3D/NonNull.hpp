@@ -16,6 +16,8 @@
 
 namespace s3d
 {
+	/// @brief ポインタが nullptr でないことを保証するラッパークラス | A wrapper class that ensures that a pointer is not nullptr
+	/// @tparam Pointer ポインタ型 | Pointer type
 	template <Concept::Pointer Pointer>
 	class NonNull
 	{
@@ -34,11 +36,13 @@ namespace s3d
 		NonNull& operator =(const NonNull&) = default;
 
 		NonNull& operator=(std::nullptr_t) = delete;
-
+		
 		constexpr operator Pointer() const noexcept;
 		
+		/// @brief ポインタを取得します。 | Gets the pointer.
+		/// @return ポインタ | Pointer
 		constexpr decltype(auto) operator ->() const noexcept { return get(); }
-		
+
 		constexpr decltype(auto) operator *() const noexcept { return *get(); }
 
 		constexpr std::conditional_t<std::is_copy_constructible_v<Pointer>, Pointer, const Pointer&> get() const noexcept;

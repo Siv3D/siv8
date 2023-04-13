@@ -43,14 +43,14 @@
 //# include <Siv3D/Indexed.hpp>
 # include <Siv3D/Utility.hpp>
 //# include <Siv3D/Endian.hpp>
-//# include <Siv3D/Byte.hpp>
+# include <Siv3D/Byte.hpp>
 # include <Siv3D/Hash.hpp>
 //# include <Siv3D/Step.hpp>
 //# include <Siv3D/Step2D.hpp>
 //# include <Siv3D/InfiniteList.hpp>
 # include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/UniqueResource.hpp>
-//# include <Siv3D/Demangle.hpp>
+# include <Siv3D/Demangle.hpp>
 //# include <Siv3D/KahanSummation.hpp>
 //# include <Siv3D/SIMD.hpp>
 

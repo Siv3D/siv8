@@ -115,6 +115,12 @@
     <Filter Include="src\Siv3D\Error">
       <UniqueIdentifier>{1bccd29a-0855-4942-acaf-73f3c168b879}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Demangle">
+      <UniqueIdentifier>{9a5e6d66-9462-4dc5-aec7-56d4c1d3f43d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Byte">
+      <UniqueIdentifier>{8ab0f6e7-f37a-4326-b46d-b674f918d810}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -369,6 +375,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TupleFormatter.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Demangle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Byte.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -451,6 +463,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Error\SivError.cpp">
       <Filter>src\Siv3D\Error</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Demangle\SivDemangle.cpp">
+      <Filter>src\Siv3D\Demangle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Byte\SivByte.cpp">
+      <Filter>src\Siv3D\Byte</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

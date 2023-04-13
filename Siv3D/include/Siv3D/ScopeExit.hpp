@@ -16,6 +16,8 @@
 
 namespace s3d
 {
+	/// @brief スコープを抜けるときに指定した関数を実行するオブジェクト | An object that executes a specified function when it leaves the scope
+	/// @tparam ExitFunction 実行する関数の型 | The type of the function to execute
 	template <std::invocable ExitFunction>
 	class ScopeExit final
 	{
@@ -37,6 +39,7 @@ namespace s3d
 		constexpr ~ScopeExit() noexcept(std::is_nothrow_invocable_v<ExitFunction>
 			&& std::is_nothrow_destructible_v<ExitFunction>);
 
+		/// @brief ScopeExit を非アクティブにします。 | Deactivates the ScopeExit.
 		constexpr void release() noexcept;
 
 	private:

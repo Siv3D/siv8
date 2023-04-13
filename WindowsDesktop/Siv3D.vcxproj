@@ -14,12 +14,14 @@
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BoolToString.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Byte.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Char.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Common.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CompilerVersion.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Concepts.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Console.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Demangle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Char.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Console.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConsoleBuffer.ipp" />
@@ -104,9 +106,11 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BoolToString\SivBoolToString.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Byte\SivByte.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ConsoleBuffer\SivConsoleBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Demangle\SivDemangle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Error\SivError.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\SivFloatFormatter.cpp" />
