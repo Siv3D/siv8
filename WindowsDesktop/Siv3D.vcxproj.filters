@@ -106,6 +106,12 @@
     <Filter Include="src\Siv3D\FloatToString">
       <UniqueIdentifier>{f6e5e7ec-7e06-4868-b292-1fab3ae0f46a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\BoolToString">
+      <UniqueIdentifier>{a5cc62c5-ca19-4655-a745-1b10ab6cace5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Optional">
+      <UniqueIdentifier>{7a0b6584-2608-454e-af91-a4be77157647}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -336,6 +342,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IntToString.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BoolToString.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Optional.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -409,6 +421,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatToString\SivFloatToString.cpp">
       <Filter>src\Siv3D\FloatToString</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BoolToString\SivBoolToString.cpp">
+      <Filter>src\Siv3D\BoolToString</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp">
+      <Filter>src\Siv3D\Optional</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

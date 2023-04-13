@@ -22,9 +22,6 @@ namespace s3d
 	//
 	//////////////////////////////////////////////////
 
-	[[nodiscard]]
-	String ToString(bool value) = delete;
-
 	/// @brief 整数を文字列に変換します。 | Converts an integer to a string.
 	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String

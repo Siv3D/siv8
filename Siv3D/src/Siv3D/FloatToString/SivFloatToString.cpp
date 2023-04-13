@@ -11,6 +11,7 @@
 
 # include <bit>
 # include <charconv>
+# include <Siv3D/String.hpp>
 # include <Siv3D/FloatToString.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/IntToString.hpp>

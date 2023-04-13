@@ -12,6 +12,7 @@
 # pragma once
 # include <optional>
 # include <iostream>
+# include "FormatData.hpp"
 
 namespace s3d
 {
@@ -30,4 +31,11 @@ namespace s3d
 		constexpr CharType no[] = { 'n','o','n','e','\0' };
 		return output << no;
 	}
+
+	void Formatter(FormatData& formatData, const None_t& value);
+
+	template <class Type>
+	void Formatter(FormatData& formatData, const Optional<Type>& value);
 }
+
+# include "detail/Optional.ipp"

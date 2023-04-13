@@ -565,7 +565,7 @@ namespace s3d
 		friend std::wistream& operator >>(std::wistream& is, String& value);
 
 
-		//friend void Formatter(FormatData& formatData, const String& s);
+		friend void Formatter(FormatData& formatData, const String& s);
 
 	private:
 

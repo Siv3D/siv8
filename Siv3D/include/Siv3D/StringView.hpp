@@ -17,6 +17,8 @@
 
 namespace s3d
 {
+	struct FormatData;
+
 	class StringView
 	{
 	public:
@@ -306,7 +308,7 @@ namespace s3d
 
 		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const StringView& value);
 
-		// friend void Formatter(FormatData& formatData, const StringView& s);
+		friend void Formatter(FormatData& formatData, const StringView& s);
 
 	private:
 

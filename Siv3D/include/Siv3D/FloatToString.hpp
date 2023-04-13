@@ -10,11 +10,12 @@
 //-----------------------------------------------
 
 # pragma once
-# include "String.hpp"
 # include "LetterCase.hpp"
 
 namespace s3d
 {
+	class String;
+
 	/// @brief 浮動小数点数を文字列に変換します。 | Converts a floating-point number to a string.
 	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String

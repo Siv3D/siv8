@@ -11,9 +11,8 @@
 
 # include <iostream>
 # include <Siv3D/String.hpp>
-# include <Siv3D/Hash.hpp>
 # include <Siv3D/Unicode.hpp>
-//# include <Siv3D/FormatData.hpp>
+# include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
@@ -264,10 +263,10 @@ namespace s3d
 	//
 	//////////////////////////////////////////////////
 
-	//void Formatter(FormatData& formatData, const String& s)
-	//{
-	//	formatData.string.append(s);
-	//}
+	void Formatter(FormatData& formatData, const String& s)
+	{
+		formatData.string.append(s);
+	}
 
 	//////////////////////////////////////////////////
 	//

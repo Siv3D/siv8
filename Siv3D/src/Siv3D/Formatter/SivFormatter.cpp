@@ -15,9 +15,7 @@
 
 namespace s3d
 {
-	constexpr StringView TrueS{ U"true" };
-	
-	constexpr StringView FalseS{ U"false" };
+	constexpr StringView BoolS[2] = { U"false", U"true" };
 
 	constexpr StringView NullS{ U"null" };
 
@@ -31,7 +29,7 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const bool value)
 	{
-		formatData.string.append(value ? TrueS : FalseS);
+		formatData.string.append(BoolS[value]);
 	}
 
 	void Formatter(FormatData& formatData, const int8 value)

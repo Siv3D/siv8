@@ -78,17 +78,14 @@
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/LetterCase.hpp>
 //# include <Siv3D/UnicodeConverter.hpp>
-//# include <Siv3D/LetterCase.hpp>
 //# include <Siv3D/MatchResults.hpp>
 //# include <Siv3D/RegExp.hpp>
 //# include <Siv3D/Obfuscation.hpp>
 
-//# include <Siv3D/FormatBool.hpp>
-//# include <Siv3D/FormatInt.hpp>
-//# include <Siv3D/FormatFloat.hpp>
 
-# include <Siv3D/LetterCase.hpp>
+# include <Siv3D/BoolToString.hpp>
 # include <Siv3D/IntToString.hpp>
 # include <Siv3D/FloatToString.hpp>
 # include <Siv3D/IntFormatter.hpp>
