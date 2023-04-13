@@ -13,7 +13,7 @@
 # if __has_include(<stop_token>)
 #	include <stop_token>
 # else
-#	include <ThirdParty/stop_token/stop_token.hpp>
+#	include <ThirdParty/jthread/stop_token.hpp>
 # endif
 # include <thread>
 # include "Common.hpp"
