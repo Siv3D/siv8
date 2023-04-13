@@ -112,6 +112,9 @@
     <Filter Include="src\Siv3D\Optional">
       <UniqueIdentifier>{7a0b6584-2608-454e-af91-a4be77157647}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Error">
+      <UniqueIdentifier>{1bccd29a-0855-4942-acaf-73f3c168b879}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -348,6 +351,24 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Optional.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Error.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RangeFormatter.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RangeFormatter.ipp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TupleFormatter.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TupleFormatter.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -427,6 +448,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp">
       <Filter>src\Siv3D\Optional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Error\SivError.cpp">
+      <Filter>src\Siv3D\Error</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

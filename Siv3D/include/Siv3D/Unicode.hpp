@@ -18,13 +18,12 @@
 //	文字コードの変換 | Character Code Conversion
 //
 //	String WidenAscii(std::string_view asciiText);
-//	String Widen(std::string_view s);
 //	String FromWstring(std::wstring_view s);
 //	String FromUTF8(std::string_view s);
 //	String FromUTF16(std::u16string_view s);
 //	String FromUTF32(std::u32string_view s);
 //	std::string NarrowAscii(StringView asciiText);
-//	std::string Narrow(StringView s);
+//	std::wstring ToWstring(std::string_view s);
 //	std::wstring ToWstring(StringView s);
 //	std::string ToUTF8(StringView s);
 //	std::u16string ToUTF16(StringView s);
@@ -89,6 +88,12 @@ namespace s3d
 
 		[[deprecated("Use StringView::ToUTF8() instead")]]
 		std::string Narrow(StringView s);
+
+		/// @brief std::string を std::wstring に変換します。 | Converts std::string to std::wstring.
+		/// @param s 変換する文字列 | The string to convert
+		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
+		[[nodiscard]]
+		std::wstring ToWstring(std::string_view s);
 
 		/// @brief String を std::wstring に変換します。 | Converts String to std::wstring.
 		/// @param s 変換する文字列 | The string to convert

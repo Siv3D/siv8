@@ -16,21 +16,14 @@ namespace s3d
 {
 	namespace detail
 	{
-		template <size_t I, class Tuple>
-		static void Release(Tuple&& t)
+		template <class Tuple, size_t Index = (std::tuple_size_v<Tuple> -1)>
+		void ReleaseTupleReverse(Tuple& tuple)
 		{
-			std::get<I>(t).release();
-
-			if constexpr (I > 0)
+			if constexpr (Index != static_cast<size_t>(-1))
 			{
-				Release<I - 1>(t);
+				std::get<Index>(tuple).release();
+				ReleaseTupleReverse<Tuple, (Index - 1)>(tuple);
 			}
-		}
-
-		template <class Tuple>
-		static void ReleaseAll(Tuple&& t)
-		{
-			return Release<std::tuple_size_v<std::remove_reference_t<Tuple>> -1>(std::forward<Tuple>(t));
 		}
 	}
 
@@ -41,7 +34,7 @@ namespace s3d
 
 	Siv3DEngine::~Siv3DEngine()
 	{
-		detail::ReleaseAll(m_components);
+		detail::ReleaseTupleReverse(m_components);
 		
 		pEngine = nullptr;
 	}

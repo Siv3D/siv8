@@ -183,7 +183,7 @@ namespace s3d
 
 					for (const char32 ch : asciiText)
 					{
-						if (static_cast<uint32>(ch) <= 0x7Fu )
+						if (static_cast<uint32>(ch) <= 0x7Fu)
 						{
 							*buf++ = static_cast<char>(ch);
 						}
@@ -219,11 +219,44 @@ namespace s3d
 			return result;
 		}
 
+		std::wstring ToWstring(std::string_view s)
+		{
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			static_assert(sizeof(wchar_t) == sizeof(char16));
+			
+			const size_t requiredLength = simdutf::utf16_length_from_utf8(s.data(), s.size());
+
+			std::wstring result;
+
+			result.resize_and_overwrite(requiredLength, [&](wchar_t* buf, size_t) {
+				return simdutf::convert_utf8_to_utf16le(s.data(), s.size(), static_cast<char16*>(static_cast<void*>(buf)));
+				});
+
+			return result;
+
+		# else
+
+			static_assert(sizeof(wchar_t) == sizeof(char32));
+
+			const size_t requiredLength = simdutf::utf32_length_from_utf8(s.data(), s.size());
+
+			std::wstring result;
+
+			result.resize_and_overwrite(requiredLength, [&](wchar_t* buf, size_t) {
+				return simdutf::convert_utf8_to_utf32(s.data(), s.size(), static_cast<char32*>(static_cast<void*>(buf)));
+				});
+
+			return result;
+
+		# endif
+		}
+
 		std::wstring ToWstring(const StringView s)
 		{
 		# if SIV3D_PLATFORM(WINDOWS)
 
-			static_assert(sizeof(wchar_t) == 2);
+			static_assert(sizeof(wchar_t) == sizeof(char16));
 			
 			const size_t requiredLength = simdutf::utf16_length_from_utf32(s.data(), s.size());
 
@@ -237,7 +270,7 @@ namespace s3d
 
 		# else
 
-			static_assert(sizeof(wchar_t) == 4);
+			static_assert(sizeof(wchar_t) == sizeof(char32));
 
 			return std::wstring(s.begin(), s.end());
 

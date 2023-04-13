@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <compare>
 # include "FormatData.hpp"
 
 namespace s3d
@@ -54,7 +55,7 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, std::nullptr_t);
 
-	//void Formatter(FormatData& formatData, const void* value);
+	void Formatter(FormatData& formatData, const void* value);
 
 	void Formatter(FormatData& formatData, const char*) = delete;
 
@@ -74,20 +75,7 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, std::partial_ordering value);
 
-	//template <class ForwardIt>
-	//inline void Formatter(FormatData& formatData, ForwardIt first, ForwardIt last);
 
-	//template <class Type, size_t N>
-	//inline void Formatter(FormatData& formatData, const Type(&values)[N]);
-
-	//template <class Type, size_t N>
-	//inline void Formatter(FormatData& formatData, const std::array<Type, N>& v);
-
-	//template <class Type, class Allocator = std::allocator<Type>>
-	//inline void Formatter(FormatData& formatData, const std::vector<Type, Allocator>& v);
-
-	//template <class Type>
-	//inline void Formatter(FormatData& formatData, const std::initializer_list<Type>& ilist);
 
 	//template <class Fitrst, class Second>
 	//inline void Formatter(FormatData& formatData, const std::pair<Fitrst, Second>& pair);

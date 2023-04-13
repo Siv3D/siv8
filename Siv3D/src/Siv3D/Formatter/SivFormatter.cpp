@@ -12,6 +12,7 @@
 # include <Siv3D/Formatter.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/FloatFormatter.hpp>
+# include <Siv3D/IntToString.hpp>
 
 namespace s3d
 {
@@ -144,6 +145,15 @@ namespace s3d
 	void Formatter(FormatData& formatData, std::nullptr_t)
 	{
 		formatData.string.append(NullS);
+	}
+
+	void Formatter(FormatData& formatData, const void* value)
+	{
+		constexpr size_t HexRepresentationLength = (sizeof(void*) * 2);
+		const String hex = ToHex(reinterpret_cast<std::uintptr_t>(value));
+		formatData.string.reserve(formatData.string.size() + HexRepresentationLength);
+		formatData.string.append((HexRepresentationLength - hex.size()), U'0');
+		formatData.string.append(hex);
 	}
 
 	void Formatter(FormatData& formatData, const char32_t* s)

@@ -50,7 +50,6 @@
 //# include <Siv3D/InfiniteList.hpp>
 # include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/UniqueResource.hpp>
-//# include <Siv3D/Error.hpp>
 //# include <Siv3D/Demangle.hpp>
 //# include <Siv3D/KahanSummation.hpp>
 //# include <Siv3D/SIMD.hpp>
@@ -60,8 +59,7 @@
 
 # include <Siv3D/Optional.hpp>
 
-
-//# include <Siv3D/Array.hpp>
+# include <Siv3D/Array.hpp>
 //# include <Siv3D/Grid.hpp>
 //# include <Siv3D/HeterogeneousLookupHelper.hpp>
 //# include <Siv3D/OrderedTable.hpp>
@@ -69,6 +67,8 @@
 //# include <Siv3D/HashSet.hpp>
 //# include <Siv3D/KDTree.hpp>
 //# include <Siv3D/DisjointSet.hpp>
+
+
 
 //# include <Siv3D/Threading.hpp>
 //# include <Siv3D/AsyncTask.hpp>
@@ -84,6 +84,7 @@
 //# include <Siv3D/RegExp.hpp>
 //# include <Siv3D/Obfuscation.hpp>
 
+# include <Siv3D/Error.hpp>
 
 # include <Siv3D/BoolToString.hpp>
 # include <Siv3D/IntToString.hpp>
@@ -92,6 +93,8 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/Formatter.hpp>
+# include <Siv3D/RangeFormatter.hpp>
+# include <Siv3D/TupleFormatter.hpp>
 # include <Siv3D/Format.hpp>
 //# include <Siv3D/FormatLiteral.hpp>
 //# include <Siv3D/FormatUtility.hpp>
