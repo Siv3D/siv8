@@ -45,11 +45,11 @@ namespace s3d
 
 	//////////////////////////////////////////////////
 	//
-	//	narrow / toWstr / toUTF8 / toUTF16 / toUTF32
+	//	toUTF8 / toWstr / toUTF16 / toUTF32
 	//
 	//////////////////////////////////////////////////
 
-	std::string String::narrow() const
+	std::string String::toUTF8() const
 	{
 		return Unicode::ToUTF8(m_string);
 	}
@@ -57,11 +57,6 @@ namespace s3d
 	std::wstring String::toWstr() const
 	{
 		return Unicode::ToWstring(m_string);
-	}
-
-	std::string String::toUTF8() const
-	{
-		return Unicode::ToUTF8(m_string);
 	}
 
 	std::u16string String::toUTF16() const
@@ -222,7 +217,7 @@ namespace s3d
 
 	std::ostream& operator <<(std::ostream& os, const String& value)
 	{
-		return (os << value.narrow());
+		return (os << value.toUTF8());
 	}
 
 	std::wostream& operator <<(std::wostream& os, const String& value)

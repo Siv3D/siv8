@@ -23,6 +23,9 @@ namespace s3d
 	using StopSource = std::stop_source;
 	
 	using StopToken = std::stop_token;
+
+	template <class Callback>
+	using StopCallback = std::stop_callback<Callback>;
 	
 	inline constexpr std::nostopstate_t NoStopState{};
 
@@ -34,30 +37,14 @@ namespace s3d
 
 		using native_handle_type = std::thread::native_handle_type;
 
-		Thread() noexcept
-			: m_stopSource{ NoStopState }
-			, m_thread{} {}
+		Thread() noexcept;
 
-		template <class FTy, class... Args, std::enable_if_t<not std::is_same_v<std::remove_cvref_t<FTy>, Thread>, int> = 0>
+		template <class FTy, class... Args>
+			requires (not std::is_same_v<std::remove_cvref_t<FTy>, Thread>)
 		[[nodiscard]]
-		explicit Thread(FTy&& f, Args&&... args)
-			: m_stopSource{}
-			, m_thread{ [](StopToken st, auto&& f, auto&&... args)
-				{
-					if constexpr (std::is_invocable_v<std::decay_t<FTy>, StopToken, std::decay_t<Args>...>)
-					{
-						std::invoke(std::forward<decltype(f)>(f), std::move(st), std::forward<decltype(args)>(args)...);
-					}
-					else
-					{
-						std::invoke(std::forward<decltype(f)>(f), std::forward<decltype(args)>(args)...);
-					}
-				}, m_stopSource.get_token(), std::forward<FTy>(f), std::forward<Args>(args)... } {}
+		explicit Thread(FTy&& f, Args&&... args);
 
-		~Thread()
-		{
-			tryCancelAndJoin();
-		}
+		~Thread();
 
 		Thread(const Thread&) = delete;
 
@@ -65,69 +52,30 @@ namespace s3d
 
 		Thread& operator =(const Thread&) = delete;
 
-		Thread& operator =(Thread&& other) noexcept
-		{
-			if (this == std::addressof(other))
-			{
-				return *this;
-			}
+		Thread& operator =(Thread&& other) noexcept;
 
-			tryCancelAndJoin();
-			m_thread = std::move(other.m_thread);
-			m_stopSource = std::move(other.m_stopSource);
-			return *this;
-		}
-
-		void swap(Thread& other) noexcept
-		{
-			m_thread.swap(other.m_thread);
-			m_stopSource.swap(other.m_stopSource);
-		}
+		void swap(Thread& other) noexcept;
 
 		[[nodiscard]]
-		bool joinable() const noexcept
-		{
-			return m_thread.joinable();
-		}
+		bool joinable() const noexcept;
 
-		void join()
-		{
-			m_thread.join();
-		}
+		void join();
 
-		void detach()
-		{
-			m_thread.detach();
-		}
+		void detach();
 
 		[[nodiscard]]
-		id get_id() const noexcept
-		{
-			return m_thread.get_id();
-		}
+		id get_id() const noexcept;
 
 		[[nodiscard]]
-		native_handle_type native_handle() noexcept
-		{
-			return m_thread.native_handle();
-		}
+		native_handle_type native_handle() noexcept;
 
 		[[nodiscard]]
-		StopSource get_stop_source() noexcept
-		{
-			return m_stopSource;
-		}
+		StopSource get_stop_source() noexcept;
 
 		[[nodiscard]]
-		StopToken get_stop_token() const noexcept
-		{
-			return m_stopSource.get_token();
-		}
+		StopToken get_stop_token() const noexcept;
 
-		bool request_stop() noexcept
-		{
-			return m_stopSource.request_stop();
-		}
+		bool request_stop() noexcept;
 
 		friend void swap(Thread& lhs, Thread& rhs) noexcept
 		{
@@ -135,24 +83,16 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static uint32 AvailableParallelism() noexcept
-		{
-			return std::thread::hardware_concurrency();
-		}
+		static uint32 AvailableParallelism() noexcept;
 
 	private:
 
-		void tryCancelAndJoin() noexcept
-		{
-			if (m_thread.joinable())
-			{
-				m_stopSource.request_stop();
-				m_thread.join();
-			}
-		}
+		void tryCancelAndJoin() noexcept;
 
 		StopSource m_stopSource;
 
 		std::thread m_thread;
 	};
 }
+
+# include "detail/Thread.ipp"

@@ -75,11 +75,6 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, std::partial_ordering value);
 
-
-
-	//template <class Fitrst, class Second>
-	//inline void Formatter(FormatData& formatData, const std::pair<Fitrst, Second>& pair);
-
 	namespace Concept
 	{
 		template <class Type>

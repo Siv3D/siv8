@@ -18,6 +18,12 @@
 
 namespace s3d
 {
+	//////////////////////////////////////////////////
+	//
+	//	ToString
+	//
+	//////////////////////////////////////////////////
+
 	String ToString(const float value)
 	{
 		char buffer[50];
@@ -59,6 +65,12 @@ namespace s3d
 		return String(formatter.data(), (formatter.data() + formatter.size()));
 	}
 
+	//////////////////////////////////////////////////
+	//
+	//	ToFixed
+	//
+	//////////////////////////////////////////////////
+
 	String ToFixed(const float value, const int32 decimalPlace)
 	{
 		return ToFixed(static_cast<double>(value), decimalPlace);
@@ -70,6 +82,12 @@ namespace s3d
 		return String(formatter.data(), (formatter.data() + formatter.size()));
 	}
 
+	//////////////////////////////////////////////////
+	//
+	//	ToBinary
+	//
+	//////////////////////////////////////////////////
+
 	String ToBinary(const float value)
 	{
 		return ToBinary(std::bit_cast<uint32>(value));
@@ -80,6 +98,12 @@ namespace s3d
 		return ToBinary(std::bit_cast<uint64>(value));
 	}
 
+	//////////////////////////////////////////////////
+	//
+	//	ToOctal
+	//
+	//////////////////////////////////////////////////
+
 	String ToOctal(const float value)
 	{
 		return ToOctal(std::bit_cast<uint32>(value));
@@ -89,6 +113,12 @@ namespace s3d
 	{
 		return ToOctal(std::bit_cast<uint64>(value));
 	}
+
+	//////////////////////////////////////////////////
+	//
+	//	ToHex
+	//
+	//////////////////////////////////////////////////
 
 	String ToHex(const float value, const LetterCase letterCase)
 	{

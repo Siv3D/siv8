@@ -53,7 +53,7 @@ namespace s3d
 		[[nodiscard]]
 		String WidenAscii(std::string_view asciiText);
 
-		[[deprecated("Use StringView::FromUTF8() instead")]]
+		[[deprecated("Use Unicode::FromUTF8() instead")]]
 		String Widen(std::string_view s);
 
 		/// @brief ワイド文字列を String に変換します。 | Converts a wide string to String.
@@ -86,7 +86,7 @@ namespace s3d
 		[[nodiscard]]
 		std::string NarrowAscii(StringView asciiText);
 
-		[[deprecated("Use StringView::ToUTF8() instead")]]
+		[[deprecated("Use Unicode::ToUTF8() instead")]]
 		std::string Narrow(StringView s);
 
 		/// @brief std::string を std::wstring に変換します。 | Converts std::string to std::wstring.

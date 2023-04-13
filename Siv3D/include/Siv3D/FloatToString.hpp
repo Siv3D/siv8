@@ -16,6 +16,12 @@ namespace s3d
 {
 	class String;
 
+	//////////////////////////////////////////////////
+	//
+	//	ToString
+	//
+	//////////////////////////////////////////////////
+
 	/// @brief 浮動小数点数を文字列に変換します。 | Converts a floating-point number to a string.
 	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
@@ -44,6 +50,12 @@ namespace s3d
 	[[nodiscard]]
 	String ToString(double value, int32 decimalPlace);
 
+	//////////////////////////////////////////////////
+	//
+	//	ToFixed
+	//
+	//////////////////////////////////////////////////
+
 	/// @brief 浮動小数点数を文字列に変換します。 | Converts a floating-point number to a string.
 	/// @param value 変換する値 | The value to convert
 	/// @param decimalPlace 小数点以下の桁数 | The number of digits after the decimal point
@@ -60,6 +72,12 @@ namespace s3d
 	[[nodiscard]]
 	String ToFixed(double value, int32 decimalPlace);
 
+	//////////////////////////////////////////////////
+	//
+	//	ToBinary
+	//
+	//////////////////////////////////////////////////
+
 	/// @brief 浮動小数点数のビット列を 2 進数文字列に変換します。 | Converts the bit sequence of a floating-point number to a binary string.
 	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
@@ -72,6 +90,12 @@ namespace s3d
 	[[nodiscard]]
 	String ToBinary(double value);
 
+	//////////////////////////////////////////////////
+	//
+	//	ToOctal
+	//
+	//////////////////////////////////////////////////
+
 	/// @brief 浮動小数点数のビット列を 8 進数文字列に変換します。 | Converts the bit sequence of a floating-point number to an octal string.
 	/// @param value 変換する値 | The value to convert
 	/// @return 文字列 | String
@@ -83,6 +107,12 @@ namespace s3d
 	/// @return 文字列 | String
 	[[nodiscard]]
 	String ToOctal(double value);
+
+	//////////////////////////////////////////////////
+	//
+	//	ToHex
+	//
+	//////////////////////////////////////////////////
 
 	/// @brief 浮動小数点数のビット列を 16 進数文字列に変換します。 | Converts the bit sequence of a floating-point number to a hexadecimal string.
 	/// @param value 変換する値 | The value to convert

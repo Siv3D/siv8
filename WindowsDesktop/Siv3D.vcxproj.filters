@@ -396,6 +396,9 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\stop_token\stop_token.hpp">
       <Filter>include\ThirdParty\stop_token</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Thread.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">

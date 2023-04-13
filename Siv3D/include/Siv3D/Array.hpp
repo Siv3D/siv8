@@ -16,4 +16,6 @@ namespace s3d
 {
 	template <class Type>
 	using Array = std::vector<Type>;
+
+	// ToDo
 }

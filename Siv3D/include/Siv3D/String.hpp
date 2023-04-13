@@ -40,13 +40,13 @@ namespace s3d
 		[[nodiscard]]
 		String() noexcept;
 
-		/// @brief 文字列をコピーして新しい文字列を作成します。
-		/// @param other コピーする文字列
+		/// @brief 文字列をコピーして新しい文字列を作成します。 | Creates a new string by copying the given string.
+		/// @param other コピーする文字列 | The string to copy
 		[[nodiscard]]
 		String(const String& other);
 
-		/// @brief 文字列をコピーして新しい文字列を作成します。
-		/// @param s コピーする文字列
+		/// @brief 文字列をコピーして新しい文字列を作成します。 | Creates a new string by copying the given string.
+		/// @param s コピーする文字列 | The string to copy
 		[[nodiscard]]
 		String(const string_type& s);
 
@@ -216,28 +216,30 @@ namespace s3d
 		String& insert(size_t offset, const StringViewIsh auto& s, size_type pos, size_type count = npos);
 
 
-		/// @brief 先頭に文字を追加します。
-		/// @param ch 追加する文字
+		/// @brief 文字列の先頭に文字を追加します。 | Appends a character to the beginning of the string.
+		/// @param ch 追加する文字 | The character to append
 		void push_front(value_type ch);
 
-		/// @brief 末尾に文字を追加します。
-		/// @param ch 追加する文字
+		/// @brief 文字列の末尾に文字を追加します。 | Appends a character to the end of the string.
+		/// @param ch 追加する文字 | The character to append
 		void push_back(value_type ch);
 
-		/// @brief 先頭の文字を削除します。
+		/// @brief 文字列から先頭の文字を削除します。 | Removes the first character from the string.
+		/// @remark 文字列が空の時に呼び出してはいけません。 | You must not call this function when the string is empty.
 		void pop_front();
 
-		/// @brief 先頭の n 文字を削除します。
-		/// @remark n が現在の文字数より大きい場合は空の文字列にします。
-		/// @param n 削除する文字数
+		/// @brief 文字列から先頭の n 文字を削除します。 | Removes the first n characters from the string.
+		/// @remark n が現在の文字数より大きい場合は空の文字列にします。 | If n is greater than the current number of characters, the string will be empty.
+		/// @param n 削除する文字数 | The number of characters to remove
 		void pop_front_N(size_t n);
 
-		/// @brief 末尾の文字を削除します。
+		/// @brief 文字列の末尾の文字を削除します。 | Removes the last character from the string.
+		/// @remark 文字列が空の時に呼び出してはいけません。 | You must not call this function when the string is empty.
 		void pop_back() noexcept;
 
-		/// @brief 末尾の n 文字を削除します。
-		/// @remark n が現在の文字数より大きい場合は空の文字列にします。
-		/// @param n 削除する文字数
+		/// @brief 文字列から末尾の n 文字を削除します。 | Removes the last n characters from the string.
+		/// @remark n が現在の文字数より大きい場合は空の文字列にします。 | If n is greater than the current number of characters, the string will be empty.
+		/// @param n 削除する文字数 | The number of characters to remove
 		void pop_back_N(size_t n) noexcept;
 
 
@@ -248,7 +250,7 @@ namespace s3d
 		iterator erase(const_iterator first, const_iterator last) noexcept;
 		
 
-		/// @brief 格納している文字列を消去し、空の文字列にします。
+		/// @brief 格納している文字列を消去し、空の文字列にします。 | Erases the stored string and makes it an empty string.
 		void clear() noexcept;
 
 
@@ -482,20 +484,18 @@ namespace s3d
 		[[nodiscard]]
 		StringView substrView(size_t offset = 0, size_t count = npos) && = delete;
 
-		/// @brief 文字列を std::string に変換します。
-		/// @return 変換された文字列
-		[[nodiscard]]
+		[[deprecated("Use String::toUTF8() instead")]]
 		std::string narrow() const;
-
-		/// @brief 文字列を std::wstring に変換します。
-		/// @return 変換された文字列
-		[[nodiscard]]
-		std::wstring toWstr() const;
 
 		/// @brief 文字列を UTF-8 文字列に変換します。
 		/// @return 変換された文字列
 		[[nodiscard]]
 		std::string toUTF8() const;
+
+		/// @brief 文字列を std::wstring に変換します。
+		/// @return 変換された文字列
+		[[nodiscard]]
+		std::wstring toWstr() const;
 
 		/// @brief 文字列を UTF-16 文字列に変換します。
 		/// @return 変換された文字列
