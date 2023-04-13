@@ -56,16 +56,14 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const int32 value)
 	{
-		const IntFormatter buffer{ value };
-		
-		formatData.string.append(buffer.data(), (buffer.data() + buffer.size()));
+		const IntFormatter formatter{ value };	
+		formatData.string.append(formatter.data(), (formatter.data() + formatter.size()));
 	}
 
 	void Formatter(FormatData& formatData, const uint32 value)
 	{
-		const IntFormatter buffer{ value };
-		
-		formatData.string.append(buffer.data(), (buffer.data() + buffer.size()));
+		const IntFormatter formatter{ value };	
+		formatData.string.append(formatter.data(), (formatter.data() + formatter.size()));
 	}
 
 	void Formatter(FormatData& formatData, const long value)
@@ -94,16 +92,14 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const long long value)
 	{
-		const IntFormatter buffer{ static_cast<int64>(value) };
-		
-		formatData.string.append(buffer.data(), (buffer.data() + buffer.size()));
+		const IntFormatter formatter{ static_cast<int64>(value) };	
+		formatData.string.append(formatter.data(), (formatter.data() + formatter.size()));
 	}
 
 	void Formatter(FormatData& formatData, const unsigned long long value)
 	{
-		const IntFormatter buffer{ static_cast<uint64>(value) };
-		
-		formatData.string.append(buffer.data(), (buffer.data() + buffer.size()));
+		const IntFormatter formatter{ static_cast<uint64>(value) };	
+		formatData.string.append(formatter.data(), (formatter.data() + formatter.size()));
 	}
 
 	void Formatter(FormatData& formatData, const float value)
@@ -113,8 +109,8 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const double value)
 	{
-		const FloatFormatter buffer{ value, formatData.decimalPlaces.value, false };
-		formatData.string.append(buffer.data(), (buffer.data() + buffer.size()));
+		const FloatFormatter formatter{ value, formatData.decimalPlaces.value, false };
+		formatData.string.append(formatter.data(), (formatter.data() + formatter.size()));
 	}
 
 	void Formatter(FormatData& formatData, const long double value)

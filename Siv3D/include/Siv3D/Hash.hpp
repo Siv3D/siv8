@@ -44,11 +44,9 @@ namespace s3d
 		uint64 Hash(const void* data, size_t size, uint64 seed, const uint64(&secret)[4]) noexcept;
 
 		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
-		/// @tparam TriviallyCopyable TriviallyCopyable 型 | TriviallyCopyable type
 		/// @param data 計算対象のデータ | Data to be calculated
 		/// @return ハッシュ値 | Hash value
-		template <Concept::TriviallyCopyable TriviallyCopyable>
-		uint64 Hash(const TriviallyCopyable& data) noexcept;
+		uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept;
 	}
 
 	inline namespace xxHash3
@@ -76,11 +74,9 @@ namespace s3d
 		uint64 Hash(const void* data, size_t size, uint64 seed, const uint64(&secret)[4]) noexcept;
 
 		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
-		/// @tparam TriviallyCopyable TriviallyCopyable 型 | TriviallyCopyable type
 		/// @param data 計算対象のデータ | Data to be calculated
 		/// @return ハッシュ値 | Hash value
-		template <Concept::TriviallyCopyable TriviallyCopyable>
-		uint64 Hash(const TriviallyCopyable& data) noexcept;
+		uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept;
 	}
 
 	/// @brief 2 つのハッシュ値を混ぜます。 | Mixes two hash values.

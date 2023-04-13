@@ -26,6 +26,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatData.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IntFormatter.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IntToString.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Memory.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\NonNull.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ScopeExit.ipp" />
@@ -36,11 +37,14 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Utility.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\YesNo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatFormatter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FloatToString.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Format.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FormatData.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Formatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Hash.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IntFormatter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IntToString.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\LetterCase.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Memory.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NamedParameter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NonNull.hpp" />
@@ -95,10 +99,12 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\FloatFormatter.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\SivFloatFormatter.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\FormatData\SivFormatData.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Hash\SivHash.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\IntFormatter.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp" />

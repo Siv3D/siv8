@@ -97,6 +97,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory">
       <UniqueIdentifier>{56b41572-0d09-4451-990d-bdcd05b67180}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\IntToString">
+      <UniqueIdentifier>{bc0d9104-d397-4fd2-a492-e60d4f4c4355}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\FormatData">
+      <UniqueIdentifier>{06e95f34-d42b-4032-8d9e-ceebf2caa1c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -315,6 +321,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\UniqueResource.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\IntToString.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\LetterCase.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FloatToString.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IntToString.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -353,10 +371,10 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp">
       <Filter>src\Siv3D\Formatter</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\IntFormatter.cpp">
+    <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp">
       <Filter>src\Siv3D\IntFormatter</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\FloatFormatter.cpp">
+    <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\SivFloatFormatter.cpp">
       <Filter>src\Siv3D\FloatFormatter</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\bignum-dtoa.cc">
@@ -379,6 +397,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory\SivMemory.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp">
+      <Filter>src\Siv3D\IntToString</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FormatData\SivFormatData.cpp">
+      <Filter>src\Siv3D\FormatData</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -13,19 +13,18 @@
 
 namespace s3d
 {
-	namespace wyhash
+	inline String ToBinary(const Concept::Integral auto value)
 	{
-		inline uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept
-		{
-			return Hash(std::addressof(data), sizeof(data));
-		}
+		return ToBaseN(value, 2);
 	}
 
-	namespace xxHash3
+	inline String ToOctal(const Concept::Integral auto value)
 	{
-		inline uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept
-		{
-			return Hash(std::addressof(data), sizeof(data));
-		}
+		return ToBaseN(value, 8);
+	}
+
+	inline String ToHex(const Concept::Integral auto value, const LetterCase letterCase)
+	{
+		return ToBaseN(value, 16, letterCase);
 	}
 }

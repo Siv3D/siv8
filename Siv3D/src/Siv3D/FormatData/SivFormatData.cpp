@@ -9,16 +9,12 @@
 //
 //-----------------------------------------------
 
-# pragma once
+# include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
-	namespace detail
+	void Formatter(FormatData& formatData, const FormatData::DecimalPlaces decimalPlace)
 	{
-		inline ConsoleBuffer& ConsoleBuffer::operator <<(const Concept::Formattable auto& value)
-		{
-			Formatter(*formatData, value);
-			return *this;
-		}
+		formatData.decimalPlaces = decimalPlace;
 	}
 }

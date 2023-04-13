@@ -87,6 +87,10 @@
 //# include <Siv3D/FormatBool.hpp>
 //# include <Siv3D/FormatInt.hpp>
 //# include <Siv3D/FormatFloat.hpp>
+
+# include <Siv3D/LetterCase.hpp>
+# include <Siv3D/IntToString.hpp>
+# include <Siv3D/FloatToString.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FormatData.hpp>

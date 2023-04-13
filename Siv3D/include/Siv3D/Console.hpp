@@ -60,8 +60,7 @@ namespace s3d
 			template <class... Args>
 			void operator ()(const Args&... args) const = delete;
 
-			template <Concept::Formattable Formattable>
-			ConsoleBuffer operator <<(const Formattable& value) const;
+			ConsoleBuffer operator <<(const Concept::Formattable auto& value) const;
 
 			ConsoleBuffer operator <<(const char32* s) const;
 

@@ -43,8 +43,7 @@ namespace s3d
 
 			ConsoleBuffer& operator <<(const String& s);
 
-			template <Concept::Formattable Formattable>
-			ConsoleBuffer& operator <<(const Formattable& value);
+			ConsoleBuffer& operator <<(const Concept::Formattable auto& value);
 		};
 	}
 }

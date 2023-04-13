@@ -33,8 +33,7 @@ namespace s3d
 			return writeln(args...);
 		}
 
-		template <Concept::Formattable Formattable>
-		inline ConsoleBuffer Console_impl::operator <<(const Formattable& value) const
+		inline ConsoleBuffer Console_impl::operator <<(const Concept::Formattable auto& value) const
 		{
 			ConsoleBuffer buf;
 			Formatter(*buf.formatData, value);

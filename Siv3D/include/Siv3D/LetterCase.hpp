@@ -13,12 +13,13 @@
 
 namespace s3d
 {
-	namespace detail
+	/// @brief アルファベットの大文字・小文字 | Letter case
+	enum class LetterCase : uint8
 	{
-		inline ConsoleBuffer& ConsoleBuffer::operator <<(const Concept::Formattable auto& value)
-		{
-			Formatter(*formatData, value);
-			return *this;
-		}
-	}
+		/// @brief 小文字 | Lowercase
+		Lower,
+
+		/// @brief 大文字 | Uppercase
+		Upper,
+	};
 }
