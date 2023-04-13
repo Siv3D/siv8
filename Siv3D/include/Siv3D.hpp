@@ -51,7 +51,7 @@
 # include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/UniqueResource.hpp>
 # include <Siv3D/Demangle.hpp>
-//# include <Siv3D/KahanSummation.hpp>
+# include <Siv3D/KahanSummation.hpp>
 //# include <Siv3D/SIMD.hpp>
 
 # include <Siv3D/NonNull.hpp>
@@ -70,7 +70,7 @@
 
 
 
-//# include <Siv3D/Threading.hpp>
+# include <Siv3D/Thread.hpp>
 //# include <Siv3D/AsyncTask.hpp>
 //# include <Siv3D/ChildProcess.hpp>
 

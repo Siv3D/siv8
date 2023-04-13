@@ -121,6 +121,9 @@
     <Filter Include="src\Siv3D\Byte">
       <UniqueIdentifier>{8ab0f6e7-f37a-4326-b46d-b674f918d810}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\stop_token">
+      <UniqueIdentifier>{a37c3f23-8423-47ee-a943-284dfff013b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -380,6 +383,18 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Byte.hpp">
       <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\KahanSummation.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\KahanSummation.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Thread.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\stop_token\stop_token.hpp">
+      <Filter>include\ThirdParty\stop_token</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
