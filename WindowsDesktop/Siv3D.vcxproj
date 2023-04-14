@@ -25,6 +25,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Char.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Console.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConsoleBuffer.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Expected.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Format.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatData.ipp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Utility.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\YesNo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Error.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Expected.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatToString.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Format.hpp" />
@@ -81,6 +83,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Windows.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\YesNo.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\doctest\doctest.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\expected\expected.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\jthread\stop_token.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h" />

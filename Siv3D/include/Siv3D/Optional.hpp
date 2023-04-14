@@ -25,6 +25,8 @@ namespace s3d
 
 	inline constexpr None_t unspecified{ std::nullopt };
 
+	using BadOptionalAccess = std::bad_optional_access;
+
 	template <class CharType>
 	inline std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const None_t&)
 	{

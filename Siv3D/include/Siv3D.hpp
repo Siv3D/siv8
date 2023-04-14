@@ -58,6 +58,7 @@
 # include <Siv3D/Memory.hpp>
 
 # include <Siv3D/Optional.hpp>
+# include <Siv3D/Expected.hpp>
 
 # include <Siv3D/Array.hpp>
 //# include <Siv3D/Grid.hpp>
@@ -104,6 +105,29 @@
 //# include <Siv3D/ParseFloat.hpp>
 //# include <Siv3D/Parse.hpp>
 
+//# include <Siv3D/Number.hpp>
+//# include <Siv3D/FloatingPoint.hpp>
+//# include <Siv3D/Int128.hpp>
+//# include <Siv3D/BigInt.hpp>
+//# include <Siv3D/BigFloat.hpp>
+//# include <Siv3D/CommonFloat.hpp>
+
+//# include <Siv3D/Duration.hpp>
+//# include <Siv3D/DayOfWeek.hpp>
+//# include <Siv3D/Date.hpp>
+//# include <Siv3D/DateTime.hpp>
+//# include <Siv3D/Time.hpp>
+
+//# include <Siv3D/ISteadyClock.hpp>
+//# include <Siv3D/Stopwatch.hpp>
+//# include <Siv3D/VariableSpeedStopwatch.hpp>
+//# include <Siv3D/Timer.hpp>
+
+//# include <Siv3D/Profiler.hpp>
+//# include <Siv3D/MillisecClock.hpp>
+//# include <Siv3D/MicrosecClock.hpp>
+//# include <Siv3D/RDTSCClock.hpp>
+//# include <Siv3D/TimeProfiler.hpp>
 
 # include <Siv3D/ConsoleBuffer.hpp>
 # include <Siv3D/Console.hpp>
