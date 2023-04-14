@@ -19,8 +19,8 @@ namespace s3d
 		return ((b < a) ? b : a);
 	}
 
-	template <Concept::NonScalar NonScalar>
-	constexpr const NonScalar& Min(const NonScalar& a, const NonScalar& b) noexcept(noexcept(b < a))
+	template <class Type>
+	constexpr const Type& Min(const Type& a, const Type& b) noexcept(noexcept(b < a))
 	{
 		return ((b < a) ? b : a);
 	}
@@ -31,8 +31,8 @@ namespace s3d
 		return ((a < b) ? b : a);
 	}
 
-	template <Concept::NonScalar NonScalar>
-	constexpr const NonScalar& Max(const NonScalar& a, const NonScalar& b) noexcept(noexcept(a < b))
+	template <class Type>
+	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b))
 	{
 		return ((a < b) ? b : a);
 	}
@@ -53,8 +53,8 @@ namespace s3d
 		return v;
 	}
 
-	template <Concept::NonScalar NonScalar>
-	constexpr const NonScalar& Clamp(const NonScalar& v, const NonScalar& min, const NonScalar& max) noexcept(noexcept(max < v))
+	template <class Type>
+	constexpr const Type& Clamp(const Type& v, const Type& min, const Type& max) noexcept(noexcept(max < v))
 	{
 		if (max < v)
 		{
@@ -75,8 +75,8 @@ namespace s3d
 		return ((min <= v) && (v <= max));
 	}
 
-	template <Concept::NonScalar NonScalar>
-	constexpr bool InRange(const NonScalar& v, const NonScalar& min, const NonScalar& max) noexcept(noexcept(v < min))
+	template <class Type>
+	constexpr bool InRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min))
 	{
 		return ((min <= v) && (v <= max));
 	}
@@ -87,8 +87,8 @@ namespace s3d
 		return ((min < v) && (v < max));
 	}
 
-	template <Concept::NonScalar NonScalar>
-	constexpr bool InOpenRange(const NonScalar& v, const NonScalar& min, const NonScalar& max) noexcept(noexcept(v < min))
+	template <class Type>
+	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min))
 	{
 		return ((min < v) && (v < max));
 	}

@@ -17,15 +17,15 @@
 //	ユーティリティ関数 | Utility functions
 //
 //	Scalar Min(Scalar a, Scalar b);
-//	const NonScalar& Min(const NonScalar& a, const NonScalar& b);
+//	const Type& Min(const Type& a, const Type& b);
 //	Scalar Max(Scalar a, Scalar b);
-//	const NonScalar& Max(const NonScalar& a, const NonScalar& b);
+//	const Type& Max(const Type& a, const Type& b);
 //	Scalar Clamp(Scalar v, Scalar min, Scalar max);
-//	NonScalar& Clamp(const NonScalar& v, const NonScalar& min, const NonScalar& max);
+//	Type& Clamp(const Type& v, const Type& min, const Type& max);
 //	bool InRange(Scalar v, Scalar min, Scalar max);
-//	bool InRange(const NonScalar& v, const NonScalar& min, const NonScalar& max);
+//	bool InRange(const Type& v, const Type& min, const Type& max);
 //	bool InOpenRange(Scalar v, Scalar min, Scalar max);
-//	bool InOpenRange(const NonScalar& v, const NonScalar& min, const NonScalar& max);
+//	bool InOpenRange(const Type& v, const Type& min, const Type& max);
 // 
 //////////////////////////////////////////////////
 
@@ -45,9 +45,9 @@ namespace s3d
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち小さい方の値。等しい場合は a | The lesser of a and b. If they are equivalent, returns a
-	template <Concept::NonScalar NonScalar>
+	template <class Type>
 	[[nodiscard]]
-	constexpr const NonScalar& Min(const NonScalar& a, const NonScalar& b) noexcept(noexcept(b < a));
+	constexpr const Type& Min(const Type& a, const Type& b) noexcept(noexcept(b < a));
 
 	/// @brief 2 つの値のうち大きい方の値を返します。 | Returns the greater of the two.
 	/// @tparam Scalar 比較する値の型 | The type of the value to compare
@@ -63,9 +63,9 @@ namespace s3d
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち大きい方の値。等しい場合は a | The greater of a and b. If they are equivalent, returns a
-	template <Concept::NonScalar NonScalar>
+	template <class Type>
 	[[nodiscard]]
-	constexpr const NonScalar& Max(const NonScalar& a, const NonScalar& b) noexcept(noexcept(a < b));
+	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b));
 
 	/// @brief 最小値と最大値の範囲にクランプした値を返します。 | Clamps the value to the specified minimum and maximum range.
 	/// @tparam Scalar 比較する値の型 | The type of the value to compare
@@ -83,9 +83,9 @@ namespace s3d
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return v をクランプした値 | The clamped value for the v
-	template <Concept::NonScalar NonScalar>
+	template <class Type>
 	[[nodiscard]]
-	constexpr const NonScalar& Clamp(const NonScalar& v, const NonScalar& min, const NonScalar& max) noexcept(noexcept(max < v));
+	constexpr const Type& Clamp(const Type& v, const Type& min, const Type& max) noexcept(noexcept(max < v));
 
 	/// @brief 値が閉区間 [min, max] にあるかを返します。 | Returns true if the value is in the closed interval [min, max].
 	/// @tparam Scalar 比較する値の型 | The type of the value to compare
@@ -103,9 +103,9 @@ namespace s3d
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 閉区間 [min, max] にある場合 true, それ以外の場合は false | Returns true if the value is in the closed interval [min, max], false otherwise
-	template <Concept::NonScalar NonScalar>
+	template <class Type>
 	[[nodiscard]]
-	constexpr bool InRange(const NonScalar& v, const NonScalar& min, const NonScalar& max) noexcept(noexcept(v < min));
+	constexpr bool InRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min));
 
 	/// @brief 値が開区間 (min, max) にあるかを返します。 | Returns true if the value is in the open interval (min, max).
 	/// @tparam Scalar 比較する値の型 | The type of the value to compare
@@ -123,9 +123,9 @@ namespace s3d
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 開区間 (min, max) にある場合 true, それ以外の場合は false | Returns true if the value is in the open interval (min, max), false otherwise
-	template <Concept::NonScalar NonScalar>
+	template <class Type>
 	[[nodiscard]]
-	constexpr bool InOpenRange(const NonScalar& v, const NonScalar& min, const NonScalar& max) noexcept(noexcept(v < min));
+	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min));
 }
 
 # include "detail/Utility.ipp"

@@ -51,11 +51,6 @@ namespace s3d
 		template <class Type>
 		concept Scalar = std::is_scalar_v<Type>;
 
-		/// @brief 非スカラー型のコンセプト | Non-scalar type concept
-		/// @tparam Type 型 | Type
-		template <class Type>
-		concept NonScalar = std::negation_v<std::is_scalar<Type>>;
-
 		/// @brief 列挙型のコンセプト | Enum type concept
 		/// @tparam Type 型 | Type
 		template <class Type>
