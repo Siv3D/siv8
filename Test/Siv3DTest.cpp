@@ -131,14 +131,6 @@ TEST_CASE("Concepts.hpp")
 	CHECK(Concept::Scalar<EnumT> == true);
 	CHECK(Concept::Scalar<ScopedEnumT> == true);
 
-	CHECK(Concept::NonScalar<bool> == false);
-	CHECK(Concept::NonScalar<uint8> == false);
-	CHECK(Concept::NonScalar<int32> == false);
-	CHECK(Concept::NonScalar<float> == false);
-	CHECK(Concept::NonScalar<std::string> == true);
-	CHECK(Concept::NonScalar<EnumT> == false);
-	CHECK(Concept::NonScalar<ScopedEnumT> == false);
-
 	CHECK(Concept::Enum<bool> == false);
 	CHECK(Concept::Enum<uint8> == false);
 	CHECK(Concept::Enum<int32> == false);
