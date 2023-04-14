@@ -39,17 +39,12 @@ namespace s3d
 		/// @brief 符号付数値型のコンセプト | Signed numeric type concept
 		/// @tparam Type 型 | Type
 		template <class Type>
-		concept Signed = std::is_signed_v<Type>;
+		concept Signed = (SignedIntegral<Type> || FloatingPoint<Type>);
 
 		/// @brief 数値型のコンセプト | Numeric type concept
 		/// @tparam Type 型 | Type
 		template <class Type>
-		concept Arithmetic = std::is_arithmetic_v<Type>;
-
-		/// @brief スカラー型のコンセプト | Scalar type concept
-		/// @tparam Type 型 | Type
-		template <class Type>
-		concept Scalar = std::is_scalar_v<Type>;
+		concept Arithmetic = (Integral<Type> || FloatingPoint<Type>);
 
 		/// @brief 列挙型のコンセプト | Enum type concept
 		/// @tparam Type 型 | Type
@@ -61,6 +56,16 @@ namespace s3d
 		template <class Type>
 		concept ScopedEnum = std::is_scoped_enum_v<Type>;
 
+		/// @brief ポインタ型のコンセプト | Pointer type concept
+		/// @tparam Type 型 | Type
+		template <class Type>
+		concept Pointer = std::is_pointer_v<Type>;
+
+		/// @brief スカラー型のコンセプト | Scalar type concept
+		/// @tparam Type 型 | Type
+		template <class Type>
+		concept Scalar = (Arithmetic<Type> || Enum<Type> || Pointer<Type> || std::is_member_pointer_v<Type> || std::is_null_pointer_v<Type>);
+
 		/// @brief トリビアルコピー可能型のコンセプト | Trivially copyable type concept
 		/// @tparam Type 型 | Type
 		template <class Type>
@@ -70,10 +75,5 @@ namespace s3d
 		/// @tparam Type 型 | Type
 		template <class Type>
 		concept UniformRandomBitGenerator = (std::invocable<Type&> && std::unsigned_integral<std::invoke_result_t<Type&>>);
-
-		/// @brief ポインタ型のコンセプト | Pointer type concept
-		/// @tparam Type 型 | Type
-		template <class Type>
-		concept Pointer = std::is_pointer_v<Type>;
 	}
 }
