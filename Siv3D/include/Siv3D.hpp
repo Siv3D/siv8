@@ -72,7 +72,7 @@
 
 
 # include <Siv3D/Thread.hpp>
-//# include <Siv3D/AsyncTask.hpp>
+# include <Siv3D/AsyncTask.hpp>
 //# include <Siv3D/ChildProcess.hpp>
 
 # include <Siv3D/Char.hpp>
@@ -112,8 +112,8 @@
 //# include <Siv3D/BigFloat.hpp>
 //# include <Siv3D/CommonFloat.hpp>
 
-//# include <Siv3D/Duration.hpp>
-//# include <Siv3D/DayOfWeek.hpp>
+# include <Siv3D/Duration.hpp>
+# include <Siv3D/DayOfWeek.hpp>
 //# include <Siv3D/Date.hpp>
 //# include <Siv3D/DateTime.hpp>
 //# include <Siv3D/Time.hpp>
@@ -128,6 +128,31 @@
 //# include <Siv3D/MicrosecClock.hpp>
 //# include <Siv3D/RDTSCClock.hpp>
 //# include <Siv3D/TimeProfiler.hpp>
+
+# include <Siv3D/IReader.hpp>
+# include <Siv3D/IWriter.hpp>
+//# include <Siv3D/SpecialFolder.hpp>
+//# include <Siv3D/CopyOption.hpp>
+//# include <Siv3D/FileSystem.hpp>
+//# include <Siv3D/ResourceOption.hpp>
+//# include <Siv3D/Resource.hpp>
+//# include <Siv3D/FileAction.hpp>
+//# include <Siv3D/DirectoryWatcher.hpp>
+//# include <Siv3D/MemoryViewReader.hpp>
+//# include <Siv3D/MemoryReader.hpp>
+//# include <Siv3D/MemoryMappedFileView.hpp>
+//# include <Siv3D/MemoryMappedFile.hpp>
+//# include <Siv3D/Blob.hpp>
+//# include <Siv3D/MemoryWriter.hpp>
+//# include <Siv3D/OpenMode.hpp>
+//# include <Siv3D/BinaryReader.hpp>
+//# include <Siv3D/BinaryWriter.hpp>
+//# include <Siv3D/Base64.hpp>
+//# include <Siv3D/MD5Value.hpp>
+//# include <Siv3D/MD5.hpp>
+//# include <Siv3D/Crypto.hpp>
+//# include <Siv3D/ArchivedFileReader.hpp>
+//# include <Siv3D/FileArchive.hpp>
 
 # include <Siv3D/ConsoleBuffer.hpp>
 # include <Siv3D/Console.hpp>
