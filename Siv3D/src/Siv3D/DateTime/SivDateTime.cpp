@@ -161,6 +161,7 @@ namespace s3d
 			}
 		}
 
+		[[nodiscard]]
 		static String FormatDateTime(const DateTime& dateTime, const StringView format, const bool skipTime)
 		{
 			String formattedDateTime, keyPattern;
@@ -207,13 +208,11 @@ namespace s3d
 							(format[i + 1] == U'\''))
 						{
 							formattedDateTime << U'\'';
-
 							++i;
-
 							continue;
 						}
 
-						inQuot = !inQuot;
+						inQuot = (not inQuot);
 					}
 					else
 					{
@@ -236,5 +235,106 @@ namespace s3d
 	String FormatDate(const Date& date, const StringView format)
 	{
 		return detail::FormatDateTime(date, format, true);
+	}
+
+	String DateTime::format(const StringView format) const
+	{
+		return FormatDateTime(*this, format);
+	}
+
+	DateTime DateTime::operator +(const Days& days) const noexcept
+	{
+		return (DateTime{ *this } += days);
+	}
+
+	DateTime DateTime::operator +(const Milliseconds& _milliseconds) const noexcept
+	{
+		return (DateTime{ *this } += _milliseconds);
+	}
+
+	DateTime DateTime::operator -(const Days& days) const noexcept
+	{
+		return (DateTime{ *this } -= days);
+	}
+
+	DateTime DateTime::operator -(const Milliseconds& _milliseconds) const noexcept
+	{
+		return (DateTime{ *this } -= _milliseconds);
+	}
+
+	DateTime& DateTime::operator +=(const Days& days) noexcept
+	{
+		Date d = (date() + days);
+		year = d.year;
+		month = d.month;
+		day = d.day;
+		return *this;
+	}
+
+	DateTime& DateTime::operator +=(const Milliseconds& _milliseconds) noexcept
+	{
+		constexpr int64 millisecIn1Day = (86400 * 1000);
+
+		int64 count = _milliseconds.count();
+
+		if (const int64 days = (count / millisecIn1Day))
+		{
+			(operator += (Days{ days }));
+			count -= (days * millisecIn1Day);
+		}
+
+		int64 newCount = (detail::TimeToMillisecCount(hour, minute, second, milliseconds) + count);
+
+		if (millisecIn1Day <= newCount)
+		{
+			(operator += (Days{ 1 }));
+			newCount -= millisecIn1Day;
+		}
+		else if (newCount < 0)
+		{
+			(operator += (Days{ -1 }));
+			newCount += millisecIn1Day;
+		}
+
+		hour = static_cast<int32>(newCount / (60 * 60 * 1000));
+		minute = static_cast<int32>(newCount / (60 * 1000) % 60);
+		second = static_cast<int32>(newCount / (1000) % 60);
+		milliseconds = static_cast<int32>(newCount % 1000);
+		return *this;
+	}
+
+	DateTime& DateTime::operator -=(const Days& days) noexcept
+	{
+		return (operator += (-days));
+	}
+
+	DateTime& DateTime::operator -=(const Milliseconds& _milliseconds) noexcept
+	{
+		return (operator += (-_milliseconds));
+	}
+
+	DateTime DateTime::Yesterday() noexcept
+	{
+		return Date::Yesterday();
+	}
+
+	DateTime DateTime::Today() noexcept
+	{
+		return Date::Today();
+	}
+
+	DateTime DateTime::Tomorrow() noexcept
+	{
+		return Date::Tomorrow();
+	}
+
+	void Formatter(FormatData& formatData, const DateTime& value)
+	{
+		formatData.string.append(value.format());
+	}
+
+	String FormatDateTime(const DateTime& dateTime, const StringView format)
+	{
+		return detail::FormatDateTime(dateTime, format, false);
 	}
 }

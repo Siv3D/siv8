@@ -11,11 +11,6 @@
 
 # include <Siv3D/Date.hpp>
 # include <Siv3D/FormatData.hpp>
-# if SIV3D_PLATFORM(WINDOWS)
-#	include <Siv3D/Windows/MinWindows.hpp>
-# else
-#	include <ctime>
-# endif
 
 namespace s3d
 {
@@ -66,23 +61,6 @@ namespace s3d
 	Date& Date::operator -=(const Days& days) noexcept
 	{
 		return (*this += (-days));
-	}
-
-	Date Date::Today() noexcept
-	{
-	# if SIV3D_PLATFORM(WINDOWS)
-
-		SYSTEMTIME sysTime;
-		::GetLocalTime(&sysTime);
-		return{ sysTime.wYear, sysTime.wMonth, sysTime.wDay };
-
-	# else
-
-		::time_t t = ::time(nullptr);
-		::tm* lt = ::localtime(&t);
-		return{ (1900 + lt->tm_year), (lt->tm_mon + 1), lt->tm_mday };
-
-	# endif
 	}
 
 	Date Date::Yesterday() noexcept
