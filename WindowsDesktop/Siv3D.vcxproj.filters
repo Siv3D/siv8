@@ -142,6 +142,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Time">
       <UniqueIdentifier>{898c45f0-bef2-497c-b2be-90d0d2098fe2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Stopwatch">
+      <UniqueIdentifier>{7b0d39b0-bfb5-4891-a2d0-847c64118f77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Duration">
+      <UniqueIdentifier>{44b8ccb5-e2a6-49d3-ad8a-1cab2a726c59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -477,6 +483,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Time.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ISteadyClock.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ISteadyClock.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Stopwatch.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Stopwatch.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -580,6 +598,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Time\SivTime.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp">
+      <Filter>src\Siv3D\Stopwatch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp">
+      <Filter>src\Siv3D\Duration</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

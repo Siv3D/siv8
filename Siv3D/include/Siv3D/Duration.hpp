@@ -12,9 +12,12 @@
 # pragma once
 # include <chrono>
 # include "Common.hpp"
+# include "String.hpp"
 
 namespace s3d
 {
+	struct FormatData;
+
 	/// @brief 日数 | Days
 	using Days = std::chrono::duration<int32, std::ratio<86400>>;
 
@@ -87,102 +90,102 @@ namespace s3d
 		}
 	}
 
-	///// @brief 時間を文字列に変換します。
-	///// DD		日 (00-)
-	///// D		日 (0-)
-	///// dd		日 (00-)
-	///// d		日 (0-)
-	///// HH		時 (00-)
-	///// H		時 (0-)
-	///// hh		時 (00-24)
-	///// h		時 (0-24)
-	///// MM		分 (00-)
-	///// M		分 (0-)
-	///// mm		分 (00-59)
-	///// m		分 (0-59)
-	///// SS		秒 (00-)
-	///// S		秒 (0-)
-	///// ss		秒 (00-59)
-	///// s		秒 (0-59)
-	///// X		ミリ秒 (0-)
-	///// x		小数点以下 1 桁秒 (0-9)
-	///// xx		小数点以下 2 桁秒 (00-99)
-	///// xxx		小数点以下 3 桁秒 (000-999)
-	///// @param duration 時間
-	///// @param format フォーマット指定
-	///// @return フォーマットされた時間
-	//[[nodiscard]]
-	//String FormatTime(const Duration& duration, StringView format = U"HH:mm:ss.xxx"_sv);
+	/// @brief 時間を文字列に変換します。
+	/// DD		日 (00-)
+	/// D		日 (0-)
+	/// dd		日 (00-)
+	/// d		日 (0-)
+	/// HH		時 (00-)
+	/// H		時 (0-)
+	/// hh		時 (00-24)
+	/// h		時 (0-24)
+	/// MM		分 (00-)
+	/// M		分 (0-)
+	/// mm		分 (00-59)
+	/// m		分 (0-59)
+	/// SS		秒 (00-)
+	/// S		秒 (0-)
+	/// ss		秒 (00-59)
+	/// s		秒 (0-59)
+	/// X		ミリ秒 (0-)
+	/// x		小数点以下 1 桁秒 (0-9)
+	/// xx		小数点以下 2 桁秒 (00-99)
+	/// xxx		小数点以下 3 桁秒 (000-999)
+	/// @param duration 時間
+	/// @param format フォーマット指定
+	/// @return フォーマットされた時間
+	[[nodiscard]]
+	String FormatTime(const Duration& duration, StringView format = U"HH:mm:ss.xxx"_sv);
 
-	///// @brief 日数をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param days 日数
-	//void Formatter(FormatData& formatData, const Days& days);
+	/// @brief 日数をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param days 日数
+	void Formatter(FormatData& formatData, const Days& days);
 
-	///// @brief 日数をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param days 日数
-	//void Formatter(FormatData& formatData, const DaysF& days);
+	/// @brief 日数をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param days 日数
+	void Formatter(FormatData& formatData, const DaysF& days);
 
-	///// @brief 時間をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param hours 時間
-	//void Formatter(FormatData& formatData, const Hours& hours);
+	/// @brief 時間をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param hours 時間
+	void Formatter(FormatData& formatData, const Hours& hours);
 
-	///// @brief 時間をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param hours 時間
-	//void Formatter(FormatData& formatData, const HoursF& hours);
+	/// @brief 時間をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param hours 時間
+	void Formatter(FormatData& formatData, const HoursF& hours);
 
-	///// @brief 分をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param minutes 分
-	//void Formatter(FormatData& formatData, const Minutes& minutes);
+	/// @brief 分をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param minutes 分
+	void Formatter(FormatData& formatData, const Minutes& minutes);
 
-	///// @brief 分をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param minutes 分
-	//void Formatter(FormatData& formatData, const MinutesF& minutes);
+	/// @brief 分をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param minutes 分
+	void Formatter(FormatData& formatData, const MinutesF& minutes);
 
-	///// @brief 秒をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param seconds 秒
-	//void Formatter(FormatData& formatData, const Seconds& seconds);
+	/// @brief 秒をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param seconds 秒
+	void Formatter(FormatData& formatData, const Seconds& seconds);
 
-	///// @brief 秒をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param seconds 秒
-	//void Formatter(FormatData& formatData, const SecondsF& seconds);
+	/// @brief 秒をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param seconds 秒
+	void Formatter(FormatData& formatData, const SecondsF& seconds);
 
-	///// @brief ミリ秒をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param milliseconds ミリ秒
-	//void Formatter(FormatData& formatData, const Milliseconds& milliseconds);
+	/// @brief ミリ秒をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param milliseconds ミリ秒
+	void Formatter(FormatData& formatData, const Milliseconds& milliseconds);
 
-	///// @brief ミリ秒をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param milliseconds ミリ秒
-	//void Formatter(FormatData& formatData, const MillisecondsF& milliseconds);
+	/// @brief ミリ秒をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param milliseconds ミリ秒
+	void Formatter(FormatData& formatData, const MillisecondsF& milliseconds);
 
-	///// @brief マイクロ秒をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param microseconds マイクロ秒
-	//void Formatter(FormatData& formatData, const Microseconds& microseconds);
+	/// @brief マイクロ秒をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param microseconds マイクロ秒
+	void Formatter(FormatData& formatData, const Microseconds& microseconds);
 
-	///// @brief マイクロ秒をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param microseconds マイクロ秒
-	//void Formatter(FormatData& formatData, const MicrosecondsF& microseconds);
+	/// @brief マイクロ秒をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param microseconds マイクロ秒
+	void Formatter(FormatData& formatData, const MicrosecondsF& microseconds);
 
-	///// @brief ナノ秒をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param nanoseconds ナノ秒
-	//void Formatter(FormatData& formatData, const Nanoseconds& nanoseconds);
+	/// @brief ナノ秒をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param nanoseconds ナノ秒
+	void Formatter(FormatData& formatData, const Nanoseconds& nanoseconds);
 
-	///// @brief ナノ秒をフォーマットします。
-	///// @param formatData フォーマットデータ
-	///// @param nanoseconds ナノ秒
-	//void Formatter(FormatData& formatData, const NanosecondsF& nanoseconds);
+	/// @brief ナノ秒をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param nanoseconds ナノ秒
+	void Formatter(FormatData& formatData, const NanosecondsF& nanoseconds);
 }
 
 # include "detail/Duration.ipp"

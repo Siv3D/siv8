@@ -117,9 +117,8 @@
 # include <Siv3D/Date.hpp>
 # include <Siv3D/DateTime.hpp>
 # include <Siv3D/Time.hpp>
-
-//# include <Siv3D/ISteadyClock.hpp>
-//# include <Siv3D/Stopwatch.hpp>
+# include <Siv3D/ISteadyClock.hpp>
+# include <Siv3D/Stopwatch.hpp>
 //# include <Siv3D/VariableSpeedStopwatch.hpp>
 //# include <Siv3D/Timer.hpp>
 

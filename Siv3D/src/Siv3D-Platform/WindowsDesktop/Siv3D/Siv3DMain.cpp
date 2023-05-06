@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/Windows/MinWindows.hpp>
+# include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 // ユーザによって実装される | Implemented by the user
@@ -20,9 +20,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 {
 	using namespace s3d;
 
+	::timeBeginPeriod(1);
+
 	Siv3DEngine engine;
 
 	Main();
 
+	::timeEndPeriod(1);
+	
 	return 0;
 }

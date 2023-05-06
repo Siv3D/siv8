@@ -5,9 +5,5 @@ void Main()
 {
 	RunTest();
 
-	Console << DateTime::Now();
-
-	Console << (Time::GetUptimeSec() / 60);
-
 	std::system("pause");
 }

@@ -10,10 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
-# include "YesNo.hpp"
 
 namespace s3d
 {
-	/// @brief 即座に開始する | Start immediately
-	using StartImmediately = YesNo<struct StartImmediately_tag>;
+
 }
