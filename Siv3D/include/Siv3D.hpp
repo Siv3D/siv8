@@ -116,7 +116,7 @@
 # include <Siv3D/DayOfWeek.hpp>
 # include <Siv3D/Date.hpp>
 # include <Siv3D/DateTime.hpp>
-//# include <Siv3D/Time.hpp>
+# include <Siv3D/Time.hpp>
 
 //# include <Siv3D/ISteadyClock.hpp>
 //# include <Siv3D/Stopwatch.hpp>

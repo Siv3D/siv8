@@ -273,27 +273,27 @@ namespace s3d
 
 	DateTime& DateTime::operator +=(const Milliseconds& _milliseconds) noexcept
 	{
-		constexpr int64 millisecIn1Day = (86400 * 1000);
+		constexpr int64 MilliSecIn1Day = (86400 * 1000);
 
 		int64 count = _milliseconds.count();
 
-		if (const int64 days = (count / millisecIn1Day))
+		if (const int64 days = (count / MilliSecIn1Day))
 		{
 			(operator += (Days{ days }));
-			count -= (days * millisecIn1Day);
+			count -= (days * MilliSecIn1Day);
 		}
 
 		int64 newCount = (detail::TimeToMillisecCount(hour, minute, second, milliseconds) + count);
 
-		if (millisecIn1Day <= newCount)
+		if (MilliSecIn1Day <= newCount)
 		{
 			(operator += (Days{ 1 }));
-			newCount -= millisecIn1Day;
+			newCount -= MilliSecIn1Day;
 		}
 		else if (newCount < 0)
 		{
 			(operator += (Days{ -1 }));
-			newCount += millisecIn1Day;
+			newCount += MilliSecIn1Day;
 		}
 
 		hour = static_cast<int32>(newCount / (60 * 60 * 1000));
