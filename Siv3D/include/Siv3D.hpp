@@ -98,7 +98,7 @@
 # include <Siv3D/TupleFormatter.hpp>
 # include <Siv3D/Format.hpp>
 //# include <Siv3D/FormatLiteral.hpp>
-//# include <Siv3D/FormatUtility.hpp>
+# include <Siv3D/FormatUtility.hpp>
 
 //# include <Siv3D/ParseBool.hpp>
 //# include <Siv3D/ParseInt.hpp>
@@ -114,7 +114,7 @@
 
 # include <Siv3D/Duration.hpp>
 # include <Siv3D/DayOfWeek.hpp>
-//# include <Siv3D/Date.hpp>
+# include <Siv3D/Date.hpp>
 //# include <Siv3D/DateTime.hpp>
 //# include <Siv3D/Time.hpp>
 

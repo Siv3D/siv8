@@ -127,6 +127,12 @@
     <Filter Include="include\ThirdParty\expected">
       <UniqueIdentifier>{26b9c9b3-75bd-4484-adad-17a5d5cb172c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Date">
+      <UniqueIdentifier>{5651f882-2b77-4f45-995e-dc853d7ed5a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\DateTime">
+      <UniqueIdentifier>{e8d46b35-6439-4fd1-ad65-41a298fb7213}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -438,6 +444,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\DayOfWeek.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Date.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Date.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DateTime.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FormatUtility.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -526,6 +544,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Byte\SivByte.cpp">
       <Filter>src\Siv3D\Byte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Date\SivDate.cpp">
+      <Filter>src\Siv3D\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DateTime\SivDateTime.cpp">
+      <Filter>src\Siv3D\DateTime</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
