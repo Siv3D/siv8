@@ -16,21 +16,30 @@
 namespace s3d
 {
 	/// @brief 日付と時刻 | Date and time
-	struct DateTime : Date
+	struct DateTime
 	{
-		/// @brief 時 [0-23]
+		/// @brief 西暦 | Year
+		int32 year;
+
+		/// @brief 月 [1-12] | Month [1-12]
+		int32 month;
+
+		/// @brief 日 [1-31] | Day [1-31]
+		int32 day;
+
+		/// @brief 時 [0-23] | Hour [0-23]
 		int32 hour;
 
-		/// @brief 分 [0-59]
+		/// @brief 分 [0-59] | Minute [0-59]
 		int32 minute;
 
-		/// @brief 秒 [0-59]
+		/// @brief 秒 [0-59] | Second [0-59]
 		int32 second;
 
-		/// @brief ミリ秒 [0-999]
+		/// @brief ミリ秒 [0-999] | Millisecond [0-999]
 		int32 milliseconds;
 
-		/// @brief デフォルトコンストラクタ
+		/// @brief デフォルトコンストラクタ | Default constructor
 		[[nodiscard]]
 		DateTime() noexcept = default;
 
@@ -72,6 +81,12 @@ namespace s3d
 		/// @return 日付と時刻が正しい範囲の値であれば true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isValid() const noexcept;
+
+		[[nodiscard]]
+		constexpr Date date() const noexcept;
+
+		[[nodiscard]]
+		constexpr DayOfWeek dayOfWeek() const noexcept;
 
 		/// @brief 日付と時刻を指定したフォーマットの文字列で返します。
 		/// yyyy	4 桁の年 (0001-)
@@ -222,4 +237,4 @@ struct std::hash<s3d::DateTime>
 	}
 };
 
-//# include "detail/DateTime.ipp"
+# include "detail/DateTime.ipp"

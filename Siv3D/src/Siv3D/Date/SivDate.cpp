@@ -74,13 +74,13 @@ namespace s3d
 
 		SYSTEMTIME sysTime;
 		::GetLocalTime(&sysTime);
-		return Date(sysTime.wYear, sysTime.wMonth, sysTime.wDay);
+		return{ sysTime.wYear, sysTime.wMonth, sysTime.wDay };
 
 	# else
 
 		::time_t t = ::time(nullptr);
 		::tm* lt = ::localtime(&t);
-		return Date{ (1900 + lt->tm_year), (lt->tm_mon + 1), lt->tm_mday };
+		return{ (1900 + lt->tm_year), (lt->tm_mon + 1), lt->tm_mday };
 
 	# endif
 	}

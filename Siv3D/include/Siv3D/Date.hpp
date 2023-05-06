@@ -41,7 +41,7 @@ namespace s3d
 		/// @param _day 日 [1-31] | Day [1-31]
 		/// @remark 日付の妥当性検証は行われません。 | No validation is performed.
 		[[nodiscard]] 
-		explicit constexpr Date(int32 _year, int32 _month = 1, int32 _day = 1) noexcept;
+		constexpr Date(int32 _year, int32 _month, int32 _day) noexcept;
 
 		/// @brief 曜日を返します。 | Returns the day of the week.
 		/// @return 曜日 | Day of the week
@@ -123,7 +123,7 @@ namespace s3d
 		[[nodiscard]]
 		friend constexpr Days operator -(const Date& to, const Date& from) noexcept
 		{
-			return Subtract(to, from);
+			return Date::Subtract(to, from);
 		}
 
 		/// @brief 日付を進めます | Advances the date
@@ -220,7 +220,6 @@ namespace s3d
 	/// @param date 日付 | Date
 	/// @param format フォーマット指定 | Format specifier
 	/// @return フォーマットされた日付 | Formatted date
-	/// 	[[nodiscard]]
 	[[nodiscard]]
 	String FormatDate(const Date& date, StringView format = U"yyyy-MM-dd"_sv);
 }

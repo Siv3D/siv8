@@ -63,7 +63,7 @@ namespace s3d
 			const auto january = std::begin(DaysAtEndOfMonth[isLeapYear]);
 			const int32 months = static_cast<int32>(std::distance(january, std::upper_bound(january, january + 12, daysAYearPeriod)));
 			const int32 days = daysAYearPeriod - (DaysAtEndOfMonth[isLeapYear][(months - 1)]) + 1;
-			return Date{ years, months, days };
+			return{ years, months, days };
 		}
 	}
 

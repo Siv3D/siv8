@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Concepts.hpp"
+# include "detail/UtilityClass.ipp"
 
 //////////////////////////////////////////////////
 //
@@ -126,6 +127,75 @@ namespace s3d
 	template <class Type>
 	[[nodiscard]]
 	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min));
+
+	//////////////////////////////////////////////////
+	//
+	//	Abs
+	//
+	//////////////////////////////////////////////////
+
+	/// @brief 絶対値を計算する関数オブジェクトです。
+	inline constexpr auto Abs = detail::Abs_impl{};
+
+	//////////////////////////////////////////////////
+	//
+	//	AbsDiff
+	//
+	//////////////////////////////////////////////////
+
+	/// @brief 差の絶対値を返します。
+	/// @param a 1 つ目の値
+	/// @param b 2 つ目の値
+	/// @return 2 つの値の差の絶対値
+	[[nodiscard]]
+	inline constexpr auto AbsDiff(Concept::Arithmetic auto a, Concept::Arithmetic auto b) noexcept;
+
+	//////////////////////////////////////////////////
+	//
+	//	FromEnum
+	//
+	//////////////////////////////////////////////////
+
+	/// @brief 列挙型を整数型に変換する関数オブジェクトです。
+	inline constexpr auto FromEnum = detail::FromEnum_impl{};
+
+	//////////////////////////////////////////////////
+	//
+	//	ToEnum
+	//
+	//////////////////////////////////////////////////
+
+	/// @brief 整数を列挙型の値に変換する関数オブジェクトです。
+	/// @tparam Enum 変換先の列挙型
+	template <Concept::Enum Enum>
+	inline constexpr auto ToEnum = detail::ToEnum_impl<Enum>{};
+
+	//////////////////////////////////////////////////
+	//
+	//	IsOdd
+	//
+	//////////////////////////////////////////////////
+
+	/// @brief 数が奇数かを判定する関数オブジェクトです。
+	inline constexpr auto IsOdd = detail::IsOdd_impl{};
+
+	//////////////////////////////////////////////////
+	//
+	//	IsEven
+	//
+	//////////////////////////////////////////////////
+
+	/// @brief 数が偶数かを判定する関数オブジェクトです。
+	inline constexpr auto IsEven = detail::IsEven_impl{};
+
+	//////////////////////////////////////////////////
+	//
+	//	Identity
+	//
+	//////////////////////////////////////////////////
+
+	/// @brief 渡された値をそのまま返す関数オブジェクトです。
+	inline constexpr auto Identity = detail::Identity_impl{};
 }
 
 # include "detail/Utility.ipp"

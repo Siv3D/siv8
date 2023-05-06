@@ -13,7 +13,6 @@
 # include <chrono>
 # include "Common.hpp"
 
-
 namespace s3d
 {
 	/// @brief 日数 | Days

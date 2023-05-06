@@ -13,6 +13,7 @@
 # include <Siv3D/String.hpp>
 # include <Siv3D/IntToString.hpp>
 # include <Siv3D/Char.hpp>
+# include <Siv3D/FormatUtility.hpp>
 
 namespace s3d
 {
@@ -77,7 +78,7 @@ namespace s3d
 			U"SSS"_sv,
 		};
 
-		static void AppendElement(String& result, const DateTime& date, const StringView format, const bool skipTime)
+		static void AppendElement(String& result, const DateTime& dt, const StringView format, const bool skipTime)
 		{
 			constexpr size_t timeStartIndex = 11;
 			const size_t formatIndex = std::distance(
@@ -87,77 +88,77 @@ namespace s3d
 					format)
 			);
 
-			if (skipTime && formatIndex >= timeStartIndex)
+			if (skipTime && (timeStartIndex <= formatIndex))
 			{
 				return;
 			}
 
-			//switch (formatIndex)
-			//{
-			//case 0:	// yyyy	4 桁の年 (0001-)
-			//	result += Pad(date.year, { 4, U'0' });
-			//	break;
-			//case 1:	// yy	2 桁の年 (00-99)
-			//	result += Pad(date.year % 100, { 2, U'0' });
-			//	break;
-			//case 2:	// y	年 (1-)
-			//	result += ToString(date.year);
-			//	break;
-			//case 3:	// MMMM	英語の月 (January-December)
-			//	result += MonthEnglish[(date.month - 1)];
-			//	break;
-			//case 4:	// MMM	英語の月の略称 (Jan-Dec)
-			//	result += MonthEnglish[(date.month - 1)].substr(0, 3);
-			//	break;
-			//case 5:	// MM	2 桁の月 (01-12)
-			//	result += Pad(date.month, { 2, U'0' });
-			//	break;
-			//case 6:	// M	1-2 桁の月 (1-12)
-			//	result += ToString(date.month);
-			//	break;
-			//case 7:	// dd	2 桁の日 (01-31)
-			//	result += Pad(date.day, { 2, U'0' });
-			//	break;
-			//case 8:	// d	1-2 桁の日 (1-31)
-			//	result += ToString(date.day);
-			//	break;
-			//case 9:	// EEEE 英語の曜日 (Sunday-Satueday)
-			//	result += DayOfWeekEnglish[FromEnum(date.dayOfWeek())];
-			//	break;
-			//case 10: // EEE	英語の曜日の略称 (Sun-Sat)
-			//	result += DayOfWeekEnglish[FromEnum(date.dayOfWeek())].substr(0, 3);
-			//	break;
-			//case 11: // a	午前/午後 (AM/PM)
-			//	result += AMPM[date.hour > 11];
-			//	break;
-			//case 12: // HH	24 時間表記の 2 桁の時 (00-23)
-			//	result += Pad(date.hour, { 2, U'0' });
-			//	break;
-			//case 13: // H	24 時間表記の時 (0-23)
-			//	result += ToString(date.hour);
-			//	break;
-			//case 14: // hh	12 時間表記の 2 桁の時 (00-11)
-			//	result += Pad(date.hour % 12, { 2, U'0' });
-			//	break;
-			//case 15: // h	12 時間表記の時 (0-11)
-			//	result += ToString(date.hour % 12);
-			//	break;
-			//case 16: // mm	2 桁の分 (00-59)
-			//	result += Pad(date.minute, { 2, U'0' });
-			//	break;
-			//case 17: // ss	2 桁の秒 (00-59)
-			//	result += Pad(date.second, { 2, U'0' });
-			//	break;
-			//case 18: // S	小数点以下 1 桁の秒 (0-9)
-			//	result += ToString(date.milliseconds / 100);
-			//	break;
-			//case 19: // SS	小数点以下 2 桁の秒 (00-99)
-			//	result += Pad(date.milliseconds / 10, { 2, U'0' });
-			//	break;
-			//case 20: // SSS	小数点以下 3 桁の秒 (000-999)
-			//	result += Pad(date.milliseconds, { 3, U'0' });
-			//	break;
-			//}
+			switch (formatIndex)
+			{
+			case 0:	// yyyy	4 桁の年 (0001-)
+				result += Pad(dt.year, { 4, U'0' });
+				break;
+			case 1:	// yy	2 桁の年 (00-99)
+				result += Pad(dt.year % 100, { 2, U'0' });
+				break;
+			case 2:	// y	年 (1-)
+				result += ToString(dt.year);
+				break;
+			case 3:	// MMMM	英語の月 (January-December)
+				result += MonthEnglish[(dt.month - 1)];
+				break;
+			case 4:	// MMM	英語の月の略称 (Jan-Dec)
+				result += MonthEnglish[(dt.month - 1)].substr(0, 3);
+				break;
+			case 5:	// MM	2 桁の月 (01-12)
+				result += Pad(dt.month, { 2, U'0' });
+				break;
+			case 6:	// M	1-2 桁の月 (1-12)
+				result += ToString(dt.month);
+				break;
+			case 7:	// dd	2 桁の日 (01-31)
+				result += Pad(dt.day, { 2, U'0' });
+				break;
+			case 8:	// d	1-2 桁の日 (1-31)
+				result += ToString(dt.day);
+				break;
+			case 9:	// EEEE 英語の曜日 (Sunday-Saturday)
+				result += DayOfWeekEnglish[FromEnum(dt.dayOfWeek())];
+				break;
+			case 10: // EEE	英語の曜日の略称 (Sun-Sat)
+				result += DayOfWeekEnglish[FromEnum(dt.dayOfWeek())].substr(0, 3);
+				break;
+			case 11: // a	午前/午後 (AM/PM)
+				result += AMPM[dt.hour > 11];
+				break;
+			case 12: // HH	24 時間表記の 2 桁の時 (00-23)
+				result += Pad(dt.hour, { 2, U'0' });
+				break;
+			case 13: // H	24 時間表記の時 (0-23)
+				result += ToString(dt.hour);
+				break;
+			case 14: // hh	12 時間表記の 2 桁の時 (00-11)
+				result += Pad(dt.hour % 12, { 2, U'0' });
+				break;
+			case 15: // h	12 時間表記の時 (0-11)
+				result += ToString(dt.hour % 12);
+				break;
+			case 16: // mm	2 桁の分 (00-59)
+				result += Pad(dt.minute, { 2, U'0' });
+				break;
+			case 17: // ss	2 桁の秒 (00-59)
+				result += Pad(dt.second, { 2, U'0' });
+				break;
+			case 18: // S	小数点以下 1 桁の秒 (0-9)
+				result += ToString(dt.milliseconds / 100);
+				break;
+			case 19: // SS	小数点以下 2 桁の秒 (00-99)
+				result += Pad(dt.milliseconds / 10, { 2, U'0' });
+				break;
+			case 20: // SSS	小数点以下 3 桁の秒 (000-999)
+				result += Pad(dt.milliseconds, { 3, U'0' });
+				break;
+			}
 		}
 
 		static String FormatDateTime(const DateTime& dateTime, const StringView format, const bool skipTime)
