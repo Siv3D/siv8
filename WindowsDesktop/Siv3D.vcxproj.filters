@@ -157,6 +157,21 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger">
       <UniqueIdentifier>{ff033043-dd9a-47df-a591-f59702a14c1a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\EngineLog">
+      <UniqueIdentifier>{29196edd-05f3-4bed-9c4a-89730870e6d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\BinaryReader">
+      <UniqueIdentifier>{ba529226-a699-4c6d-a1df-7e8b58e3f123}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader">
+      <UniqueIdentifier>{c7b8aa4b-732a-4089-b5ec-22364aef9781}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\fmt">
+      <UniqueIdentifier>{b2d0e130-5452-4f05-b12c-dfb63c19e6fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\fmt">
+      <UniqueIdentifier>{d9cd66d8-e1f7-4c8c-af81-5b7dd3abcd59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -510,6 +525,30 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\EngineLog.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryReader.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryWriter.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader\BinaryReaderDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\format.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\core.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FormatLiteral.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -631,6 +670,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\EngineLog\SivEngineLog.cpp">
+      <Filter>src\Siv3D\EngineLog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryReader\SivBinaryReader.cpp">
+      <Filter>src\Siv3D\BinaryReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader\BinaryReaderDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

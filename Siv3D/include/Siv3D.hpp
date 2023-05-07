@@ -97,7 +97,7 @@
 # include <Siv3D/RangeFormatter.hpp>
 # include <Siv3D/TupleFormatter.hpp>
 # include <Siv3D/Format.hpp>
-//# include <Siv3D/FormatLiteral.hpp>
+# include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/FormatUtility.hpp>
 
 //# include <Siv3D/ParseBool.hpp>
@@ -144,7 +144,7 @@
 //# include <Siv3D/Blob.hpp>
 //# include <Siv3D/MemoryWriter.hpp>
 //# include <Siv3D/OpenMode.hpp>
-//# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryReader.hpp>
 //# include <Siv3D/BinaryWriter.hpp>
 //# include <Siv3D/Base64.hpp>
 //# include <Siv3D/MD5Value.hpp>
