@@ -19,6 +19,7 @@ SIV3D_DISABLE_MSVC_WARNINGS_POP()
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
 # include <Siv3D/String.hpp>
+# include <Siv3D/Format.hpp>
 
 namespace s3d
 {
@@ -50,6 +51,12 @@ namespace s3d
 			constexpr detail::FormatHelper operator ""_fmt(const char32* s, size_t length) noexcept;
 		}
 	}
+
+	template <class Type>
+	concept FmtFormattable = requires (Type& v, fmt::format_context ctx)
+	{
+		fmt::formatter<std::remove_cvref_t<Type>>().format(v, ctx);
+	};
 }
 
 # include "detail/FormatLiteral.ipp"
@@ -126,7 +133,7 @@ struct SIV3D_HIDDEN fmt::formatter<s3d::StringView, s3d::char32>
 {
 	std::u32string tag;
 
-	auto parse(basic_format_parse_context<s3d::char32>& ctx)
+	auto parse(fmt::basic_format_parse_context<s3d::char32>& ctx)
 	{
 		return s3d::GetFormatTag(tag, ctx);
 	}
@@ -137,6 +144,29 @@ struct SIV3D_HIDDEN fmt::formatter<s3d::StringView, s3d::char32>
 		return fmt::format_to(ctx.out(), (tag.empty() ? U"{}" : (U"{:" + tag + U'}')), sv);
 	}
 };
+
+template <class Type>
+	requires (s3d::Concept::Formattable<Type>
+		&& (not std::is_convertible_v<Type, const s3d::char32*>)
+		&& (not std::is_same_v<Type, s3d::char32>)
+		&& (not s3d::FmtFormattable<Type>))
+struct SIV3D_HIDDEN fmt::formatter<Type, s3d::char32>
+{
+	std::u32string tag;
+
+	auto parse(fmt::basic_format_parse_context<s3d::char32>& ctx)
+	{
+		return s3d::GetFormatTag(tag, ctx);
+	}
+
+	auto format(const Type& value, auto& ctx)
+	{
+		const s3d::String s = s3d::Format(value);
+		const fmt::basic_string_view<s3d::char32> sv(s.data(), s.size());
+		return fmt::format_to(ctx.out(), (tag.empty() ? U"{}" : (U"{:" + tag + U'}')), sv);
+	}
+};
+
 
 //template <class Type, class Allocator>
 //struct SIV3D_HIDDEN fmt::formatter<s3d::Array<Type, Allocator>, s3d::char32>
