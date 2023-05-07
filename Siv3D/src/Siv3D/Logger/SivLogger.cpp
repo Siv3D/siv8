@@ -8,18 +8,3 @@
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
-
-# pragma once
-
-namespace s3d
-{
-	/// @brief アルファベットの大文字・小文字 | Letter case
-	enum class LetterCase
-	{
-		/// @brief 小文字 | Lowercase
-		Lower,
-
-		/// @brief 大文字 | Uppercase
-		Upper,
-	};
-}

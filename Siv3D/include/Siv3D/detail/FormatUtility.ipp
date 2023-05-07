@@ -13,16 +13,20 @@
 
 namespace s3d
 {
-	template <class Type>
-	inline String Pad(const Type& value, std::pair<int32, char32> padding)
+	namespace detail
 	{
-		String result = Format(value);
+		String Lpad(String&& s, const std::pair<int32, char32>& padding);
 
-		if (result.length() < padding.first)
-		{
-			result.insert(result.begin(), (padding.first - result.length()), padding.second);
-		}
+		String ThousandSeparateInt(const String& value, char32 separator);
+	}
 
-		return result;
+	inline String Pad(const auto& value, const std::pair<int32, char32>& padding)
+	{
+		return detail::Lpad(Format(value), padding);
+	}
+
+	inline String ThousandSeparate(const Concept::Integral auto value, const char32 separator)
+	{
+		return detail::ThousandSeparateInt(ToString(value), separator);
 	}
 }

@@ -9,9 +9,12 @@
 //
 //-----------------------------------------------
 
-# pragma once
+# include <Siv3D/Logger/CLogger.hpp>
 
 namespace s3d
 {
-
+	ISiv3DLogger* ISiv3DLogger::Create()
+	{
+		return new CLogger;
+	}
 }

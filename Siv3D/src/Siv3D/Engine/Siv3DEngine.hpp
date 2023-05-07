@@ -15,6 +15,7 @@
 
 namespace s3d
 {
+	class ISiv3DLogger;
 	class ISiv3DConsole;
 
 	class Siv3DEngine
@@ -24,6 +25,7 @@ namespace s3d
 		inline static Siv3DEngine* pEngine = nullptr;
 
 		std::tuple<
+			Siv3DComponent<ISiv3DLogger>,
 			Siv3DComponent<ISiv3DConsole>> m_components;
 
 	public:

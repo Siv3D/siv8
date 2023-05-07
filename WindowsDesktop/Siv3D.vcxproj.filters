@@ -148,6 +148,15 @@
     <Filter Include="src\Siv3D\Duration">
       <UniqueIdentifier>{44b8ccb5-e2a6-49d3-ad8a-1cab2a726c59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\FormatUtility">
+      <UniqueIdentifier>{2c69bb9f-cb9a-44d4-9e9c-1dfe47047ca7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Logger">
+      <UniqueIdentifier>{bab70111-893c-4f81-a7a2-401d25fb58be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger">
+      <UniqueIdentifier>{ff033043-dd9a-47df-a591-f59702a14c1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -492,8 +501,14 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Stopwatch.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Stopwatch.ipp">
-      <Filter>include\Siv3D\detail</Filter>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp">
+      <Filter>src\Siv3D\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp">
+      <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -604,6 +619,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp">
       <Filter>src\Siv3D\Duration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FormatUtility\SivFormatUtility.cpp">
+      <Filter>src\Siv3D\FormatUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Logger\LoggerFactory.cpp">
+      <Filter>src\Siv3D\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Logger\SivLogger.cpp">
+      <Filter>src\Siv3D\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "Siv3DEngine.hpp"
+# include <Siv3D/Logger/ILogger.hpp>
 # include <Siv3D/Console/IConsole.hpp>
 
 namespace s3d
@@ -34,8 +35,7 @@ namespace s3d
 
 	Siv3DEngine::~Siv3DEngine()
 	{
-		detail::ReleaseTupleReverse(m_components);
-		
+		detail::ReleaseTupleReverse(m_components);	
 		pEngine = nullptr;
 	}
 
