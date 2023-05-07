@@ -39,6 +39,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Format.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatData.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteral.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatUtility.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IntFormatter.ipp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\ieee.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\utils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\fmt\format-inl.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\wyhash\wyhash.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\xxHash\xxhash.h" />
@@ -183,6 +185,7 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\double-to-string.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\fast-dtoa.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.cc" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\fmt\format.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</LanguageStandard>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Default</LanguageStandard>

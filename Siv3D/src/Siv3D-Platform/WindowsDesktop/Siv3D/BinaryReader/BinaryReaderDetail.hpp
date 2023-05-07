@@ -11,6 +11,7 @@
 
 # pragma once
 # include <fstream>
+# include <Siv3D/BinaryReader.hpp>
 # include <Siv3D/NonNull.hpp>
 # include <Siv3D/Byte.hpp>
 # include <Siv3D/String.hpp>
@@ -21,30 +22,41 @@ namespace s3d
 	{
 	public:
 
+		[[nodiscard]]
 		BinaryReaderDetail();
 
 		~BinaryReaderDetail();
 
+		[[nodiscard]]
 		bool open(FilePathView path);
 
 		void close();
 
+		[[nodiscard]]
 		bool isOpen() const noexcept;
 
+		[[nodiscard]]
 		int64 size() const noexcept;
 
+		[[nodiscard]]
 		int64 setPos(int64 clampedPos);
 
+		[[nodiscard]]
 		int64 getPos();
 
-		int64 read(NonNull<void*> dst, int64 size);
+		[[nodiscard]]
+		int64 read(NonNull<void*> dst, int64 readSize);
 
-		int64 read(NonNull<void*> dst, int64 pos, int64 size);
+		[[nodiscard]]
+		int64 read(NonNull<void*> dst, int64 pos, int64 readSize);
 
-		int64 lookahead(NonNull<void*> dst, int64 size);
+		[[nodiscard]]
+		int64 lookahead(NonNull<void*> dst, int64 readSize);
 
-		int64 lookahead(NonNull<void*> dst, int64 pos, int64 size);
+		[[nodiscard]]
+		int64 lookahead(NonNull<void*> dst, int64 pos, int64 readSize);
 
+		[[nodiscard]]
 		const FilePath& path() const noexcept;
 
 	private:
@@ -52,22 +64,23 @@ namespace s3d
 		struct File
 		{
 			std::ifstream file;
-			int64 pos = 0;
+			int64 readPos = 0;
 		} m_file;
 
 		struct Resource
 		{
 			const Byte* pointer = nullptr;
-			int64 pos = 0;
+			int64 readPos = 0;
 		} m_resource;
 
 		struct Info
 		{
-			bool isOpen = false;
-			int64 size = 0;
 			FilePath fullPath;
+			int64 size = 0;
+			bool isOpen = false;
 		} m_info;
 
+		[[nodiscard]]
 		bool isResource() const noexcept;
 	};
 }

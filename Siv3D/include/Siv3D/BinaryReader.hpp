@@ -80,16 +80,16 @@ namespace s3d
 
 		/// @brief ファイルからデータを読み込みます。
 		/// @param dst 読み込み先
-		/// @param size 読み込むサイズ（バイト）
+		/// @param readSize 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
-		int64 read(void* dst, int64 size) override;
+		int64 read(void* dst, int64 readSize) override;
 
 		/// @brief ファイルからデータを読み込みます。
 		/// @param dst 読み込み先
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
-		/// @param size 読み込むサイズ（バイト）
+		/// @param readSize 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
-		int64 read(void* dst, int64 pos, int64 size) override;
+		int64 read(void* dst, int64 pos, int64 readSize) override;
 
 		/// @brief ファイルからデータを読み込みます。
 		/// @param dst 読み込み先
@@ -98,16 +98,16 @@ namespace s3d
 
 		/// @brief 読み込み位置を変更しないでファイルからデータを読み込みます。
 		/// @param dst 読み込み先
-		/// @param size 読み込むサイズ（バイト）
+		/// @param readSize 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
-		int64 lookahead(void* dst, int64 size) const override;
+		int64 lookahead(void* dst, int64 readSize) const override;
 
 		/// @brief 読み込み位置を変更しないでファイルからデータを読み込みます。
 		/// @param dst 読み込み先
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
-		/// @param size 読み込むサイズ（バイト）
+		/// @param readSize 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
-		int64 lookahead(void* dst, int64 pos, int64 size) const override;
+		int64 lookahead(void* dst, int64 pos, int64 readSize) const override;
 
 		/// @brief 読み込み位置を変更しないでファイルからデータを読み込みます。
 		/// @param dst 読み込み先

@@ -16,6 +16,15 @@
 
 namespace s3d
 {
+	Error::Error(const char* message)
+		: std::exception{ message } {}
+
+	Error::Error(const std::string_view message)
+		: Error{ std::string{ message } } {}
+
+	Error::Error(const std::string& message)
+		: std::exception{ message.c_str() } {}
+
 	Error::Error(const char32* message)
 		: Error{ StringView{ message } } {}
 

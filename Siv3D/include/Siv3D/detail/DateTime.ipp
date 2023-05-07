@@ -82,8 +82,8 @@ namespace s3d
 	constexpr Duration DateTime::Subtract(const DateTime& a, const DateTime& b) noexcept
 	{
 		const Days diffDays = (a.date() - b.date());
-		const int32 aMillisec = detail::TimeToMillisecCount(a.hour, a.minute, a.second, a.milliseconds);
-		const int32 bMillisec = detail::TimeToMillisecCount(b.hour, b.minute, b.second, b.milliseconds);
-		return Duration{ (static_cast<int64>(diffDays.count()) * (86400 * 1000) + (aMillisec - bMillisec)) / 1000.0 };
+		const int64 aMilliSec = detail::TimeToMillisecCount(a.hour, a.minute, a.second, a.milliseconds);
+		const int64 bMilliSec = detail::TimeToMillisecCount(b.hour, b.minute, b.second, b.milliseconds);
+		return Duration{ (static_cast<int64>(diffDays.count()) * (86400 * 1000) + (aMilliSec - bMilliSec)) / 1000.0 };
 	}
 }

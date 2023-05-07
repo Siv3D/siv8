@@ -12,6 +12,7 @@
 # pragma once
 # include "LogType.hpp"
 # include "String.hpp"
+# include "FormatLiteral.hpp"
 
 namespace s3d
 {

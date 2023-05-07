@@ -24,6 +24,15 @@ namespace s3d
 		Error() = default;
 
 		[[nodiscard]]
+		explicit Error(const char* message);
+
+		[[nodiscard]]
+		explicit Error(std::string_view message);
+
+		[[nodiscard]]
+		explicit Error(const std::string& message);
+
+		[[nodiscard]]
 		explicit Error(const char32* message);
 
 		[[nodiscard]]
