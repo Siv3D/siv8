@@ -59,6 +59,7 @@
 
 # include <Siv3D/Optional.hpp>
 # include <Siv3D/Expected.hpp>
+# include <Siv3D/FunctionRef.hpp>
 
 # include <Siv3D/Array.hpp>
 //# include <Siv3D/Grid.hpp>

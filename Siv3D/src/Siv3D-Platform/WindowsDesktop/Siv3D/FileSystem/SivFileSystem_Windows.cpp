@@ -9,9 +9,9 @@
 //
 //-----------------------------------------------
 
+# include <Siv3D/Windows/Windows.hpp>
 # include <filesystem>
 # include <Shlobj.h>
-# include <Siv3D/Windows/MinWindows.hpp>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
 
