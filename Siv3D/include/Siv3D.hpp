@@ -74,6 +74,7 @@
 
 # include <Siv3D/Thread.hpp>
 # include <Siv3D/AsyncTask.hpp>
+# include <Siv3D/TaskFlow.hpp>
 //# include <Siv3D/ChildProcess.hpp>
 
 # include <Siv3D/Char.hpp>

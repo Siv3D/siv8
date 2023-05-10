@@ -46,9 +46,7 @@ namespace s3d
 
 		void Console_impl::writeln(const StringView s) const
 		{
-			write(s);
-
-			std::cout << std::endl;
+			write(s + U'\n');
 		}
 
 		void Console_impl::writeln(const String& s) const
