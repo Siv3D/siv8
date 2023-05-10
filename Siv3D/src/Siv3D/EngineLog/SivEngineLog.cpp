@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/EngineLog.hpp>
+# include <Siv3D/Unicode.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Logger/ILogger.hpp>
 
@@ -33,13 +34,13 @@ namespace s3d
 			}
 		}
 
-		ScopedEngineLog::ScopedEngineLog(const LogType type, String message)
+		ScopedEngineLog::ScopedEngineLog(const LogType type, std::string message)
 			: m_message{ std::move(message) }
 			, m_type{ type }
 		{
 			if (Siv3DEngine::isActive())
 			{
-				SIV3D_ENGINE(Logger)->write(m_type, (m_message + U" ---"_s));
+				SIV3D_ENGINE(Logger)->write(m_type, (m_message + " ---"));
 			}
 		}
 
@@ -47,7 +48,7 @@ namespace s3d
 		{
 			if (Siv3DEngine::isActive())
 			{
-				SIV3D_ENGINE(Logger)->write(m_type, (U"--- "_s + m_message));
+				SIV3D_ENGINE(Logger)->write(m_type, ("--- " + m_message));
 			}
 		}
 	}

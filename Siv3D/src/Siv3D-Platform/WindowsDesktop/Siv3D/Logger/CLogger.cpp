@@ -33,7 +33,7 @@ namespace s3d
 	}
 
 	CLogger::CLogger()
-		: m_outputLevel{ SIV3D_BUILD(DEBUG) ? LogType::Trace : LogType::User } {}
+		: m_outputLevel{ SIV3D_BUILD(DEBUG) ? LogType::Trace : LogType::Info } {}
 
 	CLogger::~CLogger() = default;
 

@@ -26,13 +26,13 @@ namespace s3d
 		{
 		public:
 
-			ScopedEngineLog(LogType type, String message);
+			ScopedEngineLog(LogType type, std::string message);
 
 			~ScopedEngineLog();
 	
 		private:
 
-			String m_message;
+			std::string m_message;
 
 			LogType m_type;
 		};

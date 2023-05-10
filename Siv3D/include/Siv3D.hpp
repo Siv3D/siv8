@@ -155,6 +155,19 @@
 //# include <Siv3D/ArchivedFileReader.hpp>
 //# include <Siv3D/FileArchive.hpp>
 
+
+
+
+
+
+
+
+
+
+
+# include <Siv3D/System.hpp>
+
+
 # include <Siv3D/ConsoleBuffer.hpp>
 # include <Siv3D/Console.hpp>
 
