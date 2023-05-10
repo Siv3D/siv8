@@ -18,6 +18,8 @@ namespace s3d
 {
 	namespace Internal
 	{
+		void OutputEngineLog(LogType type, std::string_view s);
+
 		void OutputEngineLog(LogType type, StringView s);
 
 		class ScopedEngineLog

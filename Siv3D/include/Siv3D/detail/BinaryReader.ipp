@@ -10,13 +10,16 @@
 //-----------------------------------------------
 
 # pragma once
-# include "YesNo.hpp"
 
 namespace s3d
 {
-	/// @brief 即座に開始する | Start immediately
-	using StartImmediately = YesNo<struct StartImmediately_tag>;
+	inline bool BinaryReader::read(Concept::TriviallyCopyable auto& dst)
+	{
+		return (read(std::addressof(dst), sizeof(dst)) == sizeof(dst));
+	}
 
-	/// @brief やり直しを許可する
-	using AllowUndo = YesNo<struct AllowUndo_tag>;
+	inline bool BinaryReader::lookahead(Concept::TriviallyCopyable auto& dst) const
+	{
+		return (lookahead(std::addressof(dst), sizeof(dst)) == sizeof(dst));
+	}
 }

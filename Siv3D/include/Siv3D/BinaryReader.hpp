@@ -70,8 +70,8 @@ namespace s3d
 
 		/// @brief 読み込み位置を変更します。
 		/// @param pos 新しい読み込み位置（バイト）
-		/// @return 読み込み位置の変更に成功した場合 true, それ以外の場合は false
-		bool setPos(int64 pos) override;
+		/// @return 新しい読み込み位置
+		int64 setPos(int64 pos) override;
 
 		/// @brief ファイルを読み飛ばし、読み込み位置を変更します。
 		/// @param offset 読み飛ばすサイズ（バイト）
@@ -112,7 +112,7 @@ namespace s3d
 		/// @brief 読み込み位置を変更しないでファイルからデータを読み込みます。
 		/// @param dst 読み込み先
 		/// @return 読み込みに成功したら true, それ以外の場合は false
-		bool lookahead(Concept::TriviallyCopyable auto& dst);
+		bool lookahead(Concept::TriviallyCopyable auto& dst) const;
 
 		/// @brief 開いているファイルのパスを返します。
 		/// @return 開いているファイルのパス。ファイルが開いていない場合は空の文字列
@@ -126,3 +126,5 @@ namespace s3d
 		std::shared_ptr<BinaryReaderDetail> pImpl;
 	};
 }
+
+# include "detail/BinaryReader.ipp"

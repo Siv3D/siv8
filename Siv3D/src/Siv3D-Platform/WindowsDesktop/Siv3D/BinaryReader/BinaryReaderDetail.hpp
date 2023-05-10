@@ -38,8 +38,9 @@ namespace s3d
 		[[nodiscard]]
 		int64 size() const noexcept;
 
-		[[nodiscard]]
-		int64 setPos(int64 clampedPos);
+		int64 setPos(int64 pos);
+
+		int64 skip(int64 offset);
 
 		[[nodiscard]]
 		int64 getPos();
@@ -61,23 +62,38 @@ namespace s3d
 
 	private:
 
-		struct File
-		{
-			std::ifstream file;
-			int64 readPos = 0;
-		} m_file;
-
 		struct Resource
 		{
 			const Byte* pointer = nullptr;
+
 			int64 readPos = 0;
+
+			int64 read(NonNull<void*> dst, int64 pos, int64 readSize, int64 fileSize);
+
+			int64 lookahead(NonNull<void*> dst, int64 pos, int64 readSize, int64 fileSize);
+
 		} m_resource;
+
+		struct File
+		{
+			std::ifstream file;
+			
+			int64 readPos = 0;
+
+			int64 read(NonNull<void*> dst, int64 readSize, int64 fileSize, const FilePath& fullPath);
+
+			int64 lookahead(NonNull<void*> dst, int64 readSize, int64 fileSize, const FilePath& fullPath);
+
+		} m_file;
 
 		struct Info
 		{
 			FilePath fullPath;
-			int64 size = 0;
+			
+			int64 fileSize = 0;
+			
 			bool isOpen = false;
+		
 		} m_info;
 
 		[[nodiscard]]

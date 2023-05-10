@@ -172,6 +172,9 @@
     <Filter Include="src\ThirdParty\fmt">
       <UniqueIdentifier>{d9cd66d8-e1f7-4c8c-af81-5b7dd3abcd59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem">
+      <UniqueIdentifier>{4d846f7d-d0d7-4041-994e-a7feec2911a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -555,6 +558,12 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\fmt\format-inl.h">
       <Filter>src\ThirdParty\fmt</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileSystem.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryReader.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -688,6 +697,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\fmt\format.cc">
       <Filter>src\ThirdParty\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\SivFileSystem_Windows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

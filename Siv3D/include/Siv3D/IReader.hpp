@@ -46,8 +46,8 @@ namespace s3d
 
 		/// @brief データの読み込み位置を変更します。 | Changes the read position of the data.
 		/// @param pos 新しい読み込み位置（バイト） | The new read position (bytes)
-		/// @return 読み込み位置の変更に成功した場合 true, それ以外の場合は false | Returns true if the read position was successfully changed, otherwise false
-		virtual bool setPos(int64 pos) = 0;
+		/// @return 新しい読み込み位置（バイト） | The new read position (bytes)
+		virtual int64 setPos(int64 pos) = 0;
 
 		/// @brief データを読み飛ばし、読み込み位置を前進させます。 | Skips the data and advances the read position.
 		/// @param offset 読み飛ばすサイズ（バイト） | The size to skip (bytes)

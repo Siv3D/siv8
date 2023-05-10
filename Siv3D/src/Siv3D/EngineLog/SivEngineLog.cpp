@@ -17,6 +17,14 @@ namespace s3d
 {
 	namespace Internal
 	{
+		void OutputEngineLog(const LogType type, const std::string_view s)
+		{
+			if (Siv3DEngine::isActive())
+			{
+				SIV3D_ENGINE(Logger)->write(type, s);
+			}
+		}
+
 		void OutputEngineLog(const LogType type, const StringView s)
 		{
 			if (Siv3DEngine::isActive())

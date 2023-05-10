@@ -15,9 +15,16 @@ namespace s3d
 {
 	namespace detail
 	{
-		struct FormatHelper : std::u32string_view
+		struct FormatHelper
 		{
-			using std::u32string_view::u32string_view;
+			fmt::basic_string_view<char32> sv;
+
+			[[nodiscard]]
+			FormatHelper() = default;
+
+			[[nodiscard]]
+			constexpr FormatHelper(const char32* s, const size_t length) noexcept
+				: sv{ s, length } {}
 
 			/// @brief フォーマット指定子 `{}` を含む文字列リテラルへ、変換する値を渡します。
 			/// @tparam ...Args 変換する値の型
@@ -28,7 +35,7 @@ namespace s3d
 			[[nodiscard]]
 			String operator()(Args&& ...args) const
 			{
-				return fmt::format(*this, std::forward<Args>(args)...);
+				return fmt::format(sv, std::forward<Args>(args)...);
 			}
 		};
 	}
@@ -48,22 +55,22 @@ namespace s3d
 
 	constexpr detail::FormatHelper Fmt(const char32* s) noexcept
 	{
-		return detail::FormatHelper{ s, std::char_traits<char32>::length(s) };
+		return{ s, std::char_traits<char32>::length(s) };
 	}
 
 	constexpr detail::FormatHelper Fmt(const StringView s) noexcept
 	{
-		return detail::FormatHelper{ s.data(), s.size() };
+		return{ s.data(), s.size() };
 	}
 
 	inline detail::FormatHelper Fmt(const String& s) noexcept
 	{
-		return detail::FormatHelper{ s.c_str(), s.size() };
+		return{ s.c_str(), s.size() };
 	}
 
 	inline detail::FormatHelper Fmt(const std::u32string& s) noexcept
 	{
-		return detail::FormatHelper{ s.c_str(), s.size() };
+		return{ s.c_str(), s.size() };
 	}
 
 	namespace Literals
@@ -72,7 +79,7 @@ namespace s3d
 		{
 			constexpr detail::FormatHelper operator ""_fmt(const char32* s, const size_t length) noexcept
 			{
-				return detail::FormatHelper{ s, length };
+				return{ s, length };
 			}
 		}
 	}

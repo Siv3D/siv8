@@ -30,6 +30,12 @@ namespace s3d
 	/// @return 桁区切りされた文字列 | Digit-separated string
 	[[nodiscard]]
 	String ThousandSeparate(Concept::Integral auto value, char32 separator = U',');
+
+	/// @brief データサイズを文字列に変換します。 | Converts the data size to a string.
+	/// @param bytes データサイズ | Data size
+	/// @return 変換した結果 | Conversion result
+	[[nodiscard]]
+	String FormatDataSize(int64 bytes);
 }
 
 # include "detail/FormatUtility.ipp"

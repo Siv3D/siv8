@@ -388,3 +388,181 @@ TEST_CASE("Unicode.hpp")
 	}
 }
 
+TEST_CASE("BinaryReader.hpp")
+{
+	FileSystem::Remove(U"test.bin");
+	ScopeExit exit = [](){ FileSystem::Remove(U"test.bin"); };
+	
+	{
+		BinaryReader reader;
+		CHECK(reader.supportsLookahead());
+		CHECK(not reader);
+		CHECK(not reader.isOpen());
+		CHECK(reader.path().isEmpty());
+		CHECK(reader.size() == 0);
+		CHECK(reader.getPos() == 0);
+
+		CHECK(reader.setPos(0) == 0);
+		CHECK(reader.getPos() == 0);
+		
+		CHECK(reader.setPos(-10) == 0);
+		CHECK(reader.getPos() == 0);
+	
+		CHECK(reader.setPos(20) == 0);
+		CHECK(reader.getPos() == 0);
+		
+		CHECK(reader.skip(-10) == 0);
+		CHECK(reader.getPos() == 0);
+		
+		CHECK(reader.skip(20) == 0);
+		CHECK(reader.getPos() == 0);
+
+		{
+			int32 value = 123;
+			CHECK(reader.read(&value, sizeof(value)) == 0);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK(reader.read(&value, 0, sizeof(value)) == 0);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK_THROWS_AS(reader.read(&value, -2, sizeof(value)), Error);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK_THROWS_AS(reader.read(&value, 2, sizeof(value)), Error);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK_THROWS_AS(reader.read(&value, 100, sizeof(value)), Error);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK(reader.read(value) == false);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+		}
+
+		{
+			int32 value = 123;
+			CHECK(reader.lookahead(&value, sizeof(value)) == 0);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK(reader.lookahead(&value, 0, sizeof(value)) == 0);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK_THROWS_AS(reader.lookahead(&value, -2, sizeof(value)), Error);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK_THROWS_AS(reader.lookahead(&value, 2, sizeof(value)), Error);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK_THROWS_AS(reader.lookahead(&value, 100, sizeof(value)), Error);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+
+			CHECK(reader.lookahead(value) == false);
+			CHECK(reader.getPos() == 0);
+			CHECK(value == 123);
+		}
+	}
+
+	{
+		BinaryReader reader{ U"test.bin" };
+		CHECK(not reader);
+		CHECK(not reader.isOpen());
+		CHECK(reader.path().isEmpty());
+		CHECK(reader.size() == 0);
+		CHECK(reader.getPos() == 0);
+	}
+
+	{
+		const int32 Data = 123456789;
+		{
+			std::ofstream ofs{ "test.bin", std::ios::binary };
+			ofs.write((const char*)&Data, sizeof(Data));
+		}
+
+		{
+			BinaryReader reader{ U"test.bin" };
+			CHECK(reader);
+			CHECK(reader.isOpen());
+			CHECK(reader.path() == FileSystem::FullPath(U"test.bin"));
+			CHECK(reader.size() == 4);
+			CHECK(reader.getPos() == 0);
+
+			CHECK(reader.setPos(0) == 0);
+			CHECK(reader.getPos() == 0);
+
+			CHECK(reader.setPos(-10) == 0);
+			CHECK(reader.getPos() == 0);
+
+			CHECK(reader.setPos(2) == 2);
+			CHECK(reader.getPos() == 2);
+
+			CHECK(reader.setPos(4) == 4);
+			CHECK(reader.getPos() == 4);
+
+			CHECK(reader.setPos(5) == 4);
+			CHECK(reader.getPos() == 4);
+
+			CHECK(reader.setPos(20) == 4);
+			CHECK(reader.getPos() == 4);
+
+			CHECK(reader.skip(-10) == 0);
+			CHECK(reader.getPos() == 0);
+
+			CHECK(reader.skip(1) == 1);
+			CHECK(reader.getPos() == 1);
+
+			CHECK(reader.skip(2) == 3);
+			CHECK(reader.getPos() == 3);
+
+			CHECK(reader.skip(20) == 4);
+			CHECK(reader.getPos() == 4);
+
+			CHECK(reader.setPos(0) == 0);
+			CHECK(reader.getPos() == 0);
+
+			{
+				int32 value = 123;
+				CHECK(reader.read(&value, sizeof(value)) == 4);
+				CHECK(reader.getPos() == 4);
+				CHECK(value == Data);
+				value = 0;
+
+				CHECK(reader.read(&value, 0, sizeof(value)) == 4);
+				CHECK(reader.getPos() == 4);
+				CHECK(value == Data);
+				value = 0;
+
+				CHECK_THROWS_AS(reader.read(&value, -2, sizeof(value)), Error);
+				CHECK(reader.getPos() == 4);
+				CHECK(value == 0);
+
+				CHECK(reader.read(&value, 2, sizeof(value)) == 2);
+				CHECK(reader.getPos() == 4);
+				CHECK(value == (Data >> 16));
+				value = 0;
+
+				CHECK_THROWS_AS(reader.read(&value, 100, sizeof(value)), Error);
+				CHECK(reader.getPos() == 4);
+				CHECK(value == 0);
+
+				CHECK(reader.read(value) == false);
+				CHECK(reader.getPos() == 4);
+				CHECK(value == 0);
+
+				CHECK(reader.setPos(0) == 0);
+				CHECK(reader.read(value) == true);
+				CHECK(reader.getPos() == 4);
+				CHECK(value == Data);
+			}
+		}
+	}
+}

@@ -20,12 +20,6 @@ namespace s3d
 	namespace detail
 	{
 		[[noreturn]]
-		static void ThrowSetPosOutOfRangeError(const int64 pos)
-		{
-			throw Error{ fmt::format("BinaryReader::setPos(): The provided position {} is out of range.", pos) };
-		}
-
-		[[noreturn]]
 		static void ThrowReadDstError()
 		{
 			throw Error{ "BinaryReader::read(): A non-null destination pointer is required when readSize is greater than 0." };
@@ -59,6 +53,11 @@ namespace s3d
 		open(path);
 	}
 
+	bool BinaryReader::supportsLookahead() const noexcept
+	{
+		return true;
+	}
+
 	bool BinaryReader::open(const FilePathView path)
 	{
 		return pImpl->open(path);
@@ -89,21 +88,14 @@ namespace s3d
 		return pImpl->getPos();
 	}
 
-	bool BinaryReader::setPos(const int64 pos)
+	int64 BinaryReader::setPos(const int64 pos)
 	{
-		if (not InRange<int64>(pos, 0, pImpl->size()))
-		{
-			detail::ThrowSetPosOutOfRangeError(pos);
-		}
-
-		return (pImpl->setPos(pos) == pos);
+		return pImpl->setPos(pos);
 	}
 
 	int64 BinaryReader::skip(const int64 offset)
 	{
-		const int64 clampedPos = Clamp<int64>((pImpl->getPos() + offset), 0, pImpl->size());
-
-		return pImpl->setPos(clampedPos);
+		return pImpl->skip(offset);
 	}
 
 	int64 BinaryReader::read(void* const dst, const int64 readSize)

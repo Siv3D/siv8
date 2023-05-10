@@ -132,7 +132,7 @@
 # include <Siv3D/IWriter.hpp>
 //# include <Siv3D/SpecialFolder.hpp>
 //# include <Siv3D/CopyOption.hpp>
-//# include <Siv3D/FileSystem.hpp>
+# include <Siv3D/FileSystem.hpp>
 //# include <Siv3D/ResourceOption.hpp>
 //# include <Siv3D/Resource.hpp>
 //# include <Siv3D/FileAction.hpp>

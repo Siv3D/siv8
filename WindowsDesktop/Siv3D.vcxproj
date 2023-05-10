@@ -29,6 +29,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\DayOfWeek.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Demangle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AsyncTask.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryReader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Char.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Console.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConsoleBuffer.ipp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\EngineLog.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Error.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Expected.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileSystem.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatToString.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Format.hpp" />
@@ -144,6 +146,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DateTime\SivDateTime_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Date\SivDate_Windows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\SivFileSystem_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory\SivMemory.cpp">
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4559</DisableSpecificWarnings>
