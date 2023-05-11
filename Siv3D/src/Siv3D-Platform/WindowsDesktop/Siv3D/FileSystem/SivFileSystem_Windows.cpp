@@ -9,14 +9,18 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/Windows/Windows.hpp>
 # include <filesystem>
+# include <array>
+# include <Siv3D/Windows/Windows.hpp>
 # include <Shlobj.h>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/Array.hpp>
 
 namespace s3d
 {
+	inline constexpr size_t DefaultMaxPathLength = 320;
+
 	namespace detail
 	{
 		[[nodiscard]]
@@ -36,10 +40,10 @@ namespace s3d
 		{
 			std::replace(path.begin(), path.end(), L'\\', L'/');
 
-			if ((not path.ends_with(U'/'))
+			if ((not path.ends_with(L'/'))
 				&& (skipDirectoryCheck || (GetStatus(path).type() == std::filesystem::file_type::directory)))
 			{
-				path.push_back(U'/');
+				path.push_back(L'/');
 			}
 
 			return Unicode::FromWstring(path);
@@ -58,6 +62,88 @@ namespace s3d
 			{
 				return 0;
 			}
+		}
+
+		namespace init
+		{
+			const static struct FilePathCache
+			{
+				FilePath initialDirectory;
+
+				FilePathCache()
+				{
+					//initialDirectory = Unicode::FromWstring(L"Siv3D");// FileSystem::CurrentDirectory();
+				}
+
+				//FilePath modulePath = []() -> FilePath
+				//{
+				//	wchar_t result[1024];
+				//	const DWORD length = ::GetModuleFileNameW(nullptr, result, _countof(result));
+
+				//	if ((length == 0) || (_countof(result) <= length))
+				//	{
+				//		return{};
+				//	}
+
+				//	return NormalizePath(std::wstring{ result, length });
+				//}();
+
+				//std::array<FilePath, 11> specialFolderPaths = []()
+				//{
+				//	static constexpr int ids[] = {
+				//		CSIDL_DESKTOP,
+				//		CSIDL_MYDOCUMENTS,
+				//		CSIDL_LOCAL_APPDATA,
+				//		CSIDL_MYPICTURES,
+				//		CSIDL_MYMUSIC,
+				//		CSIDL_MYVIDEO,
+				//		CSIDL_FONTS,
+				//		CSIDL_FONTS,
+				//		CSIDL_FONTS,
+				//		CSIDL_PROFILE,
+				//		CSIDL_PROGRAM_FILES,
+				//	};
+
+				//	std::array<FilePath, 11> paths;
+
+				//	for (size_t i = 0; i < paths.size(); ++i)
+				//	{
+				//		wchar_t path[MAX_PATH];
+
+				//		if (FAILED(::SHGetFolderPathW(nullptr, ids[i], nullptr, 0, path)))
+				//		{
+				//			continue;
+				//		}
+
+				//		paths[i] = NormalizePath(path, true);
+				//	}
+
+				//	return paths;
+				//}();
+
+				//Array<FilePath> resourceFilePaths = []()
+				//{
+				//	Array<FilePath> paths;
+
+				//	HMODULE hModule = ::GetModuleHandleW(nullptr);
+
+				//	::EnumResourceNamesW(hModule, L"FILE", EnumResourceNameCallback, (LONG_PTR)&paths);
+
+				//	std::ranges::sort(paths);
+
+				//	return paths;
+				//}();
+
+				//static BOOL CALLBACK EnumResourceNameCallback(HMODULE, LPCWSTR, LPWSTR lpName, LONG_PTR lParam)
+				//{
+				//	Array<FilePath>& paths = *reinterpret_cast<Array<FilePath>*>(lParam);
+
+				//	paths.push_back(U'/' + Unicode::FromWstring(lpName));
+
+				//	return true;
+				//}
+
+			} g_filePathCache;
 		}
 	}
 
@@ -83,7 +169,7 @@ namespace s3d
 			}
 
 			const std::wstring pathW = path.toWstr();
-			wchar_t result[320];
+			wchar_t result[DefaultMaxPathLength];
 			wchar_t* pFilePart = nullptr;
 			const DWORD length = ::GetFullPathNameW(pathW.c_str(), _countof(result), result, &pFilePart);
 
@@ -144,6 +230,52 @@ namespace s3d
 			}
 
 			return ((static_cast<uint64>(fad.nFileSizeHigh) << 32) + fad.nFileSizeLow);
+		}
+
+
+		const FilePath& InitialDirectory() noexcept
+		{
+			static FilePath initialDirectory;
+			return initialDirectory;
+			//return detail::init::g_filePathCache.initialDirectory;
+		}
+
+		const FilePath& ModulePath() noexcept
+		{
+			static FilePath modulePath;
+			return modulePath;
+			//return detail::init::g_filePathCache.modulePath;
+		}
+
+		FilePath CurrentDirectory()
+		{
+			wchar_t result[DefaultMaxPathLength];
+			const DWORD length = ::GetCurrentDirectoryW(_countof(result), result);
+
+			if (length == 0)
+			{
+				return{};
+			}
+			else if (std::size(result) < length)
+			{
+				std::wstring result2(length - 1, L'\0');
+				const DWORD length2 = ::GetCurrentDirectoryW(length, result2.data());
+
+				if ((length2 == 0)
+					|| (length < (length2 + 1)))
+				{
+					return{};
+				}
+
+				if (length2 < result2.size())
+				{
+					result2.resize(length2);
+				}
+
+				return detail::NormalizePath(result2, true);
+			}
+
+			return detail::NormalizePath(std::wstring{ result, length }, true);
 		}
 
 		bool Remove(const FilePathView path, const AllowUndo allowUndo)

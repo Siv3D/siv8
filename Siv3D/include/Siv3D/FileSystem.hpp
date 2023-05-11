@@ -38,7 +38,20 @@ namespace s3d
 		[[nodiscard]]
 		int64 FileSize(FilePathView path);
 
+		/// @brief 実行ファイルを起動したディレクトリを返します。
+		/// @return 実行ファイルを起動したディレクトリ
+		[[nodiscard]]
+		const FilePath& InitialDirectory() noexcept;
 
+		/// @brief 実行ファイルのフルパスを返します。
+		/// @return 実行ファイルのフルパス
+		[[nodiscard]]
+		const FilePath& ModulePath() noexcept;
+	
+		/// @brief 現在のカレントディレクトリを返します。
+		/// @return 現在のカレントディレクトリ
+		[[nodiscard]]
+		FilePath CurrentDirectory();
 
 		/// @brief 指定したファイルまたはディレクトリを削除します。
 		/// @param path 削除するパス

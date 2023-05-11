@@ -12,6 +12,7 @@
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/System/CSystem.hpp>
+# include <Siv3D/Window/CWindow.hpp>
 # include <Siv3D/AsyncTask.hpp>
 
 // ユーザによって実装される | Implemented by the user
@@ -31,10 +32,10 @@ namespace s3d
 
 	void DestroyWindow()
 	{
-		//if (auto pCWindow = dynamic_cast<CWindow*>(SIV3D_ENGINE(Window)))
-		//{
-		//	pCWindow->destroy();
-		//}
+		if (auto pCWindow = dynamic_cast<CWindow*>(SIV3D_ENGINE(Window)))
+		{
+			pCWindow->destroy();
+		}
 
 		g_shouldDestroyWindow.clear();
 	}
@@ -103,7 +104,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 		{
 			try
 			{
-				//SIV3D_ENGINE(Window)->init();
+				SIV3D_ENGINE(Window)->init();
 			}
 			catch (const std::exception& error)
 			{
