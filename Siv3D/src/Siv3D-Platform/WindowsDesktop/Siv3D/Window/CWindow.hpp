@@ -88,7 +88,7 @@ namespace s3d
 
 		HDEVNOTIFY m_deviceNotificationHandle = nullptr;
 
-		ComPtr<ITaskbarList3> m_taskbar;
+		ComPtr<ITaskbarList3> m_taskbarList;
 
 		bool m_windowShown = false;
 	};

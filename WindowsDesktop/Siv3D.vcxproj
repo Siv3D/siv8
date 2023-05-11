@@ -119,6 +119,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\ComPtr.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Libraries.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\MinWindows.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Resource.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Windows.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\YesNo.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\doctest\doctest.h" />

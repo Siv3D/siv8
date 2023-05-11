@@ -115,6 +115,27 @@ namespace s3d
 			LOG_TRACE("RegisterDeviceNotificationW()");
 			return ::RegisterDeviceNotificationW(hWnd, (DEV_BROADCAST_HDR*)&dbi, DEVICE_NOTIFY_WINDOW_HANDLE);
 		}
+
+		[[nodiscard]]
+		static ComPtr<ITaskbarList3> CreateTaskbarList()
+		{
+			ComPtr<ITaskbarList3> taskbarList;
+
+			if (SUCCEEDED(::CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&taskbarList))))
+			{
+				if (FAILED(taskbarList->HrInit()))
+				{
+					LOG_FAIL("Failed to initialize a TaskbarList object");
+					taskbarList.Reset();
+				}
+			}
+			else
+			{
+				LOG_FAIL("Failed to create a TaskbarList object");
+			}
+
+			return taskbarList;
+		}
 	}
 
 	extern std::atomic_flag g_shouldDestroyWindow;
@@ -224,20 +245,8 @@ namespace s3d
 		// DBT_DEVICEARRIVAL, DBT_DEVICEREMOVECOMPLETE が送られるようにする
 		m_deviceNotificationHandle = detail::StartDeviceNotification(m_hWnd);
 
-		// タスクバー取得
-		{
-			if (SUCCEEDED(::CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&m_taskbar))))
-			{
-				if (FAILED(m_taskbar->HrInit()))
-				{
-					LOG_FAIL(U"Failed to initialize a TaskbarList object");
-				}
-			}
-			else
-			{
-				LOG_FAIL(U"Failed to create a TaskbarList object");
-			}
-		}
+		// タスクバーリストを作成する
+		m_taskbarList = detail::CreateTaskbarList();
 
 		//SIV3D_ENGINE(TextInput)->init();
 	}
@@ -325,7 +334,7 @@ namespace s3d
 
 		if (m_hWnd)
 		{
-			m_taskbar.Reset();
+			m_taskbarList.Reset();
 
 			if (m_deviceNotificationHandle)
 			{
@@ -335,7 +344,7 @@ namespace s3d
 			}
 
 			LOG_TRACE("DestroyWindow()");
-			const BOOL b = ::DestroyWindow(m_hWnd);
+			[[maybe_unused]] const BOOL b = ::DestroyWindow(m_hWnd);
 			LOG_TRACE(fmt::format("DestroyWindow() -> {}", static_cast<bool>(b)));
 		}
 
@@ -373,7 +382,7 @@ namespace s3d
 		};
 
 		{
-			LOG_TRACE(U"RegisterClassExW()");
+			LOG_TRACE("RegisterClassExW()");
 		
 			if (not ::RegisterClassExW(&windowClass))
 			{
@@ -384,10 +393,8 @@ namespace s3d
 
 	void CWindow::WindowClass::unregisterClass(const HINSTANCE hInstance)
 	{
-		LOG_TRACE(U"UnregisterClassW()");
-		
-		const BOOL b = ::UnregisterClassW(name.c_str(), hInstance);
-		
-		LOG_TRACE(U"UnregisterClassW() -> {}"_fmt(!!b));
+		LOG_TRACE("UnregisterClassW()");	
+		[[maybe_unused]] const BOOL b = ::UnregisterClassW(name.c_str(), hInstance);	
+		LOG_TRACE(fmt::format("UnregisterClassW() -> {}", static_cast<bool>(b)));
 	}
 }

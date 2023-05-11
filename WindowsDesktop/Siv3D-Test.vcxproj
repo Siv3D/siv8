@@ -25,6 +25,12 @@
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="App\icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="App\Resource.rc" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

@@ -44,7 +44,7 @@ namespace s3d::detail
 		{
 			if (decltype(SetProcessDpiAwareness)* p_SetProcessDpiAwareness = DLL::GetFunctionNoThrow(shcore, "SetProcessDpiAwareness"))
 			{
-				LOG_TRACE(U"SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)");
+				LOG_TRACE("SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)");
 				p_SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
 			}
 
