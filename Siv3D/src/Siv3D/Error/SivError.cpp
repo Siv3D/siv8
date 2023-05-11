@@ -31,14 +31,19 @@ namespace s3d
 	Error::Error(const StringView message)
 		: std::exception{ Unicode::ToUTF8(message).c_str() } {}
 
-	String Error::type() const noexcept
+	String Error::type() const
 	{
 		return U"Error";
 	}
 
-	String Error::message() const noexcept
+	String Error::message() const
 	{
 		return Unicode::FromUTF8(what());
+	}
+
+	std::string Error::messageUTF8() const
+	{
+		return what();
 	}
 
 	std::ostream& operator <<(std::ostream& os, const Error& value)
@@ -64,22 +69,22 @@ namespace s3d
 		formatData.string.append(value.message());
 	}
 
-	const char* Error::what() const noexcept
+	const char* Error::what() const
 	{
 		return std::exception::what();
 	}
 
-	String ParseError::type() const noexcept
+	String ParseError::type() const
 	{
 		return U"ParseError";
 	}
 
-	String NotImplementedError::type() const noexcept
+	String NotImplementedError::type() const
 	{
 		return U"NotImplementedError";
 	}
 
-	String EngineError::type() const noexcept
+	String EngineError::type() const
 	{
 		return U"EngineError";
 	}

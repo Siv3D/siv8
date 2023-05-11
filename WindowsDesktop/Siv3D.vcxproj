@@ -141,6 +141,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Console\IConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DComponent.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\SystemLog.hpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Date\SivDate_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL\SivDLL.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\SivFileSystem_Windows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox\FreestandingMessageBox.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory\SivMemory.cpp">
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4559</DisableSpecificWarnings>

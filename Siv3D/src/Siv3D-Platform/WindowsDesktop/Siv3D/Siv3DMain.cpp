@@ -13,10 +13,11 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/System/CSystem.hpp>
 # include <Siv3D/Window/CWindow.hpp>
+# include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
 # include <Siv3D/AsyncTask.hpp>
-
-// ユーザによって実装される | Implemented by the user
-void Main();
+# include <Siv3D/Unicode.hpp>
+# include <Siv3D/Error.hpp>
+# include <Siv3D/EngineLog.hpp>
 
 //        [THREAD #0]                        [THREAD #1]
 //                            
@@ -40,6 +41,9 @@ void Main();
 //     Sleep(1);                      ||   }
 //   }                                || }  
 // }
+
+// ユーザによって実装される | Implemented by the user
+void Main();
 
 namespace s3d
 {
@@ -86,6 +90,118 @@ namespace s3d
 		g_shouldDestroyWindow.clear();
 	}
 
+	static void TryMain()
+	{
+		std::string errorMessage;
+
+		try
+		{
+			LOG_SCOPED_TRACE("Main()");
+			Main();
+		}
+		catch (const Error& error)
+		{
+			errorMessage = error.messageUTF8();
+		}
+		catch (const fmt::format_error& error)
+		{
+			errorMessage = fmt::format("[fmt::format_error] : {}", error.what());
+		}
+		catch (const std::runtime_error& error)
+		{
+			errorMessage = fmt::format("[std::runtime_error] : {}", error.what());
+		}
+		catch (const std::out_of_range& error)
+		{
+			errorMessage = fmt::format("[std::out_of_range] : {}", error.what());
+		}
+		catch (const std::exception& error)
+		{
+			errorMessage = fmt::format("[std::exception] : {}", error.what());
+		}
+
+		if (not errorMessage.empty())
+		{
+			//static_cast<void>(Window::SetFullscreen(false)); // メッセージボックスを表示するためにフルスクリーンモードを解除
+
+			errorMessage += "\n\nFor more information, [Debug] -> [Windows] -> [Exception Settings] -> Tick the C++ Exceptions checkbox under the [Break When Thrown] heading.";
+
+			FreestandingMessageBox::ShowError(errorMessage);
+		}
+	}
+
+	[[nodiscard]]
+	constexpr std::string_view ExceptionToString(const DWORD code) noexcept
+	{
+		switch (code)
+		{
+		case EXCEPTION_ACCESS_VIOLATION:
+			return "EXCEPTION_ACCESS_VIOLATION";
+		case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+			return "EXCEPTION_ARRAY_BOUNDS_EXCEEDED";
+		case EXCEPTION_BREAKPOINT:
+			return "EXCEPTION_BREAKPOINT";
+		case EXCEPTION_DATATYPE_MISALIGNMENT:
+			return "EXCEPTION_DATATYPE_MISALIGNMENT";
+		case EXCEPTION_FLT_DENORMAL_OPERAND:
+			return "EXCEPTION_FLT_DENORMAL_OPERAND";
+		case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+			return "EXCEPTION_FLT_DIVIDE_BY_ZERO";
+		case EXCEPTION_FLT_INEXACT_RESULT:
+			return "EXCEPTION_FLT_INEXACT_RESULT";
+		case EXCEPTION_FLT_INVALID_OPERATION:
+			return "EXCEPTION_FLT_INVALID_OPERATION";
+		case EXCEPTION_FLT_OVERFLOW:
+			return "EXCEPTION_FLT_OVERFLOW";
+		case EXCEPTION_FLT_STACK_CHECK:
+			return "EXCEPTION_FLT_STACK_CHECK";
+		case EXCEPTION_FLT_UNDERFLOW:
+			return "EXCEPTION_FLT_UNDERFLOW";
+		case EXCEPTION_ILLEGAL_INSTRUCTION:
+			return "EXCEPTION_ILLEGAL_INSTRUCTION";
+		case EXCEPTION_IN_PAGE_ERROR:
+			return "EXCEPTION_IN_PAGE_ERROR";
+		case EXCEPTION_INT_DIVIDE_BY_ZERO:
+			return "EXCEPTION_INT_DIVIDE_BY_ZERO";
+		case EXCEPTION_INT_OVERFLOW:
+			return "EXCEPTION_INT_OVERFLOW";
+		case EXCEPTION_INVALID_DISPOSITION:
+			return "EXCEPTION_INVALID_DISPOSITION";
+		case EXCEPTION_NONCONTINUABLE_EXCEPTION:
+			return "EXCEPTION_NONCONTINUABLE_EXCEPTION";
+		case EXCEPTION_PRIV_INSTRUCTION:
+			return "EXCEPTION_PRIV_INSTRUCTION";
+		case EXCEPTION_SINGLE_STEP:
+			return "EXCEPTION_SINGLE_STEP";
+		case EXCEPTION_STACK_OVERFLOW:
+			return "EXCEPTION_STACK_OVERFLOW";
+		default:
+			return "Unknown Exception";
+		}
+	}
+
+	static int ShowException(const DWORD code, struct _EXCEPTION_POINTERS*)
+	{
+		const std::string message{ ExceptionToString(code) };
+
+		LOG_ERROR(fmt::format("🛑 Application terminated due to an exception `{}`", message));
+
+		//Window::Minimize();
+
+		FreestandingMessageBox::ShowError(fmt::format("Application terminated due to an exception `{}`", message));
+
+		return EXCEPTION_EXECUTE_HANDLER;
+	}
+
+	static void MainSEH()
+	{
+		__try
+		{
+			TryMain();
+		}
+		__except (ShowException(GetExceptionCode(), GetExceptionInformation())) {}
+	}
+
 	static void MainThread()
 	{
 		detail::init::InitFileSystem();
@@ -122,7 +238,7 @@ namespace s3d
 			catch (const std::exception& error)
 			{
 				//::OutputDebugStringW(Format(error, U'\n').toWstr().c_str());
-				//FreestandingMessageBox::ShowError(Format(error));
+				FreestandingMessageBox::ShowError(error.what());
 				g_hasCriticalError = true;
 				lock.unlock(); // --(3)
 				g_cv.notify_one();
@@ -136,7 +252,7 @@ namespace s3d
 		}
 
 		// (4b)--
-		Main();
+		MainSEH();
 	}
 }
 
@@ -164,7 +280,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 			}
 			catch (const std::exception& error)
 			{
-				//::OutputDebugStringW(Format(error, U'\n').toWstr().c_str());
+				::OutputDebugStringW((Unicode::ToWstring(error.what()) + L'\n').c_str());
 				g_hasCriticalError = true;
 				return -1;
 			}

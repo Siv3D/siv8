@@ -45,12 +45,15 @@ namespace s3d
 		/// @brief エラーの種類を返します。 | Returns the type of the error.
 		/// @return エラーの種類 | The type of the error
 		[[nodiscard]]
-		virtual String type() const noexcept;
+		virtual String type() const;
 
 		/// @brief エラーメッセージを返します。 | Returns the error message.
 		/// @return エラーメッセージ | The error message
 		[[nodiscard]]
-		virtual String message() const noexcept;
+		virtual String message() const;
+
+		[[nodiscard]]
+		virtual std::string messageUTF8() const;
 
 		friend std::ostream& operator <<(std::ostream& os, const Error& value);
 
@@ -63,7 +66,7 @@ namespace s3d
 	protected:
 
 		[[nodiscard]]
-		const char* what() const noexcept override;
+		const char* what() const override;
 	};
 
 	/// @brief パースのエラー | Parse error
@@ -76,7 +79,7 @@ namespace s3d
 		/// @brief エラーの種類を返します。 | Returns the type of the error.
 		/// @return U"ParseError"
 		[[nodiscard]]
-		String type() const noexcept override;
+		String type() const override;
 	};
 
 	/// @brief 実装されていない機能を呼び出したエラー | Not implemented error
@@ -89,7 +92,7 @@ namespace s3d
 		/// @brief エラーの種類を返します。 | Returns the type of the error.
 		/// @return U"NotImplementedError"
 		[[nodiscard]]
-		String type() const noexcept override;
+		String type() const override;
 	};
 
 	/// @brief エンジン内部のエラー | Engine error
@@ -102,6 +105,6 @@ namespace s3d
 		/// @brief エラーの種類を返します。 | Returns the type of the error.
 		/// @return U"EngineError"
 		[[nodiscard]]
-		String type() const noexcept override;
+		String type() const override;
 	};
 }
