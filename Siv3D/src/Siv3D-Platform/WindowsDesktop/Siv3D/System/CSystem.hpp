@@ -27,16 +27,18 @@ namespace s3d
 
 		bool update() override;
 
+		void preInit();
+
 		void onDeviceChange();
 
 	private:
 
-		enum class SetupState
+		enum class SetupStep
 		{
 			Uninitialized,
 			Initialized,
 			WindowDisplayed,
-		} m_setupState = SetupState::Uninitialized;
+		} m_setupStep = SetupStep::Uninitialized;
 
 		std::atomic_flag m_onDeviceChange;
 

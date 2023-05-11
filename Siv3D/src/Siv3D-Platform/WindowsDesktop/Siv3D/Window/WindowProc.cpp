@@ -10,6 +10,11 @@
 //-----------------------------------------------
 
 # include "WindowProc.hpp"
+# include <Siv3D/UserAction.hpp>
+# include <Siv3D/EngineLog.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/UserAction/IUSerAction.hpp>
+# include "CWindow.hpp"
 
 namespace s3d
 {
@@ -28,46 +33,46 @@ namespace s3d
 		//	dragDrop->process();
 		//}
 
-		//switch (message)
-		//{
-		//case WM_CLOSE:
-		//	{
-		//		LOG_TRACE(U"WM_CLOSE");
+		switch (message)
+		{
+		case WM_CLOSE:
+			{
+				LOG_TRACE("WM_CLOSE");
 
-		//		SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::CloseButtonClicked);
+				SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::CloseButtonClicked);
 
-		//		return 0; // WM_DESTROY を発生させない
-		//	}
-		//case WM_SETFOCUS:
-		//	{
-		//		LOG_VERBOSE(U"WM_SETFOCUS");
+				return 0; // WM_DESTROY を発生させない
+			}
+		case WM_SETFOCUS:
+			{
+				LOG_TRACE("WM_SETFOCUS");
 
-		//		static_cast<CWindow*>(SIV3D_ENGINE(Window))->onFocus(true);
-		//		
-		//		break;
-		//	}
-		//case WM_SYSKEYDOWN:
-		//	{
-		//		if ((wParam == VK_RETURN) && (lParam & (1 << 29))) // Alt + Enter
-		//		{
-		//			static_cast<CWindow*>(SIV3D_ENGINE(Window))->requestToggleFullscreen();
-		//			return 0;
-		//		}
+				//static_cast<CWindow*>(SIV3D_ENGINE(Window))->onFocus(true);
+				
+				break;
+			}
+		case WM_SYSKEYDOWN:
+			{
+				if ((wParam == VK_RETURN) && (lParam & (1 << 29))) // Alt + Enter
+				{
+					//static_cast<CWindow*>(SIV3D_ENGINE(Window))->requestToggleFullscreen();
+					return 0;
+				}
 
-		//		break;
-		//	}
-		//case WM_SYSKEYUP:
-		//	{
-		//		break;
-		//	}
-		//case WM_KILLFOCUS:
-		//	{
-		//		LOG_VERBOSE(U"WM_KILLFOCUS");
+				break;
+			}
+		case WM_SYSKEYUP:
+			{
+				break;
+			}
+		case WM_KILLFOCUS:
+			{
+				LOG_TRACE("WM_KILLFOCUS");
 
-		//		static_cast<CWindow*>(SIV3D_ENGINE(Window))->onFocus(false);
+				//static_cast<CWindow*>(SIV3D_ENGINE(Window))->onFocus(false);
 
-		//		break;
-		//	}
+				break;
+			}
 		//case WM_KEYDOWN:
 		//	{
 		//		LOG_VERBOSE(U"WM_KEYDOWN");
@@ -87,26 +92,26 @@ namespace s3d
 
 		//		break;
 		//	}
-		//case WM_SYSCOMMAND:
-		//	{
-		//		LOG_VERBOSE(U"WM_SYSCOMMAND");
+		case WM_SYSCOMMAND:
+			{
+				LOG_TRACE("WM_SYSCOMMAND");
 
-		//		switch (wParam & 0xffF0)
-		//		{
-		//		case SC_SCREENSAVE:
-		//		case SC_MONITORPOWER:
-		//		case SC_KEYMENU:
-		//			return 0;
-		//		}
+				switch (wParam & 0xffF0)
+				{
+				case SC_SCREENSAVE:
+				case SC_MONITORPOWER:
+				case SC_KEYMENU:
+					return 0;
+				}
 
-		//		break;
-		//	}
-		//case WM_DISPLAYCHANGE:
-		//	{
-		//		LOG_TRACE(U"WM_DISPLAYCHANGE");
-		//		
-		//		return true;
-		//	}
+				break;
+			}
+		case WM_DISPLAYCHANGE:
+			{
+				LOG_TRACE("WM_DISPLAYCHANGE");
+				
+				return true;
+			}
 		//case WM_DPICHANGED:
 		//	{
 		//		LOG_TRACE(U"WM_DPICHANGED");
@@ -144,14 +149,14 @@ namespace s3d
 
 		//		return 0;
 		//	}
-		//case WM_DESTROY:
-		//	{
-		//		LOG_TRACE(U"WM_DESTROY");
+		case WM_DESTROY:
+			{
+				LOG_TRACE("WM_DESTROY");
 
-		//		::PostQuitMessage(0);
+				::PostQuitMessage(0);
 
-		//		return 0;
-		//	}
+				return 0;
+			}
 		//case WM_CHAR:
 		//	{
 		//		LOG_VERBOSE(U"WM_CHAR");
@@ -218,10 +223,10 @@ namespace s3d
 
 		//		break;
 		//	}
-		//case WM_ERASEBKGND:
-		//	{
-		//		return true;
-		//	}
+		case WM_ERASEBKGND:
+			{
+				return true;
+			}
 		//case WM_GETMINMAXINFO:
 		//	{
 		//		//LOG_VERBOSE(U"WM_GETMINMAXINFO");
@@ -302,7 +307,7 @@ namespace s3d
 
 		//		break;
 		//	}
-		//}
+		}
 
 		return ::DefWindowProcW(hWnd, message, wParam, lParam);
 	}

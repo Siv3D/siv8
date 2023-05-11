@@ -9,16 +9,12 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include "Common.hpp"
-# include "StringView.hpp"
-# include "WindowState.hpp"
+# include "CUserAction.hpp"
 
 namespace s3d
 {
-	namespace Window
+	ISiv3DUserAction* ISiv3DUserAction::Create()
 	{
-		/// @brief ウィンドウのデフォルトのタイトル | Default window title
-		inline constexpr StringView DefaultTitle = U"Siv3D App";
+		return new CUserAction;
 	}
 }

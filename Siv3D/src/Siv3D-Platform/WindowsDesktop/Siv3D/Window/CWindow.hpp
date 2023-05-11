@@ -11,10 +11,12 @@
 
 # pragma once
 # include <Siv3D/Windows/Windows.hpp>
+# include <Siv3D/Windows/ComPtr.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/DLL.hpp>
 # include <Siv3D/Window.hpp>
+# include <ShObjIdl_core.h>
 
 namespace s3d
 {
@@ -36,6 +38,8 @@ namespace s3d
 
 		void* getHandle() const noexcept override;
 
+		void show();
+
 		void destroy();
 
 	private:
@@ -51,6 +55,8 @@ namespace s3d
 			decltype(GetSystemMetricsForDpi)* pGetSystemMetricsForDpi = nullptr;
 			
 			decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi = nullptr;
+
+			decltype(SetWindowFeedbackSetting)* pSetWindowFeedbackSetting = nullptr;
 
 			void load();
 
@@ -68,8 +74,22 @@ namespace s3d
 
 		} m_windowClass;
 
-		String m_title{ Window::DefaultTitle };
+		struct WindowTitle
+		{
+			String title{ Window::DefaultTitle };
 
-		String m_actualTitle{ SIV3D_BUILD(DEBUG) ? U"Siv3D App (Debug Build)"_sv : Window::DefaultTitle };
+			String actual{ SIV3D_BUILD(DEBUG) ? U"Siv3D App (Debug Build)"_sv : Window::DefaultTitle };
+		
+		} m_title;
+
+		WindowState m_state;
+
+		int32 m_dpi = USER_DEFAULT_SCREEN_DPI;
+
+		HDEVNOTIFY m_deviceNotificationHandle = nullptr;
+
+		ComPtr<ITaskbarList3> m_taskbar;
+
+		bool m_windowShown = false;
 	};
 }

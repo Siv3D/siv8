@@ -18,6 +18,29 @@
 // ユーザによって実装される | Implemented by the user
 void Main();
 
+//        [THREAD #0]                        [THREAD #1]
+//                            
+// WinMain() {                 
+//   f = std::async(MainThread)       || MainThread() {
+//   **LOCK**                         ||   Siv3DEngine engine;
+//                                    ||   engine->System->preInit();
+//                                    <=   **LOCK**
+//   engine->Window->init();          ||
+//   **LOCK**                         =>
+//                                    ||   engine->System->init();
+//                                    <=
+//   while (!f._Is_ready()) {         ||   Main() { while(System::Update()) {} } // User code
+//     PumMessages();                 ||
+//                                    ||   engine::~Siv3DEngine() {
+//     if (g_callWindowDestroy) {     ||     ...
+//       engine->Window->destroy();   ||     g_callWindowDestroy = true
+//       g_callWindowDestroy = false; ||     |
+//     }                              ||     wait until (g_callWindowDestroy == false)
+//                                    ||     ...  
+//     Sleep(1);                      ||   }
+//   }                                || }  
+// }
+
 namespace s3d
 {
 	namespace
@@ -34,6 +57,24 @@ namespace s3d
 	}
 
 	std::atomic_flag g_shouldDestroyWindow;
+
+	static void PumpMessages()
+	{
+		for (int32 i = 0; i < 100; ++i)
+		{
+			MSG message{};
+
+			if (::PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
+			{
+				::TranslateMessage(&message);
+				::DispatchMessageW(&message);
+			}
+			else
+			{
+				return;
+			}
+		}
+	}
 
 	void DestroyWindow()
 	{
@@ -53,7 +94,10 @@ namespace s3d
 
 		std::unique_lock lock{ g_mutex }; // (1)--
 		{
-			SIV3D_ENGINE(System)->init();
+			if (auto pCSystem = dynamic_cast<CSystem*>(SIV3D_ENGINE(System)))
+			{
+				pCSystem->preInit();
+			}
 
 			g_initStep = 1;
 			lock.unlock(); // --(1)
@@ -73,7 +117,7 @@ namespace s3d
 
 			try
 			{
-				//static_cast<CSystem*>(SIV3D_ENGINE(System))->init2();
+				SIV3D_ENGINE(System)->init();
 			}
 			catch (const std::exception& error)
 			{
@@ -100,6 +144,11 @@ namespace s3d
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 {
 	::timeBeginPeriod(1);
+
+	if (FAILED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
+	{
+		::OutputDebugStringW(L"CoInitializeEx() failed\n");
+	}
 
 	using namespace s3d;
 	{
@@ -145,7 +194,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 
 		while (not mainThread.isReady())
 		{
-			//PumpMessages();
+			PumpMessages();
 
 			if (g_shouldDestroyWindow.test())
 			{
@@ -155,6 +204,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 			::Sleep(1);
 		}
 	}
+
+	::CoUninitialize();
 
 	::timeEndPeriod(1);
 	

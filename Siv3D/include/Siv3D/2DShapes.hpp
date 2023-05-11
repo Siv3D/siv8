@@ -15,6 +15,10 @@
 
 namespace s3d
 {
+	struct Point;
+	struct Vec2;
+	struct Rect;
+
 	struct Point
 	{
 		/// @brief ベクトルの要素の型
@@ -28,9 +32,46 @@ namespace s3d
 
 		/// @brief ベクトルの Y 成分
 		value_type y;
+
+		[[nodiscard]]
+		constexpr Point operator +(Point p) const noexcept;
+
+		[[nodiscard]]
+		constexpr Vec2 operator *(double s) const noexcept;
 	};
 
 	using Size = Point;
+
+	struct Vec2
+	{
+		/// @brief ベクトルの要素の型
+		using value_type = double;
+
+		/// @brief ベクトルの次元数
+		static constexpr size_t Dimension = 2;
+
+		/// @brief ベクトルの X 成分
+		value_type x;
+
+		/// @brief ベクトルの Y 成分
+		value_type y;
+
+		[[nodiscard]]
+		constexpr Point asPoint() const noexcept
+		{
+			return{ static_cast<Point::value_type>(x), static_cast<Point::value_type>(y) };
+		}
+	};
+
+	constexpr Point Point::operator +(const Point p) const noexcept
+	{
+		return{ (x + p.x), (y + p.y) };
+	}
+
+	constexpr Vec2 Point::operator *(const double s) const noexcept
+	{
+		return{ (x * s), (y * s) };
+	}
 
 	struct Rect
 	{

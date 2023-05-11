@@ -9,16 +9,21 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include "Common.hpp"
-# include "StringView.hpp"
-# include "WindowState.hpp"
+# include <Siv3D/Windows/Windows.hpp>
+# include <Siv3D/System.hpp>
 
 namespace s3d
 {
-	namespace Window
+	namespace System
 	{
-		/// @brief ウィンドウのデフォルトのタイトル | Default window title
-		inline constexpr StringView DefaultTitle = U"Siv3D App";
+		void Sleep(const int32 milliseconds)
+		{
+			if (milliseconds < 0)
+			{
+				return;
+			}
+
+			::Sleep(milliseconds);
+		}
 	}
 }

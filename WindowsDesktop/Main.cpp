@@ -5,5 +5,8 @@ void Main()
 {
 	RunTest();
 
-	std::system("pause");
+	while (System::Update())
+	{
+		System::Sleep(100);
+	}
 }

@@ -10,6 +10,9 @@
 //-----------------------------------------------
 
 # include "CSystem.hpp"
+# include <Siv3D/Window/CWindow.hpp>
+# include <Siv3D/UserAction/IUserAction.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/System/SystemLog.hpp>
 
@@ -29,11 +32,10 @@ namespace s3d
 	{
 		LOG_SCOPED_TRACE("CSystem::init()");
 
-		SystemLog::Launch();
-		//SystemMisc::Init();
 
-		//SIV3D_ENGINE(Resource)->init();
-		//SIV3D_ENGINE(Profiler)->init();
+
+		m_setupStep = SetupStep::Initialized;
+		LOG_INFO("✅ Siv3D engine has initialized");
 	}
 
 	bool CSystem::update()
@@ -43,7 +45,38 @@ namespace s3d
 			return false;
 		}
 
+		if (m_setupStep == SetupStep::Initialized)
+		{
+			if (auto pWindow = static_cast<CWindow*>(SIV3D_ENGINE(Window)))
+			{
+				pWindow->show();
+			}
+
+			m_setupStep = SetupStep::WindowDisplayed;
+		}
+
+		if (SIV3D_ENGINE(UserAction)->shouldTerminate())
+		{
+			m_shouldTerminate = true;
+			return false;
+		}
+
+
+
+
+
 		return true;
+	}
+
+	void CSystem::preInit()
+	{
+		LOG_SCOPED_TRACE("CSystem::preInit()");
+
+		SystemLog::Launch();
+		//SystemMisc::Init();
+
+		//SIV3D_ENGINE(Resource)->init();
+		//SIV3D_ENGINE(Profiler)->init();
 	}
 
 	void CSystem::onDeviceChange()

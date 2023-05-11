@@ -199,6 +199,9 @@
     <Filter Include="src\Siv3D\MonitorInfo">
       <UniqueIdentifier>{1cbabc47-f82a-4e4d-a8b6-4ecd6525f9b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\UserAction">
+      <UniqueIdentifier>{5e1bcb5e-9424-4e82-b2a0-7f6aa2ff1d35}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -636,6 +639,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Monitor.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\WindowState.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\WindowStyle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\UserAction.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.hpp">
+      <Filter>src\Siv3D\UserAction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\IUserAction.hpp">
+      <Filter>src\Siv3D\UserAction</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -808,6 +826,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\MonitorInfo\SivMonitorInfo.cpp">
       <Filter>src\Siv3D\MonitorInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\SivSytem_Windows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.cpp">
+      <Filter>src\Siv3D\UserAction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\UserAction\UserActionFactory.cpp">
+      <Filter>src\Siv3D\UserAction</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
