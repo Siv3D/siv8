@@ -28,6 +28,11 @@ namespace s3d
 		bool g_hasCriticalError = false;
 	}
 
+	namespace detail::init
+	{
+		void InitFileSystem();
+	}
+
 	std::atomic_flag g_shouldDestroyWindow;
 
 	void DestroyWindow()
@@ -42,6 +47,8 @@ namespace s3d
 
 	static void MainThread()
 	{
+		detail::init::InitFileSystem();
+
 		Siv3DEngine engine;
 
 		std::unique_lock lock{ g_mutex }; // (1)--

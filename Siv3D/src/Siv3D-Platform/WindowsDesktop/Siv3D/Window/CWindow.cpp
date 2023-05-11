@@ -13,6 +13,7 @@
 # include "DPIAwareness.hpp"
 # include "WindowProc.hpp"
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/Monitor.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -49,28 +50,30 @@ namespace s3d
 	{
 		LOG_SCOPED_TRACE("CWindow::init()");
 
-		//// hInstance を取得
-		//m_hInstance = ::GetModuleHandleW(nullptr);
+		// hInstance を取得する
+		m_hInstance = ::GetModuleHandleW(nullptr);
 
-		//m_user32.load();
+		// User32.dll の関数をロードする
+		m_user32.load();
 
-		//// DPI awareness を有効化
-		//detail::SetDPIAwareness(m_user32.library);
+		// DPI awareness を有効化する
+		detail::SetDPIAwareness(m_user32.library);
 
-		//m_windowClass.registerClass(m_hInstance);
+		// ウィンドウクラスを登録する
+		m_windowClass.registerClass(m_hInstance);
 
-		//// モニタを取得
-		//const Array<MonitorInfo> monitors = System::EnumerateMonitors();
+		// モニタを取得する
+		const Array<MonitorInfo> monitors = System::EnumerateMonitors();
 
-		//if (not monitors)
-		//{
-		//	throw EngineError(U"System::EnumActiveMonitors() failed");
-		//}
+		if (monitors.empty())
+		{
+			throw EngineError{ "System::EnumActiveMonitors() failed" };
+		}
 
-		//for (auto [i, monitor] : Indexed(monitors))
-		//{
-		//	LOG_TRACE(U"🖥️ Monitor[{}]"_fmt(i) + monitor.format());
-		//}
+		for (size_t i = 0; i < monitors.size(); ++i)
+		{
+			LOG_TRACE(fmt::format("🖥️ Monitor[{}] ", i) + monitors[i].format().toUTF8());
+		}
 	}
 
 	void CWindow::update()

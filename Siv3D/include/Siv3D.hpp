@@ -169,6 +169,8 @@
 
 # include <Siv3D/Window.hpp>
 
+# include <Siv3D/MonitorInfo.hpp>
+# include <Siv3D/Monitor.hpp>
 
 # include <Siv3D/ConsoleBuffer.hpp>
 # include <Siv3D/Console.hpp>
