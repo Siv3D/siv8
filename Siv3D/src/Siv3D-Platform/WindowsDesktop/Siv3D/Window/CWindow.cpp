@@ -230,13 +230,13 @@ namespace s3d
 				throw EngineError{ "CreateWindowExW() failed" };
 			}
 
-			if (::GetSystemMetrics(SM_DIGITIZER) & NID_MULTI_INPUT)
-			{
-				LOG_INFO("ℹ️ An input digitizer with support for multiple inputs found");
-				::RegisterTouchWindow(m_hWnd, TWF_WANTPALM);
-			}
-
 			break;
+		}
+
+		if (::GetSystemMetrics(SM_DIGITIZER) & NID_MULTI_INPUT)
+		{
+			LOG_INFO("ℹ️ An input digitizer with support for multiple inputs found");
+			::RegisterTouchWindow(m_hWnd, TWF_WANTPALM);
 		}
 
 		// Disable touch feedback visualization that causes frame rate drops
@@ -277,10 +277,10 @@ namespace s3d
 
 		//m_toggleFullscreenRequest = false;
 
-		//if constexpr (SIV3D_BUILD(DEBUG))
-		//{
-		//	setWindowTitle(m_title);
-		//}
+		if constexpr (SIV3D_BUILD(DEBUG))
+		{
+			setWindowTitle(m_title.title);
+		}
 	}
 
 	void CWindow::setWindowTitle(const String& title)

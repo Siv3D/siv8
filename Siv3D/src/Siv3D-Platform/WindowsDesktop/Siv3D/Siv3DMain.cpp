@@ -76,7 +76,7 @@ namespace s3d
 		}
 	}
 
-	void DestroyWindow()
+	static void DestroyWindow()
 	{
 		if (auto pCWindow = dynamic_cast<CWindow*>(SIV3D_ENGINE(Window)))
 		{
