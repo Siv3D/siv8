@@ -80,6 +80,10 @@ namespace s3d
 
 			String actual{ SIV3D_BUILD(DEBUG) ? U"Siv3D App (Debug Build)"_sv : Window::DefaultTitle };
 		
+			void set(HWND hWnd, const String& newTitle);
+
+			void refresh(HWND hWnd);
+
 		} m_title;
 
 		WindowState m_state;

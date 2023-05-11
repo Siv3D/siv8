@@ -9,11 +9,10 @@
 //
 //-----------------------------------------------
 
-# include <array>
 # include "CWindow.hpp"
 # include "DPIAwareness.hpp"
+# include "WindowMisc.hpp"
 # include "WindowProc.hpp"
-# include <Dbt.h>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Monitor.hpp>
 # include <Siv3D/Error.hpp>
@@ -21,123 +20,6 @@
 
 namespace s3d
 {
-	namespace detail
-	{
-		[[nodiscard]]
-		constexpr double GetScaling(uint32 dpi) noexcept
-		{
-			return (static_cast<double>(dpi) / USER_DEFAULT_SCREEN_DPI);
-		}
-
-		[[nodiscard]]
-		constexpr Point CalculateWindowPos(const MonitorInfo& monitor, const Size& frameBufferSize) noexcept
-		{
-			const int32 offsetX = Max<int32>((monitor.workArea.w - frameBufferSize.x) / 2, 0);
-			const int32 offsetY = Max<int32>((monitor.workArea.h - frameBufferSize.y) / 2, 0);
-			return (monitor.displayRect.pos + Point{ offsetX, offsetY });
-		}
-
-		[[nodiscard]]
-		constexpr uint32 GetWindowStyleFlags(const WindowStyle style) noexcept
-		{
-			switch (style)
-			{
-			case WindowStyle::Fixed:
-				return (WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX | WS_THICKFRAME));
-			case WindowStyle::Frameless:
-				return (WS_POPUP | WS_VISIBLE | WS_MINIMIZEBOX);
-			case WindowStyle::Sizable:
-			default:
-				return WS_OVERLAPPEDWINDOW;
-			}
-		}
-
-		[[nodiscard]]
-		static Rect AdjustWindowRect(const HWND hWnd, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
-			const int32 dpi, const Point& windowPos, const Size& size, const int32 windowStyleFlags)
-		{
-			LOG_TRACE(U"AdjustWindowRect({}, {}, {:#x})"_fmt(windowPos, size, windowStyleFlags));
-
-			const DWORD windowExStyleFlags = static_cast<DWORD>(::GetWindowLongPtrW(hWnd, GWL_EXSTYLE));
-			RECT rect{ windowPos.x, windowPos.y, (windowPos.x + size.x), (windowPos.y + size.y) };
-
-			if (pAdjustWindowRectExForDpi)
-			{
-				pAdjustWindowRectExForDpi(&rect, windowStyleFlags, false, windowExStyleFlags, dpi);
-			}
-			else
-			{
-				::AdjustWindowRectEx(&rect, windowStyleFlags, false, windowExStyleFlags);
-			}
-
-			return{ rect.left, rect.top, (rect.right - rect.left), (rect.bottom - rect.top) };
-		}
-
-		static void DisableTouchFeedbackVisualization(HWND hWND, decltype(SetWindowFeedbackSetting)* pSetWindowFeedbackSetting)
-		{
-			LOG_TRACE("DisableTouchFeedbackVisualization()");
-
-			if (pSetWindowFeedbackSetting)
-			{
-				static constexpr std::array<FEEDBACK_TYPE, 11> feedbackTypes =
-				{
-					FEEDBACK_TOUCH_CONTACTVISUALIZATION,
-					FEEDBACK_PEN_BARRELVISUALIZATION,
-					FEEDBACK_PEN_TAP,
-					FEEDBACK_PEN_DOUBLETAP,
-					FEEDBACK_PEN_PRESSANDHOLD,
-					FEEDBACK_PEN_RIGHTTAP,
-					FEEDBACK_TOUCH_TAP,
-					FEEDBACK_TOUCH_DOUBLETAP,
-					FEEDBACK_TOUCH_PRESSANDHOLD,
-					FEEDBACK_TOUCH_RIGHTTAP,
-					FEEDBACK_GESTURE_PRESSANDTAP,
-				};
-
-				for (const auto& feedbackType : feedbackTypes)
-				{
-					BOOL val = FALSE;
-					pSetWindowFeedbackSetting(hWND, feedbackType, 0, sizeof(BOOL), &val);
-				}
-			}
-		}
-
-		[[nodiscard]]
-		static HDEVNOTIFY StartDeviceNotification(const HWND hWnd)
-		{
-			static constexpr GUID _GUID_DEVINTERFACE_HID = { 0x4D1E55B2L, 0xF16F, 0x11CF, 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 };
-
-			DEV_BROADCAST_DEVICEINTERFACE_W dbi{};
-			dbi.dbcc_size = sizeof(dbi);
-			dbi.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-			dbi.dbcc_classguid = _GUID_DEVINTERFACE_HID;
-
-			LOG_TRACE("RegisterDeviceNotificationW()");
-			return ::RegisterDeviceNotificationW(hWnd, (DEV_BROADCAST_HDR*)&dbi, DEVICE_NOTIFY_WINDOW_HANDLE);
-		}
-
-		[[nodiscard]]
-		static ComPtr<ITaskbarList3> CreateTaskbarList()
-		{
-			ComPtr<ITaskbarList3> taskbarList;
-
-			if (SUCCEEDED(::CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&taskbarList))))
-			{
-				if (FAILED(taskbarList->HrInit()))
-				{
-					LOG_FAIL("Failed to initialize a TaskbarList object");
-					taskbarList.Reset();
-				}
-			}
-			else
-			{
-				LOG_FAIL("Failed to create a TaskbarList object");
-			}
-
-			return taskbarList;
-		}
-	}
-
 	extern std::atomic_flag g_shouldDestroyWindow;
 
 	CWindow::CWindow() = default;
@@ -279,28 +161,13 @@ namespace s3d
 
 		if constexpr (SIV3D_BUILD(DEBUG))
 		{
-			setWindowTitle(m_title.title);
+			m_title.refresh(m_hWnd);
 		}
 	}
 
 	void CWindow::setWindowTitle(const String& title)
 	{
-		String newActualTitle = title;
-
-		//if constexpr (SIV3D_BUILD(DEBUG))
-		//{
-		//	const String statistics = SIV3D_ENGINE(Profiler)->getSimpleStatistics();
-		//	newActualTitle += U" (Debug Build) | ";
-		//	newActualTitle += statistics;
-		//}
-
-		if (m_title.actual != newActualTitle)
-		{
-			::SetWindowTextW(m_hWnd, newActualTitle.toWstr().c_str());
-			m_title.actual.swap(newActualTitle);
-		}
-
-		m_title.title = title;
+		m_title.set(m_hWnd, title);
 	}
 
 	const String& CWindow::getWindowTitle() const noexcept
@@ -381,13 +248,11 @@ namespace s3d
 			.lpszClassName	= name.c_str(),
 		};
 
+		LOG_TRACE("RegisterClassExW()");
+
+		if (not ::RegisterClassExW(&windowClass))
 		{
-			LOG_TRACE("RegisterClassExW()");
-		
-			if (not ::RegisterClassExW(&windowClass))
-			{
-				throw EngineError{ "RegisterClassExW() failed" };
-			}
+			throw EngineError{ "RegisterClassExW() failed" };
 		}
 	}
 
@@ -396,5 +261,30 @@ namespace s3d
 		LOG_TRACE("UnregisterClassW()");	
 		[[maybe_unused]] const BOOL b = ::UnregisterClassW(name.c_str(), hInstance);	
 		LOG_TRACE(fmt::format("UnregisterClassW() -> {}", static_cast<bool>(b)));
+	}
+
+	void CWindow::WindowTitle::set(const HWND hWnd, const String& newTitle)
+	{
+		String newActualTitle = newTitle;
+
+		//if constexpr (SIV3D_BUILD(DEBUG))
+		//{
+		//	const String statistics = SIV3D_ENGINE(Profiler)->getSimpleStatistics();
+		//	newActualTitle += U" (Debug Build) | ";
+		//	newActualTitle += statistics;
+		//}
+
+		if (actual != newActualTitle)
+		{
+			::SetWindowTextW(hWnd, newActualTitle.toWstr().c_str());
+			actual.swap(newActualTitle);
+		}
+
+		title = newTitle;
+	}
+
+	void CWindow::WindowTitle::refresh(const HWND hWnd)
+	{
+		set(hWnd, title);
 	}
 }

@@ -657,6 +657,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Resource.hpp">
       <Filter>include\Siv3D\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Window</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -838,6 +841,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\UserAction\UserActionFactory.cpp">
       <Filter>src\Siv3D\UserAction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
