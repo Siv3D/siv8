@@ -511,6 +511,25 @@ namespace s3d
 
 
 
+		/// @brief 文字列の末尾にある空白文字を削除します。
+		/// @return *this
+		String& rtrim();
+
+		/// @brief 文字列の末尾にある空白文字を削除した新しい文字列を返します。
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String rtrimmed() const&;
+
+		/// @brief 文字列の末尾にある空白文字を削除した新しい文字列を返します。
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String rtrimmed()&&;
+
+
+
+
+
+
 		bool operator ==(const String&) const noexcept = default;
 
 		std::strong_ordering operator <=>(const String& rhs) const noexcept = default;

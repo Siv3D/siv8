@@ -50,11 +50,25 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		HRSRC GetResource(const HMODULE hModule, const FilePathView path)
+		{
+			return ::FindResourceW(hModule, path.substr(1).toWstr().c_str(), L"FILE");
+		}
+
+		[[nodiscard]]
+		static bool ResourceExists(const FilePathView path)
+		{
+			const HMODULE hModule = ::GetModuleHandleW(nullptr);
+
+			return (GetResource(hModule, path) != nullptr);
+		}
+
+		[[nodiscard]]
 		static int64 ResourceSize(const FilePathView path)
 		{
-			HMODULE hModule = ::GetModuleHandleW(nullptr);
+			const HMODULE hModule = ::GetModuleHandleW(nullptr);
 
-			if (HRSRC hrs = ::FindResourceW(hModule, path.substr(1).toWstr().c_str(), L"FILE"))
+			if (HRSRC hrs = GetResource(hModule, path))
 			{
 				return ::SizeofResource(hModule, hrs);
 			}
@@ -166,6 +180,20 @@ namespace s3d
 			return path.starts_with(U'/');
 		}
 
+		bool Exists(const FilePathView path)
+		{
+			if (not path) [[unlikely]]
+			{
+				return false;
+			}
+
+			if (IsResourcePath(path))
+			{
+				return detail::ResourceExists(path);
+			}
+
+			return (detail::GetStatus(path).type() != std::filesystem::file_type::not_found);
+		}
 
 
 		FilePath FullPath(const FilePathView path)
@@ -213,6 +241,10 @@ namespace s3d
 			const bool isDirectory = (pFilePart == nullptr);
 			return detail::NormalizePath(std::wstring{ result, length }, isDirectory);
 		}
+
+
+
+
 
 
 

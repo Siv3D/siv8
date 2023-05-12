@@ -10,16 +10,25 @@
 //-----------------------------------------------
 
 # include <iostream>
+# include <algorithm>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
-	[[noreturn]]
-	static void ThrowSubstrViewXrange()
+	namespace detail
 	{
-		throw std::out_of_range{ "String::substrView(): index out of range" };
+		constexpr bool IsTrimmable(char32 ch) noexcept
+		{
+			return (ch <= 0x20) || ((ch - 0x7F) <= (0x9F - 0x7F));
+		}
+		
+		[[noreturn]]
+		static void ThrowSubstrViewXrange()
+		{
+			throw std::out_of_range{ "String::substrView(): index out of range" };
+		}
 	}
 
 	//////////////////////////////////////////////////
@@ -37,7 +46,7 @@ namespace s3d
 	{
 		if (size() < offset)
 		{
-			ThrowSubstrViewXrange();
+			detail::ThrowSubstrViewXrange();
 		}
 
 		return StringView((m_string.data() + offset), Min(count, (m_string.size() - offset)));
@@ -68,6 +77,42 @@ namespace s3d
 	{
 		return m_string;
 	}
+
+
+
+
+
+
+	String& String::rtrim()
+	{
+		m_string.erase(std::find_if_not(m_string.rbegin(), m_string.rend(), detail::IsTrimmable).base(), m_string.end());
+
+		return *this;
+	}
+
+	String String::rtrimmed() const&
+	{
+		return String(m_string.begin(), std::find_if_not(m_string.rbegin(), m_string.rend(), detail::IsTrimmable).base());
+	}
+
+	String String::rtrimmed()&&
+	{
+		rtrim();
+
+		return std::move(*this);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 	//////////////////////////////////////////////////
 	//

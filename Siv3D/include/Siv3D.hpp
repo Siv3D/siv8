@@ -147,7 +147,7 @@
 //# include <Siv3D/MemoryWriter.hpp>
 //# include <Siv3D/OpenMode.hpp>
 # include <Siv3D/BinaryReader.hpp>
-//# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryWriter.hpp>
 //# include <Siv3D/Base64.hpp>
 //# include <Siv3D/MD5Value.hpp>
 //# include <Siv3D/MD5.hpp>

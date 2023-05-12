@@ -208,6 +208,18 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox">
       <UniqueIdentifier>{c9306ab6-19d1-4a56-b33e-35e147df1027}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\BinaryWriter">
+      <UniqueIdentifier>{2a543371-1c7d-443c-b82f-bf9a9c900ca0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter">
+      <UniqueIdentifier>{6a46a564-dccc-47ae-907d-50e676345d62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\FileSystem">
+      <UniqueIdentifier>{5668364b-e905-4ed5-b652-198ca3374d49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows">
+      <UniqueIdentifier>{4a572113-819e-44ae-9272-79ca3d1d1e8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -600,9 +612,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FunctionRef.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\TaskFlow.hpp">
-      <Filter>include\Siv3D\detail</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp">
       <Filter>src\Siv3D\System</Filter>
     </ClInclude>
@@ -668,6 +677,18 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp">
       <Filter>src\Siv3D\FreestandingMessageBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TaskFlow.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryWriter.ipp">
+      <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -856,6 +877,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox\FreestandingMessageBox.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryWriter\SivBinaryWriter.cpp">
+      <Filter>src\Siv3D\BinaryWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FileSystem\SivFileSystem.cpp">
+      <Filter>src\Siv3D\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows\SivWindows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
