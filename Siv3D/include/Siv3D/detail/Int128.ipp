@@ -13,13 +13,13 @@
 
 namespace s3d
 {
-	namespace detail
+	constexpr int128 MakeInt128(const int64 high, const uint64 low) noexcept
 	{
-		String Lpad(String&& s, const std::pair<int32, char32>& padding);
+		return absl::MakeInt128(high, low);
 	}
 
-	inline String Pad(const auto& value, const std::pair<int32, char32>& padding)
+	constexpr uint128 MakeUint128(const uint64 high, const uint64 low) noexcept
 	{
-		return detail::Lpad(Format(value), padding);
+		return absl::MakeUint128(high, low);
 	}
 }

@@ -101,6 +101,7 @@
 # include <Siv3D/Format.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/FormatUtility.hpp>
+# include <Siv3D/ThousandSeparate.hpp>
 
 # include <Siv3D/ParseErrorReason.hpp>
 # include <Siv3D/ParseBool.hpp>
@@ -109,8 +110,7 @@
 # include <Siv3D/Parse.hpp>
 
 # include <Siv3D/Number.hpp>
-//# include <Siv3D/FloatingPoint.hpp>
-//# include <Siv3D/Int128.hpp>
+# include <Siv3D/Int128.hpp>
 //# include <Siv3D/BigInt.hpp>
 //# include <Siv3D/BigFloat.hpp>
 //# include <Siv3D/CommonFloat.hpp>

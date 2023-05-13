@@ -13,7 +13,6 @@
 # include "Common.hpp"
 # include "String.hpp"
 # include "Format.hpp"
-# include "IntToString.hpp"
 
 namespace s3d
 {
@@ -23,13 +22,6 @@ namespace s3d
 	/// @return パディングされた文字列 | Padded string
 	[[nodiscard]]
 	String Pad(const auto& value, const std::pair<int32, char32>& padding);
-
-	/// @brief 桁区切りを行いながら整数を文字列に変換します。 | Converts an integer to a string while performing digit separation.
-	/// @param value 変換する値 | Value
-	/// @param separator 桁区切りの文字 | Digit separator
-	/// @return 桁区切りされた文字列 | Digit-separated string
-	[[nodiscard]]
-	String ThousandSeparate(Concept::Integral auto value, char32 separator = U',');
 
 	/// @brief データサイズを文字列に変換します。 | Converts the data size to a string.
 	/// @param bytes データサイズ | Data size

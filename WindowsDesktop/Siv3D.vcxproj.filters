@@ -235,6 +235,15 @@
     <Filter Include="src\Siv3D\Parse">
       <UniqueIdentifier>{4d87520f-86bc-46fc-a0a4-abd5540e97f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\absl">
+      <UniqueIdentifier>{8eac6cfe-0ad9-4343-8ba9-b7b980cf1ba5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Int128">
+      <UniqueIdentifier>{0b842bdd-0304-447b-801d-95f53c276f8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ThousandSeparate">
+      <UniqueIdentifier>{61fae085-977a-4aa4-93c0-ccc44e329f4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -744,6 +753,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Number.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Int128.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Int128.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ThousandSeparate.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ThousandSeparate.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -961,6 +982,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp">
       <Filter>src\Siv3D\Parse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\absl\int128.cc">
+      <Filter>src\ThirdParty\absl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Int128\SivInt128.cpp">
+      <Filter>src\Siv3D\Int128</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ThousandSeparate\SivThousandSeparate.cpp">
+      <Filter>src\Siv3D\ThousandSeparate</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

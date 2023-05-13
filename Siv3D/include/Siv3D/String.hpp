@@ -511,6 +511,14 @@ namespace s3d
 
 
 
+		/// @brief 文字を後方から逆順に検索し、最初に現れた位置を返します。
+		/// @param ch 検索する文字
+		/// @param offset 検索を開始する位置。npos の場合は終端から
+		/// @return 検索した文字が最初に現れた位置。見つからなかった場合は npos	
+		[[nodiscard]]
+		size_t lastIndexOf(value_type ch, size_t offset = npos) const noexcept;
+
+
 		/// @brief 文字列の末尾にある空白文字を削除します。
 		/// @return *this
 		String& rtrim();

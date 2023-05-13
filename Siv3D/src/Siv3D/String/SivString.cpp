@@ -79,7 +79,10 @@ namespace s3d
 	}
 
 
-
+	size_t String::lastIndexOf(const value_type ch, const size_t offset) const noexcept
+	{
+		return m_string.rfind(ch, offset);
+	}
 
 
 

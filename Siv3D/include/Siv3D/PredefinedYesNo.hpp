@@ -17,6 +17,9 @@ namespace s3d
 	/// @brief 即座に開始する | Start immediately
 	using StartImmediately = YesNo<struct StartImmediately_tag>;
 
-	/// @brief やり直しを許可する
+	/// @brief 取り消しを許可する | Allow undo
 	using AllowUndo = YesNo<struct AllowUndo_tag>;
+
+	/// @brief 固定されている | Fixed
+	using Fixed = YesNo<struct Fixed_tag>;
 }

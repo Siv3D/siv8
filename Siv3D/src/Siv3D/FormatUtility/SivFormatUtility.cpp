@@ -42,47 +42,6 @@ namespace s3d
 
 			return s;
 		}
-
-		String ThousandSeparateInt(const String& value, const char32 separator)
-		{
-			const bool isNegative = (value.starts_with(U'-'));
-			const size_t digits = (value.length() - (isNegative ? 1 : 0));
-
-			if (digits <= 3)
-			{
-				return value;
-			}
-
-			const size_t count = ((digits - 1) / 3);
-			const size_t resultLength = (value.length() + count);
-
-			String result;
-			result.reserve(resultLength);
-
-			if (isNegative)
-			{
-				result.push_back(U'-');
-			}
-
-			const char32* pSrc = value.c_str();
-
-			if (isNegative)
-			{
-				++pSrc;
-			}
-
-			for (size_t i = 0; i < digits; ++i)
-			{
-				result.push_back(*pSrc++);
-
-				if (((digits - i - 1) % 3 == 0) && (i != (digits - 1)))
-				{
-					result.push_back(separator);
-				}
-			}
-
-			return result;
-		}
 	}
 
 	String FormatDataSize(const int64 bytes)

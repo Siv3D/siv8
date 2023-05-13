@@ -15,11 +15,16 @@ namespace s3d
 {
 	namespace detail
 	{
-		String Lpad(String&& s, const std::pair<int32, char32>& padding);
+		String ThousandSeparateInt(const String& value, char32 separator);
 	}
 
-	inline String Pad(const auto& value, const std::pair<int32, char32>& padding)
+	inline String ThousandSeparate(const Concept::Integral auto value, const char32 separator)
 	{
-		return detail::Lpad(Format(value), padding);
+		return detail::ThousandSeparateInt(ToString(value), separator);
+	}
+
+	inline String ThousandSeparate(const Concept::FloatingPoint auto value, const char32 separator)
+	{
+
 	}
 }
