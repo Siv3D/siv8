@@ -102,10 +102,11 @@
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/FormatUtility.hpp>
 
-//# include <Siv3D/ParseBool.hpp>
-//# include <Siv3D/ParseInt.hpp>
-//# include <Siv3D/ParseFloat.hpp>
-//# include <Siv3D/Parse.hpp>
+# include <Siv3D/ParseErrorReason.hpp>
+# include <Siv3D/ParseBool.hpp>
+# include <Siv3D/ParseInt.hpp>
+# include <Siv3D/ParseFloat.hpp>
+# include <Siv3D/Parse.hpp>
 
 //# include <Siv3D/Number.hpp>
 //# include <Siv3D/FloatingPoint.hpp>
@@ -145,7 +146,7 @@
 //# include <Siv3D/MemoryMappedFile.hpp>
 //# include <Siv3D/Blob.hpp>
 //# include <Siv3D/MemoryWriter.hpp>
-//# include <Siv3D/OpenMode.hpp>
+# include <Siv3D/OpenMode.hpp>
 # include <Siv3D/BinaryReader.hpp>
 # include <Siv3D/BinaryWriter.hpp>
 //# include <Siv3D/Base64.hpp>

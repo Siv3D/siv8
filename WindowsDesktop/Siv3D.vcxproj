@@ -54,6 +54,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Memory.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\NonNull.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Optional.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Parse.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ParseInt.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RangeFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ScopeExit.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp" />
@@ -95,6 +97,11 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NonNull.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Optional.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Parse.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ParseBool.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ParseErrorReason.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ParseFloat.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ParseInt.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Platform.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedNamedParameter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedYesNo.hpp" />
@@ -125,6 +132,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Windows.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\YesNo.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\doctest\doctest.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\EnumBitmask\EnumBitmask.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\expected\expected.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\core.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\format.h" />
@@ -162,6 +170,8 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\fast-dtoa.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\ieee.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\string-to-double.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\strtod.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\utils.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\fmt\format-inl.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.h" />
@@ -219,6 +229,10 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\SivLogger.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MonitorInfo\SivMonitorInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ParseBool\SivParseBool.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ParseFloat\SivParseFloat.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ParseInt\SivParseInt.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp" />
@@ -236,6 +250,8 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\double-to-string.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\fast-dtoa.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.cc" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\string-to-double.cc" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\strtod.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\fmt\format.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</LanguageStandard>

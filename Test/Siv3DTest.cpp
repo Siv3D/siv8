@@ -388,6 +388,413 @@ TEST_CASE("Unicode.hpp")
 	}
 }
 
+
+TEST_CASE("Parse.hpp")
+{
+	{
+		CHECK(ParseBoolChecked(U"") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseBoolChecked(U" ") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseBoolChecked(U"0") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"1") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U" 0") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"1 ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"t") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"tru") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"tru ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"truee ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"f") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"fals") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"fals ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseBoolChecked(U"falsee ") == Unexpected{ ParseErrorReason::InvalidFormat });
+
+		CHECK(ParseBoolChecked(U"false") == false);
+		CHECK(ParseBoolChecked(U"false ") == false);
+		CHECK(ParseBoolChecked(U"  false ") == false);
+		CHECK(ParseBoolChecked(U"true") == true);
+		CHECK(ParseBoolChecked(U"true ") == true);
+		CHECK(ParseBoolChecked(U"  true ") == true);
+
+		CHECK(ParseBoolChecked(U"False") == false);
+		CHECK(ParseBoolChecked(U"False ") == false);
+		CHECK(ParseBoolChecked(U"  False ") == false);
+		CHECK(ParseBoolChecked(U"True") == true);
+		CHECK(ParseBoolChecked(U"True ") == true);
+		CHECK(ParseBoolChecked(U"  True ") == true);
+
+		CHECK(ParseBoolChecked(U"FALSE") == false);
+		CHECK(ParseBoolChecked(U"FALSE ") == false);
+		CHECK(ParseBoolChecked(U"  FALSE ") == false);
+		CHECK(ParseBoolChecked(U"TRUE") == true);
+		CHECK(ParseBoolChecked(U"TRUE ") == true);
+		CHECK(ParseBoolChecked(U"  TRUE ") == true);
+	}
+
+	{
+		CHECK(ParseIntChecked<int8>(U"") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<int8>(U" ") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<int8>(U"a") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int8>(U"x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int8>(U" x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int8>(U"2x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int8>(U"2 x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int8>(U"0") == 0);
+		CHECK(ParseIntChecked<int8>(U"-0") == 0);
+		CHECK(ParseIntChecked<int8>(U"00") == 0);
+		CHECK(ParseIntChecked<int8>(U"-00") == 0);
+		CHECK(ParseIntChecked<int8>(U"1") == 1);
+		CHECK(ParseIntChecked<int8>(U" 1 ") == 1);
+		CHECK(ParseIntChecked<int8>(U"-1") == -1);
+		CHECK(ParseIntChecked<int8>(U" -1 ") == -1);
+		CHECK(ParseIntChecked<int8>(U" - 1 ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int8>(U"-127") == -127);
+		CHECK(ParseIntChecked<int8>(U" -128 ") == -128);
+		CHECK(ParseIntChecked<int8>(U"128") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int8>(U"-129") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int8>(U"1270") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int8>(U"9999999999999999999999999") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int8>(U"-9999999999999999999999999") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int8>(U"0", 1) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<int8>(U"0", 37) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<int8>(U"7F", 16) == 0x7F);
+		CHECK(ParseIntChecked<int8>(U"-7F", 16) == -127);
+		CHECK(ParseIntChecked<int8>(U"81", 16) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int8>(U"-81", 16) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int8>(U"2", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int8>(U"011", 2) == 3);
+		CHECK(ParseIntChecked<int8>(U"01015", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int8>(U"011010101010101011", 2) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int8>(U"0x7F", 0) == 0x7F);
+		CHECK(ParseIntChecked<int8>(U"0x81", 0) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int8>(U"", 0) == Unexpected{ ParseErrorReason::EmptyInput });
+	}
+
+	{
+		CHECK(ParseIntChecked<uint8>(U"") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<uint8>(U" ") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<uint8>(U"a") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint8>(U"x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint8>(U" x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint8>(U"2x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint8>(U"2 x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint8>(U"0") == 0);
+		CHECK(ParseIntChecked<uint8>(U"-0") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U"00") == 0);
+		CHECK(ParseIntChecked<uint8>(U"-00") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U"1") == 1);
+		CHECK(ParseIntChecked<uint8>(U" 1 ") == 1);
+		CHECK(ParseIntChecked<uint8>(U"-1") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U" -1 ") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U" - 1 ") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U"-127") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U" -128 ") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U"128") == 128);
+		CHECK(ParseIntChecked<uint8>(U"-129") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U"255") == 255);
+		CHECK(ParseIntChecked<uint8>(U"256") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint8>(U"2550") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint8>(U"9999999999999999999999999") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint8>(U"-9999999999999999999999999") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U"0", 1) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<uint8>(U"0", 37) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<uint8>(U"7F", 16) == 0x7F);
+		CHECK(ParseIntChecked<uint8>(U"-7F", 16) == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U"81", 16) == 0x81);
+		CHECK(ParseIntChecked<uint8>(U"-81", 16) == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U"FF", 16) == 0xFF);
+		CHECK(ParseIntChecked<uint8>(U"-FF", 16) == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint8>(U"2", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint8>(U"011", 2) == 3);
+		CHECK(ParseIntChecked<uint8>(U"01015", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint8>(U"011010101010101011", 2) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint8>(U"", 0) == Unexpected{ ParseErrorReason::EmptyInput });
+	}
+
+	{
+		CHECK(ParseIntChecked<int32>(U"") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<int32>(U" ") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<int32>(U"a") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int32>(U"x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int32>(U" x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int32>(U"2x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int32>(U"2 x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int32>(U"0") == 0);
+		CHECK(ParseIntChecked<int32>(U"-0") == 0);
+		CHECK(ParseIntChecked<int32>(U"00") == 0);
+		CHECK(ParseIntChecked<int32>(U"-00") == 0);
+		CHECK(ParseIntChecked<int32>(U"1") == 1);
+		CHECK(ParseIntChecked<int32>(U" 1 ") == 1);
+		CHECK(ParseIntChecked<int32>(U"-1") == -1);
+		CHECK(ParseIntChecked<int32>(U" -1 ") == -1);
+		CHECK(ParseIntChecked<int32>(U" - 1 ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int32>(U"-127") == -127);
+		CHECK(ParseIntChecked<int32>(U" -128 ") == -128);
+		CHECK(ParseIntChecked<int32>(U"2147483647") == 2147483647);
+		CHECK(ParseIntChecked<int32>(U"-2147483648") == -2147483648);
+		CHECK(ParseIntChecked<int32>(U"2147483648") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int32>(U"-2147483649") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int32>(U"9999999999999999999999999") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int32>(U"-9999999999999999999999999") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int32>(U"0", 1) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<int32>(U"0", 37) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<int32>(U"7F", 16) == 0x7F);
+		CHECK(ParseIntChecked<int32>(U"-7F", 16) == -127);
+		CHECK(ParseIntChecked<int32>(U"81", 16) == 0x81);
+		CHECK(ParseIntChecked<int32>(U"-81", 16) == -0x81);
+		CHECK(ParseIntChecked<int32>(U"2", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int32>(U"011", 2) == 3);
+		CHECK(ParseIntChecked<int32>(U"01015", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int32>(U"011010101010101011011010101010101011", 2) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int32>(U"0x7F", 0) == 0x7F);
+		CHECK(ParseIntChecked<int32>(U"0x81FF11FF11", 0) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int32>(U"", 0) == Unexpected{ ParseErrorReason::EmptyInput });
+	}
+
+	{
+		CHECK(ParseIntChecked<uint32>(U"") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<uint32>(U" ") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<uint32>(U"a") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint32>(U"x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint32>(U" x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint32>(U"2x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint32>(U"2 x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint32>(U"0") == 0);
+		CHECK(ParseIntChecked<uint32>(U"-0") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U"00") == 0);
+		CHECK(ParseIntChecked<uint32>(U"-00") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U"1") == 1);
+		CHECK(ParseIntChecked<uint32>(U" 1 ") == 1);
+		CHECK(ParseIntChecked<uint32>(U"-1") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U" -1 ") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U" - 1 ") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U"-127") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U" -128 ") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U"4294967295") == 4294967295u);
+		CHECK(ParseIntChecked<uint32>(U"4294967296") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint32>(U"9999999999999999999999999") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint32>(U"-9999999999999999999999999") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U"0", 1) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<uint32>(U"0", 37) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<uint32>(U"7F", 16) == 0x7F);
+		CHECK(ParseIntChecked<uint32>(U"-7F", 16) == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U"81", 16) == 0x81);
+		CHECK(ParseIntChecked<uint32>(U"-81", 16) == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U"FF", 16) == 0xFF);
+		CHECK(ParseIntChecked<uint32>(U"-FF", 16) == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint32>(U"2", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint32>(U"011", 2) == 3);
+		CHECK(ParseIntChecked<uint32>(U"01015", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint32>(U"011010101010101011011010101010101011", 2) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint32>(U"0x7F", 0) == 0x7F);
+		CHECK(ParseIntChecked<uint32>(U"0x81FF11FF11", 0) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint32>(U"", 0) == Unexpected{ ParseErrorReason::EmptyInput });
+	}
+
+	{
+		CHECK(ParseIntChecked<int64>(U"") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<int64>(U" ") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<int64>(U"a") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int64>(U"x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int64>(U" x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int64>(U"2x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int64>(U"2 x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int64>(U"0") == 0);
+		CHECK(ParseIntChecked<int64>(U"-0") == 0);
+		CHECK(ParseIntChecked<int64>(U"00") == 0);
+		CHECK(ParseIntChecked<int64>(U"-00") == 0);
+		CHECK(ParseIntChecked<int64>(U"1") == 1);
+		CHECK(ParseIntChecked<int64>(U" 1 ") == 1);
+		CHECK(ParseIntChecked<int64>(U"-1") == -1);
+		CHECK(ParseIntChecked<int64>(U" -1 ") == -1);
+		CHECK(ParseIntChecked<int64>(U" - 1 ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int64>(U"-127") == -127);
+		CHECK(ParseIntChecked<int64>(U" -128 ") == -128);
+		CHECK(ParseIntChecked<int64>(U"9223372036854775807") == 9223372036854775807LL);
+		CHECK(ParseIntChecked<int64>(U"-9223372036854775808") == INT64_MIN);
+		CHECK(ParseIntChecked<int64>(U"9223372036854775808") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int64>(U"-9223372036854775809") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int64>(U"9999999999999999999999999") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int64>(U"-9999999999999999999999999") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int64>(U"0", 1) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<int64>(U"0", 37) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<int64>(U"7F", 16) == 0x7F);
+		CHECK(ParseIntChecked<int64>(U"-7F", 16) == -127);
+		CHECK(ParseIntChecked<int64>(U"81", 16) == 0x81);
+		CHECK(ParseIntChecked<int64>(U"-81", 16) == -0x81);
+		CHECK(ParseIntChecked<int64>(U"2", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int64>(U"011", 2) == 3);
+		CHECK(ParseIntChecked<int64>(U"01015", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<int64>(U"011010101010101011011010101010101011011010101010101011011010101010101011", 2) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int64>(U"0x7F", 0) == 0x7F);
+		CHECK(ParseIntChecked<int64>(U"0x81FF11FF1181FF11FF11", 0) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<int64>(U"", 0) == Unexpected{ ParseErrorReason::EmptyInput });
+	}
+
+	{
+		CHECK(ParseIntChecked<uint64>(U"") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<uint64>(U" ") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseIntChecked<uint64>(U"a") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint64>(U"x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint64>(U" x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint64>(U"2x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint64>(U"2 x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint64>(U"0") == 0);
+		CHECK(ParseIntChecked<uint64>(U"-0") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U"00") == 0);
+		CHECK(ParseIntChecked<uint64>(U"-00") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U"1") == 1);
+		CHECK(ParseIntChecked<uint64>(U" 1 ") == 1);
+		CHECK(ParseIntChecked<uint64>(U"-1") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U" -1 ") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U" - 1 ") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U"-127") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U" -128 ") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U"18446744073709551615") == 18446744073709551615ULL);
+		CHECK(ParseIntChecked<uint64>(U"18446744073709551616") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint64>(U"9999999999999999999999999") == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint64>(U"-9999999999999999999999999") == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U"0", 1) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<uint64>(U"0", 37) == Unexpected{ ParseErrorReason::InvalidRadix });
+		CHECK(ParseIntChecked<uint64>(U"7F", 16) == 0x7F);
+		CHECK(ParseIntChecked<uint64>(U"-7F", 16) == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U"81", 16) == 0x81);
+		CHECK(ParseIntChecked<uint64>(U"-81", 16) == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U"FF", 16) == 0xFF);
+		CHECK(ParseIntChecked<uint64>(U"-FF", 16) == Unexpected{ ParseErrorReason::InvalidValueForType });
+		CHECK(ParseIntChecked<uint64>(U"2", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint64>(U"011", 2) == 3);
+		CHECK(ParseIntChecked<uint64>(U"01015", 2) == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseIntChecked<uint64>(U"011010101010101011011010101010101011011010101010101011011010101010101011", 2) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint64>(U"0x7F", 0) == 0x7F);
+		CHECK(ParseIntChecked<uint64>(U"0x81FF11FF1181FF11FF11", 0) == Unexpected{ ParseErrorReason::NumericOverflow });
+		CHECK(ParseIntChecked<uint64>(U"", 0) == Unexpected{ ParseErrorReason::EmptyInput });
+	}
+
+	{
+		CHECK(ParseFloatChecked<float>(U"") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseFloatChecked<float>(U" ") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseFloatChecked<float>(U"a") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<float>(U"x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<float>(U" x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<float>(U"2x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<float>(U"2 x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<float>(U"1.2.3") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<float>(U"-1.2.3") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<float>(U"0") == 0.0f);
+		CHECK(ParseFloatChecked<float>(U"-0") == -0.0f);
+		CHECK(ParseFloatChecked<float>(U"00") == 0.0f);
+		CHECK(ParseFloatChecked<float>(U"-00") == -0.0f);
+		CHECK(ParseFloatChecked<float>(U"1") == 1.0f);
+		CHECK(ParseFloatChecked<float>(U" 1 ") == 1.0f);
+		CHECK(ParseFloatChecked<float>(U"-1") == -1.0f);
+		CHECK(ParseFloatChecked<float>(U" -1 ") == -1.0f);
+		CHECK(ParseFloatChecked<float>(U" .25 ") == 0.25f);
+		CHECK(ParseFloatChecked<float>(U"-.25") == -0.25f);
+		CHECK(ParseFloatChecked<float>(U" -.25 ") == -0.25f);
+		CHECK(ParseFloatChecked<float>(U" 3.14159265 ") == 3.14159265f);
+		CHECK(ParseFloatChecked<float>(U"-3.14159265") == -3.14159265f);
+		CHECK(ParseFloatChecked<float>(U" -3.14159265 ") == -3.14159265f);
+		CHECK(ParseFloatChecked<float>(U" 1e5 ") == 1e5f);
+		CHECK(ParseFloatChecked<float>(U"-1e5") == -1e5f);
+		CHECK(ParseFloatChecked<float>(U" -1e5 ") == -1e5f);
+		CHECK(ParseFloatChecked<float>(U" 0.00000000001 ") == 0.00000000001f); 
+		CHECK(ParseFloatChecked<float>(U"-0.00000000001") == -0.00000000001f);
+		CHECK(ParseFloatChecked<float>(U" -0.00000000001 ") == -0.00000000001f);
+		CHECK(ParseFloatChecked<float>(U" 340282346638528859811704183484516925440 ") == FLT_MAX);
+		CHECK(ParseFloatChecked<float>(U"-340282346638528859811704183484516925440") == -FLT_MAX);
+		CHECK(ParseFloatChecked<float>(U" -340282346638528859811704183484516925440 ") == -FLT_MAX);
+		CHECK(std::isinf(ParseFloatChecked<float>(U" 350282346638528859811704183484516925440 ").value()));
+		CHECK(std::isinf(ParseFloatChecked<float>(U"-350282346638528859811704183484516925440").value()));
+		CHECK(std::isinf(ParseFloatChecked<float>(U" -350282346638528859811704183484516925440 ").value()));
+		CHECK(ParseFloatChecked<float>(U" 350282346638528859811704183484516925440 ").value() > 0.0f);
+		CHECK(ParseFloatChecked<float>(U"-350282346638528859811704183484516925440").value() < 0.0f);
+		CHECK(ParseFloatChecked<float>(U" -350282346638528859811704183484516925440 ").value() < 0.0f);
+		CHECK(ParseFloatChecked<float>(U" 0.00000000000000000000000000000000000001175494351 ") == FLT_MIN);
+		CHECK(ParseFloatChecked<float>(U"-0.00000000000000000000000000000000000001175494351") == -FLT_MIN);
+		CHECK(ParseFloatChecked<float>(U" -0.00000000000000000000000000000000000001175494351 ") == -FLT_MIN);
+		CHECK(ParseFloatChecked<float>(U" 0.000000000000000000000000000000000000000000001401298464 ") == FLT_TRUE_MIN);
+		CHECK(ParseFloatChecked<float>(U"-0.000000000000000000000000000000000000000000001401298464") == -FLT_TRUE_MIN);
+		CHECK(ParseFloatChecked<float>(U" -0.000000000000000000000000000000000000000000001401298464 ") == -FLT_TRUE_MIN);
+		CHECK(ParseFloatChecked<float>(U" 0.000000000000000000000000000000000000000000000601298464 ") == 0.0f);
+		CHECK(ParseFloatChecked<float>(U"-0.000000000000000000000000000000000000000000000601298464") == 0.0f);
+		CHECK(ParseFloatChecked<float>(U" -0.000000000000000000000000000000000000000000000601298464 ") == 0.0f);
+
+		CHECK(std::isinf(ParseFloatChecked<float>(U"inf").value()));
+		CHECK(std::isinf(ParseFloatChecked<float>(U" inf").value()));
+		CHECK(std::isinf(ParseFloatChecked<float>(U" inf ").value()));
+		CHECK(ParseFloatChecked<float>(U" inf ").value() > 0.0f);
+		CHECK(std::isinf(ParseFloatChecked<float>(U"-inf").value()));
+		CHECK(std::isinf(ParseFloatChecked<float>(U" -inf ").value()));
+		CHECK(ParseFloatChecked<float>(U" -inf ").value() < 0.0f);
+
+		CHECK(std::isnan(ParseFloatChecked<float>(U"nan").value()));
+		CHECK(std::isnan(ParseFloatChecked<float>(U" nan").value()));
+		CHECK(std::isnan(ParseFloatChecked<float>(U" nan ").value()));
+	}
+
+	{
+		CHECK(ParseFloatChecked<double>(U"") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseFloatChecked<double>(U" ") == Unexpected{ ParseErrorReason::EmptyInput });
+		CHECK(ParseFloatChecked<double>(U"a") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<double>(U"x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<double>(U" x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<double>(U"2x ") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<double>(U"2 x") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<double>(U"1.2.3") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<double>(U"-1.2.3") == Unexpected{ ParseErrorReason::InvalidFormat });
+		CHECK(ParseFloatChecked<double>(U"0") == 0.0);
+		CHECK(ParseFloatChecked<double>(U"-0") == -0.0);
+		CHECK(ParseFloatChecked<double>(U"00") == 0.0);
+		CHECK(ParseFloatChecked<double>(U"-00") == -0.0);
+		CHECK(ParseFloatChecked<double>(U"1") == 1.0);
+		CHECK(ParseFloatChecked<double>(U" 1 ") == 1.0);
+		CHECK(ParseFloatChecked<double>(U"-1") == -1.0);
+		CHECK(ParseFloatChecked<double>(U" -1 ") == -1.0);
+		CHECK(ParseFloatChecked<double>(U" .25 ") == 0.25);
+		CHECK(ParseFloatChecked<double>(U"-.25") == -0.25);
+		CHECK(ParseFloatChecked<double>(U" -.25 ") == -0.25);
+		CHECK(ParseFloatChecked<double>(U" 3.14159265 ") == 3.14159265);
+		CHECK(ParseFloatChecked<double>(U"-3.14159265") == -3.14159265);
+		CHECK(ParseFloatChecked<double>(U" -3.14159265 ") == -3.14159265);
+		CHECK(ParseFloatChecked<double>(U" 1e5 ") == 1e5);
+		CHECK(ParseFloatChecked<double>(U"-1e5") == -1e5);
+		CHECK(ParseFloatChecked<double>(U" -1e5 ") == -1e5);
+		CHECK(ParseFloatChecked<double>(U" 0.00000000001 ") == 0.00000000001);
+		CHECK(ParseFloatChecked<double>(U"-0.00000000001") == -0.00000000001);
+		CHECK(ParseFloatChecked<double>(U" -0.00000000001 ") == -0.00000000001);
+		CHECK(ParseFloatChecked<double>(U" 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368 ") == DBL_MAX);
+		CHECK(ParseFloatChecked<double>(U"-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368") == -DBL_MAX);
+		CHECK(ParseFloatChecked<double>(U" -179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368 ") == -DBL_MAX);
+		CHECK(std::isinf(ParseFloatChecked<double>(U" 179869313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368 ").value()));
+		CHECK(std::isinf(ParseFloatChecked<double>(U"-179869313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368").value()));
+		CHECK(std::isinf(ParseFloatChecked<double>(U" -179869313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368 ").value()));
+		CHECK(ParseFloatChecked<double>(U" 179869313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368 ").value() > 0.0f);
+		CHECK(ParseFloatChecked<double>(U"-179869313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368").value() < 0.0f);
+		CHECK(ParseFloatChecked<double>(U" -179869313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368 ").value() < 0.0f);
+		CHECK(ParseFloatChecked<double>(U" 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002225073858507201383 ") == DBL_MIN);
+		CHECK(ParseFloatChecked<double>(U"-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002225073858507201383") == -DBL_MIN);
+		CHECK(ParseFloatChecked<double>(U" -0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002225073858507201383 ") == -DBL_MIN);
+		CHECK(ParseFloatChecked<double>(U" 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000494065645841246544 ") == DBL_TRUE_MIN);
+		CHECK(ParseFloatChecked<double>(U"-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000494065645841246544") == -DBL_TRUE_MIN);
+		CHECK(ParseFloatChecked<double>(U" -0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000494065645841246544 ") == -DBL_TRUE_MIN);
+		CHECK(ParseFloatChecked<double>(U" 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000204065645841246544 ") == 0.0);
+		CHECK(ParseFloatChecked<double>(U"-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000204065645841246544") == 0.0);
+		CHECK(ParseFloatChecked<double>(U" -0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000204065645841246544 ") == 0.0);
+
+		CHECK(std::isinf(ParseFloatChecked<double>(U"inf").value()));
+		CHECK(std::isinf(ParseFloatChecked<double>(U" inf").value()));
+		CHECK(std::isinf(ParseFloatChecked<double>(U" inf ").value()));
+		CHECK(ParseFloatChecked<double>(U" inf ").value() > 0.0);
+		CHECK(std::isinf(ParseFloatChecked<double>(U"-inf").value()));
+		CHECK(std::isinf(ParseFloatChecked<double>(U" -inf ").value()));
+		CHECK(ParseFloatChecked<double>(U" -inf ").value() < 0.0);
+
+		CHECK(std::isnan(ParseFloatChecked<double>(U"nan").value()));
+		CHECK(std::isnan(ParseFloatChecked<double>(U" nan").value()));
+		CHECK(std::isnan(ParseFloatChecked<double>(U" nan ").value()));
+	}
+}
+
+
 TEST_CASE("BinaryReader.hpp")
 {
 	FileSystem::Remove(U"test.bin");

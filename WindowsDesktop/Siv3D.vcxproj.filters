@@ -220,6 +220,21 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows">
       <UniqueIdentifier>{4a572113-819e-44ae-9272-79ca3d1d1e8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\EnumBitmask">
+      <UniqueIdentifier>{b85b8970-8556-4fe6-9e41-e78d75823ffe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ParseBool">
+      <UniqueIdentifier>{edfdd4ba-b3d2-4643-a472-be3cf767c239}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ParseInt">
+      <UniqueIdentifier>{4bfb1cee-9d6d-4926-a07f-2bdb910f792e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ParseFloat">
+      <UniqueIdentifier>{fe5aade6-0971-45f5-953d-f4c3e55ddef0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Parse">
+      <UniqueIdentifier>{4d87520f-86bc-46fc-a0a4-abd5540e97f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -690,6 +705,36 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryWriter.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\EnumBitmask\EnumBitmask.hpp">
+      <Filter>include\ThirdParty\EnumBitmask</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ParseBool.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ParseErrorReason.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ParseInt.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Parse.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ParseInt.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ParseFloat.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\string-to-double.h">
+      <Filter>src\ThirdParty\double-conversion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\strtod.h">
+      <Filter>src\ThirdParty\double-conversion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Parse.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -889,6 +934,24 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows\SivWindows.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ParseBool\SivParseBool.cpp">
+      <Filter>src\Siv3D\ParseBool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ParseInt\SivParseInt.cpp">
+      <Filter>src\Siv3D\ParseInt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ParseFloat\SivParseFloat.cpp">
+      <Filter>src\Siv3D\ParseFloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\string-to-double.cc">
+      <Filter>src\ThirdParty\double-conversion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\strtod.cc">
+      <Filter>src\ThirdParty\double-conversion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp">
+      <Filter>src\Siv3D\Parse</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

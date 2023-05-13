@@ -23,11 +23,11 @@ namespace s3d
 		{
 			DWORD creationDisposition = 0;
 
-			if (FromEnum(openMode) & FromEnum(OpenMode::Append))
+			if (openMode & OpenMode::Append)
 			{
 				creationDisposition = OPEN_ALWAYS;
 			}
-			else if (FromEnum(openMode) & FromEnum(OpenMode::Trunc))
+			else if (openMode & OpenMode::Trunc)
 			{
 				creationDisposition = CREATE_ALWAYS;
 			}
@@ -85,7 +85,7 @@ namespace s3d
 				.handle = handle
 			};
 
-			if (FromEnum(openMode) & FromEnum(OpenMode::Append))
+			if (openMode & OpenMode::Append)
 			{
 				LARGE_INTEGER distance{ 0, 0 };
 				::SetFilePointerEx(m_file.handle, distance, nullptr, FILE_END);

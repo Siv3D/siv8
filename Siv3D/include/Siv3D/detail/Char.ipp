@@ -102,8 +102,8 @@ namespace s3d
 	constexpr bool IsSpace(const char32 ch) noexcept
 	{
 		return ((ch == detail::halfWidthSpace)
-			|| (ch - U'\t') <= (U'\r' - U'\t'))
-			|| (ch == detail::fullWidthSpace);
+			|| ((ch - U'\t') <= (U'\r' - U'\t'))
+			|| (ch == detail::fullWidthSpace));
 	}
 
 	inline bool IsPrint(const char32 ch) noexcept

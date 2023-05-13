@@ -9,20 +9,18 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include "Common.hpp"
-# include <ThirdParty/EnumBitmask/EnumBitmask.hpp>
+# include <Siv3D/Parse.hpp>
+# include <Siv3D/Demangle.hpp>
+# include <Siv3D/FormatLiteral.hpp>
 
 namespace s3d
 {
-	/// @brief ファイルのオープンモード
-	enum class OpenMode
+	namespace detail
 	{
-		/// @brief 新規作成
-		Trunc = (1 << 1),
-
-		/// @brief 追加
-		Append = (1 << 2),
-	};
-	DEFINE_BITMASK_OPERATORS(OpenMode);
+		[[noreturn]]
+		void ThrowParseError(const char* type, const std::string_view s)
+		{
+			throw ParseError{ fmt::format("Parse<{}>(): Failed to parse `{}`", Demangle(type), s) };
+		}
+	}
 }
