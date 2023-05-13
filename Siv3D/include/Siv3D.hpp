@@ -83,8 +83,8 @@
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/LetterCase.hpp>
 //# include <Siv3D/UnicodeConverter.hpp>
-//# include <Siv3D/MatchResults.hpp>
-//# include <Siv3D/RegExp.hpp>
+# include <Siv3D/MatchResults.hpp>
+# include <Siv3D/RegExp.hpp>
 //# include <Siv3D/Obfuscation.hpp>
 
 # include <Siv3D/Error.hpp>
@@ -134,7 +134,7 @@
 # include <Siv3D/IReader.hpp>
 # include <Siv3D/IWriter.hpp>
 # include <Siv3D/SpecialFolder.hpp>
-//# include <Siv3D/CopyOption.hpp>
+# include <Siv3D/CopyOption.hpp>
 # include <Siv3D/FileSystem.hpp>
 //# include <Siv3D/ResourceOption.hpp>
 //# include <Siv3D/Resource.hpp>

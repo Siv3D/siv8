@@ -244,6 +244,12 @@
     <Filter Include="src\Siv3D\ThousandSeparate">
       <UniqueIdentifier>{61fae085-977a-4aa4-93c0-ccc44e329f4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\RegExp">
+      <UniqueIdentifier>{afc44ce1-5af3-4f67-908e-8022138ef39e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\Oniguruma">
+      <UniqueIdentifier>{06be8420-b245-44d8-8aca-38a235541484}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -765,6 +771,27 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ThousandSeparate.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CopyOption.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MatchResults.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RegExp.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MatchResults.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RegExp.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp">
+      <Filter>src\Siv3D\RegExp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\oniguruma.h">
+      <Filter>src\ThirdParty\Oniguruma</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -991,6 +1018,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ThousandSeparate\SivThousandSeparate.cpp">
       <Filter>src\Siv3D\ThousandSeparate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.cpp">
+      <Filter>src\Siv3D\RegExp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\SivRegExp.cpp">
+      <Filter>src\Siv3D\RegExp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
