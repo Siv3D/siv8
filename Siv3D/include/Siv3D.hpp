@@ -108,7 +108,7 @@
 # include <Siv3D/ParseFloat.hpp>
 # include <Siv3D/Parse.hpp>
 
-//# include <Siv3D/Number.hpp>
+# include <Siv3D/Number.hpp>
 //# include <Siv3D/FloatingPoint.hpp>
 //# include <Siv3D/Int128.hpp>
 //# include <Siv3D/BigInt.hpp>

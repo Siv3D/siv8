@@ -13,6 +13,7 @@
 # include <Siv3D/Error.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/Char.hpp>
+# include <Siv3D/Number.hpp>
 # include <ThirdParty/double-conversion/double-conversion.h>
 
 namespace s3d
@@ -63,8 +64,6 @@ namespace s3d
 			return ParseErrorReason::InvalidFormat;
 		}
 
-		inline static constexpr double sNaN = std::numeric_limits<double>::signaling_NaN();
-
 		inline static constexpr int flags =
 			(double_conversion::StringToDoubleConverter::ALLOW_LEADING_SPACES
 			| double_conversion::StringToDoubleConverter::ALLOW_TRAILING_SPACES
@@ -75,7 +74,7 @@ namespace s3d
 		[[nodiscard]]
 		static double ParseDouble(const SV s) noexcept
 		{
-			const double_conversion::StringToDoubleConverter conv{ flags, sNaN, sNaN, "inf", "nan" };
+			const double_conversion::StringToDoubleConverter conv{ flags, SNaN<double>, SNaN<double>, "inf", "nan" };
 			int unused;
 			return conv.Siv3D_StringToIeee(s.data(), static_cast<int>(s.length()), true, &unused);
 		}
@@ -85,7 +84,7 @@ namespace s3d
 		{
 			const double d = ParseDouble(s);
 
-			if (std::bit_cast<uint64>(d) == std::bit_cast<uint64>(sNaN))
+			if (std::bit_cast<uint64>(d) == std::bit_cast<uint64>(SNaN<double>))
 			{
 				return Unexpected{ CheckParseFloat(s) };
 			}
@@ -98,7 +97,7 @@ namespace s3d
 		{
 			const double d = ParseDouble(s);
 
-			if (std::bit_cast<uint64>(d) == std::bit_cast<uint64>(sNaN))
+			if (std::bit_cast<uint64>(d) == std::bit_cast<uint64>(SNaN<double>))
 			{
 				return Unexpected{ CheckParseFloat(s) };
 			}
