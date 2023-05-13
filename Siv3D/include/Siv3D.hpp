@@ -133,7 +133,7 @@
 
 # include <Siv3D/IReader.hpp>
 # include <Siv3D/IWriter.hpp>
-//# include <Siv3D/SpecialFolder.hpp>
+# include <Siv3D/SpecialFolder.hpp>
 //# include <Siv3D/CopyOption.hpp>
 # include <Siv3D/FileSystem.hpp>
 //# include <Siv3D/ResourceOption.hpp>
@@ -157,12 +157,54 @@
 //# include <Siv3D/FileArchive.hpp>
 
 
+//# include <Siv3D/Zlib.hpp>
+//# include <Siv3D/Compression.hpp>
+//# include <Siv3D/ZIPReader.hpp>
+////# include <Siv3D/ZIPWriter.hpp> // [Siv3D ToDo]
 
+//# include <Siv3D/TextEncoding.hpp>
+//# include <Siv3D/TextReader.hpp>
+//# include <Siv3D/TextWriter.hpp>
+//# include <Siv3D/CSV.hpp>
+//# include <Siv3D/INI.hpp>
+//# include <Siv3D/JSON.hpp>
+//# include <Siv3D/JSONValidator.hpp>
+//# include <Siv3D/XMLReader.hpp>
+//# include <Siv3D/TOMLReader.hpp>
+//# include <Siv3D/GeoJSON.hpp>
+//# include <Siv3D/HTMLWriter.hpp>
 
+# include <Siv3D/LogType.hpp>
+//# include <Siv3D/Logger.hpp>
+//# include <Siv3D/LicenseInfo.hpp>
+//# include <Siv3D/LicenseManager.hpp>
+//# include <Siv3D/MathConstants.hpp>
+//# include <Siv3D/Math.hpp>
+//# include <Siv3D/FastMath.hpp>
+//# include <Siv3D/Interpolation.hpp>
+//# include <Siv3D/Easing.hpp>
+//# include <Siv3D/EasingAB.hpp>
+//# include <Siv3D/SimpleAnimation.hpp>
+//# include <Siv3D/Transition.hpp>
+//# include <Siv3D/Periodic.hpp>
+//# include <Siv3D/PoissonDisk2D.hpp>
+//# include <Siv3D/Spline.hpp>
+//# include <Siv3D/SIMDMath.hpp>
+//# include <Siv3D/HalfFloat.hpp>
+//# include <Siv3D/SIMD_Float4.hpp>
+//# include <Siv3D/MathParser.hpp>
+//# include <Siv3D/Statistics.hpp>
+//# include <Siv3D/PrimeNumber.hpp>
 
+//# include <Siv3D/Noise.hpp>
+//# include <Siv3D/PerlinNoise.hpp>
 
-
-
+//# include <Siv3D/ColorHSV.hpp>
+//# include <Siv3D/Color.hpp>
+//# include <Siv3D/ColorF.hpp>
+//# include <Siv3D/HSV.hpp>
+//# include <Siv3D/Palette.hpp>x
+//# include <Siv3D/Colormap.hpp>
 
 
 
