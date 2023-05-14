@@ -16,10 +16,62 @@
 
 namespace s3d
 {
-	RegExp::RegExpDetail::RegExpDetail()
+	namespace detail
 	{
-		// do nothing
+		static MatchResults MatchOrSearch(regex_t* regex, const bool search, const StringView s)
+		{
+			if (regex == nullptr)
+			{
+				return{};
+			}
+
+			const UChar* pString = reinterpret_cast<const UChar*>(s.data());
+			const size_t stringLength = (s.size() * sizeof(char32_t));
+
+			const unsigned char* pStart = pString;
+			const unsigned char* pEnd = pString + stringLength;
+			const unsigned char* pRange = pEnd;
+
+			OnigRegion* region = ::onig_region_new();
+			ScopeExit sg = [=]() { ::onig_region_free(region, 1); };
+
+			const int r = search ? ::onig_match(regex, pString, pEnd, pStart, region, ONIG_OPTION_NONE)
+				: ::onig_search(regex, pString, pEnd, pStart, pRange, region, ONIG_OPTION_NONE);
+
+			if (r >= 0)
+			{
+				Array<Optional<StringView>> matches;
+
+				for (int32 i = 0; i < region->num_regs; ++i)
+				{
+					if ((region->beg[i] == ONIG_REGION_NOTPOS)
+						|| (region->end[i] == ONIG_REGION_NOTPOS))
+					{
+						matches.emplace_back();
+						continue;
+					}
+
+					const size_t begIndex = (region->beg[i] / sizeof(char32_t));
+					const size_t endIndex = (region->end[i] / sizeof(char32_t));
+					const size_t length = (endIndex - begIndex);
+					matches.push_back(s.substr(begIndex, length));
+				}
+
+				return MatchResults(std::move(matches));
+			}
+			else if (r == ONIG_MISMATCH)
+			{
+				return{};
+			}
+			else
+			{
+				// error
+				return{};
+			}
+		}
 	}
+
+	RegExp::RegExpDetail::RegExpDetail() {}
 
 	RegExp::RegExpDetail::RegExpDetail(const StringView pattern)
 	{
@@ -91,103 +143,12 @@ namespace s3d
 
 	MatchResults RegExp::RegExpDetail::match(const StringView s) const
 	{
-		if (not isValid())
-		{
-			return{};
-		}
-
-		const UChar* pString = reinterpret_cast<const UChar*>(s.data());
-		const size_t stringLength = (s.size() * sizeof(char32_t));
-
-		const unsigned char* pStart = pString;
-		const unsigned char* pEnd = pString + stringLength;
-
-		OnigRegion* region = ::onig_region_new();
-		ScopeExit sg = [=]() { ::onig_region_free(region, 1); };
-
-		const int r = ::onig_match(m_regex, pString, pEnd, pStart, region, ONIG_OPTION_NONE);
-
-		if (r >= 0)
-		{
-			Array<Optional<StringView>> matches;
-
-			for (int32 i = 0; i < region->num_regs; ++i)
-			{
-				if ((region->beg[i] == ONIG_REGION_NOTPOS)
-					|| (region->end[i] == ONIG_REGION_NOTPOS))
-				{
-					matches.emplace_back();
-					continue;
-				}
-
-				const size_t begIndex = (region->beg[i] / sizeof(char32_t));
-				const size_t endIndex = (region->end[i] / sizeof(char32_t));
-				const size_t length = (endIndex - begIndex);
-				matches.push_back(s.substr(begIndex, length));
-			}
-
-			return MatchResults(std::move(matches));
-		}
-		else if (r == ONIG_MISMATCH)
-		{
-			return{};
-		}
-		else
-		{
-			// error
-			return{};
-		}
+		return detail::MatchOrSearch(m_regex, false, s);
 	}
 
 	MatchResults RegExp::RegExpDetail::search(const StringView s) const
 	{
-		if (not isValid())
-		{
-			return{};
-		}
-
-		const UChar* pString = reinterpret_cast<const UChar*>(s.data());
-		const size_t stringLength = (s.size() * sizeof(char32_t));
-
-		const unsigned char* pStart = pString;
-		const unsigned char* pEnd = pString + stringLength;
-		const unsigned char* pRange = pEnd;
-
-		OnigRegion* region = ::onig_region_new();
-		ScopeExit sg = [=]() { ::onig_region_free(region, 1); };
-
-		const int r = ::onig_search(m_regex, pString, pEnd, pStart, pRange, region, ONIG_OPTION_NONE);
-
-		if (r >= 0)
-		{
-			Array<Optional<StringView>> matches;
-
-			for (int32 i = 0; i < region->num_regs; ++i)
-			{
-				if ((region->beg[i] == ONIG_REGION_NOTPOS)
-					|| (region->end[i] == ONIG_REGION_NOTPOS))
-				{
-					matches.emplace_back();
-					continue;
-				}
-
-				const size_t begIndex = (region->beg[i] / sizeof(char32_t));
-				const size_t endIndex = (region->end[i] / sizeof(char32_t));
-				const size_t length = (endIndex - begIndex);
-				matches.push_back(s.substr(begIndex, length));
-			}
-
-			return MatchResults(std::move(matches));
-		}
-		else if (r == ONIG_MISMATCH)
-		{
-			return{};
-		}
-		else
-		{
-			// error
-			return{};
-		}
+		return detail::MatchOrSearch(m_regex, true, s);
 	}
 
 	Array<MatchResults> RegExp::RegExpDetail::findAll(const StringView s) const
