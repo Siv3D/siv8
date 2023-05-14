@@ -158,10 +158,10 @@ namespace s3d
 
 		const int r = ::onig_search(m_regex, pString, pEnd, pStart, pRange, region, ONIG_OPTION_NONE);
 
-		Array<Optional<StringView>> matches;
-
 		if (r >= 0)
 		{
+			Array<Optional<StringView>> matches;
+
 			for (int32 i = 0; i < region->num_regs; ++i)
 			{
 				if ((region->beg[i] == ONIG_REGION_NOTPOS)

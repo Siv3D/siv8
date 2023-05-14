@@ -20,6 +20,34 @@ namespace s3d
 	}
 
 	template <class Type>
+	Type Parse(const std::string_view s)
+	{
+		if constexpr (std::is_same_v<Type, bool>)
+		{
+			return ParseBool(s);
+		}
+		else if constexpr (Concept::Integral<Type>)
+		{
+			return ParseInt<Type>(s);
+		}
+		else if constexpr (Concept::FloatingPoint<Type>)
+		{
+			return ParseFloat<Type>(s);
+		}
+		else
+		{
+			Type to;
+
+			if (not(std::istringstream{ s } >> to))
+			{
+				detail::ThrowParseError(typeid(Type).name(), s);
+			}
+
+			return to;
+		}
+	}
+
+	template <class Type>
 	Type Parse(const StringView s)
 	{
 		if constexpr (std::is_same_v<Type, bool>)
@@ -50,16 +78,28 @@ namespace s3d
 	}
 
 	template <class Type, class U>
+	Type ParseOr(const std::string_view s, U&& defaultValue)
+	{
+		return ParseChecked<Type>(s).value_or(std::forward<U>(defaultValue));
+	}
+
+	template <class Type, class U>
 	Type ParseOr(const StringView s, U&& defaultValue)
 	{
 		return ParseChecked<Type>(s).value_or(std::forward<U>(defaultValue));
 	}
 
-	template <class Type, class Fty>
-	[[nodiscard]]
-	Type ParseOrElse(StringView s, Fty&& f)
+	template <class Type>
+	Optional<Type> ParseOpt(const std::string_view s) noexcept
 	{
-		return ParseChecked<Type>(s).or_else(std::forward<Fty>(f));
+		if (const auto checked = ParseChecked<Type>(s))
+		{
+			return *checked;
+		}
+		else
+		{
+			return none;
+		}
 	}
 
 	template <class Type>
@@ -72,6 +112,34 @@ namespace s3d
 		else
 		{
 			return none;
+		}
+	}
+
+	template <class Type>
+	Expected<Type, ParseErrorReason> ParseChecked(const std::string_view s) noexcept
+	{
+		if constexpr (std::is_same_v<Type, bool>)
+		{
+			return ParseBoolChecked(s);
+		}
+		else if constexpr (Concept::Integral<Type>)
+		{
+			return ParseIntChecked<Type>(s);
+		}
+		else if constexpr (Concept::FloatingPoint<Type>)
+		{
+			return ParseFloatChecked<Type>(s);
+		}
+		else
+		{
+			Type to;
+
+			if (not(std::istringstream{ s } >> to))
+			{
+				return Unexpected{ ParseErrorReason::InvalidFormat };
+			}
+
+			return to;
 		}
 	}
 
