@@ -21,27 +21,47 @@ namespace s3d
 	{
 	public:
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		RegExp();
 
+		/// @brief 正規表現パターンを作成します。
+		/// @param pattern 正規表現の文字列
 		[[nodiscard]]
 		explicit RegExp(StringView pattern);
 
+		/// @brief 正規表現パターンが有効かを返します。
+		/// @return 正規表現パターンが有効な場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isValid() const noexcept;
 
+		/// @brief 正規表現パターンが有効かを返します。
+		/// @return 正規表現パターンが有効な場合 true, それ以外の場合は false
+		/// @remark isValid() と同じです。
 		[[nodiscard]]
 		explicit operator bool() const noexcept;
 
+		/// @brief 文字列全体が正規表現パターンにマッチしているかを返します。
+		/// @param s 文字列
+		/// @return 文字列全体が正規表現パターンにマッチしている場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool fullMatch(StringView s) const;
 
+		/// @brief 文字列の先頭が正規表現パターンにマッチしているかを返します。
+		/// @param s 文字列
+		/// @return マッチオブジェクト
 		[[nodiscard]]
 		MatchResults match(StringView s) const;
 
+		/// @brief 文字列の一部が正規表現パターンにマッチしているかを返します。
+		/// @param s 文字列
+		/// @return マッチオブジェクト
 		[[nodiscard]]
 		MatchResults search(StringView s) const;
 
+		/// @brief 文字列内で正規表現パターンにマッチするすべての部分文字列を返します。
+		/// @param s 文字列
+		/// @return マッチオブジェクトの配列
 		[[nodiscard]]
 		Array<MatchResults> findAll(StringView s) const;
 
@@ -56,6 +76,10 @@ namespace s3d
 	{
 		inline namespace RegExpLiterals
 		{
+			/// @brief 正規表現パターンを作成します。
+			/// @param s 正規表現の文字列
+			/// @param length 正規表現の文字列の長さ
+			/// @return 正規表現
 			[[nodiscard]]
 			inline RegExp operator ""_re(const char32_t* s, size_t length) noexcept;
 		}
