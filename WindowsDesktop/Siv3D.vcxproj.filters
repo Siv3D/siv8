@@ -250,6 +250,9 @@
     <Filter Include="src\ThirdParty\Oniguruma">
       <UniqueIdentifier>{06be8420-b245-44d8-8aca-38a235541484}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\obfuscate">
+      <UniqueIdentifier>{55c584c2-6e78-466d-9c84-d5ff0e73bb56}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -791,6 +794,12 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\oniguruma.h">
       <Filter>src\ThirdParty\Oniguruma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\obfuscate\obfuscate.h">
+      <Filter>include\ThirdParty\obfuscate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Obfuscation.hpp">
+      <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

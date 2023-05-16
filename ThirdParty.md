@@ -12,6 +12,8 @@ Name | Version
 [fmt](https://github.com/fmtlib/fmt) | 10.0.0
 [jthread](https://github.com/josuttis/jthread) | 
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.1
+[Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
+[Oniguruma](https://github.com/kkos/oniguruma) | v6.9.8
 [simdutf](https://github.com/simdutf/simdutf) | Version 3.2.8
 [taskflow]() | v3.6.0
 [wyhash](https://github.com/wangyi-fudan/wyhash) | wyhash_final4

@@ -85,7 +85,7 @@
 //# include <Siv3D/UnicodeConverter.hpp>
 # include <Siv3D/MatchResults.hpp>
 # include <Siv3D/RegExp.hpp>
-//# include <Siv3D/Obfuscation.hpp>
+# include <Siv3D/Obfuscation.hpp>
 
 # include <Siv3D/Error.hpp>
 
