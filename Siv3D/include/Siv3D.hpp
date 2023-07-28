@@ -162,8 +162,8 @@
 //# include <Siv3D/ZIPReader.hpp>
 ////# include <Siv3D/ZIPWriter.hpp> // [Siv3D ToDo]
 
-//# include <Siv3D/TextEncoding.hpp>
-//# include <Siv3D/TextReader.hpp>
+# include <Siv3D/TextEncoding.hpp>
+# include <Siv3D/TextReader.hpp>
 //# include <Siv3D/TextWriter.hpp>
 //# include <Siv3D/CSV.hpp>
 //# include <Siv3D/INI.hpp>
@@ -203,7 +203,7 @@
 //# include <Siv3D/Color.hpp>
 //# include <Siv3D/ColorF.hpp>
 //# include <Siv3D/HSV.hpp>
-//# include <Siv3D/Palette.hpp>x
+//# include <Siv3D/Palette.hpp>
 //# include <Siv3D/Colormap.hpp>
 
 

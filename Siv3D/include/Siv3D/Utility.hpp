@@ -46,7 +46,7 @@ namespace s3d
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち小さい方の値。等しい場合は a | The lesser of a and b. If they are equivalent, returns a
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
 	constexpr const Type& Min(const Type& a, const Type& b) noexcept(noexcept(b < a));
 
@@ -64,7 +64,7 @@ namespace s3d
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち大きい方の値。等しい場合は a | The greater of a and b. If they are equivalent, returns a
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
 	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b));
 
@@ -84,7 +84,7 @@ namespace s3d
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return v をクランプした値 | The clamped value for the v
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
 	constexpr const Type& Clamp(const Type& v, const Type& min, const Type& max) noexcept(noexcept(max < v));
 
@@ -104,7 +104,7 @@ namespace s3d
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 閉区間 [min, max] にある場合 true, それ以外の場合は false | Returns true if the value is in the closed interval [min, max], false otherwise
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
 	constexpr bool InRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min));
 
@@ -124,7 +124,7 @@ namespace s3d
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 開区間 (min, max) にある場合 true, それ以外の場合は false | Returns true if the value is in the open interval (min, max), false otherwise
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
 	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min));
 

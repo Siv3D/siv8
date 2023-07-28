@@ -53,6 +53,7 @@ namespace s3d::detail
 	struct ToEnum_impl
 	{
 		[[nodiscard]]
+		_MSVC_INTRINSIC
 		constexpr auto operator ()(std::underlying_type_t<Enum> x) const noexcept
 		{
 			return Enum{ x };
@@ -107,6 +108,7 @@ namespace s3d::detail
 
 		template <class Type>
 		[[nodiscard]]
+		_MSVC_INTRINSIC
 		constexpr Type&& operator()(Type&& x) const noexcept
 		{
 			return std::forward<Type>(x);

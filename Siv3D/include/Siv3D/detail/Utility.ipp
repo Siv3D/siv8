@@ -19,7 +19,7 @@ namespace s3d
 		return ((b < a) ? b : a);
 	}
 
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	constexpr const Type& Min(const Type& a, const Type& b) noexcept(noexcept(b < a))
 	{
 		return ((b < a) ? b : a);
@@ -31,7 +31,7 @@ namespace s3d
 		return ((a < b) ? b : a);
 	}
 
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b))
 	{
 		return ((a < b) ? b : a);
@@ -53,7 +53,7 @@ namespace s3d
 		return v;
 	}
 
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	constexpr const Type& Clamp(const Type& v, const Type& min, const Type& max) noexcept(noexcept(max < v))
 	{
 		if (max < v)
@@ -75,7 +75,7 @@ namespace s3d
 		return ((min <= v) && (v <= max));
 	}
 
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	constexpr bool InRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min))
 	{
 		return ((min <= v) && (v <= max));
@@ -87,7 +87,7 @@ namespace s3d
 		return ((min < v) && (v < max));
 	}
 
-	template <class Type>
+	template <class Type> requires (not Concept::Scalar<Type>)
 	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min))
 	{
 		return ((min < v) && (v < max));

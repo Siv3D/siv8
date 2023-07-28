@@ -973,3 +973,13 @@ TEST_CASE("BinaryReader.hpp")
 		}
 	}
 }
+
+
+TEST_CASE("TextEncoding.hpp")
+{
+	CHECK(Unicode::GetBOMSize(TextEncoding::Unknown) == 0);
+	CHECK(Unicode::GetBOMSize(TextEncoding::UTF8_NO_BOM) == 0);
+	CHECK(Unicode::GetBOMSize(TextEncoding::UTF8_WITH_BOM) == 3);
+	CHECK(Unicode::GetBOMSize(TextEncoding::UTF16LE) == 2);
+	CHECK(Unicode::GetBOMSize(TextEncoding::UTF16BE) == 2);
+}

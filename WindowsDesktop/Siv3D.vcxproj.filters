@@ -253,6 +253,9 @@
     <Filter Include="include\ThirdParty\obfuscate">
       <UniqueIdentifier>{55c584c2-6e78-466d-9c84-d5ff0e73bb56}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\TextEncoding">
+      <UniqueIdentifier>{16ec0108-8630-43ec-b0dc-92577eb7cc3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -801,6 +804,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Obfuscation.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEncoding.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextEncoding.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextReader.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1033,6 +1045,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\SivRegExp.cpp">
       <Filter>src\Siv3D\RegExp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextEncoding\SivTextEncoding.cpp">
+      <Filter>src\Siv3D\TextEncoding</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
