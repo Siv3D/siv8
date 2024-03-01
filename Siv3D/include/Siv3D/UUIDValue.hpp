@@ -149,7 +149,7 @@ namespace s3d
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const UUIDValue& lhs, const UUIDValue& rhs) = default;
 
-#	 else
+	# else
 	
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const UUIDValue& lhs, const UUIDValue& rhs)

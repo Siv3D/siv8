@@ -15,6 +15,7 @@
 
 namespace s3d
 {
+	struct FormatData;
 	class IReader;
 
 	////////////////////////////////////////////////////////////////
@@ -26,9 +27,6 @@ namespace s3d
 	/// @brief テキストファイルのエンコーディング形式 | Text file encoding
 	enum class TextEncoding : uint8
 	{
-		/// @brief 不明なエンコーティング | Unknown encoding
-		Unknown,
-
 		/// @brief UTF-8
 		UTF8_NO_BOM,
 
@@ -44,6 +42,8 @@ namespace s3d
 		/// @brief デフォルト [UTF-8] | Default [UTF-8]
 		Default = UTF8_NO_BOM,
 	};
+
+	void Formatter(FormatData& formatData, TextEncoding value);
 
 	namespace Unicode
 	{
