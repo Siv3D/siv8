@@ -9,7 +9,8 @@
 //
 //-----------------------------------------------
 
-# include <memory>
+# include <cstring>
+# include <type_traits>
 # include <Siv3D/IntFormatter.hpp>
 
 namespace s3d
