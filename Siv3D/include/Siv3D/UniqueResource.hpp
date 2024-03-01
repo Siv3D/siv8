@@ -10,8 +10,9 @@
 //-----------------------------------------------
 
 # pragma once
-# include <utility>
+# include <functional>
 # include <type_traits>
+# include <utility>
 
 namespace s3d
 {
