@@ -91,12 +91,14 @@
     <IncludePath>$(SolutionDir)..\Siv3D\include;$(SolutionDir)..\Siv3D\include\ThirdParty;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\Siv3D\lib\Windows;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)(debug)</TargetName>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
     <IncludePath>$(SolutionDir)..\Siv3D\include;$(SolutionDir)..\Siv3D\include\ThirdParty;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\Siv3D\lib\Windows;$(LibraryPath)</LibraryPath>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
