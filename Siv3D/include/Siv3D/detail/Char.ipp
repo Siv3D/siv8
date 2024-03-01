@@ -1,0 +1,227 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+
+namespace s3d
+{
+	namespace detail
+	{
+		inline constexpr char32 HalfWidthSpace{ U' ' };
+
+		inline constexpr char32 FullWidthSpace{ U'　' };
+
+		[[nodiscard]]
+		constexpr int32 Compare(char32 a, char32 b) noexcept
+		{
+			return ((a < b) ? -1 : (a > b));
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsAscii
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsAscii(const char32 ch) noexcept
+	{
+		return (ch <= 0x7F);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsDigit
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsDigit(const char32 ch) noexcept
+	{
+		return ((ch - U'0') <= (U'9' - U'0'));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsLower
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsLower(const char32 ch) noexcept
+	{
+		return ((ch - U'a') <= (U'z' - U'a'));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsUpper
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsUpper(const char32 ch) noexcept
+	{
+		return ((ch - U'A') <= (U'Z' - U'A'));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ToLower
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr char32 ToLower(const char32 ch) noexcept
+	{
+		if (IsUpper(ch))
+		{
+			return (ch + ('a' - 'A'));
+		}
+		else
+		{
+			return ch;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ToUpper
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr char32 ToUpper(const char32 ch) noexcept
+	{
+		if (IsLower(ch))
+		{
+			return (ch - ('a' - 'A'));
+		}
+		else
+		{
+			return ch;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsAlpha
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsAlpha(const char32 ch) noexcept
+	{
+		return (IsLower(ch) || IsUpper(ch));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsAlnum
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsAlnum(const char32 ch) noexcept
+	{
+		return (IsDigit(ch) || IsAlpha(ch));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsXdigit
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsXdigit(const char32 ch) noexcept
+	{
+		return (IsDigit(ch)
+			|| ((ch - U'A') <= (U'F' - U'A'))
+			|| ((ch - U'a') <= (U'f' - U'a')));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsControl
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsControl(const char32 ch) noexcept
+	{
+		return ((ch <= 0x1F) || ((ch - 0x7F) <= (0x9F - 0x7F)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsBlank
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsBlank(const char32 ch) noexcept
+	{
+		return ((ch == detail::HalfWidthSpace)
+			|| (ch == U'\t')
+			|| (ch == detail::FullWidthSpace));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsSpace
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsSpace(const char32 ch) noexcept
+	{
+		return ((ch == detail::HalfWidthSpace)
+			|| ((ch - U'\t') <= (U'\r' - U'\t'))
+			|| (ch == detail::FullWidthSpace));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsPrint
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline bool IsPrint(const char32 ch) noexcept
+	{
+		if (ch < 0xFFFF)
+		{
+			return static_cast<bool>(::iswprint(static_cast<wchar_t>(ch)));
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CaseInsensitiveCompare
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr int32 CaseInsensitiveCompare(const char32 a, const char32 b) noexcept
+	{
+		if (IsAlpha(a) && IsAlpha(b))
+		{
+			return detail::Compare(ToLower(a), ToLower(b));
+		}
+		else
+		{
+			return detail::Compare(a, b);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CaseInsensitiveEquals
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool CaseInsensitiveEquals(const char32 a, const char32 b) noexcept
+	{
+		return (ToLower(a) == ToLower(b));
+	}
+}
