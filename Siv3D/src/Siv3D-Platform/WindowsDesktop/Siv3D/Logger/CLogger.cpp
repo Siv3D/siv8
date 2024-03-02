@@ -25,8 +25,8 @@ namespace s3d
 			L": [warning] ",
 			L": [log] ",
 			L": [info] ",
+			L": [debug] ",
 			L": [trace] ",
-			L": [verbose] ",
 		};
 	}
 

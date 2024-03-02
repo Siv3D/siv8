@@ -179,7 +179,7 @@ namespace s3d
 
 		std::string ToUTF8(const StringView s)
 		{
-		// macOS で simdutf を使うと時々謎のクラッシュが起こる
+		// macOS で simdutf を使うと時々謎のクラッシュが起こるため回避
 		# if SIV3D_PLATFORM(MACOS)
 			
 			std::string result(detail::UTF8_Length(s), '0');
@@ -201,9 +201,12 @@ namespace s3d
 			
 			std::string result;
 
-			result.resize_and_overwrite(requiredLength, [&](char* buf, size_t) {
-				return simdutf::convert_utf32_to_utf8(s.data(), s.size(), buf);
+			result.resize_and_overwrite(requiredLength, [&](char* buf, size_t)
+				{
+					return simdutf::convert_utf32_to_utf8(s.data(), s.size(), buf);
 				});
+
+			return result;
 		
 		# endif
 		}
