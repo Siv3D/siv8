@@ -98,5 +98,26 @@ namespace s3d
 			
 			return currentDirectory;
 		}
+	
+		size_t FileSize(const FilePathView path)
+		{
+			if (path.isEmpty())
+			{
+				return 0;
+			}
+			
+			struct stat s;
+			if (not detail::GetStat(path, s))
+			{
+				return 0;
+			}
+			
+			if (not S_ISREG(s.st_mode))
+			{
+				return 0;
+			}
+			
+			return s.st_size;
+		}
 	}
 }

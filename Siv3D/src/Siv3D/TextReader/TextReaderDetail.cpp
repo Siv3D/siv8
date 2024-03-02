@@ -19,7 +19,6 @@ namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
 		static void SplitLines(const std::string& s, Array<std::string>& lines)
 		{
 			lines.clear();
@@ -43,7 +42,6 @@ namespace s3d
 			lines.push_back(s.substr(start));
 		}
 
-		[[nodiscard]]
 		static void SplitLines(const std::string& s, Array<String>& lines)
 		{
 			lines.clear();
