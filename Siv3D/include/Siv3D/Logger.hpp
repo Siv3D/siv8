@@ -19,7 +19,7 @@
 
 namespace s3d
 {
-	enum class LogLevel : uint8;
+	enum class LogType : uint8;
 
 	namespace detail
 	{
@@ -116,7 +116,7 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
-			void setOutputLevel(LogLevel logLevel) const noexcept;
+			void setOutputLevel(LogType logType) const noexcept;
 
 			////////////////////////////////////////////////////////////////
 			//
@@ -125,7 +125,7 @@ namespace s3d
 			////////////////////////////////////////////////////////////////
 
 			[[nodiscard]]
-			LogLevel getOutputLevel() const noexcept;
+			LogType getOutputLevel() const noexcept;
 		};
 	}
 

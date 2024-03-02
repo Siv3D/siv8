@@ -11,7 +11,6 @@
 
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Time.hpp>
-# include <Siv3D/LogLevel.hpp>
 # include "CLogger.hpp"
 
 namespace s3d

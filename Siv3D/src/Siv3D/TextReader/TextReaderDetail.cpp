@@ -17,6 +17,35 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static Array<std::string> SplitLines(const std::string& s)
+		{
+			if (s.empty())
+			{
+				return{};
+			}
+
+			Array<std::string> result;
+
+			size_t start = 0;
+
+			for (size_t i = 0; i < s.length(); ++i)
+			{
+				if (s[i] == '\n')
+				{
+					result.push_back(s.substr(start, (i - start)));
+					start = (i + 1);
+				}
+			}
+
+			result.push_back(s.substr(start));
+
+			return result;
+		}
+	}
+
 	TextReader::TextReaderDetail::~TextReaderDetail()
 	{
 		close();
@@ -193,19 +222,26 @@ namespace s3d
 	{
 		lines.clear();
 
-		if (not m_info.isOpen)
+		if (m_info.encoding == TextEncoding::UTF16LE)
 		{
-			return false;
-		}
-
-		switch (m_info.encoding)
-		{
-		case TextEncoding::UTF16LE:
 			return readLinesUTF16LE(lines);
-		case TextEncoding::UTF16BE:
+		}
+		else if (m_info.encoding == TextEncoding::UTF16BE)
+		{
 			return readLinesUTF16BE(lines);
-		default:
-			return readLinesUTF8(lines);
+		}
+		else
+		{
+			std::string s8;
+
+			if (not readAll(s8))
+			{
+				return false;
+			}
+
+			lines = SplitLines(s8);
+
+			return true;
 		}
 	}
 
@@ -276,35 +312,51 @@ namespace s3d
 	{
 		s.clear();
 
-		if (not m_info.isOpen)
+		if ((m_info.encoding == TextEncoding::UTF16LE)
+			|| (m_info.encoding == TextEncoding::UTF16BE))
 		{
-			return false;
+			if (not m_info.isOpen)
+			{
+				return false;
+			}
+
+			bool eof = true;
+
+			for (;;)
+			{
+				char32 codePoint;
+
+				if (not readCodePoint(codePoint))
+				{
+					break;
+				}
+
+				eof = false;
+
+				if (codePoint == U'\0')
+				{
+					break;
+				}
+				else if (codePoint != U'\r')
+				{
+					s.push_back(codePoint);
+				}
+			}
+
+			return (not eof);
 		}
-
-		bool eof = true;
-
-		for (;;)
+		else
 		{
-			char32 codePoint;
-
-			if (not readCodePoint(codePoint))
+			if (std::string s8; readAll(s8))
 			{
-				break;
+				s = Unicode::FromUTF8(s8);
+				return true;
 			}
-
-			eof = false;
-
-			if (codePoint == U'\0')
+			else
 			{
-				break;
-			}
-			else if (codePoint != U'\r')
-			{
-				s.push_back(codePoint);
+				return false;
 			}
 		}
-
-		return (not eof);
 	}
 
 	TextEncoding TextReader::TextReaderDetail::encoding() const noexcept
@@ -573,43 +625,6 @@ namespace s3d
 		}
 
 		line = Unicode::UTF16ToUTF8(line16);
-
-		return (not eof);
-	}
-
-
-	bool TextReader::TextReaderDetail::readLinesUTF8(Array<std::string>& lines)
-	{
-		std::string line;
-
-		bool eof = true;
-
-		for (;;)
-		{
-			uint8 ch;
-
-			if (not readByte(ch))
-			{
-				if (not eof)
-				{
-					lines.push_back(std::move(line));
-				}
-
-				break;
-			}
-
-			eof = false;
-
-			if ((ch == '\n') || (ch == '\0'))
-			{
-				lines.push_back(std::move(line));
-				line.clear();
-			}
-			else if (ch != '\r')
-			{
-				line.push_back(ch);
-			}
-		}
 
 		return (not eof);
 	}

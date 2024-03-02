@@ -30,6 +30,7 @@
     <ClCompile Include="..\Test\Test_NamedParameter.cpp" />
     <ClCompile Include="..\Test\Test_Step.cpp" />
     <ClCompile Include="..\Test\Test_StringView.cpp" />
+    <ClCompile Include="..\Test\Test_TextReader.cpp" />
     <ClCompile Include="..\Test\Test_TupleFormatter.cpp" />
     <ClCompile Include="..\Test\Test_Types.cpp" />
     <ClCompile Include="..\Test\Test_Unicode.cpp" />

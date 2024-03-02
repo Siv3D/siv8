@@ -116,7 +116,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HeterogeneousLookupHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Logger.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LoggerBuffer.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\LogLevel.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MapFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MD5Value.hpp" />

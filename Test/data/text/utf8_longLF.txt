@@ -1,0 +1,4472 @@
+{{転送|ユニコード|声優ユニット「UniChØrd」|D4DJ#UniChØrd（ユニコード）}}
+{{JIS2004}}
+[[ファイル:New_Unicode_logo.svg|thumb|right|200px]]
+{{Table Unicode}}
+'''Unicode'''（ユニコード）は、[[符号化文字集合]]や[[文字符号化方式]]などを定めた、[[文字コード]]の業界[[標準規格]]。[[文字集合]]（文字セット）が単一の[[大規模文字セット]]であること（「Uni」という名はそれに由来する）などが特徴である。
+
+従来、各国の標準化団体あるいは各コンピュータメーカーによって独自に開発されていた個々の文字コードの間には互換性がなかった<ref name="COM">{{Cite Journal|和書|author=[[師茂樹]]|date=2009|title=Unicodeとのつきあい方 ―漢字文化圏を中心に―|url=https://doi.org/10.14949/konpyutariyoukyouiku.27.12|journal=|volume=27|pages=12-17|publisher=一般社団法人 CIEC|accessdate=2020-05-14|Journal=コンピュータ＆エデュケーション}}</ref>。[[ISO/IEC 2022]]のように複数の文字コードを共存させる方法も考案されたが、例えば日本語の漢字と中国語の漢字のように、文字が重複する短所がある。一方Unicodeは、微細な差異はあっても本質的に同じ文字であれば一つの番号を当てる方針で各国・各社の文字コードの統合を図った規格である<ref name="COM" />。[[1980年代]]に、[[Xerox Star|Starワークステーション]]の日本語化（J-Star）などを行った[[ゼロックス]]が提唱し、[[マイクロソフト]]、[[Apple]]、[[IBM]]、[[サン・マイクロシステムズ]]、[[ヒューレット・パッカード]]、[[ジャストシステム]]などが参加する[[ユニコードコンソーシアム]]により作られた。国際規格の[[ISO/IEC 10646]]とUnicode規格は同じ文字コード表になるように協調して策定されている<ref>{{Cite web
+| url=https://www.unicode.org/versions/Unicode11.0.0/UnicodeStandard-11.0.pdf
+| title=The Unicode Standard Version 11.0
+| format=PDF
+| publisher=The Unicode Consortium
+| language=English
+| date=2018-06-05
+| accessdate=2019-02-23
+| page=921
+| quote=Today both organizations are firmly committed to maintaining the synchronization between the Unicode Standard and ISO/IEC 10646.
+}}</ref>。
+
+== 概要 ==
+Unicodeは世界で使われる全ての文字を共通の文字集合にて利用できるようにしようという考えで作られ、[[UNIX|Unix]]、[[Microsoft Windows|Windows]]、[[macOS]]、[[Plan 9 from Bell Labs|Plan 9]]{{efn|UTF-8はPlan 9が由来。}}などの様々な[[オペレーティングシステム]]でサポートされている。[[Java]]や[[.NET]]のようなプログラミング環境でも標準的にサポートされている。現代の文字だけでなく古代の文字や歴史的な文字、数学記号、絵文字なども含む<ref>{{Cite web
+| url=https://www.unicode.org/versions/Unicode11.0.0/UnicodeStandard-11.0.pdf
+| title=The Unicode Standard Version 11.0
+| format=PDF
+| publisher=The Unicode Consortium
+| language=English
+| date=2018-06-05
+| accessdate=2019-01-15
+| page=3
+}}</ref>。
+
+Unicode以前の[[文字コード]]との相互運用性もある程度考慮されており、歴史上・実用上の識別が求められる場合には互換領域がとられ、元のコード→Unicode→元のコードというような変換（ラウンドトリップ変換）において、元通りに戻るよう配慮されている文字もある。しかし、正規の[[JIS X 0208]]の範囲内であればトラブルは少ないが、複数の文字集合が混在していたり、文字集合の亜種ごとにマッピング（対応づけ）が異なる文字（[[機種依存文字]]）を含んでいたりする場合{{efn|例えば[[Shift_JIS]]の実装である[[Microsoftコードページ932|CP932]]や[[MacJapanese]]、[[EUC-JP#EUC-JPの亜種|EUC-JPの亜種]]であるCP51932とeucJP-ms、など。}}、変換テーブルによるマッピングが不可逆変換となり文字化けを起こすことがある。
+
+== Unicode文字符号化モデル ==
+文字コードは、Unicode文字符号化モデル<ref>{{Cite web |url=https://www.unicode.org/reports/tr17/tr17-7.html |title=UTR#17: Unicode Character Encoding Model |access-date=2019-05-21 |date=2008-11-11 |publisher=The Unicode Consortium |language=English}}</ref>によると以下の4段階に分けられる：
+; {{Visible anchor|抽象文字集合|ACR}} ({{abbr|ACR|abstract character repertoire}}) : 符号化の対象とする順序のない文字の集合。
+; {{Visible anchor|符号化文字集合|CCS}} ({{abbr|CCS|coded character set}}) : 抽象文字集合を非負整数に対応させたもの。この非負整数の範囲を符号空間、各値を[[符号点|符号位置]] (コードポイント) といい、抽象文字は対応後、符号化文字となる<ref>{{Cite web |url=https://www.unicode.org/versions/Unicode12.0.0/UnicodeStandard-12.0.pdf |title=The Unicode Standard Version 12.0 |access-date=2019-05-21 |date=2019-05-07 |format=PDF |publisher=The Unicode Consortium |page=29 |quote=The range of integers used to code the abstract characters is called the codespace. A particular integer in this set is called a code point. When an abstract character is mapped or assigned to a particular code point in the codespace, it is then referred to as an encoded character. |language=English}}</ref>。抽象文字は複数の符号化文字に対応されることもある<ref>{{Cite web |url=https://www.unicode.org/versions/Unicode12.0.0/UnicodeStandard-12.0.pdf |title=The Unicode Standard Version 12.0 |access-date=2019-05-21 |date=2019-05-07 |format=PDF |publisher=The Unicode Consortium |page=29 |quote=an abstract character may be represented by a sequence of two (or more) other encoded characters. |language=English}}</ref>。
+; {{Visible anchor|文字符号化形式|CEF}} ({{abbr|CEF|character encoding form}}) : 符号化文字集合の非負整数を符号単位列に変換する方法。文字符号化形式はコンピュータ中に実際にデータとして文字を表現することを可能にする。
+; {{Visible anchor|文字符号化方式|CES}} ({{abbr|CES|character encoding scheme}}) : 符号単位列をバイト列に[[直列化]]する方法。符号単位が8ビットより大きい場合は[[エンディアン]]が関係する。
+
+その後、バイト列を、[[gzip]]などで圧縮したり、7ビット伝送路に通すために[[Base64]]や[[Quoted-printable]]などで変換したりすることがあるが、これらは文字コードの管轄範囲外である。
+
+== 文字集合 ==
+<!-- {{redirect|U+|その他}} -->
+{{下付き文字}}
+Unicodeの文字集合の符号空間は0 - 10FFFF<sub>[[16進数|16]]</sub>で111万4,112の符号位置がある<ref>{{Cite web
+| url=https://www.unicode.org/versions/Unicode11.0.0/UnicodeStandard-11.0.pdf
+| title=The Unicode Standard Version 11.0
+| format=PDF
+| publisher=The Unicode Consortium
+| language=English
+| date=2018-06-05
+| accessdate=2019-01-15
+| page=1,29
+}}</ref>。Unicode 12.1（2019年5月7日公表）では13万7,929個 (12%) の文字{{efn|図形文字、書式文字。}}が割り当てられ、65個を制御文字に使い、13万7,468符号位置 (12%) を私用文字として確保している。また、2,048文字分をUTF-16のための代用符号位置に使用しており、加えて66の特別な符号位置は使われない。残りの83万6,536符号位置 (75%) は未使用である<ref>{{Cite web
+| url=https://www.unicode.org/versions/Unicode12.0.0/UnicodeStandard-12.0.pdf
+| title=The Unicode Standard Version 12.0
+| format=PDF
+| publisher=The Unicode Consortium
+| language=English
+| date=2019-05-07
+| accessdate=2019-05-21
+| page=954
+}}</ref>。
+
+文字を特定する場合にはUnicode符号位置や一意につけられた名前が使われる。例えば、アルファベット小文字の「a」はU+0061 (LATIN SMALL LETTER A)、[[八分音符]]「♪」はU+266A (EIGHTH NOTE) である。Unicode符号位置を文章中などに記す場合は "U+" の後に[[十六進法]]で符号位置を4桁から6桁続けることで表す。また、符号空間のうち代用符号位置を除く符号位置をUnicodeスカラ値という<ref>{{Cite web
+| url=https://www.unicode.org/versions/Unicode11.0.0/UnicodeStandard-11.0.pdf
+| title=The Unicode Standard Version 11.0
+| format=PDF
+| publisher=The Unicode Consortium
+| language=English
+| date=2018-06-05
+| accessdate=2019-01-15
+| page=120
+| quote=D76 Unicode scalar value: Any Unicode code point except high-surrogate and low-surrogate code points.
+}}</ref>。
+
+収録されている文字は、各国で標準として規定されている文字集合や実際に使用されている文字を持ち寄り、委員会により取捨選択されている。日本の文字については当初より[[JIS X 0201]]、[[JIS X 0208]]、[[JIS X 0212]]を、Unicode 3.1からは[[JIS X 0213]]の内容も収録している。
+
+また収録において、元の各文字集合内で分離されている文字は尊重するが、異なる文字集合に同一の文字が収録されているとみなされるものは、同じ符号位置に割り当てる方針を取っている。この際に集合が膨大であるという理由で、漢字について、[[中国]]、[[日本]]、[[大韓民国|韓国]]の各規格の[[Unihan|漢字を統合]]し[[CJK統合漢字]]としたことは大きな議論となった。
+
+現在では独自創作の絵文字の追加等、当初の目的である「各国・各社の文字コードの統合」から外れた動きも進んでいる。
+
+Unicodeに収録されている文字については、「[[ブロック (Unicode)#ブロックの一覧|ブロックの一覧]]」を参照。
+
+== 文字符号化形式 ==
+{{特殊文字|説明=「AΩ語」の次の文字は笑顔を示す[[顔文字]]}}
+Unicodeでは文字符号化形式として[[UTF-8]]、[[UTF-16]]、[[UTF-32]]の3種類が定められている。
+
+UTF-8は1符号化文字を1〜4符号単位で表す可変幅文字符号化形式で、1符号単位は8ビットである。
+
+UTF-16は1符号化文字を1〜2符号単位で表す可変幅文字符号化形式で、1符号単位は16ビットである。[[基本多言語面]]の文字を符号単位一つで、その他の文字を[[#サロゲートペア|サロゲートペア]]（代用対）という仕組みを使い符号単位二つで表現する。
+
+UTF-32は1符号化文字を1符号単位で表す固定幅文字符号化形式で、1符号単位は32ビットである。ただし、Unicodeの符号空間がU+10FFFFまでであるため、実際に使われるのは21ビットまでである。
+
+{|class="wikitable"
+|+ 各文字符号化形式の符号化例
+|-
+!<!-- 幅調節行 -->
+|00
+|01
+|02
+|03
+|04
+|05
+|06
+|07
+|08
+|09
+|0A
+|0B
+|0C
+|0D
+|0E
+|0F
+|-
+!rowspan="2"|UTF-8
+|style="text-align:center;"|A
+|colspan="2" style="text-align:center;"|Ω
+|colspan="3" style="text-align:center;"|語
+|colspan="4" style="text-align:center;"|😊
+|colspan="99" rowspan="2"|
+|-
+|style="text-align:center;"|41
+|style="text-align:center;"|CE
+|style="text-align:center;"|A9
+|style="text-align:center;"|E8
+|style="text-align:center;"|AA
+|style="text-align:center;"|9E
+|style="text-align:center;"|F0
+|style="text-align:center;"|9F
+|style="text-align:center;"|98
+|style="text-align:center;"|8A
+|-
+!rowspan="2"|UTF-16
+|colspan="2" style="text-align:center;"|A
+|colspan="2" style="text-align:center;"|Ω
+|colspan="2" style="text-align:center;"|語
+|colspan="4" style="text-align:center;"|😊
+|colspan="99" rowspan="2"|
+|-
+|colspan="2" style="text-align:center;"|0041
+|colspan="2" style="text-align:center;"|03A9
+|colspan="2" style="text-align:center;"|8A9E
+|colspan="2" style="text-align:center;"|D83D
+|colspan="2" style="text-align:center;"|DE0A
+|-
+!rowspan="2"|UTF-32
+|colspan="4" style="text-align:center;"|A
+|colspan="4" style="text-align:center;"|Ω
+|colspan="4" style="text-align:center;"|語
+|colspan="4" style="text-align:center;"|😊
+|-
+|colspan="4" style="text-align:center;"|00000041
+|colspan="4" style="text-align:center;"|000003A9
+|colspan="4" style="text-align:center;"|00008A9E
+|colspan="4" style="text-align:center;"|0001F60A
+|}
+
+== 文字符号化方式 ==
+{|class="wikitable floatright"
+!文字符号化形式<br />(CEF)!!文字符号化方式<br />(CES)
+|-
+|UTF-8||UTF-8
+|-
+|rowspan="3"|UTF-16||UTF-16
+|-
+|UTF-16BE
+|-
+|UTF-16LE
+|-
+|rowspan="3"|UTF-32||UTF-32
+|-
+|UTF-32BE
+|-
+|UTF-32LE
+|}
+
+Unicodeでは文字符号化方式として'''UTF-8'''、'''UTF-16'''、'''UTF-16BE'''、'''UTF-16LE'''、'''UTF-32'''、'''UTF-32BE'''、'''UTF-32LE'''の7種類が定められている。それぞれの符号化形式に対応する符号化方式は表の通り。
+
+文字符号化形式との違いは、文字符号化形式がプログラム内部で文字を扱う場合に符号なし整数として文字を表現する方法なのに対し、文字符号化方式は入出力時にバイト列として表現する方法である。UTF-8は符号単位が8ビットであるため区別する意味はない。
+
+{|class="wikitable floatright"
+!文字符号化方式<br />(CES)!!エンディアン!!BOMの付与
+|-
+|UTF-8||{{n/a}}||{{yes2|可}}
+|-
+|UTF-16||ビッグ/リトル||{{yes2|可}}
+|-
+|UTF-16BE||ビッグエンディアン||{{no2|不可}}
+|-
+|UTF-16LE||リトルエンディアン||{{no2|不可}}
+|-
+|UTF-32||ビッグ/リトル||{{yes2|可}}
+|-
+|UTF-32BE||ビッグエンディアン||{{no2|不可}}
+|-
+|UTF-32LE||リトルエンディアン||{{no2|不可}}
+|}
+
+; UTF-8
+{{main|UTF-8}}
+: 可変長（1-4バイト）の8ビット符号単位で表現する文字符号化方式。ASCIIに対して[[上位互換]]となっており、文字の境界が明確である、UTF-16符号化方式やUTF-32符号化方式との変換・逆変換に際して乗除算などの高負荷処理が必要ない、などの特長を持ち、インターネットではもっとも一般的に利用されている。
+:なお、UTF-8はもともと8ビットを符号単位とするため[[バイト順マーク]]（BOM；後述）は必要ないが、UTF-8であることが識別できるよう、データストリームの先頭に EF BB BF（U+FEFFのUTF-8での表現）の3バイトが付与されることがある。UTF-8のBOMはバイト順を表すものではなく、UTF-16符号化方式等における「真の意味でのBOM」と同じコードポイントを利用しているがゆえに慣用的にこう呼ばれているに過ぎない。UTF-8でのBOMの使用は非推奨<ref>{{Cite web
+| url=https://www.unicode.org/versions/Unicode12.0.0/UnicodeStandard-12.0.pdf
+| title=The Unicode Standard Version 12.0
+| format=PDF
+| publisher=The Unicode Consortium
+| language=English
+| date=2019-05-07
+| accessdate=2019-09-26
+| page=40
+| quote=Use of a BOM is neither required nor recommended for UTF-8,
+}}</ref>。
+; UTF-16
+{{main|UTF-16}}
+: UTF-16符号化方式では、通常はファイルの先頭にバイト順マーク (BOM) が付与される。BOMとは、通信やファイルの読み書き等、8ビット単位の処理で[[エンディアン|バイト順]]を識別するための印であり、データストリームの先頭に付与される。値はU+FEFF。システムが読み込んだ先頭2バイトが FF FEならリトルエンディアン、FE FFならビッグエンディアンとして後に続く文書を処理する。
+:{{IETF RFC|2781}} ではBOMが付いていないUTF-16文書はビッグエンディアンとして解釈することになっている。[[Microsoft Windows]]のメモ帳で作成した「Unicodeテキスト」はBOMが付与されるようになっている。ビッグエンディアンの符号化方式を'''UTF-16BE'''、リトルエンディアンの符号化方式を'''UTF-16LE'''として区別することもある。プロトコルもしくはアプリケーションの設定などの手段で符号化方式に'''UTF-16BE'''や'''UTF-16LE'''を指定している場合にはBOMを付与することは許容されない。Windows上の文書における「Unicodeテキスト」は特に明記のない場合、リトルエンディアンのUTF-16符号化方式のことを指す。TCP/IPネットワークでは、プロトコルヘッダやMIME等の手段で符号化方式が指定されずBOMも付与されない場合、ビッグエンディアンとして扱うと決められている。
+; UTF-32
+{{main|UTF-32}}
+: UTF-32符号化方式でもUTF-16符号化方式と同じく、ビッグエンディアンとリトルエンディアンが存在し、それぞれ'''UTF-32BE'''、'''UTF-32LE'''と呼ばれる。プロトコルもしくはアプリケーションの設定などの手段で符号化方式に'''UTF-32BE'''や'''UTF-32LE'''を指定している場合にはBOMを付与することは許容されない。
+: 単純な符号化方式であるが、テキストファイルなどではファイルのサイズが大きくなる（すべてBMPの文字からなる文章の場合はUTF-16符号化方式の2倍、すべてASCII文字の場合はASCII/UTF-8の4倍のサイズとなる）ため、ストレージ用として使われることは稀である。そのためか、[[Microsoft Office]]での「エンコードされたテキストファイル」の読み書きでは、Office 2016 でもいまだに符号化方式には対応していない。[[フリーウェア]]・[[シェアウェア]]の[[テキストエディタ]]のうち多数の符号化方式に対応しているものでも、この符号化方式には対応していないものが存在する。
+: ただし、すべてのUnicode文字を処理する場合には、すべての文字を単一の符号単位で表現したほうが処理に適するため、内部の処理ではUTF-32符号化形式（あるいはUCS-4）で扱うこともある。実例として、[[Linux]] 上の[[C言語]]環境では <code>wchar_t</code> は32ビット整数型である。
+:UTF-16符号化方式などと同様にUTF-32符号化方式にもBOMがあり、データストリームの先頭に付される。先頭の4バイトがFF FE 00 00ならリトルエンディアン、00 00 FE FFならビッグエンディアンになる。UTF-16のリトルエンディアンとUTF-32のリトルエンディアンは最初の2バイトが等しいため、4バイトまで読んで判断する必要がある。
+
+{|class="wikitable"
+|+ 各文字符号化方式の符号化例
+|-
+!rowspan="2" style="border-bottom-width: 2px;"|UTF-8
+|style="text-align:center;"|A
+|colspan="2" style="text-align:center;"|Ω
+|colspan="3" style="text-align:center;"|語
+|colspan="4" style="text-align:center;"|😊
+|colspan="99" rowspan="2" style="border-bottom-width: 2px;"|
+|-
+|style="border-bottom-width: 2px;"|41
+|style="border-bottom-width: 2px;"|CE
+|style="border-bottom-width: 2px;"|A9
+|style="border-bottom-width: 2px;"|E8
+|style="border-bottom-width: 2px;"|AA
+|style="border-bottom-width: 2px;"|9E
+|style="border-bottom-width: 2px;"|F0
+|style="border-bottom-width: 2px;"|9F
+|style="border-bottom-width: 2px;"|98
+|style="border-bottom-width: 2px;"|8A
+|-
+!rowspan="2" style="border-bottom-width: 2px;"|UTF-16BE
+|colspan="2" style="text-align:center;"|A
+|colspan="2" style="text-align:center;"|Ω
+|colspan="2" style="text-align:center;"|語
+|colspan="4" style="text-align:center;"|😊
+|colspan="99" rowspan="4" style="border-bottom-width: 2px;"|
+|-
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|41
+|style="border-bottom-width: 2px;"|03
+|style="border-bottom-width: 2px;"|A9
+|style="border-bottom-width: 2px;"|8A
+|style="border-bottom-width: 2px;"|9E
+|style="border-bottom-width: 2px;"|D8
+|style="border-bottom-width: 2px;"|3D
+|style="border-bottom-width: 2px;"|DE
+|style="border-bottom-width: 2px;"|0A
+|-
+!rowspan="2" style="border-bottom-width: 2px;"|UTF-16LE
+|colspan="2" style="text-align:center;"|A
+|colspan="2" style="text-align:center;"|Ω
+|colspan="2" style="text-align:center;"|語
+|colspan="4" style="text-align:center;"|😊
+|-
+|style="border-bottom-width: 2px;"|41
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|A9
+|style="border-bottom-width: 2px;"|03
+|style="border-bottom-width: 2px;"|9E
+|style="border-bottom-width: 2px;"|8A
+|style="border-bottom-width: 2px;"|3D
+|style="border-bottom-width: 2px;"|D8
+|style="border-bottom-width: 2px;"|0A
+|style="border-bottom-width: 2px;"|DE
+|-
+!rowspan="2" style="border-bottom-width: 2px;"|UTF-32BE
+|colspan="4" style="text-align:center;"|A
+|colspan="4" style="text-align:center;"|Ω
+|colspan="4" style="text-align:center;"|語
+|colspan="4" style="text-align:center;"|😊
+|-
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|41
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|03
+|style="border-bottom-width: 2px;"|A9
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|8A
+|style="border-bottom-width: 2px;"|9E
+|style="border-bottom-width: 2px;"|00
+|style="border-bottom-width: 2px;"|01
+|style="border-bottom-width: 2px;"|F6
+|style="border-bottom-width: 2px;"|0A
+|-
+!rowspan="2"|UTF-32LE
+|colspan="4" style="text-align:center;"|A
+|colspan="4" style="text-align:center;"|Ω
+|colspan="4" style="text-align:center;"|語
+|colspan="4" style="text-align:center;"|😊
+|-
+|41
+|00
+|00
+|00
+|A9
+|03
+|00
+|00
+|9E
+|8A
+|00
+|00
+|0A
+|F6
+|01
+|00
+|}
+
+=== その他 ===
+; UTF-7
+{{main|UTF-7}}
+: UTF-16で表したUnicodeを[[Base64]]で変換して表す符号化方式。ただし、[[ASCII]]のアルファベット範囲等についてはBase64に変換しない等、特殊な符号化方式を行う。{{IETF RFC|2152}}で定められており、Unicode規格及びUnicodeの関連規格には含まれない。かつての[[Simple Mail Transfer Protocol|SMTP]]等のように、7ビット単位でしかデータを扱えない通信方式を利用する場合を想定して作られている。ステートフルエンコーディングであり、運用上問題が多いため、現在ではこの方式は推奨されていない。Unicode文字を7ビット単位伝送通信にどうしても通さなければならない場合は、替わりにUTF-8をQuoted-printableあるいはBase64で変換するなどの方式が好ましい。
+<br />
+以下は[[エイプリルフール]]に公開された[[Request for Comments#一風変わったRFC|ジョークRFC]]である ({{IETF RFC|4042}})。UTF-9に関しては同名の規格が実際に検討されていた（ただし、内容は大きく異なる）が、ドラフト段階で破棄されているため重複にはならない。
+; UTF-9
+: 可変長の9ビット符号単位で表現する符号化方式。1[[バイト (情報)|バイト]]が[[8ビット]]（[[オクテット (コンピュータ)|オクテット]]）ではなく9ビット（[[ノネット]]）であるような環境での利用を想定している。UTF-8と比較した場合、Latin-1領域が1バイト、[[CJK統合漢字]]領域が2バイトで表現できる特長があり、データ量が少なくなる。[[ワード]]長が9の倍数のコンピュータ（[[PDP-10]]や[[ACOS-6]]など）であれば計算コストも低い。
+; UTF-18
+: Unicode符号位置を単一の18ビット符号単位で表現する符号化方式。UTF-8に対するUTF-16のようなものだが、RFC公開時点のUnicodeで文字が定義されていた4つの[[面 (文字コード)|面]]（BMP、U+1xxxx、U+2xxxx、U+Exxxx）を余った2ビットで識別するため、[[Unicode文字のマッピング#代用符号位置|代用符号位置]]は使わない。
+
+以下はドラフト段階で破棄された規格案。
+; UTF-5
+: [[国際化ドメイン名]]での利用を想定し、0-9、A-Vの32文字で表現する文字符号化方式。国際化ドメイン名には[[Punycode]]が採用されたため、利用されていない。
+
+; UTF-9
+: 可変長（1-5バイト）の8ビット符号単位で表現する文字符号化形式または文字符号化方式。ISO-8859-1に対して一部互換である。しかし、UTF-8が普及しつつあり、それと比べて欠点がいくつかあったため、破棄された。
+
+== 拡張領域 ==
+1980年代の当初の構想では、Unicodeは16ビット固定長で、2<sup>16</sup> = 6万5,536 個の符号位置に必要な全ての文字を収録する、というもくろみであった。しかし、Unicode 1.0公表後、拡張可能な空き領域2万字分を巡り、各国から文字追加要求が起こった。その内容は中国、日本、台湾、ベトナム、シンガポールの追加漢字約1万5千字、[[古ハングル]]約5千字、未登録言語の文字などである。このようにしてUnicodeの、16ビットの枠内に全世界の文字を収録するという計画は早々に破綻し、1996年のUnicode 2.0の時点で既に、文字集合の空間を16ビットから広げることが決まった。この時、それまでの16ビットを前提としてすでに設計されていたシステム（たとえば[[Java]]の<code>char</code>型や、[[Windows NT]]・[[Windows 95]]のAPI）をなるべくそのままにしたまま、広げられた空間にある符号位置を表現する方法として、サロゲートペアが定義された。
+
+=== サロゲートペア ===
+サロゲートペア（代用対）は16ビットUnicodeの領域1,024文字分を2つ使い（前半 U+D800 〜 U+DBFF、後半 U+DC00 〜 U+DFFF）、各々1個ずつからなるペアで1,024 × 1,024 = 1,048,576文字を表す。これはちょうど16面分であり、第1面〜第16面（U+010000 〜 U+10FFFF）の文字をこれで表すこととした。加えて第0面（[[基本多言語面]]）も使用可能なので、Unicodeには合計で 1,048,576 + 65,536 - 2,048 = 111万2,064文字分の空間が確保されたことになる。Unicodeの符号空間が10FFFF<sub>16</sub>まで（サロゲート領域を除いて111万2,064文字）とされているのはUTF-16が表現可能な限界だからである。
+
+サロゲートはUnicodeの符号位置の U+010000 〜 U+10FFFF の範囲を16ビットユニットのペア（2つ）で表現する集合で、最初の16ビットユニットを前半サロゲートもしくはハイサロゲート、二番目を後半サロゲートもしくはローサロゲートと称する。ハイサロゲートは U+D800 〜 U+DBFF の範囲、ローサロゲートは U+DC00 〜 U+DFFF の範囲である。
+
+サロゲートペアはUTF-16でのみ使われ<ref>{{Cite web
+| url=https://www.unicode.org/versions/Unicode11.0.0/UnicodeStandard-11.0.pdf
+| title=The Unicode Standard Version 11.0
+| format=PDF
+| publisher=The Unicode Consortium
+| language=English
+| date=2018-06-05
+| accessdate=2019-01-15
+| page=119
+| quote=Surrogate pairs are used only in UTF-16.
+}}</ref>、UTF-8、UTF-32ではすべての符号位置を符号化できるためこのような特別な処理は必要ない。
+
+==== コーディング ====
+サロゲートのエンコーディングは、符号位置を <math>CP</math>、ハイサロゲートを <math>HSG</math>、ローサロゲートを <math>LSG</math> とすると次の通りに計算する。
+: <math>HSG = \mathrm{floor}\left(\frac{CP - 10000_{16}}{400_{16}}\right) + {\rm D800}_{16}</math>
+: <math>LSG = \left(CP - 10000_{16}\right)\bmod 400_{16} + {\rm DC00}_{16}</math>
+デコーディングは、
+: <math>CP = 10000_{16} + \left(HSG - {\rm D800}_{16}\right)\times 400_{16} + \left(LSG - {\rm DC00}_{16}\right)</math>
+である。
+
+; コード変換例:「[[wikt:𠮷|𠮷]]{{efn|name="U+20BB7"|「吉」U+5409 の[[異体字]]で、上部が「士」ではなく「土」となっており、下の棒が長い。「つちよし」とも。}}」U+20BB7 のエンコードを考えてみる。
+:: <math>{\color{green}0010\ 0000\ 10}{\color{blue}11\ 1011\ 0111}_2\ ({\rm 20BB7}_{16})</math> から
+:: <math>0001\ 0000\ 0000\ 0000\ 0000_2\ (10000_{16})</math> を引くと、結果は
+:: <math>{\color{green}0001\ 0000\ 10}{\color{blue}11\ 1011\ 0111}_2\ ({\rm 10BB7}_{16})</math> となる。
+: これを上位10ビット値と下位10ビット値に分割する。
+:: <math>{\color{green}0001\ 0000\ 10}_2\ ({\color{green}0042}_{16}),\ \ {\color{blue}11\ 1011\ 0111}_2\ ({\rm\color{blue}03B7}_{16})</math>
+: ハイ（上位）サロゲートを形成するために上位ビットに <math>{\rm D800}_{16}</math>を加える。
+:: <math>{\color{green}00\ 0100\ 0010}_2\ ({\color{green}0042}_{16}) + 1101\ 1000\ 0000\ 0000_2\ ({\rm D800}_{16}) = 1101\ 10{\color{green}00\ 0100\ 0010}_2 ({\rm D842}_{16})</math>
+: ロー（下位）サロゲートを形成するために下位ビットに <math>{\rm DC00}_{16}</math> を加える。
+:: <math>{\color{blue}11\ 1011\ 0111}_2\ ({\rm\color{blue}03B7}_{16}) + 1101\ 1100\ 0000\ 0000_2\ ({\rm DC00}_{16}) = 1101\ 11{\color{blue}11\ 1011\ 0111}_2 ({\rm DFB7}_{16})</math>
+: 結果
+:: <math>{\rm\color{green}D842}_{16},\ {\rm\color{blue}DFB7}_{16}</math> (UTF-16 符号単位列)
+:: <math>{\rm\color{green}D8}_{16},\ {\rm\color{green}42}_{16},\ {\rm\color{blue}DF}_{16},\ {\rm\color{blue}B7}_{16}</math>(UTF-16BEでの符号化バイト列)
+:: <math>{\rm\color{green}42}_{16},\ {\rm\color{green}D8}_{16},\ {\rm\color{blue}B7}_{16},\ {\rm\color{blue}DF}_{16}</math>(UTF-16LEでの符号化バイト列)
+
+次の表は、この文字変換と他をまとめたものである。 色は、コードポイントからのビットがUTF-16バイトにどのように分配されるかを示した。 なお、UTF-16エンコーディングプロセスによって追加された追加ビットは黒で示されている。
+
+{| class="wikitable"
+|-
+!colspan=2|文字<br>（符号位置）
+! 符号位置(2進数)
+! UTF-16<br>符号単位列(2進数)
+! UTF-16<br>符号単位列
+! UTF-16BE<br>符号化バイト列
+! UTF-16LE<br>符号化バイト列
+|-
+|[[$]] || <code>U+0024</code>
+|align=right|<code>{{Font color|#0070FF|0000 0000 0010 0100}}</code>
+|align=right|<code>{{Font color|#0070FF|0000 0000 0010 0100}}</code>
+|align=right|<code>{{Font color|#0070FF|0024}}</code>
+|align=right|<code>{{Font color|#0070FF|00 24}}</code>
+|align=right|<code>{{Font color|#0070FF|24 00}}</code>
+|-
+|[[€]]{{efn|[[通貨]]の[[ユーロ記号]]。}} || <code>U+20AC</code>
+|align=right|<code>{{Font color|#0070FF|0010 0000 1010 1100}}</code>
+|align=right|<code>{{Font color|#0070FF|0010 0000 1010 1100}}</code>
+|align=right|<code>{{Font color|#0070FF|20AC}}</code>
+|align=right|<code>{{Font color|#0070FF|20 AC}}</code>
+|align=right|<code>{{Font color|#0070FF|AC 20}}</code>
+|-
+|[[wikt:𠮷|𠮷]]{{efn|name="U+20BB7"}} || <code>U+20BB7</code>
+|align=right|<code>{{Font color|#00AA00|0010 0000 10}}{{Font color|#0070FF|11 1011 0111}}</code>
+|align=right|<code>1101 10{{Font color|#00AA00|00 0100 0010}} 1101 11{{Font color|#0070FF|11 1011 0111}}</code>
+|align=right|<code>{{Font color|#00AA00|D842}} {{Font color|#0070FF|DFB7}}</code>
+|align=right|<code>{{Font color|#00AA00|D8 42}} {{Font color|#0070FF|DF B7}}</code>
+|align=right|<code>{{Font color|#00AA00|42 D8}} {{Font color|#0070FF|B7 DF}}</code>
+|-
+|最大値 || <code>U+10FFFF</code>
+|align=right|<code>{{Font color|#00AA00|1 0000 1111 11}}{{Font color|#0070FF|11 1111 1111}}</code>
+|align=right|<code>1101 10{{Font color|#00AA00|11 1111 1111}} 1101 11{{Font color|#0070FF|11 1111 1111}}</code>
+|align=right|<code>{{Font color|#00AA00|DBFF}} {{Font color|#0070FF|DFFF}}</code>
+|align=right|<code>{{Font color|#00AA00|DB FF}} {{Font color|#0070FF|DF FF}}</code>
+|align=right|<code>{{Font color|#00AA00|FF DB}} {{Font color|#0070FF|FF DF}}</code>
+|}
+
+== 面 ==
+一つの面は6万5536個の符号位置がある。
+{|class="wikitable" style="font-size:95%"
+!style="white-space:nowrap"|面!!style="white-space:nowrap"|符号位置!!style="white-space:nowrap"|英語での名称!!style="white-space:nowrap"|略称!!style="white-space:nowrap"|日本語での名称!!style="white-space:nowrap"|収録されている主な文字
+|-
+!style="white-space:nowrap; text-align:right"|第0面
+|style="white-space:nowrap; text-align:right;"|<code>U+0000 - U+FFFF</code>||Basic Multilingual Plane||BMP||[[基本多言語面]]||基本的な文字。
+|-
+!style="white-space:nowrap; text-align:right"|第1面
+|style="white-space:nowrap; text-align:right;"|<code>U+10000 - U+1FFFF</code>||Supplementary Multilingual Plane||SMP||[[追加多言語面]]||古代文字や記号・[[絵文字]]類など。
+|-
+!style="white-space:nowrap; text-align:right"|第2面
+|style="white-space:nowrap; text-align:right;"|<code>U+20000 - U+2FFFF</code>||Supplementary Ideographic Plane||SIP||[[追加漢字面]]||漢字専用領域。
+|-
+!style="white-space:nowrap; text-align:right"|第3面
+|style="white-space:nowrap; text-align:right;"|<code>U+30000 - U+3FFFF</code>||Tertiary Ideographic Plane||TIP||[[第三漢字面]]||追加漢字面に入りきらなかった漢字。また、将来的には古代漢字や甲骨文字などが収録される予定{{efn|2019年3月現在では、古代漢字や甲骨文字はまだ1文字も収録されていない。}}。
+|-
+!style="white-space:nowrap; text-align:right"|第4面
+|style="white-space:nowrap; text-align:right;"|<code>U+40000 - U+4FFFF</code>||colspan="4" rowspan="10" style="text-align:center" |未使用（将来どのような目的で使用するのかすら決まっていない）。
+|-
+!style="white-space:nowrap; text-align:right"|第5面
+|style="white-space:nowrap; text-align:right;"|<code>U+50000 - U+5FFFF</code>
+|-
+!style="white-space:nowrap; text-align:right"|第6面
+|style="white-space:nowrap; text-align:right;"|<code>U+60000 - U+6FFFF</code>
+|-
+!style="white-space:nowrap; text-align:right"|第7面
+|style="white-space:nowrap; text-align:right;"|<code>U+70000 - U+7FFFF</code>
+|-
+!style="white-space:nowrap; text-align:right"|第8面
+|style="white-space:nowrap; text-align:right;"|<code>U+80000 - U+8FFFF</code>
+|-
+!style="white-space:nowrap; text-align:right"|第9面
+|style="white-space:nowrap; text-align:right;"|<code>U+90000 - U+9FFFF</code>
+|-
+!style="white-space:nowrap; text-align:right"|第10面
+|style="white-space:nowrap; text-align:right;"|<code>U+A0000 - U+AFFFF</code>
+|-
+!style="white-space:nowrap; text-align:right"|第11面
+|style="white-space:nowrap; text-align:right;"|<code>U+B0000 - U+BFFFF</code>
+|-
+!style="white-space:nowrap; text-align:right"|第12面
+|style="white-space:nowrap; text-align:right;"|<code>U+C0000 - U+CFFFF</code>
+|-
+!style="white-space:nowrap; text-align:right"|第13面
+|style="white-space:nowrap; text-align:right;"|<code>U+D0000 - U+DFFFF</code>
+|-
+!style="white-space:nowrap; text-align:right"|第14面
+|style="white-space:nowrap; text-align:right;"|<code>U+E0000 - U+EFFFF</code>||Supplementary Special-purpose Plane||SSP||[[追加特殊用途面]]||制御コード専用領域。
+|-
+!style="white-space:nowrap; text-align:right"|第15面
+|style="white-space:nowrap; text-align:right;"|<code>U+F0000 - U+FFFFF</code>||rowspan="2" |Private Use Plane||rowspan="2" |PUP||rowspan="2" |[[私用面]]||rowspan="2" |BMPの U+E000 - U+F8FF の領域の拡張。
+|-
+!style="white-space:nowrap; text-align:right"|第16面
+|style="white-space:nowrap; text-align:right;"|<code>U+100000 - U+10FFFF</code>
+|-
+|}
+
+日本では2000年に[[JIS X 0208]]を拡張する目的でJIS X 0213（いわゆるJIS第3・第4水準）が制定されたが、この際、新たに採用された文字でUnicodeになかったものの一部は、BMPに収録できず、第2面への収録となった（Unicodeが最終的にJIS X 0213への対応を完了したのは[[2002年]]である）。このため、JIS X 0213収録文字をUnicodeで完全にサポートするには、追加漢字面をサポートした[[オペレーティングシステム|OS]]、[[フォント]]、[[アプリケーションソフトウェア|アプリケーション]]が必要となる。Shift_JISなど、Unicodeにて規定されるもの以外のエンコーディングを利用する場合であっても、JIS X 0213に対応するフォントやアプリケーションが必要である。
+
+[[常用漢字]]の[[2010年]]改定で追加された字のうち<span style="font-size:150%;">「{{JIS2004フォント|&#x20B9F;}}」</span>はU+20B9Fで、追加漢字面に含まれる。そのため、改定後の常用漢字完全サポートを謳う場合、Unicodeに対応していて更にこの拡張領域にも対応している必要があると言える。ただ、現状ではこの字は、JIS X 0208に含まれる（＝当然、Unicode策定当初からBMPに収録されている）異体字の<span style="font-size:150%;">「叱」</span>(U+53F1) で代用されることが多い。
+
+== 歴史 ==
+1984年、ISOの文字コード規格委員会 (ISO/TC 97/SC2) は文字セットの切り替えを行わずに世界中の文字を単一の文字集合として扱える文字コード規格 (ISO 10646) を作成することを決定し、専門の作業グループ (ISO/TC 97/SC 2/WG 2) を設置し、作業を始めていた。1980年代後半にはこの作業グループにおいてさまざまな提案が検討されている。1990年になって出来あがったISO/TC 97/SC 2/WG 2作成のISO 10646の初版ドラフト（[[DIS 10646#DIS 10646第1版]]）では、漢字コードは32ビットで表現され、各国の漢字コードはそのまま入れることになった。しかし中国は漢字を各国でばらばらに符号化するのではなく、あくまで統一して扱うことを求めてこのドラフトには当初から反対しており、今後の漢字コードの方針を決めるため、WG 2は CJK-JRG (Joint Research Group) と呼ばれるグループを別途設置し、そこで引き続き検討することにした。
+
+このような公的機関の動きとは別に、1987年頃から[[Xerox]]のJoe BeckerとLee Collinsは、後にUnicodeと呼ばれるようになる、世界中の文字を統一して扱える文字コードを開発していた。1989年9月には「Unicode Draft 1」が発表された。ここではその基本方針として、2オクテット（16ビット）固定長で全ての文字を扱えることを目指しており、そのために日本・中国・韓国の漢字を統一することで2万弱の漢字コードを入れ、さらに将来の拡張用に、3万程度の漢字の空き領域が別に用意されていた。このドラフトは少しずつ改良を加えられながら1990年4月にUnicode Draft 2、同年12月Unicode Final Draftとなった。さらに1991年1月にはこのUnicode Final Draftに賛同する企業によって、[[ユニコードコンソーシアム]]が設立された。
+
+1991年6月、ISO/IEC 10646による4オクテット固定長コードを主体としたドラフト「DIS 10646第1版」は、2オクテット固定長コードであるUnicodeとの一本化を求める各国により否決され、ISO 10646とUnicodeの一本化が図られることになった。また中国およびユニコードコンソーシアムの要請により、CJK-JRGにおいて、ISO 10646とUnicodeの一本化が図られることになった。CJK-JRGは各国の漢字コードに基づき独自の統合規準を定め、ISO 10646 / Unicode用の統合漢字コード表を作成することになった。CJK-JRGの会合は第1回が7月22日から24日にかけて東京で、第2回の会合が9月17日から19日にかけて北京で、第3回が11月25日から29日にかけて香港で開催された。これらの討議の結果、1991年末になって「ISO 10646＝Unicode」用の統合漢字コード表が Unified Repertoire and Ordering (URO) の第1版として完成した。
+
+Unicodeの最初に印刷されたドキュメントであるUnicode 1.0は、統合漢字表の完成に先行して漢字部分を除いたUnicode 1.0, Vol.1が1991年10月に出版され、後に1992年になって漢字部分だけのUnicode 1.0, Vol.2が出版された。
+
+1992年、CJK統合漢字URO第二版が完成し、これを取り込んだ（ただし、UROには若干の間違いが発見されており、それらの修正が行われている。）DIS 10646第2版が、5月30日の国際投票で可決された。
+
+1993年5月1日 「ISO/IEC 10646-1: 1993 Universal Multiple-Octet Coded Character Set (UCS) -- Part 1: Architecture and basic Multilingual Plane」が制定される。同年翌6月にUnicode 1.0は ISO/IEC 10646-1:1993にあわせた変更を行いUnicode 1.1となり、以後UnicodeとISO/IEC 10646とは歩調を合わせて改訂されていくことになる。
+
+=== Unicodeのバージョン ===
+Unicodeのバージョンは、メジャーバージョン (the major version)、マイナーバージョン (the minor version)、アップデートバージョン (the update version) の3つの部分から構成され、ピリオドでつなげて表示される<ref>{{Cite web
+| url=http://www.unicode.org/standard/versions/
+| title=About Versions of the Unicode® Standard
+| publisher= Unicode Consortium
+| language=English
+| date=2015-06-18
+| accessdate=2015-07-31
+}}</ref>。ただし、マイナーバージョン及びアップデートバージョンについては0の場合には省略して表示されることもある。メジャーバージョンはレパートリーの追加のような重要な変更が行われたときに改定される。Unicodeのドキュメントは書籍形態と電子版ドキュメント形態の両方で公表され、どちらもUnicodeについての正式なドキュメントであるとされている。新たなバージョンがリリースされたときは新たなドキュメントが公表されるが、書籍として刊行されるのはメジャーバージョンが改定された場合および重要なマイナーバージョンの改定があった場合のみである。書籍版のバージョン1.0は、2巻に分けて刊行され、統合漢字部分を除いた第1巻は1991年10月に、統合漢字部分の第2巻は1992年6月に刊行された。そのため第1巻のみのものをUnicode 1.0.0、第2巻を含めたものをUnicode 1.0.1と呼ぶことがある。
+
+=== 各バージョンとその特徴 ===
+Unicodeのそれぞれのバージョン番号とその制定年月日、収録文字数他の特徴は以下の通りである。
+
+{| class="wikitable" style="font-size:90%"
+!制定年月日!! style="white-space:nowrap;" |バージョン番号!! style="white-space:nowrap;" |収録文字数!!概要!! style="white-space:nowrap;" |日本語における主要な追加文字
+|-
+|1991年10月|| style="white-space:nowrap;" |Unicode 1.0.0
+<ref name="unicode_components_1.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-1.0.0.html
+| title=Components of The Unicode Standard Version 1.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-03
+| accessdate=2013-10-05
+}}</ref>
+||7,161||初期バージョン、16ビットの文字コード||[[JIS X 0201]]
+|-
+|1992年6月||Unicode 1.0.1
+<ref name="unicode_components_1.0.1">{{Cite web
+| url=http://www.unicode.org/versions/components-1.0.1.html
+| title=Components of The Unicode Standard Version 1.0.1
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-03
+| accessdate=2013-10-05
+}}</ref>
+||28,359||[[CJK統合漢字]]を導入||[[JIS X 0208]]、[[JIS X 0212]]
+|-
+|1993年6月||Unicode 1.1.0
+<ref name="unicode_components_1.1.0">{{Cite web
+| url=http://www.unicode.org/versions/components-1.1.0.html
+| title=Components of The Unicode Standard Version 1.1.0
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-03
+| accessdate=2013-10-05
+}}</ref>
+||34,233||ISO/IEC 10646-1:1993にあわせ変更||
+|-
+|1993年7月||Unicode 1.1.5
+<ref name="unicode_components_1.1.5">{{Cite web
+| url=http://www.unicode.org/versions/components-1.1.5.html
+| title=Components of The Unicode Standard Version 1.1.5
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-03
+| accessdate=2013-10-05
+}}</ref>
+|| || ||
+|-
+|1996年7月||Unicode 2.0.0
+<ref name="unicode_components_2.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-2.0.0.html
+| title=Components of The Unicode Standard Version 2.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-12
+| accessdate=2013-10-05
+}}</ref>
+||38,950||ISO/IEC 10646-1:1993の追補Amd.1からAmd.7に対応。[[ハングル]]の大移動を行いUnicode1.xとの互換性を失う (Amd.5)、サロゲートペア（代用対）を導入し[[追加面]]を可能にして収容可能な文字を大幅に増やす、21ビット領域に拡張 (Amd.1)||
+|-
+|1998年5月||Unicode 2.1.0
+<ref name="unicode_components_2.1.0">{{Cite web
+| url=http://www.unicode.org/versions/Unicode2.1.0/
+| title=Unicode 2.1.0
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-12
+| accessdate=2013-10-05
+}}</ref>
+||38,952||[[ユーロ記号]]と正誤表を追加||
+|-
+|1998年5月||Unicode 2.1.2
+<ref name="unicode_components_2.1.2">{{Cite web
+| url=http://www.unicode.org/versions/components-2.1.2.html
+| title= Components of The Unicode Standard Version 2.1.2
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-15
+| accessdate=2013-10-05
+}}</ref>
+|| || ||
+|-
+|1998年8月||Unicode 2.1.5
+<ref name="unicode_components_2.1.5">{{Cite web
+| url=http://www.unicode.org/versions/components-2.1.5.html
+| title= Components of The Unicode Standard Version 2.1.5
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-15
+| accessdate=2013-10-05
+}}</ref>
+|| || ||
+|-
+|1998年10月||Unicode 2.1.8
+<ref name="unicode_components_2.1.8">{{Cite web
+| url=http://www.unicode.org/versions/components-2.1.8.html
+| title= Components of The Unicode Standard Version 2.1.8
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-15
+| accessdate=2013-10-05
+}}</ref>
+|| || ||
+|-
+|1999年4月||Unicode 2.1.9
+<ref name="unicode_components_2.1.9">{{Cite web
+| url=http://www.unicode.org/versions/components-2.1.9.html
+| title= Components of The Unicode Standard Version 2.1.9
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-15
+| accessdate=2013-10-05
+}}</ref>
+|| || ||
+|-
+|1999年9月||Unicode 3.0.0
+<ref name="unicode_components_3.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-3.0.0.html
+| title= Components of The Unicode Standard Version 3.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-21
+| accessdate=2013-10-05
+}}</ref>
+||49,259||ISO/IEC 10646-1:2000が発行されるまでの追補Amd.8からAmd.31の文字すべてに対応。[[CJK統合漢字拡張A]]で漢字6582字を追加 (Amd.17)||[[JIS X 0213]]の一部（地名や人名などに用いられる漢字）
+|-
+|2000年8月||Unicode 3.0.1
+<ref name="unicode_components_3.0.1">{{Cite web
+| url=http://www.unicode.org/versions/components-3.0.1.html
+| title= Components of The Unicode Standard Version 3.0.1
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-18
+| accessdate=2013-10-05
+}}</ref>
+|| || ||
+|-
+|2001年3月||Unicode 3.1.0
+<ref name="unicode_components_3.1.0">{{Cite web
+| url=http://www.unicode.org/versions/components-3.1.0.html
+| title= Components of The Unicode Standard Version 3.1.0
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-23
+| accessdate=2013-10-05
+}}</ref>
+||94,205||ISO/IEC 10646-2:2001に対応。BMP以外の拡張。[[CJK統合漢字拡張B]]で漢字42711字を追加||JIS X 0213の一部（地名や人名などに用いられる漢字）
+|-
+|2001年8月||Unicode 3.1.1
+<ref name="unicode_components_3.1.1">{{Cite web
+| url=http://www.unicode.org/versions/components-3.1.1.html
+| title= Components of The Unicode Standard Version 3.1.1
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-18
+| accessdate=2013-10-05
+}}</ref>
+|| || ||
+|-
+|2002年3月||Unicode 3.2.0
+<ref name="unicode_components_3.2.0">{{Cite web
+| url=http://www.unicode.org/versions/components-3.2.0.html
+| title= Components of The Unicode Standard Version 3.2.0
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-23
+| accessdate=2013-10-05
+}}</ref>
+||95,221||ISO/IEC 10646-1:2000の追補Amd.1に対応||JIS X 0213（正式対応）
+|-
+|2003年4月||Unicode 4.0.0
+<ref name="unicode_components_4.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-4.0.0.html
+| title= Components of The Unicode Standard Version 4.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-22
+| accessdate=2013-10-05
+}}</ref>
+||96,447||ISO/IEC 10646:2003に対応||
+|-
+|2004年5月||Unicode 4.0.1
+<ref name="unicode_components_4.0.1">{{Cite web
+| url=http://www.unicode.org/versions/components-4.0.1.html
+| title= Components of The Unicode Standard Version 4.0.1
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-01
+| accessdate=2013-10-05
+}}</ref>
+|| || ||
+|-
+|2005年3月31日||Unicode 4.1.0
+<ref name="unicode_components_4.1.0">{{Cite web
+| url=http://www.unicode.org/versions/components-4.1.0.html
+| title= Components of The Unicode Standard Version 4.1.0
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-01
+| accessdate=2013-10-05
+}}</ref>
+||97,720||ISO/IEC 10646:2003の追補Amd.1に対応||
+|-
+|2006年7月14日||Unicode 5.0.0
+<ref name="unicode_components_5.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-5.0.0.html
+| title= Components of The Unicode Standard Version 5.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-07
+| accessdate=2013-10-05
+}}</ref>
+||99,089
+||ISO/IEC 10646:2003の追補Amd.2と[[シンド語]]（Amd.3に含まれる）に対応||
+|-
+| style="white-space:nowrap;" |[[2008年]]4月4日
+<ref name="unicode_components_5.1.0">{{cite web
+|author=[[ユニコードコンソーシアム|Unicode Consortium]]|url=http://www.unicode.org/versions/components-5.1.0.html
+|title=Components of The Unicode Version 5.1.0
+|accessdate=2008-04-05
+}}</ref>
+||Unicode 5.1.0
+||100,713
+||ISO/IEC 10646:2003の追補Amd.3とAmd.4に対応。[[異体字セレクタ]]を漢字に対して使い始める
+<ref>{{cite web
+|author=[[ユニコードコンソーシアム|Unicode Consortium]]|url=http://www.unicode.org/versions/Unicode5.1.0/
+|title=Unicode 5.1.0
+|accessdate=2008-04-08
+}}</ref>
+||[[麻雀牌]]、割り算の[[筆算]]（長除法）の記号、[[スターマーク|電話機の星印]]、[[Adobe-Japan1|Adobe-Japan1-6]]の漢字字形
+<ref>{{cite web
+|author=[[ユニコードコンソーシアム|Unicode Consortium]]
+|url=http://www.unicode.org/ivd/
+|title=Ideographic Variation Database
+|accessdate=2008-04-07
+}}</ref>
+|-
+|2009年10月1日
+||Unicode 5.2.0
+<ref name="unicode_components_5.2.0">{{Cite web
+| url=http://www.unicode.org/versions/components-5.2.0.html
+| title= Components of The Unicode Standard Version 5.2.0
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-12
+| accessdate=2013-10-05
+}}</ref>
+||107,361
+||ISO/IEC 10646:2003の追補Amd.6までに対応
+||[[ARIB外字]]
+|-
+|{{nowrap|2010年10月11日}}
+||Unicode 6.0.0
+<ref name="unicode_components_6.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-6.0.0.html
+| title= Components of The Unicode Standard Version 6.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2011-03-18
+| accessdate=2013-10-05
+}}</ref>
+||109,449
+||ISO/IEC 10646:2010
+||[[携帯電話の絵文字]]
+|-
+|2012年1月31日
+||Unicode 6.1.0
+<ref name="unicode_components_6.1.0">{{Cite web
+| url=http://www.unicode.org/versions/components-6.1.0.html
+| title= Components of The Unicode Standard Version 6.1.0
+| publisher= Unicode Consortium
+| language=English
+| date=2012-05-15
+| accessdate=2013-10-05
+}}</ref>
+||110,181
+||ISO/IEC 10646:2012||
+|-
+|2012年9月26日
+||Unicode 6.2.0
+<ref name="unicode_components_6.2.0">{{Cite web
+| url=http://www.unicode.org/versions/components-6.2.0.html
+| title= Components of The Unicode Standard Version 6.2.0
+| publisher= Unicode Consortium
+| language=English
+| date=2012-11-17
+| accessdate=2013-10-05
+}}</ref>
+||110,182
+||[[新トルコリラ]]の通貨記号の追加など||
+|-
+|2013年9月30日
+||Unicode 6.3.0
+<ref name="unicode_components_6.3.0">{{Cite web
+| url=http://www.unicode.org/versions/components-6.3.0.html
+| title= Components of The Unicode Standard Version 6.3.0
+| publisher= Unicode Consortium
+| language=English
+| date=2013-09-28
+| accessdate=2013-10-05
+}}</ref>
+||110,187
+||
+||
+|-
+|2014年6月16日
+||Unicode 7.0.0
+<ref name="unicode_components_7.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-7.0.0.html
+| title= Components of The Unicode Standard Version 7.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2014-06-16
+| accessdate=2014-06-18
+}}</ref>
+||113,021
+||ISO/IEC 10646:2012の追補Amd.1とAmd.2に対応。[[ルーブル]]、[[アゼルバイジャン・マナト]]の通貨記号、北米・中国・インド・アフリカの言語のための歴史的なスクリプトの追加。
+||約250字の絵文字の追加。
+|-
+|2015年6月17日
+||Unicode 8.0.0
+<ref name="unicode_components_8.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-8.0.0.html
+| title= Components of The Unicode Standard Version 8.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2015-06-17
+| accessdate=2015-06-19
+}}</ref>
+||120,737
+||ISO/IEC 10646:2014の追補Amd.1に対応。
+||U+301C [[波ダッシュ|WAVE DASH]]の修正（後述）
+|-
+|2016年6月21日
+||Unicode 9.0.0
+<ref name="unicode_components_9.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-9.0.0.html
+| title= Components of The Unicode Standard Version 9.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2016-06-21
+| accessdate=2016-07-05
+}}</ref>
+||128,172
+||ISO/IEC 10646:2014の追補Amd.2に対応。
+||91個の絵文字の追加、4KTV放送用シンボル19個の追加
+|-
+|2017年6月20日
+||{{nowrap|Unicode 10.0.0}}
+<ref name="unicode_components_10.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-10.0.0.html
+| title= Components of The Unicode Standard Version 10.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-20
+| accessdate=2017-06-23
+}}</ref>
+||136,690
+||ISO/IEC 10646:2017
+||[[変体仮名]]285文字追加
+|-
+|2018年6月5日
+||{{nowrap|Unicode 11.0.0 <ref name="unicode_components_11.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-11.0.0.html
+| title= Components of The Unicode Standard Version 11.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2018-06-05
+| accessdate=2019-04-13
+}}</ref>}}
+||137,374
+||ISO/IEC 10646:2017の追補Amd.1に対応
+||
+|-
+|2019年3月5日
+||Unicode 12.0.0 <ref name="unicode_components_12.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-12.0.0.html
+| title= Components of The Unicode Standard Version 12.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2019-03-05
+| accessdate=2019-04-13
+}}</ref>
+||137,928
+||ISO/IEC 10646:2017の追補Amd.1とAmd.2に対応
+||小文字の「ゐ」「ゑ」「を」「ヰ」「ヱ」「ヲ」「ン」追加
+|-
+|2019年5月7日
+||Unicode 12.1.0 <ref name="unicode_components_12.1.0">{{Cite web
+| url=http://www.unicode.org/versions/components-12.1.0.html
+| title= Components of The Unicode Standard Version 12.1.0
+| publisher= Unicode Consortium
+| language=English
+| date=2019-05-07
+| accessdate=2019-05-07
+}}</ref>
+||137,929
+||
+|| 「&#x32FF;」（日本の元号「令和」の合字）追加
+|-
+|2020年3月10日
+||Unicode 13.0.0 <ref name="unicode_components_13.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-13.0.0.html
+| title= Components of The Unicode Standard Version 13.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2020-03-10
+| accessdate=2020-03-13
+}}</ref>
+||143,859
+||ISO/IEC 10646:2020
+||
+|-
+|2021年9月22日
+||Unicode 14.0.0 <ref name="unicode_components_14.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-14.0.0.html
+| title= Components of The Unicode Standard Version 14.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2021-09-22
+| accessdate=2021-09-22
+}}</ref>
+||144,697
+||ISO/IEC 10646:2021
+||
+|-
+|2022年9月13日
+||Unicode 15.0.0 <ref name="unicode_components_15.0.0">{{Cite web
+| url=http://www.unicode.org/versions/components-15.0.0.html
+| title= Components of The Unicode Standard Version 15.0.0
+| publisher= Unicode Consortium
+| language=English
+| date=2022-09-13
+| accessdate=2022-09-13
+}}</ref>
+||149,186
+||ISO/IEC 10646:2022
+||
+|-
+|}
+
+=== 構成要素のバージョン ===
+{{更新|date=2022年7月|section=1}}
+
+Unicodeのバージョンには、上記のような「Unicodeの規格全体に付けられたバージョン」の他に「Unicodeを構成する個々の要素の規格に付けられたバージョン」が存在する。これに該当するものとしては、Unicodeを構成する各面ごとに付けられたバージョンや、Unicodeに収録されないこととされたスクリプトのリスト (NOR = Not The Roadmap) に付けられたバージョン、規格の一部を構成するUnicode Technical Note（Unicode技術ノート）、Unicode Technical Report（Unicode技術報告）、Unicode Technical Standard（Unicode技術標準）のバージョンなどが存在する。
+
+{| class="wikitable" style="font-size:95%"
+!style="white-space:nowrap"|日付
+!style="white-space:nowrap"|全体<ref>{{Cite web
+| url=http://www.unicode.org/versions/enumeratedversions.html
+| title=Enumerated Versions of The Unicode Standard
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-20
+| accessdate=2017-07-22
+}}</ref>
+!style="white-space:nowrap"|[[基本多言語面|BMP]]<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/index.html
+| title=Roadmap to the BMP
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-21
+| accessdate=2017-07-22
+}}</ref>
+!style="white-space:nowrap"|[[追加多言語面|SMP]]<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/
+| title=Roadmap to the SMP
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2018-01-10
+| accessdate=2018-01-14
+}}</ref>
+!style="white-space:nowrap"|[[追加漢字面|SIP]]<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/
+| title=Roadmap to the SIP
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-21
+| accessdate=2017-07-22
+}}</ref>
+!style="white-space:nowrap"|[[第三漢字面|TIP]]<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/
+| title=Roadmap to the TIP
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-12-27
+| accessdate=2018-01-01
+}}</ref>
+!style="white-space:nowrap"|[[追加特殊用途面|SSP]]<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/
+| title=Roadmap to the SSP
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-21
+| accessdate=2017-07-22
+}}</ref>
+!style="white-space:nowrap"|NOR<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/
+| title=Roadmap to the NOR
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-21
+| accessdate=2017-07-22
+}}</ref>
+|-
+!style="white-space:nowrap"|1991年10月
+|1.0.0<ref name="unicode_components_1.0.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1992年6月
+|1.0.1<ref name="unicode_components_1.0.1" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1993年6月
+|1.1.0<ref name="unicode_components_1.1.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1993年7月
+|1.1.5<ref name="unicode_components_1.1.5" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1996年7月
+|2.0.0<ref name="unicode_components_2.0.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1998年5月
+|2.1.0<ref name="unicode_components_2.1.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1998年5月
+|2.1.2<ref name="unicode_components_2.1.2" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1998年8月
+|2.1.5<ref name="unicode_components_2.1.5" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1998年10月
+|2.1.8<ref name="unicode_components_2.1.8" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1999年4月
+|2.1.9<ref name="unicode_components_2.1.9" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|1999年9月
+|3.0.0<ref name="unicode_components_3.0.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2000年8月
+|3.0.1<ref name="unicode_components_3.0.1" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2001年3月
+|3.1.0<ref name="unicode_components_3.1.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2001年8月
+|3.1.1<ref name="unicode_components_3.1.1" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2001年10月10日
+|
+|3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-0.html
+| title=Roadmap to the BMP 3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2001-10-10
+| accessdate=2012-05-05
+}}</ref>
+|3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-3-0.html
+| title=Roadmap to the SMP 3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2001-10-10
+| accessdate=2012-05-05
+}}</ref>
+|3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-3-0.html
+| title=Roadmap to the SIP 3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2001-10-10
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-1-0.html
+| title=Roadmap to the NOR 1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2001-10-10
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2001年10月12日
+|
+|
+|3.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-3-1.html
+| title=Roadmap to the SMP 3.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2001-10-12
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2001年10月27日
+|
+|3.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-1.html
+| title=Roadmap to the BMP 3.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2001-10-27
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2001年11月27日
+|
+|
+|
+|
+|
+|3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-3-0.html
+| title=Roadmap to the SSP 3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2001-11-27
+| accessdate=2012-05-05
+}}</ref>
+|
+|-
+!style="white-space:nowrap"|2002年1月22日
+|
+|3.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-2.html
+| title=Roadmap to the BMP 3.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-01-22
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|3.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-3-1.html
+| title=Roadmap to the SSP 3.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-01-22
+| accessdate=2012-05-05
+}}</ref>
+|
+|-
+!style="white-space:nowrap"|2002年1月29日
+|
+|3.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-3.html
+| title=Roadmap to the BMP 3.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-01-29
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年2月5日
+|
+|3.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-4.html
+| title=Roadmap to the BMP 3.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-02-05
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年3月
+|3.2.0<ref name="unicode_components_3.2.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年4月3日
+|
+|
+|3.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-3-2.html
+| title=Roadmap to the SMP 3.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-04-03
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年4月4日
+|
+|3.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-5.html
+| title=Roadmap to the BMP 3.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-04-04
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年6月7日
+|
+|3.6<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-6.html
+| title=Roadmap to the BMP 3.6
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-06-07
+| accessdate=2012-05-05
+}}</ref>
+|3.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-3-3.html
+| title=Roadmap to the SMP 3.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-06-07
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年6月23日
+|
+|3.7<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-7.html
+| title=Roadmap to the BMP 3.7
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-06-23
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年10月2日
+|
+|3.8<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-8.html
+| title=Roadmap to the BMP 3.8
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-10-02
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年10月28日
+|
+|3.9<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-9.html
+| title=Roadmap to the BMP 3.9
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-10-28
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年11月11日
+|
+|
+|
+|3.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-3-1.html
+| title=Roadmap to the SIP 3.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-11-11
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年12月3日
+|
+|3.10<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-10.html
+| title=Roadmap to the BMP 3.10
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-12-03
+| accessdate=2012-05-05
+}}</ref>
+|3.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-3-4.html
+| title=Roadmap to the SMP 3.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-12-03
+| accessdate=2012-05-05
+}}</ref>
+<br />
+3.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-3-5.html
+| title=Roadmap to the SMP 3.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-12-03
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2002年12月11日
+|
+|3.11<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-11.html
+| title=Roadmap to the BMP 3.11
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2002-12-11
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年3月12日
+|
+|3.12<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-3-12.html
+| title=Roadmap to the BMP 3.12
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-03-12
+| accessdate=2012-05-05
+}}</ref>
+|3.6<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-3-6.html
+| title=Roadmap to the SMP 3.6
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-03-12
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年3月15日
+|
+|
+|3.7<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-3-7.html
+| title=Roadmap to the SMP 3.7
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-03-15
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年4月
+|4.0.0<ref name="unicode_components_4.0.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年4月16日
+|
+|4.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-0.html
+| title=Roadmap to the BMP 4.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-04-16
+| accessdate=2012-05-05
+}}</ref>
+|4.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-0.html
+| title=Roadmap to the SMP 4.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-04-16
+| accessdate=2012-05-05
+}}</ref>
+|4.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-4-0.html
+| title=Roadmap to the SIP 4.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-04-16
+| accessdate=2012-05-05
+}}</ref>
+|
+|4.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-4-0.html
+| title=Roadmap to the SSP 4.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-04-16
+| accessdate=2012-05-05
+}}</ref>
+|4.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-4-0.html
+| title=Roadmap to the NOR 4.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-04-16
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2003年5月4日
+|
+|4.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-1.html
+| title=Roadmap to the BMP 4.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-05-04
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年5月16日
+|
+|
+|
+|4.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-4-1.html
+| title=Roadmap to the SIP 4.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-05-16
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年6月18日
+|
+|4.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-2.html
+| title=Roadmap to the BMP 4.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-06-18
+| accessdate=2012-05-05
+}}</ref>
+|4.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-1.html
+| title=Roadmap to the SMP 4.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-06-18
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年7月15日
+|
+|
+|
+|
+|
+|4.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-4-1.html
+| title=Roadmap to the SSP 4.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-07-15
+| accessdate=2012-05-05
+}}</ref>
+|
+|-
+!style="white-space:nowrap"|2003年8月19日
+|
+|4.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-3.html
+| title=Roadmap to the BMP 4.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-08-19
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年9月11日
+|
+|4.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-4.html
+| title=Roadmap to the BMP 4.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-09-11
+| accessdate=2012-05-05
+}}</ref>
+|4.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-2.html
+| title=Roadmap to the SMP 4.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-09-11
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年9月20日
+|
+|4.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-5.html
+| title=Roadmap to the BMP 4.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-09-20
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年10月22日
+|
+|4.6<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-6.html
+| title=Roadmap to the BMP 4.6
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-10-22
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年10月31日
+|
+|
+|4.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-3.html
+| title=Roadmap to the SMP 4.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-10-31
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2003年12月23日
+|
+|4.7<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-7.html
+| title=Roadmap to the BMP 4.7
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-12-23
+| accessdate=2012-05-05
+}}</ref>
+|4.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-4.html
+| title=Roadmap to the SMP 4.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2003-12-23
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2004年5月
+|4.0.1<ref name="unicode_components_4.0.1" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2004年5月27日
+|
+|
+|4.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-5.html
+| title=Roadmap to the SMP 4.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2004-05-27
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2004年6月24日
+|
+|4.8<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-8.html
+| title=Roadmap to the BMP 4.8
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2004-06-24
+| accessdate=2012-05-05
+}}</ref>
+|4.6<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-6.html
+| title=Roadmap to the SMP 4.6
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2004-06-24
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2004年7月3日
+|
+|
+|4.7<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-7.html
+| title=Roadmap to the SMP 4.7
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2004-07-03
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2004年12月1日
+|
+|
+|
+|
+|
+|
+|4.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-4-1.html
+| title=Roadmap to the NOR 4.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2004-12-01
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2005年1月27日
+|
+|
+|
+|4.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-4-2.html
+| title=Roadmap to the SIP 4.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-01-27
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2005年1月28日
+|
+|4.9<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-9.html
+| title=Roadmap to the BMP 4.9
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-01-28
+| accessdate=2012-05-05
+}}</ref>
+|4.8<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-8.html
+| title=Roadmap to the SMP 4.8
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-01-28
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2005年3月31日
+|4.1.0<ref name="unicode_components_4.1.0" />
+|4.10<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-10.html
+| title=Roadmap to the BMP 4.10
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-03-31
+| accessdate=2012-05-05
+}}</ref>
+|4.9<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-9.html
+| title=Roadmap to the SMP 4.9
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-03-31
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2005年5月27日
+|
+|
+|4.10<ref>[{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-10.html
+| title=Roadmap to the SMP 4.10
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-05-27
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|4.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-4-2.html
+| title=Roadmap to the NOR 4.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-05-27
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2005年6月10日
+|
+|4.11<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-11.html
+| title=Roadmap to the BMP 4.11
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-06-10
+| accessdate=2012-05-05
+}}</ref>
+|4.11<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-11.html
+| title=Roadmap to the SMP 4.11
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-06-10
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2005年6月27日
+|
+|4.12<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-12.html
+| title=Roadmap to the BMP 4.12
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-06-27
+| accessdate=2012-05-05
+}}</ref>
+|4.12<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-12.html
+| title=Roadmap to the SMP 4.12
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-06-27
+| accessdate=2012-05-05
+}}</ref>
+|4.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-4-3.html
+| title=Roadmap to the SIP 4.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-06-27
+| accessdate=2012-05-05
+}}</ref>
+|
+|4.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/ssp-4-2.html
+| title=Roadmap to the SSP 4.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-06-27
+| accessdate=2012-05-05
+}}</ref>
+|4.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-4-3.html
+| title=Roadmap to the NOR 4.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-06-27
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2005年8月1日
+|
+|4.13<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-13.html
+| title=Roadmap to the BMP 4.13
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-08-01
+| accessdate=2012-05-05
+}}</ref>
+|4.13<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-13.html
+| title=Roadmap to the SMP 4.13
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-08-01
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2005年9月6日
+|
+|4.14<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-14.html
+| title=Roadmap to the BMP 4.14
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-09-06
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2005年9月14日
+|
+|4.15<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-15.html
+| title=Roadmap to the BMP 4.15
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-09-14
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2005年9月17日
+|
+|
+|4.14<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-14.html
+| title=Roadmap to the SMP 4.14
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-09-17
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2005年9月19日
+|
+|4.16<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-16.html
+| title=Roadmap to the BMP 4.16
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-09-19
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2005年12月8日
+|
+|
+|4.15<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-15.html
+| title=Roadmap to the SMP 4.15
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2005-12-08
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2006年1月11日
+|
+|4.17<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-17.html
+| title=Roadmap to the BMP 4.17
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-01-11
+| accessdate=2012-05-05
+}}</ref>
+|4.16<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/smp-4-16.html
+| title=Roadmap to the SMP 4.16
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-01-11
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2006年4月17日
+|
+|4.18<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-4-18.html
+| title=Roadmap to the BMP 4.18
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-04-17
+| accessdate=2012-05-05
+}}</ref>
+|4.17<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-4-17.html
+| title=Roadmap to the SMP 4.17
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-04-17
+| accessdate=2012-05-05
+}}</ref>
+|4.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-4-4.html
+| title=Roadmap to the SIP 4.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-04-17
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2006年4月28日
+|
+|
+|
+|
+|
+|
+|4.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-4-4.html
+| title=Roadmap to the NOR 4.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-04-28
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2006年7月14日
+|5.0.0<ref name="unicode_components_5.0.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2006年9月21日
+|
+|5.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-0.html
+| title=Roadmap to the BMP 5.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-09-21
+| accessdate=2012-05-05
+}}</ref>
+|5.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-0.html
+| title=Roadmap to the SMP 5.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-09-21
+| accessdate=2012-05-05
+}}</ref>
+|5.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-5-0.html
+| title=Roadmap to the SIP 5.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-09-21
+| accessdate=2012-05-05
+}}</ref>
+|
+|5.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-5-0.html
+| title=Roadmap to the SSP 5.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-09-21
+| accessdate=2012-05-05
+}}</ref>
+|5.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-5-0.html
+| title=Roadmap to the NOR 5.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-09-21
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2006年9月29日
+|
+|5.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-0-1.html
+| title=Roadmap to the BMP 5.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-09-29
+| accessdate=2012-05-05
+}}</ref>
+|
+|5.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-5-0-1.html
+| title=Roadmap to the SIP 5.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2006-09-29
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2007年3月14日
+|
+|
+|5.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-0-1.html
+| title=Roadmap to the SMP 5.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-03-14
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2007年4月11日
+|
+|5.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-0-2.html
+| title=Roadmap to the BMP 5.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-04-11
+| accessdate=2012-05-05
+}}</ref>
+|5.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-0-2.html
+| title=Roadmap to the SMP 5.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-04-11
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2007年5月5日
+|
+|5.0.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-0-3.html
+| title=Roadmap to the BMP 5.0.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-05-05
+| accessdate=2012-05-05
+}}</ref>
+|5.0.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-0-3.html
+| title=Roadmap to the SMP 5.0.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-05-05
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2007年7月24日
+|
+|5.0.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-0-4.html
+| title=Roadmap to the BMP 5.0.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-07-24
+| accessdate=2012-05-05
+}}</ref>
+|5.0.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-0-4.html
+| title=Roadmap to the SMP 5.0.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-07-24
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|5.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-5-0-1.html
+| title=Roadmap to the NOR 5.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-07-24
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2007年8月22日
+|
+|5.0.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-0-5.html
+| title=Roadmap to the BMP 5.0.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-08-22
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2007年8月29日
+|
+|
+|5.0.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-0-5.html
+| title=Roadmap to the SMP 5.0.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2007-08-29
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2008年1月15日
+|
+|
+|5.0.6<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-0-6.html
+| title=Roadmap to the SMP 5.0.6
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-01-15
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2008年1月31日
+|
+|5.0.6<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-0-6.html
+| title=Roadmap to the BMP 5.0.6
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-01-31
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2008年2月14日
+|
+|5.0.7<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-0-7.html
+| title=Roadmap to the BMP 5.0.7
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-02-14
+| accessdate=2012-05-05
+}}</ref>
+|5.0.7<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-0-7.html
+| title=Roadmap to the SMP 5.0.7
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-02-14
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2008年4月4日
+|5.1.0<ref name="unicode_components_5.1.0" />
+|5.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-1-0.html
+| title=Roadmap to the BMP 5.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-04-04
+| accessdate=2012-05-05
+}}</ref>
+|5.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-1-0.html
+| title=Roadmap to the SMP 5.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-04-04
+| accessdate=2012-05-05
+}}</ref>
+|5.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-5-1-0.html
+| title=Roadmap to the SIP 5.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-04-04
+| accessdate=2012-05-05
+}}</ref>
+|
+|5.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-5-1-0.html
+| title=Roadmap to the SSP 5.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-04-04
+| accessdate=2012-05-05
+}}</ref>
+|5.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-5-1-0.html
+| title=Roadmap to the NOR 5.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-04-04
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2008年4月25日
+|
+|5.1.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-1-1.html
+| title=Roadmap to the BMP 5.1.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-04-25
+| accessdate=2012-05-05
+}}</ref>
+|5.1.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-1-1.html
+| title=Roadmap to the SMP 5.1.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-04-25
+| accessdate=2012-05-05
+}}</ref>
+|
+|5.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-5-1-0.html
+| title=Roadmap to the TIP 5.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-04-25
+| accessdate=2012-05-05
+}}</ref>
+|
+|5.1.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-5-1-1.html
+| title=Roadmap to the NOR 5.1.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-04-25
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2008年8月12日
+|
+|5.1.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-1-2.html
+| title=Roadmap to the BMP 5.1.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-08-12
+| accessdate=2012-05-05
+}}</ref>
+|5.1.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-1-2.html
+| title=Roadmap to the SMP 5.1.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-08-12
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2008年8月19日
+|
+|5.1.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-1-3.html
+| title=Roadmap to the BMP 5.1.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-08-19
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2008年10月17日
+|
+|5.1.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-1-4.html
+| title=Roadmap to the BMP 5.1.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-10-17
+| accessdate=2012-05-05
+}}</ref>
+|5.1.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-1-3.html
+| title=Roadmap to the SMP 5.1.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-10-17
+| accessdate=2012-05-05
+}}</ref>
+|
+|5.1.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-5-1-1.html
+| title=Roadmap to the TIP 5.1.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2008-10-17
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|-
+!style="white-space:nowrap"|2009年2月4日
+|
+|5.1.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-1-5.html
+| title=Roadmap to the BMP 5.1.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-02-04
+| accessdate=2012-05-05
+}}</ref>
+|5.1.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-1-4.html
+| title=Roadmap to the SMP 5.1.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-02-04
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2009年2月26日
+|
+|
+|
+|5.1.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-5-1-1.html
+| title=Roadmap to the SIP 5.1.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-02-26
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2009年4月22日
+|
+|
+|
+|5.1.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-5-1-2.html
+| title=Roadmap to the SIP 5.1.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-04-22
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2009年4月24日
+|
+|
+|5.1.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-1-5.html
+| title=Roadmap to the SMP 5.1.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-04-24
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2009年10月1日
+|5.2.0<ref name="unicode_components_5.2.0" />
+|5.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-2-0.html
+| title=Roadmap to the BMP 5.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-10-01
+| accessdate=2012-05-05
+}}</ref>
+|5.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-2-0.html
+| title=Roadmap to the SMP 5.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-10-01
+| accessdate=2012-05-05
+}}</ref>
+|5.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-5-2-0.html
+| title=Roadmap to the SIP 5.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-10-01
+| accessdate=2012-05-05
+}}</ref>
+|5.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-5-2-0.html
+| title=Roadmap to the TIP 5.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-10-01
+| accessdate=2012-05-05
+}}</ref>
+|5.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-5-2-0.html
+| title=Roadmap to the SSP 5.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-10-01
+| accessdate=2012-05-05
+}}</ref>
+|5.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-5-2-0.html
+| title=Roadmap to the NOR 5.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-10-01
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2009年11月18日
+|
+|5.2.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-2-1.html
+| title=Roadmap to the BMP 5.2.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2009-11-18
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2010年2月5日
+|
+|
+|5.2.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-2-1.html
+| title=Roadmap to the SMP 5.2.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-02-05
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2010年2月10日
+|
+|
+|5.2.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-2-2.html
+| title=Roadmap to the SMP 5.2.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-02-10
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2010年2月23日
+|
+|
+|5.2.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-2-3.html
+| title=Roadmap to the SMP 5.2.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-02-23
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2010年4月23日
+|
+|5.2.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-5-2-2.html
+| title=Roadmap to the BMP 5.2.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-04-23
+| accessdate=2012-05-05
+}}</ref>
+|5.2.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-2-4.html
+| title=Roadmap to the SMP 5.2.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-04-23
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2010年5月12日
+|
+|
+|5.2.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-2-5.html
+| title=Roadmap to the SMP 5.2.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-05-12
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2010年6月24日
+|
+|
+|5.2.6<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-2-6.html
+| title=Roadmap to the SMP 5.2.6
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-06-24
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2010年7月27日
+|
+|
+|5.2.7<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-5-2-7.html
+| title=Roadmap to the SMP 5.2.7
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-07-27
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2010年10月11日
+|6.0.0<ref name="unicode_components_6.0.0" />
+|6.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-6-0-0.html
+| title=Roadmap to the BMP 6.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-10-11
+| accessdate=2012-05-05
+}}</ref>
+|6.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-0.html
+| title=Roadmap to the SMP 6.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-10-11
+| accessdate=2012-05-05
+}}</ref>
+|6.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-6-0-0.html
+| title=Roadmap to the SIP 6.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-10-11
+| accessdate=2012-05-05
+}}</ref>
+|6.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-6-0-0.html
+| title=Roadmap to the TIP 6.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-10-11
+| accessdate=2012-05-05
+}}</ref>
+|6.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-6-0-0.html
+| title=Roadmap to the SSP 6.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-10-11
+| accessdate=2012-05-05
+}}</ref>
+|6.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-6-0-0.html
+| title=Roadmap to the NOR 6.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-10-11
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2010年12月6日
+|
+|
+|6.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-1.html
+| title=Roadmap to the SMP 6.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2010-12-06
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年1月9日
+|
+|
+|6.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-2.html
+| title=Roadmap to the SMP 6.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-09
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年1月14日
+|
+|6.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-6-0-1.html
+| title=Roadmap to the BMP 6.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-14
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年1月27日
+|
+|6.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-6-0-2.html
+| title=Roadmap to the BMP 6.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-27
+| accessdate=2012-05-05
+}}</ref>
+|6.0.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-3.html
+| title=Roadmap to the SMP 6.0.3
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-27
+| accessdate=2012-05-05
+}}</ref>
+|6.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-6-0-1.html
+| title=Roadmap to the SIP 6.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-27
+| accessdate=2012-05-05
+}}</ref>
+|6.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-6-0-1.html
+| title=Roadmap to the TIP 6.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-27
+| accessdate=2012-05-05
+}}</ref>
+|6.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-6-0-1.html
+| title=Roadmap to the SSP 6.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-27
+| accessdate=2012-05-05
+}}</ref>
+|6.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-6-0-1.html
+| title=Roadmap to the NOR 6.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-01-27
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2011年3月18日
+|
+|
+|6.0.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-4.html
+| title=Roadmap to the SMP 6.0.4
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-03-18
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年5月24日
+|
+|
+|6.0.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-5.html
+| title=Roadmap to the SMP 6.0.5
+| author= Michael Everson, Rick McGowan, Ken Whistler
+| publisher= Unicode Consortium
+| language=English
+| date=2011-05-24
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年6月23日
+|
+|6.0.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-6-0-3.html
+| title=Roadmap to the BMP 6.0.3
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2011-06-23
+| accessdate=2012-05-05
+}}</ref>
+|6.0.6<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-6.html
+| title=Roadmap to the SMP 6.0.6
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2011-06-23
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年8月1日
+|
+|
+|6.0.7<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-7.html
+| title=Roadmap to the SMP 6.0.7
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2011-08-01
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年8月15日
+|
+|
+|6.0.8<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-8.html
+| title=Roadmap to the SMP 6.0.8
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2011-08-15
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年8月24日
+|
+|
+|6.0.9<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-9.html
+| title=Roadmap to the SMP 6.0.9
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2011-08-24
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年11月15日
+|
+|
+|6.0.10<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-10.html
+| title=Roadmap to the SMP 6.0.10
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2011-11-15
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年11月29日
+|
+|
+|6.0.11<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-11.html
+| title=Roadmap to the SMP 6.0.11
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2011-11-29
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2011年12月19日
+|
+|
+|
+|
+|
+|
+|6.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-6-0-2.html
+| title=Roadmap to the NOR 6.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2011-12-19
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2012年1月6日
+|
+|
+|6.0.12<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-0-12.html
+| title=Roadmap to the SMP 6.0.12
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-01-06
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2012年1月31日
+|6.1.0<ref name="unicode_components_6.1.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2012年2月1日
+|
+|6.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-6-1-0.html
+| title=Roadmap to the BMP 6.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-02-01
+| accessdate=2012-05-05
+}}</ref>
+|6.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-1-0.html
+| title=Roadmap to the SMP 6.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-02-01
+| accessdate=2012-05-05
+}}</ref>
+|6.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-6-1-0.html
+| title=Roadmap to the SIP 6.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-02-01
+| accessdate=2012-05-05
+}}</ref>
+|6.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-6-1-0.html
+| title=Roadmap to the TIP 6.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-02-01
+| accessdate=2012-05-05
+}}</ref>
+|6.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-6-1-0.html
+| title=Roadmap to the SSP 6.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-02-01
+| accessdate=2012-05-05
+}}</ref>
+|6.1.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-6-1-0.html
+| title=Roadmap to the NOR 6.1.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-02-01
+| accessdate=2012-05-05
+}}</ref>
+|-
+!style="white-space:nowrap"|2012年2月15日
+|
+|
+|6.1.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-1-1.html
+| title=Roadmap to the SMP 6.1.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-02-15
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2012年5月4日
+|
+|
+|6.1.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-1-2.html
+| title=Roadmap to the SMP 6.1.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-05-04
+| accessdate=2012-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2012年7月30日
+|
+|
+|6.1.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-1-3.html
+| title=Roadmap to the SMP 6.1.3
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-07-30
+| accessdate=2012-08-01
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2012年8月27日
+|
+|
+|6.1.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-1-4.html
+| title=Roadmap to the SMP 6.1.4
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-08-27
+| accessdate=2012-08-29
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2012年9月13日
+|
+|6.1.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-6-1-1.html
+| title=Roadmap to the BMP 6.1.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-09-13
+| accessdate=2012-09-14
+}}</ref>
+|6.1.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-1-5.html
+| title=Roadmap to the SMP 6.1.5
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-09-13
+| accessdate=2012-09-14
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2012年9月26日
+|6.2.0<ref name="unicode_components_6.2.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2012年9月27日
+|
+|6.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-6-2-0.html
+| title=Roadmap to the BMP 6.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-09-27
+| accessdate=2012-09-28
+}}</ref>
+|6.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-2-0.html
+| title=Roadmap to the SMP 6.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-09-27
+| accessdate=2012-09-28
+}}</ref>
+|6.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-6-2-0.html
+| title=Roadmap to the SIP 6.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-09-27
+| accessdate=2012-09-28
+}}</ref>
+|6.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-6-2-0.html
+| title=Roadmap to the TIP 6.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-09-27
+| accessdate=2012-09-28
+}}</ref>
+|6.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-6-2-0.html
+| title=Roadmap to the SSP 6.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-09-27
+| accessdate=2012-09-28
+}}</ref>
+|6.2.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-6-2-0.html
+| title=Roadmap to the NOR 6.2.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-09-27
+| accessdate=2012-09-28
+}}</ref>
+|-
+!style="white-space:nowrap"|2012年10月16日
+|
+|
+|6.2.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-2-1.html
+| title=Roadmap to the SMP 6.2.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-10-16
+| accessdate=2012-10-20
+}}</ref>
+|6.2.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-6-2-1.html
+| title=Roadmap to the SIP 6.2.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-10-16
+| accessdate=2012-10-20
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2012年12月2日
+|
+|
+|6.2.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-2-2.html
+| title=Roadmap to the SMP 6.2.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-12-02
+| accessdate=2012-12-04
+}}</ref>
+|6.2.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-6-2-2.html
+| title=Roadmap to the SIP 6.2.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2012-12-02
+| accessdate=2012-12-04
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2013年3月19日
+|
+|
+|6.2.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-2-3.html
+| title=Roadmap to the SMP 6.2.3
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-03-19
+| accessdate=2013-03-21
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2013年5月4日
+|
+|
+|6.2.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-2-4.html
+| title=Roadmap to the SMP 6.2.4
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-05-03
+| accessdate=2013-05-05
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2013年5月23日
+|
+|
+|6.2.5<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-2-5.html
+| title=Roadmap to the SMP 6.2.5
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-05-23
+| accessdate=2013-05-24
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2013年7月24日
+|
+|
+|6.2.6<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-2-6.html
+| title=Roadmap to the SMP 6.2.6
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-07-24
+| accessdate=2013-07-25
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2013年9月30日
+|6.3.0<ref name="unicode_components_6.3.0" />
+|
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2013年10月28日
+|
+|6.3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-6-3-0.html
+| title=Roadmap to the BMP 6.3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-10-28
+| accessdate=2013-10-30
+}}</ref>
+|6.3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-3-0.html
+| title=Roadmap to the SMP 6.3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-11-02
+| accessdate=2013-11-03
+}}</ref>
+|6.3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-6-3-0.html
+| title=Roadmap to the SIP 6.3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-10-28
+| accessdate=2013-10-30
+}}</ref>
+|6.3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-6-3-0.html
+| title=Roadmap to the TIP 6.3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-10-28
+| accessdate=2013-10-30
+}}</ref>
+|6.3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-6-3-0.html
+| title=Roadmap to the SSP 6.3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-10-28
+| accessdate=2013-10-30
+}}</ref>
+|6.3.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-6-3-0.html
+| title=Roadmap to the NOR 6.3.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2013-10-28
+| accessdate=2013-10-30
+}}</ref>
+|-
+!style="white-space:nowrap"|2014年2月19日
+|
+|6.3.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-6-3-1.html
+| title=Roadmap to the BMP 6.3.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-02-19
+| accessdate=2014-02-20
+}}</ref>
+|6.3.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-6-3-1.html
+| title=Roadmap to the SMP 6.3.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-02-19
+| accessdate=2014-02-20
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2014年6月16日
+|7.0.0<ref name="unicode_components_7.0.0" />
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2014年8月7日
+|
+|7.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-7-0-0.html
+| title=Roadmap to the BMP 7.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-08-07
+| accessdate=2014-08-09
+}}</ref>
+|7.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-7-0-0.html
+| title=Roadmap to the SMP 7.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-08-07
+| accessdate=2014-08-09
+}}</ref>
+|7.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-7-0-0.html
+| title=Roadmap to the SIP 7.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-08-07
+| accessdate=2014-08-09
+}}</ref>
+|7.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-7-0-0.html
+| title=Roadmap to the TIP 7.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-08-07
+| accessdate=2014-08-09
+}}</ref>
+|7.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-7-0-0.html
+| title=Roadmap to the SSP 7.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-08-07
+| accessdate=2014-08-09
+}}</ref>
+|7.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-7-0-0.html
+| title=Roadmap to the NOR 7.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-08-07
+| accessdate=2014-08-09
+}}</ref>
+|-
+!style="white-space:nowrap"|2014年9月18日
+|
+|7.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-7-0-1.html
+| title=Roadmap to the BMP 7.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-09-18
+| accessdate=2014-09-28
+}}</ref>
+|7.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-7-0-1.html
+| title=Roadmap to the SMP 7.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-09-18
+| accessdate=2014-09-28
+}}</ref>
+|7.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-7-0-1.html
+| title=Roadmap to the SIP 7.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-09-18
+| accessdate=2014-09-28
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2014年10月24日
+|
+|
+|7.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-7-0-2.html
+| title=Roadmap to the SMP 7.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-10-24
+| accessdate=2014-10-30
+}}</ref>
+|7.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-7-0-2.html
+| title=Roadmap to the SIP 7.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-10-24
+| accessdate=2014-10-26
+}}</ref>
+|7.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-7-0-1.html
+| title=Roadmap to the TIP 7.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2014-10-24
+| accessdate=2014-10-31
+}}</ref>
+|
+|
+|-
+!style="white-space:nowrap"|2015年3月26日
+|
+|7.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-7-0-2.html
+| title=Roadmap to the BMP 7.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-03-26
+| accessdate=2015-03-28
+}}</ref>
+|7.0.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-7-0-3.html
+| title=Roadmap to the SMP 7.0.3
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-03-26
+| accessdate=2015-03-28
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2015年6月3日
+|
+|7.0.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-7-0-3.html
+| title=Roadmap to the BMP 7.0.3
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-06-03
+| accessdate=2015-06-13
+}}</ref>
+|7.0.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-7-0-4.html
+| title=Roadmap to the SMP 7.0.4
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-06-03
+| accessdate=2015-06-13
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2015年6月17日
+|8.0.0<ref name="unicode_components_8.0.0" />
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2015年6月26日
+|
+|8.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-8-0-0.html
+| title=Roadmap to the BMP 8.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-07-09
+| accessdate=2015-07-10
+}}</ref>
+|8.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-8-0-0.html
+| title=Roadmap to the SMP 8.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-07-09
+| accessdate=2015-07-10
+}}</ref>
+|8.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-8-0-0.html
+| title=Roadmap to the SIP 8.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-07-09
+| accessdate=2015-07-10
+}}</ref>
+|8.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-8-0-0.html
+| title=Roadmap to the TIP 8.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-07-09
+| accessdate=2015-07-10
+}}</ref>
+|8.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-8-0-0.html
+| title=Roadmap to the SSP 8.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-07-09
+| accessdate=2015-07-10
+}}</ref>
+|8.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-8-0-0.html
+| title=Roadmap to the NOR 8.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-07-09
+| accessdate=2015-07-10
+}}</ref>
+|-
+!style="white-space:nowrap"|2015年8月17日
+|
+|
+|8.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-8-0-1.html
+| title=Roadmap to the SMP 8.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2015-08-17
+| accessdate=2015-08-22
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2016年1月21日
+|
+|8.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-8-0-1.html
+| title=Roadmap to the BMP 8.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-01-21
+| accessdate=2016-01-25
+}}</ref>
+|8.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-8-0-2.html
+| title=Roadmap to the SMP 8.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-01-21
+| accessdate=2016-01-25
+}}</ref>
+|
+|8.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-8-0-1.html
+| title=Roadmap to the TIP 8.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-01-21
+| accessdate=2016-01-22
+}}</ref>
+|
+|
+|-
+!style="white-space:nowrap"|2016年2月3日
+|
+|
+|8.0.3<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-8-0-3.html
+| title=Roadmap to the SMP 8.0.3
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-02-03
+| accessdate=2016-02-05
+}}</ref>
+|8.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-8-0-1.html
+| title=Roadmap to the SIP 8.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-02-03
+| accessdate=2016-02-05
+}}</ref>
+|
+|
+|
+|-
+!style="white-space:nowrap"|2016年5月3日
+|
+|8.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-8-0-2.html
+| title=Roadmap to the BMP 8.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-05-03
+| accessdate=2016-06-13
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2016年6月10日
+|
+|
+|8.0.4<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-8-0-4.html
+| title=Roadmap to the SMP 8.0.4
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-06-10
+| accessdate=2016-06-13
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2016年6月21日
+|9.0.0<ref name="unicode_components_9.0.0" />
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2016年6月23日
+|
+|9.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-9-0-0.html
+| title=Roadmap to the BMP 9.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-06-23
+| accessdate=2016-06-25
+}}</ref>
+|9.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-9-0-0.html
+| title=Roadmap to the SMP 9.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-06-23
+| accessdate=2016-06-25
+}}</ref>
+|9.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-9-0-0.html
+| title=Roadmap to the SIP 9.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-06-23
+| accessdate=2016-06-25
+}}</ref>
+|9.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-9-0-0.html
+| title=Roadmap to the TIP 9.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-06-23
+| accessdate=2016-06-25
+}}</ref>
+|9.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-9-0-0.html
+| title=Roadmap to the SSP 9.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-06-23
+| accessdate=2016-06-25
+}}</ref>
+|9.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-9-0-0.html
+| title=Roadmap to the NOR 9.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2016-06-23
+| accessdate=2016-06-25
+}}</ref>
+|-
+!style="white-space:nowrap"|2017年1月12日
+|
+|
+|9.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-9-0-1.html
+| title=Roadmap to the SMP 9.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-01-12
+| accessdate=2017-01-25
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2017年5月24日
+|
+|9.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-9-0-1.html
+| title=Roadmap to the BMP 9.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-05-24
+| accessdate=2017-05-28
+}}</ref>
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2017年6月6日
+|
+|
+|9.0.2<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-9-0-2.html
+| title=Roadmap to the SMP 9.0.2
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-06
+| accessdate=2017-06-09
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2017年6月20日
+|10.0.0<ref name="unicode_components_10.0.0" />
+|
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2017年6月21日
+|
+|10.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/bmp/bmp-10-0-0.html
+| title=Roadmap to the BMP 10.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-21
+| accessdate=2017-07-22
+}}</ref>
+|
+|10.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/sip/sip-10-0-0.html
+| title=Roadmap to the SIP 10.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-21
+| accessdate=2017-07-22
+}}</ref>
+|10.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-10-0-0.html
+| title=Roadmap to the TIP 10.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-21
+| accessdate=2017-07-22
+}}</ref>
+|10.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/ssp/ssp-10-0-0.html
+| title=Roadmap to the SSP 10.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-21
+| accessdate=2017-07-22
+}}</ref>
+|10.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/not-the-roadmap/not-the-roadmap-10-0-0.html
+| title=Roadmap to the NOR 10.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-21
+| accessdate=2017-07-22
+}}</ref>
+|-
+!style="white-space:nowrap"|2017年6月29日
+|
+|
+|10.0.0<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-10-0-0.html
+| title=Roadmap to the SMP 10.0.0
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-06-29
+| accessdate=2017-07-22
+}}</ref>
+|
+|
+|
+|
+|-
+!style="white-space:nowrap"|2017年12月27日
+|
+|
+|
+|
+|10.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/tip/tip-10-0-1.html
+| title=Roadmap to the TIP 10.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2017-12-27
+| accessdate=2018-01-01
+}}</ref>
+|
+|
+|-
+!style="white-space:nowrap"|2018年1月10日
+|
+|
+|10.0.1<ref>{{Cite web
+| url=http://www.unicode.org/roadmaps/smp/smp-10-0-1.html
+| title=Roadmap to the SMP 10.0.1
+| author= Michael Everson, Rick McGowan, Ken Whistler, V.S. Umamaheswaran
+| publisher= Unicode Consortium
+| language=English
+| date=2018-01-10
+| accessdate=2018-01-14
+}}</ref>
+|
+|
+|
+||-
+|}
+
+== Unicodeの諸問題 ==
+=== バージョンごとの非互換性 ===
+Unicodeは同一のコードでもバージョンが変わったとき完全に異なった文字を定義し直したことがある。
+
+そのうち最大のものがUnicode 2.0での「[[ハングル#Unicode|ハングルの大移動]]」である。これはUnicode 1.1までで定義されていたハングルの領域を破棄し、新しいハングルの領域を別の位置に設定し、破棄された領域には別の文字の領域を割り当てることとなった。その後、Unicode 3.0では、従来ハングルが割り当てられていた領域に[[CJK統合漢字拡張A]]、ついでUnicode 4.0で六十四卦が割り当てられた。このように、Unicode 1.1以前でハングルを記述した文書とUnicode 2.0以降でCJK統合漢字拡張Aを記述した文書には互換性がない{{efn|RFC 3629の [https://datatracker.ietf.org/doc/html/rfc3629#section-5 5. Versions of the standards] でKorean mess（ハングル大移動）について、[https://datatracker.ietf.org/doc/html/rfc3629#section-8 8. MIME registration] でUTF-8にバージョン指定がない理由についての言及がある。}}。JCS委員長の[[芝野耕司]]はUnicodeに日本語の漢字を収録させる議論の中で、ハングル大移動について「韓国のとった滅茶苦茶な行動」と述べている<ref>{{Cite web|和書| url=https://internet.watch.impress.co.jp/www/column/ogata/part2_8.htm | title=小形克宏の「文字の海、ビットの舟」| author=[[小形克宏]] | date=2000-07-20 | publisher=[[INTERNET Watch]] | accessdate=2011-02-24}}</ref>。
+
+=== 日本語環境でのUnicodeの諸問題 ===
+==== YEN SIGN 問題 ====
+{{未検証|section=1|date=2010年7月}}<!-- ここで述べられているのはシフト符号化表現のマイクロソフトコードページでの運用に関する問題ではないか。ISO/IEC 646国別バリアントでナショナルユースの区点をUS-ASCIIにマップすることはない。つまり既存キャラクタセットのマッピングの問題であって、ユニコードの問題ではない。 -->
+
+<!-- 先立ちの[[ASCII]]の文字定義を乗っ取りして、：よくわからない。日本語が母語でない方の文？ -->
+[[Shift JIS]] では [[JIS X 0201]] における（[[日本]]や[[中国]]の[[通貨]]の）[[円記号]] "¥" が 0x5C に置かれている。これを Unicode のマッピングに合わせると YEN SIGN (U+00A5) にマップされる。しかし、0x5C は [[ASCII]] では[[バックスラッシュ]] "{{Backslash}}" に相当し、[[C言語]]などで[[エスケープ文字]]として使われる事から、この文字のコードを変更すると問題が起きる。極端な例として、0x5C が円記号とエスケープ文字の両方の目的で使われているケース（たとえば[[C言語]]の[[printf]]関数で <code>printf("¥¥%d¥n", price);</code> など）も考えられる。
+
+そのため、Unicode を利用するアプリケーションでは、U+007F 以下のコードに関しては移動させないという暗黙のルールができている。
+
+そうなると、Unicode 環境では円記号がバックスラッシュの表示に変わってしまうように思われるが、これは日本語用の[[フォント]]データの 0x5C の位置には円記号の字形を当ててしまうことで対処している。これによって、日本語環境での表示上は 0x5C の位置で円記号を用いることができる。
+
+この問題は日本語環境に限ったことではない。もともと [[ISO 646]] 上では、0x5C を含む数種の文字は自由領域（バリアント）として各国での定義を認めていた。そのため、日本語以外でも ASCII でバックスラッシュに相当するコードに異なる記号を当てているケースが多い。例えば、[[大韓民国|韓国]]では通貨の[[ウォン記号]] (WON SIGN, U+20A9, "{{Unicode|&#x20A9;}}")、[[デンマーク]]や[[ノルウェー]]ではストローク付きO (LATIN CAPITAL LETTER O WITH STROKE, U+00D8, "{{Unicode|[[&#x00D8;]]}}") などである。（後者は後の時代には、0x5C はバックスラッシュのままとし、[[ISO 8859]] シリーズを用いることが一般化した。）
+
+==== 波ダッシュ・全角チルダ問題 ====
+[[JIS X 0221]] 規定の JIS X 0208 と JIS X 0221 の対応表では、[[波ダッシュ]]は WAVE DASH (U+301C, "{{JIS2004フォント|&#x301C;}}") に対応させている。
+
+しかし、[[マイクロソフト]]は Windows の Shift_JIS と Unicode の変換テーブルを作成する際に、JIS X 0208 において 1 区 33 点に割り当てられている波ダッシュ "{{JIS2004フォント|&#x301C;}}" を、Unicode における全角チルダ (FULLWIDTH TILDE, U+FF5E, "&#xFF5E;") に割り当てたため不整合が生じた。
+
+この結果、[[macOS]] 等の JIS X 0221 準拠の Shift_JIS ⇔ Unicode 変換テーブルをもつ処理系と Windows との間で Unicode データをやり取りする場合、[[文字化け]]を起こすことになる。そこで Windows 以外の OS 上で動くアプリケーションの中には、[[Microsoftコードページ932|CP932]] という名前でマイクロソフト仕様の Shift_JIS コード体系を別途用意して対応しているケースが多い。この原因とされている Unicode 仕様書の例示字形の問題に関しては、[[波ダッシュ#Unicodeに関連する問題]]を参照すること。
+
+=====マイクロソフト仕様に起因する問題=====
+上記に加え、マイクロソフト仕様は変換時にも問題が起こる文字を以下に示す。
+{| class="wikitable sortable"
+|-
+! JIS X 0208<br />区点 !! Shift JIS !! JIS X 0208<br />日本語通用名称 !! SJISでデコード !! MS932でデコード<br />(マイクロソフト仕様) !! 関連記事
+|-
+|style="text-align: center"| <code>1-29</code> || style="text-align: center"|<code>0x815c</code> || ダッシュ(全角) || {{font|text={{JIS2004フォント|&#x2014;}}|font=monospace|size=200%}} (<code>U+2014</code>) EM DASH || {{font|text={{JIS2004フォント|&#x2015;}}|font=monospace|size=200%}} (<code>U+2015</code>) HORIZONTAL BAR || [[ダッシュ (記号)#全角ダッシュのマッピング問題|ダッシュ (記号)]]
+|-
+|style="text-align: center"| <code>1-33</code> || style="text-align: center"|<code>0x8160</code> || 波ダッシュ || {{font|text={{JIS2004フォント|&#x301C;}}|font=monospace|size=200%}} (<code>U+301C</code>) WAVE DASH || {{font|text={{JIS2004フォント|&#xFF5E;}}|font=monospace|size=200%}} (<code>U+FF5E</code>) FULLWIDTH TILDE || [[波ダッシュ#Unicodeに関連する問題|波ダッシュ]]、[[チルダ#全角チルダ|全角チルダ]]
+|-
+|style="text-align: center"| <code>1-34</code> || style="text-align: center"|<code>0x8161</code> || 双柱 || {{font|text={{JIS2004フォント|&#x2016;}}|font=monospace|size=200%}} (<code>U+2016</code>) DOUBLE VERTICAL LINE || {{font|text={{JIS2004フォント|&#x2225;}}|font=monospace|size=200%}} (<code>U+2225</code>) PARALLEL TO || [[双柱]]、[[平行記号#文字コードにおける問題|平行記号]]
+|-
+|style="text-align: center"| <code>1-61</code> || style="text-align: center"|<code>0x817c</code> || 負符号、減算記号 || {{font|text={{JIS2004フォント|&#x2212;}}|font=monospace|size=200%}} (<code>U+2212</code>) MINUS SIGN || {{font|text={{JIS2004フォント|&#xFF0D;}}|font=monospace|size=200%}} (<code>U+FF0D</code>) FULLWIDTH HYPHEN-MINUS || [[プラス記号とマイナス記号#マイナス記号|マイナス記号]]、[[ハイフンマイナス]]
+|-
+|style="text-align: center"| <code>1-81</code> || style="text-align: center"|<code>0x8191</code> || セント記号 || {{font|text={{JIS2004フォント|&#x00A2;}}|font=monospace|size=200%}} (<code>U+00A2</code>) CENT SIGN || {{font|text={{JIS2004フォント|&#xFFE0;}}|font=monospace|size=200%}} (<code>U+FFE0</code>) FULLWIDTH CENT SIGN || [[セント (通貨)#符号位置|セント (通貨)]]
+|-
+|style="text-align: center"| <code>1-82</code> || style="text-align: center"|<code>0x8192</code> || ポンド記号 || {{font|text={{JIS2004フォント|&#x00A3;}}|font=monospace|size=200%}} (<code>U+00A3</code>) POUND SIGN || {{font|text={{JIS2004フォント|&#xFFE1;}}|font=monospace|size=200%}} (<code>U+FFE1</code>) FULLWIDTH POUND SIGN || [[£#コンピュータでの扱い|£]]
+|-
+|style="text-align: center"| <code>2-44</code> || style="text-align: center"|<code>0x81ca</code> || 否定 || {{font|text={{JIS2004フォント|&#x00AC;}}|font=monospace|size=200%}} (<code>U+00AC</code>) NOT SIGN || {{font|text={{JIS2004フォント|&#xFFE2;}}|font=monospace|size=200%}} (<code>U+FFE2</code>) FULLWIDTH NOT SIGN || [[否定記号]]
+|}
+このうちセント・ポンド・否定については、IBMのメインフレームではShift_JISを拡張してこれらの半角版をコードポイント 0xFD-0xFF に割り当て、別途JIS X 0208からマップされた位置に全角版を収録していたため、WindowsをIBMメインフレームの端末として用いるケースを想定したといわれている{{要出典|date=2016年4月}}。
+
+なお、[[Microsoft Windows Vista|Windows Vista]] や Microsoft Office 2007 に付属する IME パッドの文字一覧における JIS X 0213 の面区点の表示は、上記の文字についても JIS で規定されているものと同じマッピングを使用している{{要出典|date=2022年5月}}。
+
+== ブロックの一覧 ==
+{{main|ブロック (Unicode)}}
+{| class="toccolours" style="text-align:cnter; padding:1px;margin-left:auto; margin-right:auto;"
+! colspan="7" style="background-color:#ccf;" | 索引
+|- style="text-align:center; font-family:'Osaka−等幅','Osaka-Mono','IPAゴシック','MS ゴシック',monospace;vertical-align: top;"
+|
+[[Unicode一覧 0000-0FFF|0000-0FFF]]<br />
+[[Unicode一覧 1000-1FFF|1000-1FFF]]<br />
+[[Unicode一覧 2000-2FFF|2000-2FFF]]<br />
+[[Unicode一覧 3000-3FFF|3000-3FFF]]<br />
+[[Unicode一覧 4000-4FFF|4000-4FFF]]<br />
+[[Unicode一覧 5000-5FFF|5000-5FFF]]<br />
+[[Unicode一覧 6000-6FFF|6000-6FFF]]<br />
+[[Unicode一覧 7000-7FFF|7000-7FFF]]<br />
+[[Unicode一覧 8000-8FFF|8000-8FFF]]<br />
+[[Unicode一覧 9000-9FFF|9000-9FFF]]<br />
+[[Unicode一覧 A000-AFFF|A000-AFFF]]<br />
+[[Unicode一覧 B000-BFFF|B000-BFFF]]<br />
+[[Unicode一覧 C000-CFFF|C000-CFFF]]<br />
+[[Unicode一覧 D000-DFFF|D000-DFFF]]<br />
+[[Unicode一覧 E000-EFFF|E000-EFFF]]<br />
+[[Unicode一覧 F000-FFFF|F000-FFFF]]
+|
+[[Unicode一覧 10000-10FFF|10000-10FFF]]<br />
+[[Unicode一覧 11000-11FFF|11000-11FFF]]<br />
+[[Unicode一覧 12000-12FFF|12000-12FFF]]<br />
+[[Unicode一覧 13000-13FFF|13000-13FFF]]<br />
+[[Unicode一覧 14000-14FFF|14000-14FFF]]<br />
+[[Unicode一覧 15000-15FFF|15000-15FFF]]<br />
+[[Unicode一覧 16000-16FFF|16000-16FFF]]<br />
+[[Unicode一覧 17000-17FFF|17000-17FFF]]<br />
+[[Unicode一覧 18000-18FFF|18000-18FFF]]<br />
+[[Unicode一覧 19000-19FFF|19000-19FFF]]<br />
+[[Unicode一覧 1A000-1AFFF|1A000-1AFFF]]<br />
+[[Unicode一覧 1B000-1BFFF|1B000-1BFFF]]<br />
+[[Unicode一覧 1C000-1CFFF|1C000-1CFFF]]<br />
+[[Unicode一覧 1D000-1DFFF|1D000-1DFFF]]<br />
+[[Unicode一覧 1E000-1EFFF|1E000-1EFFF]]<br />
+[[Unicode一覧 1F000-1FFFF|1F000-1FFFF]]
+
+|
+[[Unicode一覧 20000-20FFF|20000-20FFF]]<br />
+[[Unicode一覧 21000-21FFF|21000-21FFF]]<br />
+[[Unicode一覧 22000-22FFF|22000-22FFF]]<br />
+[[Unicode一覧 23000-23FFF|23000-23FFF]]<br />
+[[Unicode一覧 24000-24FFF|24000-24FFF]]<br />
+[[Unicode一覧 25000-25FFF|25000-25FFF]]<br />
+[[Unicode一覧 26000-26FFF|26000-26FFF]]<br />
+[[Unicode一覧 27000-27FFF|27000-27FFF]]<br />
+[[Unicode一覧 28000-28FFF|28000-28FFF]]<br />
+[[Unicode一覧 29000-29FFF|29000-29FFF]]<br />
+[[Unicode一覧 2A000-2AFFF|2A000-2AFFF]]<br />
+[[Unicode一覧 2B000-2BFFF|2B000-2BFFF]]<br />
+[[Unicode一覧 2C000-2CFFF|2C000-2CFFF]]<br />
+[[Unicode一覧 2D000-2DFFF|2D000-2DFFF]]<br />
+[[Unicode一覧 2E000-2EFFF|2E000-2EFFF]]<br />
+[[Unicode一覧 2F000-2FFFF|2F000-2FFFF]]
+|
+[[Unicode一覧 30000-30FFF|30000-30FFF]]<br />
+[[Unicode一覧 31000-31FFF|31000-31FFF]]<br />
+[[Unicode一覧 32000-32FFF|32000-32FFF]]<br />
+[[Unicode一覧 33000-33FFF|33000-33FFF]]<br />
+[[Unicode一覧 34000-34FFF|34000-34FFF]]<br />
+[[Unicode一覧 35000-35FFF|35000-35FFF]]<br />
+[[Unicode一覧 36000-36FFF|36000-36FFF]]<br />
+[[Unicode一覧 37000-37FFF|37000-37FFF]]<br />
+[[Unicode一覧 38000-38FFF|38000-38FFF]]<br />
+[[Unicode一覧 39000-39FFF|39000-39FFF]]<br />
+[[Unicode一覧 3A000-3AFFF|3A000-3AFFF]]<br />
+[[Unicode一覧 3B000-3BFFF|3B000-3BFFF]]<br />
+[[Unicode一覧 3C000-3CFFF|3C000-3CFFF]]<br />
+[[Unicode一覧 3D000-3DFFF|3D000-3DFFF]]<br />
+[[Unicode一覧 3E000-3EFFF|3E000-3EFFF]]<br />
+[[Unicode一覧 3F000-3FFFF|3F000-3FFFF]]
+|
+[[Unicode一覧 E0000-E0FFF|E0000-E0FFF]]
+|}
+
+{{Unicode blocks}}
+
+== 脚注 ==
+{{脚注ヘルプ}}
+=== 注釈 ===
+{{Notelist}}
+=== 出典 ===
+{{Reflist|2}}
+
+== 参考文献 ==
+*用語の日本語表記は原則として次にならった。{{Cite web|和書| url = https://www.unicode.org/terminology/term_en_ja.html | title = Unicode Terminology English - Japanese | publisher = Unicode, Inc | accessdate = 2010-01-01}}
+*{{Cite book|others=[[The Unicode Consortium]]|title=The Unicode standard worldwide character encoding, Version 1.0|volume=Vol.1|year=1991|publisher=Addison-Wesley Pub.|isbn=0-201-56788-1|ref=UnicodeConsortium1991}}
+*{{Cite book|others=[[The Unicode Consortium]]|title=The Unicode standard worldwide character encoding, Version 1.0|volume=Vol.2|year=1992|publisher=Addison-Wesley Pub.|isbn=0-201-60845-6|ref=UnicodeConsortium1992}}
+**{{Cite book|others=[[The Unicode Consortium]]|title=The Unicode standard, Version 1.1|year=1993|publisher=|isbn=|ref= UnicodeConsortium1993}}
+**{{Cite book|others=[[The Unicode Consortium]]|title=The Unicode standard, Version 2.0|year=1996|publisher=Addison-Wesley|isbn=0-201-48345-9|ref= UnicodeConsortium1996}}
+**{{Cite book|others=[[The Unicode Consortium]]|title=The Unicode standard, Version 3.0|year=2000|publisher=Addison-Wesley|isbn=0-201-61633-5|ref= UnicodeConsortium2000}} - 付属：CD-ROM。
+**{{Cite book|others=[[The Unicode Consortium]]|title=The Unicode standard, Version 4.0|year=2003|publisher=Addison-Wesley Professional|isbn=0-321-18578-1|ref=UnicodeConsortium2003}} - 付属：CD-ROM。
+**{{Cite book|others=[[The Unicode Consortium]]|title=The Unicode standard, Version 5.0, Fifth Edition|year=2006|publisher=Addison-Wesley Professional|isbn=0-321-48091-0|ref=UnicodeConsortium2006}} - 付属：CD-ROM。
+*{{Cite book|和書|first=トニー|last=グラハム|authorlink=トニー・グラハム|others=[[乾和志]]・[[海老塚徹]]訳、[[関口正裕]]監修|title=Unicode標準入門|year=2001|month=5|publisher=[[翔泳社]]|isbn=4-7981-0030-7|ref=グラハム2001}} - 原タイトル：''Unicode: a primer''。
+*{{Cite book|和書|author=小林龍生|authorlink=小林龍生|year=2011|month=6|title=ユニコード戦記 文字符号の国際標準化バトル|publisher=[[東京電機大学出版局]]|isbn=978-4-501-54970-1|ref=小林2011}}
+*{{Cite book|和書|author=田丸健三郎|authorlink=田丸健三郎|title=UnicodeによるJIS X 0213実装入門 情報システムの新たな日本語処理環境|year=2008|month=8|publisher=[[日経BPソフトプレス]]、[[日経BP出版センター]]（発売）|series=マイクロソフト公式解説書 マイクロソフトITプロフェッショナルシリーズ|isbn=978-4-89100-608-2|ref=田丸2008}}
+*{{Cite book|和書|author=中島靖|authorlink=中島靖|title=日本語文字コード表 Unicode順13652字 For windows, internet|year=1998|month=4|publisher=[[情報管理 (出版社)|情報管理]]、[[星雲社]]（発売）|series=Desk side series|isbn=4-7952-3094-3|ref=中島1998}}
+*{{Cite book|和書|author=Microsoft Corporation|authorlink=マイクロソフト|others=アスキー書籍編集部ほか訳|title=公式Win32 APIリファレンス|year=1999|month=10|publisher=[[アスキー (企業)|アスキー]]|series=ASCII books|isbn=4-7561-3237-5|volume=v.4|ref=マイクロソフト1999}}
+*{{Cite book|和書|editor=ユニコード漢字情報辞典編集委員会|title=ユニコード漢字情報辞典 Sanseido's unicode kanji information dictionary|year=2000|month=6|publisher=[[三省堂]]|isbn=4-385-13690-4|ref=ユニコード漢字情報辞典編集委員会2000}}
+*{{Cite book|和書|first=Ken|last=Lunde|authorlink=ケン・ランディ|others=[[小松章]]・[[逆井克己]]訳|year=2002|month=12|title=CJKV日中韓越情報処理|publisher=オライリー・ジャパン|isbn=4-87311-108-0|ref=ランディ2002}}
+
+== 関連項目 ==
+* [[ISO/IEC 10646]]
+* [[OpenType]]
+* [[Unicode一覧]]
+* [[Unicode一覧表]]
+* [[ブロック (Unicode)]]
+* [[Unicode参照アルゴリズム]]
+* [[機種依存文字]]
+* [[国際化と地域化]]
+* [[中西亮]]
+* [[文字コード]]
+* [[異体字セレクタ]]
+
+== 外部リンク ==
+* [https://www.unicode.org/ The Unicode Consortium] {{en icon}}
+* [https://decodeunicode.org/ DecodeUnicode] {{en icon}}
+* [https://www.babelstone.co.uk/Software/BabelMap.html BabelMap] - Unicode Character Map for Windows
+
+{{文字コード}}
+{{Normdaten}}
+
+{{DEFAULTSORT:UNICODE}}
+[[Category:Unicode|*]]

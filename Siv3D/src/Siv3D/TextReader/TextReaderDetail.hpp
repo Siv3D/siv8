@@ -95,9 +95,6 @@ namespace s3d
 		bool readLineUTF16BE(std::string& line);
 
 		[[nodiscard]]
-		bool readLinesUTF8(Array<std::string>& lines);
-
-		[[nodiscard]]
 		bool readLinesUTF16LE(Array<std::string>& lines);
 
 		[[nodiscard]]

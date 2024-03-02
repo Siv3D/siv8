@@ -520,9 +520,6 @@
 //
 ////////////////////////////////////////////////////////////////
 
-// ログ出力レベル | Log output level
-# include <Siv3D/LogLevel.hpp>
-
 // ログの種類 | The type of the log message
 # include <Siv3D/LogType.hpp>
 
