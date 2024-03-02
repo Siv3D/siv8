@@ -29,7 +29,6 @@
 //
 // doctest
 //
-# define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 # if SIV3D_COMPILER(APPLECLANG) // Xcode では色付けを無効化
 #   define DOCTEST_CONFIG_COLORS_NONE
 # endif

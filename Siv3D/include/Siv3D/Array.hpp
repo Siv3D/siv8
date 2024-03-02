@@ -956,12 +956,13 @@ namespace s3d
 	//	[[nodiscard]]
 	//	String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const;
 
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @param f 
-	//	/// @return 
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
-	//	auto map(Fty f) const;
+		/// @brief 各要素に関数を適用した戻り値からなる新しい配列を返します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @return 各要素に関数を適用した戻り値からなる新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr auto map(Fty f) const requires std::invocable<Fty, value_type>;
 
 	//	/// @brief 条件を満たす要素が存在しないかを返します。
 	//	/// @tparam Fty 条件を記述した関数の型

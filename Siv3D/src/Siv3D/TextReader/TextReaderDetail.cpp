@@ -20,14 +20,14 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static Array<std::string> SplitLines(const std::string& s)
+		static void SplitLines(const std::string& s, Array<std::string>& lines)
 		{
+			lines.clear();
+
 			if (s.empty())
 			{
-				return{};
+				return;
 			}
-
-			Array<std::string> result;
 
 			size_t start = 0;
 
@@ -35,14 +35,36 @@ namespace s3d
 			{
 				if (s[i] == '\n')
 				{
-					result.push_back(s.substr(start, (i - start)));
+					lines.push_back(s.substr(start, (i - start)));
 					start = (i + 1);
 				}
 			}
 
-			result.push_back(s.substr(start));
+			lines.push_back(s.substr(start));
+		}
 
-			return result;
+		[[nodiscard]]
+		static void SplitLines(const std::string& s, Array<String>& lines)
+		{
+			lines.clear();
+
+			if (s.empty())
+			{
+				return;
+			}
+
+			size_t start = 0;
+
+			for (size_t i = 0; i < s.length(); ++i)
+			{
+				if (s[i] == '\n')
+				{
+					lines.push_back(Unicode::FromUTF8(s.substr(start, (i - start))));
+					start = (i + 1);
+				}
+			}
+
+			lines.push_back(Unicode::FromUTF8(s.substr(start)));
 		}
 	}
 
@@ -239,7 +261,7 @@ namespace s3d
 				return false;
 			}
 
-			lines = SplitLines(s8);
+			SplitLines(s8, lines);
 
 			return true;
 		}
@@ -249,43 +271,60 @@ namespace s3d
 	{
 		lines.clear();
 
-		if (not m_info.isOpen)
+		if ((m_info.encoding == TextEncoding::UTF16LE)
+			|| (m_info.encoding == TextEncoding::UTF16BE))
 		{
-			return false;
-		}
-
-		String line;
-
-		bool eof = true;
-
-		for (;;)
-		{
-			char32 codePoint;
-
-			if (not readCodePoint(codePoint))
+			if (not m_info.isOpen)
 			{
-				if (not eof)
+				return false;
+			}
+
+			String line;
+
+			bool eof = true;
+
+			for (;;)
+			{
+				char32 codePoint;
+
+				if (not readCodePoint(codePoint))
 				{
-					lines.push_back(std::move(line));
+					if (not eof)
+					{
+						lines.push_back(std::move(line));
+					}
+
+					break;
 				}
 
-				break;
+				eof = false;
+
+				if ((codePoint == U'\n') || (codePoint == U'\0'))
+				{
+					lines.push_back(line);
+					line.clear();
+				}
+				else if (codePoint != U'\r')
+				{
+					line.push_back(codePoint);
+				}
 			}
 
-			eof = false;
-
-			if ((codePoint == U'\n') || (codePoint == U'\0'))
-			{
-				lines.push_back(line);
-				line.clear();
-			}
-			else if (codePoint != U'\r')
-			{
-				line.push_back(codePoint);
-			}
+			return (not eof);
 		}
+		else
+		{
+			std::string s8;
 
-		return (not eof);
+			if (not readAll(s8))
+			{
+				return false;
+			}
+
+			SplitLines(s8, lines);
+
+			return true;
+		}
 	}
 
 	bool TextReader::TextReaderDetail::readAll(std::string& s)
