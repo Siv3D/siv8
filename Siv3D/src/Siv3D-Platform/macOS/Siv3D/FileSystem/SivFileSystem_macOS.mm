@@ -12,7 +12,6 @@
 # include <sys/stat.h>
 # include <unistd.h>
 # include <mach-o/dyld.h>
-# include <boost/filesystem.hpp>
 # include <Foundation/Foundation.h>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
@@ -22,18 +21,6 @@ namespace s3d
 {
 	namespace detail
 	{
-		[[nodiscard]]
-		inline static boost::filesystem::path ToPath(const FilePathView path)
-		{
-			return boost::filesystem::path{ Unicode::ToUTF8(path) };
-		}
-	
-		[[nodiscard]]
-		inline static boost::filesystem::file_status GetStatus(const FilePathView path)
-		{
-			return boost::filesystem::status(ToPath(path));
-		}
-	
 		[[nodiscard]]
 		static bool GetStat(const FilePathView path, struct stat& s)
 		{
@@ -266,22 +253,7 @@ namespace s3d
 			return (IsResourcePath(path) && detail::Exists(path));
 		}
 	
-		FilePath FullPath(const FilePathView path)
-		{
-			if (path.isEmpty())
-			{
-				return{};
-			}
-			
-			FilePath fullpath = U"[Siv3D ToDo: macOS FileSystem::FullPath() unimplemented]"; //Unicode::FromUTF8(boost::filesystem::weakly_canonical(detail::ToPath(path)).string());
-			
-			if (detail::IsDirectory(fullpath) && (not fullpath.ends_with(U'/')))
-			{
-				fullpath.push_back(U'/');
-			}
-			
-			return fullpath;
-		}
+
 	
 	
 	

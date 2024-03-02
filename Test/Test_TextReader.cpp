@@ -35,7 +35,7 @@ TEST_CASE("TextReader.encoding")
 		REQUIRE(reader.encoding() == TextEncoding::UTF8_NO_BOM);
 	}
 }
-/*
+
 TEST_CASE("TextReader.path")
 {
 	REQUIRE(TextReader{}.encoding() == TextEncoding::UTF8_NO_BOM);
@@ -60,7 +60,7 @@ TEST_CASE("TextReader.path")
 		REQUIRE(reader.path().isEmpty());
 	}
 }
-*/
+
 TEST_CASE("TextReader.isOpen")
 {
 	REQUIRE(TextReader{}.isOpen() == false);

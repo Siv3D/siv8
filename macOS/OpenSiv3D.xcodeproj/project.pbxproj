@@ -440,7 +440,6 @@
 		F9636C6F2B90D70500257BA7 /* BinaryReaderDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9636A272B90D70400257BA7 /* BinaryReaderDetail.cpp */; };
 		F9636C702B90D70500257BA7 /* CConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9636A292B90D70400257BA7 /* CConsole.cpp */; };
 		F9636C712B90D70500257BA7 /* CConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9636A2A2B90D70400257BA7 /* CConsole.hpp */; };
-		F9636C722B90D70500257BA7 /* mimalloc-new-delete.h in Headers */ = {isa = PBXBuildFile; fileRef = F9636A2D2B90D70400257BA7 /* mimalloc-new-delete.h */; };
 		F9636C732B90D70500257BA7 /* SivVector2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9636A302B90D70400257BA7 /* SivVector2D.cpp */; };
 		F9636C742B90D70500257BA7 /* SivBoolToString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9636A322B90D70400257BA7 /* SivBoolToString.cpp */; };
 		F9636C752B90D70500257BA7 /* SivParseBool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9636A342B90D70400257BA7 /* SivParseBool.cpp */; };
@@ -976,7 +975,6 @@
 		F9636A272B90D70400257BA7 /* BinaryReaderDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryReaderDetail.cpp; sourceTree = "<group>"; };
 		F9636A292B90D70400257BA7 /* CConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CConsole.cpp; sourceTree = "<group>"; };
 		F9636A2A2B90D70400257BA7 /* CConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CConsole.hpp; sourceTree = "<group>"; };
-		F9636A2D2B90D70400257BA7 /* mimalloc-new-delete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mimalloc-new-delete.h"; sourceTree = "<group>"; };
 		F9636A302B90D70400257BA7 /* SivVector2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVector2D.cpp; sourceTree = "<group>"; };
 		F9636A322B90D70400257BA7 /* SivBoolToString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBoolToString.cpp; sourceTree = "<group>"; };
 		F9636A342B90D70400257BA7 /* SivParseBool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivParseBool.cpp; sourceTree = "<group>"; };
@@ -1071,6 +1069,7 @@
 		F9636ACB2B90D70400257BA7 /* xxhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xxhash.h; sourceTree = "<group>"; };
 		F9ED1F612B93084700028F83 /* TextReader.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextReader.ipp; sourceTree = "<group>"; };
 		F9ED1F652B930D8E00028F83 /* Test_TextReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextReader.cpp; sourceTree = "<group>"; };
+		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1096,6 +1095,7 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */,
 				F9190F272B8EEDFB00667E3B /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -1931,17 +1931,8 @@
 		F9636A2B2B90D70400257BA7 /* ThirdParty-prebuilt */ = {
 			isa = PBXGroup;
 			children = (
-				F9636A2C2B90D70400257BA7 /* mimalloc */,
 			);
 			path = "ThirdParty-prebuilt";
-			sourceTree = "<group>";
-		};
-		F9636A2C2B90D70400257BA7 /* mimalloc */ = {
-			isa = PBXGroup;
-			children = (
-				F9636A2D2B90D70400257BA7 /* mimalloc-new-delete.h */,
-			);
-			path = mimalloc;
 			sourceTree = "<group>";
 		};
 		F9636A2E2B90D70400257BA7 /* Siv3D */ = {
@@ -2658,7 +2649,6 @@
 				F9636B0B2B90D70400257BA7 /* Error.hpp in Headers */,
 				F9636CAA2B90D70500257BA7 /* Siv3DComponent.hpp in Headers */,
 				F9636CB82B90D70500257BA7 /* wyhash.h in Headers */,
-				F9636C722B90D70500257BA7 /* mimalloc-new-delete.h in Headers */,
 				F9636B372B90D70400257BA7 /* FloatFormatter.ipp in Headers */,
 				F9636B4C2B90D70500257BA7 /* AlignedAllocator.ipp in Headers */,
 				F9636BEF2B90D70500257BA7 /* dbsad.h in Headers */,

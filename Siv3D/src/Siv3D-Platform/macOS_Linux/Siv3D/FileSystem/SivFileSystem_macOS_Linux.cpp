@@ -19,6 +19,12 @@ namespace s3d
 	namespace detail
 	{
 		[[nodiscard]]
+		inline static std::filesystem::path ToPath(const FilePathView path)
+		{
+			return std::filesystem::path{ Unicode::ToUTF8(path) };
+		}
+
+		[[nodiscard]]
 		static bool GetStat(const FilePathView _path, struct stat& s)
 		{
 			const std::string path = Unicode::ToUTF8(FilePath{ _path }.replaced(U'\\', U'/'));
@@ -42,6 +48,23 @@ namespace s3d
 
 	namespace FileSystem
 	{
+		FilePath FullPath(const FilePathView path)
+		{
+			if (path.isEmpty())
+			{
+				return{};
+			}
+
+			FilePath fullpath = Unicode::FromUTF8(std::filesystem::weakly_canonical(detail::ToPath(path)).string());
+			
+			if (IsDirectory(fullpath) && (not fullpath.ends_with(U'/')))
+			{
+				fullpath.push_back(U'/');
+			}
+			
+			return fullpath;
+		}
+	
 		Optional<DateTime> CreationTime(const FilePathView path)
 		{
 			struct stat s;

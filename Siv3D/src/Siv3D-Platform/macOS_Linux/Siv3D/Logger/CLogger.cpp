@@ -24,8 +24,8 @@ namespace s3d
 			": [warning] ",
 			": [log] ",
 			": [info] ",
+			": [debug] ",
 			": [trace] ",
-			": [verbose] ",
 		};
 	}
 
@@ -37,17 +37,13 @@ namespace s3d
 		std::string output;
 		output.reserve(s.size() + 1);
 		output.append(s);
-		output.push_back('\n');
 		
 		writeImpl(output);
 	}
 
 	void CLogger::write(const StringView s)
 	{
-		std::string output = Unicode::ToUTF8(s);
-		output.push_back('\n');
-		
-		writeImpl(output);
+		writeImpl(Unicode::ToUTF8(s));
 	}
 
 	void CLogger::write(const LogType type, const std::string_view s)
@@ -61,7 +57,6 @@ namespace s3d
 		output.append(std::to_string(Time::GetMillisec()));
 		output.append(detail::LogTypeStrings[FromEnum(type)]);
 		output.append(s);
-		output.push_back('\n');
 
 		writeImpl(output);
 	}
@@ -77,7 +72,6 @@ namespace s3d
 		output.append(std::to_string(Time::GetMillisec()));
 		output.append(detail::LogTypeStrings[FromEnum(type)]);
 		output.append(Unicode::ToUTF8(s));
-		output.push_back('\n');
 
 		writeImpl(output);
 	}
