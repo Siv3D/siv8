@@ -88,6 +88,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextEncoding.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextReader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ThousandSeparate.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TupleFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Unicode.ipp" />
@@ -115,7 +116,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HeterogeneousLookupHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Logger.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LoggerBuffer.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\LogLevel.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MapFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MD5Value.hpp" />

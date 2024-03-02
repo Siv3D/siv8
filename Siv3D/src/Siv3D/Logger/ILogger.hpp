@@ -16,7 +16,6 @@
 namespace s3d
 {
 	enum class LogType : uint8;
-	enum class LogLevel : uint8;
 
 	class SIV3D_NOVTABLE ISiv3DLogger
 	{

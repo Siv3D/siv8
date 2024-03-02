@@ -813,6 +813,31 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	map
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr auto Array<Type, Allocator>::map(Fty f) const requires std::invocable<Fty, value_type>
+	{
+		using result_value_type = std::decay_t<std::invoke_result_t<Fty, value_type>>;
+
+		Array<result_value_type> result;
+
+		result.reserve(m_container.size());
+
+		for (const auto& value : m_container)
+		{
+			result.push_back(f(value));
+		}
+
+		return result;
+	}
+
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	sort / sorted
 	//
 	////////////////////////////////////////////////////////////////

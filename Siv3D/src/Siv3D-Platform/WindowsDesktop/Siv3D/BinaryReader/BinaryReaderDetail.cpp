@@ -23,7 +23,7 @@ namespace s3d
 
 	bool BinaryReader::BinaryReaderDetail::open(const FilePathView path)
 	{
-		LOG_TRACE(fmt::format("BinaryReader::BinaryReaderDetail::open(\"{0}\")", path));
+		LOG_DEBUG(fmt::format("BinaryReader::BinaryReaderDetail::open(\"{0}\")", path));
 
 		close();
 

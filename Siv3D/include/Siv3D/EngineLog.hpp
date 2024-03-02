@@ -46,9 +46,10 @@ namespace s3d
 #	define LOG_FAIL(S)			s3d::Internal::OutputEngineLog(s3d::LogType::Fail,    S)
 #	define LOG_WARN(S)			s3d::Internal::OutputEngineLog(s3d::LogType::Warning, S)
 #	define LOG_INFO(S)			s3d::Internal::OutputEngineLog(s3d::LogType::Info,    S)
-#	define LOG_TRACE(S)			s3d::Internal::OutputEngineLog(s3d::LogType::Trace,   S)
+#	define LOG_DEBUG(S)			s3d::Internal::OutputEngineLog(s3d::LogType::Debug,   S)
+#	define LOG_SCOPED_DEBUG(S)	const s3d::Internal::ScopedEngineLog s3d_scoped_trace{ s3d::LogType::Debug, S }
+#	define LOG_TRACE(S)			s3d::Internal::OutputEngineLog(s3d::LogType::Trace,	  S)
 #	define LOG_SCOPED_TRACE(S)	const s3d::Internal::ScopedEngineLog s3d_scoped_trace{ s3d::LogType::Trace, S }
-#	define LOG_VERBOSE(S)		s3d::Internal::OutputEngineLog(s3d::LogType::Verbose, S)
 #	define LOG_TEST(S)			s3d::Internal::OutputEngineLog(s3d::LogType::App,	  S)
 
 # else
@@ -57,8 +58,9 @@ namespace s3d
 #	define LOG_FAIL(S)			s3d::Internal::OutputEngineLog(s3d::LogType::Fail,		S)
 #	define LOG_WARN(S)			s3d::Internal::OutputEngineLog(s3d::LogType::Warning,	S)
 #	define LOG_INFO(S)			s3d::Internal::OutputEngineLog(s3d::LogType::Info,		S)
+#	define LOG_DEBUG(S)			((void)0)
+#	define LOG_SCOPED_DEBUG(S)	((void)0)
 #	define LOG_TRACE(S)			((void)0)
 #	define LOG_SCOPED_TRACE(S)	((void)0)
-#	define LOG_VERBOSE(S)		((void)0)
 
 # endif

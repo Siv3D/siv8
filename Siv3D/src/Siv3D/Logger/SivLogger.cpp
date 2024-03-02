@@ -12,7 +12,6 @@
 # include <Siv3D/Logger.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/LogType.hpp>
-# include <Siv3D/LogLevel.hpp>
 # include <Siv3D/Logger/ILogger.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -155,12 +154,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void Logger_impl::setOutputLevel(const LogLevel logLevel) const noexcept
+		void Logger_impl::setOutputLevel(const LogType logType) const noexcept
 		{
-			const LogType outputLevel = ((logLevel == LogLevel::Verbose) ? LogType::Verbose
-				: (logLevel == LogLevel::Trace) ? LogType::Trace : LogType::Info);
-
-			SIV3D_ENGINE(Logger)->setOutputLevel(outputLevel);
+			SIV3D_ENGINE(Logger)->setOutputLevel(logType);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -170,12 +166,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		LogLevel Logger_impl::getOutputLevel() const noexcept
+		LogType Logger_impl::getOutputLevel() const noexcept
 		{
-			const LogType outputLevel = SIV3D_ENGINE(Logger)->getOutputLevel();
-
-			return ((outputLevel == LogType::Verbose) ? LogLevel::Verbose
-				: (outputLevel == LogType::Trace) ? LogLevel::Trace : LogLevel::Default);
+			return SIV3D_ENGINE(Logger)->getOutputLevel();
 		}
 	}
 }

@@ -11,9 +11,32 @@
 
 # include <Siv3D/TextEncoding.hpp>
 # include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
+	namespace detail
+	{
+		static constexpr std::array TextEncodingStrings =
+		{
+			U"UTF8_NO_BOM"_sv,
+			U"UTF8_WITH_BOM"_sv,
+			U"UTF16LE"_sv,
+			U"UTF16BE"_sv,
+		};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const TextEncoding value)
+	{
+		formatData.string.append(detail::TextEncodingStrings[FromEnum(value)]);
+	}
+
 	namespace Unicode
 	{
 		////////////////////////////////////////////////////////////////
@@ -35,11 +58,7 @@ namespace s3d
 			}
 
 			uint8 bom[3]{};
-
-			if (not reader.lookahead(bom))
-			{
-				return TextEncoding::UTF8_NO_BOM;
-			}
+			reader.lookahead(bom);
 
 			if ((bom[0] == 0xEF) && (bom[1] == 0xBB) && (bom[2] == 0xBF))
 			{

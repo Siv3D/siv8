@@ -12,6 +12,7 @@
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/String.hpp>
 # include <ThirdParty/simdutf/simdutf.h>
+# include "../UnicodeConverter/UnicodeUtility.hpp"
 
 namespace s3d
 {
@@ -178,8 +179,26 @@ namespace s3d
 
 		std::string ToUTF8(const StringView s)
 		{
-			const size_t requiredLength = simdutf::utf8_length_from_utf32(s.data(), s.size());
+		// macOS で simdutf を使うと時々謎のクラッシュが起こるため回避
+		# if SIV3D_PLATFORM(MACOS)
+			
+			std::string result(detail::UTF8_Length(s), '0');
 
+			const char32* pSrc = s.data();
+			const char32* const pSrcEnd = pSrc + s.size();
+			char8* pDst = &result[0];
+
+			while (pSrc != pSrcEnd)
+			{
+				detail::UTF8_Encode(&pDst, *pSrc++);
+			}
+
+			return result;
+			
+		# else
+			
+			const size_t requiredLength = simdutf::utf8_length_from_utf32(s.data(), s.size());
+			
 			std::string result;
 
 			result.resize_and_overwrite(requiredLength, [&](char* buf, size_t)
@@ -188,6 +207,8 @@ namespace s3d
 				});
 
 			return result;
+		
+		# endif
 		}
 			
 		////////////////////////////////////////////////////////////////

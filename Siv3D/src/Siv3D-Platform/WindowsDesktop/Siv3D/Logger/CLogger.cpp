@@ -12,7 +12,6 @@
 # include <Siv3D/Windows/MinWindows.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Time.hpp>
-# include <Siv3D/LogLevel.hpp>
 # include "CLogger.hpp"
 
 namespace s3d
@@ -26,8 +25,8 @@ namespace s3d
 			L": [warning] ",
 			L": [log] ",
 			L": [info] ",
+			L": [debug] ",
 			L": [trace] ",
-			L": [verbose] ",
 		};
 	}
 
