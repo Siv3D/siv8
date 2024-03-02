@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <atomic>
 # include <mutex>
 # include <Siv3D/Logger/ILogger.hpp>
 # include <Siv3D/LogType.hpp>
