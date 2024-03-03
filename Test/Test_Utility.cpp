@@ -24,7 +24,7 @@ enum Number : int32
 	Three = 3,
 };
 
-enum class Color : uint8
+enum class ColorType : uint8
 {
 	Red,
 	Green,
@@ -164,12 +164,12 @@ TEST_CASE("Utility")
 		static_assert(FromEnum(One) == 1);
 		static_assert(FromEnum(Two) == 2);
 		static_assert(FromEnum(Three) == 3);
-		static_assert(FromEnum(Color::Red) == 0);
-		static_assert(FromEnum(Color::Green) == 1);
-		static_assert(FromEnum(Color::Blue) == 2);
+		static_assert(FromEnum(ColorType::Red) == 0);
+		static_assert(FromEnum(ColorType::Green) == 1);
+		static_assert(FromEnum(ColorType::Blue) == 2);
 
 		static_assert(std::is_same_v<decltype(FromEnum(One)), int32>);
-		static_assert(std::is_same_v<decltype(FromEnum(Color::Red)), uint8>);
+		static_assert(std::is_same_v<decltype(FromEnum(ColorType::Red)), uint8>);
 	}
 
 	SUBCASE("ToEnum")
@@ -177,12 +177,12 @@ TEST_CASE("Utility")
 		static_assert(ToEnum<Number>(1) == One);
 		static_assert(ToEnum<Number>(2) == Two);
 		static_assert(ToEnum<Number>(3) == Three);
-		static_assert(ToEnum<Color>(0) == Color::Red);
-		static_assert(ToEnum<Color>(1) == Color::Green);
-		static_assert(ToEnum<Color>(2) == Color::Blue);
+		static_assert(ToEnum<ColorType>(0) == ColorType::Red);
+		static_assert(ToEnum<ColorType>(1) == ColorType::Green);
+		static_assert(ToEnum<ColorType>(2) == ColorType::Blue);
 
 		static_assert(std::is_same_v<decltype(ToEnum<Number>(1)), Number>);
-		static_assert(std::is_same_v<decltype(ToEnum<Color>(0)), Color>);
+		static_assert(std::is_same_v<decltype(ToEnum<ColorType>(0)), ColorType>);
 	}
 
 	SUBCASE("IsOdd")

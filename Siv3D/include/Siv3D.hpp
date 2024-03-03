@@ -479,7 +479,7 @@
 # include <Siv3D/TextEncoding.hpp>
 
 // 読み込み専用テキストファイル | Text file reader
-# include <Siv3D/TextReader.hpp> // ToDo
+# include <Siv3D/TextReader.hpp>
 
 //// 書き込み専用テキストファイル | Text file writer
 //# include <Siv3D/TextWriter.hpp>
@@ -550,8 +550,35 @@
 # include <Siv3D/FastMath.hpp>
 
 
+////////////////////////////////////////////////////////////////
+//
+//	ノイズ | Noise
+//
+////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////
+//
+//	色 | Color
+//
+////////////////////////////////////////////////////////////////
 
+// 色 | Colors
+# include <Siv3D/ColorHSV.hpp> // ToDo
+
+// 色 (uint8 x 4) | Color (uint8 * 4)
+# include <Siv3D/Color.hpp> // ToDo
+
+// 色 (double * 4) | Color (double * 4)
+# include <Siv3D/ColorF.hpp> // ToDo
+
+// HSV カラー | HSV color
+# include <Siv3D/HSV.hpp> // ToDo
+
+// 色定数 | Color constants
+# include <Siv3D/Palette.hpp> // ToDo
+
+//// カラーマップ | Colormap
+//# include <Siv3D/Colormap.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

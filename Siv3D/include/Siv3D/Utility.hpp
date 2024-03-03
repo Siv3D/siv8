@@ -20,8 +20,10 @@
 //
 //	Scalar Min(Scalar a, Scalar b);
 //	const Type& Min(const Type& a, const Type& b);
+//	Type Min(std::initializer_list<Type> values);
 //	Scalar Max(Scalar a, Scalar b);
 //	const Type& Max(const Type& a, const Type& b);
+//	Type Max(std::initializer_list<Type> values);
 //	Scalar Clamp(Scalar v, Scalar min, Scalar max);
 //	Type& Clamp(const Type& v, const Type& min, const Type& max);
 //	bool InRange(Scalar v, Scalar min, Scalar max);
@@ -62,6 +64,14 @@ namespace s3d
 	[[nodiscard]]
 	constexpr const Type& Min(const Type& a, const Type& b) noexcept(noexcept(b < a));
 
+	/// @brief 渡された初期化リストの中で最小の値を返します。 | Returns the least of the values in initializer list.
+	/// @tparam Type 比較する値の型
+	/// @param values 比較する値の初期化リスト | Initializer list with the values to compare 
+	/// @return 初期化リストの中で最小大の値。複数が等しい場合はその中で最も左の値 | The least value in values. If several values are equivalent to the least, returns the leftmost one
+	template <class Type>
+	[[nodiscard]]
+	constexpr Type Min(std::initializer_list<Type> values);
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Max
@@ -81,6 +91,14 @@ namespace s3d
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
 	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b));
+
+	/// @brief 渡された初期化リストの中で最大の値を返します。 | Returns the greatest of the values in initializer list.
+	/// @tparam Type 比較する値の型
+	/// @param values 比較する値の初期化リスト | Initializer list with the values to compare
+	/// @return 初期化リストの中で最大の値。複数が等しい場合はその中で最も左の値 | The greatest value in values. If several values are equivalent to the greatest, returns the leftmost one
+	template <class Type>
+	[[nodiscard]]
+	constexpr Type Max(std::initializer_list<Type> values);
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -21,6 +21,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Blob.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BoolToString.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Char.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Color.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColorF.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColorHSV.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Common.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CompilerVersion.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Concepts.hpp" />
@@ -40,6 +43,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BoolArray.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Byte.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Char.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Color.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ColorF.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Console.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConsoleBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Date.ipp" />
@@ -50,6 +55,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Endian.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\EscapedFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HardwareRNG.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\HSV.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MapFormatter.ipp" />
@@ -114,6 +120,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HashSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashTable.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HeterogeneousLookupHelper.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\HSV.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Logger.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LoggerBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp" />
@@ -122,6 +129,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OrderedSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OrderedTable.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Palette.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Parse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ParseFloat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PCG64.hpp" />
