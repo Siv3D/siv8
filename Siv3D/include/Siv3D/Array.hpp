@@ -20,12 +20,18 @@
 namespace s3d
 {
 	template <class Type, class Allocator>
-	class Array;	
+	class Array;
 
 	template <class Type>
-	concept HasAsArray = requires(Type t)
+	concept ArrayLike = requires(Type&& t)
 	{
-		{ t.asArray() } -> std::convertible_to<Array<typename Type::value_type, std::allocator<typename Type::value_type>>>;
+		Array<typename std::remove_cvref_t<Type>::value_type, typename std::remove_cvref_t<Type>::allocator_type>{ std::forward<Type>(t) };
+	};
+
+	template <class Type>
+	concept HasAsArray = requires(Type&& t)
+	{
+		{ std::forward<Type>(t).asArray() } -> ArrayLike;
 	};
 
 	////////////////////////////////////////////////////////////////
