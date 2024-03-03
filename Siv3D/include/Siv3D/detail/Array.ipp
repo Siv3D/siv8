@@ -777,7 +777,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr bool Array<Type, Allocator>::all(Fty f) const requires std::predicate<Fty, value_type>
+	constexpr bool Array<Type, Allocator>::all(Fty f) const requires std::predicate<Fty, const value_type&>
 	{
 		return std::all_of(m_container.begin(), m_container.end(), f);
 	}
@@ -790,7 +790,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr bool Array<Type, Allocator>::any(Fty f) const requires std::predicate<Fty, value_type>
+	constexpr bool Array<Type, Allocator>::any(Fty f) const requires std::predicate<Fty, const value_type&>
 	{
 		return std::any_of(m_container.begin(), m_container.end(), f);
 	}

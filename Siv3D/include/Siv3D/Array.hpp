@@ -768,7 +768,7 @@ namespace s3d
 		/// @return 全ての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty, value_type>;
+		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -782,7 +782,7 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty, value_type>;
+		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
