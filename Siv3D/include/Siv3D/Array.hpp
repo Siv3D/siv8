@@ -197,7 +197,7 @@ namespace s3d
 		/// @tparam Fty ジェネレータ関数の型
 		/// @param size 作成する配列の要素数
 		/// @param generator ジェネレータ関数
-		template <class Fty> requires (std::invocable<Fty> && std::same_as<std::invoke_result_t<Fty>, Type>)
+		template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
 		[[nodiscard]]
 		Array(size_type size, Arg::generator_<Fty> generator);
 
@@ -1448,7 +1448,7 @@ namespace s3d
 		/// @param size 
 		/// @param generator 
 		/// @return 
-		template <class Fty> requires (std::invocable<Fty>&& std::same_as<std::invoke_result_t<Fty>, Type>)
+		template <class Fty> requires (std::invocable<Fty>&& std::convertible_to<std::invoke_result_t<Fty>, Type>)
 		[[nodiscard]]
 		static Array Generate(size_type size, Fty generator);
 
