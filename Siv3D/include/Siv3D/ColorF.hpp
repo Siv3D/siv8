@@ -64,11 +64,11 @@ namespace s3d
 		[[nodiscard]]
 		constexpr ColorF(Color rgb, double _a) noexcept;
 
-		[[nodiscard]]
-		ColorF(const HSV& hsva) noexcept;
+		//[[nodiscard]]
+		//ColorF(const HSV& hsva) noexcept;
 
-		[[nodiscard]]
-		ColorF(const HSV& hsv, double _a) noexcept;
+		//[[nodiscard]]
+		//ColorF(const HSV& hsv, double _a) noexcept;
 
 		[[nodiscard]]
 		explicit constexpr ColorF(StringView code) noexcept;
@@ -77,16 +77,16 @@ namespace s3d
 		constexpr double elem(size_t index) const noexcept;
 
 		[[nodiscard]]
-		double* getPointer() noexcept;
+		constexpr double* getPointer() noexcept;
 
 		[[nodiscard]]
-		const double* getPointer() const noexcept;
+		constexpr const double* getPointer() const noexcept;
 
 		constexpr ColorF& operator =(const ColorF&) noexcept = default;
 
 		constexpr ColorF& operator =(Color color) noexcept;
 
-		ColorF& operator =(const HSV& hsva) noexcept;
+		//ColorF& operator =(const HSV& hsva) noexcept;
 
 		[[nodiscard]]
 		constexpr ColorF operator +(const ColorF& rgb) const noexcept;
@@ -347,9 +347,6 @@ namespace s3d
 
 	[[nodiscard]]
 	inline constexpr ColorF AlphaF(double alpha) noexcept;
-
-	[[nodiscard]]
-	inline constexpr ColorF Transparency(double transparency) noexcept;
 }
 
 //template <>

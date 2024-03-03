@@ -200,11 +200,43 @@ namespace s3d
 				<< value.a << CharType(')');
 		}
 
-		//template <class CharType>
-		//friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Color& value)
-		//{
+		template <class CharType>
+		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Color& value)
+		{
+			CharType unused;
+			input >> unused;
 
-		//}
+			if (unused == CharType('#'))
+			{
+				String code;
+				input >> code;
+				value = Color(U'#' + code);
+			}
+			else
+			{
+				uint32 cols[4];
+				input
+					>> cols[0] >> unused
+					>> cols[1] >> unused
+					>> cols[2] >> unused;
+
+				if (unused == CharType(','))
+				{
+					input >> cols[3] >> unused;
+				}
+				else
+				{
+					cols[3] = 255;
+				}
+
+				value.r = static_cast<uint8>(cols[0]);
+				value.g = static_cast<uint8>(cols[1]);
+				value.b = static_cast<uint8>(cols[2]);
+				value.a = static_cast<uint8>(cols[3]);
+			}
+
+			return input;
+		}
 
 		friend void Formatter(FormatData& formatData, const Color& value);
 	};
