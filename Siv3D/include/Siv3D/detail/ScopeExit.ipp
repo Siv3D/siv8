@@ -12,7 +12,7 @@
 # pragma once
 
 namespace s3d
-{		
+{
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -20,18 +20,28 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <detail::ExitFunction ExitFunction>
-	constexpr ScopeExit<ExitFunction>::ScopeExit(ScopeExit&& other) noexcept(std::is_nothrow_move_constructible_v<ExitFunction>
-																				|| std::is_nothrow_copy_constructible_v<ExitFunction>)
-		: m_exitFunction{ std::move(other.m_exitFunction) }
+	constexpr ScopeExit<ExitFunction>::ScopeExit(ScopeExit&& other) noexcept(std::is_nothrow_copy_constructible_v<ExitFunction>)
+		: m_exitFunction{ other.m_exitFunction }
 		, m_active{ std::exchange(other.m_active, false) } {}
-	
+
+	template <detail::ExitFunction ExitFunction>
+	constexpr ScopeExit<ExitFunction>::ScopeExit(ScopeExit&& other) noexcept
+		requires std::is_nothrow_move_constructible_v<ExitFunction>
+		: m_exitFunction{ std::forward<ExitFunction>(other.m_exitFunction) }
+		, m_active{ std::exchange(other.m_active, false) } {}
+
 	template <detail::ExitFunction ExitFunction>
 	template <class Fty>
 		requires (not std::same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>>)
-	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty>
-																				|| std::is_nothrow_constructible_v<ExitFunction, Fty&>)
+	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>)
+		: m_exitFunction{ exitFunction } {}
+
+	template <detail::ExitFunction ExitFunction>
+	template <class Fty>
+		requires ((not std::same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>>) && (not std::is_lvalue_reference_v<Fty>) && std::is_nothrow_constructible_v<ExitFunction, Fty>)
+	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept
 		: m_exitFunction{ std::forward<Fty>(exitFunction) } {}
-		
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -47,7 +57,7 @@ namespace s3d
 			std::invoke(m_exitFunction);
 		}
 	}
-		
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	release
