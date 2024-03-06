@@ -27,6 +27,7 @@ namespace s3d
 	
 	template <detail::ExitFunction ExitFunction>
 	template <class Fty>
+		requires (not std::same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>>)
 	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty>
 																				|| std::is_nothrow_constructible_v<ExitFunction, Fty&>)
 		: m_exitFunction{ std::forward<Fty>(exitFunction) } {}

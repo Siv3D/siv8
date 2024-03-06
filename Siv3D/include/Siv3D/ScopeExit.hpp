@@ -45,6 +45,7 @@ namespace s3d
 			|| std::is_nothrow_copy_constructible_v<ExitFunction>);
 
 		template <class Fty>
+			requires (not std::same_as<std::remove_cvref_t<Fty>, ScopeExit>)
 		[[nodiscard]]
 		constexpr ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty>
 			|| std::is_nothrow_constructible_v<ExitFunction, Fty&>);
