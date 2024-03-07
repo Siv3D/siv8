@@ -331,6 +331,6 @@ namespace s3d
 
 	inline constexpr ColorF AlphaF(const double alpha) noexcept
 	{
-		return{ 1.0, alpha };
+		return ColorF{ 1.0, alpha };
 	}
 }

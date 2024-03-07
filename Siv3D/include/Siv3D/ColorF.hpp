@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "FormatData.hpp"
 # include "PointVector.hpp"
+# include "FmtExtension.hpp"
 
 namespace s3d
 {
@@ -117,19 +118,19 @@ namespace s3d
 		[[nodiscard]]
 		friend constexpr bool operator ==(const ColorF& lhs, const ColorF& rhs) noexcept
 		{
-			return (lhs.r == rhs.r)
-				&& (lhs.g == rhs.g)
-				&& (lhs.b == rhs.b)
-				&& (lhs.a == rhs.a);
+			return ((lhs.r == rhs.r)
+				&&  (lhs.g == rhs.g)
+				&&  (lhs.b == rhs.b)
+				&&  (lhs.a == rhs.a));
 		}
 
 		[[nodiscard]]
 		friend constexpr bool operator !=(const ColorF& lhs, const ColorF& rhs) noexcept
 		{
-			return (lhs.r != rhs.r)
-				|| (lhs.g != rhs.g)
-				|| (lhs.b != rhs.b)
-				|| (lhs.a != rhs.a);
+			return ((lhs.r != rhs.r)
+				||  (lhs.g != rhs.g)
+				||  (lhs.b != rhs.b)
+				||  (lhs.a != rhs.a));
 		}
 
 		/// @brief r 成分のみを変更した自身のコピーを返します。
@@ -349,31 +350,21 @@ namespace s3d
 	inline constexpr ColorF AlphaF(double alpha) noexcept;
 }
 
-//template <>
-//struct SIV3D_HIDDEN fmt::formatter<s3d::ColorF, s3d::char32>
-//{
-//	std::u32string tag;
+////////////////////////////////////////////////////////////////
 //
-//	auto parse(basic_format_parse_context<s3d::char32>& ctx)
-//	{
-//		return s3d::detail::GetFormatTag(tag, ctx);
-//	}
+//	fmt
 //
-//	template <class FormatContext>
-//	auto format(const s3d::ColorF& value, FormatContext& ctx)
-//	{
-//		if (tag.empty())
-//		{
-//			return format_to(ctx.out(), U"({}, {}, {}, {})", value.r, value.g, value.b, value.a);
-//		}
-//		else
-//		{
-//			const std::u32string format
-//				= (U"({:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"})");
-//			return format_to(ctx.out(), format, value.r, value.g, value.b, value.a);
-//		}
-//	}
-//};
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::ColorF, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::ColorF& value, s3d::BufferContext& ctx);
+};
 
 ////////////////////////////////////////////////////////////////
 //

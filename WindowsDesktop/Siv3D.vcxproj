@@ -273,6 +273,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Blob\SivBlob.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BoolToString\SivBoolToString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Byte\SivByte.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ColorF\SivColorF.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Color\SivColor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ConsoleBuffer\SivConsoleBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />

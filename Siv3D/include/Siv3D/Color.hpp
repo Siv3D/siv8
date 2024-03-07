@@ -13,6 +13,9 @@
 # include <bit>
 # include "Common.hpp"
 # include "Utility.hpp"
+# include "StringView.hpp"
+# include "Char.hpp"
+# include "FmtExtension.hpp"
 
 namespace s3d
 {
@@ -71,7 +74,7 @@ namespace s3d
 
 		constexpr Color& operator =(const ColorF& color) noexcept;
 
-		constexpr Color& operator =(const HSV& hsva) noexcept;
+		//constexpr Color& operator =(const HSV& hsva) noexcept;
 
 		[[nodiscard]]
 		constexpr Color operator ~() const noexcept;
@@ -244,6 +247,22 @@ namespace s3d
 	[[nodiscard]]
 	constexpr Color Alpha(uint32 alpha) noexcept;
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::Color, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::Color& value, s3d::BufferContext& ctx);
+};
 
 ////////////////////////////////////////////////////////////////
 //
