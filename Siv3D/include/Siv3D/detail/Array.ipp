@@ -82,7 +82,7 @@ namespace s3d
 # endif
 
 	template <class Type, class Allocator>
-	template <class Fty> requires (std::invocable<Fty> && std::same_as<std::invoke_result_t<Fty>, Type>)
+	template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
 	Array<Type, Allocator>::Array(const size_type size, Arg::generator_<Fty> generator)
 		: Array(Generate<Fty>(size, *generator)) {}
 
@@ -777,7 +777,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr bool Array<Type, Allocator>::all(Fty f) const requires std::predicate<Fty, value_type>
+	constexpr bool Array<Type, Allocator>::all(Fty f) const requires std::predicate<Fty, const value_type&>
 	{
 		return std::all_of(m_container.begin(), m_container.end(), f);
 	}
@@ -790,7 +790,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr bool Array<Type, Allocator>::any(Fty f) const requires std::predicate<Fty, value_type>
+	constexpr bool Array<Type, Allocator>::any(Fty f) const requires std::predicate<Fty, const value_type&>
 	{
 		return std::any_of(m_container.begin(), m_container.end(), f);
 	}
@@ -874,7 +874,7 @@ namespace s3d
 
 
 	template <class Type, class Allocator>
-	template <class Fty>  requires (std::invocable<Fty>&& std::same_as<std::invoke_result_t<Fty>, Type>)
+	template <class Fty>  requires (std::invocable<Fty>&& std::convertible_to<std::invoke_result_t<Fty>, Type>)
 	Array<Type, Allocator> Array<Type, Allocator>::Generate(const size_type size, Fty generator)
 	{
 		Array new_array(Arg::reserve = size);

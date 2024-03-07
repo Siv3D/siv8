@@ -20,12 +20,18 @@
 namespace s3d
 {
 	template <class Type, class Allocator>
-	class Array;	
+	class Array;
 
 	template <class Type>
-	concept HasAsArray = requires(Type t)
+	concept ArrayLike = requires(Type&& t)
 	{
-		{ t.asArray() } -> std::convertible_to<Array<typename Type::value_type, std::allocator<typename Type::value_type>>>;
+		Array<typename std::remove_cvref_t<Type>::value_type, typename std::remove_cvref_t<Type>::allocator_type>{ std::forward<Type>(t) };
+	};
+
+	template <class Type>
+	concept HasAsArray = requires(Type&& t)
+	{
+		{ std::forward<Type>(t).asArray() } -> ArrayLike;
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -191,7 +197,7 @@ namespace s3d
 		/// @tparam Fty ジェネレータ関数の型
 		/// @param size 作成する配列の要素数
 		/// @param generator ジェネレータ関数
-		template <class Fty> requires (std::invocable<Fty> && std::same_as<std::invoke_result_t<Fty>, Type>)
+		template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
 		[[nodiscard]]
 		Array(size_type size, Arg::generator_<Fty> generator);
 
@@ -762,7 +768,7 @@ namespace s3d
 		/// @return 全ての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty, value_type>;
+		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -776,7 +782,7 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty, value_type>;
+		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1443,7 +1449,7 @@ namespace s3d
 		/// @param size 
 		/// @param generator 
 		/// @return 
-		template <class Fty> requires (std::invocable<Fty>&& std::same_as<std::invoke_result_t<Fty>, Type>)
+		template <class Fty> requires (std::invocable<Fty>&& std::convertible_to<std::invoke_result_t<Fty>, Type>)
 		[[nodiscard]]
 		static Array Generate(size_type size, Fty generator);
 
