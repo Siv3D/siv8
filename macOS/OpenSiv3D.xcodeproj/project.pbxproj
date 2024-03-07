@@ -543,6 +543,7 @@
 		F9D813DA2B9A21B500727425 /* IConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D813982B9A21B500727425 /* IConsole.hpp */; };
 		F9D813DB2B9A21B500727425 /* SivConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D813992B9A21B500727425 /* SivConsole.cpp */; };
 		F9D813DC2B9A21B500727425 /* SivInt128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D8139B2B9A21B500727425 /* SivInt128.cpp */; };
+		F9D813DE2B9A22C500727425 /* Test_Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D813DD2B9A22C500727425 /* Test_Color.cpp */; };
 		F9ED1F662B930D8E00028F83 /* Test_TextReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ED1F652B930D8E00028F83 /* Test_TextReader.cpp */; };
 /* End PBXBuildFile section */
 
@@ -1088,6 +1089,7 @@
 		F9D813982B9A21B500727425 /* IConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IConsole.hpp; sourceTree = "<group>"; };
 		F9D813992B9A21B500727425 /* SivConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivConsole.cpp; sourceTree = "<group>"; };
 		F9D8139B2B9A21B500727425 /* SivInt128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInt128.cpp; sourceTree = "<group>"; };
+		F9D813DD2B9A22C500727425 /* Test_Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Color.cpp; sourceTree = "<group>"; };
 		F9ED1F652B930D8E00028F83 /* Test_TextReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextReader.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1165,6 +1167,7 @@
 		F9190EF62B8EE52300667E3B /* Test */ = {
 			isa = PBXGroup;
 			children = (
+				F9D813DD2B9A22C500727425 /* Test_Color.cpp */,
 				F9190EFD2B8EE52300667E3B /* Siv3DTest.cpp */,
 				F9190EFA2B8EE52300667E3B /* Test_Array.cpp */,
 				F9190F0A2B8EE52300667E3B /* Test_Byte.cpp */,
@@ -3144,6 +3147,7 @@
 				F9190F122B8EE52300667E3B /* Test_FmtExtension.cpp in Sources */,
 				F9190F1F2B8EE52300667E3B /* Test_FileSystem.cpp in Sources */,
 				F9190F212B8EE52300667E3B /* Test_FunctionRef.cpp in Sources */,
+				F9D813DE2B9A22C500727425 /* Test_Color.cpp in Sources */,
 				F9190F202B8EE52300667E3B /* Test_Byte.cpp in Sources */,
 				F9190F1E2B8EE52300667E3B /* Test_YesNo.cpp in Sources */,
 				F9190F152B8EE52300667E3B /* Test_Indexed.cpp in Sources */,
