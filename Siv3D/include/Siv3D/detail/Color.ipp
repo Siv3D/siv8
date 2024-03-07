@@ -306,7 +306,7 @@ namespace s3d
 		return ColorF{ *this }.applySRGBCurve();
 	}
 
-	inline size_t Color::hash() const noexcept
+	inline uint64 Color::hash() const noexcept
 	{
 		return Hash(*this);
 	}
