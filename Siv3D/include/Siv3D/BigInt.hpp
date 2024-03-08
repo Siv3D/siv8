@@ -18,6 +18,8 @@
 
 namespace s3d
 {
+	class BigFloat;
+
 	/// @brief 多倍長整数型
 	class BigInt
 	{
@@ -766,8 +768,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//BigFloat asBigFloat() const;
+		[[nodiscard]]
+		BigFloat asBigFloat() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -796,8 +798,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//explicit operator BigFloat() const;
+		[[nodiscard]]
+		explicit operator BigFloat() const;
 
 		////////////////////////////////////////////////////////////////
 		//
