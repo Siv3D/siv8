@@ -563,10 +563,10 @@
 ////////////////////////////////////////////////////////////////
 
 // 色 | Colors
-# include <Siv3D/ColorHSV.hpp> // ToDo
+# include <Siv3D/ColorHSV.hpp>
 
 // 色 (uint8 x 4) | Color (uint8 * 4)
-# include <Siv3D/Color.hpp> // ToDo
+# include <Siv3D/Color.hpp>
 
 // 色 (double * 4) | Color (double * 4)
 # include <Siv3D/ColorF.hpp> // ToDo
@@ -575,7 +575,7 @@
 # include <Siv3D/HSV.hpp> // ToDo
 
 // 色定数 | Color constants
-# include <Siv3D/Palette.hpp> // ToDo
+# include <Siv3D/Palette.hpp>
 
 //// カラーマップ | Colormap
 //# include <Siv3D/Colormap.hpp>
@@ -649,12 +649,12 @@
 // 2 次元ベクトル | 2D vector
 # include <Siv3D/Vector2D.hpp> // ToDo
 
-//// 3 次元ベクトル | 3D vector
-//# include <Siv3D/Vector3D.hpp>
-//
-//// 4 次元ベクトル | 4D vector
-//# include <Siv3D/Vector4D.hpp>
-//
+// 3 次元ベクトル | 3D vector
+# include <Siv3D/Vector3D.hpp> // ToDo
+
+// 4 次元ベクトル | 4D vector
+# include <Siv3D/Vector4D.hpp> // ToDo
+
 //// 浮動小数点数の計算補助 | Floating point support
 //# include <Siv3D/CommonFloat.hpp>
 //

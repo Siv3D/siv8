@@ -13,6 +13,8 @@
 # include "Common.hpp"
 # include "FormatData.hpp"
 # include "PointVector.hpp"
+# include "Vector3D.hpp"
+# include "Vector4D.hpp"
 # include "FmtExtension.hpp"
 
 namespace s3d
@@ -53,38 +55,67 @@ namespace s3d
 		[[nodiscard]]
 		ColorF(const ColorF&) = default;
 
-		/// @brief 色を作成します。
-		/// @param _r 赤成分
-		/// @param _g 緑成分
-		/// @param _b 青成分
-		/// @param _a アルファ成分
+		/// @brief ColorF を作成します。
+		/// @param _r R 成分
+		/// @param _g G 成分
+		/// @param _b B 成分
+		/// @param _a アルファ値
 		[[nodiscard]]
 		constexpr ColorF(double _r, double _g, double _b, double _a = 1.0) noexcept;
 
+		/// @brief ColorF を作成します。
+		/// @param rgb RGB 成分
+		/// @param _a アルファ値
 		[[nodiscard]]
 		explicit constexpr ColorF(double rgb, double _a = 1.0) noexcept;
 
+		/// @brief 別の ColorF から ColorF を作成します。
+		/// @param rgb 別の ColorF
+		/// @param _a アルファ値
+		/// @remark `ColorF{ rgb.r, rgb.g, rgb.b, _a }` と同じです。
 		[[nodiscard]]
 		constexpr ColorF(const ColorF& rgb, double _a) noexcept;
 
-		//[[nodiscard]]
-		//explicit constexpr ColorF(const Vec3& rgb, double _a = 1.0) noexcept;
+		/// @brief Vec3 から ColorF を作成します。
+		/// @param rgb Vec3
+		/// @param _a アルファ値
+		/// @remark `ColorF{ rgb.x, rgb.y, rgb.z, _a }` と同じです。
+		[[nodiscard]]
+		explicit constexpr ColorF(const Vec3& rgb, double _a = 1.0) noexcept;
 
-		//[[nodiscard]]
-		//explicit constexpr ColorF(const Vec4& rgba) noexcept;
+		/// @brief Vec4 から ColorF を作成します。
+		/// @param rgba Vec4
+		/// @remark `ColorF{ rgba.x, rgba.y, rgba.z, rgba.w }` と同じです。
+		[[nodiscard]]
+		explicit constexpr ColorF(const Vec4& rgba) noexcept;
 
+		/// @brief Color から ColorF を作成します。
+		/// @param color Color
 		[[nodiscard]]
 		constexpr ColorF(Color color) noexcept;
 
+		/// @brief Color から ColorF を作成します。
+		/// @param rgb Color
+		/// @param _a アルファ値
+		/// @remark 引数 `color` のアルファ値は無視されます。
 		[[nodiscard]]
 		constexpr ColorF(Color rgb, double _a) noexcept;
 
+		/// @brief HSV から ColorF を作成します。
+		/// @param hsva HSV
 		[[nodiscard]]
 		ColorF(const HSV& hsva) noexcept;
 
+		/// @brief HSV から ColorF を作成します。
+		/// @param hsv HSV
+		/// @param _a アルファ値
+		/// @remark 引数 `hsv` のアルファ値は無視されます。
 		[[nodiscard]]
 		ColorF(const HSV& hsv, double _a) noexcept;
 
+		/// @brief 16 進数のカラーコードから ColorF を作成します。
+		/// @param code 16 進数のカラーコード
+		/// @remark #RGB, #RGBA, RRGGBB, #RRGGBB, RRGGBBAA, #RRGGBBAA に対応します。
 		[[nodiscard]]
 		explicit constexpr ColorF(StringView code) noexcept;
 
@@ -453,10 +484,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Float4{ r, g, b, a } を返します。
-		///// @return Float4{ r, g, b, a }
-		//[[nodiscard]]
-		//constexpr Float4 toFloat4() const noexcept;
+		/// @brief Float4{ r, g, b, a } を返します。
+		/// @return Float4{ r, g, b, a }
+		[[nodiscard]]
+		constexpr Float4 toFloat4() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -464,10 +495,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Vec4{ r, g, b, a } を返します。
-		///// @return Vec4{ r, g, b, a }
-		//[[nodiscard]]
-		//constexpr Vec4 toVec4() const noexcept;
+		/// @brief Vec4{ r, g, b, a } を返します。
+		/// @return Vec4{ r, g, b, a }
+		[[nodiscard]]
+		constexpr Vec4 toVec4() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -496,20 +527,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Vec3{ r, g, b } を返します。
-		///// @return Vec3{ r, g, b }
-		//[[nodiscard]]
-		//constexpr Vec3 rgb() const noexcept;
+		/// @brief Vec3{ r, g, b } を返します。
+		/// @return Vec3{ r, g, b }
+		[[nodiscard]]
+		constexpr Vec3 rgb() const noexcept;
 
-		///// @brief Vec3{ g, b, a } を返します。
-		///// @return Vec3{ g, b, a }
-		//[[nodiscard]]
-		//constexpr Vec3 gba() const noexcept;
+		/// @brief Vec3{ g, b, a } を返します。
+		/// @return Vec3{ g, b, a }
+		[[nodiscard]]
+		constexpr Vec3 gba() const noexcept;
 
-		///// @brief Vec3{ b, g, r } を返します。
-		///// @return Vec3{ b, g, r }
-		//[[nodiscard]]
-		//constexpr Vec3 bgr() const noexcept;
+		/// @brief Vec3{ b, g, r } を返します。
+		/// @return Vec3{ b, g, r }
+		[[nodiscard]]
+		constexpr Vec3 bgr() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -517,31 +548,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Vec4{ r, g, b, a } を返します。
-		///// @remark `toVec4()` と同じです。
-		///// @return Vec4{ r, g, b, a }
-		//[[nodiscard]]
-		//constexpr Vec4 rgba() const noexcept;
+		/// @brief Vec4{ r, g, b, a } を返します。
+		/// @remark `toVec4()` と同じです。
+		/// @return Vec4{ r, g, b, a }
+		[[nodiscard]]
+		constexpr Vec4 rgba() const noexcept;
 
-		///// @brief Vec4{ r, g, b, 0 } を返します。
-		///// @return Vec4{ r, g, b, 0 }
-		//[[nodiscard]]
-		//constexpr Vec4 rgb0() const noexcept;
+		/// @brief Vec4{ r, g, b, 0 } を返します。
+		/// @return Vec4{ r, g, b, 0 }
+		[[nodiscard]]
+		constexpr Vec4 rgb0() const noexcept;
 
-		///// @brief Vec4{ r, g, b, 1 } を返します。
-		///// @return Vec4{ r, g, b, 1 }
-		//[[nodiscard]]
-		//constexpr Vec4 rgb1() const noexcept;
+		/// @brief Vec4{ r, g, b, 1 } を返します。
+		/// @return Vec4{ r, g, b, 1 }
+		[[nodiscard]]
+		constexpr Vec4 rgb1() const noexcept;
 
-		///// @brief Vec4{ a, r, g, b } を返します。
-		///// @return Vec4{ a, r, g, b }
-		//[[nodiscard]]
-		//constexpr Vec4 argb() const noexcept;
+		/// @brief Vec4{ a, r, g, b } を返します。
+		/// @return Vec4{ a, r, g, b }
+		[[nodiscard]]
+		constexpr Vec4 argb() const noexcept;
 
-		///// @brief Vec4{ a, b, g, r } を返します。
-		///// @return Vec4{ a, b, g, r }
-		//[[nodiscard]]
-		//constexpr Vec4 abgr() const noexcept;
+		/// @brief Vec4{ a, b, g, r } を返します。
+		/// @return Vec4{ a, b, g, r }
+		[[nodiscard]]
+		constexpr Vec4 abgr() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -633,6 +664,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief ColorF{ 1.0, 1.0, 1.0, alpha } を返します。
+	/// @param alpha アルファ値
+	/// @return ColorF{ 1.0, 1.0, 1.0, alpha }
 	[[nodiscard]]
 	constexpr ColorF AlphaF(double alpha) noexcept;
 }

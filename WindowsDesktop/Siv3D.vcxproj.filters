@@ -289,6 +289,15 @@
     <Filter Include="src\Siv3D\Color">
       <UniqueIdentifier>{0c8dc3b2-4f0d-414c-8875-c3e1cf3b001c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Vector3D">
+      <UniqueIdentifier>{13c339df-bc70-4a22-908e-c8a797163871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Vector4D">
+      <UniqueIdentifier>{77b793e1-c5f8-46eb-b9f0-95fcb4b0b114}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\HSV">
+      <UniqueIdentifier>{509503ee-44a4-435f-bd4c-040a16a9d229}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1017,6 +1026,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HSV.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Vector3D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Vector4D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1252,6 +1267,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Color\SivColor.cpp">
       <Filter>src\Siv3D\Color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Vector4D\SivVector4D.cpp">
+      <Filter>src\Siv3D\Vector4D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Vector3D\SivVector3D.cpp">
+      <Filter>src\Siv3D\Vector3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\HSV\SivHSV.cpp">
+      <Filter>src\Siv3D\HSV</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

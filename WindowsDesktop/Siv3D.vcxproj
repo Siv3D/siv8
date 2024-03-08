@@ -197,6 +197,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Utility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UUIDValue.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector2D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Vector3D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Vector4D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Version.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Libraries.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\MinWindows.hpp" />
@@ -295,6 +297,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FormatUtility\SivFormatUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Hash\SivHash.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\HSV\SivHSV.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Int128\SivInt128.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />
@@ -325,6 +328,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\UUIDValue\SivUUIDValue.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector2D\SivVector2D.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Vector3D\SivVector3D.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Vector4D\SivVector4D.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\numeric\int128.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\random\discrete_distribution.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\random\gaussian_distribution.cc" />

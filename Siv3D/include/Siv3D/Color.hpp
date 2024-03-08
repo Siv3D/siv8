@@ -75,7 +75,7 @@ namespace s3d
 		/// @brief 別の Color から Color を作成します。
 		/// @param rgb Color
 		/// @param _a アルファ値 [0, 255]
-		/// @remark 引数 `rgb` のアルファ値は無視されます。
+		/// @remark `Color{ rgb.r, rgb.g, rgb.b, _a }` と同じです。
 		[[nodiscard]]
 		constexpr Color(Color rgb, value_type _a) noexcept;
 
@@ -539,7 +539,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief Color{ 255, 255, 255, alpha } を返します。
-	/// @param alpha アルファ値
+	/// @param alpha アルファ値 [0, 255]
 	/// @return Color{ 255, 255, 255, alpha }
 	[[nodiscard]]
 	constexpr Color Alpha(uint32 alpha) noexcept;
