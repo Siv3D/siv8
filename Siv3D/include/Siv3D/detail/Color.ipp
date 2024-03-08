@@ -70,6 +70,16 @@ namespace s3d
 		, b{ Color::ToUint8(color.b) }
 		, a{ _a } {}
 
+	inline Color::Color(const HSV& hsv) noexcept
+	{
+		*this = hsv.toColor();
+	}
+
+	inline Color::Color(const HSV& hsv, const value_type _a) noexcept
+	{
+		*this = hsv.toColor(_a);
+	}
+
 	constexpr Color::Color(const StringView code) noexcept
 		: r{ 0 }
 		, g{ 0 }
@@ -120,6 +130,11 @@ namespace s3d
 		b = Color::ToUint8(color.b);
 		a = Color::ToUint8(color.a);
 		return *this;
+	}
+
+	inline Color& Color::operator =(const HSV& hsva) noexcept
+	{
+		return (*this = hsva.toColor());
 	}
 
 	constexpr Color Color::operator ~() const noexcept

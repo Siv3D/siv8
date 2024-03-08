@@ -11,6 +11,36 @@
 
 # include "Siv3DTest.hpp"
 
+TEST_CASE("Color.operator ==")
+{
+	constexpr ColorF c0{ 0, 0, 0, 0 };
+	constexpr ColorF c1{ 0.001, 0.002, 0.003, 0.004 };
+	constexpr ColorF c2{ 0.494, 0.5, 0.504, 0.506 };
+
+	static_assert(c0 == c0);
+	static_assert(c1 == c1);
+	static_assert(c2 == c2);
+
+	static_assert(not(c0 == c1));
+	static_assert(not(c0 == c2));
+	static_assert(not(c1 == c2));
+}
+
+TEST_CASE("Color.operator !=")
+{
+	constexpr ColorF c0{ 0, 0, 0, 0 };
+	constexpr ColorF c1{ 0.001, 0.002, 0.003, 0.004 };
+	constexpr ColorF c2{ 0.494, 0.5, 0.504, 0.506 };
+
+	static_assert(c0 != c1);
+	static_assert(c0 != c2);
+	static_assert(c1 != c2);
+
+	static_assert(not(c0 != c0));
+	static_assert(not(c1 != c1));
+	static_assert(not(c2 != c2));
+}
+
 TEST_CASE("ColorF.fmt")
 {
 	constexpr ColorF c0{ 0, 0, 0, 0 };

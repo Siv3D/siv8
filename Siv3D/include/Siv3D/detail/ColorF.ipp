@@ -43,6 +43,16 @@ namespace s3d
 		, b{ rgb.b / 255.0 }
 		, a{ _a } {}
 
+	inline ColorF::ColorF(const HSV& hsva) noexcept
+	{
+		*this = hsva.toColorF();
+	}
+
+	inline ColorF::ColorF(const HSV& hsv, const double _a) noexcept
+	{
+		*this = hsv.toColorF(_a);
+	}
+
 	constexpr ColorF::ColorF(const StringView code) noexcept
 		: ColorF{ Color{ code } } {}
 
@@ -89,6 +99,11 @@ namespace s3d
 		return *this;
 	}
 
+	inline ColorF& ColorF::operator =(const HSV& hsva) noexcept
+	{
+		return *this = hsva.toColorF();
+	}
+
 	constexpr ColorF ColorF::operator +(const ColorF& rgb) const noexcept
 	{
 		return{ (r + rgb.r), (g + rgb.g), (b + rgb.b), a };
@@ -120,17 +135,17 @@ namespace s3d
 		return{ (r * s), (g * s), (b * s), a };
 	}
 
+	constexpr ColorF ColorF::operator *(const ColorF& rgba) const noexcept
+	{
+		return{ (r * rgba.r), (g * rgba.g), (b * rgba.b), (a * rgba.a) };
+	}
+
 	constexpr ColorF& ColorF::operator *=(const double s) noexcept
 	{
 		r *= s;
 		g *= s;
 		b *= s;
 		return *this;
-	}
-
-	constexpr ColorF ColorF::operator *(const ColorF& rgba) const noexcept
-	{
-		return{ (r * rgba.r), (g * rgba.g), (b * rgba.b), (a * rgba.a) };
 	}
 
 	constexpr ColorF& ColorF::operator *=(const ColorF& rgba) noexcept
