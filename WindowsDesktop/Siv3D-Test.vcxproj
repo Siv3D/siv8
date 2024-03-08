@@ -17,6 +17,8 @@
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
     <ClCompile Include="..\Test\Test_Byte.cpp" />
+    <ClCompile Include="..\Test\Test_Color.cpp" />
+    <ClCompile Include="..\Test\Test_ColorF.cpp" />
     <ClCompile Include="..\Test\Test_Concepts.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />

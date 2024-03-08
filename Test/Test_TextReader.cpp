@@ -839,6 +839,8 @@ TEST_CASE("TextReader.longLF")
 	}
 }
 
+# if SIV3D_RUN_BENCHMARK
+
 TEST_CASE("TextReader.benchmark")
 {
 	const auto oldOutputLevel = Logger.getOutputLevel();
@@ -1095,3 +1097,4 @@ TEST_CASE("TextReader.benchmark")
 	Logger.setOutputLevel(oldOutputLevel);
 }
 
+# endif
