@@ -273,6 +273,10 @@
 		F907027C2B9B280000383E4D /* SivVector2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702342B9B280000383E4D /* SivVector2D.cpp */; };
 		F907027D2B9B280000383E4D /* SivVector3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702362B9B280000383E4D /* SivVector3D.cpp */; };
 		F907027E2B9B280000383E4D /* SivVector4D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702382B9B280000383E4D /* SivVector4D.cpp */; };
+		F90702802B9B82FD00383E4D /* BinaryWriter.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F907027F2B9B82FD00383E4D /* BinaryWriter.ipp */; };
+		F90702832B9B831B00383E4D /* SivBinaryWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702812B9B831B00383E4D /* SivBinaryWriter.cpp */; };
+		F90702872B9B835300383E4D /* BinaryWriterDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702842B9B835300383E4D /* BinaryWriterDetail.cpp */; };
+		F90702882B9B835300383E4D /* BinaryWriterDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90702852B9B835300383E4D /* BinaryWriterDetail.hpp */; };
 		F907FE0B2B9B274E00383E4D /* Test_ColorF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F907FE0A2B9B274E00383E4D /* Test_ColorF.cpp */; };
 		F9190F0E2B8EE52300667E3B /* Test_Step.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9190EF72B8EE52300667E3B /* Test_Step.cpp */; };
 		F9190F0F2B8EE52300667E3B /* Test_Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9190EF82B8EE52300667E3B /* Test_Platform.cpp */; };
@@ -823,6 +827,10 @@
 		F90702342B9B280000383E4D /* SivVector2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVector2D.cpp; sourceTree = "<group>"; };
 		F90702362B9B280000383E4D /* SivVector3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVector3D.cpp; sourceTree = "<group>"; };
 		F90702382B9B280000383E4D /* SivVector4D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVector4D.cpp; sourceTree = "<group>"; };
+		F907027F2B9B82FD00383E4D /* BinaryWriter.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BinaryWriter.ipp; sourceTree = "<group>"; };
+		F90702812B9B831B00383E4D /* SivBinaryWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBinaryWriter.cpp; sourceTree = "<group>"; };
+		F90702842B9B835300383E4D /* BinaryWriterDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryWriterDetail.cpp; sourceTree = "<group>"; };
+		F90702852B9B835300383E4D /* BinaryWriterDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BinaryWriterDetail.hpp; sourceTree = "<group>"; };
 		F907FE0A2B9B274E00383E4D /* Test_ColorF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ColorF.cpp; sourceTree = "<group>"; };
 		F9190EF72B8EE52300667E3B /* Test_Step.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Step.cpp; sourceTree = "<group>"; };
 		F9190EF82B8EE52300667E3B /* Test_Platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Platform.cpp; sourceTree = "<group>"; };
@@ -1185,6 +1193,7 @@
 				F90700372B9B27F300383E4D /* AsyncTask.ipp */,
 				F90700382B9B27F300383E4D /* BigInt.ipp */,
 				F90700392B9B27F300383E4D /* BinaryReader.ipp */,
+				F907027F2B9B82FD00383E4D /* BinaryWriter.ipp */,
 				F907003A2B9B27F300383E4D /* Blob.ipp */,
 				F907003B2B9B27F300383E4D /* BoolArray.ipp */,
 				F907003C2B9B27F300383E4D /* Byte.ipp */,
@@ -1868,6 +1877,7 @@
 				F90701BF2B9B280000383E4D /* _TEMPLATE */,
 				F90701C22B9B280000383E4D /* BigInt */,
 				F90701C42B9B280000383E4D /* BinaryReader */,
+				F90702822B9B831B00383E4D /* BinaryWriter */,
 				F90701C62B9B280000383E4D /* Blob */,
 				F90701C82B9B280000383E4D /* BoolToString */,
 				F90701CA2B9B280000383E4D /* Byte */,
@@ -1923,6 +1933,23 @@
 				F90702392B9B280000383E4D /* Vector4D */,
 			);
 			path = Siv3D;
+			sourceTree = "<group>";
+		};
+		F90702822B9B831B00383E4D /* BinaryWriter */ = {
+			isa = PBXGroup;
+			children = (
+				F90702812B9B831B00383E4D /* SivBinaryWriter.cpp */,
+			);
+			path = BinaryWriter;
+			sourceTree = "<group>";
+		};
+		F90702862B9B835300383E4D /* BinaryWriter */ = {
+			isa = PBXGroup;
+			children = (
+				F90702842B9B835300383E4D /* BinaryWriterDetail.cpp */,
+				F90702852B9B835300383E4D /* BinaryWriterDetail.hpp */,
+			);
+			path = BinaryWriter;
 			sourceTree = "<group>";
 		};
 		F9190EF62B8EE52300667E3B /* Test */ = {
@@ -2436,6 +2463,7 @@
 		F9636A1B2B90D70400257BA7 /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
+				F90702862B9B835300383E4D /* BinaryWriter */,
 				F9636A252B90D70400257BA7 /* BinaryReader */,
 				F9636A282B90D70400257BA7 /* Console */,
 				F9636A212B90D70400257BA7 /* Date */,
@@ -2870,6 +2898,7 @@
 				F9636BD12B90D70500257BA7 /* add.h in Headers */,
 				F907010D2B9B27F400383E4D /* Duration.ipp in Headers */,
 				F9636B952B90D70500257BA7 /* simde-f16.h in Headers */,
+				F90702882B9B835300383E4D /* BinaryWriterDetail.hpp in Headers */,
 				F9636BFF2B90D70500257BA7 /* madd.h in Headers */,
 				F9636C122B90D70500257BA7 /* xor.h in Headers */,
 				F9636C242B90D70500257BA7 /* simde-aes.h in Headers */,
@@ -2947,6 +2976,7 @@
 				F907013C2B9B27F400383E4D /* UnicodeConverter.ipp in Headers */,
 				F9636BD92B90D70500257BA7 /* adds.h in Headers */,
 				F9636B902B90D70500257BA7 /* pcg_uint128.hpp in Headers */,
+				F90702802B9B82FD00383E4D /* BinaryWriter.ipp in Headers */,
 				F9636BEC2B90D70500257BA7 /* dpbusds.h in Headers */,
 				F90701692B9B27F400383E4D /* FileAction.hpp in Headers */,
 				F90701212B9B27F400383E4D /* KahanSummation.ipp in Headers */,
@@ -3220,6 +3250,7 @@
 				F9636C6B2B90D70500257BA7 /* SivDateTime_macOS_Linux.cpp in Sources */,
 				F90702712B9B280000383E4D /* SivTextEncoding.cpp in Sources */,
 				F90702722B9B280000383E4D /* SivTextReader.cpp in Sources */,
+				F90702832B9B831B00383E4D /* SivBinaryWriter.cpp in Sources */,
 				F907023B2B9B280000383E4D /* _TEMPLATE.cpp in Sources */,
 				F90702402B9B280000383E4D /* SivBoolToString.cpp in Sources */,
 				F907026C2B9B280000383E4D /* SivRect.cpp in Sources */,
@@ -3252,6 +3283,7 @@
 				F90702692B9B280000383E4D /* SivParseInt.cpp in Sources */,
 				F90702502B9B280000383E4D /* SivEngineLog.cpp in Sources */,
 				F907026D2B9B280000383E4D /* Levenshtein.cpp in Sources */,
+				F90702872B9B835300383E4D /* BinaryWriterDetail.cpp in Sources */,
 				F9636CB72B90D70500257BA7 /* format.cc in Sources */,
 				F90702702B9B280000383E4D /* SivSystem.cpp in Sources */,
 				F9636CBE2B90D70500257BA7 /* bignum.cc in Sources */,
