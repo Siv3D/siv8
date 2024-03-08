@@ -127,6 +127,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 色の各成分を反転した色を返します。
+		/// @return 色の各成分を反転した色
+		/// @remark `Color{ (255 - r), (255 - g), (255 - b), a }` を返します。
 		[[nodiscard]]
 		constexpr Color operator ~() const noexcept;
 
@@ -153,25 +156,25 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief r 成分のみを変更した自身のコピーを返します。
-		/// @param _r r 成分
+		/// @param _r r 成分 [0, 255]
 		/// @return r 成分を変更したコピー
 		[[nodiscard]]
 		constexpr Color withR(uint32 _r) const noexcept;
 
 		/// @brief g 成分のみを変更した自身のコピーを返します。
-		/// @param _g g 成分
+		/// @param _g g 成分 [0, 255]
 		/// @return g 成分を変更したコピー
 		[[nodiscard]]
 		constexpr Color withG(uint32 _g) const noexcept;
 
 		/// @brief b 成分のみを変更した自身のコピーを返します。
-		/// @param _b b 成分
+		/// @param _b b 成分 [0, 255]
 		/// @return b 成分を変更したコピー
 		[[nodiscard]]
 		constexpr Color withB(uint32 _b) const noexcept;
 
 		/// @brief a 成分のみを変更した自身のコピーを返します。
-		/// @param _a a 成分
+		/// @param _a a 成分 [0, 255]
 		/// @return a 成分を変更したコピー
 		[[nodiscard]]
 		constexpr Color withA(uint32 _a) const noexcept;
@@ -195,22 +198,22 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief R 成分を変更します。
-		/// @param _r 新しい R 成分
+		/// @param _r 新しい R 成分 [0, 255]
 		/// @return *this
 		constexpr Color& setR(uint32 _r) noexcept;
 
 		/// @brief G 成分を変更します。
-		/// @param _g 新しい G 成分
+		/// @param _g 新しい G 成分 [0, 255]
 		/// @return *this
 		constexpr Color& setG(uint32 _g) noexcept;
 
 		/// @brief B 成分を変更します。
-		/// @param _b 新しい B 成分
+		/// @param _b 新しい B 成分 [0, 255]
 		/// @return *this
 		constexpr Color& setB(uint32 _b) noexcept;
 
 		/// @brief アルファ値を変更します。
-		/// @param _a 新しいアルファ値
+		/// @param _a 新しいアルファ値 [0, 255]
 		/// @return *this
 		constexpr Color& setA(uint32 _a) noexcept;
 
@@ -220,8 +223,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGB 成分を変更します。
+		/// @param rgb 新しい RGB 成分 [0, 255]
+		/// @return *this
 		constexpr Color& setRGB(uint32 rgb) noexcept;
 
+		/// @brief RGB 成分を変更します。
+		/// @param _r 新しい R 成分 [0, 255]
+		/// @param _g 新しい G 成分 [0, 255]
+		/// @param _b 新しい B 成分 [0, 255]
+		/// @return *this
 		constexpr Color& setRGB(uint32 _r, uint32 _g, uint32 _b) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -230,10 +241,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 色を変更します。
+		/// @param rgb 新しい RGB 成分 [0, 255]
+		/// @param _a 新しいアルファ値 [0, 255]
+		/// @return *this
 		constexpr Color& set(uint32 rgb, uint32 _a = 255) noexcept;
 
+		/// @brief 色を変更します。
+		/// @param _r 新しい R 成分 [0, 255]
+		/// @param _g 新しい G 成分 [0, 255]
+		/// @param _b 新しい B 成分 [0, 255]
+		/// @param _a 新しいアルファ値
+		/// @return *this
 		constexpr Color& set(uint32 _r, uint32 _g, uint32 _b, uint32 _a = 255) noexcept;
 
+		/// @brief 色を変更します。
+		/// @param color 新しい色
+		/// @return *this
 		constexpr Color& set(Color color) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -242,6 +266,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief グレースケール値を [0, 255] の範囲で返します。
+		/// @return グレースケール値 [0, 255]
+		/// @remark `(0.299 * r) + (0.587 * g) + (0.114 * b)` によって計算されます。
 		[[nodiscard]]
 		constexpr uint8 grayscale0_255() const noexcept;
 
@@ -251,6 +278,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief グレースケール値を [0.0, 1.0] の範囲で返します。
+		/// @return グレースケール値 [0.0, 1.0]
+		/// @remark `(0.299 * r) + (0.587 * g) + (0.114 * b)` によって計算されます。
 		[[nodiscard]]
 		constexpr double grayscale() const noexcept;
 
@@ -260,9 +290,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGB 成分のうち最小の値を返します。
+		/// @return RGB 成分のうち最小の値
 		[[nodiscard]]
 		constexpr uint8 minRGBComponent() const noexcept;
 
+		/// @brief RGB 成分のうち最大の値を返します。
+		/// @return RGB 成分のうち最大の値
 		[[nodiscard]]
 		constexpr uint8 maxRGBComponent() const noexcept;
 
@@ -272,9 +306,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGBA 成分のうち最小の値を返します。
+		/// @return RGBA 成分のうち最小の値
 		[[nodiscard]]
 		constexpr uint8 minComponent() const noexcept;
 
+		/// @brief RGBA 成分のうち最大の値を返します。
+		/// @return RGBA 成分のうち最大の値
 		[[nodiscard]]
 		constexpr uint8 maxComponent() const noexcept;
 
@@ -284,6 +322,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Color のビット列を 32-bit 整数として解釈した値を返します。
+		/// @return Color のビット列を 32-bit 整数として解釈した値
 		[[nodiscard]]
 		constexpr uint32 asUint32() const noexcept;
 
@@ -293,6 +333,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの色の間を線形補間した色を返します。
+		/// @param other もう一方の色
+		/// @param f 補間係数
+		/// @return 補間された色
 		[[nodiscard]]
 		constexpr Color lerp(Color other, double f) const noexcept;
 
@@ -302,9 +346,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 色を明るくした色を返します。
+		/// @param amount 明るくする量 [0.0, 1.0]
+		/// @return 明るくした色
+		/// @remark `Color{ (r + (255 - r) * amount), (g + (255 - g) * amount), (b + (255 - b) * amount), a }` を返します。
 		[[nodiscard]]
 		constexpr Color lightened(double amount) const noexcept;
 
+		/// @brief 色を暗くした色を返します。
+		/// @param amount 暗くする量 [0.0, 1.0]
+		/// @return 暗くした色
+		/// @remark `Color{ (r * (1.0 - amount)), (g * (1.0 - amount)), (b * (1.0 - amount)), a }` を返します。
 		[[nodiscard]]
 		constexpr Color darkened(double amount) const noexcept;
 
@@ -314,6 +366,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 色をガンマ補正した色を返します。
+		/// @param gamma ガンマ値
+		/// @return ガンマ補正された色
 		[[nodiscard]]
 		Color gamma(double gamma) const noexcept;
 
@@ -323,9 +378,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief リニアカラースペースに変換した色を返します。
+		/// @return リニアカラースペースに変換した色
 		[[nodiscard]]
 		ColorF removeSRGBCurve() const noexcept;
 
+		/// @brief sRGB カーブを適用した色を返します。
+		/// @return sRGB カーブを適用した色
 		[[nodiscard]]
 		ColorF applySRGBCurve() const noexcept;
 
@@ -335,6 +394,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 16 進数のカラーコード RRGGBB を返します。
+		/// @return 16 進数のカラーコード RRGGBB
 		[[nodiscard]]
 		String toHex() const;
 
@@ -344,6 +405,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 

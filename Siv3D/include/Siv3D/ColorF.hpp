@@ -94,6 +94,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの成分を返します。
+		/// @param index インデックス
+		/// @return 指定したインデックスの成分。範囲外の場合は 0.0
+		/// @remark 0 で R 成分、1 で G 成分、2 で B 成分、3 で A 成分にアクセスできます。
 		[[nodiscard]]
 		constexpr double elem(size_t index) const noexcept;
 
@@ -103,9 +107,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief R 成分へのポインタを返します。
+		/// @return R 成分へのポインタ
+		/// @remark [0] で R 成分、[1] で G 成分、[2] で B 成分、[3] で A 成分にアクセスできます。
 		[[nodiscard]]
 		constexpr double* getPointer() noexcept;
 
+		/// @brief R 成分へのポインタを返します。
+		/// @return R 成分へのポインタ
+		/// @remark [0] で R 成分、[1] で G 成分、[2] で B 成分、[3] で A 成分にアクセスできます。
 		[[nodiscard]]
 		constexpr const double* getPointer() const noexcept;
 
@@ -234,6 +244,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief a 成分のみを変更した自身のコピーを返します。
+		/// @param _a a 成分
+		/// @return a 成分を変更したコピー
+		/// @remark `.withA(_a)` と同じです。
 		constexpr ColorF withAlpha(double _a) const noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -242,12 +256,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief R 成分を変更します。
+		/// @param _r 新しい R 成分
+		/// @return *this
 		constexpr ColorF& setR(double _r) noexcept;
 
+		/// @brief G 成分を変更します。
+		/// @param _g 新しい G 成分
+		/// @return *this
 		constexpr ColorF& setG(double _g) noexcept;
 
+		/// @brief B 成分を変更します。
+		/// @param _b 新しい B 成分
+		/// @return *this
 		constexpr ColorF& setB(double _b) noexcept;
 
+		/// @brief アルファ値を変更します。
+		/// @param _a 新しいアルファ値
+		/// @return *this
 		constexpr ColorF& setA(double _a) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -256,8 +282,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGB 成分を変更します。
+		/// @param rgb 新しい RGB 成分
+		/// @return *this
 		constexpr ColorF& setRGB(double rgb) noexcept;
 
+		/// @brief RGB 成分を変更します。
+		/// @param _r 新しい R 成分
+		/// @param _g 新しい G 成分
+		/// @param _b 新しい B 成分
+		/// @return *this
 		constexpr ColorF& setRGB(double _r, double _g, double _b) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -266,10 +300,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 色を変更します。
+		/// @param rgb 新しい RGB 成分
+		/// @param _a 新しいアルファ値
+		/// @return *this
 		constexpr ColorF& set(double rgb, double _a = 1.0) noexcept;
 
+		/// @brief 色を変更します。
+		/// @param _r 新しい R 成分
+		/// @param _g 新しい G 成分
+		/// @param _b 新しい B 成分
+		/// @param _a 新しいアルファ値
+		/// @return *this
 		constexpr ColorF& set(double _r, double _g, double _b, double _a = 1.0) noexcept;
 
+		/// @brief 色を変更します。
+		/// @param color 新しい色
+		/// @return *this
 		constexpr ColorF& set(const ColorF& ColorF) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -290,13 +337,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief RGB 各成分の最小値を返します。
-		/// @return RGB 各成分の最小値
+		/// @brief RGB 成分のうち最小の値を返します。
+		/// @return RGB 成分のうち最小の値
 		[[nodiscard]]
 		constexpr double minRGBComponent() const noexcept;
 
-		/// @brief RGB 各成分の最大値を返します。
-		/// @return RGB 各成分の最大値
+		/// @brief RGB 成分のうち最大の値を返します。
+		/// @return RGB 成分のうち最大の値
 		[[nodiscard]]
 		constexpr double maxRGBComponent() const noexcept;
 
@@ -306,13 +353,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief RGBA 各成分の最小値を返します。
-		/// @return RGBA 各成分の最小値
+		/// @brief RGBA 成分のうち最小の値を返します。
+		/// @return RGBA 成分のうち最小の値
 		[[nodiscard]]
 		constexpr double minComponent() const noexcept;
 
-		/// @brief RGBA 各成分の最大値を返します。
-		/// @return RGBA 各成分の最大値
+		/// @brief RGBA 成分のうち最大の値を返します。
+		/// @return RGBA 成分のうち最大の値
 		[[nodiscard]]
 		constexpr double maxComponent() const noexcept;
 
@@ -322,6 +369,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの色の間を線形補間した色を返します。
+		/// @param other もう一方の色
+		/// @param f 補間係数
+		/// @return 補間された色
 		[[nodiscard]]
 		constexpr ColorF lerp(const ColorF& other, double f) const noexcept;
 
@@ -331,9 +382,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 色を明るくした色を返します。
+		/// @param amount 明るくする量 [0.0, 1.0]
+		/// @return 明るくした色
+		/// @remark `ColorF{ (r + (1.0 - r) * amount), (g + (1.0 - g) * amount), (b + (1.0 - b) * amount), a }` を返します。
 		[[nodiscard]]
 		constexpr ColorF lightened(double amount) const noexcept;
 
+		/// @brief 色を暗くした色を返します。
+		/// @param amount 暗くする量 [0.0, 1.0]
+		/// @return 暗くした色
+		/// @remark `ColorF{ (r * (1.0 - amount)), (g * (1.0 - amount)), (b * (1.0 - amount)), a }` を返します。
 		[[nodiscard]]
 		constexpr ColorF darkened(double amount) const noexcept;
 
@@ -343,6 +402,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 色をガンマ補正した色を返します。
+		/// @param gamma ガンマ値
+		/// @return ガンマ補正された色
 		[[nodiscard]]
 		ColorF gamma(double gamma) const noexcept;
 
@@ -352,9 +414,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief リニアカラースペースに変換した色を返します。
+		/// @return リニアカラースペースに変換した色
 		[[nodiscard]]
 		ColorF removeSRGBCurve() const noexcept;
 
+		/// @brief sRGB カーブを適用した色を返します。
+		/// @return sRGB カーブを適用した色
 		[[nodiscard]]
 		ColorF applySRGBCurve() const noexcept;
 
@@ -364,6 +430,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
@@ -374,8 +442,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 色を Color で返します。
-		/// @remark 各成分は 0.0～1.0 の範囲にクランプされます。
-		/// @return 変換された Color
+		/// @return Color
+		/// @remark 0.0 未満の成分は 0 に、1.0 より大きい成分は 255 になります。
 		[[nodiscard]]
 		constexpr Color toColor() const noexcept;
 
