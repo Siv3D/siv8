@@ -428,7 +428,7 @@
 # include <Siv3D/OpenMode.hpp>
 
 // 読み込み専用バイナリファイル | Binary file reader
-# include <Siv3D/BinaryReader.hpp> // ToDo
+# include <Siv3D/BinaryReader.hpp>
 
 // 書き込み専用バイナリファイル | Binary file writer
 # include <Siv3D/BinaryWriter.hpp> // ToDo
@@ -569,10 +569,10 @@
 # include <Siv3D/Color.hpp>
 
 // 色 (double * 4) | Color (double * 4)
-# include <Siv3D/ColorF.hpp> // ToDo
+# include <Siv3D/ColorF.hpp>
 
 // HSV カラー | HSV color
-# include <Siv3D/HSV.hpp> // ToDo
+# include <Siv3D/HSV.hpp>
 
 // 色定数 | Color constants
 # include <Siv3D/Palette.hpp>
@@ -641,7 +641,7 @@
 ////////////////////////////////////////////////////////////////
 
 // ベクトル | Vectors
-# include <Siv3D/PointVector.hpp> // ToDo
+# include <Siv3D/PointVector.hpp>
 
 // 整数の 2 次元ベクトル | 2D vector (integer)
 # include <Siv3D/Point.hpp> // ToDo
