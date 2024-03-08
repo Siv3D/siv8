@@ -128,7 +128,7 @@ namespace s3d
 		/// @brief 指定したインデックスの成分を返します。
 		/// @param index インデックス
 		/// @return 指定したインデックスの成分。範囲外の場合は 0.0
-		/// @remark 0 で R 成分、1 で G 成分、2 で B 成分、3 で A 成分にアクセスできます。
+		/// @remark 0 で R 成分、1 で G 成分、2 で B 成分、3 で アルファ値にアクセスできます。
 		[[nodiscard]]
 		constexpr double elem(size_t index) const noexcept;
 
@@ -140,13 +140,13 @@ namespace s3d
 
 		/// @brief R 成分へのポインタを返します。
 		/// @return R 成分へのポインタ
-		/// @remark [0] で R 成分、[1] で G 成分、[2] で B 成分、[3] で A 成分にアクセスできます。
+		/// @remark [0] で R 成分、[1] で G 成分、[2] で B 成分、[3] で アルファ値にアクセスできます。
 		[[nodiscard]]
 		constexpr double* getPointer() noexcept;
 
 		/// @brief R 成分へのポインタを返します。
 		/// @return R 成分へのポインタ
-		/// @remark [0] で R 成分、[1] で G 成分、[2] で B 成分、[3] で A 成分にアクセスできます。
+		/// @remark [0] で R 成分、[1] で G 成分、[2] で B 成分、[3] で アルファ値にアクセスできます。
 		[[nodiscard]]
 		constexpr const double* getPointer() const noexcept;
 
@@ -245,27 +245,27 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief r 成分のみを変更した自身のコピーを返します。
-		/// @param _r r 成分
-		/// @return r 成分を変更したコピー
+		/// @brief R 成分のみを変更した自身のコピーを返します。
+		/// @param _r 新しい R 成分
+		/// @return R 成分を変更したコピー
 		[[nodiscard]]
 		constexpr ColorF withR(double _r) const noexcept;
 
-		/// @brief g 成分のみを変更した自身のコピーを返します。
-		/// @param _g g 成分
-		/// @return g 成分を変更したコピー
+		/// @brief G 成分のみを変更した自身のコピーを返します。
+		/// @param _g 新しい G 成分
+		/// @return G 成分を変更したコピー
 		[[nodiscard]]
 		constexpr ColorF withG(double _g) const noexcept;
 
-		/// @brief b 成分のみを変更した自身のコピーを返します。
-		/// @param _b b 成分
-		/// @return b 成分を変更したコピー
+		/// @brief B 成分のみを変更した自身のコピーを返します。
+		/// @param _b 新しい B 成分
+		/// @return B 成分を変更したコピー
 		[[nodiscard]]
 		constexpr ColorF withB(double _b) const noexcept;
 
-		/// @brief a 成分のみを変更した自身のコピーを返します。
-		/// @param _a a 成分
-		/// @return a 成分を変更したコピー
+		/// @brief アルファ値のみを変更した自身のコピーを返します。
+		/// @param _a 新しいアルファ値
+		/// @return アルファ値を変更したコピー
 		[[nodiscard]]
 		constexpr ColorF withA(double _a) const noexcept;
 
@@ -275,9 +275,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief a 成分のみを変更した自身のコピーを返します。
-		/// @param _a a 成分
-		/// @return a 成分を変更したコピー
+		/// @brief アルファ値のみを変更した自身のコピーを返します。
+		/// @param _a 新しいアルファ値
+		/// @return アルファ値を変更したコピー
 		/// @remark `.withA(_a)` と同じです。
 		constexpr ColorF withAlpha(double _a) const noexcept;
 

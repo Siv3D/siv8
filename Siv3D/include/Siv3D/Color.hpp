@@ -155,27 +155,27 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief r 成分のみを変更した自身のコピーを返します。
-		/// @param _r r 成分 [0, 255]
-		/// @return r 成分を変更したコピー
+		/// @brief R 成分のみを変更した自身のコピーを返します。
+		/// @param _r 新しい R 成分 [0, 255]
+		/// @return R 成分を変更したコピー
 		[[nodiscard]]
 		constexpr Color withR(uint32 _r) const noexcept;
 
-		/// @brief g 成分のみを変更した自身のコピーを返します。
-		/// @param _g g 成分 [0, 255]
-		/// @return g 成分を変更したコピー
+		/// @brief G 成分のみを変更した自身のコピーを返します。
+		/// @param _g 新しい G 成分 [0, 255]
+		/// @return G 成分を変更したコピー
 		[[nodiscard]]
 		constexpr Color withG(uint32 _g) const noexcept;
 
-		/// @brief b 成分のみを変更した自身のコピーを返します。
-		/// @param _b b 成分 [0, 255]
-		/// @return b 成分を変更したコピー
+		/// @brief B 成分のみを変更した自身のコピーを返します。
+		/// @param _b 新しい B 成分 [0, 255]
+		/// @return B 成分を変更したコピー
 		[[nodiscard]]
 		constexpr Color withB(uint32 _b) const noexcept;
 
-		/// @brief a 成分のみを変更した自身のコピーを返します。
-		/// @param _a a 成分 [0, 255]
-		/// @return a 成分を変更したコピー
+		/// @brief アルファ値のみを変更した自身のコピーを返します。
+		/// @param _a 新しい アルファ値 [0, 255]
+		/// @return アルファ値を変更したコピー
 		[[nodiscard]]
 		constexpr Color withA(uint32 _a) const noexcept;
 
@@ -185,9 +185,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief a 成分のみを変更した自身のコピーを返します。
-		/// @param _a a 成分
-		/// @return a 成分を変更したコピー
+		/// @brief アルファ値のみを変更した自身のコピーを返します。
+		/// @param _a 新しい アルファ値
+		/// @return アルファ値を変更したコピー
 		/// @remark `.withA(_a)` と同じです。
 		constexpr Color withAlpha(uint32 _a) const noexcept;
 
