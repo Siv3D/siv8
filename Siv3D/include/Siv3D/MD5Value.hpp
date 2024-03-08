@@ -110,20 +110,8 @@ namespace s3d
 		[[nodiscard]]
 		friend constexpr bool operator ==(const MD5Value&, const MD5Value&) = default;
 
-	# if __cpp_lib_three_way_comparison
-
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const MD5Value& lhs, const MD5Value& rhs) = default;
-
-	# else
-
-		[[nodiscard]]
-		friend constexpr auto operator <=>(const MD5Value& lhs, const MD5Value& rhs)
-		{
-			return LexicographicalCompareThreeWay(lhs.m_values.begin(), lhs.m_values.end(), rhs.m_values.begin(), rhs.m_values.end(), std::compare_three_way{});
-		}
-
-	# endif
 
 		////////////////////////////////////////////////////////////////
 		//

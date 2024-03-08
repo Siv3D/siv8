@@ -1474,23 +1474,11 @@ namespace s3d
 			return (lhs.m_container == rhs.m_container);
 		}
 
-	# if __cpp_lib_three_way_comparison
-
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const Array& lhs, const Array& rhs)
 		{
 			return (lhs.m_container <=> rhs.m_container);
 		}
-
-	# else
-
-		[[nodiscard]]
-		friend constexpr auto operator <=>(const Array& lhs, const Array& rhs)
-		{
-			return LexicographicalCompareThreeWay(lhs.m_container.begin(), lhs.m_container.end(), rhs.m_container.begin(), rhs.m_container.end(), std::compare_three_way{});
-		}
-
-	# endif
 
 		////////////////////////////////////////////////////////////////
 		//
