@@ -52,7 +52,7 @@ namespace s3d
 
 		[[nodiscard]]
 		explicit BigInt(std::string_view number);
-		
+
 		[[nodiscard]]
 		explicit BigInt(StringView number);
 
@@ -71,21 +71,21 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator =(int64 i);
-		
+
 		BigInt& operator =(uint64 i);
-		
+
 		BigInt& operator =(Concept::SignedIntegral auto i);
 
 		BigInt& operator =(Concept::UnsignedIntegral auto i);
 
 		BigInt& operator =(const BigInt& other);
-		
+
 		BigInt& operator =(BigInt&& other) noexcept;
-		
+
 		BigInt& operator =(std::string_view number);
-		
+
 		BigInt& operator =(StringView number);
-		
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator +
@@ -97,7 +97,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator +(int64 i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator +(uint64 i) const;
 
@@ -106,7 +106,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator +(Concept::UnsignedIntegral auto i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator +(const BigInt& i) const;
 
@@ -124,13 +124,13 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator -() const&;
-		
+
 		[[nodiscard]]
 		BigInt operator -()&&;
 
 		[[nodiscard]]
 		BigInt operator -(int64 i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator -(uint64 i) const;
 
@@ -160,7 +160,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator *(Concept::UnsignedIntegral auto i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator *(const BigInt& i) const;
 
@@ -176,7 +176,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		[[nodiscard]]		
+		[[nodiscard]]
 		BigInt operator /(int64 i) const;
 
 		[[nodiscard]]
@@ -184,7 +184,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator /(Concept::SignedIntegral auto i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator /(Concept::UnsignedIntegral auto i) const;
 
@@ -221,7 +221,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		[[nodiscard]]		
+		[[nodiscard]]
 		BigInt operator %(int64 i) const;
 
 		[[nodiscard]]
@@ -229,7 +229,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator %(Concept::SignedIntegral auto i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator %(Concept::UnsignedIntegral auto i) const;
 
@@ -267,13 +267,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator +=(int64 i);
-		
+
 		BigInt& operator +=(uint64 i);
 
 		BigInt& operator +=(Concept::SignedIntegral auto i);
 
 		BigInt& operator +=(Concept::UnsignedIntegral auto i);
-		
+
 		BigInt& operator +=(const BigInt& i);
 
 		////////////////////////////////////////////////////////////////
@@ -283,13 +283,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator -=(int64 i);
-		
+
 		BigInt& operator -=(uint64 i);
 
 		BigInt& operator -=(Concept::SignedIntegral auto i);
 
 		BigInt& operator -=(Concept::UnsignedIntegral auto i);
-		
+
 		BigInt& operator -=(const BigInt& i);
 
 		////////////////////////////////////////////////////////////////
@@ -299,13 +299,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator *=(int64 i);
-		
+
 		BigInt& operator *=(uint64 i);
 
 		BigInt& operator *=(Concept::SignedIntegral auto i);
 
 		BigInt& operator *=(Concept::UnsignedIntegral auto i);
-		
+
 		BigInt& operator *=(const BigInt& i);
 
 		////////////////////////////////////////////////////////////////
@@ -315,13 +315,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator /=(int64 i);
-		
+
 		BigInt& operator /=(uint64 i);
 
 		BigInt& operator /=(Concept::SignedIntegral auto i);
 
 		BigInt& operator /=(Concept::UnsignedIntegral auto i);
-		
+
 		BigInt& operator /=(const BigInt& i);
 
 		////////////////////////////////////////////////////////////////
@@ -331,13 +331,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator %=(int64 i);
-		
+
 		BigInt& operator %=(uint64 i);
 
 		BigInt& operator %=(Concept::SignedIntegral auto i);
 
 		BigInt& operator %=(Concept::UnsignedIntegral auto i);
-		
+
 		BigInt& operator %=(const BigInt& i);
 
 		////////////////////////////////////////////////////////////////
@@ -361,7 +361,7 @@ namespace s3d
 		BigInt& operator --()&;
 
 		BigInt operator --()&&;
-		
+
 		BigInt operator --(int);
 
 		////////////////////////////////////////////////////////////////
@@ -381,7 +381,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator &(Concept::UnsignedIntegral auto i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator &(const BigInt& i) const;
 
@@ -408,7 +408,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator |(Concept::UnsignedIntegral auto i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator |(const BigInt& i) const;
 
@@ -435,7 +435,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator ^(Concept::UnsignedIntegral auto i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator ^(const BigInt& i) const;
 
@@ -452,13 +452,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator &=(int64 i);
-		
+
 		BigInt& operator &=(uint64 i);
 
 		BigInt& operator &=(Concept::SignedIntegral auto i);
 
 		BigInt& operator &=(Concept::UnsignedIntegral auto i);
-		
+
 		BigInt& operator &=(const BigInt& i);
 
 		////////////////////////////////////////////////////////////////
@@ -468,13 +468,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator |=(int64 i);
-		
+
 		BigInt& operator |=(uint64 i);
 
 		BigInt& operator |=(Concept::SignedIntegral auto i);
 
 		BigInt& operator |=(Concept::UnsignedIntegral auto i);
-		
+
 		BigInt& operator |=(const BigInt& i);
 
 		////////////////////////////////////////////////////////////////
@@ -484,13 +484,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator ^=(int64 i);
-		
+
 		BigInt& operator ^=(uint64 i);
 
 		BigInt& operator ^=(Concept::SignedIntegral auto i);
 
 		BigInt& operator ^=(Concept::UnsignedIntegral auto i);
-		
+
 		BigInt& operator ^=(const BigInt& i);
 
 		////////////////////////////////////////////////////////////////
@@ -501,7 +501,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator <<(int64 i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator <<(uint64 i) const;
 
@@ -519,7 +519,7 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator >>(int64 i) const;
-		
+
 		[[nodiscard]]
 		BigInt operator >>(uint64 i) const;
 
@@ -536,9 +536,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator <<=(int64 i);
-		
+
 		BigInt& operator <<=(uint64 i);
-		
+
 		BigInt& operator <<=(Concept::SignedIntegral auto i);
 
 		BigInt& operator <<=(Concept::UnsignedIntegral auto i);
@@ -550,9 +550,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		BigInt& operator >>=(int64 i);
-		
+
 		BigInt& operator >>=(uint64 i);
-		
+
 		BigInt& operator >>=(Concept::SignedIntegral auto i);
 
 		BigInt& operator >>=(Concept::UnsignedIntegral auto i);
@@ -610,31 +610,31 @@ namespace s3d
 
 		[[nodiscard]]
 		bool isZero() const noexcept;
-	
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	sign
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		[[nodiscard]]
 		int32 sign() const noexcept;
-	
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	abs
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		[[nodiscard]]
 		BigInt abs() const;
-	
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	pow
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		[[nodiscard]]
 		BigInt pow(uint32 x) const;
 
@@ -643,17 +643,26 @@ namespace s3d
 		//	divmod
 		//
 		////////////////////////////////////////////////////////////////
-		
+
 		void divmod(const BigInt& x, BigInt& q, BigInt& r) const;
-	
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	lsb
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		[[nodiscard]]
-		uint32 lsb() const noexcept;
+		uint64 lsb() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	msb
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		uint64 msb() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -663,22 +672,40 @@ namespace s3d
 
 		[[nodiscard]]
 		bool bitTest(uint32 index) const noexcept;
-	
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	bitSet
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		BigInt& bitSet(uint32 index, bool value) noexcept;
-	
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	bitFlip
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		BigInt& bitFlip(uint32 index) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	gcd
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BigInt gcd(const BigInt& x) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	lcm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BigInt lcm(const BigInt& x) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -695,7 +722,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		size_t hash() const noexcept;
+		uint64 hash() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -705,70 +732,70 @@ namespace s3d
 
 		[[nodiscard]]
 		int32 asInt32() const noexcept;
-		
+
 		[[nodiscard]]
 		uint32 asUint32() const noexcept;
-		
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	asInt64, asUint64
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		[[nodiscard]]
 		int64 asInt64() const noexcept;
-	
+
 		[[nodiscard]]
 		uint64 asUint64() const noexcept;
-		
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	asFloat, asDouble
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		[[nodiscard]]
 		float asFloat() const noexcept;
-		
+
 		[[nodiscard]]
 		double asDouble() const noexcept;
-			
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	asBigFloat
 		//
 		////////////////////////////////////////////////////////////////
-		
+
 		//[[nodiscard]]
 		//BigFloat asBigFloat() const;
-		
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator size_t
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		[[nodiscard]]
 		explicit operator size_t() const noexcept;
-		
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator float, operator double
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		[[nodiscard]]
 		explicit operator float() const noexcept;
 
 		[[nodiscard]]
 		explicit operator double() const noexcept;
-		
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator BigFloat
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		//[[nodiscard]]
 		//explicit operator BigFloat() const;
 
@@ -798,10 +825,16 @@ namespace s3d
 
 		[[nodiscard]]
 		int32 compare(int64 i) const noexcept;
-		
+
 		[[nodiscard]]
 		int32 compare(uint64 i) const noexcept;
-		
+
+		[[nodiscard]]
+		int32 compare(float f) const noexcept;
+
+		[[nodiscard]]
+		int32 compare(double f) const noexcept;
+
 		[[nodiscard]]
 		int32 compare(long double f) const noexcept;
 
@@ -811,9 +844,6 @@ namespace s3d
 		[[nodiscard]]
 		int32 compare(Concept::UnsignedIntegral auto i) const noexcept;
 
-		[[nodiscard]]
-		int32 compare(Concept::FloatingPoint auto f) const noexcept;
-		
 		[[nodiscard]]
 		int32 compare(const BigInt& i) const noexcept;
 
@@ -876,6 +906,46 @@ namespace s3d
 		BigInt _modI(int64 a) const;
 		BigInt _modI(uint64 a) const;
 	};
+
+	inline namespace Literals
+	{
+		inline namespace BigNumLiterals
+		{
+			////////////////////////////////////////////////////////////////
+			//
+			//	_big
+			//
+			////////////////////////////////////////////////////////////////
+
+			[[nodiscard]]
+			BigInt operator ""_big(const char* s);
+
+			/// @remark BigFloat 用のサフィックスは _bigF です。
+			[[nodiscard]]
+			BigInt operator ""_big(long double) = delete;
+		}
+	}
+
+	namespace Math
+	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	GCD
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BigInt GCD(const BigInt& a, const BigInt& b);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	LCM
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BigInt LCM(const BigInt& a, const BigInt& b);
+	}
 }
 
 ////////////////////////////////////////////////////////////////
