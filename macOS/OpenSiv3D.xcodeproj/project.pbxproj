@@ -277,6 +277,7 @@
 		F90702832B9B831B00383E4D /* SivBinaryWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702812B9B831B00383E4D /* SivBinaryWriter.cpp */; };
 		F90702872B9B835300383E4D /* BinaryWriterDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702842B9B835300383E4D /* BinaryWriterDetail.cpp */; };
 		F90702882B9B835300383E4D /* BinaryWriterDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90702852B9B835300383E4D /* BinaryWriterDetail.hpp */; };
+		F907028A2B9C3AA300383E4D /* TestBinaryWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702892B9C3AA300383E4D /* TestBinaryWriter.cpp */; };
 		F907FE0B2B9B274E00383E4D /* Test_ColorF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F907FE0A2B9B274E00383E4D /* Test_ColorF.cpp */; };
 		F9190F0E2B8EE52300667E3B /* Test_Step.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9190EF72B8EE52300667E3B /* Test_Step.cpp */; };
 		F9190F0F2B8EE52300667E3B /* Test_Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9190EF82B8EE52300667E3B /* Test_Platform.cpp */; };
@@ -831,6 +832,7 @@
 		F90702812B9B831B00383E4D /* SivBinaryWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBinaryWriter.cpp; sourceTree = "<group>"; };
 		F90702842B9B835300383E4D /* BinaryWriterDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryWriterDetail.cpp; sourceTree = "<group>"; };
 		F90702852B9B835300383E4D /* BinaryWriterDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BinaryWriterDetail.hpp; sourceTree = "<group>"; };
+		F90702892B9C3AA300383E4D /* TestBinaryWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestBinaryWriter.cpp; sourceTree = "<group>"; };
 		F907FE0A2B9B274E00383E4D /* Test_ColorF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ColorF.cpp; sourceTree = "<group>"; };
 		F9190EF72B8EE52300667E3B /* Test_Step.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Step.cpp; sourceTree = "<group>"; };
 		F9190EF82B8EE52300667E3B /* Test_Platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Platform.cpp; sourceTree = "<group>"; };
@@ -1955,6 +1957,7 @@
 		F9190EF62B8EE52300667E3B /* Test */ = {
 			isa = PBXGroup;
 			children = (
+				F90702892B9C3AA300383E4D /* TestBinaryWriter.cpp */,
 				F9190EFD2B8EE52300667E3B /* Siv3DTest.cpp */,
 				F9190EFA2B8EE52300667E3B /* Test_Array.cpp */,
 				F9190F0A2B8EE52300667E3B /* Test_Byte.cpp */,
@@ -3233,6 +3236,7 @@
 				F9190F182B8EE52300667E3B /* Test_Concepts.cpp in Sources */,
 				F9190F1D2B8EE52300667E3B /* Test_SequenceFormatter.cpp in Sources */,
 				F9190F1B2B8EE52300667E3B /* Test_Utility.cpp in Sources */,
+				F907028A2B9C3AA300383E4D /* TestBinaryWriter.cpp in Sources */,
 				F9190F192B8EE52300667E3B /* Test_TupleFormatter.cpp in Sources */,
 				F9190F172B8EE52300667E3B /* Test_Hash.cpp in Sources */,
 				F9190F0F2B8EE52300667E3B /* Test_Platform.cpp in Sources */,

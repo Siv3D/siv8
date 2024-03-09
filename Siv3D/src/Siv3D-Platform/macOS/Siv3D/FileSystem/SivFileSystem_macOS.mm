@@ -12,6 +12,7 @@
 # include <sys/stat.h>
 # include <unistd.h>
 # include <mach-o/dyld.h>
+# include <filesystem>
 # include <Foundation/Foundation.h>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
@@ -21,6 +22,12 @@ namespace s3d
 {
 	namespace detail
 	{
+		[[nodiscard]]
+		static std::filesystem::path ToPath(const FilePathView path)
+		{
+			return std::filesystem::path(Unicode::ToUTF8(path));
+		}
+
 		[[nodiscard]]
 		static bool GetStat(const FilePathView path, struct stat& s)
 		{
@@ -117,6 +124,21 @@ namespace s3d
 				}
 				
 				return [directory UTF8String];
+			}
+		}
+
+		[[nodiscard]]
+		static bool MacOS_TrashFile(const std::string_view path, const bool isDirectory)
+		{
+			@autoreleasepool
+			{
+				NSURL* url = (CFBridgingRelease(CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8*)path.data(), path.size(), isDirectory)));
+				
+				const bool result = [[NSFileManager defaultManager] trashItemAtURL: url
+																  resultingItemURL: nil
+																			 error: nil];
+				
+				return result;
 			}
 		}
 	
@@ -283,6 +305,38 @@ namespace s3d
 			assert(FromEnum(folder) < static_cast<int32>(std::size(detail::init::g_specialFolderPaths)));
 
 			return detail::init::g_specialFolderPaths[FromEnum(folder)];
+		}
+	
+	
+	
+		bool Remove(const FilePathView path, const AllowUndo allowUndo)
+		{
+			if (not path)
+			{
+				return false;
+			}
+			
+			if (IsResourcePath(path))
+			{
+				return false;
+			}
+			
+			if (allowUndo)
+			{
+				return detail::MacOS_TrashFile(Unicode::ToUTF8(path), IsDirectory(path));
+			}
+			else
+			{
+				try
+				{
+					std::filesystem::remove_all(detail::ToPath(path));
+					return true;
+				}
+				catch (const std::filesystem::filesystem_error&)
+				{
+					return false;
+				}
+			}
 		}
 	}
 }
