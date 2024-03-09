@@ -481,8 +481,8 @@
 // 読み込み専用テキストファイル | Text file reader
 # include <Siv3D/TextReader.hpp>
 
-//// 書き込み専用テキストファイル | Text file writer
-//# include <Siv3D/TextWriter.hpp>
+// 書き込み専用テキストファイル | Text file writer
+# include <Siv3D/TextWriter.hpp> // ToDo
 
 ////////////////////////////////////////////////////////////////
 //
