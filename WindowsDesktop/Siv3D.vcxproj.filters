@@ -304,6 +304,9 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter">
       <UniqueIdentifier>{00531a58-d7b7-4289-8d4b-e0db8c6e1366}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows">
+      <UniqueIdentifier>{b010b876-7831-4db2-94c5-ea1ea74e1849}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1294,6 +1297,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows\SivWindows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
