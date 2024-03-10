@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "2DShapesFwd.hpp"
+# include "FmtHelper.hpp"
 
 namespace s3d
 {
@@ -184,9 +185,171 @@ namespace s3d
 				 && (lhs.y == rhs.y));
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	epsilonEquals
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した別のベクトルとの各成分の差の絶対値が epsilon 以下であるかを返します。
+		/// @param other 別のベクトル
+		/// @param epsilon 差の絶対値の許容量
+		/// @return 別のベクトルとの各成分の差の絶対値が epsilon 以下である場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool epsilonEquals(Vector2D other, value_type epsilon) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	hasSameDirection
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した別のベクトルとのなす角が 90° 未満であるかを返します。
+		/// @param other 別のベクトル
+		/// @return 別のベクトルとのなす角が 90° 未満である場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool hasSameDirection(Vector2D other) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	hasOppositeDirection
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した別のベクトルとのなす角が 90° より大きいかを返します。
+		/// @param other 別のベクトル
+		/// @return 別のベクトルとのなす角が 90° より大きい場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool hasOppositeDirection(Vector2D other) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isZero
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ゼロベクトルであるかを返します。
+		/// @return ゼロベクトルである場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isZero() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	hasNaN
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief NaN である成分を持つかを返します。
+		/// @return NaN である成分を持つ場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool hasNaN() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	minComponent, maxComponent
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 最小の成分を返します。
+		/// @return 最小の成分
+		[[nodiscard]]
+		constexpr value_type minComponent() const noexcept;
+
+		/// @brief 最大の成分を返します。
+		/// @return 最大の成分
+		[[nodiscard]]
+		constexpr value_type maxComponent() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	clear
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各成分を 0 にセットします。
+		constexpr void clear() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withX, withY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief x 成分のみを変更した自身のコピーを返します。
+		/// @param _x x 成分
+		/// @return x 成分を変更したコピー
+		[[nodiscard]]
+		constexpr Vector2D withX(value_type _x) const noexcept;
+
+		/// @brief y 成分のみを変更した自身のコピーを返します。
+		/// @param _y y 成分
+		/// @return y 成分を変更したコピー
+		[[nodiscard]]
+		constexpr Vector2D withY(value_type _y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	set
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各成分を変更します。
+		/// @param _x 新しい X 成分
+		/// @param _y 新しい Y 成分
+		/// @return *this
+		constexpr Vector2D& set(value_type _x, value_type _y) noexcept;
+
+		/// @brief ベクトルを変更します。
+		/// @param v 新しいベクトル
+		/// @return *this
+		constexpr Vector2D& set(Vector2D v) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	movedBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 位置ベクトルを移動させた新しいベクトルを返します。
+		/// @param _x X 成分の移動量
+		/// @param _y Y 成分の移動量
+		/// @return 移動後の新しいベクトル
+		[[nodiscard]]
+		constexpr Vector2D movedBy(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 位置ベクトルを移動させた新しいベクトルを返します。
+		/// @param v 移動量
+		/// @return 移動後の新しいベクトル
+		[[nodiscard]]
+		constexpr Vector2D movedBy(Vector2D v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	moveBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 位置ベクトルを移動させます。
+		/// @param _x X 成分の移動量
+		/// @param _y Y 成分の移動量
+		/// @return *this
+		constexpr Vector2D& moveBy(value_type _x, value_type _y) noexcept;
+
+		/// @brief 位置ベクトルを移動させます。
+		/// @param v 移動量
+		/// @return *this
+		constexpr Vector2D& moveBy(Vector2D v) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	clamp, clamped
+		//
+		////////////////////////////////////////////////////////////////
+
+		//Vector2D& clamp(const RectF& rect) noexcept;
+
+		//[[nodiscard]]
+		//Vector2D clamped(const RectF& rect) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -206,21 +369,621 @@ namespace s3d
 		[[nodiscard]]
 		constexpr value_type cross(Vector2D v) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	horizontalAspectRatio
+		//
+		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		constexpr value_type horizontalAspectRatio() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	length
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの大きさ（長さ）を返します。
+		/// @return ベクトルの大きさ（長さ）
+		[[nodiscard]]
+		value_type length() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	lengthSq
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの大きさ（長さ）の二乗を返します。
+		/// @remark 平方根を計算しないため `length()` より高速です。
+		/// @return ベクトルの大きさ（長さ）の二乗
+		[[nodiscard]]
+		constexpr value_type lengthSq() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	invLength
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの長さの逆数 (1 / length())を返します。
+		/// @return ベクトルの長さの逆数
+		[[nodiscard]]
+		value_type invLength() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	manhattanLength
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点からこの位置ベクトルまでのマンハッタン距離を返します。
+		/// @return 原点からのマンハッタン距離
+		[[nodiscard]]
+		constexpr value_type manhattanLength() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	manhattanDistanceFrom
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の位置ベクトルからのマンハッタン距離を返します。
+		/// @param _x 別の位置ベクトルの X 成分
+		/// @param _y 別の位置ベクトルの Y 成分
+		/// @return 別の位置ベクトルからのマンハッタン距離
+		[[nodiscard]]
+		constexpr value_type manhattanDistanceFrom(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 別の位置ベクトルからのマンハッタン距離を返します。
+		/// @param v 別の位置ベクトル
+		/// @return 別の位置ベクトルからのマンハッタン距離
+		[[nodiscard]]
+		constexpr value_type manhattanDistanceFrom(Vector2D v) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceFrom
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の位置ベクトルからの距離を返します。
+		/// @param _x 別の位置ベクトルの X 成分
+		/// @param _y 別の位置ベクトルの Y 成分
+		/// @return 別の位置ベクトルからの距離
+		[[nodiscard]]
+		value_type distanceFrom(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 別の位置ベクトルからの距離を返します。
+		/// @param v 別の位置ベクトル
+		/// @return 別の位置ベクトルからの距離
+		[[nodiscard]]
+		value_type distanceFrom(Vector2D v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceFromSq
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の位置ベクトルからの距離の二乗を返します。
+		/// @param _x 別の位置ベクトルの X 成分
+		/// @param _y 別の位置ベクトルの Y 成分
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @return 別の位置ベクトルからの距離の二乗
+		[[nodiscard]]
+		constexpr value_type distanceFromSq(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 別の位置ベクトルからの距離の二乗を返します。
+		/// @param v 別の位置ベクトル
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @return 別の位置ベクトルからの距離の二乗
+		[[nodiscard]]
+		constexpr value_type distanceFromSq(Vector2D v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withLength
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 向きが同じで大きさ（長さ）を変更した新しいベクトルを返します。
+		/// @param _length ベクトルの大きさ（長さ）
+		/// @return 新しいベクトル。自身がゼロベクトルの場合はゼロベクトル
+		[[nodiscard]]
+		Vector2D withLength(value_type _length) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setLength
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ベクトルの向きはそのままで、大きさ（長さ）だけを変更します。
+		/// @param _length ベクトルの大きさ（長さ）
+		/// @remark 自身がゼロベクトルの場合は何もしません。
+		/// @return *this
+		Vector2D& setLength(value_type _length) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withMaxLength
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 向きが同じで大きさ（長さ）を一定の値以下にした新しいベクトルを返します。
+		/// @param maxLength ベクトルの最大の大きさ（長さ）
+		/// @return 大きさ（長さ）を一定の値以下にした新しいベクトル
+		[[nodiscard]]
+		Vector2D withMaxLength(value_type maxLength) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setMaxLength
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ベクトルの向きはそのままで、大きさ（長さ）を一定の値以下にします
+		/// @param maxLength ベクトルの最大の大きさ（長さ）
+		/// @return *this
+		Vector2D& setMaxLength(value_type maxLength) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	normalized
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 正規化した（大きさを 1 にした）ベクトルを返します。
+		/// @return 正規化した（大きさを 1 にした）ベクトル
+		[[nodiscard]]
+		Vector2D normalized() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	normalize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 自身を正規化（大きさを 1 に）します。
+		/// @return *this
+		Vector2D& normalize() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated, rotate
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Vector2D rotated(value_type angle) const noexcept;
+
+		Vector2D& rotate(value_type angle) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotatedAt, rotateAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Vector2D rotatedAt(Vector2D center, value_type angle) const noexcept;
+
+		Vector2D& rotateAt(Vector2D center, value_type angle) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated90, rotate90
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 時計回りに 90°* n 回転したベクトルを返します。
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return 時計回りに 90°* n 回転したベクトル
+		[[nodiscard]]
+		constexpr Vector2D rotated90(int32 n = 1) const noexcept;
+
+		/// @brief 自身を時計回りに 90°* n 回転します。
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr Vector2D& rotate90(int32 n = 1) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated90At, rotate90At
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief centerを中心とし、時計回りに 90°* n 回転したベクトルを返します。
+		/// @param center 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return centerを中心とし、時計回りに 90°* n 回転したベクトル
+		[[nodiscard]]
+		constexpr Vector2D rotated90At(Vector2D center, int32 n = 1) const noexcept;
+
+		/// @brief centerを中心とし、自身を時計回りに 90°* n 回転します。
+		/// @param center 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr Vector2D& rotate90At(Vector2D center, int32 n = 1) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getAngle
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		value_type getAngle() const noexcept;
+
+		[[nodiscard]]
+		value_type getAngle(Vector2D other) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getPerpendicularCW, getPerpendicularCCW
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 時計回りに 90° 回転したベクトルを返します。
+		/// @return 時計回りに 90° 回転したベクトル
+		[[nodiscard]]
+		constexpr Vector2D getPerpendicularCW() const noexcept;
+
+		/// @brief 反時計回りに 90° 回転したベクトルを返します。
+		/// @return 反時計回りに 90° 回転したベクトル
+		[[nodiscard]]
+		constexpr Vector2D getPerpendicularCCW() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getMidpoint
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr Vector2D getMidpoint(Vector2D other) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	projection
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr Vector2D projection(Vector2D onto) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getPointByAngleAndDistance
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Vector2D getPointByAngleAndDistance(value_type angle, value_type distance) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	lerp
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr Vector2D lerp(Vector2D other, value_type f) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	asPoint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vec2 を Point 型に変換します。小数点数以下は切り捨てられます。
+		/// @return Point
+		[[nodiscard]]
+		constexpr Point asPoint() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	asCircle
+		//
+		////////////////////////////////////////////////////////////////
+
+		///// @brief 点を中心とした円を作成します。
+		///// @param r 円の半径
+		///// @return 円
+		//[[nodiscard]]
+		//Circle asCircle(double r) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersects
+		//
+		////////////////////////////////////////////////////////////////
+
+		//template <class Shape2DType>
+		//[[nodiscard]]
+		//constexpr bool intersects(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	hash
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		uint64 hash() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	xx, xy, yx, yy, x0, y0
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ x, x } を返します。
+		/// @return Vector2D{ x, x }
+		[[nodiscard]]
+		constexpr Vector2D xx() const noexcept;
+
+		/// @brief Vector2D{ x, y } を返します。
+		/// @return Vector2D{ x, y }
+		[[nodiscard]]
+		constexpr Vector2D xy() const noexcept;
+
+		/// @brief Vector2D{ y, x } を返します。
+		/// @return Vector2D{ y, x }
+		[[nodiscard]]
+		constexpr Vector2D yx() const noexcept;
+
+		/// @brief Vector2D{ y, y } を返します。
+		/// @return Vector2D{ y, y }
+		[[nodiscard]]
+		constexpr Vector2D yy() const noexcept;
+
+		/// @brief Vector2D{ x, 0 } を返します。
+		/// @return Vector2D{ x, 0 }
+		[[nodiscard]]
+		constexpr Vector2D x0() const noexcept;
+
+		/// @brief Vector2D{ y, 0 } を返します。
+		/// @return Vector2D{ y, 0 }
+		[[nodiscard]]
+		constexpr Vector2D y0() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	xy0
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector3D{ x, y, 0 } を返します。
+		/// @return Vector3D{ x, y, 0 }
+		[[nodiscard]]
+		constexpr Vector3D<Type> xy0() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	xy00
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector4D{ x, y, 0, 0 } を返します。
+		/// @return Vector4D{ x, y, 0, 0 }
+		[[nodiscard]]
+		constexpr Vector4D<Type> xy00() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Zero
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 0, 0 } を返します。
+		/// @return Vector2D{ 0, 0 }
+		[[nodiscard]]
+		static constexpr Vector2D Zero() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	One
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 1, 1 } を返します。
+		/// @return Vector2D{ 1, 1 }
+		[[nodiscard]]
+		static constexpr Vector2D One() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	All
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ value, value } を返します。
+		/// @param value 値
+		/// @return Vector2D{ value, value }
+		[[nodiscard]]
+		static constexpr Vector2D All(value_type value = 1) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	UnitX, UnitY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 1, 0 } を返します。
+		/// @return Vector2D{ 1, 0 }
+		[[nodiscard]]
+		static constexpr Vector2D UnitX() noexcept;
+
+		/// @brief Vector2D{ 0, 1 } を返します。
+		/// @return Vector2D{ 0, 1 }
+		[[nodiscard]]
+		static constexpr Vector2D UnitY() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Left, Right, Up, Down
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ -length, 0 } を返します。
+		/// @param length 値
+		/// @return Vector2D{ -length, 0 }
+		[[nodiscard]]
+		static constexpr Vector2D Left(value_type length = 1) noexcept;
+
+		/// @brief Vector2D{ length, 0 } を返します。
+		/// @param length 値
+		/// @return Vector2D{ length, 0 }
+		[[nodiscard]]
+		static constexpr Vector2D Right(value_type length = 1) noexcept;
+
+		/// @brief Vector2D{ 0, -length } を返します。
+		/// @param length 値
+		/// @return Vector2D{ 0, -length }
+		[[nodiscard]]
+		static constexpr Vector2D Up(value_type length = 1) noexcept;
+
+		/// @brief Vector2D{ 0, length } を返します。
+		/// @return Vector2D{ 0, length }
+		[[nodiscard]]
+		static constexpr Vector2D Down(value_type length = 1) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AnchorCenter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 0.5, 0.5 } を返します。
+		/// @return Vector2D{ 0.5, 0.5 }
+		[[nodiscard]]
+		static constexpr Vector2D AnchorCenter() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AnchorTopLeft
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 0, 0 } を返します。
+		/// @return Vector2D{ 0, 0 }
+		[[nodiscard]]
+		static constexpr Vector2D AnchorTopLeft() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AchorTopCenter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 0.5, 0 } を返します。
+		/// @return Vector2D{ 0.5, 0 }
+		[[nodiscard]]
+		static constexpr Vector2D AnchorTopCenter() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AchorTopRight
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 1, 0 } を返します。
+		/// @return Vector2D{ 1, 0 }
+		[[nodiscard]]
+		static constexpr Vector2D AnchorTopRight() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AchorRightCenter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 1, 0.5 } を返します。
+		/// @return Vector2D{ 1, 0.5 }
+		[[nodiscard]]
+		static constexpr Vector2D AnchorRightCenter() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AchorBottomRight
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 1, 1 } を返します。
+		/// @return Vector2D{ 1, 1 }
+		[[nodiscard]]
+		static constexpr Vector2D AnchorBottomRight() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AchorBottomCenter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 0.5, 1 } を返します。
+		/// @return Vector2D{ 0.5, 1 }
+		[[nodiscard]]
+		static constexpr Vector2D AnchorBottomCenter() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AchorBottomLeft
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 0, 1 } を返します。
+		/// @return Vector2D{ 0, 1 }
+		[[nodiscard]]
+		static constexpr Vector2D AnchorBottomLeft() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AchorLeftCenter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vector2D{ 0, 0.5 } を返します。
+		/// @return Vector2D{ 0, 0.5 }
+		[[nodiscard]]
+		static constexpr Vector2D AnchorLeftCenter() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator <<
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class CharType>
+		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Vector2D& value)
+		{
+			return output << CharType('(')
+				<< value.x << CharType(',') << CharType(' ')
+				<< value.y << CharType(')');
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class CharType>
+		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Vector2D& value)
+		{
+			CharType unused;
+			return input >> unused
+				>> value.x >> unused
+				>> value.y >> unused;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
 
 		friend void Formatter(FormatData& formatData, const Vector2D& value)
 		{
@@ -234,3 +997,55 @@ namespace s3d
 	using Vec2		= Vector2D<double>;
 	using SizeF		= Vec2;
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::Float2, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::Float2& value, s3d::BufferContext& ctx);
+};
+
+template <>
+struct fmt::formatter<s3d::Vec2, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::Vec2& value, s3d::BufferContext& ctx);
+};
+
+////////////////////////////////////////////////////////////////
+//
+//	std::hash
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct std::hash<s3d::Float2>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::Float2& value) const noexcept
+	{
+		return value.hash();
+	}
+};
+
+template <>
+struct std::hash<s3d::Vec2>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::Vec2& value) const noexcept
+	{
+		return value.hash();
+	}
+};
