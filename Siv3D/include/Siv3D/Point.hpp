@@ -15,6 +15,8 @@
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "Utility.hpp"
+# include "CommonFloat.hpp"
+# include "MathConstants.hpp"
 # include "FmtExtension.hpp"
 
 namespace s3d
@@ -499,16 +501,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 自身を時計回りに 90°* n 回転します。
-		///// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
-		///// @return *this
-		//constexpr Point& rotate90(int32 n = 1) noexcept;
+		/// @brief 自身を時計回りに 90°* n 回転します。
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr Point& rotate90(int32 n = 1) noexcept;
 
-		///// @brief 時計回りに 90°* n 回転した座標を返します。
-		///// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
-		///// @return 時計回りに 90°* n 回転した座標
-		//[[nodiscard]]
-		//constexpr Point rotated90(int32 n = 1) const noexcept;
+		/// @brief 時計回りに 90°* n 回転した座標を返します。
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return 時計回りに 90°* n 回転した座標
+		[[nodiscard]]
+		constexpr Point rotated90(int32 n = 1) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -516,18 +518,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief centerを中心とし、自身を時計回りに 90°* n 回転します。
-		///// @param center 回転の中心座標
-		///// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
-		///// @return *this
-		//constexpr Point& rotate90At(Point center, int32 n = 1) noexcept;
+		/// @brief centerを中心とし、自身を時計回りに 90°* n 回転します。
+		/// @param center 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr Point& rotate90At(Point center, int32 n = 1) noexcept;
 
-		///// @brief centerを中心とし、時計回りに 90°* n 回転した座標を返します。
-		///// @param center 回転の中心座標
-		///// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
-		///// @return centerを中心とし、時計回りに 90°* n 回転した座標
-		//[[nodiscard]]
-		//constexpr Point rotated90At(Point center, int32 n = 1) const noexcept;
+		/// @brief centerを中心とし、時計回りに 90°* n 回転した座標を返します。
+		/// @param center 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return centerを中心とし、時計回りに 90°* n 回転した座標
+		[[nodiscard]]
+		constexpr Point rotated90At(Point center, int32 n = 1) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -535,31 +537,29 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Type = double>
-		//[[nodiscard]]
-		//Type getAngle() const noexcept;
+		template <class Type = double>
+		[[nodiscard]]
+		Type getAngle() const noexcept;
 
-		//template <class Type>
-		//[[nodiscard]]
-		//Type getAngle(Vector2D<Type> other) const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getPerpendicularCW
-		//
-		////////////////////////////////////////////////////////////////
-
-		//[[nodiscard]]
-		//constexpr Point getPerpendicularCW() const noexcept;
+		template <class Type>
+		[[nodiscard]]
+		Type getAngle(Vector2D<Type> other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getPerpendicularCCW
+		//	getPerpendicularCW, getPerpendicularCCW
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//constexpr Point getPerpendicularCCW() const noexcept;
+		/// @brief 時計回りに 90° 回転したベクトルを返します。
+		/// @return 時計回りに 90° 回転したベクトル
+		[[nodiscard]]
+		constexpr Point getPerpendicularCW() const noexcept;
+
+		/// @brief 反時計回りに 90° 回転したベクトルを返します。
+		/// @return 反時計回りに 90° 回転したベクトル
+		[[nodiscard]]
+		constexpr Point getPerpendicularCCW() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -567,21 +567,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 別の座標との中間にある座標を返します。
-		///// @tparam Type 戻り値の二次元座標の要素の型
-		///// @param other 別の座標
-		///// @return 別の座標との中間にある座標
-		//template <class Type = double>
-		//[[nodiscard]]
-		//constexpr Vector2D<Type> getMidpoint(Point other) const noexcept;
+		/// @brief 別の座標との中間にある座標を返します。
+		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @param other 別の座標
+		/// @return 別の座標との中間にある座標
+		template <class Type = double>
+		[[nodiscard]]
+		constexpr Vector2D<Type> getMidpoint(Point other) const noexcept;
 
-		///// @brief 別の座標との中間にある座標を返します。
-		///// @tparam Type 戻り値の二次元座標の要素の型
-		///// @param other 別の座標
-		///// @return 別の座標との中間にある座標
-		//template <class Type>
-		//[[nodiscard]]
-		//constexpr Vector2D<Type> getMidpoint(Vector2D<Type> other) const noexcept;
+		/// @brief 別の座標との中間にある座標を返します。
+		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @param other 別の座標
+		/// @return 別の座標との中間にある座標
+		template <class Type>
+		[[nodiscard]]
+		constexpr Vector2D<Type> getMidpoint(Vector2D<Type> other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -589,9 +589,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class T, class U>
-		//[[nodiscard]]
-		//auto getPointByAngleAndDistance(T angle, U distance) const noexcept;
+		/// @brief 指定した角度に向かって指定した距離だけ進んだ座標を返します。
+		/// @param angle 角度（ラジアン）
+		/// @param distance 進む距離
+		/// @return 指定した角度に向かって指定した距離だけ進んだ座標
+		[[nodiscard]]
+		auto getPointByAngleAndDistance(Concept::Arithmetic auto angle, Concept::Arithmetic auto distance) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -599,13 +602,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Type = double>
-		//[[nodiscard]]
-		//constexpr Vector2D<Type> lerp(Point other, double f) const noexcept;
+		template <class Type = double>
+		[[nodiscard]]
+		constexpr Vector2D<Type> lerp(Point other, double f) const noexcept;
 
-		//template <class Type>
-		//[[nodiscard]]
-		//constexpr Vector2D<Type> lerp(Vector2D<Type> other, double f) const noexcept;
+		template <class Type>
+		[[nodiscard]]
+		constexpr Vector2D<Type> lerp(Vector2D<Type> other, double f) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -687,35 +690,35 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Point{ x, x } を返します。
-		///// @return Point{ x, x }
-		//[[nodiscard]]
-		//constexpr Point xx() const noexcept;
+		/// @brief Point{ x, x } を返します。
+		/// @return Point{ x, x }
+		[[nodiscard]]
+		constexpr Point xx() const noexcept;
 
-		///// @brief Point{ x, y } を返します。
-		///// @return Point{ x, y }
-		//[[nodiscard]]
-		//constexpr Point xy() const noexcept;
+		/// @brief Point{ x, y } を返します。
+		/// @return Point{ x, y }
+		[[nodiscard]]
+		constexpr Point xy() const noexcept;
 
-		///// @brief Point{ y x } を返します。
-		///// @return Point{ y, x }
-		//[[nodiscard]]
-		//constexpr Point yx() const noexcept;
+		/// @brief Point{ y x } を返します。
+		/// @return Point{ y, x }
+		[[nodiscard]]
+		constexpr Point yx() const noexcept;
 
-		///// @brief Point{ y, y } を返します。
-		///// @return Point{ y, y }
-		//[[nodiscard]]
-		//constexpr Point yy() const noexcept;
+		/// @brief Point{ y, y } を返します。
+		/// @return Point{ y, y }
+		[[nodiscard]]
+		constexpr Point yy() const noexcept;
 
-		///// @brief Point{ x, 0 } を返します。
-		///// @return Point{ x, 0 }
-		//[[nodiscard]]
-		//constexpr Point x0() const noexcept;
+		/// @brief Point{ x, 0 } を返します。
+		/// @return Point{ x, 0 }
+		[[nodiscard]]
+		constexpr Point x0() const noexcept;
 
-		///// @brief Point{ y, 0 } を返します。
-		///// @return Point{ y, 0 }
-		//[[nodiscard]]
-		//constexpr Point y0() const noexcept;
+		/// @brief Point{ y, 0 } を返します。
+		/// @return Point{ y, 0 }
+		[[nodiscard]]
+		constexpr Point y0() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -723,10 +726,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Point{ 0, 0 } を返します。
-		///// @return Point{ 0, 0 }
-		//[[nodiscard]]
-		//static constexpr Point Zero() noexcept;
+		/// @brief Point{ 0, 0 } を返します。
+		/// @return Point{ 0, 0 }
+		[[nodiscard]]
+		static constexpr Point Zero() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -734,10 +737,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Point{ 1, 1 } を返します。
-		///// @return Point{ 1, 1 }
-		//[[nodiscard]]
-		//static constexpr Point One() noexcept;
+		/// @brief Point{ 1, 1 } を返します。
+		/// @return Point{ 1, 1 }
+		[[nodiscard]]
+		static constexpr Point One() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -745,11 +748,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Point{ value, value } を返します。
-		///// @param value 値
-		///// @return Point{ value, value }
-		//[[nodiscard]]
-		//static constexpr Point All(value_type value = 1) noexcept;
+		/// @brief Point{ value, value } を返します。
+		/// @param value 値
+		/// @return Point{ value, value }
+		[[nodiscard]]
+		static constexpr Point All(value_type value = 1) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -757,15 +760,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Point{ 1, 0 } を返します。
-		///// @return Point{ 1, 0 }
-		//[[nodiscard]]
-		//static constexpr Point UnitX() noexcept;
+		/// @brief Point{ 1, 0 } を返します。
+		/// @return Point{ 1, 0 }
+		[[nodiscard]]
+		static constexpr Point UnitX() noexcept;
 
-		///// @brief Point{ 0, 1 } を返します。
-		///// @return Point{ 0, 1 }
-		//[[nodiscard]]
-		//static constexpr Point UnitY() noexcept;
+		/// @brief Point{ 0, 1 } を返します。
+		/// @return Point{ 0, 1 }
+		[[nodiscard]]
+		static constexpr Point UnitY() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -773,29 +776,29 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief Point{ -length, 0 } を返します。
-		///// @param length 値
-		///// @return Point{ -length, 0 }
-		//[[nodiscard]]
-		//static constexpr Point Left(value_type length = 1) noexcept;
+		/// @brief Point{ -length, 0 } を返します。
+		/// @param length 値
+		/// @return Point{ -length, 0 }
+		[[nodiscard]]
+		static constexpr Point Left(value_type length = 1) noexcept;
 
-		///// @brief Point{ length, 0 } を返します。
-		///// @param length 値
-		///// @return Point{ length, 0 }
-		//[[nodiscard]]
-		//static constexpr Point Right(value_type length = 1) noexcept;
+		/// @brief Point{ length, 0 } を返します。
+		/// @param length 値
+		/// @return Point{ length, 0 }
+		[[nodiscard]]
+		static constexpr Point Right(value_type length = 1) noexcept;
 
-		///// @brief Point{ 0, -length } を返します。
-		///// @param length 値
-		///// @return Point{ 0, -length }
-		//[[nodiscard]]
-		//static constexpr Point Up(value_type length = 1) noexcept;
+		/// @brief Point{ 0, -length } を返します。
+		/// @param length 値
+		/// @return Point{ 0, -length }
+		[[nodiscard]]
+		static constexpr Point Up(value_type length = 1) noexcept;
 
-		///// @brief Point{ 0, length } を返します。
-		///// @param length 値
-		///// @return Point{ 0, length }
-		//[[nodiscard]]
-		//static constexpr Point Down(value_type length = 1) noexcept;
+		/// @brief Point{ 0, length } を返します。
+		/// @param length 値
+		/// @return Point{ 0, length }
+		[[nodiscard]]
+		static constexpr Point Down(value_type length = 1) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -803,13 +806,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class CharType>
-		//friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Point& value)
-		//{
-		//	return output << CharType('(')
-		//		<< value.x << CharType(',') << CharType(' ')
-		//		<< value.y << CharType(')');
-		//}
+		template <class CharType>
+		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Point& value)
+		{
+			return output << CharType('(')
+				<< value.x << CharType(',') << CharType(' ')
+				<< value.y << CharType(')');
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -817,14 +820,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class CharType>
-		//friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Point& value)
-		//{
-		//	CharType unused;
-		//	return input >> unused
-		//		>> value.x >> unused
-		//		>> value.y >> unused;
-		//}
+		template <class CharType>
+		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Point& value)
+		{
+			CharType unused;
+			return input >> unused
+				>> value.x >> unused
+				>> value.y >> unused;
+		}
 
 		friend void Formatter(FormatData& formatData, const Point& value);
 	};

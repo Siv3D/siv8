@@ -684,9 +684,9 @@
 // 4 次元ベクトル | 4D vector
 # include <Siv3D/Vector4D.hpp> // ToDo
 
-//// 浮動小数点数の計算補助 | Floating point support
-//# include <Siv3D/CommonFloat.hpp>
-//
+// 浮動小数点数の計算補助 | Floating point support
+# include <Siv3D/CommonFloat.hpp>
+
 //// ベクトルクラステンプレートの計算補助 | Vector class templates support
 //# include <Siv3D/CommonVector.hpp>
 //

@@ -518,4 +518,268 @@ namespace s3d
 		return (x * y);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate90, rotated90
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point& Point::rotate90(const int32 n) noexcept
+	{
+		return (*this = rotated90(n));
+	}
+
+	constexpr Point Point::rotated90(const int32 n) const noexcept
+	{
+		switch (n % 4) // 時計回りに何回 90° 回転するか
+		{
+		case 1:
+		case -3:
+			return{ -y, x }; // 1 回または -3 回
+		case 2:
+		case -2:
+			return{ -x, -y }; // 2 回または -2 回
+		case 3:
+		case -1:
+			return{ y, -x }; // 3 回または -1 回
+		default:
+			return *this; // 0 回
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate90, rotated90
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point& Point::rotate90At(const Point center, const int32 n) noexcept
+	{
+		return (*this = rotated90At(center, n));
+	}
+
+	constexpr Point Point::rotated90At(const Point center, const int32 n) const noexcept
+	{
+		return ((*this - center).rotated90(n) + center);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getAngle
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	Type Point::getAngle() const noexcept
+	{
+		if (isZero())
+		{
+			return Math::NaN_v<Type>;
+		}
+
+		return std::atan2(x, -y);
+	}
+
+	template <class Type>
+	Type Point::getAngle(const Vector2D<Type> other) const noexcept
+	{
+		if (isZero() || other.isZero())
+		{
+			return Math::NaN_v<Type>;
+		}
+
+		return std::atan2(Vector2D<Type>{ *this }.cross(other), Vector2D<Type>{ *this }.dot(other));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getPerpendicularCW, getPerpendicularCCW
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point Point::getPerpendicularCW() const noexcept
+	{
+		return{ -y, x };
+	}
+
+	constexpr Point Point::getPerpendicularCCW() const noexcept
+	{
+		return{ y, -x };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getMidpoint
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr Vector2D<Type> Point::getMidpoint(const Point other) const noexcept
+	{
+		return{ (x + (other.x - x) * 0.5), (y + (other.y - y) * 0.5) };
+	}
+
+	template <class Type>
+	constexpr Vector2D<Type> Point::getMidpoint(const Vector2D<Type> other) const noexcept
+	{
+		return{ (x * 0.5 + other.x * 0.5), (y * 0.5 + other.y * 0.5) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getPointByAngleAndDistance
+	//
+	////////////////////////////////////////////////////////////////
+
+	auto Point::getPointByAngleAndDistance(const Concept::Arithmetic auto angle, const Concept::Arithmetic auto distance) const noexcept
+	{
+		using ValueType = CommonFloat_t<decltype(angle), decltype(distance)>;
+		
+		const auto s = std::sin(angle);
+		const auto c = std::cos(angle);
+		
+		return Vector2D<ValueType>{
+			static_cast<ValueType>((s * distance) + x),
+			static_cast<ValueType>((-c * distance) + y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	lerp
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr Vector2D<Type> Point::lerp(const Point other, const double f) const noexcept
+	{
+		return{ (x + (other.x - x) * f), (y + (other.y - y) * f) };
+	}
+
+	template <class Type>
+	constexpr Vector2D<Type> Point::lerp(const Vector2D<Type> other, const double f) const noexcept
+	{
+		return{ (x + (other.x - x) * static_cast<Type>(f)), (y + (other.y - y) * static_cast<Type>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	lerp
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline uint64 Point::hash() const noexcept
+	{
+		return Hash(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	xx, xy, yx, yy, x0, y0
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point Point::xx() const noexcept
+	{
+		return{ x, x };
+	}
+
+	constexpr Point Point::xy() const noexcept
+	{
+		return{ x, y };
+	}
+
+	constexpr Point Point::yx() const noexcept
+	{
+		return{ y, x };
+	}
+
+	constexpr Point Point::yy() const noexcept
+	{
+		return{ y, y };
+	}
+
+	constexpr Point Point::x0() const noexcept
+	{
+		return{ x, 0 };
+	}
+
+	constexpr Point Point::y0() const noexcept
+	{
+		return{ y, 0 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Zero
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point Point::Zero() noexcept
+	{
+		return{ 0, 0 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	One
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point Point::One() noexcept
+	{
+		return{ 1, 1 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	All
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point Point::All(const value_type value) noexcept
+	{
+		return{ value, value };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	UnitX, UnitY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point Point::UnitX() noexcept
+	{
+		return{ 1, 0 };
+	}
+
+	constexpr Point Point::UnitY() noexcept
+	{
+		return{ 0, 1 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Left, Right, Up, Down
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point Point::Left(const value_type length) noexcept
+	{
+		return{ -length, 0 };
+	}
+
+	constexpr Point Point::Right(const value_type length) noexcept
+	{
+		return{ length, 0 };
+	}
+
+	constexpr Point Point::Up(const value_type length) noexcept
+	{
+		return{ 0, -length };
+	}
+
+	constexpr Point Point::Down(const value_type length) noexcept
+	{
+		return{ 0, length };
+	}
 }
