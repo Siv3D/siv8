@@ -31,16 +31,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	double Random(URBG&& urbg) noexcept
+	double Random(Concept::UniformRandomBitGenerator auto&& urbg) noexcept
 	{
-		if constexpr (std::is_same_v<std::decay_t<URBG>, DefaultRNG>)
+		if constexpr (std::is_same_v<std::decay_t<decltype(urbg)>, DefaultRNG>)
 		{
 			return urbg.generateReal();
 		}
 		else
 		{
-			return RandomClosedOpen(0.0, 1.0, std::forward<URBG>(urbg));
+			return RandomClosedOpen(0.0, 1.0, std::forward<decltype(urbg)>(urbg));
 		}
 	}
 
@@ -57,16 +56,16 @@ namespace s3d
 		}
 	}
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
-	Arithmetic Random(const Arithmetic min, const Arithmetic max, URBG&& urbg)
+	template <Concept::Arithmetic Arithmetic>
+	Arithmetic Random(const Arithmetic min, const Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		if constexpr (std::is_integral_v<Arithmetic>)
 		{
-			return absl::Uniform(absl::IntervalClosed, std::forward<URBG>(urbg), min, max);
+			return absl::Uniform(absl::IntervalClosed, std::forward<decltype(urbg)>(urbg), min, max);
 		}
 		else
 		{
-			return absl::Uniform(absl::IntervalClosedOpen, std::forward<URBG>(urbg), min, max);
+			return absl::Uniform(absl::IntervalClosedOpen, std::forward<decltype(urbg)>(urbg), min, max);
 		}
 	}
 
@@ -76,10 +75,10 @@ namespace s3d
 		return Random(max, GetDefaultRNG());
 	}
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
-	Arithmetic Random(const Arithmetic max, URBG&& urbg)
+	template <Concept::Arithmetic Arithmetic>
+	Arithmetic Random(const Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return Random<Arithmetic>(0, max, std::forward<URBG>(urbg));
+		return Random<Arithmetic>(0, max, std::forward<decltype(urbg)>(urbg));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -94,10 +93,10 @@ namespace s3d
 		return absl::Uniform(absl::IntervalOpen, GetDefaultRNG(), min, max);
 	}
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
-	Arithmetic RandomOpen(const Arithmetic min, const Arithmetic max, URBG&& urbg)
+	template <Concept::Arithmetic Arithmetic>
+	Arithmetic RandomOpen(const Arithmetic min, const Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform(absl::IntervalOpen, std::forward<URBG>(urbg), min, max);
+		return absl::Uniform(absl::IntervalOpen, std::forward<decltype(urbg)>(urbg), min, max);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -112,10 +111,10 @@ namespace s3d
 		return absl::Uniform(absl::IntervalClosed, GetDefaultRNG(), min, max);
 	}
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
-	Arithmetic RandomClosed(const Arithmetic min, const Arithmetic max, URBG&& urbg)
+	template <Concept::Arithmetic Arithmetic>
+	Arithmetic RandomClosed(const Arithmetic min, const Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform(absl::IntervalClosed, std::forward<URBG>(urbg), min, max);
+		return absl::Uniform(absl::IntervalClosed, std::forward<decltype(urbg)>(urbg), min, max);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -130,10 +129,10 @@ namespace s3d
 		return absl::Uniform(absl::IntervalOpenClosed, GetDefaultRNG(), min, max);
 	}
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
-	Arithmetic RandomOpenClosed(const Arithmetic min, const Arithmetic max, URBG&& urbg)
+	template <Concept::Arithmetic Arithmetic>
+	Arithmetic RandomOpenClosed(const Arithmetic min, const Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform(absl::IntervalOpenClosed, std::forward<URBG>(urbg), min, max);
+		return absl::Uniform(absl::IntervalOpenClosed, std::forward<decltype(urbg)>(urbg), min, max);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -148,10 +147,10 @@ namespace s3d
 		return absl::Uniform(absl::IntervalClosedOpen, GetDefaultRNG(), min, max);
 	}
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
-	Arithmetic RandomClosedOpen(const Arithmetic min, const Arithmetic max, URBG&& urbg)
+	template <Concept::Arithmetic Arithmetic>
+	Arithmetic RandomClosedOpen(const Arithmetic min, const Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform(absl::IntervalClosedOpen, std::forward<URBG>(urbg), min, max);
+		return absl::Uniform(absl::IntervalClosedOpen, std::forward<decltype(urbg)>(urbg), min, max);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -165,10 +164,9 @@ namespace s3d
 		return absl::Bernoulli(GetDefaultRNG(), p);
 	}
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	bool RandomBool(const double p, URBG&& urbg) noexcept
+	bool RandomBool(const double p, Concept::UniformRandomBitGenerator auto&& urbg) noexcept
 	{
-		return absl::Bernoulli(std::forward<URBG>(urbg), p);
+		return absl::Bernoulli(std::forward<decltype(urbg)>(urbg), p);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -182,10 +180,9 @@ namespace s3d
 		return absl::Uniform<uint8>(GetDefaultRNG());
 	}
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	uint8 RandomUint8(URBG&& urbg)
+	uint8 RandomUint8(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform<uint8>(std::forward<URBG>(urbg));
+		return absl::Uniform<uint8>(std::forward<decltype(urbg)>(urbg));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -199,10 +196,9 @@ namespace s3d
 		return absl::Uniform<uint16>(GetDefaultRNG());
 	}
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	uint16 RandomUint16(URBG&& urbg)
+	uint16 RandomUint16(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform<uint16>(std::forward<URBG>(urbg));
+		return absl::Uniform<uint16>(std::forward<decltype(urbg)>(urbg));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -216,10 +212,9 @@ namespace s3d
 		return absl::Uniform<uint32>(GetDefaultRNG());
 	}
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	uint32 RandomUint32(URBG&& urbg)
+	uint32 RandomUint32(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform<uint32>(std::forward<URBG>(urbg));
+		return absl::Uniform<uint32>(std::forward<decltype(urbg)>(urbg));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -233,10 +228,9 @@ namespace s3d
 		return absl::Uniform<uint64>(GetDefaultRNG());
 	}
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	uint64 RandomUint64(URBG&& urbg)
+	uint64 RandomUint64(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform<uint64>(std::forward<URBG>(urbg));
+		return absl::Uniform<uint64>(std::forward<decltype(urbg)>(urbg));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -250,10 +244,9 @@ namespace s3d
 		return RandomInt8(GetDefaultRNG());
 	}
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	int8 RandomInt8(URBG&& urbg)
+	int8 RandomInt8(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform(absl::IntervalClosed, std::forward<URBG>(urbg), Smallest<int8>, Largest<int8>);
+		return absl::Uniform(absl::IntervalClosed, std::forward<decltype(urbg)>(urbg), Smallest<int8>, Largest<int8>);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -267,10 +260,9 @@ namespace s3d
 		return RandomInt16(GetDefaultRNG());
 	}
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	int16 RandomInt16(URBG&& urbg)
+	int16 RandomInt16(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform(absl::IntervalClosed, std::forward<URBG>(urbg), Smallest<int16>, Largest<int16>);
+		return absl::Uniform(absl::IntervalClosed, std::forward<decltype(urbg)>(urbg), Smallest<int16>, Largest<int16>);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -284,10 +276,9 @@ namespace s3d
 		return RandomInt32(GetDefaultRNG());
 	}
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	int32 RandomInt32(URBG&& urbg)
+	int32 RandomInt32(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform(absl::IntervalClosed, std::forward<URBG>(urbg), Smallest<int32>, Largest<int32>);
+		return absl::Uniform(absl::IntervalClosed, std::forward<decltype(urbg)>(urbg), Smallest<int32>, Largest<int32>);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -301,9 +292,8 @@ namespace s3d
 		return RandomInt64(GetDefaultRNG());
 	}
 
-	template <Concept::UniformRandomBitGenerator URBG>
-	int64 RandomInt64(URBG&& urbg)
+	int64 RandomInt64(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return absl::Uniform(absl::IntervalClosed, std::forward<URBG>(urbg), Smallest<int64>, Largest<int64>);
+		return absl::Uniform(absl::IntervalClosed, std::forward<decltype(urbg)>(urbg), Smallest<int64>, Largest<int64>);
 	}
 }

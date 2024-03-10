@@ -25,10 +25,10 @@ namespace s3d
 		Shuffle(std::ranges::begin(range), std::ranges::end(range), DefaultRNG());
 	}
 
-	template <class Range, Concept::UniformRandomBitGenerator URBG> requires std::permutable<std::ranges::iterator_t<Range>>
-	void Shuffle(Range&& range, URBG&& urbg)
+	template <class Range> requires std::permutable<std::ranges::iterator_t<Range>>
+	void Shuffle(Range&& range, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		Shuffle(std::ranges::begin(range), std::ranges::end(range), std::forward<URBG>(urbg));
+		Shuffle(std::ranges::begin(range), std::ranges::end(range), std::forward<decltype(urbg)>(urbg));
 	}
 
 	template <class RandomIt> requires std::permutable<RandomIt>
@@ -37,8 +37,8 @@ namespace s3d
 		Shuffle(first, last, DefaultRNG());
 	}
 
-	template <class RandomIt, Concept::UniformRandomBitGenerator URBG> requires std::permutable<RandomIt>
-	void Shuffle(RandomIt first, RandomIt last, URBG&& urbg)
+	template <class RandomIt> requires std::permutable<RandomIt>
+	void Shuffle(RandomIt first, RandomIt last, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		if (first == last)
 		{
@@ -50,7 +50,7 @@ namespace s3d
 		for (auto it = (first + 1); it < last; ++it)
 		{
 			const uint64 n = static_cast<uint64>(it - first);
-			std::iter_swap(it, first + static_cast<difference_type>(Random<uint64>(0, n, std::forward<URBG>(urbg))));
+			std::iter_swap(it, first + static_cast<difference_type>(Random<uint64>(0, n, std::forward<decltype(urbg)>(urbg))));
 		}
 	}
 }

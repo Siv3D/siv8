@@ -73,8 +73,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		template <Concept::UniformRandomBitGenerator URBG>
-		result_type operator ()(URBG&& urbg);
+		result_type operator ()(Concept::UniformRandomBitGenerator auto&& urbg);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -114,25 +113,25 @@ namespace s3d
 	[[nodiscard]]
 	auto DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight);
 
-	template <class Iterator, Concept::UniformRandomBitGenerator URBG>
+	template <class Iterator>
 	[[nodiscard]]
-	auto DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight, URBG&& urbg);
+	auto DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	template <class Container>
 	[[nodiscard]]
 	auto DiscreteSample(const Container& c, DiscreteDistribution& weight);
 
-	template <class Container, Concept::UniformRandomBitGenerator URBG>
+	template <class Container>
 	[[nodiscard]]
-	auto DiscreteSample(const Container& c, DiscreteDistribution& weight, URBG&& urbg);
+	auto DiscreteSample(const Container& c, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	template <class Type>
 	[[nodiscard]]
 	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight);
 	
-	template <class Type, Concept::UniformRandomBitGenerator URBG>
+	template <class Type>
 	[[nodiscard]]
-	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, URBG&& urbg);
+	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg);
 }
 
 # include "detail/DiscreteDistribution.ipp"

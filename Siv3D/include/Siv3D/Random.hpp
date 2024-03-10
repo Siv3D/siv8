@@ -59,12 +59,10 @@ namespace s3d
 	double Random() noexcept;
 
 	/// @brief [0, 1) の範囲の乱数を返します。
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param urbg 乱数エンジン
 	/// @return [0, 1) の範囲の乱数
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	double Random(URBG&& urbg) noexcept;
+	double Random(Concept::UniformRandomBitGenerator auto&& urbg) noexcept;
 
 	/// @brief 現在のスレッドの乱数エンジンを用いて、min 以上 max 以下の範囲の乱数を生成して返します。
 	/// @tparam Arithmetic 生成する乱数の型
@@ -77,14 +75,13 @@ namespace s3d
 
 	/// @brief min 以上 max 以下の範囲の乱数を生成して返します。
 	/// @tparam Arithmetic 生成する乱数の型
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param min 生成する乱数の最小値
 	/// @param max 生成する乱数の最大値
 	/// @param urbg 乱数エンジン
 	/// @return 生成された乱数
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
+	template <Concept::Arithmetic Arithmetic>
 	[[nodiscard]]
-	Arithmetic Random(Arithmetic min, Arithmetic max, URBG&& urbg);
+	Arithmetic Random(Arithmetic min, Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	/// @brief 現在のスレッドの乱数エンジンを用いて、0 以上 max 以下の範囲の乱数を生成して返します。
 	/// @tparam Arithmetic 生成する乱数の型
@@ -94,9 +91,9 @@ namespace s3d
 	[[nodiscard]]
 	Arithmetic Random(Arithmetic max);
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
+	template <Concept::Arithmetic Arithmetic>
 	[[nodiscard]]
-	Arithmetic Random(Arithmetic max, URBG&& urbg);
+	Arithmetic Random(Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -113,9 +110,9 @@ namespace s3d
 	[[nodiscard]]
 	Arithmetic RandomOpen(Arithmetic min, Arithmetic max);
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
+	template <Concept::Arithmetic Arithmetic>
 	[[nodiscard]]
-	Arithmetic RandomOpen(Arithmetic min, Arithmetic max, URBG&& urbg);
+	Arithmetic RandomOpen(Arithmetic min, Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -133,9 +130,9 @@ namespace s3d
 	[[nodiscard]]
 	Arithmetic RandomClosed(Arithmetic min, Arithmetic max);
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
+	template <Concept::Arithmetic Arithmetic>
 	[[nodiscard]]
-	Arithmetic RandomClosed(Arithmetic min, Arithmetic max, URBG&& urbg);
+	Arithmetic RandomClosed(Arithmetic min, Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -152,8 +149,8 @@ namespace s3d
 	[[nodiscard]]
 	Arithmetic RandomOpenClosed(Arithmetic min, Arithmetic max);
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
-	Arithmetic RandomOpenClosed(Arithmetic min, Arithmetic max, URBG&& urbg);
+	template <Concept::Arithmetic Arithmetic>
+	Arithmetic RandomOpenClosed(Arithmetic min, Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -169,8 +166,8 @@ namespace s3d
 	template <Concept::Arithmetic Arithmetic>
 	Arithmetic RandomClosedOpen(Arithmetic min, Arithmetic max);
 
-	template <Concept::Arithmetic Arithmetic, Concept::UniformRandomBitGenerator URBG>
-	Arithmetic RandomClosedOpen(Arithmetic min, Arithmetic max, URBG&& urbg);
+	template <Concept::Arithmetic Arithmetic>
+	Arithmetic RandomClosedOpen(Arithmetic min, Arithmetic max, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -184,9 +181,8 @@ namespace s3d
 	[[nodiscard]]
 	bool RandomBool(double p = 0.5) noexcept;
 
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	bool RandomBool(double p, URBG&& urbg) noexcept;
+	bool RandomBool(double p, Concept::UniformRandomBitGenerator auto&& urbg) noexcept;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -200,12 +196,10 @@ namespace s3d
 	uint8 RandomUint8();
 
 	/// @brief 指定した乱数エンジンを用いて、uint8 型で表現されるランダムな値を返します。
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param urbg 使用する乱数エンジン
 	/// @return uint8 型のランダムな値
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	uint8 RandomUint8(URBG&& urbg);
+	uint8 RandomUint8(Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -219,12 +213,10 @@ namespace s3d
 	uint16 RandomUint16();
 
 	/// @brief 指定した乱数エンジンを用いて、uint16 型で表現されるランダムな値を返します。
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param urbg 使用する乱数エンジン
 	/// @return uint16 型のランダムな値
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	uint16 RandomUint16(URBG&& urbg);
+	uint16 RandomUint16(Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -238,12 +230,10 @@ namespace s3d
 	uint32 RandomUint32();
 
 	/// @brief 指定した乱数エンジンを用いて、uint32 型で表現されるランダムな値を返します。
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param urbg 使用する乱数エンジン
 	/// @return uint32 型のランダムな値
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	uint32 RandomUint32(URBG&& urbg);
+	uint32 RandomUint32(Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -257,12 +247,10 @@ namespace s3d
 	uint64 RandomUint64();
 
 	/// @brief 指定した乱数エンジンを用いて、uint64 型で表現されるランダムな値を返します。
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param urbg 使用する乱数エンジン
 	/// @return uint64 型のランダムな値
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	uint64 RandomUint64(URBG&& urbg);
+	uint64 RandomUint64(Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -276,12 +264,10 @@ namespace s3d
 	int8 RandomInt8();
 
 	/// @brief 指定した乱数エンジンを用いて、int8 型で表現されるランダムな値を返します。
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param urbg 使用する乱数エンジン
 	/// @return int8 型のランダムな値
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	int8 RandomInt8(URBG&& urbg);
+	int8 RandomInt8(Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -295,12 +281,10 @@ namespace s3d
 	int16 RandomInt16();
 
 	/// @brief 指定した乱数エンジンを用いて、int16 型で表現されるランダムな値を返します。
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param urbg 使用する乱数エンジン
 	/// @return int16 型のランダムな値
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	int16 RandomInt16(URBG&& urbg);
+	int16 RandomInt16(Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -314,12 +298,10 @@ namespace s3d
 	int32 RandomInt32();
 
 	/// @brief 指定した乱数エンジンを用いて、int32 型で表現されるランダムな値を返します。
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param urbg 使用する乱数エンジン
 	/// @return int32 型のランダムな値
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	int32 RandomInt32(URBG&& urbg);
+	int32 RandomInt32(Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -333,12 +315,10 @@ namespace s3d
 	int64 RandomInt64();
 
 	/// @brief 指定した乱数エンジンを用いて、int64 型で表現されるランダムな値を返します。
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param urbg 使用する乱数エンジン
 	/// @return int64 型のランダムな値
-	template <Concept::UniformRandomBitGenerator URBG>
 	[[nodiscard]]
-	int64 RandomInt64(URBG&& urbg);
+	int64 RandomInt64(Concept::UniformRandomBitGenerator auto&& urbg);
 }
 
 # include "detail/Random.ipp"
