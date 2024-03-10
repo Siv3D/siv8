@@ -2159,17 +2159,12 @@ namespace s3d
 		/// @brief 文字列をソートせずに、重複する文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String stable_unique() && noexcept;
+		String stable_unique() &&;
 
 		/// @brief 文字列をソートせずに、重複する文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String stable_uniqued() const&;
-
-		/// @brief 文字列をソートせずに、重複する文字を削除した新しい文字列を返します。
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String stable_uniqued() && noexcept;
+		String stable_uniqued() const;
 
 		////////////////////////////////////////////////////////////////
 		//

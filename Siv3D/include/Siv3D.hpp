@@ -126,8 +126,6 @@
 
 //# include <Siv3D/Step2D.hpp> // ToDo
 
-//# include <Siv3D/InfiniteList.hpp> // ToDo
-
 ////////////////////////////////////////////////////////////////
 //
 //	文字と文字列 | Characters and String
