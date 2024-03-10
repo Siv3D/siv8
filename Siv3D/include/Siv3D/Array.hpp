@@ -11,6 +11,7 @@
 
 # pragma once
 # include <vector>
+# include <numeric>
 # include "String.hpp"
 # include "Unicode.hpp"
 # include "Format.hpp"
@@ -374,7 +375,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	begin / end
+		//	begin, end
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -402,7 +403,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	cbegin / cend
+		//	cbegin, cend
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -419,7 +420,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	rbegin / rend
+		//	rbegin, rend
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -447,7 +448,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	crbegin / crend
+		//	crbegin, crend
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1053,7 +1054,7 @@ namespace s3d
 		/// @param end 
 		/// @return 
 		[[nodiscard]]
-		String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const;
+		constexpr String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1089,45 +1090,62 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件を記述した関数
-	//	/// @return 区分化された境界を指すイテレータ
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	auto partition(Fty f);
+		/// @brief 条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 区分化された境界を指すイテレータ
+		template <class Fty>
+		constexpr auto partition(Fty f) requires std::predicate<Fty, const value_type&>;
 
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @tparam R 
-	//	/// @param f 
-	//	/// @param init 
-	//	/// @return 
-	//	template <class Fty, class R = std::decay_t<std::invoke_result_t<Fty, Type, Type>>>
-	//	auto reduce(Fty f, R init) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	reduce
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @param f 
-	//	/// @return 
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type, Type>>* = nullptr>
-	//	auto reduce1(Fty f) const;
+		/// @brief 
+		/// @tparam Fty 
+		/// @tparam R 
+		/// @param f 
+		/// @param init 
+		/// @return 
+		template <class Fty, class R>
+		constexpr auto reduce(Fty f, R init) const;
 
-	//	/// @brief 
-	//	/// @param value 
-	//	/// @return 
-	//	Array& remove(const value_type& value);
+		////////////////////////////////////////////////////////////////
+		//
+		//	remove, removed
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 
-	//	/// @param value 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array removed(const value_type& value) const&;
+		/// @brief 指定した値と等しい全ての要素を削除します。
+		/// @param value 削除する値
+		/// @return *this
+		constexpr Array& remove(const value_type& value)&;
 
-	//	/// @brief 
-	//	/// @param value 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array removed(const value_type& value)&&;
+		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array remove(const value_type& value) &&;
+
+		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed(const value_type& value) const&;
+
+		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed(const value_type& value)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	remove_at, removed_at
+		//
+		////////////////////////////////////////////////////////////////
 
 	//	/// @brief 指定したインデックスにある要素を削除します。
 	//	/// @param index インデックス
@@ -1145,6 +1163,12 @@ namespace s3d
 	//	/// @return 新しい配列
 	//	[[nodiscard]]
 	//	Array removed_at(size_t index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	remove_if, removed_if
+		//
+		////////////////////////////////////////////////////////////////
 
 	//	/// @brief 条件を満たす要素を配列から削除します。
 	//	/// @tparam Fty 条件を記述した関数の型
@@ -1169,6 +1193,12 @@ namespace s3d
 	//	[[nodiscard]]
 	//	Array removed_if(Fty f)&&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace, replaced
+		//
+		////////////////////////////////////////////////////////////////
+
 	//	/// @brief 指定した値と等しい全ての要素を別の値に置き換えます。
 	//	/// @param oldValue 置き換えられる値
 	//	/// @param newValue 新しい値
@@ -1188,6 +1218,12 @@ namespace s3d
 	//	/// @return 新しい配列
 	//	[[nodiscard]]
 	//	Array replaced(const value_type& oldValue, const value_type& newValue)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace_if, replaced_if
+		//
+		////////////////////////////////////////////////////////////////
 
 	//	/// @brief 指定した条件を満たす全ての要素を別の値に置き換えます。
 	//	/// @tparam Fty 条件を記述した関数の型
@@ -1215,6 +1251,12 @@ namespace s3d
 	//	[[nodiscard]]
 	//	Array replaced_if(Fty f, const value_type& newValue)&&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse, reversed
+		//
+		////////////////////////////////////////////////////////////////
+
 	//	/// @brief 配列の要素を逆順に並び替えます。
 	//	/// @return *this
 	//	Array& reverse();
@@ -1229,6 +1271,12 @@ namespace s3d
 	//	[[nodiscard]]
 	//	Array reversed()&&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_each
+		//
+		////////////////////////////////////////////////////////////////
+
 	//	/// @brief 
 	//	/// @tparam Fty 
 	//	/// @param f 
@@ -1242,6 +1290,12 @@ namespace s3d
 	//	/// @return 
 	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
 	//	const Array& reverse_each(Fty f) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotate, rotated
+		//
+		////////////////////////////////////////////////////////////////
 
 	//	/// @brief 
 	//	/// @param count 

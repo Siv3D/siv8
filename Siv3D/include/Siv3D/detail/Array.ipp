@@ -302,7 +302,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	begin / end
+	//	begin, end
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -332,7 +332,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	cbegin / cend
+	//	cbegin, cend
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -350,7 +350,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	rbegin / rend
+	//	rbegin, rend
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -380,7 +380,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	crbegin / crend
+	//	crbegin, crend
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -1145,7 +1145,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	inline String Array<Type, Allocator>::join(const StringView sep, const StringView begin, const StringView end) const
+	constexpr String Array<Type, Allocator>::join(const StringView sep, const StringView begin, const StringView end) const
 	{
 		String result;
 
@@ -1209,8 +1209,72 @@ namespace s3d
 		return std::none_of(m_container.begin(), m_container.end(), f);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	partition
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr auto Array<Type, Allocator>::partition(Fty f) requires std::predicate<Fty, const value_type&>
+	{
+		return std::partition(m_container.begin(), m_container.end(), f);
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	reduce
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty, class R>
+	constexpr auto Array<Type, Allocator>::reduce(Fty f, R init) const
+	{
+		return std::reduce(m_container.begin(), m_container.end(), init, f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	remove, removed
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::remove(const value_type& value)&
+	{
+		m_container.erase(std::remove(m_container.begin(), m_container.end(), value), m_container.end());
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::remove(const value_type& value)&&
+	{
+		return std::move(remove(value));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed(const value_type& value) const&
+	{
+		Array result(Arg::reserve = m_container.size());
+
+		for (const auto& v : m_container)
+		{
+			if (v != value)
+			{
+				result.push_back(v);
+			}
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed(const value_type& value)&&
+	{
+		return std::move(remove(value));
+	}
 
 
 
@@ -1221,7 +1285,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	sort / sorted
+	//	sort, sorted
 	//
 	////////////////////////////////////////////////////////////////
 
