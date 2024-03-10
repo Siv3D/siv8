@@ -298,6 +298,18 @@
     <Filter Include="src\Siv3D\HSV">
       <UniqueIdentifier>{509503ee-44a4-435f-bd4c-040a16a9d229}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\BinaryWriter">
+      <UniqueIdentifier>{6b7d8c4b-d443-433d-b037-53226dd0bf2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter">
+      <UniqueIdentifier>{00531a58-d7b7-4289-8d4b-e0db8c6e1366}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows">
+      <UniqueIdentifier>{b010b876-7831-4db2-94c5-ea1ea74e1849}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TextWriter">
+      <UniqueIdentifier>{d443395f-63e6-4b25-80a2-6d39edf237f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -603,7 +615,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtExtension.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FmtExtension.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FmtHelper.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\FormatUtility.hpp">
@@ -1032,6 +1044,48 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector4D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryWriter.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextWriter.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextWriter.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.hpp">
+      <Filter>src\Siv3D\TextWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Window.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\WindowState.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DLL.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\WindowStyle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Point.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vector2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CommonFloat.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\2DShapesFwd.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1276,6 +1330,21 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\HSV\SivHSV.cpp">
       <Filter>src\Siv3D\HSV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryWriter\SivBinaryWriter.cpp">
+      <Filter>src\Siv3D\BinaryWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows\SivWindows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\SivTextWriter.cpp">
+      <Filter>src\Siv3D\TextWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.cpp">
+      <Filter>src\Siv3D\TextWriter</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

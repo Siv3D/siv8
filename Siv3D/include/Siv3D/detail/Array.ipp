@@ -302,7 +302,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	begin / end
+	//	begin, end
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -332,7 +332,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	cbegin / cend
+	//	cbegin, cend
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -350,7 +350,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	rbegin / rend
+	//	rbegin, rend
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -380,7 +380,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	crbegin / crend
+	//	crbegin, crend
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -808,8 +808,369 @@ namespace s3d
 		return *this;
 	}
 
+	template <class Type, class Allocator>
+	template <class Iterator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(Iterator first, Iterator last)
+	{
+		m_container.insert(m_container.end(), first, last);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(std::initializer_list<value_type> list)
+	{
+		m_container.insert(m_container.end(), list);
+		return *this;
+	}
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	choice
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice()
+	{
+		return choice(GetDefaultRNG());
+	}
+
+	template <class Type, class Allocator>
+	const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice() const
+	{
+		return choice(GetDefaultRNG());
+	}
+
+	template <class Type, class Allocator>
+	typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg)
+	{
+		const size_t size = m_container.size();
+
+		if (size == 0)
+		{
+			throw std::out_of_range{ "Array::choice(): Array is empty" };
+		}
+
+		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+	}
+
+	template <class Type, class Allocator>
+	const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
+	{
+		const size_t size = m_container.size();
+
+		if (size == 0)
+		{
+			throw std::out_of_range{ "Array::choice(): Array is empty" };
+		}
+
+		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+	}
+
+	template <class Type, class Allocator>
+	Array<Type, Allocator> Array<Type, Allocator>::choice(const Concept::Integral auto n) const
+	{
+		return choice(n, GetDefaultRNG());
+	}
+
+	template <class Type, class Allocator>
+	Array<Type, Allocator> Array<Type, Allocator>::choice(const Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const
+	{
+		Array result(Arg::reserve = Min<size_t>(n, m_container.size()));
+
+		std::sample(begin(), end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	chunk
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::chunk(const size_t n) const
+	{
+		Array<Array<value_type>> result;
+
+		if (n == 0)
+		{
+			return result;
+		}
+
+		for (size_t i = 0; i < (size() + n - 1) / n; ++i)
+		{
+			result.push_back(slice((i * n), n));
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr bool Array<Type, Allocator>::contains(const value_type& value) const
+	{
+		return (std::find(m_container.begin(), m_container.end(), value) != m_container.end());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Array<Type, Allocator>::contains_if(Fty f) const requires std::predicate<Fty, const value_type&>
+	{
+		return std::any_of(m_container.begin(), m_container.end(), f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr size_t Array<Type, Allocator>::count(const value_type& value) const
+	{
+		return std::count(m_container.begin(), m_container.end(), value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr size_t Array<Type, Allocator>::count_if(Fty f) const requires std::predicate<Fty, const value_type&>
+	{
+		return std::count_if(m_container.begin(), m_container.end(), f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::each(Fty f) requires std::invocable<Fty, value_type&>
+	{
+		std::for_each(m_container.begin(), m_container.end(), f);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr const Array<Type, Allocator>& Array<Type, Allocator>::each(Fty f) const requires std::invocable<Fty, const value_type&>
+	{
+		std::for_each(m_container.begin(), m_container.end(), f);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_index
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	Array<Type, Allocator>& Array<Type, Allocator>::each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>
+	{
+		for (size_t i = 0; auto& elem : m_container)
+		{
+			f(i++, elem);
+		}
+
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	const Array<Type, Allocator>& Array<Type, Allocator>::each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>
+	{
+		for (size_t i = 0; const auto& elem : m_container)
+		{
+			f(i++, elem);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_sindex
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>
+	{
+		for (isize i = 0; auto& elem : m_container)
+		{
+			f(i++, elem);
+		}
+
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr const Array<Type, Allocator>& Array<Type, Allocator>::each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>
+	{
+		for (isize i = 0; const auto& elem : m_container)
+		{
+			f(i++, elem);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fetch
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class U>
+	constexpr typename Array<Type, Allocator>::value_type Array<Type, Allocator>::fetch(size_t index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
+	{
+		if (m_container.size() <= index)
+		{
+			return value_type(std::forward<U>(defaultValue));
+		}
+
+		return m_container[index];
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fill
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::fill(const value_type& value)
+	{
+		std::fill(m_container.begin(), m_container.end(), value);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	filter
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::filter(Fty f) const requires std::predicate<Fty, const value_type&>
+	{
+		Array result;
+
+		for (const auto& value : m_container)
+		{
+			if (f(value))
+			{
+				result.push_back(value);
+			}
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	in_groups
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::in_groups(const size_t group) const
+	{
+		Array<Array<value_type>> result;
+
+		if (group == 0)
+		{
+			return result;
+		}
+
+		const size_t div = (m_container.size() / group);
+		const size_t mod = (m_container.size() % group);
+		size_t index = 0;
+
+		for (size_t i = 0; i < group; ++i)
+		{
+			const size_t length = (div + ((0 < mod) && (i < mod)));
+
+			result.push_back(slice(index, length));
+
+			index += length;
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isSorted
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr bool Array<Type, Allocator>::isSorted() const requires Concept::LessThanComparable<Type>
+	{
+		return std::is_sorted(m_container.begin(), m_container.end());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	join
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr String Array<Type, Allocator>::join(const StringView sep, const StringView begin, const StringView end) const
+	{
+		String result;
+
+		result.append(begin);
+
+		bool isFirst = true;
+
+		for (const auto& value : m_container)
+		{
+			if (isFirst)
+			{
+				isFirst = false;
+			}
+			else
+			{
+				result.append(sep);
+			}
+
+			result.append(Format(value));
+		}
+
+		result.append(end);
+
+		return result;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -835,10 +1196,96 @@ namespace s3d
 		return result;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	none
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Array<Type, Allocator>::none(Fty f) const requires std::predicate<Fty, const value_type&>
+	{
+		return std::none_of(m_container.begin(), m_container.end(), f);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	sort / sorted
+	//	partition
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr auto Array<Type, Allocator>::partition(Fty f) requires std::predicate<Fty, const value_type&>
+	{
+		return std::partition(m_container.begin(), m_container.end(), f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reduce
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty, class R>
+	constexpr auto Array<Type, Allocator>::reduce(Fty f, R init) const
+	{
+		return std::reduce(m_container.begin(), m_container.end(), init, f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	remove, removed
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::remove(const value_type& value)&
+	{
+		m_container.erase(std::remove(m_container.begin(), m_container.end(), value), m_container.end());
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::remove(const value_type& value)&&
+	{
+		return std::move(remove(value));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed(const value_type& value) const&
+	{
+		Array result(Arg::reserve = m_container.size());
+
+		for (const auto& v : m_container)
+		{
+			if (v != value)
+			{
+				result.push_back(v);
+			}
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed(const value_type& value)&&
+	{
+		return std::move(remove(value));
+	}
+
+
+
+
+
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sort, sorted
 	//
 	////////////////////////////////////////////////////////////////
 

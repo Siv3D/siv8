@@ -151,30 +151,4 @@ namespace s3d
 			return detail::Abs_impl{}(a - b);
 		}
 	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	LexicographicalCompareThreeWay
-	//
-	////////////////////////////////////////////////////////////////
-
-   template <class InputIt1, class InputIt2, class Cmp>
-   constexpr auto LexicographicalCompareThreeWay(InputIt1 f1, InputIt1 l1, InputIt2 f2, InputIt2 l2, Cmp comp)
-	   -> decltype(comp(*f1, *f2))
-   {
-	   bool exhaust1 = (f1 == l1);
-	   bool exhaust2 = (f2 == l2);
-	   
-	   for (; (not exhaust1) && (not exhaust2); exhaust1 = (++f1 == l1), exhaust2 = (++f2 == l2))
-	   {
-		   if (auto c = comp(*f1, *f2); c != 0)
-		   {
-			   return c;
-		   }
-	   }
-	   
-	   return ((not exhaust1) ? std::strong_ordering::greater:
-			  (not exhaust2) ? std::strong_ordering::less:
-						  std::strong_ordering::equal);
-   }
 }

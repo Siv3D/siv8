@@ -43,6 +43,27 @@ namespace s3d
 		Default = UTF8_NO_BOM,
 	};
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	Byte Order Mark (BOM)
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief UTF-8 の BOM
+	inline constexpr uint8 BOM_UTF8[3] = { 0xEF, 0xBB, 0xBF };
+
+	/// @brief UTF-16LE の BOM
+	inline constexpr uint8 BOM_UTF16LE[2] = { 0xFF, 0xFE };
+
+	/// @brief UTF-16BE の BOM
+	inline constexpr uint8 BOM_UTF16BE[2] = { 0xFE, 0xFF };
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
 	void Formatter(FormatData& formatData, TextEncoding value);
 
 	namespace Unicode

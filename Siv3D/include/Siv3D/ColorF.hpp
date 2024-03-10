@@ -13,9 +13,7 @@
 # include "Common.hpp"
 # include "FormatData.hpp"
 # include "PointVector.hpp"
-# include "Vector3D.hpp"
-# include "Vector4D.hpp"
-# include "FmtExtension.hpp"
+# include "FmtHelper.hpp"
 
 namespace s3d
 {
@@ -226,6 +224,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	operator ~
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 色の各成分を反転した色を返します。
+		/// @return 色の各成分を反転した色
+		/// @remark `ColorF{ (1.0 - r), (1.0 - g), (1.0 - b), a }` を返します。
+		[[nodiscard]]
+		constexpr ColorF operator ~() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	operator ==
 		//
 		////////////////////////////////////////////////////////////////
@@ -426,6 +436,42 @@ namespace s3d
 		/// @remark `ColorF{ (r * (1.0 - amount)), (g * (1.0 - amount)), (b * (1.0 - amount)), a }` を返します。
 		[[nodiscard]]
 		constexpr ColorF darkened(double amount) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	adjustHue
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 色相を調整した色を返します。
+		/// @param amount 色相の調整量
+		/// @return 色相を調整した色
+		[[nodiscard]]
+		ColorF adjustHue(double amount) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	inverted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 反転した色を返します。
+		/// @return 反転した色
+		/// @remark `ColorF{ (1.0 - r), (1.0 - g), (1.0 - b), a }` を返します。
+		/// @remark `operator ~` と同じです。
+		[[nodiscard]]
+		constexpr ColorF inverted() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	complemented
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 補色を返します。
+		/// @return 補色
+		[[nodiscard]]
+		ColorF complemented() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

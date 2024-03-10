@@ -261,6 +261,9 @@
 // フォーマットリテラル | Format literal
 # include <Siv3D/FormatLiteral.hpp>
 
+// Fmt の拡張の補助 | Fmt helper
+# include <Siv3D/FmtHelper.hpp>
+
 // Fmt の拡張 | Fmt extension
 # include <Siv3D/FmtExtension.hpp>
 
@@ -428,7 +431,7 @@
 # include <Siv3D/OpenMode.hpp>
 
 // 読み込み専用バイナリファイル | Binary file reader
-# include <Siv3D/BinaryReader.hpp> // ToDo
+# include <Siv3D/BinaryReader.hpp>
 
 // 書き込み専用バイナリファイル | Binary file writer
 # include <Siv3D/BinaryWriter.hpp> // ToDo
@@ -481,8 +484,8 @@
 // 読み込み専用テキストファイル | Text file reader
 # include <Siv3D/TextReader.hpp>
 
-//// 書き込み専用テキストファイル | Text file writer
-//# include <Siv3D/TextWriter.hpp>
+// 書き込み専用テキストファイル | Text file writer
+# include <Siv3D/TextWriter.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -549,12 +552,47 @@
 // 精度を落とした高速な数学関数 | Fast math functions
 # include <Siv3D/FastMath.hpp>
 
-
-////////////////////////////////////////////////////////////////
+//// 線形補間 | Interpolation
+//# include <Siv3D/Interpolation.hpp>
 //
-//	ノイズ | Noise
+//// イージング関数 | Easing
+//# include <Siv3D/Easing.hpp>
 //
-////////////////////////////////////////////////////////////////
+//// イージングによる往復 | Bidirectional easing
+//# include <Siv3D/EasingAB.hpp>
+//
+//// キーフレームによるアニメーション | Keyframe animation
+//# include <Siv3D/SimpleAnimation.hpp>
+//
+//// トランジション | Transition
+//# include <Siv3D/Transition.hpp>
+//
+//// 周期関数 | Periodic functions
+//# include <Siv3D/Periodic.hpp>
+//
+//// Poisson Disk 2D | Poisson disk 2D
+//# include <Siv3D/PoissonDisk2D.hpp>
+//
+//// スプライン | Spline
+//# include <Siv3D/Spline.hpp>
+//
+//// SIMD 演算 | SIMD
+//# include <Siv3D/SIMDMath.hpp>
+//
+//// 半精度浮動小数点数 | Half-precision floating-point
+//# include <Siv3D/HalfFloat.hpp>
+//
+//// SIMD 対応 Float4 | SIMD Float4
+//# include <Siv3D/SIMD_Float4.hpp>
+//
+//// 数式パーサ | Math parser
+//# include <Siv3D/MathParser.hpp>
+//
+//// 統計 | Statistics
+//# include <Siv3D/Statistics.hpp>
+//
+//// 素数判定 | Primality test
+//# include <Siv3D/PrimeNumber.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -569,10 +607,10 @@
 # include <Siv3D/Color.hpp>
 
 // 色 (double * 4) | Color (double * 4)
-# include <Siv3D/ColorF.hpp> // ToDo
+# include <Siv3D/ColorF.hpp>
 
 // HSV カラー | HSV color
-# include <Siv3D/HSV.hpp> // ToDo
+# include <Siv3D/HSV.hpp>
 
 // 色定数 | Color constants
 # include <Siv3D/Palette.hpp>
@@ -624,15 +662,9 @@
 //
 //// ランダムなサンプリング | Random sampling
 //# include <Siv3D/Sample.hpp>
-//
-// UUID | UUID
-# include <Siv3D/UUIDValue.hpp>
 
-
-
-
-
-
+//// Improved Perlin ノイズ | Improved Perlin noise
+//# include <Siv3D/PerlinNoise.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -641,7 +673,7 @@
 ////////////////////////////////////////////////////////////////
 
 // ベクトル | Vectors
-# include <Siv3D/PointVector.hpp> // ToDo
+# include <Siv3D/PointVector.hpp>
 
 // 整数の 2 次元ベクトル | 2D vector (integer)
 # include <Siv3D/Point.hpp> // ToDo
@@ -655,9 +687,9 @@
 // 4 次元ベクトル | 4D vector
 # include <Siv3D/Vector4D.hpp> // ToDo
 
-//// 浮動小数点数の計算補助 | Floating point support
-//# include <Siv3D/CommonFloat.hpp>
-//
+// 浮動小数点数の計算補助 | Floating point support
+# include <Siv3D/CommonFloat.hpp>
+
 //// ベクトルクラステンプレートの計算補助 | Vector class templates support
 //# include <Siv3D/CommonVector.hpp>
 //
@@ -751,28 +783,183 @@
 //// 平面分割 | Planar subdivisions
 //# include <Siv3D/Subdivision2D.hpp>
 
+////////////////////////////////////////////////////////////////
+//
+//	システム | System
+//
+////////////////////////////////////////////////////////////////
 
+//// 環境変数 | Environment variable
+//# include <Siv3D/EnvironmentVariable.hpp>
+//
+//// コマンドライン引数 | Command-line arguments
+//# include <Siv3D/CommandLine.hpp>
+//
+//// CPU 情報 | CPU information
+//# include <Siv3D/CPUInfo.hpp>
+//
+//// 画面解像度の定数 | Display resolution constants
+//# include <Siv3D/DisplayResolution.hpp>
+//
+//// モニターの情報 | Monitor information
+//# include <Siv3D/MonitorInfo.hpp>
+//
+//// モニター | Monitor
+//# include <Siv3D/Monitor.hpp>
+//
+//// ユーザアクション | User action
+//# include <Siv3D/UserAction.hpp>
 
+// システム | System
+# include <Siv3D/System.hpp> // ToDo
 
+//// クリップボード | Clipboard
+//# include <Siv3D/Clipboard.hpp>
+//
+//// ドライブの種類 | Drive type
+//# include <Siv3D/DriveType.hpp>
+//
+//// ドライブの情報 | Drive information
+//# include <Siv3D/DriveInfo.hpp>
 
+// UUID | UUID
+# include <Siv3D/UUIDValue.hpp>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+////////////////////////////////////////////////////////////////
+//
+//	コンソール入出力 | Console input/output
+//
+////////////////////////////////////////////////////////////////
 
 # include <Siv3D/ConsoleBuffer.hpp>
+
+// コンソール入出力 | Console input/output
 # include <Siv3D/Console.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	ネットワーク | Network
+//
+////////////////////////////////////////////////////////////////
+
+//// Twitter | Twitter
+//# include <Siv3D/Twitter.hpp>
+//
+//// IPv4 アドレス | IPv4 address
+//# include <Siv3D/IPv4Address.hpp>
+//
+//// ネットワーク | Networking
+//# include <Siv3D/Network.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	TCP 通信 | TCP Communication
+//
+////////////////////////////////////////////////////////////////
+
+//// TCP 通信のエラー | TCP connection errors
+//# include <Siv3D/TCPError.hpp>
+//
+//// TCP サーバ | TCP server
+//# include <Siv3D/TCPServer.hpp>
+//
+//// TCP クライアント | TCP client
+//# include <Siv3D/TCPClient.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	OSC 通信 | OSC Communication
+//
+////////////////////////////////////////////////////////////////
+
+//// OSC 型タグ
+//# include <Siv3D/OSCTypeTag.hpp>
+//
+//// OSC 送信メッセージ
+//# include <Siv3D/OSCMessage.hpp>
+//
+//// OSC 送信クラス
+//# include <Siv3D/OSCSender.hpp>
+//
+//// OSC 受信メッセージの引数
+//# include <Siv3D/OSCArgument.hpp>
+//
+//// OSC 受信メッセージ
+//# include <Siv3D/ReceivedOSCMessage.hpp>
+//
+//// OSC 受信クラス
+//# include <Siv3D/OSCReceiver.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	HTTP 通信 | HTTP Communication
+//
+////////////////////////////////////////////////////////////////
+
+//// URL | URL
+//# include <Siv3D/URL.hpp>
+//
+//# include <Siv3D/URLView.hpp>
+//
+//# include <Siv3D/HTTPStatusCode.hpp>
+//
+//# include <Siv3D/HTTPResponse.hpp>
+//
+//# include <Siv3D/HTTPAsyncStatus.hpp>
+//
+//# include <Siv3D/HTTPProgress.hpp>
+//
+//# include <Siv3D/AsyncHTTPTask.hpp>
+//
+//// シンプルな HTTP 通信ライブラリ | Simple HTTP library
+//# include <Siv3D/SimpleHTTP.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	シリアル通信 | Serial Communication
+//
+////////////////////////////////////////////////////////////////
+
+//// シリアルポートの情報 | Serial port information
+//# include <Siv3D/SerialPortInfo.hpp>
+//
+//// シリアル通信 | Serial communication
+//# include <Siv3D/Serial.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	パイプ | Pipe
+//
+////////////////////////////////////////////////////////////////
+
+//// パイプ通信 | Interprocess communication (Pipe)
+//# include <Siv3D/Pipe.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	ウィンドウ | Window
+//
+////////////////////////////////////////////////////////////////
+
+// ウィンドウスタイル | Window Style
+# include <Siv3D/WindowStyle.hpp> // ToDo
+
+// ウィンドウステート | Window State
+# include <Siv3D/WindowState.hpp> // ToDo
+
+// ウィンドウ | Window
+# include <Siv3D/Window.hpp> // ToDo
+
+
+
+
+
+
+
+
+
+
+
 
 
 # if SIV3D_PLATFORM(WINDOWS)

@@ -15,7 +15,7 @@
 # include "Utility.hpp"
 # include "StringView.hpp"
 # include "Char.hpp"
-# include "FmtExtension.hpp"
+# include "FmtHelper.hpp"
 
 namespace s3d
 {
@@ -371,6 +371,42 @@ namespace s3d
 		/// @return ガンマ補正された色
 		[[nodiscard]]
 		Color gamma(double gamma) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	adjustHue
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 色相を調整した色を返します。
+		/// @param amount 色相の調整量
+		/// @return 色相を調整した色
+		[[nodiscard]]
+		Color adjustHue(double amount) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	inverted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 反転した色を返します。
+		/// @return 反転した色
+		/// @remark `Color{ (255 - r), (255 - g), (255 - b), a }` を返します。
+		/// @remark `operator ~` と同じです。
+		[[nodiscard]]
+		constexpr Color inverted() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	complemented
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 補色を返します。
+		/// @return 補色
+		[[nodiscard]]
+		Color complemented() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

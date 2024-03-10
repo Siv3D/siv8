@@ -143,21 +143,9 @@ namespace s3d
 
 		[[nodiscard]]
 		friend constexpr bool operator ==(const UUIDValue&, const UUIDValue&) = default;
-		
-	# if __cpp_lib_three_way_comparison
-		
+
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const UUIDValue& lhs, const UUIDValue& rhs) = default;
-
-	# else
-	
-		[[nodiscard]]
-		friend constexpr auto operator <=>(const UUIDValue& lhs, const UUIDValue& rhs)
-		{
-			return LexicographicalCompareThreeWay(lhs.m_data.begin(), lhs.m_data.end(), rhs.m_data.begin(), rhs.m_data.end(), std::compare_three_way{});
-		}
-
-	# endif
 
 		////////////////////////////////////////////////////////////////
 		//

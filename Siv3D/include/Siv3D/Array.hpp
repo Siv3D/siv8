@@ -11,6 +11,7 @@
 
 # pragma once
 # include <vector>
+# include <numeric>
 # include "String.hpp"
 # include "Unicode.hpp"
 # include "Format.hpp"
@@ -374,7 +375,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	begin / end
+		//	begin, end
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -402,7 +403,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	cbegin / cend
+		//	cbegin, cend
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -419,7 +420,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	rbegin / rend
+		//	rbegin, rend
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -447,7 +448,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	crbegin / crend
+		//	crbegin, crend
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -635,6 +636,10 @@ namespace s3d
 		/// @return 削除した要素の次の要素を指すイテレータ
 		constexpr iterator erase(const_iterator pos);
 
+		/// @brief 指定した範囲の要素を削除します。
+		/// @param first 削除する範囲の開始位置
+		/// @param last 削除する範囲の終端位置
+		/// @return 削除された範囲の次を指すイテレータ
 		constexpr iterator erase(const_iterator first, const_iterator last);
 
 		////////////////////////////////////////////////////////////////
@@ -795,172 +800,267 @@ namespace s3d
 		/// @return *this
 		constexpr Array& append(const Array& other);
 
-	//	/// @brief 配列の要素を 1 つランダムに返します。
-	//	/// @return 配列からランダムに選ばれた要素への参照
-	//	[[nodiscard]]
-	//	value_type& choice();
+		template <class Iterator>
+		constexpr Array& append(Iterator first, Iterator last);
 
-	//	/// @brief 配列の要素を 1 つランダムに返します。
-	//	/// @return 配列からランダムに選ばれた要素への参照
-	//	[[nodiscard]]
-	//	const value_type& choice() const;
+		constexpr Array& append(std::initializer_list<value_type> list);
 
-	//	/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
-	//	/// @tparam URBG 使用する乱数エンジンの型
-	//	/// @param rbg 使用する乱数エンジン
-	//	/// @return 配列からランダムに選ばれた要素への参照
-	//	[[nodiscard]]
-	//	value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg);
+		////////////////////////////////////////////////////////////////
+		//
+		//	choice
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
-	//	/// @tparam URBG 使用する乱数エンジンの型
-	//	/// @param rbg 使用する乱数エンジン
-	//	/// @return 配列からランダムに選ばれた要素への参照
-	//	[[nodiscard]]
-	//	const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
+		/// @brief 配列の要素を 1 つランダムに返します。
+		/// @return 配列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice();
 
-	//	/// @brief 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
-	//	/// @tparam Int 個数に使う整数型
-	//	/// @param n 選択する個数
-	//	/// @return ランダムに選ばれた要素の配列
-	//	[[nodiscard]]
-	//	Array choice(Concept::Integral auto n) const;
+		/// @brief 配列の要素を 1 つランダムに返します。
+		/// @return 配列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice() const;
 
-	//	/// @brief 指定した乱数エンジンを用いて、 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
-	//	/// @tparam Size_t 個数に使う整数型
-	//	/// @param n 選択する個数
-	//	/// @param rbg 使用する乱数エンジン
-	//	/// @return ランダムに選ばれた要素の配列
-	//	template <Concept::Integral Size_t, Concept::UniformRandomBitGenerator URBG>
-	//	[[nodiscard]]
-	//	Array choice(Size_t n, URBG&& rbg) const;
+		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 配列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg);
 
-	//	/// @brief 指定した個数の要素を持つ配列のグループに分割します。最後のグループの要素数は n 個未満になることがあります。
-	//	/// @param n 1 つのグループが持つ要素数
-	//	/// @remark { 0, 1, 2, 3, 4, 5, 6 } を 3 個の要素を持つ配列のグループに分割すると { { 0, 1, 2 }, { 3, 4, 5 }, { 6 }} になります。
-	//	/// @return 分割されたグループ
-	//	[[nodiscard]]
-	//	Array<Array<value_type>> chunk(size_t n) const;
+		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 配列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
 
-	//	/// @brief 指定した値と等しい要素があるかを返します。
-	//	/// @param value 検索する値
-	//	/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
-	//	[[nodiscard]]
-	//	bool contains(const value_type& value) const;
+		/// @brief 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @return ランダムに選ばれた要素の配列
+		[[nodiscard]]
+		Array choice(Concept::Integral auto n) const;
 
-	//	/// @brief 指定した条件を満たす要素があるかを返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件を記述した関数
-	//	/// @remark `.any(f)` と同じです。
-	//	/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	bool contains_if(Fty f) const;
+		/// @brief 指定した乱数エンジンを用いて、 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @param rbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素の配列
+		[[nodiscard]]
+		Array choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const;
 
-	//	/// @brief 指定した値と等しい要素の個数を返します。
-	//	/// @param value 検索する値
-	//	/// @return 指定した値と等しい要素の個数
-	//	[[nodiscard]]
-	//	size_t count(const value_type& value) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	chunk
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 条件を満たす要素の個数を返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件を記述した関数
-	//	/// @return 条件を満たす要素の個数
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	size_t count_if(Fty f) const;
+		/// @brief 指定した個数の要素を持つ配列のグループに分割します。最後のグループの要素数は n 個未満になることがあります。
+		/// @param n 1 つのグループが持つ要素数
+		/// @remark { 0, 1, 2, 3, 4, 5, 6 } を 3 個の要素を持つ配列のグループに分割すると { { 0, 1, 2 }, { 3, 4, 5 }, { 6 }} になります。
+		/// @return 分割されたグループ
+		[[nodiscard]]
+		constexpr Array<Array<value_type>> chunk(size_t n) const;
 
-	//	/// @brief 全ての要素を順番に引数にして関数を呼び出します。
-	//	/// @tparam Fty 呼び出す関数の型
-	//	/// @param f 呼び出す関数
-	//	/// @remark `for (auto& x : xs) f(x);` と同じです。
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type&>>* = nullptr>
-	//	Array& each(Fty f);
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 全ての要素を順番に引数にして関数を呼び出します。
-	//	/// @tparam Fty 呼び出す関数の型
-	//	/// @param f 呼び出す関数
-	//	/// @remark `for (const auto& x : xs) f(x);` と同じです。
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
-	//	const Array& each(Fty f) const;
+		/// @brief 指定した値と等しい要素があるかを返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool contains(const value_type& value) const;
 
-	//	/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
-	//	/// @tparam Fty 呼び出す関数の型
-	//	/// @param f 呼び出す関数
-	//	/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, size_t, Type&>>* = nullptr>
-	//	Array& each_index(Fty f);
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains_if
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
-	//	/// @tparam Fty 呼び出す関数の型
-	//	/// @param f 呼び出す関数
-	//	/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, size_t, Type>>* = nullptr>
-	//	const Array& each_index(Fty f) const;
+		/// @brief 指定した条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @remark `.any(f)` と同じです。
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		constexpr bool contains_if(Fty f) const requires std::predicate<Fty, const value_type&>;
 
-	//	/// @brief 指定したインデックスにある要素を返します。インデックスが範囲外の場合デフォルト値を返します。
-	//	/// @param index インデックス
-	//	/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
-	//	/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue
-	//	template <class U>
-	//	[[nodiscard]]
-	//	value_type fetch(size_t index, U&& defaultValue) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	count
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 指定した値を全ての要素に代入します。
-	//	/// @param value 代入する値
-	//	/// @return *this
-	//	Array& fill(const value_type& value);
+		/// @brief 指定した値と等しい要素の個数を返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素の個数
+		[[nodiscard]]
+		constexpr size_t count(const value_type& value) const;
 
-	//	/// @brief 指定した条件を満たす要素だけを集めた新しい配列を返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件を記述した関数
-	//	/// @remark 結果において、要素の前後関係は維持されます。
-	//	/// @return 指定した条件を満たす要素を集めた新しい配列
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	Array filter(Fty f) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	count_if
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 要素を指定したグループ数に分割します。
-	//	/// @param group グループ数
-	//	/// @remark { 0, 1, 2, 3, 4, 5, 6 } を 3 グループに分割すると { { 0, 1, 2 }, { 3, 4 }, { 5, 6 }} になります。
-	//	/// @return 分割したグループ
-	//	[[nodiscard]]
-	//	Array<Array<value_type>> in_groups(size_t group) const;
+		/// @brief 条件を満たす要素の個数を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素の個数
+		template <class Fty>
+		[[nodiscard]]
+		constexpr size_t count_if(Fty f) const requires std::predicate<Fty, const value_type&>;
 
-	//	/// @brief 指定した値と等しい要素があるかを返します。
-	//	/// @param value 検索する値
-	//	/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
-	//	/// @remark `.contains(value)` と同じです。
-	//	[[nodiscard]]
-	//	bool includes(const value_type& value) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	each
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 指定した条件を満たす要素があるかを返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件を記述した関数
-	//	/// @remark `.any(f)` と同じです。
-	//	/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
-	//	/// @remark `.contains_if(f)` および `.any(f)` と同じです。
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	bool includes_if(Fty f) const;
+		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (auto& x : xs) f(x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		constexpr Array& each(Fty f) requires std::invocable<Fty, value_type&>;
 
-	//	/// @brief 配列の要素が昇順にソートされているかを返します。
-	//	/// @return 配列の要素が昇順にソートされている場合 true, それ以外の場合は false
-	//	[[nodiscard]]
-	//	bool isSorted() const requires Concept::LessThanComparable<Type>;
+		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (const auto& x : xs) f(x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		constexpr const Array& each(Fty f) const requires std::invocable<Fty, const value_type&>;
 
-	//	/// @brief 
-	//	/// @param sep 
-	//	/// @param begin 
-	//	/// @param end 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_index
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		Array& each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>;
+
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		const Array& each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_sindex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (isize i = 0; auto& x : xs) f(i++, x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		constexpr Array& each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>;
+
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (isize i = 0; auto x : xs) f(i++, x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		constexpr const Array& each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fetch
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を返します。インデックスが範囲外の場合デフォルト値を返します。
+		/// @param index インデックス
+		/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
+		/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue
+		template <class U>
+		[[nodiscard]]
+		constexpr value_type fetch(size_t index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fill
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値を全ての要素に代入します。
+		/// @param value 代入する値
+		/// @return *this
+		constexpr Array& fill(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	filter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素だけを集めた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @remark 結果において、要素の前後関係は維持されます。
+		/// @return 指定した条件を満たす要素を集めた新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array filter(Fty f) const requires std::predicate<Fty, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	in_groups
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を指定したグループ数に分割します。
+		/// @param group グループ数
+		/// @remark { 0, 1, 2, 3, 4, 5, 6 } を 3 グループに分割すると { { 0, 1, 2 }, { 3, 4 }, { 5, 6 }} になります。
+		/// @return 分割したグループ
+		[[nodiscard]]
+		constexpr Array<Array<value_type>> in_groups(size_t group) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isSorted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素が昇順にソートされているかを返します。
+		/// @return 配列の要素が昇順にソートされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isSorted() const requires Concept::LessThanComparable<Type>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	join
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 
+		/// @param sep 
+		/// @param begin 
+		/// @param end 
+		/// @return 
+		[[nodiscard]]
+		constexpr String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	map
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 各要素に関数を適用した戻り値からなる新しい配列を返します。
 		/// @tparam Fty 各要素に適用する関数の型
@@ -970,53 +1070,82 @@ namespace s3d
 		[[nodiscard]]
 		constexpr auto map(Fty f) const requires std::invocable<Fty, value_type>;
 
-	//	/// @brief 条件を満たす要素が存在しないかを返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件を記述した関数
-	//	/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
-	//	template <class Fty = decltype(Identity), std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	bool none(Fty f = Identity) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	none
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件を記述した関数
-	//	/// @return 区分化された境界を指すイテレータ
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	auto partition(Fty f);
+		/// @brief 条件を満たす要素が存在しないかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool none(Fty f = Identity) const requires std::predicate<Fty, const value_type&>;
 
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @tparam R 
-	//	/// @param f 
-	//	/// @param init 
-	//	/// @return 
-	//	template <class Fty, class R = std::decay_t<std::invoke_result_t<Fty, Type, Type>>>
-	//	auto reduce(Fty f, R init) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	partition
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @param f 
-	//	/// @return 
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type, Type>>* = nullptr>
-	//	auto reduce1(Fty f) const;
+		/// @brief 条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 区分化された境界を指すイテレータ
+		template <class Fty>
+		constexpr auto partition(Fty f) requires std::predicate<Fty, const value_type&>;
 
-	//	/// @brief 
-	//	/// @param value 
-	//	/// @return 
-	//	Array& remove(const value_type& value);
+		////////////////////////////////////////////////////////////////
+		//
+		//	reduce
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 
-	//	/// @param value 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array removed(const value_type& value) const&;
+		/// @brief 
+		/// @tparam Fty 
+		/// @tparam R 
+		/// @param f 
+		/// @param init 
+		/// @return 
+		template <class Fty, class R>
+		constexpr auto reduce(Fty f, R init) const;
 
-	//	/// @brief 
-	//	/// @param value 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array removed(const value_type& value)&&;
+		////////////////////////////////////////////////////////////////
+		//
+		//	remove, removed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい全ての要素を削除します。
+		/// @param value 削除する値
+		/// @return *this
+		constexpr Array& remove(const value_type& value)&;
+
+		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array remove(const value_type& value) &&;
+
+		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed(const value_type& value) const&;
+
+		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed(const value_type& value)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	remove_at, removed_at
+		//
+		////////////////////////////////////////////////////////////////
 
 	//	/// @brief 指定したインデックスにある要素を削除します。
 	//	/// @param index インデックス
@@ -1034,6 +1163,12 @@ namespace s3d
 	//	/// @return 新しい配列
 	//	[[nodiscard]]
 	//	Array removed_at(size_t index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	remove_if, removed_if
+		//
+		////////////////////////////////////////////////////////////////
 
 	//	/// @brief 条件を満たす要素を配列から削除します。
 	//	/// @tparam Fty 条件を記述した関数の型
@@ -1058,6 +1193,12 @@ namespace s3d
 	//	[[nodiscard]]
 	//	Array removed_if(Fty f)&&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace, replaced
+		//
+		////////////////////////////////////////////////////////////////
+
 	//	/// @brief 指定した値と等しい全ての要素を別の値に置き換えます。
 	//	/// @param oldValue 置き換えられる値
 	//	/// @param newValue 新しい値
@@ -1077,6 +1218,12 @@ namespace s3d
 	//	/// @return 新しい配列
 	//	[[nodiscard]]
 	//	Array replaced(const value_type& oldValue, const value_type& newValue)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace_if, replaced_if
+		//
+		////////////////////////////////////////////////////////////////
 
 	//	/// @brief 指定した条件を満たす全ての要素を別の値に置き換えます。
 	//	/// @tparam Fty 条件を記述した関数の型
@@ -1104,6 +1251,12 @@ namespace s3d
 	//	[[nodiscard]]
 	//	Array replaced_if(Fty f, const value_type& newValue)&&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse, reversed
+		//
+		////////////////////////////////////////////////////////////////
+
 	//	/// @brief 配列の要素を逆順に並び替えます。
 	//	/// @return *this
 	//	Array& reverse();
@@ -1118,6 +1271,12 @@ namespace s3d
 	//	[[nodiscard]]
 	//	Array reversed()&&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_each
+		//
+		////////////////////////////////////////////////////////////////
+
 	//	/// @brief 
 	//	/// @tparam Fty 
 	//	/// @param f 
@@ -1131,6 +1290,12 @@ namespace s3d
 	//	/// @return 
 	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
 	//	const Array& reverse_each(Fty f) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotate, rotated
+		//
+		////////////////////////////////////////////////////////////////
 
 	//	/// @brief 
 	//	/// @param count 
@@ -1196,22 +1361,28 @@ namespace s3d
 	//	[[nodiscard]]
 	//	Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&;
 
-	//	/// @brief 
-	//	/// @param index 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array slice(size_t index) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	slice
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 
-	//	/// @param index 
-	//	/// @param length 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array slice(size_t index, size_t length) const;
+		/// @brief 
+		/// @param index 
+		/// @return 
+		[[nodiscard]]
+		constexpr Array slice(size_t index) const;
+
+		/// @brief 
+		/// @param index 
+		/// @param length 
+		/// @return 
+		[[nodiscard]]
+		constexpr Array slice(size_t index, size_t length) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	sort / sorted
+		//	sort, sorted
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1392,8 +1563,6 @@ namespace s3d
 	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
 	//	auto operator >>(Fty f) const;
 
-	//# ifndef SIV3D_NO_CONCURRENT_API
-
 	//	/// @brief 
 	//	/// @tparam Fty 
 	//	/// @param f 
@@ -1420,8 +1589,6 @@ namespace s3d
 	//	/// @return 
 	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
 	//	auto parallel_map(Fty f) const;
-
-	//# endif
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1474,23 +1641,11 @@ namespace s3d
 			return (lhs.m_container == rhs.m_container);
 		}
 
-	# if __cpp_lib_three_way_comparison
-
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const Array& lhs, const Array& rhs)
 		{
 			return (lhs.m_container <=> rhs.m_container);
 		}
-
-	# else
-
-		[[nodiscard]]
-		friend constexpr auto operator <=>(const Array& lhs, const Array& rhs)
-		{
-			return LexicographicalCompareThreeWay(lhs.m_container.begin(), lhs.m_container.end(), rhs.m_container.begin(), rhs.m_container.end(), std::compare_three_way{});
-		}
-
-	# endif
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1508,6 +1663,12 @@ namespace s3d
 		container_type m_container;
 	};
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	ToArray
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief range から Array を作成します。
 	/// @tparam Range range の型
 	/// @tparam Elem range の要素の型
@@ -1518,8 +1679,9 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	Deduction guides
+	//	(deductino guide)
 	//
+	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator = std::allocator<Type>>
 	Array(std::initializer_list<Type>, Allocator = Allocator{})
@@ -1540,9 +1702,6 @@ namespace s3d
 		-> Array<std::ranges::range_value_t<Range>, Allocator>;
 
 # endif
-
-	//
-	////////////////////////////////////////////////////////////////
 }
 
 # include "detail/Array.ipp"

@@ -31,3 +31,28 @@ namespace s3d
 		formatData.string.append(buffer, (p - buffer));
 	}
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+s3d::ParseContext::iterator fmt::formatter<s3d::Point, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::Point, s3d::char32>::format(const s3d::Point& value, s3d::BufferContext& ctx)
+{
+	if (tag.empty())
+	{
+		return format_to(ctx.out(), U"({}, {})", value.x, value.y);
+	}
+	else
+	{
+		const std::u32string format
+			= (U"({:" + tag + U"}, {:" + tag + U"})");
+		return format_to(ctx.out(), format, value.x, value.y);
+	}
+}

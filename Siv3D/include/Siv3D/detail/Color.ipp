@@ -157,9 +157,9 @@ namespace s3d
 
 	constexpr Color Color::operator ~() const noexcept
 	{
-		return{ static_cast<uint8>(~r),
-				static_cast<uint8>(~g),
-				static_cast<uint8>(~b),
+		return{ static_cast<uint8>(255 - r),
+				static_cast<uint8>(255 - g),
+				static_cast<uint8>(255 - b),
 				a };
 	}
 
@@ -383,6 +383,20 @@ namespace s3d
 		return{ static_cast<uint8>(r * (1.0 - amount)),
 				static_cast<uint8>(g * (1.0 - amount)),
 				static_cast<uint8>(b * (1.0 - amount)),
+				a };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	inverted
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Color Color::inverted() const noexcept
+	{
+		return{ static_cast<uint8>(255 - r),
+				static_cast<uint8>(255 - g),
+				static_cast<uint8>(255 - b),
 				a };
 	}
 

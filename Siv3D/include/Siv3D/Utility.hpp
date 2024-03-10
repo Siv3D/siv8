@@ -240,15 +240,6 @@ namespace s3d
 
 	/// @brief 渡された値をそのまま返す関数オブジェクトです。
 	inline constexpr auto Identity = detail::Identity_impl{};
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	LexicographicalCompareThreeWay
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class InputIt1, class InputIt2, class Cmp>
-	constexpr auto LexicographicalCompareThreeWay(InputIt1 f1, InputIt1 l1, InputIt2 f2, InputIt2 l2, Cmp comp) -> decltype(comp(*f1, *f2));
 }
 
 # include "detail/Utility.ipp"

@@ -94,6 +94,9 @@
     <ClCompile Include="..\Test\Test_ColorF.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_BinaryWriter.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">

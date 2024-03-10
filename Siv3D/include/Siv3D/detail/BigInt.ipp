@@ -19,9 +19,374 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline BigInt::BigInt(const Concept::SignedIntegral auto i)
+	BigInt::BigInt(const Concept::SignedIntegral auto i)
 		: BigInt{ static_cast<int64>(i) } {}
 
-	inline BigInt::BigInt(const Concept::UnsignedIntegral auto i)
+	BigInt::BigInt(const Concept::UnsignedIntegral auto i)
 		: BigInt{ static_cast<uint64>(i) } {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator =
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator =(const Concept::SignedIntegral auto i)
+	{
+		*this = static_cast<int64>(i);
+		return *this;
+	}
+
+	BigInt& BigInt::operator =(const Concept::UnsignedIntegral auto i)
+	{
+		*this = static_cast<uint64>(i);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator +
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator +(const Concept::SignedIntegral auto i) const
+	{
+		return (*this + static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator +(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this + static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator -
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator -(const Concept::SignedIntegral auto i) const
+	{
+		return (*this - static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator -(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this - static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator *
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator *(const Concept::SignedIntegral auto i) const
+	{
+		return (*this * static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator *(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this * static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator /
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator /(const Concept::SignedIntegral auto i) const
+	{
+		return (*this / static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator /(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this / static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator %
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator %(const Concept::SignedIntegral auto i) const
+	{
+		return (*this % static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator %(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this % static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator +=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator +=(const Concept::SignedIntegral auto i)
+	{
+		return (*this += static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator +=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this += static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator -=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator -=(const Concept::SignedIntegral auto i)
+	{
+		return (*this -= static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator -=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this -= static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator *=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator *=(const Concept::SignedIntegral auto i)
+	{
+		return (*this *= static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator *=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this *= static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator /=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator /=(const Concept::SignedIntegral auto i)
+	{
+		return (*this /= static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator /=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this /= static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator %=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator %=(const Concept::SignedIntegral auto i)
+	{
+		return (*this %= static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator %=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this %= static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator &
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator &(const Concept::SignedIntegral auto i) const
+	{
+		return (*this & static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator &(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this & static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator |
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator |(const Concept::SignedIntegral auto i) const
+	{
+		return (*this | static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator |(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this | static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ^
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator ^(const Concept::SignedIntegral auto i) const
+	{
+		return (*this ^ static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator ^(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this ^ static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator &=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator &=(const Concept::SignedIntegral auto i)
+	{
+		return (*this &= static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator &=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this &= static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator |=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator |=(const Concept::SignedIntegral auto i)
+	{
+		return (*this |= static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator |=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this |= static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ^=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator ^=(const Concept::SignedIntegral auto i)
+	{
+		return (*this ^= static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator ^=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this ^= static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator <<
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator <<(const Concept::SignedIntegral auto i) const
+	{
+		return (*this << static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator <<(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this << static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator >>
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt BigInt::operator >>(const Concept::SignedIntegral auto i) const
+	{
+		return (*this >> static_cast<int64>(i));
+	}
+
+	BigInt BigInt::operator >>(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this >> static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator <<=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator <<=(const Concept::SignedIntegral auto i)
+	{
+		return (*this <<= static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator <<=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this <<= static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator >>=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigInt& BigInt::operator >>=(const Concept::SignedIntegral auto i)
+	{
+		return (*this >>= static_cast<int64>(i));
+	}
+
+	BigInt& BigInt::operator >>=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this >>= static_cast<uint64>(i));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	swap
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void BigInt::swap(BigInt& other) noexcept
+	{
+		std::swap(pImpl, other.pImpl);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	compare
+	//
+	////////////////////////////////////////////////////////////////
+	
+	int32 BigInt::compare(const Concept::SignedIntegral auto i) const noexcept
+	{
+		return compare(static_cast<int64>(i));
+	}
+
+	int32 BigInt::compare(const Concept::UnsignedIntegral auto i) const noexcept
+	{
+		return compare(static_cast<uint64>(i));
+	}
 }
