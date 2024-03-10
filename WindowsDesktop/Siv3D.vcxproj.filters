@@ -313,6 +313,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL">
       <UniqueIdentifier>{8fb860c2-ed4a-4e03-8636-dc12bcfb5a28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\MonitorInfo">
+      <UniqueIdentifier>{435c84c3-cd92-485b-a90d-1d167e82ae04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo">
+      <UniqueIdentifier>{60bc308f-d907-4e68-8492-42864685699f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1095,6 +1101,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomDuration.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DisplayResolution.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MonitorInfo.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\2DShapes.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Rect.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1357,6 +1375,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL\SivDLL.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MonitorInfo\SivMonitorInfo.cpp">
+      <Filter>src\Siv3D\MonitorInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo\SivMonitorInfo_Windows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -79,6 +79,11 @@ namespace s3d
 
 
 
+		/// @brief 空の長方形を返します。
+		/// @return 空の長方形 (`Rect{ 0, 0, 0, 0 }`)
+		[[nodiscard]]
+		static constexpr Rect Empty() noexcept;
+
 
 
 
@@ -86,3 +91,21 @@ namespace s3d
 		friend void Formatter(FormatData& formatData, const Rect& value);
 	};
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::Rect, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::Rect& value, s3d::BufferContext& ctx);
+};
+
+# include "detail/Rect.ipp"
