@@ -958,6 +958,28 @@ namespace s3d
 		return std::count_if(m_container.begin(), m_container.end(), f);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::each(Fty f) requires std::invocable<Fty, value_type&>
+	{
+		std::for_each(m_container.begin(), m_container.end(), f);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr const Array<Type, Allocator>& Array<Type, Allocator>::each(Fty f) const requires std::invocable<Fty, const value_type&>
+	{
+		std::for_each(m_container.begin(), m_container.end(), f);
+		return *this;
+	}
+
 
 
 
@@ -1005,6 +1027,28 @@ namespace s3d
 
 		return result;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	none
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Array<Type, Allocator>::none(Fty f) const requires std::predicate<Fty, const value_type&>
+	{
+		return std::none_of(m_container.begin(), m_container.end(), f);
+	}
+
+
+
+
+
+
+
+
+
 
 
 	////////////////////////////////////////////////////////////////

@@ -917,21 +917,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 全ての要素を順番に引数にして関数を呼び出します。
-	//	/// @tparam Fty 呼び出す関数の型
-	//	/// @param f 呼び出す関数
-	//	/// @remark `for (auto& x : xs) f(x);` と同じです。
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type&>>* = nullptr>
-	//	Array& each(Fty f);
+		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (auto& x : xs) f(x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		constexpr Array& each(Fty f) requires std::invocable<Fty, value_type&>;
 
-	//	/// @brief 全ての要素を順番に引数にして関数を呼び出します。
-	//	/// @tparam Fty 呼び出す関数の型
-	//	/// @param f 呼び出す関数
-	//	/// @remark `for (const auto& x : xs) f(x);` と同じです。
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
-	//	const Array& each(Fty f) const;
+		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (const auto& x : xs) f(x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		constexpr const Array& each(Fty f) const requires std::invocable<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1059,13 +1059,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 条件を満たす要素が存在しないかを返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件を記述した関数
-	//	/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
-	//	template <class Fty = decltype(Identity), std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	bool none(Fty f = Identity) const;
+		/// @brief 条件を満たす要素が存在しないかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool none(Fty f = Identity) const requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
