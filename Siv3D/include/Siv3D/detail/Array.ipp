@@ -823,6 +823,165 @@ namespace s3d
 		return *this;
 	}
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	choice
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice()
+	{
+		return choice(GetDefaultRNG());
+	}
+
+	template <class Type, class Allocator>
+	const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice() const
+	{
+		return choice(GetDefaultRNG());
+	}
+
+	template <class Type, class Allocator>
+	typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg)
+	{
+		const size_t size = m_container.size();
+
+		if (size == 0)
+		{
+			throw std::out_of_range{ "Array::choice(): Array is empty" };
+		}
+
+		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+	}
+
+	template <class Type, class Allocator>
+	const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
+	{
+		const size_t size = m_container.size();
+
+		if (size == 0)
+		{
+			throw std::out_of_range{ "Array::choice(): Array is empty" };
+		}
+
+		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+	}
+
+	template <class Type, class Allocator>
+	Array<Type, Allocator> Array<Type, Allocator>::choice(const Concept::Integral auto n) const
+	{
+		return choice(n, GetDefaultRNG());
+	}
+
+	template <class Type, class Allocator>
+	Array<Type, Allocator> Array<Type, Allocator>::choice(const Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const
+	{
+		Array result(Arg::reserve = Min<size_t>(n, m_container.size()));
+
+		std::sample(begin(), end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	chunk
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::chunk(const size_t n) const
+	{
+		Array<Array<value_type>> result;
+
+		if (n == 0)
+		{
+			return result;
+		}
+
+		for (size_t i = 0; i < (size() + n - 1) / n; ++i)
+		{
+			result.push_back(slice((i * n), n));
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr bool Array<Type, Allocator>::contains(const value_type& value) const
+	{
+		return (std::find(m_container.begin(), m_container.end(), value) != m_container.end());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Array<Type, Allocator>::contains_if(Fty f) const requires std::predicate<Fty, const value_type&>
+	{
+		return std::any_of(m_container.begin(), m_container.end(), f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr size_t Array<Type, Allocator>::count(const value_type& value) const
+	{
+		return std::count(m_container.begin(), m_container.end(), value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr size_t Array<Type, Allocator>::count_if(Fty f) const requires std::predicate<Fty, const value_type&>
+	{
+		return std::count_if(m_container.begin(), m_container.end(), f);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	map
