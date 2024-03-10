@@ -628,12 +628,6 @@
 // UUID | UUID
 # include <Siv3D/UUIDValue.hpp>
 
-
-
-
-
-
-
 ////////////////////////////////////////////////////////////////
 //
 //	2D 図形 | 2D Geometry
@@ -751,28 +745,85 @@
 //// 平面分割 | Planar subdivisions
 //# include <Siv3D/Subdivision2D.hpp>
 
+//////////////////////////////////////////////////
+//
+//	システム | System
+//
+//////////////////////////////////////////////////
 
+//// 環境変数 | Environment variable
+//# include <Siv3D/EnvironmentVariable.hpp>
+//
+//// コマンドライン引数 | Command-line arguments
+//# include <Siv3D/CommandLine.hpp>
+//
+//// CPU 情報 | CPU information
+//# include <Siv3D/CPUInfo.hpp>
+//
+//// 画面解像度の定数 | Display resolution constants
+//# include <Siv3D/DisplayResolution.hpp>
+//
+//// モニターの情報 | Monitor information
+//# include <Siv3D/MonitorInfo.hpp>
+//
+//// モニター | Monitor
+//# include <Siv3D/Monitor.hpp>
+//
+//// ユーザアクション | User action
+//# include <Siv3D/UserAction.hpp>
 
+// システム | System
+# include <Siv3D/System.hpp> // ToDo
 
+//// クリップボード | Clipboard
+//# include <Siv3D/Clipboard.hpp>
+//
+//// ドライブの種類 | Drive type
+//# include <Siv3D/DriveType.hpp>
+//
+//// ドライブの情報 | Drive information
+//# include <Siv3D/DriveInfo.hpp>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//////////////////////////////////////////////////
+//
+//	コンソール入出力 | Console input/output
+//
+//////////////////////////////////////////////////
 
 # include <Siv3D/ConsoleBuffer.hpp>
+
+// コンソール入出力 | Console input/output
 # include <Siv3D/Console.hpp>
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+//
+//	ウィンドウ | Window
+//
+////////////////////////////////////////////////////////////////
+
+// ウィンドウスタイル | Window Style
+# include <Siv3D/WindowStyle.hpp> // ToDo
+
+// ウィンドウステート | Window State
+# include <Siv3D/WindowState.hpp> // ToDo
+
+// ウィンドウ | Window
+# include <Siv3D/Window.hpp> // ToDo
+
+
+
+
+
+
+
+
+
+
+
 
 
 # if SIV3D_PLATFORM(WINDOWS)
