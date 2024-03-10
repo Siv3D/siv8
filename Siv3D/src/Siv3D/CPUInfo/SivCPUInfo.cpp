@@ -38,42 +38,10 @@ namespace s3d
 			return result;
 		}
 	}
-}
 
-# elif SIV3D_CPU(ARM64)
-
-# include <ThirdParty/cpu_features/cpuinfo_aarch64.h>
-
-namespace s3d
-{
-	static_assert(sizeof(s3d::ARM64Features) == sizeof(cpu_features::Aarch64Features));
-
-	namespace detail
-	{
-		[[nodiscard]]
-		static CPUInfo InitCPUInfo() noexcept
-		{
-			const cpu_features::Aarch64Info info = cpu_features::GetAarch64Info();
-
-			CPUInfo result;
-			std::memcpy(&result.features, &info.features, sizeof(s3d::ARM64Features));
-			result.implementer	= info.implementer;
-			result.variant		= info.variant;
-			result.part			= info.part;
-			result.revision		= info.revision;
-
-			return result;
-		}
-	}
-}
-
-# endif
-
-namespace s3d
-{
 	static const CPUInfo g_CPUInfo = detail::InitCPUInfo();
 	
-	namespace System
+	namespace Platform::Windows::System
 	{
 		const CPUInfo& GetCPUInfo() noexcept
 		{
@@ -81,3 +49,5 @@ namespace s3d
 		}
 	}
 }
+
+# endif
