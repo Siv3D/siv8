@@ -795,6 +795,11 @@ namespace s3d
 		/// @return *this
 		constexpr Array& append(const Array& other);
 
+		template <class Iterator>
+		constexpr Array& append(Iterator first, Iterator last);
+
+		constexpr Array& append(std::initializer_list<value_type> list);
+
 	//	/// @brief 配列の要素を 1 つランダムに返します。
 	//	/// @return 配列からランダムに選ばれた要素への参照
 	//	[[nodiscard]]

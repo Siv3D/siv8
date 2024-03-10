@@ -11,6 +11,7 @@
 
 # include "TextWriterDetail.hpp"
 # include <Siv3D/Endian.hpp>
+# include <Siv3D/Array.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/UnicodeConverter.hpp>
 
@@ -39,7 +40,7 @@ namespace s3d
 			return false;
 		}
 
-		if (m_binaryWriter.size() > 0)
+		if (0 < m_binaryWriter.size())
 		{
 			return true;
 		}
@@ -48,20 +49,17 @@ namespace s3d
 		{
 		case TextEncoding::UTF8_WITH_BOM:
 			{
-				constexpr uint8 utf8BOM[] = { 0xEF, 0xBB, 0xBF };
-				m_binaryWriter.write(utf8BOM);
+				m_binaryWriter.write(BOM_UTF8);
 				break;
 			}
 		case TextEncoding::UTF16LE:
 			{
-				constexpr uint8 utf16LEBOM[] = { 0xFF, 0xFE };
-				m_binaryWriter.write(utf16LEBOM);
+				m_binaryWriter.write(BOM_UTF16LE);
 				break;
 			}
 		case TextEncoding::UTF16BE:
 			{
-				constexpr uint8 utf16BEBOM[] = { 0xFE, 0xFF };
-				m_binaryWriter.write(utf16BEBOM);
+				m_binaryWriter.write(BOM_UTF16BE);
 				break;
 			}
 		default:
@@ -100,108 +98,82 @@ namespace s3d
 		switch (m_encoding)
 		{
 		case TextEncoding::UTF16LE:
-			{
-				char16 previous = u'\0';
-
-				UTF32toUTF16_Converter translator;
-
-				for (const char32 ch32 : s)
-				{
-					const size_t length = translator.put(ch32);
-
-					if (length == 1)
-					{
-						const char16 ch = translator.get()[0];
-
-						if ((ch == u'\n') && (previous != u'\r'))
-						{
-							m_binaryWriter.write(u"\r\n", 4);
-						}
-						else
-						{
-							m_binaryWriter.write(ch);
-							previous = ch;
-						}
-					}
-					else
-					{
-						m_binaryWriter.write(translator.get());
-						previous = '\0';
-					}
-				}
-
-				break;
-			}
 		case TextEncoding::UTF16BE:
 			{
-				char16 previous = u'\0';
+				Array<char16> buffer(Arg::reserve = s.size());
 
 				UTF32toUTF16_Converter translator;
 
-				for (const char32 ch32 : s)
+				for (const char32 codePoint : s)
 				{
-					const size_t length = translator.put(ch32);
-
-					if (length == 1)
+					if (codePoint == U'\r')
 					{
-						const char16 ch = translator.get()[0];
+						continue;
+					}
 
-						if ((ch == u'\n') && (previous != u'\r'))
-						{
-							const uint8 newLine[] = { 0x00, 0x0D, 0x00, 0x0A };
-							m_binaryWriter.write(newLine);
-						}
-						else
-						{
-							m_binaryWriter.write(SwapEndian(static_cast<uint16>(ch)));
-							previous = ch;
-						}
+					if (codePoint == U'\n')
+					{
+						buffer.push_back(u'\r');
+						buffer.push_back(u'\n');
+						continue;
+					}
+
+					if (const size_t length = translator.put(codePoint);
+						length == 1)
+					{
+						buffer.push_back(translator.get()[0]);
 					}
 					else
 					{
-						const uint16 chars[2] =
-						{
-							SwapEndian(static_cast<uint16>(translator.get()[0])),
-							SwapEndian(static_cast<uint16>(translator.get()[1]))
-						};
-
-						m_binaryWriter.write(chars);
-						previous = '\0';
+						buffer.push_back(translator.get()[0]);
+						buffer.push_back(translator.get()[1]);
 					}
 				}
+
+				if (m_encoding == TextEncoding::UTF16BE)
+				{
+					for (char16& ch : buffer)
+					{
+						ch = SwapEndian(static_cast<uint16>(ch));
+					}
+				}
+
+				m_binaryWriter.write(buffer.data(), buffer.size_bytes());
 
 				break;
 			}
 		default:
 			{
-				char8 previous = '\0';
+				Array<char8> buffer(Arg::reserve = s.size());
 
 				UTF32toUTF8_Converter translator;
 
-				for (const char32 ch32 : s)
+				for (const char32 codePoint : s)
 				{
-					const size_t length = translator.put(ch32);
-
-					if (length == 1)
+					if (codePoint == U'\r')
 					{
-						const char8 ch = translator.get()[0];
+						continue;
+					}
 
-						if ((ch == '\n') && (previous != '\r'))
-						{
-							m_binaryWriter.write("\r\n", 2);
-						}
-						else
-						{
-							m_binaryWriter.write(ch);
-							previous = ch;
-						}
+					if (codePoint == U'\n')
+					{
+						buffer.push_back('\r');
+						buffer.push_back('\n');
+						continue;
+					}
+
+					if (const size_t length = translator.put(codePoint);
+						length == 1)
+					{
+						buffer.push_back(translator.get()[0]);
 					}
 					else
 					{
-						m_binaryWriter.write(translator.get().data(), length);
-						previous = '\0';
+						buffer.append(translator.get().begin(), (translator.get().begin() + length));
 					}
 				}
+
+				m_binaryWriter.write(buffer.data(), buffer.size_bytes());
 
 				break;
 			}
@@ -236,64 +208,63 @@ namespace s3d
 		switch (m_encoding)
 		{
 		case TextEncoding::UTF16LE:
-			{
-				char16_t previous = '\0';
-
-				for (const char16_t ch : Unicode::UTF8ToUTF16(s))
-				{
-					if ((ch == '\n') && (previous != '\r'))
-					{
-						const uint8 newLine[] = { 0x0D, 0x00, 0x0A, 0x00 };
-						m_binaryWriter.write(newLine);
-					}
-					else
-					{
-						m_binaryWriter.write(ch);
-					}
-
-					previous = ch;
-				}
-
-				break;
-			}
 		case TextEncoding::UTF16BE:
 			{
-				char16_t previous = '\0';
+				const std::u16string utf16 = Unicode::UTF8ToUTF16(s);
 
-				for (const char16_t ch : Unicode::UTF8ToUTF16(s))
+				Array<char16> buffer(Arg::reserve = utf16.size());
+
+				for (const char16 ch : utf16)
 				{
-					if ((ch == '\n') && (previous != '\r'))
+					if (ch == u'\r')
 					{
-						const uint8 newLine[] = { 0x00, 0x0D, 0x00, 0x0A };
-						m_binaryWriter.write(newLine);
-					}
-					else
-					{
-						m_binaryWriter.write(SwapEndian(static_cast<uint16>(ch)));
+						continue;
 					}
 
-					previous = ch;
+					if (ch == u'\n')
+					{
+						buffer.push_back(u'\r');
+						buffer.push_back(u'\n');
+						continue;
+					}
+
+					buffer.push_back(ch);
 				}
+
+				if (m_encoding == TextEncoding::UTF16BE)
+				{
+					for (char16& ch : buffer)
+					{
+						ch = SwapEndian(static_cast<uint16>(ch));
+					}
+				}
+
+				m_binaryWriter.write(buffer.data(), buffer.size_bytes());
 
 				break;
 			}
 		default:
 			{
-				char previous = '\0';
+				Array<char8> buffer(Arg::reserve = s.size());
 
 				for (const char8 ch : s)
 				{
-					if ((ch == '\n') && (previous != '\r'))
+					if (ch == '\r')
 					{
-						m_binaryWriter.write("\r\n", 2);
-					}
-					else
-					{
-						m_binaryWriter.write(ch);
+						continue;
 					}
 
-					previous = ch;
+					if (ch == '\n')
+					{
+						buffer.push_back('\r');
+						buffer.push_back('\n');
+						continue;
+					}
+
+					buffer.push_back(ch);
 				}
+
+				m_binaryWriter.write(buffer.data(), buffer.size_bytes());
 
 				break;
 			}

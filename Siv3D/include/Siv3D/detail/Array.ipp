@@ -808,8 +808,20 @@ namespace s3d
 		return *this;
 	}
 
+	template <class Type, class Allocator>
+	template <class Iterator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(Iterator first, Iterator last)
+	{
+		m_container.insert(m_container.end(), first, last);
+		return *this;
+	}
 
-
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(std::initializer_list<value_type> list)
+	{
+		m_container.insert(m_container.end(), list);
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
