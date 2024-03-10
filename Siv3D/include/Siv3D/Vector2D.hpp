@@ -46,9 +46,6 @@ namespace s3d
 		Vector2D() = default;
 
 		[[nodiscard]]
-		Vector2D(const Vector2D&) = default;
-
-		[[nodiscard]]
 		constexpr Vector2D(value_type _x, value_type _y) noexcept;
 
 		[[nodiscard]]
