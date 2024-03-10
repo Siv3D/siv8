@@ -67,6 +67,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PCG64.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Point.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Random.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomDuration.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Result.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FastMath.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatFormatter.ipp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PointVector.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Random.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomDuration.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Rect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Result.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FastMath.hpp" />
