@@ -319,6 +319,15 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo">
       <UniqueIdentifier>{60bc308f-d907-4e68-8492-42864685699f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\CPUInfo">
+      <UniqueIdentifier>{f284a74a-e8e9-4b58-a8a3-9620a6095f8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\cpu_features">
+      <UniqueIdentifier>{399ad904-572f-457a-8eaf-f96f6ce62326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\cpu_features\internal">
+      <UniqueIdentifier>{ef26dff1-a36a-4523-9a6d-e5293ae407f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1113,6 +1122,27 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Rect.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CPUInfo.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpuinfo_x86.h">
+      <Filter>src\ThirdParty\cpu_features</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpu_features_cache_info.h">
+      <Filter>src\ThirdParty\cpu_features</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpu_features_macros.h">
+      <Filter>src\ThirdParty\cpu_features</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\bit_utils.h">
+      <Filter>src\ThirdParty\cpu_features\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\cpuid_x86.h">
+      <Filter>src\ThirdParty\cpu_features\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\windows_utils.h">
+      <Filter>src\ThirdParty\cpu_features\internal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1382,5 +1412,25 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo\SivMonitorInfo_Windows.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo</Filter>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\CPUInfo\SivCPUInfo.cpp">
+      <Filter>src\Siv3D\CPUInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86_windows.c">
+      <Filter>src\ThirdParty\cpu_features</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86__base_implementation.inl">
+      <Filter>src\ThirdParty\cpu_features</Filter>
+    </None>
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\copy.inl">
+      <Filter>src\ThirdParty\cpu_features</Filter>
+    </None>
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\equals.inl">
+      <Filter>src\ThirdParty\cpu_features</Filter>
+    </None>
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\define_introspection.inl">
+      <Filter>src\ThirdParty\cpu_features</Filter>
+    </None>
   </ItemGroup>
 </Project>

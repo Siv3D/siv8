@@ -789,9 +789,9 @@
 //
 //// コマンドライン引数 | Command-line arguments
 //# include <Siv3D/CommandLine.hpp>
-//
-//// CPU 情報 | CPU information
-//# include <Siv3D/CPUInfo.hpp>
+
+// CPU 情報 | CPU information
+# include <Siv3D/CPUInfo.hpp>
 
 // 画面解像度の定数 | Display resolution constants
 # include <Siv3D/DisplayResolution.hpp>

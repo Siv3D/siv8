@@ -33,6 +33,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Console.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CopyOption.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CPUInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Date.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DateTime.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DayOfWeek.hpp" />
@@ -257,6 +258,12 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UnicodeConverter\UnicodeUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\mimalloc\mimalloc-new-delete.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpuinfo_x86.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpu_features_cache_info.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpu_features_macros.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\bit_utils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\cpuid_x86.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\windows_utils.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\bignum-dtoa.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\bignum.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\cached-powers.h" />
@@ -305,6 +312,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ConsoleBuffer\SivConsoleBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\CPUInfo\SivCPUInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DateTime\SivDateTime.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Date\SivDate.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DayOfWeek\SivDayOfWeek.cpp" />
@@ -361,6 +369,10 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\numeric\int128.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\random\discrete_distribution.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\random\gaussian_distribution.cc" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86_windows.c">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4100; 4132</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4100; 4132</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\bignum-dtoa.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\bignum.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\cached-powers.cc" />
@@ -372,6 +384,12 @@
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4127; 4310; 4505</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4127; 4310; 4505</DisableSpecificWarnings>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\copy.inl" />
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\define_introspection.inl" />
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\equals.inl" />
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86__base_implementation.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
