@@ -81,11 +81,147 @@ namespace s3d
 		return &x;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator +
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type>
+	constexpr Vector2D<Type> Vector2D<Type>::operator +() const noexcept
+	{
+		return *this;
+	}
+	
+	template <class Type>
+	constexpr Vector2D<Type> Vector2D<Type>::operator +(const Vector2D v) const noexcept
+	{
+		return{ (x + v.x), (y + v.y) };
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator -
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type>
+	constexpr Vector2D<Type> Vector2D<Type>::operator -() const noexcept
+	{
+		return{ -x, -y };
+	}
 
+	template <class Type>
+	constexpr Vector2D<Type> Vector2D<Type>::operator -(const Vector2D v) const noexcept
+	{
+		return{ (x - v.x), (y - v.y) };
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator *
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr Vector2D<Type> Vector2D<Type>::operator *(const value_type s) const noexcept
+	{
+		return{ (x * s), (y * s) };
+	}
+
+	template <class Type>
+	constexpr Vector2D<Type> Vector2D<Type>::operator *(const Vector2D v) const noexcept
+	{
+		return{ (x * v.x), (y * v.y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator /
+	//
+	////////////////////////////////////////////////////////////////
+	
+	template <class Type>
+	constexpr Vector2D<Type> Vector2D<Type>::operator /(const value_type s) const noexcept
+	{
+		return (*this * (static_cast<value_type>(1.0) / s));
+	}
+
+	template <class Type>
+	constexpr Vector2D<Type> Vector2D<Type>::operator /(const Vector2D v) const noexcept
+	{
+		return{ (x / v.x), (y / v.y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator +=
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr Vector2D<Type>& Vector2D<Type>::operator +=(const Vector2D v) noexcept
+	{
+		x += v.x;
+		y += v.y;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator -=
+	//
+	////////////////////////////////////////////////////////////////
+	
+	template <class Type>
+	constexpr Vector2D<Type>& Vector2D<Type>::operator -=(const Vector2D v) noexcept
+	{
+		x -= v.x;
+		y -= v.y;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator *=
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr Vector2D<Type>& Vector2D<Type>::operator *=(const value_type s) noexcept
+	{
+		x *= s;
+		y *= s;
+		return *this;
+	}
+
+	template <class Type>
+	constexpr Vector2D<Type>& Vector2D<Type>::operator *=(const Vector2D v) noexcept
+	{
+		x *= v.x;
+		y *= v.y;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator /=
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr Vector2D<Type>& Vector2D<Type>::operator /=(const value_type s) noexcept
+	{
+		return (*this *= (static_cast<value_type>(1.0) / s));
+	}
+
+	template <class Type>
+	constexpr Vector2D<Type>& Vector2D<Type>::operator /=(const Vector2D v) noexcept
+	{
+		x /= v.x;
+		y /= v.y;
+		return *this;
+	}
 
 
 	////////////////////////////////////////////////////////////////

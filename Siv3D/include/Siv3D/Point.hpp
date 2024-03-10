@@ -49,9 +49,6 @@ namespace s3d
 		Point() = default;
 
 		[[nodiscard]]
-		Point(const Point&) = default;
-
-		[[nodiscard]]
 		constexpr Point(value_type _x, value_type _y) noexcept;
 
 		[[nodiscard]]
