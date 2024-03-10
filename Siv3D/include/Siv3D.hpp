@@ -549,12 +549,47 @@
 // 精度を落とした高速な数学関数 | Fast math functions
 # include <Siv3D/FastMath.hpp>
 
-
-////////////////////////////////////////////////////////////////
+//// 線形補間 | Interpolation
+//# include <Siv3D/Interpolation.hpp>
 //
-//	ノイズ | Noise
+//// イージング関数 | Easing
+//# include <Siv3D/Easing.hpp>
 //
-////////////////////////////////////////////////////////////////
+//// イージングによる往復 | Bidirectional easing
+//# include <Siv3D/EasingAB.hpp>
+//
+//// キーフレームによるアニメーション | Keyframe animation
+//# include <Siv3D/SimpleAnimation.hpp>
+//
+//// トランジション | Transition
+//# include <Siv3D/Transition.hpp>
+//
+//// 周期関数 | Periodic functions
+//# include <Siv3D/Periodic.hpp>
+//
+//// Poisson Disk 2D | Poisson disk 2D
+//# include <Siv3D/PoissonDisk2D.hpp>
+//
+//// スプライン | Spline
+//# include <Siv3D/Spline.hpp>
+//
+//// SIMD 演算 | SIMD
+//# include <Siv3D/SIMDMath.hpp>
+//
+//// 半精度浮動小数点数 | Half-precision floating-point
+//# include <Siv3D/HalfFloat.hpp>
+//
+//// SIMD 対応 Float4 | SIMD Float4
+//# include <Siv3D/SIMD_Float4.hpp>
+//
+//// 数式パーサ | Math parser
+//# include <Siv3D/MathParser.hpp>
+//
+//// 統計 | Statistics
+//# include <Siv3D/Statistics.hpp>
+//
+//// 素数判定 | Primality test
+//# include <Siv3D/PrimeNumber.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -624,9 +659,9 @@
 //
 //// ランダムなサンプリング | Random sampling
 //# include <Siv3D/Sample.hpp>
-//
-// UUID | UUID
-# include <Siv3D/UUIDValue.hpp>
+
+//// Improved Perlin ノイズ | Improved Perlin noise
+//# include <Siv3D/PerlinNoise.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -745,11 +780,11 @@
 //// 平面分割 | Planar subdivisions
 //# include <Siv3D/Subdivision2D.hpp>
 
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 //
 //	システム | System
 //
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
 //// 環境変数 | Environment variable
 //# include <Siv3D/EnvironmentVariable.hpp>
@@ -784,20 +819,118 @@
 //// ドライブの情報 | Drive information
 //# include <Siv3D/DriveInfo.hpp>
 
-//////////////////////////////////////////////////
+// UUID | UUID
+# include <Siv3D/UUIDValue.hpp>
+
+////////////////////////////////////////////////////////////////
 //
 //	コンソール入出力 | Console input/output
 //
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
 # include <Siv3D/ConsoleBuffer.hpp>
 
 // コンソール入出力 | Console input/output
 # include <Siv3D/Console.hpp>
 
+////////////////////////////////////////////////////////////////
+//
+//	ネットワーク | Network
+//
+////////////////////////////////////////////////////////////////
 
+//// Twitter | Twitter
+//# include <Siv3D/Twitter.hpp>
+//
+//// IPv4 アドレス | IPv4 address
+//# include <Siv3D/IPv4Address.hpp>
+//
+//// ネットワーク | Networking
+//# include <Siv3D/Network.hpp>
 
+////////////////////////////////////////////////////////////////
+//
+//	TCP 通信 | TCP Communication
+//
+////////////////////////////////////////////////////////////////
 
+//// TCP 通信のエラー | TCP connection errors
+//# include <Siv3D/TCPError.hpp>
+//
+//// TCP サーバ | TCP server
+//# include <Siv3D/TCPServer.hpp>
+//
+//// TCP クライアント | TCP client
+//# include <Siv3D/TCPClient.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	OSC 通信 | OSC Communication
+//
+////////////////////////////////////////////////////////////////
+
+//// OSC 型タグ
+//# include <Siv3D/OSCTypeTag.hpp>
+//
+//// OSC 送信メッセージ
+//# include <Siv3D/OSCMessage.hpp>
+//
+//// OSC 送信クラス
+//# include <Siv3D/OSCSender.hpp>
+//
+//// OSC 受信メッセージの引数
+//# include <Siv3D/OSCArgument.hpp>
+//
+//// OSC 受信メッセージ
+//# include <Siv3D/ReceivedOSCMessage.hpp>
+//
+//// OSC 受信クラス
+//# include <Siv3D/OSCReceiver.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	HTTP 通信 | HTTP Communication
+//
+////////////////////////////////////////////////////////////////
+
+//// URL | URL
+//# include <Siv3D/URL.hpp>
+//
+//# include <Siv3D/URLView.hpp>
+//
+//# include <Siv3D/HTTPStatusCode.hpp>
+//
+//# include <Siv3D/HTTPResponse.hpp>
+//
+//# include <Siv3D/HTTPAsyncStatus.hpp>
+//
+//# include <Siv3D/HTTPProgress.hpp>
+//
+//# include <Siv3D/AsyncHTTPTask.hpp>
+//
+//// シンプルな HTTP 通信ライブラリ | Simple HTTP library
+//# include <Siv3D/SimpleHTTP.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	シリアル通信 | Serial Communication
+//
+////////////////////////////////////////////////////////////////
+
+//// シリアルポートの情報 | Serial port information
+//# include <Siv3D/SerialPortInfo.hpp>
+//
+//// シリアル通信 | Serial communication
+//# include <Siv3D/Serial.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	パイプ | Pipe
+//
+////////////////////////////////////////////////////////////////
+
+//// パイプ通信 | Interprocess communication (Pipe)
+//# include <Siv3D/Pipe.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
