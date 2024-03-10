@@ -261,6 +261,9 @@
 // フォーマットリテラル | Format literal
 # include <Siv3D/FormatLiteral.hpp>
 
+// Fmt の拡張の補助 | Fmt helper
+# include <Siv3D/FmtHelper.hpp>
+
 // Fmt の拡張 | Fmt extension
 # include <Siv3D/FmtExtension.hpp>
 

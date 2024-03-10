@@ -14,10 +14,11 @@
 # include <cmath>
 # include "Common.hpp"
 # include "Concepts.hpp"
+# include "2DShapesFwd.hpp"
 # include "Utility.hpp"
 # include "CommonFloat.hpp"
 # include "MathConstants.hpp"
-# include "FmtExtension.hpp"
+# include "FmtHelper.hpp"
 
 namespace s3d
 {

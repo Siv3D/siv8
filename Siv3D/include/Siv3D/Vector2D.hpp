@@ -11,6 +11,8 @@
 
 # pragma once
 # include "Common.hpp"
+# include "Concepts.hpp"
+# include "2DShapesFwd.hpp"
 
 namespace s3d
 {
@@ -32,6 +34,93 @@ namespace s3d
 
 		/// @brief ベクトルの Y 成分
 		value_type y;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Vector2D() = default;
+
+		[[nodiscard]]
+		Vector2D(const Vector2D&) = default;
+
+		[[nodiscard]]
+		constexpr Vector2D(value_type _x, value_type _y) noexcept;
+
+		[[nodiscard]]
+		constexpr Vector2D(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y) noexcept;
+
+		[[nodiscard]]
+		constexpr Vector2D(Point p) noexcept;
+
+		template <class U>
+		[[nodiscard]]
+		constexpr Vector2D(const Vector2D<U>& v) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	elem
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr value_type elem(size_t index) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getPointer
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr value_type* getPointer() noexcept;
+
+		[[nodiscard]]
+		constexpr const value_type* getPointer() const noexcept;
+
+
+
+
+
+
+
+
+
+
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	dot
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr value_type dot(Vector2D v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	cross
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr value_type cross(Vector2D v) const noexcept;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -615,7 +615,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtExtension.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FmtExtension.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FmtHelper.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\FormatUtility.hpp">
@@ -1078,6 +1078,12 @@
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\CommonFloat.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\2DShapesFwd.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>

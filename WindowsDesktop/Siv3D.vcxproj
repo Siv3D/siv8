@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\2DShapesFwd.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AlignedAllocator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AsyncTask.hpp" />
@@ -69,7 +70,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Result.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FastMath.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatFormatter.ipp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FmtExtension.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FmtHelper.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Format.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatData.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteral.ipp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Error\ParseError.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\EscapedFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HardwareRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashTable.hpp" />
