@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -44,7 +44,7 @@ namespace s3d
 
 		if (parentFilePath && (not FileSystem::Exists(parentFilePath)) && (not FileSystem::CreateDirectories(parentFilePath)))
 		{
-			LOG_FAIL(fmt::format("❌ BinaryWriter: Failed to create parent directories \"{0}\"", parentDirectory));
+			LOG_FAIL(fmt::format("❌ BinaryWriter: Failed to create parent directories \"{0}\"", parentFilePath));
 			return false;
 		}
 

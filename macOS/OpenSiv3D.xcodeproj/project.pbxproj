@@ -607,6 +607,8 @@
 		F90707DE2B9DAEC900383E4D /* wyhash.h in Headers */ = {isa = PBXBuildFile; fileRef = F90705B12B9DAEC900383E4D /* wyhash.h */; };
 		F90707DF2B9DAEC900383E4D /* xxhash.h in Headers */ = {isa = PBXBuildFile; fileRef = F90705B32B9DAEC900383E4D /* xxhash.h */; };
 		F90707E02B9DAEC900383E4D /* mimalloc-new-delete.h in Headers */ = {isa = PBXBuildFile; fileRef = F90705B62B9DAEC900383E4D /* mimalloc-new-delete.h */; };
+		F90707E22B9DDFFE00383E4D /* RandomDuration.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90707E12B9DDFFE00383E4D /* RandomDuration.ipp */; };
+		F90707E42B9DE01300383E4D /* RandomDuration.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90707E32B9DE01300383E4D /* RandomDuration.hpp */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -1216,6 +1218,8 @@
 		F90705B12B9DAEC900383E4D /* wyhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wyhash.h; sourceTree = "<group>"; };
 		F90705B32B9DAEC900383E4D /* xxhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xxhash.h; sourceTree = "<group>"; };
 		F90705B62B9DAEC900383E4D /* mimalloc-new-delete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mimalloc-new-delete.h"; sourceTree = "<group>"; };
+		F90707E12B9DDFFE00383E4D /* RandomDuration.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomDuration.ipp; sourceTree = "<group>"; };
+		F90707E32B9DE01300383E4D /* RandomDuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomDuration.hpp; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1451,6 +1455,7 @@
 				F90703422B9DAEC900383E4D /* PCG64.ipp */,
 				F90703432B9DAEC900383E4D /* Point.ipp */,
 				F90703442B9DAEC900383E4D /* Random.ipp */,
+				F90707E12B9DDFFE00383E4D /* RandomDuration.ipp */,
 				F90703452B9DAEC900383E4D /* Result.ipp */,
 				F90703462B9DAEC900383E4D /* ScopeExit.ipp */,
 				F90703472B9DAEC900383E4D /* SequenceFormatter.ipp */,
@@ -1499,9 +1504,6 @@
 		F90703E12B9DAEC900383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
-				F907035A2B9DAEC900383E4D /* detail */,
-				F907035D2B9DAEC900383E4D /* Error */,
-				F90703622B9DAEC900383E4D /* Windows */,
 				F90703632B9DAEC900383E4D /* _TEMPLATE.hpp */,
 				F90703642B9DAEC900383E4D /* 2DShapesFwd.hpp */,
 				F90703652B9DAEC900383E4D /* AlignedAllocator.hpp */,
@@ -1595,6 +1597,7 @@
 				F90703BD2B9DAEC900383E4D /* PredefinedYesNo.hpp */,
 				F90703BE2B9DAEC900383E4D /* PRNG.hpp */,
 				F90703BF2B9DAEC900383E4D /* Random.hpp */,
+				F90707E32B9DE01300383E4D /* RandomDuration.hpp */,
 				F90703C02B9DAEC900383E4D /* Rect.hpp */,
 				F90703C12B9DAEC900383E4D /* Result.hpp */,
 				F90703C22B9DAEC900383E4D /* ScopeExit.hpp */,
@@ -1628,6 +1631,9 @@
 				F90703DE2B9DAEC900383E4D /* WindowState.hpp */,
 				F90703DF2B9DAEC900383E4D /* WindowStyle.hpp */,
 				F90703E02B9DAEC900383E4D /* YesNo.hpp */,
+				F907035A2B9DAEC900383E4D /* detail */,
+				F907035D2B9DAEC900383E4D /* Error */,
+				F90703622B9DAEC900383E4D /* Windows */,
 			);
 			path = Siv3D;
 			sourceTree = "<group>";
@@ -3062,6 +3068,7 @@
 				F90706852B9DAEC900383E4D /* Window.hpp in Headers */,
 				F90706602B9DAEC900383E4D /* PCG64.hpp in Headers */,
 				F90706092B9DAEC900383E4D /* Resource.hpp in Headers */,
+				F90707E22B9DDFFE00383E4D /* RandomDuration.ipp in Headers */,
 				F90706262B9DAEC900383E4D /* DisjointSet.hpp in Headers */,
 				F90705C22B9DAEC900383E4D /* BoolArray.ipp in Headers */,
 				F90706FE2B9DAEC900383E4D /* mov_mask.h in Headers */,
@@ -3156,6 +3163,7 @@
 				F90705BF2B9DAEC900383E4D /* BinaryReader.ipp in Headers */,
 				F90706D22B9DAEC900383E4D /* cmp.h in Headers */,
 				F90706BF2B9DAEC900383E4D /* phmap_fwd_decl.h in Headers */,
+				F90707E42B9DE01300383E4D /* RandomDuration.hpp in Headers */,
 				F90707E02B9DAEC900383E4D /* mimalloc-new-delete.h in Headers */,
 				F90706452B9DAEC900383E4D /* IReader.hpp in Headers */,
 				F90707192B9DAEC900383E4D /* sad.h in Headers */,
