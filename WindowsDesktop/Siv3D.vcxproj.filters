@@ -310,6 +310,9 @@
     <Filter Include="src\Siv3D\TextWriter">
       <UniqueIdentifier>{d443395f-63e6-4b25-80a2-6d39edf237f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL">
+      <UniqueIdentifier>{8fb860c2-ed4a-4e03-8636-dc12bcfb5a28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1345,6 +1348,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.cpp">
       <Filter>src\Siv3D\TextWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL\SivDLL.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
