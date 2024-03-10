@@ -939,21 +939,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
-	//	/// @tparam Fty 呼び出す関数の型
-	//	/// @param f 呼び出す関数
-	//	/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, size_t, Type&>>* = nullptr>
-	//	Array& each_index(Fty f);
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		Array& each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>;
 
-	//	/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
-	//	/// @tparam Fty 呼び出す関数の型
-	//	/// @param f 呼び出す関数
-	//	/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, size_t, Type>>* = nullptr>
-	//	const Array& each_index(Fty f) const;
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		const Array& each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -961,19 +961,35 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (isize i = 0; auto& x : xs) f(i++, x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		constexpr Array& each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>;
+
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (isize i = 0; auto x : xs) f(i++, x);` と同じです。
+		/// @return *this
+		template <class Fty>
+		constexpr const Array& each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	fetch
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 指定したインデックスにある要素を返します。インデックスが範囲外の場合デフォルト値を返します。
-	//	/// @param index インデックス
-	//	/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
-	//	/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue
-	//	template <class U>
-	//	[[nodiscard]]
-	//	value_type fetch(size_t index, U&& defaultValue) const;
+		/// @brief 指定したインデックスにある要素を返します。インデックスが範囲外の場合デフォルト値を返します。
+		/// @param index インデックス
+		/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
+		/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue
+		template <class U>
+		[[nodiscard]]
+		constexpr value_type fetch(size_t index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -981,10 +997,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 指定した値を全ての要素に代入します。
-	//	/// @param value 代入する値
-	//	/// @return *this
-	//	Array& fill(const value_type& value);
+		/// @brief 指定した値を全ての要素に代入します。
+		/// @param value 代入する値
+		/// @return *this
+		constexpr Array& fill(const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -992,14 +1008,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 指定した条件を満たす要素だけを集めた新しい配列を返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件を記述した関数
-	//	/// @remark 結果において、要素の前後関係は維持されます。
-	//	/// @return 指定した条件を満たす要素を集めた新しい配列
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	Array filter(Fty f) const;
+		/// @brief 指定した条件を満たす要素だけを集めた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @remark 結果において、要素の前後関係は維持されます。
+		/// @return 指定した条件を満たす要素を集めた新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array filter(Fty f) const requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1007,12 +1023,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 要素を指定したグループ数に分割します。
-	//	/// @param group グループ数
-	//	/// @remark { 0, 1, 2, 3, 4, 5, 6 } を 3 グループに分割すると { { 0, 1, 2 }, { 3, 4 }, { 5, 6 }} になります。
-	//	/// @return 分割したグループ
-	//	[[nodiscard]]
-	//	Array<Array<value_type>> in_groups(size_t group) const;
+		/// @brief 要素を指定したグループ数に分割します。
+		/// @param group グループ数
+		/// @remark { 0, 1, 2, 3, 4, 5, 6 } を 3 グループに分割すると { { 0, 1, 2 }, { 3, 4 }, { 5, 6 }} になります。
+		/// @return 分割したグループ
+		[[nodiscard]]
+		constexpr Array<Array<value_type>> in_groups(size_t group) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1020,10 +1036,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 配列の要素が昇順にソートされているかを返します。
-	//	/// @return 配列の要素が昇順にソートされている場合 true, それ以外の場合は false
-	//	[[nodiscard]]
-	//	bool isSorted() const requires Concept::LessThanComparable<Type>;
+		/// @brief 配列の要素が昇順にソートされているかを返します。
+		/// @return 配列の要素が昇順にソートされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isSorted() const requires Concept::LessThanComparable<Type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1031,13 +1047,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 
-	//	/// @param sep 
-	//	/// @param begin 
-	//	/// @param end 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const;
+		/// @brief 
+		/// @param sep 
+		/// @param begin 
+		/// @param end 
+		/// @return 
+		[[nodiscard]]
+		String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const;
 
 		////////////////////////////////////////////////////////////////
 		//

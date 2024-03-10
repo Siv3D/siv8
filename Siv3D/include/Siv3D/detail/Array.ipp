@@ -980,29 +980,197 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_index
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	template <class Fty>
+	Array<Type, Allocator>& Array<Type, Allocator>::each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>
+	{
+		for (size_t i = 0; auto& elem : m_container)
+		{
+			f(i++, elem);
+		}
 
+		return *this;
+	}
 
+	template <class Type, class Allocator>
+	template <class Fty>
+	const Array<Type, Allocator>& Array<Type, Allocator>::each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>
+	{
+		for (size_t i = 0; const auto& elem : m_container)
+		{
+			f(i++, elem);
+		}
 
+		return *this;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_sindex
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>
+	{
+		for (isize i = 0; auto& elem : m_container)
+		{
+			f(i++, elem);
+		}
 
+		return *this;
+	}
 
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr const Array<Type, Allocator>& Array<Type, Allocator>::each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>
+	{
+		for (isize i = 0; const auto& elem : m_container)
+		{
+			f(i++, elem);
+		}
 
+		return *this;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	fetch
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	template <class U>
+	constexpr typename Array<Type, Allocator>::value_type Array<Type, Allocator>::fetch(size_t index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
+	{
+		if (m_container.size() <= index)
+		{
+			return value_type(std::forward<U>(defaultValue));
+		}
 
+		return m_container[index];
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	fill
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::fill(const value_type& value)
+	{
+		std::fill(m_container.begin(), m_container.end(), value);
+		return *this;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	filter
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::filter(Fty f) const requires std::predicate<Fty, const value_type&>
+	{
+		Array result;
 
+		for (const auto& value : m_container)
+		{
+			if (f(value))
+			{
+				result.push_back(value);
+			}
+		}
 
+		return result;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	in_groups
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::in_groups(const size_t group) const
+	{
+		Array<Array<value_type>> result;
 
+		if (group == 0)
+		{
+			return result;
+		}
 
+		const size_t div = (m_container.size() / group);
+		const size_t mod = (m_container.size() % group);
+		size_t index = 0;
 
+		for (size_t i = 0; i < group; ++i)
+		{
+			const size_t length = (div + ((0 < mod) && (i < mod)));
+
+			result.push_back(slice(index, length));
+
+			index += length;
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isSorted
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr bool Array<Type, Allocator>::isSorted() const requires Concept::LessThanComparable<Type>
+	{
+		return std::is_sorted(m_container.begin(), m_container.end());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	join
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	inline String Array<Type, Allocator>::join(const StringView sep, const StringView begin, const StringView end) const
+	{
+		String result;
+
+		result.append(begin);
+
+		bool isFirst = true;
+
+		for (const auto& value : m_container)
+		{
+			if (isFirst)
+			{
+				isFirst = false;
+			}
+			else
+			{
+				result.append(sep);
+			}
+
+			result.append(Format(value));
+		}
+
+		result.append(end);
+
+		return result;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
