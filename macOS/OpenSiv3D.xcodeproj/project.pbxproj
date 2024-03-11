@@ -636,6 +636,39 @@
 		F9070E912B9F183100383E4D /* CSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E8B2B9F183100383E4D /* CSystem.cpp */; };
 		F9070E922B9F183100383E4D /* CSystem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070E8C2B9F183100383E4D /* CSystem.hpp */; };
 		F9070E932B9F183100383E4D /* SivSystem_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9070E8D2B9F183100383E4D /* SivSystem_macOS.mm */; };
+		F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */ = {isa = PBXBuildFile; fileRef = F9070E942B9F1C8900383E4D /* cocoa_init.m */; };
+		F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E952B9F1C8900383E4D /* cocoa_joystick.h */; };
+		F9070ED42B9F1C8900383E4D /* cocoa_joystick.m in Sources */ = {isa = PBXBuildFile; fileRef = F9070E962B9F1C8900383E4D /* cocoa_joystick.m */; };
+		F9070ED52B9F1C8900383E4D /* cocoa_monitor.m in Sources */ = {isa = PBXBuildFile; fileRef = F9070E972B9F1C8900383E4D /* cocoa_monitor.m */; };
+		F9070ED62B9F1C8900383E4D /* cocoa_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E982B9F1C8900383E4D /* cocoa_platform.h */; };
+		F9070ED72B9F1C8900383E4D /* cocoa_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070E992B9F1C8900383E4D /* cocoa_time.c */; };
+		F9070ED82B9F1C8900383E4D /* cocoa_time.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E9A2B9F1C8900383E4D /* cocoa_time.h */; };
+		F9070ED92B9F1C8900383E4D /* cocoa_window.m in Sources */ = {isa = PBXBuildFile; fileRef = F9070E9B2B9F1C8900383E4D /* cocoa_window.m */; };
+		F9070EDA2B9F1C8900383E4D /* context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070E9C2B9F1C8900383E4D /* context.c */; };
+		F9070EDB2B9F1C8900383E4D /* egl_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070E9D2B9F1C8900383E4D /* egl_context.c */; };
+		F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E9E2B9F1C8900383E4D /* glfw3.h */; };
+		F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E9F2B9F1C8900383E4D /* glfw3native.h */; };
+		F9070EDE2B9F1C8900383E4D /* glx_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA02B9F1C8900383E4D /* glx_context.c */; };
+		F9070EDF2B9F1C8900383E4D /* init.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA12B9F1C8900383E4D /* init.c */; };
+		F9070EE02B9F1C8900383E4D /* input.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA22B9F1C8900383E4D /* input.c */; };
+		F9070EE12B9F1C8900383E4D /* internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EA32B9F1C8900383E4D /* internal.h */; };
+		F9070EE42B9F1C8900383E4D /* mappings.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EA62B9F1C8900383E4D /* mappings.h */; };
+		F9070EE52B9F1C8900383E4D /* monitor.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA72B9F1C8900383E4D /* monitor.c */; };
+		F9070EE62B9F1C8900383E4D /* nsgl_context.m in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA82B9F1C8900383E4D /* nsgl_context.m */; };
+		F9070EEE2B9F1C8900383E4D /* platform.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB02B9F1C8900383E4D /* platform.c */; };
+		F9070EEF2B9F1C8900383E4D /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB12B9F1C8900383E4D /* platform.h */; };
+		F9070EF02B9F1C8900383E4D /* posix_module.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB22B9F1C8900383E4D /* posix_module.c */; };
+		F9070EF12B9F1C8900383E4D /* posix_poll.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB32B9F1C8900383E4D /* posix_poll.c */; };
+		F9070EF22B9F1C8900383E4D /* posix_poll.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB42B9F1C8900383E4D /* posix_poll.h */; };
+		F9070EF32B9F1C8900383E4D /* posix_thread.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB52B9F1C8900383E4D /* posix_thread.c */; };
+		F9070EF42B9F1C8900383E4D /* posix_thread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB62B9F1C8900383E4D /* posix_thread.h */; };
+		F9070EF52B9F1C8900383E4D /* posix_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB72B9F1C8900383E4D /* posix_time.c */; };
+		F9070EF62B9F1C8900383E4D /* posix_time.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB82B9F1C8900383E4D /* posix_time.h */; };
+		F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB92B9F1C8900383E4D /* vulkan.c */; };
+		F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EBA2B9F1C8900383E4D /* wgl_context.c */; };
+		F9070F042B9F1C8900383E4D /* window.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EC62B9F1C8900383E4D /* window.c */; };
+		F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */; };
+		F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070ED02B9F1C8900383E4D /* xkb_unicode.h */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -1274,6 +1307,39 @@
 		F9070E8B2B9F183100383E4D /* CSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSystem.cpp; sourceTree = "<group>"; };
 		F9070E8C2B9F183100383E4D /* CSystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSystem.hpp; sourceTree = "<group>"; };
 		F9070E8D2B9F183100383E4D /* SivSystem_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivSystem_macOS.mm; sourceTree = "<group>"; };
+		F9070E942B9F1C8900383E4D /* cocoa_init.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cocoa_init.m; sourceTree = "<group>"; };
+		F9070E952B9F1C8900383E4D /* cocoa_joystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_joystick.h; sourceTree = "<group>"; };
+		F9070E962B9F1C8900383E4D /* cocoa_joystick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cocoa_joystick.m; sourceTree = "<group>"; };
+		F9070E972B9F1C8900383E4D /* cocoa_monitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cocoa_monitor.m; sourceTree = "<group>"; };
+		F9070E982B9F1C8900383E4D /* cocoa_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_platform.h; sourceTree = "<group>"; };
+		F9070E992B9F1C8900383E4D /* cocoa_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cocoa_time.c; sourceTree = "<group>"; };
+		F9070E9A2B9F1C8900383E4D /* cocoa_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_time.h; sourceTree = "<group>"; };
+		F9070E9B2B9F1C8900383E4D /* cocoa_window.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cocoa_window.m; sourceTree = "<group>"; };
+		F9070E9C2B9F1C8900383E4D /* context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = context.c; sourceTree = "<group>"; };
+		F9070E9D2B9F1C8900383E4D /* egl_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = egl_context.c; sourceTree = "<group>"; };
+		F9070E9E2B9F1C8900383E4D /* glfw3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glfw3.h; sourceTree = "<group>"; };
+		F9070E9F2B9F1C8900383E4D /* glfw3native.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glfw3native.h; sourceTree = "<group>"; };
+		F9070EA02B9F1C8900383E4D /* glx_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glx_context.c; sourceTree = "<group>"; };
+		F9070EA12B9F1C8900383E4D /* init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = init.c; sourceTree = "<group>"; };
+		F9070EA22B9F1C8900383E4D /* input.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = input.c; sourceTree = "<group>"; };
+		F9070EA32B9F1C8900383E4D /* internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = internal.h; sourceTree = "<group>"; };
+		F9070EA62B9F1C8900383E4D /* mappings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mappings.h; sourceTree = "<group>"; };
+		F9070EA72B9F1C8900383E4D /* monitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = monitor.c; sourceTree = "<group>"; };
+		F9070EA82B9F1C8900383E4D /* nsgl_context.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = nsgl_context.m; sourceTree = "<group>"; };
+		F9070EB02B9F1C8900383E4D /* platform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = platform.c; sourceTree = "<group>"; };
+		F9070EB12B9F1C8900383E4D /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		F9070EB22B9F1C8900383E4D /* posix_module.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = posix_module.c; sourceTree = "<group>"; };
+		F9070EB32B9F1C8900383E4D /* posix_poll.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = posix_poll.c; sourceTree = "<group>"; };
+		F9070EB42B9F1C8900383E4D /* posix_poll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = posix_poll.h; sourceTree = "<group>"; };
+		F9070EB52B9F1C8900383E4D /* posix_thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = posix_thread.c; sourceTree = "<group>"; };
+		F9070EB62B9F1C8900383E4D /* posix_thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = posix_thread.h; sourceTree = "<group>"; };
+		F9070EB72B9F1C8900383E4D /* posix_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = posix_time.c; sourceTree = "<group>"; };
+		F9070EB82B9F1C8900383E4D /* posix_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = posix_time.h; sourceTree = "<group>"; };
+		F9070EB92B9F1C8900383E4D /* vulkan.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vulkan.c; sourceTree = "<group>"; };
+		F9070EBA2B9F1C8900383E4D /* wgl_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wgl_context.c; sourceTree = "<group>"; };
+		F9070EC62B9F1C8900383E4D /* window.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = window.c; sourceTree = "<group>"; };
+		F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xkb_unicode.c; sourceTree = "<group>"; };
+		F9070ED02B9F1C8900383E4D /* xkb_unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xkb_unicode.h; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1993,6 +2059,7 @@
 				F9070A6A2B9DEB5900383E4D /* double-conversion */,
 				F9070A6C2B9DEB5900383E4D /* fast_float */,
 				F9070A6F2B9DEB5900383E4D /* fmt */,
+				F9070ED12B9F1C8900383E4D /* GLFW */,
 				F9070A712B9DEB5900383E4D /* levenshtein-sse */,
 				F9070A732B9DEB5900383E4D /* miniutf */,
 				F9070A752B9DEB5900383E4D /* RFC1321 */,
@@ -3030,6 +3097,46 @@
 			path = System;
 			sourceTree = "<group>";
 		};
+		F9070ED12B9F1C8900383E4D /* GLFW */ = {
+			isa = PBXGroup;
+			children = (
+				F9070E942B9F1C8900383E4D /* cocoa_init.m */,
+				F9070E952B9F1C8900383E4D /* cocoa_joystick.h */,
+				F9070E962B9F1C8900383E4D /* cocoa_joystick.m */,
+				F9070E972B9F1C8900383E4D /* cocoa_monitor.m */,
+				F9070E982B9F1C8900383E4D /* cocoa_platform.h */,
+				F9070E992B9F1C8900383E4D /* cocoa_time.c */,
+				F9070E9A2B9F1C8900383E4D /* cocoa_time.h */,
+				F9070E9B2B9F1C8900383E4D /* cocoa_window.m */,
+				F9070E9C2B9F1C8900383E4D /* context.c */,
+				F9070E9D2B9F1C8900383E4D /* egl_context.c */,
+				F9070E9E2B9F1C8900383E4D /* glfw3.h */,
+				F9070E9F2B9F1C8900383E4D /* glfw3native.h */,
+				F9070EA02B9F1C8900383E4D /* glx_context.c */,
+				F9070EA12B9F1C8900383E4D /* init.c */,
+				F9070EA22B9F1C8900383E4D /* input.c */,
+				F9070EA32B9F1C8900383E4D /* internal.h */,
+				F9070EA62B9F1C8900383E4D /* mappings.h */,
+				F9070EA72B9F1C8900383E4D /* monitor.c */,
+				F9070EA82B9F1C8900383E4D /* nsgl_context.m */,
+				F9070EB02B9F1C8900383E4D /* platform.c */,
+				F9070EB12B9F1C8900383E4D /* platform.h */,
+				F9070EB22B9F1C8900383E4D /* posix_module.c */,
+				F9070EB32B9F1C8900383E4D /* posix_poll.c */,
+				F9070EB42B9F1C8900383E4D /* posix_poll.h */,
+				F9070EB52B9F1C8900383E4D /* posix_thread.c */,
+				F9070EB62B9F1C8900383E4D /* posix_thread.h */,
+				F9070EB72B9F1C8900383E4D /* posix_time.c */,
+				F9070EB82B9F1C8900383E4D /* posix_time.h */,
+				F9070EB92B9F1C8900383E4D /* vulkan.c */,
+				F9070EBA2B9F1C8900383E4D /* wgl_context.c */,
+				F9070EC62B9F1C8900383E4D /* window.c */,
+				F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */,
+				F9070ED02B9F1C8900383E4D /* xkb_unicode.h */,
+			);
+			path = GLFW;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3072,6 +3179,7 @@
 				F90706DA2B9DAEC900383E4D /* conflict.h in Headers */,
 				F90706D72B9DAEC900383E4D /* cmplt.h in Headers */,
 				F90707542B9DAEC900383E4D /* simde-constify.h in Headers */,
+				F9070EF22B9F1C8900383E4D /* posix_poll.h in Headers */,
 				F9070C452B9F175000383E4D /* BinaryWriter.ipp in Headers */,
 				F9070C532B9F175000383E4D /* Endian.ipp in Headers */,
 				F9070C652B9F175000383E4D /* IWriter.ipp in Headers */,
@@ -3109,6 +3217,7 @@
 				F90706D32B9DAEC900383E4D /* cmpeq.h in Headers */,
 				F9070CAA2B9F175000383E4D /* CPUInfo.hpp in Headers */,
 				F9070AFE2B9DEB5900383E4D /* ieee.h in Headers */,
+				F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */,
 				F90707122B9DAEC900383E4D /* rol.h in Headers */,
 				F90706DD2B9DAEC900383E4D /* cvts.h in Headers */,
 				F9070CDE2B9F175100383E4D /* NonNull.hpp in Headers */,
@@ -3123,13 +3232,16 @@
 				F9070D0C2B9F175100383E4D /* UserAction.hpp in Headers */,
 				F9070C9E2B9F175000383E4D /* Byte.hpp in Headers */,
 				F90706C52B9DAEC900383E4D /* 2intersect.h in Headers */,
+				F9070EE42B9F1C8900383E4D /* mappings.h in Headers */,
 				F90706FB2B9DAEC900383E4D /* maddubs.h in Headers */,
 				F9070AF92B9DEB5900383E4D /* double-to-string.h in Headers */,
 				F9070C712B9F175000383E4D /* ParseInt.ipp in Headers */,
+				F9070EF42B9F1C8900383E4D /* posix_thread.h in Headers */,
 				F9070C7F2B9F175000383E4D /* TextEncoding.ipp in Headers */,
 				F9070C8A2B9F175000383E4D /* Vector2D.ipp in Headers */,
 				F9070C5E2B9F175000383E4D /* HSV.ipp in Headers */,
 				F9070CBF2B9F175000383E4D /* FmtHelper.hpp in Headers */,
+				F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */,
 				F90706D92B9DAEC900383E4D /* compress.h in Headers */,
 				F90707252B9DAEC900383E4D /* slli.h in Headers */,
 				F90706B82B9DAEC900383E4D /* nanobench.h in Headers */,
@@ -3213,6 +3325,7 @@
 				F90706D02B9DAEC900383E4D /* broadcast.h in Headers */,
 				F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */,
 				F9070AFF2B9DEB5900383E4D /* utils.h in Headers */,
+				F9070EF62B9F1C8900383E4D /* posix_time.h in Headers */,
 				F9070CDC2B9F175100383E4D /* MonitorInfo.hpp in Headers */,
 				F90707312B9DAEC900383E4D /* subs.h in Headers */,
 				F90706F52B9DAEC900383E4D /* kshift.h in Headers */,
@@ -3221,6 +3334,7 @@
 				F9070B042B9DEB5900383E4D /* miniutf.hpp in Headers */,
 				F9070CF82B9F175100383E4D /* SequenceFormatter.hpp in Headers */,
 				F90706DF2B9DAEC900383E4D /* cvtus.h in Headers */,
+				F9070ED82B9F1C8900383E4D /* cocoa_time.h in Headers */,
 				F90706FE2B9DAEC900383E4D /* mov_mask.h in Headers */,
 				F9070CAC2B9F175000383E4D /* DateTime.hpp in Headers */,
 				F9070CEE2B9F175100383E4D /* Point.hpp in Headers */,
@@ -3260,6 +3374,7 @@
 				F90706962B9DAEC900383E4D /* any_invocable.h in Headers */,
 				F90706DE2B9DAEC900383E4D /* cvtt.h in Headers */,
 				F90706E22B9DAEC900383E4D /* dpbf16.h in Headers */,
+				F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */,
 				F90706D52B9DAEC900383E4D /* cmpgt.h in Headers */,
 				F9070CB32B9F175000383E4D /* DLL.hpp in Headers */,
 				F9070CAD2B9F175000383E4D /* DayOfWeek.hpp in Headers */,
@@ -3301,6 +3416,7 @@
 				F90707302B9DAEC900383E4D /* sub.h in Headers */,
 				F90706F92B9DAEC900383E4D /* lzcnt.h in Headers */,
 				F9070D032B9F175100383E4D /* TextWriter.hpp in Headers */,
+				F9070EEF2B9F1C8900383E4D /* platform.h in Headers */,
 				F90706E12B9DAEC900383E4D /* div.h in Headers */,
 				F907068E2B9DAEC900383E4D /* config.h in Headers */,
 				F90706DB2B9DAEC900383E4D /* copysign.h in Headers */,
@@ -3423,6 +3539,7 @@
 				F9070CDD2B9F175100383E4D /* NamedParameter.hpp in Headers */,
 				F9070C892B9F175000383E4D /* UUIDValue.ipp in Headers */,
 				F907068D2B9DAEC900383E4D /* attributes.h in Headers */,
+				F9070EE12B9F1C8900383E4D /* internal.h in Headers */,
 				F90707152B9DAEC900383E4D /* rorv.h in Headers */,
 				F9070D0F2B9F175100383E4D /* Vector2D.hpp in Headers */,
 				F9070CD52B9F175100383E4D /* Logger.hpp in Headers */,
@@ -3462,6 +3579,7 @@
 				F9070C4B2B9F175000383E4D /* ColorF.ipp in Headers */,
 				F9070DE92B9F175E00383E4D /* ISystem.hpp in Headers */,
 				F90706F42B9DAEC900383E4D /* knot.h in Headers */,
+				F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */,
 				F907075A2B9DAEC900383E4D /* XoshiroCpp.hpp in Headers */,
 				F90707522B9DAEC900383E4D /* simde-common.h in Headers */,
 				F90706B12B9DAEC900383E4D /* utility.h in Headers */,
@@ -3493,6 +3611,7 @@
 				F9070C7D2B9F175000383E4D /* String.ipp in Headers */,
 				F9070C7E2B9F175000383E4D /* StringView.ipp in Headers */,
 				F9070CE62B9F175100383E4D /* Parse.hpp in Headers */,
+				F9070ED62B9F1C8900383E4D /* cocoa_platform.h in Headers */,
 				F90706C92B9DAEC900383E4D /* add.h in Headers */,
 				F90707552B9DAEC900383E4D /* simde-detect-clang.h in Headers */,
 				F90706A42B9DAEC900383E4D /* uniform_helper.h in Headers */,
@@ -3672,32 +3791,43 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9070ED72B9F1C8900383E4D /* cocoa_time.c in Sources */,
+				F9070EE62B9F1C8900383E4D /* nsgl_context.m in Sources */,
 				F9070B062B9DEB5900383E4D /* simdutf.cpp in Sources */,
+				F9070EE02B9F1C8900383E4D /* input.c in Sources */,
 				F9070DE42B9F175E00383E4D /* SivRandom.cpp in Sources */,
 				F9070E632B9F176B00383E4D /* SivSystem_macOS_Linux.cpp in Sources */,
 				F9070DB22B9F175E00383E4D /* SivBlob.cpp in Sources */,
 				F9070DD32B9F175E00383E4D /* SivHSV.cpp in Sources */,
 				F9070DED2B9F175E00383E4D /* SivTextReader.cpp in Sources */,
+				F9070F042B9F1C8900383E4D /* window.c in Sources */,
+				F9070EE52B9F1C8900383E4D /* monitor.c in Sources */,
 				F9070DE82B9F175E00383E4D /* SivStringView.cpp in Sources */,
 				F9070DB72B9F175E00383E4D /* ConsoleFactory.cpp in Sources */,
 				F9070DE62B9F175E00383E4D /* Levenshtein.cpp in Sources */,
 				F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */,
 				F9070DEA2B9F175E00383E4D /* SivSystem.cpp in Sources */,
+				F9070EEE2B9F1C8900383E4D /* platform.c in Sources */,
 				F9070DD22B9F175E00383E4D /* SivHash.cpp in Sources */,
 				F9070DFC2B9F175E00383E4D /* UserActionFactory.cpp in Sources */,
 				F9070DC62B9F175E00383E4D /* Siv3DEngine.cpp in Sources */,
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
+				F9070ED42B9F1C8900383E4D /* cocoa_joystick.m in Sources */,
+				F9070EF12B9F1C8900383E4D /* posix_poll.c in Sources */,
 				F9070DE02B9F175E00383E4D /* SivParseErrorReason.cpp in Sources */,
 				F9070DF72B9F175E00383E4D /* UnicodeUtility.cpp in Sources */,
 				F9070DDC2B9F175E00383E4D /* SivMonitorInfo.cpp in Sources */,
+				F9070EDB2B9F1C8900383E4D /* egl_context.c in Sources */,
 				F9070DE32B9F175E00383E4D /* SivPoint.cpp in Sources */,
 				F9070DD12B9F175E00383E4D /* SivFormatUtility.cpp in Sources */,
 				F9070DDF2B9F175E00383E4D /* SivParseBoolExtended.cpp in Sources */,
 				F9070DAD2B9F175E00383E4D /* _TEMPLATE.cpp in Sources */,
 				F9070DE22B9F175E00383E4D /* SivParseInt.cpp in Sources */,
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
+				F9070EF02B9F1C8900383E4D /* posix_module.c in Sources */,
 				F9070DB32B9F175E00383E4D /* SivBoolToString.cpp in Sources */,
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
+				F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */,
 				F9070E932B9F183100383E4D /* SivSystem_macOS.mm in Sources */,
 				F9070DF02B9F175E00383E4D /* SivTextWriter.cpp in Sources */,
 				F9070DCC2B9F175E00383E4D /* SivFileSystem.cpp in Sources */,
@@ -3723,20 +3853,25 @@
 				F9070E582B9F176B00383E4D /* BinaryReaderDetail.cpp in Sources */,
 				F9070DBC2B9F175E00383E4D /* SivDate.cpp in Sources */,
 				F9070DF12B9F175E00383E4D /* TextWriterDetail.cpp in Sources */,
+				F9070EDE2B9F1C8900383E4D /* glx_context.c in Sources */,
 				F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */,
 				F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */,
 				F9070DBE2B9F175E00383E4D /* SivDayOfWeek.cpp in Sources */,
 				F9070AFA2B9DEB5900383E4D /* fast-dtoa.cc in Sources */,
 				F9070DFF2B9F175E00383E4D /* SivVector3D.cpp in Sources */,
 				F9070DFD2B9F175E00383E4D /* SivUUIDValue.cpp in Sources */,
+				F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */,
 				F9070AEF2B9DEB5900383E4D /* discrete_distribution.cc in Sources */,
+				F9070EF32B9F1C8900383E4D /* posix_thread.c in Sources */,
 				F9070DB52B9F175E00383E4D /* SivColor.cpp in Sources */,
 				F9070DD92B9F175E00383E4D /* SivLogger.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
+				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
 				F9070DF92B9F175E00383E4D /* CUserAction.cpp in Sources */,
 				F9070DB62B9F175E00383E4D /* SivColorF.cpp in Sources */,
 				F9070DC32B9F175E00383E4D /* EmptyFactory.cpp in Sources */,
+				F9070ED52B9F1C8900383E4D /* cocoa_monitor.m in Sources */,
 				F9070DDA2B9F175E00383E4D /* SivLoggerBuffer.cpp in Sources */,
 				F9070E552B9F176B00383E4D /* SivFileSystem_macOS.mm in Sources */,
 				F9070E912B9F183100383E4D /* CSystem.cpp in Sources */,
@@ -3749,12 +3884,17 @@
 				F9070AF12B9DEB5900383E4D /* bignum-dtoa.cc in Sources */,
 				F9070DAF2B9F175E00383E4D /* SivBigInt.cpp in Sources */,
 				F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */,
+				F9070EF52B9F1C8900383E4D /* posix_time.c in Sources */,
 				F9070DD52B9F175E00383E4D /* SivIntFormatter.cpp in Sources */,
+				F9070EDA2B9F1C8900383E4D /* context.c in Sources */,
 				F9070E022B9F175E00383E4D /* WindowFactory.cpp in Sources */,
 				F9070E5C2B9F176B00383E4D /* CConsole.cpp in Sources */,
 				F9070DF32B9F175E00383E4D /* SivThousandSeparate.cpp in Sources */,
+				F9070EDF2B9F1C8900383E4D /* init.c in Sources */,
 				F9070DEE2B9F175E00383E4D /* TextReaderDetail.cpp in Sources */,
+				F9070ED92B9F1C8900383E4D /* cocoa_window.m in Sources */,
 				F9070DD42B9F175E00383E4D /* SivInt128.cpp in Sources */,
+				F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */,
 				F9070AF52B9DEB5900383E4D /* cached-powers.cc in Sources */,
 				F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */,
 				F9070DCD2B9F175E00383E4D /* SivFloatFormatter.cpp in Sources */,
