@@ -799,9 +799,6 @@
 // モニターの情報 | Monitor information
 # include <Siv3D/MonitorInfo.hpp>
 
-//// モニター | Monitor
-//# include <Siv3D/Monitor.hpp>
-//
 //// ユーザアクション | User action
 //# include <Siv3D/UserAction.hpp>
 

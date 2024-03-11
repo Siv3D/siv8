@@ -857,7 +857,7 @@ namespace s3d
 		/// @remark { 0, 1, 2, 3, 4, 5, 6 } を 3 個の要素を持つ配列のグループに分割すると { { 0, 1, 2 }, { 3, 4, 5 }, { 6 }} になります。
 		/// @return 分割されたグループ
 		[[nodiscard]]
-		constexpr Array<Array<value_type>> chunk(size_t n) const;
+		constexpr Array<Array<value_type>> chunk(size_type n) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -896,7 +896,7 @@ namespace s3d
 		/// @param value 検索する値
 		/// @return 指定した値と等しい要素の個数
 		[[nodiscard]]
-		constexpr size_t count(const value_type& value) const;
+		constexpr isize count(const value_type& value) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -910,7 +910,7 @@ namespace s3d
 		/// @return 条件を満たす要素の個数
 		template <class Fty>
 		[[nodiscard]]
-		constexpr size_t count_if(Fty f) const requires std::predicate<Fty, const value_type&>;
+		constexpr isize count_if(Fty f) const requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -990,7 +990,7 @@ namespace s3d
 		/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue
 		template <class U>
 		[[nodiscard]]
-		constexpr value_type fetch(size_t index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>;
+		constexpr value_type fetch(size_type index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1029,7 +1029,7 @@ namespace s3d
 		/// @remark { 0, 1, 2, 3, 4, 5, 6 } を 3 グループに分割すると { { 0, 1, 2 }, { 3, 4 }, { 5, 6 }} になります。
 		/// @return 分割したグループ
 		[[nodiscard]]
-		constexpr Array<Array<value_type>> in_groups(size_t group) const;
+		constexpr Array<Array<value_type>> in_groups(size_type group) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1147,22 +1147,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 指定したインデックスにある要素を削除します。
-	//	/// @param index インデックス
-	//	/// @return *this
-	//	Array& remove_at(size_t index);
+		/// @brief 指定したインデックスにある要素を削除します。
+		/// @param index インデックス
+		/// @return *this
+		constexpr Array& remove_at(size_type index)&;
 
-	//	/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-	//	/// @param index インデックス
-	//	/// @return 新しい配列
-	//	[[nodiscard]]
-	//	Array removed_at(size_t index) const&;
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array remove_at(size_type index)&&;
 
-	//	/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-	//	/// @param index インデックス
-	//	/// @return 新しい配列
-	//	[[nodiscard]]
-	//	Array removed_at(size_t index) &&;
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed_at(size_type index) const&;
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed_at(size_type index)&&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1170,28 +1176,36 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 条件を満たす要素を配列から削除します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	Array& remove_if(Fty f);
+		/// @brief 条件を満たす要素を配列から削除します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return *this
+		template <class Fty>
+		constexpr Array& remove_if(Fty f)& requires std::predicate<Fty, const value_type&>;
 
-	//	/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件
-	//	/// @return 新しい配列
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	Array removed_if(Fty f) const&;
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array remove_if(Fty f)&& requires std::predicate<Fty, const value_type&>;
 
-	//	/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件
-	//	/// @return 新しい配列
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	Array removed_if(Fty f)&&;
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array removed_if(Fty f) const& requires std::predicate<Fty, const value_type&>;
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array removed_if(Fty f)&& requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1199,25 +1213,32 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 指定した値と等しい全ての要素を別の値に置き換えます。
-	//	/// @param oldValue 置き換えられる値
-	//	/// @param newValue 新しい値
-	//	/// @return *this
-	//	Array& replace(const value_type& oldValue, const value_type& newValue);
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えます。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return *this
+		constexpr Array& replace(const value_type& oldValue, const value_type& newValue)&;
 
-	//	/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
-	//	/// @param oldValue 置き換えられる値
-	//	/// @param newValue 新しい値
-	//	/// @return 新しい配列
-	//	[[nodiscard]]
-	//	Array replaced(const value_type& oldValue, const value_type& newValue) const&;
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array replace(const value_type& oldValue, const value_type& newValue)&&;
 
-	//	/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
-	//	/// @param oldValue 置き換えられる値
-	//	/// @param newValue 新しい値
-	//	/// @return 新しい配列
-	//	[[nodiscard]]
-	//	Array replaced(const value_type& oldValue, const value_type& newValue)&&;
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array replaced(const value_type& oldValue, const value_type& newValue) const&;
+
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array replaced(const value_type& oldValue, const value_type& newValue)&&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1225,31 +1246,40 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 指定した条件を満たす全ての要素を別の値に置き換えます。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件
-	//	/// @param newValue 新しい値
-	//	/// @return *this
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	Array& replace_if(Fty f, const value_type& newValue);
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return *this
+		template <class Fty>
+		constexpr Array& replace_if(Fty f, const value_type& newValue)& requires std::predicate<Fty, const value_type&>;
+		
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array replace_if(Fty f, const value_type& newValue)&& requires std::predicate<Fty, const value_type&>;
 
-	//	/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件
-	//	/// @param newValue 新しい値
-	//	/// @return 新しい配列
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	Array replaced_if(Fty f, const value_type& newValue) const&;
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty, const value_type&>;
 
-	//	/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
-	//	/// @tparam Fty 条件を記述した関数の型
-	//	/// @param f 条件
-	//	/// @param newValue 新しい値
-	//	/// @return 新しい配列
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	Array replaced_if(Fty f, const value_type& newValue)&&;
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array replaced_if(Fty f, const value_type& newValue)&& requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1257,19 +1287,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 配列の要素を逆順に並び替えます。
-	//	/// @return *this
-	//	Array& reverse();
+		/// @brief 配列の要素を逆順に並び替えます。
+		/// @return *this
+		constexpr Array& reverse()&;
 
-	//	/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
-	//	/// @return 新しい配列
-	//	[[nodiscard]]
-	//	Array reversed() const&;
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array reverse()&&;
 
-	//	/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
-	//	/// @return 新しい配列
-	//	[[nodiscard]]
-	//	Array reversed()&&;
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array reversed() const&;
+
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array reversed()&&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1294,6 +1329,18 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 		//
 		//	rotate, rotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rsort, rsorted
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	shuffle, shuffled
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1371,14 +1418,14 @@ namespace s3d
 		/// @param index 
 		/// @return 
 		[[nodiscard]]
-		constexpr Array slice(size_t index) const;
+		constexpr Array slice(size_type index) const;
 
 		/// @brief 
 		/// @param index 
 		/// @param length 
 		/// @return 
 		[[nodiscard]]
-		constexpr Array slice(size_t index, size_t length) const;
+		constexpr Array slice(size_type index, size_type length) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1404,6 +1451,36 @@ namespace s3d
 		/// @return 新しい配列
 		[[nodiscard]]
 		constexpr Array sorted()&& requires Concept::LessThanComparable<Type>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sort_by, sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stable_sort, stable_sorted
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stable_sort_by, stable_sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sum
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sumF
+		//
+		////////////////////////////////////////////////////////////////
 
 	//	/// @brief 要素を相対順序を保ちながら昇順に並び替えます。
 	//	/// @return *this
