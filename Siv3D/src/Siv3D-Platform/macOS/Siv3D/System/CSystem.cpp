@@ -45,7 +45,7 @@ namespace s3d
 			return false;
 		}
 
-
+		SIV3D_ENGINE(Window)->update();
 
 		return true;
 	}
