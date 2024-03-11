@@ -14,17 +14,17 @@
 
 namespace s3d
 {
-	class SIV3D_NOVTABLE ISiv3DConsole
+	class SIV3D_NOVTABLE ISiv3DSystem
 	{
 	public:
 
 		[[nodiscard]]
-		static ISiv3DConsole* Create();
+		static ISiv3DSystem* Create();
 
-		virtual ~ISiv3DConsole() = default;
+		virtual ~ISiv3DSystem() = default;
 
-		virtual void open() = 0;
+		virtual void init() = 0;
 
-		virtual void close() = 0;
+		virtual bool update() = 0;
 	};
 }

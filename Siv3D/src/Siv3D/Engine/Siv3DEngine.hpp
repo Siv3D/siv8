@@ -16,6 +16,8 @@
 namespace s3d
 {
 	class ISiv3DLogger;
+	class ISiv3DSystem;
+	class ISiv3DWindow;
 	class ISiv3DConsole;
 
 	class Siv3DEngine
@@ -26,6 +28,8 @@ namespace s3d
 
 		std::tuple<
 			Siv3DComponent<ISiv3DLogger>,
+			Siv3DComponent<ISiv3DSystem>,
+			Siv3DComponent<ISiv3DWindow>,
 			Siv3DComponent<ISiv3DConsole>> m_components;
 
 	public:

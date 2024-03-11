@@ -10,21 +10,15 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/Common.hpp>
+# include "IEmpty.hpp"
 
 namespace s3d
 {
-	class SIV3D_NOVTABLE ISiv3DConsole
+	class CEmpty final : public ISiv3DEmpty
 	{
 	public:
 
-		[[nodiscard]]
-		static ISiv3DConsole* Create();
+	private:
 
-		virtual ~ISiv3DConsole() = default;
-
-		virtual void open() = 0;
-
-		virtual void close() = 0;
 	};
 }

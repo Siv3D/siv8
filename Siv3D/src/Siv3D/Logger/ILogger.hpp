@@ -21,6 +21,7 @@ namespace s3d
 	{
 	public:
 
+		[[nodiscard]]
 		static ISiv3DLogger* Create();
 
 		virtual ~ISiv3DLogger() = default;

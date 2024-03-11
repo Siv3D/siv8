@@ -9,22 +9,9 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include <Siv3D/Common.hpp>
+# include "CEmpty.hpp"
 
 namespace s3d
 {
-	class SIV3D_NOVTABLE ISiv3DConsole
-	{
-	public:
 
-		[[nodiscard]]
-		static ISiv3DConsole* Create();
-
-		virtual ~ISiv3DConsole() = default;
-
-		virtual void open() = 0;
-
-		virtual void close() = 0;
-	};
 }

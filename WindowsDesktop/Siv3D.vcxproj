@@ -210,6 +210,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Unicode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UnicodeConverter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UniqueResource.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\UserAction.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Utility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UUIDValue.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector2D.hpp" />
@@ -249,14 +250,19 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMainHelper.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\CSystem.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\CWindow.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\BigInt\BigIntDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Console\IConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DComponent.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UnicodeConverter\UnicodeUtility.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Window\IWindow.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\mimalloc\mimalloc-new-delete.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpuinfo_x86.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpu_features_cache_info.h" />
@@ -299,9 +305,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo\SivMonitorInfo_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMainHelper.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\CSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\SivSystem_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Time\SivTime.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows\SivWindows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\CWindow.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigInt\SivBigInt.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BinaryReader\SivBinaryReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BinaryWriter\SivBinaryWriter.cpp" />
@@ -353,6 +362,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\String\Levenshtein.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SivSystem.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\System\SystemFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEncoding\SivTextEncoding.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\SivTextReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.cpp" />
@@ -367,6 +377,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector2D\SivVector2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector3D\SivVector3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector4D\SivVector4D.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Window\WindowFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\numeric\int128.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\random\discrete_distribution.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\random\gaussian_distribution.cc" />
