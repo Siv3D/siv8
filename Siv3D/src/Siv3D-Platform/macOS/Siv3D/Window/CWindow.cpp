@@ -19,11 +19,19 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CWindow::~CWindow()");
 
+		::glfwTerminate();
 	}
 
 	void CWindow::init()
 	{
 		LOG_SCOPED_DEBUG("CWindow::init()");
+		
+		::glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
+		
+		if (not ::glfwInit())
+		{
+			throw InternalEngineError{ "glfwInit() failed" };
+		}
 
 	}
 
@@ -40,12 +48,11 @@ namespace s3d
 
 	const String& CWindow::getWindowTitle() const noexcept
 	{
-		static String windowTitle;
-		return(windowTitle);
+		return m_windowTitle;
 	}
 
 	void* CWindow::getHandle() const noexcept
 	{
-		return nullptr;
+		return m_window;
 	}
 }

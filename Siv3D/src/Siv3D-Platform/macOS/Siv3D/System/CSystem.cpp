@@ -11,6 +11,7 @@
 
 # include "CSystem.hpp"
 # include <Siv3D/UserAction/IUserAction.hpp>
+# include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -24,6 +25,8 @@ namespace s3d
 	void CSystem::init()
 	{
 		LOG_SCOPED_DEBUG("CSystem::init()");
+		
+		SIV3D_ENGINE(Window)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}

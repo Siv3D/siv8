@@ -10,8 +10,10 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/Window.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Common/OpenGL.hpp>
 
 namespace s3d
 {
@@ -35,5 +37,8 @@ namespace s3d
 
 	private:
 
+		GLFWwindow* m_window = nullptr;
+		
+		String m_windowTitle{ Window::DefaultTitle };
 	};
 }

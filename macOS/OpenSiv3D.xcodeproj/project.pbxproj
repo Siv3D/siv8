@@ -669,6 +669,15 @@
 		F9070F042B9F1C8900383E4D /* window.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EC62B9F1C8900383E4D /* window.c */; };
 		F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */; };
 		F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070ED02B9F1C8900383E4D /* xkb_unicode.h */; };
+		F9070F272B9F24E300383E4D /* OpenGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070F242B9F24E200383E4D /* OpenGL.cpp */; };
+		F9070F282B9F24E300383E4D /* OpenGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070F252B9F24E200383E4D /* OpenGL.hpp */; };
+		F9070F302B9F252E00383E4D /* null_init.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F292B9F252D00383E4D /* null_init.c */; };
+		F9070F312B9F252E00383E4D /* osmesa_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2A2B9F252D00383E4D /* osmesa_context.c */; };
+		F9070F322B9F252E00383E4D /* null_window.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2B2B9F252D00383E4D /* null_window.c */; };
+		F9070F332B9F252E00383E4D /* null_monitor.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2C2B9F252E00383E4D /* null_monitor.c */; };
+		F9070F342B9F252E00383E4D /* null_joystick.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070F2D2B9F252E00383E4D /* null_joystick.h */; };
+		F9070F352B9F252E00383E4D /* null_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070F2E2B9F252E00383E4D /* null_platform.h */; };
+		F9070F362B9F252E00383E4D /* null_joystick.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2F2B9F252E00383E4D /* null_joystick.c */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -1340,6 +1349,15 @@
 		F9070EC62B9F1C8900383E4D /* window.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = window.c; sourceTree = "<group>"; };
 		F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xkb_unicode.c; sourceTree = "<group>"; };
 		F9070ED02B9F1C8900383E4D /* xkb_unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xkb_unicode.h; sourceTree = "<group>"; };
+		F9070F242B9F24E200383E4D /* OpenGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGL.cpp; sourceTree = "<group>"; };
+		F9070F252B9F24E200383E4D /* OpenGL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = OpenGL.hpp; sourceTree = "<group>"; };
+		F9070F292B9F252D00383E4D /* null_init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_init.c; sourceTree = "<group>"; };
+		F9070F2A2B9F252D00383E4D /* osmesa_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = osmesa_context.c; sourceTree = "<group>"; };
+		F9070F2B2B9F252D00383E4D /* null_window.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_window.c; sourceTree = "<group>"; };
+		F9070F2C2B9F252E00383E4D /* null_monitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_monitor.c; sourceTree = "<group>"; };
+		F9070F2D2B9F252E00383E4D /* null_joystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = null_joystick.h; sourceTree = "<group>"; };
+		F9070F2E2B9F252E00383E4D /* null_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = null_platform.h; sourceTree = "<group>"; };
+		F9070F2F2B9F252E00383E4D /* null_joystick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_joystick.c; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2961,6 +2979,7 @@
 		F9070E082B9F176B00383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
+				F9070F262B9F24E200383E4D /* Common */,
 				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
 				F9070E042B9F176B00383E4D /* FileSystem */,
 				F9070E8E2B9F183100383E4D /* System */,
@@ -3119,6 +3138,13 @@
 				F9070EA62B9F1C8900383E4D /* mappings.h */,
 				F9070EA72B9F1C8900383E4D /* monitor.c */,
 				F9070EA82B9F1C8900383E4D /* nsgl_context.m */,
+				F9070F292B9F252D00383E4D /* null_init.c */,
+				F9070F2F2B9F252E00383E4D /* null_joystick.c */,
+				F9070F2D2B9F252E00383E4D /* null_joystick.h */,
+				F9070F2C2B9F252E00383E4D /* null_monitor.c */,
+				F9070F2E2B9F252E00383E4D /* null_platform.h */,
+				F9070F2B2B9F252D00383E4D /* null_window.c */,
+				F9070F2A2B9F252D00383E4D /* osmesa_context.c */,
 				F9070EB02B9F1C8900383E4D /* platform.c */,
 				F9070EB12B9F1C8900383E4D /* platform.h */,
 				F9070EB22B9F1C8900383E4D /* posix_module.c */,
@@ -3135,6 +3161,15 @@
 				F9070ED02B9F1C8900383E4D /* xkb_unicode.h */,
 			);
 			path = GLFW;
+			sourceTree = "<group>";
+		};
+		F9070F262B9F24E200383E4D /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				F9070F242B9F24E200383E4D /* OpenGL.cpp */,
+				F9070F252B9F24E200383E4D /* OpenGL.hpp */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -3275,6 +3310,7 @@
 				F90706C62B9DAEC900383E4D /* 4dpwssd.h in Headers */,
 				F9070DC72B9F175E00383E4D /* Siv3DEngine.hpp in Headers */,
 				F9070C802B9F175000383E4D /* TextReader.ipp in Headers */,
+				F9070F342B9F252E00383E4D /* null_joystick.h in Headers */,
 				F9070D102B9F175100383E4D /* Vector3D.hpp in Headers */,
 				F90707242B9DAEC900383E4D /* sll.h in Headers */,
 				F9070C7B2B9F175000383E4D /* Step.ipp in Headers */,
@@ -3411,6 +3447,7 @@
 				F9070C992B9F175000383E4D /* BigInt.hpp in Headers */,
 				F907074B2B9DAEC900383E4D /* check.h in Headers */,
 				F90707432B9DAEC900383E4D /* sse.h in Headers */,
+				F9070F352B9F252E00383E4D /* null_platform.h in Headers */,
 				F90706AB2B9DAEC900383E4D /* gaussian_distribution.h in Headers */,
 				F9070CBC2B9F175000383E4D /* FloatFormatter.hpp in Headers */,
 				F90707302B9DAEC900383E4D /* sub.h in Headers */,
@@ -3444,6 +3481,7 @@
 				F907074D2B9DAEC900383E4D /* hedley.h in Headers */,
 				F9070CDF2B9F175100383E4D /* Number.hpp in Headers */,
 				F9070CED2B9F175100383E4D /* Platform.hpp in Headers */,
+				F9070F282B9F24E300383E4D /* OpenGL.hpp in Headers */,
 				F9070CF12B9F175100383E4D /* PredefinedYesNo.hpp in Headers */,
 				F90706A22B9DAEC900383E4D /* iostream_state_saver.h in Headers */,
 				F90707202B9DAEC900383E4D /* setr4.h in Headers */,
@@ -3791,9 +3829,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9070F322B9F252E00383E4D /* null_window.c in Sources */,
 				F9070ED72B9F1C8900383E4D /* cocoa_time.c in Sources */,
 				F9070EE62B9F1C8900383E4D /* nsgl_context.m in Sources */,
 				F9070B062B9DEB5900383E4D /* simdutf.cpp in Sources */,
+				F9070F312B9F252E00383E4D /* osmesa_context.c in Sources */,
 				F9070EE02B9F1C8900383E4D /* input.c in Sources */,
 				F9070DE42B9F175E00383E4D /* SivRandom.cpp in Sources */,
 				F9070E632B9F176B00383E4D /* SivSystem_macOS_Linux.cpp in Sources */,
@@ -3814,6 +3854,7 @@
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
 				F9070ED42B9F1C8900383E4D /* cocoa_joystick.m in Sources */,
 				F9070EF12B9F1C8900383E4D /* posix_poll.c in Sources */,
+				F9070F332B9F252E00383E4D /* null_monitor.c in Sources */,
 				F9070DE02B9F175E00383E4D /* SivParseErrorReason.cpp in Sources */,
 				F9070DF72B9F175E00383E4D /* UnicodeUtility.cpp in Sources */,
 				F9070DDC2B9F175E00383E4D /* SivMonitorInfo.cpp in Sources */,
@@ -3828,6 +3869,7 @@
 				F9070DB32B9F175E00383E4D /* SivBoolToString.cpp in Sources */,
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
 				F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */,
+				F9070F362B9F252E00383E4D /* null_joystick.c in Sources */,
 				F9070E932B9F183100383E4D /* SivSystem_macOS.mm in Sources */,
 				F9070DF02B9F175E00383E4D /* SivTextWriter.cpp in Sources */,
 				F9070DCC2B9F175E00383E4D /* SivFileSystem.cpp in Sources */,
@@ -3853,6 +3895,7 @@
 				F9070E582B9F176B00383E4D /* BinaryReaderDetail.cpp in Sources */,
 				F9070DBC2B9F175E00383E4D /* SivDate.cpp in Sources */,
 				F9070DF12B9F175E00383E4D /* TextWriterDetail.cpp in Sources */,
+				F9070F302B9F252E00383E4D /* null_init.c in Sources */,
 				F9070EDE2B9F1C8900383E4D /* glx_context.c in Sources */,
 				F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */,
 				F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */,
@@ -3863,6 +3906,7 @@
 				F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */,
 				F9070AEF2B9DEB5900383E4D /* discrete_distribution.cc in Sources */,
 				F9070EF32B9F1C8900383E4D /* posix_thread.c in Sources */,
+				F9070F272B9F24E300383E4D /* OpenGL.cpp in Sources */,
 				F9070DB52B9F175E00383E4D /* SivColor.cpp in Sources */,
 				F9070DD92B9F175E00383E4D /* SivLogger.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
@@ -4170,6 +4214,7 @@
 					"$(inherited)",
 					__MACOSX_CORE__,
 					_UNICODE,
+					_GLFW_COCOA,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -4237,6 +4282,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					__MACOSX_CORE__,
 					_UNICODE,
+					_GLFW_COCOA,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
