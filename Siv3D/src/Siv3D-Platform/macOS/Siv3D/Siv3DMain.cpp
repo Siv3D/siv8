@@ -10,16 +10,34 @@
 //-----------------------------------------------
 
 # include <iostream>
+# include <Siv3D/System/ISystem.hpp>
+# include <Siv3D/Error.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/EngineLog.hpp>
+
 void Main();
 
 int main(int, char**)
 {
-	s3d::Siv3DEngine engine;
+	using namespace s3d;
 	
 	std::clog << "OpenSiv3D for macOS\n";
 	
-	Main();
+	Siv3DEngine engine;
+	
+	try
+	{
+		SIV3D_ENGINE(System)->init();
+	}
+	catch (const Error& error)
+	{
+		std::cerr << error << '\n';
+		return -1;
+	}
 
-	return 0;
+	LOG_DEBUG("Main() ---");
+
+	Main();
+	
+	LOG_DEBUG("--- Main()");
 }
