@@ -10,3 +10,14 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
+# include "StringView.hpp"
+
+namespace s3d
+{
+	namespace Window
+	{
+		/// @brief ウィンドウのデフォルトのタイトル
+		inline constexpr StringView DefaultTitle = U"Siv3D App";
+	}
+}

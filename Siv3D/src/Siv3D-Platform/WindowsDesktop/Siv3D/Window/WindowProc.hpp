@@ -10,15 +10,9 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/Common.hpp>
+# include <Siv3D/Windows/Windows.hpp>
 
 namespace s3d
 {
-	void WinMainInit();
-
-	void WinMainExit();
-
-	void MainSEH();
-
-	void PumpMessages();
+	LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 }

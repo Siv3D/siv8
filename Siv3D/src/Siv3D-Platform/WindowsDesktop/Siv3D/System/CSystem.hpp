@@ -19,7 +19,7 @@ namespace s3d
 	{
 	public:
 
-		CSystem();
+		CSystem() = default;
 
 		~CSystem() override;
 
@@ -42,5 +42,7 @@ namespace s3d
 		} m_setupProgress = SetupProgress::Uninitialized;
 
 		std::atomic<bool> m_onDeviceChange{ false };
+
+		bool m_shouldTerminate = false;
 	};
 }

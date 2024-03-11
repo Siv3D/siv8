@@ -9,16 +9,12 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include <Siv3D/Common.hpp>
+# include "CUserAction.hpp"
 
 namespace s3d
 {
-	void WinMainInit();
-
-	void WinMainExit();
-
-	void MainSEH();
-
-	void PumpMessages();
+	ISiv3DUserAction* ISiv3DUserAction::Create()
+	{
+		return new CUserAction;
+	}
 }

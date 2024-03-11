@@ -10,15 +10,17 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/Common.hpp>
+# include <Siv3D/String.hpp>
+# include <Siv3D/Windows/Windows.hpp>
 
 namespace s3d
 {
-	void WinMainInit();
+	struct WindowClass
+	{
+		std::wstring name;
 
-	void WinMainExit();
+		void registerClass(HINSTANCE hInstance);
 
-	void MainSEH();
-
-	void PumpMessages();
+		void unregisterClass(HINSTANCE hInstance);
+	};
 }

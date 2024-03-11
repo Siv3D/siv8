@@ -31,7 +31,7 @@
 //   **LOCK**                         =>
 //                                    ||   engine->System->init();
 //                                    <=
-//   while (!f._Is_ready()) {         ||   Main() { while(System::Update()) {} } // User code
+//   while (not f.isReady()) {        ||   Main() { while(System::Update()) {} } // User code
 //     PumMessages();                 ||
 //                                    ||   engine::~Siv3DEngine() {
 //     if (g_callWindowDestroy) {     ||     ...
@@ -45,75 +45,105 @@
 
 namespace s3d
 {
+	std::atomic_flag g_shouldDestroyWindow;
+
 	namespace
 	{
 		std::condition_variable g_cv;
-		
+
 		std::mutex g_mutex;
-		
+
 		int32 g_initStep = 0;
 
 		bool g_hasCriticalError = false;
-	}
 
-	static void MainThread()
-	{
-		s3d::Siv3DEngine engine;
+		////////////////////////////////////////////////////////////////
+		//
+		//	MainThread
+		//
+		////////////////////////////////////////////////////////////////
 
-		std::unique_lock lock{ g_mutex }; // (1)--
+		static void MainThread()
 		{
-			if (auto pCSystem = dynamic_cast<CSystem*>(SIV3D_ENGINE(System)))
+			Siv3DEngine engine;
+
+			std::unique_lock lock{ g_mutex }; // (1)--
 			{
-				pCSystem->preInit();
-			}
+				if (auto pCSystem = dynamic_cast<CSystem*>(SIV3D_ENGINE(System)))
+				{
+					pCSystem->preInit();
+				}
 
-			g_initStep = 1;
-			
-			lock.unlock(); // --(1)
-			g_cv.notify_one();
-		}
+				g_initStep = 1;
 
-		lock.lock();
-		{
-			g_cv.wait(lock, []() { return ((g_initStep == 2) || g_hasCriticalError); }); // (3)--
-
-			if (g_hasCriticalError)
-			{
-				lock.unlock();
+				lock.unlock(); // --(1)
 				g_cv.notify_one();
-
-				return;
 			}
 
-			try
+			lock.lock();
 			{
-				SIV3D_ENGINE(System)->init();
-			}
-			catch (const std::exception& error)
-			{
-				::OutputDebugStringW((Unicode::ToWstring(error.what()) + L'\n').c_str());
-				//FreestandingMessageBox::ShowError(error.what());
-				
-				g_hasCriticalError = true;
-				
+				g_cv.wait(lock, []() { return ((g_initStep == 2) || g_hasCriticalError); }); // (3)--
+
+				if (g_hasCriticalError)
+				{
+					lock.unlock();
+					g_cv.notify_one();
+
+					return;
+				}
+
+				try
+				{
+					SIV3D_ENGINE(System)->init();
+				}
+				catch (const std::exception& error)
+				{
+					::OutputDebugStringW((Unicode::ToWstring(error.what()) + L'\n').c_str());
+					//FreestandingMessageBox::ShowError(error.what());
+
+					g_hasCriticalError = true;
+
+					lock.unlock(); // --(3)
+					g_cv.notify_one();
+
+					return;
+				}
+
+				g_initStep = 3;
+
 				lock.unlock(); // --(3)
 				g_cv.notify_one();
-				
-				return;
 			}
 
-			g_initStep = 3;
-
-			lock.unlock(); // --(3)
-			g_cv.notify_one();
+			// (4b)--
+			MainSEH();
 		}
 
-		// (4b)--
-		MainSEH();
+		////////////////////////////////////////////////////////////////
+		//
+		//	DestroyWindow
+		//
+		////////////////////////////////////////////////////////////////
+
+		static void DestroyWindow()
+		{
+			if (auto pCWindow = dynamic_cast<CWindow*>(SIV3D_ENGINE(Window)))
+			{
+				pCWindow->destroy();
+			}
+
+			g_shouldDestroyWindow.clear();
+		}
 	}
 }
 
 using namespace s3d;
+
+////////////////////////////////////////////////////////////////
+//
+//	WinMain
+//
+////////////////////////////////////////////////////////////////
 
 // Windows アプリケーションのエントリーポイント | Entry point for Windows applications
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
@@ -151,10 +181,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 	{
 		while (not mainThread.isReady())
 		{
-			//if (g_shouldDestroyWindow.test())
-			//{
-			//	DestroyWindow();
-			//}
+			if (g_shouldDestroyWindow.test())
+			{
+				DestroyWindow();
+			}
 
 			::Sleep(1);
 		}
@@ -164,12 +194,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 
 	while (not mainThread.isReady())
 	{
-		//PumpMessages();
+		PumpMessages();
 
-		//if (g_shouldDestroyWindow.test())
-		//{
-		//	DestroyWindow();
-		//}
+		if (g_shouldDestroyWindow.test())
+		{
+			DestroyWindow();
+		}
 
 		::Sleep(1);
 	}

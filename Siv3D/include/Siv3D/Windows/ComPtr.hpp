@@ -10,15 +10,11 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/Common.hpp>
 
-namespace s3d
-{
-	void WinMainInit();
+# if defined(_WIN32)
 
-	void WinMainExit();
+	# include <wrl/client.h>
 
-	void MainSEH();
+	using Microsoft::WRL::ComPtr;
 
-	void PumpMessages();
-}
+# endif // defined(_WIN32)
