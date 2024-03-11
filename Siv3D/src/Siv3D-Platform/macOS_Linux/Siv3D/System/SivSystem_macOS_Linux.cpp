@@ -9,17 +9,21 @@
 //
 //-----------------------------------------------
 
+# include <unistd.h>
 # include <Siv3D/System.hpp>
 
 namespace s3d
 {
 	namespace System
 	{
-		void Sleep(const Duration& duration)
+		void Sleep(const int32 milliseconds)
 		{
-			const int32 milliSec = static_cast<int32>(duration.count() * 1000);
+			if (milliseconds < 0)
+			{
+				return;
+			}
 
-			Sleep(milliSec);
+			::usleep(static_cast<uint32>(milliseconds) * 1000);
 		}
 	}
 }
