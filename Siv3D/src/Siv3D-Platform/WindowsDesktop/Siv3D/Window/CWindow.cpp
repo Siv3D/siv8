@@ -61,36 +61,23 @@ namespace s3d
 		// プライマリモニターにウィンドウを作成する
 		for (const auto& monitor : WindowMisc::GetMonitors())
 		{
-			if (not monitor.isPrimary)
+			if (monitor.isPrimary)
 			{
-				continue;
+				// ウィンドウを作成する
+				m_hWnd = WindowMisc::CreateMainWindow(
+					m_hInstance,
+					monitor,
+					m_windowClass.name,
+					m_windowTitle.actual,
+					m_user32.pAdjustWindowRectExForDpi,
+					m_dpi,
+					m_state);
+
+				break;
 			}
-
-			const double scale = monitor.scaling.value_or(1.0);
-			m_dpi = static_cast<int32>(std::round(USER_DEFAULT_SCREEN_DPI * scale));
-			m_state.scaling = WindowMisc::GetScaling(m_dpi);
-			m_state.frameBufferSize = (m_state.virtualSize * scale).asPoint();
-
-			const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
-			const Point windowPos = WindowMisc::CalculateWindowPos(monitor, m_state.frameBufferSize);
-			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi, windowPos, m_state.frameBufferSize, windowStyleFlags);
-
-			LOG_DEBUG("CreateWindowExW()");
-			m_hWnd = ::CreateWindowExW(
-				0,
-				m_windowClass.name.c_str(),
-				Unicode::ToWstring(m_windowTitle.actual).c_str(),
-				windowStyleFlags,
-				windowRect.x, windowRect.y,
-				windowRect.w, windowRect.h,
-				nullptr, // No parent window
-				nullptr, // No menu
-				m_hInstance,
-				nullptr);
-
-			break;
 		}
 
+		// ウィンドウの作成に失敗したらエラー
 		if (not m_hWnd)
 		{
 			throw InternalEngineError{ "CreateWindowExW() failed" };

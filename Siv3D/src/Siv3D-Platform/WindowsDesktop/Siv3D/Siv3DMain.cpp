@@ -137,8 +137,6 @@ namespace s3d
 	}
 }
 
-using namespace s3d;
-
 ////////////////////////////////////////////////////////////////
 //
 //	WinMain
@@ -148,6 +146,8 @@ using namespace s3d;
 // Windows アプリケーションのエントリーポイント | Entry point for Windows applications
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 {
+	using namespace s3d;
+
 	WinMainInit();
 
 	std::unique_lock lock{ g_mutex }; // (0)--

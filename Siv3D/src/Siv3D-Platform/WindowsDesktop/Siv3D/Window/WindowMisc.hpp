@@ -12,7 +12,7 @@
 # pragma once
 # include <Siv3D/DLL.hpp>
 # include <Siv3D/MonitorInfo.hpp>
-# include <Siv3D/WindowStyle.hpp>
+# include <Siv3D/WindowState.hpp>
 # include <Siv3D/Windows/ComPtr.hpp>
 # include <ShObjIdl_core.h> // ITaskbarList3
 
@@ -70,6 +70,17 @@ namespace s3d::WindowMisc
 	[[nodiscard]]
 	Rect AdjustWindowRect(HWND hWnd, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
 		int32 dpi, const Point& windowPos, const Size& size, int32 windowStyleFlags);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateMainWindow
+	//
+	////////////////////////////////////////////////////////////////
+
+	[[nodiscard]]
+	HWND CreateMainWindow(HINSTANCE hInstance, const MonitorInfo& monitor,
+		const std::wstring& windowClassName, const String& windowName, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
+		int32& dpi, WindowState& windowState);
 
 	////////////////////////////////////////////////////////////////
 	//

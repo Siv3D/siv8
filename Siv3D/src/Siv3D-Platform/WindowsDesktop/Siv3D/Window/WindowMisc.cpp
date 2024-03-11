@@ -164,6 +164,39 @@ namespace s3d::WindowMisc
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	CreateMainWindow
+	//
+	////////////////////////////////////////////////////////////////
+
+	HWND CreateMainWindow(HINSTANCE hInstance, const MonitorInfo& monitor,
+		const std::wstring& windowClassName, const String& windowName, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
+		int32& dpi, WindowState& windowState)
+	{
+		const double scale = monitor.scaling.value_or(1.0);
+		dpi = static_cast<int32>(std::round(USER_DEFAULT_SCREEN_DPI * scale));
+		windowState.scaling = WindowMisc::GetScaling(dpi);
+		windowState.frameBufferSize = (windowState.virtualSize * scale).asPoint();
+
+		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(windowState.style);
+		const Point windowPos = WindowMisc::CalculateWindowPos(monitor, windowState.frameBufferSize);
+		const Rect windowRect = WindowMisc::AdjustWindowRect(nullptr, pAdjustWindowRectExForDpi, dpi, windowPos, windowState.frameBufferSize, windowStyleFlags);
+
+		LOG_DEBUG("CreateWindowExW()");
+		return ::CreateWindowExW(
+			0,
+			windowClassName.c_str(),
+			Unicode::ToWstring(windowName).c_str(),
+			windowStyleFlags,
+			windowRect.x, windowRect.y,
+			windowRect.w, windowRect.h,
+			nullptr, // No parent window
+			nullptr, // No menu
+			hInstance,
+			nullptr);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	DisablePalmRejection
 	//
 	////////////////////////////////////////////////////////////////
