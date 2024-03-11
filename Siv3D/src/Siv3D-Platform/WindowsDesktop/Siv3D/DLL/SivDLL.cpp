@@ -41,7 +41,7 @@ namespace s3d
 
 		LibraryHandle Load(const StringView path)
 		{
-			LOG_TRACE(fmt::format("DLL::Load(\"path = `{}`\")", path));
+			LOG_DEBUG(fmt::format("DLL::Load(\"path = `{}`\")", path));
 
 			return ::LoadLibraryW(path.toWstr().c_str());
 		}

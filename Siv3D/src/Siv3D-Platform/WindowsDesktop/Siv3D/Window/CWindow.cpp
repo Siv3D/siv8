@@ -53,27 +53,13 @@ namespace s3d
 		m_user32.load();
 
 		// DPI awareness を有効化する
-		SetDPIAwareness(m_user32.library);
+		WindowMisc::SetDPIAwareness(m_user32.library);
 
 		// ウィンドウクラスを登録する
 		m_windowClass.registerClass(m_hInstance);
 
-		// モニタを取得する
-		const Array<MonitorInfo> monitors = System::EnumerateMonitors();
-		{
-			if (not monitors)
-			{
-				throw InternalEngineError{ "System::EnumActiveMonitors() failed" };
-			}
-
-			for (size_t i = 0; i < monitors.size(); ++i)
-			{
-				LOG_TRACE(fmt::format("🖥️ Monitor[{}] ", i) + monitors[i].format().toUTF8());
-			}
-		}
-
-		// ウィンドウを作成する
-		for (const auto& monitor : monitors)
+		// プライマリモニターにウィンドウを作成する
+		for (const auto& monitor : WindowMisc::GetMonitors())
 		{
 			if (not monitor.isPrimary)
 			{
@@ -82,12 +68,12 @@ namespace s3d
 
 			const double scale = monitor.scaling.value_or(1.0);
 			m_dpi = static_cast<int32>(std::round(USER_DEFAULT_SCREEN_DPI * scale));
-			m_state.scaling = GetScaling(m_dpi);
+			m_state.scaling = WindowMisc::GetScaling(m_dpi);
 			m_state.frameBufferSize = (m_state.virtualSize * scale).asPoint();
 
-			const uint32 windowStyleFlags = GetWindowStyleFlags(m_state.style);
-			const Point windowPos = CalculateWindowPos(monitor, m_state.frameBufferSize);
-			const Rect windowRect = AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi, windowPos, m_state.frameBufferSize, windowStyleFlags);
+			const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
+			const Point windowPos = WindowMisc::CalculateWindowPos(monitor, m_state.frameBufferSize);
+			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi, windowPos, m_state.frameBufferSize, windowStyleFlags);
 
 			LOG_DEBUG("CreateWindowExW()");
 			m_hWnd = ::CreateWindowExW(
@@ -102,28 +88,25 @@ namespace s3d
 				m_hInstance,
 				nullptr);
 
-			if (not m_hWnd)
-			{
-				throw InternalEngineError{ "CreateWindowExW() failed" };
-			}
-
 			break;
 		}
 
-		if (::GetSystemMetrics(SM_DIGITIZER) & NID_MULTI_INPUT)
+		if (not m_hWnd)
 		{
-			LOG_INFO("ℹ️ An input digitizer with support for multiple inputs found");
-			::RegisterTouchWindow(m_hWnd, TWF_WANTPALM);
+			throw InternalEngineError{ "CreateWindowExW() failed" };
 		}
 
-		// Disable touch feedback visualization that causes frame rate drops
-		DisableTouchFeedbackVisualization(m_hWnd, m_user32.pSetWindowFeedbackSetting);
+		// タッチ操作時の palm rejection を無効化し、タッチメッセージの取得を高速化する。
+		WindowMisc::DisablePalmRejection(m_hWnd);
+
+		// タッチ操作時の視覚フィードバック（フレームレートを低下させることがある）を無効化する
+		WindowMisc::DisableTouchFeedbackVisualization(m_hWnd, m_user32.pSetWindowFeedbackSetting);
 
 		// DBT_DEVICEARRIVAL, DBT_DEVICEREMOVECOMPLETE が送られるようにする
-		m_deviceNotificationHandle = StartDeviceNotification(m_hWnd);
+		m_deviceNotificationHandle = WindowMisc::StartDeviceNotification(m_hWnd);
 
 		// タスクバーリストを作成する
-		m_taskbarList = CreateTaskbarList();
+		m_taskbarList = WindowMisc::CreateTaskbarList();
 	}
 
 	void CWindow::update()
@@ -152,15 +135,7 @@ namespace s3d
 
 	void CWindow::show()
 	{
-		LOG_DEBUG("ShowWindow()");
-
-		::ShowWindow(m_hWnd, SW_SHOW);
-
-		::ValidateRect(m_hWnd, 0);
-
-		::UpdateWindow(m_hWnd);
-
-		::SetForegroundWindow(m_hWnd);
+		WindowMisc::ShowWindow(m_hWnd);
 
 		m_windowShown = true;
 	}
@@ -175,7 +150,7 @@ namespace s3d
 
 			if (m_deviceNotificationHandle)
 			{
-				LOG_TRACE("UnregisterDeviceNotification()");
+				LOG_DEBUG("UnregisterDeviceNotification()");
 				[[maybe_unused]] const BOOL b = ::UnregisterDeviceNotification(m_deviceNotificationHandle);
 				m_deviceNotificationHandle = nullptr;
 				LOG_DEBUG(fmt::format("UnregisterDeviceNotification() -> {}", static_cast<bool>(b)));				

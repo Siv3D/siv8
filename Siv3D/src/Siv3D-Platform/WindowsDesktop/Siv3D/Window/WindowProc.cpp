@@ -37,7 +37,7 @@ namespace s3d
 		{
 		case WM_CLOSE:
 			{
-				LOG_TRACE("WM_CLOSE");
+				LOG_DEBUG("WM_CLOSE");
 
 				SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::CloseButtonClicked);
 
@@ -45,7 +45,7 @@ namespace s3d
 			}
 		case WM_SETFOCUS:
 			{
-				LOG_TRACE("WM_SETFOCUS");
+				LOG_DEBUG("WM_SETFOCUS");
 
 				//static_cast<CWindow*>(SIV3D_ENGINE(Window))->onFocus(true);
 				
@@ -67,7 +67,7 @@ namespace s3d
 			}
 		case WM_KILLFOCUS:
 			{
-				LOG_TRACE("WM_KILLFOCUS");
+				LOG_DEBUG("WM_KILLFOCUS");
 
 				//static_cast<CWindow*>(SIV3D_ENGINE(Window))->onFocus(false);
 
@@ -94,7 +94,7 @@ namespace s3d
 		//	}
 		case WM_SYSCOMMAND:
 			{
-				LOG_TRACE("WM_SYSCOMMAND");
+				LOG_DEBUG("WM_SYSCOMMAND");
 
 				switch (wParam & 0xffF0)
 				{
@@ -108,13 +108,13 @@ namespace s3d
 			}
 		case WM_DISPLAYCHANGE:
 			{
-				LOG_TRACE("WM_DISPLAYCHANGE");
+				LOG_DEBUG("WM_DISPLAYCHANGE");
 				
 				return true;
 			}
 		//case WM_DPICHANGED:
 		//	{
-		//		LOG_TRACE("WM_DPICHANGED");
+		//		LOG_DEBUG("WM_DPICHANGED");
 
 		//		const uint32 newDPI = HIWORD(wParam);
 		//		const RECT rect = *reinterpret_cast<const RECT*>(lParam);
@@ -126,7 +126,7 @@ namespace s3d
 		//	}
 		//case WM_SIZE:
 		//	{
-		//		LOG_TRACE("WM_SIZE");
+		//		LOG_DEBUG("WM_SIZE");
 
 		//		auto pCWindow = static_cast<CWindow*>(SIV3D_ENGINE(Window));
 		//		pCWindow->onBoundsUpdate();
@@ -143,7 +143,7 @@ namespace s3d
 		//	}
 		//case WM_MOVE:
 		//	{
-		//		LOG_TRACE("WM_MOVE");
+		//		LOG_DEBUG("WM_MOVE");
 
 		//		static_cast<CWindow*>(SIV3D_ENGINE(Window))->onBoundsUpdate();
 
@@ -151,7 +151,7 @@ namespace s3d
 		//	}
 		case WM_DESTROY:
 			{
-				LOG_TRACE("WM_DESTROY");
+				LOG_DEBUG("WM_DESTROY");
 
 				::PostQuitMessage(0);
 
@@ -159,7 +159,7 @@ namespace s3d
 			}
 		//case WM_CHAR:
 		//	{
-		//		LOG_TRACE("WM_CHAR");
+		//		LOG_DEBUG("WM_CHAR");
 
 		//		if (auto p = SIV3D_ENGINE(TextInput))
 		//		{
@@ -170,7 +170,7 @@ namespace s3d
 		//	}
 		//case WM_UNICHAR:
 		//	{
-		//		LOG_TRACE("WM_UNICHAR");
+		//		LOG_DEBUG("WM_UNICHAR");
 
 		//		if (wParam == UNICODE_NOCHAR)
 		//		{
@@ -190,7 +190,7 @@ namespace s3d
 
 		//		if (wParam == DBT_DEVICEARRIVAL)
 		//		{
-		//			LOG_TRACE("WM_DEVICECHANGE (DBT_DEVICEARRIVAL)");
+		//			LOG_DEBUG("WM_DEVICECHANGE (DBT_DEVICEARRIVAL)");
 
 		//			if (CSystem* system = static_cast<CSystem*>(SIV3D_ENGINE(System)))
 		//			{
@@ -206,7 +206,7 @@ namespace s3d
 		//		}
 		//		else if (wParam == DBT_DEVICEREMOVECOMPLETE)
 		//		{
-		//			LOG_TRACE("WM_DEVICECHANGE (DBT_DEVICEREMOVECOMPLETE)");
+		//			LOG_DEBUG("WM_DEVICECHANGE (DBT_DEVICEREMOVECOMPLETE)");
 
 		//			if (CSystem* system = static_cast<CSystem*>(SIV3D_ENGINE(System)))
 		//			{
@@ -238,14 +238,14 @@ namespace s3d
 		//	}
 		//case WM_ENTERSIZEMOVE:
 		//	{
-		//		LOG_TRACE("WM_ENTERSIZEMOVE");
+		//		LOG_DEBUG("WM_ENTERSIZEMOVE");
 		//		static_cast<CWindow*>(SIV3D_ENGINE(Window))->onEnterSizeMove();
 
 		//		break;
 		//	}
 		//case WM_EXITSIZEMOVE:
 		//	{
-		//		LOG_TRACE("WM_EXITSIZEMOVE");
+		//		LOG_DEBUG("WM_EXITSIZEMOVE");
 		//		static_cast<CWindow*>(SIV3D_ENGINE(Window))->onExitSizeMove();
 
 		//		break;

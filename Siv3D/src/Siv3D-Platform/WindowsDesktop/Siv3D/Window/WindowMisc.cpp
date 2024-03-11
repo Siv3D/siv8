@@ -10,12 +10,19 @@
 //-----------------------------------------------
 
 # include "WindowMisc.hpp"
-# include <ShellScalingApi.h> // SetProcessDpiAwareness()
+# include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <ShellScalingApi.h> // SetProcessDpiAwareness()
 # include <Dbt.h>
 
-namespace s3d
+namespace s3d::WindowMisc
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	SetDPIAwareness
+	//
+	////////////////////////////////////////////////////////////////
+
 	void SetDPIAwareness(LibraryHandle user32)
 	{
 		LOG_SCOPED_DEBUG("SetDPIAwareness()");
@@ -52,13 +59,56 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
+	////////////////////////////////////////////////////////////////
+	//
+	//	GetMonitors
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<MonitorInfo> GetMonitors()
+	{
+		Array<MonitorInfo> monitors = System::EnumerateMonitors();
+
+		if (not monitors)
+		{
+			throw InternalEngineError{ "System::EnumActiveMonitors() failed" };
+		}
+
+		String message = U"Active monitors:\n";
+
+		for (size_t i = 0; i < monitors.size(); ++i)
+		{
+			if (0 < i)
+			{
+				message.push_back(U'\n');
+			}
+
+			message += U"---- 🖥️ Monitor[{}] ----\n"_fmt(i);
+			message += monitors[i].format();
+		}
+
+		LOG_DEBUG(message);
+
+		return monitors;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	GetScaling
+	//
+	////////////////////////////////////////////////////////////////
+
 	double GetScaling(uint32 dpi) noexcept
 	{
 		return (static_cast<double>(dpi) / USER_DEFAULT_SCREEN_DPI);
 	}
 
-	[[nodiscard]]
+	////////////////////////////////////////////////////////////////
+	//
+	//	CalculateWindowPos
+	//
+	////////////////////////////////////////////////////////////////
+
 	Point CalculateWindowPos(const MonitorInfo& monitor, const Size& frameBufferSize) noexcept
 	{
 		const int32 offsetX = Max<int32>((monitor.workArea.w - frameBufferSize.x) / 2, 0);
@@ -66,7 +116,12 @@ namespace s3d
 		return (monitor.displayRect.pos + Point{ offsetX, offsetY });
 	}
 
-	[[nodiscard]]
+	////////////////////////////////////////////////////////////////
+	//
+	//	GetWindowStyleFlags
+	//
+	////////////////////////////////////////////////////////////////
+
 	uint32 GetWindowStyleFlags(const WindowStyle style) noexcept
 	{
 		switch (style)
@@ -81,7 +136,12 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
+	////////////////////////////////////////////////////////////////
+	//
+	//	AdjustWindowRect
+	//
+	////////////////////////////////////////////////////////////////
+
 	Rect AdjustWindowRect(const HWND hWnd, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
 		const int32 dpi, const Point& windowPos, const Size& size, const int32 windowStyleFlags)
 	{
@@ -101,6 +161,27 @@ namespace s3d
 
 		return{ rect.left, rect.top, (rect.right - rect.left), (rect.bottom - rect.top) };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	DisablePalmRejection
+	//
+	////////////////////////////////////////////////////////////////
+
+	void DisablePalmRejection(HWND hWND)
+	{
+		if (::GetSystemMetrics(SM_DIGITIZER) & NID_MULTI_INPUT)
+		{
+			LOG_INFO("ℹ️ An input digitizer with support for multiple inputs found");
+			::RegisterTouchWindow(hWND, TWF_WANTPALM);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	DisableTouchFeedbackVisualization
+	//
+	////////////////////////////////////////////////////////////////
 
 	void DisableTouchFeedbackVisualization(HWND hWND, decltype(SetWindowFeedbackSetting)* pSetWindowFeedbackSetting)
 	{
@@ -131,7 +212,12 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
+	////////////////////////////////////////////////////////////////
+	//
+	//	StartDeviceNotification
+	//
+	////////////////////////////////////////////////////////////////
+
 	HDEVNOTIFY StartDeviceNotification(const HWND hWnd)
 	{
 		LOG_DEBUG("StartDeviceNotification()");
@@ -147,7 +233,12 @@ namespace s3d
 		return ::RegisterDeviceNotificationW(hWnd, (DEV_BROADCAST_HDR*)&dbi, DEVICE_NOTIFY_WINDOW_HANDLE);
 	}
 
-	[[nodiscard]]
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateTaskbarList
+	//
+	////////////////////////////////////////////////////////////////
+
 	ComPtr<ITaskbarList3> CreateTaskbarList()
 	{
 		LOG_DEBUG("CreateTaskbarList()");
@@ -168,5 +259,24 @@ namespace s3d
 		}
 
 		return taskbarList;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ShowWindow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void ShowWindow(HWND hWnd)
+	{
+		LOG_DEBUG("ShowWindow()");
+
+		::ShowWindow(hWnd, SW_SHOW);
+
+		::ValidateRect(hWnd, 0);
+
+		::UpdateWindow(hWnd);
+
+		::SetForegroundWindow(hWnd);
 	}
 }
