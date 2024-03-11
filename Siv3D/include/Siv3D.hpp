@@ -799,8 +799,8 @@
 // モニターの情報 | Monitor information
 # include <Siv3D/MonitorInfo.hpp>
 
-//// ユーザアクション | User action
-//# include <Siv3D/UserAction.hpp>
+// ユーザアクション | User action
+# include <Siv3D/UserAction.hpp>
 
 // システム | System
 # include <Siv3D/System.hpp> // ToDo
