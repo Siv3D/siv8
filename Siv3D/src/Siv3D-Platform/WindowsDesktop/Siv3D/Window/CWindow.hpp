@@ -14,7 +14,6 @@
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/Windows/ComPtr.hpp>
-# include <Siv3D/Windows/ComPtr.hpp>
 # include <ShObjIdl_core.h> // ITaskbarList3
 # include "User32Lib.hpp"
 # include "WindowClass.hpp"

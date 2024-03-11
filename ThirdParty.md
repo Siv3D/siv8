@@ -11,6 +11,7 @@ Name | Version
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
 [fast_float](https://github.com/fastfloat/fast_float) | Version 6.1.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
+[GLFW](https://github.com/glfw/glfw) | 3.4
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
