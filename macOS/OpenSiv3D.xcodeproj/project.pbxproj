@@ -631,7 +631,7 @@
 		F9070E612B9F176B00383E4D /* CLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E192B9F176B00383E4D /* CLogger.cpp */; };
 		F9070E622B9F176B00383E4D /* CLogger.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070E1A2B9F176B00383E4D /* CLogger.hpp */; };
 		F9070E632B9F176B00383E4D /* SivSystem_macOS_Linux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E1C2B9F176B00383E4D /* SivSystem_macOS_Linux.cpp */; };
-		F9070E8F2B9F183100383E4D /* CWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E882B9F183100383E4D /* CWindow.cpp */; };
+		F9070E8F2B9F183100383E4D /* CWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9070E882B9F183100383E4D /* CWindow.mm */; };
 		F9070E902B9F183100383E4D /* CWindow.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070E892B9F183100383E4D /* CWindow.hpp */; };
 		F9070E912B9F183100383E4D /* CSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E8B2B9F183100383E4D /* CSystem.cpp */; };
 		F9070E922B9F183100383E4D /* CSystem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070E8C2B9F183100383E4D /* CSystem.hpp */; };
@@ -678,6 +678,8 @@
 		F9070F362B9F252E00383E4D /* null_joystick.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2F2B9F252E00383E4D /* null_joystick.c */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
+		F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A852BA018CE00222F45 /* WindowTitle.hpp */; };
+		F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A862BA018CF00222F45 /* WindowTitle.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1310,7 +1312,7 @@
 		F9070E192B9F176B00383E4D /* CLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CLogger.cpp; sourceTree = "<group>"; };
 		F9070E1A2B9F176B00383E4D /* CLogger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CLogger.hpp; sourceTree = "<group>"; };
 		F9070E1C2B9F176B00383E4D /* SivSystem_macOS_Linux.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSystem_macOS_Linux.cpp; sourceTree = "<group>"; };
-		F9070E882B9F183100383E4D /* CWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CWindow.cpp; sourceTree = "<group>"; };
+		F9070E882B9F183100383E4D /* CWindow.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CWindow.mm; sourceTree = "<group>"; };
 		F9070E892B9F183100383E4D /* CWindow.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CWindow.hpp; sourceTree = "<group>"; };
 		F9070E8B2B9F183100383E4D /* CSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSystem.cpp; sourceTree = "<group>"; };
 		F9070E8C2B9F183100383E4D /* CSystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSystem.hpp; sourceTree = "<group>"; };
@@ -1357,6 +1359,8 @@
 		F9070F2F2B9F252E00383E4D /* null_joystick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_joystick.c; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
+		F9528A852BA018CE00222F45 /* WindowTitle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowTitle.hpp; sourceTree = "<group>"; };
+		F9528A862BA018CF00222F45 /* WindowTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowTitle.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -3082,7 +3086,9 @@
 		F9070E8A2B9F183100383E4D /* Window */ = {
 			isa = PBXGroup;
 			children = (
-				F9070E882B9F183100383E4D /* CWindow.cpp */,
+				F9528A862BA018CF00222F45 /* WindowTitle.cpp */,
+				F9528A852BA018CE00222F45 /* WindowTitle.hpp */,
+				F9070E882B9F183100383E4D /* CWindow.mm */,
 				F9070E892B9F183100383E4D /* CWindow.hpp */,
 			);
 			path = Window;
@@ -3223,6 +3229,7 @@
 				F9070C952B9F175000383E4D /* 2DShapesFwd.hpp in Headers */,
 				F9070C922B9F175000383E4D /* Windows.hpp in Headers */,
 				F90706CE2B9DAEC900383E4D /* bitshuffle.h in Headers */,
+				F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */,
 				F907070F2B9DAEC900383E4D /* range.h in Headers */,
 				F9070E5D2B9F176B00383E4D /* CConsole.hpp in Headers */,
 				F9070C472B9F175000383E4D /* BoolArray.ipp in Headers */,
@@ -3868,7 +3875,7 @@
 				F9070DDB2B9F175E00383E4D /* SivMD5Value.cpp in Sources */,
 				F9070DBA2B9F175E00383E4D /* SivConsoleBuffer.cpp in Sources */,
 				F9070AEE2B9DEB5900383E4D /* int128.cc in Sources */,
-				F9070E8F2B9F183100383E4D /* CWindow.cpp in Sources */,
+				F9070E8F2B9F183100383E4D /* CWindow.mm in Sources */,
 				F9070DC12B9F175E00383E4D /* CEmpty.cpp in Sources */,
 				F9070DD02B9F175E00383E4D /* SivFormatter.cpp in Sources */,
 				F9070E602B9F176B00383E4D /* SivFileSystem_macOS_Linux.cpp in Sources */,
@@ -3930,6 +3937,7 @@
 				F9070E5A2B9F176B00383E4D /* BinaryWriterDetail.cpp in Sources */,
 				F9070E002B9F175E00383E4D /* SivVector4D.cpp in Sources */,
 				F9070DB42B9F175E00383E4D /* SivByte.cpp in Sources */,
+				F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */,
 				F9070DEB2B9F175E00383E4D /* SystemFactory.cpp in Sources */,
 				F9070AF32B9DEB5900383E4D /* bignum.cc in Sources */,
 				F9070DCA2B9F175E00383E4D /* SivEscapedFormatter.cpp in Sources */,

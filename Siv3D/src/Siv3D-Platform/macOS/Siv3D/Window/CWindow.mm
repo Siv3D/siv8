@@ -41,10 +41,9 @@ namespace s3d
 		
 		// ウィンドウの作成
 		{
-			m_window = ::glfwCreateWindow(800, 600,
-										  "Siv3D App", nullptr, nullptr);
+			m_glfwWindow = ::glfwCreateWindow(800, 600, Unicode::ToUTF8(m_windowTitle.actual).c_str(), nullptr, nullptr);
 			
-			if (not m_window)
+			if (not m_glfwWindow)
 			{
 				throw InternalEngineError{ "glfwCreateWindow() failed" };
 			}
@@ -57,25 +56,30 @@ namespace s3d
 		
 		//updateState();
 
-		if (::glfwWindowShouldClose(m_window))
+		if constexpr (SIV3D_BUILD(DEBUG))
+		{
+			m_windowTitle.refresh(m_glfwWindow);
+		}
+		
+		if (::glfwWindowShouldClose(m_glfwWindow))
 		{
 			SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::CloseButtonClicked);
-			::glfwSetWindowShouldClose(m_window, GLFW_FALSE);
+			::glfwSetWindowShouldClose(m_glfwWindow, GLFW_FALSE);
 		}
 	}
 
 	void CWindow::setWindowTitle(const String& title)
 	{
-
+		m_windowTitle.set(m_glfwWindow, title);
 	}
 
 	const String& CWindow::getWindowTitle() const noexcept
 	{
-		return m_windowTitle;
+		return m_windowTitle.title;
 	}
 
 	void* CWindow::getHandle() const noexcept
 	{
-		return m_window;
+		return m_glfwWindow;
 	}
 }

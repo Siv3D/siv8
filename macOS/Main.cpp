@@ -4,5 +4,10 @@
 
 void Main()
 {
-	RunTest();
+	//RunTest();
+	
+	while (System::Update())
+	{
+		
+	}
 }

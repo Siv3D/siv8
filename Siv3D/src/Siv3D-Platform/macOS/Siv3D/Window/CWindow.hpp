@@ -14,6 +14,7 @@
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
+# include "WindowTitle.hpp"
 
 namespace s3d
 {
@@ -37,8 +38,8 @@ namespace s3d
 
 	private:
 
-		GLFWwindow* m_window = nullptr;
+		GLFWwindow* m_glfwWindow = nullptr;
 		
-		String m_windowTitle{ Window::DefaultTitle };
+		WindowTitle m_windowTitle;
 	};
 }
