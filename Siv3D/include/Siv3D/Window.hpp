@@ -18,9 +18,21 @@ namespace s3d
 {
 	namespace Window
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	DefaultTitle
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief ウィンドウのデフォルトのタイトル
 		inline constexpr StringView DefaultTitle = U"Siv3D App";
-	
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetTitle
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief ウィンドウのタイトルを変更します。
 		/// @param title 新しいタイトル
 		void SetTitle(const String& title);
@@ -30,9 +42,17 @@ namespace s3d
 		/// @param ...args 新しいタイトル
 		void SetTitle(const Concept::Formattable auto&... args);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetTitle
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 現在のウィンドウのタイトルを返します。
 		/// @return  現在のウィンドウのタイトル
 		[[nodiscard]]
 		const String& GetTitle() noexcept;
 	}
 }
+
+# include "detail/Window.ipp"

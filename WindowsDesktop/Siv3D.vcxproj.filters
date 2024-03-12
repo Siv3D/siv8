@@ -1197,6 +1197,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\IUserAction.hpp">
       <Filter>src\Siv3D\UserAction</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Window.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1510,6 +1513,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.cpp">
       <Filter>src\Siv3D\UserAction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Window\SivWindow.cpp">
+      <Filter>src\Siv3D\Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
