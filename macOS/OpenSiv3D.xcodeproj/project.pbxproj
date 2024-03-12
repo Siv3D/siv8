@@ -669,8 +669,6 @@
 		F9070F042B9F1C8900383E4D /* window.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EC62B9F1C8900383E4D /* window.c */; };
 		F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */; };
 		F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070ED02B9F1C8900383E4D /* xkb_unicode.h */; };
-		F9070F272B9F24E300383E4D /* OpenGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070F242B9F24E200383E4D /* OpenGL.cpp */; };
-		F9070F282B9F24E300383E4D /* OpenGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070F252B9F24E200383E4D /* OpenGL.hpp */; };
 		F9070F302B9F252E00383E4D /* null_init.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F292B9F252D00383E4D /* null_init.c */; };
 		F9070F312B9F252E00383E4D /* osmesa_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2A2B9F252D00383E4D /* osmesa_context.c */; };
 		F9070F322B9F252E00383E4D /* null_window.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2B2B9F252D00383E4D /* null_window.c */; };
@@ -679,6 +677,7 @@
 		F9070F352B9F252E00383E4D /* null_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070F2E2B9F252E00383E4D /* null_platform.h */; };
 		F9070F362B9F252E00383E4D /* null_joystick.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2F2B9F252E00383E4D /* null_joystick.c */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
+		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1349,8 +1348,6 @@
 		F9070EC62B9F1C8900383E4D /* window.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = window.c; sourceTree = "<group>"; };
 		F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xkb_unicode.c; sourceTree = "<group>"; };
 		F9070ED02B9F1C8900383E4D /* xkb_unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xkb_unicode.h; sourceTree = "<group>"; };
-		F9070F242B9F24E200383E4D /* OpenGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGL.cpp; sourceTree = "<group>"; };
-		F9070F252B9F24E200383E4D /* OpenGL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = OpenGL.hpp; sourceTree = "<group>"; };
 		F9070F292B9F252D00383E4D /* null_init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_init.c; sourceTree = "<group>"; };
 		F9070F2A2B9F252D00383E4D /* osmesa_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = osmesa_context.c; sourceTree = "<group>"; };
 		F9070F2B2B9F252D00383E4D /* null_window.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_window.c; sourceTree = "<group>"; };
@@ -1359,6 +1356,7 @@
 		F9070F2E2B9F252E00383E4D /* null_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = null_platform.h; sourceTree = "<group>"; };
 		F9070F2F2B9F252E00383E4D /* null_joystick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_joystick.c; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1484,26 +1482,10 @@
 			path = data;
 			sourceTree = "<group>";
 		};
-		F90702B22B9DAEB900383E4D /* binarywriter */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = binarywriter;
-			sourceTree = "<group>";
-		};
-		F90702B32B9DAEB900383E4D /* output */ = {
-			isa = PBXGroup;
-			children = (
-				F90702B22B9DAEB900383E4D /* binarywriter */,
-			);
-			path = output;
-			sourceTree = "<group>";
-		};
 		F90702CF2B9DAEB900383E4D /* Test */ = {
 			isa = PBXGroup;
 			children = (
 				F90702B12B9DAEB900383E4D /* data */,
-				F90702B32B9DAEB900383E4D /* output */,
 				F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */,
 				F90702B52B9DAEB900383E4D /* Siv3DTest.hpp */,
 				F90702B62B9DAEB900383E4D /* Test_Array.cpp */,
@@ -2979,9 +2961,9 @@
 		F9070E082B9F176B00383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
-				F9070F262B9F24E200383E4D /* Common */,
-				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
 				F9070E042B9F176B00383E4D /* FileSystem */,
+				F95289C62B9FEA0D00222F45 /* GLFW */,
+				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
 				F9070E8E2B9F183100383E4D /* System */,
 				F9070E062B9F176B00383E4D /* Time */,
 				F9070E8A2B9F183100383E4D /* Window */,
@@ -3163,13 +3145,12 @@
 			path = GLFW;
 			sourceTree = "<group>";
 		};
-		F9070F262B9F24E200383E4D /* Common */ = {
+		F95289C62B9FEA0D00222F45 /* GLFW */ = {
 			isa = PBXGroup;
 			children = (
-				F9070F242B9F24E200383E4D /* OpenGL.cpp */,
-				F9070F252B9F24E200383E4D /* OpenGL.hpp */,
+				F95289C42B9FEA0D00222F45 /* GLFW.hpp */,
 			);
-			path = Common;
+			path = GLFW;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -3380,6 +3361,7 @@
 				F9070C7C2B9F175000383E4D /* Stopwatch.ipp in Headers */,
 				F9070CFE2B9F175100383E4D /* String.hpp in Headers */,
 				F90706F32B9DAEC900383E4D /* kand.h in Headers */,
+				F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */,
 				F9070CC62B9F175000383E4D /* HardwareRNG.hpp in Headers */,
 				F90707142B9DAEC900383E4D /* ror.h in Headers */,
 				F9070C8F2B9F175000383E4D /* Libraries.hpp in Headers */,
@@ -3481,7 +3463,6 @@
 				F907074D2B9DAEC900383E4D /* hedley.h in Headers */,
 				F9070CDF2B9F175100383E4D /* Number.hpp in Headers */,
 				F9070CED2B9F175100383E4D /* Platform.hpp in Headers */,
-				F9070F282B9F24E300383E4D /* OpenGL.hpp in Headers */,
 				F9070CF12B9F175100383E4D /* PredefinedYesNo.hpp in Headers */,
 				F90706A22B9DAEC900383E4D /* iostream_state_saver.h in Headers */,
 				F90707202B9DAEC900383E4D /* setr4.h in Headers */,
@@ -3906,7 +3887,6 @@
 				F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */,
 				F9070AEF2B9DEB5900383E4D /* discrete_distribution.cc in Sources */,
 				F9070EF32B9F1C8900383E4D /* posix_thread.c in Sources */,
-				F9070F272B9F24E300383E4D /* OpenGL.cpp in Sources */,
 				F9070DB52B9F175E00383E4D /* SivColor.cpp in Sources */,
 				F9070DD92B9F175E00383E4D /* SivLogger.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,

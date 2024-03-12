@@ -10,10 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
-//# include <ThirdParty/GL/glew.h>
+# define GLFW_INCLUDE_NONE
 # include <ThirdParty/GLFW/glfw3.h>
-
-namespace s3d
-{
-	void CheckOpenGLError();
-}
+# define GLFW_EXPOSE_NATIVE_COCOA
+# include <ThirdParty/GLFW/glfw3native.h>

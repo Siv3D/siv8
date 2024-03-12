@@ -13,7 +13,7 @@
 # include <Siv3D/Window.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
-# include <Siv3D/Common/OpenGL.hpp>
+# include <Siv3D/GLFW/GLFW.hpp>
 
 namespace s3d
 {
