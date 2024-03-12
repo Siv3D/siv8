@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\2DShapes.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\2DShapesFwd.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AlignedAllocator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Console.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CopyOption.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CPUInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Date.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DateTime.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DayOfWeek.hpp" />
@@ -67,6 +69,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PCG64.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Point.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Random.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomDuration.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Rect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Result.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FastMath.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatFormatter.ipp" />
@@ -109,10 +113,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\UtilityClass.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\UUIDValue.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vector2D.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Window.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\YesNo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Byte.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DiscreteDistribution.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DisjointSet.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DisplayResolution.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Distribution.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DLL.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Duration.hpp" />
@@ -134,6 +140,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MapFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MD5Value.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MonitorInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OrderedSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OrderedTable.hpp" />
@@ -145,6 +152,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PointVector.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Random.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomDuration.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Rect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Result.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FastMath.hpp" />
@@ -203,6 +211,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Unicode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UnicodeConverter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UniqueResource.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\UserAction.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Utility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UUIDValue.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector2D.hpp" />
@@ -212,6 +221,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Window.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WindowState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WindowStyle.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Windows\ComPtr.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Libraries.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\MinWindows.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Resource.hpp" />
@@ -242,15 +252,33 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMainHelper.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\CSystem.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\CWindow.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\User32Lib.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowClass.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowTitle.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\BigInt\BigIntDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Console\IConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DComponent.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UnicodeConverter\UnicodeUtility.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\IUserAction.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Window\IWindow.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\mimalloc\mimalloc-new-delete.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpuinfo_x86.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpu_features_cache_info.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\cpu_features_macros.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\bit_utils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\cpuid_x86.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\windows_utils.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\bignum-dtoa.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\bignum.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\cached-powers.h" />
@@ -276,6 +304,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DateTime\SivDateTime_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Date\SivDate_Windows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL\SivDLL.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\SivFileSystem_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.cpp" />
@@ -283,9 +312,19 @@
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4559</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4559</DisableSpecificWarnings>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo\SivMonitorInfo_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMainHelper.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\CSystem.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\SivSystem_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Time\SivTime.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows\SivWindows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\CWindow.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\User32Lib.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowClass.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowTitle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigInt\SivBigInt.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BinaryReader\SivBinaryReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BinaryWriter\SivBinaryWriter.cpp" />
@@ -297,6 +336,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ConsoleBuffer\SivConsoleBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\CPUInfo\SivCPUInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DateTime\SivDateTime.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Date\SivDate.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DayOfWeek\SivDayOfWeek.cpp" />
@@ -322,6 +362,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\LoggerFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\SivLogger.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MD5Value\SivMD5Value.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MonitorInfo\SivMonitorInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBoolExtended\SivParseBoolExtended.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBool\SivParseBool.cpp" />
@@ -335,6 +376,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\String\Levenshtein.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SivSystem.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\System\SystemFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEncoding\SivTextEncoding.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\SivTextReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.cpp" />
@@ -345,13 +387,21 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\UnicodeConverter\SivUnicodeConverter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\UnicodeConverter\UnicodeUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\UserAction\UserActionFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\UUIDValue\SivUUIDValue.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector2D\SivVector2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector3D\SivVector3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector4D\SivVector4D.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Window\SivWindow.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Window\WindowFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\numeric\int128.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\random\discrete_distribution.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\random\gaussian_distribution.cc" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86_windows.c">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4100; 4132</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4100; 4132</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\bignum-dtoa.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\bignum.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\cached-powers.cc" />
@@ -363,6 +413,12 @@
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4127; 4310; 4505</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4127; 4310; 4505</DisableSpecificWarnings>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\copy.inl" />
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\define_introspection.inl" />
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\equals.inl" />
+    <None Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86__base_implementation.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

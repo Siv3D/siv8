@@ -28,8 +28,4 @@ void RunTest()
 	doctest::Context context;
 
 	context.run();
-
-# if SIV3D_PLATFORM(WINDOWS)
-	getchar();
-# endif
 }

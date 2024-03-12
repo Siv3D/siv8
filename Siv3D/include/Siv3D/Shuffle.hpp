@@ -32,8 +32,8 @@ namespace s3d
 	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param range 範囲
 	/// @param urbg 乱数エンジン
-	template <class Range, Concept::UniformRandomBitGenerator URBG> requires std::permutable<std::ranges::iterator_t<Range>>
-	void Shuffle(Range&& range, URBG&& urbg);
+	template <class Range> requires std::permutable<std::ranges::iterator_t<Range>>
+	void Shuffle(Range&& range, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	/// @brief 指定した範囲の要素をランダムにシャッフルします。
 	/// @tparam RandomIt イテレータの型
@@ -48,8 +48,8 @@ namespace s3d
 	/// @param first 範囲の開始位置を指すイテレータ
 	/// @param last 範囲の終端位置を指すイテレータ
 	/// @param urbg 乱数エンジン
-	template <class RandomIt, Concept::UniformRandomBitGenerator URBG> requires std::permutable<RandomIt>
-	void Shuffle(RandomIt first, RandomIt last, URBG&& urbg);
+	template <class RandomIt> requires std::permutable<RandomIt>
+	void Shuffle(RandomIt first, RandomIt last, Concept::UniformRandomBitGenerator auto&& urbg);
 }
 
 # include "detail/Shuffle.ipp"

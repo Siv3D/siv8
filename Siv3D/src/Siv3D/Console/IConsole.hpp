@@ -18,6 +18,7 @@ namespace s3d
 	{
 	public:
 
+		[[nodiscard]]
 		static ISiv3DConsole* Create();
 
 		virtual ~ISiv3DConsole() = default;

@@ -879,7 +879,7 @@ namespace s3d
 	{
 		Array result(Arg::reserve = Min<size_t>(n, m_container.size()));
 
-		std::sample(begin(), end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
+		std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
 
 		return result;
 	}
@@ -891,7 +891,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::chunk(const size_t n) const
+	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::chunk(const size_type n) const
 	{
 		Array<Array<value_type>> result;
 
@@ -940,7 +940,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr size_t Array<Type, Allocator>::count(const value_type& value) const
+	constexpr isize Array<Type, Allocator>::count(const value_type& value) const
 	{
 		return std::count(m_container.begin(), m_container.end(), value);
 	}
@@ -953,7 +953,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr size_t Array<Type, Allocator>::count_if(Fty f) const requires std::predicate<Fty, const value_type&>
+	constexpr isize Array<Type, Allocator>::count_if(Fty f) const requires std::predicate<Fty, const value_type&>
 	{
 		return std::count_if(m_container.begin(), m_container.end(), f);
 	}
@@ -1048,7 +1048,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class U>
-	constexpr typename Array<Type, Allocator>::value_type Array<Type, Allocator>::fetch(size_t index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
+	constexpr typename Array<Type, Allocator>::value_type Array<Type, Allocator>::fetch(const size_type index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
 	{
 		if (m_container.size() <= index)
 		{
@@ -1101,7 +1101,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::in_groups(const size_t group) const
+	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::in_groups(const size_type group) const
 	{
 		Array<Array<value_type>> result;
 
@@ -1274,6 +1274,208 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed(const value_type& value)&&
 	{
 		return std::move(remove(value));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	remove_at, removed_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::remove_at(const size_type index)&
+	{
+		if (m_container.size() <= index)
+		{
+			throw std::out_of_range{ "Array::remove_at(): index out of range" };
+		}
+
+		erase(m_container.begin() + index);
+
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::remove_at(const size_type index)&&
+	{
+		return std::move(remove_at(index));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_type index) const&
+	{
+		if (m_container.size() <= index)
+		{
+			throw std::out_of_range{ "Array::removed_at(): index out of range" };
+		}
+
+		Array result(Arg::reserve = m_container.size() - 1);
+		result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
+		result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_type index)&&
+	{
+		return std::move(remove_at(index));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	remove_if, removed_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::remove_if(Fty f)& requires std::predicate<Fty, const value_type&>
+	{
+		erase(std::remove_if(m_container.begin(), m_container.end(), f), m_container.end());
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::remove_if(Fty f) && requires std::predicate<Fty, const value_type&>
+	{
+		return std::move(remove_if(f));
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed_if(Fty f) const& requires std::predicate<Fty, const value_type&>
+	{
+		Array result;
+
+		for (const auto& v : m_container)
+		{
+			if (not f(v))
+			{
+				result.push_back(v);
+			}
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed_if(Fty f) && requires std::predicate<Fty, const value_type&>
+	{
+		return std::move(remove_if(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replace, replaced
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::replace(const value_type& oldValue, const value_type& newValue)&
+	{
+		std::replace(m_container.begin(), m_container.end(), oldValue, newValue);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::replace(const value_type& oldValue, const value_type& newValue)&&
+	{
+		return std::move(replace(oldValue, newValue));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::replaced(const value_type& oldValue, const value_type& newValue) const&
+	{
+		Array result(Arg::reserve = m_container.size());
+
+		for (const auto& v : m_container)
+		{
+			result.push_back((v == oldValue) ? newValue : v);
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::replaced(const value_type& oldValue, const value_type& newValue)&&
+	{
+		return std::move(replace(oldValue, newValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replace_if, replaced_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::replace_if(Fty f, const value_type& newValue)& requires std::predicate<Fty, const value_type&>
+	{
+		std::replace_if(m_container.begin(), m_container.end(), f, newValue);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::replace_if(Fty f, const value_type& newValue) && requires std::predicate<Fty, const value_type&>
+	{
+		return std::move(replace_if(f, newValue));
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty, const value_type&>
+	{
+		Array result(Arg::reserve = m_container.size());
+
+		for (const auto& v : m_container)
+		{
+			result.push_back(f(v) ? newValue : v);
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::replaced_if(Fty f, const value_type& newValue) && requires std::predicate<Fty, const value_type&>
+	{
+		return std::move(replace_if(f, newValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse, reversed
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::reverse()&
+	{
+		std::reverse(m_container.begin(), m_container.end());
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::reverse()&&
+	{
+		return std::move(reverse());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::reversed() const&
+	{
+		return Array(m_container.rbegin(), m_container.rend());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::reversed()&&
+	{
+		return std::move(reverse());
 	}
 
 

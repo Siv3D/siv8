@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -23,19 +23,19 @@ namespace s3d
 
 	bool BinaryWriter::BinaryWriterDetail::open(const FilePathView path, const OpenMode openMode)
 	{
-		LOG_DEBUG(U"BinaryWriter::BinaryWriterDetail::open(\"{0}\", {1})"_fmt(path, FromEnum(openMode)));
+		LOG_DEBUG(fmt::format("BinaryWriter::BinaryWriterDetail::open(\"{0}\", {1})", path, FromEnum(openMode)));
 
 		close();
 
 		if (not path)
 		{
-			LOG_FAIL(U"❌ BinaryWriter: path is empty");
+			LOG_FAIL("❌ BinaryWriter: path is empty");
 			return false;
 		}
 
 		if (FileSystem::IsResourcePath(path))
 		{
-			LOG_FAIL(U"❌ BinaryWriter: path is a resource path");
+			LOG_FAIL("❌ BinaryWriter: path is a resource path");
 			return false;
 		}
 
@@ -44,7 +44,7 @@ namespace s3d
 
 		if (parentFilePath && (not FileSystem::Exists(parentFilePath)) && (not FileSystem::CreateDirectories(parentFilePath)))
 		{
-			LOG_FAIL(U"❌ BinaryWriter: Failed to create parent directories \"{0}\""_fmt(parentFilePath));
+			LOG_FAIL(fmt::format("❌ BinaryWriter: Failed to create parent directories \"{0}\"", parentFilePath));
 			return false;
 		}
 
@@ -56,7 +56,7 @@ namespace s3d
 
 			if (not file)
 			{
-				LOG_FAIL(U"❌ BinaryWriter: Failed to open the file `{0}`"_fmt(path));
+				LOG_FAIL(fmt::format("❌ BinaryWriter: Failed to open the file `{0}`", path));
 				return false;
 			}
 
@@ -76,7 +76,7 @@ namespace s3d
 				.isOpen = true,
 			};
 
-			LOG_INFO(U"📤 BinaryWriter: File `{0}` opened"_fmt(m_info.fullPath));
+			LOG_INFO(fmt::format("📤 BinaryWriter: File `{0}` opened", m_info.fullPath));
 		}
 
 		return true;
@@ -96,7 +96,7 @@ namespace s3d
 		std::fclose(m_file.file);
 		m_file = {};
 
-		LOG_INFO(U"📥 BinaryWriter: File `{0}` closed"_fmt(m_info.fullPath));
+		LOG_INFO(fmt::format("📥 BinaryWriter: File `{0}` closed", m_info.fullPath));
 
 		m_info = {};
 	}

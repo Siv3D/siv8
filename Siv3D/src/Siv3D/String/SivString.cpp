@@ -11,6 +11,7 @@
 
 # include <iostream>
 # include <stdexcept>
+# include <Siv3D/HashSet.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Char.hpp>
 # include <Siv3D/Unicode.hpp>
@@ -21,10 +22,26 @@ namespace s3d
 {
 	namespace detail
 	{
+		[[nodiscard]]
 		inline static constexpr bool IsTrimmable(const char32 ch) noexcept
 		{
 			return (ch <= 0x20) || ((ch - 0x7F) <= (0x9F - 0x7F));
 		}
+
+		class StableUniqueHelper
+		{
+		private:
+
+			HashSet<char32> m_set;
+
+		public:
+
+			[[nodiscard]]
+			bool operator()(const char32 value)
+			{
+				return m_set.insert(value).second;
+			}
+		};
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -972,13 +989,91 @@ namespace s3d
 		return std::move(uppercase());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	stable_unique, stable_uniqued
+	//
+	////////////////////////////////////////////////////////////////
 
+	String& String::stable_unique() & noexcept
+	{
+		return (*this = stable_uniqued());
+	}
 
+	String String::stable_unique() &&
+	{
+		return stable_uniqued();
+	}
 
+	String String::stable_uniqued() const
+	{
+		String result;
 
+		detail::StableUniqueHelper pred;
 
+		std::copy_if(m_string.begin(), m_string.end(), std::back_inserter(result), std::ref(pred));
 
+		return result;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	sort_and_unique, sorted_and_uniqued
+	//
+	////////////////////////////////////////////////////////////////
+
+	String& String::sort_and_unique() & noexcept
+	{
+		std::sort(m_string.begin(), m_string.end());
+		m_string.erase(std::unique(m_string.begin(), m_string.end()), m_string.end());
+		return *this;
+	}
+
+	String String::sort_and_unique() && noexcept
+	{
+		return std::move(sort_and_unique());
+	}
+
+	String String::sorted_and_uniqued() const&
+	{
+		String result{ *this };
+		result.sort_and_unique();
+		return result;
+	}
+
+	String String::sorted_and_uniqued() && noexcept
+	{
+		return std::move(sort_and_unique());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	unique_consecutive, uniqued_consecutive
+	//
+	////////////////////////////////////////////////////////////////
+
+	String& String::unique_consecutive() & noexcept
+	{
+		m_string.erase(std::unique(m_string.begin(), m_string.end()), m_string.end());
+		return *this;
+	}
+
+	String String::unique_consecutive() && noexcept
+	{
+		return std::move(unique_consecutive());
+	}
+
+	String String::uniqued_consecutive() const&
+	{
+		String result;
+		std::unique_copy(m_string.begin(), m_string.end(), std::back_inserter(result));
+		return result;
+	}
+
+	String String::uniqued_consecutive() && noexcept
+	{
+		return std::move(unique_consecutive());
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

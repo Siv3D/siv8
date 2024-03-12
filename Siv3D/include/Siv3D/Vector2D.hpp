@@ -115,12 +115,13 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Vector2D operator *(Vector2D v) const noexcept;
 		
+		template <Concept::Arithmetic U> // IntelliSense のエラー回避のため template を使う (17.10 Preview 1)
 		[[nodiscard]]
-		friend constexpr Vector2D operator *(const Concept::Arithmetic auto s, const Vector2D v) noexcept
+		friend constexpr Vector2D operator *(const U s, const Vector2D v) noexcept
 		{
-			return (v * static_cast<Type>(s));
+			return (v * static_cast<value_type>(s));
 		}
-		
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator /

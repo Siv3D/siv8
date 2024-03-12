@@ -5,11 +5,13 @@ To view the license information, press the <kbd>F1</kbd> key while the Siv3D app
 Name | Version
 --- | ---
 [Abseil](https://github.com/abseil/abseil-cpp) | 20230802.1
+[cpu_features](https://github.com/google/cpu_features) | 
 [doctest](https://github.com/doctest/doctest) | v2.4.11
 [double-conversion](https://github.com/google/double-conversion) | v3.3.0
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
 [fast_float](https://github.com/fastfloat/fast_float) | Version 6.1.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
+[GLFW](https://github.com/glfw/glfw) | 3.4
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 

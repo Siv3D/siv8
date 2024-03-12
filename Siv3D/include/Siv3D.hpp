@@ -126,8 +126,6 @@
 
 //# include <Siv3D/Step2D.hpp> // ToDo
 
-//# include <Siv3D/InfiniteList.hpp> // ToDo
-
 ////////////////////////////////////////////////////////////////
 //
 //	文字と文字列 | Characters and String
@@ -141,7 +139,7 @@
 # include <Siv3D/StringView.hpp>
 
 // 文字列 | String
-# include <Siv3D/String.hpp> // ToDo
+# include <Siv3D/String.hpp>
 
 // Unicode | Unicode
 # include <Siv3D/Unicode.hpp>
@@ -312,9 +310,9 @@
 
 //// 多倍長浮動小数点数 | 100 decimal digits precision floating point type
 //# include <Siv3D/BigFloat.hpp>
-//
-//// 浮動小数点数型の共通型 | Common Float
-//# include <Siv3D/CommonFloat.hpp>
+
+// 浮動小数点数型の共通型 | Common Float
+# include <Siv3D/CommonFloat.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -642,9 +640,9 @@
 // シャッフル | Random shuffle
 # include <Siv3D/Shuffle.hpp>
 
-//// ランダムな時間 | Random duration
-//# include <Siv3D/RandomDuration.hpp>
-//
+// ランダムな時間 | Random duration
+# include <Siv3D/RandomDuration.hpp>
+
 //// ランダムな Point の作成 | Random Point generation
 //# include <Siv3D/RandomPoint.hpp>
 //
@@ -686,9 +684,6 @@
 
 // 4 次元ベクトル | 4D vector
 # include <Siv3D/Vector4D.hpp> // ToDo
-
-// 浮動小数点数の計算補助 | Floating point support
-# include <Siv3D/CommonFloat.hpp>
 
 //// ベクトルクラステンプレートの計算補助 | Vector class templates support
 //# include <Siv3D/CommonVector.hpp>
@@ -794,21 +789,18 @@
 //
 //// コマンドライン引数 | Command-line arguments
 //# include <Siv3D/CommandLine.hpp>
-//
-//// CPU 情報 | CPU information
-//# include <Siv3D/CPUInfo.hpp>
-//
-//// 画面解像度の定数 | Display resolution constants
-//# include <Siv3D/DisplayResolution.hpp>
-//
-//// モニターの情報 | Monitor information
-//# include <Siv3D/MonitorInfo.hpp>
-//
-//// モニター | Monitor
-//# include <Siv3D/Monitor.hpp>
-//
-//// ユーザアクション | User action
-//# include <Siv3D/UserAction.hpp>
+
+// CPU 情報 | CPU information
+# include <Siv3D/CPUInfo.hpp>
+
+// 画面解像度の定数 | Display resolution constants
+# include <Siv3D/DisplayResolution.hpp>
+
+// モニターの情報 | Monitor information
+# include <Siv3D/MonitorInfo.hpp>
+
+// ユーザアクション | User action
+# include <Siv3D/UserAction.hpp>
 
 // システム | System
 # include <Siv3D/System.hpp> // ToDo
