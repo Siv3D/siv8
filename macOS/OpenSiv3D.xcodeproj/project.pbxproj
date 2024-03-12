@@ -680,6 +680,8 @@
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
 		F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A852BA018CE00222F45 /* WindowTitle.hpp */; };
 		F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A862BA018CF00222F45 /* WindowTitle.cpp */; };
+		F9528A8A2BA0251E00222F45 /* Window.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A892BA0251E00222F45 /* Window.ipp */; };
+		F9528A8C2BA0253700222F45 /* SivWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A8B2BA0253700222F45 /* SivWindow.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1361,6 +1363,8 @@
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
 		F9528A852BA018CE00222F45 /* WindowTitle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowTitle.hpp; sourceTree = "<group>"; };
 		F9528A862BA018CF00222F45 /* WindowTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowTitle.cpp; sourceTree = "<group>"; };
+		F9528A892BA0251E00222F45 /* Window.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Window.ipp; sourceTree = "<group>"; };
+		F9528A8B2BA0253700222F45 /* SivWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivWindow.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2181,6 +2185,7 @@
 				F9070BAC2B9F175000383E4D /* UtilityClass.ipp */,
 				F9070BAD2B9F175000383E4D /* UUIDValue.ipp */,
 				F9070BAE2B9F175000383E4D /* Vector2D.ipp */,
+				F9528A892BA0251E00222F45 /* Window.ipp */,
 				F9070BAF2B9F175000383E4D /* YesNo.ipp */,
 			);
 			path = detail;
@@ -2870,8 +2875,9 @@
 		F9070DAB2B9F175E00383E4D /* Window */ = {
 			isa = PBXGroup;
 			children = (
-				F9070DA92B9F175E00383E4D /* IWindow.hpp */,
+				F9528A8B2BA0253700222F45 /* SivWindow.cpp */,
 				F9070DAA2B9F175E00383E4D /* WindowFactory.cpp */,
+				F9070DA92B9F175E00383E4D /* IWindow.hpp */,
 			);
 			path = Window;
 			sourceTree = "<group>";
@@ -3596,6 +3602,7 @@
 				F9070D042B9F175100383E4D /* ThousandSeparate.hpp in Headers */,
 				F90707562B9DAEC900383E4D /* simde-diagnostic.h in Headers */,
 				F90707262B9DAEC900383E4D /* sllv.h in Headers */,
+				F9528A8A2BA0251E00222F45 /* Window.ipp in Headers */,
 				F90706C42B9DAEC900383E4D /* pcg_uint128.hpp in Headers */,
 				F90706EA2B9DAEC900383E4D /* fixupimm.h in Headers */,
 				F9070C672B9F175000383E4D /* Logger.ipp in Headers */,
@@ -3836,6 +3843,7 @@
 				F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */,
 				F9070DEA2B9F175E00383E4D /* SivSystem.cpp in Sources */,
 				F9070EEE2B9F1C8900383E4D /* platform.c in Sources */,
+				F9528A8C2BA0253700222F45 /* SivWindow.cpp in Sources */,
 				F9070DD22B9F175E00383E4D /* SivHash.cpp in Sources */,
 				F9070DFC2B9F175E00383E4D /* UserActionFactory.cpp in Sources */,
 				F9070DC62B9F175E00383E4D /* Siv3DEngine.cpp in Sources */,
