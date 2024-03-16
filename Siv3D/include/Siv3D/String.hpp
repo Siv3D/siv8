@@ -1965,7 +1965,7 @@ namespace s3d
 		/// @param f 比較関数
 		/// @return *this
 		template <class Fty>
-		String& sort_by(Fty f) & noexcept requires std::is_invocable_r_v<bool, Fty, value_type, value_type>;
+		String& sort_by(Fty f) & noexcept requires std::predicate<Fty, const value_type&, const value_type&>;
 		
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -1973,7 +1973,7 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String sort_by(Fty f) && noexcept requires std::is_invocable_r_v<bool, Fty, value_type, value_type>;
+		String sort_by(Fty f) && noexcept requires std::predicate<Fty, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -1981,7 +1981,7 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String sorted_by(Fty f) const& requires std::is_invocable_r_v<bool, Fty, value_type, value_type>;
+		String sorted_by(Fty f) const& requires std::predicate<Fty, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -1989,7 +1989,7 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String sorted_by(Fty f) && noexcept requires std::is_invocable_r_v<bool, Fty, value_type, value_type>;
+		String sorted_by(Fty f) && noexcept requires std::predicate<Fty, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

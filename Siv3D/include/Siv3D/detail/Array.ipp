@@ -1478,12 +1478,176 @@ namespace s3d
 		return std::move(reverse());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse_each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::reverse_each(Fty f) requires std::invocable<Fty, value_type&>
+	{
+		std::for_each(m_container.rbegin(), m_container.rend(), f);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr const Array<Type, Allocator>& Array<Type, Allocator>::reverse_each(Fty f) const requires std::invocable<Fty, const value_type&>
+	{
+		std::for_each(m_container.rbegin(), m_container.rend(), f);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate, rotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::rotate(const size_type middle)&
+	{
+		std::rotate(m_container.begin(), (m_container.begin() + middle), m_container.end());
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::rotate(const size_type middle)&&
+	{
+		return std::move(rotate(middle));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::rotated(const size_type middle) const&
+	{
+		Array result(Arg::reserve = m_container.size());
+
+		result.insert(result.end(), (m_container.begin() + middle), m_container.end());
+
+		result.insert(result.end(), m_container.begin(), (m_container.begin() + middle));
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::rotated(const size_type middle)&&
+	{
+		return std::move(rotate(middle));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rsort, rsorted
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::rsort()& requires Concept::LessThanComparable<Type>
+	{
+		std::sort(m_container.begin(), m_container.end(), [](const Type& a, const Type& b) { return b < a; });
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsort() && requires Concept::LessThanComparable<Type>
+	{
+		return std::move(rsort());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsorted() const& requires Concept::LessThanComparable<Type>
+	{
+		Array result(*this);
+		result.rsort();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsorted() && requires Concept::LessThanComparable<Type>
+	{
+		return std::move(rsort());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shuffle, shuffled
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::shuffle()&
+	{
+		Shuffle(m_container.begin(), m_container.end(), GetDefaultRNG());
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffle()&&
+	{
+		return std::move(shuffle());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled() const&
+	{
+		Array result(*this);
+		result.shuffle();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled()&&
+	{
+		return std::move(shuffle());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
+	{
+		Shuffle(m_container.begin(), m_container.end(), std::forward<decltype(rbg)>(rbg));
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	{
+		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	{
+		Array result(*this);
+		result.shuffle(std::forward<decltype(rbg)>(rbg));
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	{
+		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+	}
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	slice
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::slice(const size_type index, const size_type length) const&
+	{
+		return Array((m_container.begin() + index), (m_container.begin() + index + length));
+	}
 
-
-
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::slice(const size_type index, const size_type length)&&
+	{
+		return Array(std::make_move_iterator(m_container.begin() + index), std::make_move_iterator(m_container.begin() + index + length));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1494,7 +1658,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort()& requires Concept::LessThanComparable<Type>
 	{
-		std::ranges::sort(m_container);
+		std::sort(m_container.begin(), m_container.end());
 		return *this;
 	}
 
@@ -1516,6 +1680,126 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted() && requires Concept::LessThanComparable<Type>
 	{
 		return std::move(sort());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sort_by, sorted_by
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort_by(Fty f)& requires std::predicate<Fty, const value_type&, const value_type&>
+	{
+		std::sort(m_container.begin(), m_container.end(), f);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sort_by(Fty f) && requires std::predicate<Fty, const value_type&, const value_type&>
+	{
+		return std::move(sort_by(f));
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) const& requires std::predicate<Fty, const value_type&, const value_type&>
+	{
+		Array result(*this);
+		result.sort_by(f);
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) && requires std::predicate<Fty, const value_type&, const value_type&>
+	{
+		return std::move(sort_by(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stable_partition
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr auto Array<Type, Allocator>::stable_partition(Fty f) requires std::predicate<Fty, const value_type&>
+	{
+		return std::stable_partition(m_container.begin(), m_container.end(), f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stable_sort, stable_sorted
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort()& requires Concept::LessThanComparable<Type>
+	{
+		std::stable_sort(m_container.begin(), m_container.end());
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sort() && requires Concept::LessThanComparable<Type>
+	{
+		return std::move(stable_sort());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted() const& requires Concept::LessThanComparable<Type>
+	{
+		Array result(*this);
+		result.stable_sort();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted() && requires Concept::LessThanComparable<Type>
+	{
+		return std::move(stable_sort());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stable_sort_by, stable_sorted_by
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort_by(Fty f)& requires std::predicate<Fty, const value_type&, const value_type&>
+	{
+		std::stable_sort(m_container.begin(), m_container.end(), f);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sort_by(Fty f) && requires std::predicate<Fty, const value_type&, const value_type&>
+	{
+		return std::move(stable_sort_by(f));
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) const& requires std::predicate<Fty, const value_type&, const value_type&>
+	{
+		Array result(*this);
+		result.stable_sort_by(f);
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) && requires std::predicate<Fty, const value_type&, const value_type&>
+	{
+		return std::move(stable_sort_by(f));
 	}
 
 

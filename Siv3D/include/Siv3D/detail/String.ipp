@@ -1701,21 +1701,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	String& String::sort_by(Fty f) & noexcept requires std::is_invocable_r_v<bool, Fty, value_type, value_type>
+	String& String::sort_by(Fty f) & noexcept requires std::predicate<Fty, const value_type&, const value_type&>
 	{
 		std::sort(m_string.begin(), m_string.end(), f);
 		return *this;
 	}
 
 	template <class Fty>
-	String String::sort_by(Fty f) && noexcept requires std::is_invocable_r_v<bool, Fty, value_type, value_type>
+	String String::sort_by(Fty f) && noexcept requires std::predicate<Fty, const value_type&, const value_type&>
 	{
 		std::sort(m_string.begin(), m_string.end(), f);
 		return std::move(*this);
 	}
 
 	template <class Fty>
-	String String::sorted_by(Fty f) const& requires std::is_invocable_r_v<bool, Fty, value_type, value_type>
+	String String::sorted_by(Fty f) const& requires std::predicate<Fty, const value_type&, const value_type&>
 	{
 		String result{ *this };
 		result.sort_by(f);
@@ -1723,7 +1723,7 @@ namespace s3d
 	}
 
 	template <class Fty>
-	String String::sorted_by(Fty f) && noexcept requires std::is_invocable_r_v<bool, Fty, value_type, value_type>
+	String String::sorted_by(Fty f) && noexcept requires std::predicate<Fty, const value_type&, const value_type&>
 	{
 		return std::move(sort_by(f));
 	}
