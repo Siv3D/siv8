@@ -676,6 +676,14 @@ namespace s3d
 
 		friend void Formatter(FormatData& formatData, StringView s);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	StringEquals
+		//
+		////////////////////////////////////////////////////////////////
+
+		static bool StringEquals(const char32* s1, const char32* s2, size_t length) noexcept;
+
 	private:
 
 		[[noreturn]]

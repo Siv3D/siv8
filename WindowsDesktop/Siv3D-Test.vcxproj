@@ -32,6 +32,7 @@
     <ClCompile Include="..\Test\Test_Memory.cpp" />
     <ClCompile Include="..\Test\Test_NamedParameter.cpp" />
     <ClCompile Include="..\Test\Test_Step.cpp" />
+    <ClCompile Include="..\Test\Test_String.cpp" />
     <ClCompile Include="..\Test\Test_StringView.cpp" />
     <ClCompile Include="..\Test\Test_TextReader.cpp" />
     <ClCompile Include="..\Test\Test_TupleFormatter.cpp" />

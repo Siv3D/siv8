@@ -2270,6 +2270,40 @@ namespace s3d
 			return (lhs.m_string <=> rhs);
 		}
 
+		[[nodiscard]]
+		static constexpr bool Eq(const String& lhs, const String& rhs) noexcept
+		{
+			if (std::is_constant_evaluated())
+			{
+				return (lhs.m_string == rhs.m_string);
+			}
+			else
+			{
+				return ((lhs.m_string.size() == rhs.m_string.size())
+					&& (std::memcmp(lhs.m_string.data(), rhs.m_string.data(), lhs.m_string.size() * sizeof(value_type)) == 0));
+			}
+		}
+
+		[[nodiscard]]
+		static constexpr bool Eq2(const String& lhs, const String& rhs) noexcept
+		{
+			if (std::is_constant_evaluated())
+			{
+				return (lhs.m_string == rhs.m_string);
+			}
+			else
+			{
+				const size_t length = lhs.m_string.size();
+
+				if (length != rhs.m_string.size())
+				{
+					return false;
+				}
+
+				return StringView::StringEquals(lhs.m_string.data(), rhs.m_string.data(), length);
+			}
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	swap
