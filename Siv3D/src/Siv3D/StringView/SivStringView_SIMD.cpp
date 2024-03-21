@@ -68,7 +68,7 @@ namespace s3d
 
 	bool StringView::StringEquals(const char32* s1, const char32* s2, const size_t length) noexcept
 	{
-		return (std::memcmp(s1, s2, (length * sizeof(char32))) == 0)
+		return (std::memcmp(s1, s2, (length * sizeof(char32))) == 0);
 	}
 }
 

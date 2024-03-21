@@ -682,6 +682,8 @@
 		F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A862BA018CF00222F45 /* WindowTitle.cpp */; };
 		F9528A8A2BA0251E00222F45 /* Window.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A892BA0251E00222F45 /* Window.ipp */; };
 		F9528A8C2BA0253700222F45 /* SivWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A8B2BA0253700222F45 /* SivWindow.cpp */; };
+		F9528B162BAC58A300222F45 /* Test_String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B152BAC58A300222F45 /* Test_String.cpp */; };
+		F9528B182BAC58D500222F45 /* SivStringView_SIMD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1365,6 +1367,8 @@
 		F9528A862BA018CF00222F45 /* WindowTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowTitle.cpp; sourceTree = "<group>"; };
 		F9528A892BA0251E00222F45 /* Window.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Window.ipp; sourceTree = "<group>"; };
 		F9528A8B2BA0253700222F45 /* SivWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivWindow.cpp; sourceTree = "<group>"; };
+		F9528B152BAC58A300222F45 /* Test_String.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_String.cpp; sourceTree = "<group>"; };
+		F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivStringView_SIMD.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1513,6 +1517,7 @@
 				F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */,
 				F90702C52B9DAEB900383E4D /* Test_SequenceFormatter.cpp */,
 				F90702C62B9DAEB900383E4D /* Test_Step.cpp */,
+				F9528B152BAC58A300222F45 /* Test_String.cpp */,
 				F90702C72B9DAEB900383E4D /* Test_StringView.cpp */,
 				F90702C82B9DAEB900383E4D /* Test_TextReader.cpp */,
 				F90702C92B9DAEB900383E4D /* Test_TupleFormatter.cpp */,
@@ -2752,6 +2757,7 @@
 		F9070D832B9F175E00383E4D /* StringView */ = {
 			isa = PBXGroup;
 			children = (
+				F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */,
 				F9070D822B9F175E00383E4D /* SivStringView.cpp */,
 			);
 			path = StringView;
@@ -3796,6 +3802,7 @@
 				F90702FB2B9DAEB900383E4D /* Test_Concepts.cpp in Sources */,
 				F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */,
 				F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */,
+				F9528B162BAC58A300222F45 /* Test_String.cpp in Sources */,
 				2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */,
 				F907030B2B9DAEB900383E4D /* Test_Unicode.cpp in Sources */,
 				F907030D2B9DAEB900383E4D /* Test_Version.cpp in Sources */,
@@ -3911,6 +3918,7 @@
 				F9070DB62B9F175E00383E4D /* SivColorF.cpp in Sources */,
 				F9070DC32B9F175E00383E4D /* EmptyFactory.cpp in Sources */,
 				F9070ED52B9F1C8900383E4D /* cocoa_monitor.m in Sources */,
+				F9528B182BAC58D500222F45 /* SivStringView_SIMD.cpp in Sources */,
 				F9070DDA2B9F175E00383E4D /* SivLoggerBuffer.cpp in Sources */,
 				F9070E552B9F176B00383E4D /* SivFileSystem_macOS.mm in Sources */,
 				F9070E912B9F183100383E4D /* CSystem.cpp in Sources */,
