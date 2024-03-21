@@ -2253,39 +2253,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		friend constexpr bool operator ==(const String& lhs, const String& rhs) noexcept = default;
-
-		[[nodiscard]]
-		friend constexpr auto operator <=>(const String&, const String&) noexcept = default;
-
-		[[nodiscard]]
-		friend constexpr bool operator ==(const String& lhs, const value_type* rhs) noexcept
-		{
-			return (lhs.m_string == rhs);
-		}
-
-		[[nodiscard]]
-		friend constexpr auto operator <=>(const String& lhs, const value_type* rhs) noexcept
-		{
-			return (lhs.m_string <=> rhs);
-		}
-
-		[[nodiscard]]
-		static constexpr bool Eq(const String& lhs, const String& rhs) noexcept
-		{
-			if (std::is_constant_evaluated())
-			{
-				return (lhs.m_string == rhs.m_string);
-			}
-			else
-			{
-				return ((lhs.m_string.size() == rhs.m_string.size())
-					&& (std::memcmp(lhs.m_string.data(), rhs.m_string.data(), lhs.m_string.size() * sizeof(value_type)) == 0));
-			}
-		}
-
-		[[nodiscard]]
-		static constexpr bool Eq2(const String& lhs, const String& rhs) noexcept
+		friend constexpr bool operator ==(const String& lhs, const String& rhs) noexcept
 		{
 			if (std::is_constant_evaluated())
 			{
@@ -2302,6 +2270,35 @@ namespace s3d
 
 				return StringView::StringEquals(lhs.m_string.data(), rhs.m_string.data(), length);
 			}
+		}
+
+		[[nodiscard]]
+		friend constexpr auto operator <=>(const String&, const String&) noexcept = default;
+
+		[[nodiscard]]
+		friend constexpr bool operator ==(const String& lhs, const value_type* rhs) noexcept
+		{
+			if (std::is_constant_evaluated())
+			{
+				return (lhs.m_string == rhs);
+			}
+			else
+			{
+				const size_t length = lhs.m_string.size();
+
+				if (length != std::char_traits<value_type>::length(rhs))
+				{
+					return false;
+				}
+
+				return StringView::StringEquals(lhs.m_string.data(), rhs, length);
+			}
+		}
+
+		[[nodiscard]]
+		friend constexpr auto operator <=>(const String& lhs, const value_type* rhs) noexcept
+		{
+			return (lhs.m_string <=> rhs);
 		}
 
 		////////////////////////////////////////////////////////////////
