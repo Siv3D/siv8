@@ -1231,17 +1231,15 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& ch : s) f(ch);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr String& each(Fty f) requires std::invocable<Fty, value_type&>;
+		constexpr void each(Fty f) requires std::invocable<Fty, value_type&>;
 
 		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& ch : s) f(ch);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr const String& each(Fty f) const requires std::invocable<Fty, const value_type&>;
+		constexpr void each(Fty f) const requires std::invocable<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1253,17 +1251,15 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto& ch : s) f(i++, ch);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr String& each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>;
+		constexpr void each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>;
 
 		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto ch : s) f(i++, ch);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr const String& each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>;
+		constexpr void each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1275,17 +1271,15 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto& ch : s) f(i++, ch);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr String& each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>;
+		constexpr void each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>;
 
 		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto ch : s) f(i++, ch);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr const String& each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>;
+		constexpr void each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1749,16 +1743,14 @@ namespace s3d
 		/// @brief 各要素を引数にして関数を呼び出します。順番は後ろからです。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
-		/// @return *this
 		template <class Fty>
-		constexpr String& reverse_each(Fty f) requires std::invocable<Fty, value_type&>;
+		constexpr void reverse_each(Fty f) requires std::invocable<Fty, value_type&>;
 
 		/// @brief 各要素を引数にして関数を呼び出します。順番は後ろからです。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
-		/// @return *this
 		template <class Fty>
-		constexpr const String& reverse_each(Fty f) const requires std::invocable<Fty, const value_type&>;
+		constexpr void reverse_each(Fty f) const requires std::invocable<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

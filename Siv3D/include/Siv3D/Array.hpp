@@ -12,10 +12,17 @@
 # pragma once
 # include <vector>
 # include <numeric>
+# include <future>
+# if SIV3D_PLATFORM(WINDOWS)
+#	include <execution>
+# endif
 # include "String.hpp"
 # include "Unicode.hpp"
 # include "Format.hpp"
 # include "Utility.hpp"
+# include "KahanSummation.hpp"
+# include "HashSet.hpp"
+# include "Threading.hpp"
 # include "PredefinedNamedParameter.hpp"
 
 namespace s3d
@@ -200,7 +207,7 @@ namespace s3d
 		/// @param generator ジェネレータ関数
 		template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
 		[[nodiscard]]
-		Array(size_type size, Arg::generator_<Fty> generator);
+		constexpr Array(size_type size, Arg::generator_<Fty> generator);
 
 		/// @brief インデックス指定ジェネレータ関数を使って配列を作成します。
 		/// @tparam Fty ジェネレータ関数の型
@@ -208,7 +215,7 @@ namespace s3d
 		/// @param indexedGenerator インデックス指定ジェネレータ関数
 		template <class Fty>
 		[[nodiscard]]
-		Array(size_type size, Arg::indexedGenerator_<Fty> indexedGenerator);
+		constexpr Array(size_type size, Arg::indexedGenerator_<Fty> indexedGenerator);
 
 		/// @brief 配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
@@ -922,17 +929,15 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr Array& each(Fty f) requires std::invocable<Fty, value_type&>;
+		constexpr void each(Fty f) requires std::invocable<Fty, value_type&>;
 
 		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr const Array& each(Fty f) const requires std::invocable<Fty, const value_type&>;
+		constexpr void each(Fty f) const requires std::invocable<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -944,17 +949,15 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
-		/// @return *this
 		template <class Fty>
-		Array& each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>;
+		constexpr void each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>;
 
 		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
-		/// @return *this
 		template <class Fty>
-		const Array& each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>;
+		constexpr void each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -966,17 +969,15 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto& x : xs) f(i++, x);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr Array& each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>;
+		constexpr void each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>;
 
 		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto x : xs) f(i++, x);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr const Array& each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>;
+		constexpr void each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1068,7 +1069,7 @@ namespace s3d
 		/// @return 各要素に関数を適用した戻り値からなる新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr auto map(Fty f) const requires std::invocable<Fty, value_type>;
+		constexpr auto map(Fty f) const requires std::invocable<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1316,17 +1317,15 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr Array& reverse_each(Fty f) requires std::invocable<Fty, value_type&>;
+		constexpr void reverse_each(Fty f) requires std::invocable<Fty, value_type&>;
 
 		/// @brief 末尾から順番に、全ての要素に対して関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
-		/// @return *this
 		template <class Fty>
-		constexpr const Array& reverse_each(Fty f) const requires std::invocable<Fty, const value_type&>;
+		constexpr void reverse_each(Fty f) const requires std::invocable<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1479,6 +1478,31 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	sort_and_unique, sorted_and_uniqued
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列をソートしたあとに重複する要素を削除します。
+		/// @return *this
+		constexpr Array& sort_and_unique() & noexcept;
+
+		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array sort_and_unique() && noexcept;
+
+		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array sorted_and_uniqued() const&;
+
+		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array sorted_and_uniqued() && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	sort_by, sorted_by
 		//
 		////////////////////////////////////////////////////////////////
@@ -1513,19 +1537,6 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		constexpr Array sorted_by(Fty f) && requires std::predicate<Fty, const value_type&, const value_type&>;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	stable_partition
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 相対順序を保ちながら、条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 区分化された境界を指すイテレータ
-		template <class Fty>
-		constexpr auto stable_partition(Fty f) requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1591,27 +1602,16 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	sum
+		//	stable_partition
 		//
 		////////////////////////////////////////////////////////////////
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	sumF
-		//
-		////////////////////////////////////////////////////////////////
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	take
-		//
-		////////////////////////////////////////////////////////////////
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	take_while
-		//
-		////////////////////////////////////////////////////////////////
+		/// @brief 相対順序を保ちながら、条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 区分化された境界を指すイテレータ
+		template <class Fty>
+		constexpr auto stable_partition(Fty f) requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1619,11 +1619,86 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 要素をソートせずに、重複する要素を削除します。
+		/// @return *this
+		constexpr Array& stable_unique() & noexcept;
+
+		/// @brief 要素をソートせずに、重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array stable_unique() && noexcept;
+
+		/// @brief 要素をソートせずに、重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array stable_uniqued() const;
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	sort_and_unique, sorted_and_uniqued
+		//	sum
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を `+` 演算子を用いて合計します。
+		/// @return 合計値
+		[[nodiscard]]
+		constexpr auto sum() const requires (Concept::Addable<Type> || Concept::AddAssignable<Type>);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sumF
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 浮動小数点数型の要素を、誤差が小さくなるように合計します。
+		/// @remark `sum()` よりも浮動小数点数誤差が小さくなります。
+		/// @return 合計値
+		[[nodiscard]]
+		constexpr auto sumF() const requires Concept::FloatingPoint<Type>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から指定した個数の要素からなる新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 新しい配列
+		/// @remark n が配列の要素数以上の場合、配列全体を返します。
+		/// @remark `Array(begin(), (begin() + Min(n, size())))` と同じです。
+		[[nodiscard]]
+		constexpr Array take(size_type n) const&;
+
+		/// @brief 先頭から指定した個数の要素からなる新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 新しい配列
+		/// @remark n が配列の要素数以上の場合、配列全体を返します。
+		/// @remark `Array(begin(), (begin() + Min(n, size())))` と同じです。
+		[[nodiscard]]
+		constexpr Array take(size_type n)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take_while
+		//
+		////////////////////////////////////////////////////////////////
+	
+		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array take_while(Fty f) const& requires std::predicate<Fty, const value_type&>;
+
+		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array take_while(Fty f) && requires std::predicate<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1631,11 +1706,36 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去します。
+		/// @return *this
+		constexpr Array& unique_consecutive() & noexcept;
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array unique_consecutive() && noexcept;
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array uniqued_consecutive() const&;
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array uniqued_consecutive() && noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	values_at
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素からなる新しい配列を返します。
+		/// @param indices インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array values_at(std::initializer_list<size_type> indices) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1643,11 +1743,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 
+		/// @tparam Fty 
+		/// @param f 
+		/// @return 
+		template <class Fty>
+		[[nodiscard]]
+		isize parallel_count_if(Fty f) const requires std::predicate<Fty, const value_type&>;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	parallel_each
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 
+		/// @tparam Fty 
+		/// @param f 
+		template <class Fty>
+		void parallel_each(Fty f) requires std::invocable<Fty, value_type&>;
+
+		/// @brief 
+		/// @tparam Fty 
+		/// @param f 
+		template <class Fty>
+		void parallel_each(Fty f) const requires std::invocable<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1655,114 +1775,27 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 
+		/// @tparam Fty 
+		/// @param f 
+		/// @return 
+		template <class Fty>
+		[[nodiscard]]
+		auto parallel_map(Fty f) const requires std::invocable<Fty, const value_type&>;
 
-	//	/// @brief 要素を `+` 演算子を用いて合計します。
-	//	/// @return 合計値
-	//	[[nodiscard]]
-	//	auto sum() const requires Concept::Addable<Type>;
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
 
-	//	/// @brief 浮動小数点数型の要素を、誤差が小さくなるように合計します。
-	//	/// @remark `sum()` よりも浮動小数点数誤差が小さくなります。
-	//	/// @return 合計値
-	//	[[nodiscard]]
-	//	auto sumF() const requires Concept::FloatingPoint<Type>;
-
-	//	/// @brief 
-	//	/// @param n 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array take(size_t n) const;
-
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @param f 
-	//	/// @return 
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	Array take_while(Fty f) const;
-
-	//	/// @brief 
-	//	/// @return 
-	//	Array& stable_unique();
-
-	//	/// @brief 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array stable_uniqued() const&;
-
-	//	/// @brief 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array stable_uniqued() &&;
-
-	//	/// @brief 
-	//	/// @return 
-	//	Array& sort_and_unique();
-
-	//	/// @brief 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array sorted_and_uniqued() const&;
-
-	//	/// @brief 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array sorted_and_uniqued()&&;
-
-	//	/// @brief 
-	//	/// @return 
-	//	Array& unique_consecutive();
-
-	//	/// @brief 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array uniqued_consecutive() const&;
-
-	//	/// @brief 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array uniqued_consecutive()&&;
-
-	//	/// @brief 
-	//	/// @param indices 
-	//	/// @return 
-	//	[[nodiscard]]
-	//	Array values_at(std::initializer_list<size_t> indices) const;
-
-	//	/// @brief 各要素に関数を適用します。
-	//	/// @tparam Fty 適用する関数の型
-	//	/// @param f 適用する関数
-	//	/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
-	//	/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
-	//	auto operator >>(Fty f) const;
-
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @param f 
-	//	/// @return 
-	//	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
-	//	[[nodiscard]]
-	//	size_t parallel_count_if(Fty f) const;
-
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @param f 
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type&>>* = nullptr>
-	//	void parallel_each(Fty f);
-
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @param f 
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
-	//	void parallel_each(Fty f) const;
-
-	//	/// @brief 
-	//	/// @tparam Fty 
-	//	/// @param f 
-	//	/// @return 
-	//	template <class Fty, std::enable_if_t<std::is_invocable_v<Fty, Type>>* = nullptr>
-	//	auto parallel_map(Fty f) const;
+		/// @brief 各要素に関数を適用します。
+		/// @tparam Fty 適用する関数の型
+		/// @param f 適用する関数
+		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
+		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
+		template <class Fty>
+		constexpr auto operator >>(Fty f) const requires std::invocable<Fty, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1785,6 +1818,12 @@ namespace s3d
 			return output << Unicode::ToUTF32(Format(value));
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Generate
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 
 		/// @tparam Fty 
 		/// @param size 
@@ -1792,7 +1831,13 @@ namespace s3d
 		/// @return 
 		template <class Fty> requires (std::invocable<Fty>&& std::convertible_to<std::invoke_result_t<Fty>, Type>)
 		[[nodiscard]]
-		static Array Generate(size_type size, Fty generator);
+		static constexpr Array Generate(size_type size, Fty generator);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IndexedGenerate
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 
 		/// @tparam Fty 
@@ -1801,7 +1846,7 @@ namespace s3d
 		/// @return 
 		template <class Fty>
 		[[nodiscard]]
-		static Array IndexedGenerate(size_type size, Fty indexedGenerator);
+		static constexpr Array IndexedGenerate(size_type size, Fty indexedGenerator);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1835,6 +1880,9 @@ namespace s3d
 	private:
 
 		container_type m_container;
+
+		[[noreturn]]
+		static void ThrowValuesAtOutOfRange();
 	};
 
 	////////////////////////////////////////////////////////////////

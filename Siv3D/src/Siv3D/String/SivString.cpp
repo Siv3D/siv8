@@ -28,12 +28,8 @@ namespace s3d
 			return (ch <= 0x20) || ((ch - 0x7F) <= (0x9F - 0x7F));
 		}
 
-		class StableUniqueHelper
+		class StringStableUniqueHelper
 		{
-		private:
-
-			HashSet<char32> m_set;
-
 		public:
 
 			[[nodiscard]]
@@ -41,6 +37,10 @@ namespace s3d
 			{
 				return m_set.insert(value).second;
 			}
+
+		private:
+
+			HashSet<char32> m_set;
 		};
 	}
 
@@ -1009,7 +1009,7 @@ namespace s3d
 	{
 		String result;
 
-		detail::StableUniqueHelper pred;
+		detail::StringStableUniqueHelper pred;
 
 		std::copy_if(m_string.begin(), m_string.end(), std::back_inserter(result), std::ref(pred));
 
@@ -1201,7 +1201,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	private functions
+	//	(private functions)
 	//
 	////////////////////////////////////////////////////////////////
 

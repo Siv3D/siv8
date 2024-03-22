@@ -1369,17 +1369,15 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr String& String::each(Fty f) requires std::invocable<Fty, value_type&>
+	constexpr void String::each(Fty f) requires std::invocable<Fty, value_type&>
 	{
 		std::for_each(m_string.begin(), m_string.end(), f);
-		return *this;
 	}
 
 	template <class Fty>
-	constexpr const String& String::each(Fty f) const requires std::invocable<Fty, const value_type&>
+	constexpr void String::each(Fty f) const requires std::invocable<Fty, const value_type&>
 	{
 		std::for_each(m_string.begin(), m_string.end(), f);
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1389,25 +1387,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr String& String::each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>
+	constexpr void String::each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>
 	{
 		for (size_t i = 0; auto& ch : m_string)
 		{
 			f(i++, ch);
 		}
-
-		return *this;
 	}
 
 	template <class Fty>
-	constexpr const String& String::each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>
+	constexpr void String::each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>
 	{
 		for (size_t i = 0; auto ch : m_string)
 		{
 			f(i++, ch);
 		}
-
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1417,25 +1411,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr String& String::each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>
+	constexpr void String::each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>
 	{
 		for (isize i = 0; auto& ch : m_string)
 		{
 			f(i++, ch);
 		}
-
-		return *this;
 	}
 
 	template <class Fty>
-	constexpr const String& String::each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>
+	constexpr void String::each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>
 	{
 		for (isize i = 0; auto ch : m_string)
 		{
 			f(i++, ch);
 		}
-
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1637,7 +1627,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr String& String::reverse_each(Fty f) requires std::invocable<Fty, value_type&>
+	constexpr void String::reverse_each(Fty f) requires std::invocable<Fty, value_type&>
 	{
 		auto it = m_string.rbegin();
 		const auto itEnd = m_string.rend();
@@ -1646,12 +1636,10 @@ namespace s3d
 		{
 			f(*it++);
 		}
-
-		return *this;
 	}
 
 	template <class Fty>
-	constexpr const String& String::reverse_each(Fty f) const requires std::invocable<Fty, const value_type&>
+	constexpr void String::reverse_each(Fty f) const requires std::invocable<Fty, const value_type&>
 	{
 		auto it = m_string.rbegin();
 		const auto itEnd = m_string.rend();
@@ -1660,8 +1648,6 @@ namespace s3d
 		{
 			f(*it++);
 		}
-
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
