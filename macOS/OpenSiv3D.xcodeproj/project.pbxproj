@@ -684,6 +684,8 @@
 		F9528A8C2BA0253700222F45 /* SivWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A8B2BA0253700222F45 /* SivWindow.cpp */; };
 		F9528B162BAC58A300222F45 /* Test_String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B152BAC58A300222F45 /* Test_String.cpp */; };
 		F9528B182BAC58D500222F45 /* SivStringView_SIMD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */; };
+		F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B192BADCC7C00222F45 /* Grid.hpp */; };
+		F9528B1C2BADCC9900222F45 /* Grid.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1B2BADCC9900222F45 /* Grid.ipp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1369,6 +1371,8 @@
 		F9528A8B2BA0253700222F45 /* SivWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivWindow.cpp; sourceTree = "<group>"; };
 		F9528B152BAC58A300222F45 /* Test_String.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_String.cpp; sourceTree = "<group>"; };
 		F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivStringView_SIMD.cpp; sourceTree = "<group>"; };
+		F9528B192BADCC7C00222F45 /* Grid.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.hpp; sourceTree = "<group>"; };
+		F9528B1B2BADCC9900222F45 /* Grid.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.ipp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2143,6 +2147,7 @@
 				F9070B7D2B9F175000383E4D /* FormatData.ipp */,
 				F9070B7E2B9F175000383E4D /* FormatLiteral.ipp */,
 				F9070B7F2B9F175000383E4D /* FormatUtility.ipp */,
+				F9528B1B2BADCC9900222F45 /* Grid.ipp */,
 				F9070B802B9F175000383E4D /* HardwareRNG.ipp */,
 				F9070B812B9F175000383E4D /* Hash.ipp */,
 				F9070B822B9F175000383E4D /* HSV.ipp */,
@@ -2220,9 +2225,6 @@
 		F9070C3E2B9F175000383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
-				F9070BB02B9F175000383E4D /* detail */,
-				F9070BB32B9F175000383E4D /* Error */,
-				F9070BB92B9F175000383E4D /* Windows */,
 				F9070BBA2B9F175000383E4D /* _TEMPLATE.hpp */,
 				F9070BBB2B9F175000383E4D /* 2DShapes.hpp */,
 				F9070BBC2B9F175000383E4D /* 2DShapesFwd.hpp */,
@@ -2274,6 +2276,7 @@
 				F9070BEA2B9F175000383E4D /* Formatter.hpp */,
 				F9070BEB2B9F175000383E4D /* FormatUtility.hpp */,
 				F9070BEC2B9F175000383E4D /* FunctionRef.hpp */,
+				F9528B192BADCC7C00222F45 /* Grid.hpp */,
 				F9070BED2B9F175000383E4D /* HardwareRNG.hpp */,
 				F9070BEE2B9F175000383E4D /* Hash.hpp */,
 				F9070BEF2B9F175000383E4D /* HashSet.hpp */,
@@ -2355,6 +2358,9 @@
 				F9070C3B2B9F175000383E4D /* WindowState.hpp */,
 				F9070C3C2B9F175000383E4D /* WindowStyle.hpp */,
 				F9070C3D2B9F175000383E4D /* YesNo.hpp */,
+				F9070BB02B9F175000383E4D /* detail */,
+				F9070BB32B9F175000383E4D /* Error */,
+				F9070BB92B9F175000383E4D /* Windows */,
 			);
 			path = Siv3D;
 			sourceTree = "<group>";
@@ -3366,6 +3372,7 @@
 				F90707312B9DAEC900383E4D /* subs.h in Headers */,
 				F90706F52B9DAEC900383E4D /* kshift.h in Headers */,
 				F90706C82B9DAEC900383E4D /* abs.h in Headers */,
+				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
 				F90706892B9DAEC900383E4D /* fast_type_id.h in Headers */,
 				F9070B042B9DEB5900383E4D /* miniutf.hpp in Headers */,
 				F9070CF82B9F175100383E4D /* SequenceFormatter.hpp in Headers */,
@@ -3540,6 +3547,7 @@
 				F9070CC42B9F175000383E4D /* FormatUtility.hpp in Headers */,
 				F90707342B9DAEC900383E4D /* testn.h in Headers */,
 				F9070CA42B9F175000383E4D /* CommonFloat.hpp in Headers */,
+				F9528B1C2BADCC9900222F45 /* Grid.ipp in Headers */,
 				F9070CB42B9F175000383E4D /* Duration.hpp in Headers */,
 				F907074F2B9DAEC900383E4D /* simde-align.h in Headers */,
 				F9070C5A2B9F175000383E4D /* FormatLiteral.ipp in Headers */,
