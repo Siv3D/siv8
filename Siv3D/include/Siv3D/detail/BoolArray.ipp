@@ -13,12 +13,145 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		struct BoolCharTraits
+		{
+			using char_type	= bool;
+			using int_type	= signed char;
+			using off_type	= size_t;
+			using pos_type	= size_t;
+
+			static constexpr void assign(char_type& c1, const char_type& c2) noexcept
+			{
+				c1 = c2;
+			}
+
+			static constexpr char_type* assign(char_type* s, size_t n, char_type a) noexcept
+			{
+				for (size_t i = 0; i < n; ++i)
+				{
+					s[i] = a;
+				}
+
+				return s;
+			}
+
+			static constexpr bool eq(const char_type& c1, const char_type& c2) noexcept
+			{
+				return (c1 == c2);
+			}
+
+			static constexpr bool lt(const char_type& c1, const char_type& c2) noexcept
+			{
+				return (c1 < c2);
+			}
+
+			static constexpr char_type* move(char_type* dst, const char_type* src, size_t n) noexcept
+			{
+				if (dst < src)
+				{
+					for (size_t i = 0; i < n; ++i)
+					{
+						dst[i] = src[i];
+					}
+				}
+				else
+				{
+					for (size_t i = n; i > 0; --i)
+					{
+						dst[i - 1] = src[i - 1];
+					}
+				}
+
+				return dst;
+			}
+
+			static constexpr char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
+			{
+				for (size_t i = 0; i < n; ++i)
+				{
+					dst[i] = src[i];
+				}
+
+				return dst;
+			}
+
+			static constexpr int compare(const char_type* s1, const char_type* s2, size_t n) noexcept
+			{
+				for (size_t i = 0; i < n; ++i)
+				{
+					if (s1[i] < s2[i])
+					{
+						return -1;
+					}
+					else if (s1[i] > s2[i])
+					{
+						return 1;
+					}
+				}
+
+				return 0;
+			}
+
+			static constexpr size_t length(const char_type* s) noexcept
+			{
+				size_t len = 0;
+
+				while (s[len])
+				{
+					++len;
+				}
+
+				return len;
+			}
+
+			static constexpr const char_type* find(const char_type* s, size_t n, const char_type& a) noexcept
+			{
+				for (size_t i = 0; i < n; ++i)
+				{
+					if (s[i] == a)
+					{
+						return (s + i);
+					}
+				}
+
+				return nullptr;
+			}
+
+			static constexpr char_type to_char_type(const int_type& c) noexcept
+			{
+				return static_cast<char_type>(c);
+			}
+
+			static constexpr int_type to_int_type(const char_type& c) noexcept
+			{
+				return static_cast<int_type>(c);
+			}
+
+			static constexpr bool eq_int_type(const int_type& c1, const int_type& c2) noexcept
+			{
+				return (c1 == c2);
+			}
+
+			static constexpr int_type eof() noexcept
+			{
+				return static_cast<int_type>(-1);
+			}
+
+			static constexpr int_type not_eof(const int_type& c) noexcept
+			{
+				return ((c == eof()) ? 0 : c);
+			}
+		};
+	}
+
 	template <class Allocator>
 	class Array<bool, Allocator>
 	{
 	public:
 
-		using container_type			= std::basic_string<bool, std::char_traits<bool>, Allocator>;
+		using container_type			= std::basic_string<bool, detail::BoolCharTraits, Allocator>;
 
 		/// @brief 配列の要素の型
 		using value_type				= typename container_type::value_type;
@@ -108,7 +241,7 @@ namespace s3d
 		/// @param alloc アロケータ
 		[[nodiscard]]
 		explicit constexpr Array(size_type count, const Allocator& alloc = Allocator{})
-			: m_container(count, alloc) {}
+			: m_container(count, false, alloc) {}
 
 		/// @brief イテレータが指す範囲の要素から配列を作成します。
 		/// @tparam Iterator イテレータ
@@ -1011,19 +1144,1518 @@ namespace s3d
 			return *this;
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	all
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 全ての要素が条件を満たすかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 全ての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty, const value_type&>
+		{
+			return std::all_of(m_container.begin(), m_container.end(), f);
+		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	any
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty, const value_type&>
+		{
+			return std::any_of(m_container.begin(), m_container.end(), f);
+		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	append
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の末尾に別の配列を追加します。
+		/// @param other 追加する配列
+		/// @return *this
+		constexpr Array& append(const Array& other)
+		{
+			m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
+			return *this;
+		}
 
+		/// @brief 配列の末尾に別の範囲の要素を追加します。
+		/// @tparam Iterator イテレータ
+		/// @param first 範囲の開始位置を指すイテレータ
+		/// @param last 範囲の終端位置を指すイテレータ
+		/// @return *this
+		template <class Iterator>
+		constexpr Array& append(Iterator first, Iterator last)
+		{
+			m_container.insert(m_container.end(), first, last);
+			return *this;
+		}
 
+		/// @brief 配列の末尾にリストの要素を追加します。
+		/// @param list リスト
+		/// @return *this
+		constexpr Array& append(std::initializer_list<value_type> list)
+		{
+			m_container.insert(m_container.end(), list);
+			return *this;
+		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	choice
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の要素を 1 つランダムに返します。
+		/// @return 配列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice()
+		{
+			return choice(GetDefaultRNG());
+		}
 
+		/// @brief 配列の要素を 1 つランダムに返します。
+		/// @return 配列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice() const
+		{
+			return choice(GetDefaultRNG());
+		}
 
+		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 配列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg)
+		{
+			const size_t size = m_container.size();
 
+			if (size == 0)
+			{
+				throw std::out_of_range{ "Array::choice(): Array is empty" };
+			}
 
+			return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		}
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 配列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const
+		{
+			const size_t size = m_container.size();
+
+			if (size == 0)
+			{
+				throw std::out_of_range{ "Array::choice(): Array is empty" };
+			}
+
+			return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		}
+
+		/// @brief 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @return ランダムに選ばれた要素の配列
+		[[nodiscard]]
+		Array choice(Concept::Integral auto n) const
+		{
+			return choice(n, GetDefaultRNG());
+		}
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @param rbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素の配列
+		[[nodiscard]]
+		Array choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const
+		{
+			Array result(Arg::reserve = Min<size_t>(n, m_container.size()));
+
+			std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
+
+			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	chunk
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した個数の要素を持つ配列のグループに分割します。最後のグループの要素数は n 個未満になることがあります。
+		/// @param n 1 つのグループが持つ要素数
+		/// @return 分割されたグループ
+		[[nodiscard]]
+		constexpr Array<Array<value_type>> chunk(size_type n) const
+		{
+			Array<Array<value_type>> result;
+
+			if (n == 0)
+			{
+				return result;
+			}
+
+			for (size_t i = 0; i < (size() + n - 1) / n; ++i)
+			{
+				result.push_back(slice((i * n), n));
+			}
+
+			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素があるかを返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool contains(const value_type& value) const
+		{
+			return (std::find(m_container.begin(), m_container.end(), value) != m_container.end());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @remark `.any(f)` と同じです。
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		constexpr bool contains_if(Fty f) const requires std::predicate<Fty, const value_type&>
+		{
+			return std::any_of(m_container.begin(), m_container.end(), f);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	count
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素の個数を返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素の個数
+		[[nodiscard]]
+		constexpr isize count(const value_type& value) const
+		{
+			return std::count(m_container.begin(), m_container.end(), value);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	count_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素の個数を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素の個数
+		template <class Fty>
+		[[nodiscard]]
+		constexpr isize count_if(Fty f) const requires std::predicate<Fty, const value_type&>
+		{
+			return std::count_if(m_container.begin(), m_container.end(), f);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (auto& x : xs) f(x);` と同じです。
+		template <class Fty>
+		constexpr void each(Fty f) requires std::invocable<Fty, value_type&>
+		{
+			std::for_each(m_container.begin(), m_container.end(), f);
+		}
+
+		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (const auto& x : xs) f(x);` と同じです。
+		template <class Fty>
+		constexpr void each(Fty f) const requires std::invocable<Fty, const value_type&>
+		{
+			std::for_each(m_container.begin(), m_container.end(), f);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_index
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
+		template <class Fty>
+		constexpr void each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>
+		{
+			for (size_t i = 0; auto & elem : m_container)
+			{
+				f(i++, elem);
+			}
+		}
+
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
+		template <class Fty>
+		constexpr void each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>
+		{
+			for (size_t i = 0; const auto & elem : m_container)
+			{
+				f(i++, elem);
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_sindex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (isize i = 0; auto& x : xs) f(i++, x);` と同じです。
+		template <class Fty>
+		constexpr void each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>
+		{
+			for (isize i = 0; auto & elem : m_container)
+			{
+				f(i++, elem);
+			}
+		}
+
+		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (isize i = 0; auto x : xs) f(i++, x);` と同じです。
+		template <class Fty>
+		constexpr void each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>
+		{
+			for (isize i = 0; const auto & elem : m_container)
+			{
+				f(i++, elem);
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fetch
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を返します。インデックスが範囲外の場合デフォルト値を返します。
+		/// @param index インデックス
+		/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
+		/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue
+		template <class U>
+		[[nodiscard]]
+		constexpr value_type fetch(size_type index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
+		{
+			if (m_container.size() <= index)
+			{
+				return value_type(std::forward<U>(defaultValue));
+			}
+
+			return m_container[index];
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fill
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値を全ての要素に代入します。
+		/// @param value 代入する値
+		/// @return *this
+		constexpr Array& fill(const value_type& value)
+		{
+			std::fill(m_container.begin(), m_container.end(), value);
+			return *this;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	filter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素だけを集めた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @remark 結果において、要素の前後関係は維持されます。
+		/// @return 指定した条件を満たす要素を集めた新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array filter(Fty f) const requires std::predicate<Fty, const value_type&>
+		{
+			Array result;
+
+			for (const auto& value : m_container)
+			{
+				if (f(value))
+				{
+					result.push_back(value);
+				}
+			}
+
+			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	in_groups
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を指定したグループ数に分割します。
+		/// @param group グループ数
+		/// @return 分割したグループ
+		[[nodiscard]]
+		constexpr Array<Array<value_type>> in_groups(size_type group) const
+		{
+			Array<Array<value_type>> result;
+
+			if (group == 0)
+			{
+				return result;
+			}
+
+			const size_t div = (m_container.size() / group);
+			const size_t mod = (m_container.size() % group);
+			size_t index = 0;
+
+			for (size_t i = 0; i < group; ++i)
+			{
+				const size_t length = (div + ((0 < mod) && (i < mod)));
+
+				result.push_back(slice(index, length));
+
+				index += length;
+			}
+
+			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isSorted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素が昇順にソートされているかを返します。
+		/// @return 配列の要素が昇順にソートされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isSorted() const
+		{
+			return std::is_sorted(m_container.begin(), m_container.end());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	join
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素から文字列を生成します。
+		/// @param sep 要素の間に挿入する文字列
+		/// @param begin 先頭に挿入する文字列
+		/// @param end 末尾に挿入する文字列
+		/// @return 生成された文字列
+		[[nodiscard]]
+		constexpr String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const
+		{
+			String result;
+
+			result.append(begin);
+
+			bool isFirst = true;
+
+			for (const auto& value : m_container)
+			{
+				if (isFirst)
+				{
+					isFirst = false;
+				}
+				else
+				{
+					result.append(sep);
+				}
+
+				result.append(Format(value));
+			}
+
+			result.append(end);
+
+			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	map
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用した戻り値からなる新しい配列を返します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @return 各要素に関数を適用した戻り値からなる新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr auto map(Fty f) const requires std::invocable<Fty, const value_type&>
+		{
+			using result_value_type = std::decay_t<std::invoke_result_t<Fty, value_type>>;
+
+			Array<result_value_type> result;
+
+			result.reserve(m_container.size());
+
+			for (const auto& value : m_container)
+			{
+				result.push_back(f(value));
+			}
+
+			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	none
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素が存在しないかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool none(Fty f = Identity) const requires std::predicate<Fty, const value_type&>
+		{
+			return std::none_of(m_container.begin(), m_container.end(), f);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	partition
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 区分化された境界を指すイテレータ
+		template <class Fty>
+		constexpr auto partition(Fty f) requires std::predicate<Fty, const value_type&>
+		{
+			return std::partition(m_container.begin(), m_container.end(), f);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reduce
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素を左から順に関数に適用していき、1 つの値にまとめます。
+		/// @tparam Fty 関数の型
+		/// @tparam R 結果の型
+		/// @param f 関数
+		/// @param init 初期値
+		/// @return まとめられた値
+		template <class Fty, class R>
+		constexpr auto reduce(Fty f, R init) const
+		{
+			return std::reduce(m_container.begin(), m_container.end(), init, f);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	remove, removed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい全ての要素を削除します。
+		/// @param value 削除する値
+		/// @return *this
+		constexpr Array& remove(const value_type& value)&
+		{
+			m_container.erase(std::remove(m_container.begin(), m_container.end(), value), m_container.end());
+			return *this;
+		}
+
+		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array remove(const value_type& value)&&
+		{
+			return std::move(remove(value));
+		}
+
+		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed(const value_type& value) const&
+		{
+			const isize newSize = std::count(m_container.begin(), m_container.end(), (not value));
+			
+			return Array(newSize, (not value));
+		}
+
+		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed(const value_type& value)&&
+		{
+			return std::move(remove(value));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	remove_at, removed_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除します。
+		/// @param index インデックス
+		/// @return *this
+		constexpr Array& remove_at(size_type index)&
+		{
+			if (m_container.size() <= index)
+			{
+				throw std::out_of_range{ "Array::remove_at(): index out of range" };
+			}
+
+			erase(m_container.begin() + index);
+
+			return *this;
+		}
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array remove_at(size_type index)&&
+		{
+			return std::move(remove_at(index));
+		}
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed_at(size_type index) const&
+		{
+			if (m_container.size() <= index)
+			{
+				throw std::out_of_range{ "Array::removed_at(): index out of range" };
+			}
+
+			Array result(Arg::reserve = m_container.size() - 1);
+			result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
+			result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
+
+			return result;
+		}
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array removed_at(size_type index)&&
+		{
+			return std::move(remove_at(index));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	remove_if, removed_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素を配列から削除します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return *this
+		template <class Fty>
+		constexpr Array& remove_if(Fty f)& requires std::predicate<Fty, const value_type&>
+		{
+			erase(std::remove_if(m_container.begin(), m_container.end(), f), m_container.end());
+			return *this;
+		}
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array remove_if(Fty f) && requires std::predicate<Fty, const value_type&>
+		{
+			return std::move(remove_if(f));
+		}
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array removed_if(Fty f) const& requires std::predicate<Fty, const value_type&>
+		{
+			Array result;
+
+			for (const auto& v : m_container)
+			{
+				if (not f(v))
+				{
+					result.push_back(v);
+				}
+			}
+
+			return result;
+		}
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array removed_if(Fty f) && requires std::predicate<Fty, const value_type&>
+		{
+			return std::move(remove_if(f));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace, replaced
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えます。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return *this
+		constexpr Array& replace(const value_type& oldValue, const value_type& newValue)&
+		{
+			if (oldValue == newValue)
+			{
+				return *this;
+			}
+			else
+			{
+				std::fill(m_container.begin(), m_container.end(), newValue);
+				return *this;
+			}
+		}
+
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array replace(const value_type& oldValue, const value_type& newValue)&&
+		{
+			return std::move(replace(oldValue, newValue));
+		}
+
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array replaced(const value_type& oldValue, const value_type& newValue) const&
+		{
+			if (oldValue == newValue)
+			{
+				return *this;
+			}
+			else
+			{
+				return Array(m_container.size(), newValue);
+			}
+		}
+
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array replaced(const value_type& oldValue, const value_type& newValue)&&
+		{
+			return std::move(replace(oldValue, newValue));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace_if, replaced_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return *this
+		template <class Fty>
+		constexpr Array& replace_if(Fty f, const value_type& newValue)& requires std::predicate<Fty, const value_type&>
+		{
+			std::replace_if(m_container.begin(), m_container.end(), f, newValue);
+			return *this;
+		}
+
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array replace_if(Fty f, const value_type& newValue) && requires std::predicate<Fty, const value_type&>
+		{
+			return std::move(replace_if(f, newValue));
+		}
+
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty, const value_type&>
+		{
+			Array result(Arg::reserve = m_container.size());
+
+			for (const auto& v : m_container)
+			{
+				result.push_back(f(v) ? newValue : v);
+			}
+
+			return result;
+		}
+
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array replaced_if(Fty f, const value_type& newValue) && requires std::predicate<Fty, const value_type&>
+		{
+			return std::move(replace_if(f, newValue));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse, reversed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素を逆順に並び替えます。
+		/// @return *this
+		constexpr Array& reverse()&
+		{
+			std::reverse(m_container.begin(), m_container.end());
+			return *this;
+		}
+
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array reverse()&&
+		{
+			return std::move(reverse());
+		}
+
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array reversed() const&
+		{
+			return Array(m_container.rbegin(), m_container.rend());
+		}
+
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array reversed()&&
+		{
+			return std::move(reverse());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から順番に、全ての要素に対して関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (auto& x : xs) f(x);` と同じです。
+		template <class Fty>
+		constexpr void reverse_each(Fty f) requires std::invocable<Fty, value_type&>
+		{
+			std::for_each(m_container.rbegin(), m_container.rend(), f);
+		}
+
+		/// @brief 末尾から順番に、全ての要素に対して関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (const auto& x : xs) f(x);` と同じです。
+		template <class Fty>
+		constexpr void reverse_each(Fty f) const requires std::invocable<Fty, const value_type&>
+		{
+			std::for_each(m_container.rbegin(), m_container.rend(), f);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotate, rotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を境に配列の前半と後半を入れ替えます。
+		/// @param middle 境の位置
+		/// @return *this
+		constexpr Array& rotate(size_type middle)&
+		{
+			std::rotate(m_container.begin(), (m_container.begin() + middle), m_container.end());
+			return *this;
+		}
+
+		/// @brief 指定した位置を境に配列の前半と後半を入れ替えた新しい配列を返します。
+		/// @param middle 境の位置
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array rotate(size_type middle)&&
+		{
+			return std::move(rotate(middle));
+		}
+
+		/// @brief 指定した位置を境に配列の前半と後半を入れ替えた新しい配列を返します。
+		/// @param middle 境の位置
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array rotated(size_type middle) const&
+		{
+			Array result(Arg::reserve = m_container.size());
+
+			result.insert(result.end(), (m_container.begin() + middle), m_container.end());
+
+			result.insert(result.end(), m_container.begin(), (m_container.begin() + middle));
+
+			return result;
+		}
+
+		/// @brief 指定した位置を境に配列の前半と後半を入れ替えた新しい配列を返します。
+		/// @param middle 境の位置
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array rotated(size_type middle)&&
+		{
+			return std::move(rotate(middle));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rsort, rsorted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を降順に並び替えます。
+		/// @return *this
+		constexpr Array& rsort()&
+		{
+			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
+
+			std::fill(m_container.begin(), (m_container.begin() + trueCount), true);
+			std::fill((m_container.begin() + trueCount), m_container.end(), false);
+
+			return *this;
+		}
+
+		/// @brief 要素を降順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array rsort() &&
+		{
+			return std::move(rsort());
+		}
+
+		/// @brief 要素を降順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array rsorted() const&
+		{
+			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
+
+			Array result(m_container.size(), false);
+			std::fill(result.begin(), (result.begin() + trueCount), true);
+
+			return result;
+		}
+
+		/// @brief 要素を降順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array rsorted() &&
+		{
+			return std::move(rsort());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	shuffle, shuffled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素の並び順をランダムにシャッフルします。
+		/// @return *this
+		constexpr Array& shuffle()&
+		{
+			Shuffle(m_container.begin(), m_container.end(), GetDefaultRNG());
+			return *this;
+		}
+
+		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array shuffle()&&
+		{
+			return std::move(shuffle());
+		}
+
+		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array shuffled() const&
+		{
+			Array result(*this);
+			result.shuffle();
+			return result;
+		}
+
+		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array shuffled()&&
+		{
+			return std::move(shuffle());
+		}
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルします。
+		/// @param rbg 使用する乱数エンジン
+		/// @return *this
+		constexpr Array& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
+		{
+			Shuffle(m_container.begin(), m_container.end(), std::forward<decltype(rbg)>(rbg));
+			return *this;
+		}
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&
+		{
+			return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+		}
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+		{
+			Array result(*this);
+			result.shuffle(std::forward<decltype(rbg)>(rbg));
+			return result;
+		}
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&
+		{
+			return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	slice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した範囲の要素からなる新しい配列を返します。
+		/// @param index インデックス
+		/// @param length 長さ
+		/// @return 新しい配列
+		/// @remark `Array((v.begin() + index), (v.begin() + index + length))` と同じです。
+		[[nodiscard]]
+		constexpr Array slice(size_type index, size_type length) const
+		{
+			return Array((m_container.begin() + index), (m_container.begin() + index + length));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sort, sorted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を昇順に並び替えます。
+		/// @return *this
+		constexpr Array& sort()&
+		{
+			const isize falseCount = std::count(m_container.begin(), m_container.end(), false);
+
+			std::fill(m_container.begin(), (m_container.begin() + falseCount), false);
+			std::fill((m_container.begin() + falseCount), m_container.end(), true);
+
+			return *this;
+		}
+
+		/// @brief 要素を昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array sort() &&
+		{
+			return std::move(sort());
+		}
+
+		/// @brief 要素を昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array sorted() const&
+		{
+			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
+
+			Array result(m_container.size(), true);
+			std::fill(result.begin(), (result.begin() + trueCount), false);
+
+			return result;
+		}
+
+		/// @brief 要素を昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array sorted() &&
+		{
+			return std::move(sort());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sort_and_unique, sorted_and_uniqued
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列をソートしたあとに重複する要素を削除します。
+		/// @return *this
+		constexpr Array& sort_and_unique() & noexcept
+		{
+			const bool hasTrue = (std::find(m_container.begin(), m_container.end(), true) != m_container.end());
+			const bool hasFalse = (std::find(m_container.begin(), m_container.end(), false) != m_container.end());
+
+			if (hasTrue && hasFalse)
+			{
+				m_container = { false, true };
+			}
+			else if (hasTrue)
+			{
+				m_container = { true };
+			}
+			else if (hasFalse)
+			{
+				m_container = { false };
+			}
+
+			return *this;
+		}
+
+		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array sort_and_unique() && noexcept
+		{
+			return std::move(sort_and_unique());
+		}
+
+		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array sorted_and_uniqued() const&
+		{
+			const bool hasTrue = (std::find(m_container.begin(), m_container.end(), true) != m_container.end());
+			const bool hasFalse = (std::find(m_container.begin(), m_container.end(), false) != m_container.end());
+
+			if (hasTrue && hasFalse)
+			{
+				return{ false, true };
+			}
+			else if (hasTrue)
+			{
+				return{ true };
+			}
+			else if (hasFalse)
+			{
+				return{ false };
+			}
+
+			return{};
+		}
+
+		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array sorted_and_uniqued() && noexcept
+		{
+			return std::move(sort_and_unique());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stable_sort, stable_sorted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えます。
+		/// @return *this
+		constexpr Array& stable_sort()&
+		{
+			return sort();
+		}
+
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array stable_sort()&&
+		{
+			return std::move(sort());
+		}
+
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array stable_sorted() const&
+		{
+			return sorted();
+		}
+
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array stable_sorted() &&
+		{
+			return std::move(sort());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stable_partition
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 相対順序を保ちながら、条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 区分化された境界を指すイテレータ
+		template <class Fty>
+		constexpr auto stable_partition(Fty f) requires std::predicate<Fty, const value_type&>
+		{
+			return partition(f);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stable_unique, stable_uniqued
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素をソートせずに、重複する要素を削除します。
+		/// @return *this
+		constexpr Array& stable_unique() & noexcept
+		{
+			const auto itTrue = std::find(m_container.begin(), m_container.end(), true);
+			const auto itFalse = std::find(m_container.begin(), m_container.end(), false);
+
+			const bool hasTrue = (itTrue != m_container.end());
+			const bool hasFalse = (itFalse != m_container.end());
+
+			if (hasTrue && hasFalse)
+			{
+				if (itFalse < itTrue)
+				{
+					m_container = { false, true };
+				}
+				else
+				{
+					m_container = { true, false };
+				}
+			}
+			else if (hasTrue)
+			{
+				m_container = { true };
+			}
+			else if (hasFalse)
+			{
+				m_container = { false };
+			}
+
+			return *this;
+		}
+
+		/// @brief 要素をソートせずに、重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array stable_unique() && noexcept
+		{
+			return std::move(stable_unique());
+		}
+
+		/// @brief 要素をソートせずに、重複する要素を削除した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array stable_uniqued() const
+		{
+			const auto itTrue = std::find(m_container.begin(), m_container.end(), true);
+			const auto itFalse = std::find(m_container.begin(), m_container.end(), false);
+
+			const bool hasTrue = (itTrue != m_container.end());
+			const bool hasFalse = (itFalse != m_container.end());
+
+			if (hasTrue && hasFalse)
+			{
+				if (itFalse < itTrue)
+				{
+					return{ false, true };
+				}
+				else
+				{
+					return{ true, false };
+				}
+			}
+			else if (hasTrue)
+			{
+				return{ true };
+			}
+			else if (hasFalse)
+			{
+				return{ false };
+			}
+
+			return{};
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sum
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を `+` 演算子を用いて合計します。
+		/// @return 合計値
+		[[nodiscard]]
+		constexpr isize sum() const
+		{
+			return std::count(m_container.begin(), m_container.end(), true);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から指定した個数の要素からなる新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 新しい配列
+		/// @remark n が配列の要素数以上の場合、配列全体を返します。
+		/// @remark `Array(begin(), (begin() + Min(n, size())))` と同じです。
+		[[nodiscard]]
+		constexpr Array take(size_type n) const&
+		{
+			return Array(m_container.begin(), (m_container.begin() + Min(n, m_container.size())));
+		}
+
+		/// @brief 先頭から指定した個数の要素からなる新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 新しい配列
+		/// @remark n が配列の要素数以上の場合、配列全体を返します。
+		/// @remark `Array(begin(), (begin() + Min(n, size())))` と同じです。
+		[[nodiscard]]
+		constexpr Array take(size_type n)&&
+		{
+			return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(m_container.begin() + Min(n, m_container.size())));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take_while
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array take_while(Fty f) const& requires std::predicate<Fty, const value_type&>
+		{
+			return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), f));
+		}
+
+		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array take_while(Fty f) && requires std::predicate<Fty, const value_type&>
+		{
+			return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(std::find_if_not(m_container.begin(), m_container.end(), f)));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	unique_consecutive, uniqued_consecutive
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去します。
+		/// @return *this
+		constexpr Array& unique_consecutive() & noexcept
+		{
+			m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
+			return *this;
+		}
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array unique_consecutive() && noexcept
+		{
+			return std::move(unique_consecutive());
+		}
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array uniqued_consecutive() const&
+		{
+			Array result;
+			std::unique_copy(m_container.begin(), m_container.end(), std::back_inserter(result));
+			return result;
+		}
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array uniqued_consecutive() && noexcept
+		{
+			return std::move(unique_consecutive());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	values_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素からなる新しい配列を返します。
+		/// @param indices インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array values_at(std::initializer_list<size_type> indices) const
+		{
+			Array result;
+			result.reserve(indices.size());
+
+			for (auto index : indices)
+			{
+				if (index < m_container.size())
+				{
+					result.push_back(m_container[index]);
+				}
+				else
+				{
+					ThrowValuesAtOutOfRange();
+				}
+			}
+
+			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用します。
+		/// @tparam Fty 適用する関数の型
+		/// @param f 適用する関数
+		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
+		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
+		template <class Fty>
+		constexpr auto operator >>(Fty f) const requires std::invocable<Fty, const value_type&>
+		{
+			using result_value_type = std::decay_t<std::invoke_result_t<Fty, const value_type&>>;
+
+			if constexpr (std::is_same_v<result_value_type, void>)
+			{
+				each(f);
+			}
+			else
+			{
+				return map(f);
+			}
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1141,6 +2773,9 @@ namespace s3d
 		container_type m_container;
 
 		[[noreturn]]
-		static void ThrowValuesAtOutOfRange();
+		static void ThrowValuesAtOutOfRange()
+		{
+			throw std::out_of_range{ "Array::values_at(): index out of range" };
+		}
 	};
 }
