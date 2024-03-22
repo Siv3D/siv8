@@ -1124,7 +1124,7 @@ namespace s3d
 		/// @brief 配列の要素が昇順にソートされているかを返します。
 		/// @return 配列の要素が昇順にソートされている場合 true, それ以外の場合は false
 		[[nodiscard]]
-		constexpr bool isSorted() const requires Concept::LessThanComparable<Type>;
+		constexpr bool isSorted() const requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1447,22 +1447,22 @@ namespace s3d
 
 		/// @brief 要素を降順に並び替えます。
 		/// @return *this
-		constexpr Array& rsort()& requires Concept::LessThanComparable<Type>;
+		constexpr Array& rsort()& requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を降順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array rsort() && requires Concept::LessThanComparable<Type>;
+		constexpr Array rsort() && requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を降順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array rsorted() const& requires Concept::LessThanComparable<Type>;
+		constexpr Array rsorted() const& requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を降順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array rsorted() && requires Concept::LessThanComparable<Type>;
+		constexpr Array rsorted() && requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1542,22 +1542,22 @@ namespace s3d
 
 		/// @brief 要素を昇順に並び替えます。
 		/// @return *this
-		constexpr Array& sort()& requires Concept::LessThanComparable<Type>;
+		constexpr Array& sort()& requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sort()&& requires Concept::LessThanComparable<Type>;
+		constexpr Array sort()&& requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sorted() const& requires Concept::LessThanComparable<Type>;
+		constexpr Array sorted() const& requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sorted()&& requires Concept::LessThanComparable<Type>;
+		constexpr Array sorted()&& requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1629,22 +1629,22 @@ namespace s3d
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えます。
 		/// @return *this
-		constexpr Array& stable_sort()& requires Concept::LessThanComparable<Type>;
+		constexpr Array& stable_sort()& requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array stable_sort() && requires Concept::LessThanComparable<Type>;
+		constexpr Array stable_sort() && requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array stable_sorted() const& requires Concept::LessThanComparable<Type>;
+		constexpr Array stable_sorted() const& requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array stable_sorted() && requires Concept::LessThanComparable<Type>;
+		constexpr Array stable_sorted() && requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1725,7 +1725,7 @@ namespace s3d
 		/// @brief 要素を `+` 演算子を用いて合計します。
 		/// @return 合計値
 		[[nodiscard]]
-		constexpr auto sum() const requires (Concept::Addable<Type> || Concept::AddAssignable<Type>);
+		constexpr auto sum() const requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1737,7 +1737,7 @@ namespace s3d
 		/// @remark `sum()` よりも浮動小数点数誤差が小さくなります。
 		/// @return 合計値
 		[[nodiscard]]
-		constexpr auto sumF() const requires Concept::FloatingPoint<Type>;
+		constexpr auto sumF() const requires Concept::FloatingPoint<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1912,9 +1912,9 @@ namespace s3d
 		/// @param size 生成する配列の要素数
 		/// @param generator 生成に使用する関数
 		/// @return 生成した配列
-		template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
+		template <class Fty>
 		[[nodiscard]]
-		static constexpr Array Generate(size_type size, Fty generator);
+		static constexpr Array Generate(size_type size, Fty generator) requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//

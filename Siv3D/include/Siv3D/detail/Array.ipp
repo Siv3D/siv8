@@ -1148,7 +1148,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr bool Array<Type, Allocator>::isSorted() const requires Concept::LessThanComparable<Type>
+	constexpr bool Array<Type, Allocator>::isSorted() const requires Concept::LessThanComparable<value_type>
 	{
 		return std::is_sorted(m_container.begin(), m_container.end());
 	}
@@ -1557,20 +1557,20 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::rsort()& requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::rsort()& requires Concept::LessThanComparable<value_type>
 	{
 		std::sort(m_container.begin(), m_container.end(), [](const Type& a, const Type& b) { return b < a; });
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsort() && requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsort() && requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(rsort());
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsorted() const& requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsorted() const& requires Concept::LessThanComparable<value_type>
 	{
 		Array result(*this);
 		result.rsort();
@@ -1578,7 +1578,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsorted() && requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsorted() && requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(rsort());
 	}
@@ -1669,20 +1669,20 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort()& requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort()& requires Concept::LessThanComparable<value_type>
 	{
 		std::sort(m_container.begin(), m_container.end());
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::sort() && requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sort() && requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(sort());
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted() const& requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted() const& requires Concept::LessThanComparable<value_type>
 	{
 		Array result(*this);
 		result.sort();
@@ -1690,7 +1690,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted() && requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted() && requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(sort());
 	}
@@ -1786,20 +1786,20 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort()& requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort()& requires Concept::LessThanComparable<value_type>
 	{
 		std::stable_sort(m_container.begin(), m_container.end());
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sort() && requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sort() && requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(stable_sort());
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted() const& requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted() const& requires Concept::LessThanComparable<value_type>
 	{
 		Array result(*this);
 		result.stable_sort();
@@ -1807,7 +1807,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted() && requires Concept::LessThanComparable<Type>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted() && requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(stable_sort());
 	}
@@ -1886,7 +1886,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr auto Array<Type, Allocator>::sum() const requires (Concept::Addable<Type> || Concept::AddAssignable<Type>)
+	constexpr auto Array<Type, Allocator>::sum() const requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>)
 	{
 		decltype(std::declval<Type>() + std::declval<Type>()) result{};
 
@@ -1915,7 +1915,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr auto Array<Type, Allocator>::sumF() const requires Concept::FloatingPoint<Type>
+	constexpr auto Array<Type, Allocator>::sumF() const requires Concept::FloatingPoint<value_type>
 	{
 		KahanSummation<Type> sum;
 
@@ -2326,8 +2326,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	template <class Fty>  requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::Generate(const size_type size, Fty generator)
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::Generate(const size_type size, Fty generator) requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, value_type>)
 	{
 		Array result(Arg::reserve = size);
 

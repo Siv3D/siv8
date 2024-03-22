@@ -103,7 +103,7 @@ namespace s3d
 		constexpr Array(size_type count, value_type value, const Allocator& alloc = Allocator{})
 			: m_container(count, value, alloc) {}
 
-		/// @brief count 個の Type() で配列を作成します。
+		/// @brief count 個の bool() で配列を作成します。
 		/// @param count 個数
 		/// @param alloc アロケータ
 		[[nodiscard]]
@@ -175,7 +175,7 @@ namespace s3d
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		/// @param alloc アロケータ
-		template <Concept::ContainerCompatibleRange<Type> Range>
+		template <Concept::ContainerCompatibleRange<bool> Range>
 		[[nodiscard]]
 		constexpr Array(std::from_range_t, Range&& range, const Allocator& alloc = Allocator{})
 			: m_container(std::from_range, std::forward<Range>(range), alloc) {}
@@ -186,7 +186,7 @@ namespace s3d
 		/// @tparam Fty ジェネレータ関数の型
 		/// @param size 作成する配列の要素数
 		/// @param generator ジェネレータ関数
-		template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
+		template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, value_type>)
 		[[nodiscard]]
 		constexpr Array(size_type size, Arg::generator_<Fty> generator)
 			: Array(Generate<Fty>(size, *generator)) {}
@@ -1057,9 +1057,9 @@ namespace s3d
 		/// @param size 生成する配列の要素数
 		/// @param generator 生成に使用する関数
 		/// @return 生成した配列
-		template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
+		template <class Fty>
 		[[nodiscard]]
-		static constexpr Array Generate(size_type size, Fty generator)
+		static constexpr Array Generate(size_type size, Fty generator) requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, value_type>)
 		{
 			Array result(Arg::reserve = size);
 
@@ -1138,7 +1138,7 @@ namespace s3d
 
 	private:
 
-		std::basic_string<bool> m_container;
+		container_type m_container;
 
 		[[noreturn]]
 		static void ThrowValuesAtOutOfRange();
