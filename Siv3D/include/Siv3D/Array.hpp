@@ -124,8 +124,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(container_type&& other);
 
-		/// @brief 
-		/// @param alloc 
+		/// @brief アロケータを指定して空の配列を作成します。
+		/// @param alloc アロケータ
 		[[nodiscard]]
 		explicit constexpr Array(const Allocator& alloc) noexcept;
 
@@ -151,27 +151,27 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(Iterator first, Iterator last, const Allocator& alloc = Allocator{});
 
-		/// @brief 
-		/// @param other 
-		/// @param alloc 
+		/// @brief アロケータを指定して、別の配列から配列を作成します。
+		/// @param other コピーする配列
+		/// @param alloc アロケータ
 		[[nodiscard]]
 		constexpr Array(const Array& other, const Allocator& alloc);
 
-		/// @brief 
-		/// @param other 
-		/// @param alloc 
+		/// @brief アロケータを指定して、別の配列から配列を作成します。
+		/// @param other ムーブする配列
+		/// @param alloc アロケータ
 		[[nodiscard]]
 		constexpr Array(Array&& other, const Allocator& alloc);
 
-		/// @brief 
-		/// @param other 
-		/// @param alloc 
+		/// @brief アロケータを指定して、std::vector から配列を作成します。
+		/// @param other コピーする配列
+		/// @param alloc アロケータ
 		[[nodiscard]]
 		constexpr Array(const container_type& other, const Allocator& alloc);
 
-		/// @brief 
-		/// @param other 
-		/// @param alloc 
+		/// @brief アロケータを指定して、std::vector から配列を作成します。
+		/// @param other ムーブする配列
+		/// @param alloc アロケータ
 		[[nodiscard]]
 		constexpr Array(container_type&& other, const Allocator& alloc);
 
@@ -195,6 +195,10 @@ namespace s3d
 
 	# ifdef __cpp_lib_containers_ranges
 		
+		/// @brief 範囲から配列を作成します。
+		/// @tparam Range 範囲の型
+		/// @param range 範囲
+		/// @param alloc アロケータ
 		template <Concept::ContainerCompatibleRange<Type> Range>
 		[[nodiscard]]
 		constexpr Array(std::from_range_t, Range&& range, const Allocator& alloc = Allocator{});
@@ -238,14 +242,29 @@ namespace s3d
 		/// @return *this
 		Array& operator =(Array&&) = default;
 
+		/// @brief コピー代入演算子
+		/// @param other コピーする配列
+		/// @return *this
 		constexpr Array& operator =(const container_type& other);
 
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする配列
+		/// @return *this
 		constexpr Array& operator =(container_type&& other);
 
+		/// @brief コピー代入演算子
+		/// @param a メンバ関数 `.asArray()` を持つ型
+		/// @return *this
 		constexpr Array& operator =(const HasAsArray auto& a);
 
+		/// @brief ムーブ代入演算子
+		/// @param a メンバ関数 `.asArray()` を持つ型
+		/// @return *this
 		constexpr Array& operator =(HasAsArray auto&& a);
 
+		/// @brief コピー代入演算子
+		/// @param list リスト
+		/// @return *this
 		constexpr Array& operator =(std::initializer_list<value_type> list);
 
 		////////////////////////////////////////////////////////////////
@@ -254,11 +273,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した個数の要素からなる配列を作成します。
+		/// @param count 要素数
+		/// @param value 要素の値
+		/// @return *this
 		constexpr Array& assign(size_type count, const value_type& value);
 
+		/// @brief イテレータが指す範囲の要素から配列を作成します。
+		/// @tparam Iterator イテレータ
+		/// @param first 範囲の開始位置を指すイテレータ
+		/// @param last 範囲の終端位置を指すイテレータ
+		/// @return *this
 		template <class Iterator>
 		constexpr Array& assign(Iterator first, Iterator last);
 
+		/// @brief リストから配列を作成します。
+		/// @param list リスト
+		/// @return *this
 		constexpr Array& assign(std::initializer_list<value_type> list);
 
 		////////////////////////////////////////////////////////////////
@@ -267,6 +298,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 範囲から配列を作成します。
+		/// @tparam Range 範囲の型
+		/// @param range 範囲
+		/// @return *this
 		template <Concept::ContainerCompatibleRange<Type> Range>
 		constexpr Array& assign_range(Range&& range);
 
@@ -276,6 +311,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief アロケータを返します。
+		/// @return アロケータ
 		[[nodiscard]]
 		constexpr allocator_type get_allocator() const noexcept;
 
@@ -285,6 +322,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief std::vector への const 参照を返します。
+		/// @return std::vector への const 参照
 		[[nodiscard]]
 		constexpr const container_type& getContainer() const noexcept;
 
@@ -294,6 +333,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief std::vector への暗黙の変換を行います。
 		[[nodiscard]]
 		constexpr operator container_type() const noexcept;
 
@@ -603,15 +643,38 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置に要素を挿入します。
+		/// @param pos 挿入する位置
+		/// @param value 挿入する値
+		/// @return 挿入された要素を指すイテレータ
 		constexpr iterator insert(const_iterator pos, const value_type& value);
 
+		/// @brief 指定した位置に要素を挿入します。
+		/// @param pos 挿入する位置
+		/// @param value 挿入する値
+		/// @return 挿入された要素を指すイテレータ
 		constexpr iterator insert(const_iterator pos, value_type&& value);
 
+		/// @brief 指定した位置に count 個の value を挿入します。
+		/// @param pos 挿入する位置
+		/// @param count 挿入する個数
+		/// @param value 挿入する値
+		/// @return 挿入された要素の先頭を指すイテレータ
 		constexpr iterator insert(const_iterator pos, size_type count, const value_type& value);
 
+		/// @brief 指定した位置にイテレータが指す範囲の要素を挿入します。
+		/// @tparam Iterator イテレータ
+		/// @param pos 挿入する位置
+		/// @param first 範囲の開始位置を指すイテレータ
+		/// @param last 範囲の終端位置を指すイテレータ
+		/// @return 挿入された要素の先頭を指すイテレータ
 		template <class Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last);
 
+		/// @brief 指定した位置にリストの要素を挿入します。
+		/// @param pos 挿入する位置
+		/// @param list リスト
+		/// @return 挿入された要素の先頭を指すイテレータ
 		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list);
 
 		////////////////////////////////////////////////////////////////
@@ -620,6 +683,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置に要素を構築して挿入します。
+		/// @tparam ...Args 構築する要素の引数の型
+		/// @param pos 挿入する位置
+		/// @param ...args 構築する要素の引数
+		/// @return 挿入された要素を指すイテレータ
 		template <class... Args>
 		constexpr iterator emplace(const_iterator pos, Args&&... args);
 
@@ -629,6 +697,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 範囲の要素を配列の末尾に追加します。
+		/// @tparam Range 範囲の型
+		/// @param range 範囲
 		template <Concept::ContainerCompatibleRange<Type> Range>
 		constexpr void append_range(Range&& range);
 
@@ -669,6 +740,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の末尾に要素を構築して追加します。
+		/// @tparam ...Args 構築する要素の引数の型
+		/// @param ...args 構築する要素の引数
+		/// @return 追加された要素への参照
 		template <class... Args>
 		constexpr reference emplace_back(Args&&... args);
 
@@ -807,9 +882,17 @@ namespace s3d
 		/// @return *this
 		constexpr Array& append(const Array& other);
 
+		/// @brief 配列の末尾に別の範囲の要素を追加します。
+		/// @tparam Iterator イテレータ
+		/// @param first 範囲の開始位置を指すイテレータ
+		/// @param last 範囲の終端位置を指すイテレータ
+		/// @return *this
 		template <class Iterator>
 		constexpr Array& append(Iterator first, Iterator last);
 
+		/// @brief 配列の末尾にリストの要素を追加します。
+		/// @param list リスト
+		/// @return *this
 		constexpr Array& append(std::initializer_list<value_type> list);
 
 		////////////////////////////////////////////////////////////////
@@ -1049,11 +1132,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @param sep 
-		/// @param begin 
-		/// @param end 
-		/// @return 
+		/// @brief 配列の要素から文字列を生成します。
+		/// @param sep 要素の間に挿入する文字列
+		/// @param begin 先頭に挿入する文字列
+		/// @param end 末尾に挿入する文字列
+		/// @return 生成された文字列
 		[[nodiscard]]
 		constexpr String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const;
 
@@ -1104,12 +1187,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @tparam R 
-		/// @param f 
-		/// @param init 
-		/// @return 
+		/// @brief 配列の要素を左から順に関数に適用していき、1 つの値にまとめます。
+		/// @tparam Fty 関数の型
+		/// @tparam R 結果の型
+		/// @param f 関数
+		/// @param init 初期値
+		/// @return まとめられた値
 		template <class Fty, class R>
 		constexpr auto reduce(Fty f, R init) const;
 
@@ -1743,10 +1826,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
-		/// @return 
+		/// @brief 条件を満たす要素の個数を返します（並列実行）。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素の個数
 		template <class Fty>
 		[[nodiscard]]
 		isize parallel_count_if(Fty f) const requires std::predicate<Fty, const value_type&>;
@@ -1757,15 +1840,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
+		/// @brief 全ての要素に対して関数を並列実行します。
+		/// @tparam Fty 関数の型
+		/// @param f 関数
 		template <class Fty>
 		void parallel_each(Fty f) requires std::invocable<Fty, value_type&>;
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
+		/// @brief 全ての要素に対して関数を並列実行します。
+		/// @tparam Fty 関数の型
+		/// @param f 関数
 		template <class Fty>
 		void parallel_each(Fty f) const requires std::invocable<Fty, const value_type&>;
 
@@ -1775,10 +1858,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
-		/// @return 
+		/// @brief 全ての要素に対して関数を適用した結果からなる新しい配列を返します（並列実行）。
+		/// @tparam Fty 関数の型
+		/// @param f 関数
+		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
 		auto parallel_map(Fty f) const requires std::invocable<Fty, const value_type&>;
@@ -1824,11 +1907,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param size 
-		/// @param generator 
-		/// @return 
+		/// @brief 関数を用いて配列を生成します。
+		/// @tparam Fty 生成に使用する関数の型
+		/// @param size 生成する配列の要素数
+		/// @param generator 生成に使用する関数
+		/// @return 生成した配列
 		template <class Fty> requires (std::invocable<Fty>&& std::convertible_to<std::invoke_result_t<Fty>, Type>)
 		[[nodiscard]]
 		static constexpr Array Generate(size_type size, Fty generator);
@@ -1839,11 +1922,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param size 
-		/// @param indexedGenerator 
-		/// @return 
+		/// @brief インデックスと関数を用いて配列を生成します。
+		/// @tparam Fty 生成に使用する関数の型
+		/// @param size 生成する配列の要素数
+		/// @param indexedGenerator 生成に使用する関数
+		/// @return 生成した配列
 		template <class Fty>
 		[[nodiscard]]
 		static constexpr Array IndexedGenerate(size_type size, Fty indexedGenerator);
@@ -1854,12 +1937,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの配列が等しいかを返します。
+		/// @param lhs 一方の配列
+		/// @param rhs もう一方の配列
+		/// @return 2 つの配列が等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const Array& lhs, const Array& rhs)
 		{
 			return (lhs.m_container == rhs.m_container);
 		}
 
+		/// @brief 2 つの配列の三方比較を行います。
+		/// @param lhs 一方の配列
+		/// @param rhs もう一方の配列
+		/// @return 三方比較の結果
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const Array& lhs, const Array& rhs)
 		{
@@ -1872,6 +1963,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの配列を入れ替えます。
+		/// @param lhs 一方の配列
+		/// @param rhs もう一方の配列
 		friend constexpr void swap(Array& lhs, Array& rhs) noexcept
 		{
 			lhs.swap(rhs);

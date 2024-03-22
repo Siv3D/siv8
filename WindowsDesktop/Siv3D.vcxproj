@@ -59,6 +59,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Duration.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Endian.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\EscapedFormatter.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Grid.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HardwareRNG.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HSV.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\EscapedFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Grid.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HardwareRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashTable.hpp" />

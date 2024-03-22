@@ -177,10 +177,10 @@
 # include <Siv3D/Result.hpp>
 
 // 動的配列（一次元）| Array
-# include <Siv3D/Array.hpp> // ToDo
+# include <Siv3D/Array.hpp>
 
-//// 動的配列（二次元）| 2D array
-//# include <Siv3D/Grid.hpp>
+// 動的配列（二次元）| 2D array
+# include <Siv3D/Grid.hpp> // ToDo
 
 // 文字列ルックアップヘルパー | Heterogeneous lookup helper
 # include <Siv3D/HeterogeneousLookupHelper.hpp>
