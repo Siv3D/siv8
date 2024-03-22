@@ -624,7 +624,24 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		friend constexpr bool operator ==(StringView, StringView) noexcept = default;
+		friend constexpr bool operator ==(StringView lhs, StringView rhs) noexcept
+		{
+			if (std::is_constant_evaluated())
+			{
+				return (lhs.m_view == rhs.m_view);
+			}
+			else
+			{
+				const size_t length = lhs.m_view.size();
+
+				if (length != rhs.m_view.size())
+				{
+					return false;
+				}
+
+				return StringView::StringEquals(lhs.m_view.data(), rhs.m_view.data(), length);
+			}
+		}
 
 		[[nodiscard]]
 		friend constexpr auto operator <=>(StringView, StringView) noexcept = default;
