@@ -837,7 +837,7 @@ namespace s3d
 		/// @brief 範囲の要素を配列の末尾に追加します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
-		template <Concept::ContainerCompatibleRange<Type> Range>
+		template <Concept::ContainerCompatibleRange<bool> Range>
 		constexpr void append_range(Range&& range)
 		{
 			m_container.append_range(std::forward<Range>(range));
