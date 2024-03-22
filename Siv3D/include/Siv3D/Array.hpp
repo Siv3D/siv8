@@ -575,7 +575,7 @@ namespace s3d
 		/// @brief 配列の要素の合計サイズ（バイト）を返します。
 		/// @return 配列の要素の合計サイズ（バイト）
 		[[nodiscard]]
-		constexpr size_t size_bytes() const noexcept requires (Concept::TriviallyCopyable<Type>);
+		constexpr size_t size_bytes() const noexcept requires (Concept::TriviallyCopyable<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1912,7 +1912,7 @@ namespace s3d
 		/// @param size 生成する配列の要素数
 		/// @param generator 生成に使用する関数
 		/// @return 生成した配列
-		template <class Fty> requires (std::invocable<Fty>&& std::convertible_to<std::invoke_result_t<Fty>, Type>)
+		template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
 		[[nodiscard]]
 		static constexpr Array Generate(size_type size, Fty generator);
 

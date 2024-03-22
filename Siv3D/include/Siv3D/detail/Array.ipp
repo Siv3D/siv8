@@ -185,6 +185,12 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	assign_range
+	//
+	////////////////////////////////////////////////////////////////
+
 	template <class Type, class Allocator>
 	template <Concept::ContainerCompatibleRange<Type> Range>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign_range(Range&& range)
@@ -482,7 +488,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr size_t Array<Type, Allocator>::size_bytes() const noexcept requires (Concept::TriviallyCopyable<Type>)
+	constexpr size_t Array<Type, Allocator>::size_bytes() const noexcept requires (Concept::TriviallyCopyable<value_type>)
 	{
 		return (m_container.size() * sizeof(value_type));
 	}
@@ -2320,17 +2326,17 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	template <class Fty>  requires (std::invocable<Fty>&& std::convertible_to<std::invoke_result_t<Fty>, Type>)
+	template <class Fty>  requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::Generate(const size_type size, Fty generator)
 	{
-		Array new_array(Arg::reserve = size);
+		Array result(Arg::reserve = size);
 
 		for (size_type i = 0; i < size; ++i)
 		{
-			new_array.m_container.push_back(generator());
+			result.m_container.push_back(generator());
 		}
 
-		return new_array;
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2343,14 +2349,14 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::IndexedGenerate(const size_type size, Fty indexedGenerator)
 	{
-		Array new_array(Arg::reserve = size);
+		Array result(Arg::reserve = size);
 
 		for (size_type i = 0; i < size; ++i)
 		{
-			new_array.m_container.push_back(indexedGenerator(i));
+			result.m_container.push_back(indexedGenerator(i));
 		}
 
-		return new_array;
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
