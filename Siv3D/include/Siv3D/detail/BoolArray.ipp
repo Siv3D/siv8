@@ -319,9 +319,9 @@ namespace s3d
 		/// @tparam Fty ジェネレータ関数の型
 		/// @param size 作成する配列の要素数
 		/// @param generator ジェネレータ関数
-		template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, value_type>)
+		template <class Fty>
 		[[nodiscard]]
-		constexpr Array(size_type size, Arg::generator_<Fty> generator)
+		constexpr Array(size_type size, Arg::generator_<Fty> generator) requires (std::invocable<Fty>&& std::convertible_to<std::invoke_result_t<Fty>, value_type>)
 			: Array(Generate<Fty>(size, *generator)) {}
 
 		/// @brief インデックス指定ジェネレータ関数を使って配列を作成します。

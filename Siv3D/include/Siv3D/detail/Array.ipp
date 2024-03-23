@@ -101,8 +101,8 @@ namespace s3d
 # endif
 
 	template <class Type, class Allocator>
-	template <class Fty> requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, Type>)
-	constexpr Array<Type, Allocator>::Array(const size_type size, Arg::generator_<Fty> generator)
+	template <class Fty>
+	constexpr Array<Type, Allocator>::Array(const size_type size, Arg::generator_<Fty> generator) requires (std::invocable<Fty>&& std::convertible_to < std::invoke_result_t<Fty>, value_type>)
 		: Array(Generate<Fty>(size, *generator)) {}
 
 	template <class Type, class Allocator>

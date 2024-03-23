@@ -159,8 +159,8 @@
 // 実行ファイルに格納される文字列の難読化 | String obfuscation
 # include <Siv3D/Obfuscation.hpp>
 
-//// Base64 | Base64
-//# include <Siv3D/Base64.hpp>
+// Base64 | Base64
+# include <Siv3D/Base64Value.hpp> // ToDo
 
 ////////////////////////////////////////////////////////////////
 //
