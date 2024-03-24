@@ -843,8 +843,7 @@ TEST_CASE("TextReader.longLF")
 
 TEST_CASE("TextReader.benchmark")
 {
-	const auto oldOutputLevel = Logger.getOutputLevel();
-	Logger.setOutputLevel(LogType::Error);
+	const ScopedLogSilencer logSilencer;
 
 	{
 		{
@@ -1093,8 +1092,6 @@ TEST_CASE("TextReader.benchmark")
 				});
 		}
 	}
-
-	Logger.setOutputLevel(oldOutputLevel);
 }
 
 # endif

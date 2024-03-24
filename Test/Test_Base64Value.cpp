@@ -40,17 +40,12 @@ TEST_CASE("Base64Value")
 
 TEST_CASE("Base64Value.Benchmark")
 {
-	const auto oldOutputLevel = Logger.getOutputLevel();
-	Logger.setOutputLevel(LogType::Error);
+	const ScopedLogSilencer logSilencer;
 	
 	{
 		Bench{}.title("Base64 encode - windmill.png").run("Base64Value::EncodeFromFile", [&]() { doNotOptimizeAway(Base64Value::EncodeFromFile(U"example/windmill.png")); });
-		Bench{}.title("Base64 encode - windmill.png").run("Base64Value::EncodeFromBlob", [&]() {
-			Blob blob{ U"example/windmill.png" };
-			doNotOptimizeAway(Base64Value::EncodeFromBlob(blob)); });
+		Bench{}.title("Base64 encode - windmill.png").run("Base64Value::EncodeFromBlob", [&]() { doNotOptimizeAway(Base64Value::EncodeFromBlob(Blob{ U"example/windmill.png" })); });
 	}
-	
-	Logger.setOutputLevel(oldOutputLevel);
 }
 
 # endif

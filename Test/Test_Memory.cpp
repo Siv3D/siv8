@@ -15,6 +15,8 @@
 
 TEST_CASE("Memory.Benchmark")
 {
+	const ScopedLogSilencer logSilencer;
+
 	{
 		Bench{}.title("Malloc").run("1024", [&]()
 			{

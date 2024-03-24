@@ -24,6 +24,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 読み込み専用メモリマップトファイル
 	class MemoryMappedFileView
 	{
 	public:

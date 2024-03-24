@@ -416,8 +416,8 @@
 // マップされたメモリ | Mapped memory
 # include <Siv3D/MappedMemory.hpp>
 
-// メモリマップトファイル | Memory mapped file
-# include <Siv3D/MemoryMappedFileView.hpp> // ToDo
+// 読み込み専用メモリマップトファイル | Read-only memory mapped file
+# include <Siv3D/MemoryMappedFileView.hpp>
 
 // 書き込み可能なメモリマップトファイル | Writable memory mapped file
 # include <Siv3D/MemoryMappedFile.hpp> // ToDo

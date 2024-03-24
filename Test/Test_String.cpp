@@ -96,6 +96,8 @@ TEST_CASE("String.operator ==")
 
 TEST_CASE("String.operator ==.Benchmark")
 {
+	const ScopedLogSilencer logSilencer;
+	
 	{
 		const std::u32string s0 = RandomString(0);
 		const std::u32string s3 = RandomString(3);

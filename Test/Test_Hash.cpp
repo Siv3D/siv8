@@ -66,6 +66,8 @@ TEST_CASE("MixHash")
 
 TEST_CASE("Hash.Benchmark")
 {
+	const ScopedLogSilencer logSilencer;
+	
 	{
 		const uint8 u8 = 123;
 		const uint32 u32 = 123456789u;
