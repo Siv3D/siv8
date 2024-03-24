@@ -22,7 +22,7 @@ namespace s3d
 	struct MappedMemory
 	{
 		/// @brief メモリの先頭アドレス
-		void* data = nullptr;
+		const void* data = nullptr;
 
 		/// @brief メモリのサイズ（バイト）
 		size_t size = 0;

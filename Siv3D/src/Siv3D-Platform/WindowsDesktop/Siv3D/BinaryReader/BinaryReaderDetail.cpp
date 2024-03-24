@@ -47,9 +47,9 @@ namespace s3d
 
 			HGLOBAL pResource = ::LoadResource(hModule, hrs);
 
-			if (not pResource) [[unlikely]]
+			if (not pResource)
 			{
-				LOG_FAIL("LoadResource() failed.");
+				LOG_FAIL(fmt::format("❌ BinaryReader: Failed to load resource \"{0}\"", path));
 				return false;
 			}
 
@@ -75,11 +75,11 @@ namespace s3d
 				m_file.file.open(path.toWstr(), std::ios_base::binary);
 				m_file.readPos = 0;
 
-				if (not m_file.file) [[unlikely]]
-					{
-						LOG_FAIL(fmt::format("❌ BinaryReader: Failed to open file `{0}`", path));
-						return false;
-					}
+				if (not m_file.file)
+				{
+					LOG_FAIL(fmt::format("❌ BinaryReader: Failed to open file `{0}`", path));
+					return false;
+				}
 			}
 
 			m_info =
