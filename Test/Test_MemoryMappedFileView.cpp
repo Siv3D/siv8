@@ -50,10 +50,10 @@ TEST_CASE("MemoryMappedFileView.TextFileTest")
 
 		{
 			const auto mapped = file.map(0, 0);
-			CHECK(mapped.data != nullptr);
+			CHECK(mapped.data == nullptr);
 			CHECK_EQ(mapped.size, 0);
 
-			CHECK_FALSE(file.mapAll());
+			CHECK(file.mapAll());
 			CHECK_FALSE(file.map(0, 0));
 			CHECK_FALSE(file.map(0, 100));
 			file.unmap();

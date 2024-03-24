@@ -166,6 +166,11 @@ namespace s3d
 
 		const size_t mapSize = Min(requestSize, static_cast<size_t>(m_info.fileSize - offset));
 
+		if (mapSize == 0)
+		{
+			return{};
+		}
+
 		if (isResource())
 		{
 			return{ .data = (m_resource.pointer + offset), .size = mapSize };
