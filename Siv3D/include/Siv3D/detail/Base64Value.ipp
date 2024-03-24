@@ -73,7 +73,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr size_t Base64Value::getBinarySize() const noexcept
+	constexpr size_t Base64Value::getMaxBinarySize() const noexcept
 	{
 		size_t padding = 0;
 

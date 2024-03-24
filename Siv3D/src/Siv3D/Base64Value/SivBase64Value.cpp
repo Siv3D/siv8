@@ -76,6 +76,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	encodeFromUTF8
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Base64Value::encodeFromUTF8(const std::string_view s)
+	{
+		encodeFromMemory(s.data(), s.size());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	encodeFromString
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Base64Value::encodeFromString(const StringView s)
+	{
+		encodeFromUTF8(Unicode::ToUTF8(s));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	decodeToBinary
 	//
 	////////////////////////////////////////////////////////////////
@@ -111,9 +133,9 @@ namespace s3d
 			return{};
 		}
 		
-		const size_t binarySize = getBinarySize();
+		const size_t maxBinarySize = getMaxBinarySize();
 
-		dst.resize(binarySize);
+		dst.resize(maxBinarySize);
 
 		const auto result = simdutf::base64_to_binary(m_base64.data(), m_base64.size(), static_cast<char*>(static_cast<void*>((dst.data()))));
 
@@ -152,6 +174,90 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	decodeToUTF8
+	//
+	////////////////////////////////////////////////////////////////
+
+	Result<size_t, size_t> Base64Value::decodeToUTF8(std::string& dst) const
+	{
+		if (m_base64.empty())
+		{
+			dst.clear();
+			return{};
+		}
+
+		const size_t maxBinarySize = getMaxBinarySize();
+
+		dst.resize(maxBinarySize);
+
+		const auto result = simdutf::base64_to_binary(m_base64.data(), m_base64.size(), dst.data());
+
+		if (result.error != simdutf::SUCCESS)
+		{
+			dst.clear();
+			return Err{ result.count };
+		}
+
+		dst.resize(result.count);
+
+		return result.count;
+	}
+
+	std::string Base64Value::decodeToUTF8() const
+	{
+		std::string s;
+
+		if (decodeToUTF8(s))
+		{
+			return s;
+		}
+		else
+		{
+			return{};
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	decodeToString
+	//
+	////////////////////////////////////////////////////////////////
+
+	Result<size_t, size_t> Base64Value::decodeToString(String& dst) const
+	{
+		std::string s;
+
+		const auto result = decodeToUTF8(s);
+
+		if (result)
+		{
+			dst = Unicode::FromUTF8(s);
+		}
+		else
+		{
+			dst.clear();
+			return Unexpected{ result.error() };
+		}
+
+		return dst.size();
+	}
+
+	String Base64Value::decodeToString() const
+	{
+		String s;
+
+		if (decodeToString(s))
+		{
+			return s;
+		}
+		else
+		{
+			return{};
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	EncodeFromMemoery
 	//
 	////////////////////////////////////////////////////////////////
@@ -187,6 +293,36 @@ namespace s3d
 		Base64Value base64Value;
 
 		base64Value.encodeFromFile(path);
+
+		return base64Value;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	EncodeFromUTF8
+	//
+	////////////////////////////////////////////////////////////////
+
+	Base64Value Base64Value::EncodeFromUTF8(const std::string_view s)
+	{
+		Base64Value base64Value;
+
+		base64Value.encodeFromUTF8(s);
+
+		return base64Value;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	EncodeFromString
+	//
+	////////////////////////////////////////////////////////////////
+
+	Base64Value Base64Value::EncodeFromString(const StringView s)
+	{
+		Base64Value base64Value;
+
+		base64Value.encodeFromString(s);
 
 		return base64Value;
 	}

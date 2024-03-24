@@ -30,9 +30,27 @@ TEST_CASE("Base64Value")
 		const Base64Value base64Value{ base64 };
 		CHECK_EQ(base64Value.getBase64(), base64);
 
-		std::string decoded(base64Value.getBinarySize(), '\0');
-		base64Value.decodeToMemory(decoded.data());
+		std::string decoded(base64Value.getMaxBinarySize(), '\0');
+		
+		const auto result = base64Value.decodeToMemory(decoded.data());
+		CHECK(result);
+
+		if (result)
+		{
+			decoded.resize(result.value());
+		}
+
 		CHECK_EQ(s, decoded);
+	}
+
+	for (const auto& [s, base64] : testCases)
+	{
+		CHECK_EQ(s, Base64Value{ base64 }.decodeToUTF8());
+	}
+
+	for (const auto& [s, base64] : testCases)
+	{
+		CHECK_EQ(Unicode::FromUTF8(s), Base64Value{ Unicode::FromUTF8(base64) }.decodeToString());
 	}
 }
 

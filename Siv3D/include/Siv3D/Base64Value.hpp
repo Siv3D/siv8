@@ -97,6 +97,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	encodeFromUTF8
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief UTF-8 文字列から Base64 値を作成します。
+		/// @param s UTF-8 文字列
+		void encodeFromUTF8(std::string_view s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	encodeFromString
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 文字列を UTF-8 に変換し、その結果から Base64 値を作成します。
+		/// @param s 文字列
+		void encodeFromString(StringView s);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	getBase64
 		//
 		////////////////////////////////////////////////////////////////
@@ -130,14 +150,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getBinarySize
+		//	getMaxBinarySize
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Base64 値をデコードした結果のバイナリデータのサイズ（バイト）を返します。
+		/// @brief Base64 値をデコードした結果として想定される、最大のバイナリデータのサイズ（バイト）を返します。
 		/// @return バイナリデータのサイズ（バイト）
+		/// @remark Base64 値が空白などを含まない場合は、デコード後のバイナリデータのサイズと一致します。
 		[[nodiscard]]
-		constexpr size_t getBinarySize() const noexcept;
+		constexpr size_t getMaxBinarySize() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -149,6 +170,7 @@ namespace s3d
 		/// @param dst 格納先のメモリの先頭ポインタ
 		/// @return デコードに成功した場合は書き込んだデータのサイズ、それ以外の場合は Base64 上のエラーの位置を示すエラー値
 		/// @remark dst には少なくとも `.getBinarySize()` バイトの書き込み可能なメモリが確保されている必要があります。
+		[[nodiscard]]
 		Result<size_t, size_t> decodeToMemory(void* dst) const;
 
 		////////////////////////////////////////////////////////////////
@@ -160,6 +182,7 @@ namespace s3d
 		/// @brief Base64 値をデコードした結果を Blob に格納します。
 		/// @param dst 格納先の Blob
 		/// @return デコードに成功した場合は格納したデータのサイズ、それ以外の場合は Base64 上のエラーの位置を示すエラー値
+		/// @return デコードに失敗した場合、dst は空の Blob になります。
 		Result<size_t, size_t> decodeToBlob(Blob& dst) const;
 
 		/// @brief Base64 値をデコードした結果を Blob で返します。
@@ -176,7 +199,44 @@ namespace s3d
 		/// @brief Base64 値をデコードした結果をファイルに保存します。
 		/// @param path 保存先のファイルパス
 		/// @return デコードに成功した場合は保存したデータのサイズ、それ以外の場合は Base64 上のエラーの位置を示すエラー値
+		/// @remark デコードに失敗した場合、ファイルは作成されません。
 		Result<size_t, size_t> decodeToFile(FilePathView path) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	decodeToUTF8
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brif Base64 値をデコードした結果を UTF-8 文字列に格納します。
+		/// @param dst 格納先の UTF-8 文字列
+		/// @return デコードに成功した場合は格納したデータのサイズ、それ以外の場合は Base64 上のエラーの位置を示すエラー値
+		/// @remark デコードに失敗した場合、dst は空の文字列になります。
+		[[nodiscard]]
+		Result<size_t, size_t> decodeToUTF8(std::string& dst) const;
+
+		/// @brief Base64 値をデコードした結果を UTF-8 文字列で返します。
+		/// @return デコードに成功した場合は UTF-8 文字列、それ以外の場合は空の文字列
+		[[nodiscard]]
+		std::string decodeToUTF8() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	decodeToString
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Base64 値をデコードした結果を文字列に格納します。
+		/// @param dst 格納先の文字列
+		/// @return デコードに成功した場合は格納した文字数、それ以外の場合は Base64 上のエラーの位置を示すエラー値
+		/// @remark デコードに失敗した場合、dst は空の文字列になります。
+		[[nodiscard]]
+		Result<size_t, size_t> decodeToString(String& dst) const;
+
+		/// @brief Base64 値をデコードした結果を文字列で返します。
+		/// @return デコードに成功した場合は文字列、それ以外の場合は空の文字列
+		[[nodiscard]]
+		String decodeToString() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -214,6 +274,30 @@ namespace s3d
 		/// @return 作成された Base64 値
 		[[nodiscard]]
 		static Base64Value EncodeFromFile(FilePathView path);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	EncodeFromUTF8
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief UTF-8 文字列から Base64 値を作成します。
+		/// @param s UTF-8 文字列
+		/// @return 作成された Base64 値
+		[[nodiscard]]
+		static Base64Value EncodeFromUTF8(std::string_view s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	EncodeFromString
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 文字列を UTF-8 に変換し、その結果から Base64 値を作成します。
+		/// @param s 文字列
+		/// @return 作成された Base64 値
+		[[nodiscard]]
+		static Base64Value EncodeFromString(StringView s);
 
 	private:
 
