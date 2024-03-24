@@ -35,3 +35,17 @@ TEST_CASE("Base64Value")
 		CHECK_EQ(s, decoded);
 	}
 }
+
+# if SIV3D_RUN_BENCHMARK
+
+TEST_CASE("Base64Value.Benchmark")
+{
+	{
+		Bench{}.title("Base64 encode - windmill.png").run("Base64Value::EncodeFromFile", [&]() { doNotOptimizeAway(Base64Value::EncodeFromFile(U"example/windmill.png")); });
+		Bench{}.title("Base64 encode - windmill.png").run("Base64Value::EncodeFromBlob", [&]() {
+			Blob blob{ U"example/windmill.png" };
+			doNotOptimizeAway(Base64Value::EncodeFromBlob(blob)); });
+	}
+}
+
+# endif

@@ -11,6 +11,7 @@
 
 # include <Siv3D/Base64Value.hpp>
 # include <Siv3D/Blob.hpp>
+# include <Siv3D/MemoryMappedFileView.hpp>
 # include <ThirdParty/simdutf/simdutf.h>
 
 namespace s3d
@@ -45,6 +46,32 @@ namespace s3d
 	void Base64Value::encodeFromBlob(const Blob& blob)
 	{
 		encodeFromMemory(blob.data(), blob.size_bytes());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	encodeFromFile
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Base64Value::encodeFromFile(const FilePathView path)
+	{
+		MemoryMappedFileView file{ path };
+
+		if (not file)
+		{
+			m_base64.clear();
+			return;
+		}
+
+		if (auto mapped = file.mapAll())
+		{
+			encodeFromMemory(mapped.data, mapped.size);
+		}
+		else
+		{
+			m_base64.clear();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -153,5 +180,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//Base64Value EncodeFromFile(FilePathView path);
+	Base64Value Base64Value::EncodeFromFile(const FilePathView path)
+	{
+		Base64Value base64Value;
+
+		base64Value.encodeFromFile(path);
+
+		return base64Value;
+	}
 }
