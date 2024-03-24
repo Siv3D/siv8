@@ -17,6 +17,38 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
+	//	encodeFromMemory
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Base64Value::encodeFromMemory(const void* src, const size_t size)
+	{
+		if ((not src) || (size == 0))
+		{
+			m_base64.clear();
+			return;
+		}
+
+		const size_t base64Length = simdutf::base64_length_from_binary(size);
+
+		m_base64.resize(base64Length);
+		
+		simdutf::binary_to_base64(static_cast<const char*>(src), size, m_base64.data());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	encodeFromBlob
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Base64Value::encodeFromBlob(const Blob& blob)
+	{
+		encodeFromMemory(blob.data(), blob.size_bytes());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	decodeToBinary
 	//
 	////////////////////////////////////////////////////////////////
@@ -97,11 +129,9 @@ namespace s3d
 
 	Base64Value Base64Value::EncodeFromMemoery(const void* src, const size_t size)
 	{
-		const size_t base64Size = simdutf::base64_length_from_binary(size);
-
 		Base64Value base64Value;
-		base64Value.m_base64.resize(base64Size);
-		simdutf::binary_to_base64(static_cast<const char*>(src), size, base64Value.m_base64.data());
+
+		base64Value.encodeFromMemory(src, size);
 
 		return base64Value;
 	}
@@ -112,7 +142,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//Base64Value EncodeFromBlob(const Blob& blob);
+	Base64Value Base64Value::EncodeFromBlob(const Blob& blob)
+	{
+		return EncodeFromMemoery(blob.data(), blob.size_bytes());
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -121,5 +154,4 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	//Base64Value EncodeFromFile(FilePathView path);
-
 }

@@ -34,21 +34,33 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 空の Base64 値を作成します。
 		[[nodiscard]]
 		Base64Value() = default;
 
+		/// @brief Base64 値を作成します。
+		/// @param base64 Base64 値
 		[[nodiscard]]
 		explicit constexpr Base64Value(const char8* base64);
 
+		/// @brief Base64 値を作成します。
+		/// @param base64 Base64 値
 		[[nodiscard]]
 		explicit constexpr Base64Value(std::string_view base64);
 
+		/// @brief Base64 値を作成します。
+		/// @param base64 Base64 値
 		[[nodiscard]]
 		explicit constexpr Base64Value(const std::string& base64);
 
+		/// @brief Base64 値を作成します。
+		/// @param base64 Base64 値
 		[[nodiscard]]
 		explicit constexpr Base64Value(std::string&& base64);
 
+		/// @brief Base64 値を作成します。
+		/// @param base64 Base64 値
+		/// @remark このオーバーロードは、入力を UTF-8 に変換するコストがかかります。
 		[[nodiscard]]
 		explicit Base64Value(StringView base64);
 
@@ -58,6 +70,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief メモリ上のデータから Base64 値を作成します。
+		/// @param src データの先頭ポインタ
+		/// @param size データのサイズ（バイト）
 		void encodeFromMemory(const void* src, size_t size);
 
 		////////////////////////////////////////////////////////////////
@@ -66,6 +81,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Blob から Base64 値を作成します。
+		/// @param blob Blob
 		void encodeFromBlob(const Blob& blob);
 
 		////////////////////////////////////////////////////////////////
@@ -74,6 +91,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ファイルの内容から Base64 値を作成します。
+		/// @param path ファイルパス
 		void encodeFromFile(FilePathView path);
 
 		////////////////////////////////////////////////////////////////
@@ -82,6 +101,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Base64 値を返します。
+		/// @return Base64 値
 		[[nodiscard]]
 		constexpr const std::string& getBase64() const noexcept;
 
@@ -91,6 +112,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Base64 値が空であるかを返します。
+		/// @return Base64 値が空である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isEmpty() const noexcept;
 
@@ -100,6 +123,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Base64 値が空でないかを返します。
+		/// @return Base64 値が空でない場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr explicit operator bool() const noexcept;
 
@@ -109,6 +134,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Base64 値をデコードした結果のバイナリデータのサイズ（バイト）を返します。
+		/// @return バイナリデータのサイズ（バイト）
 		[[nodiscard]]
 		constexpr size_t getBinarySize() const noexcept;
 
@@ -118,6 +145,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Base64 値をデコードした結果をメモリに格納します。
+		/// @param dst 格納先のメモリの先頭ポインタ
+		/// @return デコードに成功した場合は成功値 (void), それ以外の場合は Base64 上のエラーの位置を示すエラー値
+		/// @remark dst には少なくとも `.getBinarySize()` バイトの書き込み可能なメモリが確保されている必要があります。
 		Result<void, size_t> decodeToMemory(void* dst) const;
 
 		////////////////////////////////////////////////////////////////
@@ -126,8 +157,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Base64 値をデコードした結果を Blob に格納します。
+		/// @param dst 格納先の Blob
+		/// @return デコードに成功した場合は成功値 (void), それ以外の場合は Base64 上のエラーの位置を示すエラー値
 		Result<void, size_t> decodeToBlob(Blob& dst) const;
 
+		/// @brief Base64 値をデコードした結果を Blob で返します。
+		/// @return デコードに成功した場合は Blob, それ以外の場合は空の Blob
 		[[nodiscard]]
 		Blob decodeToBlob() const;
 
