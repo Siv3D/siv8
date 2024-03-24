@@ -160,7 +160,7 @@
 # include <Siv3D/Obfuscation.hpp>
 
 // Base64 | Base64
-# include <Siv3D/Base64Value.hpp> // ToDo
+# include <Siv3D/Base64Value.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

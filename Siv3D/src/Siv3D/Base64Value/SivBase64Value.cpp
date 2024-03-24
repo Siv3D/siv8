@@ -170,7 +170,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//Result<size_t, size_t> Base64Value::decodeToFile(const FilePathView path) const;
+	Result<size_t, size_t> Base64Value::decodeToFile(const FilePathView path) const
+	{
+		Blob blob;
+
+		if (const auto result = decodeToBlob(blob))
+		{
+			if (blob.save(path))
+			{
+				return result;
+			}
+			else
+			{
+				return Err{ 0 };
+			}
+		}
+		else
+		{
+			return Err{ result.error() };
+		}
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -236,7 +255,7 @@ namespace s3d
 		else
 		{
 			dst.clear();
-			return Unexpected{ result.error() };
+			return Err{ result.error() };
 		}
 
 		return dst.size();

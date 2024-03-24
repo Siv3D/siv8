@@ -199,7 +199,6 @@ namespace s3d
 		/// @brief Base64 値をデコードした結果をファイルに保存します。
 		/// @param path 保存先のファイルパス
 		/// @return デコードに成功した場合は保存したデータのサイズ、それ以外の場合は Base64 上のエラーの位置を示すエラー値
-		/// @remark デコードに失敗した場合、ファイルは作成されません。
 		Result<size_t, size_t> decodeToFile(FilePathView path) const;
 
 		////////////////////////////////////////////////////////////////
