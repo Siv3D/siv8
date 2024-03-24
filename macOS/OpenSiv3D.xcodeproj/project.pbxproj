@@ -689,7 +689,6 @@
 		F9528B1E2BAFB65000222F45 /* Base64Value.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1D2BAFB65000222F45 /* Base64Value.ipp */; };
 		F9528B202BAFB66200222F45 /* Base64Value.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1F2BAFB66200222F45 /* Base64Value.hpp */; };
 		F9528B232BAFB68400222F45 /* SivBase64Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B212BAFB68400222F45 /* SivBase64Value.cpp */; };
-		F9528B252BAFB6B600222F45 /* Test_Base64Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */; };
 		F9528B292BAFCDB400222F45 /* MemoryMappedFileView.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B262BAFCDB400222F45 /* MemoryMappedFileView.hpp */; };
 		F9528B2A2BAFCDB400222F45 /* MemoryMappedFile.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B272BAFCDB400222F45 /* MemoryMappedFile.hpp */; };
 		F9528B2B2BAFCDB400222F45 /* MappedMemory.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B282BAFCDB400222F45 /* MappedMemory.hpp */; };
@@ -698,6 +697,7 @@
 		F9528B322BB0564800222F45 /* Test_MemoryMappedFileView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B312BB0564800222F45 /* Test_MemoryMappedFileView.cpp */; };
 		F9528B362BB0567000222F45 /* MemoryMappedFileViewDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B332BB0567000222F45 /* MemoryMappedFileViewDetail.cpp */; };
 		F9528B372BB0567000222F45 /* MemoryMappedFileViewDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B342BB0567000222F45 /* MemoryMappedFileViewDetail.hpp */; };
+		F9528B382BB05D0600222F45 /* Test_Base64Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -3881,6 +3881,7 @@
 				F9528B162BAC58A300222F45 /* Test_String.cpp in Sources */,
 				2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */,
 				F907030B2B9DAEB900383E4D /* Test_Unicode.cpp in Sources */,
+				F9528B382BB05D0600222F45 /* Test_Base64Value.cpp in Sources */,
 				F907030D2B9DAEB900383E4D /* Test_Version.cpp in Sources */,
 				F90702F62B9DAEB900383E4D /* Test_Array.cpp in Sources */,
 				F907030C2B9DAEB900383E4D /* Test_Utility.cpp in Sources */,
@@ -3958,7 +3959,6 @@
 				F9070E612B9F176B00383E4D /* CLogger.cpp in Sources */,
 				F9070DCF2B9F175E00383E4D /* SivFmtExtension.cpp in Sources */,
 				F9070DE12B9F175E00383E4D /* SivParseFloat.cpp in Sources */,
-				F9528B252BAFB6B600222F45 /* Test_Base64Value.cpp in Sources */,
 				F9070AF02B9DEB5900383E4D /* gaussian_distribution.cc in Sources */,
 				F9070DEC2B9F175E00383E4D /* SivTextEncoding.cpp in Sources */,
 				F9070AFC2B9DEB5900383E4D /* fixed-dtoa.cc in Sources */,
