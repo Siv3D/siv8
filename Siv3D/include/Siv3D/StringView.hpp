@@ -277,7 +277,7 @@ namespace s3d
 		/// @brief 文字列が空でないかを返します。 | Returns whether the string is not empty.
 		/// @return 文字列が空でない場合 true, それ以外の場合は false | If the string is not empty, true, otherwise false
 		[[nodiscard]]
-		explicit constexpr operator bool() const noexcept;
+		constexpr explicit operator bool() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

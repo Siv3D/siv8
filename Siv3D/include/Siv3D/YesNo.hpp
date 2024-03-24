@@ -36,7 +36,7 @@ namespace s3d
 		constexpr YesNo(Helper helper) noexcept;
 
 		[[nodiscard]]
-		explicit constexpr operator bool() const noexcept;
+		constexpr explicit operator bool() const noexcept;
 
 		[[nodiscard]]
 		constexpr bool getBool() const noexcept;

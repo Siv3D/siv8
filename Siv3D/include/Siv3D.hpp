@@ -412,12 +412,15 @@
 //
 //// メモリ範囲への IReader インタフェース | IReader Wrapper for Memory Range 
 //# include <Siv3D/MemoryReader.hpp>
-//
-//// メモリマップトファイル | Memory mapped file
-//# include <Siv3D/MemoryMappedFileView.hpp>
-//
-//// 書き込み可能なメモリマップトファイル | Writable memory mapped file
-//# include <Siv3D/MemoryMappedFile.hpp>
+
+// マップされたメモリ | Mapped memory
+# include <Siv3D/MappedMemory.hpp>
+
+// メモリマップトファイル | Memory mapped file
+# include <Siv3D/MemoryMappedFileView.hpp> // ToDo
+
+// 書き込み可能なメモリマップトファイル | Writable memory mapped file
+# include <Siv3D/MemoryMappedFile.hpp> // ToDo
 
 // メモリ上のバッファ | Binary Large Object
 # include <Siv3D/Blob.hpp>

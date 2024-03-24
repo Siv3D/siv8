@@ -204,7 +204,7 @@ namespace s3d
 		/// @brief バイナリデータが空でないかを返します。
 		/// @return バイナリデータが空でない場合 true, それ以外の場合は false
 		[[nodiscard]]
-		explicit constexpr operator bool() const noexcept;
+		constexpr explicit operator bool() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
