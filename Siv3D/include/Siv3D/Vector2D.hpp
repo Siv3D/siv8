@@ -355,8 +355,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		template <class U>
 		[[nodiscard]]
-		constexpr value_type dot(Vector2D v) const noexcept;
+		constexpr auto dot(Vector2D<U> v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -364,8 +365,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		template <class U>
 		[[nodiscard]]
-		constexpr value_type cross(Vector2D v) const noexcept;
+		constexpr auto cross(Vector2D<U> v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

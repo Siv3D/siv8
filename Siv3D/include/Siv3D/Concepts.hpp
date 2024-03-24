@@ -102,6 +102,14 @@ namespace s3d
 			{ a + b } -> std::convertible_to<Type>;
 		};
 
+		/// @brief `+=` 演算子による加算が可能な型のコンセプト | Add-assignable type concept
+		/// @tparam Type 型 | Type
+		template <class Type>
+		concept AddAssignable = requires(Type& a, const Type & b)
+		{
+			{ a += b } -> std::convertible_to<Type>;
+		};
+
 		/// @brief コンテナに対応した Range のコンセプト | Container compatible range concept
 		template <class Range, class Elem>
 		concept ContainerCompatibleRange = (std::ranges::input_range<Range> && std::convertible_to<std::ranges::range_reference_t<Range>, Elem>);

@@ -162,6 +162,10 @@
 	# undef  SIV3D_INTRINSIC_PRIVATE_DEFINITION_NEON
 	# define SIV3D_INTRINSIC_PRIVATE_DEFINITION_NEON()	1
 
+# else
+
+	# error Unknown intrinsic
+
 # endif
 
 

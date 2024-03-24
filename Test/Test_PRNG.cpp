@@ -15,6 +15,8 @@
 
 TEST_CASE("PRNG.Benchmark")
 {
+	const ScopedLogSilencer logSilencer;
+	
 	{
 		HardwareRNG rng{};
 

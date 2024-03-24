@@ -19,7 +19,7 @@ Name | Version
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [PCG](https://github.com/imneme/pcg-cpp) | 
 [simde](https://github.com/nemequ/simde) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 4.0.9
+[simdutf](https://github.com/simdutf/simdutf) | Version 5.0.0
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 

@@ -159,8 +159,8 @@
 // 実行ファイルに格納される文字列の難読化 | String obfuscation
 # include <Siv3D/Obfuscation.hpp>
 
-//// Base64 | Base64
-//# include <Siv3D/Base64.hpp>
+// Base64 | Base64
+# include <Siv3D/Base64Value.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -177,10 +177,10 @@
 # include <Siv3D/Result.hpp>
 
 // 動的配列（一次元）| Array
-# include <Siv3D/Array.hpp> // ToDo
+# include <Siv3D/Array.hpp>
 
-//// 動的配列（二次元）| 2D array
-//# include <Siv3D/Grid.hpp>
+// 動的配列（二次元）| 2D array
+# include <Siv3D/Grid.hpp> // ToDo
 
 // 文字列ルックアップヘルパー | Heterogeneous lookup helper
 # include <Siv3D/HeterogeneousLookupHelper.hpp>
@@ -412,15 +412,18 @@
 //
 //// メモリ範囲への IReader インタフェース | IReader Wrapper for Memory Range 
 //# include <Siv3D/MemoryReader.hpp>
-//
-//// メモリマップトファイル | Memory mapped file
-//# include <Siv3D/MemoryMappedFileView.hpp>
-//
-//// 書き込み可能なメモリマップトファイル | Writable memory mapped file
-//# include <Siv3D/MemoryMappedFile.hpp>
+
+// マップされたメモリ | Mapped memory
+# include <Siv3D/MappedMemory.hpp>
+
+// 読み込み専用メモリマップトファイル | Read-only memory mapped file
+# include <Siv3D/MemoryMappedFileView.hpp>
+
+// 書き込み可能なメモリマップトファイル | Writable memory mapped file
+# include <Siv3D/MemoryMappedFile.hpp> // ToDo
 
 // メモリ上のバッファ | Binary Large Object
-# include <Siv3D/Blob.hpp> // ToDo
+# include <Siv3D/Blob.hpp>
 
 //// 書き込み用バッファ | Memory writer
 //# include <Siv3D/MemoryWriter.hpp>
@@ -432,7 +435,7 @@
 # include <Siv3D/BinaryReader.hpp>
 
 // 書き込み専用バイナリファイル | Binary file writer
-# include <Siv3D/BinaryWriter.hpp> // ToDo
+# include <Siv3D/BinaryWriter.hpp>
 
 // アーカイブファイルからの読み込み | Archived file reader
 //# include <Siv3D/ArchivedFileReader.hpp>

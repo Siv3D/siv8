@@ -277,7 +277,7 @@ namespace s3d
 		/// @brief 文字列が空でないかを返します。 | Returns whether the string is not empty.
 		/// @return 文字列が空でない場合 true, それ以外の場合は false | If the string is not empty, true, otherwise false
 		[[nodiscard]]
-		explicit constexpr operator bool() const noexcept;
+		constexpr explicit operator bool() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -624,7 +624,24 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		friend constexpr bool operator ==(StringView, StringView) noexcept = default;
+		friend constexpr bool operator ==(StringView lhs, StringView rhs) noexcept
+		{
+			if (std::is_constant_evaluated())
+			{
+				return (lhs.m_view == rhs.m_view);
+			}
+			else
+			{
+				const size_t length = lhs.m_view.size();
+
+				if (length != rhs.m_view.size())
+				{
+					return false;
+				}
+
+				return StringView::StringEquals(lhs.m_view.data(), rhs.m_view.data(), length);
+			}
+		}
 
 		[[nodiscard]]
 		friend constexpr auto operator <=>(StringView, StringView) noexcept = default;
@@ -675,6 +692,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		friend void Formatter(FormatData& formatData, StringView s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	StringEquals
+		//
+		////////////////////////////////////////////////////////////////
+
+		static bool StringEquals(const char32* s1, const char32* s2, size_t length) noexcept;
 
 	private:
 

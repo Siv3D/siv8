@@ -402,7 +402,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::dot(const Vector2D v) const noexcept
+	template <class U>
+	constexpr auto Vector2D<Type>::dot(const Vector2D<U> v) const noexcept
 	{
 		return ((x * v.x) + (y * v.y));
 	}
@@ -414,7 +415,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::cross(const Vector2D v) const noexcept
+	template <class U>
+	constexpr auto Vector2D<Type>::cross(const Vector2D<U> v) const noexcept
 	{
 		return ((x * v.y) - (y * v.x));
 	}

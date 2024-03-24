@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
+    <ClCompile Include="..\Test\Test_Base64Value.cpp" />
     <ClCompile Include="..\Test\Test_BinaryWriter.cpp" />
     <ClCompile Include="..\Test\Test_Byte.cpp" />
     <ClCompile Include="..\Test\Test_Color.cpp" />
@@ -23,6 +24,7 @@
     <ClCompile Include="..\Test\Test_Concepts.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
+    <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_SequenceFormatter.cpp" />
@@ -32,6 +34,7 @@
     <ClCompile Include="..\Test\Test_Memory.cpp" />
     <ClCompile Include="..\Test\Test_NamedParameter.cpp" />
     <ClCompile Include="..\Test\Test_Step.cpp" />
+    <ClCompile Include="..\Test\Test_String.cpp" />
     <ClCompile Include="..\Test\Test_StringView.cpp" />
     <ClCompile Include="..\Test\Test_TextReader.cpp" />
     <ClCompile Include="..\Test\Test_TupleFormatter.cpp" />

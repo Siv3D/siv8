@@ -97,6 +97,15 @@
     <ClCompile Include="..\Test\Test_BinaryWriter.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_String.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Base64Value.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">

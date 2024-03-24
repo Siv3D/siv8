@@ -35,3 +35,22 @@
 # include <ThirdParty/doctest/doctest.h>
 
 void RunTest();
+
+class ScopedLogSilencer
+{
+public:
+
+	ScopedLogSilencer()
+	{
+		Logger.setOutputLevel(LogType::Error);
+	}
+
+	~ScopedLogSilencer()
+	{
+		Logger.setOutputLevel(m_oldOutputLevel);
+	}
+
+private:
+
+	LogType m_oldOutputLevel = Logger.getOutputLevel();
+};

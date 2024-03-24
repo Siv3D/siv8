@@ -17,6 +17,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AlignedAllocator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AsyncTask.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Base64Value.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BigInt.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BinaryReader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BinaryWriter.hpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AlignedAllocator.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Array.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AsyncTask.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Base64Value.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BigInt.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryReader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryWriter.ipp" />
@@ -59,11 +61,13 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Duration.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Endian.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\EscapedFormatter.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Grid.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HardwareRNG.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HSV.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MapFormatter.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MappedMemory.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MD5Value.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Parse.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PCG64.ipp" />
@@ -130,6 +134,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\EscapedFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Grid.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HardwareRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashTable.hpp" />
@@ -139,7 +144,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\LoggerBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MapFormatter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MappedMemory.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MD5Value.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFile.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFileView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MonitorInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OrderedSet.hpp" />
@@ -252,6 +260,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMainHelper.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\CSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\CWindow.hpp" />
@@ -308,6 +317,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\SivFileSystem_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory\SivMemory.cpp">
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4559</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4559</DisableSpecificWarnings>
@@ -325,6 +335,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowTitle.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Base64Value\SivBase64Value.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigInt\SivBigInt.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BinaryReader\SivBinaryReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BinaryWriter\SivBinaryWriter.cpp" />
@@ -362,6 +373,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\LoggerFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\SivLogger.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MD5Value\SivMD5Value.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFileView\SivMemoryMappedFileView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MonitorInfo\SivMonitorInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBoolExtended\SivParseBoolExtended.cpp" />
@@ -373,6 +385,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Random\SivRandom.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Rect\SivRect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView_SIMD.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\Levenshtein.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SivSystem.cpp" />

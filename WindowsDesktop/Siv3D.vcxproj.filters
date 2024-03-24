@@ -340,6 +340,15 @@
     <Filter Include="src\Siv3D\UserAction">
       <UniqueIdentifier>{9650c4d0-715c-4b14-9e9e-a7a866357a6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Base64Value">
+      <UniqueIdentifier>{d77d082d-b11e-4ce4-9c25-b56eccc7d40f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MemoryMappedFileView">
+      <UniqueIdentifier>{e2629607-9fff-417e-a8ba-75c6088856e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView">
+      <UniqueIdentifier>{4b63e263-fe9c-42ac-8e86-d8ab754e362b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1200,6 +1209,33 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Window.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Grid.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Grid.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Base64Value.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Base64Value.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFile.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFileView.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MappedMemory.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MappedMemory.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1516,6 +1552,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Window\SivWindow.cpp">
       <Filter>src\Siv3D\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView_SIMD.cpp">
+      <Filter>src\Siv3D\StringView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Base64Value\SivBase64Value.cpp">
+      <Filter>src\Siv3D\Base64Value</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFileView\SivMemoryMappedFileView.cpp">
+      <Filter>src\Siv3D\MemoryMappedFileView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
