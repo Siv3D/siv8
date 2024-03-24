@@ -66,4 +66,27 @@ namespace s3d
 	{
 		return (not m_base64.empty());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBinarySize
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr size_t Base64Value::getBinarySize() const noexcept
+	{
+		size_t padding = 0;
+
+		if (m_base64.ends_with("=="))
+		{
+			padding = 2;
+		}
+		else if (m_base64.ends_with('='))
+		{
+			padding = 1;
+		}
+
+		return (((m_base64.size() - padding) * 3) / 4);
+	}
+
 }

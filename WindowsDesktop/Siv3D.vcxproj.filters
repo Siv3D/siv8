@@ -340,6 +340,9 @@
     <Filter Include="src\Siv3D\UserAction">
       <UniqueIdentifier>{9650c4d0-715c-4b14-9e9e-a7a866357a6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Base64Value">
+      <UniqueIdentifier>{d77d082d-b11e-4ce4-9c25-b56eccc7d40f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1531,6 +1534,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView_SIMD.cpp">
       <Filter>src\Siv3D\StringView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Base64Value\SivBase64Value.cpp">
+      <Filter>src\Siv3D\Base64Value</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -61,11 +61,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	FromBinary
+	//	FromMemory
 	//
 	////////////////////////////////////////////////////////////////
 
-	MD5Value MD5Value::FromBinary(const void* const data, const size_t size) noexcept
+	MD5Value MD5Value::FromMemory(const void* const data, const size_t size) noexcept
 	{
 		MD5_CTX ctx;
 		MD5Value result;
@@ -77,9 +77,15 @@ namespace s3d
 		return result;
 	}
 
-	MD5Value MD5Value::FromBinary(const Blob& blob) noexcept
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromBlob
+	//
+	////////////////////////////////////////////////////////////////
+
+	MD5Value MD5Value::FromBlob(const Blob& blob) noexcept
 	{
-		return FromBinary(blob.data(), blob.size_bytes());
+		return FromMemory(blob.data(), blob.size_bytes());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -90,7 +96,7 @@ namespace s3d
 
 	MD5Value MD5Value::FromUTF8(const std::string_view view) noexcept
 	{
-		return FromBinary(view.data(), view.size());
+		return FromMemory(view.data(), view.size());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -101,7 +107,7 @@ namespace s3d
 
 	MD5Value MD5Value::FromUTF32(const StringView view) noexcept
 	{
-		return FromBinary(view.data(), view.size_bytes());
+		return FromMemory(view.data(), view.size_bytes());
 	}
 
 	////////////////////////////////////////////////////////////////

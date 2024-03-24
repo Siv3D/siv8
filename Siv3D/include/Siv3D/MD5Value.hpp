@@ -143,22 +143,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	FromBinary
+		//	FromMemory
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief バイナリデータから MD5 ハッシュを計算します。
+		/// @brief メモリ上のデータから MD5 ハッシュを計算します。
 		/// @param data データの先頭ポインタ
 		/// @param size データのサイズ（バイト）
 		/// @return 計算された MD5 ハッシュ
 		[[nodiscard]]
-		static MD5Value FromBinary(const void* const data, size_t size) noexcept;
+		static MD5Value FromMemory(const void* const data, size_t size) noexcept;
 
-		/// @brief バイナリデータから MD5 ハッシュを計算します。
-		/// @param blob バイナリデータ
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromBlob
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Blob から MD5 ハッシュを計算します。
+		/// @param blob Blob
 		/// @return 計算された MD5 ハッシュ
 		[[nodiscard]]
-		static MD5Value FromBinary(const Blob& blob) noexcept;
+		static MD5Value FromBlob(const Blob& blob) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

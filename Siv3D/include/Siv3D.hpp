@@ -420,7 +420,7 @@
 //# include <Siv3D/MemoryMappedFile.hpp>
 
 // メモリ上のバッファ | Binary Large Object
-# include <Siv3D/Blob.hpp> // ToDo
+# include <Siv3D/Blob.hpp>
 
 //// 書き込み用バッファ | Memory writer
 //# include <Siv3D/MemoryWriter.hpp>
@@ -432,7 +432,7 @@
 # include <Siv3D/BinaryReader.hpp>
 
 // 書き込み専用バイナリファイル | Binary file writer
-# include <Siv3D/BinaryWriter.hpp> // ToDo
+# include <Siv3D/BinaryWriter.hpp>
 
 // アーカイブファイルからの読み込み | Archived file reader
 //# include <Siv3D/ArchivedFileReader.hpp>

@@ -18,6 +18,7 @@
 namespace s3d
 {
 	class MD5Value;
+	class Base64Value;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -25,7 +26,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief バイナリデータ
+	/// @brief メモリ上のバイナリデータ
 	class Blob
 	{
 	public:
@@ -45,6 +46,12 @@ namespace s3d
 		/// @brief 空のバイナリデータを作成します。
 		[[nodiscard]]
 		Blob() = default;
+
+		[[nodiscard]]
+		Blob(const Blob&) = default;
+
+		[[nodiscard]]
+		Blob(Blob&&) noexcept = default;
 
 		/// @brief 指定したサイズのバイナリデータを作成します。
 		/// @param sizeBytes バイナリデータのサイズ（バイト）
@@ -400,7 +407,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief バイナリデータを MD5 のハッシュ値に変換します。
+		/// @brief バイナリデータから MD5 ハッシュ値を計算します。
 		/// @return バイナリデータの MD5 ハッシュ値
 		[[nodiscard]]
 		MD5Value md5() const;
@@ -414,20 +421,11 @@ namespace s3d
 		/// @brief バイナリデータを Base64 エンコードします。
 		/// @return エンコードされたデータ
 		[[nodiscard]]
-		std::string base64() const;
-
-		/// @brief バイナリデータを Base64 エンコードします。
-		/// @return エンコードされたデータ
-		[[nodiscard]]
-		String base64Str() const;
+		Base64Value base64() const;
 
 		/// @brief バイナリデータを Base64 エンコードし、dst に格納します。
 		/// @param dst エンコードされたデータの格納先
-		void base64(std::string& dst) const;
-
-		/// @brief バイナリデータを Base64 エンコードし、dst に格納します。
-		/// @param dst エンコードされたデータの格納先
-		void base64(String& dst) const;
+		void base64(Base64Value& dst) const;
 
 		////////////////////////////////////////////////////////////////
 		//
