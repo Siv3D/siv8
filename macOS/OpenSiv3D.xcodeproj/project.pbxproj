@@ -690,6 +690,10 @@
 		F9528B202BAFB66200222F45 /* Base64Value.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1F2BAFB66200222F45 /* Base64Value.hpp */; };
 		F9528B232BAFB68400222F45 /* SivBase64Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B212BAFB68400222F45 /* SivBase64Value.cpp */; };
 		F9528B252BAFB6B600222F45 /* Test_Base64Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */; };
+		F9528B292BAFCDB400222F45 /* MemoryMappedFileView.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B262BAFCDB400222F45 /* MemoryMappedFileView.hpp */; };
+		F9528B2A2BAFCDB400222F45 /* MemoryMappedFile.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B272BAFCDB400222F45 /* MemoryMappedFile.hpp */; };
+		F9528B2B2BAFCDB400222F45 /* MappedMemory.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B282BAFCDB400222F45 /* MappedMemory.hpp */; };
+		F9528B2D2BAFCDCF00222F45 /* MappedMemory.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B2C2BAFCDCF00222F45 /* MappedMemory.ipp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1381,6 +1385,10 @@
 		F9528B1F2BAFB66200222F45 /* Base64Value.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Base64Value.hpp; sourceTree = "<group>"; };
 		F9528B212BAFB68400222F45 /* SivBase64Value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBase64Value.cpp; sourceTree = "<group>"; };
 		F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Base64Value.cpp; sourceTree = "<group>"; };
+		F9528B262BAFCDB400222F45 /* MemoryMappedFileView.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryMappedFileView.hpp; sourceTree = "<group>"; };
+		F9528B272BAFCDB400222F45 /* MemoryMappedFile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryMappedFile.hpp; sourceTree = "<group>"; };
+		F9528B282BAFCDB400222F45 /* MappedMemory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MappedMemory.hpp; sourceTree = "<group>"; };
+		F9528B2C2BAFCDCF00222F45 /* MappedMemory.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MappedMemory.ipp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2172,6 +2180,7 @@
 				F9070B8B2B9F175000383E4D /* Logger.ipp */,
 				F9070B8C2B9F175000383E4D /* LoggerBuffer.ipp */,
 				F9070B8D2B9F175000383E4D /* MapFormatter.ipp */,
+				F9528B2C2BAFCDCF00222F45 /* MappedMemory.ipp */,
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
 				F9070B8F2B9F175000383E4D /* MD5Value.ipp */,
 				F9070B902B9F175000383E4D /* Memory.ipp */,
@@ -2307,9 +2316,12 @@
 				F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */,
 				F9070BFE2B9F175000383E4D /* LogType.hpp */,
 				F9070BFF2B9F175000383E4D /* MapFormatter.hpp */,
+				F9528B282BAFCDB400222F45 /* MappedMemory.hpp */,
 				F9070C002B9F175000383E4D /* MathConstants.hpp */,
 				F9070C012B9F175000383E4D /* MD5Value.hpp */,
 				F9070C022B9F175000383E4D /* Memory.hpp */,
+				F9528B272BAFCDB400222F45 /* MemoryMappedFile.hpp */,
+				F9528B262BAFCDB400222F45 /* MemoryMappedFileView.hpp */,
 				F9070C032B9F175000383E4D /* MonitorInfo.hpp */,
 				F9070C042B9F175000383E4D /* NamedParameter.hpp */,
 				F9070C052B9F175000383E4D /* NonNull.hpp */,
@@ -3509,6 +3521,7 @@
 				F907072D2B9DAEC900383E4D /* srlv.h in Headers */,
 				F907074D2B9DAEC900383E4D /* hedley.h in Headers */,
 				F9070CDF2B9F175100383E4D /* Number.hpp in Headers */,
+				F9528B2A2BAFCDB400222F45 /* MemoryMappedFile.hpp in Headers */,
 				F9070CED2B9F175100383E4D /* Platform.hpp in Headers */,
 				F9070CF12B9F175100383E4D /* PredefinedYesNo.hpp in Headers */,
 				F90706A22B9DAEC900383E4D /* iostream_state_saver.h in Headers */,
@@ -3525,6 +3538,7 @@
 				F9070C702B9F175000383E4D /* Parse.ipp in Headers */,
 				F907069E2B9DAEC900383E4D /* distribution_caller.h in Headers */,
 				F90706EE2B9DAEC900383E4D /* fnmadd.h in Headers */,
+				F9528B292BAFCDB400222F45 /* MemoryMappedFileView.hpp in Headers */,
 				F9070DAE2B9F175E00383E4D /* BigIntDetail.hpp in Headers */,
 				F9070C6A2B9F175000383E4D /* MathConstants.ipp in Headers */,
 				F90707532B9DAEC900383E4D /* simde-complex.h in Headers */,
@@ -3544,6 +3558,7 @@
 				F9070CB02B9F175000383E4D /* DisjointSet.hpp in Headers */,
 				F9070C722B9F175000383E4D /* PCG64.ipp in Headers */,
 				F907073C2B9DAEC900383E4D /* avx2.h in Headers */,
+				F9528B2B2BAFCDB400222F45 /* MappedMemory.hpp in Headers */,
 				F9070C6E2B9F175000383E4D /* Number.ipp in Headers */,
 				F9070CCE2B9F175100383E4D /* IntFormatter.hpp in Headers */,
 				F9070CC32B9F175000383E4D /* Formatter.hpp in Headers */,
@@ -3578,6 +3593,7 @@
 				F90707282B9DAEC900383E4D /* sra.h in Headers */,
 				F9070CCA2B9F175100383E4D /* HeterogeneousLookupHelper.hpp in Headers */,
 				F9070E622B9F176B00383E4D /* CLogger.hpp in Headers */,
+				F9528B2D2BAFCDCF00222F45 /* MappedMemory.ipp in Headers */,
 				F9070DC52B9F175E00383E4D /* Siv3DComponent.hpp in Headers */,
 				F90707382B9DAEC900383E4D /* xor.h in Headers */,
 				F9070C852B9F175000383E4D /* UnicodeConverter.ipp in Headers */,
