@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -52,8 +52,8 @@ namespace s3d
 			m_file =
 			{
 				.fileHandle		= fileHandle,
-				.fileMapping	= nullptr,
 				.baseAddress	= nullptr,
+				.mapLength		= 0,
 			};
 
 			m_info =
@@ -79,7 +79,7 @@ namespace s3d
 		unmap();
 
 		{
-			::close(m_fileHandle);
+			::close(m_file.fileHandle);
 			m_file = {};
 
 			LOG_INFO(fmt::format("📥 MemoryMappedFileView: File `{0}` closed", m_info.fullPath));
@@ -106,7 +106,7 @@ namespace s3d
 			return{};
 		}
 
-		if (m_info.fileSize <= offset)
+		if (m_info.fileSize <= static_cast<int64>(offset))
 		{
 			return{};
 		}
@@ -115,7 +115,7 @@ namespace s3d
 			const size_t mapSize = Min(requestSize, static_cast<size_t>(m_info.fileSize - offset));
 			const size_t internalOffset = (offset / detail::g_granularity * detail::g_granularity);
 
-			const void* baseAddress = ::mmap(0, (offset - internalOffset + mapSize), PROT_READ, MAP_SHARED, m_fileHandle, internalOffset);
+			void* baseAddress = ::mmap(0, (offset - internalOffset + mapSize), PROT_READ, MAP_SHARED, m_file.fileHandle, internalOffset);
 
 			if (baseAddress == MAP_FAILED)
 			{
@@ -123,7 +123,7 @@ namespace s3d
 				return{};
 			}
 
-			m_file.baseAddress = static_cast<const Byte*>(baseAddress);
+			m_file.baseAddress = static_cast<Byte*>(baseAddress);
 			m_file.mapLength = (offset - internalOffset + mapSize);
 
 			return{ .data = (m_file.baseAddress + (offset - internalOffset)), .size = mapSize };
@@ -154,10 +154,5 @@ namespace s3d
 	const FilePath& MemoryMappedFileView::MemoryMappedFileViewDetail::path() const
 	{
 		return m_info.fullPath;
-	}
-
-	bool MemoryMappedFileView::MemoryMappedFileViewDetail::isResource() const noexcept
-	{
-		return (m_resource.pointer != nullptr);
 	}
 }

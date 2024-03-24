@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -45,7 +45,7 @@ namespace s3d
 		{
 			int fileHandle = -1;
 
-			const Byte* baseAddress = nullptr;
+			Byte* baseAddress = nullptr;
 
 			size_t mapLength = 0;
 
