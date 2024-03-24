@@ -80,7 +80,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Result<void, size_t> Base64Value::decodeToMemory(void* dst) const
+	Result<size_t, size_t> Base64Value::decodeToMemory(void* dst) const
 	{
 		if ((not m_base64.empty()) && (not dst))
 		{
@@ -94,7 +94,7 @@ namespace s3d
 			return Err{ result.count };
 		}
 
-		return{};
+		return result.count;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Result<void, size_t> Base64Value::decodeToBlob(Blob& dst) const
+	Result<size_t, size_t> Base64Value::decodeToBlob(Blob& dst) const
 	{
 		if (m_base64.empty())
 		{
@@ -123,7 +123,9 @@ namespace s3d
 			return Err{ result.count };
 		}
 
-		return{};
+		dst.resize(result.count);
+
+		return result.count;
 	}
 
 	Blob Base64Value::decodeToBlob() const
@@ -146,7 +148,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//bool Base64Value::decodeToFile(const FilePathView path) const;
+	//Result<size_t, size_t> Base64Value::decodeToFile(const FilePathView path) const;
 
 	////////////////////////////////////////////////////////////////
 	//

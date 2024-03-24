@@ -145,11 +145,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Base64 値をデコードした結果をメモリに格納します。
+		/// @brief Base64 値をデコードした結果をメモリに書き込みます。
 		/// @param dst 格納先のメモリの先頭ポインタ
-		/// @return デコードに成功した場合は成功値 (void), それ以外の場合は Base64 上のエラーの位置を示すエラー値
+		/// @return デコードに成功した場合は書き込んだデータのサイズ、それ以外の場合は Base64 上のエラーの位置を示すエラー値
 		/// @remark dst には少なくとも `.getBinarySize()` バイトの書き込み可能なメモリが確保されている必要があります。
-		Result<void, size_t> decodeToMemory(void* dst) const;
+		Result<size_t, size_t> decodeToMemory(void* dst) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -159,8 +159,8 @@ namespace s3d
 
 		/// @brief Base64 値をデコードした結果を Blob に格納します。
 		/// @param dst 格納先の Blob
-		/// @return デコードに成功した場合は成功値 (void), それ以外の場合は Base64 上のエラーの位置を示すエラー値
-		Result<void, size_t> decodeToBlob(Blob& dst) const;
+		/// @return デコードに成功した場合は格納したデータのサイズ、それ以外の場合は Base64 上のエラーの位置を示すエラー値
+		Result<size_t, size_t> decodeToBlob(Blob& dst) const;
 
 		/// @brief Base64 値をデコードした結果を Blob で返します。
 		/// @return デコードに成功した場合は Blob, それ以外の場合は空の Blob
@@ -175,8 +175,8 @@ namespace s3d
 
 		/// @brief Base64 値をデコードした結果をファイルに保存します。
 		/// @param path 保存先のファイルパス
-		/// @return 保存に成功した場合 true, それ以外の場合は false
-		bool decodeToFile(FilePathView path) const;
+		/// @return デコードに成功した場合は保存したデータのサイズ、それ以外の場合は Base64 上のエラーの位置を示すエラー値
+		Result<size_t, size_t> decodeToFile(FilePathView path) const;
 
 		////////////////////////////////////////////////////////////////
 		//
