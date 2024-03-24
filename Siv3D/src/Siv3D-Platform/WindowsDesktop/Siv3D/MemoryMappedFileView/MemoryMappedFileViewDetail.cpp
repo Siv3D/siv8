@@ -96,7 +96,7 @@ namespace s3d
 			m_file =
 			{
 				.fileHandle		= fileHandle,
-				.fileMapping	= INVALID_HANDLE_VALUE,
+				.fileMapping	= nullptr,
 				.baseAddress	= nullptr,
 			};
 
@@ -147,6 +147,11 @@ namespace s3d
 	MappedMemory MemoryMappedFileView::MemoryMappedFileViewDetail::map(const size_t offset, const size_t requestSize)
 	{
 		if (not m_info.isOpen)
+		{
+			return{};
+		}
+
+		if (m_file.fileMapping)
 		{
 			return{};
 		}
