@@ -25,7 +25,7 @@ static std::string CreateTestData()
 	return s;
 }
 
-TEST_CASE("MemoryMappedFileView")
+TEST_CASE("MemoryMappedFileView.TextFileTest")
 {
 	const std::string testData = CreateTestData();
 	{
@@ -80,6 +80,52 @@ TEST_CASE("MemoryMappedFileView")
 
 			std::string s(static_cast<const char*>(mapped.data), mapped.size);
 			CHECK_EQ(s, testData.substr(100, 200));
+
+			CHECK_FALSE(file.mapAll());
+			CHECK_FALSE(file.map(0, 0));
+			CHECK_FALSE(file.map(0, 100));
+			file.unmap();
+		}
+	}
+}
+
+
+TEST_CASE("MemoryMappedFileView.ImageFileTest")
+{
+	const Blob testData{ U"example/windmill.png" };
+	
+	{
+		MemoryMappedFileView file{ U"example/windmill.png" };
+		CHECK(file.isOpen());
+		CHECK(static_cast<bool>(file));
+		CHECK_EQ(file.size(), testData.size());
+
+		{
+			const auto mapped = file.mapAll();
+			CHECK(mapped.data != nullptr);
+			
+			Blob blob{ mapped.data, mapped.size };
+			CHECK_EQ(blob, testData);
+
+			CHECK_FALSE(file.mapAll());
+			CHECK_FALSE(file.map(0, 0));
+			CHECK_FALSE(file.map(0, 100));
+			file.unmap();
+		}
+	}
+
+	{
+		MemoryMappedFileView file{ U"example/windmill.png" };
+		CHECK(file.isOpen());
+		CHECK(static_cast<bool>(file));
+		CHECK_EQ(file.size(), testData.size());
+
+		{
+			const auto mapped = file.map(100'000, 100'000);
+			CHECK(mapped.data != nullptr);
+
+			Blob blob{ mapped.data, mapped.size };
+			CHECK_EQ(blob, Blob{ (testData.data() + 100'000), 100'000 });
 
 			CHECK_FALSE(file.mapAll());
 			CHECK_FALSE(file.map(0, 0));

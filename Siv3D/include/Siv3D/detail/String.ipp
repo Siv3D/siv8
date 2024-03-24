@@ -1266,7 +1266,7 @@ namespace s3d
 
 	constexpr StringView String::substrView(size_type offset, size_type count) const&
 	{
-		const size_t strSize = size();
+		const size_t strSize = m_string.size();
 
 		if (strSize < offset)
 		{

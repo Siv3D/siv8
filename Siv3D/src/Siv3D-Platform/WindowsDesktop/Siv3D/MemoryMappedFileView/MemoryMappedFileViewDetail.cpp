@@ -151,12 +151,15 @@ namespace s3d
 			return{};
 		}
 
+		LOG_TEST(U"detail::g_granularity: {}"_fmt(detail::g_granularity));
+
+		// すでにファイルがマップされている場合は何もしない
 		if (m_file.fileMapping)
 		{
 			return{};
 		}
 
-		if (m_info.fileSize <= offset)
+		if (m_info.fileSize <= static_cast<int64>(offset))
 		{
 			return{};
 		}
