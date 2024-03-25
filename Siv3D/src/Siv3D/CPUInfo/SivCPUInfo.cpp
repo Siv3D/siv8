@@ -41,7 +41,7 @@ namespace s3d
 
 	static const CPUInfo g_CPUInfo = detail::InitCPUInfo();
 	
-	namespace Platform::Windows::System
+	namespace Platform::X86_64::System
 	{
 		const CPUInfo& GetCPUInfo() noexcept
 		{
@@ -51,3 +51,32 @@ namespace s3d
 }
 
 # endif
+
+namespace s3d
+{
+	bool SupportsAVX() noexcept
+	{
+	# if SIV3D_CPU(X86_64)
+
+		return g_CPUInfo.features.avx;
+
+	# else
+
+		return false;
+
+	# endif
+	}
+
+	bool SupportsAVX2() noexcept
+	{
+	# if SIV3D_CPU(X86_64)
+
+		return g_CPUInfo.features.avx2;
+
+	# else
+
+		return false;
+
+	# endif
+	}
+}

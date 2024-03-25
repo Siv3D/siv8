@@ -368,6 +368,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\FormatUtility\SivFormatUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Hash\SivHash.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HSV\SivHSV.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Int128\SivInt128.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />

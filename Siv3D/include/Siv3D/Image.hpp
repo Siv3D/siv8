@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "Array.hpp"
 # include "AlignedAllocator.hpp"
+# include "ColorHSV.hpp"
 
 namespace s3d
 {
@@ -25,8 +26,14 @@ namespace s3d
 
 		/// @brief 作成可能な最大の画像の高さ（ピクセル）
 		static constexpr int32 MaxHeight	= 16384;
+		
+		/// @brief 画像データのアライメント（バイト）
+		/// @remark メモリはこの値の倍数で確保されます。
+		static constexpr int32 DataAlignment	= 32;
 
-		using base_type					= Array<Color, AlignedAllocator<Color, 64>>;
+		static constexpr int32 PixelAlignment	= (DataAlignment / sizeof(Color));
+
+		using base_type					= Array<Color, AlignedAllocator<Color, DataAlignment>>;
 		using iterator					= base_type::iterator;
 		using const_iterator			= base_type::const_iterator;
 		using reverse_iterator			= base_type::reverse_iterator;
@@ -243,41 +250,71 @@ namespace s3d
 		[[nodiscard]]
 		explicit operator bool() const noexcept;
 
-
-
-
-
-
-
-
-
-
-
-
+		////////////////////////////////////////////////////////////////
+		//
+		//	horizontalAspectRatio
+		//
+		////////////////////////////////////////////////////////////////
 
 		template <class Type = double>
 		[[nodiscard]]
 		Type horizontalAspectRatio() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	shrink_to_fit
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 使用するメモリ量を現在のサイズまで切り詰めます。
 		void shrink_to_fit();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	clear
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 画像を消去し、空の画像にします。
 		/// @remark メモリを解放したい場合は、さらに shrink_to_fit() を呼びます。
 		void clear() noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	release
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 画像を消去して空の画像にし、使用するメモリ量を切り詰めます。
 		/// @remark `clear()` + `shrink_to_fit()` と同じです。
 		void release();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	swap
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 画像を別の画像と交換します。
 		/// @param image 交換する画像
 		void swap(Image& image) noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	cloned
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 内容をコピーした新しい画像を作成して返します。
 		/// @return 内容をコピーした新しい画像
 		[[nodiscard]]
 		Image cloned() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator []
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した行の先頭ポインタを返します。
 		/// @param y 位置（行）
@@ -285,12 +322,6 @@ namespace s3d
 		/// @return 指定した行の先頭ポインタ
 		[[nodiscard]]
 		Color* operator [](size_t y);
-
-		/// @brief 指定した位置のピクセルの参照を返します。
-		/// @param pos 位置
-		/// @return 指定した位置のピクセルの参照
-		[[nodiscard]]
-		Color& operator [](Point pos);
 
 		/// @brief 指定した行の先頭ポインタを返します。
 		/// @param y 位置（行）
@@ -303,31 +334,162 @@ namespace s3d
 		/// @param pos 位置
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
+		Color& operator [](Point pos);
+
+		/// @brief 指定した位置のピクセルの参照を返します。
+		/// @param pos 位置
+		/// @return 指定した位置のピクセルの参照
+		[[nodiscard]]
 		const Color& operator [](Point pos) const;
 
-		/// @brief 画像データの先頭のポインタを返します。
-		/// @return 画像データの先頭のポインタ
+	# ifdef __cpp_multidimensional_subscript
+
+		/// @brief 指定した位置のピクセルの参照を返します。
+		/// @param x 位置（列）
+		/// @param y 位置（行）
+		/// @return 指定した位置のピクセルの参照
+		[[nodiscard]]
+		Color& operator [](size_t x, size_t y);
+
+		/// @brief 指定した位置のピクセルの参照を返します。
+		/// @param x 位置（列）
+		/// @param y 位置（行）
+		/// @return 指定した位置のピクセルの参照
+		[[nodiscard]]
+		const Color& operator [](size_t x, size_t y) const;
+
+	# endif
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	data
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 画像データの先頭ポインタを返します。
+		/// @return 画像データの先頭ポインタ
 		[[nodiscard]]
 		Color* data();
 
-		/// @brief 画像データの先頭のポインタを返します。
-		/// @return 画像データの先頭のポインタ
+		/// @brief 画像データの先頭ポインタを返します。
+		/// @return 画像データの先頭ポインタ
 		[[nodiscard]]
 		const Color* data() const;
 
-		/// @brief 画像データの先頭のポインタを uint8* 型で返します。
-		/// @return 画像データの先頭のポインタ
+		////////////////////////////////////////////////////////////////
+		//
+		//	dataAsUint8
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 画像データの先頭ポインタを uint8* 型で返します。
+		/// @return 画像データの先頭ポインタ
 		[[nodiscard]]
 		uint8* dataAsUint8();
 
-		/// @brief 画像データの先頭のポインタを uint8* 型で返します。
-		/// @return 画像データの先頭のポインタ
+		/// @brief 画像データの先頭ポインタを uint8* 型で返します。
+		/// @return 画像データの先頭ポインタ
 		[[nodiscard]]
 		const uint8* dataAsUint8() const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	begin, end
+		//
+		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		iterator begin() noexcept;
 
+		[[nodiscard]]
+		iterator end() noexcept;
 
+		[[nodiscard]]
+		const_iterator begin() const noexcept;
+
+		[[nodiscard]]
+		const_iterator end() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	cbegin, cend
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		const_iterator cbegin() const noexcept;
+
+		[[nodiscard]]
+		const_iterator cend() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rbegin, rend
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		reverse_iterator rbegin() noexcept;
+
+		[[nodiscard]]
+		reverse_iterator rend() noexcept;
+
+		[[nodiscard]]
+		const_reverse_iterator rbegin() const noexcept;
+
+		[[nodiscard]]
+		const_reverse_iterator rend() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	crbegin, crend
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		const_reverse_iterator crbegin() const noexcept;
+
+		[[nodiscard]]
+		const_reverse_iterator crend() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fill
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 画像を指定した色で塗りつぶします。
+		/// @param color 塗りつぶしの色
+		void fill(Color color) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	resize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 画像のデータのサイズを変更します。
+		/// @param width 新しい幅（ピクセル）
+		/// @param height 新しい高さ（ピクセル）
+		/// @remark サイズが変更された場合、画像データの内容は不定になります。
+		void resize(size_t width, size_t height);
+
+		/// @brief 画像のデータのサイズを変更します。
+		/// @param size 新しい幅と高さ（ピクセル）
+		/// @remark サイズが変更された場合、画像データの内容は不定になります。
+		void resize(Size size);
+
+		void resize(size_t width, size_t height, Color fillColor);
+
+		void resize(Size size, Color fillColor);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	resizeRows
+		//
+		////////////////////////////////////////////////////////////////
+
+		void resizeRows(size_t rows, Color fillColor);
 
 
 
