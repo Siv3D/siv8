@@ -45,6 +45,8 @@ namespace s3d
 			template <class SeedSequence>
 			void seed(SeedSequence&& seedSequence) noexcept;
 
+			/// @brief 乱数を生成します。 | Generates a pseudo-random value.
+			/// @return 生成された乱数 | A generated pseudo-random value
 			result_type operator()() noexcept;
 
 			/// @brief [0, 1) の範囲の乱数を生成します。 | Generates a pseudo-random value in [0, 1)
@@ -52,9 +54,13 @@ namespace s3d
 			[[nodiscard]]
 			double generateReal() noexcept;
 
+			/// @brief 生成する乱数の最小値を返します。 | Returns the minimum value of generated random numbers.
+			/// @return 生成する乱数の最小値 | The minimum value of generated random numbers
 			[[nodiscard]]
 			static constexpr result_type min() noexcept;
 
+			/// @brief 生成する乱数の最大値を返します。 | Returns the maximum value of generated random numbers.
+			/// @return 生成する乱数の最大値 | The maximum value of generated random numbers
 			[[nodiscard]]
 			static constexpr result_type max() noexcept;
 

@@ -236,6 +236,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの Point が等しいかを返します。
+		/// @param lhs 一方の Point
+		/// @param rhs もう一方の Point
+		/// @return 2 つの Point が等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const Point lhs, const Point rhs) noexcept
 		{
@@ -342,8 +346,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 現在の座標から移動します。
+		/// @param _x X 方向の移動量
+		/// @param _y Y 方向の移動量
+		/// @return *this
 		constexpr Point& moveBy(value_type _x, value_type _y) noexcept;
 
+		/// @brief 現在の座標から移動します。
+		/// @param p 移動量
+		/// @return *this
 		constexpr Point& moveBy(Point p) noexcept;
 
 		////////////////////////////////////////////////////////////////
