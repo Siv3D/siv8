@@ -22,19 +22,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief ファイルの操作
+	/// @brief ファイルの操作 | File action
 	enum class FileAction : uint8
 	{
-		/// @brief 不明な操作
+		/// @brief 不明な操作 | Unknown operation
 		Unknown,
 
-		/// @brief ファイルが新規追加された
+		/// @brief ファイルが新規追加された | A file was added
 		Added,
 
-		/// @brief ファイルが削除された
+		/// @brief ファイルが削除された | A file was removed
 		Removed,
 
-		/// @brief ファイルの内容が更新された
+		/// @brief ファイルの内容が更新された | A file was modified
 		Modified,
 	};
 

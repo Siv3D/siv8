@@ -524,7 +524,7 @@ namespace s3d
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Color& value)
 		{
-			CharType unused;
+			CharType unused{};
 			input >> unused;
 
 			if (unused == CharType('#'))
@@ -535,7 +535,7 @@ namespace s3d
 			}
 			else
 			{
-				uint32 cols[4];
+				uint32 cols[4]{};
 				input
 					>> cols[0] >> unused
 					>> cols[1] >> unused

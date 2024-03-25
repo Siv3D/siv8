@@ -46,6 +46,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 加算代入 | Addition assignment
+		/// @param value 加算する値 | Value to add
+		/// @return *this
 		constexpr KahanSummation& operator +=(Float value) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -54,6 +57,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 減算代入 | Subtraction assignment
+		/// @param value 減算する値 | Value to subtract
+		/// @return *this
 		constexpr KahanSummation& operator -=(Float value) noexcept;
 
 		////////////////////////////////////////////////////////////////
