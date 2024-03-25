@@ -73,13 +73,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief x 成分へのポインタを返します。
-		/// @rematk 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
 		/// @return x 成分へのポインタ
 		[[nodiscard]]
 		constexpr value_type* getPointer() noexcept;
 
 		/// @brief x 成分へのポインタを返します。
-		/// @rematk 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
 		/// @return x 成分へのポインタ
 		[[nodiscard]]
 		constexpr const value_type* getPointer() const noexcept;

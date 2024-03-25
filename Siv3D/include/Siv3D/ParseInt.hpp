@@ -23,10 +23,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 文字列をパースして整数値を返します。 | Parses a string and returns an integer value.
+	/// @tparam Int 整数の型 | Integer type
+	/// @param s パースする文字列 | String to parse
+	/// @param radix 基数（2 から 36 まで） | Radix (from 2 to 36)
+	/// @return パースした整数値 | Parsed integer value
+	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::Integral Int>
 	[[nodiscard]]
 	Int ParseInt(std::string_view s, int32 radix = 10);
 
+	/// @brief 文字列をパースして整数値を返します。 | Parses a string and returns an integer value.
+	/// @tparam Int 整数の型 | Integer type
+	/// @param s パースする文字列 | String to parse
+	/// @param radix 基数（2 から 36 まで） | Radix (from 2 to 36)
+	/// @return パースした整数値 | Parsed integer value
+	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::Integral Int>
 	[[nodiscard]]
 	Int ParseInt(StringView s, int32 radix = 10);

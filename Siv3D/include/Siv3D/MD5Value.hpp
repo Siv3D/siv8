@@ -39,10 +39,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 空のデータに対する MD5 ハッシュ値 (d41d8cd98f00b204e9800998ecf8427e) で初期化
+		/// @brief 空のデータに対する MD5 ハッシュ値 (d41d8cd98f00b204e9800998ecf8427e) を作成します。
 		[[nodiscard]]
 		constexpr MD5Value() noexcept;
 
+		/// @brief MD5 ハッシュ値を作成します。
+		/// @param md5 MD5 ハッシュ値
 		[[nodiscard]]
 		explicit constexpr MD5Value(const std::array<uint8, 16>& md5) noexcept;
 
@@ -74,6 +76,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の MD5 ハッシュ値と入れ替えます。
+		/// @param other 別の MD5 ハッシュ値
 		constexpr void swap(MD5Value& other);
 
 		////////////////////////////////////////////////////////////////
@@ -113,8 +117,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの MD5 ハッシュ値が等しいかを返します。
+		/// @param lhs 一方の MD5 ハッシュ値
+		/// @param rhs もう一方の MD5 ハッシュ値
+		/// @return 2 つの MD5 ハッシュ値が等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
-		friend constexpr bool operator ==(const MD5Value&, const MD5Value&) = default;
+		friend constexpr bool operator ==(const MD5Value& lhs, const MD5Value& rhs) = default;
 
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const MD5Value& lhs, const MD5Value& rhs) = default;
@@ -125,6 +133,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの MD5 ハッシュ値を入れ替えます。
+		/// @param lhs 一方の MD5 ハッシュ値
+		/// @param rhs もう一方の MD5 ハッシュ値
 		friend void swap(MD5Value& lhs, MD5Value& rhs) noexcept
 		{
 			lhs.swap(rhs);
