@@ -64,6 +64,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Grid.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HardwareRNG.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HSV.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Image.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MapFormatter.ipp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HashTable.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HeterogeneousLookupHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HSV.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Image.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Logger.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LoggerBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp" />

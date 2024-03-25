@@ -945,6 +945,221 @@
 // ウィンドウ | Window
 # include <Siv3D/Window.hpp> // ToDo
 
+////////////////////////////////////////////////////////////////
+//
+//	ダイアログ | Dialog
+//
+////////////////////////////////////////////////////////////////
+
+//// ファイルダイアログ | File dialog
+//# include <Siv3D/Dialog.hpp>
+//
+//// ファイル拡張子フィルタ | File extension filter
+//# include <Siv3D/FileFilter.hpp>
+
+
+////////////////////////////////////////////////////////////////
+//
+//	電源の状態 | Power Status
+//
+////////////////////////////////////////////////////////////////
+
+//// 電源の接続状態 | AC line status
+//# include <Siv3D/ACLineStatus.hpp>
+//
+//// バッテリーの残量 | Battery status
+//# include <Siv3D/BatteryStatus.hpp>
+//
+//// 電源の状態 | Power status
+//# include <Siv3D/PowerStatus.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	文章読み上げ | Text to Speech
+//
+////////////////////////////////////////////////////////////////
+
+//// 言語コード | Language code
+//# include <Siv3D/LanguageCode.hpp>
+//
+//// 文章読み上げ | Text-to-speech
+//# include <Siv3D/TextToSpeech.hpp>
+//
+//// 文章読み上げオブジェクト | Text to speech object
+//# include <Siv3D/Say.hpp>
+//
+//// KlattTTS のパラメータ | Parameters for KlattTTS
+//# include <Siv3D/KlattTTSParameters.hpp>
+//
+//// Klatt 方式による音声読み上げ | Text-to-speech using Klatt's method
+//# include <Siv3D/KlattTTS.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	ドラッグ & ドロップ | Drag & Drop
+//
+////////////////////////////////////////////////////////////////
+
+//// ドラッグするアイテムの種類 | Dragged item type
+//# include <Siv3D/DragItemType.hpp>
+//
+//// ドラッグの状態 | Dragging status
+//# include <Siv3D/DragStatus.hpp>
+//
+//// ドロップされたファイルパスの情報 | Dropped file path
+//# include <Siv3D/DroppedFilePath.hpp>
+//
+//// ドロップされたテキストの情報 | Dropped text
+//# include <Siv3D/DroppedText.hpp>
+//
+//// ドラッグ＆ドロップ | Drag & drop
+//# include <Siv3D/DragDrop.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	メッセージボックス | Message Box
+//
+////////////////////////////////////////////////////////////////
+
+//// メッセージボックスの結果 | Result from messagebox
+//# include <Siv3D/MessageBoxResult.hpp>
+//
+//// メッセージボックスのスタイル | Message box style
+//# include <Siv3D/MessageBoxStyle.hpp>
+//
+//// メッセージボックス | Message box
+//# include <Siv3D/MessageBox.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	トースト通知 | Toast Notification
+//
+////////////////////////////////////////////////////////////////
+
+//// トースト通知アイテム | Toast notification item
+//# include <Siv3D/ToastNotificationItem.hpp>
+//
+//// トースト通知の状態 | Toast notification state
+//# include <Siv3D/ToastNotificationState.hpp>
+//
+//// トースト通知 | Toast notification
+//# include <Siv3D/ToastNotification.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	画像処理 | Image Processing
+//
+////////////////////////////////////////////////////////////////
+
+//// 画像のフォーマット | Image format
+//# include <Siv3D/ImageFormat.hpp>
+//
+//// ピクセルフォーマット | Pixel format
+//# include <Siv3D/ImagePixelFormat.hpp>
+//
+//// 画像の情報 | Image information
+//# include <Siv3D/ImageInfo.hpp>
+//
+//// ピクセルアドレスモード | Image address mode
+//# include <Siv3D/ImageAddressMode.hpp>
+//
+//// 境界線の種類 | Border type
+//# include <Siv3D/BorderType.hpp>
+//
+//// 適応的閾値処理の手法 | Adaptive thresholding method
+//# include <Siv3D/AdaptiveThresholdMethod.hpp>
+//
+//// 塗りつぶし処理の境界処理手法 | Flood fill method
+//# include <Siv3D/FloodFillConnectivity.hpp>
+//
+//// 拡大縮小時の補間アルゴリズム | Interpolation algorithms for image scaling
+//# include <Siv3D/InterpolationAlgorithm.hpp>
+//
+//// エッジ保持フィルタ | Edge preserving filter
+//# include <Siv3D/EdgePreservingFilterType.hpp>
+//
+//// ボックスフィルタ | Box filter
+//# include <Siv3D/BoxFilterSize.hpp>
+
+// 画像 | Image
+# include <Siv3D/Image.hpp>
+
+//// 追加の画像処理 | Extra image processing
+//# include <Siv3D/ImageProcessing.hpp>
+//
+//// カスケード分類器 | Cascade classifier
+//# include <Siv3D/CascadeClassifier.hpp>
+//
+//// 画像の関心領域 | Image region of interest
+//# include <Siv3D/ImageROI.hpp>
+//
+//// 背景抽出のフラグ | Grab cut flag
+//# include <Siv3D/GrabCutClass.hpp>
+//
+//// 背景抽出 | Grab cut
+//# include <Siv3D/GrabCut.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	画像形式 | Image Encoding
+//
+////////////////////////////////////////////////////////////////
+
+//# include <Siv3D/IImageDecoder.hpp>
+//# include <Siv3D/IImageEncoder.hpp>
+//
+//# include <Siv3D/ImageEncoder.hpp>
+//# include <Siv3D/ImageDecoder.hpp>
+//
+//# include <Siv3D/PNGFilter.hpp>
+//# include <Siv3D/ImageFormat/PNGDecoder.hpp>
+//# include <Siv3D/ImageFormat/PNGEncoder.hpp>
+//
+//# include <Siv3D/ImageFormat/JPEGDecoder.hpp>
+//# include <Siv3D/ImageFormat/JPEGEncoder.hpp>
+//# include <Siv3D/Exif.hpp>
+//
+//# include <Siv3D/ImageFormat/BMPDecoder.hpp>
+//# include <Siv3D/ImageFormat/BMPEncoder.hpp>
+//
+//# include <Siv3D/WebPMethod.hpp>
+//# include <Siv3D/ImageFormat/WebPDecoder.hpp>
+//# include <Siv3D/ImageFormat/WebPEncoder.hpp>
+//
+//# include <Siv3D/ImageFormat/GIFDecoder.hpp>
+//# include <Siv3D/ImageFormat/GIFEncoder.hpp>
+//
+//# include <Siv3D/ImageFormat/TIFFDecoder.hpp>
+////# include <Siv3D/ImageFormat/TIFFEncoder.hpp>
+//
+//# include <Siv3D/ImageFormat/TGADecoder.hpp>
+//# include <Siv3D/ImageFormat/TGAEncoder.hpp>
+//
+//# include <Siv3D/PPMType.hpp>
+//# include <Siv3D/ImageFormat/PPMDecoder.hpp>
+//# include <Siv3D/ImageFormat/PPMEncoder.hpp>
+//
+//# include <Siv3D/ImageFormat/SVGDecoder.hpp>
+//
+//// SVG 画像 | SVG image
+//# include <Siv3D/SVG.hpp>
+//
+//// アニメーション　GIF の読み込み | Animated GIF reader
+//# include <Siv3D/AnimatedGIFReader.hpp>
+//
+//// アニメーション GIF の書き出し | Animated GIF writer
+//# include <Siv3D/AnimatedGIFWriter.hpp>
+//
+////# include <Siv3D/ImageFormat/DDSDecoder.hpp>
+////# include <Siv3D/ImageFormat/DDSEncoder.hpp>
+////# include <Siv3D/ImageFormat/JPEG2000Decoder.hpp>
+////# include <Siv3D/ImageFormat/JPEG2000Encoder.hpp>
+
+
+
+
+
+
 
 
 
