@@ -347,6 +347,7 @@ namespace s3d
 		/// @brief 指定した位置のピクセルの参照を返します。
 		/// @param x 位置（列）
 		/// @param y 位置（行）
+		/// @remark image[x, y] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
 		Color& operator [](size_t x, size_t y);
@@ -354,6 +355,7 @@ namespace s3d
 		/// @brief 指定した位置のピクセルの参照を返します。
 		/// @param x 位置（列）
 		/// @param y 位置（行）
+		/// @remark image[x, y] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
 		const Color& operator [](size_t x, size_t y) const;
@@ -368,11 +370,15 @@ namespace s3d
 
 		/// @brief 画像データの先頭ポインタを返します。
 		/// @return 画像データの先頭ポインタ
+		/// @remark 先頭ポインタは `DataAlignment` にアラインメントされています。
+		/// @remark メモリは `DataAlignment` の倍数になるよう（必要な場合は余分に）確保されています。
 		[[nodiscard]]
 		Color* data();
 
 		/// @brief 画像データの先頭ポインタを返します。
 		/// @return 画像データの先頭ポインタ
+		/// @remark 先頭ポインタは `DataAlignment` にアラインメントされています。
+		/// @remark メモリは `DataAlignment` の倍数になるよう（必要な場合は余分に）確保されています。
 		[[nodiscard]]
 		const Color* data() const;
 
@@ -384,11 +390,15 @@ namespace s3d
 
 		/// @brief 画像データの先頭ポインタを uint8* 型で返します。
 		/// @return 画像データの先頭ポインタ
+		/// @remark 先頭ポインタは `DataAlignment` にアラインメントされています。
+		/// @remark メモリは `DataAlignment` の倍数になるよう（必要な場合は余分に）確保されています。
 		[[nodiscard]]
 		uint8* dataAsUint8();
 
 		/// @brief 画像データの先頭ポインタを uint8* 型で返します。
 		/// @return 画像データの先頭ポインタ
+		/// @remark 先頭ポインタは `DataAlignment` にアラインメントされています。
+		/// @remark メモリは `DataAlignment` の倍数になるよう（必要な場合は余分に）確保されています。
 		[[nodiscard]]
 		const uint8* dataAsUint8() const;
 
@@ -468,28 +478,46 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 画像のデータのサイズを変更します。
+		/// @brief 画像のサイズを変更します。
 		/// @param width 新しい幅（ピクセル）
 		/// @param height 新しい高さ（ピクセル）
-		/// @remark サイズが変更された場合、画像データの内容は不定になります。
+		/// @remark サイズが変更された場合、画像の内容は不定になります。
 		void resize(size_t width, size_t height);
 
-		/// @brief 画像のデータのサイズを変更します。
+		/// @brief 画像のサイズを変更します。
 		/// @param size 新しい幅と高さ（ピクセル）
-		/// @remark サイズが変更された場合、画像データの内容は不定になります。
+		/// @remark サイズが変更された場合、画像の内容は不定になります。
 		void resize(Size size);
 
+		/// @brief 画像のサイズを変更します。
+		/// @param width 新しい幅（ピクセル）
+		/// @param height 新しい高さ（ピクセル）
+		/// @param fillColor リサイズ後の画像を塗りつぶす色
+		/// @remark リサイズ後の画像は `fillColor` で塗りつぶされます。
 		void resize(size_t width, size_t height, Color fillColor);
 
+		/// @brief 画像のサイズを変更します。
+		/// @param size 新しい幅と高さ（ピクセル）
+		/// @param fillColor リサイズ後の画像を塗りつぶす色
+		/// @remark リサイズ後の画像は `fillColor` で塗りつぶされます。
 		void resize(Size size, Color fillColor);
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	resizeRows
+		//	resizeHeight
 		//
 		////////////////////////////////////////////////////////////////
 
-		void resizeRows(size_t rows, Color fillColor);
+		/// @brief 画像の高さを変更します。
+		/// @param height 新しい高さ（ピクセル）
+		/// @remark 高さが増えた部分は `Color{ 0, 0, 0, 0 }` で塗りつぶされます。
+		void resizeHeight(size_t height);
+
+		/// @brief 画像の高さを変更します。
+		/// @param height 新しい高さ（ピクセル）
+		/// @param fillColor 増えた部分を塗りつぶす色
+		/// @remark 高さが増えた部分は `fillColor` で塗りつぶされます。
+		void resizeHeight(size_t height, Color fillColor);
 
 
 
@@ -524,7 +552,7 @@ namespace s3d
 		base_type m_pixels;
 
 		[[nodiscard]]
-		static constexpr Size ClampImageSize(Size size) noexcept;
+		static constexpr Size ValidImageSizeOrEmpty(Size size) noexcept;
 	};
 }
 

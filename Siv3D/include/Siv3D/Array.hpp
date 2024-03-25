@@ -895,6 +895,12 @@ namespace s3d
 		/// @return *this
 		constexpr Array& append(std::initializer_list<value_type> list);
 
+		/// @brief 配列の末尾に要素を追加します。
+		/// @param count 追加する個数
+		/// @param value 追加する値
+		/// @return *this
+		constexpr Array& append(size_type count, const value_type& value);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	choice

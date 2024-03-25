@@ -848,6 +848,13 @@ namespace s3d
 		return *this;
 	}
 
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(const size_type count, const value_type& value)
+	{
+		m_container.insert(m_container.end(), count, value);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	choice

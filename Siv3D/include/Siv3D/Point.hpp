@@ -501,8 +501,9 @@ namespace s3d
 		/// @brief 幅 x, 高さ y の長方形の面積を返します。
 		/// @return 幅 x, 高さ y の長方形の面積
 		/// @remark `x * y` を返します。要素の符号によっては負の値を返すことがあります。
+		template <class Type = int64>
 		[[nodiscard]]
-		constexpr int32 area() const noexcept;
+		constexpr Type area() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -39,11 +39,11 @@ namespace s3d
 		: Image{ Size{ width, height }, color } {}
 
 	inline Image::Image(const Size size)
-		: m_size{ ClampImageSize(size) }
+		: m_size{ ValidImageSizeOrEmpty(size) }
 		, m_pixels(m_size.area()) {}
 
 	inline Image::Image(const Size size, const Color color)
-		: m_size{ ClampImageSize(size) }
+		: m_size{ ValidImageSizeOrEmpty(size) }
 		, m_pixels(m_size.area(), color) {}
 
 	////////////////////////////////////////////////////////////////
@@ -383,13 +383,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Size Image::ClampImageSize(const Size size) noexcept
+	constexpr Size Image::ValidImageSizeOrEmpty(const Size size) noexcept
 	{
-		if ((size.x <= 0) || (size.y <= 0))
+		if (InRange(size.x, 1, Image::MaxWidth)
+			&& InRange(size.y, 1, Image::MaxHeight))
+		{
+			return size;
+		}
+		else
 		{
 			return{ 0, 0 };
 		}
-
-		return{ Min(size.x, MaxWidth), Min(size.y, MaxHeight) };
 	}
 }
