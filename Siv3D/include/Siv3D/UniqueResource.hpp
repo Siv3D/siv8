@@ -34,8 +34,9 @@ namespace s3d
 		[[nodiscard]]
 		UniqueResource() = default;
 
+		template <class R, class D>
 		[[nodiscard]]
-		explicit UniqueResource(Resource&& resource, Deleter&& deleter) noexcept;
+		explicit UniqueResource(R&& resource, D&& deleter) noexcept;
 
 		[[nodiscard]]
 		UniqueResource(UniqueResource&& other) noexcept;
