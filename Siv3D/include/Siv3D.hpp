@@ -308,8 +308,8 @@
 // 多倍長整数 | Arbitrary precision integer type
 # include <Siv3D/BigInt.hpp> // ToDo
 
-//// 多倍長浮動小数点数 | 100 decimal digits precision floating point type
-//# include <Siv3D/BigFloat.hpp>
+// 多倍長浮動小数点数 | 100 decimal digits precision floating point type
+# include <Siv3D/BigFloat.hpp> // ToDo
 
 // 浮動小数点数型の共通型 | Common Float
 # include <Siv3D/CommonFloat.hpp>
