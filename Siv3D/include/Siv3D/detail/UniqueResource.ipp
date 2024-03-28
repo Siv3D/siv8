@@ -20,9 +20,10 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Resource, class Deleter>
-	inline UniqueResource<Resource, Deleter>::UniqueResource(Resource&& resource, Deleter&& deleter) noexcept
-		: m_resource{ std::forward<Resource>(resource) }
-		, m_deleter{ std::forward<Deleter>(deleter) } {}
+	template <class R, class D>
+	inline UniqueResource<Resource, Deleter>::UniqueResource(R&& resource, D&& deleter) noexcept
+		: m_resource{ std::forward<R>(resource) }
+		, m_deleter{ std::forward<D>(deleter) } {}
 
 	template <class Resource, class Deleter>
 	inline UniqueResource<Resource, Deleter>::UniqueResource(UniqueResource&& other) noexcept
