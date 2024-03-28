@@ -12,33 +12,44 @@
 # pragma once
 
 namespace s3d
-{		
+{
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <std::invocable ExitFunction>
-	constexpr ScopeExit<ExitFunction>::ScopeExit(ScopeExit&& other) noexcept(std::is_nothrow_move_constructible_v<ExitFunction>
-																				|| std::is_nothrow_copy_constructible_v<ExitFunction>)
-		: m_exitFunction{ std::move(other.m_exitFunction) }
+	template <detail::ExitFunction ExitFunction>
+	constexpr ScopeExit<ExitFunction>::ScopeExit(ScopeExit&& other) noexcept(std::is_nothrow_copy_constructible_v<ExitFunction>)
+		: m_exitFunction{ other.m_exitFunction }
 		, m_active{ std::exchange(other.m_active, false) } {}
-	
-	template <std::invocable ExitFunction>
+
+	template <detail::ExitFunction ExitFunction>
+	constexpr ScopeExit<ExitFunction>::ScopeExit(ScopeExit&& other) noexcept
+		requires std::is_nothrow_move_constructible_v<ExitFunction>
+		: m_exitFunction{ std::forward<ExitFunction>(other.m_exitFunction) }
+		, m_active{ std::exchange(other.m_active, false) } {}
+
+	template <detail::ExitFunction ExitFunction>
 	template <class Fty>
-	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty>
-																				|| std::is_nothrow_constructible_v<ExitFunction, Fty&>)
-		: m_exitFunction{ std::forward<ExitFunction>(exitFunction) } {}
-		
+		requires (not std::same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>>)
+	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>)
+		: m_exitFunction{ exitFunction } {}
+
+	template <detail::ExitFunction ExitFunction>
+	template <class Fty>
+		requires ((not std::same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>>) && (not std::is_lvalue_reference_v<Fty>) && std::is_nothrow_constructible_v<ExitFunction, Fty>)
+	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept
+		: m_exitFunction{ std::forward<Fty>(exitFunction) } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <std::invocable ExitFunction>
-	constexpr ScopeExit<ExitFunction>::~ScopeExit() noexcept(std::is_nothrow_invocable_v<ExitFunction>
+	template <detail::ExitFunction ExitFunction>
+	constexpr ScopeExit<ExitFunction>::~ScopeExit() noexcept(std::is_nothrow_invocable_v<ExitFunction&>
 		&& std::is_nothrow_destructible_v<ExitFunction>)
 	{
 		if (m_active)
@@ -46,14 +57,14 @@ namespace s3d
 			std::invoke(m_exitFunction);
 		}
 	}
-		
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	release
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <std::invocable ExitFunction>
+	template <detail::ExitFunction ExitFunction>
 	constexpr void ScopeExit<ExitFunction>::release() noexcept
 	{
 		m_active = false;
