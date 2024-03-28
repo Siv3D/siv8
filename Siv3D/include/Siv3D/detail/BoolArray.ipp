@@ -316,22 +316,18 @@ namespace s3d
 	# endif
 		
 		/// @brief ジェネレータ関数を使って配列を作成します。
-		/// @tparam Fty ジェネレータ関数の型
 		/// @param size 作成する配列の要素数
 		/// @param generator ジェネレータ関数
-		template <class Fty>
 		[[nodiscard]]
-		constexpr Array(size_type size, Arg::generator_<Fty> generator) requires (std::invocable<Fty>&& std::convertible_to<std::invoke_result_t<Fty>, value_type>)
-			: Array(Generate<Fty>(size, *generator)) {}
+		constexpr Array(size_type size, Arg::generator_<FunctionRef<value_type()>> generator)
+			: Array(Generate(size, *generator)) {}
 
 		/// @brief インデックス指定ジェネレータ関数を使って配列を作成します。
-		/// @tparam Fty ジェネレータ関数の型
 		/// @param size 作成する配列の要素数
-		/// @param indexedGenerator インデックス指定ジェネレータ関数
-		template <class Fty>
+		/// @param generator インデックス指定ジェネレータ関数
 		[[nodiscard]]
-		constexpr Array(size_type size, Arg::indexedGenerator_<Fty> indexedGenerator)
-			: Array(IndexedGenerate<Fty>(size, *indexedGenerator)) {}
+		constexpr Array(size_type size, Arg::generator_<FunctionRef<value_type(size_t)>> generator)
+			: Array(IndexedGenerate(size, *generator)) {}
 
 		/// @brief 配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
@@ -2685,13 +2681,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 関数を用いて配列を生成します。
-		/// @tparam Fty 生成に使用する関数の型
 		/// @param size 生成する配列の要素数
 		/// @param generator 生成に使用する関数
 		/// @return 生成した配列
-		template <class Fty>
 		[[nodiscard]]
-		static constexpr Array Generate(size_type size, Fty generator) requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, value_type>)
+		static constexpr Array Generate(size_type size, FunctionRef<value_type()> generator)
 		{
 			Array result(Arg::reserve = size);
 
@@ -2710,13 +2704,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief インデックスと関数を用いて配列を生成します。
-		/// @tparam Fty 生成に使用する関数の型
 		/// @param size 生成する配列の要素数
-		/// @param indexedGenerator 生成に使用する関数
+		/// @param generator 生成に使用する関数
 		/// @return 生成した配列
-		template <class Fty>
 		[[nodiscard]]
-		static constexpr Array IndexedGenerate(size_type size, Fty indexedGenerator)
+		static constexpr Array IndexedGenerate(size_type size, FunctionRef<value_type(size_t)> indexedGenerator)
 		{
 			Array result(Arg::reserve = size);
 

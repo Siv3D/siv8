@@ -59,18 +59,56 @@ namespace s3d
 		Color(const Color&) = default;
 
 		/// @brief Color を作成します。
-		/// @param _r 赤成分 [0, 255]
-		/// @param _g 緑成分 [0, 255]
-		/// @param _b 青成分 [0, 255]
-		/// @param _a アルファ値 [0, 255]
+		/// @param rgb RGB 成分 [0, 255]
 		[[nodiscard]]
-		constexpr Color(value_type _r, value_type _g, value_type _b, value_type _a = 255) noexcept;
+		explicit constexpr Color(value_type rgb) noexcept;
+
+		/// @brief Color を作成します。
+		/// @param rgb RGB 成分 [0, 255]
+		[[nodiscard]]
+		explicit constexpr Color(Concept::Integral auto rgb) noexcept;
 
 		/// @brief Color を作成します。
 		/// @param rgb RGB 成分 [0, 255]
 		/// @param _a アルファ値 [0, 255]
 		[[nodiscard]]
-		explicit constexpr Color(value_type rgb, value_type _a = 255) noexcept;
+		constexpr Color(value_type rgb, value_type _a) noexcept;
+
+		/// @brief Color を作成します。
+		/// @param rgb RGB 成分 [0, 255]
+		/// @param _a アルファ値 [0, 255]
+		[[nodiscard]]
+		constexpr Color(Concept::Integral auto rgb, Concept::Integral auto _a) noexcept;
+
+		/// @brief Color を作成します。
+		/// @param _r 赤成分 [0, 255]
+		/// @param _g 緑成分 [0, 255]
+		/// @param _b 青成分 [0, 255]
+		[[nodiscard]]
+		constexpr Color(value_type _r, value_type _g, value_type _b) noexcept;
+
+		/// @brief Color を作成します。
+		/// @param _r 赤成分 [0, 255]
+		/// @param _g 緑成分 [0, 255]
+		/// @param _b 青成分 [0, 255]
+		[[nodiscard]]
+		constexpr Color(Concept::Integral auto _r, Concept::Integral auto _g, Concept::Integral auto _b) noexcept;
+
+		/// @brief Color を作成します。
+		/// @param _r 赤成分 [0, 255]
+		/// @param _g 緑成分 [0, 255]
+		/// @param _b 青成分 [0, 255]
+		/// @param _a アルファ値 [0, 255]
+		[[nodiscard]]
+		constexpr Color(value_type _r, value_type _g, value_type _b, value_type _a) noexcept;
+
+		/// @brief Color を作成します。
+		/// @param _r 赤成分 [0, 255]
+		/// @param _g 緑成分 [0, 255]
+		/// @param _b 青成分 [0, 255]
+		/// @param _a アルファ値 [0, 255]
+		[[nodiscard]]
+		constexpr Color(Concept::Integral auto _r, Concept::Integral auto _g, Concept::Integral auto _b, Concept::Integral auto _a) noexcept;
 
 		/// @brief 別の Color から Color を作成します。
 		/// @param rgb Color
@@ -78,6 +116,13 @@ namespace s3d
 		/// @remark `Color{ rgb.r, rgb.g, rgb.b, _a }` と同じです。
 		[[nodiscard]]
 		constexpr Color(Color rgb, value_type _a) noexcept;
+
+		/// @brief 別の Color から Color を作成します。
+		/// @param rgb Color
+		/// @param _a アルファ値 [0, 255]
+		/// @remark `Color{ rgb.r, rgb.g, rgb.b, _a }` と同じです。
+		[[nodiscard]]
+		constexpr Color(Color rgb, Concept::Integral auto _a) noexcept;
 
 		/// @brief ColorF から Color を作成します。
 		/// @param color ColorF
@@ -91,6 +136,13 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Color(const ColorF& color, value_type _a) noexcept;
 
+		/// @brief ColorF から Color を作成します。
+		/// @param color ColorF
+		/// @param _a アルファ値 [0, 255]
+		/// @remark 引数 `color` のアルファ値は無視されます。
+		[[nodiscard]]
+		constexpr Color(const ColorF& color, Concept::Integral auto _a) noexcept;
+
 		/// @brief HSV から Color を作成します。
 		/// @param hsva HSV
 		[[nodiscard]]
@@ -102,6 +154,13 @@ namespace s3d
 		/// @remark 引数 `hsv` のアルファ値は無視されます。
 		[[nodiscard]]
 		Color(const HSV& hsv, value_type _a) noexcept;
+
+		/// @brief HSV から Color を作成します。
+		/// @param hsv HSV
+		/// @param _a アルファ値 [0, 255]
+		/// @remark 引数 `hsv` のアルファ値は無視されます。
+		[[nodiscard]]
+		Color(const HSV& hsv, Concept::Integral auto _a) noexcept;
 
 		/// @brief 16 進数のカラーコードから Color を作成します。
 		/// @param code 16 進数のカラーコード

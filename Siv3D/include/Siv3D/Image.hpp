@@ -109,13 +109,50 @@ namespace s3d
 		//[[nodiscard]]
 		//Image(size_t width, size_t height, Arg::generator0_1_<Fty> generator);
 
-		//template <class Fty, std::enable_if_t<std::disjunction_v<std::is_invocable_r<Color, Fty>, std::is_invocable_r<Color, Fty, Point>, std::is_invocable_r<Color, Fty, int32, int32>>>* = nullptr>
-		//[[nodiscard]]
-		//Image(Size size, Arg::generator_<Fty> generator);
+		[[nodiscard]]
+		Image(size_t size, Arg::generator_<FunctionRef<Color()>> generator);
 
-		//template <class Fty, std::enable_if_t<std::disjunction_v<std::is_invocable_r<Color, Fty, Vec2>, std::is_invocable_r<Color, Fty, double, double>>>* = nullptr>
-		//[[nodiscard]]
-		//Image(Size size, Arg::generator0_1_<Fty> generator);
+		[[nodiscard]]
+		Image(size_t size, Arg::generator_<FunctionRef<Color(int32, int32)>> generator);
+
+		[[nodiscard]]
+		Image(size_t size, Arg::generator_<FunctionRef<Color(Point)>> generator);
+
+		[[nodiscard]]
+		Image(size_t size, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator);
+
+		[[nodiscard]]
+		Image(size_t size, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator);
+
+		[[nodiscard]]
+		Image(size_t width, size_t height, Arg::generator_<FunctionRef<Color()>> generator);
+
+		[[nodiscard]]
+		Image(size_t width, size_t height, Arg::generator_<FunctionRef<Color(int32, int32)>> generator);
+
+		[[nodiscard]]
+		Image(size_t width, size_t height, Arg::generator_<FunctionRef<Color(Point)>> generator);
+
+		[[nodiscard]]
+		Image(size_t width, size_t height, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator);
+
+		[[nodiscard]]
+		Image(size_t width, size_t height, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator);
+
+		[[nodiscard]]
+		Image(Size size, Arg::generator_<FunctionRef<Color()>> generator);
+
+		[[nodiscard]]
+		Image(Size size, Arg::generator_<FunctionRef<Color(int32, int32)>> generator);
+
+		[[nodiscard]]
+		Image(Size size, Arg::generator_<FunctionRef<Color(Point)>> generator);
+
+		[[nodiscard]]
+		Image(Size size, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator);
+
+		[[nodiscard]]
+		Image(Size size, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator);
 
 		///// @brief 画像ファイルの内容から画像データを作成します。
 		///// @param path 画像ファイルのパス

@@ -46,11 +46,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Color::Color(const value_type _r, const value_type _g, const value_type _b, const value_type _a) noexcept
-		: r{ _r }
-		, g{ _g }
-		, b{ _b }
-		, a{ _a } {}
+	constexpr Color::Color(const value_type rgb) noexcept
+		: r{ rgb }
+		, g{ rgb }
+		, b{ rgb }
+		, a{ 255 } {}
+
+	constexpr Color::Color(const Concept::Integral auto rgb) noexcept
+		: r{ static_cast<value_type>(rgb) }
+		, g{ static_cast<value_type>(rgb) }
+		, b{ static_cast<value_type>(rgb) }
+		, a{ 255 } {}
 
 	constexpr Color::Color(const value_type rgb, const value_type _a) noexcept
 		: r{ rgb }
@@ -58,11 +64,47 @@ namespace s3d
 		, b{ rgb }
 		, a{ _a } {}
 
+	constexpr Color::Color(const Concept::Integral auto rgb, const Concept::Integral auto _a) noexcept
+		: r{ static_cast<value_type>(rgb) }
+		, g{ static_cast<value_type>(rgb) }
+		, b{ static_cast<value_type>(rgb) }
+		, a{ static_cast<value_type>(_a) } {}
+
+	constexpr Color::Color(const value_type _r, const value_type _g, const value_type _b) noexcept
+		: r{ _r }
+		, g{ _g }
+		, b{ _b }
+		, a{ 255 } {}
+
+	constexpr Color::Color(const Concept::Integral auto _r, const Concept::Integral auto _g, const Concept::Integral auto _b) noexcept
+		: r{ static_cast<value_type>(_r) }
+		, g{ static_cast<value_type>(_g) }
+		, b{ static_cast<value_type>(_b) }
+		, a{ 255 } {}
+
+	constexpr Color::Color(const value_type _r, const value_type _g, const value_type _b, const value_type _a) noexcept
+		: r{ _r }
+		, g{ _g }
+		, b{ _b }
+		, a{ _a } {}
+
+	constexpr Color::Color(const Concept::Integral auto _r, const Concept::Integral auto _g, const Concept::Integral auto _b, const Concept::Integral auto _a) noexcept
+		: r{ static_cast<value_type>(_r) }
+		, g{ static_cast<value_type>(_g) }
+		, b{ static_cast<value_type>(_b) }
+		, a{ static_cast<value_type>(_a) } {}
+
 	constexpr Color::Color(const Color rgb, const value_type _a) noexcept
 		: r{ rgb.r }
 		, g{ rgb.g }
 		, b{ rgb.b }
 		, a{ _a } {}
+
+	constexpr Color::Color(const Color rgb, const Concept::Integral auto _a) noexcept
+		: r{ rgb.r }
+		, g{ rgb.g }
+		, b{ rgb.b }
+		, a{ static_cast<value_type>(_a) } {}
 
 	constexpr Color::Color(const ColorF& color) noexcept
 		: r{ Color::ToUint8(color.r) }
@@ -76,6 +118,12 @@ namespace s3d
 		, b{ Color::ToUint8(color.b) }
 		, a{ _a } {}
 
+	constexpr Color::Color(const ColorF& color, const Concept::Integral auto _a) noexcept
+		: r{ Color::ToUint8(color.r) }
+		, g{ Color::ToUint8(color.g) }
+		, b{ Color::ToUint8(color.b) }
+		, a{ static_cast<value_type>(_a) } {}
+
 	inline Color::Color(const HSV& hsv) noexcept
 	{
 		*this = hsv.toColor();
@@ -84,6 +132,11 @@ namespace s3d
 	inline Color::Color(const HSV& hsv, const value_type _a) noexcept
 	{
 		*this = hsv.toColor(_a);
+	}
+
+	inline Color::Color(const HSV& hsv, const Concept::Integral auto _a) noexcept
+	{
+		*this = hsv.toColor(static_cast<value_type>(_a));
 	}
 
 	constexpr Color::Color(const StringView code) noexcept

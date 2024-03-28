@@ -125,7 +125,7 @@ TEST_CASE("Array")
 	}
 
 	{
-		const Array<int32> v(3, Arg::indexedGenerator = [](size_t i) { return static_cast<int32>(i + 1); });
+		const Array<int32> v(3, Arg::generator = [](size_t i) { return static_cast<int32>(i + 1); });
 		CHECK_EQ(v, a123);
 	}
 
