@@ -20,8 +20,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	inline Image::Image(Image&& image) noexcept
-		: m_pixels(std::move(image.m_pixels))
-		, m_size{ image.m_size }
+		: m_size{ image.m_size }
+		, m_pixels(std::move(image.m_pixels))
 	{
 		image.m_size.clear();
 	}

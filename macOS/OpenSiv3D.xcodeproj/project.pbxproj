@@ -698,6 +698,16 @@
 		F9528B362BB0567000222F45 /* MemoryMappedFileViewDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B332BB0567000222F45 /* MemoryMappedFileViewDetail.cpp */; };
 		F9528B372BB0567000222F45 /* MemoryMappedFileViewDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B342BB0567000222F45 /* MemoryMappedFileViewDetail.hpp */; };
 		F9528B382BB05D0600222F45 /* Test_Base64Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */; };
+		F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B392BB69C1800222F45 /* Image.hpp */; };
+		F9528B3C2BB69C2800222F45 /* Image.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B3B2BB69C2800222F45 /* Image.ipp */; };
+		F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */; };
+		F9528B412BB69C8200222F45 /* SivImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B3F2BB69C8200222F45 /* SivImage.cpp */; };
+		F9528B432BB69CA900222F45 /* BigFloat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B422BB69CA900222F45 /* BigFloat.hpp */; };
+		F9528B452BB69D8500222F45 /* BigFloat.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B442BB69D8500222F45 /* BigFloat.ipp */; };
+		F9528B472BB69DA800222F45 /* BigNumMath.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B462BB69DA800222F45 /* BigNumMath.hpp */; };
+		F9528B4B2BB69EAD00222F45 /* BigFloatDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B482BB69EAD00222F45 /* BigFloatDetail.hpp */; };
+		F9528B4C2BB69EAD00222F45 /* SivBigFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B492BB69EAD00222F45 /* SivBigFloat.cpp */; };
+		F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B4D2BB69EC500222F45 /* SivBigNumMath.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1397,6 +1407,16 @@
 		F9528B312BB0564800222F45 /* Test_MemoryMappedFileView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MemoryMappedFileView.cpp; sourceTree = "<group>"; };
 		F9528B332BB0567000222F45 /* MemoryMappedFileViewDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemoryMappedFileViewDetail.cpp; sourceTree = "<group>"; };
 		F9528B342BB0567000222F45 /* MemoryMappedFileViewDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryMappedFileViewDetail.hpp; sourceTree = "<group>"; };
+		F9528B392BB69C1800222F45 /* Image.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
+		F9528B3B2BB69C2800222F45 /* Image.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Image.ipp; sourceTree = "<group>"; };
+		F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Image.cpp; sourceTree = "<group>"; };
+		F9528B3F2BB69C8200222F45 /* SivImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImage.cpp; sourceTree = "<group>"; };
+		F9528B422BB69CA900222F45 /* BigFloat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.hpp; sourceTree = "<group>"; };
+		F9528B442BB69D8500222F45 /* BigFloat.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.ipp; sourceTree = "<group>"; };
+		F9528B462BB69DA800222F45 /* BigNumMath.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigNumMath.hpp; sourceTree = "<group>"; };
+		F9528B482BB69EAD00222F45 /* BigFloatDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloatDetail.hpp; sourceTree = "<group>"; };
+		F9528B492BB69EAD00222F45 /* SivBigFloat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBigFloat.cpp; sourceTree = "<group>"; };
+		F9528B4D2BB69EC500222F45 /* SivBigNumMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBigNumMath.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1525,6 +1545,7 @@
 		F90702CF2B9DAEB900383E4D /* Test */ = {
 			isa = PBXGroup;
 			children = (
+				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
 				F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */,
 				F90702B62B9DAEB900383E4D /* Test_Array.cpp */,
 				F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */,
@@ -2149,6 +2170,7 @@
 				F9070B652B9F175000383E4D /* Array.ipp */,
 				F9070B662B9F175000383E4D /* AsyncTask.ipp */,
 				F9528B1D2BAFB65000222F45 /* Base64Value.ipp */,
+				F9528B442BB69D8500222F45 /* BigFloat.ipp */,
 				F9070B672B9F175000383E4D /* BigInt.ipp */,
 				F9070B682B9F175000383E4D /* BinaryReader.ipp */,
 				F9070B692B9F175000383E4D /* BinaryWriter.ipp */,
@@ -2178,6 +2200,7 @@
 				F9070B802B9F175000383E4D /* HardwareRNG.ipp */,
 				F9070B812B9F175000383E4D /* Hash.ipp */,
 				F9070B822B9F175000383E4D /* HSV.ipp */,
+				F9528B3B2BB69C2800222F45 /* Image.ipp */,
 				F9070B832B9F175000383E4D /* Indexed.ipp */,
 				F9070B842B9F175000383E4D /* Int128.ipp */,
 				F9070B852B9F175000383E4D /* IntFormatter.ipp */,
@@ -2260,7 +2283,9 @@
 				F9070BBE2B9F175000383E4D /* Array.hpp */,
 				F9070BBF2B9F175000383E4D /* AsyncTask.hpp */,
 				F9528B1F2BAFB66200222F45 /* Base64Value.hpp */,
+				F9528B422BB69CA900222F45 /* BigFloat.hpp */,
 				F9070BC02B9F175000383E4D /* BigInt.hpp */,
+				F9528B462BB69DA800222F45 /* BigNumMath.hpp */,
 				F9070BC12B9F175000383E4D /* BinaryReader.hpp */,
 				F9070BC22B9F175000383E4D /* BinaryWriter.hpp */,
 				F9070BC32B9F175000383E4D /* Blob.hpp */,
@@ -2312,6 +2337,7 @@
 				F9070BF02B9F175000383E4D /* HashTable.hpp */,
 				F9070BF12B9F175000383E4D /* HeterogeneousLookupHelper.hpp */,
 				F9070BF22B9F175000383E4D /* HSV.hpp */,
+				F9528B392BB69C1800222F45 /* Image.hpp */,
 				F9070BF32B9F175000383E4D /* Indexed.hpp */,
 				F9070BF42B9F175000383E4D /* Int128.hpp */,
 				F9070BF52B9F175000383E4D /* IntFormatter.hpp */,
@@ -2931,7 +2957,9 @@
 			children = (
 				F9070D182B9F175E00383E4D /* _TEMPLATE */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
+				F9528B4A2BB69EAD00222F45 /* BigFloat */,
 				F9070D1B2B9F175E00383E4D /* BigInt */,
+				F9528B4E2BB69EC500222F45 /* BigNumMath */,
 				F9070D1D2B9F175E00383E4D /* BinaryReader */,
 				F9070D1F2B9F175E00383E4D /* BinaryWriter */,
 				F9070D212B9F175E00383E4D /* Blob */,
@@ -2961,6 +2989,7 @@
 				F9070D582B9F175E00383E4D /* FormatUtility */,
 				F9070D5A2B9F175E00383E4D /* Hash */,
 				F9070D5C2B9F175E00383E4D /* HSV */,
+				F9528B402BB69C8200222F45 /* Image */,
 				F9070D5E2B9F175E00383E4D /* Int128 */,
 				F9070D602B9F175E00383E4D /* IntFormatter */,
 				F9070D622B9F175E00383E4D /* IntToString */,
@@ -3237,6 +3266,31 @@
 			path = MemoryMappedFileView;
 			sourceTree = "<group>";
 		};
+		F9528B402BB69C8200222F45 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				F9528B3F2BB69C8200222F45 /* SivImage.cpp */,
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
+		F9528B4A2BB69EAD00222F45 /* BigFloat */ = {
+			isa = PBXGroup;
+			children = (
+				F9528B482BB69EAD00222F45 /* BigFloatDetail.hpp */,
+				F9528B492BB69EAD00222F45 /* SivBigFloat.cpp */,
+			);
+			path = BigFloat;
+			sourceTree = "<group>";
+		};
+		F9528B4E2BB69EC500222F45 /* BigNumMath */ = {
+			isa = PBXGroup;
+			children = (
+				F9528B4D2BB69EC500222F45 /* SivBigNumMath.cpp */,
+			);
+			path = BigNumMath;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3283,6 +3337,7 @@
 				F9070EF22B9F1C8900383E4D /* posix_poll.h in Headers */,
 				F9070C452B9F175000383E4D /* BinaryWriter.ipp in Headers */,
 				F9070C532B9F175000383E4D /* Endian.ipp in Headers */,
+				F9528B3C2BB69C2800222F45 /* Image.ipp in Headers */,
 				F9070C652B9F175000383E4D /* IWriter.ipp in Headers */,
 				F90706AA2B9DAEC900383E4D /* exponential_distribution.h in Headers */,
 				F90706B72B9DAEC900383E4D /* mimalloc.h in Headers */,
@@ -3341,6 +3396,7 @@
 				F9070EF42B9F1C8900383E4D /* posix_thread.h in Headers */,
 				F9070C7F2B9F175000383E4D /* TextEncoding.ipp in Headers */,
 				F9070C8A2B9F175000383E4D /* Vector2D.ipp in Headers */,
+				F9528B472BB69DA800222F45 /* BigNumMath.hpp in Headers */,
 				F9070C5E2B9F175000383E4D /* HSV.ipp in Headers */,
 				F9070CBF2B9F175000383E4D /* FmtHelper.hpp in Headers */,
 				F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */,
@@ -3368,7 +3424,9 @@
 				F9070DF22B9F175E00383E4D /* TextWriterDetail.hpp in Headers */,
 				F9070C5C2B9F175000383E4D /* HardwareRNG.ipp in Headers */,
 				F9070C622B9F175000383E4D /* IntToString.ipp in Headers */,
+				F9528B432BB69CA900222F45 /* BigFloat.hpp in Headers */,
 				F90707072B9DAEC900383E4D /* or.h in Headers */,
+				F9528B452BB69D8500222F45 /* BigFloat.ipp in Headers */,
 				F9070C612B9F175000383E4D /* IntFormatter.ipp in Headers */,
 				F90706F22B9DAEC900383E4D /* insert.h in Headers */,
 				F9070C9C2B9F175000383E4D /* Blob.hpp in Headers */,
@@ -3606,6 +3664,7 @@
 				F9070CC92B9F175000383E4D /* HashTable.hpp in Headers */,
 				F90706ED2B9DAEC900383E4D /* fmsub.h in Headers */,
 				F90706CD2B9DAEC900383E4D /* avg.h in Headers */,
+				F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */,
 				F90706D12B9DAEC900383E4D /* cast.h in Headers */,
 				F9070CEA2B9F175100383E4D /* ParseFloat.hpp in Headers */,
 				F9070CC42B9F175000383E4D /* FormatUtility.hpp in Headers */,
@@ -3690,6 +3749,7 @@
 				F9070C8C2B9F175000383E4D /* InternalEngineError.hpp in Headers */,
 				F9528B202BAFB66200222F45 /* Base64Value.hpp in Headers */,
 				F9070C4B2B9F175000383E4D /* ColorF.ipp in Headers */,
+				F9528B4B2BB69EAD00222F45 /* BigFloatDetail.hpp in Headers */,
 				F9528B372BB0567000222F45 /* MemoryMappedFileViewDetail.hpp in Headers */,
 				F9070DE92B9F175E00383E4D /* ISystem.hpp in Headers */,
 				F90706F42B9DAEC900383E4D /* knot.h in Headers */,
@@ -3901,6 +3961,7 @@
 				F90703012B9DAEB900383E4D /* Test_Memory.cpp in Sources */,
 				F907030A2B9DAEB900383E4D /* Test_Types.cpp in Sources */,
 				F90702F72B9DAEB900383E4D /* Test_BinaryWriter.cpp in Sources */,
+				F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3934,6 +3995,7 @@
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
 				F9070ED42B9F1C8900383E4D /* cocoa_joystick.m in Sources */,
 				F9070EF12B9F1C8900383E4D /* posix_poll.c in Sources */,
+				F9528B412BB69C8200222F45 /* SivImage.cpp in Sources */,
 				F9070F332B9F252E00383E4D /* null_monitor.c in Sources */,
 				F9070DE02B9F175E00383E4D /* SivParseErrorReason.cpp in Sources */,
 				F9070DF72B9F175E00383E4D /* UnicodeUtility.cpp in Sources */,
@@ -3983,6 +4045,7 @@
 				F9070DBE2B9F175E00383E4D /* SivDayOfWeek.cpp in Sources */,
 				F9070AFA2B9DEB5900383E4D /* fast-dtoa.cc in Sources */,
 				F9070DFF2B9F175E00383E4D /* SivVector3D.cpp in Sources */,
+				F9528B4C2BB69EAD00222F45 /* SivBigFloat.cpp in Sources */,
 				F9070DFD2B9F175E00383E4D /* SivUUIDValue.cpp in Sources */,
 				F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */,
 				F9070AEF2B9DEB5900383E4D /* discrete_distribution.cc in Sources */,
@@ -4034,6 +4097,7 @@
 				F9528B302BB0562C00222F45 /* SivMemoryMappedFileView.cpp in Sources */,
 				F9070DB42B9F175E00383E4D /* SivByte.cpp in Sources */,
 				F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */,
+				F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */,
 				F9070DEB2B9F175E00383E4D /* SystemFactory.cpp in Sources */,
 				F9070AF32B9DEB5900383E4D /* bignum.cc in Sources */,
 				F9070DCA2B9F175E00383E4D /* SivEscapedFormatter.cpp in Sources */,

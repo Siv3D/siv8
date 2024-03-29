@@ -191,7 +191,7 @@ namespace s3d
 
 	void Image::resizeHeight(const size_t height, const Color fillColor)
 	{
-		const size_t oldHeight = m_size.y;
+		const int32 oldHeight = m_size.y;
 
 		// 高さが変更されない場合は何もしない
 		if (oldHeight == m_size.y)
