@@ -718,6 +718,15 @@
 		F9528B642BB6DC9200222F45 /* SivMicrosecClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B5E2BB6DC9200222F45 /* SivMicrosecClock.cpp */; };
 		F9528B652BB6DC9200222F45 /* SivCycleClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B602BB6DC9200222F45 /* SivCycleClock.cpp */; };
 		F9528B662BB6DC9200222F45 /* SivMillisecClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B622BB6DC9200222F45 /* SivMillisecClock.cpp */; };
+		F9528B6A2BB7087700222F45 /* LicenseManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B692BB7087700222F45 /* LicenseManager.hpp */; };
+		F9528B6E2BB7089A00222F45 /* CacheDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B6B2BB7089A00222F45 /* CacheDirectory.cpp */; };
+		F9528B6F2BB7089A00222F45 /* CacheDirectory.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B6C2BB7089A00222F45 /* CacheDirectory.hpp */; };
+		F9528B772BB708A700222F45 /* CLicenseManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B702BB708A700222F45 /* CLicenseManager.cpp */; };
+		F9528B782BB708A700222F45 /* CLicenseManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B712BB708A700222F45 /* CLicenseManager.hpp */; };
+		F9528B792BB708A700222F45 /* ILicenseManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B722BB708A700222F45 /* ILicenseManager.hpp */; };
+		F9528B7A2BB708A700222F45 /* LicenseList.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B732BB708A700222F45 /* LicenseList.hpp */; };
+		F9528B7B2BB708A700222F45 /* LicenseManagerFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B742BB708A700222F45 /* LicenseManagerFactory.cpp */; };
+		F9528B7C2BB708A700222F45 /* SivLicenseManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B752BB708A700222F45 /* SivLicenseManager.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1437,6 +1446,15 @@
 		F9528B5E2BB6DC9200222F45 /* SivMicrosecClock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMicrosecClock.cpp; sourceTree = "<group>"; };
 		F9528B602BB6DC9200222F45 /* SivCycleClock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCycleClock.cpp; sourceTree = "<group>"; };
 		F9528B622BB6DC9200222F45 /* SivMillisecClock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMillisecClock.cpp; sourceTree = "<group>"; };
+		F9528B692BB7087700222F45 /* LicenseManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LicenseManager.hpp; sourceTree = "<group>"; };
+		F9528B6B2BB7089A00222F45 /* CacheDirectory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CacheDirectory.cpp; sourceTree = "<group>"; };
+		F9528B6C2BB7089A00222F45 /* CacheDirectory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CacheDirectory.hpp; sourceTree = "<group>"; };
+		F9528B702BB708A700222F45 /* CLicenseManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CLicenseManager.cpp; sourceTree = "<group>"; };
+		F9528B712BB708A700222F45 /* CLicenseManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CLicenseManager.hpp; sourceTree = "<group>"; };
+		F9528B722BB708A700222F45 /* ILicenseManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ILicenseManager.hpp; sourceTree = "<group>"; };
+		F9528B732BB708A700222F45 /* LicenseList.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LicenseList.hpp; sourceTree = "<group>"; };
+		F9528B742BB708A700222F45 /* LicenseManagerFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LicenseManagerFactory.cpp; sourceTree = "<group>"; };
+		F9528B752BB708A700222F45 /* SivLicenseManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLicenseManager.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2372,6 +2390,7 @@
 				F9070BFA2B9F175000383E4D /* KahanSummation.hpp */,
 				F9070BFB2B9F175000383E4D /* LetterCase.hpp */,
 				F9528B502BB6DC2C00222F45 /* LicenseInfo.hpp */,
+				F9528B692BB7087700222F45 /* LicenseManager.hpp */,
 				F9070BFC2B9F175000383E4D /* Logger.hpp */,
 				F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */,
 				F9070BFE2B9F175000383E4D /* LogType.hpp */,
@@ -2992,6 +3011,7 @@
 				F9070D212B9F175E00383E4D /* Blob */,
 				F9070D232B9F175E00383E4D /* BoolToString */,
 				F9070D252B9F175E00383E4D /* Byte */,
+				F9528B6D2BB7089A00222F45 /* CacheDirectory */,
 				F9070D272B9F175E00383E4D /* Color */,
 				F9070D292B9F175E00383E4D /* ColorF */,
 				F9070D2D2B9F175E00383E4D /* Console */,
@@ -3021,6 +3041,7 @@
 				F9070D5E2B9F175E00383E4D /* Int128 */,
 				F9070D602B9F175E00383E4D /* IntFormatter */,
 				F9070D622B9F175E00383E4D /* IntToString */,
+				F9528B762BB708A700222F45 /* LicenseManager */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
@@ -3345,6 +3366,28 @@
 			path = MillisecClock;
 			sourceTree = "<group>";
 		};
+		F9528B6D2BB7089A00222F45 /* CacheDirectory */ = {
+			isa = PBXGroup;
+			children = (
+				F9528B6B2BB7089A00222F45 /* CacheDirectory.cpp */,
+				F9528B6C2BB7089A00222F45 /* CacheDirectory.hpp */,
+			);
+			path = CacheDirectory;
+			sourceTree = "<group>";
+		};
+		F9528B762BB708A700222F45 /* LicenseManager */ = {
+			isa = PBXGroup;
+			children = (
+				F9528B702BB708A700222F45 /* CLicenseManager.cpp */,
+				F9528B712BB708A700222F45 /* CLicenseManager.hpp */,
+				F9528B722BB708A700222F45 /* ILicenseManager.hpp */,
+				F9528B732BB708A700222F45 /* LicenseList.hpp */,
+				F9528B742BB708A700222F45 /* LicenseManagerFactory.cpp */,
+				F9528B752BB708A700222F45 /* SivLicenseManager.cpp */,
+			);
+			path = LicenseManager;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3465,6 +3508,7 @@
 				F9070D132B9F175100383E4D /* Window.hpp in Headers */,
 				F90707502B9DAEC900383E4D /* simde-arch.h in Headers */,
 				F90706DC2B9DAEC900383E4D /* cvt.h in Headers */,
+				F9528B6F2BB7089A00222F45 /* CacheDirectory.hpp in Headers */,
 				F9070DEF2B9F175E00383E4D /* TextReaderDetail.hpp in Headers */,
 				F90706A32B9DAEC900383E4D /* traits.h in Headers */,
 				F9070C592B9F175000383E4D /* FormatData.ipp in Headers */,
@@ -3566,6 +3610,7 @@
 				F9070CFE2B9F175100383E4D /* String.hpp in Headers */,
 				F90706F32B9DAEC900383E4D /* kand.h in Headers */,
 				F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */,
+				F9528B6A2BB7087700222F45 /* LicenseManager.hpp in Headers */,
 				F9070CC62B9F175000383E4D /* HardwareRNG.hpp in Headers */,
 				F90707142B9DAEC900383E4D /* ror.h in Headers */,
 				F9070C8F2B9F175000383E4D /* Libraries.hpp in Headers */,
@@ -3678,6 +3723,7 @@
 				F9070D0B2B9F175100383E4D /* UniqueResource.hpp in Headers */,
 				F9070C762B9F175000383E4D /* Rect.ipp in Headers */,
 				F90706A62B9DAEC900383E4D /* bernoulli_distribution.h in Headers */,
+				F9528B7A2BB708A700222F45 /* LicenseList.hpp in Headers */,
 				F90706FD2B9DAEC900383E4D /* min.h in Headers */,
 				F907071B2B9DAEC900383E4D /* set.h in Headers */,
 				F9070D112B9F175100383E4D /* Vector4D.hpp in Headers */,
@@ -3783,6 +3829,7 @@
 				F9070CDA2B9F175100383E4D /* MD5Value.hpp in Headers */,
 				F9070C522B9F175000383E4D /* Duration.ipp in Headers */,
 				F9070C602B9F175000383E4D /* Int128.ipp in Headers */,
+				F9528B792BB708A700222F45 /* ILicenseManager.hpp in Headers */,
 				F907068A2B9DAEC900383E4D /* identity.h in Headers */,
 				F907072E2B9DAEC900383E4D /* store.h in Headers */,
 				F9070CD72B9F175100383E4D /* LogType.hpp in Headers */,
@@ -3836,6 +3883,7 @@
 				F9528B542BB6DC2C00222F45 /* MicrosecClock.hpp in Headers */,
 				F90706FA2B9DAEC900383E4D /* madd.h in Headers */,
 				F9070C482B9F175000383E4D /* Byte.ipp in Headers */,
+				F9528B782BB708A700222F45 /* CLicenseManager.hpp in Headers */,
 				F9070CAE2B9F175000383E4D /* Demangle.hpp in Headers */,
 				F9070C682B9F175000383E4D /* LoggerBuffer.ipp in Headers */,
 				F90706B92B9DAEC900383E4D /* obfuscate.h in Headers */,
@@ -4070,6 +4118,8 @@
 				F9070DE22B9F175E00383E4D /* SivParseInt.cpp in Sources */,
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
 				F9070EF02B9F1C8900383E4D /* posix_module.c in Sources */,
+				F9528B7C2BB708A700222F45 /* SivLicenseManager.cpp in Sources */,
+				F9528B7B2BB708A700222F45 /* LicenseManagerFactory.cpp in Sources */,
 				F9528B652BB6DC9200222F45 /* SivCycleClock.cpp in Sources */,
 				F9070DB32B9F175E00383E4D /* SivBoolToString.cpp in Sources */,
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
@@ -4106,6 +4156,7 @@
 				F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */,
 				F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */,
 				F9070DBE2B9F175E00383E4D /* SivDayOfWeek.cpp in Sources */,
+				F9528B6E2BB7089A00222F45 /* CacheDirectory.cpp in Sources */,
 				F9070AFA2B9DEB5900383E4D /* fast-dtoa.cc in Sources */,
 				F9070DFF2B9F175E00383E4D /* SivVector3D.cpp in Sources */,
 				F9528B4C2BB69EAD00222F45 /* SivBigFloat.cpp in Sources */,
@@ -4161,6 +4212,7 @@
 				F9528B302BB0562C00222F45 /* SivMemoryMappedFileView.cpp in Sources */,
 				F9070DB42B9F175E00383E4D /* SivByte.cpp in Sources */,
 				F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */,
+				F9528B772BB708A700222F45 /* CLicenseManager.cpp in Sources */,
 				F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */,
 				F9070DEB2B9F175E00383E4D /* SystemFactory.cpp in Sources */,
 				F9070AF32B9DEB5900383E4D /* bignum.cc in Sources */,
