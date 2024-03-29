@@ -20,6 +20,12 @@ namespace s3d
 {
 	class BigFloat;
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	BigInt
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief 多倍長整数型
 	class BigInt
 	{
@@ -95,7 +101,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		const BigInt& operator +() const;
+		const BigInt& operator +() const& noexcept;
+
+		[[nodiscard]]
+		BigInt operator +() && noexcept;
 
 		[[nodiscard]]
 		BigInt operator +(int64 i) const;

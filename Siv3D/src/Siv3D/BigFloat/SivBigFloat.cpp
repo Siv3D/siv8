@@ -131,20 +131,374 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator +
+	//
+	////////////////////////////////////////////////////////////////
 
+	const BigFloat& BigFloat::operator +() const& noexcept
+	{
+		return *this;
+	}
 
+	BigFloat BigFloat::operator +() && noexcept
+	{
+		return std::move(*this);
+	}
 
+	BigFloat BigFloat::operator +(const int64 i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value + i);
+		return tmp;
+	}
 
+	BigFloat BigFloat::operator +(const uint64 i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value + i);
+		return tmp;
+	}
 
+	BigFloat BigFloat::operator +(const long double f) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value + f);
+		return tmp;
+	}
 
+	BigFloat BigFloat::operator +(const BigInt& i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value + BigFloatDetail::value_type{ i._detail().value });
+		return tmp;
+	}
 
+	BigFloat BigFloat::operator +(const BigFloat& f) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value + f.pImpl->value);
+		return tmp;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator -
+	//
+	////////////////////////////////////////////////////////////////
 
+	BigFloat BigFloat::operator -() const&
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = -(pImpl->value);
+		return tmp;
+	}
 
+	BigFloat BigFloat::operator -() && noexcept
+	{
+		pImpl->value.backend().negate();
+		return std::move(*this);
+	}
 
+	BigFloat BigFloat::operator -(const int64 i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value - i);
+		return tmp;
+	}
 
+	BigFloat BigFloat::operator -(const uint64 i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value - i);
+		return tmp;
+	}
 
+	BigFloat BigFloat::operator -(const long double f) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value - f);
+		return tmp;
+	}
 
+	BigFloat BigFloat::operator -(const BigInt& i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value - BigFloatDetail::value_type{ i._detail().value });
+		return tmp;
+	}
+
+	BigFloat BigFloat::operator -(const BigFloat& f) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value - f.pImpl->value);
+		return tmp;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator *
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat BigFloat::operator *(const int64 i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value * i);
+		return tmp;
+	}
+
+	BigFloat BigFloat::operator *(const uint64 i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value * i);
+		return tmp;
+	}
+
+	BigFloat BigFloat::operator *(const long double f) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value * f);
+		return tmp;
+	}
+
+	BigFloat BigFloat::operator *(const BigInt& i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value * BigFloatDetail::value_type{ i._detail().value });
+		return tmp;
+	}
+
+	BigFloat BigFloat::operator *(const BigFloat& f) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value * f.pImpl->value);
+		return tmp;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator /
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat BigFloat::operator /(const int64 i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value / i);
+		return tmp;
+	}
+
+	BigFloat BigFloat::operator /(const uint64 i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value / i);
+		return tmp;
+	}
+
+	BigFloat BigFloat::operator /(const long double f) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value / f);
+		return tmp;
+	}
+
+	BigFloat BigFloat::operator /(const BigInt& i) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value / BigFloatDetail::value_type{ i._detail().value });
+		return tmp;
+	}
+
+	BigFloat BigFloat::operator /(const BigFloat& f) const
+	{
+		BigFloat tmp;
+		tmp.pImpl->value = (pImpl->value / f.pImpl->value);
+		return tmp;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator +=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator +=(const int64 i)
+	{
+		pImpl->value += i;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator +=(const uint64 i)
+	{
+		pImpl->value += i;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator +=(const long double f)
+	{
+		pImpl->value += f;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator +=(const BigInt& i)
+	{
+		pImpl->value += BigFloatDetail::value_type{ i._detail().value };
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator +=(const BigFloat& f)
+	{
+		pImpl->value += f.pImpl->value;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator -=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator -=(const int64 i)
+	{
+		pImpl->value -= i;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator -=(const uint64 i)
+	{
+		pImpl->value -= i;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator -=(const long double f)
+	{
+		pImpl->value -= f;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator -=(const BigInt& i)
+	{
+		pImpl->value -= BigFloatDetail::value_type{ i._detail().value };
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator -=(const BigFloat& f)
+	{
+		pImpl->value -= f.pImpl->value;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator *=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator *=(const int64 i)
+	{
+		pImpl->value *= i;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator *=(const uint64 i)
+	{
+		pImpl->value *= i;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator *=(const long double f)
+	{
+		pImpl->value *= f;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator *=(const BigInt& i)
+	{
+		pImpl->value *= BigFloatDetail::value_type{ i._detail().value };
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator *=(const BigFloat& f)
+	{
+		pImpl->value *= f.pImpl->value;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator /=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator /=(const int64 i)
+	{
+		pImpl->value /= i;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator /=(const uint64 i)
+	{
+		pImpl->value /= i;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator /=(const long double f)
+	{
+		pImpl->value /= f;
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator /=(const BigInt& i)
+	{
+		pImpl->value /= BigFloatDetail::value_type{ i._detail().value };
+		return *this;
+	}
+
+	BigFloat& BigFloat::operator /=(const BigFloat& f)
+	{
+		pImpl->value /= f.pImpl->value;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ++
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator ++()
+	{
+		++pImpl->value;
+		return *this;
+	}
+
+	BigFloat BigFloat::operator ++(int)
+	{
+		BigFloat tmp{ *this };
+		++pImpl->value;
+		return tmp;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator --
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator --()
+	{
+		--pImpl->value;
+		return *this;
+	}
+
+	BigFloat BigFloat::operator --(int)
+	{
+		BigFloat tmp{ *this };
+		--pImpl->value;
+		return tmp;
+	}
 
 
 	////////////////////////////////////////////////////////////////
@@ -234,7 +588,7 @@ namespace s3d
 
 	uint64 BigFloat::hash() const noexcept
 	{
-		return std::hash<boost::multiprecision::cpp_dec_float_100>{}(pImpl->value);
+		return std::hash<decltype(pImpl->value)>{}(pImpl->value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -280,11 +634,18 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::string BigFloat::to_string() const
+	std::string BigFloat::to_string(const int32 digits, const std::ios_base::fmtflags fmtFlags) const
 	{
-		std::string result = pImpl->value.str(100, std::ios_base::fixed);
+		std::string result = pImpl->value.str(digits, fmtFlags);
 
-		return RemoveTrailingZeros(std::move(result));
+		if (fmtFlags == std::ios_base::fixed)
+		{
+			return RemoveTrailingZeros(std::move(result));
+		}
+		else
+		{
+			return result;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -293,9 +654,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String BigFloat::str() const
+	String BigFloat::str(const int32 digits, const std::ios_base::fmtflags fmtFlags) const
 	{
-		const std::string t = to_string();
+		const std::string t = to_string(digits, fmtFlags);
 
 		return String(t.begin(), t.end());
 	}

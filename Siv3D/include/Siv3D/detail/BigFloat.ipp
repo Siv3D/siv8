@@ -54,6 +54,174 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	operator +
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat BigFloat::operator +(const Concept::SignedIntegral auto i) const
+	{
+		return (*this + static_cast<int64>(i));
+	}
+
+	BigFloat BigFloat::operator +(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this + static_cast<uint64>(i));
+	}
+
+	BigFloat BigFloat::operator +(const Concept::FloatingPoint auto f) const
+	{
+		return (*this + static_cast<long double>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator -
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat BigFloat::operator -(const Concept::SignedIntegral auto i) const
+	{
+		return (*this - static_cast<int64>(i));
+	}
+
+	BigFloat BigFloat::operator -(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this - static_cast<uint64>(i));
+	}
+
+	BigFloat BigFloat::operator -(const Concept::FloatingPoint auto f) const
+	{
+		return (*this - static_cast<long double>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator *
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat BigFloat::operator *(const Concept::SignedIntegral auto i) const
+	{
+		return (*this * static_cast<int64>(i));
+	}
+
+	BigFloat BigFloat::operator *(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this * static_cast<uint64>(i));
+	}
+
+	BigFloat BigFloat::operator *(const Concept::FloatingPoint auto f) const
+	{
+		return (*this * static_cast<long double>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator /
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat BigFloat::operator /(const Concept::SignedIntegral auto i) const
+	{
+		return (*this / static_cast<int64>(i));
+	}
+
+	BigFloat BigFloat::operator /(const Concept::UnsignedIntegral auto i) const
+	{
+		return (*this / static_cast<uint64>(i));
+	}
+
+	BigFloat BigFloat::operator /(const Concept::FloatingPoint auto f) const
+	{
+		return (*this / static_cast<long double>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator +=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator +=(const Concept::SignedIntegral auto i)
+	{
+		return (*this += static_cast<int64>(i));
+	}
+
+	BigFloat& BigFloat::operator +=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this += static_cast<uint64>(i));
+	}
+
+	BigFloat& BigFloat::operator +=(const Concept::FloatingPoint auto f)
+	{
+		return (*this += static_cast<long double>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator -=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator -=(const Concept::SignedIntegral auto i)
+	{
+		return (*this -= static_cast<int64>(i));
+	}
+
+	BigFloat& BigFloat::operator -=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this -= static_cast<uint64>(i));
+	}
+
+	BigFloat& BigFloat::operator -=(const Concept::FloatingPoint auto f)
+	{
+		return (*this -= static_cast<long double>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator *=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator *=(const Concept::SignedIntegral auto i)
+	{
+		return (*this *= static_cast<int64>(i));
+	}
+
+	BigFloat& BigFloat::operator *=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this *= static_cast<uint64>(i));
+	}
+
+	BigFloat& BigFloat::operator *=(const Concept::FloatingPoint auto f)
+	{
+		return (*this *= static_cast<long double>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator /=
+	//
+	////////////////////////////////////////////////////////////////
+
+	BigFloat& BigFloat::operator /=(const Concept::SignedIntegral auto i)
+	{
+		return (*this /= static_cast<int64>(i));
+	}
+
+	BigFloat& BigFloat::operator /=(const Concept::UnsignedIntegral auto i)
+	{
+		return (*this /= static_cast<uint64>(i));
+	}
+
+	BigFloat& BigFloat::operator /=(const Concept::FloatingPoint auto f)
+	{
+		return (*this /= static_cast<long double>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	compare
 	//
 	////////////////////////////////////////////////////////////////

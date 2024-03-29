@@ -96,9 +96,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const BigInt& BigInt::operator +() const
+	const BigInt& BigInt::operator +() const& noexcept
 	{
 		return *this;
+	}
+
+	BigInt BigInt::operator +()&& noexcept
+	{
+		return std::move(*this);
 	}
 
 	BigInt BigInt::operator +(const int64 i) const
