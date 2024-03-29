@@ -18,6 +18,8 @@
 
 namespace s3d
 {
+	class BigInt;
+
 	class BigFloat
 	{
 	public:
@@ -51,6 +53,9 @@ namespace s3d
 	
 		[[nodiscard]]
 		BigFloat(long double f);
+
+		[[nodiscard]]
+		BigFloat(Concept::FloatingPoint auto f);
 		
 		[[nodiscard]]
 		BigFloat(const BigInt& i);
@@ -79,11 +84,13 @@ namespace s3d
 
 		BigFloat& operator =(uint64 i);
 
-		BigFloat& operator =(long double f);
-
 		BigFloat& operator =(Concept::SignedIntegral auto i);
 
 		BigFloat& operator =(Concept::UnsignedIntegral auto i);
+
+		BigFloat& operator =(long double f);
+
+		BigFloat& operator =(Concept::FloatingPoint auto f);
 
 		BigFloat& operator =(const BigInt& i);
 
@@ -101,7 +108,47 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		const BigFloat& operator +() const& noexcept;
 
+		[[nodiscard]]
+		BigFloat operator +()&& noexcept;
+
+		[[nodiscard]]
+		BigFloat operator +(int64 i) const;
+
+		[[nodiscard]]
+		BigFloat operator +(uint64 i) const;
+
+		[[nodiscard]]
+		BigFloat operator +(Concept::SignedIntegral auto  i) const;
+
+		[[nodiscard]]
+		BigFloat operator +(Concept::UnsignedIntegral auto i) const;
+
+		[[nodiscard]]
+		BigFloat operator +(long double f) const;
+
+		[[nodiscard]]
+		BigFloat operator +(Concept::FloatingPoint auto f) const;
+
+		[[nodiscard]]
+		BigFloat operator +(const BigInt& i) const;
+		
+		[[nodiscard]]
+		BigFloat operator +(const BigFloat& f) const;
+
+		[[nodiscard]]
+		friend BigFloat operator +(const Concept::Arithmetic auto a, const BigFloat& b)
+		{
+			return (b + a);
+		}
+
+		[[nodiscard]]
+		friend BigFloat operator +(const BigInt& a, const BigFloat& b)
+		{
+			return (b + a);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -109,7 +156,47 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		BigFloat operator -() const&;
 
+		[[nodiscard]]
+		BigFloat operator -()&& noexcept;
+
+		[[nodiscard]]
+		BigFloat operator -(int64 i) const;
+
+		[[nodiscard]]
+		BigFloat operator -(uint64 i) const;
+
+		[[nodiscard]]
+		BigFloat operator -(Concept::SignedIntegral auto  i) const;
+
+		[[nodiscard]]
+		BigFloat operator -(Concept::UnsignedIntegral auto i) const;
+
+		[[nodiscard]]
+		BigFloat operator -(long double f) const;
+
+		[[nodiscard]]
+		BigFloat operator -(Concept::FloatingPoint auto f) const;
+
+		[[nodiscard]]
+		BigFloat operator -(const BigInt& i) const;
+
+		[[nodiscard]]
+		BigFloat operator -(const BigFloat& f) const;
+
+		[[nodiscard]]
+		friend BigFloat operator -(const Concept::Arithmetic auto a, const BigFloat& b)
+		{
+			return (b - a);
+		}
+
+		[[nodiscard]]
+		friend BigFloat operator -(const BigInt& a, const BigFloat& b)
+		{
+			return (-b + a);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -117,8 +204,41 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		BigFloat operator *(int64 i) const;
 
+		[[nodiscard]]
+		BigFloat operator *(uint64 i) const;
 
+		[[nodiscard]]
+		BigFloat operator *(Concept::SignedIntegral auto  i) const;
+
+		[[nodiscard]]
+		BigFloat operator *(Concept::UnsignedIntegral auto i) const;
+
+		[[nodiscard]]
+		BigFloat operator *(long double f) const;
+
+		[[nodiscard]]
+		BigFloat operator *(Concept::FloatingPoint auto f) const;
+
+		[[nodiscard]]
+		BigFloat operator *(const BigInt& i) const;
+
+		[[nodiscard]]
+		BigFloat operator *(const BigFloat& f) const;
+
+		[[nodiscard]]
+		friend BigFloat operator *(const Concept::Arithmetic auto a, const BigFloat& b)
+		{
+			return (b * a);
+		}
+
+		[[nodiscard]]
+		friend BigFloat operator *(const BigInt& a, const BigFloat& b)
+		{
+			return (b * a);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -126,7 +246,41 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		BigFloat operator /(int64 i) const;
 
+		[[nodiscard]]
+		BigFloat operator /(uint64 i) const;
+
+		[[nodiscard]]
+		BigFloat operator /(Concept::SignedIntegral auto  i) const;
+
+		[[nodiscard]]
+		BigFloat operator /(Concept::UnsignedIntegral auto i) const;
+
+		[[nodiscard]]
+		BigFloat operator /(long double f) const;
+
+		[[nodiscard]]
+		BigFloat operator /(Concept::FloatingPoint auto f) const;
+
+		[[nodiscard]]
+		BigFloat operator /(const BigInt& i) const;
+
+		[[nodiscard]]
+		BigFloat operator /(const BigFloat& f) const;
+
+		[[nodiscard]]
+		friend BigFloat operator /(const Concept::Arithmetic auto a, const BigFloat& b)
+		{
+			return (BigFloat{ a } / b);
+		}
+
+		[[nodiscard]]
+		friend BigFloat operator /(const BigInt& a, const BigFloat& b)
+		{
+			return (BigFloat{ a } / b);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -134,7 +288,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		BigFloat& operator +=(int64 i);
 
+		BigFloat& operator +=(uint64 i);
+
+		BigFloat& operator +=(Concept::SignedIntegral auto i);
+
+		BigFloat& operator +=(Concept::UnsignedIntegral auto i);
+
+		BigFloat& operator +=(long double f);
+
+		BigFloat& operator +=(Concept::FloatingPoint auto f);
+
+		BigFloat& operator +=(const BigInt& i);
+
+		BigFloat& operator +=(const BigFloat& f);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -142,6 +310,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		BigFloat& operator -=(int64 i);
+
+		BigFloat& operator -=(uint64 i);
+
+		BigFloat& operator -=(Concept::SignedIntegral auto i);
+
+		BigFloat& operator -=(Concept::UnsignedIntegral auto i);
+
+		BigFloat& operator -=(long double f);
+
+		BigFloat& operator -=(Concept::FloatingPoint auto f);
+
+		BigFloat& operator -=(const BigInt& i);
+
+		BigFloat& operator -=(const BigFloat& f);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -149,7 +332,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		BigFloat& operator *=(int64 i);
 
+		BigFloat& operator *=(uint64 i);
+
+		BigFloat& operator *=(Concept::SignedIntegral auto i);
+
+		BigFloat& operator *=(Concept::UnsignedIntegral auto i);
+
+		BigFloat& operator *=(long double f);
+
+		BigFloat& operator *=(Concept::FloatingPoint auto f);
+
+		BigFloat& operator *=(const BigInt& i);
+
+		BigFloat& operator *=(const BigFloat& f);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -157,7 +354,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		BigFloat& operator /=(int64 i);
 
+		BigFloat& operator /=(uint64 i);
+
+		BigFloat& operator /=(Concept::SignedIntegral auto i);
+
+		BigFloat& operator /=(Concept::UnsignedIntegral auto i);
+
+		BigFloat& operator /=(long double f);
+
+		BigFloat& operator /=(Concept::FloatingPoint auto f);
+
+		BigFloat& operator /=(const BigInt& i);
+
+		BigFloat& operator /=(const BigFloat& f);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -165,6 +376,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		BigFloat& operator ++();
+
+		BigFloat operator ++(int);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -172,7 +386,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		BigFloat& operator --();
 
+		BigFloat operator --(int);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -180,6 +396,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		friend bool operator ==(const BigFloat& a, const BigFloat& b) noexcept
+		{
+			return (a.compare(b) == 0);
+		}
+
+		[[nodiscard]]
+		friend bool operator ==(const BigFloat& a, const BigInt& b) noexcept
+		{
+			return (a.compare(b) == 0);
+		}
+
+		[[nodiscard]]
+		friend bool operator ==(const BigFloat& a, const Concept::Arithmetic auto b) noexcept
+		{
+			return (a.compare(b) == 0);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -187,6 +420,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		friend auto operator <=>(const BigFloat& a, const BigFloat& b) noexcept
+		{
+			return (a.compare(b) <=> 0);
+		}
+
+		[[nodiscard]]
+		friend auto operator <=>(const BigFloat& a, const BigInt& b) noexcept
+		{
+			return (a.compare(b) <=> 0);
+		}
+
+		[[nodiscard]]
+		friend auto operator <=>(const BigFloat& a, const Concept::Arithmetic auto b) noexcept
+		{
+			return (a.compare(b) <=> 0);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -310,6 +560,30 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		int32 compare(int64 i) const noexcept;
+
+		[[nodiscard]]
+		int32 compare(uint64 i) const noexcept;
+
+		[[nodiscard]]
+		int32 compare(Concept::SignedIntegral auto i) const noexcept;
+
+		[[nodiscard]]
+		int32 compare(Concept::UnsignedIntegral auto i) const noexcept;
+
+		[[nodiscard]]
+		int32 compare(long double f) const noexcept;
+
+		[[nodiscard]]
+		int32 compare(Concept::FloatingPoint auto f) const noexcept;
+
+		[[nodiscard]]
+		int32 compare(const BigInt& i) const;
+		
+		[[nodiscard]]
+		int32 compare(const BigFloat& f) const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	swap
@@ -327,12 +601,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		template <class CharType>
+		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const BigFloat& value)
+		{
+			return (output << value.str());
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator >>
 		//
 		////////////////////////////////////////////////////////////////
 
+		template <class CharType>
+		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, BigFloat& value)
+		{
+			if (String s; input >> s)
+			{
+				value = s;
+			}
+
+			return input;
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -347,6 +637,20 @@ namespace s3d
 		struct BigFloatDetail;
 
 		std::unique_ptr<BigFloatDetail> pImpl;
+
+	public:
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	_detail (internal)
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BigFloatDetail& _detail() noexcept;
+
+		[[nodiscard]]
+		const BigFloatDetail& _detail() const noexcept;
 	};
 
 	inline namespace Literals
@@ -363,132 +667,6 @@ namespace s3d
 			BigFloat operator ""_bigF(const char* s);
 		}
 	}
-
-	//namespace Math
-	//{
-	//	[[nodiscard]]
-	//	BigFloat Fmod(const BigFloat& x, const BigFloat& y);
-
-	//	[[nodiscard]]
-	//	BigFloat Fraction(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Frexp(const BigFloat& x, int32& exp);
-
-	//	[[nodiscard]]
-	//	BigFloat Ldexp(const BigFloat& x, const BigFloat& y);
-
-	//	[[nodiscard]]
-	//	BigFloat Log(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Log2(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Log10(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Modf(const BigFloat& x, BigFloat& exp);
-
-	//	[[nodiscard]]
-	//	BigInt Pow(const BigInt& x, uint32 y);
-
-	//	[[nodiscard]]
-	//	BigFloat Pow(const BigFloat& x, const BigFloat& y);
-
-	//	[[nodiscard]]
-	//	int32 Sign(const BigInt& x);
-
-	//	[[nodiscard]]
-	//	int32 Sign(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat ToRadians(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat ToDegrees(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Abs(const BigInt& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Abs(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat AbsDiff(const BigFloat& x, const BigFloat& y);
-
-	//	[[nodiscard]]
-	//	BigFloat Square(const BigInt& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Square(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Exp(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Exp2(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Rsqrt(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Sqrt(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Ceil(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Floor(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Round(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Clamp(const BigFloat& x, const BigFloat& min, const BigFloat& max);
-
-	//	[[nodiscard]]
-	//	BigFloat Saturate(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Acos(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Asin(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Atan(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Atan2(const BigFloat& y, const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Cos(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Cosh(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Sin(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Sinh(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Tan(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Tanh(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Normalize(const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Smoothstep(const BigFloat& min, const BigFloat& max, const BigFloat& x);
-
-	//	[[nodiscard]]
-	//	BigFloat Smoothstep(const BigFloat& x);
-	//}
 }
 
 ////////////////////////////////////////////////////////////////

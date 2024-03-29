@@ -352,6 +352,12 @@
     <Filter Include="src\Siv3D\Image">
       <UniqueIdentifier>{f729606a-ba93-4421-94ce-c9c66efc29d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\BigFloat">
+      <UniqueIdentifier>{1658d1b0-c4f5-4934-8d87-e032fb3e238b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\BigNumMath">
+      <UniqueIdentifier>{544d7f36-8644-40b5-b514-4a00b8c309ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1251,6 +1257,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BigFloat.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\BigFloat\BigFloatDetail.hpp">
+      <Filter>src\Siv3D\BigFloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BigNumMath.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1582,6 +1594,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp">
       <Filter>src\Siv3D\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BigFloat\SivBigFloat.cpp">
+      <Filter>src\Siv3D\BigFloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BigNumMath\SivBigNumMath.cpp">
+      <Filter>src\Siv3D\BigNumMath</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

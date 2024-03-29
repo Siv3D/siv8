@@ -907,6 +907,20 @@ namespace s3d
 		BigInt _divI(uint64 a) const;
 		BigInt _modI(int64 a) const;
 		BigInt _modI(uint64 a) const;
+
+	public:
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	_detail (internal)
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BigIntDetail& _detail() noexcept;
+
+		[[nodiscard]]
+		const BigIntDetail& _detail() const noexcept;
 	};
 
 	inline namespace Literals

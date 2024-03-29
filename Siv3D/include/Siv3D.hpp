@@ -306,7 +306,7 @@
 # include <Siv3D/Int128.hpp>
 
 // 多倍長整数 | Arbitrary precision integer type
-# include <Siv3D/BigInt.hpp> // ToDo
+# include <Siv3D/BigInt.hpp>
 
 // 多倍長浮動小数点数 | 100 decimal digits precision floating point type
 # include <Siv3D/BigFloat.hpp> // ToDo
@@ -549,6 +549,12 @@
 
 // カハンの加算アルゴリズム | Kahan summation algorithm
 # include <Siv3D/KahanSummation.hpp>
+
+//// 数学関数 | Math functions
+//# include <Siv3D/Math.hpp>
+
+// 数学関数 (BigInt, BigFloat) | Math functions (BigInt, BigFloat)
+# include <Siv3D/BigNumMath.hpp>
 
 // 精度を落とした高速な数学関数 | Fast math functions
 # include <Siv3D/FastMath.hpp>

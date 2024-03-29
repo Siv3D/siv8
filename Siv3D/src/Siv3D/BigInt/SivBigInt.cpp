@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/BigInt.hpp>
+# include <Siv3D/BigFloat.hpp>
 # include <Siv3D/Unicode.hpp>
 # include "BigIntDetail.hpp"
 
@@ -867,7 +868,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//BigFloat asBigFloat() const;
+	BigFloat BigInt::asBigFloat() const
+	{
+		return BigFloat{ *this };
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -902,7 +906,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//operator BigFloat() const;
+	BigInt::operator BigFloat() const
+	{
+		return asBigFloat();
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
