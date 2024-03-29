@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[noreturn]]
 		static void ThrowParseFloatError(const std::string_view s, const ParseErrorReason reason)
@@ -77,7 +77,7 @@ namespace s3d
 		}
 		else
 		{
-			detail::ThrowParseFloatError(s, result.error());
+			ThrowParseFloatError(s, result.error());
 		}
 	}
 
@@ -90,7 +90,7 @@ namespace s3d
 		}
 		else
 		{
-			detail::ThrowParseFloatError(s, result.error());
+			ThrowParseFloatError(s, result.error());
 		}
 	}
 
@@ -103,7 +103,7 @@ namespace s3d
 		}
 		else
 		{
-			detail::ThrowParseFloatError(s, result.error());
+			ThrowParseFloatError(s, result.error());
 		}
 	}
 
@@ -116,7 +116,7 @@ namespace s3d
 		}
 		else
 		{
-			detail::ThrowParseFloatError(s, result.error());
+			ThrowParseFloatError(s, result.error());
 		}
 	}
 
@@ -187,24 +187,24 @@ namespace s3d
 	template <>
 	Result<float, ParseErrorReason> ParseFloatWithReason<float>(const std::string_view s) noexcept
 	{
-		return detail::ParseFloatWithReason_impl<float>(s);
+		return ParseFloatWithReason_impl<float>(s);
 	}
 
 	template <>
 	Result<float, ParseErrorReason> ParseFloatWithReason<float>(const StringView s) noexcept
 	{
-		return detail::ParseFloatWithReason_impl<float>(s);
+		return ParseFloatWithReason_impl<float>(s);
 	}
 
 	template <>
 	Result<double, ParseErrorReason> ParseFloatWithReason<double>(const std::string_view s) noexcept
 	{
-		return detail::ParseFloatWithReason_impl<double>(s);
+		return ParseFloatWithReason_impl<double>(s);
 	}
 
 	template <>
 	Result<double, ParseErrorReason> ParseFloatWithReason<double>(const StringView s) noexcept
 	{
-		return detail::ParseFloatWithReason_impl<double>(s);
+		return ParseFloatWithReason_impl<double>(s);
 	}
 }

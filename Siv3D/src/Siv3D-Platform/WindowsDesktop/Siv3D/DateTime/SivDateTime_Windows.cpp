@@ -15,7 +15,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		static constexpr DateTime ToDateTime(const SYSTEMTIME& in) noexcept
@@ -28,13 +28,13 @@ namespace s3d
 	{
 		SYSTEMTIME sysTime;
 		::GetLocalTime(&sysTime);
-		return detail::ToDateTime(sysTime);
+		return ToDateTime(sysTime);
 	}
 
 	DateTime DateTime::NowUTC() noexcept
 	{
 		SYSTEMTIME sysTime;
 		::GetSystemTime(&sysTime);
-		return detail::ToDateTime(sysTime);
+		return ToDateTime(sysTime);
 	}
 }

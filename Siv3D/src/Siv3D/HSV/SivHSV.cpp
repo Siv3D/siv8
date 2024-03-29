@@ -14,7 +14,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		inline static double Fraction(const double x) noexcept
@@ -66,12 +66,12 @@ namespace s3d
 
 	HSV::HSV(const Color color) noexcept
 	{
-		*this = detail::RGBAToHSV((color.r / 255.0), (color.g / 255.0), (color.b / 255.0), (color.a / 255.0));
+		*this = RGBAToHSV((color.r / 255.0), (color.g / 255.0), (color.b / 255.0), (color.a / 255.0));
 	}
 
 	HSV::HSV(const ColorF& color) noexcept
 	{
-		*this = detail::RGBAToHSV(color.r, color.g, color.b, color.a);
+		*this = RGBAToHSV(color.r, color.g, color.b, color.a);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@ namespace s3d
 
 	Color HSV::toColor(const uint32 alpha) const noexcept
 	{
-		const double hue01 = detail::Fraction(h / 360.0);
+		const double hue01 = Fraction(h / 360.0);
 		const double hueF = (hue01 * 6.0);
 		const int32 hueI = static_cast<int32>(hueF);
 		const double fr = (hueF - hueI);
@@ -115,9 +115,9 @@ namespace s3d
 			static_cast<uint8>(v * 255.0 + 0.5)
 		};
 
-		return{ vals[detail::HSVConversionTable[hueI][0]],
-				vals[detail::HSVConversionTable[hueI][1]],
-				vals[detail::HSVConversionTable[hueI][2]],
+		return{ vals[HSVConversionTable[hueI][0]],
+				vals[HSVConversionTable[hueI][1]],
+				vals[HSVConversionTable[hueI][2]],
 				static_cast<uint8>(alpha) };
 	}
 
@@ -134,7 +134,7 @@ namespace s3d
 
 	ColorF HSV::toColorF(const double alpha) const noexcept
 	{
-		const double hue01 = detail::Fraction(h / 360.0);
+		const double hue01 = Fraction(h / 360.0);
 		const double hueF = (hue01 * 6.0);
 		const int32 hueI = static_cast<int32>(hueF);
 		const double fr = (hueF - hueI);
@@ -146,9 +146,9 @@ namespace s3d
 			v
 		};
 
-		return{ vals[detail::HSVConversionTable[hueI][0]],
-				vals[detail::HSVConversionTable[hueI][1]],
-				vals[detail::HSVConversionTable[hueI][2]],
+		return{ vals[HSVConversionTable[hueI][0]],
+				vals[HSVConversionTable[hueI][1]],
+				vals[HSVConversionTable[hueI][2]],
 				alpha };
 	}
 
@@ -179,7 +179,7 @@ namespace s3d
 
 	Color HueToColor(const double hue) noexcept
 	{
-		const double hue01 = detail::Fraction(hue / 360.0);
+		const double hue01 = Fraction(hue / 360.0);
 		const double hueF = (hue01 * 6.0);
 		const int32 hueI = static_cast<int32>(hueF);
 		const double fr = (hueF - hueI);
@@ -191,9 +191,9 @@ namespace s3d
 			255
 		};
 
-		return{ vals[detail::HSVConversionTable[hueI][0]],
-				vals[detail::HSVConversionTable[hueI][1]],
-				vals[detail::HSVConversionTable[hueI][2]],
+		return{ vals[HSVConversionTable[hueI][0]],
+				vals[HSVConversionTable[hueI][1]],
+				vals[HSVConversionTable[hueI][2]],
 				255 };
 	}
 
@@ -205,7 +205,7 @@ namespace s3d
 
 	ColorF HueToColorF(const double hue) noexcept
 	{
-		const double hue01 = detail::Fraction(hue / 360.0);
+		const double hue01 = Fraction(hue / 360.0);
 		const double hueF = (hue01 * 6.0);
 		const int32 hueI = static_cast<int32>(hueF);
 		const double fr = (hueF - hueI);
@@ -217,9 +217,9 @@ namespace s3d
 			1.0
 		};
 
-		return{ vals[detail::HSVConversionTable[hueI][0]],
-				vals[detail::HSVConversionTable[hueI][1]],
-				vals[detail::HSVConversionTable[hueI][2]],
+		return{ vals[HSVConversionTable[hueI][0]],
+				vals[HSVConversionTable[hueI][1]],
+				vals[HSVConversionTable[hueI][2]],
 				1.0 };
 	}
 }

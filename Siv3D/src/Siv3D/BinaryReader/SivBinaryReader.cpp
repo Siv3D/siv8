@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[noreturn]]
 		static void ThrowReadDstError()
@@ -161,7 +161,7 @@ namespace s3d
 
 		if (dst == nullptr)
 		{
-			detail::ThrowReadDstError();
+			ThrowReadDstError();
 		}
 
 		return pImpl->read(NonNull{ dst }, readSize);
@@ -176,13 +176,13 @@ namespace s3d
 
 		if (dst == nullptr)
 		{
-			detail::ThrowReadDstError();
+			ThrowReadDstError();
 		}
 
 		if (const int64 fileSize = pImpl->size();
 			not InRange<int64>(pos, 0, fileSize))
 		{
-			detail::ThrowReadRangeError(pos, fileSize);
+			ThrowReadRangeError(pos, fileSize);
 		}
 
 		return pImpl->read(NonNull{ dst }, pos, readSize);
@@ -203,7 +203,7 @@ namespace s3d
 
 		if (dst == nullptr)
 		{
-			detail::ThrowLookaheadDstError();
+			ThrowLookaheadDstError();
 		}
 
 		return pImpl->lookahead(NonNull{ dst }, readSize);
@@ -218,13 +218,13 @@ namespace s3d
 
 		if (dst == nullptr)
 		{
-			detail::ThrowLookaheadDstError();
+			ThrowLookaheadDstError();
 		}
 
 		if (const int64 fileSize = pImpl->size();
 			not InRange<int64>(pos, 0, fileSize))
 		{
-			detail::ThrowLookaheadRangeError(pos, fileSize);
+			ThrowLookaheadRangeError(pos, fileSize);
 		}
 
 		return pImpl->lookahead(NonNull{ dst }, pos, readSize);

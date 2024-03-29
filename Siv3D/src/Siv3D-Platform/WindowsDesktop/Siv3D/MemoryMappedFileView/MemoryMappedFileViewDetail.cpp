@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static const size_t g_granularity = []()
 			{
@@ -175,7 +175,7 @@ namespace s3d
 		}
 		else
 		{
-			const size_t internalOffset = (offset / detail::g_granularity * detail::g_granularity);
+			const size_t internalOffset = (offset / g_granularity * g_granularity);
 
 			m_file.fileMapping = ::CreateFileMappingW(
 				m_file.fileHandle, 0, PAGE_READONLY,

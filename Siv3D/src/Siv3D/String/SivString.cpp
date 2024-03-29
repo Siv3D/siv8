@@ -20,7 +20,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		inline static constexpr bool IsTrimmable(const char32 ch) noexcept
@@ -349,7 +349,7 @@ namespace s3d
 
 	String& String::leftTrim() & noexcept
 	{
-		m_string.erase(m_string.begin(), std::find_if(m_string.begin(), m_string.end(), detail::IsTrimmable));
+		m_string.erase(m_string.begin(), std::find_if(m_string.begin(), m_string.end(), IsTrimmable));
 		return *this;
 	}
 
@@ -360,7 +360,7 @@ namespace s3d
 
 	String String::leftTrimmed() const&
 	{
-		auto it = std::find_if(m_string.begin(), m_string.end(), detail::IsTrimmable);
+		auto it = std::find_if(m_string.begin(), m_string.end(), IsTrimmable);
 		return String(it, m_string.end());
 	}
 
@@ -629,7 +629,7 @@ namespace s3d
 
 	String& String::rightTrim() & noexcept
 	{
-		m_string.erase(std::find_if_not(m_string.rbegin(), m_string.rend(), detail::IsTrimmable).base(), m_string.end());
+		m_string.erase(std::find_if_not(m_string.rbegin(), m_string.rend(), IsTrimmable).base(), m_string.end());
 		return *this;
 	}
 
@@ -640,7 +640,7 @@ namespace s3d
 
 	String String::rightTrimmed() const&
 	{
-		auto it = std::find_if_not(m_string.rbegin(), m_string.rend(), detail::IsTrimmable).base();
+		auto it = std::find_if_not(m_string.rbegin(), m_string.rend(), IsTrimmable).base();
 		return String(m_string.begin(), it);
 	}
 
@@ -938,12 +938,12 @@ namespace s3d
 		const char32* start = m_string.data();
 		const char32* end = (start + m_string.size());
 
-		while ((start < end) && detail::IsTrimmable(*start))
+		while ((start < end) && IsTrimmable(*start))
 		{
 			++start;
 		}
 
-		while ((start < end) && detail::IsTrimmable(*(end - 1)))
+		while ((start < end) && IsTrimmable(*(end - 1)))
 		{
 			--end;
 		}
@@ -1009,7 +1009,7 @@ namespace s3d
 	{
 		String result;
 
-		detail::StringStableUniqueHelper pred;
+		StringStableUniqueHelper pred;
 
 		std::copy_if(m_string.begin(), m_string.end(), std::back_inserter(result), std::ref(pred));
 

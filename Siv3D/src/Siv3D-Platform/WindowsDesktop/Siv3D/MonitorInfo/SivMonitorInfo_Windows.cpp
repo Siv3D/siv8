@@ -20,7 +20,7 @@ namespace s3d
 {
 	Optional<decltype(GetDpiForMonitor)*> g_pGetDpiForMonitor;
 
-	namespace detail
+	namespace
 	{
 		// チェック用デバイス名とモニタハンドル
 		using MonitorCheck = std::pair<const String, HMONITOR>;
@@ -225,7 +225,7 @@ namespace s3d
 							not(monitor.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
 						{
 							
-							monitors.push_back(detail::MakeMonitorInfo(displayDevice, &monitor));
+							monitors.push_back(MakeMonitorInfo(displayDevice, &monitor));
 						}
 
 						ZeroMemory(&monitor, sizeof(monitor));
@@ -244,13 +244,13 @@ namespace s3d
 				{
 					if (displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP)
 					{
-						monitors.push_back(detail::MakeMonitorInfo(displayDevice, nullptr));
+						monitors.push_back(MakeMonitorInfo(displayDevice, nullptr));
 						break;
 					}
 				}
 			}
 
-			detail::GetFriendlyName(monitors);
+			GetFriendlyName(monitors);
 
 			return monitors;
 		}
@@ -280,10 +280,10 @@ namespace s3d
 						if ((monitor.StateFlags & DISPLAY_DEVICE_ACTIVE) &&
 							!(monitor.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
 						{
-							detail::MonitorCheck desc = { Unicode::FromWstring(displayDevice.DeviceName), nullptr };
+							MonitorCheck desc = { Unicode::FromWstring(displayDevice.DeviceName), nullptr };
 
 							// モニターのハンドルを取得
-							::EnumDisplayMonitors(nullptr, nullptr, detail::MonitorCheckProc, (LPARAM)&desc);
+							::EnumDisplayMonitors(nullptr, nullptr, MonitorCheckProc, (LPARAM)&desc);
 
 							if (desc.second == currentMonitor)
 							{

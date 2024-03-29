@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static constexpr std::array FileActionStrings =
 		{
@@ -35,6 +35,6 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const FileAction value)
 	{
-		formatData.string.append(detail::FileActionStrings[FromEnum(value)]);
+		formatData.string.append(FileActionStrings[FromEnum(value)]);
 	}
 }

@@ -20,7 +20,7 @@ namespace s3d
 {
 	static_assert(sizeof(s3d::X86Features) == sizeof(cpu_features::X86Features));
 
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		static CPUInfo InitCPUInfo() noexcept
@@ -39,7 +39,7 @@ namespace s3d
 		}
 	}
 
-	static const CPUInfo g_CPUInfo = detail::InitCPUInfo();
+	static const CPUInfo g_CPUInfo = InitCPUInfo();
 	
 	namespace Platform::X86_64::System
 	{

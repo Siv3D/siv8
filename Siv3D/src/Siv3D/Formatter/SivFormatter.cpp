@@ -16,17 +16,20 @@
 
 namespace s3d
 {
-	constexpr StringView BoolS[2] = { U"false", U"true" };
+	namespace
+	{
+		constexpr StringView BoolS[2] = { U"false", U"true" };
 
-	constexpr StringView NullS{ U"null" };
+		constexpr StringView NullS{ U"null" };
 
-	constexpr StringView LtS{ U"LT" };
+		constexpr StringView LtS{ U"LT" };
 
-	constexpr StringView GtS{ U"GT" };
+		constexpr StringView GtS{ U"GT" };
 
-	constexpr StringView EqS{ U"EQ" };
+		constexpr StringView EqS{ U"EQ" };
 
-	constexpr StringView UnS{ U"UN" };
+		constexpr StringView UnS{ U"UN" };
+	}
 
 	void Formatter(FormatData& formatData, const bool value)
 	{

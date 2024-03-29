@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static constexpr std::array DayOfWeekStrings =
 		{
@@ -38,6 +38,6 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const DayOfWeek value)
 	{
-		formatData.string.append(detail::DayOfWeekStrings[FromEnum(value)]);
+		formatData.string.append(DayOfWeekStrings[FromEnum(value)]);
 	}
 }
