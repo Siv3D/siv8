@@ -14,7 +14,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		inline static double RemoveSRGBCurve(const double x) noexcept
@@ -63,18 +63,18 @@ namespace s3d
 
 	ColorF ColorF::removeSRGBCurve() const noexcept
 	{
-		return{	detail::RemoveSRGBCurve(r),
-				detail::RemoveSRGBCurve(g),
-				detail::RemoveSRGBCurve(b),
+		return{	RemoveSRGBCurve(r),
+				RemoveSRGBCurve(g),
+				RemoveSRGBCurve(b),
 				a
 		};
 	}
 
 	ColorF ColorF::applySRGBCurve() const noexcept
 	{
-		return{	detail::ApplySRGBCurve(r),
-				detail::ApplySRGBCurve(g),
-				detail::ApplySRGBCurve(b),
+		return{	ApplySRGBCurve(r),
+				ApplySRGBCurve(g),
+				ApplySRGBCurve(b),
 				a
 		};
 	}

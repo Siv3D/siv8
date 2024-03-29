@@ -17,7 +17,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static constexpr StringView DurationFormatPatterns[]
 		{
@@ -150,7 +150,7 @@ namespace s3d
 					}
 					else
 					{
-						result.append(detail::GetFormattedElement(us, keyPattern));
+						result.append(GetFormattedElement(us, keyPattern));
 						keyPattern.clear();
 						keyPattern.push_back(ch);
 					}
@@ -160,7 +160,7 @@ namespace s3d
 			{
 				if (keyPattern)
 				{
-					result.append(detail::GetFormattedElement(us, keyPattern));
+					result.append(GetFormattedElement(us, keyPattern));
 					keyPattern.clear();
 				}
 
@@ -187,7 +187,7 @@ namespace s3d
 
 		if (keyPattern)
 		{
-			result.append(detail::GetFormattedElement(us, keyPattern));
+			result.append(GetFormattedElement(us, keyPattern));
 		}
 
 		return result;
@@ -201,71 +201,71 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const Days& days)
 	{
-		detail::FormatDuration(formatData, days, U'd');
+		FormatDuration(formatData, days, U'd');
 	}
 
 	void Formatter(FormatData& formatData, const DaysF& days)
 	{
-		detail::FormatDuration(formatData, days, U'd');
+		FormatDuration(formatData, days, U'd');
 	}
 
 	void Formatter(FormatData& formatData, const Hours& hours)
 	{
-		detail::FormatDuration(formatData, hours, U'h');
+		FormatDuration(formatData, hours, U'h');
 	}
 
 	void Formatter(FormatData& formatData, const HoursF& hours)
 	{
-		detail::FormatDuration(formatData, hours, U'h');
+		FormatDuration(formatData, hours, U'h');
 	}
 
 	void Formatter(FormatData& formatData, const Minutes& minutes)
 	{
-		detail::FormatDuration(formatData, minutes, U"min");
+		FormatDuration(formatData, minutes, U"min");
 	}
 
 	void Formatter(FormatData& formatData, const MinutesF& minutes)
 	{
-		detail::FormatDuration(formatData, minutes, U"min");
+		FormatDuration(formatData, minutes, U"min");
 	}
 
 	void Formatter(FormatData& formatData, const Seconds& seconds)
 	{
-		detail::FormatDuration(formatData, seconds, U's');
+		FormatDuration(formatData, seconds, U's');
 	}
 
 	void Formatter(FormatData& formatData, const SecondsF& seconds)
 	{
-		detail::FormatDuration(formatData, seconds, U's');
+		FormatDuration(formatData, seconds, U's');
 	}
 
 	void Formatter(FormatData& formatData, const Milliseconds& milliseconds)
 	{
-		detail::FormatDuration(formatData, milliseconds, U"ms");
+		FormatDuration(formatData, milliseconds, U"ms");
 	}
 
 	void Formatter(FormatData& formatData, const MillisecondsF& milliseconds)
 	{
-		detail::FormatDuration(formatData, milliseconds, U"ms");
+		FormatDuration(formatData, milliseconds, U"ms");
 	}
 
 	void Formatter(FormatData& formatData, const Microseconds& microseconds)
 	{
-		detail::FormatDuration(formatData, microseconds, U"us");
+		FormatDuration(formatData, microseconds, U"us");
 	}
 
 	void Formatter(FormatData& formatData, const MicrosecondsF& microseconds)
 	{
-		detail::FormatDuration(formatData, microseconds, U"us");
+		FormatDuration(formatData, microseconds, U"us");
 	}
 
 	void Formatter(FormatData& formatData, const Nanoseconds& nanoseconds)
 	{
-		detail::FormatDuration(formatData, nanoseconds, U"ns");
+		FormatDuration(formatData, nanoseconds, U"ns");
 	}
 
 	void Formatter(FormatData& formatData, const NanosecondsF& nanoseconds)
 	{
-		detail::FormatDuration(formatData, nanoseconds, U"ns");
+		FormatDuration(formatData, nanoseconds, U"ns");
 	}
 }

@@ -98,7 +98,7 @@ namespace s3d
 		/// @param offset マップする範囲の先頭位置（バイト）
 		/// @param requestSize マップする範囲のサイズ（バイト）
 		/// @return マップされたメモリの情報
-		/// @rematk マップするサイズが 0 の場合、マップは失敗します。
+		/// @remark マップするサイズが 0 の場合、マップは失敗します。
 		[[nodiscard]]
 		MappedMemory map(size_t offset, size_t requestSize);
 
@@ -110,7 +110,7 @@ namespace s3d
 
 		/// @brief メモリマップトファイル全体をマップします。
 		/// @return マップされたメモリの情報
-		/// @rematk マップするサイズが 0 の場合、マップは失敗します。
+		/// @remark マップするサイズが 0 の場合、マップは失敗します。
 		[[nodiscard]]
 		MappedMemory mapAll();
 

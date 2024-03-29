@@ -101,14 +101,12 @@ namespace s3d
 # endif
 
 	template <class Type, class Allocator>
-	template <class Fty>
-	constexpr Array<Type, Allocator>::Array(const size_type size, Arg::generator_<Fty> generator) requires (std::invocable<Fty>&& std::convertible_to < std::invoke_result_t<Fty>, value_type>)
-		: Array(Generate<Fty>(size, *generator)) {}
+	constexpr Array<Type, Allocator>::Array(const size_type size, Arg::generator_<FunctionRef<value_type()>> generator)
+		: Array(Generate(size, *generator)) {}
 
-	template <class Type, class Allocator>
-	template <class Fty>
-	constexpr Array<Type, Allocator>::Array(const size_type size, Arg::indexedGenerator_<Fty> indexedGenerator)
-		: Array(IndexedGenerate<Fty>(size, *indexedGenerator)) {}
+		template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>::Array(const size_type size, Arg::generator_<FunctionRef<value_type(size_t)>> generator)
+		: Array(IndexedGenerate(size, *generator)) {}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>::Array(const Arg::reserve_<size_type> size)
@@ -845,6 +843,13 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(std::initializer_list<value_type> list)
 	{
 		m_container.insert(m_container.end(), list);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(const size_type count, const value_type& value)
+	{
+		m_container.insert(m_container.end(), count, value);
 		return *this;
 	}
 
@@ -2324,8 +2329,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::Generate(const size_type size, Fty generator) requires (std::invocable<Fty> && std::convertible_to<std::invoke_result_t<Fty>, value_type>)
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::Generate(const size_type size, FunctionRef<value_type()> generator)
 	{
 		Array result(Arg::reserve = size);
 
@@ -2344,14 +2348,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::IndexedGenerate(const size_type size, Fty indexedGenerator)
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::IndexedGenerate(const size_type size, FunctionRef<value_type(size_t)> generator)
 	{
 		Array result(Arg::reserve = size);
 
 		for (size_type i = 0; i < size; ++i)
 		{
-			result.m_container.push_back(indexedGenerator(i));
+			result.m_container.push_back(generator(i));
 		}
 
 		return result;

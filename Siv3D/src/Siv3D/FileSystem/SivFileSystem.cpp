@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		inline static std::filesystem::path ToPath(const FilePathView path)
@@ -218,7 +218,7 @@ namespace s3d
 
 		FilePath PathAppend(const FilePathView lhs, const FilePathView rhs)
 		{
-			return FilePath{ (detail::ToPath(lhs) / detail::ToPath(rhs)).u32string() }.replace(U'\\', U'/');
+			return FilePath{ (ToPath(lhs) / ToPath(rhs)).u32string() }.replace(U'\\', U'/');
 		}
 			
 		////////////////////////////////////////////////////////////////
@@ -234,7 +234,7 @@ namespace s3d
 				return false;
 			}
 
-			return (std::filesystem::directory_iterator{ detail::ToPath(path) } == std::filesystem::directory_iterator{});
+			return (std::filesystem::directory_iterator{ ToPath(path) } == std::filesystem::directory_iterator{});
 		}
 			
 		////////////////////////////////////////////////////////////////
@@ -340,7 +340,7 @@ namespace s3d
 
 			try
 			{
-				std::filesystem::create_directories(detail::ToPath(path));
+				std::filesystem::create_directories(ToPath(path));
 				return true;
 			}
 			catch (const std::filesystem::filesystem_error&)
@@ -397,10 +397,10 @@ namespace s3d
 
 			CreateParentDirectories(to);
 
-			const auto options = (detail::ToCopyOptions(copyOption) | std::filesystem::copy_options::recursive);
+			const auto options = (ToCopyOptions(copyOption) | std::filesystem::copy_options::recursive);
 			
 			std::error_code error;
-			std::filesystem::copy(detail::ToPath(from), detail::ToPath(to), options, error);
+			std::filesystem::copy(ToPath(from), ToPath(to), options, error);
 
 			return (error.value() == 0);
 		}
@@ -424,7 +424,7 @@ namespace s3d
 			}
 
 			std::error_code error;
-			std::filesystem::rename(detail::ToPath(from), detail::ToPath(to), error);
+			std::filesystem::rename(ToPath(from), ToPath(to), error);
 
 			return (error.value() == 0);
 		}

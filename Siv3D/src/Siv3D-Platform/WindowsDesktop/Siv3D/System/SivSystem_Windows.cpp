@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/System.hpp>
+# include <Siv3D/Unicode.hpp>
+# include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 
 namespace s3d
@@ -29,6 +31,31 @@ namespace s3d
 				::Sleep(milliseconds);
 			}
 			::timeEndPeriod(1);
+		}
+
+		bool LaunchBrowser(const FilePathView url)
+		{
+			String target;
+
+			if (const bool isWebPage = (url.starts_with(U"http://") || url.starts_with(U"https://"))) // Web ページ
+			{
+				target = url;
+			}
+			else // ローカルファイル
+			{
+				const String extension = FileSystem::Extension(url);
+				
+				const bool isHTML = ((extension == U"html") || (extension == U"htm"));
+
+				if (not isHTML)
+				{
+					return false;
+				}
+
+				target = (U"file://" + FileSystem::FullPath(url));
+			}
+
+			return (32 < reinterpret_cast<size_t>(::ShellExecuteW(nullptr, L"open", Unicode::ToWstring(target).c_str(), nullptr, nullptr, SW_SHOWNORMAL)));
 		}
 	}
 }

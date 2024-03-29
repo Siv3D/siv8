@@ -17,7 +17,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static constexpr char TableUpper[16] =
 		{
@@ -56,7 +56,7 @@ namespace s3d
 
 	std::array<char8, 2> ToHex(const Byte value) noexcept
 	{
-		return detail::ToHexUpperCase<char8>(value);
+		return ToHexUpperCase<char8>(value);
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ namespace s3d
 
 	std::array<char8, 2> ToHexLowerCase(const Byte value) noexcept
 	{
-		return detail::ToHexLowerCase<char8>(value);
+		return ToHexLowerCase<char8>(value);
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ namespace s3d
 
 	std::array<char8, 2> ToHexUpperCase(const Byte value) noexcept
 	{
-		return detail::ToHexUpperCase<char8>(value);
+		return ToHexUpperCase<char8>(value);
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const Byte& value)
 	{
-		const auto hex = detail::ToHexUpperCase<char32>(value);
+		const auto hex = ToHexUpperCase<char32>(value);
 		formatData.string.append(hex.begin(), hex.end());
 	}
 		
@@ -101,13 +101,13 @@ namespace s3d
 
 	std::ostream& operator <<(std::ostream& output, const Byte& value)
 	{
-		const auto hex = detail::ToHexUpperCase<char>(value);
+		const auto hex = ToHexUpperCase<char>(value);
 		return output.write(hex.data(), 2);
 	}
 
 	std::wostream& operator <<(std::wostream& output, const Byte& value)
 	{
-		const auto hex = detail::ToHexUpperCase<wchar_t>(value);
+		const auto hex = ToHexUpperCase<wchar_t>(value);
 		return output.write(hex.data(), 2);
 	}
 		

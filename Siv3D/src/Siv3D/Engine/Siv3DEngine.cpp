@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "Siv3DEngine.hpp"
+# include <Siv3D/LicenseManager/ILicenseManager.hpp>
 # include <Siv3D/Logger/ILogger.hpp>
 # include <Siv3D/System/ISystem.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
@@ -18,7 +19,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		template <class Tuple, size_t Index = (std::tuple_size_v<Tuple> -1)>
 		void ReleaseTupleReverse(Tuple& tuple)
@@ -38,7 +39,7 @@ namespace s3d
 
 	Siv3DEngine::~Siv3DEngine()
 	{
-		detail::ReleaseTupleReverse(m_components);	
+		ReleaseTupleReverse(m_components);	
 		pEngine = nullptr;
 	}
 

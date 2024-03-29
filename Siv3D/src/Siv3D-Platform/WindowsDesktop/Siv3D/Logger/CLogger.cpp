@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static constexpr std::array LogTypeStrings =
 		{
@@ -51,7 +51,7 @@ namespace s3d
 		}
 
 		std::wstring output = std::to_wstring(Time::GetMillisec());
-		output.append(detail::LogTypeStrings[FromEnum(type)]);
+		output.append(LogTypeStrings[FromEnum(type)]);
 		output.append(Unicode::ToWstring(s));
 		output.push_back(L'\n');
 
@@ -66,7 +66,7 @@ namespace s3d
 		}
 
 		std::wstring output = std::to_wstring(Time::GetMillisec());
-		output.append(detail::LogTypeStrings[FromEnum(type)]);
+		output.append(LogTypeStrings[FromEnum(type)]);
 		output.append(Unicode::ToWstring(s));
 		output.push_back(L'\n');
 

@@ -21,6 +21,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief タイムポイント提供インタフェース
+	/// @remark Stopwatch や Timer クラスが時間を計測する際に参照するタイムポイントを提供します。
 	class ISteadyClock
 	{
 	public:
@@ -39,6 +41,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief タイムポイント（マイクロ秒）を返します。
+		/// @return タイムポイント（マイクロ秒）
 		[[nodiscard]]
 		virtual uint64 getMicrosec() noexcept = 0;
 
@@ -48,6 +52,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief タイムポイント（ナノ秒）を返します。
+		/// @return タイムポイント（ナノ秒）
 		[[nodiscard]]
 		virtual uint64 getNanosec() noexcept;
 
@@ -57,6 +63,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief タイムポイント（マイクロ秒）を返します。
+		/// @param pSteadyClock タイムポイント提供オブジェクトのポインタ
+		/// @return タイムポイント（マイクロ秒）
 		[[nodiscard]]
 		static uint64 GetMicrosec(ISteadyClock* pSteadyClock) noexcept;
 
@@ -66,6 +75,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief タイムポイント（ナノ秒）を返します。
+		/// @param pSteadyClock タイムポイント提供オブジェクトのポインタ
+		/// @return タイムポイント（ナノ秒）
 		[[nodiscard]]
 		static uint64 GetNanosec(ISteadyClock* pSteadyClock) noexcept;
 	};

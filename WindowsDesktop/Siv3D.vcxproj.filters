@@ -349,6 +349,30 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView">
       <UniqueIdentifier>{4b63e263-fe9c-42ac-8e86-d8ab754e362b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Image">
+      <UniqueIdentifier>{f729606a-ba93-4421-94ce-c9c66efc29d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\BigFloat">
+      <UniqueIdentifier>{1658d1b0-c4f5-4934-8d87-e032fb3e238b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\BigNumMath">
+      <UniqueIdentifier>{544d7f36-8644-40b5-b514-4a00b8c309ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MillisecClock">
+      <UniqueIdentifier>{dc1d4cc1-fdbf-4ca2-8d28-43bc338364f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MicrosecClock">
+      <UniqueIdentifier>{bed510cc-8c39-4d16-8066-f3439746637c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\CycleClock">
+      <UniqueIdentifier>{1fcf5866-7164-48d0-969a-a42e2ba2cfab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\LicenseManager">
+      <UniqueIdentifier>{26b5f8c1-f34d-4f38-8c74-847275125906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\CacheDirectory">
+      <UniqueIdentifier>{4f0f3d1f-beb0-4a1f-bb63-5735e7ed8b93}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1236,6 +1260,66 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Image.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Image.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BigFloat.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BigFloat.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\BigFloat\BigFloatDetail.hpp">
+      <Filter>src\Siv3D\BigFloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BigNumMath.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\LicenseInfo.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MillisecClock.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MicrosecClock.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CycleClock.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\CycleClock.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MicrosecClock.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MillisecClock.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\LicenseManager.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\ILicenseManager.hpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\CLicenseManager.hpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.hpp">
+      <Filter>src\Siv3D\CacheDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseList.hpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Profiler.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ProfilerStat.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1564,6 +1648,36 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp">
+      <Filter>src\Siv3D\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BigFloat\SivBigFloat.cpp">
+      <Filter>src\Siv3D\BigFloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BigNumMath\SivBigNumMath.cpp">
+      <Filter>src\Siv3D\BigNumMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MillisecClock\SivMillisecClock.cpp">
+      <Filter>src\Siv3D\MillisecClock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MicrosecClock\SivMicrosecClock.cpp">
+      <Filter>src\Siv3D\MicrosecClock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\CycleClock\SivCycleClock.cpp">
+      <Filter>src\Siv3D\CycleClock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseManagerFactory.cpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\CLicenseManager.cpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\SivLicenseManager.cpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.cpp">
+      <Filter>src\Siv3D\CacheDirectory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -513,9 +513,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr int32 Point::area() const noexcept
+	template <class Type>
+	constexpr Type Point::area() const noexcept
 	{
-		return (x * y);
+		return (static_cast<Type>(x) * y);
 	}
 
 	////////////////////////////////////////////////////////////////

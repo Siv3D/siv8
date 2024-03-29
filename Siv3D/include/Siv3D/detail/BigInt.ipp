@@ -389,4 +389,20 @@ namespace s3d
 	{
 		return compare(static_cast<uint64>(i));
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	_detail (internal)
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline BigInt::BigIntDetail& BigInt::_detail() noexcept
+	{
+		return *pImpl;
+	}
+
+	inline const BigInt::BigIntDetail& BigInt::_detail() const noexcept
+	{
+		return *pImpl;
+	}
 }

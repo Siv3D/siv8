@@ -14,7 +14,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static constexpr StringView BytesUnits[9] =
 		{
@@ -28,7 +28,10 @@ namespace s3d
 			U"ZiB",
 			U"YiB",
 		};
-
+	}
+	
+	namespace detail
+	{
 		String PadLeft(String&& s, const std::pair<int32, char32>& padding)
 		{
 			const int32 targetLength = padding.first;
@@ -52,15 +55,15 @@ namespace s3d
 		{
 			if (s < 10.0)
 			{
-				return (ToString(s, 2) + detail::BytesUnits[i]);
+				return (ToString(s, 2) + BytesUnits[i]);
 			}
 			else if (s < 100.0)
 			{
-				return (ToString(s, 1) + detail::BytesUnits[i]);
+				return (ToString(s, 1) + BytesUnits[i]);
 			}
 			else if (s < 1024.0)
 			{
-				return (ToString(s, 0) + detail::BytesUnits[i]);
+				return (ToString(s, 0) + BytesUnits[i]);
 			}
 
 			s /= 1024.0;

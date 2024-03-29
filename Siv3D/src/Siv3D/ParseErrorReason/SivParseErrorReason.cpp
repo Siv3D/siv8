@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static constexpr std::array ParseErrorReasonStrings =
 		{
@@ -36,6 +36,6 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, ParseErrorReason value)
 	{
-		formatData.string.append(detail::ParseErrorReasonStrings[FromEnum(value)]);
+		formatData.string.append(ParseErrorReasonStrings[FromEnum(value)]);
 	}
 }

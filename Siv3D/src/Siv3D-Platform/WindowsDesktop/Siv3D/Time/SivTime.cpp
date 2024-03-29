@@ -15,7 +15,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		inline static int64 GetQPCFrequency() noexcept
@@ -64,22 +64,22 @@ namespace s3d
 	{
 		int64 GetSec() noexcept
 		{
-			return static_cast<int64>(detail::GetCount() * detail::g_QPC_FrequencyInvSec);
+			return static_cast<int64>(GetCount() * g_QPC_FrequencyInvSec);
 		}
 
 		int64 GetMillisec() noexcept
 		{
-			return static_cast<int64>(detail::GetCount() * detail::g_QPC_FrequencyInvMilliSec);
+			return static_cast<int64>(GetCount() * g_QPC_FrequencyInvMilliSec);
 		}
 
 		int64 GetMicrosec() noexcept
 		{
-			return static_cast<int64>(detail::GetCount() * detail::g_QPC_FrequencyInvMicroSec);
+			return static_cast<int64>(GetCount() * g_QPC_FrequencyInvMicroSec);
 		}
 
 		int64 GetNanosec() noexcept
 		{
-			return static_cast<int64>(detail::GetCount() * detail::g_QPC_FrequencyInvNanoSec);
+			return static_cast<int64>(GetCount() * g_QPC_FrequencyInvNanoSec);
 		}
 
 		int64 GetUptimeSec() noexcept
@@ -94,17 +94,17 @@ namespace s3d
 
 		uint64 GetSecSinceEpoch() noexcept
 		{
-			return (detail::Get100NanoSecSinceEpoch() / 10'000'000);
+			return (Get100NanoSecSinceEpoch() / 10'000'000);
 		}
 
 		uint64 GetMillisecSinceEpoch() noexcept
 		{
-			return (detail::Get100NanoSecSinceEpoch() / 10'000);
+			return (Get100NanoSecSinceEpoch() / 10'000);
 		}
 
 		uint64 GetMicrosecSinceEpoch() noexcept
 		{
-			return (detail::Get100NanoSecSinceEpoch() / 10);
+			return (Get100NanoSecSinceEpoch() / 10);
 		}
 
 		int32 UTCOffsetMinutes() noexcept

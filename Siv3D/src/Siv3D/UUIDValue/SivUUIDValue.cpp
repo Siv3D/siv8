@@ -17,7 +17,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		static UUIDValue ToUUIDValue(const uuids::uuid& id) noexcept
@@ -82,26 +82,26 @@ namespace s3d
 	std::string UUIDValue::to_string() const
 	{
 		std::string s(36, '-');
-		detail::ToHex(&s[0], m_data[0]);
-		detail::ToHex(&s[2], m_data[1]);
-		detail::ToHex(&s[4], m_data[2]);
-		detail::ToHex(&s[6], m_data[3]);
+		ToHex(&s[0], m_data[0]);
+		ToHex(&s[2], m_data[1]);
+		ToHex(&s[4], m_data[2]);
+		ToHex(&s[6], m_data[3]);
 
-		detail::ToHex(&s[9], m_data[4]);
-		detail::ToHex(&s[11], m_data[5]);
+		ToHex(&s[9], m_data[4]);
+		ToHex(&s[11], m_data[5]);
 
-		detail::ToHex(&s[14], m_data[6]);
-		detail::ToHex(&s[16], m_data[7]);
+		ToHex(&s[14], m_data[6]);
+		ToHex(&s[16], m_data[7]);
 
-		detail::ToHex(&s[19], m_data[8]);
-		detail::ToHex(&s[21], m_data[9]);
+		ToHex(&s[19], m_data[8]);
+		ToHex(&s[21], m_data[9]);
 
-		detail::ToHex(&s[24], m_data[10]);
-		detail::ToHex(&s[26], m_data[11]);
-		detail::ToHex(&s[28], m_data[12]);
-		detail::ToHex(&s[30], m_data[13]);
-		detail::ToHex(&s[32], m_data[14]);
-		detail::ToHex(&s[34], m_data[15]);
+		ToHex(&s[24], m_data[10]);
+		ToHex(&s[26], m_data[11]);
+		ToHex(&s[28], m_data[12]);
+		ToHex(&s[30], m_data[13]);
+		ToHex(&s[32], m_data[14]);
+		ToHex(&s[34], m_data[15]);
 
 		return s;
 	}
@@ -115,26 +115,26 @@ namespace s3d
 	String UUIDValue::str() const
 	{
 		String s(36, U'-');
-		detail::ToHex(&s[0], m_data[0]);
-		detail::ToHex(&s[2], m_data[1]);
-		detail::ToHex(&s[4], m_data[2]);
-		detail::ToHex(&s[6], m_data[3]);
+		ToHex(&s[0], m_data[0]);
+		ToHex(&s[2], m_data[1]);
+		ToHex(&s[4], m_data[2]);
+		ToHex(&s[6], m_data[3]);
 
-		detail::ToHex(&s[9], m_data[4]);
-		detail::ToHex(&s[11], m_data[5]);
+		ToHex(&s[9], m_data[4]);
+		ToHex(&s[11], m_data[5]);
 
-		detail::ToHex(&s[14], m_data[6]);
-		detail::ToHex(&s[16], m_data[7]);
+		ToHex(&s[14], m_data[6]);
+		ToHex(&s[16], m_data[7]);
 
-		detail::ToHex(&s[19], m_data[8]);
-		detail::ToHex(&s[21], m_data[9]);
+		ToHex(&s[19], m_data[8]);
+		ToHex(&s[21], m_data[9]);
 
-		detail::ToHex(&s[24], m_data[10]);
-		detail::ToHex(&s[26], m_data[11]);
-		detail::ToHex(&s[28], m_data[12]);
-		detail::ToHex(&s[30], m_data[13]);
-		detail::ToHex(&s[32], m_data[14]);
-		detail::ToHex(&s[34], m_data[15]);
+		ToHex(&s[24], m_data[10]);
+		ToHex(&s[26], m_data[11]);
+		ToHex(&s[28], m_data[12]);
+		ToHex(&s[30], m_data[13]);
+		ToHex(&s[32], m_data[14]);
+		ToHex(&s[34], m_data[15]);
 
 		return s;
 	}
@@ -147,7 +147,7 @@ namespace s3d
 
 	UUIDValue UUIDValue::Generate()
 	{
-		return detail::ToUUIDValue(uuids::uuid_system_generator{}());
+		return ToUUIDValue(uuids::uuid_system_generator{}());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ namespace s3d
 
 	UUIDValue UUIDValue::GenerateFromRNG(DefaultRNG& rng)
 	{
-		return detail::ToUUIDValue(uuids::basic_uuid_random_generator{ rng }());
+		return ToUUIDValue(uuids::basic_uuid_random_generator{ rng }());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -169,7 +169,7 @@ namespace s3d
 
 	UUIDValue UUIDValue::GenerateFromName(const UUIDValue& namespaceUUID, const std::string_view name)
 	{
-		return detail::ToUUIDValue(uuids::uuid_name_generator{ namespaceUUID.m_data }(name));
+		return ToUUIDValue(uuids::uuid_name_generator{ namespaceUUID.m_data }(name));
 	}
 
 	UUIDValue UUIDValue::GenerateFromName(const UUIDValue& namespaceUUID, const StringView name)
@@ -196,7 +196,7 @@ namespace s3d
 
 	UUIDValue UUIDValue::NamespaceDNS() noexcept
 	{
-		return detail::ToUUIDValue(uuids::uuid_namespace_dns);
+		return ToUUIDValue(uuids::uuid_namespace_dns);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -207,7 +207,7 @@ namespace s3d
 
 	UUIDValue UUIDValue::NamespaceURL() noexcept
 	{
-		return detail::ToUUIDValue(uuids::uuid_namespace_url);
+		return ToUUIDValue(uuids::uuid_namespace_url);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -218,7 +218,7 @@ namespace s3d
 
 	UUIDValue UUIDValue::NamespaceOID() noexcept
 	{
-		return detail::ToUUIDValue(uuids::uuid_namespace_oid);
+		return ToUUIDValue(uuids::uuid_namespace_oid);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -229,7 +229,7 @@ namespace s3d
 
 	UUIDValue UUIDValue::NamespaceX500() noexcept
 	{
-		return detail::ToUUIDValue(uuids::uuid_namespace_x500);
+		return ToUUIDValue(uuids::uuid_namespace_x500);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -258,7 +258,7 @@ namespace s3d
 	{
 		if (auto result = uuids::uuid::from_string(uuid))
 		{
-			return detail::ToUUIDValue(*result);
+			return ToUUIDValue(*result);
 		}
 		else
 		{
@@ -270,7 +270,7 @@ namespace s3d
 	{
 		if (auto result = uuids::uuid::from_string(uuid))
 		{
-			return detail::ToUUIDValue(*result);
+			return ToUUIDValue(*result);
 		}
 		else
 		{
