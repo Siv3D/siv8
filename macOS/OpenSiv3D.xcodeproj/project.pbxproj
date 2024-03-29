@@ -708,6 +708,16 @@
 		F9528B4B2BB69EAD00222F45 /* BigFloatDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B482BB69EAD00222F45 /* BigFloatDetail.hpp */; };
 		F9528B4C2BB69EAD00222F45 /* SivBigFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B492BB69EAD00222F45 /* SivBigFloat.cpp */; };
 		F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B4D2BB69EC500222F45 /* SivBigNumMath.cpp */; };
+		F9528B532BB6DC2C00222F45 /* LicenseInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B502BB6DC2C00222F45 /* LicenseInfo.hpp */; };
+		F9528B542BB6DC2C00222F45 /* MicrosecClock.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B512BB6DC2C00222F45 /* MicrosecClock.hpp */; };
+		F9528B552BB6DC2C00222F45 /* MillisecClock.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B522BB6DC2C00222F45 /* MillisecClock.hpp */; };
+		F9528B572BB6DC3700222F45 /* CycleClock.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B562BB6DC3700222F45 /* CycleClock.hpp */; };
+		F9528B5B2BB6DC6800222F45 /* MicrosecClock.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B582BB6DC6800222F45 /* MicrosecClock.ipp */; };
+		F9528B5C2BB6DC6800222F45 /* MillisecClock.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B592BB6DC6800222F45 /* MillisecClock.ipp */; };
+		F9528B5D2BB6DC6800222F45 /* CycleClock.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B5A2BB6DC6800222F45 /* CycleClock.ipp */; };
+		F9528B642BB6DC9200222F45 /* SivMicrosecClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B5E2BB6DC9200222F45 /* SivMicrosecClock.cpp */; };
+		F9528B652BB6DC9200222F45 /* SivCycleClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B602BB6DC9200222F45 /* SivCycleClock.cpp */; };
+		F9528B662BB6DC9200222F45 /* SivMillisecClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B622BB6DC9200222F45 /* SivMillisecClock.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1417,6 +1427,16 @@
 		F9528B482BB69EAD00222F45 /* BigFloatDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloatDetail.hpp; sourceTree = "<group>"; };
 		F9528B492BB69EAD00222F45 /* SivBigFloat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBigFloat.cpp; sourceTree = "<group>"; };
 		F9528B4D2BB69EC500222F45 /* SivBigNumMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBigNumMath.cpp; sourceTree = "<group>"; };
+		F9528B502BB6DC2C00222F45 /* LicenseInfo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LicenseInfo.hpp; sourceTree = "<group>"; };
+		F9528B512BB6DC2C00222F45 /* MicrosecClock.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MicrosecClock.hpp; sourceTree = "<group>"; };
+		F9528B522BB6DC2C00222F45 /* MillisecClock.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MillisecClock.hpp; sourceTree = "<group>"; };
+		F9528B562BB6DC3700222F45 /* CycleClock.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CycleClock.hpp; sourceTree = "<group>"; };
+		F9528B582BB6DC6800222F45 /* MicrosecClock.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MicrosecClock.ipp; sourceTree = "<group>"; };
+		F9528B592BB6DC6800222F45 /* MillisecClock.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MillisecClock.ipp; sourceTree = "<group>"; };
+		F9528B5A2BB6DC6800222F45 /* CycleClock.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CycleClock.ipp; sourceTree = "<group>"; };
+		F9528B5E2BB6DC9200222F45 /* SivMicrosecClock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMicrosecClock.cpp; sourceTree = "<group>"; };
+		F9528B602BB6DC9200222F45 /* SivCycleClock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCycleClock.cpp; sourceTree = "<group>"; };
+		F9528B622BB6DC9200222F45 /* SivMillisecClock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMillisecClock.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2182,6 +2202,7 @@
 				F9070B6F2B9F175000383E4D /* ColorF.ipp */,
 				F9070B702B9F175000383E4D /* Console.ipp */,
 				F9070B712B9F175000383E4D /* ConsoleBuffer.ipp */,
+				F9528B5A2BB6DC6800222F45 /* CycleClock.ipp */,
 				F9070B722B9F175000383E4D /* Date.ipp */,
 				F9070B732B9F175000383E4D /* DateTime.ipp */,
 				F9070B742B9F175000383E4D /* DiscreteDistribution.ipp */,
@@ -2216,6 +2237,8 @@
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
 				F9070B8F2B9F175000383E4D /* MD5Value.ipp */,
 				F9070B902B9F175000383E4D /* Memory.ipp */,
+				F9528B582BB6DC6800222F45 /* MicrosecClock.ipp */,
+				F9528B592BB6DC6800222F45 /* MillisecClock.ipp */,
 				F9070B912B9F175000383E4D /* NonNull.ipp */,
 				F9070B922B9F175000383E4D /* Number.ipp */,
 				F9070B932B9F175000383E4D /* Optional.ipp */,
@@ -2303,6 +2326,7 @@
 				F9070BCF2B9F175000383E4D /* ConsoleBuffer.hpp */,
 				F9070BD02B9F175000383E4D /* CopyOption.hpp */,
 				F9070BD12B9F175000383E4D /* CPUInfo.hpp */,
+				F9528B562BB6DC3700222F45 /* CycleClock.hpp */,
 				F9070BD22B9F175000383E4D /* Date.hpp */,
 				F9070BD32B9F175000383E4D /* DateTime.hpp */,
 				F9070BD42B9F175000383E4D /* DayOfWeek.hpp */,
@@ -2347,6 +2371,7 @@
 				F9070BF92B9F175000383E4D /* IWriter.hpp */,
 				F9070BFA2B9F175000383E4D /* KahanSummation.hpp */,
 				F9070BFB2B9F175000383E4D /* LetterCase.hpp */,
+				F9528B502BB6DC2C00222F45 /* LicenseInfo.hpp */,
 				F9070BFC2B9F175000383E4D /* Logger.hpp */,
 				F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */,
 				F9070BFE2B9F175000383E4D /* LogType.hpp */,
@@ -2357,6 +2382,8 @@
 				F9070C022B9F175000383E4D /* Memory.hpp */,
 				F9528B272BAFCDB400222F45 /* MemoryMappedFile.hpp */,
 				F9528B262BAFCDB400222F45 /* MemoryMappedFileView.hpp */,
+				F9528B512BB6DC2C00222F45 /* MicrosecClock.hpp */,
+				F9528B522BB6DC2C00222F45 /* MillisecClock.hpp */,
 				F9070C032B9F175000383E4D /* MonitorInfo.hpp */,
 				F9070C042B9F175000383E4D /* NamedParameter.hpp */,
 				F9070C052B9F175000383E4D /* NonNull.hpp */,
@@ -2970,6 +2997,7 @@
 				F9070D2D2B9F175E00383E4D /* Console */,
 				F9070D2F2B9F175E00383E4D /* ConsoleBuffer */,
 				F9070D312B9F175E00383E4D /* CPUInfo */,
+				F9528B612BB6DC9200222F45 /* CycleClock */,
 				F9070D332B9F175E00383E4D /* Date */,
 				F9070D352B9F175E00383E4D /* DateTime */,
 				F9070D372B9F175E00383E4D /* DayOfWeek */,
@@ -2997,6 +3025,8 @@
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
 				F9528B2F2BB0562C00222F45 /* MemoryMappedFileView */,
+				F9528B5F2BB6DC9200222F45 /* MicrosecClock */,
+				F9528B632BB6DC9200222F45 /* MillisecClock */,
 				F9070D6C2B9F175E00383E4D /* MonitorInfo */,
 				F9070D6E2B9F175E00383E4D /* Optional */,
 				F9070D702B9F175E00383E4D /* ParseBool */,
@@ -3291,6 +3321,30 @@
 			path = BigNumMath;
 			sourceTree = "<group>";
 		};
+		F9528B5F2BB6DC9200222F45 /* MicrosecClock */ = {
+			isa = PBXGroup;
+			children = (
+				F9528B5E2BB6DC9200222F45 /* SivMicrosecClock.cpp */,
+			);
+			path = MicrosecClock;
+			sourceTree = "<group>";
+		};
+		F9528B612BB6DC9200222F45 /* CycleClock */ = {
+			isa = PBXGroup;
+			children = (
+				F9528B602BB6DC9200222F45 /* SivCycleClock.cpp */,
+			);
+			path = CycleClock;
+			sourceTree = "<group>";
+		};
+		F9528B632BB6DC9200222F45 /* MillisecClock */ = {
+			isa = PBXGroup;
+			children = (
+				F9528B622BB6DC9200222F45 /* SivMillisecClock.cpp */,
+			);
+			path = MillisecClock;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3298,6 +3352,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9528B532BB6DC2C00222F45 /* LicenseInfo.hpp in Headers */,
 				F9528B1E2BAFB65000222F45 /* Base64Value.ipp in Headers */,
 				F907072C2B9DAEC900383E4D /* srli.h in Headers */,
 				F90707002B9DAEC900383E4D /* movm.h in Headers */,
@@ -3372,6 +3427,7 @@
 				F907069D2B9DAEC900383E4D /* int128.h in Headers */,
 				F9070D072B9F175100383E4D /* TupleFormatter.hpp in Headers */,
 				F90706D32B9DAEC900383E4D /* cmpeq.h in Headers */,
+				F9528B552BB6DC2C00222F45 /* MillisecClock.hpp in Headers */,
 				F9070CAA2B9F175000383E4D /* CPUInfo.hpp in Headers */,
 				F9070AFE2B9DEB5900383E4D /* ieee.h in Headers */,
 				F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */,
@@ -3425,6 +3481,7 @@
 				F9070C5C2B9F175000383E4D /* HardwareRNG.ipp in Headers */,
 				F9070C622B9F175000383E4D /* IntToString.ipp in Headers */,
 				F9528B432BB69CA900222F45 /* BigFloat.hpp in Headers */,
+				F9528B5D2BB6DC6800222F45 /* CycleClock.ipp in Headers */,
 				F90707072B9DAEC900383E4D /* or.h in Headers */,
 				F9528B452BB69D8500222F45 /* BigFloat.ipp in Headers */,
 				F9070C612B9F175000383E4D /* IntFormatter.ipp in Headers */,
@@ -3442,6 +3499,7 @@
 				F9070CB92B9F175000383E4D /* FastMath.hpp in Headers */,
 				F9070CC22B9F175000383E4D /* FormatLiteral.hpp in Headers */,
 				F9070AF62B9DEB5900383E4D /* cached-powers.h in Headers */,
+				F9528B5B2BB6DC6800222F45 /* MicrosecClock.ipp in Headers */,
 				F90706EC2B9DAEC900383E4D /* fmadd.h in Headers */,
 				F90706B22B9DAEC900383E4D /* doctest.h in Headers */,
 				F9070C5F2B9F175000383E4D /* Indexed.ipp in Headers */,
@@ -3484,6 +3542,7 @@
 				F9070CB72B9F175000383E4D /* Error.hpp in Headers */,
 				F9070C732B9F175000383E4D /* Point.ipp in Headers */,
 				F90706D02B9DAEC900383E4D /* broadcast.h in Headers */,
+				F9528B572BB6DC3700222F45 /* CycleClock.hpp in Headers */,
 				F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */,
 				F9070AFF2B9DEB5900383E4D /* utils.h in Headers */,
 				F9070EF62B9F1C8900383E4D /* posix_time.h in Headers */,
@@ -3528,6 +3587,7 @@
 				F90707012B9DAEC900383E4D /* mul.h in Headers */,
 				F90707222B9DAEC900383E4D /* shldv.h in Headers */,
 				F9070DFB2B9F175E00383E4D /* IUserAction.hpp in Headers */,
+				F9528B5C2BB6DC6800222F45 /* MillisecClock.ipp in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
 				F90707162B9DAEC900383E4D /* round.h in Headers */,
 				F907068F2B9DAEC900383E4D /* macros.h in Headers */,
@@ -3773,6 +3833,7 @@
 				F9070C862B9F175000383E4D /* UniqueResource.ipp in Headers */,
 				F9070CB82B9F175000383E4D /* EscapedFormatter.hpp in Headers */,
 				F9070AFB2B9DEB5900383E4D /* fast-dtoa.h in Headers */,
+				F9528B542BB6DC2C00222F45 /* MicrosecClock.hpp in Headers */,
 				F90706FA2B9DAEC900383E4D /* madd.h in Headers */,
 				F9070C482B9F175000383E4D /* Byte.ipp in Headers */,
 				F9070CAE2B9F175000383E4D /* Demangle.hpp in Headers */,
@@ -4009,6 +4070,7 @@
 				F9070DE22B9F175E00383E4D /* SivParseInt.cpp in Sources */,
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
 				F9070EF02B9F1C8900383E4D /* posix_module.c in Sources */,
+				F9528B652BB6DC9200222F45 /* SivCycleClock.cpp in Sources */,
 				F9070DB32B9F175E00383E4D /* SivBoolToString.cpp in Sources */,
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
 				F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */,
@@ -4019,6 +4081,7 @@
 				F9070DBB2B9F175E00383E4D /* SivCPUInfo.cpp in Sources */,
 				F9070E5F2B9F176B00383E4D /* SivDateTime_macOS_Linux.cpp in Sources */,
 				F9070E612B9F176B00383E4D /* CLogger.cpp in Sources */,
+				F9528B662BB6DC9200222F45 /* SivMillisecClock.cpp in Sources */,
 				F9070DCF2B9F175E00383E4D /* SivFmtExtension.cpp in Sources */,
 				F9070DE12B9F175E00383E4D /* SivParseFloat.cpp in Sources */,
 				F9070AF02B9DEB5900383E4D /* gaussian_distribution.cc in Sources */,
@@ -4088,6 +4151,7 @@
 				F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */,
 				F9070DCD2B9F175E00383E4D /* SivFloatFormatter.cpp in Sources */,
 				F9070E572B9F176B00383E4D /* Siv3DMain.cpp in Sources */,
+				F9528B642BB6DC9200222F45 /* SivMicrosecClock.cpp in Sources */,
 				F9070DB02B9F175E00383E4D /* SivBinaryReader.cpp in Sources */,
 				F9070DCE2B9F175E00383E4D /* SivFloatToString.cpp in Sources */,
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,

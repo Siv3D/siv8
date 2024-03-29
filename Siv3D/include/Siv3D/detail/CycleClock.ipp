@@ -17,7 +17,7 @@ namespace s3d
 	{
 		inline uint64 GetCycleCount() noexcept
 		{
-		# if SIV3D_PLATFORM(WINDOWS) && (defined(_M_IX86) || defined(_M_X64))
+		# if SIV3D_PLATFORM(WINDOWS) && SIV3D_CPU(X86_64)
 			
 			return ::__rdtsc();
 		
@@ -25,7 +25,7 @@ namespace s3d
 
 			uint32 hi, lo;
 			__asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
-			return static_cast<uint64>(lo) | (static_cast<uint64>(hi) << 32);
+			return (static_cast<uint64>(lo) | (static_cast<uint64>(hi) << 32));
 
 		# elif SIV3D_CPU(ARM64)
 
