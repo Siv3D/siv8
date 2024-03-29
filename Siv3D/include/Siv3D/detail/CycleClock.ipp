@@ -13,36 +13,48 @@
 
 namespace s3d
 {
-	namespace Platform
+	inline uint64 GetCycleCount() noexcept
 	{
-		inline uint64 GetCycleCount() noexcept
-		{
-		# if SIV3D_PLATFORM(WINDOWS) && SIV3D_CPU(X86_64)
+	# if SIV3D_PLATFORM(WINDOWS) && SIV3D_CPU(X86_64)
 			
-			return ::__rdtsc();
+		return ::__rdtsc();
 		
-		# elif SIV3D_CPU(X86_64)
+	# elif SIV3D_CPU(X86_64)
 
-			uint32 hi, lo;
-			__asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
-			return (static_cast<uint64>(lo) | (static_cast<uint64>(hi) << 32));
+		uint32 hi, lo;
+		__asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
+		return (static_cast<uint64>(lo) | (static_cast<uint64>(hi) << 32));
 
-		# elif SIV3D_CPU(ARM64)
+	# elif SIV3D_CPU(ARM64)
 
-			uint64 value;
-			__asm__ __volatile__("mrs %0, cntvct_el0" : "=r"(value));
-			return value;
+		uint64 value;
+		__asm__ __volatile__("mrs %0, cntvct_el0" : "=r"(value));
+		return value;
 
-		# else
+	# else
 
-			# error Unimplemented
+		# error Unimplemented
 
-		# endif
-		}
+	# endif
+	}
+
+	inline uint64 GetCycleFrequency() noexcept
+	{
+	# if SIV3D_CPU(ARM64)
+
+		uint64 value;
+		__asm__ __volatile__("mrs %0, cntfrq_el0" : "=r"(value));
+		return value;
+
+	# else
+
+		return 0;
+
+	# endif
 	}
 
 	inline uint64 CycleClock::cycles() const noexcept
 	{
-		return (Platform::GetCycleCount() - m_start);
+		return (GetCycleCount() - m_start);
 	}
 }

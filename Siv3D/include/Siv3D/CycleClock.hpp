@@ -17,11 +17,11 @@
 
 namespace s3d
 {
-	namespace Platform
-	{
-		[[nodiscard]]
-		uint64 GetCycleCount() noexcept;
-	}
+	[[nodiscard]]
+	uint64 GetCycleCount() noexcept;
+
+	[[nodiscard]]
+	uint64 GetCycleFrequency() noexcept;
 
 	/// @brief CPU サイクル数カウンター
 	/// @remark 経過時間を CPU サイクル数で計測します。
@@ -45,7 +45,7 @@ namespace s3d
 
 	private:
 
-		const uint64 m_start = Platform::GetCycleCount();
+		const uint64 m_start = GetCycleCount();
 	};
 }
 
