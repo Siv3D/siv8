@@ -727,6 +727,8 @@
 		F9528B7A2BB708A700222F45 /* LicenseList.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B732BB708A700222F45 /* LicenseList.hpp */; };
 		F9528B7B2BB708A700222F45 /* LicenseManagerFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B742BB708A700222F45 /* LicenseManagerFactory.cpp */; };
 		F9528B7C2BB708A700222F45 /* SivLicenseManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B752BB708A700222F45 /* SivLicenseManager.cpp */; };
+		F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */; };
+		F9528B802BB71F9900222F45 /* Profiler.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B7E2BB71F9900222F45 /* Profiler.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1455,6 +1457,8 @@
 		F9528B732BB708A700222F45 /* LicenseList.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LicenseList.hpp; sourceTree = "<group>"; };
 		F9528B742BB708A700222F45 /* LicenseManagerFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LicenseManagerFactory.cpp; sourceTree = "<group>"; };
 		F9528B752BB708A700222F45 /* SivLicenseManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLicenseManager.cpp; sourceTree = "<group>"; };
+		F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ProfilerStat.hpp; sourceTree = "<group>"; };
+		F9528B7E2BB71F9900222F45 /* Profiler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Profiler.hpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2426,6 +2430,8 @@
 				F9070C172B9F175000383E4D /* PredefinedNamedParameter.hpp */,
 				F9070C182B9F175000383E4D /* PredefinedYesNo.hpp */,
 				F9070C192B9F175000383E4D /* PRNG.hpp */,
+				F9528B7E2BB71F9900222F45 /* Profiler.hpp */,
+				F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */,
 				F9070C1A2B9F175000383E4D /* Random.hpp */,
 				F9070C1B2B9F175000383E4D /* RandomDuration.hpp */,
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
@@ -3544,6 +3550,7 @@
 				F9070CC22B9F175000383E4D /* FormatLiteral.hpp in Headers */,
 				F9070AF62B9DEB5900383E4D /* cached-powers.h in Headers */,
 				F9528B5B2BB6DC6800222F45 /* MicrosecClock.ipp in Headers */,
+				F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */,
 				F90706EC2B9DAEC900383E4D /* fmadd.h in Headers */,
 				F90706B22B9DAEC900383E4D /* doctest.h in Headers */,
 				F9070C5F2B9F175000383E4D /* Indexed.ipp in Headers */,
@@ -3613,6 +3620,7 @@
 				F9528B6A2BB7087700222F45 /* LicenseManager.hpp in Headers */,
 				F9070CC62B9F175000383E4D /* HardwareRNG.hpp in Headers */,
 				F90707142B9DAEC900383E4D /* ror.h in Headers */,
+				F9528B802BB71F9900222F45 /* Profiler.hpp in Headers */,
 				F9070C8F2B9F175000383E4D /* Libraries.hpp in Headers */,
 				F9070C882B9F175000383E4D /* UtilityClass.ipp in Headers */,
 				F907071A2B9DAEC900383E4D /* scalef.h in Headers */,
