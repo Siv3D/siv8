@@ -367,6 +367,12 @@
     <Filter Include="src\Siv3D\CycleClock">
       <UniqueIdentifier>{1fcf5866-7164-48d0-969a-a42e2ba2cfab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\LicenseManager">
+      <UniqueIdentifier>{26b5f8c1-f34d-4f38-8c74-847275125906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\CacheDirectory">
+      <UniqueIdentifier>{4f0f3d1f-beb0-4a1f-bb63-5735e7ed8b93}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1293,6 +1299,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MillisecClock.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\LicenseManager.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\ILicenseManager.hpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\CLicenseManager.hpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.hpp">
+      <Filter>src\Siv3D\CacheDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseList.hpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1639,6 +1660,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\CycleClock\SivCycleClock.cpp">
       <Filter>src\Siv3D\CycleClock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseManagerFactory.cpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\CLicenseManager.cpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\SivLicenseManager.cpp">
+      <Filter>src\Siv3D\LicenseManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.cpp">
+      <Filter>src\Siv3D\CacheDirectory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

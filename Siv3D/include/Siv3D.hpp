@@ -535,8 +535,8 @@
 // ライセンス情報 | License information
 # include <Siv3D/LicenseInfo.hpp>
 
-//// ライセンス出力の管理 | License management
-//# include <Siv3D/LicenseManager.hpp>
+// ライセンス出力の管理 | License management
+# include <Siv3D/LicenseManager.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
