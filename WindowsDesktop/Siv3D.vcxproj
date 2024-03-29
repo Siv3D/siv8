@@ -37,6 +37,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CopyOption.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CPUInfo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CycleClock.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Date.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DateTime.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DayOfWeek.hpp" />
@@ -57,6 +58,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ColorF.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Console.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConsoleBuffer.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\CycleClock.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Date.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\DateTime.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\DiscreteDistribution.ipp" />
@@ -73,6 +75,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MapFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MappedMemory.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MD5Value.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MicrosecClock.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MillisecClock.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Parse.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PCG64.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Point.ipp" />
@@ -145,6 +149,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HeterogeneousLookupHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HSV.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Image.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\LicenseInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Logger.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LoggerBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp" />
@@ -153,6 +158,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MD5Value.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFile.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFileView.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MicrosecClock.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MillisecClock.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MonitorInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OrderedSet.hpp" />
@@ -356,6 +363,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\CPUInfo\SivCPUInfo.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\CycleClock\SivCycleClock.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DateTime\SivDateTime.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Date\SivDate.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DayOfWeek\SivDayOfWeek.cpp" />
@@ -383,6 +391,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\SivLogger.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MD5Value\SivMD5Value.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFileView\SivMemoryMappedFileView.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MicrosecClock\SivMicrosecClock.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MillisecClock\SivMillisecClock.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MonitorInfo\SivMonitorInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBoolExtended\SivParseBoolExtended.cpp" />

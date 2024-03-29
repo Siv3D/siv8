@@ -361,16 +361,16 @@
 
 //// プロファイラー | Profiler
 //# include <Siv3D/Profiler.hpp>
-//
-//// 処理にかかった時間の測定 | Clock counter in milliseconds
-//# include <Siv3D/MillisecClock.hpp>
-//
-//// 処理にかかった時間の測定 | Clock counter in microseconds
-//# include <Siv3D/MicrosecClock.hpp>
-//
-//// Clock counter in CPU clocks | 処理にかかった CPU サイクル数の測定
-//# include <Siv3D/RDTSCClock.hpp>
-//
+
+// 処理にかかった時間の測定 | Clock counter in milliseconds
+# include <Siv3D/MillisecClock.hpp>
+
+// 処理にかかった時間の測定 | Clock counter in microseconds
+# include <Siv3D/MicrosecClock.hpp>
+
+// 処理にかかった CPU サイクル数の測定 | Clock counter in CPU cycles
+# include <Siv3D/CycleClock.hpp>
+
 //// 時間の測定 | Time profiler
 //# include <Siv3D/TimeProfiler.hpp>
 
@@ -532,9 +532,9 @@
 // ロガー | Logger
 # include <Siv3D/Logger.hpp>
 
-//// ライセンス情報 | License information
-//# include <Siv3D/LicenseInfo.hpp>
-//
+// ライセンス情報 | License information
+# include <Siv3D/LicenseInfo.hpp>
+
 //// ライセンス出力の管理 | License management
 //# include <Siv3D/LicenseManager.hpp>
 
