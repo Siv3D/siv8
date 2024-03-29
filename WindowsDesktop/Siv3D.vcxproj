@@ -172,6 +172,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Point.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PointVector.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PRNG.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Profiler.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ProfilerStat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Random.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomDuration.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Rect.hpp" />

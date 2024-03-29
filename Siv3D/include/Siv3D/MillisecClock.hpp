@@ -24,7 +24,7 @@ namespace s3d
 		/// @brief 経過時間（ミリ秒）を返します。
 		/// @return 経過時間（ミリ秒）
 		[[nodiscard]]
-		uint64 ms() const noexcept;
+		int64 ms() const noexcept;
 
 		/// @brief ログに経過時間を出力します。
 		void log() const;
@@ -37,7 +37,7 @@ namespace s3d
 
 	private:
 
-		const uint64 m_start = Time::GetMillisec();
+		const int64 m_start = Time::GetMillisec();
 	};
 }
 

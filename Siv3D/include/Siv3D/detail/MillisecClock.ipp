@@ -13,7 +13,7 @@
 
 namespace s3d
 {
-	inline uint64 MillisecClock::ms() const noexcept
+	inline int64 MillisecClock::ms() const noexcept
 	{
 		return (Time::GetMillisec() - m_start);
 	}

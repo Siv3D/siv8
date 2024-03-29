@@ -359,8 +359,11 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// プロファイラー | Profiler
-//# include <Siv3D/Profiler.hpp>
+// プロファイラーの統計情報 | Profiler statistics
+# include <Siv3D/ProfilerStat.hpp> // ToDo
+
+// プロファイラー | Profiler
+# include <Siv3D/Profiler.hpp> // ToDo
 
 // 処理にかかった時間の測定 | Clock counter in milliseconds
 # include <Siv3D/MillisecClock.hpp>
