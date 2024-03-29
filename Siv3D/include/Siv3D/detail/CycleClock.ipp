@@ -41,7 +41,7 @@ namespace s3d
 		}
 	}
 
-	uint64 CycleClock::cycles() const noexcept
+	inline uint64 CycleClock::cycles() const noexcept
 	{
 		return (Platform::GetCycleCount() - m_start);
 	}
