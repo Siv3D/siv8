@@ -20,7 +20,7 @@ namespace s3d
 		{
 			if constexpr (std::is_member_pointer_v<std::remove_cvref_t<Fty>>)
 			{
-				return [&f](auto& elem) { return std::invoke(f, elem); };
+				return [f](auto& elem) { return std::invoke(f, elem); };
 			}
 			else
 			{
