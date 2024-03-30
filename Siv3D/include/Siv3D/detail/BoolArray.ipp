@@ -1154,7 +1154,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>
 		{
-			return std::all_of(m_container.begin(), m_container.end(), f);
+			return std::all_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1171,7 +1171,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>
 		{
-			return std::any_of(m_container.begin(), m_container.end(), f);
+			return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1344,7 +1344,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>
 		{
-			return std::any_of(m_container.begin(), m_container.end(), f);
+			return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1376,7 +1376,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr isize count_if(Fty f) const requires std::predicate<Fty&, const value_type&>
 		{
-			return std::count_if(m_container.begin(), m_container.end(), f);
+			return std::count_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1392,7 +1392,7 @@ namespace s3d
 		template <class Fty>
 		constexpr void each(Fty f) requires std::invocable<Fty&, value_type&>
 		{
-			std::for_each(m_container.begin(), m_container.end(), f);
+			std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
@@ -1402,7 +1402,7 @@ namespace s3d
 		template <class Fty>
 		constexpr void each(Fty f) const requires std::invocable<Fty&, const value_type&>
 		{
-			std::for_each(m_container.begin(), m_container.end(), f);
+			std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1664,7 +1664,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool none(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>
 		{
-			return std::none_of(m_container.begin(), m_container.end(), f);
+			return std::none_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1680,7 +1680,7 @@ namespace s3d
 		template <class Fty>
 		constexpr auto partition(Fty f) requires std::predicate<Fty&, const value_type&>
 		{
-			return std::partition(m_container.begin(), m_container.end(), f);
+			return std::partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1815,7 +1815,7 @@ namespace s3d
 		template <class Fty>
 		constexpr Array& remove_if(Fty f)& requires std::predicate<Fty&, const value_type&>
 		{
-			erase(std::remove_if(m_container.begin(), m_container.end(), f), m_container.end());
+			erase(std::remove_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))), m_container.end());
 			return *this;
 		}
 
@@ -2034,7 +2034,7 @@ namespace s3d
 		template <class Fty>
 		constexpr void reverse_each(Fty f) requires std::invocable<Fty&, value_type&>
 		{
-			std::for_each(m_container.rbegin(), m_container.rend(), f);
+			std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		/// @brief 末尾から順番に、全ての要素に対して関数を呼び出します。
@@ -2044,7 +2044,7 @@ namespace s3d
 		template <class Fty>
 		constexpr void reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>
 		{
-			std::for_each(m_container.rbegin(), m_container.rend(), f);
+			std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2543,7 +2543,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array take_while(Fty f) const& requires std::predicate<Fty&, const value_type&>
 		{
-			return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), f));
+			return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))));
 		}
 
 		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい配列を返します。
@@ -2554,7 +2554,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array take_while(Fty f) && requires std::predicate<Fty&, const value_type&>
 		{
-			return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(std::find_if_not(m_container.begin(), m_container.end(), f)));
+			return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)))));
 		}
 
 		////////////////////////////////////////////////////////////////

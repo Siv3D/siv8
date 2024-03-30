@@ -802,7 +802,7 @@ namespace s3d
 	template <class Fty>
 	constexpr bool Array<Type, Allocator>::all(Fty f) const requires std::predicate<Fty&, const value_type&>
 	{
-		return std::all_of(m_container.begin(), m_container.end(), f);
+		return std::all_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -815,7 +815,7 @@ namespace s3d
 	template <class Fty>
 	constexpr bool Array<Type, Allocator>::any(Fty f) const requires std::predicate<Fty&, const value_type&>
 	{
-		return std::any_of(m_container.begin(), m_container.end(), f);
+		return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -959,7 +959,7 @@ namespace s3d
 	template <class Fty>
 	constexpr bool Array<Type, Allocator>::contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>
 	{
-		return std::any_of(m_container.begin(), m_container.end(), f);
+		return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -984,7 +984,7 @@ namespace s3d
 	template <class Fty>
 	constexpr isize Array<Type, Allocator>::count_if(Fty f) const requires std::predicate<Fty&, const value_type&>
 	{
-		return std::count_if(m_container.begin(), m_container.end(), f);
+		return std::count_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -997,14 +997,14 @@ namespace s3d
 	template <class Fty>
 	constexpr void Array<Type, Allocator>::each(Fty f) requires std::invocable<Fty&, value_type&>
 	{
-		std::for_each(m_container.begin(), m_container.end(), f);
+		std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
 	constexpr void Array<Type, Allocator>::each(Fty f) const requires std::invocable<Fty&, const value_type&>
 	{
-		std::for_each(m_container.begin(), m_container.end(), f);
+		std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1225,7 +1225,7 @@ namespace s3d
 	template <class Fty>
 	constexpr bool Array<Type, Allocator>::none(Fty f) const requires std::predicate<Fty&, const value_type&>
 	{
-		return std::none_of(m_container.begin(), m_container.end(), f);
+		return std::none_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1238,7 +1238,7 @@ namespace s3d
 	template <class Fty>
 	constexpr auto Array<Type, Allocator>::partition(Fty f) requires std::predicate<Fty&, const value_type&>
 	{
-		return std::partition(m_container.begin(), m_container.end(), f);
+		return std::partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1351,7 +1351,7 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::remove_if(Fty f)& requires std::predicate<Fty&, const value_type&>
 	{
-		erase(std::remove_if(m_container.begin(), m_container.end(), f), m_container.end());
+		erase(std::remove_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))), m_container.end());
 		return *this;
 	}
 
@@ -1507,14 +1507,14 @@ namespace s3d
 	template <class Fty>
 	constexpr void Array<Type, Allocator>::reverse_each(Fty f) requires std::invocable<Fty&, value_type&>
 	{
-		std::for_each(m_container.rbegin(), m_container.rend(), f);
+		std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
 	constexpr void Array<Type, Allocator>::reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>
 	{
-		std::for_each(m_container.rbegin(), m_container.rend(), f);
+		std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1742,7 +1742,7 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
-		std::sort(m_container.begin(), m_container.end(), f);
+		std::sort(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		return *this;
 	}
 
@@ -1779,7 +1779,7 @@ namespace s3d
 	template <class Fty>
 	constexpr auto Array<Type, Allocator>::stable_partition(Fty f) requires std::predicate<Fty&, const value_type&>
 	{
-		return std::stable_partition(m_container.begin(), m_container.end(), f);
+		return std::stable_partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1825,7 +1825,7 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
-		std::stable_sort(m_container.begin(), m_container.end(), f);
+		std::stable_sort(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		return *this;
 	}
 
@@ -1958,14 +1958,14 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::take_while(Fty f) const& requires std::predicate<Fty&, const value_type&>
 	{
-		return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), f));
+		return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::take_while(Fty f) && requires std::predicate<Fty&, const value_type&>
 	{
-		return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(std::find_if_not(m_container.begin(), m_container.end(), f)));
+		return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)))));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2040,7 +2040,7 @@ namespace s3d
 	{
 	# if SIV3D_PLATFORM(WINDOWS)
 
-		return std::count_if(std::execution::par, m_container.begin(), m_container.end(), f);
+		return std::count_if(std::execution::par, m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 
 	# else
 
@@ -2053,7 +2053,7 @@ namespace s3d
 
 		if (numThreads <= 1)
 		{
-			return std::count_if(m_container.begin(), m_container.end(), f);
+			return std::count_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		const size_t countPerthread = Max<size_t>(1, ((m_container.size() + (numThreads - 1)) / numThreads));
@@ -2110,7 +2110,7 @@ namespace s3d
 	{
 	# if SIV3D_PLATFORM(WINDOWS)
 
-		std::for_each(std::execution::par, m_container.begin(), m_container.end(), f);
+		std::for_each(std::execution::par, m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 
 	# else
 
@@ -2170,7 +2170,7 @@ namespace s3d
 	{
 	# if SIV3D_PLATFORM(WINDOWS)
 
-		std::for_each(std::execution::par, m_container.begin(), m_container.end(), f);
+		std::for_each(std::execution::par, m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 
 	# else
 
