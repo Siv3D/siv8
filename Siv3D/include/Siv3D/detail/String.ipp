@@ -1352,7 +1352,7 @@ namespace s3d
 	template <class Fty>
 	constexpr bool String::contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>
 	{
-		return any(f);
+		return any(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1513,7 +1513,7 @@ namespace s3d
 	template <class Fty>
 	constexpr String& String::keep_if(Fty f) requires std::predicate<Fty&, const value_type&>
 	{
-		m_string.erase(std::remove_if(m_string.begin(), m_string.end(), std::not_fn(f)), m_string.end());
+		m_string.erase(std::remove_if(m_string.begin(), m_string.end(), std::not_fn(std::forward<Fty>(f))), m_string.end());
 		return *this;
 	}
 
@@ -1569,7 +1569,7 @@ namespace s3d
 	[[nodiscard]]
 	constexpr String String::remove_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>
 	{
-		return std::move(remove_if(f));
+		return std::move(remove_if(std::forward<Fty>(f)));
 	}
 
 	template <class Fty>
@@ -1593,7 +1593,7 @@ namespace s3d
 	[[nodiscard]]
 	constexpr String String::removed_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>
 	{
-		return std::move(remove_if(f));
+		return std::move(remove_if(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1720,14 +1720,14 @@ namespace s3d
 	String String::sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		String result{ *this };
-		result.sort_by(f);
+		result.sort_by(std::forward<Fty>(f));
 		return result;
 	}
 
 	template <class Fty>
 	String String::sorted_by(Fty f) && noexcept requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
-		return std::move(sort_by(f));
+		return std::move(sort_by(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////

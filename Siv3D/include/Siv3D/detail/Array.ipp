@@ -1359,7 +1359,7 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::remove_if(Fty f) && requires std::predicate<Fty&, const value_type&>
 	{
-		return std::move(remove_if(f));
+		return std::move(remove_if(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
@@ -1383,7 +1383,7 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed_if(Fty f) && requires std::predicate<Fty&, const value_type&>
 	{
-		return std::move(remove_if(f));
+		return std::move(remove_if(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1750,7 +1750,7 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
-		return std::move(sort_by(f));
+		return std::move(sort_by(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
@@ -1758,7 +1758,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		Array result(*this);
-		result.sort_by(f);
+		result.sort_by(std::forward<Fty>(f));
 		return result;
 	}
 
@@ -1766,7 +1766,7 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
-		return std::move(sort_by(f));
+		return std::move(sort_by(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1833,7 +1833,7 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
-		return std::move(stable_sort_by(f));
+		return std::move(stable_sort_by(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
@@ -1841,7 +1841,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		Array result(*this);
-		result.stable_sort_by(f);
+		result.stable_sort_by(std::forward<Fty>(f));
 		return result;
 	}
 
@@ -1849,7 +1849,7 @@ namespace s3d
 	template <class Fty>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
-		return std::move(stable_sort_by(f));
+		return std::move(stable_sort_by(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2123,7 +2123,7 @@ namespace s3d
 
 		if (numThreads <= 1)
 		{
-			return each(f);
+			return each(std::forward<Fty>(f));
 		}
 
 		const size_t countPerthread = Max<size_t>(1, ((size() + (numThreads - 1)) / numThreads));
@@ -2183,7 +2183,7 @@ namespace s3d
 
 		if (numThreads <= 1)
 		{
-			return each(f);
+			return each(std::forward<Fty>(f));
 		}
 
 		const size_t countPerthread = Max<size_t>(1, ((size() + (numThreads - 1)) / numThreads));
@@ -2245,7 +2245,7 @@ namespace s3d
 
 		if (numThreads <= 1)
 		{
-			return map(f);
+			return map(std::forward<Fty>(f));
 		}
 
 		Array<result_value_type> result(m_container.size());
@@ -2314,11 +2314,11 @@ namespace s3d
 
 		if constexpr (std::is_same_v<result_value_type, void>)
 		{
-			each(f);
+			each(std::forward<Fty>(f));
 		}
 		else
 		{
-			return map(f);
+			return map(std::forward<Fty>(f));
 		}
 	}
 

@@ -1827,7 +1827,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array remove_if(Fty f) && requires std::predicate<Fty&, const value_type&>
 		{
-			return std::move(remove_if(f));
+			return std::move(remove_if(std::forward<Fty>(f)));
 		}
 
 		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
@@ -1859,7 +1859,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array removed_if(Fty f) && requires std::predicate<Fty&, const value_type&>
 		{
-			return std::move(remove_if(f));
+			return std::move(remove_if(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2403,7 +2403,7 @@ namespace s3d
 		template <class Fty>
 		constexpr auto stable_partition(Fty f) requires std::predicate<Fty&, const value_type&>
 		{
-			return partition(f);
+			return partition(std::forward<Fty>(f));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2645,11 +2645,11 @@ namespace s3d
 
 			if constexpr (std::is_same_v<result_value_type, void>)
 			{
-				each(f);
+				each(std::forward<Fty>(f));
 			}
 			else
 			{
-				return map(f);
+				return map(std::forward<Fty>(f));
 			}
 		}
 
