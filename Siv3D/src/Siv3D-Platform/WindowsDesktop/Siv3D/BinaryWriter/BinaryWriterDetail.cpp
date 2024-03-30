@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		static constexpr DWORD MakeCreationDisposition(const OpenMode openMode) noexcept
@@ -70,7 +70,7 @@ namespace s3d
 
 		// ファイルのオープン
 		{
-			const HANDLE handle = ::CreateFile2(path.toWstr().c_str(), GENERIC_WRITE, 0, detail::MakeCreationDisposition(openMode), nullptr);
+			const HANDLE handle = ::CreateFile2(path.toWstr().c_str(), GENERIC_WRITE, 0, MakeCreationDisposition(openMode), nullptr);
 
 			if (handle == INVALID_HANDLE_VALUE)
 			{

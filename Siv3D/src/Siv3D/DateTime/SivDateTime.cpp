@@ -17,7 +17,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static constexpr StringView MonthEnglish[12]
 		{
@@ -188,7 +188,7 @@ namespace s3d
 						}
 						else
 						{
-							detail::AppendElement(formattedDateTime, dateTime, keyPattern, skipTime);
+							AppendElement(formattedDateTime, dateTime, keyPattern, skipTime);
 							keyPattern.clear();
 							keyPattern.push_back(ch);
 						}
@@ -198,7 +198,7 @@ namespace s3d
 				{
 					if (keyPattern)
 					{
-						detail::AppendElement(formattedDateTime, dateTime, keyPattern, skipTime);
+						AppendElement(formattedDateTime, dateTime, keyPattern, skipTime);
 						keyPattern.clear();
 					}
 
@@ -225,7 +225,7 @@ namespace s3d
 
 			if (keyPattern)
 			{
-				detail::AppendElement(formattedDateTime, dateTime, keyPattern, skipTime);
+				AppendElement(formattedDateTime, dateTime, keyPattern, skipTime);
 			}
 
 			return formattedDateTime;
@@ -240,7 +240,7 @@ namespace s3d
 
 	String FormatDate(const Date& date, const StringView format)
 	{
-		return detail::FormatDateTime(date, format, true);
+		return FormatDateTime(date, format, true);
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -401,6 +401,6 @@ namespace s3d
 
 	String FormatDateTime(const DateTime& dateTime, const StringView format)
 	{
-		return detail::FormatDateTime(dateTime, format, false);
+		return FormatDateTime(dateTime, format, false);
 	}
 }

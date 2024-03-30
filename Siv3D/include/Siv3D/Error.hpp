@@ -34,18 +34,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
+		/// @param message エラーメッセージ | Error message
 		[[nodiscard]]
 		explicit Error(const char* message);
 
+		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
+		/// @param message エラーメッセージ | Error message
 		[[nodiscard]]
 		explicit Error(std::string_view message);
 
+		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
+		/// @param message エラーメッセージ | Error message
 		[[nodiscard]]
 		explicit Error(const std::string& message);
 
+		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
+		/// @param message エラーメッセージ | Error message
 		[[nodiscard]]
 		explicit Error(const char32* message);
 
+		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
+		/// @param message エラーメッセージ | Error message
 		[[nodiscard]]
 		explicit Error(StringView message);
 
@@ -87,6 +97,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief エラーメッセージを UTF-8 文字列で返します。 | Returns the error message as a UTF-8 string.
+		/// @return エラーメッセージ | The error message
 		[[nodiscard]]
 		virtual std::string messageUTF8() const;
 

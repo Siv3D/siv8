@@ -44,8 +44,6 @@ namespace s3d
 
 		constexpr AlignedAllocator() noexcept = default;
 
-		constexpr AlignedAllocator(const AlignedAllocator&) noexcept = default;
-
 		template <class U, size_t A>
 		constexpr AlignedAllocator(const AlignedAllocator<U, A>&) noexcept {}
 

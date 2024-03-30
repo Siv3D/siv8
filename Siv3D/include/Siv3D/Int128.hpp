@@ -43,6 +43,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 上位 64-bit と下位 64-bit から 128-bit 整数を作成します。 | Creates a 128-bit integer from the upper 64 bits and lower 64 bits.
+	/// @param high 上位 64-bit | Upper 64 bits
+	/// @param low 下位 64-bit | Lower 64 bits
+	/// @return 128-bit 整数 | 128-bit integer
 	[[nodiscard]]
 	constexpr int128 MakeInt128(int64 high, uint64 low) noexcept;
 
@@ -52,6 +56,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 上位 64-bit と下位 64-bit から 128-bit 整数を作成します。 | Creates a 128-bit integer from the upper 64 bits and lower 64 bits.
+	/// @param high 上位 64-bit | Upper 64 bits
+	/// @param low 下位 64-bit | Lower 64 bits
+	/// @return 128-bit 整数 | 128-bit integer
 	[[nodiscard]]
 	constexpr uint128 MakeUint128(uint64 high, uint64 low) noexcept;
 

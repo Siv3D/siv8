@@ -13,7 +13,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		static constexpr char32 ToHexChar(const uint32 value) noexcept
@@ -75,21 +75,21 @@ namespace s3d
 		else if (ch < 0x10)
 		{
 			formatData.string.append(U"\\u{"_sv);
-			formatData.string.push_back(detail::ToHexChar(ch));
+			formatData.string.push_back(ToHexChar(ch));
 			formatData.string.push_back(U'}');
 		}
 		else if (ch < 0x20)
 		{
 			formatData.string.append(U"\\u{"_sv);
-			formatData.string.push_back(detail::ToHexChar(ch >> 4));
-			formatData.string.push_back(detail::ToHexChar(ch));
+			formatData.string.push_back(ToHexChar(ch >> 4));
+			formatData.string.push_back(ToHexChar(ch));
 			formatData.string.push_back(U'}');
 		}
 		else if ((0x7F <= ch) && (ch <= 0xFF))
 		{
 			formatData.string.append(U"\\x{"_sv);
-			formatData.string.push_back(detail::ToHexChar(ch >> 4));
-			formatData.string.push_back(detail::ToHexChar(ch));
+			formatData.string.push_back(ToHexChar(ch >> 4));
+			formatData.string.push_back(ToHexChar(ch));
 			formatData.string.push_back(U'}');
 		}
 		else
@@ -144,21 +144,21 @@ namespace s3d
 			else if (ch < 0x10)
 			{
 				formatData.string.append(U"\\u{"_sv);
-				formatData.string.push_back(detail::ToHexChar(ch));
+				formatData.string.push_back(ToHexChar(ch));
 				formatData.string.push_back(U'}');
 			}
 			else if (ch < 0x20)
 			{
 				formatData.string.append(U"\\u{"_sv);
-				formatData.string.push_back(detail::ToHexChar(ch >> 4));
-				formatData.string.push_back(detail::ToHexChar(ch));
+				formatData.string.push_back(ToHexChar(ch >> 4));
+				formatData.string.push_back(ToHexChar(ch));
 				formatData.string.push_back(U'}');
 			}
 			else if ((0x7F <= ch) && (ch <= 0xFF))
 			{
 				formatData.string.append(U"\\x{"_sv);
-				formatData.string.push_back(detail::ToHexChar(ch >> 4));
-				formatData.string.push_back(detail::ToHexChar(ch));
+				formatData.string.push_back(ToHexChar(ch >> 4));
+				formatData.string.push_back(ToHexChar(ch));
 				formatData.string.push_back(U'}');
 			}
 			else

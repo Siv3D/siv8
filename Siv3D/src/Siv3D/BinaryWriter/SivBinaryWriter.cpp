@@ -15,7 +15,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[noreturn]]
 		static void ThrowWriteSrcError()
@@ -169,7 +169,7 @@ namespace s3d
 
 		if (src == nullptr)
 		{
-			detail::ThrowWriteSrcError();
+			ThrowWriteSrcError();
 		}
 
 		return pImpl->write(NonNull{ src }, writeSize);

@@ -19,12 +19,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief マップされたメモリの情報 | Information of the mapped memory
 	struct MappedMemory
 	{
-		/// @brief メモリの先頭アドレス
+		/// @brief メモリの先頭アドレス | The pointer to the memory
 		const void* data = nullptr;
 
-		/// @brief メモリのサイズ（バイト）
+		/// @brief メモリのサイズ（バイト） | The size of the memory in bytes
 		size_t size = 0;
 
 		/// @brief メモリが有効かを返します。

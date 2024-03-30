@@ -48,9 +48,15 @@ namespace s3d
 		[[nodiscard]]
 		HSV(const HSV&) = default;
 
+		/// @brief HSV 表色系の色を作成します。
+		/// @param _h 色相
+		/// @param _a アルファ
 		[[nodiscard]]
 		explicit constexpr HSV(double _h, double _a = 1.0) noexcept;
 
+		/// @brief HSV 表色系の色を作成します。
+		/// @param _h 色相
+		/// @param _a アルファ
 		[[nodiscard]]
 		explicit constexpr HSV(Concept::Arithmetic auto _h, double _a = 1.0) noexcept;
 
@@ -62,6 +68,11 @@ namespace s3d
 		[[nodiscard]]
 		constexpr HSV(double _h, double _s, double _v, double _a = 1.0) noexcept;
 
+		/// @brief HSV 表色系の色を作成します。
+		/// @param _h 色相
+		/// @param _s 彩度
+		/// @param _v 明度
+		/// @param _a アルファ
 		[[nodiscard]]
 		constexpr HSV(Concept::Arithmetic auto _h, double _s, double _v, double _a = 1.0) noexcept;
 
@@ -369,7 +380,7 @@ namespace s3d
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, HSV& value)
 		{
-			CharType unused;
+			CharType unused{};
 			return input >> unused
 				>> value.h >> unused
 				>> value.s >> unused

@@ -47,9 +47,11 @@ namespace s3d
 		[[nodiscard]]
 		Blob() = default;
 
+		/// @brief コピーコンストラクタ
 		[[nodiscard]]
 		Blob(const Blob&) = default;
 
+		/// @brief ムーブコンストラクタ
 		[[nodiscard]]
 		Blob(Blob&&) noexcept = default;
 
@@ -73,7 +75,7 @@ namespace s3d
 		[[nodiscard]]
 		explicit Blob(IReader& reader);
 
-		/// @brief バイナリデータをコピーして作成します。
+		/// @brief メモリ上のデータをコピーして作成します。
 		/// @param src コピーするデータの先頭ポインタ
 		/// @param sizeBytes コピーするデータのサイズ（バイト）
 		[[nodiscard]]
@@ -95,12 +97,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief コピー代入演算子
+		/// @param other コピーするデータ
+		/// @return *this
 		constexpr Blob& operator =(const Array<Byte>& other);
 
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブするデータ
+		/// @return *this
 		constexpr Blob& operator =(Array<Byte>&& other) noexcept;
 
+		/// @brief コピー代入演算子
+		/// @param other コピーするデータ
+		/// @return *this
 		constexpr Blob& operator =(const Blob& other);
 
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブするデータ
+		/// @return *this
 		constexpr Blob& operator =(Blob&& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -109,14 +123,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 他の Blob からデータをコピーします。
+		/// @param other コピー元の Blob
 		constexpr void createFrom(const Blob& other);
 
+		/// @brief 他の Blob からデータをムーブします。
+		/// @param other ムーブ元の Blob
 		constexpr void createFrom(Blob&& other);
 
+		/// @brief メモリ上のデータをコピーします。
+		/// @param src コピーするデータの先頭ポインタ
+		/// @param sizeBytes コピーするデータのサイズ（バイト）
 		void createFrom(const void* src, size_t sizeBytes);
 
+		/// @brief バイナリデータをコピーします。
+		/// @param data コピーするデータ
 		constexpr void createFrom(const Array<Byte>& data);
 
+		/// @brief バイナリデータをムーブしてバイナリデータを作成します。
+		/// @param data ムーブするデータ
 		constexpr void createFrom(Array<Byte>&& data);
 
 		////////////////////////////////////////////////////////////////
@@ -125,6 +150,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ファイルの中身をコピーします。
+		/// @param path ファイルパス
+		/// @return ファイルの読み込みに成功した場合 true, それ以外の場合は false
 		bool createFromFile(FilePathView path);
 
 		////////////////////////////////////////////////////////////////
@@ -271,6 +299,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief メモリの再確保無しで格納できる要素数を返します。
+		/// @return メモリの再確保無しで格納できる要素数
 		[[nodiscard]]
 		constexpr size_t capacity() const noexcept;
 
@@ -457,6 +487,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つのバイナリデータが等しいかを返します。
+		/// @param lhs 一方のバイナリデータ
+		/// @param rhs もう一方のバイナリデータ
+		/// @return 2 つのバイナリデータが等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const Blob& lhs, const Blob& rhs) = default;
 

@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[noreturn]]
 		static void ThrowParseBoolError(const std::string_view s, const ParseErrorReason reason)
@@ -97,7 +97,7 @@ namespace s3d
 		}
 		else
 		{
-			detail::ThrowParseBoolError(s, reason.error());
+			ThrowParseBoolError(s, reason.error());
 		}
 	}
 
@@ -109,7 +109,7 @@ namespace s3d
 		}
 		else
 		{
-			detail::ThrowParseBoolError(s, reason.error());
+			ThrowParseBoolError(s, reason.error());
 		}
 	}
 
@@ -153,13 +153,13 @@ namespace s3d
 	{
 		const char8* start = s.data();
 		const char8* end = (start + s.size());
-		return detail::ParseBoolWithReason(start, end);
+		return ParseBoolWithReason(start, end);
 	}
 
 	Result<bool, ParseErrorReason> ParseBoolWithReason(const StringView s) noexcept
 	{
 		const char32* start = s.data();
 		const char32* end = (start + s.size());
-		return detail::ParseBoolWithReason(start, end);
+		return ParseBoolWithReason(start, end);
 	}
 }

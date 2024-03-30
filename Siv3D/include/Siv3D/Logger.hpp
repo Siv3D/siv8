@@ -98,7 +98,7 @@ namespace s3d
 
 			LoggerBuffer operator <<(const Concept::Formattable auto& value) const;
 
-			// Format できない値を Logger に渡すとコンパイルエラーになります。
+			/// @brief Format できない値を Logger に渡すとコンパイルエラーになります。
 			template <class Type>
 			LoggerBuffer operator <<(const Type& value) const = delete;
 
@@ -116,6 +116,8 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
+			/// @brief エンジンが出力するログのレベルを設定します。
+			/// @param logType ログのレベル
 			void setOutputLevel(LogType logType) const noexcept;
 
 			////////////////////////////////////////////////////////////////
@@ -124,6 +126,8 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
+			/// @brief エンジンが出力するログのレベルの設定を返します。
+			/// @return ログのレベル
 			[[nodiscard]]
 			LogType getOutputLevel() const noexcept;
 		};

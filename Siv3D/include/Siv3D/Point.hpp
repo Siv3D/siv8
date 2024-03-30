@@ -73,13 +73,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief x 成分へのポインタを返します。
-		/// @rematk 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
 		/// @return x 成分へのポインタ
 		[[nodiscard]]
 		constexpr value_type* getPointer() noexcept;
 
 		/// @brief x 成分へのポインタを返します。
-		/// @rematk 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
 		/// @return x 成分へのポインタ
 		[[nodiscard]]
 		constexpr const value_type* getPointer() const noexcept;
@@ -236,6 +236,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの Point が等しいかを返します。
+		/// @param lhs 一方の Point
+		/// @param rhs もう一方の Point
+		/// @return 2 つの Point が等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const Point lhs, const Point rhs) noexcept
 		{
@@ -342,8 +346,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 現在の座標から移動します。
+		/// @param _x X 方向の移動量
+		/// @param _y Y 方向の移動量
+		/// @return *this
 		constexpr Point& moveBy(value_type _x, value_type _y) noexcept;
 
+		/// @brief 現在の座標から移動します。
+		/// @param p 移動量
+		/// @return *this
 		constexpr Point& moveBy(Point p) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -490,8 +501,9 @@ namespace s3d
 		/// @brief 幅 x, 高さ y の長方形の面積を返します。
 		/// @return 幅 x, 高さ y の長方形の面積
 		/// @remark `x * y` を返します。要素の符号によっては負の値を返すことがあります。
+		template <class Type = int64>
 		[[nodiscard]]
-		constexpr int32 area() const noexcept;
+		constexpr Type area() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

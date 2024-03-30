@@ -15,7 +15,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		static constexpr std::array TextEncodingStrings =
 		{
@@ -34,7 +34,7 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const TextEncoding value)
 	{
-		formatData.string.append(detail::TextEncodingStrings[FromEnum(value)]);
+		formatData.string.append(TextEncodingStrings[FromEnum(value)]);
 	}
 
 	namespace Unicode

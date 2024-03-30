@@ -54,14 +54,27 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
+			/// @brief 文字列をコンソールに出力し、改行します。
+			/// @param s 出力する文字列
+			/// @return *this
 			ConsoleBuffer& operator <<(const char32* s);
 
+			/// @brief 文字列をコンソールに出力し、改行します。
+			/// @param s 出力する文字列
+			/// @return *this
 			ConsoleBuffer& operator <<(StringView s);
 
+			/// @brief 文字列をコンソールに出力し、改行します。
+			/// @param s 出力する文字列
+			/// @return *this
 			ConsoleBuffer& operator <<(const String& s);
 
+			/// @brief 値をコンソールに出力し、改行します。
+			/// @param value 出力する値
+			/// @return *this
 			ConsoleBuffer& operator <<(const Concept::Formattable auto& value);
 
+			/// @brief Format できない値を Console に渡すとコンパイルエラーになります。
 			template <class Type>
 			ConsoleBuffer& operator <<(const Type& value) = delete;
 		};

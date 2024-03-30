@@ -12,8 +12,8 @@
 # include <Siv3D/StringView.hpp>
 
 # if SIV3D_CPU(X86_64)
-
-# include <emmintrin.h>
+#	include <emmintrin.h>
+# endif
 
 namespace s3d
 {
@@ -25,6 +25,8 @@ namespace s3d
 
 	bool StringView::StringEquals(const char32* s1, const char32* s2, size_t length) noexcept
 	{
+	# if SIV3D_CPU(X86_64)
+
 		const uint32* p1 = reinterpret_cast<const uint32*>(s1);
 		const uint32* p2 = reinterpret_cast<const uint32*>(s2);
 
@@ -53,27 +55,11 @@ namespace s3d
 		}
 
 		return true;
-	}
-}
 
-# elif SIV3D_CPU(ARM64)
+	# else
 
-namespace s3d
-{
-	////////////////////////////////////////////////////////////////
-	//
-	//	StringEquals
-	//
-	////////////////////////////////////////////////////////////////
-
-	bool StringView::StringEquals(const char32* s1, const char32* s2, const size_t length) noexcept
-	{
 		return (std::memcmp(s1, s2, (length * sizeof(char32))) == 0);
+
+	# endif
 	}
 }
-
-# elif
-
-#	error "Unsupported CPU architecture"
-
-#endif

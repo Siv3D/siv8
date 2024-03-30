@@ -277,11 +277,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	EncodeFromMemoery
+	//	EncodeFromMemory
 	//
 	////////////////////////////////////////////////////////////////
 
-	Base64Value Base64Value::EncodeFromMemoery(const void* src, const size_t size)
+	Base64Value Base64Value::EncodeFromMemory(const void* src, const size_t size)
 	{
 		Base64Value base64Value;
 
@@ -298,7 +298,7 @@ namespace s3d
 
 	Base64Value Base64Value::EncodeFromBlob(const Blob& blob)
 	{
-		return EncodeFromMemoery(blob.data(), blob.size_bytes());
+		return EncodeFromMemory(blob.data(), blob.size_bytes());
 	}
 
 	////////////////////////////////////////////////////////////////

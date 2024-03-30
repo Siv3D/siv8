@@ -113,15 +113,6 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
-			/// @brief 値をコンソールに出力し、改行します。
-			/// @param value 出力する値
-			/// @return ConsoleBuffer
-			ConsoleBuffer operator <<(const Concept::Formattable auto& value) const;
-
-			// Format できない値を Console に渡すとコンパイルエラーになります。
-			template <class Type>
-			ConsoleBuffer operator <<(const Type& value) const = delete;
-
 			/// @brief 文字列をコンソールに出力し、改行します。
 			/// @param s 出力する文字列
 			/// @return ConsoleBuffer
@@ -141,6 +132,15 @@ namespace s3d
 			/// @param s 出力する文字列
 			/// @return ConsoleBuffer
 			ConsoleBuffer operator <<(String&& s) const;
+
+			/// @brief 値をコンソールに出力し、改行します。
+			/// @param value 出力する値
+			/// @return ConsoleBuffer
+			ConsoleBuffer operator <<(const Concept::Formattable auto& value) const;
+
+			/// @brief Format できない値を Console に渡すとコンパイルエラーになります。
+			template <class Type>
+			ConsoleBuffer operator <<(const Type& value) const = delete;
 
 			////////////////////////////////////////////////////////////////
 			//

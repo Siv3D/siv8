@@ -24,6 +24,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief Base64 値
 	class Base64Value
 	{
 	public:
@@ -207,7 +208,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brif Base64 値をデコードした結果を UTF-8 文字列に格納します。
+		/// @brief Base64 値をデコードした結果を UTF-8 文字列に格納します。
 		/// @param dst 格納先の UTF-8 文字列
 		/// @return デコードに成功した場合は格納したデータのサイズ、それ以外の場合は Base64 上のエラーの位置を示すエラー値
 		/// @remark デコードに失敗した場合、dst は空の文字列になります。
@@ -239,7 +240,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	EncodeFromMemoery
+		//	EncodeFromMemory
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -248,7 +249,7 @@ namespace s3d
 		/// @param size データのサイズ（バイト）
 		/// @return 作成された Base64 値
 		[[nodiscard]]
-		static Base64Value EncodeFromMemoery(const void* src, size_t size);
+		static Base64Value EncodeFromMemory(const void* src, size_t size);
 
 		////////////////////////////////////////////////////////////////
 		//

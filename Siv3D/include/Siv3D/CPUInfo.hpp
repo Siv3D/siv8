@@ -137,7 +137,7 @@ namespace s3d
 		String brand;
 	};
 
-	namespace Platform::Windows::System
+	namespace Platform::X86_64::System
 	{
 		/// @brief ユーザの CPU の情報を返します。
 		/// @return ユーザの CPU の情報
@@ -147,3 +147,12 @@ namespace s3d
 }
 
 # endif
+
+namespace s3d
+{
+	[[nodiscard]]
+	bool SupportsAVX() noexcept;
+
+	[[nodiscard]]
+	bool SupportsAVX2() noexcept;
+}

@@ -29,5 +29,10 @@ namespace s3d
 		/// @brief 現在のスレッドの実行を指定した時間だけ停止します。
 		/// @param duration スリープする時間
 		void Sleep(const Duration& duration);
+
+		/// @brief 指定した URL をデフォルトの Web ブラウザでオープンします。
+		/// @param url URL
+		/// @return オープンに成功した場合 true, それ以外の場合は false
+		bool LaunchBrowser(FilePathView url);
 	}
 }

@@ -34,7 +34,7 @@ namespace s3d
 			[[nodiscard]]
 			String operator ()(const Args&... args) const;
 
-			// Format できない値が Format() に渡されたときに発生するエラーです
+			/// @brief Format できない値が Format() に渡されたときに発生するエラーです
 			template <class... Args>
 			String operator ()(const Args&...) const = delete;
 
