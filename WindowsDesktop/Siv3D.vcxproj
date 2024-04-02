@@ -271,11 +271,6 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_extras.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_random.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_uint128.hpp" />
-    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\basic_iterator.hpp" />
-    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\cartesian_product.hpp" />
-    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\common.hpp" />
-    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\utility\meta.hpp" />
-    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\utility\tuple_utils.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\Xoshiro-cpp\XoshiroCpp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader\BinaryReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.hpp" />

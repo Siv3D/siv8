@@ -13,9 +13,6 @@
 # include <ranges>
 # include "Concepts.hpp"
 # include "PointVector.hpp"
-# ifndef __cpp_lib_ranges_cartesian_product
-#	include <ThirdParty/tl/cartesian_product.hpp>
-# endif
 
 namespace s3d
 {
