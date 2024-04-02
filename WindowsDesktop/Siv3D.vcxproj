@@ -80,6 +80,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Parse.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PCG64.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Point.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Point3D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Random.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomDuration.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Rect.ipp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Shuffle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Step.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Step2D.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Step3D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Stopwatch.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp" />
@@ -171,6 +173,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ParseFloat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PCG64.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Point.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Point3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PointVector.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Profiler.hpp" />
@@ -221,6 +224,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SpecialFolder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step2D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Step3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Stopwatch.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\String.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringView.hpp" />
@@ -413,6 +417,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseErrorReason\SivParseErrorReason.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseFloat\SivParseFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseInt\SivParseInt.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Point3D\SivPoint3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point\SivPoint.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Random\SivRandom.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Rect\SivRect.cpp" />

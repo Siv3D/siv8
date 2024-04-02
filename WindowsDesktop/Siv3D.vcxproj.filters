@@ -373,6 +373,9 @@
     <Filter Include="src\Siv3D\CacheDirectory">
       <UniqueIdentifier>{4f0f3d1f-beb0-4a1f-bb63-5735e7ed8b93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Point3D">
+      <UniqueIdentifier>{cbf30b9a-f814-4e04-9b97-5340361da621}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1326,6 +1329,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Step2D.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Point3D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Point3D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Step3D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Step3D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1684,6 +1699,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.cpp">
       <Filter>src\Siv3D\CacheDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Point3D\SivPoint3D.cpp">
+      <Filter>src\Siv3D\Point3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

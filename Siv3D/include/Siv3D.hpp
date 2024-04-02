@@ -126,6 +126,8 @@
 
 # include <Siv3D/Step2D.hpp>
 
+# include <Siv3D/Step3D.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	文字と文字列 | Characters and String
@@ -687,6 +689,9 @@
 
 // 整数の 2 次元ベクトル | 2D vector (integer)
 # include <Siv3D/Point.hpp> // ToDo
+
+// 整数の 3 次元ベクトル | 3D vector (integer)
+# include <Siv3D/Point3D.hpp> // ToDo
 
 // 2 次元ベクトル | 2D vector
 # include <Siv3D/Vector2D.hpp> // ToDo

@@ -154,7 +154,8 @@ namespace s3d
 		const auto x_view = std::views::iota(0, n.x);
 		const auto y_view = std::views::iota(0, n.y);
 		return (std::views::cartesian_product(y_view, x_view)
-			| std::views::transform([](const auto& p) { return Point{ std::get<1>(p), std::get<0>(p) }; }));
+			| std::views::transform([](const auto& p) -> Point
+				{ return{ std::get<1>(p), std::get<0>(p) }; }));
 	}
 
 	constexpr auto step(const Point start, const Size n) noexcept
@@ -162,7 +163,8 @@ namespace s3d
 		const auto x_view = std::views::iota(start.x, (start.x + n.x));
 		const auto y_view = std::views::iota(start.y, (start.y + n.y));
 		return (std::views::cartesian_product(y_view, x_view)
-			| std::views::transform([](const auto& p) { return Point{ std::get<1>(p), std::get<0>(p) }; }));
+			| std::views::transform([](const auto& p) -> Point 
+				{ return{ std::get<1>(p), std::get<0>(p) }; }));
 	}
 
 	constexpr auto step(const Point start, const Size n, const Size step) noexcept
@@ -170,7 +172,8 @@ namespace s3d
 		const auto x_view = std::views::iota(0, n.x);
 		const auto y_view = std::views::iota(0, n.y);
 		return (std::views::cartesian_product(y_view, x_view)
-			| std::views::transform([=](const auto& p) { return Point{ (start.x + std::get<1>(p) * step.x),  (start.y + std::get<0>(p) * step.y) }; }));
+			| std::views::transform([=](const auto& p) -> Point 
+				{ return{ (start.x + std::get<1>(p) * step.x),  (start.y + std::get<0>(p) * step.y) }; }));
 	}
 
 # else
@@ -206,8 +209,9 @@ namespace s3d
 		const auto x_view = std::views::iota(0, n.x);
 		const auto y_view = std::views::iota(0, n.y);
 		return (std::views::cartesian_product(y_view, x_view)
-			| std::views::transform([](const auto& p) { return Point{ std::get<1>(p), std::get<0>(p) }; })
-			| std::views::reverse);
+			| std::views::reverse
+			| std::views::transform([](const auto& p) -> Point 
+				{ return{ std::get<1>(p), std::get<0>(p) }; }));
 	}
 
 # else
