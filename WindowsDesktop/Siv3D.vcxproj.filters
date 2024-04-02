@@ -373,6 +373,12 @@
     <Filter Include="src\Siv3D\CacheDirectory">
       <UniqueIdentifier>{4f0f3d1f-beb0-4a1f-bb63-5735e7ed8b93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\tl">
+      <UniqueIdentifier>{edd7009b-5770-4596-a8d1-d8f6370dc430}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\tl\utility">
+      <UniqueIdentifier>{8632b2e5-4dc5-46b7-b5eb-ea66b7dca1be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1319,6 +1325,27 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ProfilerStat.hpp">
       <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Step2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Step2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\cartesian_product.hpp">
+      <Filter>include\ThirdParty\tl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\common.hpp">
+      <Filter>include\ThirdParty\tl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\basic_iterator.hpp">
+      <Filter>include\ThirdParty\tl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\utility\tuple_utils.hpp">
+      <Filter>include\ThirdParty\tl\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\tl\utility\meta.hpp">
+      <Filter>include\ThirdParty\tl\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

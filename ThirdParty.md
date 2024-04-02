@@ -18,6 +18,7 @@ Name | Version
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [PCG](https://github.com/imneme/pcg-cpp) | 
+[ranges](https://github.com/TartanLlama/ranges) | 
 [simde](https://github.com/nemequ/simde) | 
 [simdutf](https://github.com/simdutf/simdutf) | Version 5.0.0
 [stduuid](https://github.com/mariusbancila/stduuid) | 

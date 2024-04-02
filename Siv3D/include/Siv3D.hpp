@@ -124,7 +124,7 @@
 
 # include <Siv3D/Step.hpp>
 
-//# include <Siv3D/Step2D.hpp> // ToDo
+# include <Siv3D/Step2D.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
