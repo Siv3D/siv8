@@ -729,6 +729,7 @@
 		F9528B7C2BB708A700222F45 /* SivLicenseManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B752BB708A700222F45 /* SivLicenseManager.cpp */; };
 		F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */; };
 		F9528B802BB71F9900222F45 /* Profiler.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B7E2BB71F9900222F45 /* Profiler.hpp */; };
+		F9528B822BBC164800222F45 /* Test_ScopeExit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1459,6 +1460,7 @@
 		F9528B752BB708A700222F45 /* SivLicenseManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLicenseManager.cpp; sourceTree = "<group>"; };
 		F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ProfilerStat.hpp; sourceTree = "<group>"; };
 		F9528B7E2BB71F9900222F45 /* Profiler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Profiler.hpp; sourceTree = "<group>"; };
+		F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ScopeExit.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1587,7 +1589,6 @@
 		F90702CF2B9DAEB900383E4D /* Test */ = {
 			isa = PBXGroup;
 			children = (
-				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
 				F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */,
 				F90702B62B9DAEB900383E4D /* Test_Array.cpp */,
 				F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */,
@@ -1600,12 +1601,14 @@
 				F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */,
 				F90702BE2B9DAEB900383E4D /* Test_FunctionRef.cpp */,
 				F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */,
+				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
 				F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */,
 				F90702C12B9DAEB900383E4D /* Test_Memory.cpp */,
 				F9528B312BB0564800222F45 /* Test_MemoryMappedFileView.cpp */,
 				F90702C22B9DAEB900383E4D /* Test_NamedParameter.cpp */,
 				F90702C32B9DAEB900383E4D /* Test_Platform.cpp */,
 				F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */,
+				F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */,
 				F90702C52B9DAEB900383E4D /* Test_SequenceFormatter.cpp */,
 				F90702C62B9DAEB900383E4D /* Test_Step.cpp */,
 				F9528B152BAC58A300222F45 /* Test_String.cpp */,
@@ -4070,6 +4073,7 @@
 				F90703042B9DAEB900383E4D /* Test_PRNG.cpp in Sources */,
 				F90703072B9DAEB900383E4D /* Test_StringView.cpp in Sources */,
 				F90702F92B9DAEB900383E4D /* Test_Color.cpp in Sources */,
+				F9528B822BBC164800222F45 /* Test_ScopeExit.cpp in Sources */,
 				F90702FC2B9DAEB900383E4D /* Test_FileSystem.cpp in Sources */,
 				F90703092B9DAEB900383E4D /* Test_TupleFormatter.cpp in Sources */,
 				F90702FD2B9DAEB900383E4D /* Test_FmtExtension.cpp in Sources */,

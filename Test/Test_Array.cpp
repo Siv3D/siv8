@@ -160,3 +160,36 @@ TEST_CASE("Array")
 	}
 
 }
+
+TEST_CASE("Array.all")
+{
+	{
+		const Array<int32> v{ 1, 3, 5 };
+		CHECK(v.all([](int32 x) { return (0 < x); }));
+		CHECK(not v.all([](int32 x) { return (1 < x); }));
+		CHECK(v.all(IsOdd));
+		CHECK(not v.all(IsEven));
+	}
+
+	{
+		const Array<String> v{ U"abc", U"def", U"ghi" };
+		CHECK(v.all([](const String& s) { return (s.length() == 3); }));
+		CHECK(not v.all([](const String& s) { return (s.length() == 2); }));
+		CHECK(v.all(&String::operator bool));
+		CHECK(not v.all(&String::isEmpty));
+	}
+
+	{
+		static_assert(Array<int32>{}.all(IsEven) == true);
+		static_assert(Array<int32>{ 1 }.all(IsEven) == false);
+		static_assert(Array<int32>{ 1, 2, 3 }.all(IsEven) == false);
+		static_assert(Array<int32>{ 1, 3, 5 }.all(IsEven) == false);
+		static_assert(Array<int32>{ 2, 4, 6 }.all(IsEven) == true);
+
+		static_assert(Array<int32>{}.all(IsOdd) == true);
+		static_assert(Array<int32>{ 1 }.all(IsOdd) == true);
+		static_assert(Array<int32>{ 1, 2, 3 }.all(IsOdd) == false);
+		static_assert(Array<int32>{ 1, 3, 5 }.all(IsOdd) == true);
+		static_assert(Array<int32>{ 2, 4, 6 }.all(IsOdd) == false);
+	}
+}
