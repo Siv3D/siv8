@@ -162,7 +162,7 @@
 
 # else
 
-	//# error Unknown intrinsic
+	# error Unknown intrinsic
 
 # endif
 
