@@ -852,7 +852,7 @@ namespace s3d
 		/// @return 全ての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty, const value_type&>;
+		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -866,7 +866,7 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty, const value_type&>;
+		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -977,7 +977,7 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool contains_if(Fty f) const requires std::predicate<Fty, const value_type&>;
+		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1003,7 +1003,7 @@ namespace s3d
 		/// @return 条件を満たす要素の個数
 		template <class Fty>
 		[[nodiscard]]
-		constexpr isize count_if(Fty f) const requires std::predicate<Fty, const value_type&>;
+		constexpr isize count_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1016,14 +1016,14 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) requires std::invocable<Fty, value_type&>;
+		constexpr void each(Fty f) requires std::invocable<Fty&, value_type&>;
 
 		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) const requires std::invocable<Fty, const value_type&>;
+		constexpr void each(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1036,14 +1036,14 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) requires std::invocable<Fty, size_t, value_type&>;
+		constexpr void each_index(Fty f) requires std::invocable<Fty&, size_t, value_type&>;
 
 		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) const requires std::invocable<Fty, size_t, const value_type&>;
+		constexpr void each_index(Fty f) const requires std::invocable<Fty&, size_t, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1056,14 +1056,14 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto& x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) requires std::invocable<Fty, isize, value_type&>;
+		constexpr void each_sindex(Fty f) requires std::invocable<Fty&, isize, value_type&>;
 
 		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) const requires std::invocable<Fty, isize, const value_type&>;
+		constexpr void each_sindex(Fty f) const requires std::invocable<Fty&, isize, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1103,7 +1103,7 @@ namespace s3d
 		/// @return 指定した条件を満たす要素を集めた新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array filter(Fty f) const requires std::predicate<Fty, const value_type&>;
+		constexpr Array filter(Fty f) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1155,7 +1155,7 @@ namespace s3d
 		/// @return 各要素に関数を適用した戻り値からなる新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr auto map(Fty f) const requires std::invocable<Fty, const value_type&>;
+		constexpr auto map(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1169,7 +1169,7 @@ namespace s3d
 		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool none(Fty f = Identity) const requires std::predicate<Fty, const value_type&>;
+		constexpr bool none(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1182,7 +1182,7 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return 区分化された境界を指すイテレータ
 		template <class Fty>
-		constexpr auto partition(Fty f) requires std::predicate<Fty, const value_type&>;
+		constexpr auto partition(Fty f) requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1268,7 +1268,7 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& remove_if(Fty f)& requires std::predicate<Fty, const value_type&>;
+		constexpr Array& remove_if(Fty f)& requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1276,7 +1276,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array remove_if(Fty f)&& requires std::predicate<Fty, const value_type&>;
+		constexpr Array remove_if(Fty f)&& requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1284,7 +1284,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array removed_if(Fty f) const& requires std::predicate<Fty, const value_type&>;
+		constexpr Array removed_if(Fty f) const& requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1292,7 +1292,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array removed_if(Fty f)&& requires std::predicate<Fty, const value_type&>;
+		constexpr Array removed_if(Fty f)&& requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1339,7 +1339,7 @@ namespace s3d
 		/// @param newValue 新しい値
 		/// @return *this
 		template <class Fty>
-		constexpr Array& replace_if(Fty f, const value_type& newValue)& requires std::predicate<Fty, const value_type&>;
+		constexpr Array& replace_if(Fty f, const value_type& newValue)& requires std::predicate<Fty&, const value_type&>;
 		
 		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1348,7 +1348,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array replace_if(Fty f, const value_type& newValue)&& requires std::predicate<Fty, const value_type&>;
+		constexpr Array replace_if(Fty f, const value_type& newValue)&& requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1357,7 +1357,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty, const value_type&>;
+		constexpr Array replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1366,7 +1366,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array replaced_if(Fty f, const value_type& newValue)&& requires std::predicate<Fty, const value_type&>;
+		constexpr Array replaced_if(Fty f, const value_type& newValue)&& requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1404,14 +1404,14 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void reverse_each(Fty f) requires std::invocable<Fty, value_type&>;
+		constexpr void reverse_each(Fty f) requires std::invocable<Fty&, value_type&>;
 
 		/// @brief 末尾から順番に、全ての要素に対して関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void reverse_each(Fty f) const requires std::invocable<Fty, const value_type&>;
+		constexpr void reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1598,7 +1598,7 @@ namespace s3d
 		/// @param f 比較に使用する関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& sort_by(Fty f)& requires std::predicate<Fty, const value_type&, const value_type&>;
+		constexpr Array& sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1606,7 +1606,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array sort_by(Fty f) && requires std::predicate<Fty, const value_type&, const value_type&>;
+		constexpr Array sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1614,7 +1614,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array sorted_by(Fty f) const& requires std::predicate<Fty, const value_type&, const value_type&>;
+		constexpr Array sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1622,7 +1622,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array sorted_by(Fty f) && requires std::predicate<Fty, const value_type&, const value_type&>;
+		constexpr Array sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1660,7 +1660,7 @@ namespace s3d
 		/// @param f 比較に使用する関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& stable_sort_by(Fty f)& requires std::predicate<Fty, const value_type&, const value_type&>;
+		constexpr Array& stable_sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1668,7 +1668,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array stable_sort_by(Fty f) && requires std::predicate<Fty, const value_type&, const value_type&>;
+		constexpr Array stable_sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1676,7 +1676,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array stable_sorted_by(Fty f) const& requires std::predicate<Fty, const value_type&, const value_type&>;
+		constexpr Array stable_sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1684,7 +1684,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array stable_sorted_by(Fty f) && requires std::predicate<Fty, const value_type&, const value_type&>;
+		constexpr Array stable_sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1697,7 +1697,7 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return 区分化された境界を指すイテレータ
 		template <class Fty>
-		constexpr auto stable_partition(Fty f) requires std::predicate<Fty, const value_type&>;
+		constexpr auto stable_partition(Fty f) requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1776,7 +1776,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array take_while(Fty f) const& requires std::predicate<Fty, const value_type&>;
+		constexpr Array take_while(Fty f) const& requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1784,7 +1784,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array take_while(Fty f) && requires std::predicate<Fty, const value_type&>;
+		constexpr Array take_while(Fty f) && requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1835,7 +1835,7 @@ namespace s3d
 		/// @return 条件を満たす要素の個数
 		template <class Fty>
 		[[nodiscard]]
-		isize parallel_count_if(Fty f) const requires std::predicate<Fty, const value_type&>;
+		isize parallel_count_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1847,13 +1847,13 @@ namespace s3d
 		/// @tparam Fty 関数の型
 		/// @param f 関数
 		template <class Fty>
-		void parallel_each(Fty f) requires std::invocable<Fty, value_type&>;
+		void parallel_each(Fty f) requires std::invocable<Fty&, value_type&>;
 
 		/// @brief 全ての要素に対して関数を並列実行します。
 		/// @tparam Fty 関数の型
 		/// @param f 関数
 		template <class Fty>
-		void parallel_each(Fty f) const requires std::invocable<Fty, const value_type&>;
+		void parallel_each(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1867,7 +1867,7 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		auto parallel_map(Fty f) const requires std::invocable<Fty, const value_type&>;
+		auto parallel_map(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1881,7 +1881,7 @@ namespace s3d
 		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
 		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
 		template <class Fty>
-		constexpr auto operator >>(Fty f) const requires std::invocable<Fty, const value_type&>;
+		constexpr auto operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
