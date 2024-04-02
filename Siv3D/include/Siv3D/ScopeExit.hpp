@@ -17,12 +17,6 @@
 
 namespace s3d
 {
-	namespace detail
-	{
-		template <class T>
-		concept ExitFunction = std::invocable<std::add_lvalue_reference_t<T>> && (not std::is_rvalue_reference_v<T>);
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	ScopeExit
@@ -31,7 +25,7 @@ namespace s3d
 
 	/// @brief スコープを抜けるときに指定した関数を実行するオブジェクト | An object that executes a specified function when it leaves the scope
 	/// @tparam ExitFunction 実行する関数の型 | The type of the function to execute
-	template <detail::ExitFunction ExitFunction>
+	template <std::invocable ExitFunction>
 	class ScopeExit final
 	{
 	public:
@@ -41,23 +35,15 @@ namespace s3d
 		ScopeExit& operator =(const ScopeExit&) = delete;
 
 		[[nodiscard]]
-		constexpr ScopeExit(ScopeExit&& other) noexcept(std::is_nothrow_copy_constructible_v<ExitFunction>);
-
-		[[nodiscard]]
-		constexpr ScopeExit(ScopeExit&& other) noexcept
-			requires std::is_nothrow_move_constructible_v<ExitFunction>;
+		constexpr ScopeExit(ScopeExit&& other) noexcept(std::is_nothrow_move_constructible_v<ExitFunction>
+			|| std::is_nothrow_copy_constructible_v<ExitFunction>);
 
 		template <class Fty>
-			requires (not std::same_as<std::remove_cvref_t<Fty>, ScopeExit>)
 		[[nodiscard]]
-		constexpr ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>);
+		constexpr ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty>
+			|| std::is_nothrow_constructible_v<ExitFunction, Fty&>);
 
-		template <class Fty>
-			requires ((not std::same_as<std::remove_cvref_t<Fty>, ScopeExit>) && (not std::is_lvalue_reference_v<Fty>) && std::is_nothrow_constructible_v<ExitFunction, Fty>)
-		[[nodiscard]]
-		constexpr ScopeExit(Fty&& exitFunction) noexcept;
-
-		constexpr ~ScopeExit() noexcept(std::is_nothrow_invocable_v<ExitFunction&>
+		constexpr ~ScopeExit() noexcept(std::is_nothrow_invocable_v<ExitFunction>
 			&& std::is_nothrow_destructible_v<ExitFunction>);
 
 		/// @brief ScopeExit を非アクティブにします。 | Deactivates the ScopeExit.
@@ -70,7 +56,7 @@ namespace s3d
 		bool m_active = true;
 	};
 
-	template <detail::ExitFunction ExitFunction>
+	template <std::invocable ExitFunction>
 	ScopeExit(ExitFunction) -> ScopeExit<ExitFunction>;
 }
 
