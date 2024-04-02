@@ -730,6 +730,8 @@
 		F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */; };
 		F9528B802BB71F9900222F45 /* Profiler.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B7E2BB71F9900222F45 /* Profiler.hpp */; };
 		F9528B822BBC164800222F45 /* Test_ScopeExit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */; };
+		F9528B842BBC5D3100222F45 /* Step2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B832BBC5D3100222F45 /* Step2D.hpp */; };
+		F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B852BBC5D4B00222F45 /* Step2D.ipp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1461,6 +1463,8 @@
 		F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ProfilerStat.hpp; sourceTree = "<group>"; };
 		F9528B7E2BB71F9900222F45 /* Profiler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Profiler.hpp; sourceTree = "<group>"; };
 		F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ScopeExit.cpp; sourceTree = "<group>"; };
+		F9528B832BBC5D3100222F45 /* Step2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Step2D.hpp; sourceTree = "<group>"; };
+		F9528B852BBC5D4B00222F45 /* Step2D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Step2D.ipp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2279,6 +2283,7 @@
 				F9070B9D2B9F175000383E4D /* SequenceFormatter.ipp */,
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
 				F9070B9F2B9F175000383E4D /* Step.ipp */,
+				F9528B852BBC5D4B00222F45 /* Step2D.ipp */,
 				F9070BA02B9F175000383E4D /* Stopwatch.ipp */,
 				F9070BA12B9F175000383E4D /* String.ipp */,
 				F9070BA22B9F175000383E4D /* StringView.ipp */,
@@ -2445,6 +2450,7 @@
 				F9070C212B9F175000383E4D /* SIMD.hpp */,
 				F9070C222B9F175000383E4D /* SpecialFolder.hpp */,
 				F9070C232B9F175000383E4D /* Step.hpp */,
+				F9528B832BBC5D3100222F45 /* Step2D.hpp */,
 				F9070C242B9F175000383E4D /* Stopwatch.hpp */,
 				F9070C252B9F175000383E4D /* String.hpp */,
 				F9070C262B9F175000383E4D /* StringView.hpp */,
@@ -3765,6 +3771,7 @@
 				F9070C6E2B9F175000383E4D /* Number.ipp in Headers */,
 				F9070CCE2B9F175100383E4D /* IntFormatter.hpp in Headers */,
 				F9070CC32B9F175000383E4D /* Formatter.hpp in Headers */,
+				F9528B842BBC5D3100222F45 /* Step2D.hpp in Headers */,
 				F90706C72B9DAEC900383E4D /* 4dpwssds.h in Headers */,
 				F90706B62B9DAEC900383E4D /* xchar.h in Headers */,
 				F9070C4F2B9F175000383E4D /* DateTime.ipp in Headers */,
@@ -3806,6 +3813,7 @@
 				F90707422B9DAEC900383E4D /* mmx.h in Headers */,
 				F9070CAB2B9F175000383E4D /* Date.hpp in Headers */,
 				F90707212B9DAEC900383E4D /* setzero.h in Headers */,
+				F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */,
 				F90707112B9DAEC900383E4D /* reduce.h in Headers */,
 				F90707392B9DAEC900383E4D /* xorsign.h in Headers */,
 				F9070CE52B9F175100383E4D /* Palette.hpp in Headers */,
