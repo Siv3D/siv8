@@ -732,6 +732,11 @@
 		F9528B822BBC164800222F45 /* Test_ScopeExit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */; };
 		F9528B842BBC5D3100222F45 /* Step2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B832BBC5D3100222F45 /* Step2D.hpp */; };
 		F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B852BBC5D4B00222F45 /* Step2D.ipp */; };
+		F9528B952BBC76D300222F45 /* Step3D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B932BBC76D300222F45 /* Step3D.hpp */; };
+		F9528B962BBC76D300222F45 /* Point3D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B942BBC76D300222F45 /* Point3D.hpp */; };
+		F9528B992BBC76EA00222F45 /* Step3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B972BBC76EA00222F45 /* Step3D.ipp */; };
+		F9528B9A2BBC76EA00222F45 /* Point3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B982BBC76EA00222F45 /* Point3D.ipp */; };
+		F9528B9D2BBC771000222F45 /* SivPoint3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B9B2BBC771000222F45 /* SivPoint3D.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1465,6 +1470,11 @@
 		F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ScopeExit.cpp; sourceTree = "<group>"; };
 		F9528B832BBC5D3100222F45 /* Step2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Step2D.hpp; sourceTree = "<group>"; };
 		F9528B852BBC5D4B00222F45 /* Step2D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Step2D.ipp; sourceTree = "<group>"; };
+		F9528B932BBC76D300222F45 /* Step3D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Step3D.hpp; sourceTree = "<group>"; };
+		F9528B942BBC76D300222F45 /* Point3D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Point3D.hpp; sourceTree = "<group>"; };
+		F9528B972BBC76EA00222F45 /* Step3D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Step3D.ipp; sourceTree = "<group>"; };
+		F9528B982BBC76EA00222F45 /* Point3D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Point3D.ipp; sourceTree = "<group>"; };
+		F9528B9B2BBC771000222F45 /* SivPoint3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivPoint3D.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2275,6 +2285,7 @@
 				F9070B952B9F175000383E4D /* ParseInt.ipp */,
 				F9070B962B9F175000383E4D /* PCG64.ipp */,
 				F9070B972B9F175000383E4D /* Point.ipp */,
+				F9528B982BBC76EA00222F45 /* Point3D.ipp */,
 				F9070B982B9F175000383E4D /* Random.ipp */,
 				F9070B992B9F175000383E4D /* RandomDuration.ipp */,
 				F9070B9A2B9F175000383E4D /* Rect.ipp */,
@@ -2284,6 +2295,7 @@
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
 				F9070B9F2B9F175000383E4D /* Step.ipp */,
 				F9528B852BBC5D4B00222F45 /* Step2D.ipp */,
+				F9528B972BBC76EA00222F45 /* Step3D.ipp */,
 				F9070BA02B9F175000383E4D /* Stopwatch.ipp */,
 				F9070BA12B9F175000383E4D /* String.ipp */,
 				F9070BA22B9F175000383E4D /* StringView.ipp */,
@@ -2434,6 +2446,7 @@
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
 				F9070C152B9F175000383E4D /* Point.hpp */,
+				F9528B942BBC76D300222F45 /* Point3D.hpp */,
 				F9070C162B9F175000383E4D /* PointVector.hpp */,
 				F9070C172B9F175000383E4D /* PredefinedNamedParameter.hpp */,
 				F9070C182B9F175000383E4D /* PredefinedYesNo.hpp */,
@@ -2451,6 +2464,7 @@
 				F9070C222B9F175000383E4D /* SpecialFolder.hpp */,
 				F9070C232B9F175000383E4D /* Step.hpp */,
 				F9528B832BBC5D3100222F45 /* Step2D.hpp */,
+				F9528B932BBC76D300222F45 /* Step3D.hpp */,
 				F9070C242B9F175000383E4D /* Stopwatch.hpp */,
 				F9070C252B9F175000383E4D /* String.hpp */,
 				F9070C262B9F175000383E4D /* StringView.hpp */,
@@ -3071,6 +3085,7 @@
 				F9070D762B9F175E00383E4D /* ParseFloat */,
 				F9070D782B9F175E00383E4D /* ParseInt */,
 				F9070D7A2B9F175E00383E4D /* Point */,
+				F9528B9C2BBC771000222F45 /* Point3D */,
 				F9070D7C2B9F175E00383E4D /* Random */,
 				F9070D7E2B9F175E00383E4D /* Rect */,
 				F9070D812B9F175E00383E4D /* String */,
@@ -3403,6 +3418,14 @@
 			path = LicenseManager;
 			sourceTree = "<group>";
 		};
+		F9528B9C2BBC771000222F45 /* Point3D */ = {
+			isa = PBXGroup;
+			children = (
+				F9528B9B2BBC771000222F45 /* SivPoint3D.cpp */,
+			);
+			path = Point3D;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3427,6 +3450,7 @@
 				F9070CB52B9F175000383E4D /* Endian.hpp in Headers */,
 				F9070C632B9F175000383E4D /* IReader.ipp in Headers */,
 				F90706A02B9DAEC900383E4D /* fastmath.h in Headers */,
+				F9528B992BBC76EA00222F45 /* Step3D.ipp in Headers */,
 				F90707572B9DAEC900383E4D /* simde-f16.h in Headers */,
 				F90706BD2B9DAEC900383E4D /* phmap_config.h in Headers */,
 				F9070B012B9DEB5900383E4D /* format-inl.h in Headers */,
@@ -3595,6 +3619,7 @@
 				F9070D122B9F175100383E4D /* Version.hpp in Headers */,
 				F9070D062B9F175100383E4D /* Time.hpp in Headers */,
 				F9070C442B9F175000383E4D /* BinaryReader.ipp in Headers */,
+				F9528B952BBC76D300222F45 /* Step3D.hpp in Headers */,
 				F9070C8E2B9F175000383E4D /* ComPtr.hpp in Headers */,
 				F9070AF22B9DEB5900383E4D /* bignum-dtoa.h in Headers */,
 				F90707512B9DAEC900383E4D /* simde-bf16.h in Headers */,
@@ -3835,6 +3860,7 @@
 				F9070C892B9F175000383E4D /* UUIDValue.ipp in Headers */,
 				F907068D2B9DAEC900383E4D /* attributes.h in Headers */,
 				F9070EE12B9F1C8900383E4D /* internal.h in Headers */,
+				F9528B962BBC76D300222F45 /* Point3D.hpp in Headers */,
 				F90707152B9DAEC900383E4D /* rorv.h in Headers */,
 				F9070D0F2B9F175100383E4D /* Vector2D.hpp in Headers */,
 				F9070CD52B9F175100383E4D /* Logger.hpp in Headers */,
@@ -3862,6 +3888,7 @@
 				F9070CC82B9F175000383E4D /* HashSet.hpp in Headers */,
 				F90706C12B9DAEC900383E4D /* phmap.h in Headers */,
 				F907069A2B9DAEC900383E4D /* bits.h in Headers */,
+				F9528B9A2BBC76EA00222F45 /* Point3D.ipp in Headers */,
 				F9070CA62B9F175000383E4D /* Concepts.hpp in Headers */,
 				F9070D042B9F175100383E4D /* ThousandSeparate.hpp in Headers */,
 				F90707562B9DAEC900383E4D /* simde-diagnostic.h in Headers */,
@@ -4156,6 +4183,7 @@
 				F9070DE12B9F175E00383E4D /* SivParseFloat.cpp in Sources */,
 				F9070AF02B9DEB5900383E4D /* gaussian_distribution.cc in Sources */,
 				F9070DEC2B9F175E00383E4D /* SivTextEncoding.cpp in Sources */,
+				F9528B9D2BBC771000222F45 /* SivPoint3D.cpp in Sources */,
 				F9070AFC2B9DEB5900383E4D /* fixed-dtoa.cc in Sources */,
 				F9070DFE2B9F175E00383E4D /* SivVector2D.cpp in Sources */,
 				F9070DE72B9F175E00383E4D /* SivString.cpp in Sources */,
