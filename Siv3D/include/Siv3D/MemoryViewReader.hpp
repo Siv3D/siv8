@@ -160,18 +160,6 @@ namespace s3d
 		int64 m_size = 0;
 
 		int64 m_pos = 0;
-
-		[[noreturn]]
-		static void ThrowReadDstError();
-
-		[[noreturn]]
-		static void ThrowReadPosError();
-
-		[[noreturn]]
-		static void ThrowLookaheadDstError();
-
-		[[noreturn]]
-		static void ThrowLookaheadPosError();
 	};
 }
 

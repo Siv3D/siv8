@@ -96,65 +96,6 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline int64 MemoryViewReader::read(void* dst, const int64 size)
-	{
-		if (size <= 0)
-		{
-			return 0;
-		}
-
-		if (dst == nullptr)
-		{
-			ThrowReadDstError();
-		}
-
-		const int64 readSize = Min<int64>(size, (m_size - m_pos));
-
-		if (readSize <= 0)
-		{
-			return 0;
-		}
-
-		std::memcpy(dst, (m_base + m_pos), static_cast<size_t>(readSize));
-
-		m_pos += readSize;
-
-		return readSize;
-	}
-
-	inline int64 MemoryViewReader::read(void* dst, int64 pos, const int64 size)
-	{
-		if (size <= 0)
-		{
-			return 0;
-		}
-
-		if (dst == nullptr)
-		{
-			ThrowReadDstError();
-		}
-
-		if (pos < 0)
-		{
-			ThrowReadPosError();
-		}
-
-		pos = Min<int64>(pos, m_size);
-
-		const int64 readSize = Min<int64>(size, (m_size - pos));
-
-		if (readSize <= 0)
-		{
-			return 0;
-		}
-
-		std::memcpy(dst, (m_base + pos), static_cast<size_t>(readSize));
-
-		m_pos = (pos + readSize);
-
-		return readSize;
-	}
-
 	bool MemoryViewReader::read(Concept::TriviallyCopyable auto& dst)
 	{
 		return (read(std::addressof(dst), sizeof(dst)) == sizeof(dst));
@@ -165,61 +106,6 @@ namespace s3d
 	//	lookahead
 	//
 	////////////////////////////////////////////////////////////////
-
-	inline int64 MemoryViewReader::lookahead(void* dst, const int64 size) const
-	{
-		if (size <= 0)
-		{
-			return 0;
-		}
-
-		if (dst == nullptr)
-		{
-			ThrowLookaheadDstError();
-		}
-
-		const int64 readSize = Min<int64>(size, (m_size - m_pos));
-
-		if (readSize <= 0)
-		{
-			return 0;
-		}
-
-		std::memcpy(dst, (m_base + m_pos), static_cast<size_t>(readSize));
-
-		return readSize;
-	}
-
-	inline int64 MemoryViewReader::lookahead(void* dst, int64 pos, const int64 size) const
-	{
-		if (size <= 0)
-		{
-			return 0;
-		}
-
-		if (dst == nullptr)
-		{
-			ThrowLookaheadDstError();
-		}
-
-		if (pos < 0)
-		{
-			ThrowLookaheadPosError();
-		}
-
-		pos = Min<int64>(pos, m_size);
-
-		const int64 readSize = Min<int64>(size, (m_size - pos));
-
-		if (readSize <= 0)
-		{
-			return 0;
-		}
-
-		std::memcpy(dst, (m_base + pos), static_cast<size_t>(readSize));
-
-		return readSize;
-	}
 
 	bool MemoryViewReader::lookahead(Concept::TriviallyCopyable auto& dst) const
 	{
