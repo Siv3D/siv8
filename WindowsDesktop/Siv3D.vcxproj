@@ -120,6 +120,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextReader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextWriter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ThousandSeparate.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Timer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TupleFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Unicode.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\UnicodeConverter.ipp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Utility.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\UtilityClass.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\UUIDValue.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\VariableSpeedStopwatch.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vector2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Window.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\YesNo.ipp" />
@@ -235,6 +237,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ThousandSeparate.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Threading.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Time.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Timer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TupleFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Types.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Unicode.hpp" />
@@ -243,6 +246,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\UserAction.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Utility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UUIDValue.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\VariableSpeedStopwatch.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector4D.hpp" />
