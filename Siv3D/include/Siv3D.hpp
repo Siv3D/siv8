@@ -353,7 +353,7 @@
 # include <Siv3D/VariableSpeedStopwatch.hpp>
 
 // カウントダウンタイマー | Countdown timer
-# include <Siv3D/Timer.hpp> // ToDo
+# include <Siv3D/Timer.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
