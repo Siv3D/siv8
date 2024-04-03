@@ -165,8 +165,209 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	assign
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::assign(const size_type w, const size_type h, const value_type& value)
+	{
+		m_size = { w, h };
+		m_container.assign((m_size.x * m_size.y), value);
+	}
 
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::assign(const Size size, const value_type& value)
+	{
+		m_size = detail::ValidGridSizeOrEmpty(size);
+		m_container.assign((m_size.x * m_size.y), value);
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::assign(const std::initializer_list<std::initializer_list<value_type>>& set)
+	{
+		m_container.clear();
+
+		resize(std::max_element(set.begin(), set.end(),
+			[](auto& lhs, auto& rhs) { return lhs.size() < rhs.size(); })->size(), set.size());
+
+		auto dst = m_container.begin();
+
+		for (const auto& a : set)
+		{
+			std::copy(a.begin(), a.end(), dst);
+			dst += m_size.x;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	get_allocator
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::allocator_type Grid<Type, Allocator>::get_allocator() const noexcept
+	{
+		return m_container.get_allocator();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getContainer
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr const typename Grid<Type, Allocator>::container_type& Grid<Type, Allocator>::getContainer() const& noexcept
+	{
+		return m_container;
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::container_type Grid<Type, Allocator>::getContainer() && noexcept
+	{
+		return std::move(m_container);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	at
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::at(const size_type y, const size_type x)&
+	{
+		if (not inBounds(Point{ x, y }))
+		{
+			ThrowAtOutOfRange();
+		}
+
+		return *(m_container.data() + (y * m_size.x + x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::at(const size_type y, const size_type x) const&
+	{
+		if (not inBounds(Point{ x, y }))
+		{
+			ThrowAtOutOfRange();
+		}
+
+		return *(m_container.data() + (y * m_size.x + x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::at(const size_type y, const size_type x)&&
+	{
+		if (not inBounds(Point{ x, y }))
+		{
+			ThrowAtOutOfRange();
+		}
+
+		return std::move(*(m_container.data() + (y * m_size.x + x)));
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::at(const Point pos)&
+	{
+		if (not inBounds(pos))
+		{
+			ThrowAtOutOfRange();
+		}
+
+		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::at(const Point pos) const&
+	{
+		if (not inBounds(pos))
+		{
+			ThrowAtOutOfRange();
+		}
+
+		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::at(const Point pos)&&
+	{
+		if (not inBounds(pos))
+		{
+			ThrowAtOutOfRange();
+		}
+
+		return std::move(*(m_container.data() + (pos.y * m_size.x + pos.x)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator []
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::pointer Grid<Type, Allocator>::operator [](const size_t y)
+	{
+		assert(y < static_cast<size_t>(m_size.y));
+		return (m_container.data() + (y * m_size.x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::const_pointer Grid<Type, Allocator>::operator [](const size_t y) const
+	{
+		assert(y < static_cast<size_t>(m_size.y));
+		return (m_container.data() + (y * m_size.x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::operator [](const Point pos)&
+	{
+		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::operator [](const Point pos) const&
+	{
+		assert(inBounds(pos));
+		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const Point pos)&&
+	{
+		assert(inBounds(pos));
+		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+	}
+
+# ifdef __cpp_multidimensional_subscript
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::operator [](const size_t x, const size_t y)&
+	{
+		assert(inBounds(Point{ x, y }));
+		return *(m_container.data() + (y * m_size.x + x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::operator [](const size_t x, const size_t y) const&
+	{
+		assert(inBounds(Point{ x, y }));
+		return *(m_container.data() + (y * m_size.x + x));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const size_t x, const size_t y)&&
+	{
+		assert(inBounds(Point{ x, y }));
+		return *(m_container.data() + (y * m_size.x + x));
+	}
+
+# endif
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -175,19 +376,19 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::reference Grid<Type, Allocator>::front() & noexcept
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::front() & noexcept
 	{
 		return m_container.front();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::front() const& noexcept
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::front() const& noexcept
 	{
 		return m_container.front();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::front() && noexcept
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::front() && noexcept
 	{
 		return std::move(m_container.front());
 	}
@@ -199,19 +400,19 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::reference Grid<Type, Allocator>::back() & noexcept
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::back() & noexcept
 	{
 		return m_container.back();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::back() const& noexcept
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::back() const& noexcept
 	{
 		return m_container.back();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::back() && noexcept
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::back() && noexcept
 	{
 		return std::move(m_container.back());
 	}
@@ -235,13 +436,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::value_type* Grid<Type, Allocator>::data() noexcept
+	constexpr typename Grid<Type, Allocator>::pointer Grid<Type, Allocator>::data() noexcept
 	{
 		return m_container.data();
 	}
 
 	template <class Type, class Allocator>
-	constexpr const Grid<Type, Allocator>::value_type* Grid<Type, Allocator>::data() const noexcept
+	constexpr typename Grid<Type, Allocator>::const_pointer Grid<Type, Allocator>::data() const noexcept
 	{
 		return m_container.data();
 	}
@@ -253,25 +454,25 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::iterator Grid<Type, Allocator>::begin() noexcept
+	constexpr typename Grid<Type, Allocator>::iterator Grid<Type, Allocator>::begin() noexcept
 	{
 		return m_container.begin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::iterator Grid<Type, Allocator>::end() noexcept
+	constexpr typename Grid<Type, Allocator>::iterator Grid<Type, Allocator>::end() noexcept
 	{
 		return m_container.end();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_iterator Grid<Type, Allocator>::begin() const noexcept
+	constexpr typename Grid<Type, Allocator>::const_iterator Grid<Type, Allocator>::begin() const noexcept
 	{
 		return m_container.begin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_iterator Grid<Type, Allocator>::end() const noexcept
+	constexpr typename Grid<Type, Allocator>::const_iterator Grid<Type, Allocator>::end() const noexcept
 	{
 		return m_container.end();
 	}
@@ -283,13 +484,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_iterator Grid<Type, Allocator>::cbegin() const noexcept
+	constexpr typename Grid<Type, Allocator>::const_iterator Grid<Type, Allocator>::cbegin() const noexcept
 	{
 		return m_container.cbegin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_iterator Grid<Type, Allocator>::cend() const noexcept
+	constexpr typename Grid<Type, Allocator>::const_iterator Grid<Type, Allocator>::cend() const noexcept
 	{
 		return m_container.cend();
 	}
@@ -301,25 +502,25 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::reverse_iterator Grid<Type, Allocator>::rbegin() noexcept
+	constexpr typename Grid<Type, Allocator>::reverse_iterator Grid<Type, Allocator>::rbegin() noexcept
 	{
 		return m_container.rbegin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::reverse_iterator Grid<Type, Allocator>::rend() noexcept
+	constexpr typename Grid<Type, Allocator>::reverse_iterator Grid<Type, Allocator>::rend() noexcept
 	{
 		return m_container.rend();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_reverse_iterator Grid<Type, Allocator>::rbegin() const noexcept
+	constexpr typename Grid<Type, Allocator>::const_reverse_iterator Grid<Type, Allocator>::rbegin() const noexcept
 	{
 		return m_container.rbegin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_reverse_iterator Grid<Type, Allocator>::rend() const noexcept
+	constexpr typename Grid<Type, Allocator>::const_reverse_iterator Grid<Type, Allocator>::rend() const noexcept
 	{
 		return m_container.rend();
 	}
@@ -331,13 +532,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_reverse_iterator Grid<Type, Allocator>::crbegin() const noexcept
+	constexpr typename Grid<Type, Allocator>::const_reverse_iterator Grid<Type, Allocator>::crbegin() const noexcept
 	{
 		return m_container.crbegin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::const_reverse_iterator Grid<Type, Allocator>::crend() const noexcept
+	constexpr typename Grid<Type, Allocator>::const_reverse_iterator Grid<Type, Allocator>::crend() const noexcept
 	{
 		return m_container.crend();
 	}
@@ -408,12 +609,129 @@ namespace s3d
 		return m_size;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	num_elements
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr size_t Grid<Type, Allocator>::num_elements() const noexcept
+	{
+		return m_container.size();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	size_bytes
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr size_t Grid<Type, Allocator>::size_bytes() const noexcept requires (Concept::TriviallyCopyable<value_type>)
+	{
+		return (m_container.size() * sizeof(value_type));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reserve
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::reserve(const size_type w, const size_type h)
+	{
+		m_container.reserve(w * h);
+	}
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::reserve(const Size size)
+	{
+		const Size newSize = detail::ValidGridSizeOrEmpty(size);
+		m_container.reserve(newSize.x * newSize.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	capacity
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr size_t Grid<Type, Allocator>::capacity() const noexcept
+	{
+		return m_container.capacity();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shrink_to_fit
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::shrink_to_fit()
+	{
+		m_container.shrink_to_fit();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	clear
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::clear() noexcept
+	{
+		m_size.clear();
+		m_container.clear();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	release
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::release()
+	{
+		clear();
+		shrink_to_fit();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	swap
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::swap(Grid& other) noexcept
+	{
+		std::ranges::swap(m_size, other.m_size);
+		m_container.swap(other.m_container);
+	}
 
 
 
 
 
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private functions)
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::ThrowAtOutOfRange()
+	{
+		throw std::out_of_range{ "Grid::at(): index out of range" };
+	}
 
 
 
@@ -449,4 +767,7 @@ namespace s3d
 
 		formatData.string.push_back(U']');
 	}
+
+
+
 }

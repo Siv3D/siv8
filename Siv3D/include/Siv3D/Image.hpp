@@ -329,7 +329,12 @@ namespace s3d
 		/// @brief 内容をコピーした新しい画像を作成して返します。
 		/// @return 内容をコピーした新しい画像
 		[[nodiscard]]
-		Image cloned() const;
+		Image cloned() const&;
+
+		/// @brief 内容をコピーした新しい画像を作成して返します。
+		/// @return 内容をコピーした新しい画像
+		[[nodiscard]]
+		Image cloned() &&;
 
 		////////////////////////////////////////////////////////////////
 		//

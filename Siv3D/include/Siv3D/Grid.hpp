@@ -175,7 +175,12 @@ namespace s3d
 		/// @brief Array への const 参照を返します。
 		/// @return Array への const 参照
 		[[nodiscard]]
-		constexpr const container_type& getContainer() const noexcept;
+		constexpr const container_type& getContainer() const& noexcept;
+
+		/// @brief Array を返します。
+		/// @return Array
+		[[nodiscard]]
+		constexpr container_type getContainer() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -183,15 +188,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr value_type& at(size_type y, size_type x)&;
+		constexpr reference at(size_type y, size_type x)&;
 
-		constexpr const value_type& at(size_type y, size_type x) const&;
+		constexpr const_reference at(size_type y, size_type x) const&;
 
 		constexpr value_type at(size_type y, size_type x)&&;
 
-		constexpr value_type& at(Point pos)&;
+		constexpr reference at(Point pos)&;
 
-		constexpr const value_type& at(Point pos) const&;
+		constexpr const_reference at(Point pos) const&;
 
 		constexpr value_type at(Point pos)&&;
 
@@ -202,23 +207,29 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr value_type* operator [](size_t y);
+		constexpr pointer operator [](size_t y);
 
 		[[nodiscard]]
-		constexpr const value_type* operator [](size_t y) const;
+		constexpr const_pointer operator [](size_t y) const;
 
-		constexpr value_type& operator [](Point pos)&;
+		[[nodiscard]]
+		constexpr reference operator [](Point pos)&;
 
-		constexpr const value_type& operator [](Point pos) const&;
+		[[nodiscard]]
+		constexpr const_reference operator [](Point pos) const&;
 
+		[[nodiscard]]
 		constexpr value_type operator [](Point pos)&&;
 
 	# ifdef __cpp_multidimensional_subscript
 
-		constexpr value_type& operator [](size_t x, size_t y)&;
+		[[nodiscard]]
+		constexpr reference operator [](size_t x, size_t y)&;
 
-		constexpr const value_type& operator [](size_t x, size_t y) const&;
+		[[nodiscard]]
+		constexpr const_reference operator [](size_t x, size_t y) const&;
 
+		[[nodiscard]]
 		constexpr value_type operator [](size_t x, size_t y)&&;
 
 	# endif
@@ -283,12 +294,12 @@ namespace s3d
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr value_type* data() noexcept;
+		constexpr pointer data() noexcept;
 
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr const value_type* data() const noexcept;
+		constexpr const_pointer data() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -442,7 +453,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr size_type num_elements() const noexcept;
+		constexpr size_t num_elements() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -470,7 +481,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr size_type capacity() const noexcept;
+		constexpr size_t capacity() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -562,6 +573,9 @@ namespace s3d
 		Size m_size{ 0, 0 };
 
 		container_type m_container;
+
+		[[noreturn]]
+		static void ThrowAtOutOfRange();
 	};
 
 	////////////////////////////////////////////////////////////////

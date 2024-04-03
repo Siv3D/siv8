@@ -211,9 +211,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Image Image::cloned() const
+	inline Image Image::cloned() const&
 	{
 		return *this;
+	}
+
+	inline Image Image::cloned()&&
+	{
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
