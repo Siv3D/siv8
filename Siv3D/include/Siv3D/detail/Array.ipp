@@ -216,9 +216,15 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr const typename Array<Type, Allocator>::container_type& Array<Type, Allocator>::getContainer() const noexcept
+	constexpr const typename Array<Type, Allocator>::container_type& Array<Type, Allocator>::getContainer() const& noexcept
 	{
 		return m_container;
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Array<Type, Allocator>::container_type Array<Type, Allocator>::getContainer() && noexcept
+	{
+		return std::move(m_container);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -228,9 +234,15 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>::operator typename Array<Type, Allocator>::container_type() const noexcept
+	constexpr Array<Type, Allocator>::operator typename Array<Type, Allocator>::container_type() const& noexcept
 	{
 		return m_container;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>::operator typename Array<Type, Allocator>::container_type() && noexcept
+	{
+		return std::move(m_container);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -240,15 +252,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::at(const size_type index) const
+	constexpr const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::at(const size_type index) const&
 	{
 		return m_container.at(index);
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::at(const size_type index)
+	constexpr typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::at(const size_type index) &
 	{
 		return m_container.at(index);
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Array<Type, Allocator>::value_type Array<Type, Allocator>::at(const size_type index) &&
+	{
+		return std::move(m_container.at(index));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -258,15 +276,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::operator[](const size_type index) const noexcept
+	constexpr const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::operator[](const size_type index) const& noexcept
 	{
 		return m_container[index];
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::operator[](const size_type index) noexcept
+	constexpr typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::operator[](const size_type index) & noexcept
 	{
 		return m_container[index];
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Array<Type, Allocator>::value_type Array<Type, Allocator>::operator[](const size_type index) && noexcept
+	{
+		return std::move(m_container[index]);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -276,15 +300,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::reference Array<Type, Allocator>::front() noexcept
+	constexpr typename Array<Type, Allocator>::reference Array<Type, Allocator>::front()& noexcept
 	{
 		return m_container.front();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_reference Array<Type, Allocator>::front() const noexcept
+	constexpr typename Array<Type, Allocator>::const_reference Array<Type, Allocator>::front() const& noexcept
 	{
 		return m_container.front();
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Array<Type, Allocator>::value_type Array<Type, Allocator>::front()&& noexcept
+	{
+		return std::move(m_container.front());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -294,15 +324,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::reference Array<Type, Allocator>::back() noexcept
+	constexpr typename Array<Type, Allocator>::reference Array<Type, Allocator>::back()& noexcept
 	{
 		return m_container.back();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_reference Array<Type, Allocator>::back() const noexcept
+	constexpr typename Array<Type, Allocator>::const_reference Array<Type, Allocator>::back() const& noexcept
 	{
 		return m_container.back();
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Array<Type, Allocator>::value_type Array<Type, Allocator>::back() && noexcept
+	{
+		return std::move(m_container.back());
 	}
 
 	////////////////////////////////////////////////////////////////

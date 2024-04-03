@@ -322,7 +322,12 @@ namespace s3d
 		/// @brief std::vector への const 参照を返します。
 		/// @return std::vector への const 参照
 		[[nodiscard]]
-		constexpr const container_type& getContainer() const noexcept;
+		constexpr const container_type& getContainer() const& noexcept;
+
+		/// @brief std::vector を返します。
+		/// @return std::vector
+		[[nodiscard]]
+		constexpr container_type getContainer() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -332,7 +337,11 @@ namespace s3d
 
 		/// @brief std::vector への暗黙の変換を行います。
 		[[nodiscard]]
-		constexpr operator container_type() const noexcept;
+		constexpr operator container_type() const& noexcept;
+
+		/// @brief std::vector への暗黙の変換を行います。
+		[[nodiscard]]
+		constexpr operator container_type() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -342,14 +351,21 @@ namespace s3d
 
 		/// @brief 要素にアクセスします。
 		/// @param index 要素へのインデックス
-		/// @throw std::out_of_range 範囲外アクセスの場合 throw
 		/// @return 要素への参照
-		constexpr const value_type& at(size_type index) const;
+		/// @throw std::out_of_range 範囲外アクセスの場合 throw
+		constexpr const value_type& at(size_type index) const&;
 
 		/// @brief 要素にアクセスします。
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
-		constexpr value_type& at(size_type index);
+		/// @throw std::out_of_range 範囲外アクセスの場合 throw
+		constexpr value_type& at(size_type index) &;
+
+		/// @brief 要素にアクセスします。
+		/// @param index 要素へのインデックス
+		/// @return 要素
+		/// @throw std::out_of_range 範囲外アクセスの場合 throw
+		constexpr value_type at(size_type index) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -361,13 +377,19 @@ namespace s3d
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
 		[[nodiscard]]
-		constexpr const value_type& operator [](size_type index) const noexcept;
+		constexpr const value_type& operator [](size_type index) const& noexcept;
 
 		/// @brief 要素にアクセスします。
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
 		[[nodiscard]]
-		constexpr value_type& operator [](size_type index) noexcept;
+		constexpr value_type& operator [](size_type index)& noexcept;
+
+		/// @brief 要素にアクセスします。
+		/// @param index 要素へのインデックス
+		/// @return 要素
+		[[nodiscard]]
+		constexpr value_type operator [](size_type index) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -378,12 +400,17 @@ namespace s3d
 		/// @brief 先頭の要素への参照を返します。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr reference front() noexcept;
+		constexpr reference front()& noexcept;
 
 		/// @brief 先頭の要素への参照を返します。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr const_reference front() const noexcept;
+		constexpr const_reference front() const& noexcept;
+
+		/// @brief 先頭の要素を返します。
+		/// @return 先頭の要素
+		[[nodiscard]]
+		constexpr value_type front() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -394,12 +421,17 @@ namespace s3d
 		/// @brief 末尾の要素への参照を返します。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr reference back() noexcept;
+		constexpr reference back()& noexcept;
 
 		/// @brief 末尾の要素への参照を返します。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr const_reference back() const noexcept;
+		constexpr const_reference back() const& noexcept;
+
+		/// @brief 末尾の要素を返します。
+		/// @return 末尾の要素
+		[[nodiscard]]
+		constexpr value_type back() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1889,19 +1921,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		friend std::ostream& operator <<(std::ostream& output, const Array& value)
+		template <class CharType>
+		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Array& value)
 		{
-			return (output << Unicode::ToUTF8(Format(value)));
-		}
-
-		friend std::wostream& operator <<(std::wostream& output, const Array& value)
-		{
-			return (output << Unicode::ToWstring(Format(value)));
-		}
-
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const Array& value)
-		{
-			return output << Unicode::ToUTF32(Format(value));
+			return output << Format(value);
 		}
 
 		////////////////////////////////////////////////////////////////

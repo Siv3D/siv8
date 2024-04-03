@@ -93,22 +93,6 @@ namespace s3d
 		[[nodiscard]]
 		Image(Size size, Color color);
 
-		//template <class Fty, std::enable_if_t<std::disjunction_v<std::is_invocable_r<Color, Fty>, std::is_invocable_r<Color, Fty, Point>, std::is_invocable_r<Color, Fty, int32, int32>>>* = nullptr>
-		//[[nodiscard]]
-		//Image(size_t size, Arg::generator_<Fty> generator);
-
-		//template <class Fty, std::enable_if_t<std::disjunction_v<std::is_invocable_r<Color, Fty, Vec2>, std::is_invocable_r<Color, Fty, double, double>>>* = nullptr>
-		//[[nodiscard]]
-		//Image(size_t size, Arg::generator0_1_<Fty> generator);
-
-		//template <class Fty, std::enable_if_t<std::disjunction_v<std::is_invocable_r<Color, Fty>, std::is_invocable_r<Color, Fty, Point>, std::is_invocable_r<Color, Fty, int32, int32>>>* = nullptr>
-		//[[nodiscard]]
-		//Image(size_t width, size_t height, Arg::generator_<Fty> generator);
-
-		//template <class Fty, std::enable_if_t<std::disjunction_v<std::is_invocable_r<Color, Fty, Vec2>, std::is_invocable_r<Color, Fty, double, double>>>* = nullptr>
-		//[[nodiscard]]
-		//Image(size_t width, size_t height, Arg::generator0_1_<Fty> generator);
-
 		[[nodiscard]]
 		Image(size_t size, Arg::generator_<FunctionRef<Color()>> generator);
 
@@ -371,13 +355,19 @@ namespace s3d
 		/// @param pos 位置
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
-		Color& operator [](Point pos);
+		Color& operator [](Point pos)&;
 
 		/// @brief 指定した位置のピクセルの参照を返します。
 		/// @param pos 位置
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
-		const Color& operator [](Point pos) const;
+		const Color& operator [](Point pos) const&;
+
+		/// @brief 指定した位置のピクセルを返します。
+		/// @param pos 位置
+		/// @return 指定した位置のピクセル
+		[[nodiscard]]
+		Color operator [](Point pos)&&;
 
 	# ifdef __cpp_multidimensional_subscript
 
@@ -387,7 +377,7 @@ namespace s3d
 		/// @remark image[x, y] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
-		Color& operator [](size_t x, size_t y);
+		Color& operator [](size_t x, size_t y)&;
 
 		/// @brief 指定した位置のピクセルの参照を返します。
 		/// @param x 位置（列）
@@ -395,7 +385,14 @@ namespace s3d
 		/// @remark image[x, y] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
-		const Color& operator [](size_t x, size_t y) const;
+		const Color& operator [](size_t x, size_t y) const&;
+
+		/// @brief 指定した位置のピクセルを返します。
+		/// @param x 位置（列）
+		/// @param y 位置（行）
+		/// @return 指定した位置のピクセル
+		[[nodiscard]]
+		Color operator [](size_t x, size_t y)&&;
 
 	# endif
 

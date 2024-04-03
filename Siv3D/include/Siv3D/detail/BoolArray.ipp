@@ -498,9 +498,9 @@ namespace s3d
 
 		/// @brief 要素にアクセスします。
 		/// @param index 要素へのインデックス
-		/// @throw std::out_of_range 範囲外アクセスの場合 throw
 		/// @return 要素への参照
-		constexpr const value_type& at(size_type index) const
+		/// @throw std::out_of_range 範囲外アクセスの場合 throw
+		constexpr const value_type& at(size_type index) const&
 		{
 			return m_container.at(index);
 		}
@@ -508,7 +508,17 @@ namespace s3d
 		/// @brief 要素にアクセスします。
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
-		constexpr value_type& at(size_type index)
+		/// @throw std::out_of_range 範囲外アクセスの場合 throw
+		constexpr value_type& at(size_type index)&
+		{
+			return m_container.at(index);
+		}
+
+		/// @brief 要素にアクセスします。
+		/// @param index 要素へのインデックス
+		/// @return 要素
+		/// @throw std::out_of_range 範囲外アクセスの場合 throw
+		constexpr value_type at(size_type index) &&
 		{
 			return m_container.at(index);
 		}
@@ -523,7 +533,7 @@ namespace s3d
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
 		[[nodiscard]]
-		constexpr const value_type& operator [](size_type index) const noexcept
+		constexpr const value_type& operator [](size_type index) const& noexcept
 		{
 			return m_container[index];
 		}
@@ -532,7 +542,16 @@ namespace s3d
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
 		[[nodiscard]]
-		constexpr value_type& operator [](size_type index) noexcept
+		constexpr value_type& operator [](size_type index) & noexcept
+		{
+			return m_container[index];
+		}
+
+		/// @brief 要素にアクセスします。
+		/// @param index 要素へのインデックス
+		/// @return 要素
+		[[nodiscard]]
+		constexpr value_type operator [](size_type index) && noexcept
 		{
 			return m_container[index];
 		}
@@ -546,7 +565,7 @@ namespace s3d
 		/// @brief 先頭の要素への参照を返します。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr reference front() noexcept
+		constexpr reference front()& noexcept
 		{
 			return m_container.front();
 		}
@@ -554,7 +573,15 @@ namespace s3d
 		/// @brief 先頭の要素への参照を返します。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr const_reference front() const noexcept
+		constexpr const_reference front() const& noexcept
+		{
+			return m_container.front();
+		}
+
+		/// @brief 先頭の要素を返します。
+		/// @return 先頭の要素
+		[[nodiscard]]
+		constexpr value_type front() && noexcept
 		{
 			return m_container.front();
 		}
@@ -568,7 +595,7 @@ namespace s3d
 		/// @brief 末尾の要素への参照を返します。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr reference back() noexcept
+		constexpr reference back()& noexcept
 		{
 			return m_container.back();
 		}
@@ -576,7 +603,15 @@ namespace s3d
 		/// @brief 末尾の要素への参照を返します。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr const_reference back() const noexcept
+		constexpr const_reference back() const& noexcept
+		{
+			return m_container.back();
+		}
+
+		/// @brief 末尾の要素を返します。
+		/// @return 末尾の要素
+		[[nodiscard]]
+		constexpr value_type back() && noexcept
 		{
 			return m_container.back();
 		}

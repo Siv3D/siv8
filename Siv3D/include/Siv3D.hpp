@@ -1096,7 +1096,7 @@
 //# include <Siv3D/BoxFilterSize.hpp>
 
 // 画像 | Image
-# include <Siv3D/Image.hpp>
+# include <Siv3D/Image.hpp> // ToDo
 
 //// 追加の画像処理 | Extra image processing
 //# include <Siv3D/ImageProcessing.hpp>

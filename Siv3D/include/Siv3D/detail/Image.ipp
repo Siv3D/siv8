@@ -232,24 +232,34 @@ namespace s3d
 		return (m_pixels.data() + (m_size.x * y));
 	}
 
-	inline Color& Image::operator [](const Point pos)
+	inline Color& Image::operator [](const Point pos)&
 	{
 		return *(m_pixels.data() + (m_size.x * pos.y + pos.x));
 	}
 
-	inline const Color& Image::operator [](const Point pos) const
+	inline const Color& Image::operator [](const Point pos) const&
+	{
+		return *(m_pixels.data() + (m_size.x * pos.y + pos.x));
+	}
+
+	inline Color Image::operator [](const Point pos)&&
 	{
 		return *(m_pixels.data() + (m_size.x * pos.y + pos.x));
 	}
 
 # ifdef __cpp_multidimensional_subscript
 
-	inline Color& Image::operator [](const size_t x, const size_t y)
+	inline Color& Image::operator [](const size_t x, const size_t y)&
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
 	}
 
-	inline const Color& Image::operator [](const size_t x, const size_t y) const
+	inline const Color& Image::operator [](const size_t x, const size_t y) const&
+	{
+		return *(m_pixels.data() + (m_size.x * y + x));
+	}
+
+	inline Color Image::operator [](const size_t x, const size_t y)&&
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
 	}
