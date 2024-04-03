@@ -741,6 +741,7 @@
 		F9528BA12BBD6F8800222F45 /* Timer.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528BA02BBD6F8800222F45 /* Timer.ipp */; };
 		F9528BA32BBD706000222F45 /* MemoryViewReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528BA22BBD706000222F45 /* MemoryViewReader.hpp */; };
 		F9528BA52BBD707100222F45 /* MemoryViewReader.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */; };
+		F9528BA82BBDA25E00222F45 /* SivMemoryViewReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528BA62BBDA25E00222F45 /* SivMemoryViewReader.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1483,6 +1484,7 @@
 		F9528BA02BBD6F8800222F45 /* Timer.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Timer.ipp; sourceTree = "<group>"; };
 		F9528BA22BBD706000222F45 /* MemoryViewReader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryViewReader.hpp; sourceTree = "<group>"; };
 		F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryViewReader.ipp; sourceTree = "<group>"; };
+		F9528BA62BBDA25E00222F45 /* SivMemoryViewReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMemoryViewReader.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -3087,6 +3089,7 @@
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
 				F9528B2F2BB0562C00222F45 /* MemoryMappedFileView */,
+				F9528BA72BBDA25E00222F45 /* MemoryViewReader */,
 				F9528B5F2BB6DC9200222F45 /* MicrosecClock */,
 				F9528B632BB6DC9200222F45 /* MillisecClock */,
 				F9070D6C2B9F175E00383E4D /* MonitorInfo */,
@@ -3436,6 +3439,14 @@
 				F9528B9B2BBC771000222F45 /* SivPoint3D.cpp */,
 			);
 			path = Point3D;
+			sourceTree = "<group>";
+		};
+		F9528BA72BBDA25E00222F45 /* MemoryViewReader */ = {
+			isa = PBXGroup;
+			children = (
+				F9528BA62BBDA25E00222F45 /* SivMemoryViewReader.cpp */,
+			);
+			path = MemoryViewReader;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4156,6 +4167,7 @@
 				F9070EE52B9F1C8900383E4D /* monitor.c in Sources */,
 				F9070DE82B9F175E00383E4D /* SivStringView.cpp in Sources */,
 				F9070DB72B9F175E00383E4D /* ConsoleFactory.cpp in Sources */,
+				F9528BA82BBDA25E00222F45 /* SivMemoryViewReader.cpp in Sources */,
 				F9070DE62B9F175E00383E4D /* Levenshtein.cpp in Sources */,
 				F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */,
 				F9070DEA2B9F175E00383E4D /* SivSystem.cpp in Sources */,
