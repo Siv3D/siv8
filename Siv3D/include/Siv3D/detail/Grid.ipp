@@ -718,6 +718,55 @@ namespace s3d
 
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	row
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::row(const size_t y) noexcept
+	{
+		assert(y < static_cast<size_t>(m_size.y));
+		return std::span(m_container.data() + (y * m_size.x), m_size.x);
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::row(const size_t y) const noexcept
+	{
+		assert(y < static_cast<size_t>(m_size.y));
+		return std::span(m_container.data() + (y * m_size.x), m_size.x);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	column
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::column(const size_t x) noexcept
+	{
+		assert(x < static_cast<size_t>(m_size.x));
+		return std::views::iota(0u, static_cast<size_t>(m_size.y))
+			| std::views::transform([base = (m_container.data() + x), stride = m_size.x](size_t y) -> reference
+				{ return *(base + (y * stride)); });
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::column(const size_t x) const noexcept
+	{
+		assert(x < static_cast<size_t>(m_size.x));
+		return std::views::iota(0u, static_cast<size_t>(m_size.y))
+			| std::views::transform([base = (m_container.data() + x), stride = m_size.x](size_t y) -> const_reference
+				{ return *(base + (y * stride)); });
+	}
+
+
+
+
+
+
 
 
 
@@ -759,7 +808,7 @@ namespace s3d
 			}
 			else
 			{
-				formatData.string.append(U",\n");
+				formatData.string.append(U",\n ");
 			}
 
 			Formatter(formatData, std::span<const Type>(v[y], v[y] + v.width()));

@@ -2022,6 +2022,10 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator = std::allocator<Type>>
+	Array(size_t count, Type value, Allocator alloc = Allocator{})
+		-> Array<Type, Allocator>;
+
+	template <class Type, class Allocator = std::allocator<Type>>
 	Array(std::initializer_list<Type>, Allocator = Allocator{})
 		-> Array<Type, Allocator>;
 

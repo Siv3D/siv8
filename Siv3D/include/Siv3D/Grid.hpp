@@ -522,6 +522,33 @@ namespace s3d
 
 
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	row
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr auto row(size_t y) noexcept;
+
+		[[nodiscard]]
+		constexpr auto row(size_t y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	column
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr auto column(size_t x) noexcept;
+
+		[[nodiscard]]
+		constexpr auto column(size_t x) const noexcept;
+
+
+
+
 
 
 
@@ -592,6 +619,12 @@ namespace s3d
 	//	(deduction guide)
 	//
 	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	Grid(size_t, size_t, Type) -> Grid<Type>;
+
+	template <class Type>
+	Grid(Size, Type) -> Grid<Type>;
 
 	template <class Type>
 	Grid(std::initializer_list<std::initializer_list<Type>>) -> Grid<Type>;
