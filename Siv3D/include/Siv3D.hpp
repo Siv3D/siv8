@@ -415,8 +415,8 @@
 // 所有権を持たない、メモリ範囲への IReader インタフェース | IReader Wrapper for Non-Owning Memory Range 
 # include <Siv3D/MemoryViewReader.hpp>
 
-//// メモリ範囲への IReader インタフェース | IReader Wrapper for Memory Range 
-//# include <Siv3D/MemoryReader.hpp>
+// メモリ範囲への IReader インタフェース | IReader Wrapper for Memory Range 
+# include <Siv3D/MemoryReader.hpp> // ToDo
 
 // マップされたメモリ | Mapped memory
 # include <Siv3D/MappedMemory.hpp>

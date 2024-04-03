@@ -46,7 +46,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief Reader が読み込み位置を前進させないデータ読み込みをサポートしているかを返します。 | Returns whether the Reader supports data reading without advancing the read position.
-		/// @return 読み込み位置を前進させないデータ読み込みをサポートしている場合 true, それ以外の場合は false | Returns true if the Reader supports data reading without advancing the read position, otherwise false
+		/// @return true
 		[[nodiscard]]
 		constexpr bool supportsLookahead() const noexcept override;
 
