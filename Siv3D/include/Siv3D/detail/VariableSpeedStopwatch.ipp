@@ -103,7 +103,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void VariableSpeedStopwatch::pause() noexcept
+	inline void VariableSpeedStopwatch::pause() noexcept
 	{
 		m_accumulatedNanosec = ns();
 
@@ -116,7 +116,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void VariableSpeedStopwatch::resume() noexcept
+	inline void VariableSpeedStopwatch::resume() noexcept
 	{
 		if (not isPaused())
 		{
@@ -132,7 +132,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void VariableSpeedStopwatch::reset() noexcept
+	inline void VariableSpeedStopwatch::reset() noexcept
 	{
 		m_accumulatedNanosec = 0;
 
@@ -147,7 +147,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void VariableSpeedStopwatch::restart() noexcept
+	inline void VariableSpeedStopwatch::restart() noexcept
 	{
 		reset();
 
@@ -160,7 +160,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void VariableSpeedStopwatch::set(const Duration& time) noexcept
+	inline void VariableSpeedStopwatch::set(const Duration& time) noexcept
 	{
 		m_isStarted = true;
 
@@ -175,7 +175,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void VariableSpeedStopwatch::setSpeed(const double speed) noexcept
+	inline void VariableSpeedStopwatch::setSpeed(const double speed) noexcept
 	{
 		assert(0.0 <= speed);
 
@@ -195,7 +195,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	double VariableSpeedStopwatch::getSpeed() const noexcept
+	inline double VariableSpeedStopwatch::getSpeed() const noexcept
 	{
 		return m_speed;
 	}
