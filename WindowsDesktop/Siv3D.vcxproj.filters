@@ -376,6 +376,9 @@
     <Filter Include="src\Siv3D\Point3D">
       <UniqueIdentifier>{cbf30b9a-f814-4e04-9b97-5340361da621}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\MemoryViewReader">
+      <UniqueIdentifier>{22559437-f9da-49dc-8c7f-2af463f61d9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1720,6 +1723,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Point3D\SivPoint3D.cpp">
       <Filter>src\Siv3D\Point3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MemoryViewReader\SivMemoryViewReader.cpp">
+      <Filter>src\Siv3D\MemoryViewReader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
