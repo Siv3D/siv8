@@ -36,7 +36,7 @@ namespace s3d
 		MemoryReader() = default;
 
 		[[nodiscard]]
-		constexpr MemoryReader(const void* data, size_t size_bytes) noexcept;
+		MemoryReader(const void* data, size_t size_bytes);
 
 		[[nodiscard]]
 		explicit constexpr MemoryReader(const Blob& blob) noexcept;
@@ -54,7 +54,6 @@ namespace s3d
 		/// @return true
 		[[nodiscard]]
 		constexpr bool supportsLookahead() const noexcept override;
-
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -111,6 +110,53 @@ namespace s3d
 		/// @return 新しい読み込み位置（バイト） | The new read position (bytes)
 		constexpr int64 skip(int64 offset) override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	read
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief データを読み込み、その分読み込み位置を前進させます。 | Reads the data and advances the read position.
+		/// @param dst 読み込んだデータの格納先 | The destination to store the read data
+		/// @param size 読み込むサイズ（バイト） | The size to read (bytes)
+		/// @return 実際に読み込んだサイズ（バイト） | The actual size read (bytes)
+		int64 read(void* dst, int64 size) override;
+
+		/// @brief データを読み込み、その分読み込み位置を前進させます。 | Reads the data and advances the read position.
+		/// @param dst 読み込んだデータの格納先 | The destination to store the read data
+		/// @param pos 先頭から数えた読み込み開始位置（バイト） | The read start position from the beginning (bytes)
+		/// @param size 読み込むサイズ（バイト） | The size to read (bytes)
+		/// @return 実際に読み込んだサイズ（バイト） | The actual size read (bytes)
+		int64 read(void* dst, int64 pos, int64 size) override;
+
+		/// @brief データを読み込み、その分読み込み位置を前進させます。 | Reads the data and advances the read position.
+		/// @param dst 読み込んだデータの格納先 | The destination to store the read data
+		/// @return 読み込みに成功した場合 true, それ以外の場合は false | Returns true if the read was successful, otherwise false
+		bool read(Concept::TriviallyCopyable auto& dst);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	lookahead
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 現在の読み込み位置から、読み込み位置を前進させずにデータを読み込みます。 | Reads the data from the current read position without advancing the read position.
+		/// @param dst 読み込んだデータの格納先 | The destination to store the read data
+		/// @param size 読み込むサイズ（バイト） | The size to read (bytes)
+		/// @return 実際に読み込んだサイズ（バイト） | The actual size read (bytes)
+		int64 lookahead(void* dst, int64 size) const override;
+
+		/// @brief 現在の読み込み位置は変更せずに、データを読み込みます。 | Reads the data without changing the current read position.
+		/// @param dst 読み込んだデータの格納先 | The destination to store the read data
+		/// @param pos 先頭から数えた読み込み開始位置（バイト） | The read start position from the beginning (bytes)
+		/// @param size 読み込むサイズ（バイト） | The size to read (bytes)
+		/// @return 実際に読み込んだサイズ（バイト） | The actual size read (bytes)
+		int64 lookahead(void* dst, int64 pos, int64 size) const override;
+
+		/// @brief 現在の読み込み位置から、読み込み位置を前進させずにデータを読み込みます。 | Reads the data from the current read position without advancing the read position.
+		/// @param dst 読み込んだデータの格納先 | The destination to store the read data
+		/// @return 読み込みに成功したら true, それ以外の場合は false | Returns true if the read was successful, otherwise false
+		bool lookahead(Concept::TriviallyCopyable auto& dst) const;
 
 	private:
 
