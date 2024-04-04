@@ -742,6 +742,11 @@
 		F9528BA32BBD706000222F45 /* MemoryViewReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528BA22BBD706000222F45 /* MemoryViewReader.hpp */; };
 		F9528BA52BBD707100222F45 /* MemoryViewReader.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */; };
 		F9528BA82BBDA25E00222F45 /* SivMemoryViewReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528BA62BBDA25E00222F45 /* SivMemoryViewReader.cpp */; };
+		F9528BAB2BBE7CF300222F45 /* MemoryReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528BA92BBE7CF300222F45 /* MemoryReader.hpp */; };
+		F9528BAC2BBE7CF300222F45 /* MemoryWriter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528BAA2BBE7CF300222F45 /* MemoryWriter.hpp */; };
+		F9528BAF2BBE7D1100222F45 /* MemoryWriter.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528BAD2BBE7D1100222F45 /* MemoryWriter.ipp */; };
+		F9528BB02BBE7D1100222F45 /* MemoryReader.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528BAE2BBE7D1100222F45 /* MemoryReader.ipp */; };
+		F9528BB32BBE7D3400222F45 /* SivMemoryReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528BB12BBE7D3400222F45 /* SivMemoryReader.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1485,6 +1490,11 @@
 		F9528BA22BBD706000222F45 /* MemoryViewReader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryViewReader.hpp; sourceTree = "<group>"; };
 		F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryViewReader.ipp; sourceTree = "<group>"; };
 		F9528BA62BBDA25E00222F45 /* SivMemoryViewReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMemoryViewReader.cpp; sourceTree = "<group>"; };
+		F9528BA92BBE7CF300222F45 /* MemoryReader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryReader.hpp; sourceTree = "<group>"; };
+		F9528BAA2BBE7CF300222F45 /* MemoryWriter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryWriter.hpp; sourceTree = "<group>"; };
+		F9528BAD2BBE7D1100222F45 /* MemoryWriter.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryWriter.ipp; sourceTree = "<group>"; };
+		F9528BAE2BBE7D1100222F45 /* MemoryReader.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryReader.ipp; sourceTree = "<group>"; };
+		F9528BB12BBE7D3400222F45 /* SivMemoryReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMemoryReader.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2286,7 +2296,9 @@
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
 				F9070B8F2B9F175000383E4D /* MD5Value.ipp */,
 				F9070B902B9F175000383E4D /* Memory.ipp */,
+				F9528BAE2BBE7D1100222F45 /* MemoryReader.ipp */,
 				F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */,
+				F9528BAD2BBE7D1100222F45 /* MemoryWriter.ipp */,
 				F9528B582BB6DC6800222F45 /* MicrosecClock.ipp */,
 				F9528B592BB6DC6800222F45 /* MillisecClock.ipp */,
 				F9070B912B9F175000383E4D /* NonNull.ipp */,
@@ -2437,7 +2449,9 @@
 				F9070C022B9F175000383E4D /* Memory.hpp */,
 				F9528B272BAFCDB400222F45 /* MemoryMappedFile.hpp */,
 				F9528B262BAFCDB400222F45 /* MemoryMappedFileView.hpp */,
+				F9528BA92BBE7CF300222F45 /* MemoryReader.hpp */,
 				F9528BA22BBD706000222F45 /* MemoryViewReader.hpp */,
+				F9528BAA2BBE7CF300222F45 /* MemoryWriter.hpp */,
 				F9528B512BB6DC2C00222F45 /* MicrosecClock.hpp */,
 				F9528B522BB6DC2C00222F45 /* MillisecClock.hpp */,
 				F9070C032B9F175000383E4D /* MonitorInfo.hpp */,
@@ -3089,6 +3103,7 @@
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
 				F9528B2F2BB0562C00222F45 /* MemoryMappedFileView */,
+				F9528BB22BBE7D3400222F45 /* MemoryReader */,
 				F9528BA72BBDA25E00222F45 /* MemoryViewReader */,
 				F9528B5F2BB6DC9200222F45 /* MicrosecClock */,
 				F9528B632BB6DC9200222F45 /* MillisecClock */,
@@ -3449,6 +3464,14 @@
 			path = MemoryViewReader;
 			sourceTree = "<group>";
 		};
+		F9528BB22BBE7D3400222F45 /* MemoryReader */ = {
+			isa = PBXGroup;
+			children = (
+				F9528BB12BBE7D3400222F45 /* SivMemoryReader.cpp */,
+			);
+			path = MemoryReader;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3547,6 +3570,7 @@
 				F9070B0A2B9DEB5900383E4D /* xxhash.h in Headers */,
 				F9070D012B9F175100383E4D /* TextEncoding.hpp in Headers */,
 				F9070D082B9F175100383E4D /* Types.hpp in Headers */,
+				F9528BB02BBE7D1100222F45 /* MemoryReader.ipp in Headers */,
 				F9070D0C2B9F175100383E4D /* UserAction.hpp in Headers */,
 				F9070C9E2B9F175000383E4D /* Byte.hpp in Headers */,
 				F90706C52B9DAEC900383E4D /* 2intersect.h in Headers */,
@@ -3667,6 +3691,7 @@
 				F9070ED82B9F1C8900383E4D /* cocoa_time.h in Headers */,
 				F90706FE2B9DAEC900383E4D /* mov_mask.h in Headers */,
 				F9070CAC2B9F175000383E4D /* DateTime.hpp in Headers */,
+				F9528BAF2BBE7D1100222F45 /* MemoryWriter.ipp in Headers */,
 				F9070CEE2B9F175100383E4D /* Point.hpp in Headers */,
 				F90706BE2B9DAEC900383E4D /* phmap_dump.h in Headers */,
 				F9070C4C2B9F175000383E4D /* Console.ipp in Headers */,
@@ -3739,6 +3764,7 @@
 				F90706D42B9DAEC900383E4D /* cmpge.h in Headers */,
 				F90706912B9DAEC900383E4D /* options.h in Headers */,
 				F9070CF02B9F175100383E4D /* PredefinedNamedParameter.hpp in Headers */,
+				F9528BAB2BBE7CF300222F45 /* MemoryReader.hpp in Headers */,
 				F90706FC2B9DAEC900383E4D /* max.h in Headers */,
 				F9070D0A2B9F175100383E4D /* UnicodeConverter.hpp in Headers */,
 				F907069F2B9DAEC900383E4D /* fast_uniform_bits.h in Headers */,
@@ -3941,6 +3967,7 @@
 				F9070C502B9F175000383E4D /* DiscreteDistribution.ipp in Headers */,
 				F9070C692B9F175000383E4D /* MapFormatter.ipp in Headers */,
 				F9070C642B9F175000383E4D /* ISteadyClock.ipp in Headers */,
+				F9528BAC2BBE7CF300222F45 /* MemoryWriter.hpp in Headers */,
 				F90706A92B9DAEC900383E4D /* distributions.h in Headers */,
 				F90707062B9DAEC900383E4D /* negate.h in Headers */,
 				F90707052B9DAEC900383E4D /* multishift.h in Headers */,
@@ -4234,6 +4261,7 @@
 				F9070DBE2B9F175E00383E4D /* SivDayOfWeek.cpp in Sources */,
 				F9528B6E2BB7089A00222F45 /* CacheDirectory.cpp in Sources */,
 				F9070AFA2B9DEB5900383E4D /* fast-dtoa.cc in Sources */,
+				F9528BB32BBE7D3400222F45 /* SivMemoryReader.cpp in Sources */,
 				F9070DFF2B9F175E00383E4D /* SivVector3D.cpp in Sources */,
 				F9528B4C2BB69EAD00222F45 /* SivBigFloat.cpp in Sources */,
 				F9070DFD2B9F175E00383E4D /* SivUUIDValue.cpp in Sources */,
