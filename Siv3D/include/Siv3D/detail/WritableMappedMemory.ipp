@@ -19,7 +19,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr MappedMemory::operator bool() const noexcept
+	constexpr WritableMappedMemory::operator bool() const noexcept
 	{
 		return (data != nullptr);
 	}
