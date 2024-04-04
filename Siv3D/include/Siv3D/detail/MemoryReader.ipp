@@ -19,7 +19,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MemoryReader::MemoryReader(const void* data, const size_t size_bytes)
+	inline MemoryReader::MemoryReader(const void* data, const size_t size_bytes)
 		: m_blob{ data, size_bytes } {}
 
 	constexpr MemoryReader::MemoryReader(const Blob& blob) noexcept

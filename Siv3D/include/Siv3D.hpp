@@ -430,8 +430,8 @@
 // メモリ上のバッファ | Binary Large Object
 # include <Siv3D/Blob.hpp>
 
-//// 書き込み用バッファ | Memory writer
-//# include <Siv3D/MemoryWriter.hpp>
+// 書き込み用バッファ | Memory writer
+# include <Siv3D/MemoryWriter.hpp> // ToDo
 
 // ファイルオープンモード / File open mode
 # include <Siv3D/OpenMode.hpp>

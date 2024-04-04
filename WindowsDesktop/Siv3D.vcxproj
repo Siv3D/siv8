@@ -77,6 +77,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MD5Value.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MemoryReader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MemoryViewReader.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MemoryWriter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MicrosecClock.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MillisecClock.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Parse.ipp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFileView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryReader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryViewReader.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MemoryWriter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MicrosecClock.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MillisecClock.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MonitorInfo.hpp" />
