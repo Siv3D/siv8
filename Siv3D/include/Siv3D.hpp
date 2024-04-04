@@ -468,10 +468,10 @@
 
 //// zlib 方式による可逆圧縮 | Lossless compression with zlib format
 //# include <Siv3D/Zlib.hpp>
-//
-//// Zstandard 方式による可逆圧縮 | Lossless compression with Zstandard algorithm
-//# include <Siv3D/Compression.hpp>
-//
+
+// Zstandard 方式による可逆圧縮 | Lossless compression with Zstandard algorithm
+# include <Siv3D/Compression.hpp>
+
 //// ZIP 圧縮ファイルの読み込み | ZIP reader
 //# include <Siv3D/ZIPReader.hpp>
 //

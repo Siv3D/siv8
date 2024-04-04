@@ -25,3 +25,4 @@ Name | Version
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
+[Zstandard](https://github.com/facebook/zstd) | v1.5.6
