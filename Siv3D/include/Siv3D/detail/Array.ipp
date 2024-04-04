@@ -830,6 +830,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	subspan
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr std::span<typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::subspan(const size_type pos, const size_type count) noexcept
+	{
+		return std::span{ m_container }.subspan(pos, count);
+	}
+
+	template <class Type, class Allocator>
+	constexpr std::span<const typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::subspan(const size_type pos, const size_type count) const noexcept
+	{
+		return std::span{ m_container }.subspan(pos, count);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	all
 	//
 	////////////////////////////////////////////////////////////////
