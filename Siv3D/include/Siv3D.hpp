@@ -416,7 +416,7 @@
 # include <Siv3D/MemoryViewReader.hpp>
 
 // メモリ範囲への IReader インタフェース | IReader Wrapper for Memory Range 
-# include <Siv3D/MemoryReader.hpp> // ToDo
+# include <Siv3D/MemoryReader.hpp>
 
 // マップされたメモリ | Mapped memory
 # include <Siv3D/MappedMemory.hpp>
@@ -431,7 +431,7 @@
 # include <Siv3D/Blob.hpp>
 
 // 書き込み用バッファ | Memory writer
-# include <Siv3D/MemoryWriter.hpp> // ToDo
+# include <Siv3D/MemoryWriter.hpp>
 
 // ファイルオープンモード / File open mode
 # include <Siv3D/OpenMode.hpp>
