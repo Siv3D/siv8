@@ -103,7 +103,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 MemoryWriter::write(const void* src, const int64 sizeBytes)
+	inline int64 MemoryWriter::write(const void* src, const int64 sizeBytes)
 	{
 		assert(src || (sizeBytes == 0));
 
