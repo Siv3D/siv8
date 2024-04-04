@@ -50,9 +50,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Blob CompressFile(FilePathView path, int32 compressionLevel = DefaultLevel);
+		Blob CompressFile(FilePathView inputPath, int32 compressionLevel = DefaultLevel, int32 nThreads = 0);
 
-		bool CompressFile(FilePathView path, Blob& dst, int32 compressionLevel = DefaultLevel);
+		bool CompressFile(FilePathView inputPath, Blob& dst, int32 compressionLevel = DefaultLevel, int32 nThreads = 0);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -60,9 +60,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool CompressToFile(const void* data, size_t size, FilePathView outputPath, int32 compressionLevel = DefaultLevel);
+		bool CompressToFile(const void* data, size_t size, FilePathView outputPath, int32 compressionLevel = DefaultLevel, int32 nThreads = 0);
 
-		bool CompressToFile(const Blob& blob, FilePathView outputPath, int32 compressionLevel = DefaultLevel);
+		bool CompressToFile(const Blob& blob, FilePathView outputPath, int32 compressionLevel = DefaultLevel, int32 nThreads = 0);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -70,7 +70,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool CompressFileToFile(FilePathView inputPath, FilePathView outputPath, int32 compressionLevel = DefaultLevel);
+		bool CompressFileToFile(FilePathView inputPath, FilePathView outputPath, int32 compressionLevel = DefaultLevel, int32 nThreads = 0);
 
 		////////////////////////////////////////////////////////////////
 		//
