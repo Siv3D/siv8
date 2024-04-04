@@ -15,6 +15,9 @@
 // ベンチマークを実行する場合 1, 実行しない場合 0
 # define SIV3D_RUN_BENCHMARK 1
 
+// 所用時間の長いテストを実行する場合 1, 実行しない場合 0
+# define SIV3D_RUN_HEAVY_TEST 1
+
 # if SIV3D_RUN_BENCHMARK
 
 	//

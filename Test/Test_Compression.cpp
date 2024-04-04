@@ -24,6 +24,8 @@ static Blob MakeRandomBlob(size_t size)
 	return Blob{ bytes };
 }
 
+# if SIV3D_RUN_HEAVY_TEST
+
 TEST_CASE("Compression")
 {
 	constexpr int32 nThreads = 8;
@@ -317,6 +319,39 @@ TEST_CASE("Compression")
 			CHECK(original_large == Blob{ U"../../Test/output/compression/original_large.out" });
 		}
 	}
-
-	FileSystem::Remove(U"../../Test/output/compression/");
 }
+
+# endif
+
+# if SIV3D_RUN_BENCHMARK
+
+TEST_CASE("Compression.Benchmark")
+{
+	const Blob original = MakeRandomBlob(1024 * 1024 * 64); // 64 MB
+	const ScopedLogSilencer logSilencer;
+
+	Console << U"\n----------------";
+	{
+		Console << U"Compression::CompressToFile(nThreads = 0)";
+		MillisecClock clock;
+		Compression::CompressToFile(original, U"../../Test/output/compression/original_large.out");
+		Console << U"| {} ms"_fmt(clock.ms());
+	}
+
+	{
+		Console << U"Compression::CompressToFile(nThreads = 2)";
+		MillisecClock clock;
+		Compression::CompressToFile(original, U"../../Test/output/compression/original_large.out", Compression::DefaultLevel, 2);
+		Console << U"| {} ms"_fmt(clock.ms());
+	}
+
+	{
+		Console << U"Compression::CompressToFile(nThreads = 4)";
+		MillisecClock clock;
+		Compression::CompressToFile(original, U"../../Test/output/compression/original_large.out", Compression::DefaultLevel, 4);
+		Console << U"| {} ms"_fmt(clock.ms());
+	}
+	Console << U"----------------\n";
+}
+
+# endif

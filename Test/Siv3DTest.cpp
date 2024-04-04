@@ -28,4 +28,6 @@ void RunTest()
 	doctest::Context context;
 
 	context.run();
+
+	FileSystem::Remove(U"../../Test/output/");
 }
