@@ -90,7 +90,7 @@ namespace s3d
 		/// @brief ファイルが開いているかを返します。
 		/// @return ファイルが開いている場合 true, それ以外の場合は false	
 		[[nodiscard]]
-		explicit operator bool() const noexcept;
+		explicit operator bool() const noexcept override;
 
 		////////////////////////////////////////////////////////////////
 		//
