@@ -34,6 +34,12 @@ TEST_CASE("Compression")
 	const Blob original_medium = MakeRandomBlob(1024 * 320 + 333); // 320 KB
 	const Blob original_large = MakeRandomBlob(1024 * 1024 * 2 + 555); // 2 MB
 
+	const Blob compressed_empty = Compression::Compress(original_empty);
+	const Blob compressed_tiny = Compression::Compress(original_tiny);
+	const Blob compressed_small = Compression::Compress(original_small);
+	const Blob compressed_medium = Compression::Compress(original_medium);
+	const Blob compressed_large = Compression::Compress(original_large);
+
 	original_empty.save(U"../../Test/output/compression/original_empty.bin");
 	original_tiny.save(U"../../Test/output/compression/original_tiny.bin");
 	original_small.save(U"../../Test/output/compression/original_small.bin");
@@ -42,35 +48,11 @@ TEST_CASE("Compression")
 
 	SUBCASE("Compress")
 	{
-		{
-			const Blob compressed = Compression::Compress(original_empty);
-			const Blob decompressed = Compression::Decompress(compressed);
-			CHECK_EQ(original_empty, decompressed);
-		}
-
-		{
-			const Blob compressed = Compression::Compress(original_tiny);
-			const Blob decompressed = Compression::Decompress(compressed);
-			CHECK_EQ(original_tiny, decompressed);
-		}
-
-		{
-			const Blob compressed = Compression::Compress(original_small);
-			const Blob decompressed = Compression::Decompress(compressed);
-			CHECK_EQ(original_small, decompressed);
-		}
-
-		{
-			const Blob compressed = Compression::Compress(original_medium);
-			const Blob decompressed = Compression::Decompress(compressed);
-			CHECK_EQ(original_medium, decompressed);
-		}
-
-		{
-			const Blob compressed = Compression::Compress(original_large);
-			const Blob decompressed = Compression::Decompress(compressed);
-			CHECK_EQ(original_large, decompressed);
-		}
+		CHECK_EQ(original_empty, Compression::Decompress(compressed_empty));
+		CHECK_EQ(original_tiny, Compression::Decompress(compressed_tiny));
+		CHECK_EQ(original_small, Compression::Decompress(compressed_small));
+		CHECK_EQ(original_medium, Compression::Decompress(compressed_medium));
+		CHECK_EQ(original_large, Compression::Decompress(compressed_large));
 	}
 
 	SUBCASE("CompressFile")
@@ -232,6 +214,107 @@ TEST_CASE("Compression")
 			CHECK(Compression::CompressFileToFile(U"../../Test/output/compression/original_large.bin", U"../../Test/output/compression/original_large.bin.zstd", Compression::DefaultLevel, nThreads));
 			const Blob decompressed = Compression::Decompress(Blob{ U"../../Test/output/compression/original_large.bin.zstd" });
 			CHECK_EQ(original_large, decompressed);
+		}
+	}
+
+	SUBCASE("DecompressFile")
+	{
+		compressed_empty.save(U"../../Test/output/compression/original_empty.bin.zstd");
+		compressed_tiny.save(U"../../Test/output/compression/original_tiny.bin.zstd");
+		compressed_small.save(U"../../Test/output/compression/original_small.bin.zstd");
+		compressed_medium.save(U"../../Test/output/compression/original_medium.bin.zstd");
+		compressed_large.save(U"../../Test/output/compression/original_large.bin.zstd");
+
+		{
+			Blob decompressed;
+			CHECK(Compression::DecompressFile(U"../../Test/output/compression/original_empty.bin.zstd", decompressed));
+			CHECK_EQ(original_empty, decompressed);
+		}
+
+		{
+			Blob decompressed;
+			CHECK(Compression::DecompressFile(U"../../Test/output/compression/original_tiny.bin.zstd", decompressed));
+			CHECK_EQ(original_tiny, decompressed);
+		}
+
+		{
+			Blob decompressed;
+			CHECK(Compression::DecompressFile(U"../../Test/output/compression/original_small.bin.zstd", decompressed));
+			CHECK_EQ(original_small, decompressed);
+		}
+
+		{
+			Blob decompressed;
+			CHECK(Compression::DecompressFile(U"../../Test/output/compression/original_medium.bin.zstd", decompressed));
+			CHECK_EQ(original_medium, decompressed);
+		}
+
+		{
+			Blob decompressed;
+			CHECK(Compression::DecompressFile(U"../../Test/output/compression/original_large.bin.zstd", decompressed));
+			CHECK_EQ(original_large, decompressed);
+		}
+	}
+
+	SUBCASE("DecompressToFile")
+	{
+		{
+			CHECK(Compression::DecompressToFile(compressed_empty, U"../../Test/output/compression/original_empty.out"));
+			CHECK(original_empty == Blob{ U"../../Test/output/compression/original_empty.out" });
+		}
+
+		{
+			CHECK(Compression::DecompressToFile(compressed_tiny, U"../../Test/output/compression/original_tiny.out"));
+			CHECK(original_tiny == Blob{ U"../../Test/output/compression/original_tiny.out" });
+		}
+
+		{
+			CHECK(Compression::DecompressToFile(compressed_small, U"../../Test/output/compression/original_small.out"));
+			CHECK(original_small == Blob{ U"../../Test/output/compression/original_small.out" });
+		}
+
+		{
+			CHECK(Compression::DecompressToFile(compressed_medium, U"../../Test/output/compression/original_medium.out"));
+			CHECK(original_medium == Blob{ U"../../Test/output/compression/original_medium.out" });
+		}
+
+		{
+			CHECK(Compression::DecompressToFile(compressed_large, U"../../Test/output/compression/original_large.out"));
+			CHECK(original_large == Blob{ U"../../Test/output/compression/original_large.out" });
+		}
+	}
+
+	SUBCASE("DecompressFileToFile")
+	{
+		compressed_empty.save(U"../../Test/output/compression/original_empty.bin.zstd");
+		compressed_tiny.save(U"../../Test/output/compression/original_tiny.bin.zstd");
+		compressed_small.save(U"../../Test/output/compression/original_small.bin.zstd");
+		compressed_medium.save(U"../../Test/output/compression/original_medium.bin.zstd");
+		compressed_large.save(U"../../Test/output/compression/original_large.bin.zstd");
+
+		{
+			CHECK(Compression::DecompressFileToFile(U"../../Test/output/compression/original_empty.bin.zstd", U"../../Test/output/compression/original_empty.out"));
+			CHECK(original_empty == Blob{ U"../../Test/output/compression/original_empty.out" });
+		}
+
+		{
+			CHECK(Compression::DecompressFileToFile(U"../../Test/output/compression/original_tiny.bin.zstd", U"../../Test/output/compression/original_tiny.out"));
+			CHECK(original_tiny == Blob{ U"../../Test/output/compression/original_tiny.out" });
+		}
+
+		{
+			CHECK(Compression::DecompressFileToFile(U"../../Test/output/compression/original_small.bin.zstd", U"../../Test/output/compression/original_small.out"));
+			CHECK(original_small == Blob{ U"../../Test/output/compression/original_small.out" });
+		}
+
+		{
+			CHECK(Compression::DecompressFileToFile(U"../../Test/output/compression/original_medium.bin.zstd", U"../../Test/output/compression/original_medium.out"));
+			CHECK(original_medium == Blob{ U"../../Test/output/compression/original_medium.out" });
+		}
+
+		{
+			CHECK(Compression::DecompressFileToFile(U"../../Test/output/compression/original_large.bin.zstd", U"../../Test/output/compression/original_large.out"));
+			CHECK(original_large == Blob{ U"../../Test/output/compression/original_large.out" });
 		}
 	}
 

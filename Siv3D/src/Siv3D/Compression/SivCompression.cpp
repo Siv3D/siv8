@@ -432,6 +432,68 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		Blob DecompressFile(const FilePathView path)
+		{
+			Blob blob;
+
+			if (not DecompressFile(path, blob))
+			{
+				return{};
+			}
+
+			return blob;
+		}
+
+		bool DecompressFile(const FilePathView path, Blob& dst)
+		{
+			// ファイルのオープン
+			BinaryReader reader{ path };
+			{
+				if (not reader)
+				{
+					return false;
+				}
+			}
+
+			// バッファの作成
+			const size_t InputBufferSize = ZSTD_CStreamInSize();
+			const size_t OutputBufferSize = ZSTD_CStreamOutSize();
+			const auto inputBuffer = std::make_unique_for_overwrite<Byte[]>(InputBufferSize);
+			const auto outputBuffer = std::make_unique_for_overwrite<Byte[]>(OutputBufferSize);
+
+			// コンテキストの作成
+			ZSTD_DCtx* const context = ZSTD_createDCtx();
+			{
+				if (not context)
+				{
+					return false;
+				}
+			}
+
+			while (size_t read = static_cast<size_t>(reader.read(inputBuffer.get(), InputBufferSize)))
+			{
+				ZSTD_inBuffer input = { inputBuffer.get(), read, 0 };
+
+				while (input.pos < input.size)
+				{
+					ZSTD_outBuffer output = { outputBuffer.get(), OutputBufferSize, 0 };
+					size_t const result = ZSTD_decompressStream(context, &output, &input);
+
+					if (ZSTD_isError(result))
+					{
+						ZSTD_freeDCtx(context);
+						dst.clear();
+						return false;
+					}
+
+					dst.append(outputBuffer.get(), output.pos);
+				}
+			}
+
+			ZSTD_freeDCtx(context);
+
+			return true;
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -439,6 +501,64 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		bool DecompressToFile(const void* data, const size_t size, const FilePathView outputPath)
+		{
+			// ファイルのオープン
+			BinaryWriter writer{ outputPath };
+			{
+				if (not writer)
+				{
+					return false;
+				}
+			}
+
+			// バッファの作成
+			const size_t InputBufferSize = ZSTD_CStreamInSize();
+			const size_t OutputBufferSize = ZSTD_CStreamOutSize();
+			const auto outputBuffer = std::make_unique_for_overwrite<Byte[]>(OutputBufferSize);
+
+			// コンテキストの作成
+			ZSTD_DCtx* const context = ZSTD_createDCtx();
+			{
+				if (not context)
+				{
+					return false;
+				}
+			}
+
+			size_t readPos = 0;
+
+			while (size_t read = Min(InputBufferSize, (size - readPos)))
+			{
+				ZSTD_inBuffer input = { (static_cast<const Byte*>(data) + readPos), read, 0 };
+
+				readPos += read;
+
+				while (input.pos < input.size)
+				{
+					ZSTD_outBuffer output = { outputBuffer.get(), OutputBufferSize, 0 };
+					size_t const result = ZSTD_decompressStream(context, &output, &input);
+
+					if (ZSTD_isError(result))
+					{
+						ZSTD_freeDCtx(context);
+						writer.clear();
+						return false;
+					}
+
+					writer.write(outputBuffer.get(), output.pos);
+				}
+			}
+
+			ZSTD_freeDCtx(context);
+
+			return true;
+		}
+
+		bool DecompressToFile(const Blob& blob, const FilePathView outputPath)
+		{
+			return DecompressToFile(blob.data(), blob.size(), outputPath);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -446,6 +566,64 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		bool DecompressFileToFile(const FilePathView inputPath, const FilePathView outputPath)
+		{
+			// 入力ファイルのオープン
+			BinaryReader reader{ inputPath };
+			{
+				if (not reader)
+				{
+					return false;
+				}
+			}
 
+			// 出力ファイルのオープン
+			BinaryWriter writer{ outputPath };
+			{
+				if (not writer)
+				{
+					return false;
+				}
+			}
+
+			// バッファの作成
+			const size_t InputBufferSize = ZSTD_CStreamInSize();
+			const size_t OutputBufferSize = ZSTD_CStreamOutSize();
+			const auto inputBuffer = std::make_unique_for_overwrite<Byte[]>(InputBufferSize);
+			const auto outputBuffer = std::make_unique_for_overwrite<Byte[]>(OutputBufferSize);
+
+			// コンテキストの作成
+			ZSTD_DCtx* const context = ZSTD_createDCtx();
+			{
+				if (not context)
+				{
+					return false;
+				}
+			}
+
+			while (size_t read = static_cast<size_t>(reader.read(inputBuffer.get(), InputBufferSize)))
+			{
+				ZSTD_inBuffer input = { inputBuffer.get(), read, 0 };
+
+				while (input.pos < input.size)
+				{
+					ZSTD_outBuffer output = { outputBuffer.get(), OutputBufferSize, 0 };
+					size_t const result = ZSTD_decompressStream(context, &output, &input);
+
+					if (ZSTD_isError(result))
+					{
+						ZSTD_freeDCtx(context);
+						writer.clear();
+						return false;
+					}
+
+					writer.write(outputBuffer.get(), output.pos);
+				}
+			}
+
+			ZSTD_freeDCtx(context);
+
+			return true;
+		}
 	}
 }
