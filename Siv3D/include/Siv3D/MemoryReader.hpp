@@ -22,6 +22,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief メモリ上のバイナリデータを読み込む Reader クラス | Reader class to read binary data in memory
 	class MemoryReader : public IReader
 	{
 	public:

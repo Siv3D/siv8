@@ -37,39 +37,62 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 0 で初期化します。
 		[[nodiscard]]
 		BigFloat();
 
+		/// @brief 別の BigFloat から初期化します。
+		/// @param other 初期化に使う BigFloat
 		[[nodiscard]]
 		BigFloat(const BigFloat& other);
 
+		/// @brief 別の BigFloat から初期化します。
+		/// @param other 初期化に使う BigFloat
 		[[nodiscard]]
 		BigFloat(BigFloat&& other) noexcept = default;
 
+		/// @brief 整数から初期化します。
+		/// @param i 初期化に使う整数
 		[[nodiscard]]
 		BigFloat(Concept::SignedIntegral auto i);
 
+		/// @brief 整数から初期化します。
+		/// @param i 初期化に使う整数
 		[[nodiscard]]
 		BigFloat(Concept::UnsignedIntegral auto i);
 
+		/// @brief 整数から初期化します。
+		/// @param i 初期化に使う整数
 		[[nodiscard]]
 		BigFloat(int64 i);
 
+		/// @brief 整数から初期化します。
+		/// @param i 初期化に使う整数
 		[[nodiscard]]
 		BigFloat(uint64 i);
 	
+		/// @brief 浮動小数点数から初期化します。
+		/// @param f 初期化に使う浮動小数点数
 		[[nodiscard]]
 		BigFloat(long double f);
 
+		/// @brief 浮動小数点数から初期化します。
+		/// @param f 初期化に使う浮動小数点数
 		[[nodiscard]]
 		BigFloat(Concept::FloatingPoint auto f);
 		
+		/// @brief 多倍長整数から初期化します。
+		/// @param i 初期化に使う多倍長整数
 		[[nodiscard]]
 		BigFloat(const BigInt& i);
 		
+		/// @brief 文字列から初期化します。
+		/// @param number 初期化に使う文字列
 		[[nodiscard]]
 		explicit BigFloat(std::string_view number);
 		
+		/// @brief 文字列から初期化します。
+		/// @param number 初期化に使う文字列
 		[[nodiscard]]
 		explicit BigFloat(StringView number);
 
@@ -79,6 +102,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デストラクタ
 		~BigFloat();
 
 		////////////////////////////////////////////////////////////////
@@ -451,6 +475,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 0 でない場合 true, それ以外の場合は false
 		[[nodiscard]]
 		explicit operator bool() const noexcept;
 
@@ -460,6 +485,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 0 であるかを返します。
+		/// @return 0 である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isZero() const noexcept;
 
@@ -469,6 +496,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief NaN であるかを返します。
+		/// @return NaN である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isNaN() const noexcept;
 
@@ -478,6 +507,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 無限大であるかを返します。
+		/// @return 無限大である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isInf() const noexcept;
 
@@ -487,6 +518,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 符号を返します。
+		/// @return 符号が正の場合 1, 負の場合 -1, それ以外の場合は 0
 		[[nodiscard]]
 		int32 sign() const noexcept;
 
@@ -496,6 +529,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 絶対値を返します。
+		/// @return 絶対値
 		[[nodiscard]]
 		BigFloat abs() const;
 
@@ -505,6 +540,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの BigFloat の値を交換します。
+		/// @param other もう一方の BigFloat
 		void swap(BigFloat& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -513,6 +550,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
@@ -522,12 +561,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief float に変換します。
+		/// @return float に変換した値
 		[[nodiscard]]
 		float asFloat() const;
 
+		/// @brief double に変換します。
+		/// @return double に変換した値
 		[[nodiscard]]
 		double asDouble() const;
 
+		/// @brief long double に変換します。
+		/// @return long double に変換した値
 		[[nodiscard]]
 		long double asLongDouble() const;
 
@@ -537,9 +582,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief float に変換します。
+		/// @return float に変換した値
 		[[nodiscard]]
 		explicit operator float() const noexcept;
 
+		/// @brief double に変換します。
+		/// @return double に変換した値
 		[[nodiscard]]
 		explicit operator double() const noexcept;
 
@@ -549,6 +598,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列に変換します。
+		/// @param digits 桁数
+		/// @param fmtFlags 書式指定
+		/// @return 変換した文字列
 		[[nodiscard]]
 		std::string to_string(int32 digits = 100, std::ios_base::fmtflags fmtFlags = std::ios_base::fixed) const;
 
@@ -558,6 +611,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列に変換します。
+		/// @param digits 桁数
+		/// @param fmtFlags 書式指定
+		/// @return 変換した文字列
 		[[nodiscard]]
 		String str(int32 digits = 100, std::ios_base::fmtflags fmtFlags = std::ios_base::fixed) const;
 

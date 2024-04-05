@@ -127,6 +127,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した時間だけ、非同期処理のタスク完了を待ちます。
+		/// @tparam Rep 時間の表現の型
+		/// @tparam Period 時間の単位
+		/// @param relTime 時間
+		/// @return 非同期処理のタスクが完了した場合 std::future_status::ready, 指定した時間が経過した場合 std::future_status::timeout
 		template <class Rep, class Period>
 		std::future_status wait_for(const std::chrono::duration<Rep, Period>& relTime) const;
 
@@ -136,6 +141,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した時刻まで、非同期処理のタスク完了を待ちます。
+		/// @tparam Clock 時間の種類
+		/// @tparam Duration 時間の型
+		/// @param absTime 時刻
+		/// @return 非同期処理のタスクが完了した場合 std::future_status::ready, 指定した時刻になった場合 std::future_status::timeout
 		template <class Clock, class Duration>
 		std::future_status wait_until(const std::chrono::time_point<Clock, Duration>& absTime) const;
 

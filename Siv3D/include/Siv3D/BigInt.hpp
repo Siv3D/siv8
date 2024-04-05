@@ -14,6 +14,7 @@
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "String.hpp"
+# include "Optional.hpp"
 # include "FormatData.hpp"
 
 namespace s3d
@@ -610,6 +611,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 0 でない場合 true, それ以外の場合は false
 		[[nodiscard]]
 		explicit operator bool() const noexcept;
 
@@ -619,6 +621,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 0 であるかを返します。
+		/// @return 0 である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isZero() const noexcept;
 
@@ -628,6 +632,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 符号を返します。
+		/// @return 符号が正の場合 +1, 負の場合 -1, 0 の場合 0
 		[[nodiscard]]
 		int32 sign() const noexcept;
 
@@ -637,6 +643,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 絶対値を返します。
+		/// @return 絶対値
 		[[nodiscard]]
 		BigInt abs() const;
 
@@ -646,6 +654,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief べき乗を計算します。
+		/// @param x 指数
+		/// @return べき乗した結果
 		[[nodiscard]]
 		BigInt pow(uint32 x) const;
 
@@ -655,6 +666,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 除算と剰余を計算します。
+		/// @param x 割る数
+		/// @param q 除算の結果
+		/// @param r 剰余の結果
 		void divmod(const BigInt& x, BigInt& q, BigInt& r) const;
 
 		////////////////////////////////////////////////////////////////
@@ -663,8 +678,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 1 のビットが立っている最下位ビットの位置を返します。
+		/// @return 1 のビットが立っている最下位ビットの位置。値が 0 以下の場合は none
 		[[nodiscard]]
-		uint64 lsb() const noexcept;
+		Optional<uint64> lsb() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -672,8 +689,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 1 のビットが立っている最上位ビットの位置を返します。
+		/// @return 1 のビットが立っている最上位ビットの位置。値が 0 以下の場合は none
 		[[nodiscard]]
-		uint64 msb() const noexcept;
+		Optional<uint64> msb() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
