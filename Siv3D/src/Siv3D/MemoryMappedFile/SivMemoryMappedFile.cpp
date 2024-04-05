@@ -9,8 +9,8 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/MemoryMappedFileView.hpp>
-# include <Siv3D/MemoryMappedFileView/MemoryMappedFileViewDetail.hpp>
+# include <Siv3D/MemoryMappedFile.hpp>
+# include <Siv3D/MemoryMappedFile/MemoryMappedFileDetail.hpp>
 
 namespace s3d
 {
@@ -20,13 +20,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MemoryMappedFileView::MemoryMappedFileView()
-		: pImpl{ std::make_shared<MemoryMappedFileViewDetail>() } {}
+	MemoryMappedFile::MemoryMappedFile()
+		: pImpl{ std::make_shared<MemoryMappedFileDetail>() } {}
 
-	MemoryMappedFileView::MemoryMappedFileView(const FilePathView path)
-		: MemoryMappedFileView{}
+	MemoryMappedFile::MemoryMappedFile(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
+		: MemoryMappedFile{}
 	{
-		open(path);
+		open(path, ifExists, ifNotFound);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -35,9 +35,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MemoryMappedFileView::open(const FilePathView path)
+	bool MemoryMappedFile::open(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
 	{
-		return pImpl->open(path);
+		return pImpl->open(path, ifExists, ifNotFound);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void MemoryMappedFileView::close()
+	void MemoryMappedFile::close()
 	{
 		pImpl->close();
 	}
@@ -57,7 +57,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MemoryMappedFileView::isOpen() const
+	bool MemoryMappedFile::isOpen() const
 	{
 		return pImpl->isOpen();
 	}
@@ -68,7 +68,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MemoryMappedFileView::operator bool() const
+	MemoryMappedFile::operator bool() const
 	{
 		return isOpen();
 	}
@@ -79,7 +79,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MappedMemory MemoryMappedFileView::map(const size_t offset, const size_t requestSize)
+	WritableMappedMemory MemoryMappedFile::map(const size_t offset, const size_t requestSize)
 	{
 		return pImpl->map(offset, requestSize);
 	}
@@ -90,7 +90,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MappedMemory MemoryMappedFileView::mapAll()
+	WritableMappedMemory MemoryMappedFile::mapAll()
 	{
 		return pImpl->map(0, pImpl->size());
 	}
@@ -101,9 +101,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void MemoryMappedFileView::unmap()
+	void MemoryMappedFile::unmap()
 	{
 		pImpl->unmap();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	flush
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool MemoryMappedFile::flush()
+	{
+		return pImpl->flush();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -112,7 +123,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 MemoryMappedFileView::size() const
+	int64 MemoryMappedFile::size() const
 	{
 		return pImpl->size();
 	}
@@ -123,7 +134,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const FilePath& MemoryMappedFileView::path() const
+	const FilePath& MemoryMappedFile::path() const
 	{
 		return pImpl->path();
 	}

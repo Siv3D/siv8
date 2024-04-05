@@ -27,6 +27,7 @@ namespace s3d
 
 		void close();
 
+		[[nodiscard]]
 		bool isOpen() const;
 
 		[[nodiscard]]

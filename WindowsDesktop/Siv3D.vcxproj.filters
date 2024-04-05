@@ -400,6 +400,12 @@
     <Filter Include="src\Siv3D\Compression">
       <UniqueIdentifier>{56fa9914-951d-4712-9734-0219d1966378}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\MemoryMappedFile">
+      <UniqueIdentifier>{2d1267a1-9d85-4bce-8267-88d6949d1bdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile">
+      <UniqueIdentifier>{141a7895-34ae-4f8c-a344-14c6d7c7db1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1521,6 +1527,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\WritableMappedMemory.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -1978,6 +1987,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Compression\SivCompression.cpp">
       <Filter>src\Siv3D\Compression</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFile\SivMemoryMappedFile.cpp">
+      <Filter>src\Siv3D\MemoryMappedFile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

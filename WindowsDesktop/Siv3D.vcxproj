@@ -295,6 +295,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMainHelper.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\CSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\CWindow.hpp" />
@@ -396,6 +397,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory\SivMemory.cpp">
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4559</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4559</DisableSpecificWarnings>
@@ -461,6 +463,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\SivLogger.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MD5Value\SivMD5Value.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFileView\SivMemoryMappedFileView.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFile\SivMemoryMappedFile.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryReader\SivMemoryReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryViewReader\SivMemoryViewReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MicrosecClock\SivMicrosecClock.cpp" />

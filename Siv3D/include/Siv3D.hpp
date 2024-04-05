@@ -428,7 +428,7 @@
 # include <Siv3D/WritableMappedMemory.hpp>
 
 // 書き込み可能なメモリマップトファイル | Writable memory mapped file
-# include <Siv3D/MemoryMappedFile.hpp> // ToDo
+# include <Siv3D/MemoryMappedFile.hpp>
 
 // メモリ上のバッファ | Binary Large Object
 # include <Siv3D/Blob.hpp>
