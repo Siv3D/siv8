@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/Image.hpp>
+# include <Siv3D/ImageDecoder.hpp>
+# include <Siv3D/ImageEncoder.hpp>
 
 namespace s3d
 {
@@ -136,7 +138,17 @@ namespace s3d
 			}
 		}
 	}
-	
+
+	Image::Image(const FilePathView path, const ImageFormat format)
+	{
+		*this = ImageDecoder::Decode(path, format);
+	}
+
+	Image::Image(IReader&& reader, const ImageFormat format)
+	{
+		*this = ImageDecoder::Decode(reader, format);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	fill
@@ -210,4 +222,22 @@ namespace s3d
 			m_pixels.append((m_size.x * (m_size.y - oldHeight)), fillColor);
 		}
 	}
+
+
+
+
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	save
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Image::save(const FilePathView path, const ImageFormat format) const
+	{
+		return ImageEncoder::Save(*this, format, path);
+	}
+
 }
