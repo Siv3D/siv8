@@ -1068,15 +1068,15 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// 画像のフォーマット | Image format
-//# include <Siv3D/ImageFormat.hpp>
-//
-//// ピクセルフォーマット | Pixel format
-//# include <Siv3D/ImagePixelFormat.hpp>
-//
-//// 画像の情報 | Image information
-//# include <Siv3D/ImageInfo.hpp>
-//
+// 画像のフォーマット | Image format
+# include <Siv3D/ImageFormat.hpp>
+
+// ピクセルフォーマット | Pixel format
+# include <Siv3D/ImagePixelFormat.hpp>
+
+// 画像の情報 | Image information
+# include <Siv3D/ImageInfo.hpp>
+
 //// ピクセルアドレスモード | Image address mode
 //# include <Siv3D/ImageAddressMode.hpp>
 //
@@ -1122,12 +1122,12 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//# include <Siv3D/IImageDecoder.hpp>
-//# include <Siv3D/IImageEncoder.hpp>
-//
-//# include <Siv3D/ImageEncoder.hpp>
-//# include <Siv3D/ImageDecoder.hpp>
-//
+# include <Siv3D/IImageDecoder.hpp>
+# include <Siv3D/IImageEncoder.hpp>
+
+# include <Siv3D/ImageDecoder.hpp>
+# include <Siv3D/ImageEncoder.hpp>
+
 //# include <Siv3D/PNGFilter.hpp>
 //# include <Siv3D/ImageFormat/PNGDecoder.hpp>
 //# include <Siv3D/ImageFormat/PNGEncoder.hpp>
@@ -1135,10 +1135,10 @@
 //# include <Siv3D/ImageFormat/JPEGDecoder.hpp>
 //# include <Siv3D/ImageFormat/JPEGEncoder.hpp>
 //# include <Siv3D/Exif.hpp>
-//
-//# include <Siv3D/ImageFormat/BMPDecoder.hpp>
-//# include <Siv3D/ImageFormat/BMPEncoder.hpp>
-//
+
+# include <Siv3D/ImageFormat/BMPDecoder.hpp>
+# include <Siv3D/ImageFormat/BMPEncoder.hpp>
+
 //# include <Siv3D/WebPMethod.hpp>
 //# include <Siv3D/ImageFormat/WebPDecoder.hpp>
 //# include <Siv3D/ImageFormat/WebPEncoder.hpp>

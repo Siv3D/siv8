@@ -825,6 +825,31 @@
 		F9528C522BC029E800222F45 /* Test_MemoryMappedFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C512BC029E800222F45 /* Test_MemoryMappedFile.cpp */; };
 		F9528C562BC02A3100222F45 /* MemoryMappedFileDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C532BC02A3100222F45 /* MemoryMappedFileDetail.cpp */; };
 		F9528C572BC02A3100222F45 /* MemoryMappedFileDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C542BC02A3100222F45 /* MemoryMappedFileDetail.hpp */; };
+		F9528C622BC05B0200222F45 /* ImageInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C582BC05B0200222F45 /* ImageInfo.hpp */; };
+		F9528C632BC05B0200222F45 /* ImagePixelFormat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C592BC05B0200222F45 /* ImagePixelFormat.hpp */; };
+		F9528C642BC05B0200222F45 /* ImageEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C5A2BC05B0200222F45 /* ImageEncoder.hpp */; };
+		F9528C652BC05B0200222F45 /* ImageDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C5B2BC05B0200222F45 /* ImageDecoder.hpp */; };
+		F9528C662BC05B0200222F45 /* BMPDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C5C2BC05B0200222F45 /* BMPDecoder.hpp */; };
+		F9528C672BC05B0200222F45 /* BMPEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C5D2BC05B0200222F45 /* BMPEncoder.hpp */; };
+		F9528C682BC05B0200222F45 /* IImageDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C5F2BC05B0200222F45 /* IImageDecoder.hpp */; };
+		F9528C692BC05B0200222F45 /* ImageFormat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C602BC05B0200222F45 /* ImageFormat.hpp */; };
+		F9528C6A2BC05B0200222F45 /* IImageEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C612BC05B0200222F45 /* IImageEncoder.hpp */; };
+		F9528C6D2BC05B1A00222F45 /* ImageDecoder.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C6B2BC05B1A00222F45 /* ImageDecoder.ipp */; };
+		F9528C6E2BC05B1A00222F45 /* ImageEncoder.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C6C2BC05B1A00222F45 /* ImageEncoder.ipp */; };
+		F9528C822BC05B5B00222F45 /* SivIImageDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C6F2BC05B5A00222F45 /* SivIImageDecoder.cpp */; };
+		F9528C832BC05B5B00222F45 /* BMPDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C712BC05B5A00222F45 /* BMPDecoder.cpp */; };
+		F9528C842BC05B5B00222F45 /* BMPEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C722BC05B5A00222F45 /* BMPEncoder.cpp */; };
+		F9528C852BC05B5B00222F45 /* BMPHeader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C732BC05B5A00222F45 /* BMPHeader.hpp */; };
+		F9528C862BC05B5B00222F45 /* CImageEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C762BC05B5A00222F45 /* CImageEncoder.cpp */; };
+		F9528C872BC05B5B00222F45 /* CImageEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C772BC05B5A00222F45 /* CImageEncoder.hpp */; };
+		F9528C882BC05B5B00222F45 /* IImageEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C782BC05B5A00222F45 /* IImageEncoder.hpp */; };
+		F9528C892BC05B5B00222F45 /* ImageEncoderFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C792BC05B5A00222F45 /* ImageEncoderFactory.cpp */; };
+		F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C7A2BC05B5A00222F45 /* SivImageEncoder.cpp */; };
+		F9528C8B2BC05B5B00222F45 /* CImageDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C7C2BC05B5B00222F45 /* CImageDecoder.cpp */; };
+		F9528C8C2BC05B5B00222F45 /* CImageDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C7D2BC05B5B00222F45 /* CImageDecoder.hpp */; };
+		F9528C8D2BC05B5B00222F45 /* IImageDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C7E2BC05B5B00222F45 /* IImageDecoder.hpp */; };
+		F9528C8E2BC05B5B00222F45 /* ImageDecoderFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C7F2BC05B5B00222F45 /* ImageDecoderFactory.cpp */; };
+		F9528C8F2BC05B5B00222F45 /* SivImageDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C802BC05B5B00222F45 /* SivImageDecoder.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1651,6 +1676,31 @@
 		F9528C512BC029E800222F45 /* Test_MemoryMappedFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MemoryMappedFile.cpp; sourceTree = "<group>"; };
 		F9528C532BC02A3100222F45 /* MemoryMappedFileDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemoryMappedFileDetail.cpp; sourceTree = "<group>"; };
 		F9528C542BC02A3100222F45 /* MemoryMappedFileDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryMappedFileDetail.hpp; sourceTree = "<group>"; };
+		F9528C582BC05B0200222F45 /* ImageInfo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageInfo.hpp; sourceTree = "<group>"; };
+		F9528C592BC05B0200222F45 /* ImagePixelFormat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImagePixelFormat.hpp; sourceTree = "<group>"; };
+		F9528C5A2BC05B0200222F45 /* ImageEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageEncoder.hpp; sourceTree = "<group>"; };
+		F9528C5B2BC05B0200222F45 /* ImageDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageDecoder.hpp; sourceTree = "<group>"; };
+		F9528C5C2BC05B0200222F45 /* BMPDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BMPDecoder.hpp; sourceTree = "<group>"; };
+		F9528C5D2BC05B0200222F45 /* BMPEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BMPEncoder.hpp; sourceTree = "<group>"; };
+		F9528C5F2BC05B0200222F45 /* IImageDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IImageDecoder.hpp; sourceTree = "<group>"; };
+		F9528C602BC05B0200222F45 /* ImageFormat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageFormat.hpp; sourceTree = "<group>"; };
+		F9528C612BC05B0200222F45 /* IImageEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IImageEncoder.hpp; sourceTree = "<group>"; };
+		F9528C6B2BC05B1A00222F45 /* ImageDecoder.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageDecoder.ipp; sourceTree = "<group>"; };
+		F9528C6C2BC05B1A00222F45 /* ImageEncoder.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageEncoder.ipp; sourceTree = "<group>"; };
+		F9528C6F2BC05B5A00222F45 /* SivIImageDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivIImageDecoder.cpp; sourceTree = "<group>"; };
+		F9528C712BC05B5A00222F45 /* BMPDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BMPDecoder.cpp; sourceTree = "<group>"; };
+		F9528C722BC05B5A00222F45 /* BMPEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BMPEncoder.cpp; sourceTree = "<group>"; };
+		F9528C732BC05B5A00222F45 /* BMPHeader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BMPHeader.hpp; sourceTree = "<group>"; };
+		F9528C762BC05B5A00222F45 /* CImageEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CImageEncoder.cpp; sourceTree = "<group>"; };
+		F9528C772BC05B5A00222F45 /* CImageEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CImageEncoder.hpp; sourceTree = "<group>"; };
+		F9528C782BC05B5A00222F45 /* IImageEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IImageEncoder.hpp; sourceTree = "<group>"; };
+		F9528C792BC05B5A00222F45 /* ImageEncoderFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageEncoderFactory.cpp; sourceTree = "<group>"; };
+		F9528C7A2BC05B5A00222F45 /* SivImageEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImageEncoder.cpp; sourceTree = "<group>"; };
+		F9528C7C2BC05B5B00222F45 /* CImageDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CImageDecoder.cpp; sourceTree = "<group>"; };
+		F9528C7D2BC05B5B00222F45 /* CImageDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CImageDecoder.hpp; sourceTree = "<group>"; };
+		F9528C7E2BC05B5B00222F45 /* IImageDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IImageDecoder.hpp; sourceTree = "<group>"; };
+		F9528C7F2BC05B5B00222F45 /* ImageDecoderFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageDecoderFactory.cpp; sourceTree = "<group>"; };
+		F9528C802BC05B5B00222F45 /* SivImageDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImageDecoder.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2440,6 +2490,8 @@
 				F9070B812B9F175000383E4D /* Hash.ipp */,
 				F9070B822B9F175000383E4D /* HSV.ipp */,
 				F9528B3B2BB69C2800222F45 /* Image.ipp */,
+				F9528C6B2BC05B1A00222F45 /* ImageDecoder.ipp */,
+				F9528C6C2BC05B1A00222F45 /* ImageEncoder.ipp */,
 				F9070B832B9F175000383E4D /* Indexed.ipp */,
 				F9070B842B9F175000383E4D /* Int128.ipp */,
 				F9070B852B9F175000383E4D /* IntFormatter.ipp */,
@@ -2588,7 +2640,14 @@
 				F9070BF02B9F175000383E4D /* HashTable.hpp */,
 				F9070BF12B9F175000383E4D /* HeterogeneousLookupHelper.hpp */,
 				F9070BF22B9F175000383E4D /* HSV.hpp */,
+				F9528C5F2BC05B0200222F45 /* IImageDecoder.hpp */,
+				F9528C612BC05B0200222F45 /* IImageEncoder.hpp */,
 				F9528B392BB69C1800222F45 /* Image.hpp */,
+				F9528C5B2BC05B0200222F45 /* ImageDecoder.hpp */,
+				F9528C5A2BC05B0200222F45 /* ImageEncoder.hpp */,
+				F9528C602BC05B0200222F45 /* ImageFormat.hpp */,
+				F9528C582BC05B0200222F45 /* ImageInfo.hpp */,
+				F9528C592BC05B0200222F45 /* ImagePixelFormat.hpp */,
 				F9070BF32B9F175000383E4D /* Indexed.hpp */,
 				F9070BF42B9F175000383E4D /* Int128.hpp */,
 				F9070BF52B9F175000383E4D /* IntFormatter.hpp */,
@@ -2683,6 +2742,7 @@
 				F9070C3D2B9F175000383E4D /* YesNo.hpp */,
 				F9070BB02B9F175000383E4D /* detail */,
 				F9070BB32B9F175000383E4D /* Error */,
+				F9528C5E2BC05B0200222F45 /* ImageFormat */,
 				F9070BB92B9F175000383E4D /* Windows */,
 			);
 			path = Siv3D;
@@ -3257,7 +3317,11 @@
 				F9070D582B9F175E00383E4D /* FormatUtility */,
 				F9070D5A2B9F175E00383E4D /* Hash */,
 				F9070D5C2B9F175E00383E4D /* HSV */,
+				F9528C702BC05B5A00222F45 /* IImageDecoder */,
 				F9528B402BB69C8200222F45 /* Image */,
+				F9528C812BC05B5B00222F45 /* ImageDecoder */,
+				F9528C7B2BC05B5A00222F45 /* ImageEncoder */,
+				F9528C752BC05B5A00222F45 /* ImageFormat */,
 				F9070D5E2B9F175E00383E4D /* Int128 */,
 				F9070D602B9F175E00383E4D /* IntFormatter */,
 				F9070D622B9F175E00383E4D /* IntToString */,
@@ -3770,6 +3834,65 @@
 			path = MemoryMappedFile;
 			sourceTree = "<group>";
 		};
+		F9528C5E2BC05B0200222F45 /* ImageFormat */ = {
+			isa = PBXGroup;
+			children = (
+				F9528C5C2BC05B0200222F45 /* BMPDecoder.hpp */,
+				F9528C5D2BC05B0200222F45 /* BMPEncoder.hpp */,
+			);
+			path = ImageFormat;
+			sourceTree = "<group>";
+		};
+		F9528C702BC05B5A00222F45 /* IImageDecoder */ = {
+			isa = PBXGroup;
+			children = (
+				F9528C6F2BC05B5A00222F45 /* SivIImageDecoder.cpp */,
+			);
+			path = IImageDecoder;
+			sourceTree = "<group>";
+		};
+		F9528C742BC05B5A00222F45 /* BMP */ = {
+			isa = PBXGroup;
+			children = (
+				F9528C712BC05B5A00222F45 /* BMPDecoder.cpp */,
+				F9528C722BC05B5A00222F45 /* BMPEncoder.cpp */,
+				F9528C732BC05B5A00222F45 /* BMPHeader.hpp */,
+			);
+			path = BMP;
+			sourceTree = "<group>";
+		};
+		F9528C752BC05B5A00222F45 /* ImageFormat */ = {
+			isa = PBXGroup;
+			children = (
+				F9528C742BC05B5A00222F45 /* BMP */,
+			);
+			path = ImageFormat;
+			sourceTree = "<group>";
+		};
+		F9528C7B2BC05B5A00222F45 /* ImageEncoder */ = {
+			isa = PBXGroup;
+			children = (
+				F9528C762BC05B5A00222F45 /* CImageEncoder.cpp */,
+				F9528C772BC05B5A00222F45 /* CImageEncoder.hpp */,
+				F9528C782BC05B5A00222F45 /* IImageEncoder.hpp */,
+				F9528C792BC05B5A00222F45 /* ImageEncoderFactory.cpp */,
+				F9528C7A2BC05B5A00222F45 /* SivImageEncoder.cpp */,
+			);
+			path = ImageEncoder;
+			sourceTree = "<group>";
+		};
+		F9528C812BC05B5B00222F45 /* ImageDecoder */ = {
+			isa = PBXGroup;
+			children = (
+				F9528C7C2BC05B5B00222F45 /* CImageDecoder.cpp */,
+				F9528C7D2BC05B5B00222F45 /* CImageDecoder.hpp */,
+				F9528C7E2BC05B5B00222F45 /* IImageDecoder.hpp */,
+				F9528C7F2BC05B5B00222F45 /* ImageDecoderFactory.cpp */,
+				F9528C802BC05B5B00222F45 /* SivImageDecoder.cpp */,
+			);
+			path = ImageDecoder;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3780,6 +3903,7 @@
 				F9528B532BB6DC2C00222F45 /* LicenseInfo.hpp in Headers */,
 				F9528C042BBF026F00222F45 /* bits.h in Headers */,
 				F9528B1E2BAFB65000222F45 /* Base64Value.ipp in Headers */,
+				F9528C632BC05B0200222F45 /* ImagePixelFormat.hpp in Headers */,
 				F907072C2B9DAEC900383E4D /* srli.h in Headers */,
 				F90707002B9DAEC900383E4D /* movm.h in Headers */,
 				F907070C2B9DAEC900383E4D /* permutexvar.h in Headers */,
@@ -3833,6 +3957,7 @@
 				F9070DFA2B9F175E00383E4D /* CUserAction.hpp in Headers */,
 				F9528C2F2BBF026F00222F45 /* zstd_lazy.h in Headers */,
 				F90706F72B9DAEC900383E4D /* load.h in Headers */,
+				F9528C8C2BC05B5B00222F45 /* CImageDecoder.hpp in Headers */,
 				F907073B2B9DAEC900383E4D /* avx.h in Headers */,
 				F9070C822B9F175000383E4D /* ThousandSeparate.ipp in Headers */,
 				F9070DB82B9F175E00383E4D /* IConsole.hpp in Headers */,
@@ -3845,6 +3970,7 @@
 				F9070CD22B9F175100383E4D /* IWriter.hpp in Headers */,
 				F9070CD62B9F175100383E4D /* LoggerBuffer.hpp in Headers */,
 				F90706AF2B9DAEC900383E4D /* uniform_real_distribution.h in Headers */,
+				F9528C682BC05B0200222F45 /* IImageDecoder.hpp in Headers */,
 				F9070CD82B9F175100383E4D /* MapFormatter.hpp in Headers */,
 				F9070C952B9F175000383E4D /* 2DShapesFwd.hpp in Headers */,
 				F9070C922B9F175000383E4D /* Windows.hpp in Headers */,
@@ -3905,6 +4031,7 @@
 				F9070DEF2B9F175E00383E4D /* TextReaderDetail.hpp in Headers */,
 				F90706A32B9DAEC900383E4D /* traits.h in Headers */,
 				F9070C592B9F175000383E4D /* FormatData.ipp in Headers */,
+				F9528C6E2BC05B1A00222F45 /* ImageEncoder.ipp in Headers */,
 				F9070E922B9F183100383E4D /* CSystem.hpp in Headers */,
 				F9528BB52BBF023600222F45 /* Compression.hpp in Headers */,
 				F90707402B9DAEC900383E4D /* fma.h in Headers */,
@@ -3924,6 +4051,7 @@
 				F90707072B9DAEC900383E4D /* or.h in Headers */,
 				F9528B452BB69D8500222F45 /* BigFloat.ipp in Headers */,
 				F9070C612B9F175000383E4D /* IntFormatter.ipp in Headers */,
+				F9528C8D2BC05B5B00222F45 /* IImageDecoder.hpp in Headers */,
 				F90706F22B9DAEC900383E4D /* insert.h in Headers */,
 				F9070C9C2B9F175000383E4D /* Blob.hpp in Headers */,
 				F9070C752B9F175000383E4D /* RandomDuration.ipp in Headers */,
@@ -3985,6 +4113,7 @@
 				F90707512B9DAEC900383E4D /* simde-bf16.h in Headers */,
 				F90706D62B9DAEC900383E4D /* cmple.h in Headers */,
 				F9070CB72B9F175000383E4D /* Error.hpp in Headers */,
+				F9528C672BC05B0200222F45 /* BMPEncoder.hpp in Headers */,
 				F9070C732B9F175000383E4D /* Point.ipp in Headers */,
 				F90706D02B9DAEC900383E4D /* broadcast.h in Headers */,
 				F9528B572BB6DC3700222F45 /* CycleClock.hpp in Headers */,
@@ -4005,6 +4134,7 @@
 				F9070CAC2B9F175000383E4D /* DateTime.hpp in Headers */,
 				F9528BAF2BBE7D1100222F45 /* MemoryWriter.ipp in Headers */,
 				F9070CEE2B9F175100383E4D /* Point.hpp in Headers */,
+				F9528C652BC05B0200222F45 /* ImageDecoder.hpp in Headers */,
 				F9528C1A2BBF026F00222F45 /* zstd_internal.h in Headers */,
 				F9528C292BBF026F00222F45 /* zstd_cwksp.h in Headers */,
 				F90706BE2B9DAEC900383E4D /* phmap_dump.h in Headers */,
@@ -4016,6 +4146,7 @@
 				F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */,
 				F9528B6A2BB7087700222F45 /* LicenseManager.hpp in Headers */,
 				F9070CC62B9F175000383E4D /* HardwareRNG.hpp in Headers */,
+				F9528C6A2BC05B0200222F45 /* IImageEncoder.hpp in Headers */,
 				F90707142B9DAEC900383E4D /* ror.h in Headers */,
 				F9528B802BB71F9900222F45 /* Profiler.hpp in Headers */,
 				F9528C072BBF026F00222F45 /* cpu.h in Headers */,
@@ -4059,6 +4190,7 @@
 				F90707292B9DAEC900383E4D /* srai.h in Headers */,
 				F9070CA72B9F175000383E4D /* Console.hpp in Headers */,
 				F907073A2B9DAEC900383E4D /* aes.h in Headers */,
+				F9528C882BC05B5B00222F45 /* IImageEncoder.hpp in Headers */,
 				F9070CFC2B9F175100383E4D /* Step.hpp in Headers */,
 				F90706F82B9DAEC900383E4D /* loadu.h in Headers */,
 				F9070CA82B9F175000383E4D /* ConsoleBuffer.hpp in Headers */,
@@ -4066,6 +4198,7 @@
 				F9528C402BBF026F00222F45 /* cover.h in Headers */,
 				F9070CE02B9F175100383E4D /* Obfuscation.hpp in Headers */,
 				F9070C832B9F175000383E4D /* TupleFormatter.ipp in Headers */,
+				F9528C6D2BC05B1A00222F45 /* ImageDecoder.ipp in Headers */,
 				F9528C362BBF026F00222F45 /* zstdmt_compress.h in Headers */,
 				F9070C7A2B9F175000383E4D /* Shuffle.ipp in Headers */,
 				F9070CD12B9F175100383E4D /* ISteadyClock.hpp in Headers */,
@@ -4115,6 +4248,7 @@
 				F9070CCB2B9F175100383E4D /* HSV.hpp in Headers */,
 				F9528C052BBF026F00222F45 /* bitstream.h in Headers */,
 				F9070CB62B9F175000383E4D /* EngineLog.hpp in Headers */,
+				F9528C622BC05B0200222F45 /* ImageInfo.hpp in Headers */,
 				F9070C582B9F175000383E4D /* Format.ipp in Headers */,
 				F9528C132BBF026F00222F45 /* portability_macros.h in Headers */,
 				F9070C9D2B9F175000383E4D /* BoolToString.hpp in Headers */,
@@ -4134,6 +4268,7 @@
 				F9070B082B9DEB5900383E4D /* uuid.h in Headers */,
 				F9070C842B9F175000383E4D /* Unicode.ipp in Headers */,
 				F9070C542B9F175000383E4D /* EscapedFormatter.ipp in Headers */,
+				F9528C642BC05B0200222F45 /* ImageEncoder.hpp in Headers */,
 				F9070D0B2B9F175100383E4D /* UniqueResource.hpp in Headers */,
 				F9070C762B9F175000383E4D /* Rect.ipp in Headers */,
 				F90706A62B9DAEC900383E4D /* bernoulli_distribution.h in Headers */,
@@ -4162,6 +4297,7 @@
 				F9528C322BBF026F00222F45 /* zstd_ldm.h in Headers */,
 				F9070CF22B9F175100383E4D /* PRNG.hpp in Headers */,
 				F907071D2B9DAEC900383E4D /* set4.h in Headers */,
+				F9528C692BC05B0200222F45 /* ImageFormat.hpp in Headers */,
 				F9070CB02B9F175000383E4D /* DisjointSet.hpp in Headers */,
 				F9070C722B9F175000383E4D /* PCG64.ipp in Headers */,
 				F9528C1F2BBF026F00222F45 /* hist.h in Headers */,
@@ -4189,6 +4325,7 @@
 				F90706CD2B9DAEC900383E4D /* avg.h in Headers */,
 				F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */,
 				F90706D12B9DAEC900383E4D /* cast.h in Headers */,
+				F9528C852BC05B5B00222F45 /* BMPHeader.hpp in Headers */,
 				F9070CEA2B9F175100383E4D /* ParseFloat.hpp in Headers */,
 				F9528C1B2BBF026F00222F45 /* zstd_trace.h in Headers */,
 				F9070CC42B9F175000383E4D /* FormatUtility.hpp in Headers */,
@@ -4250,6 +4387,7 @@
 				F90706E72B9DAEC900383E4D /* expand.h in Headers */,
 				F9070CD42B9F175100383E4D /* LetterCase.hpp in Headers */,
 				F9070CDA2B9F175100383E4D /* MD5Value.hpp in Headers */,
+				F9528C662BC05B0200222F45 /* BMPDecoder.hpp in Headers */,
 				F9070C522B9F175000383E4D /* Duration.ipp in Headers */,
 				F9528C572BC02A3100222F45 /* MemoryMappedFileDetail.hpp in Headers */,
 				F9070C602B9F175000383E4D /* Int128.ipp in Headers */,
@@ -4314,6 +4452,7 @@
 				F907074C2B9DAEC900383E4D /* debug-trap.h in Headers */,
 				F9070C862B9F175000383E4D /* UniqueResource.ipp in Headers */,
 				F9070CB82B9F175000383E4D /* EscapedFormatter.hpp in Headers */,
+				F9528C872BC05B5B00222F45 /* CImageEncoder.hpp in Headers */,
 				F9070AFB2B9DEB5900383E4D /* fast-dtoa.h in Headers */,
 				F9528C1C2BBF026F00222F45 /* clevels.h in Headers */,
 				F9528B542BB6DC2C00222F45 /* MicrosecClock.hpp in Headers */,
@@ -4551,6 +4690,7 @@
 				F9070DC62B9F175E00383E4D /* Siv3DEngine.cpp in Sources */,
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
 				F9070ED42B9F1C8900383E4D /* cocoa_joystick.m in Sources */,
+				F9528C862BC05B5B00222F45 /* CImageEncoder.cpp in Sources */,
 				F9528C562BC02A3100222F45 /* MemoryMappedFileDetail.cpp in Sources */,
 				F9070EF12B9F1C8900383E4D /* posix_poll.c in Sources */,
 				F9528B412BB69C8200222F45 /* SivImage.cpp in Sources */,
@@ -4562,6 +4702,7 @@
 				F9070DDC2B9F175E00383E4D /* SivMonitorInfo.cpp in Sources */,
 				F9070EDB2B9F1C8900383E4D /* egl_context.c in Sources */,
 				F9070DE32B9F175E00383E4D /* SivPoint.cpp in Sources */,
+				F9528C832BC05B5B00222F45 /* BMPDecoder.cpp in Sources */,
 				F9070DD12B9F175E00383E4D /* SivFormatUtility.cpp in Sources */,
 				F9070DDF2B9F175E00383E4D /* SivParseBoolExtended.cpp in Sources */,
 				F9070DAD2B9F175E00383E4D /* _TEMPLATE.cpp in Sources */,
@@ -4579,6 +4720,7 @@
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
 				F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */,
 				F9070F362B9F252E00383E4D /* null_joystick.c in Sources */,
+				F9528C842BC05B5B00222F45 /* BMPEncoder.cpp in Sources */,
 				F9070E932B9F183100383E4D /* SivSystem_macOS.mm in Sources */,
 				F9070DF02B9F175E00383E4D /* SivTextWriter.cpp in Sources */,
 				F9070DCC2B9F175E00383E4D /* SivFileSystem.cpp in Sources */,
@@ -4591,6 +4733,7 @@
 				F9070DE12B9F175E00383E4D /* SivParseFloat.cpp in Sources */,
 				F9070AF02B9DEB5900383E4D /* gaussian_distribution.cc in Sources */,
 				F9070DEC2B9F175E00383E4D /* SivTextEncoding.cpp in Sources */,
+				F9528C822BC05B5B00222F45 /* SivIImageDecoder.cpp in Sources */,
 				F9528B9D2BBC771000222F45 /* SivPoint3D.cpp in Sources */,
 				F9070AFC2B9DEB5900383E4D /* fixed-dtoa.cc in Sources */,
 				F9070DFE2B9F175E00383E4D /* SivVector2D.cpp in Sources */,
@@ -4634,6 +4777,7 @@
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
+				F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */,
 				F9528C2C2BBF026F00222F45 /* zstd_fast.c in Sources */,
 				F9528C432BBF026F00222F45 /* fastcover.c in Sources */,
 				F9070DF92B9F175E00383E4D /* CUserAction.cpp in Sources */,
@@ -4649,8 +4793,10 @@
 				F9070DE52B9F175E00383E4D /* SivRect.cpp in Sources */,
 				F9528B232BAFB68400222F45 /* SivBase64Value.cpp in Sources */,
 				F9070DF42B9F175E00383E4D /* SivThreading.cpp in Sources */,
+				F9528C892BC05B5B00222F45 /* ImageEncoderFactory.cpp in Sources */,
 				F9070DBF2B9F175E00383E4D /* SivDemangle.cpp in Sources */,
 				F9070DC02B9F175E00383E4D /* SivDuration.cpp in Sources */,
+				F9528C8F2BC05B5B00222F45 /* SivImageDecoder.cpp in Sources */,
 				F9070AF12B9DEB5900383E4D /* bignum-dtoa.cc in Sources */,
 				F9070DAF2B9F175E00383E4D /* SivBigInt.cpp in Sources */,
 				F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */,
@@ -4682,11 +4828,13 @@
 				F9528C392BBF026F00222F45 /* zstd_ddict.c in Sources */,
 				F9528C242BBF026F00222F45 /* zstd_compress_sequences.c in Sources */,
 				F9070E5A2B9F176B00383E4D /* BinaryWriterDetail.cpp in Sources */,
+				F9528C8B2BC05B5B00222F45 /* CImageDecoder.cpp in Sources */,
 				F9070E002B9F175E00383E4D /* SivVector4D.cpp in Sources */,
 				F9528B302BB0562C00222F45 /* SivMemoryMappedFileView.cpp in Sources */,
 				F9528C162BBF026F00222F45 /* xxhash.c in Sources */,
 				F9070DB42B9F175E00383E4D /* SivByte.cpp in Sources */,
 				F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */,
+				F9528C8E2BC05B5B00222F45 /* ImageDecoderFactory.cpp in Sources */,
 				F9528C0A2BBF026F00222F45 /* entropy_common.c in Sources */,
 				F9528B772BB708A700222F45 /* CLicenseManager.cpp in Sources */,
 				F9528C3B2BBF026F00222F45 /* zstd_decompress_block.c in Sources */,

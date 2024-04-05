@@ -9,17 +9,16 @@
 //
 //-----------------------------------------------
 
-# include <ios>
-# include "CConsole.hpp"
+# pragma once
 
 namespace s3d
 {
-	CConsole::CConsole()
+	namespace ImageDecoder
 	{
-		std::ios_base::sync_with_stdio(false);
+		template <class ImageDecoder> requires std::derived_from<ImageDecoder, IImageDecoder>
+		bool Add()
+		{
+			return Add(std::make_unique<ImageDecoder>());
+		}
 	}
-
-	void CConsole::open() {}
-
-	void CConsole::close() {}
 }

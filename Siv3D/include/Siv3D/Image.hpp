@@ -14,9 +14,12 @@
 # include "Array.hpp"
 # include "AlignedAllocator.hpp"
 # include "ColorHSV.hpp"
+# include "ImageFormat.hpp"
 
 namespace s3d
 {
+	class IReader;
+
 	class Image
 	{
 	public:
@@ -138,17 +141,17 @@ namespace s3d
 		[[nodiscard]]
 		Image(Size size, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator);
 
-		///// @brief 画像ファイルの内容から画像データを作成します。
-		///// @param path 画像ファイルのパス
-		///// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
-		//[[nodiscard]]
-		//explicit Image(FilePathView path, ImageFormat format = ImageFormat::Unspecified);
+		/// @brief 画像ファイルの内容から画像データを作成します。
+		/// @param path 画像ファイルのパス
+		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
+		[[nodiscard]]
+		explicit Image(FilePathView path, ImageFormat format = ImageFormat::Unspecified);
 
-		///// @brief IReader から画像データを作成します。
-		///// @param reader IReader オブジェクト
-		///// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
-		//[[nodiscard]]
-		//explicit Image(IReader&& reader, ImageFormat format = ImageFormat::Unspecified);
+		/// @brief IReader から画像データを作成します。
+		/// @param reader IReader オブジェクト
+		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
+		[[nodiscard]]
+		explicit Image(IReader&& reader, ImageFormat format = ImageFormat::Unspecified);
 
 		//[[nodiscard]]
 		//Image(FilePathView rgb, FilePathView alpha);
@@ -565,6 +568,29 @@ namespace s3d
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	save
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 画像をファイルに保存します。
+		/// @param path 保存するファイルパス
+		/// @param format 保存時のフォーマット。`ImageFormat::Unspecified` の場合拡張子から判断
+		/// @return 保存に成功した場合 true, それ以外の場合は false
+		bool save(FilePathView path, ImageFormat format = ImageFormat::Unspecified) const;
 
 
 

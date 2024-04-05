@@ -9,17 +9,12 @@
 //
 //-----------------------------------------------
 
-# include <ios>
-# include "CConsole.hpp"
+# include "CImageDecoder.hpp"
 
 namespace s3d
 {
-	CConsole::CConsole()
+	ISiv3DImageDecoder* ISiv3DImageDecoder::Create()
 	{
-		std::ios_base::sync_with_stdio(false);
+		return new CImageDecoder;
 	}
-
-	void CConsole::open() {}
-
-	void CConsole::close() {}
 }

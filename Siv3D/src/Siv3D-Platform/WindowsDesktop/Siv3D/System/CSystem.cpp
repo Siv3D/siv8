@@ -12,6 +12,8 @@
 # include "CSystem.hpp"
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/CWindow.hpp>
+# include <Siv3D/ImageDecoder/IImageDecoder.hpp>
+# include <Siv3D/ImageEncoder/IImageEncoder.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -32,6 +34,10 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CSystem::init()");
 
 		m_setupProgress = SetupProgress::EngineInitialized;
+
+		SIV3D_ENGINE(ImageDecoder)->init();
+
+		SIV3D_ENGINE(ImageEncoder)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}
