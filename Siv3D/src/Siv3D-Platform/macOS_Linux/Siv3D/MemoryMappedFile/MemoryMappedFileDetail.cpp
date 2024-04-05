@@ -9,6 +9,10 @@
 //
 //-----------------------------------------------
 
+# include <unistd.h>
+# include <fcntl.h>
+# include <sys/stat.h>
+# include <sys/mman.h>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/FormatUtility.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -26,7 +30,7 @@ namespace s3d
 		close();
 	}
 
-	bool MemoryMappedFile::MemoryMappedFileDetail::open(const FilePathView path)
+	bool MemoryMappedFile::MemoryMappedFileDetail::open(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
 	{
 		LOG_DEBUG(fmt::format("MemoryMappedFile::MemoryMappedFileDetail::open(\"{0}\")", path));
 
@@ -43,19 +47,19 @@ namespace s3d
 
 			switch (ifExists)
 			{
-			case MMFOpenMode_if_Exists::JustOpen:
+			case OpenMode_if_Exists::JustOpen:
 				{
-					openMode |= ((ifNotFound == MMFOpenMode_if_NotFound::Create) ? O_CREAT : 0);
+					openMode |= ((ifNotFound == OpenMode_if_NotFound::Create) ? O_CREAT : 0);
 					break;
 				}
-			case MMFOpenMode_if_Exists::Truncate:
+			case OpenMode_if_Exists::Truncate:
 				{
-					openMode |= ((ifNotFound == MMFOpenMode_if_NotFound::Create) ? (O_TRUNC | O_CREAT) : O_TRUNC);
+					openMode |= ((ifNotFound == OpenMode_if_NotFound::Create) ? (O_TRUNC | O_CREAT) : O_TRUNC);
 					break;
 				}
 			default:
 				{
-					if (ifNotFound == MMFOpenMode_if_NotFound::Create)
+					if (ifNotFound == OpenMode_if_NotFound::Create)
 					{
 						openMode |= (O_EXCL | O_CREAT);
 					}
@@ -128,7 +132,7 @@ namespace s3d
 		{
 			return{};
 		}
-
+		
 		// すでにファイルがマップされている場合は何もしない
 		if (m_file.baseAddress)
 		{
@@ -136,28 +140,29 @@ namespace s3d
 		}
 
 		// ファイルサイズよりも大きいオフセットが指定された場合は失敗
-		if (m_info.fileSize <= static_cast<int64>(offset))
+		if (m_info.fileSize < static_cast<int64>(offset))
 		{
 			return{};
 		}
 
-		const size_t mapSize = Min(requestSize, static_cast<size_t>(m_info.fileSize - offset));
+		const size_t mapSize = requestSize;
 		
 		if (mapSize == 0)
 		{
 			return{};
 		}
-
-		if (m_info.fileSize < (offset + mapSize))
+		
+		if (static_cast<size_t>(m_info.fileSize) < (offset + mapSize))
 		{
-			if (-1 == ::ftruncate(m_fileHandle, (offset + mapSize)))
+			if (-1 == ::ftruncate(m_file.fileHandle, (offset + mapSize)))
 			{
+				LOG_FAIL(fmt::format("❌ MemoryMappedFile: ftruncate() failed. offset: {0}, size: {1}", offset, mapSize));
 				return{};
 			}
 
 			m_info.fileSize = (offset + mapSize);
 		}
-		
+
 		const size_t internalOffset = (offset / detail::g_granularity * detail::g_granularity);
 
 		void* baseAddress = ::mmap(0, (offset - internalOffset + mapSize), (PROT_READ | PROT_WRITE), MAP_SHARED, m_file.fileHandle, internalOffset);
@@ -190,12 +195,12 @@ namespace s3d
 		m_file.mapLength = 0;
 	}
 
-	bool MemoryMappedFile::MemoryMappedFileDetail::flush()
+	bool MemoryMappedFile::MemoryMappedFileDetail::flush() const
 	{
 		// ファイルがマップされていなければ何もしない
 		if (m_file.baseAddress == nullptr)
 		{
-			return;
+			return true;
 		}
 
 		return (::msync(m_file.baseAddress, m_file.mapLength, MS_SYNC) == 0);
