@@ -36,7 +36,7 @@ namespace s3d
 		virtual bool isHeader(const uint8(&bytes)[16]) const noexcept = 0;
 
 		[[nodiscard]]
-		virtual const Array<String>& possibleExtensions() const noexcept = 0;
+		virtual const Array<String>& possibleExtensions() const = 0;
 
 		[[nodiscard]]
 		virtual Optional<ImageInfo> getImageInfo(FilePathView path) const;
