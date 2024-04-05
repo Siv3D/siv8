@@ -45,33 +45,24 @@ namespace s3d
 
 	private:
 
-		//struct File
-		//{
-		//	HANDLE fileHandle = INVALID_HANDLE_VALUE;
+		struct File
+		{
+			HANDLE fileHandle = INVALID_HANDLE_VALUE;
 
-		//	HANDLE fileMapping = nullptr;
+			HANDLE fileMapping = nullptr;
 
-		//	const Byte* baseAddress	= nullptr;
+			Byte* baseAddress	= nullptr;
 
-		//} m_file;
+		} m_file;
 
-		//struct Resource
-		//{
-		//	const Byte* pointer = nullptr;
+		struct Info
+		{
+			FilePath fullPath;
 
-		//} m_resource;
+			int64 fileSize = 0;
 
-		//struct Info
-		//{
-		//	FilePath fullPath;
+			bool isOpen = false;
 
-		//	int64 fileSize = 0;
-
-		//	bool isOpen = false;
-
-		//} m_info;
-
-		//[[nodiscard]]
-		//bool isResource() const noexcept;
+		} m_info;
 	};
 }

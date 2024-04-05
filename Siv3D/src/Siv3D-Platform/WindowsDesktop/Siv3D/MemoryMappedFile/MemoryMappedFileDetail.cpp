@@ -16,224 +16,199 @@
 
 namespace s3d
 {
-	//namespace
-	//{
-	//	static const size_t g_granularity = []()
-	//		{
-	//			SYSTEM_INFO systemInfo{};
-	//			::GetSystemInfo(&systemInfo);
-	//			return systemInfo.dwAllocationGranularity;
-	//		}();
-	//}
+	namespace
+	{
+		static const size_t g_granularity = []()
+			{
+				SYSTEM_INFO systemInfo{};
+				::GetSystemInfo(&systemInfo);
+				return systemInfo.dwAllocationGranularity;
+			}();
+	}
 
-	//MemoryMappedFileView::MemoryMappedFileViewDetail::~MemoryMappedFileViewDetail()
-	//{
-	//	close();
-	//}
+	MemoryMappedFile::MemoryMappedFileDetail::~MemoryMappedFileDetail()
+	{
+		close();
+	}
 
-	//bool MemoryMappedFileView::MemoryMappedFileViewDetail::open(const FilePathView path)
-	//{
-	//	LOG_DEBUG(fmt::format("MemoryMappedFileView::MemoryMappedFileViewDetail::open(\"{0}\")", path));
+	bool MemoryMappedFile::MemoryMappedFileDetail::open(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
+	{
+		LOG_DEBUG(fmt::format("MemoryMappedFile::MemoryMappedFileDetail::open(\"{0}\")", path));
 
-	//	close();
+		close();
 
-	//	if (FileSystem::IsResourcePath(path))
-	//	{
-	//		HMODULE hModule = ::GetModuleHandleW(nullptr);
+		if (FileSystem::IsResourcePath(path))
+		{
+			LOG_FAIL(fmt::format("❌ MemoryMappedFile: Resource `{0}` cannot be opened as writable", path));
 
-	//		if (not hModule)
-	//		{
-	//			LOG_FAIL("GetModuleHandleW() failed.");
-	//			return false;
-	//		}
+			return false;
+		}
 
-	//		HRSRC hrs = ::FindResourceW(hModule, path.substr(1).toWstr().c_str(), L"FILE");
+		int32 openMode;
 
-	//		if (not hrs)
-	//		{
-	//			LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to open resource \"{0}\"", path));
-	//			return false;
-	//		}
+		switch (ifExists)
+		{
+		case OpenMode_if_Exists::JustOpen:
+			{
+				openMode = ((ifNotFound == OpenMode_if_NotFound::Create) ? OPEN_ALWAYS : OPEN_EXISTING);
+				break;
+			}
+		case OpenMode_if_Exists::Truncate:
+			{
+				openMode = ((ifNotFound == OpenMode_if_NotFound::Create) ? CREATE_ALWAYS : TRUNCATE_EXISTING);
+				break;
+			}
+		default: // OpenMode_if_Exists::Fail
+			{
+				if (ifNotFound == OpenMode_if_NotFound::Create)
+				{
+					openMode = CREATE_NEW;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
 
-	//		HGLOBAL pResource = ::LoadResource(hModule, hrs);
+		const HANDLE fileHandle = ::CreateFileW(
+			Unicode::ToWstring(path).c_str(), (GENERIC_READ | GENERIC_WRITE), (FILE_SHARE_READ | FILE_SHARE_WRITE),
+			nullptr, openMode, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-	//		if (not pResource)
-	//		{
-	//			LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to load resource \"{0}\"", path));
-	//			return false;
-	//		}
+		if (fileHandle == INVALID_HANDLE_VALUE)
+		{
+			LOG_FAIL(fmt::format("❌ MemoryMappedFile: Failed to open file `{0}`", path));
+			return false;
+		}
 
-	//		m_resource =
-	//		{
-	//			.pointer	= static_cast<const Byte*>(::LockResource(pResource)),
-	//		};
+		LARGE_INTEGER size{};
+		::GetFileSizeEx(fileHandle, &size);
+		const int64 fileSize = size.QuadPart;
 
-	//		m_info =
-	//		{
-	//			.fullPath	= FilePath{ path },
-	//			.fileSize	= ::SizeofResource(hModule, hrs),
-	//			.isOpen		= true,
-	//		};
+		m_file =
+		{
+			.fileHandle		= fileHandle,
+			.fileMapping	= nullptr,
+			.baseAddress	= nullptr,
+		};
 
-	//		LOG_INFO(fmt::format("📤 MemoryMappedFileView: Opened resource \"{0}\" size: {1}", m_info.fullPath, FormatDataSize(m_info.fileSize)));
-	//	}
-	//	else
-	//	{
-	//		const HANDLE fileHandle = ::CreateFileW(
-	//			Unicode::ToWstring(path).c_str(), GENERIC_READ, (FILE_SHARE_READ | FILE_SHARE_WRITE),
-	//			nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+		m_info =
+		{
+			.fullPath	= FileSystem::FullPath(path),
+			.fileSize	= fileSize,
+			.isOpen		= true,
+		};
 
-	//		if (fileHandle == INVALID_HANDLE_VALUE)
-	//		{
-	//			LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to open file `{0}`", path));
-	//			return false;
-	//		}
+		LOG_INFO(fmt::format("📤 MemoryMappedFile: Opened file `{0}` size: {1}", m_info.fullPath, FormatDataSize(m_info.fileSize)));
 
-	//		LARGE_INTEGER size{};
-	//		::GetFileSizeEx(fileHandle, &size);
-	//		const int64 fileSize = size.QuadPart;
+		return true;
+	}
 
-	//		m_file =
-	//		{
-	//			.fileHandle		= fileHandle,
-	//			.fileMapping	= nullptr,
-	//			.baseAddress	= nullptr,
-	//		};
+	void MemoryMappedFile::MemoryMappedFileDetail::close()
+	{
+		if (not m_info.isOpen)
+		{
+			return;
+		}
 
-	//		m_info =
-	//		{
-	//			.fullPath	= FileSystem::FullPath(path),
-	//			.fileSize	= fileSize,
-	//			.isOpen		= true,
-	//		};
+		unmap();
 
-	//		LOG_INFO(fmt::format("📤 MemoryMappedFileView: Opened file `{0}` size: {1}", m_info.fullPath, FormatDataSize(m_info.fileSize)));
-	//	}
+		::CloseHandle(m_file.fileHandle);
+		m_file = {};
 
-	//	return true;
-	//}
+		LOG_INFO(fmt::format("📥 MemoryMappedFile: File `{0}` closed", m_info.fullPath));
 
-	//void MemoryMappedFileView::MemoryMappedFileViewDetail::close()
-	//{
-	//	if (not m_info.isOpen)
-	//	{
-	//		return;
-	//	}
+		m_info = {};
+	}
 
-	//	unmap();
+	bool MemoryMappedFile::MemoryMappedFileDetail::isOpen() const
+	{
+		return m_info.isOpen;
+	}
 
-	//	if (isResource())
-	//	{
-	//		m_resource = {};
+	WritableMappedMemory MemoryMappedFile::MemoryMappedFileDetail::map(const size_t offset, const size_t requestSize)
+	{
+		if (not m_info.isOpen)
+		{
+			return{};
+		}
 
-	//		LOG_INFO(fmt::format("📥 MemoryMappedFileView: Resource `{0}` closed", m_info.fullPath));
-	//	}
-	//	else
-	//	{
-	//		::CloseHandle(m_file.fileHandle);
-	//		m_file = {};
+		// すでにファイルがマップされている場合は何もしない
+		if (m_file.fileMapping)
+		{
+			return{};
+		}
 
-	//		LOG_INFO(fmt::format("📥 MemoryMappedFileView: File `{0}` closed", m_info.fullPath));
-	//	}
+		if (m_info.fileSize < static_cast<int64>(offset))
+		{
+			return{};
+		}
 
-	//	m_info = {};
-	//}
+		const size_t mapSize = (requestSize ? requestSize : Min(requestSize, static_cast<size_t>(m_info.fileSize - offset)));
 
-	//bool MemoryMappedFileView::MemoryMappedFileViewDetail::isOpen() const
-	//{
-	//	return m_info.isOpen;
-	//}
+		if (mapSize == 0)
+		{
+			return{};
+		}
 
-	//MappedMemory MemoryMappedFileView::MemoryMappedFileViewDetail::map(const size_t offset, const size_t requestSize)
-	//{
-	//	if (not m_info.isOpen)
-	//	{
-	//		return{};
-	//	}
+		const size_t internalOffset = (offset / g_granularity * g_granularity);
 
-	//	// すでにファイルがマップされている場合は何もしない
-	//	if (m_file.fileMapping)
-	//	{
-	//		return{};
-	//	}
+		m_file.fileMapping = ::CreateFileMappingW(
+			m_file.fileHandle, 0, PAGE_READWRITE,
+			(static_cast<uint64>(offset + mapSize) >> 32), ((offset + mapSize) & 0xffFFffFF), nullptr);
 
-	//	if (m_info.fileSize <= static_cast<int64>(offset))
-	//	{
-	//		return{};
-	//	}
+		if (m_file.fileMapping == nullptr)
+		{
+			LOG_FAIL(fmt::format("❌ MemoryMappedFile: CreateFileMappingW() failed. offset: {0}, size: {1}", offset, mapSize));
+			return{};
+		}
 
-	//	const size_t mapSize = Min(requestSize, static_cast<size_t>(m_info.fileSize - offset));
+		m_file.baseAddress = static_cast<Byte*>(::MapViewOfFile(
+			m_file.fileMapping, FILE_MAP_WRITE, (static_cast<uint64>(internalOffset) >> 32),
+			(internalOffset & 0xffFFffFF), (offset - internalOffset + mapSize)));
 
-	//	if (mapSize == 0)
-	//	{
-	//		return{};
-	//	}
+		if (m_file.baseAddress == nullptr)
+		{
+			LOG_FAIL(fmt::format("❌ MemoryMappedFile: MapViewOfFile() failed. offset: {0}, size: {1}", offset, mapSize));
+			return{};
+		}
 
-	//	if (isResource())
-	//	{
-	//		return{ .data = (m_resource.pointer + offset), .size = mapSize };
-	//	}
-	//	else
-	//	{
-	//		const size_t internalOffset = (offset / g_granularity * g_granularity);
+		if (static_cast<size_t>(m_info.fileSize) < (offset + mapSize))
+		{
+			m_info.fileSize = (offset + mapSize);
+		}
 
-	//		m_file.fileMapping = ::CreateFileMappingW(
-	//			m_file.fileHandle, 0, PAGE_READONLY,
-	//			(static_cast<uint64>(offset + mapSize) >> 32), ((offset + mapSize) & 0xffFFffFF), nullptr);
+		return{ .data = (m_file.baseAddress + (offset - internalOffset)), .size = mapSize };
+	}
 
-	//		if (m_file.fileMapping == NULL)
-	//		{
-	//			LOG_FAIL(fmt::format("❌ MemoryMappedFileView: CreateFileMappingW() failed. offset: {0}, size: {1}", offset, mapSize));
-	//			return{};
-	//		}
+	void MemoryMappedFile::MemoryMappedFileDetail::unmap()
+	{
+		// ファイルがマップされていなければ何もしない
+		if (not m_file.fileMapping)
+		{
+			return;
+		}
 
-	//		m_file.baseAddress = static_cast<const Byte*>(::MapViewOfFile(
-	//			m_file.fileMapping, FILE_MAP_READ, (static_cast<uint64>(internalOffset) >> 32),
-	//			(internalOffset & 0xffFFffFF), (offset - internalOffset + mapSize)));
+		if (not ::UnmapViewOfFile(m_file.baseAddress))
+		{
+			LOG_FAIL("❌ MemoryMappedFile: UnmapViewOfFile() failed.");
+		}
+		m_file.baseAddress = nullptr;
 
-	//		if (m_file.baseAddress == nullptr)
-	//		{
-	//			LOG_FAIL(fmt::format("❌ MemoryMappedFileView: MapViewOfFile() failed. offset: {0}, size: {1}", offset, mapSize));
-	//			return{};
-	//		}
+		if (not ::CloseHandle(m_file.fileMapping))
+		{
+			LOG_FAIL("❌ MemoryMappedFile: CloseHandle() failed.");
+		}
+		m_file.fileMapping = nullptr;
+	}
 
-	//		return{ .data = (m_file.baseAddress + (offset - internalOffset)), .size = mapSize };
-	//	}
-	//}
+	int64 MemoryMappedFile::MemoryMappedFileDetail::size() const
+	{
+		return m_info.fileSize;
+	}
 
-	//void MemoryMappedFileView::MemoryMappedFileViewDetail::unmap()
-	//{
-	//	// ファイルがマップされていなければ何もしない
-	//	if (not m_file.fileMapping)
-	//	{
-	//		return;
-	//	}
-
-	//	if (not ::UnmapViewOfFile(m_file.baseAddress))
-	//	{
-	//		LOG_FAIL("❌ MemoryMappedFileView: UnmapViewOfFile() failed.");
-	//	}
-	//	m_file.baseAddress = nullptr;
-
-	//	if (not ::CloseHandle(m_file.fileMapping))
-	//	{
-	//		LOG_FAIL("❌ MemoryMappedFileView: CloseHandle() failed.");
-	//	}
-	//	m_file.fileMapping = nullptr;
-	//}
-
-	//int64 MemoryMappedFileView::MemoryMappedFileViewDetail::size() const
-	//{
-	//	return m_info.fileSize;
-	//}
-
-	//const FilePath& MemoryMappedFileView::MemoryMappedFileViewDetail::path() const
-	//{
-	//	return m_info.fullPath;
-	//}
-
-	//bool MemoryMappedFileView::MemoryMappedFileViewDetail::isResource() const noexcept
-	//{
-	//	return (m_resource.pointer != nullptr);
-	//}
+	const FilePath& MemoryMappedFile::MemoryMappedFileDetail::path() const
+	{
+		return m_info.fullPath;
+	}
 }

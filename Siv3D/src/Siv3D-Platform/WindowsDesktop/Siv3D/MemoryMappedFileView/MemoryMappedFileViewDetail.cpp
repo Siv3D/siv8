@@ -181,7 +181,7 @@ namespace s3d
 				m_file.fileHandle, 0, PAGE_READONLY,
 				(static_cast<uint64>(offset + mapSize) >> 32), ((offset + mapSize) & 0xffFFffFF), nullptr);
 
-			if (m_file.fileMapping == NULL)
+			if (m_file.fileMapping == nullptr)
 			{
 				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: CreateFileMappingW() failed. offset: {0}, size: {1}", offset, mapSize));
 				return{};

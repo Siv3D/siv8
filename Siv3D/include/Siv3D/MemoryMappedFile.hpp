@@ -35,8 +35,6 @@ namespace s3d
 
 			JustOpen,
 
-			MapAll,
-
 			Truncate,
 		};
 
