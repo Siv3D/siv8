@@ -419,13 +419,13 @@
 # include <Siv3D/MemoryReader.hpp>
 
 // マップされた読み込み専用メモリ | Mapped memory
-# include <Siv3D/MappedMemory.hpp>
+# include <Siv3D/MappedMemoryView.hpp>
 
 // 読み込み専用メモリマップトファイル | Read-only memory mapped file
 # include <Siv3D/MemoryMappedFileView.hpp>
 
 // マップされた書き込み可能なメモリ | Mapped memory
-# include <Siv3D/WritableMappedMemory.hpp>
+# include <Siv3D/MappedMemory.hpp>
 
 // 書き込み可能なメモリマップトファイル | Writable memory mapped file
 # include <Siv3D/MemoryMappedFile.hpp>

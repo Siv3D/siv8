@@ -144,7 +144,7 @@ namespace s3d
 		return m_info.isOpen;
 	}
 
-	MappedMemory MemoryMappedFileView::MemoryMappedFileViewDetail::map(const size_t offset, const size_t requestSize)
+	MappedMemoryView MemoryMappedFileView::MemoryMappedFileViewDetail::map(const size_t offset, const size_t requestSize)
 	{
 		if (not m_info.isOpen)
 		{

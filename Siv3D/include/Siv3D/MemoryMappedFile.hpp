@@ -14,7 +14,7 @@
 # include "Common.hpp"
 # include "Byte.hpp"
 # include "String.hpp"
-# include "WritableMappedMemory.hpp"
+# include "MappedMemory.hpp"
 
 namespace s3d
 {
@@ -114,7 +114,7 @@ namespace s3d
 		/// @return マップされたメモリの情報
 		/// @remark マップするサイズが 0 の場合、マップは失敗します。
 		[[nodiscard]]
-		WritableMappedMemory map(size_t offset, size_t requestSize);
+		MappedMemory map(size_t offset, size_t requestSize);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -126,7 +126,7 @@ namespace s3d
 		/// @return マップされたメモリの情報
 		/// @remark マップするサイズが 0 の場合、マップは失敗します。
 		[[nodiscard]]
-		WritableMappedMemory mapAll();
+		MappedMemory mapAll();
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -14,7 +14,7 @@
 # include "Common.hpp"
 # include "Byte.hpp"
 # include "String.hpp"
-# include "MappedMemory.hpp"
+# include "MappedMemoryView.hpp"
 
 namespace s3d
 {
@@ -100,7 +100,7 @@ namespace s3d
 		/// @return マップされたメモリの情報
 		/// @remark マップするサイズが 0 の場合、マップは失敗します。
 		[[nodiscard]]
-		MappedMemory map(size_t offset, size_t requestSize);
+		MappedMemoryView map(size_t offset, size_t requestSize);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -112,7 +112,7 @@ namespace s3d
 		/// @return マップされたメモリの情報
 		/// @remark マップするサイズが 0 の場合、マップは失敗します。
 		[[nodiscard]]
-		MappedMemory mapAll();
+		MappedMemoryView mapAll();
 
 		////////////////////////////////////////////////////////////////
 		//

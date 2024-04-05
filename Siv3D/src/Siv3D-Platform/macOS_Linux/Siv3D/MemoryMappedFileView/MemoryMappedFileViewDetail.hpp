@@ -29,7 +29,7 @@ namespace s3d
 		bool isOpen() const;
 
 		[[nodiscard]]
-		MappedMemory map(size_t offset, size_t requestSize);
+		MappedMemoryView map(size_t offset, size_t requestSize);
 
 		void unmap();
 

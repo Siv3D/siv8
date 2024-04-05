@@ -15,15 +15,15 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	WritableMappedMemory
+	//	MappedMemoryView
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief マップされたメモリの情報 | Information of the mapped memory
-	struct WritableMappedMemory
+	/// @brief マップされた読み込み専用メモリの情報 | Information of the mapped memory
+	struct MappedMemoryView
 	{
 		/// @brief メモリの先頭アドレス | The pointer to the memory
-		void* data = nullptr;
+		const void* data = nullptr;
 
 		/// @brief メモリのサイズ（バイト） | The size of the memory in bytes
 		size_t size = 0;
@@ -41,4 +41,4 @@ namespace s3d
 	};
 }
 
-# include "detail/WritableMappedMemory.ipp"
+# include "detail/MappedMemoryView.ipp"

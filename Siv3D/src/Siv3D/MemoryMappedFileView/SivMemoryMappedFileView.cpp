@@ -79,7 +79,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MappedMemory MemoryMappedFileView::map(const size_t offset, const size_t requestSize)
+	MappedMemoryView MemoryMappedFileView::map(const size_t offset, const size_t requestSize)
 	{
 		return pImpl->map(offset, requestSize);
 	}
@@ -90,7 +90,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MappedMemory MemoryMappedFileView::mapAll()
+	MappedMemoryView MemoryMappedFileView::mapAll()
 	{
 		return pImpl->map(0, pImpl->size());
 	}

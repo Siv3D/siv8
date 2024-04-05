@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include <Siv3D/MemoryMappedFile.hpp>
-# include <Siv3D/Windows/Windows.hpp>
 
 namespace s3d
 {
@@ -31,7 +30,7 @@ namespace s3d
 		bool isOpen() const;
 
 		[[nodiscard]]
-		MappedMemory map(size_t offset, size_t requestSize);
+		WritableMappedMemory map(size_t offset, size_t requestSize);
 
 		void unmap();
 
@@ -45,24 +44,24 @@ namespace s3d
 
 	private:
 
-		struct File
-		{
-			HANDLE fileHandle = INVALID_HANDLE_VALUE;
+		//struct File
+		//{
+		//	HANDLE fileHandle = INVALID_HANDLE_VALUE;
 
-			HANDLE fileMapping = nullptr;
+		//	HANDLE fileMapping = nullptr;
 
-			Byte* baseAddress	= nullptr;
+		//	Byte* baseAddress	= nullptr;
 
-		} m_file;
+		//} m_file;
 
-		struct Info
-		{
-			FilePath fullPath;
+		//struct Info
+		//{
+		//	FilePath fullPath;
 
-			int64 fileSize = 0;
+		//	int64 fileSize = 0;
 
-			bool isOpen = false;
+		//	bool isOpen = false;
 
-		} m_info;
+		//} m_info;
 	};
 }

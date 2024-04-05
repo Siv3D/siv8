@@ -9,18 +9,12 @@
 //
 //-----------------------------------------------
 
-# pragma once
+# include <Siv3D/FileSystem.hpp>
+# include <Siv3D/FormatUtility.hpp>
+# include <Siv3D/EngineLog.hpp>
+# include "MemoryMappedFileDetail.hpp"
 
 namespace s3d
 {
-	////////////////////////////////////////////////////////////////
-	//
-	//	operator bool
-	//
-	////////////////////////////////////////////////////////////////
 
-	constexpr WritableMappedMemory::operator bool() const noexcept
-	{
-		return (data != nullptr);
-	}
 }

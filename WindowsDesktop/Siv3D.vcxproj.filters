@@ -1284,10 +1284,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFileView.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\MappedMemory.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\MappedMemoryView.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MappedMemory.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MappedMemoryView.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.hpp">
@@ -1521,10 +1521,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Compression.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\WritableMappedMemory.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\MappedMemory.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\WritableMappedMemory.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MappedMemory.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.hpp">

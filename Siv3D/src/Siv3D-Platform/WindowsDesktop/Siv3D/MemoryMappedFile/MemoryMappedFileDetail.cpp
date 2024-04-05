@@ -126,7 +126,7 @@ namespace s3d
 		return m_info.isOpen;
 	}
 
-	WritableMappedMemory MemoryMappedFile::MemoryMappedFileDetail::map(const size_t offset, const size_t requestSize)
+	MappedMemory MemoryMappedFile::MemoryMappedFileDetail::map(const size_t offset, const size_t requestSize)
 	{
 		if (not m_info.isOpen)
 		{
