@@ -1321,6 +1321,22 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	subspan
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::span<String::value_type> String::subspan(const size_type pos, const size_type count) noexcept
+	{
+		return std::span{ m_string }.subspan(pos, count);
+	}
+
+	constexpr std::span<const String::value_type> String::subspan(const size_type pos, const size_type count) const noexcept
+	{
+		return std::span{ m_string }.subspan(pos, count);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	all
 	//
 	////////////////////////////////////////////////////////////////

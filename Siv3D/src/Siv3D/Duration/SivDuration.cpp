@@ -96,13 +96,6 @@ namespace s3d
 		}
 
 		template <class DurationType>
-		void FormatDuration(FormatData& formatData, const DurationType& d, char32 unit)
-		{
-			Formatter(formatData, d.count());
-			formatData.string.push_back(unit);
-		}
-
-		template <class DurationType>
 		void FormatDuration(FormatData& formatData, const DurationType& d, StringView unit)
 		{
 			Formatter(formatData, d.count());
@@ -201,71 +194,71 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const Days& days)
 	{
-		FormatDuration(formatData, days, U'd');
+		FormatDuration(formatData, days, U" d");
 	}
 
 	void Formatter(FormatData& formatData, const DaysF& days)
 	{
-		FormatDuration(formatData, days, U'd');
+		FormatDuration(formatData, days, U" d");
 	}
 
 	void Formatter(FormatData& formatData, const Hours& hours)
 	{
-		FormatDuration(formatData, hours, U'h');
+		FormatDuration(formatData, hours, U" h");
 	}
 
 	void Formatter(FormatData& formatData, const HoursF& hours)
 	{
-		FormatDuration(formatData, hours, U'h');
+		FormatDuration(formatData, hours, U" h");
 	}
 
 	void Formatter(FormatData& formatData, const Minutes& minutes)
 	{
-		FormatDuration(formatData, minutes, U"min");
+		FormatDuration(formatData, minutes, U" min");
 	}
 
 	void Formatter(FormatData& formatData, const MinutesF& minutes)
 	{
-		FormatDuration(formatData, minutes, U"min");
+		FormatDuration(formatData, minutes, U" min");
 	}
 
 	void Formatter(FormatData& formatData, const Seconds& seconds)
 	{
-		FormatDuration(formatData, seconds, U's');
+		FormatDuration(formatData, seconds, U" s");
 	}
 
 	void Formatter(FormatData& formatData, const SecondsF& seconds)
 	{
-		FormatDuration(formatData, seconds, U's');
+		FormatDuration(formatData, seconds, U" s");
 	}
 
 	void Formatter(FormatData& formatData, const Milliseconds& milliseconds)
 	{
-		FormatDuration(formatData, milliseconds, U"ms");
+		FormatDuration(formatData, milliseconds, U" ms");
 	}
 
 	void Formatter(FormatData& formatData, const MillisecondsF& milliseconds)
 	{
-		FormatDuration(formatData, milliseconds, U"ms");
+		FormatDuration(formatData, milliseconds, U" ms");
 	}
 
 	void Formatter(FormatData& formatData, const Microseconds& microseconds)
 	{
-		FormatDuration(formatData, microseconds, U"us");
+		FormatDuration(formatData, microseconds, U" us");
 	}
 
 	void Formatter(FormatData& formatData, const MicrosecondsF& microseconds)
 	{
-		FormatDuration(formatData, microseconds, U"us");
+		FormatDuration(formatData, microseconds, U" us");
 	}
 
 	void Formatter(FormatData& formatData, const Nanoseconds& nanoseconds)
 	{
-		FormatDuration(formatData, nanoseconds, U"ns");
+		FormatDuration(formatData, nanoseconds, U" ns");
 	}
 
 	void Formatter(FormatData& formatData, const NanosecondsF& nanoseconds)
 	{
-		FormatDuration(formatData, nanoseconds, U"ns");
+		FormatDuration(formatData, nanoseconds, U" ns");
 	}
 }

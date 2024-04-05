@@ -144,7 +144,7 @@ namespace s3d
 		return m_info.isOpen;
 	}
 
-	MappedMemory MemoryMappedFileView::MemoryMappedFileViewDetail::map(const size_t offset, const size_t requestSize)
+	MappedMemoryView MemoryMappedFileView::MemoryMappedFileViewDetail::map(const size_t offset, const size_t requestSize)
 	{
 		if (not m_info.isOpen)
 		{
@@ -157,6 +157,7 @@ namespace s3d
 			return{};
 		}
 
+		// ファイルサイズよりも大きいオフセットが指定された場合は失敗
 		if (m_info.fileSize <= static_cast<int64>(offset))
 		{
 			return{};
@@ -181,7 +182,7 @@ namespace s3d
 				m_file.fileHandle, 0, PAGE_READONLY,
 				(static_cast<uint64>(offset + mapSize) >> 32), ((offset + mapSize) & 0xffFFffFF), nullptr);
 
-			if (m_file.fileMapping == NULL)
+			if (m_file.fileMapping == nullptr)
 			{
 				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: CreateFileMappingW() failed. offset: {0}, size: {1}", offset, mapSize));
 				return{};

@@ -441,6 +441,9 @@ gmon.out
 **/App/AS_DEBUG/
 **/App/Screenshot/
 
+## Ignore test output
+/Test/output/
+
 # example Wavefront .obj files
 !**/example/obj/
 !**/example/obj/*.obj

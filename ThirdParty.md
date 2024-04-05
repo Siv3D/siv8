@@ -17,11 +17,12 @@ Name | Version
 [miniutf](https://github.com/dropbox/miniutf) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
-[PCG](https://github.com/imneme/pcg-cpp) | 
-[simde](https://github.com/nemequ/simde) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 5.0.0
+[pcg-cpp](https://github.com/imneme/pcg-cpp) | 
+[simde](https://github.com/nemequ/simde) | v0.8.0
+[simdutf](https://github.com/simdutf/simdutf) | Version 5.2.2
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
+[Zstandard](https://github.com/facebook/zstd) | v1.5.6

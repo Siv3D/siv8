@@ -18,15 +18,15 @@ namespace s3d
 	{
 		static constexpr StringView BytesUnits[9] =
 		{
-			U"B",
-			U"KiB",
-			U"MiB",
-			U"GiB",
-			U"TiB",
-			U"PiB",
-			U"EiB",
-			U"ZiB",
-			U"YiB",
+			U" B",
+			U" KiB",
+			U" MiB",
+			U" GiB",
+			U" TiB",
+			U" PiB",
+			U" EiB",
+			U" ZiB",
+			U" YiB",
 		};
 	}
 	

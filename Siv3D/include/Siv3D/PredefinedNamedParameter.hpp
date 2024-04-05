@@ -14,7 +14,7 @@
 
 namespace s3d::Arg
 {
-	SIV3D_NAMED_PARAMETER(generator);			// Array, Image
+	SIV3D_NAMED_PARAMETER(generator);			// Array, Image, Grid
 	SIV3D_NAMED_PARAMETER(generator0_1);		// Image
 	SIV3D_NAMED_PARAMETER(reserve);				// Array
 

@@ -93,7 +93,7 @@ namespace s3d
 		return m_info.isOpen;
 	}
 
-	MappedMemory MemoryMappedFileView::MemoryMappedFileViewDetail::map(const size_t offset, const size_t requestSize)
+	MappedMemoryView MemoryMappedFileView::MemoryMappedFileViewDetail::map(const size_t offset, const size_t requestSize)
 	{
 		if (not m_info.isOpen)
 		{
@@ -106,6 +106,7 @@ namespace s3d
 			return{};
 		}
 
+		// ファイルサイズよりも大きいオフセットが指定された場合は失敗
 		if (m_info.fileSize <= static_cast<int64>(offset))
 		{
 			return{};

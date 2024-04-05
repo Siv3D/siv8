@@ -13,7 +13,7 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		[[nodiscard]]
 		constexpr uint8 MakeByte(const uint32 c0, const uint32 c1) noexcept
@@ -126,11 +126,11 @@ namespace s3d
 
 	constexpr Optional<MD5Value> MD5Value::Parse(const std::string_view md5)
 	{
-		return detail::ParseMD5(md5.data(), (md5.data() + md5.size()));
+		return ParseMD5(md5.data(), (md5.data() + md5.size()));
 	}
 
 	constexpr Optional<MD5Value> MD5Value::Parse(const StringView md5)
 	{
-		return detail::ParseMD5(md5.data(), (md5.data() + md5.size()));
+		return ParseMD5(md5.data(), (md5.data() + md5.size()));
 	}
 }

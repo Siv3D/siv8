@@ -124,7 +124,9 @@
 
 # include <Siv3D/Step.hpp>
 
-//# include <Siv3D/Step2D.hpp> // ToDo
+# include <Siv3D/Step2D.hpp>
+
+# include <Siv3D/Step3D.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -347,11 +349,11 @@
 // 経過時間の計測 | Stopwatch
 # include <Siv3D/Stopwatch.hpp>
 
-//// スピードを変更可能なストップウォッチ | Stopwatch with variable speed
-//# include <Siv3D/VariableSpeedStopwatch.hpp>
-//
-//// カウントダウンタイマー | Countdown timer
-//# include <Siv3D/Timer.hpp>
+// スピードを変更可能なストップウォッチ | Stopwatch with variable speed
+# include <Siv3D/VariableSpeedStopwatch.hpp>
+
+// カウントダウンタイマー | Countdown timer
+# include <Siv3D/Timer.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -409,27 +411,30 @@
 
 //// ファイルとディレクトリの変更の監視 | Directory watcher
 //# include <Siv3D/DirectoryWatcher.hpp>
-//
-//// 所有権を持たない、メモリ範囲への IReader インタフェース | IReader Wrapper for Non-Owning Memory Range 
-//# include <Siv3D/MemoryViewReader.hpp>
-//
-//// メモリ範囲への IReader インタフェース | IReader Wrapper for Memory Range 
-//# include <Siv3D/MemoryReader.hpp>
 
-// マップされたメモリ | Mapped memory
-# include <Siv3D/MappedMemory.hpp>
+// 所有権を持たない、メモリ範囲への IReader インタフェース | IReader Wrapper for Non-Owning Memory Range 
+# include <Siv3D/MemoryViewReader.hpp>
+
+// メモリ範囲への IReader インタフェース | IReader Wrapper for Memory Range 
+# include <Siv3D/MemoryReader.hpp>
+
+// マップされた読み込み専用メモリ | Mapped memory
+# include <Siv3D/MappedMemoryView.hpp>
 
 // 読み込み専用メモリマップトファイル | Read-only memory mapped file
 # include <Siv3D/MemoryMappedFileView.hpp>
 
+// マップされた書き込み可能なメモリ | Mapped memory
+# include <Siv3D/MappedMemory.hpp>
+
 // 書き込み可能なメモリマップトファイル | Writable memory mapped file
-# include <Siv3D/MemoryMappedFile.hpp> // ToDo
+# include <Siv3D/MemoryMappedFile.hpp>
 
 // メモリ上のバッファ | Binary Large Object
 # include <Siv3D/Blob.hpp>
 
-//// 書き込み用バッファ | Memory writer
-//# include <Siv3D/MemoryWriter.hpp>
+// 書き込み用バッファ | Memory writer
+# include <Siv3D/MemoryWriter.hpp>
 
 // ファイルオープンモード / File open mode
 # include <Siv3D/OpenMode.hpp>
@@ -466,10 +471,10 @@
 
 //// zlib 方式による可逆圧縮 | Lossless compression with zlib format
 //# include <Siv3D/Zlib.hpp>
-//
-//// Zstandard 方式による可逆圧縮 | Lossless compression with Zstandard algorithm
-//# include <Siv3D/Compression.hpp>
-//
+
+// Zstandard 方式による可逆圧縮 | Lossless compression with Zstandard algorithm
+# include <Siv3D/Compression.hpp>
+
 //// ZIP 圧縮ファイルの読み込み | ZIP reader
 //# include <Siv3D/ZIPReader.hpp>
 //
@@ -687,6 +692,9 @@
 
 // 整数の 2 次元ベクトル | 2D vector (integer)
 # include <Siv3D/Point.hpp> // ToDo
+
+// 整数の 3 次元ベクトル | 3D vector (integer)
+# include <Siv3D/Point3D.hpp> // ToDo
 
 // 2 次元ベクトル | 2D vector
 # include <Siv3D/Vector2D.hpp> // ToDo
@@ -1091,7 +1099,7 @@
 //# include <Siv3D/BoxFilterSize.hpp>
 
 // 画像 | Image
-# include <Siv3D/Image.hpp>
+# include <Siv3D/Image.hpp> // ToDo
 
 //// 追加の画像処理 | Extra image processing
 //# include <Siv3D/ImageProcessing.hpp>

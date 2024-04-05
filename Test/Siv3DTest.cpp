@@ -26,6 +26,11 @@ void RunTest()
 	Console.open();
 
 	doctest::Context context;
+	{
+		FileSystem::Remove(U"../../Test/output/");
 
-	context.run();
+		context.run();
+
+		FileSystem::Remove(U"../../Test/output/");
+	}
 }

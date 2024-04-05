@@ -23,10 +23,16 @@ namespace s3d
 	struct MappedMemory
 	{
 		/// @brief メモリの先頭アドレス | The pointer to the memory
-		const void* data = nullptr;
+		void* data = nullptr;
 
 		/// @brief メモリのサイズ（バイト） | The size of the memory in bytes
 		size_t size = 0;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator bool
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief メモリが有効かを返します。
 		/// @return メモリが有効な場合 true, それ以外の場合は false
