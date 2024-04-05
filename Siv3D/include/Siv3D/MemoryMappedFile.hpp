@@ -55,9 +55,7 @@ namespace s3d
 		MemoryMappedFile();
 
 		[[nodiscard]]
-		explicit MemoryMappedFile(FilePathView path,
-			OpenMode_if_Exists ifExists = OpenMode_if_Exists::Truncate,
-			OpenMode_if_NotFound ifNotFound = OpenMode_if_NotFound::Create);
+		MemoryMappedFile(FilePathView path, OpenMode_if_Exists ifExists, OpenMode_if_NotFound ifNotFound = OpenMode_if_NotFound::Create);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -65,9 +63,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool open(FilePathView path,
-			OpenMode_if_Exists ifExists = OpenMode_if_Exists::Truncate,
-			OpenMode_if_NotFound ifNotFound = OpenMode_if_NotFound::Create);
+		bool open(FilePathView path, OpenMode_if_Exists ifExists, OpenMode_if_NotFound ifNotFound = OpenMode_if_NotFound::Create);
 
 		////////////////////////////////////////////////////////////////
 		//
