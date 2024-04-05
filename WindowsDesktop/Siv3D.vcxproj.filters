@@ -409,6 +409,9 @@
     <Filter Include="src\Siv3D\IImageDecoder">
       <UniqueIdentifier>{78fe3332-b3de-4306-9b8e-d00cca092639}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ImageDecoder">
+      <UniqueIdentifier>{9d89d638-a0a6-4839-a117-d30590e40f46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1548,6 +1551,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\IImageEncoder.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.hpp">
+      <Filter>src\Siv3D\ImageDecoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\IImageDecoder.hpp">
+      <Filter>src\Siv3D\ImageDecoder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -2014,6 +2023,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\IImageDecoder\SivIImageDecoder.cpp">
       <Filter>src\Siv3D\IImageDecoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.cpp">
+      <Filter>src\Siv3D\ImageDecoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\ImageDecoderFactory.cpp">
+      <Filter>src\Siv3D\ImageDecoder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

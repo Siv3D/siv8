@@ -51,5 +51,8 @@ namespace s3d
 
 		/// @brief SVG
 		SVG,
+
+		/// @brief 指定しない（データと拡張子から判断）
+		Unspecified = Unknown,
 	};
 }

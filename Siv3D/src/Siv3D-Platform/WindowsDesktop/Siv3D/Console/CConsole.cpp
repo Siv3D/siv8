@@ -14,6 +14,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Windows/MinWindows.hpp>
 # include "CConsole.hpp"
+# include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
@@ -21,6 +22,8 @@ namespace s3d
 
 	CConsole::~CConsole()
 	{
+		LOG_SCOPED_DEBUG("CConsole::~CConsole()");
+
 		close();
 	}
 

@@ -20,8 +20,6 @@ namespace s3d
 
 		CConsole();
 
-		~CConsole() override;
-
 		void open() override;
 
 		void close() override;
