@@ -819,6 +819,9 @@
 		F9528C462BBF026F00222F45 /* zstd_errors.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528C002BBF026F00222F45 /* zstd_errors.h */; };
 		F9528C472BBF026F00222F45 /* zstd.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528C012BBF026F00222F45 /* zstd.h */; };
 		F9528C492BBF028E00222F45 /* Test_Compression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C482BBF028E00222F45 /* Test_Compression.cpp */; };
+		F9528C4C2BBFEC2400222F45 /* SivMemoryMappedFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C4A2BBFEC2400222F45 /* SivMemoryMappedFile.cpp */; };
+		F9528C4E2BBFEC3800222F45 /* MappedMemoryView.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C4D2BBFEC3800222F45 /* MappedMemoryView.hpp */; };
+		F9528C502BBFEC4D00222F45 /* MappedMemoryView.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C4F2BBFEC4D00222F45 /* MappedMemoryView.ipp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1639,6 +1642,9 @@
 		F9528C002BBF026F00222F45 /* zstd_errors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zstd_errors.h; sourceTree = "<group>"; };
 		F9528C012BBF026F00222F45 /* zstd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zstd.h; sourceTree = "<group>"; };
 		F9528C482BBF028E00222F45 /* Test_Compression.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Compression.cpp; sourceTree = "<group>"; };
+		F9528C4A2BBFEC2400222F45 /* SivMemoryMappedFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMemoryMappedFile.cpp; sourceTree = "<group>"; };
+		F9528C4D2BBFEC3800222F45 /* MappedMemoryView.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MappedMemoryView.hpp; sourceTree = "<group>"; };
+		F9528C4F2BBFEC4D00222F45 /* MappedMemoryView.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MappedMemoryView.ipp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2439,6 +2445,7 @@
 				F9070B8C2B9F175000383E4D /* LoggerBuffer.ipp */,
 				F9070B8D2B9F175000383E4D /* MapFormatter.ipp */,
 				F9528B2C2BAFCDCF00222F45 /* MappedMemory.ipp */,
+				F9528C4F2BBFEC4D00222F45 /* MappedMemoryView.ipp */,
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
 				F9070B8F2B9F175000383E4D /* MD5Value.ipp */,
 				F9070B902B9F175000383E4D /* Memory.ipp */,
@@ -2591,6 +2598,7 @@
 				F9070BFE2B9F175000383E4D /* LogType.hpp */,
 				F9070BFF2B9F175000383E4D /* MapFormatter.hpp */,
 				F9528B282BAFCDB400222F45 /* MappedMemory.hpp */,
+				F9528C4D2BBFEC3800222F45 /* MappedMemoryView.hpp */,
 				F9070C002B9F175000383E4D /* MathConstants.hpp */,
 				F9070C012B9F175000383E4D /* MD5Value.hpp */,
 				F9070C022B9F175000383E4D /* Memory.hpp */,
@@ -3250,6 +3258,7 @@
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
+				F9528C4B2BBFEC2400222F45 /* MemoryMappedFile */,
 				F9528B2F2BB0562C00222F45 /* MemoryMappedFileView */,
 				F9528BB22BBE7D3400222F45 /* MemoryReader */,
 				F9528BA72BBDA25E00222F45 /* MemoryViewReader */,
@@ -3734,6 +3743,14 @@
 				F9528C012BBF026F00222F45 /* zstd.h */,
 			);
 			path = zstd;
+			sourceTree = "<group>";
+		};
+		F9528C4B2BBFEC2400222F45 /* MemoryMappedFile */ = {
+			isa = PBXGroup;
+			children = (
+				F9528C4A2BBFEC2400222F45 /* SivMemoryMappedFile.cpp */,
+			);
+			path = MemoryMappedFile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4260,6 +4277,7 @@
 				F90707522B9DAEC900383E4D /* simde-common.h in Headers */,
 				F90706B12B9DAEC900383E4D /* utility.h in Headers */,
 				F9070CEF2B9F175100383E4D /* PointVector.hpp in Headers */,
+				F9528C4E2BBFEC3800222F45 /* MappedMemoryView.hpp in Headers */,
 				F9528C422BBF026F00222F45 /* divsufsort.h in Headers */,
 				F9528C192BBF026F00222F45 /* zstd_deps.h in Headers */,
 				F9070CE32B9F175100383E4D /* OrderedSet.hpp in Headers */,
@@ -4272,6 +4290,7 @@
 				F90707062B9DAEC900383E4D /* negate.h in Headers */,
 				F90707052B9DAEC900383E4D /* multishift.h in Headers */,
 				F9070CFD2B9F175100383E4D /* Stopwatch.hpp in Headers */,
+				F9528C502BBFEC4D00222F45 /* MappedMemoryView.ipp in Headers */,
 				F90706922B9DAEC900383E4D /* policy_checks.h in Headers */,
 				F90706B32B9DAEC900383E4D /* EnumBitmask.hpp in Headers */,
 				F907074C2B9DAEC900383E4D /* debug-trap.h in Headers */,
@@ -4654,6 +4673,7 @@
 				F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */,
 				F9070DEB2B9F175E00383E4D /* SystemFactory.cpp in Sources */,
 				F9070AF32B9DEB5900383E4D /* bignum.cc in Sources */,
+				F9528C4C2BBFEC2400222F45 /* SivMemoryMappedFile.cpp in Sources */,
 				F9070DCA2B9F175E00383E4D /* SivEscapedFormatter.cpp in Sources */,
 				F9070DD82B9F175E00383E4D /* LoggerFactory.cpp in Sources */,
 				F9528C262BBF026F00222F45 /* zstd_compress_superblock.c in Sources */,
