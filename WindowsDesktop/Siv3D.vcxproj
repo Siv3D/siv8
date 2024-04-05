@@ -71,6 +71,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HardwareRNG.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HSV.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Image.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageDecoder.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageEncoder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MapFormatter.ipp" />
@@ -161,6 +163,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\IImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IImageEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Image.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageDecoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\BMPDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\BMPEncoder.hpp" />
@@ -466,8 +470,10 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\IImageDecoder\SivIImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\ImageDecoderFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\SivImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageEncoder\CImageEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageEncoder\ImageEncoderFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageEncoder\SivImageEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\BMP\BMPDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\BMP\BMPEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp" />
