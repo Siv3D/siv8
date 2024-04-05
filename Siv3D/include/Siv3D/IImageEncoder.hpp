@@ -19,6 +19,8 @@
 
 namespace s3d
 {
+	class IWriter;
+
 	struct IImageEncoder
 	{
 		virtual ~IImageEncoder() = default;
@@ -30,7 +32,7 @@ namespace s3d
 		virtual ImageFormat imageFormat() const noexcept = 0;
 
 		[[nodiscard]]
-		virtual const Array<String>& possibleExtensions() const noexcept = 0;
+		virtual const Array<String>& possibleExtensions() const = 0;
 
 		virtual bool save(const Image& image, FilePathView path) const = 0;
 

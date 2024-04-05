@@ -26,7 +26,7 @@ namespace s3d
 
 		bool add(std::unique_ptr<IImageDecoder>&& decoder) override;
 
-		void remove(StringView name) override;
+		void remove(StringView decoderName) override;
 
 		const Array<std::unique_ptr<IImageDecoder>>& enumDecoder() const noexcept override;
 

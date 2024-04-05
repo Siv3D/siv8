@@ -20,11 +20,11 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static Array<std::unique_ptr<IImageDecoder>>::const_iterator FindDecoderByName(const Array<std::unique_ptr<IImageDecoder>>& decoders, const StringView name) noexcept
+		static Array<std::unique_ptr<IImageDecoder>>::const_iterator FindDecoderByName(const Array<std::unique_ptr<IImageDecoder>>& decoders, const StringView decoderName) noexcept
 		{
-			return std::find_if(decoders.begin(), decoders.end(), [name](const std::unique_ptr<IImageDecoder>& decoder)
+			return std::find_if(decoders.begin(), decoders.end(), [decoderName](const std::unique_ptr<IImageDecoder>& decoder)
 				{
-					return (decoder->name() == name);
+					return (decoder->name() == decoderName);
 				});
 		}
 
@@ -133,19 +133,19 @@ namespace s3d
 		}
 	}
 
-	void CImageDecoder::remove(const StringView name)
+	void CImageDecoder::remove(const StringView decoderName)
 	{
-		const auto it = FindDecoderByName(m_decoders, name);
+		const auto it = FindDecoderByName(m_decoders, decoderName);
 
 		if (it != m_decoders.end())
 		{
 			m_decoders.erase(it);
 
-			LOG_INFO(fmt::format("🗑️ ImageDecoder: {} has been removed", name));
+			LOG_INFO(fmt::format("🗑️ ImageDecoder: {} has been removed", decoderName));
 		}
 		else
 		{
-			LOG_DEBUG(fmt::format("ImageDecoder: {} not found", name));
+			LOG_DEBUG(fmt::format("ImageDecoder: {} not found", decoderName));
 		}
 	}
 

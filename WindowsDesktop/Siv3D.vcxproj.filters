@@ -421,6 +421,9 @@
     <Filter Include="src\Siv3D\ImageFormat\BMP">
       <UniqueIdentifier>{d2c478e3-cff9-48e5-a579-b420372e28e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ImageEncoder">
+      <UniqueIdentifier>{7cf0e64c-1f81-4e58-a56a-cc946e4acc02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1572,6 +1575,15 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageFormat\BMP\BMPHeader.hpp">
       <Filter>src\Siv3D\ImageFormat\BMP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\BMPEncoder.hpp">
+      <Filter>include\Siv3D\ImageFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ImageEncoder\CImageEncoder.hpp">
+      <Filter>src\Siv3D\ImageEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ImageEncoder\IImageEncoder.hpp">
+      <Filter>src\Siv3D\ImageEncoder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -2047,6 +2059,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\BMP\BMPDecoder.cpp">
       <Filter>src\Siv3D\ImageFormat\BMP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\BMP\BMPEncoder.cpp">
+      <Filter>src\Siv3D\ImageFormat\BMP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageEncoder\ImageEncoderFactory.cpp">
+      <Filter>src\Siv3D\ImageEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageEncoder\CImageEncoder.cpp">
+      <Filter>src\Siv3D\ImageEncoder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -28,7 +28,7 @@ namespace s3d
 
 		virtual bool add(std::unique_ptr<IImageDecoder>&& decoder) = 0;
 
-		virtual void remove(StringView name) = 0;
+		virtual void remove(StringView decoderName) = 0;
 
 		virtual const Array<std::unique_ptr<IImageDecoder>>& enumDecoder() const noexcept = 0;
 
