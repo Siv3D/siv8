@@ -53,6 +53,8 @@ namespace s3d
 
 			Byte* baseAddress	= nullptr;
 
+			size_t mapLength = 0;
+
 		} m_file;
 
 		struct Info

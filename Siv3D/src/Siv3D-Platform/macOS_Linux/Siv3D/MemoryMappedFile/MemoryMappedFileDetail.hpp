@@ -44,24 +44,24 @@ namespace s3d
 
 	private:
 
-		//struct File
-		//{
-		//	HANDLE fileHandle = INVALID_HANDLE_VALUE;
+		struct File
+		{
+			int fileHandle = -1;
 
-		//	HANDLE fileMapping = nullptr;
+			Byte* baseAddress = nullptr;
 
-		//	Byte* baseAddress	= nullptr;
+			size_t mapLength = 0;
 
-		//} m_file;
+		} m_file;
 
-		//struct Info
-		//{
-		//	FilePath fullPath;
+		struct Info
+		{
+			FilePath fullPath;
 
-		//	int64 fileSize = 0;
+			int64 fileSize = 0;
 
-		//	bool isOpen = false;
+			bool isOpen = false;
 
-		//} m_info;
+		} m_info;
 	};
 }

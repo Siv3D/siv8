@@ -90,6 +90,7 @@ namespace s3d
 			.fileHandle		= fileHandle,
 			.fileMapping	= nullptr,
 			.baseAddress	= nullptr,
+			.mapLength		= 0,
 		};
 
 		m_info =
@@ -139,6 +140,7 @@ namespace s3d
 			return{};
 		}
 
+		// ファイルサイズよりも大きいオフセットが指定された場合は失敗
 		if (m_info.fileSize < static_cast<int64>(offset))
 		{
 			return{};
@@ -173,6 +175,8 @@ namespace s3d
 			return{};
 		}
 
+		m_file.mapLength = (offset - internalOffset + mapSize);
+
 		if (static_cast<size_t>(m_info.fileSize) < (offset + mapSize))
 		{
 			m_info.fileSize = (offset + mapSize);
@@ -200,6 +204,25 @@ namespace s3d
 			LOG_FAIL("❌ MemoryMappedFile: CloseHandle() failed.");
 		}
 		m_file.fileMapping = nullptr;
+		m_file.mapLength = 0;
+	}
+
+	bool MemoryMappedFile::MemoryMappedFileDetail::flush() const
+	{
+		if (not m_info.isOpen)
+		{
+			return false;
+		}
+
+		if (m_file.fileMapping)
+		{
+			return ((::FlushViewOfFile(m_file.baseAddress, m_file.mapLength) != 0)
+				&&  (::FlushFileBuffers(m_file.fileHandle) != 0));
+		}
+		else
+		{
+			return (::FlushFileBuffers(m_file.fileHandle) != 0);
+		}
 	}
 
 	int64 MemoryMappedFile::MemoryMappedFileDetail::size() const

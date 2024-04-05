@@ -157,6 +157,7 @@ namespace s3d
 			return{};
 		}
 
+		// ファイルサイズよりも大きいオフセットが指定された場合は失敗
 		if (m_info.fileSize <= static_cast<int64>(offset))
 		{
 			return{};
