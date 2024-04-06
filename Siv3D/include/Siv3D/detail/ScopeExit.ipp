@@ -29,7 +29,7 @@ namespace s3d
 	template <class Fty>
 	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty>
 																				|| std::is_nothrow_constructible_v<ExitFunction, Fty&>)
-		: m_exitFunction{ std::forward<ExitFunction>(exitFunction) } {}
+		: m_exitFunction{ std::forward<Fty>(exitFunction) } {}
 		
 	////////////////////////////////////////////////////////////////
 	//
