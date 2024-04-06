@@ -14,6 +14,7 @@
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/ImageFormat/BMPEncoder.hpp>
 # include <Siv3D/ImageFormat/PNGEncoder.hpp>
+# include <Siv3D/ImageFormat/JPEGEncoder.hpp>
 
 namespace s3d
 {
@@ -40,6 +41,7 @@ namespace s3d
 
 		m_encoders.push_back(std::make_unique<BMPEncoder>());
 		m_encoders.push_back(std::make_unique<PNGEncoder>());
+		m_encoders.push_back(std::make_unique<JPEGEncoder>());
 	}
 
 	bool CImageEncoder::add(std::unique_ptr<IImageEncoder>&& encoder)

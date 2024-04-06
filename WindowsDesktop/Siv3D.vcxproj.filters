@@ -433,6 +433,12 @@
     <Filter Include="src\Siv3D\ImageFormat\PNG">
       <UniqueIdentifier>{04a1644e-69c4-4565-b9b6-3e89a74eeed7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ImageFormat\JPEG">
+      <UniqueIdentifier>{a832502a-8c32-41b7-8b41-6838e9399a9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty-prebuilt\libjpeg-turbo">
+      <UniqueIdentifier>{2b1a31c7-c289-4ebf-8c31-23133abddf3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1629,6 +1635,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PNGFilter.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\JPEGDecoder.hpp">
+      <Filter>include\Siv3D\ImageFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\JPEGEncoder.hpp">
+      <Filter>include\Siv3D\ImageFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\libjpeg-turbo\turbojpeg.h">
+      <Filter>src\ThirdParty-prebuilt\libjpeg-turbo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -2125,6 +2140,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\PNG\PNGEncoder.cpp">
       <Filter>src\Siv3D\ImageFormat\PNG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\JPEG\JPEGDecoder.cpp">
+      <Filter>src\Siv3D\ImageFormat\JPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\JPEG\JPEGEncoder.cpp">
+      <Filter>src\Siv3D\ImageFormat\JPEG</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
