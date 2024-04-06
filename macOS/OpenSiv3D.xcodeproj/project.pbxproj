@@ -862,6 +862,12 @@
 		F9528CA62BC1209900222F45 /* zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA32BC1209900222F45 /* zlib.h */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
+		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
+		F9E5FC1F2BC13CAB0081A4F7 /* JPEGEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1D2BC13CAB0081A4F7 /* JPEGEncoder.hpp */; };
+		F9E5FC232BC13CD00081A4F7 /* JPEGDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FC202BC13CD00081A4F7 /* JPEGDecoder.cpp */; };
+		F9E5FC242BC13CD00081A4F7 /* JPEGEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FC212BC13CD00081A4F7 /* JPEGEncoder.cpp */; };
+		F9E5FC272BC13CF00081A4F7 /* turbojpeg.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC252BC13CF00081A4F7 /* turbojpeg.h */; };
+		F9E5FC292BC13F950081A4F7 /* libturbojpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC282BC13F950081A4F7 /* libturbojpeg.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1725,6 +1731,12 @@
 		F9528CA32BC1209900222F45 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
+		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
+		F9E5FC1D2BC13CAB0081A4F7 /* JPEGEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGEncoder.hpp; sourceTree = "<group>"; };
+		F9E5FC202BC13CD00081A4F7 /* JPEGDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JPEGDecoder.cpp; sourceTree = "<group>"; };
+		F9E5FC212BC13CD00081A4F7 /* JPEGEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JPEGEncoder.cpp; sourceTree = "<group>"; };
+		F9E5FC252BC13CF00081A4F7 /* turbojpeg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = turbojpeg.h; sourceTree = "<group>"; };
+		F9E5FC282BC13F950081A4F7 /* libturbojpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libturbojpeg.a; path = "../Siv3D/lib/macOS/libjpeg-turbo/libturbojpeg.a"; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1734,6 +1746,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */,
+				F9E5FC292BC13F950081A4F7 /* libturbojpeg.a in Frameworks */,
 				F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */,
 				F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */,
 				2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */,
@@ -1753,6 +1766,7 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F9E5FC282BC13F950081A4F7 /* libturbojpeg.a */,
 				F9E5FC192BC12C340081A4F7 /* libpng */,
 				F9E5FC172BC12C340081A4F7 /* zlib */,
 				F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */,
@@ -2462,6 +2476,7 @@
 		F9070A822B9DEB5900383E4D /* ThirdParty-prebuilt */ = {
 			isa = PBXGroup;
 			children = (
+				F9E5FC262BC13CF00081A4F7 /* libjpeg-turbo */,
 				F9528C9E2BC1208B00222F45 /* libpng */,
 				F9070A812B9DEB5900383E4D /* mimalloc */,
 				F9528CA42BC1209900222F45 /* zlib */,
@@ -3868,6 +3883,8 @@
 		F9528C5E2BC05B0200222F45 /* ImageFormat */ = {
 			isa = PBXGroup;
 			children = (
+				F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */,
+				F9E5FC1D2BC13CAB0081A4F7 /* JPEGEncoder.hpp */,
 				F9528C5C2BC05B0200222F45 /* BMPDecoder.hpp */,
 				F9528C5D2BC05B0200222F45 /* BMPEncoder.hpp */,
 				F9528C912BC1204200222F45 /* PNGDecoder.hpp */,
@@ -3898,6 +3915,7 @@
 			isa = PBXGroup;
 			children = (
 				F9528C742BC05B5A00222F45 /* BMP */,
+				F9E5FC222BC13CD00081A4F7 /* JPEG */,
 				F9528C982BC1206E00222F45 /* PNG */,
 			);
 			path = ImageFormat;
@@ -3971,6 +3989,23 @@
 			);
 			name = libpng;
 			path = ../Siv3D/lib/macOS/libpng;
+			sourceTree = "<group>";
+		};
+		F9E5FC222BC13CD00081A4F7 /* JPEG */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FC202BC13CD00081A4F7 /* JPEGDecoder.cpp */,
+				F9E5FC212BC13CD00081A4F7 /* JPEGEncoder.cpp */,
+			);
+			path = JPEG;
+			sourceTree = "<group>";
+		};
+		F9E5FC262BC13CF00081A4F7 /* libjpeg-turbo */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FC252BC13CF00081A4F7 /* turbojpeg.h */,
+			);
+			path = "libjpeg-turbo";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4230,6 +4265,7 @@
 				F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */,
 				F9528B6A2BB7087700222F45 /* LicenseManager.hpp in Headers */,
 				F9070CC62B9F175000383E4D /* HardwareRNG.hpp in Headers */,
+				F9E5FC1F2BC13CAB0081A4F7 /* JPEGEncoder.hpp in Headers */,
 				F9528C6A2BC05B0200222F45 /* IImageEncoder.hpp in Headers */,
 				F90707142B9DAEC900383E4D /* ror.h in Headers */,
 				F9528B802BB71F9900222F45 /* Profiler.hpp in Headers */,
@@ -4330,6 +4366,7 @@
 				F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */,
 				F9070CCF2B9F175100383E4D /* IntToString.hpp in Headers */,
 				F9070C9A2B9F175000383E4D /* BinaryReader.hpp in Headers */,
+				F9E5FC272BC13CF00081A4F7 /* turbojpeg.h in Headers */,
 				F9070CCB2B9F175100383E4D /* HSV.hpp in Headers */,
 				F9528C052BBF026F00222F45 /* bitstream.h in Headers */,
 				F9070CB62B9F175000383E4D /* EngineLog.hpp in Headers */,
@@ -4413,6 +4450,7 @@
 				F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */,
 				F90706D12B9DAEC900383E4D /* cast.h in Headers */,
 				F9528C852BC05B5B00222F45 /* BMPHeader.hpp in Headers */,
+				F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */,
 				F9070CEA2B9F175100383E4D /* ParseFloat.hpp in Headers */,
 				F9528C1B2BBF026F00222F45 /* zstd_trace.h in Headers */,
 				F9070CC42B9F175000383E4D /* FormatUtility.hpp in Headers */,
@@ -4863,6 +4901,7 @@
 				F9528C0B2BBF026F00222F45 /* error_private.c in Sources */,
 				F9070DD92B9F175E00383E4D /* SivLogger.cpp in Sources */,
 				F9528C0D2BBF026F00222F45 /* fse_decompress.c in Sources */,
+				F9E5FC242BC13CD00081A4F7 /* JPEGEncoder.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
@@ -4914,6 +4953,7 @@
 				F9070DCE2B9F175E00383E4D /* SivFloatToString.cpp in Sources */,
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,
 				F9528C332BBF026F00222F45 /* zstd_opt.c in Sources */,
+				F9E5FC232BC13CD00081A4F7 /* JPEGDecoder.cpp in Sources */,
 				F9070DDE2B9F175E00383E4D /* SivParseBool.cpp in Sources */,
 				F9528C392BBF026F00222F45 /* zstd_ddict.c in Sources */,
 				F9528C242BBF026F00222F45 /* zstd_compress_sequences.c in Sources */,
@@ -4996,6 +5036,7 @@
 					../Siv3D/lib/macOS/libpng,
 					../Siv3D/lib/macOS/zlib,
 					../Siv3D/lib/macOS/siv3d,
+					"../Siv3D/lib/macOS/libjpeg-turbo",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -5063,6 +5104,7 @@
 					../Siv3D/lib/macOS/libpng,
 					../Siv3D/lib/macOS/zlib,
 					../Siv3D/lib/macOS/siv3d,
+					"../Siv3D/lib/macOS/libjpeg-turbo",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
