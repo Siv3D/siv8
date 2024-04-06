@@ -21,6 +21,11 @@ namespace s3d
 	{
 		template <class T>
 		concept ExitFunction = std::invocable<std::add_lvalue_reference_t<T>> && (not std::is_rvalue_reference_v<T>);
+
+		template <class T, class U>
+		concept not_same_as_impl = (not std::is_same_v<T, U>);
+		template <class T, class U>
+		concept not_same_as = (not_same_as_impl<T, U> && not_same_as_impl<U, T>);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -45,6 +50,7 @@ namespace s3d
 			|| std::is_nothrow_copy_constructible_v<ExitFunction>);
 
 		template <class Fty>
+			requires detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>>
 		[[nodiscard]]
 		constexpr ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty>
 			|| std::is_nothrow_constructible_v<ExitFunction, Fty&>);
