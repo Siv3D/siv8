@@ -68,6 +68,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Endian.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\EscapedFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Grid.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\HalfFloat.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HardwareRNG.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HSV.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Image.ipp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Grid.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\HalfFloat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HardwareRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashTable.hpp" />
@@ -247,6 +249,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopeExit.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Shuffle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SIMD.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SIMDMath.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SpecialFolder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step2D.hpp" />
@@ -285,6 +288,11 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Windows.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MappedMemory.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\YesNo.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXCollision.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXColors.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXMath.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXPackedVector.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\sal.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\doctest\doctest.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\EnumBitmask\EnumBitmask.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\core.h" />
@@ -592,6 +600,12 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\dictBuilder\zdict.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXCollision.inl" />
+    <None Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXMathConvert.inl" />
+    <None Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXMathMatrix.inl" />
+    <None Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXMathMisc.inl" />
+    <None Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXMathVector.inl" />
+    <None Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXPackedVector.inl" />
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\copy.inl" />
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\define_introspection.inl" />
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\equals.inl" />

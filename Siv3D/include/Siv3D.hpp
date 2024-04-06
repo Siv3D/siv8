@@ -313,6 +313,9 @@
 // 多倍長浮動小数点数 | 100 decimal digits precision floating point type
 # include <Siv3D/BigFloat.hpp>
 
+// 半精度浮動小数点数 | Half-precision floating-point
+# include <Siv3D/HalfFloat.hpp>
+
 // 浮動小数点数型の共通型 | Common Float
 # include <Siv3D/CommonFloat.hpp>
 
@@ -590,13 +593,10 @@
 //
 //// スプライン | Spline
 //# include <Siv3D/Spline.hpp>
-//
-//// SIMD 演算 | SIMD
-//# include <Siv3D/SIMDMath.hpp>
-//
-//// 半精度浮動小数点数 | Half-precision floating-point
-//# include <Siv3D/HalfFloat.hpp>
-//
+
+// SIMD 演算 | SIMD
+# include <Siv3D/SIMDMath.hpp>
+
 //// SIMD 対応 Float4 | SIMD Float4
 //# include <Siv3D/SIMD_Float4.hpp>
 //
@@ -1038,7 +1038,7 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// メッセージボックスの結果 | Result from messagebox
+//// メッセージボックスの結果 | Result from message box
 //# include <Siv3D/MessageBoxResult.hpp>
 //
 //// メッセージボックスのスタイル | Message box style
@@ -1128,12 +1128,12 @@
 # include <Siv3D/ImageDecoder.hpp>
 # include <Siv3D/ImageEncoder.hpp>
 
-//# include <Siv3D/PNGFilter.hpp>
-//# include <Siv3D/ImageFormat/PNGDecoder.hpp>
-//# include <Siv3D/ImageFormat/PNGEncoder.hpp>
-//
-//# include <Siv3D/ImageFormat/JPEGDecoder.hpp>
-//# include <Siv3D/ImageFormat/JPEGEncoder.hpp>
+# include <Siv3D/PNGFilter.hpp>
+# include <Siv3D/ImageFormat/PNGDecoder.hpp>
+# include <Siv3D/ImageFormat/PNGEncoder.hpp>
+
+# include <Siv3D/ImageFormat/JPEGDecoder.hpp>
+# include <Siv3D/ImageFormat/JPEGEncoder.hpp>
 //# include <Siv3D/Exif.hpp>
 
 # include <Siv3D/ImageFormat/BMPDecoder.hpp>
