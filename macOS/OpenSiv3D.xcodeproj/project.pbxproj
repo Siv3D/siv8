@@ -850,6 +850,18 @@
 		F9528C8D2BC05B5B00222F45 /* IImageDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C7E2BC05B5B00222F45 /* IImageDecoder.hpp */; };
 		F9528C8E2BC05B5B00222F45 /* ImageDecoderFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C7F2BC05B5B00222F45 /* ImageDecoderFactory.cpp */; };
 		F9528C8F2BC05B5B00222F45 /* SivImageDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C802BC05B5B00222F45 /* SivImageDecoder.cpp */; };
+		F9528C922BC1204200222F45 /* PNGEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C902BC1204200222F45 /* PNGEncoder.hpp */; };
+		F9528C932BC1204200222F45 /* PNGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C912BC1204200222F45 /* PNGDecoder.hpp */; };
+		F9528C952BC1205300222F45 /* PNGFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528C942BC1205300222F45 /* PNGFilter.hpp */; };
+		F9528C992BC1206E00222F45 /* PNGDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C962BC1206E00222F45 /* PNGDecoder.cpp */; };
+		F9528C9A2BC1206E00222F45 /* PNGEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528C972BC1206E00222F45 /* PNGEncoder.cpp */; };
+		F9528C9F2BC1208B00222F45 /* png.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528C9B2BC1208B00222F45 /* png.h */; };
+		F9528CA02BC1208B00222F45 /* pngconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528C9C2BC1208B00222F45 /* pngconf.h */; };
+		F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528C9D2BC1208B00222F45 /* pnglibconf.h */; };
+		F9528CA52BC1209900222F45 /* zconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA22BC1209900222F45 /* zconf.h */; };
+		F9528CA62BC1209900222F45 /* zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA32BC1209900222F45 /* zlib.h */; };
+		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
+		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1701,6 +1713,18 @@
 		F9528C7E2BC05B5B00222F45 /* IImageDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IImageDecoder.hpp; sourceTree = "<group>"; };
 		F9528C7F2BC05B5B00222F45 /* ImageDecoderFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageDecoderFactory.cpp; sourceTree = "<group>"; };
 		F9528C802BC05B5B00222F45 /* SivImageDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImageDecoder.cpp; sourceTree = "<group>"; };
+		F9528C902BC1204200222F45 /* PNGEncoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PNGEncoder.hpp; sourceTree = "<group>"; };
+		F9528C912BC1204200222F45 /* PNGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PNGDecoder.hpp; sourceTree = "<group>"; };
+		F9528C942BC1205300222F45 /* PNGFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PNGFilter.hpp; sourceTree = "<group>"; };
+		F9528C962BC1206E00222F45 /* PNGDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PNGDecoder.cpp; sourceTree = "<group>"; };
+		F9528C972BC1206E00222F45 /* PNGEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PNGEncoder.cpp; sourceTree = "<group>"; };
+		F9528C9B2BC1208B00222F45 /* png.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = png.h; sourceTree = "<group>"; };
+		F9528C9C2BC1208B00222F45 /* pngconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pngconf.h; sourceTree = "<group>"; };
+		F9528C9D2BC1208B00222F45 /* pnglibconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglibconf.h; sourceTree = "<group>"; };
+		F9528CA22BC1209900222F45 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
+		F9528CA32BC1209900222F45 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
+		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
+		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1710,6 +1734,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */,
+				F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */,
+				F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */,
 				2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1727,6 +1753,8 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F9E5FC192BC12C340081A4F7 /* libpng */,
+				F9E5FC172BC12C340081A4F7 /* zlib */,
 				F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */,
 				F9190F272B8EEDFB00667E3B /* Foundation.framework */,
 			);
@@ -2434,7 +2462,9 @@
 		F9070A822B9DEB5900383E4D /* ThirdParty-prebuilt */ = {
 			isa = PBXGroup;
 			children = (
+				F9528C9E2BC1208B00222F45 /* libpng */,
 				F9070A812B9DEB5900383E4D /* mimalloc */,
+				F9528CA42BC1209900222F45 /* zlib */,
 			);
 			path = "ThirdParty-prebuilt";
 			sourceTree = "<group>";
@@ -2693,6 +2723,7 @@
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
+				F9528C942BC1205300222F45 /* PNGFilter.hpp */,
 				F9070C152B9F175000383E4D /* Point.hpp */,
 				F9528B942BBC76D300222F45 /* Point3D.hpp */,
 				F9070C162B9F175000383E4D /* PointVector.hpp */,
@@ -3839,6 +3870,8 @@
 			children = (
 				F9528C5C2BC05B0200222F45 /* BMPDecoder.hpp */,
 				F9528C5D2BC05B0200222F45 /* BMPEncoder.hpp */,
+				F9528C912BC1204200222F45 /* PNGDecoder.hpp */,
+				F9528C902BC1204200222F45 /* PNGEncoder.hpp */,
 			);
 			path = ImageFormat;
 			sourceTree = "<group>";
@@ -3865,6 +3898,7 @@
 			isa = PBXGroup;
 			children = (
 				F9528C742BC05B5A00222F45 /* BMP */,
+				F9528C982BC1206E00222F45 /* PNG */,
 			);
 			path = ImageFormat;
 			sourceTree = "<group>";
@@ -3891,6 +3925,52 @@
 				F9528C802BC05B5B00222F45 /* SivImageDecoder.cpp */,
 			);
 			path = ImageDecoder;
+			sourceTree = "<group>";
+		};
+		F9528C982BC1206E00222F45 /* PNG */ = {
+			isa = PBXGroup;
+			children = (
+				F9528C962BC1206E00222F45 /* PNGDecoder.cpp */,
+				F9528C972BC1206E00222F45 /* PNGEncoder.cpp */,
+			);
+			path = PNG;
+			sourceTree = "<group>";
+		};
+		F9528C9E2BC1208B00222F45 /* libpng */ = {
+			isa = PBXGroup;
+			children = (
+				F9528C9B2BC1208B00222F45 /* png.h */,
+				F9528C9C2BC1208B00222F45 /* pngconf.h */,
+				F9528C9D2BC1208B00222F45 /* pnglibconf.h */,
+			);
+			path = libpng;
+			sourceTree = "<group>";
+		};
+		F9528CA42BC1209900222F45 /* zlib */ = {
+			isa = PBXGroup;
+			children = (
+				F9528CA22BC1209900222F45 /* zconf.h */,
+				F9528CA32BC1209900222F45 /* zlib.h */,
+			);
+			path = zlib;
+			sourceTree = "<group>";
+		};
+		F9E5FC172BC12C340081A4F7 /* zlib */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FC162BC12C340081A4F7 /* libz.a */,
+			);
+			name = zlib;
+			path = ../Siv3D/lib/macOS/zlib;
+			sourceTree = "<group>";
+		};
+		F9E5FC192BC12C340081A4F7 /* libpng */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FC182BC12C340081A4F7 /* libpng16.a */,
+			);
+			name = libpng;
+			path = ../Siv3D/lib/macOS/libpng;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -3977,6 +4057,7 @@
 				F9528C152BBF026F00222F45 /* threading.h in Headers */,
 				F90706CE2B9DAEC900383E4D /* bitshuffle.h in Headers */,
 				F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */,
+				F9528CA62BC1209900222F45 /* zlib.h in Headers */,
 				F907070F2B9DAEC900383E4D /* range.h in Headers */,
 				F9070E5D2B9F176B00383E4D /* CConsole.hpp in Headers */,
 				F9070C472B9F175000383E4D /* BoolArray.ipp in Headers */,
@@ -4053,6 +4134,7 @@
 				F9070C612B9F175000383E4D /* IntFormatter.ipp in Headers */,
 				F9528C8D2BC05B5B00222F45 /* IImageDecoder.hpp in Headers */,
 				F90706F22B9DAEC900383E4D /* insert.h in Headers */,
+				F9528C922BC1204200222F45 /* PNGEncoder.hpp in Headers */,
 				F9070C9C2B9F175000383E4D /* Blob.hpp in Headers */,
 				F9070C752B9F175000383E4D /* RandomDuration.ipp in Headers */,
 				F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */,
@@ -4068,6 +4150,7 @@
 				F9070AF62B9DEB5900383E4D /* cached-powers.h in Headers */,
 				F9528B5B2BB6DC6800222F45 /* MicrosecClock.ipp in Headers */,
 				F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */,
+				F9528CA52BC1209900222F45 /* zconf.h in Headers */,
 				F90706EC2B9DAEC900383E4D /* fmadd.h in Headers */,
 				F90706B22B9DAEC900383E4D /* doctest.h in Headers */,
 				F9528C452BBF026F00222F45 /* zdict.h in Headers */,
@@ -4126,6 +4209,7 @@
 				F90706C82B9DAEC900383E4D /* abs.h in Headers */,
 				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
 				F90706892B9DAEC900383E4D /* fast_type_id.h in Headers */,
+				F9528C932BC1204200222F45 /* PNGDecoder.hpp in Headers */,
 				F9070B042B9DEB5900383E4D /* miniutf.hpp in Headers */,
 				F9070CF82B9F175100383E4D /* SequenceFormatter.hpp in Headers */,
 				F90706DF2B9DAEC900383E4D /* cvtus.h in Headers */,
@@ -4243,6 +4327,7 @@
 				F90707192B9DAEC900383E4D /* sad.h in Headers */,
 				F9070CD02B9F175100383E4D /* IReader.hpp in Headers */,
 				F90706B42B9DAEC900383E4D /* core.h in Headers */,
+				F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */,
 				F9070CCF2B9F175100383E4D /* IntToString.hpp in Headers */,
 				F9070C9A2B9F175000383E4D /* BinaryReader.hpp in Headers */,
 				F9070CCB2B9F175100383E4D /* HSV.hpp in Headers */,
@@ -4272,6 +4357,7 @@
 				F9070D0B2B9F175100383E4D /* UniqueResource.hpp in Headers */,
 				F9070C762B9F175000383E4D /* Rect.ipp in Headers */,
 				F90706A62B9DAEC900383E4D /* bernoulli_distribution.h in Headers */,
+				F9528CA02BC1208B00222F45 /* pngconf.h in Headers */,
 				F9528B7A2BB708A700222F45 /* LicenseList.hpp in Headers */,
 				F90706FD2B9DAEC900383E4D /* min.h in Headers */,
 				F907071B2B9DAEC900383E4D /* set.h in Headers */,
@@ -4280,6 +4366,7 @@
 				F907069E2B9DAEC900383E4D /* distribution_caller.h in Headers */,
 				F90706EE2B9DAEC900383E4D /* fnmadd.h in Headers */,
 				F9528B292BAFCDB400222F45 /* MemoryMappedFileView.hpp in Headers */,
+				F9528C952BC1205300222F45 /* PNGFilter.hpp in Headers */,
 				F9070DAE2B9F175E00383E4D /* BigIntDetail.hpp in Headers */,
 				F9070C6A2B9F175000383E4D /* MathConstants.ipp in Headers */,
 				F90707532B9DAEC900383E4D /* simde-complex.h in Headers */,
@@ -4386,6 +4473,7 @@
 				F907073F2B9DAEC900383E4D /* f16c.h in Headers */,
 				F90706E72B9DAEC900383E4D /* expand.h in Headers */,
 				F9070CD42B9F175100383E4D /* LetterCase.hpp in Headers */,
+				F9528C9F2BC1208B00222F45 /* png.h in Headers */,
 				F9070CDA2B9F175100383E4D /* MD5Value.hpp in Headers */,
 				F9528C662BC05B0200222F45 /* BMPDecoder.hpp in Headers */,
 				F9070C522B9F175000383E4D /* Duration.ipp in Headers */,
@@ -4765,6 +4853,7 @@
 				F9070DFF2B9F175E00383E4D /* SivVector3D.cpp in Sources */,
 				F9528B4C2BB69EAD00222F45 /* SivBigFloat.cpp in Sources */,
 				F9070DFD2B9F175E00383E4D /* SivUUIDValue.cpp in Sources */,
+				F9528C9A2BC1206E00222F45 /* PNGEncoder.cpp in Sources */,
 				F9528C082BBF026F00222F45 /* debug.c in Sources */,
 				F9528C442BBF026F00222F45 /* zdict.c in Sources */,
 				F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */,
@@ -4805,6 +4894,7 @@
 				F9070EDA2B9F1C8900383E4D /* context.c in Sources */,
 				F9070E022B9F175E00383E4D /* WindowFactory.cpp in Sources */,
 				F9528C222BBF026F00222F45 /* zstd_compress_literals.c in Sources */,
+				F9528C992BC1206E00222F45 /* PNGDecoder.cpp in Sources */,
 				F9070E5C2B9F176B00383E4D /* CConsole.cpp in Sources */,
 				F9070DF32B9F175E00383E4D /* SivThousandSeparate.cpp in Sources */,
 				F9070EDF2B9F1C8900383E4D /* init.c in Sources */,
@@ -4902,7 +4992,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = ../Siv3D/lib/macOS/siv3d;
+				LIBRARY_SEARCH_PATHS = (
+					../Siv3D/lib/macOS/libpng,
+					../Siv3D/lib/macOS/zlib,
+					../Siv3D/lib/macOS/siv3d,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -4965,7 +5059,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = ../Siv3D/lib/macOS/siv3d;
+				LIBRARY_SEARCH_PATHS = (
+					../Siv3D/lib/macOS/libpng,
+					../Siv3D/lib/macOS/zlib,
+					../Siv3D/lib/macOS/siv3d,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
