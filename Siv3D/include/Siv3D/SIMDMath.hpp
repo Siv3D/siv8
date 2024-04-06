@@ -17,8 +17,17 @@
 #	define _XM_SSE4_INTRINSICS_
 # endif
 
+# ifdef __clang__
+#	pragma clang diagnostic push
+#	pragma clang diagnostic ignored "-Wdefaulted-function-deleted"
+# endif
+
 # include <ThirdParty/DirectXMath/DirectXMath.h>
 # include <ThirdParty/DirectXMath/DirectXPackedVector.h>
+
+# ifdef __clang__
+#	pragma clang diagnostic pop
+# endif
 
 # if !SIV3D_PLATFORM(WINDOWS)
 #	undef __in
