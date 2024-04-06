@@ -868,6 +868,14 @@
 		F9E5FC242BC13CD00081A4F7 /* JPEGEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FC212BC13CD00081A4F7 /* JPEGEncoder.cpp */; };
 		F9E5FC272BC13CF00081A4F7 /* turbojpeg.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC252BC13CF00081A4F7 /* turbojpeg.h */; };
 		F9E5FC292BC13F950081A4F7 /* libturbojpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC282BC13F950081A4F7 /* libturbojpeg.a */; };
+		F9E5FC2C2BC15AEE0081A4F7 /* HalfFloat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC2A2BC15AEE0081A4F7 /* HalfFloat.hpp */; };
+		F9E5FC2D2BC15AEE0081A4F7 /* SIMDMath.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC2B2BC15AEE0081A4F7 /* SIMDMath.hpp */; };
+		F9E5FC2F2BC15B060081A4F7 /* HalfFloat.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC2E2BC15B060081A4F7 /* HalfFloat.ipp */; };
+		F9E5FC3C2BC15B260081A4F7 /* DirectXCollision.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC302BC15B260081A4F7 /* DirectXCollision.h */; };
+		F9E5FC3D2BC15B260081A4F7 /* DirectXColors.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC322BC15B260081A4F7 /* DirectXColors.h */; };
+		F9E5FC3E2BC15B260081A4F7 /* DirectXMath.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC332BC15B260081A4F7 /* DirectXMath.h */; };
+		F9E5FC3F2BC15B260081A4F7 /* DirectXPackedVector.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC382BC15B260081A4F7 /* DirectXPackedVector.h */; };
+		F9E5FC402BC15B260081A4F7 /* sal.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC3A2BC15B260081A4F7 /* sal.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1737,6 +1745,20 @@
 		F9E5FC212BC13CD00081A4F7 /* JPEGEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JPEGEncoder.cpp; sourceTree = "<group>"; };
 		F9E5FC252BC13CF00081A4F7 /* turbojpeg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = turbojpeg.h; sourceTree = "<group>"; };
 		F9E5FC282BC13F950081A4F7 /* libturbojpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libturbojpeg.a; path = "../Siv3D/lib/macOS/libjpeg-turbo/libturbojpeg.a"; sourceTree = "<group>"; };
+		F9E5FC2A2BC15AEE0081A4F7 /* HalfFloat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HalfFloat.hpp; sourceTree = "<group>"; };
+		F9E5FC2B2BC15AEE0081A4F7 /* SIMDMath.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIMDMath.hpp; sourceTree = "<group>"; };
+		F9E5FC2E2BC15B060081A4F7 /* HalfFloat.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HalfFloat.ipp; sourceTree = "<group>"; };
+		F9E5FC302BC15B260081A4F7 /* DirectXCollision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectXCollision.h; sourceTree = "<group>"; };
+		F9E5FC312BC15B260081A4F7 /* DirectXCollision.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DirectXCollision.inl; sourceTree = "<group>"; };
+		F9E5FC322BC15B260081A4F7 /* DirectXColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectXColors.h; sourceTree = "<group>"; };
+		F9E5FC332BC15B260081A4F7 /* DirectXMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectXMath.h; sourceTree = "<group>"; };
+		F9E5FC342BC15B260081A4F7 /* DirectXMathConvert.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DirectXMathConvert.inl; sourceTree = "<group>"; };
+		F9E5FC352BC15B260081A4F7 /* DirectXMathMatrix.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DirectXMathMatrix.inl; sourceTree = "<group>"; };
+		F9E5FC362BC15B260081A4F7 /* DirectXMathMisc.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DirectXMathMisc.inl; sourceTree = "<group>"; };
+		F9E5FC372BC15B260081A4F7 /* DirectXMathVector.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DirectXMathVector.inl; sourceTree = "<group>"; };
+		F9E5FC382BC15B260081A4F7 /* DirectXPackedVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectXPackedVector.h; sourceTree = "<group>"; };
+		F9E5FC392BC15B260081A4F7 /* DirectXPackedVector.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DirectXPackedVector.inl; sourceTree = "<group>"; };
+		F9E5FC3A2BC15B260081A4F7 /* sal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sal.h; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2299,6 +2321,7 @@
 			isa = PBXGroup;
 			children = (
 				F90704152B9DAEC900383E4D /* absl */,
+				F9E5FC3B2BC15B260081A4F7 /* DirectXMath */,
 				F90704172B9DAEC900383E4D /* doctest */,
 				F907041A2B9DAEC900383E4D /* EnumBitmask */,
 				F907041E2B9DAEC900383E4D /* fmt */,
@@ -2531,6 +2554,7 @@
 				F9070B7E2B9F175000383E4D /* FormatLiteral.ipp */,
 				F9070B7F2B9F175000383E4D /* FormatUtility.ipp */,
 				F9528B1B2BADCC9900222F45 /* Grid.ipp */,
+				F9E5FC2E2BC15B060081A4F7 /* HalfFloat.ipp */,
 				F9070B802B9F175000383E4D /* HardwareRNG.ipp */,
 				F9070B812B9F175000383E4D /* Hash.ipp */,
 				F9070B822B9F175000383E4D /* HSV.ipp */,
@@ -2679,6 +2703,7 @@
 				F9070BEB2B9F175000383E4D /* FormatUtility.hpp */,
 				F9070BEC2B9F175000383E4D /* FunctionRef.hpp */,
 				F9528B192BADCC7C00222F45 /* Grid.hpp */,
+				F9E5FC2A2BC15AEE0081A4F7 /* HalfFloat.hpp */,
 				F9070BED2B9F175000383E4D /* HardwareRNG.hpp */,
 				F9070BEE2B9F175000383E4D /* Hash.hpp */,
 				F9070BEF2B9F175000383E4D /* HashSet.hpp */,
@@ -2755,6 +2780,7 @@
 				F9070C1F2B9F175000383E4D /* SequenceFormatter.hpp */,
 				F9070C202B9F175000383E4D /* Shuffle.hpp */,
 				F9070C212B9F175000383E4D /* SIMD.hpp */,
+				F9E5FC2B2BC15AEE0081A4F7 /* SIMDMath.hpp */,
 				F9070C222B9F175000383E4D /* SpecialFolder.hpp */,
 				F9070C232B9F175000383E4D /* Step.hpp */,
 				F9528B832BBC5D3100222F45 /* Step2D.hpp */,
@@ -4008,6 +4034,24 @@
 			path = "libjpeg-turbo";
 			sourceTree = "<group>";
 		};
+		F9E5FC3B2BC15B260081A4F7 /* DirectXMath */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FC302BC15B260081A4F7 /* DirectXCollision.h */,
+				F9E5FC312BC15B260081A4F7 /* DirectXCollision.inl */,
+				F9E5FC322BC15B260081A4F7 /* DirectXColors.h */,
+				F9E5FC332BC15B260081A4F7 /* DirectXMath.h */,
+				F9E5FC342BC15B260081A4F7 /* DirectXMathConvert.inl */,
+				F9E5FC352BC15B260081A4F7 /* DirectXMathMatrix.inl */,
+				F9E5FC362BC15B260081A4F7 /* DirectXMathMisc.inl */,
+				F9E5FC372BC15B260081A4F7 /* DirectXMathVector.inl */,
+				F9E5FC382BC15B260081A4F7 /* DirectXPackedVector.h */,
+				F9E5FC392BC15B260081A4F7 /* DirectXPackedVector.inl */,
+				F9E5FC3A2BC15B260081A4F7 /* sal.h */,
+			);
+			path = DirectXMath;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -4120,6 +4164,7 @@
 				F9528BB02BBE7D1100222F45 /* MemoryReader.ipp in Headers */,
 				F9070D0C2B9F175100383E4D /* UserAction.hpp in Headers */,
 				F9070C9E2B9F175000383E4D /* Byte.hpp in Headers */,
+				F9E5FC3F2BC15B260081A4F7 /* DirectXPackedVector.h in Headers */,
 				F90706C52B9DAEC900383E4D /* 2intersect.h in Headers */,
 				F9070EE42B9F1C8900383E4D /* mappings.h in Headers */,
 				F90706FB2B9DAEC900383E4D /* maddubs.h in Headers */,
@@ -4138,6 +4183,7 @@
 				F9070C982B9F175000383E4D /* AsyncTask.hpp in Headers */,
 				F9528BA12BBD6F8800222F45 /* Timer.ipp in Headers */,
 				F9070C3F2B9F175000383E4D /* _TEMPLATE.ipp in Headers */,
+				F9E5FC2C2BC15AEE0081A4F7 /* HalfFloat.hpp in Headers */,
 				F9070C4E2B9F175000383E4D /* Date.ipp in Headers */,
 				F9070D132B9F175100383E4D /* Window.hpp in Headers */,
 				F90707502B9DAEC900383E4D /* simde-arch.h in Headers */,
@@ -4207,12 +4253,14 @@
 				F9070C8B2B9F175000383E4D /* YesNo.ipp in Headers */,
 				F9070D022B9F175100383E4D /* TextReader.hpp in Headers */,
 				F9070C432B9F175000383E4D /* BigInt.ipp in Headers */,
+				F9E5FC3C2BC15B260081A4F7 /* DirectXCollision.h in Headers */,
 				F9070CC72B9F175000383E4D /* Hash.hpp in Headers */,
 				F9070C4A2B9F175000383E4D /* Color.ipp in Headers */,
 				F90707352B9DAEC900383E4D /* types.h in Headers */,
 				F9070AF42B9DEB5900383E4D /* bignum.h in Headers */,
 				F9070CBE2B9F175000383E4D /* FmtExtension.hpp in Headers */,
 				F9070CA02B9F175000383E4D /* Color.hpp in Headers */,
+				F9E5FC3E2BC15B260081A4F7 /* DirectXMath.h in Headers */,
 				F9070B032B9DEB5900383E4D /* levenshtein-sse.hpp in Headers */,
 				F90707042B9DAEC900383E4D /* mullo.h in Headers */,
 				F9070CFA2B9F175100383E4D /* SIMD.hpp in Headers */,
@@ -4265,6 +4313,7 @@
 				F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */,
 				F9528B6A2BB7087700222F45 /* LicenseManager.hpp in Headers */,
 				F9070CC62B9F175000383E4D /* HardwareRNG.hpp in Headers */,
+				F9E5FC3D2BC15B260081A4F7 /* DirectXColors.h in Headers */,
 				F9E5FC1F2BC13CAB0081A4F7 /* JPEGEncoder.hpp in Headers */,
 				F9528C6A2BC05B0200222F45 /* IImageEncoder.hpp in Headers */,
 				F90707142B9DAEC900383E4D /* ror.h in Headers */,
@@ -4291,6 +4340,7 @@
 				F9070DFB2B9F175E00383E4D /* IUserAction.hpp in Headers */,
 				F9528C302BBF026F00222F45 /* zstd_ldm_geartab.h in Headers */,
 				F9528B5C2BB6DC6800222F45 /* MillisecClock.ipp in Headers */,
+				F9E5FC2D2BC15AEE0081A4F7 /* SIMDMath.hpp in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
 				F90707162B9DAEC900383E4D /* round.h in Headers */,
 				F907068F2B9DAEC900383E4D /* macros.h in Headers */,
@@ -4558,6 +4608,7 @@
 				F907075A2B9DAEC900383E4D /* XoshiroCpp.hpp in Headers */,
 				F90707522B9DAEC900383E4D /* simde-common.h in Headers */,
 				F90706B12B9DAEC900383E4D /* utility.h in Headers */,
+				F9E5FC402BC15B260081A4F7 /* sal.h in Headers */,
 				F9070CEF2B9F175100383E4D /* PointVector.hpp in Headers */,
 				F9528C4E2BBFEC3800222F45 /* MappedMemoryView.hpp in Headers */,
 				F9528C422BBF026F00222F45 /* divsufsort.h in Headers */,
@@ -4597,6 +4648,7 @@
 				F9528BA52BBD707100222F45 /* MemoryViewReader.ipp in Headers */,
 				F90707322B9DAEC900383E4D /* ternarylogic.h in Headers */,
 				F9070C7D2B9F175000383E4D /* String.ipp in Headers */,
+				F9E5FC2F2BC15B060081A4F7 /* HalfFloat.ipp in Headers */,
 				F9070C7E2B9F175000383E4D /* StringView.ipp in Headers */,
 				F9528C272BBF026F00222F45 /* zstd_compress_superblock.h in Headers */,
 				F9070CE62B9F175100383E4D /* Parse.hpp in Headers */,
