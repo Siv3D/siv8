@@ -442,6 +442,9 @@
     <Filter Include="include\ThirdParty\DirectXMath">
       <UniqueIdentifier>{ee7d840d-f7b3-447c-a7c4-781f036b8ebf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\HalfFloat">
+      <UniqueIdentifier>{8a2b2725-7669-48ec-a9ee-e00e0deb3e13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2173,6 +2176,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\JPEG\JPEGEncoder.cpp">
       <Filter>src\Siv3D\ImageFormat\JPEG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\HalfFloat\SivHalfFloat.cpp">
+      <Filter>src\Siv3D\HalfFloat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

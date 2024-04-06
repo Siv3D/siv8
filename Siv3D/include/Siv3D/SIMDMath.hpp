@@ -18,6 +18,7 @@
 # endif
 
 # include <ThirdParty/DirectXMath/DirectXMath.h>
+# include <ThirdParty/DirectXMath/DirectXPackedVector.h>
 
 # if !SIV3D_PLATFORM(WINDOWS)
 #	undef __in
