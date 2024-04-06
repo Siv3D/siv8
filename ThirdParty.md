@@ -13,6 +13,7 @@ Name | Version
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [GLFW](https://github.com/glfw/glfw) | 3.4
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
+[libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
@@ -25,4 +26,5 @@ Name | Version
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
+[zlib](https://www.zlib.net/) | 1.3.1
 [Zstandard](https://github.com/facebook/zstd) | v1.5.6
