@@ -877,6 +877,7 @@
 		F9E5FC3F2BC15B260081A4F7 /* DirectXPackedVector.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC382BC15B260081A4F7 /* DirectXPackedVector.h */; };
 		F9E5FC402BC15B260081A4F7 /* sal.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC3A2BC15B260081A4F7 /* sal.h */; };
 		F9E5FC432BC19B110081A4F7 /* SivHalfFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FC412BC19B110081A4F7 /* SivHalfFloat.cpp */; };
+		F9E5FC462BC1AA820081A4F7 /* SivSIMDMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FC442BC1AA820081A4F7 /* SivSIMDMath.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1761,6 +1762,7 @@
 		F9E5FC392BC15B260081A4F7 /* DirectXPackedVector.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DirectXPackedVector.inl; sourceTree = "<group>"; };
 		F9E5FC3A2BC15B260081A4F7 /* sal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sal.h; sourceTree = "<group>"; };
 		F9E5FC412BC19B110081A4F7 /* SivHalfFloat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivHalfFloat.cpp; sourceTree = "<group>"; };
+		F9E5FC442BC1AA820081A4F7 /* SivSIMDMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSIMDMath.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -3421,6 +3423,7 @@
 				F9528B9C2BBC771000222F45 /* Point3D */,
 				F9070D7C2B9F175E00383E4D /* Random */,
 				F9070D7E2B9F175E00383E4D /* Rect */,
+				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9070D812B9F175E00383E4D /* String */,
 				F9070D832B9F175E00383E4D /* StringView */,
 				F9070D872B9F175E00383E4D /* System */,
@@ -4061,6 +4064,14 @@
 				F9E5FC412BC19B110081A4F7 /* SivHalfFloat.cpp */,
 			);
 			path = HalfFloat;
+			sourceTree = "<group>";
+		};
+		F9E5FC452BC1AA820081A4F7 /* SIMDMath */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FC442BC1AA820081A4F7 /* SivSIMDMath.cpp */,
+			);
+			path = SIMDMath;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4891,6 +4902,7 @@
 				F9528B362BB0567000222F45 /* MemoryMappedFileViewDetail.cpp in Sources */,
 				F9070DDC2B9F175E00383E4D /* SivMonitorInfo.cpp in Sources */,
 				F9070EDB2B9F1C8900383E4D /* egl_context.c in Sources */,
+				F9E5FC462BC1AA820081A4F7 /* SivSIMDMath.cpp in Sources */,
 				F9070DE32B9F175E00383E4D /* SivPoint.cpp in Sources */,
 				F9528C832BC05B5B00222F45 /* BMPDecoder.cpp in Sources */,
 				F9070DD12B9F175E00383E4D /* SivFormatUtility.cpp in Sources */,

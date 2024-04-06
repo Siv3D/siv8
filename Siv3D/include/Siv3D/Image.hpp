@@ -456,15 +456,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ピクセル配列の先頭位置を指すイテレータを返します。
+		/// @return ピクセル配列の先頭位置を指すイテレータ
 		[[nodiscard]]
 		iterator begin() noexcept;
 
+		/// @brief ピクセル配列の終端位置を指すイテレータを返します。
+		/// @return ピクセル配列の終端位置を指すイテレータ
 		[[nodiscard]]
 		iterator end() noexcept;
 
+		/// @brief ピクセル配列の先頭位置を指すイテレータを返します。
+		/// @return ピクセル配列の先頭位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator begin() const noexcept;
 
+		/// @brief ピクセル配列の終端位置を指すイテレータを返します。
+		/// @return ピクセル配列の終端位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator end() const noexcept;
 
@@ -474,9 +482,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ピクセル配列の先頭位置を指すイテレータを返します。
+		/// @return ピクセル配列の先頭位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator cbegin() const noexcept;
 
+		/// @brief ピクセル配列の終端位置を指すイテレータを返します。
+		/// @return ピクセル配列の終端位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator cend() const noexcept;
 
@@ -486,15 +498,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ピクセル配列の末尾位置を指すリバース・イテレータを返します。
+		/// @return ピクセル配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		reverse_iterator rbegin() noexcept;
 
+		/// @brief ピクセル配列の先端位置を指すリバース・イテレータを返します。
+		/// @return ピクセル配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		reverse_iterator rend() noexcept;
 
+		/// @brief ピクセル配列の末尾位置を指すリバース・イテレータを返します。
+		/// @return ピクセル配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		const_reverse_iterator rbegin() const noexcept;
 
+		/// @brief ピクセル配列の先端位置を指すリバース・イテレータを返します。
+		/// @return ピクセル配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		const_reverse_iterator rend() const noexcept;
 
@@ -504,9 +524,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ピクセル配列の末尾位置を指すリバース・イテレータを返します。
+		/// @return ピクセル配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		const_reverse_iterator crbegin() const noexcept;
 
+		/// @brief ピクセル配列の先端位置を指すリバース・イテレータを返します。
+		/// @return ピクセル配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		const_reverse_iterator crend() const noexcept;
 
