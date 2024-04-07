@@ -479,6 +479,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	subspan
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief バイナリデータの部分配列を指す span を返します。
+		/// @param pos 部分配列の開始位置
+		/// @param count 部分配列の要素数
+		/// @return 部分配列を指す span
+		[[nodiscard]]
+		constexpr std::span<Byte> subspan(size_t pos, size_t count) noexcept;
+
+		/// @brief バイナリデータの部分配列を指す span を返します。
+		/// @param pos 部分配列の開始位置
+		/// @param count 部分配列の要素数
+		/// @return 部分配列を指す span
+		[[nodiscard]]
+		constexpr std::span<const Byte> subspan(size_t pos, size_t count) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	save
 		//
 		////////////////////////////////////////////////////////////////

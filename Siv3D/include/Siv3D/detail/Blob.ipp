@@ -442,4 +442,20 @@ namespace s3d
 	{
 		return m_data.insert(pos, first, last);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	subspan
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::span<Byte> Blob::subspan(const size_t pos, const size_t count) noexcept
+	{
+		return m_data.subspan(pos, count);
+	}
+
+	constexpr std::span<const Byte> Blob::subspan(const size_t pos, const size_t count) const noexcept
+	{
+		return m_data.subspan(pos, count);
+	}
 }

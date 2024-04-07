@@ -20,6 +20,12 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
+	void Formatter(FormatData& formatData, const std::span<Type> span)
+	{
+		Formatter(formatData, std::span<const Type>{ span });
+	}
+
+	template <class Type>
 	void Formatter(FormatData& formatData, const std::span<const Type> span)
 	{
 		formatData.string.push_back(U'[');
@@ -50,30 +56,30 @@ namespace s3d
 	template <class Type, size_t N>
 	void Formatter(FormatData& formatData, const Type(&values)[N])
 	{
-		Formatter(formatData, std::span<const Type>(values));
+		Formatter(formatData, std::span<const Type>{ values });
 	}
 
 	template <class Type, size_t N>
 	void Formatter(FormatData& formatData, const std::array<Type, N>& v)
 	{
-		Formatter(formatData, std::span<const Type>(v));
+		Formatter(formatData, std::span<const Type>{ v });
 	}
 
 	template <class Type, class Allocator>
 	void Formatter(FormatData& formatData, const std::vector<Type, Allocator>& v)
 	{
-		Formatter(formatData, std::span(v));
+		Formatter(formatData, std::span{ v });
 	}
 
 	template <class Type, class Allocator>
 	void Formatter(FormatData& formatData, const Array<Type, Allocator>& v)
 	{
-		Formatter(formatData, std::span(v));
+		Formatter(formatData, std::span{ v });
 	}
 
 	template <class Type>
 	void Formatter(FormatData& formatData, const std::initializer_list<Type> list)
 	{
-		Formatter(formatData, std::span(list));
+		Formatter(formatData, std::span{ list });
 	}
 }
