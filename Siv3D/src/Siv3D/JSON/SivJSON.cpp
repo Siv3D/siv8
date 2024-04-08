@@ -228,6 +228,23 @@ namespace s3d
 		return ((not m_json.is_null())
 			&&  (not m_json.is_discarded()));
 	}
+
+
+
+	JSON JSON::MakeArray()
+	{
+		return JSON(JSONValueType::Array);
+	}
+
+	JSON JSON::MakeObject()
+	{
+		return JSON(JSONValueType::Object);
+	}
+
+	JSON JSON::MakeBinary()
+	{
+		return JSON(JSONValueType::Binary);
+	}
 }
 
 namespace nlohmann

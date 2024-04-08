@@ -301,9 +301,9 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\core.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\format.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h" />
-    <ClInclude Include="..\Siv3D\include\ThirdParty\json\json.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\nlohmann\json.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\Obfuscate\obfuscate.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\parallel_hashmap\btree.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\parallel_hashmap\phmap.h" />

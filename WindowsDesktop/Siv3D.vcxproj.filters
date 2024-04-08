@@ -448,14 +448,14 @@
     <Filter Include="src\Siv3D\SIMDMath">
       <UniqueIdentifier>{2c02465f-7f4a-443b-8c26-2abdfe3ba693}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\ThirdParty\json">
-      <UniqueIdentifier>{6ef1fce8-b162-4ec9-919f-ffe55c35be5d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D\JSONValueType">
       <UniqueIdentifier>{c4e9f7b7-a300-441a-bef3-6d5bfe01a3c8}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\JSON">
       <UniqueIdentifier>{6a73f235-fc13-4b8d-bdef-78a0f7a6c426}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\nlohmann">
+      <UniqueIdentifier>{39a9cd51-3c84-48a0-9148-3d86a3d91c0f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1686,9 +1686,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SIMDMath.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\ThirdParty\json\json.hpp">
-      <Filter>include\ThirdParty\json</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\JSON.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -1697,6 +1694,9 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\JSON.ipp">
       <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\nlohmann\json.hpp">
+      <Filter>include\ThirdParty\nlohmann</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
