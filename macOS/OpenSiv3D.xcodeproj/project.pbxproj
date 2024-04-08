@@ -878,6 +878,11 @@
 		F9E5FC402BC15B260081A4F7 /* sal.h in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC3A2BC15B260081A4F7 /* sal.h */; };
 		F9E5FC432BC19B110081A4F7 /* SivHalfFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FC412BC19B110081A4F7 /* SivHalfFloat.cpp */; };
 		F9E5FC462BC1AA820081A4F7 /* SivSIMDMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FC442BC1AA820081A4F7 /* SivSIMDMath.cpp */; };
+		F9E5FCD22BC3AD410081A4F7 /* JSON.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FCD02BC3AD400081A4F7 /* JSON.hpp */; };
+		F9E5FCD32BC3AD410081A4F7 /* JSONValueType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FCD12BC3AD400081A4F7 /* JSONValueType.hpp */; };
+		F9E5FCD52BC3AD580081A4F7 /* JSON.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FCD42BC3AD580081A4F7 /* JSON.ipp */; };
+		F9E5FCDA2BC3AD820081A4F7 /* SivJSONValueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FCD62BC3AD820081A4F7 /* SivJSONValueType.cpp */; };
+		F9E5FCDB2BC3AD820081A4F7 /* SivJSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FCD82BC3AD820081A4F7 /* SivJSON.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1763,6 +1768,12 @@
 		F9E5FC3A2BC15B260081A4F7 /* sal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sal.h; sourceTree = "<group>"; };
 		F9E5FC412BC19B110081A4F7 /* SivHalfFloat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivHalfFloat.cpp; sourceTree = "<group>"; };
 		F9E5FC442BC1AA820081A4F7 /* SivSIMDMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSIMDMath.cpp; sourceTree = "<group>"; };
+		F9E5FCD02BC3AD400081A4F7 /* JSON.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JSON.hpp; sourceTree = "<group>"; };
+		F9E5FCD12BC3AD400081A4F7 /* JSONValueType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JSONValueType.hpp; sourceTree = "<group>"; };
+		F9E5FCD42BC3AD580081A4F7 /* JSON.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JSON.ipp; sourceTree = "<group>"; };
+		F9E5FCD62BC3AD820081A4F7 /* SivJSONValueType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivJSONValueType.cpp; sourceTree = "<group>"; };
+		F9E5FCD82BC3AD820081A4F7 /* SivJSON.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivJSON.cpp; sourceTree = "<group>"; };
+		F9E5FCDE2BC3ADD10081A4F7 /* json.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2331,6 +2342,7 @@
 				F907041E2B9DAEC900383E4D /* fmt */,
 				F90704202B9DAEC900383E4D /* mimalloc */,
 				F90704222B9DAEC900383E4D /* nanobench */,
+				F9E5FCDF2BC3ADD10081A4F7 /* nlohmann */,
 				F90704242B9DAEC900383E4D /* Obfuscate */,
 				F907042D2B9DAEC900383E4D /* parallel_hashmap */,
 				F90704312B9DAEC900383E4D /* pcg */,
@@ -2572,6 +2584,7 @@
 				F9070B872B9F175000383E4D /* IReader.ipp */,
 				F9070B882B9F175000383E4D /* ISteadyClock.ipp */,
 				F9070B892B9F175000383E4D /* IWriter.ipp */,
+				F9E5FCD42BC3AD580081A4F7 /* JSON.ipp */,
 				F9070B8A2B9F175000383E4D /* KahanSummation.ipp */,
 				F9070B8B2B9F175000383E4D /* Logger.ipp */,
 				F9070B8C2B9F175000383E4D /* LoggerBuffer.ipp */,
@@ -2729,6 +2742,8 @@
 				F9070BF72B9F175000383E4D /* IReader.hpp */,
 				F9070BF82B9F175000383E4D /* ISteadyClock.hpp */,
 				F9070BF92B9F175000383E4D /* IWriter.hpp */,
+				F9E5FCD02BC3AD400081A4F7 /* JSON.hpp */,
+				F9E5FCD12BC3AD400081A4F7 /* JSONValueType.hpp */,
 				F9070BFA2B9F175000383E4D /* KahanSummation.hpp */,
 				F9070BFB2B9F175000383E4D /* LetterCase.hpp */,
 				F9528B502BB6DC2C00222F45 /* LicenseInfo.hpp */,
@@ -3402,6 +3417,8 @@
 				F9070D5E2B9F175E00383E4D /* Int128 */,
 				F9070D602B9F175E00383E4D /* IntFormatter */,
 				F9070D622B9F175E00383E4D /* IntToString */,
+				F9E5FCD92BC3AD820081A4F7 /* JSON */,
+				F9E5FCD72BC3AD820081A4F7 /* JSONValueType */,
 				F9528B762BB708A700222F45 /* LicenseManager */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
@@ -4074,6 +4091,30 @@
 			path = SIMDMath;
 			sourceTree = "<group>";
 		};
+		F9E5FCD72BC3AD820081A4F7 /* JSONValueType */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FCD62BC3AD820081A4F7 /* SivJSONValueType.cpp */,
+			);
+			path = JSONValueType;
+			sourceTree = "<group>";
+		};
+		F9E5FCD92BC3AD820081A4F7 /* JSON */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FCD82BC3AD820081A4F7 /* SivJSON.cpp */,
+			);
+			path = JSON;
+			sourceTree = "<group>";
+		};
+		F9E5FCDF2BC3ADD10081A4F7 /* nlohmann */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FCDE2BC3ADD10081A4F7 /* json.hpp */,
+			);
+			path = nlohmann;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -4083,6 +4124,7 @@
 			files = (
 				F9528B532BB6DC2C00222F45 /* LicenseInfo.hpp in Headers */,
 				F9528C042BBF026F00222F45 /* bits.h in Headers */,
+				F9E5FCD52BC3AD580081A4F7 /* JSON.ipp in Headers */,
 				F9528B1E2BAFB65000222F45 /* Base64Value.ipp in Headers */,
 				F9528C632BC05B0200222F45 /* ImagePixelFormat.hpp in Headers */,
 				F907072C2B9DAEC900383E4D /* srli.h in Headers */,
@@ -4365,6 +4407,7 @@
 				F9E5FC2D2BC15AEE0081A4F7 /* SIMDMath.hpp in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
 				F90707162B9DAEC900383E4D /* round.h in Headers */,
+				F9E5FCD32BC3AD410081A4F7 /* JSONValueType.hpp in Headers */,
 				F907068F2B9DAEC900383E4D /* macros.h in Headers */,
 				F90706E52B9DAEC900383E4D /* dpwssd.h in Headers */,
 				F9070C792B9F175000383E4D /* SequenceFormatter.ipp in Headers */,
@@ -4598,6 +4641,7 @@
 				F90706AC2B9DAEC900383E4D /* log_uniform_int_distribution.h in Headers */,
 				F9528C252BBF026F00222F45 /* zstd_compress_sequences.h in Headers */,
 				F9070CC52B9F175000383E4D /* FunctionRef.hpp in Headers */,
+				F9E5FCD22BC3AD410081A4F7 /* JSON.hpp in Headers */,
 				F907075B2B9DAEC900383E4D /* Siv3D.hpp in Headers */,
 				F90706E42B9DAEC900383E4D /* dpbusds.h in Headers */,
 				F907068B2B9DAEC900383E4D /* inline_variable.h in Headers */,
@@ -4935,6 +4979,7 @@
 				F9070DE12B9F175E00383E4D /* SivParseFloat.cpp in Sources */,
 				F9070AF02B9DEB5900383E4D /* gaussian_distribution.cc in Sources */,
 				F9070DEC2B9F175E00383E4D /* SivTextEncoding.cpp in Sources */,
+				F9E5FCDB2BC3AD820081A4F7 /* SivJSON.cpp in Sources */,
 				F9528C822BC05B5B00222F45 /* SivIImageDecoder.cpp in Sources */,
 				F9528B9D2BBC771000222F45 /* SivPoint3D.cpp in Sources */,
 				F9070AFC2B9DEB5900383E4D /* fixed-dtoa.cc in Sources */,
@@ -4996,6 +5041,7 @@
 				F9070DC82B9F175E00383E4D /* SivEngineLog.cpp in Sources */,
 				F9070DE52B9F175E00383E4D /* SivRect.cpp in Sources */,
 				F9528B232BAFB68400222F45 /* SivBase64Value.cpp in Sources */,
+				F9E5FCDA2BC3AD820081A4F7 /* SivJSONValueType.cpp in Sources */,
 				F9070DF42B9F175E00383E4D /* SivThreading.cpp in Sources */,
 				F9528C892BC05B5B00222F45 /* ImageEncoderFactory.cpp in Sources */,
 				F9070DBF2B9F175E00383E4D /* SivDemangle.cpp in Sources */,

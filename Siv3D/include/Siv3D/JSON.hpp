@@ -15,7 +15,7 @@
 # include "String.hpp"
 # include "JSONValueType.hpp"
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(26819)
-# include <ThirdParty/json/json.hpp>
+# include <ThirdParty/nlohmann/json.hpp>
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
