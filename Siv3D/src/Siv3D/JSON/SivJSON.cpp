@@ -14,6 +14,8 @@
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/Demangle.hpp>
 # include <Siv3D/Error.hpp>
+# include <Siv3D/TextWriter.hpp>
+
 
 namespace s3d
 {
@@ -107,7 +109,7 @@ namespace s3d
 
 		for (const auto& element : list)
 		{
-			json[element.first] = element.second.get();
+			json[element.first] = element.second.getConstRef();
 		}
 	}
 
@@ -118,7 +120,7 @@ namespace s3d
 
 		for (const auto& element : list)
 		{
-			json[Unicode::ToUTF8(element.first)] = element.second.get();
+			json[Unicode::ToUTF8(element.first)] = element.second.getConstRef();
 		}
 	}
 
@@ -129,15 +131,9 @@ namespace s3d
 
 		for (const auto& v : arr)
 		{
-			json.push_back(v.get());
+			json.push_back(v.getConstRef());
 		}
 	}
-
-	//JSON::JSON(const json_base& j)
-	//	: m_json(j) {}
-
-	//JSON::JSON(json_base&& j)
-	//	: m_json(std::move(j)) {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -147,7 +143,7 @@ namespace s3d
 
 	JSONValueType JSON::getType() const noexcept
 	{
-		return ToJSONValueType(get().type());
+		return ToJSONValueType(getConstRef().type());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -158,7 +154,7 @@ namespace s3d
 
 	bool JSON::isNull() const noexcept
 	{
-		return get().is_null();
+		return getConstRef().is_null();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -169,7 +165,7 @@ namespace s3d
 
 	bool JSON::isBool() const noexcept
 	{
-		return get().is_boolean();
+		return getConstRef().is_boolean();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -180,7 +176,7 @@ namespace s3d
 
 	bool JSON::isNumber() const noexcept
 	{
-		return get().is_number();
+		return getConstRef().is_number();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -191,7 +187,7 @@ namespace s3d
 
 	bool JSON::isInt() const noexcept
 	{
-		return get().is_number_integer();
+		return getConstRef().is_number_integer();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -202,7 +198,7 @@ namespace s3d
 
 	bool JSON::isUint() const noexcept
 	{
-		return get().is_number_unsigned();
+		return getConstRef().is_number_unsigned();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -213,7 +209,7 @@ namespace s3d
 
 	bool JSON::isFloat() const noexcept
 	{
-		return get().is_number_float();
+		return getConstRef().is_number_float();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -224,7 +220,7 @@ namespace s3d
 
 	bool JSON::isString() const noexcept
 	{
-		return get().is_string();
+		return getConstRef().is_string();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -235,7 +231,7 @@ namespace s3d
 
 	bool JSON::isArray() const noexcept
 	{
-		return get().is_array();
+		return getConstRef().is_array();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -246,7 +242,7 @@ namespace s3d
 
 	bool JSON::isObject() const noexcept
 	{
-		return get().is_object();
+		return getConstRef().is_object();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -257,7 +253,7 @@ namespace s3d
 
 	bool JSON::isBinary() const noexcept
 	{
-		return get().is_binary();
+		return getConstRef().is_binary();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -268,7 +264,7 @@ namespace s3d
 
 	bool JSON::isInvalid() const noexcept
 	{
-		return get().is_discarded();
+		return getConstRef().is_discarded();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -279,7 +275,7 @@ namespace s3d
 
 	JSON::operator bool() const noexcept
 	{
-		const auto& j = get();
+		const auto& j = getConstRef();
 		return ((not j.is_null())
 			&&  (not j.is_discarded()));
 	}
@@ -292,12 +288,12 @@ namespace s3d
 
 	bool JSON::hasElement(const std::string_view key) const
 	{
-		return get().contains(key);
+		return getConstRef().contains(key);
 	}
 
 	bool JSON::hasElement(const StringView key) const
 	{
-		return get().contains(Unicode::ToUTF8(key));
+		return getConstRef().contains(Unicode::ToUTF8(key));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -313,7 +309,7 @@ namespace s3d
 			ThrowNotString();
 		}
 
-		return Unicode::FromUTF8(get().get<std::string_view>());
+		return Unicode::FromUTF8(getConstRef().get<std::string_view>());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -329,7 +325,7 @@ namespace s3d
 			ThrowNotStringUTF8();
 		}
 
-		return get().get<std::string>();
+		return getConstRef().get<std::string>();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -345,7 +341,7 @@ namespace s3d
 			ThrowNotBinary();
 		}
 
-		const auto& binary = get().get<nlohmann::json::binary_t>();
+		const auto& binary = getConstRef().get<nlohmann::json::binary_t>();
 
 		return Blob{ binary.data(), binary.size() };
 	}
@@ -358,12 +354,12 @@ namespace s3d
 
 	JSON JSON::operator [](const std::string_view key)
 	{
-		return JSON(std::ref(get()[key]));
+		return JSON(std::ref(getRef()[key]));
 	}
 
 	const JSON JSON::operator [](const std::string_view key) const
 	{
-		return JSON(std::cref(get()[key]));
+		return JSON(std::cref(getConstRef()[key]));
 	}
 
 	JSON JSON::operator [](const StringView key)
@@ -376,35 +372,39 @@ namespace s3d
 		return operator[](Unicode::ToUTF8(key));
 	}
 
-	//JSON JSON::operator [](const size_t index)
-	//{
-	//	if (not isArray())
-	//	{
-	//		ThrowNotArray();
-	//	}
+	JSON JSON::operator [](const size_t index)
+	{
+		auto& j = getRef();
 
-	//	if (m_json.size() <= index)
-	//	{
-	//		ThrowIndexOutOfRange();
-	//	}
+		if (not j.is_array())
+		{
+			ThrowNotArray();
+		}
 
-	//	return JSON(m_json[index]);
-	//}
+		if (j.size() <= index)
+		{
+			ThrowIndexOutOfRange();
+		}
 
-	//const JSON JSON::operator [](const size_t index) const
-	//{
-	//	if (not isArray())
-	//	{
-	//		ThrowNotArray();
-	//	}
+		return JSON(std::ref(j[index]));
+	}
 
-	//	if (m_json.size() <= index)
-	//	{
-	//		ThrowIndexOutOfRange();
-	//	}
+	const JSON JSON::operator [](const size_t index) const
+	{
+		auto& j = getConstRef();
 
-	//	return JSON(m_json[index]);
-	//}
+		if (not j.is_array())
+		{
+			ThrowNotArray();
+		}
+
+		if (j.size() <= index)
+		{
+			ThrowIndexOutOfRange();
+		}
+
+		return JSON(std::ref(j[index]));
+	}
 
 
 
@@ -431,29 +431,80 @@ namespace s3d
 
 	std::string JSON::formatUTF8(const char32 space, const size_t spaceCount) const
 	{
-		return get().dump(static_cast<int>(spaceCount), static_cast<char>(space));
+		return getConstRef().dump(static_cast<int>(spaceCount), static_cast<char>(space));
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	formatMinimum
+	//	formatMinified
 	//
 	////////////////////////////////////////////////////////////////
 
-	String JSON::formatMinimum() const
+	String JSON::formatMinified() const
 	{
-		return Unicode::FromUTF8(formatUTF8Minimum());
+		return Unicode::FromUTF8(formatUTF8Minified());
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	formatUTF8Minimum
+	//	formatUTF8Minified
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::string JSON::formatUTF8Minimum() const
+	std::string JSON::formatUTF8Minified() const
 	{
-		return get().dump();
+		return getConstRef().dump();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	save
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool JSON::save(const FilePathView path) const
+	{
+		TextWriter writer{ path };
+
+		if (not writer)
+		{
+			return false;
+		}
+
+		writer.writeUTF8(formatUTF8());
+
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	saveMinimum
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool JSON::saveMinimum(const FilePathView path) const
+	{
+		TextWriter writer{ path };
+
+		if (not writer)
+		{
+			return false;
+		}
+
+		writer.writeUTF8(formatUTF8Minified());
+
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	swap
+	//
+	////////////////////////////////////////////////////////////////
+
+	void JSON::swap(JSON& other) noexcept
+	{
+		m_json.swap(other.m_json);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -487,6 +538,17 @@ namespace s3d
 	JSON JSON::MakeBinary()
 	{
 		return JSON(JSONValueType::Binary);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const JSON& value)
+	{
+		formatData.string.append(value.format());
 	}
 
 }

@@ -115,7 +115,7 @@ namespace s3d
 
 		JSON& operator =(auto&& value)
 		{
-			get() = std::forward<decltype(value)>(value);
+			getRef() = std::forward<decltype(value)>(value);
 			return *this;
 		}
 
@@ -405,25 +405,25 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	formatMinimum
+		//	formatMinified
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON データを最小限の文字列にフォーマットした結果を返します。
 		/// @return フォーマットされた JSON データ
 		[[nodiscard]]
-		String formatMinimum() const;
+		String formatMinified() const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	formatUTF8Minimum
+		//	formatUTF8Minified
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON データを最小限の UTF-8 文字列にフォーマットした結果を返します。
 		/// @return フォーマットされた JSON データ
 		[[nodiscard]]
-		std::string formatUTF8Minimum() const;
+		std::string formatUTF8Minified() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -446,6 +446,39 @@ namespace s3d
 		/// @param path 保存するファイルのパス
 		/// @return 保存に成功した場合 true, それ以外の場合は false
 		bool saveMinimum(FilePathView path) const;
+	
+		/// @brief BSON 形式にシリアライズした結果を返します。
+		/// @return BSON データ
+		[[nodiscard]]
+		Blob toBSON() const;
+
+		/// @brief CBOR 形式にシリアライズした結果を返します。
+		/// @return CBOR データ
+		[[nodiscard]]
+		Blob toCBOR() const;
+
+		/// @brief MessagePack 形式にシリアライズした結果を返します。
+		/// @return MessagePack データ
+		[[nodiscard]]
+		Blob toMessagePack() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	swap
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief JSON オブジェクトを交換します。
+		/// @param other 交換する JSON オブジェクト
+		void swap(JSON& other) noexcept;
+
+		/// @brief 2 つの JSON オブジェクトを交換します。
+		/// @param lhs JSON オブジェクト
+		/// @param rhs JSON オブジェクト
+		friend void swap(JSON& lhs, JSON& rhs) noexcept
+		{
+			lhs.swap(rhs);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -456,7 +489,7 @@ namespace s3d
 		[[nodiscard]]
 		friend bool operator ==(const JSON& lhs, const JSON& rhs) noexcept
 		{
-			return (lhs.get() == rhs.get());
+			return (lhs.getConstRef() == rhs.getConstRef());
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -486,12 +519,20 @@ namespace s3d
 		[[nodiscard]]
 		static JSON MakeBinary();
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
+
+		friend void Formatter(FormatData& formatData, const JSON& value);
+
 	private:
 
 		std::variant<json_base, std::reference_wrapper<json_base>, std::reference_wrapper<const json_base>> m_json;
 
 		[[nodiscard]]
-		json_base& get()
+		json_base& getRef()
 		{
 			if (std::holds_alternative<json_base>(m_json))
 			{
@@ -509,7 +550,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		const json_base& get() const
+		const json_base& getConstRef() const
 		{
 			if (std::holds_alternative<json_base>(m_json))
 			{

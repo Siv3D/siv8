@@ -65,7 +65,7 @@ namespace s3d
 		}
 		else
 		{
-			detail::ThrowJSONGetError(typeid(Type).name(), formatUTF8Minimum());
+			detail::ThrowJSONGetError(typeid(Type).name(), formatUTF8Minified());
 		}
 	}
 
@@ -105,7 +105,7 @@ namespace s3d
 				return none;
 			}
 
-			return Unicode::FromUTF8(get().get<std::string>());
+			return Unicode::FromUTF8(getConstRef().get<std::string>());
 		}
 		else if constexpr (std::is_same_v<Type, std::string>)
 		{
@@ -114,11 +114,11 @@ namespace s3d
 				return none;
 			}
 
-			return get().get<std::string>();
+			return getConstRef().get<std::string>();
 		}
 		else if constexpr (std::is_arithmetic_v<Type>)
 		{
-			return get().get<Type>();
+			return getConstRef().get<Type>();
 		}
 		else
 		{
@@ -127,7 +127,7 @@ namespace s3d
 				return none;
 			}
 
-			return ParseOpt<Type>(get().get<std::string>());
+			return ParseOpt<Type>(getConstRef().get<std::string>());
 		}
 	}
 }
