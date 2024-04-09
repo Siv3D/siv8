@@ -180,6 +180,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	clone
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON JSON::clone() const
+	{
+		return JSON(json_base(getConstRef()));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getType
 	//
 	////////////////////////////////////////////////////////////////
@@ -561,22 +572,40 @@ namespace s3d
 
 	JSON::iterator JSON::begin() noexcept
 	{
-		return iterator{ getRef().begin() };
-	}
+		auto& j = getRef();
 
-	JSON::const_iterator JSON::end() const noexcept
-	{
-		return const_iterator{ getConstRef().end() };
-	}
-
-	JSON::const_iterator JSON::begin() const noexcept
-	{
-		return const_iterator{ getConstRef().begin() };
+		if (j.is_array())
+		{
+			return iterator{ j.begin(), 0 };
+		}
+		else
+		{
+			return iterator{ j.begin() };
+		}
 	}
 
 	JSON::iterator JSON::end() noexcept
 	{
-		return iterator{ getRef().end() };
+		auto& j = getRef();
+
+		if (j.is_array())
+		{
+			return iterator{ j.end(), j.size() };
+		}
+		else
+		{
+			return iterator{ j.end() };
+		}
+	}
+
+	JSON::const_iterator JSON::begin() const noexcept
+	{
+		return cbegin();
+	}
+
+	JSON::const_iterator JSON::end() const noexcept
+	{
+		return cend();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -587,12 +616,30 @@ namespace s3d
 
 	JSON::const_iterator JSON::cbegin() const noexcept
 	{
-		return const_iterator{ getConstRef().cbegin() };
+		const auto& j = getConstRef();
+
+		if (j.is_array())
+		{
+			return const_iterator{ j.cbegin(), 0 };
+		}
+		else
+		{
+			return const_iterator{ j.cbegin() };
+		}
 	}
 
 	JSON::const_iterator JSON::cend() const noexcept
 	{
-		return const_iterator{ getConstRef().cend() };
+		const auto& j = getConstRef();
+
+		if (j.is_array())
+		{
+			return const_iterator{ j.cend(), j.size() };
+		}
+		else
+		{
+			return const_iterator{ j.cend() };
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
