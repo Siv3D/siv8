@@ -49,7 +49,7 @@ TEST_CASE("JSON")
 
 	{
 		const JSON j_null(nullptr);
-		const JSON j_object(JSON::MakeEmptyObject());
+		const JSON j_object(JSON::EmptyObject());
 		const JSON j_array(Array<int32>{ 1, 2, 3, 4, 5 });
 		const JSON j_string("Hello, Siv3D!");
 		const JSON j_boolean(true);
@@ -69,7 +69,7 @@ TEST_CASE("JSON")
 
 	{
 		const JSON j_null = nullptr;
-		const JSON j_object = JSON::MakeEmptyObject();
+		const JSON j_object = JSON::EmptyObject();
 		const JSON j_array = Array<int32>{ 1, 2, 3, 4, 5 };
 		const JSON j_string = "Hello, Siv3D!";
 		const JSON j_boolean = true;

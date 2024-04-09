@@ -828,7 +828,7 @@ namespace s3d
 				throw Error{ fmt::format("JSON::load(): failed to open `{}`", path) };
 			}
 
-			return JSON::MakeInvalid();
+			return JSON::Invalid();
 		}
 
 		return Parse(reader.readAllUTF8(), allowExceptions);
@@ -845,7 +845,7 @@ namespace s3d
 				throw Error{ "JSON::load(): failed to open from IReader" };
 			}
 
-			return JSON::MakeInvalid();
+			return JSON::Invalid();
 		}
 
 		return Parse(textReader.readAllUTF8(), allowExceptions);
@@ -946,44 +946,44 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	MakeEmptyArray
+	//	EmptyArray
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON JSON::MakeEmptyArray()
+	JSON JSON::EmptyArray()
 	{
 		return JSON(JSONValueType::Array);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	MakeEmptyObject
+	//	EmptyObject
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON JSON::MakeEmptyObject()
+	JSON JSON::EmptyObject()
 	{
 		return JSON(JSONValueType::Object);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	MakeEmptyBinary
+	//	EmptyBinary
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON JSON::MakeEmptyBinary()
+	JSON JSON::EmptyBinary()
 	{
 		return JSON(JSONValueType::Binary);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	MakeInvalid
+	//	Invalid
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON JSON::MakeInvalid()
+	JSON JSON::Invalid()
 	{
 		return JSON(JSONValueType::Invalid);
 	}
