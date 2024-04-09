@@ -48,6 +48,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	operator = 
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON& JSON::operator =(auto&& value)
+	{
+		getRef() = std::forward<decltype(value)>(value);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	get
 	//
 	////////////////////////////////////////////////////////////////
@@ -129,6 +141,19 @@ namespace s3d
 
 			return ParseOpt<Type>(getConstRef().get<std::string>());
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Load
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Reader>
+		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+	JSON JSON::Load(Reader&& reader, const AllowExceptions allowExceptions)
+	{
+		return Load(std::make_unique<Reader>(std::move(reader)), allowExceptions);
 	}
 }
 

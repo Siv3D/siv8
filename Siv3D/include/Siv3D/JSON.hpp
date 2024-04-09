@@ -17,6 +17,7 @@
 # include "Blob.hpp"
 # include "Optional.hpp"
 # include "JSONValueType.hpp"
+# include "PredefinedYesNo.hpp"
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(26819)
 # include <ThirdParty/nlohmann/json.hpp>
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
@@ -96,16 +97,15 @@ namespace s3d
 		template <JSONCompatibleType Type>
 		[[nodiscard]]
 		JSON(const std::initializer_list<Type>& list);
+	
+		[[nodiscard]]
+		explicit JSON(std::reference_wrapper<json_base> json);
+		
+		[[nodiscard]]
+		explicit JSON(std::reference_wrapper<const json_base> json);
 
-		//JSON(const json_base& j);
-
-		//JSON(json_base&& j);
-
-		JSON(std::reference_wrapper<json_base> j)
-			: m_json(j) {}
-
-		JSON(std::reference_wrapper<const json_base> j)
-			: m_json(j) {}
+		[[nodiscard]]
+		explicit JSON(json_base&& json);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -113,11 +113,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		JSON& operator =(auto&& value)
-		{
-			getRef() = std::forward<decltype(value)>(value);
-			return *this;
-		}
+		JSON& operator =(auto&& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -438,24 +434,42 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	saveMinimum
+		//	saveMinified
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON データを最小限の形式でファイルに保存します。
 		/// @param path 保存するファイルのパス
 		/// @return 保存に成功した場合 true, それ以外の場合は false
-		bool saveMinimum(FilePathView path) const;
-	
+		bool saveMinified(FilePathView path) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	toBSON
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief BSON 形式にシリアライズした結果を返します。
 		/// @return BSON データ
 		[[nodiscard]]
 		Blob toBSON() const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	toCBOR
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief CBOR 形式にシリアライズした結果を返します。
 		/// @return CBOR データ
 		[[nodiscard]]
 		Blob toCBOR() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	toMessagePack
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief MessagePack 形式にシリアライズした結果を返します。
 		/// @return MessagePack データ
@@ -487,10 +501,87 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		friend bool operator ==(const JSON& lhs, const JSON& rhs) noexcept
-		{
-			return (lhs.getConstRef() == rhs.getConstRef());
-		}
+		friend bool operator ==(const JSON& lhs, const JSON& rhs) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Load
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief JSON ファイルをパースして JSON オブジェクトを返します。
+		/// @param [in] path ファイルパス
+		/// @param [in] allowExceptions 例外を発生させるか
+		/// @return JSON オブジェクト
+		[[nodiscard]]
+		static JSON Load(FilePathView path, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		template <class Reader>
+			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+		[[nodiscard]]
+		static JSON Load(Reader&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		[[nodiscard]]
+		static JSON Load(std::unique_ptr<IReader>&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Parse
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief JSON 文字列をパースして JSON オブジェクトを返します。
+		/// @param [in] s 文字列
+		/// @param [in] allowExceptions 例外を発生させるか
+		/// @return JSON オブジェクト
+		[[nodiscard]]
+		static JSON Parse(std::string_view s, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		/// @brief JSON 文字列をパースして JSON オブジェクトを返します。
+		/// @param [in] s 文字列
+		/// @param [in] allowExceptions 例外を発生させるか
+		/// @return JSON オブジェクト
+		[[nodiscard]]
+		static JSON Parse(StringView s, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromBSON
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief BSON 形式のデータから JSON オブジェクトをデシリアライズします。
+		/// @param [in] bson BSON データ
+		/// @param [in] allowExceptions 例外を発生させるか
+		/// @return JSON オブジェクト
+		[[nodiscard]]
+		static JSON FromBSON(const Blob& bson, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromCBOR
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief CBOR 形式のデータから JSON オブジェクトをデシリアライズします。
+		/// @param [in] cbor CBOR データ
+		/// @param [in] allowExceptions 例外を発生させるか
+		/// @return JSON オブジェクト
+		[[nodiscard]]
+		static JSON FromCBOR(const Blob& cbor, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromMessagePack
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief MessagePack 形式のデータから JSON オブジェクトをデシリアライズします。
+		/// @param [in] msgpack MessagePack データ
+		/// @param [in] allowExceptions 例外を発生させるか
+		/// @return JSON オブジェクト
+		[[nodiscard]]
+		static JSON FromMessagePack(const Blob& msgpack, AllowExceptions allowExceptions = AllowExceptions::No);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -521,6 +612,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	MakeInvalid
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static JSON MakeInvalid();
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Formatter
 		//
 		////////////////////////////////////////////////////////////////
@@ -532,39 +632,10 @@ namespace s3d
 		std::variant<json_base, std::reference_wrapper<json_base>, std::reference_wrapper<const json_base>> m_json;
 
 		[[nodiscard]]
-		json_base& getRef()
-		{
-			if (std::holds_alternative<json_base>(m_json))
-			{
-				return std::get<json_base>(m_json);
-			}
-			else if (std::holds_alternative<std::reference_wrapper<json_base>>(m_json))
-			{
-				return std::get<std::reference_wrapper<json_base>>(m_json).get();
-			}
-			else
-			{
-				m_json = json_base(std::get<std::reference_wrapper<const json_base>>(m_json).get());
-				return std::get<json_base>(m_json);
-			}
-		}
+		json_base& getRef();
 
 		[[nodiscard]]
-		const json_base& getConstRef() const
-		{
-			if (std::holds_alternative<json_base>(m_json))
-			{
-				return std::get<json_base>(m_json);
-			}
-			else if (std::holds_alternative<std::reference_wrapper<json_base>>(m_json))
-			{
-				return std::get<std::reference_wrapper<json_base>>(m_json).get();
-			}
-			else
-			{
-				return std::get<std::reference_wrapper<const json_base>>(m_json).get();
-			}
-		}
+		const json_base& getConstRef() const;
 	};
 }
 

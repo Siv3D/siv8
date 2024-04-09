@@ -26,4 +26,7 @@ namespace s3d
 	/// @brief 固定されている | Fixed
 	using Fixed				= YesNo<struct Fixed_tag>;
 
+	/// @brief 例外を発生させる
+	using AllowExceptions	= YesNo<struct AllowExceptions_tag>;
+	
 }

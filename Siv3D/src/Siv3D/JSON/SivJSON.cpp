@@ -12,10 +12,11 @@
 # include <Siv3D/JSON.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/FormatLiteral.hpp>
+# include <Siv3D/FmtExtension.hpp>
 # include <Siv3D/Demangle.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/TextWriter.hpp>
-
+# include <Siv3D/TextReader.hpp>
 
 namespace s3d
 {
@@ -134,6 +135,15 @@ namespace s3d
 			json.push_back(v.getConstRef());
 		}
 	}
+
+	JSON::JSON(std::reference_wrapper<json_base> json)
+		: m_json(json) {}
+
+	JSON::JSON(std::reference_wrapper<const json_base> json)
+		: m_json(json) {}
+
+	JSON::JSON(json_base&& json)
+		: m_json(std::move(json)) {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -478,11 +488,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	saveMinimum
+	//	saveMinified
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool JSON::saveMinimum(const FilePathView path) const
+	bool JSON::saveMinified(const FilePathView path) const
 	{
 		TextWriter writer{ path };
 
@@ -498,6 +508,45 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	toBSON
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob JSON::toBSON() const
+	{
+		std::vector<uint8> result;
+		nlohmann::json::to_bson(getConstRef(), result);
+		return Blob{ result.data(), result.size() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toCBOR
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob JSON::toCBOR() const
+	{
+		std::vector<uint8> result;
+		nlohmann::json::to_cbor(getConstRef(), result);
+		return Blob{ result.data(), result.size() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toMessagePack
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob JSON::toMessagePack() const
+	{
+		std::vector<uint8> result;
+		nlohmann::json::to_msgpack(getConstRef(), result);
+		return Blob{ result.data(), result.size() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	swap
 	//
 	////////////////////////////////////////////////////////////////
@@ -505,6 +554,89 @@ namespace s3d
 	void JSON::swap(JSON& other) noexcept
 	{
 		m_json.swap(other.m_json);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ==
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool operator ==(const JSON& lhs, const JSON& rhs) noexcept
+	{
+		return (lhs.getConstRef() == rhs.getConstRef());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Load
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON JSON::Load(const FilePathView path, const AllowExceptions allowExceptions)
+	{
+		TextReader reader{ path };
+
+		if (not reader)
+		{
+			if (allowExceptions)
+			{
+				throw Error{ fmt::format("JSON::load(): failed to open `{}`", path) };
+			}
+
+			return JSON::MakeInvalid();
+		}
+
+		return Parse(reader.readAllUTF8(), allowExceptions);
+	}
+
+	JSON JSON::Load(std::unique_ptr<IReader>&& reader, const AllowExceptions allowExceptions)
+	{
+		TextReader textReader{ std::move(reader) };
+
+		if (not textReader)
+		{
+			if (allowExceptions)
+			{
+				throw Error{ "JSON::load(): failed to open from IReader" };
+			}
+
+			return JSON::MakeInvalid();
+		}
+
+		return Parse(textReader.readAllUTF8(), allowExceptions);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Parse
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON JSON::Parse(const std::string_view s, const AllowExceptions allowExceptions)
+	{
+		JSON json;
+
+		try
+		{
+			json.m_json = nlohmann::json::parse(s, nullptr, allowExceptions.getBool(), true);
+		}
+		catch (const nlohmann::json::parse_error& e)
+		{
+			if (allowExceptions)
+			{
+				throw Error{ fmt::format("JSON::Parse(): {}", e.what()) };
+			}
+
+			return JSON::MakeInvalid();
+		}
+
+		return json;
+	}
+
+	JSON JSON::Parse(const StringView s, const AllowExceptions allowExceptions)
+	{
+		return Parse(Unicode::ToUTF8(s), allowExceptions);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -542,6 +674,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	MakeInvalid
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON JSON::MakeInvalid()
+	{
+		return JSON(JSONValueType::Invalid);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Formatter
 	//
 	////////////////////////////////////////////////////////////////
@@ -551,6 +694,44 @@ namespace s3d
 		formatData.string.append(value.format());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON::json_base& JSON::getRef()
+	{
+		if (std::holds_alternative<json_base>(m_json))
+		{
+			return std::get<json_base>(m_json);
+		}
+		else if (std::holds_alternative<std::reference_wrapper<json_base>>(m_json))
+		{
+			return std::get<std::reference_wrapper<json_base>>(m_json).get();
+		}
+		else
+		{
+			m_json = json_base(std::get<std::reference_wrapper<const json_base>>(m_json).get());
+			return std::get<json_base>(m_json);
+		}
+	}
+
+	const JSON::json_base& JSON::getConstRef() const
+	{
+		if (std::holds_alternative<json_base>(m_json))
+		{
+			return std::get<json_base>(m_json);
+		}
+		else if (std::holds_alternative<std::reference_wrapper<json_base>>(m_json))
+		{
+			return std::get<std::reference_wrapper<json_base>>(m_json).get();
+		}
+		else
+		{
+			return std::get<std::reference_wrapper<const json_base>>(m_json).get();
+		}
+	}
 }
 
 namespace nlohmann
