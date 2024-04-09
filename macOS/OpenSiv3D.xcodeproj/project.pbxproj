@@ -883,6 +883,11 @@
 		F9E5FCD52BC3AD580081A4F7 /* JSON.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FCD42BC3AD580081A4F7 /* JSON.ipp */; };
 		F9E5FCDA2BC3AD820081A4F7 /* SivJSONValueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FCD62BC3AD820081A4F7 /* SivJSONValueType.cpp */; };
 		F9E5FCDB2BC3AD820081A4F7 /* SivJSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FCD82BC3AD820081A4F7 /* SivJSON.cpp */; };
+		F9E5FCE12BC59E610081A4F7 /* Test_JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FCE02BC59E610081A4F7 /* Test_JSON.cpp */; };
+		F9E5FCE42BC59E7E0081A4F7 /* SivParse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FCE22BC59E7E0081A4F7 /* SivParse.cpp */; };
+		F9E5FCE72BC59EA00081A4F7 /* JSONIterator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FCE52BC59EA00081A4F7 /* JSONIterator.hpp */; };
+		F9E5FCE82BC59EA00081A4F7 /* JSONPointer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FCE62BC59EA00081A4F7 /* JSONPointer.hpp */; };
+		F9E5FCEB2BC59EB50081A4F7 /* SivJSONIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FCE92BC59EB50081A4F7 /* SivJSONIterator.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1774,6 +1779,11 @@
 		F9E5FCD62BC3AD820081A4F7 /* SivJSONValueType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivJSONValueType.cpp; sourceTree = "<group>"; };
 		F9E5FCD82BC3AD820081A4F7 /* SivJSON.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivJSON.cpp; sourceTree = "<group>"; };
 		F9E5FCDE2BC3ADD10081A4F7 /* json.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
+		F9E5FCE02BC59E610081A4F7 /* Test_JSON.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_JSON.cpp; sourceTree = "<group>"; };
+		F9E5FCE22BC59E7E0081A4F7 /* SivParse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivParse.cpp; sourceTree = "<group>"; };
+		F9E5FCE52BC59EA00081A4F7 /* JSONIterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JSONIterator.hpp; sourceTree = "<group>"; };
+		F9E5FCE62BC59EA00081A4F7 /* JSONPointer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JSONPointer.hpp; sourceTree = "<group>"; };
+		F9E5FCE92BC59EB50081A4F7 /* SivJSONIterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivJSONIterator.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1923,6 +1933,7 @@
 				F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */,
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
 				F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */,
+				F9E5FCE02BC59E610081A4F7 /* Test_JSON.cpp */,
 				F90702C12B9DAEB900383E4D /* Test_Memory.cpp */,
 				F9528C512BC029E800222F45 /* Test_MemoryMappedFile.cpp */,
 				F9528B312BB0564800222F45 /* Test_MemoryMappedFileView.cpp */,
@@ -2743,6 +2754,8 @@
 				F9070BF82B9F175000383E4D /* ISteadyClock.hpp */,
 				F9070BF92B9F175000383E4D /* IWriter.hpp */,
 				F9E5FCD02BC3AD400081A4F7 /* JSON.hpp */,
+				F9E5FCE52BC59EA00081A4F7 /* JSONIterator.hpp */,
+				F9E5FCE62BC59EA00081A4F7 /* JSONPointer.hpp */,
 				F9E5FCD12BC3AD400081A4F7 /* JSONValueType.hpp */,
 				F9070BFA2B9F175000383E4D /* KahanSummation.hpp */,
 				F9070BFB2B9F175000383E4D /* LetterCase.hpp */,
@@ -3418,6 +3431,7 @@
 				F9070D602B9F175E00383E4D /* IntFormatter */,
 				F9070D622B9F175E00383E4D /* IntToString */,
 				F9E5FCD92BC3AD820081A4F7 /* JSON */,
+				F9E5FCEA2BC59EB50081A4F7 /* JSONIterator */,
 				F9E5FCD72BC3AD820081A4F7 /* JSONValueType */,
 				F9528B762BB708A700222F45 /* LicenseManager */,
 				F9070D662B9F175E00383E4D /* Logger */,
@@ -3431,6 +3445,7 @@
 				F9528B632BB6DC9200222F45 /* MillisecClock */,
 				F9070D6C2B9F175E00383E4D /* MonitorInfo */,
 				F9070D6E2B9F175E00383E4D /* Optional */,
+				F9E5FCE32BC59E7E0081A4F7 /* Parse */,
 				F9070D702B9F175E00383E4D /* ParseBool */,
 				F9070D722B9F175E00383E4D /* ParseBoolExtended */,
 				F9070D742B9F175E00383E4D /* ParseErrorReason */,
@@ -4115,6 +4130,22 @@
 			path = nlohmann;
 			sourceTree = "<group>";
 		};
+		F9E5FCE32BC59E7E0081A4F7 /* Parse */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FCE22BC59E7E0081A4F7 /* SivParse.cpp */,
+			);
+			path = Parse;
+			sourceTree = "<group>";
+		};
+		F9E5FCEA2BC59EB50081A4F7 /* JSONIterator */ = {
+			isa = PBXGroup;
+			children = (
+				F9E5FCE92BC59EB50081A4F7 /* SivJSONIterator.cpp */,
+			);
+			path = JSONIterator;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -4130,6 +4161,7 @@
 				F907072C2B9DAEC900383E4D /* srli.h in Headers */,
 				F90707002B9DAEC900383E4D /* movm.h in Headers */,
 				F907070C2B9DAEC900383E4D /* permutexvar.h in Headers */,
+				F9E5FCE72BC59EA00081A4F7 /* JSONIterator.hpp in Headers */,
 				F90706A72B9DAEC900383E4D /* beta_distribution.h in Headers */,
 				F90707592B9DAEC900383E4D /* simde-math.h in Headers */,
 				F90707482B9DAEC900383E4D /* ssse3.h in Headers */,
@@ -4547,6 +4579,7 @@
 				F9070CC32B9F175000383E4D /* Formatter.hpp in Headers */,
 				F9528B842BBC5D3100222F45 /* Step2D.hpp in Headers */,
 				F90706C72B9DAEC900383E4D /* 4dpwssds.h in Headers */,
+				F9E5FCE82BC59EA00081A4F7 /* JSONPointer.hpp in Headers */,
 				F90706B62B9DAEC900383E4D /* xchar.h in Headers */,
 				F9070C4F2B9F175000383E4D /* DateTime.ipp in Headers */,
 				F90707492B9DAEC900383E4D /* svml.h in Headers */,
@@ -4876,6 +4909,7 @@
 				F907030B2B9DAEB900383E4D /* Test_Unicode.cpp in Sources */,
 				F9528B382BB05D0600222F45 /* Test_Base64Value.cpp in Sources */,
 				F907030D2B9DAEB900383E4D /* Test_Version.cpp in Sources */,
+				F9E5FCE12BC59E610081A4F7 /* Test_JSON.cpp in Sources */,
 				F90702F62B9DAEB900383E4D /* Test_Array.cpp in Sources */,
 				F907030C2B9DAEB900383E4D /* Test_Utility.cpp in Sources */,
 				F90703032B9DAEB900383E4D /* Test_Platform.cpp in Sources */,
@@ -4955,6 +4989,7 @@
 				F9528C3E2BBF026F00222F45 /* zstd_decompress.c in Sources */,
 				F9528C3F2BBF026F00222F45 /* cover.c in Sources */,
 				F9070DE22B9F175E00383E4D /* SivParseInt.cpp in Sources */,
+				F9E5FCEB2BC59EB50081A4F7 /* SivJSONIterator.cpp in Sources */,
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
 				F9528C2E2BBF026F00222F45 /* zstd_lazy.c in Sources */,
 				F9070EF02B9F1C8900383E4D /* posix_module.c in Sources */,
@@ -5056,6 +5091,7 @@
 				F9070E022B9F175E00383E4D /* WindowFactory.cpp in Sources */,
 				F9528C222BBF026F00222F45 /* zstd_compress_literals.c in Sources */,
 				F9528C992BC1206E00222F45 /* PNGDecoder.cpp in Sources */,
+				F9E5FCE42BC59E7E0081A4F7 /* SivParse.cpp in Sources */,
 				F9070E5C2B9F176B00383E4D /* CConsole.cpp in Sources */,
 				F9070DF32B9F175E00383E4D /* SivThousandSeparate.cpp in Sources */,
 				F9070EDF2B9F1C8900383E4D /* init.c in Sources */,

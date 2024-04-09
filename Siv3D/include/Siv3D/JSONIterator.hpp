@@ -60,7 +60,6 @@ namespace s3d
 
 		JSONIterator operator --(int);
 
-		[[nodiscard]]
 		friend bool operator ==(const JSONIterator& lhs, const JSONIterator& rhs);
 
 	private:
@@ -118,7 +117,6 @@ namespace s3d
 
 		JSONConstIterator operator --(int);
 
-		[[nodiscard]]
 		friend bool operator ==(const JSONConstIterator& lhs, const JSONConstIterator& rhs);
 
 	private:
