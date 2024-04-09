@@ -135,6 +135,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief JSON オブジェクトを複製します。
+		/// @return 複製された JSON オブジェクト
+		/// @remark 関数内で作成した JSON から子オブジェクトを返す場合、`clone()` を使用してください。
 		[[nodiscard]]
 		JSON clone() const;
 
@@ -336,6 +339,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の要素数またはオブジェクトのキーの数を返します。
+		/// @return 配列の要素数またはオブジェクトのキーの数
 		[[nodiscard]]
 		size_t size() const noexcept;
 		
@@ -423,21 +428,39 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief オブジェクトの指定したキーの要素を返します。
+		/// @param key キー
+		/// @return 要素
 		[[nodiscard]]
 		JSON operator [](std::string_view key);
 
+		/// @brief オブジェクトの指定したキーの要素を返します。
+		/// @param key キー
+		/// @return 要素
 		[[nodiscard]]
 		const JSON operator [](std::string_view key) const;
 
+		/// @brief オブジェクトの指定したキーの要素を返します。
+		/// @param key キー
+		/// @return 要素
 		[[nodiscard]]
 		JSON operator [](StringView key);
 
+		/// @brief オブジェクトの指定したキーの要素を返します。
+		/// @param key キー
+		/// @return 要素
 		[[nodiscard]]
 		const JSON operator [](StringView key) const;
 
+		/// @brief 配列の指定したインデックスの要素を返します。
+		/// @param index インデックス
+		/// @return 要素
 		[[nodiscard]]
 		JSON operator [](size_t index);
 
+		/// @brief 配列の指定したインデックスの要素を返します。
+		/// @param index インデックス
+		/// @return 要素
 		[[nodiscard]]
 		const JSON operator [](size_t index) const;
 
@@ -447,6 +470,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の末尾に要素を追加します。
+		/// @param value 追加する要素
 		void push_back(const JSON& value);
 
 		////////////////////////////////////////////////////////////////
@@ -455,6 +480,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の末尾の要素を削除します。
 		void pop_back();
 
 		////////////////////////////////////////////////////////////////
@@ -492,15 +518,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief オブジェクトまたは配列の要素の先頭を指すイテレータを返します。
+		/// @return オブジェクトまたは配列の要素の先頭を指すイテレータ
 		[[nodiscard]]
 		iterator begin() noexcept;
 
+		/// @brief オブジェクトまたは配列の要素の終端位置を指すイテレータを返します。
+		/// @return オブジェクトまたは配列の要素の終端位置を指すイテレータ
 		[[nodiscard]]
 		iterator end() noexcept;
 
+		/// @brief オブジェクトまたは配列の要素の先頭を指すイテレータを返します。
+		/// @return オブジェクトまたは配列の要素の先頭を指すイテレータ
 		[[nodiscard]]
 		const_iterator begin() const noexcept;
 
+		/// @brief オブジェクトまたは配列の要素の終端位置を指すイテレータを返します。
+		/// @return オブジェクトまたは配列の要素の終端位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator end() const noexcept;
 
@@ -510,9 +544,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief オブジェクトまたは配列の要素の先頭を指すイテレータを返します。
+		/// @return オブジェクトまたは配列の要素の先頭を指すイテレータ
 		[[nodiscard]]
 		const_iterator cbegin() const noexcept;
 
+		/// @brief オブジェクトまたは配列の要素の終端位置を指すイテレータを返します。
+		/// @return オブジェクトまたは配列の要素の終端位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator cend() const noexcept;
 
@@ -683,17 +721,26 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON ファイルをパースして JSON オブジェクトを返します。
-		/// @param [in] path ファイルパス
-		/// @param [in] allowExceptions 例外を発生させるか
+		/// @param path ファイルパス
+		/// @param allowExceptions パースに失敗した場合に例外を発生させるか
 		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON Load(FilePathView path, AllowExceptions allowExceptions = AllowExceptions::No);
 
+		/// @brief JSON ファイルをパースして JSON オブジェクトを返します。
+		/// @tparam Reader JSON ファイルを指す IReader の派生クラスの型
+		/// @param reader JSON ファイルを指す IReader の派生クラスのインスタンス
+		/// @param allowExceptions パースに失敗した場合に例外を発生させるか
+		/// @return JSON オブジェクト
 		template <class Reader>
 			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
 		[[nodiscard]]
 		static JSON Load(Reader&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
 
+		/// @brief JSON ファイルをパースして JSON オブジェクトを返します。
+		/// @param reader JSON ファイルを指す IReader のインスタンス
+		/// @param allowExceptions パースに失敗した場合に例外を発生させるか
+		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON Load(std::unique_ptr<IReader>&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
 
@@ -762,6 +809,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 空の配列を持つ JSON オブジェクトを作成します。
+		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON EmptyArray();
 
@@ -771,6 +820,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 空のオブジェクトを持つ JSON オブジェクトを作成します。
+		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON EmptyObject();
 
@@ -780,6 +831,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 空のバイナリデータを持つ JSON オブジェクトを作成します。
+		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON EmptyBinary();
 
@@ -789,6 +842,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 不正な JSON オブジェクトを作成します。
+		/// @return 不正な JSON オブジェクト
 		[[nodiscard]]
 		static JSON Invalid();
 
@@ -821,9 +876,17 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
+			/// @brief JSON 文字列リテラルをパースして JSON オブジェクトを作成します。
+			/// @param str JSON 文字列リテラル
+			/// @param length JSON 文字列リテラルの長さ
+			/// @return JSON オブジェクト
 			[[nodiscard]]
 			JSON operator ""_json(const char* str, size_t length);
 
+			/// @brief JSON 文字列リテラルをパースして JSON オブジェクトを作成します。
+			/// @param str JSON 文字列リテラル
+			/// @param length JSON 文字列リテラルの長さ
+			/// @return JSON オブジェクト
 			[[nodiscard]]
 			JSON operator ""_json(const char32_t* str, size_t length);
 		}

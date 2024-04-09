@@ -144,3 +144,16 @@ TEST_CASE("JSON and String")
 		CHECK_EQ(j, json);
 	}
 }
+
+TEST_CASE("JSON Invalid")
+{
+	{
+		const JSON json = JSON::Parse(U"");
+		CHECK(json.isInvalid());
+	}
+
+	{
+		const JSON json = JSON::Parse(U"{ \"a\": \"Siv3D\"");
+		CHECK(json.isInvalid());
+	}
+}
