@@ -74,6 +74,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Image.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageDecoder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageEncoder.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\JSON.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MapFormatter.ipp" />
@@ -176,6 +177,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\PNGEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImagePixelFormat.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\JSON.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\JSONIterator.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\JSONPointer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\JSONValueType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseManager.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Logger.hpp" />
@@ -300,6 +305,7 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\nlohmann\json.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\Obfuscate\obfuscate.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\parallel_hashmap\btree.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\parallel_hashmap\phmap.h" />
@@ -504,6 +510,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Int128\SivInt128.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\JSONIterator\SivJSONIterator.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\JSONValueType\SivJSONValueType.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\JSON\SivJSON.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\CLicenseManager.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseManagerFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\SivLicenseManager.cpp" />
@@ -524,6 +533,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseErrorReason\SivParseErrorReason.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseFloat\SivParseFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseInt\SivParseInt.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point3D\SivPoint3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point\SivPoint.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Random\SivRandom.cpp" />

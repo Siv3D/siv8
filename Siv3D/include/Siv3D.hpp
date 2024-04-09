@@ -505,18 +505,26 @@
 //
 ////////////////////////////////////////////////////////////////
 
+// JSON の値の種類 | JSON value type
+# include <Siv3D/JSONValueType.hpp>
+
+// JSON データの読み書き | JSON reader/writer
+# include <Siv3D/JSON.hpp>
+
+# include <Siv3D/JSONIterator.hpp>
+
+# include <Siv3D/JSONPointer.hpp> // ToDo
+
+//// JSON データの検証 | JSON validation
+//# include <Siv3D/JSONValidator.hpp>
+//
+// 
 //// CSV データの読み書き | CSV reader/writer
 //# include <Siv3D/CSV.hpp>
 //
 //// INI データの読み書き | INI reader/writer
 //# include <Siv3D/INI.hpp>
-//
-//// JSON データの読み書き | JSON reader/writer
-//# include <Siv3D/JSON.hpp>
-//
-//// JSON データの検証 | JSON validation
-//# include <Siv3D/JSONValidator.hpp>
-//
+
 //// TOML ファイルの読み込み | TOML reader/writer
 //# include <Siv3D/TOML>
 //

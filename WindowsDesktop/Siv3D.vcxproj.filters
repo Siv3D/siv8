@@ -448,6 +448,21 @@
     <Filter Include="src\Siv3D\SIMDMath">
       <UniqueIdentifier>{2c02465f-7f4a-443b-8c26-2abdfe3ba693}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\JSONValueType">
+      <UniqueIdentifier>{c4e9f7b7-a300-441a-bef3-6d5bfe01a3c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\JSON">
+      <UniqueIdentifier>{6a73f235-fc13-4b8d-bdef-78a0f7a6c426}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\nlohmann">
+      <UniqueIdentifier>{39a9cd51-3c84-48a0-9148-3d86a3d91c0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Parse">
+      <UniqueIdentifier>{957b594e-42d7-4245-a9e5-2d50f6ff4d12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\JSONIterator">
+      <UniqueIdentifier>{1ce1b2b0-de6d-445f-b76c-a14460b7588f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1677,6 +1692,24 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SIMDMath.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\JSON.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\JSONValueType.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\JSON.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\nlohmann\json.hpp">
+      <Filter>include\ThirdParty\nlohmann</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\JSONIterator.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\JSONPointer.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -2185,6 +2218,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp">
       <Filter>src\Siv3D\SIMDMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\JSONValueType\SivJSONValueType.cpp">
+      <Filter>src\Siv3D\JSONValueType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\JSON\SivJSON.cpp">
+      <Filter>src\Siv3D\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp">
+      <Filter>src\Siv3D\Parse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\JSONIterator\SivJSONIterator.cpp">
+      <Filter>src\Siv3D\JSONIterator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
