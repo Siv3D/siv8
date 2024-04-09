@@ -366,17 +366,15 @@ namespace s3d
 		return JSON(std::cref(get()[key]));
 	}
 
-	//JSON JSON::operator [](const StringView key)
-	//{
-	//	return JSON(m_json[Unicode::ToUTF8(key)]);
-	//}
+	JSON JSON::operator [](const StringView key)
+	{
+		return operator[](Unicode::ToUTF8(key));
+	}
 
-	//const JSON JSON::operator [](const StringView key) const
-	//{
-	//	m_json.operator[](Unicode::ToUTF8(key));
-
-	//	return JSON(m_json[Unicode::ToUTF8(key)]);
-	//}
+	const JSON JSON::operator [](const StringView key) const
+	{
+		return operator[](Unicode::ToUTF8(key));
+	}
 
 	//JSON JSON::operator [](const size_t index)
 	//{
@@ -434,6 +432,28 @@ namespace s3d
 	std::string JSON::formatUTF8(const char32 space, const size_t spaceCount) const
 	{
 		return get().dump(static_cast<int>(spaceCount), static_cast<char>(space));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	formatMinimum
+	//
+	////////////////////////////////////////////////////////////////
+
+	String JSON::formatMinimum() const
+	{
+		return Unicode::FromUTF8(formatUTF8Minimum());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	formatUTF8Minimum
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::string JSON::formatUTF8Minimum() const
+	{
+		return get().dump();
 	}
 
 	////////////////////////////////////////////////////////////////

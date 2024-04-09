@@ -100,29 +100,12 @@ namespace s3d
 	{
 		if constexpr (std::is_same_v<Type, String>)
 		{
-			return std::visit([](auto&& json)->std::string
-			{
-				if (not json.is_string())
-				{
-					return none;
-				}
-
-				return Unicode::FromUTF8(json.get<std::string>());
-			}, m_json);
-		}
-
-		return none;
-
-		/*
-
-		if constexpr (std::is_same_v<Type, String>)
-		{
 			if (not isString())
 			{
 				return none;
 			}
 
-			return Unicode::FromUTF8(m_json.get<std::string>());
+			return Unicode::FromUTF8(get().get<std::string>());
 		}
 		else if constexpr (std::is_same_v<Type, std::string>)
 		{
@@ -131,11 +114,11 @@ namespace s3d
 				return none;
 			}
 
-			return m_json.get<std::string>();
+			return get().get<std::string>();
 		}
 		else if constexpr (std::is_arithmetic_v<Type>)
 		{
-			return m_json.get<Type>();
+			return get().get<Type>();
 		}
 		else
 		{
@@ -144,9 +127,8 @@ namespace s3d
 				return none;
 			}
 
-			return ParseOpt<Type>(m_json.get<std::string>());
+			return ParseOpt<Type>(get().get<std::string>());
 		}
-		*/
 	}
 }
 

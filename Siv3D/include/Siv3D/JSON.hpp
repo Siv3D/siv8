@@ -488,7 +488,7 @@ namespace s3d
 
 	private:
 
-		std::variant<json_base, std::reference_wrapper<json_base>> m_json;
+		std::variant<json_base, std::reference_wrapper<json_base>, std::reference_wrapper<const json_base>> m_json;
 
 		[[nodiscard]]
 		json_base& get()
@@ -497,9 +497,14 @@ namespace s3d
 			{
 				return std::get<json_base>(m_json);
 			}
-			else
+			else if (std::holds_alternative<std::reference_wrapper<json_base>>(m_json))
 			{
 				return std::get<std::reference_wrapper<json_base>>(m_json).get();
+			}
+			else
+			{
+				m_json = json_base(std::get<std::reference_wrapper<const json_base>>(m_json).get());
+				return std::get<json_base>(m_json);
 			}
 		}
 
@@ -510,18 +515,15 @@ namespace s3d
 			{
 				return std::get<json_base>(m_json);
 			}
-			else
+			else if (std::holds_alternative<std::reference_wrapper<json_base>>(m_json))
 			{
 				return std::get<std::reference_wrapper<json_base>>(m_json).get();
 			}
+			else
+			{
+				return std::get<std::reference_wrapper<const json_base>>(m_json).get();
+			}
 		}
-
-		//[[nodiscard]]
-		//json_base clone() const
-		//{
-		//	return std::visit([](const auto& j) { return j; }, m_json);
-		//}
-
 	};
 }
 
