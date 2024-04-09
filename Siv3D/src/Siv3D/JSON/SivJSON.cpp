@@ -553,9 +553,47 @@ namespace s3d
 		j.erase(j.begin() + index);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	begin, end
+	//
+	////////////////////////////////////////////////////////////////
 
+	JSON::iterator JSON::begin() noexcept
+	{
+		return iterator{ getRef().begin() };
+	}
 
+	JSON::const_iterator JSON::end() const noexcept
+	{
+		return const_iterator{ getConstRef().end() };
+	}
 
+	JSON::const_iterator JSON::begin() const noexcept
+	{
+		return const_iterator{ getConstRef().begin() };
+	}
+
+	JSON::iterator JSON::end() noexcept
+	{
+		return iterator{ getRef().end() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	cbegin, cend
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON::const_iterator JSON::cbegin() const noexcept
+	{
+		return const_iterator{ getConstRef().cbegin() };
+	}
+
+	JSON::const_iterator JSON::cend() const noexcept
+	{
+		return const_iterator{ getConstRef().cend() };
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -799,33 +837,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	MakeArray
+	//	MakeEmptyArray
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON JSON::MakeArray()
+	JSON JSON::MakeEmptyArray()
 	{
 		return JSON(JSONValueType::Array);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	MakeObject
+	//	MakeEmptyObject
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON JSON::MakeObject()
+	JSON JSON::MakeEmptyObject()
 	{
 		return JSON(JSONValueType::Object);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	MakeBinary
+	//	MakeEmptyBinary
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON JSON::MakeBinary()
+	JSON JSON::MakeEmptyBinary()
 	{
 		return JSON(JSONValueType::Binary);
 	}
@@ -888,6 +926,30 @@ namespace s3d
 		else
 		{
 			return std::get<std::reference_wrapper<const json_base>>(m_json).get();
+		}
+	}
+
+	inline namespace Literals
+	{
+		inline namespace JSONLiterals
+		{
+			////////////////////////////////////////////////////////////////
+			//
+			//	_json
+			//
+			////////////////////////////////////////////////////////////////
+
+			[[nodiscard]]
+			JSON operator ""_json(const char* str, size_t length)
+			{
+				return JSON::Parse(std::string_view{ str, length });
+			}
+
+			[[nodiscard]]
+			JSON operator ""_json(const char32_t* str, size_t length)
+			{
+				return JSON::Parse(StringView{ str, length });
+			}
 		}
 	}
 }
