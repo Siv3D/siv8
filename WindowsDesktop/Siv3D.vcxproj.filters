@@ -457,6 +457,9 @@
     <Filter Include="include\ThirdParty\nlohmann">
       <UniqueIdentifier>{39a9cd51-3c84-48a0-9148-3d86a3d91c0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Parse">
+      <UniqueIdentifier>{957b594e-42d7-4245-a9e5-2d50f6ff4d12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2212,6 +2215,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\JSON\SivJSON.cpp">
       <Filter>src\Siv3D\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp">
+      <Filter>src\Siv3D\Parse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

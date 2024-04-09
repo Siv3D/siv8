@@ -94,4 +94,15 @@ TEST_CASE("JSON")
 		CHECK(j_array.isArray());
 		CHECK(j_string.isString());
 	}
+
+	{
+		JSON j;
+		CHECK(j.isNull());
+		j = nullptr;
+		CHECK(j.isNull());
+		j = "Hello, Siv3D!";
+		CHECK(j.isString());
+		j = true;
+		CHECK(j.isBool());
+	}
 }

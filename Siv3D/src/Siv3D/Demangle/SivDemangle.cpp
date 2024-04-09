@@ -51,4 +51,35 @@ namespace s3d
 
 	# endif
 	}
+			
+	////////////////////////////////////////////////////////////////
+	//
+	//	DemangleUTF8
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::string DemangleUTF8(const char* name)
+	{
+	# if defined(SIV3D_HAS_CXXABI)
+
+		int status = 0;
+
+		std::unique_ptr<char, void(*)(void*)> demangledName(
+			abi::__cxa_demangle(name, nullptr, nullptr, &status), std::free);
+
+		if (status == 0)
+		{
+			return demangledName.get();
+		}
+		else
+		{
+			return name; // デマングルに失敗した場合、元の名前を返す
+		}
+
+	# else
+
+		return name;
+
+	# endif
+	}
 }
