@@ -53,15 +53,27 @@ namespace s3d
 		}
 
 		[[noreturn]]
-		static void ThrowNotArray()
+		static void ThrowOpSubscriptNotArray()
 		{
 			throw Error{ U"JSON::operator [](size_t): This JSON value is not an array" };
 		}
 
 		[[noreturn]]
-		static void ThrowIndexOutOfRange()
+		static void ThrowOpSubscriptIndexOutOfRange()
 		{
 			throw Error{ U"JSON::operator [](size_t): Index out of range" };
+		}
+
+		[[noreturn]]
+		static void ThrowEraseNotArray()
+		{
+			throw Error{ U"JSON::erase(size_t): This JSON value is not an array" };
+		}
+
+		[[noreturn]]
+		static void ThrowEraseIndexOutOfRange()
+		{
+			throw Error{ U"JSON::erase(size_t): Index out of range" };
 		}
 	}
 
@@ -144,6 +156,27 @@ namespace s3d
 
 	JSON::JSON(json_base&& json)
 		: m_json(std::move(json)) {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator = 
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON& JSON::operator =(const char32* value)
+	{
+		return operator =(Unicode::ToUTF8(value));
+	}
+
+	JSON& JSON::operator =(const std::u32string_view value)
+	{
+		return operator =(Unicode::ToUTF8(value));
+	}
+
+	JSON& JSON::operator =(const StringView value)
+	{
+		return operator =(Unicode::ToUTF8(value));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -235,6 +268,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	isPrimitive
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool JSON::isPrimitive() const noexcept
+	{
+		return getConstRef().is_primitive();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	isArray
 	//
 	////////////////////////////////////////////////////////////////
@@ -304,6 +348,33 @@ namespace s3d
 	bool JSON::hasElement(const StringView key) const
 	{
 		return getConstRef().contains(Unicode::ToUTF8(key));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool JSON::contains(const std::string_view key) const
+	{
+		return getConstRef().contains(key);
+	}
+
+	bool JSON::contains(const StringView key) const
+	{
+		return getConstRef().contains(Unicode::ToUTF8(key));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	size
+	//
+	////////////////////////////////////////////////////////////////
+
+	size_t JSON::size() const noexcept
+	{
+		return getConstRef().size();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -388,12 +459,12 @@ namespace s3d
 
 		if (not j.is_array())
 		{
-			ThrowNotArray();
+			ThrowOpSubscriptNotArray();
 		}
 
 		if (j.size() <= index)
 		{
-			ThrowIndexOutOfRange();
+			ThrowOpSubscriptIndexOutOfRange();
 		}
 
 		return JSON(std::ref(j[index]));
@@ -405,22 +476,109 @@ namespace s3d
 
 		if (not j.is_array())
 		{
-			ThrowNotArray();
+			ThrowOpSubscriptNotArray();
 		}
 
 		if (j.size() <= index)
 		{
-			ThrowIndexOutOfRange();
+			ThrowOpSubscriptIndexOutOfRange();
 		}
 
 		return JSON(std::ref(j[index]));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	push_back
+	//
+	////////////////////////////////////////////////////////////////
+
+	void JSON::push_back(const JSON& value)
+	{
+		getRef().push_back(value.getConstRef());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pop_back
+	//
+	////////////////////////////////////////////////////////////////
+
+	void JSON::pop_back()
+	{
+		getRef().erase(getRef().end() - 1);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	clear
+	//
+	////////////////////////////////////////////////////////////////
+
+	void JSON::clear()
+	{
+		getRef().clear();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase
+	//
+	////////////////////////////////////////////////////////////////
+
+	void JSON::erase(const std::string_view key)
+	{
+		getRef().erase(key);
+	}
+
+	void JSON::erase(const StringView key)
+	{
+		getRef().erase(Unicode::ToUTF8(key));
+	}
+
+	void JSON::erase(const size_t index)
+	{
+		auto& j = getRef();
+
+		if (not j.is_array())
+		{
+			ThrowEraseNotArray();
+		}
+
+		if (j.size() <= index)
+		{
+			ThrowEraseIndexOutOfRange();
+		}
+
+		j.erase(j.begin() + index);
 	}
 
 
 
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	flatten
+	//
+	////////////////////////////////////////////////////////////////
 
+	[[nodiscard]]
+	JSON JSON::flatten() const
+	{
+		return JSON(getConstRef().flatten());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	unflatten
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON JSON::unflatten() const
+	{
+		return JSON(getConstRef().unflatten());
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -428,9 +586,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String JSON::format(const char32 space, const size_t spaceCount) const
+	String JSON::format(const char32 indent, const size_t spaceCount, const EnsureAscii ensureAscii) const
 	{
-		return Unicode::FromUTF8(formatUTF8(space, spaceCount));
+		return Unicode::FromUTF8(formatUTF8(indent, spaceCount, ensureAscii));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -439,9 +597,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::string JSON::formatUTF8(const char32 space, const size_t spaceCount) const
+	std::string JSON::formatUTF8(const char32 indent, const size_t spaceCount, const EnsureAscii ensureAscii) const
 	{
-		return getConstRef().dump(static_cast<int>(spaceCount), static_cast<char>(space));
+		return getConstRef().dump(static_cast<int>(spaceCount), static_cast<char>(indent), ensureAscii.getBool());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -450,9 +608,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String JSON::formatMinified() const
+	String JSON::formatMinified(const EnsureAscii ensureAscii) const
 	{
-		return Unicode::FromUTF8(formatUTF8Minified());
+		return Unicode::FromUTF8(formatUTF8Minified(ensureAscii));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -461,9 +619,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::string JSON::formatUTF8Minified() const
+	std::string JSON::formatUTF8Minified(const EnsureAscii ensureAscii) const
 	{
-		return getConstRef().dump();
+		return getConstRef().dump(-1, ' ', ensureAscii.getBool());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -472,7 +630,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool JSON::save(const FilePathView path) const
+	bool JSON::save(const FilePathView path, const char32 indent, const size_t spaceCount, const EnsureAscii ensureAscii) const
 	{
 		TextWriter writer{ path };
 
@@ -481,7 +639,7 @@ namespace s3d
 			return false;
 		}
 
-		writer.writeUTF8(formatUTF8());
+		writer.writeUTF8(formatUTF8(indent, spaceCount, ensureAscii));
 
 		return true;
 	}
@@ -492,7 +650,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool JSON::saveMinified(const FilePathView path) const
+	bool JSON::saveMinified(const FilePathView path, const EnsureAscii ensureAscii) const
 	{
 		TextWriter writer{ path };
 
@@ -501,7 +659,7 @@ namespace s3d
 			return false;
 		}
 
-		writer.writeUTF8(formatUTF8Minified());
+		writer.writeUTF8(formatUTF8Minified(ensureAscii));
 
 		return true;
 	}

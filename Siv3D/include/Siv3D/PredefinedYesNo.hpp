@@ -29,4 +29,6 @@ namespace s3d
 	/// @brief 例外を発生させる
 	using AllowExceptions	= YesNo<struct AllowExceptions_tag>;
 	
+	/// @brief アスキー文字のみになるよう変換する
+	using EnsureAscii		= YesNo<struct EnsureAscii_tag>;
 }

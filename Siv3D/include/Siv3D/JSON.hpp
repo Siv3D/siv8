@@ -36,7 +36,11 @@ namespace s3d
 	{
 	public:
 
-		using json_base = nlohmann::json;
+		using json_base			= nlohmann::json;
+
+		using iterator			= json_base::iterator;
+
+		using const_iterator	= json_base::const_iterator;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -113,6 +117,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		JSON& operator =(const char32* value);
+
+		JSON& operator =(std::u32string_view value);
+
+		JSON& operator =(StringView value);
+
 		JSON& operator =(auto&& value);
 
 		////////////////////////////////////////////////////////////////
@@ -133,6 +143,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値の型が null であるかを返します。 
+		/// @return 値の型が null である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isNull() const noexcept;
 
@@ -143,6 +154,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値の型が bool であるかを返します。 
+		/// @return 値の型が bool である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isBool() const noexcept;
 
@@ -153,6 +165,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値が数値型（整数型、符号なし整数型、浮動小数点数型）であるかを返します。 
+		/// @return 値が数値型である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isNumber() const noexcept;
 
@@ -163,6 +176,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値が整数型（整数型、符号なし整数型）であるかを返します。 
+		/// @return 値が整数型である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isInt() const noexcept;
 
@@ -173,6 +187,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値が符号なし整数型であるかを返します。 
+		/// @return 値が符号なし整数型である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isUint() const noexcept;
 
@@ -183,6 +198,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値が浮動小数点数型であるかを返します。 
+		/// @return 値が浮動小数点数型である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isFloat() const noexcept;
 
@@ -193,8 +209,20 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値が文字列型であるかを返します。 
+		/// @return 値が文字列型である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isString() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isPrimitive
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 値がプリミティブ型（null, bool, 数値型, 文字列型、バイナリデータ型）であるかを返します。 
+		/// @return 値がプリミティブ型である場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool isPrimitive() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -203,6 +231,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値が配列型であるかを返します。 
+		/// @return 値が配列型である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isArray() const noexcept;
 
@@ -212,7 +241,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 値がオブジェクト型であるかを返します。 
+		/// @brief 値がオブジェクト型であるかを返します。
+		/// @return 値がオブジェクト型である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isObject() const noexcept;
 
@@ -223,6 +253,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値がバイナリデータ型であるかを返します。 
+		/// @return 値がバイナリデータ型である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isBinary() const noexcept;
 
@@ -233,6 +264,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値が不正であるかを返します。
+		/// @return 値が不正である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isInvalid() const noexcept;
 
@@ -243,6 +275,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 値が Null または不正でないかを返します。
+		/// @return 値が Null または不正でない場合 true, それ以外の場合は false
 		[[nodiscard]]
 		explicit operator bool() const noexcept;
 
@@ -254,14 +287,45 @@ namespace s3d
 
 		/// @brief 指定したキーの要素が存在するかを返します。
 		/// @param key キー
+		/// @return 要素が存在する場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool hasElement(std::string_view key) const;
 
 		/// @brief 指定したキーの要素が存在するかを返します。
 		/// @param key キー
+		/// @return 要素が存在する場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool hasElement(StringView key) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したキーの要素が存在するかを返します。
+		/// @param key キー
+		/// @return 要素が存在する場合 true, それ以外の場合は false
+		/// @rematk `hasElement` と同じです。
+		[[nodiscard]]
+		bool contains(std::string_view key) const;
+
+		/// @brief 指定したキーの要素が存在するかを返します。
+		/// @param key キー
+		/// @return 要素が存在する場合 true, それ以外の場合は false
+		/// @rematk `hasElement` と同じです。
+		[[nodiscard]]
+		bool contains(StringView key) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	size
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		size_t size() const noexcept;
+		
 		////////////////////////////////////////////////////////////////
 		//
 		//	getString
@@ -364,14 +428,102 @@ namespace s3d
 		[[nodiscard]]
 		const JSON operator [](size_t index) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	push_back
+		//
+		////////////////////////////////////////////////////////////////
 
+		void push_back(const JSON& value);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	pop_back
+		//
+		////////////////////////////////////////////////////////////////
 
+		void pop_back();
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	clear
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 値の型はそのままで、値を空にします。
+		/// @remark 配列の場合は要素を全て削除します。数値型の場合は 0 に、bool 型の場合は false になります。
+		void clear();
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したキーの要素を削除します。
+		/// @param key キー
+		void erase(std::string_view key);
 
+		/// @brief 指定したキーの要素を削除します。
+		/// @param key キー
+		void erase(StringView key);
+
+		/// @brief 指定したインデックスの要素を削除します。
+		/// @param index インデックス
+		/// @throe Error JSON の値が配列でない場合、またはインデックスが範囲外の場合
+		void erase(size_t index);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	begin, end
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		iterator begin() noexcept;
+
+		[[nodiscard]]
+		const_iterator end() const noexcept;
+
+		[[nodiscard]]
+		const_iterator begin() const noexcept;
+
+		[[nodiscard]]
+		iterator end() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	cbegin, cend
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		const_iterator cbegin() const noexcept;
+
+		[[nodiscard]]
+		const_iterator cend() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	flatten
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief JSON ポインタとプリミティブ型の値のペアをからなる JSON オブジェクトに変換した結果を返します。
+		/// @return JSON オブジェクト
+		[[nodiscard]]
+		JSON flatten() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	unflatten
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief `flatten` で変換された JSON オブジェクトを、元の JSON オブジェクトに復元した結果を返します。
+		/// @return JSON オブジェクト
+		[[nodiscard]]
+		JSON unflatten() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -380,11 +532,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON データを文字列にフォーマットした結果を返します。
-		/// @param space インデントの文字
+		/// @param indent インデントの文字
 		/// @param spaceCount インデントの文字数
+		/// @param ensureAscii ASCII 文字のみにエンコードするか
 		/// @return フォーマットされた JSON データ
 		[[nodiscard]]
-		String format(char32 space = U' ', size_t spaceCount = 2) const;
+		String format(char32 indent = U' ', size_t spaceCount = 2, EnsureAscii ensureAscii = EnsureAscii::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -393,11 +546,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON データを UTF-8 文字列にフォーマットした結果を返します。
-		/// @param space インデントの文字
+		/// @param indent インデントの文字
 		/// @param spaceCount インデントの文字数
+		/// @param ensureAscii ASCII 文字のみにエンコードするか
 		/// @return フォーマットされた JSON データ
 		[[nodiscard]]
-		std::string formatUTF8(char32 space = U' ', size_t spaceCount = 2) const;
+		std::string formatUTF8(char32 indent = U' ', size_t spaceCount = 2, EnsureAscii ensureAscii = EnsureAscii::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -406,9 +560,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON データを最小限の文字列にフォーマットした結果を返します。
+		/// @param ensureAscii ASCII 文字のみにエンコードするか
 		/// @return フォーマットされた JSON データ
 		[[nodiscard]]
-		String formatMinified() const;
+		String formatMinified(EnsureAscii ensureAscii = EnsureAscii::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -417,9 +572,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON データを最小限の UTF-8 文字列にフォーマットした結果を返します。
+		/// @param ensureAscii ASCII 文字のみにエンコードするか
 		/// @return フォーマットされた JSON データ
 		[[nodiscard]]
-		std::string formatUTF8Minified() const;
+		std::string formatUTF8Minified(EnsureAscii ensureAscii = EnsureAscii::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -428,9 +584,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON データをファイルに保存します。
+		/// @param indent インデントの文字
+		/// @param spaceCount インデントの文字数
+		/// @param ensureAscii ASCII 文字のみにエンコードするか
 		/// @param path 保存するファイルのパス
 		/// @return 保存に成功した場合 true, それ以外の場合は false
-		bool save(FilePathView path) const;
+		bool save(FilePathView path, char32 indent = U' ', size_t spaceCount = 2, EnsureAscii ensureAscii = EnsureAscii::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -440,8 +599,9 @@ namespace s3d
 
 		/// @brief JSON データを最小限の形式でファイルに保存します。
 		/// @param path 保存するファイルのパス
+		/// @param ensureAscii ASCII 文字のみにエンコードするか
 		/// @return 保存に成功した場合 true, それ以外の場合は false
-		bool saveMinified(FilePathView path) const;
+		bool saveMinified(FilePathView path, EnsureAscii ensureAscii = EnsureAscii::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
