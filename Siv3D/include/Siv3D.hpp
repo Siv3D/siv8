@@ -511,6 +511,10 @@
 // JSON データの読み書き | JSON reader/writer
 # include <Siv3D/JSON.hpp>
 
+# include <Siv3D/JSONIterator.hpp>
+
+# include <Siv3D/JSONPointer.hpp> // ToDo
+
 //// JSON データの検証 | JSON validation
 //# include <Siv3D/JSONValidator.hpp>
 //

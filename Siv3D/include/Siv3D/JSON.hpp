@@ -28,6 +28,7 @@ namespace s3d
 	class JSON;
 	class JSONIterator;
 	class JSONConstIterator;
+	class JSONPointer;
 
 	template <class Type>
 	concept JSONCompatibleType =
@@ -318,14 +319,14 @@ namespace s3d
 		/// @brief 指定したキーの要素が存在するかを返します。
 		/// @param key キー
 		/// @return 要素が存在する場合 true, それ以外の場合は false
-		/// @rematk `hasElement` と同じです。
+		/// @remark `hasElement` と同じです。
 		[[nodiscard]]
 		bool contains(std::string_view key) const;
 
 		/// @brief 指定したキーの要素が存在するかを返します。
 		/// @param key キー
 		/// @return 要素が存在する場合 true, それ以外の場合は false
-		/// @rematk `hasElement` と同じです。
+		/// @ `hasElement` と同じです。
 		[[nodiscard]]
 		bool contains(StringView key) const;
 
@@ -808,194 +809,6 @@ namespace s3d
 
 		[[nodiscard]]
 		const json_base& getConstRef() const;
-	};
-
-	class JSONIterator
-	{
-	public:
-
-		struct JSONItem
-		{
-			String key;
-
-			JSON value;
-		};
-
-		using value_type		= JSONItem;
-
-		using difference_type	= std::ptrdiff_t;
-
-		using iterator_concept	= std::bidirectional_iterator_tag;
-
-		[[nodiscard]]
-		JSONIterator() = default;
-
-		[[nodiscard]]
-		explicit JSONIterator(JSON::json_base::iterator it, const Optional<difference_type>& index = none)
-			: m_iterator(it)
-			, m_index(index.value_or(0LL))
-			, m_isArray{ index.has_value() } {}
-
-		[[nodiscard]]
-		JSONItem operator *() const
-		{
-			return JSONItem{ key(), value() };
-		}
-
-		[[nodiscard]]
-		String key() const
-		{
-			if (m_isArray)
-			{
-				return ToString(m_index);
-			}
-
-			return Unicode::FromUTF8(m_iterator.key());
-		}
-
-		[[nodiscard]]
-		JSON value() const
-		{
-			return JSON(std::ref(m_iterator.value()));
-		}
-
-		JSONIterator& operator ++()
-		{
-			++m_iterator;
-			++m_index;
-			return *this;
-		}
-
-		JSONIterator& operator ++(int)
-		{
-			JSONIterator old = *this;
-			++m_iterator;
-			++m_index;
-			return old;
-		}
-		
-		JSONIterator& operator --()
-		{
-			--m_iterator;
-			--m_index;
-			return *this;
-		}
-
-		JSONIterator& operator --(int)
-		{
-			JSONIterator old = *this;
-			--m_iterator;
-			--m_index;
-			return old;
-		}
-
-		[[nodiscard]]
-		friend bool operator ==(const JSONIterator& lhs, const JSONIterator& rhs)
-		{
-			return (lhs.m_iterator == rhs.m_iterator);
-		}
-
-	private:
-
-		JSON::json_base::iterator m_iterator;
-
-		difference_type m_index;
-
-		bool m_isArray = false;
-	};
-
-	class JSONConstIterator
-	{
-	public:
-
-		struct JSONItem
-		{
-			const String key;
-
-			const JSON value;
-		};
-
-		using value_type		= JSONItem;
-
-		using difference_type	= std::ptrdiff_t;
-
-		using iterator_concept	= std::bidirectional_iterator_tag;
-
-		[[nodiscard]]
-		JSONConstIterator() = default;
-
-		[[nodiscard]]
-		explicit JSONConstIterator(JSON::json_base::const_iterator it, const Optional<difference_type>& index = none)
-			: m_iterator(it)
-			, m_index(index.value_or(0LL))
-			, m_isArray{ index.has_value() } {}
-
-		[[nodiscard]]
-		JSONItem operator *() const
-		{
-			return JSONItem{ key(), value() };
-		}
-
-		[[nodiscard]]
-		const String key() const
-		{
-			if (m_isArray)
-			{
-				return ToString(m_index);
-			}
-
-			return Unicode::FromUTF8(m_iterator.key());
-		}
-
-		[[nodiscard]]
-		const JSON value() const
-		{
-			return JSON(std::cref(m_iterator.value()));
-		}
-
-		JSONConstIterator& operator ++()
-		{
-			++m_iterator;
-			++m_index;
-			return *this;
-		}
-
-		JSONConstIterator& operator ++(int)
-		{
-			JSONConstIterator old = *this;
-			++m_iterator;
-			++m_index;
-			return old;
-		}
-
-		JSONConstIterator& operator --()
-		{
-			--m_iterator;
-			--m_index;
-			return *this;
-		}
-
-		JSONConstIterator& operator --(int)
-		{
-			JSONConstIterator old = *this;
-			--m_iterator;
-			--m_index;
-			return old;
-		}
-
-		[[nodiscard]]
-		friend bool operator ==(const JSONConstIterator& lhs, const JSONConstIterator& rhs)
-		{
-			return (lhs.m_iterator == rhs.m_iterator);
-		}
-
-	private:
-
-		JSON::json_base::const_iterator m_iterator;
-
-		difference_type m_index;
-
-		bool m_isArray = false;
 	};
 
 	inline namespace Literals

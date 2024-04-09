@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/JSON.hpp>
+# include <Siv3D/JSONIterator.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/FmtExtension.hpp>
@@ -866,12 +867,7 @@ namespace s3d
 		}
 		catch (const nlohmann::json::parse_error& e)
 		{
-			if (allowExceptions)
-			{
-				throw Error{ fmt::format("JSON::Parse(): {}", e.what()) };
-			}
-
-			return JSON::MakeInvalid();
+			throw Error{ fmt::format("JSON::Parse(): {}", e.what()) };
 		}
 
 		return json;
@@ -880,6 +876,72 @@ namespace s3d
 	JSON JSON::Parse(const StringView s, const AllowExceptions allowExceptions)
 	{
 		return Parse(Unicode::ToUTF8(s), allowExceptions);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromBSON
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON JSON::FromBSON(const Blob& bson, const AllowExceptions allowExceptions)
+	{
+		JSON json;
+
+		try
+		{
+			json.m_json = nlohmann::json::from_bson(bson.begin(), bson.end(), true, allowExceptions.getBool());
+		}
+		catch (const std::exception& e)
+		{
+			throw Error{ fmt::format("JSON::FromBSON(): {}", e.what()) };
+		}
+
+		return json;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromCBOR
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON JSON::FromCBOR(const Blob& cbor, const AllowExceptions allowExceptions)
+	{
+		JSON json;
+
+		try
+		{
+			json.m_json = nlohmann::json::from_cbor(cbor.begin(), cbor.end(), true, allowExceptions.getBool());
+		}
+		catch (const std::exception& e)
+		{
+			throw Error{ fmt::format("JSON::FromCBOR(): {}", e.what()) };
+		}
+
+		return json;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromMessagePack
+	//
+	////////////////////////////////////////////////////////////////
+
+	JSON JSON::FromMessagePack(const Blob& msgpack, const AllowExceptions allowExceptions)
+	{
+		JSON json;
+
+		try
+		{
+			json.m_json = nlohmann::json::from_msgpack(msgpack.begin(), msgpack.end(), true, allowExceptions.getBool());
+		}
+		catch (const std::exception& e)
+		{
+			throw Error{ fmt::format("JSON::FromMessagePack(): {}", e.what()) };
+		}
+
+		return json;
 	}
 
 	////////////////////////////////////////////////////////////////
