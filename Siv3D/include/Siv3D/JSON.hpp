@@ -115,6 +115,10 @@ namespace s3d
 		[[nodiscard]]
 		explicit JSON(json_base&& json);
 
+		JSON(const JSON& other) = default;
+
+		JSON(JSON&& other) = default;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator = 
@@ -126,6 +130,12 @@ namespace s3d
 		JSON& operator =(std::u32string_view value);
 
 		JSON& operator =(StringView value);
+
+		JSON& operator =(const JSON& value);
+
+		JSON& operator =(JSON&& value);
+
+		JSON& operator =(JSON& value);
 
 		JSON& operator =(auto&& value);
 

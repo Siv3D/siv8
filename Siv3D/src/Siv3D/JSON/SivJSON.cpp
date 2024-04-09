@@ -179,6 +179,21 @@ namespace s3d
 		return operator =(Unicode::ToUTF8(value));
 	}
 
+	JSON& JSON::operator =(const JSON& value)
+	{
+		return operator =(value.getConstRef());
+	}
+
+	JSON& JSON::operator =(JSON&& value)
+	{
+		return operator =(value.getConstRef());
+	}
+
+	JSON& JSON::operator =(JSON& value)
+	{
+		return operator =(value.getConstRef());
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	clone
