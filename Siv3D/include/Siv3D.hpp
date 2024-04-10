@@ -521,9 +521,9 @@
 // 
 //// CSV データの読み書き | CSV reader/writer
 //# include <Siv3D/CSV.hpp>
-//
-//// INI データの読み書き | INI reader/writer
-//# include <Siv3D/INI.hpp>
+
+// INI データの読み書き | INI reader/writer
+# include <Siv3D/INI.hpp>
 
 //// TOML ファイルの読み込み | TOML reader/writer
 //# include <Siv3D/TOML>

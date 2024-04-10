@@ -74,6 +74,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Image.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageDecoder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageEncoder.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\INI.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\JSON.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\PNGEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImagePixelFormat.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\INI.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSON.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONIterator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONPointer.hpp" />

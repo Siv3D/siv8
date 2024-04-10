@@ -36,6 +36,12 @@ namespace s3d
 		&& (not std::is_same_v<std::decay_t<Type>, JSON>)
 		&& (not std::is_same_v<std::decay_t<Type>, JSONValueType>);
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	JSON
+	//
+	////////////////////////////////////////////////////////////////
+
 	class JSON
 	{
 	public:
@@ -118,6 +124,51 @@ namespace s3d
 		JSON(const JSON& other) = default;
 
 		JSON(JSON&& other) = default;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	load
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
+		/// @param path ファイルパス
+		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
+		/// @return ロードに成功した場合 true, それ以外の場合は false
+		bool load(FilePathView path, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
+		/// @tparam Reader JSON ファイルを指す IReader の派生クラスの型
+		/// @param reader JSON ファイルを指す IReader の派生クラスのインスタンス
+		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
+		/// @return ロードに成功した場合 true, それ以外の場合は false
+		template <class Reader>
+			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+		bool load(Reader&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
+		/// @param reader JSON ファイルを指す IReader のインスタンス
+		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
+		/// @return ロードに成功した場合 true, それ以外の場合は false
+		bool load(std::unique_ptr<IReader>&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	parse
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief JSON 文字列をパースして JSON オブジェクトを返します。
+		/// @param s 文字列
+		/// @param allowExceptions 例外を発生させるか
+		/// @return パースに成功した場合 true, それ以外の場合は false
+		bool parse(std::string_view s, AllowExceptions allowExceptions = AllowExceptions::No);
+
+		/// @brief JSON 文字列をパースして JSON オブジェクトを返します。
+		/// @param s 文字列
+		/// @param allowExceptions 例外を発生させるか
+		/// @return パースに成功した場合 true, それ以外の場合は false
+		bool parse(StringView s, AllowExceptions allowExceptions = AllowExceptions::No);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -729,26 +780,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief JSON ファイルをパースして JSON オブジェクトを返します。
+		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
 		/// @param path ファイルパス
-		/// @param allowExceptions パースに失敗した場合に例外を発生させるか
+		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
 		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON Load(FilePathView path, AllowExceptions allowExceptions = AllowExceptions::No);
 
-		/// @brief JSON ファイルをパースして JSON オブジェクトを返します。
+		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
 		/// @tparam Reader JSON ファイルを指す IReader の派生クラスの型
 		/// @param reader JSON ファイルを指す IReader の派生クラスのインスタンス
-		/// @param allowExceptions パースに失敗した場合に例外を発生させるか
+		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
 		/// @return JSON オブジェクト
 		template <class Reader>
 			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
 		[[nodiscard]]
 		static JSON Load(Reader&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
 
-		/// @brief JSON ファイルをパースして JSON オブジェクトを返します。
+		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
 		/// @param reader JSON ファイルを指す IReader のインスタンス
-		/// @param allowExceptions パースに失敗した場合に例外を発生させるか
+		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
 		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON Load(std::unique_ptr<IReader>&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
@@ -760,15 +811,15 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief JSON 文字列をパースして JSON オブジェクトを返します。
-		/// @param [in] s 文字列
-		/// @param [in] allowExceptions 例外を発生させるか
+		/// @param s 文字列
+		/// @param allowExceptions 例外を発生させるか
 		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON Parse(std::string_view s, AllowExceptions allowExceptions = AllowExceptions::No);
 
 		/// @brief JSON 文字列をパースして JSON オブジェクトを返します。
-		/// @param [in] s 文字列
-		/// @param [in] allowExceptions 例外を発生させるか
+		/// @param s 文字列
+		/// @param allowExceptions 例外を発生させるか
 		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON Parse(StringView s, AllowExceptions allowExceptions = AllowExceptions::No);
@@ -780,8 +831,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief BSON 形式のデータから JSON オブジェクトをデシリアライズします。
-		/// @param [in] bson BSON データ
-		/// @param [in] allowExceptions 例外を発生させるか
+		/// @param bson BSON データ
+		/// @param allowExceptions 例外を発生させるか
 		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON FromBSON(const Blob& bson, AllowExceptions allowExceptions = AllowExceptions::No);
@@ -793,8 +844,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief CBOR 形式のデータから JSON オブジェクトをデシリアライズします。
-		/// @param [in] cbor CBOR データ
-		/// @param [in] allowExceptions 例外を発生させるか
+		/// @param cbor CBOR データ
+		/// @param allowExceptions 例外を発生させるか
 		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON FromCBOR(const Blob& cbor, AllowExceptions allowExceptions = AllowExceptions::No);
@@ -806,8 +857,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief MessagePack 形式のデータから JSON オブジェクトをデシリアライズします。
-		/// @param [in] msgpack MessagePack データ
-		/// @param [in] allowExceptions 例外を発生させるか
+		/// @param msgpack MessagePack データ
+		/// @param allowExceptions 例外を発生させるか
 		/// @return JSON オブジェクト
 		[[nodiscard]]
 		static JSON FromMessagePack(const Blob& msgpack, AllowExceptions allowExceptions = AllowExceptions::No);

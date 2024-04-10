@@ -160,6 +160,68 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	load
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool JSON::load(const FilePathView path, const AllowExceptions allowExceptions)
+	{
+		try
+		{
+			*this = Load(path, allowExceptions);
+		}
+		catch (const Error&)
+		{
+			*this = Invalid();
+			throw;
+		}
+
+		return (not isInvalid());
+	}
+
+	bool JSON::load(std::unique_ptr<IReader>&& reader, const AllowExceptions allowExceptions)
+	{
+		try
+		{
+			*this = Load(std::move(reader), allowExceptions);
+		}
+		catch (const Error&)
+		{
+			*this = Invalid();
+			throw;
+		}
+
+		return (not isInvalid());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	parse
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool JSON::parse(const std::string_view s, const AllowExceptions allowExceptions)
+	{
+		try
+		{
+			*this = Parse(s, allowExceptions);
+		}
+		catch (const Error&)
+		{
+			*this = Invalid();
+			throw;
+		}
+
+		return (not isInvalid());
+	}
+
+	bool JSON::parse(const StringView s, const AllowExceptions allowExceptions)
+	{
+		return parse(Unicode::ToUTF8(s), allowExceptions);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	operator = 
 	//
 	////////////////////////////////////////////////////////////////
