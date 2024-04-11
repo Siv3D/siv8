@@ -327,7 +327,7 @@ namespace s3d
 			return;
 		}
 
-		m_sections.push_back(INISection{ String{ section } });
+		m_sections.push_back(INISection{ .name = String{ section }, .items = {} });
 		m_sectionIndex.emplace(section, (m_sections.size() - 1));
 	}
 
