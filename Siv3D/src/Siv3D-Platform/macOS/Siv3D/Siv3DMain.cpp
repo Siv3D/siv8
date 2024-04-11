@@ -17,11 +17,18 @@
 
 void Main();
 
-int main(int, char**)
+namespace s3d::detail::init
+{
+	void InitCommandLines(int argc, char** argv);
+}
+
+int main(int argc, char* argv[])
 {
 	using namespace s3d;
 	
 	std::clog << "OpenSiv3D for macOS\n";
+	
+	detail::init::InitCommandLines(argc, argv);
 	
 	Siv3DEngine engine;
 	
