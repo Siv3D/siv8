@@ -235,20 +235,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getProperty
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief プロパティの値を返します。
-		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
-		/// @param key プロパティ名
-		/// @return プロパティの値
-		/// @throw Error 指定したプロパティが存在しない場合
-		[[nodiscard]]
-		const String& getProperty(StringView section, StringView key) const;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	hasGlobalProperty
 		//
 		////////////////////////////////////////////////////////////////
@@ -258,19 +244,6 @@ namespace s3d
 		/// @return プロパティが存在する場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool hasGlobalProperty(StringView key) const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getGlobalProperty
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief グローバル（無名）セクションのプロパティの値を返します。
-		/// @param key プロパティ名
-		/// @return プロパティの値
-		/// @throw Error 指定したプロパティが存在しない場合
-		[[nodiscard]]
-		const String& getGlobalProperty(StringView key) const;
 
 		////////////////////////////////////////////////////////////////
 		//

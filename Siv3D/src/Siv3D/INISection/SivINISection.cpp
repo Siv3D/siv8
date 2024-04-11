@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/INISection.hpp>
+# include <Siv3D/Array.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/FmtExtension.hpp>
 # include <Siv3D/Demangle.hpp>
@@ -46,38 +47,35 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	hasProperty
-	//
-	////////////////////////////////////////////////////////////////
-
-	void INISection::addProperty(const StringView key, const StringView value)
-	{
-		const auto it = items.find(key);
-
-		if (it != items.end())
-		{
-			it->second.value = value;
-		}
-		else
-		{
-			items.emplace(key, INIItem{ String{ value }, static_cast<int32>(items.size()) });
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	hasProperty
+	//	removeProperty
 	//
 	////////////////////////////////////////////////////////////////
 
 	void INISection::removeProperty(const StringView key)
 	{
+		const auto it = items.find(key);
+
+		if (it == items.end())
+		{
+			return;
+		}
+
+		const int32 index = it->second.index;
+
 		items.erase(key);
+
+		for (auto& [_, item] : items)
+		{
+			if (index < item.index)
+			{
+				--item.index;
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	hasProperty
+	//	operator []
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -107,7 +105,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	hasProperty
+	//	begin, end
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -133,7 +131,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	hasProperty
+	//	cbegin, cend
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -145,5 +143,48 @@ namespace s3d
 	INISection::const_iterator INISection::cend() const noexcept
 	{
 		return items.cend();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	format
+	//
+	////////////////////////////////////////////////////////////////
+
+	String INISection::format() const
+	{
+		String result;
+
+		if (name)
+		{
+			result += (U'[' + name + U"]\n");
+		}
+
+		Array<std::pair<int32, std::pair<String, String>>> sortedItems;
+
+		for (const auto& [key, item] : items)
+		{
+			sortedItems.emplace_back(item.index, std::pair{ key, item.value });
+		}
+
+		sortedItems.sort();
+
+		for (const auto& item : sortedItems)
+		{
+			result += (item.second.first + U" = " + item.second.second + U'\n');
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	_addProperty
+	//
+	////////////////////////////////////////////////////////////////
+
+	void INISection::_addProperty(const StringView key, String&& value)
+	{
+		items.emplace(key, INIItem{ .value = std::move(value), .index = static_cast<int32>(items.size()) });
 	}
 }

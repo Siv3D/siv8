@@ -27,18 +27,6 @@ namespace s3d
 		{
 			throw Error{ U"INI::getSection(): Section `{}` not found"_fmt(section) };
 		}
-
-		[[noreturn]]
-		static void ThrowGetProperty(const StringView section)
-		{
-			throw Error{ U"INI::getProperty(): Section `{}` not found"_fmt(section) };
-		}
-
-		[[noreturn]]
-		static void ThrowGetProperty(const StringView section, const StringView key)
-		{
-			throw Error{ U"INI::getProperty(): Property `{}` not found in section `{}`"_fmt(key, section) };
-		}
 	}
 
 	namespace detail
@@ -316,33 +304,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getProperty
-	//
-	////////////////////////////////////////////////////////////////
-
-	const String& INI::getProperty(const StringView section, const StringView key) const
-	{
-		const auto it = m_sectionIndex.find(section);
-
-		if (it == m_sectionIndex.end())
-		{
-			ThrowGetProperty(section);
-		}
-
-		const INISection& s = m_sections[it->second];
-
-		if (const auto itItem = s.items.find(key); itItem != s.items.end())
-		{
-			return itItem->second.value;
-		}
-		else
-		{
-			ThrowGetProperty(section, key);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	hasGlobalProperty
 	//
 	////////////////////////////////////////////////////////////////
@@ -350,17 +311,6 @@ namespace s3d
 	bool INI::hasGlobalProperty(const StringView key) const noexcept
 	{
 		return hasProperty(GlobalSection, key);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getGlobalProperty
-	//
-	////////////////////////////////////////////////////////////////
-
-	const String& INI::getGlobalProperty(const StringView key) const
-	{
-		return getProperty(GlobalSection, key);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -488,7 +438,32 @@ namespace s3d
 
 	String INI::format() const
 	{
-		return(U"");
+		String result;
+
+		// グローバル（無名）セクション
+		if (const auto itGlobal = m_sectionIndex.find(GlobalSection);
+			itGlobal != m_sectionIndex.end())
+		{
+			result += m_sections[itGlobal->second].format();
+		}
+
+		// その他のセクション
+		for (const auto& section : m_sections)
+		{
+			if (section.name == GlobalSection)
+			{
+				continue;
+			}
+
+			if (result)
+			{
+				result.push_back(U'\n');
+			}
+
+			result += section.format();
+		}
+	
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////

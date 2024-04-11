@@ -49,7 +49,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void addProperty(StringView key, StringView value);
+		void addProperty(StringView key, const Concept::Formattable auto& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -130,6 +130,18 @@ namespace s3d
 		template <class Type>
 		[[nodiscard]]
 		Optional<Type> getOpt(StringView key) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	format
+		//
+		////////////////////////////////////////////////////////////////
+
+		String format() const;
+
+	private:
+
+		void _addProperty(StringView key, String&& value);
 	};
 }
 
