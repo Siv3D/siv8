@@ -152,11 +152,11 @@
 // アルファベットの大文字・小文字 | Letter case
 # include <Siv3D/LetterCase.hpp>
 
-//// 正規表現のマッチ結果 | Regular expression matching
-//# include <Siv3D/MatchResults.hpp>
-//
-//// 正規表現 | Regular expression
-//# include <Siv3D/RegExp.hpp>
+// 正規表現のマッチ結果 | Regular expression matching
+# include <Siv3D/MatchResults.hpp>
+
+// 正規表現 | Regular expression
+# include <Siv3D/RegExp.hpp>
 
 // 実行ファイルに格納される文字列の難読化 | String obfuscation
 # include <Siv3D/Obfuscation.hpp>
