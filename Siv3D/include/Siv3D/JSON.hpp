@@ -390,7 +390,7 @@ namespace s3d
 		/// @brief 指定したキーの要素が存在するかを返します。
 		/// @param key キー
 		/// @return 要素が存在する場合 true, それ以外の場合は false
-		/// @ `hasElement` と同じです。
+		/// @remark `hasElement` と同じです。
 		[[nodiscard]]
 		bool contains(StringView key) const;
 

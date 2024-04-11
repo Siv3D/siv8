@@ -484,8 +484,8 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\EnvironmentVariable">
       <UniqueIdentifier>{53b9259f-f35b-4939-89b5-cd6e69daf821}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\CommandLine">
-      <UniqueIdentifier>{a6f9d547-38d5-4d49-afed-3f3360b40592}</UniqueIdentifier>
+    <Filter Include="src\Siv3D\CommandLine">
+      <UniqueIdentifier>{8de318ff-dd83-444d-944d-3f1c74cd3bfc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2309,8 +2309,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EnvironmentVariable\SivEnvironmentVariable.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\EnvironmentVariable</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\CommandLine\SivCommandLine.cpp">
-      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\CommandLine</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\CommandLine\SivCommandLine.cpp">
+      <Filter>src\Siv3D\CommandLine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
