@@ -10,4 +10,5 @@
 //-----------------------------------------------
 
 # define DefineResource(identifier,type,path) identifier type #path
-# define Resource(path) DefineResource(path, FILE, path)
+# define Resource(path) path FILE path \
+path PATH { L##path }

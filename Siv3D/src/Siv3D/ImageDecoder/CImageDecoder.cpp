@@ -14,6 +14,8 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/ImageFormat/BMPDecoder.hpp>
+# include <Siv3D/ImageFormat/PNGDecoder.hpp>
+# include <Siv3D/ImageFormat/JPEGDecoder.hpp>
 
 namespace s3d
 {
@@ -108,6 +110,8 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CImageDecoder::init()");
 
 		m_decoders.push_back(std::make_unique<BMPDecoder>());
+		m_decoders.push_back(std::make_unique<PNGDecoder>());
+		m_decoders.push_back(std::make_unique<JPEGDecoder>());
 	}
 
 	bool CImageDecoder::add(std::unique_ptr<IImageDecoder>&& decoder)

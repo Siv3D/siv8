@@ -723,8 +723,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint64 BigInt::lsb() const noexcept
+	Optional<uint64> BigInt::lsb() const noexcept
 	{
+		if (pImpl->value.sign() <= 0)
+		{
+			return none;
+		}
+		
 		return boost::multiprecision::lsb(pImpl->value);
 	}
 
@@ -734,8 +739,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint64 BigInt::msb() const noexcept
+	Optional<uint64> BigInt::msb() const noexcept
 	{
+		if (pImpl->value.sign() <= 0)
+		{
+			return none;
+		}
+		
 		return boost::multiprecision::msb(pImpl->value);
 	}
 

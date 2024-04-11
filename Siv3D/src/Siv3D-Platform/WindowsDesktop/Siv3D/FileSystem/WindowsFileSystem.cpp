@@ -12,6 +12,7 @@
 # include "WindowsFileSystem.hpp"
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/Resource.hpp>
 # include <Shlobj.h>
 
 namespace s3d
@@ -81,28 +82,6 @@ namespace s3d
 
 				return paths;
 			}();
-
-			resourceFilePaths = []()
-			{
-				Array<FilePath> paths;
-						
-				const HMODULE hModule = ::GetModuleHandleW(nullptr);
-
-				::EnumResourceNamesW(hModule, L"FILE", EnumResourceNameCallback, (LONG_PTR)&paths);
-
-				paths.sort();
-
-				return paths;
-			}();
-		}
-
-		BOOL CALLBACK FilePathCache::EnumResourceNameCallback(HMODULE, LPCWSTR, LPWSTR lpName, LONG_PTR lParam)
-		{
-			Array<FilePath>& paths = *reinterpret_cast<Array<FilePath>*>(lParam);
-					
-			paths.push_back(U'/' + Unicode::FromWstring(lpName));
-					
-			return true;
 		}
 
 		[[nodiscard]]
@@ -119,16 +98,14 @@ namespace s3d
 
 		bool ResourceExists(const FilePathView path)
 		{
-			const std::wstring pathW = Unicode::ToWstring(path);
-			return (::FindResourceW(::GetModuleHandleW(nullptr), &pathW[1], L"FILE") != nullptr);
+			return (::FindResourceW(::GetModuleHandleW(nullptr), Platform::Windows::ToResourceName(path).c_str(), L"FILE") != nullptr);
 		}
 
 		size_t ResourceSize(const FilePathView path)
 		{
 			HMODULE hModule = ::GetModuleHandleW(nullptr);
-			const std::wstring pathW = Unicode::ToWstring(path);
 
-			if (HRSRC hrs = ::FindResourceW(hModule, &pathW[1], L"FILE"))
+			if (HRSRC hrs = ::FindResourceW(hModule, Platform::Windows::ToResourceName(path).c_str(), L"FILE"))
 			{
 				return ::SizeofResource(hModule, hrs);
 			}

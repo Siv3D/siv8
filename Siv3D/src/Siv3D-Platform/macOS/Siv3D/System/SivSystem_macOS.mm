@@ -41,9 +41,9 @@ namespace s3d
 		{
 			@autoreleasepool
 			{
-				NSString* path = [NSString stringWithUTF8String:_path];
-				const bool result = [[NSWorkspace sharedWorkspace]
-									openFile:path];
+				NSString* pathString = [NSString stringWithUTF8String:_path];
+				NSURL* url = [NSURL fileURLWithPath:pathString];
+				const bool result = [[NSWorkspace sharedWorkspace] openURL:url];
 				return result;
 			}
 		}

@@ -12,7 +12,13 @@
 # pragma once
 
 namespace s3d
-{
+{	
+	////////////////////////////////////////////////////////////////
+	//
+	//	ImageFormat
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief 画像のエンコード形式
 	enum class ImageFormat
 	{
@@ -27,6 +33,9 @@ namespace s3d
 
 		/// @brief JPEG
 		JPEG,
+
+		/// @brief JPEG 2000
+		JPEG2000,
 
 		/// @brief JPEG XL
 		JPEG_XL,

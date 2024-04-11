@@ -23,6 +23,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief メモリ上のデータに対して所有権を持たずに読み込みを行う Reader | Reader for reading data on memory without owning the data
 	class MemoryViewReader : public IReader
 	{
 	public:

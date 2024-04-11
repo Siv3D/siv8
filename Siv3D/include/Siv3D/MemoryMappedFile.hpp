@@ -29,19 +29,26 @@ namespace s3d
 	{
 	public:
 
+		/// @brief 存在するファイルをオープンする際のオプション
 		enum class OpenMode_if_Exists
 		{
+			/// @brief ファイルが存在する場合、失敗にします。
 			Fail,
 
+			/// @brief ファイルが存在する場合、そのファイルをオープンします。
 			JustOpen,
 
+			/// @brief ファイルが存在する場合、ファイルをオープンしてサイズを 0 にします。
 			Truncate,
 		};
 
+		/// @brief 存在しないファイルをオープンする際のオプション
 		enum class OpenMode_if_NotFound
 		{
+			/// @brief ファイルが存在しない場合、失敗にします。
 			Fail,
 
+			/// @brief ファイルが存在しない場合、新規作成します。
 			Create,
 		};
 
@@ -51,9 +58,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		MemoryMappedFile();
 
+		/// @brief メモリマップトファイルをオープンします。
+		/// @param path ファイルパス
+		/// @param ifExists ファイルが存在する場合のオプション
+		/// @param ifNotFound ファイルが存在しない場合のオプション
 		[[nodiscard]]
 		MemoryMappedFile(FilePathView path, OpenMode_if_Exists ifExists, OpenMode_if_NotFound ifNotFound = OpenMode_if_NotFound::Create);
 
@@ -63,6 +75,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief メモリマップトファイルをオープンします。
+		/// @param path ファイルパス
+		/// @param ifExists ファイルが存在する場合のオプション
+		/// @param ifNotFound ファイルが存在しない場合のオプション
+		/// @return メモリマップトファイルがオープンに成功した場合 true, それ以外の場合は false
 		bool open(FilePathView path, OpenMode_if_Exists ifExists, OpenMode_if_NotFound ifNotFound = OpenMode_if_NotFound::Create);
 
 		////////////////////////////////////////////////////////////////
@@ -139,6 +156,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief メモリマップトファイルの内容をディスクにフラッシュします。
+		/// @return フラッシュに成功した場合 true, それ以外の場合は false
 		bool flush();
 
 		////////////////////////////////////////////////////////////////

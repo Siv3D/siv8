@@ -313,6 +313,9 @@
 // 多倍長浮動小数点数 | 100 decimal digits precision floating point type
 # include <Siv3D/BigFloat.hpp>
 
+// 半精度浮動小数点数 | Half-precision floating-point
+# include <Siv3D/HalfFloat.hpp>
+
 // 浮動小数点数型の共通型 | Common Float
 # include <Siv3D/CommonFloat.hpp>
 
@@ -376,9 +379,6 @@
 // 処理にかかった CPU サイクル数の測定 | Clock counter in CPU cycles
 # include <Siv3D/CycleClock.hpp>
 
-//// 時間の測定 | Time profiler
-//# include <Siv3D/TimeProfiler.hpp>
-
 ////////////////////////////////////////////////////////////////
 //
 //	ファイル I/O | File I/O
@@ -402,9 +402,9 @@
 
 //// リソースファイルの設定 | Resource file option
 //# include <Siv3D/ResourceOption.hpp>
-//
-//// リソースファイルの管理 | Resource files
-//# include <Siv3D/Resource.hpp>
+
+// リソースファイルの管理 | Resource files
+# include <Siv3D/Resource.hpp> // ToDo
 
 // ファイル操作のイベント | File action
 # include <Siv3D/FileAction.hpp>
@@ -498,33 +498,80 @@
 
 ////////////////////////////////////////////////////////////////
 //
-//	設定ファイル | Configuration File
+//	JSON ファイル | JSON File
+//
+////////////////////////////////////////////////////////////////
+
+// JSON の値の種類 | JSON value type
+# include <Siv3D/JSONValueType.hpp>
+
+// JSON データの読み書き | JSON reader/writer
+# include <Siv3D/JSON.hpp>
+
+# include <Siv3D/JSONIterator.hpp>
+
+# include <Siv3D/JSONPointer.hpp> // ToDo
+
+//// JSON データの検証 | JSON validation
+//# include <Siv3D/JSONValidator.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	INI ファイル | INI File
+//
+////////////////////////////////////////////////////////////////
+
+# include <Siv3D/INIItem.hpp>
+
+# include <Siv3D/INISection.hpp>
+
+// INI データの読み書き | INI reader/writer
+# include <Siv3D/INI.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	CSV ファイル | CSV File
 //
 ////////////////////////////////////////////////////////////////
 
 //// CSV データの読み書き | CSV reader/writer
 //# include <Siv3D/CSV.hpp>
+
+////////////////////////////////////////////////////////////////
 //
-//// INI データの読み書き | INI reader/writer
-//# include <Siv3D/INI.hpp>
+//	TOML ファイル | TOML File
 //
-//// JSON データの読み書き | JSON reader/writer
-//# include <Siv3D/JSON.hpp>
-//
-//// JSON データの検証 | JSON validation
-//# include <Siv3D/JSONValidator.hpp>
-//
+////////////////////////////////////////////////////////////////
+
 //// TOML ファイルの読み込み | TOML reader/writer
 //# include <Siv3D/TOML>
+
+////////////////////////////////////////////////////////////////
 //
+//	XML ファイル | XML File
+//
+////////////////////////////////////////////////////////////////
+
 //// XML ファイルの読み込み | XML parser
 //# include <Siv3D/XMLReader.hpp>
+
+////////////////////////////////////////////////////////////////
 //
-//// GeoJSON ファイルの読み込み | GeoJSON parser
-//# include <Siv3D/GeoJSON.hpp>
+//	HTML ファイル | HTML File
 //
+////////////////////////////////////////////////////////////////
+
 //// HTML ファイルの書き出し | HTML document writer
 //# include <Siv3D/HTMLWriter.hpp>
+
+////////////////////////////////////////////////////////////////
+//
+//	GeoJSON ファイル | GeoJSON File
+//
+////////////////////////////////////////////////////////////////
+
+//// GeoJSON ファイルの読み込み | GeoJSON parser
+//# include <Siv3D/GeoJSON.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -590,13 +637,10 @@
 //
 //// スプライン | Spline
 //# include <Siv3D/Spline.hpp>
-//
-//// SIMD 演算 | SIMD
-//# include <Siv3D/SIMDMath.hpp>
-//
-//// 半精度浮動小数点数 | Half-precision floating-point
-//# include <Siv3D/HalfFloat.hpp>
-//
+
+// SIMD 演算 | SIMD
+# include <Siv3D/SIMDMath.hpp>
+
 //// SIMD 対応 Float4 | SIMD Float4
 //# include <Siv3D/SIMD_Float4.hpp>
 //
@@ -630,8 +674,11 @@
 // 色定数 | Color constants
 # include <Siv3D/Palette.hpp>
 
-//// カラーマップ | Colormap
-//# include <Siv3D/Colormap.hpp>
+// カラーマップ用のカラースケール | Color scale for colormap
+# include <Siv3D/ColorScale.hpp>
+
+// カラーマップ | Colormap
+# include <Siv3D/Colormap.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -804,11 +851,11 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// 環境変数 | Environment variable
-//# include <Siv3D/EnvironmentVariable.hpp>
-//
-//// コマンドライン引数 | Command-line arguments
-//# include <Siv3D/CommandLine.hpp>
+// 環境変数 | Environment variable
+# include <Siv3D/EnvironmentVariable.hpp>
+
+// コマンドライン引数 | Command-line arguments
+# include <Siv3D/CommandLine.hpp>
 
 // CPU 情報 | CPU information
 # include <Siv3D/CPUInfo.hpp>
@@ -974,7 +1021,6 @@
 //// ファイル拡張子フィルタ | File extension filter
 //# include <Siv3D/FileFilter.hpp>
 
-
 ////////////////////////////////////////////////////////////////
 //
 //	電源の状態 | Power Status
@@ -1038,7 +1084,7 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// メッセージボックスの結果 | Result from messagebox
+//// メッセージボックスの結果 | Result from message box
 //# include <Siv3D/MessageBoxResult.hpp>
 //
 //// メッセージボックスのスタイル | Message box style
@@ -1128,13 +1174,13 @@
 # include <Siv3D/ImageDecoder.hpp>
 # include <Siv3D/ImageEncoder.hpp>
 
-//# include <Siv3D/PNGFilter.hpp>
-//# include <Siv3D/ImageFormat/PNGDecoder.hpp>
-//# include <Siv3D/ImageFormat/PNGEncoder.hpp>
-//
-//# include <Siv3D/ImageFormat/JPEGDecoder.hpp>
-//# include <Siv3D/ImageFormat/JPEGEncoder.hpp>
-//# include <Siv3D/Exif.hpp>
+# include <Siv3D/PNGFilter.hpp>
+# include <Siv3D/ImageFormat/PNGDecoder.hpp>
+# include <Siv3D/ImageFormat/PNGEncoder.hpp>
+
+# include <Siv3D/ImageFormat/JPEGDecoder.hpp>
+# include <Siv3D/ImageFormat/JPEGEncoder.hpp>
+# include <Siv3D/Exif.hpp>
 
 # include <Siv3D/ImageFormat/BMPDecoder.hpp>
 # include <Siv3D/ImageFormat/BMPEncoder.hpp>

@@ -11,6 +11,7 @@
 
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/FormatUtility.hpp>
+# include <Siv3D/Resource.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "BinaryReaderDetail.hpp"
 
@@ -37,7 +38,7 @@ namespace s3d
 				return false;
 			}
 
-			HRSRC hrs = ::FindResourceW(hModule, path.substr(1).toWstr().c_str(), L"FILE");
+			HRSRC hrs = ::FindResourceW(hModule, Platform::Windows::ToResourceName(path).c_str(), L"FILE");
 
 			if (not hrs)
 			{

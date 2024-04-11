@@ -310,6 +310,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief sizeBytes バイトまでの要素をメモリの再確保無しで格納できるよう、必要に応じてメモリを再確保します。
+		/// @param sizeBytes メモリを確保するバイト数
 		constexpr void reserve(size_t sizeBytes);
 
 		////////////////////////////////////////////////////////////////
@@ -318,6 +320,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief バイナリデータのサイズを sizeBytes バイトに変更します。
+		/// @param sizeBytes 新しいバイナリデータのサイズ（バイト）
 		constexpr void resize(size_t sizeBytes);
 
 		////////////////////////////////////////////////////////////////
@@ -326,6 +330,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 使用するメモリ量を現在のサイズまで切り詰めます。
+		/// @remark この関数の呼び出しの後で capacity() == size() になるとは限りません。
 		constexpr void shrink_to_fit();
 
 		////////////////////////////////////////////////////////////////
@@ -334,6 +340,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief バイナリデータを空にします。
 		constexpr void clear();
 
 		////////////////////////////////////////////////////////////////
@@ -342,6 +349,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief バイナリデータを空にし、メモリを解放します。
+		/// @remark `clear()` + `shrink_to_fit()` と同じです。
 		constexpr void release();
 
 		////////////////////////////////////////////////////////////////
@@ -350,15 +359,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief バイナリデータの先頭位置を指すイテレータを返します。
+		/// @return バイナリデータの先頭位置を指すイテレータ
 		[[nodiscard]]
 		constexpr iterator begin() noexcept;
 
+		/// @brief バイナリデータの終端位置を指すイテレータを返します。
+		/// @return バイナリデータの終端位置を指すイテレータ
 		[[nodiscard]]
 		constexpr iterator end() noexcept;
 
+		/// @brief バイナリデータの先頭位置を指すイテレータを返します。
+		/// @return バイナリデータの先頭位置を指すイテレータ
 		[[nodiscard]]
 		constexpr const_iterator begin() const noexcept;
 
+		/// @brief バイナリデータの終端位置を指すイテレータを返します。
+		/// @return バイナリデータの終端位置を指すイテレータ
 		[[nodiscard]]
 		constexpr const_iterator end() const noexcept;
 
@@ -368,9 +385,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief バイナリデータの先頭位置を指すイテレータを返します。
+		/// @return バイナリデータの先頭位置を指すイテレータ
 		[[nodiscard]]
 		constexpr const_iterator cbegin() const noexcept;
 
+		/// @brief バイナリデータの終端位置を指すイテレータを返します。
+		/// @return バイナリデータの終端位置を指すイテレータ
 		[[nodiscard]]
 		constexpr const_iterator cend() const noexcept;
 
@@ -380,15 +401,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief バイナリデータの末尾位置を指すリバース・イテレータを返します。
+		/// @return バイナリデータの末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr reverse_iterator rbegin() noexcept;
 
+		/// @brief バイナリデータの先端位置を指すリバース・イテレータを返します。
+		/// @return バイナリデータの先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr reverse_iterator rend() noexcept;
 
+		/// @brief バイナリデータの末尾位置を指すリバース・イテレータを返します。
+		/// @return バイナリデータの末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr const_reverse_iterator rbegin() const noexcept;
 
+		/// @brief バイナリデータの先端位置を指すリバース・イテレータを返します。
+		/// @return バイナリデータの先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr const_reverse_iterator rend() const noexcept;
 
@@ -398,9 +427,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief バイナリデータの末尾位置を指すリバース・イテレータを返します。
+		/// @return バイナリデータの末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr const_reverse_iterator crbegin() const noexcept;
 
+		/// @brief バイナリデータの先端位置を指すリバース・イテレータを返します。
+		/// @return バイナリデータの先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr const_reverse_iterator crend() const noexcept;
 
@@ -443,6 +476,26 @@ namespace s3d
 
 		template <class Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	subspan
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief バイナリデータの部分配列を指す span を返します。
+		/// @param pos 部分配列の開始位置
+		/// @param count 部分配列の要素数
+		/// @return 部分配列を指す span
+		[[nodiscard]]
+		constexpr std::span<Byte> subspan(size_t pos, size_t count) noexcept;
+
+		/// @brief バイナリデータの部分配列を指す span を返します。
+		/// @param pos 部分配列の開始位置
+		/// @param count 部分配列の要素数
+		/// @return 部分配列を指す span
+		[[nodiscard]]
+		constexpr std::span<const Byte> subspan(size_t pos, size_t count) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

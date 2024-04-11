@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/Resource.hpp>
 # include "WindowsFileSystem.hpp"
 
 namespace s3d
@@ -267,22 +268,51 @@ namespace s3d
 
 		Array<FilePath> DirectoryContents(const FilePathView path, const Recursive recursive)
 		{
-			Array<FilePath> paths;
-
 			if (path.isEmpty())
 			{
-				return paths;
+				return{};
 			}
 
 			if (IsResourcePath(path))
 			{
+				String searchPath = path.toString();
+
+				if (not searchPath.ends_with(U'/'))
+				{
+					searchPath.push_back(U'/');
+				}
+
+				Array<FilePath> paths;
+
+				for (const auto& resourcePath : EnumResourceFiles())
+				{
+					if (not resourcePath.starts_with(searchPath))
+					{
+						continue;
+					}
+
+					if (recursive)
+					{
+						paths << resourcePath;
+					}
+					else
+					{
+						if (std::find((resourcePath.begin() + searchPath.size()), resourcePath.end(), U'/') == resourcePath.end())
+						{
+							paths << resourcePath;
+						}
+					}
+				}
+
 				return paths;
 			}
 
 			if (detail::GetStatus(path).type() != std::filesystem::file_type::directory)
 			{
-				return paths;
+				return{};
 			}
+
+			Array<FilePath> paths;
 
 			detail::DirectoryContentsDetail(Unicode::ToWstring(FullPath(path)), paths, recursive);
 

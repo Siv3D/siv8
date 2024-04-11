@@ -23,6 +23,9 @@
 
 	# pragma comment (linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
 	# pragma comment (lib, "winmm")
+	# pragma comment (lib, "libjpeg-turbo/turbojpeg-static" SIV3D_DEBUG_LIB_SUFFIX(_d))
+	# pragma comment (lib, "libpng/libpng16" SIV3D_DEBUG_LIB_SUFFIX(_d))
+	# pragma comment (lib, "zlib/zlib" SIV3D_DEBUG_LIB_SUFFIX(d))
 	# pragma comment (lib, "siv3d/Siv3D" SIV3D_DEBUG_LIB_SUFFIX(_d))
 
 	# if (SIV3D_USE_MIMALLOC)

@@ -66,16 +66,16 @@ DefineResource(100, ICON, icon.ico)
 ////
 //Resource(engine/font/min/siv3d-min.woff)
 //
-////
-////	Box-shadow Textures
-////
-//Resource(engine/texture/box-shadow/256.png)
-//Resource(engine/texture/box-shadow/128.png)
-//Resource(engine/texture/box-shadow/64.png)
-//Resource(engine/texture/box-shadow/32.png)
-//Resource(engine/texture/box-shadow/16.png)
-//Resource(engine/texture/box-shadow/8.png)
 //
+//	Box-shadow Textures
+//
+Resource("engine/texture/box-shadow/256.png")
+Resource("engine/texture/box-shadow/128.png")
+Resource("engine/texture/box-shadow/64.png")
+Resource("engine/texture/box-shadow/32.png")
+Resource("engine/texture/box-shadow/16.png")
+Resource("engine/texture/box-shadow/8.png")
+
 ////////////////////////////////////////////////////////
 ////
 ////	Siv3D Engine Optional Resources (Can be removed if not required)
@@ -125,16 +125,18 @@ DefineResource(100, ICON, icon.ico)
 
 	//
 	// Define your resource path inside `Resource()` macro.
-	// No double quotation marks and white spaces may appear.
+	// No white spaces may appear.
 	//
-	Resource(example/siv3d-kun.png)		// ok
-	Resource(example/windmill.png)		// ok
-	Resource(assets/a b c.txt)			// error: contains white spaces
-	Resource("example/windmill.png")	// error: contains double quotation marks
+	Resource("example/siv3d-kun.png")		// ok
+	Resource("example/windmill.png")		// ok
+	Resource("assets/a b c.txt")			// error: contains white spaces
 
 	//
 	// If your file contains a white space, define the identifier without using Resource() macro.
 	//
-	MYIDENTIFIER_1 FILE "assets/a b c.txt"
-	MYIDENTIFIER_2 FILE "level 1/map.dat"
+	"MYIDENTIFIER_1" FILE "assets/a b c.txt"
+	"MYIDENTIFIER_1" PATH { L"assets/a b c.txt" }
+
+	"MYIDENTIFIER_2" FILE "level 1/map.dat"
+	"MYIDENTIFIER_2" PATH { L"level 1/map.dat" }
 */

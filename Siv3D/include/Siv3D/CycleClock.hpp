@@ -25,6 +25,7 @@ namespace s3d
 
 	/// @brief CPU サイクル数カウンター
 	/// @remark 経過時間を CPU サイクル数で計測します。
+	/// @remark macOS では CPU の周波数とは異なるサイクルのカウンターを使用します。
 	class CycleClock
 	{
 	public:

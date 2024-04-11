@@ -304,15 +304,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列の先頭位置を指すイテレータを返します。
+		/// @return 文字列の先頭位置を指すイテレータ
 		[[nodiscard]]
 		constexpr iterator begin() noexcept;
 
+		/// @brief 文字列の終端位置を指すイテレータを返します。
+		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
+		/// @return 文字列の終端位置を指すイテレータ
 		[[nodiscard]]
 		constexpr iterator end() noexcept;
 
+		/// @brief 文字列の先頭位置を指すイテレータを返します。
+		/// @return 文字列の先頭位置を指すイテレータ
 		[[nodiscard]]
 		constexpr const_iterator begin() const noexcept;
 
+		/// @brief 文字列の終端位置を指すイテレータを返します。
+		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
+		/// @return 文字列の終端位置を指すイテレータ
 		[[nodiscard]]
 		constexpr const_iterator end() const noexcept;
 
@@ -322,9 +332,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列の先頭位置を指すイテレータを返します。
+		/// @return 文字列の先頭位置を指すイテレータ
 		[[nodiscard]]
 		constexpr const_iterator cbegin() const noexcept;
 
+		/// @brief 文字列の終端位置を指すイテレータを返します。
+		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
+		/// @return 文字列の終端位置を指すイテレータ
 		[[nodiscard]]
 		constexpr const_iterator cend() const noexcept;
 
@@ -334,15 +349,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列の末尾位置を指すリバース・イテレータを返します。
+		/// @return 文字列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr reverse_iterator rbegin() noexcept;
 
+		/// @brief 文字列の先端位置を指すリバース・イテレータを返します。
+		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
+		/// @return 文字列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr reverse_iterator rend() noexcept;
 
+		/// @brief 文字列の末尾位置を指すリバース・イテレータを返します。
+		/// @return 文字列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr const_reverse_iterator rbegin() const noexcept;
 
+		/// @brief 文字列の先端位置を指すリバース・イテレータを返します。
+		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
+		/// @return 文字列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr const_reverse_iterator rend() const noexcept;
 
@@ -352,9 +377,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列の末尾位置を指すリバース・イテレータを返します。
+		/// @return 文字列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr const_reverse_iterator crbegin() const noexcept;
 
+		/// @brief 文字列の先端位置を指すリバース・イテレータを返します。
+		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
+		/// @return 文字列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		constexpr const_reverse_iterator crend() const noexcept;
 
@@ -470,6 +500,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 使用するメモリ量を現在のサイズまで切り詰めます。
+		/// @remark この関数の呼び出しの後で capacity() == size() になるとは限りません。
 		constexpr void shrink_to_fit();
 
 		////////////////////////////////////////////////////////////////

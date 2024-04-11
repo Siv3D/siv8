@@ -56,14 +56,6 @@ namespace s3d
 				return{};
 			}
 
-			if constexpr (Platform::HasEmbeddedResource)
-			{
-				if (IsResourcePath(path))
-				{
-					return{};
-				}
-			}
-
 			while (path.starts_with(U'.'))
 			{
 				path.remove_prefix(1);
@@ -99,14 +91,6 @@ namespace s3d
 			if (path.isEmpty())
 			{
 				return{};
-			}
-
-			if constexpr (Platform::HasEmbeddedResource)
-			{
-				if (IsResourcePath(path))
-				{
-					return{};
-				}
 			}
 
 			if (path.ends_with(U'/') || path.ends_with(U'\\'))
@@ -173,16 +157,6 @@ namespace s3d
 			if (path.isEmpty())
 			{
 				return{};
-			}
-
-			if constexpr (Platform::HasEmbeddedResource)
-			{
-				// リソースパスの場合は親ディレクトリ無し
-				if (IsResourcePath(path))
-				{
-					baseFullPath.clear();
-					return{};
-				}
 			}
 
 			FilePath result = FullPath(path);

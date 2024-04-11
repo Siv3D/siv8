@@ -135,6 +135,11 @@ namespace s3d
 			g_shouldDestroyWindow.clear();
 		}
 	}
+
+	namespace detail::init
+	{
+		void InitCommandLines(int argc, char** argv);
+	}
 }
 
 ////////////////////////////////////////////////////////////////
@@ -147,6 +152,8 @@ namespace s3d
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 {
 	using namespace s3d;
+
+	detail::init::InitCommandLines(__argc, __argv);
 
 	WinMainInit();
 
