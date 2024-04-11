@@ -472,6 +472,9 @@
     <Filter Include="src\Siv3D\INIItem">
       <UniqueIdentifier>{f3bbf380-be52-4904-96e9-e789298a9fae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Resource">
+      <UniqueIdentifier>{7b6802fd-28d7-4bfb-8cbe-e35ea4a70cca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1737,6 +1740,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\INISection.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Resource.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -2266,6 +2272,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\INIItem\SivINIItem.cpp">
       <Filter>src\Siv3D\INIItem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Resource\SivResource_Windows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,7 @@
 # include "WindowsFileSystem.hpp"
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/Resource.hpp>
 # include <Shlobj.h>
 
 namespace s3d
@@ -119,16 +120,14 @@ namespace s3d
 
 		bool ResourceExists(const FilePathView path)
 		{
-			const std::wstring pathW = Unicode::ToWstring(path);
-			return (::FindResourceW(::GetModuleHandleW(nullptr), &pathW[1], L"FILE") != nullptr);
+			return (::FindResourceW(::GetModuleHandleW(nullptr), Platform::Windows::ToResourceName(path).c_str(), L"FILE") != nullptr);
 		}
 
 		size_t ResourceSize(const FilePathView path)
 		{
 			HMODULE hModule = ::GetModuleHandleW(nullptr);
-			const std::wstring pathW = Unicode::ToWstring(path);
 
-			if (HRSRC hrs = ::FindResourceW(hModule, &pathW[1], L"FILE"))
+			if (HRSRC hrs = ::FindResourceW(hModule, Platform::Windows::ToResourceName(path).c_str(), L"FILE"))
 			{
 				return ::SizeofResource(hModule, hrs);
 			}
