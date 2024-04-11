@@ -10,6 +10,7 @@ Name | Version
 [DirectXMath](https://github.com/microsoft/DirectXMath) | February 2024
 [doctest](https://github.com/doctest/doctest) | v2.4.11
 [double-conversion](https://github.com/google/double-conversion) | v3.3.0
+[easyexif](https://github.com/mayanklahiri/easyexif) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
 [fast_float](https://github.com/fastfloat/fast_float) | Version 6.1.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1

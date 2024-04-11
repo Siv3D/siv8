@@ -1180,7 +1180,7 @@
 
 # include <Siv3D/ImageFormat/JPEGDecoder.hpp>
 # include <Siv3D/ImageFormat/JPEGEncoder.hpp>
-//# include <Siv3D/Exif.hpp>
+# include <Siv3D/Exif.hpp>
 
 # include <Siv3D/ImageFormat/BMPDecoder.hpp>
 # include <Siv3D/ImageFormat/BMPEncoder.hpp>

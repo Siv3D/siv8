@@ -186,6 +186,14 @@ BSD_3_LICENSE
 },
 
 {
+R"-(easyexif)-",
+R"-(Copyright (c) 2010-2015 Mayank Lahiri
+mlahiri@gmail.com
+All rights reserved.)-",
+BSD_2_LICENSE
+},
+
+{
 R"-(fmt)-",
 R"-(Copyright (c) 2012 - present, Victor Zverovich and {fmt} contributors)-",
 MIT_LICENSE

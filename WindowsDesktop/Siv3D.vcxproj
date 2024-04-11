@@ -161,6 +161,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Error\InternalEngineError.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Error\ParseError.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\EscapedFormatter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Exif.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Grid.hpp" />
@@ -389,6 +390,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\ieee.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\utils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\easyexif\exif.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\fast_float\fast_float.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\fmt\format-inl.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\levenshtein-sse\levenshtein-sse.hpp" />
@@ -499,6 +501,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Error\SivError.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\EscapedFormatter\SivEscapedFormatter.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Exif\SivExif.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FileAction\SivFileAction.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FileSystem\SivFileSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\SivFloatFormatter.cpp" />
@@ -595,6 +598,7 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\double-to-string.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\fast-dtoa.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.cc" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\easyexif\exif.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\fmt\format.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp">
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4127; 4310; 4505</DisableSpecificWarnings>
