@@ -860,6 +860,15 @@
 		F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528C9D2BC1208B00222F45 /* pnglibconf.h */; };
 		F9528CA52BC1209900222F45 /* zconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA22BC1209900222F45 /* zconf.h */; };
 		F9528CA62BC1209900222F45 /* zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA32BC1209900222F45 /* zlib.h */; };
+		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
+		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
+		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
+		F986F8312BC7B024006A4C0F /* INI.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82E2BC7B024006A4C0F /* INI.ipp */; };
+		F986F8322BC7B024006A4C0F /* INIItem.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82F2BC7B024006A4C0F /* INIItem.ipp */; };
+		F986F8332BC7B024006A4C0F /* INISection.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8302BC7B024006A4C0F /* INISection.ipp */; };
+		F986F83A2BC7B043006A4C0F /* SivINIItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8342BC7B043006A4C0F /* SivINIItem.cpp */; };
+		F986F83B2BC7B043006A4C0F /* SivINI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8362BC7B043006A4C0F /* SivINI.cpp */; };
+		F986F83C2BC7B043006A4C0F /* SivINISection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8382BC7B043006A4C0F /* SivINISection.cpp */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -1749,6 +1758,15 @@
 		F9528C9D2BC1208B00222F45 /* pnglibconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglibconf.h; sourceTree = "<group>"; };
 		F9528CA22BC1209900222F45 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
 		F9528CA32BC1209900222F45 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
+		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
+		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
+		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
+		F986F82E2BC7B024006A4C0F /* INI.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.ipp; sourceTree = "<group>"; };
+		F986F82F2BC7B024006A4C0F /* INIItem.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.ipp; sourceTree = "<group>"; };
+		F986F8302BC7B024006A4C0F /* INISection.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.ipp; sourceTree = "<group>"; };
+		F986F8342BC7B043006A4C0F /* SivINIItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivINIItem.cpp; sourceTree = "<group>"; };
+		F986F8362BC7B043006A4C0F /* SivINI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivINI.cpp; sourceTree = "<group>"; };
+		F986F8382BC7B043006A4C0F /* SivINISection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivINISection.cpp; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -2589,6 +2607,9 @@
 				F9528C6B2BC05B1A00222F45 /* ImageDecoder.ipp */,
 				F9528C6C2BC05B1A00222F45 /* ImageEncoder.ipp */,
 				F9070B832B9F175000383E4D /* Indexed.ipp */,
+				F986F82E2BC7B024006A4C0F /* INI.ipp */,
+				F986F82F2BC7B024006A4C0F /* INIItem.ipp */,
+				F986F8302BC7B024006A4C0F /* INISection.ipp */,
 				F9070B842B9F175000383E4D /* Int128.ipp */,
 				F9070B852B9F175000383E4D /* IntFormatter.ipp */,
 				F9070B862B9F175000383E4D /* IntToString.ipp */,
@@ -2747,6 +2768,9 @@
 				F9528C582BC05B0200222F45 /* ImageInfo.hpp */,
 				F9528C592BC05B0200222F45 /* ImagePixelFormat.hpp */,
 				F9070BF32B9F175000383E4D /* Indexed.hpp */,
+				F986F8292BC7B00A006A4C0F /* INI.hpp */,
+				F986F82A2BC7B00A006A4C0F /* INIItem.hpp */,
+				F986F8282BC7B00A006A4C0F /* INISection.hpp */,
 				F9070BF42B9F175000383E4D /* Int128.hpp */,
 				F9070BF52B9F175000383E4D /* IntFormatter.hpp */,
 				F9070BF62B9F175000383E4D /* IntToString.hpp */,
@@ -3427,6 +3451,9 @@
 				F9528C812BC05B5B00222F45 /* ImageDecoder */,
 				F9528C7B2BC05B5A00222F45 /* ImageEncoder */,
 				F9528C752BC05B5A00222F45 /* ImageFormat */,
+				F986F8372BC7B043006A4C0F /* INI */,
+				F986F8352BC7B043006A4C0F /* INIItem */,
+				F986F8392BC7B043006A4C0F /* INISection */,
 				F9070D5E2B9F175E00383E4D /* Int128 */,
 				F9070D602B9F175E00383E4D /* IntFormatter */,
 				F9070D622B9F175E00383E4D /* IntToString */,
@@ -4037,6 +4064,30 @@
 			path = zlib;
 			sourceTree = "<group>";
 		};
+		F986F8352BC7B043006A4C0F /* INIItem */ = {
+			isa = PBXGroup;
+			children = (
+				F986F8342BC7B043006A4C0F /* SivINIItem.cpp */,
+			);
+			path = INIItem;
+			sourceTree = "<group>";
+		};
+		F986F8372BC7B043006A4C0F /* INI */ = {
+			isa = PBXGroup;
+			children = (
+				F986F8362BC7B043006A4C0F /* SivINI.cpp */,
+			);
+			path = INI;
+			sourceTree = "<group>";
+		};
+		F986F8392BC7B043006A4C0F /* INISection */ = {
+			isa = PBXGroup;
+			children = (
+				F986F8382BC7B043006A4C0F /* SivINISection.cpp */,
+			);
+			path = INISection;
+			sourceTree = "<group>";
+		};
 		F9E5FC172BC12C340081A4F7 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -4223,6 +4274,7 @@
 				F9070CEC2B9F175100383E4D /* PCG64.hpp in Headers */,
 				F9070D0E2B9F175100383E4D /* UUIDValue.hpp in Headers */,
 				F9070CD22B9F175100383E4D /* IWriter.hpp in Headers */,
+				F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */,
 				F9070CD62B9F175100383E4D /* LoggerBuffer.hpp in Headers */,
 				F90706AF2B9DAEC900383E4D /* uniform_real_distribution.h in Headers */,
 				F9528C682BC05B0200222F45 /* IImageDecoder.hpp in Headers */,
@@ -4430,6 +4482,7 @@
 				F9070CE72B9F175100383E4D /* ParseBool.hpp in Headers */,
 				F9070AFD2B9DEB5900383E4D /* fixed-dtoa.h in Headers */,
 				F9070AF72B9DEB5900383E4D /* diy-fp.h in Headers */,
+				F986F8312BC7B024006A4C0F /* INI.ipp in Headers */,
 				F9070CCC2B9F175100383E4D /* Indexed.hpp in Headers */,
 				F90707012B9DAEC900383E4D /* mul.h in Headers */,
 				F90707222B9DAEC900383E4D /* shldv.h in Headers */,
@@ -4498,6 +4551,7 @@
 				F9070D032B9F175100383E4D /* TextWriter.hpp in Headers */,
 				F9070EEF2B9F1C8900383E4D /* platform.h in Headers */,
 				F90706E12B9DAEC900383E4D /* div.h in Headers */,
+				F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */,
 				F907068E2B9DAEC900383E4D /* config.h in Headers */,
 				F90706DB2B9DAEC900383E4D /* copysign.h in Headers */,
 				F9070C4D2B9F175000383E4D /* ConsoleBuffer.ipp in Headers */,
@@ -4521,6 +4575,7 @@
 				F9070C582B9F175000383E4D /* Format.ipp in Headers */,
 				F9528C132BBF026F00222F45 /* portability_macros.h in Headers */,
 				F9070C9D2B9F175000383E4D /* BoolToString.hpp in Headers */,
+				F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */,
 				F9070C9B2B9F175000383E4D /* BinaryWriter.hpp in Headers */,
 				F90707332B9DAEC900383E4D /* test.h in Headers */,
 				F90707092B9DAEC900383E4D /* packus.h in Headers */,
@@ -4646,6 +4701,7 @@
 				F9070CDD2B9F175100383E4D /* NamedParameter.hpp in Headers */,
 				F9070C892B9F175000383E4D /* UUIDValue.ipp in Headers */,
 				F907068D2B9DAEC900383E4D /* attributes.h in Headers */,
+				F986F8332BC7B024006A4C0F /* INISection.ipp in Headers */,
 				F9070EE12B9F1C8900383E4D /* internal.h in Headers */,
 				F9528B962BBC76D300222F45 /* Point3D.hpp in Headers */,
 				F90707152B9DAEC900383E4D /* rorv.h in Headers */,
@@ -4658,6 +4714,7 @@
 				F9070C902B9F175000383E4D /* MinWindows.hpp in Headers */,
 				F907073F2B9DAEC900383E4D /* f16c.h in Headers */,
 				F90706E72B9DAEC900383E4D /* expand.h in Headers */,
+				F986F8322BC7B024006A4C0F /* INIItem.ipp in Headers */,
 				F9070CD42B9F175100383E4D /* LetterCase.hpp in Headers */,
 				F9528C9F2BC1208B00222F45 /* png.h in Headers */,
 				F9070CDA2B9F175100383E4D /* MD5Value.hpp in Headers */,
@@ -4944,6 +5001,7 @@
 				F9528BB82BBF024D00222F45 /* SivCompression.cpp in Sources */,
 				F9070EE62B9F1C8900383E4D /* nsgl_context.m in Sources */,
 				F9070B062B9DEB5900383E4D /* simdutf.cpp in Sources */,
+				F986F83C2BC7B043006A4C0F /* SivINISection.cpp in Sources */,
 				F9528C142BBF026F00222F45 /* threading.c in Sources */,
 				F9E5FC432BC19B110081A4F7 /* SivHalfFloat.cpp in Sources */,
 				F9070F312B9F252E00383E4D /* osmesa_context.c in Sources */,
@@ -5058,6 +5116,7 @@
 				F9070DD92B9F175E00383E4D /* SivLogger.cpp in Sources */,
 				F9528C0D2BBF026F00222F45 /* fse_decompress.c in Sources */,
 				F9E5FC242BC13CD00081A4F7 /* JPEGEncoder.cpp in Sources */,
+				F986F83A2BC7B043006A4C0F /* SivINIItem.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
@@ -5131,6 +5190,7 @@
 				F9070AF32B9DEB5900383E4D /* bignum.cc in Sources */,
 				F9528C4C2BBFEC2400222F45 /* SivMemoryMappedFile.cpp in Sources */,
 				F9070DCA2B9F175E00383E4D /* SivEscapedFormatter.cpp in Sources */,
+				F986F83B2BC7B043006A4C0F /* SivINI.cpp in Sources */,
 				F9070DD82B9F175E00383E4D /* LoggerFactory.cpp in Sources */,
 				F9528C262BBF026F00222F45 /* zstd_compress_superblock.c in Sources */,
 				F9070DBD2B9F175E00383E4D /* SivDateTime.cpp in Sources */,

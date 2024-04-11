@@ -73,7 +73,7 @@ namespace s3d
 	template <class Type, class U>
 	Type INI::getOr(const StringView section, const StringView key, U&& defaultValue) const
 	{
-		return getOpt<Type>().value_or(std::forward<U>(defaultValue));
+		return getOpt<Type>(section, key).value_or(std::forward<U>(defaultValue));
 	}
 
 	////////////////////////////////////////////////////////////////
