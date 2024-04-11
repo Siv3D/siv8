@@ -19,20 +19,6 @@
 
 namespace s3d
 {
-	struct INIItem
-	{
-		String key;
-
-		String value;
-	};
-
-	struct INISection
-	{
-		String name;
-
-		Array<INIItem> items;
-	};
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	INI
@@ -43,6 +29,90 @@ namespace s3d
 	class INI
 	{
 	public:
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	INI::Item
+		//
+		////////////////////////////////////////////////////////////////
+
+		struct Item
+		{
+			/// @brief プロパティの値
+			String value;
+
+			/// @brief セクション内でのインデックス（小さいほど上位）
+			int32 index = 0;
+
+			////////////////////////////////////////////////////////////////
+			//
+			//	get
+			//
+			////////////////////////////////////////////////////////////////
+
+			/// @brief 値を Type 型として取得します。
+			/// @tparam Type 値の型
+			/// @return 値
+			/// @throw Error JSON の値を Type 型に変換できない場合
+			template <class Type>
+			[[nodiscard]]
+			Type get() const;
+
+			////////////////////////////////////////////////////////////////
+			//
+			//	getOr
+			//
+			////////////////////////////////////////////////////////////////
+
+			/// @brief 値を Type 型として取得します。取得できなかった場合は defaultValue を返します。
+			/// @tparam Type 値の型
+			/// @tparam U 取得できなかった場合に返す値の型
+			/// @param defaultValue 取得できなかった場合に返す値
+			/// @return 値
+			template <class Type, class U>
+			[[nodiscard]]
+			Type getOr(U&& defaultValue) const;
+
+			////////////////////////////////////////////////////////////////
+			//
+			//	getOpt
+			//
+			////////////////////////////////////////////////////////////////
+
+			/// @brief 値を Type 型として取得します。
+			/// @tparam Type 値の型
+			/// @return 値。取得できなかった場合は none
+			template <class Type>
+			[[nodiscard]]
+			Optional<Type> getOpt() const;
+		};
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	INI::Section
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief INI ファイルのセクション
+		struct Section
+		{
+			/// @brief セクション名
+			String name;
+
+			/// @brief プロパティ
+			HashTable<String, Item> items;
+
+			[[nodiscard]]
+			bool hasProperty(StringView key) const noexcept;
+
+			void addProperty(StringView key, StringView value);
+
+			[[nodiscard]]
+			const Item& operator [](StringView key) const;
+
+			[[nodiscard]]
+			Item& operator [](StringView key);
+		};
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -132,7 +202,7 @@ namespace s3d
 		/// @brief セクションの一覧を返します。
 		/// @return セクションの一覧
 		[[nodiscard]]
-		const Array<INISection>& sections() const noexcept;
+		const Array<Section>& sections() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -157,36 +227,14 @@ namespace s3d
 		/// @return セクションへの参照
 		/// @throw Error 指定したセクションが存在しない場合
 		[[nodiscard]]
-		const INISection& getSection(StringView section) const;
+		const Section& getSection(StringView section) const;
 
 		/// @brief セクションへの参照を返します。
 		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
 		/// @return セクションへの参照
 		/// @throw Error 指定したセクションが存在しない場合
 		[[nodiscard]]
-		INISection& getSection(StringView section);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	operator []
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief セクションへの参照を返します。
-		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
-		/// @return セクションへの参照
-		/// @throw Error 指定したセクションが存在しない場合
-		/// @remark `getSection()` と同じです。
-		[[nodiscard]]
-		const INISection& operator [](StringView section) const;
-
-		/// @brief セクションへの参照を返します。
-		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
-		/// @return セクションへの参照
-		/// @throw Error 指定したセクションが存在しない場合
-		/// @remark `getSection()` と同じです。
-		[[nodiscard]]
-		INISection& operator [](StringView section);
+		Section& getSection(StringView section);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -208,12 +256,52 @@ namespace s3d
 		/// @brief グローバル（無名）セクションへの参照を返します。
 		/// @return グローバル（無名）セクションへの参照
 		[[nodiscard]]
-		const INISection& getGlobalSection() const;
+		const Section& getGlobalSection() const;
 
 		/// @brief グローバル（無名）セクションへの参照を返します。
 		/// @return グローバル（無名）セクションへの参照
 		[[nodiscard]]
-		INISection& getGlobalSection();
+		Section& getGlobalSection();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator []
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief セクションへの参照を返します。
+		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
+		/// @return セクションへの参照
+		/// @throw Error 指定したセクションが存在しない場合
+		/// @remark `getSection()` と同じです。
+		[[nodiscard]]
+		const Section& operator [](StringView section) const;
+
+		/// @brief セクションへの参照を返します。
+		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
+		/// @return セクションへの参照
+		/// @throw Error 指定したセクションが存在しない場合
+		/// @remark `getSection()` と同じです。
+		[[nodiscard]]
+		Section& operator [](StringView section);
+
+	# ifdef __cpp_multidimensional_subscript
+
+		/// @brief グローバル（無名）セクションへの参照を返します。
+		/// @return グローバル（無名）セクションへの参照
+		/// @throw Error グローバル（無名）セクションが存在しない場合
+		/// @remark `getGlobalSection()` と同じです。
+		[[nodiscard]]
+		const Section& operator []() const;
+
+		/// @brief グローバル（無名）セクションへの参照を返します。
+		/// @return グローバル（無名）セクションへの参照
+		/// @throw Error グローバル（無名）セクションが存在しない場合
+		/// @remark `getGlobalSection()` と同じです。
+		[[nodiscard]]
+		Section& operator []();
+
+	# endif
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -238,6 +326,7 @@ namespace s3d
 		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
 		/// @param key プロパティ名
 		/// @return プロパティの値
+		/// @throw Error 指定したプロパティが存在しない場合
 		[[nodiscard]]
 		const String& getProperty(StringView section, StringView key) const;
 
@@ -262,8 +351,69 @@ namespace s3d
 		/// @brief グローバル（無名）セクションのプロパティの値を返します。
 		/// @param key プロパティ名
 		/// @return プロパティの値
+		/// @throw Error 指定したプロパティが存在しない場合
 		[[nodiscard]]
 		const String& getGlobalProperty(StringView key) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	get
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class Type>
+		[[nodiscard]]
+		Type get(StringView section, StringView key) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getOr
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class Type, class U>
+		[[nodiscard]]
+		Type getOr(StringView section, StringView key, U&& defaultValue) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getOpt
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class Type>
+		[[nodiscard]]
+		Optional<Type> getOpt(StringView section, StringView key) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlobal
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class Type>
+		[[nodiscard]]
+		Type getGlobal(StringView key) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlobalOr
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class Type, class U>
+		[[nodiscard]]
+		Type getGlobalOr(StringView key, U&& defaultValue) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlobalOpt
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class Type>
+		[[nodiscard]]
+		Optional<Type> getGlobalOpt(StringView key) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -271,6 +421,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief セクションを追加します。
+		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
+		/// @remark 既に存在する場合は何もしません。
 		void addSection(StringView section);
 
 		////////////////////////////////////////////////////////////////
@@ -279,6 +432,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief セクションを削除します。
+		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
 		void removeSection(StringView section);
 
 		////////////////////////////////////////////////////////////////
@@ -287,6 +442,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief グローバル（無名）セクションを削除します。
 		void removeGlobalSection();
 
 		////////////////////////////////////////////////////////////////
@@ -296,6 +452,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		void addProperty(StringView section, StringView key, String value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addGlobalProperty
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addGlobalProperty(StringView key, String value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -356,9 +520,11 @@ namespace s3d
 
 	private:
 
-		Array<INISection> m_sections;
+		Array<Section> m_sections;
 
 		HashTable<String, size_t> m_sectionIndex;
+
+		const String* getPropertyValue(StringView section, StringView key) const;
 	};
 }
 

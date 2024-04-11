@@ -13,7 +13,9 @@
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/FmtExtension.hpp>
 # include <Siv3D/Error.hpp>
+# include <Siv3D/Demangle.hpp>
 # include <Siv3D/TextReader.hpp>
+# include <Siv3D/TextWriter.hpp>
 
 namespace s3d
 {
@@ -24,6 +26,75 @@ namespace s3d
 		{
 			throw Error{ U"INI::getSection(): Section `{}` not found"_fmt(section) };
 		}
+
+		[[noreturn]]
+		static void ThrowGetProperty(const StringView section)
+		{
+			throw Error{ U"INI::getProperty(): Section `{}` not found"_fmt(section) };
+		}
+
+		[[noreturn]]
+		static void ThrowGetProperty(const StringView section, const StringView key)
+		{
+			throw Error{ U"INI::getProperty(): Property `{}` not found in section `{}`"_fmt(key, section) };
+		}
+	}
+
+	namespace detail
+	{
+		void ThrowINIGetError(const char* type, const StringView section, const StringView key)
+		{
+			throw Error{ fmt::format("INI::get<{}>({}, {}) failed", DemangleUTF8(type), section, key) };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	INI::Section
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool INI::Section::hasProperty(const StringView key) const noexcept
+	{
+		return items.contains(key);
+	}
+
+	void INI::Section::addProperty(const StringView key, const StringView value)
+	{
+		auto it = items.find(key);
+
+		if (it != items.end())
+		{
+			it->second.value = value;
+		}
+		else
+		{
+			items.emplace(key, Item{ String{ value }, static_cast<int32>(items.size()) });
+		}
+	}
+
+	const INI::Item& INI::Section::operator [](const StringView key) const
+	{
+		const auto it = items.find(key);
+
+		if (it == items.end())
+		{
+			ThrowGetProperty(name, key);
+		}
+
+		return it->second;
+	}
+
+	INI::Item& INI::Section::operator [](const StringView key)
+	{
+		const auto it = items.find(key);
+
+		if (it == items.end())
+		{
+			ThrowGetProperty(name, key);
+		}
+
+		return it->second;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -132,7 +203,7 @@ namespace s3d
 		else if (sectionCount == 1)
 		{
 			// 唯一のセクションが無名セクションかつ空である場合、INI ファイルは空
-			return (m_sections.front().name.isEmpty() && m_sections.front().items.isEmpty());
+			return (m_sections.front().name.isEmpty() && m_sections.front().items.empty());
 		}
 		else
 		{
@@ -170,7 +241,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<INISection>& INI::sections() const noexcept
+	const Array<INI::Section>& INI::sections() const noexcept
 	{
 		return m_sections;
 	}
@@ -192,7 +263,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const INISection& INI::getSection(const StringView section) const
+	const INI::Section& INI::getSection(const StringView section) const
 	{
 		const auto it = m_sectionIndex.find(section);
 
@@ -204,7 +275,7 @@ namespace s3d
 		return m_sections[it->second];
 	}
 
-	INISection& INI::getSection(const StringView section)
+	INI::Section& INI::getSection(const StringView section)
 	{
 		const auto it = m_sectionIndex.find(section);
 
@@ -214,22 +285,6 @@ namespace s3d
 		}
 
 		return m_sections[it->second];
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	operator []
-	//
-	////////////////////////////////////////////////////////////////
-
-	const INISection& INI::operator [](const StringView section) const
-	{
-		return getSection(section);
-	}
-
-	INISection& INI::operator [](const StringView section)
-	{
-		return getSection(section);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -249,31 +304,239 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const INISection& INI::getGlobalSection() const
+	const INI::Section& INI::getGlobalSection() const
 	{
 		return getSection(U"");
 	}
 
-	INISection& INI::getGlobalSection()
+	INI::Section& INI::getGlobalSection()
 	{
 		return getSection(U"");
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator []
+	//
+	////////////////////////////////////////////////////////////////
 
+	const INI::Section& INI::operator [](const StringView section) const
+	{
+		return getSection(section);
+	}
 
+	INI::Section& INI::operator [](const StringView section)
+	{
+		return getSection(section);
+	}
 
+# ifdef __cpp_multidimensional_subscript
 
+	const INI::Section& INI::operator []() const
+	{
+		return getSection(U"");
+	}
 
+	INI::Section& INI::operator []()
+	{
+		return getSection(U"");
+	}
 
+# endif
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasProperty
+	//
+	////////////////////////////////////////////////////////////////
 
+	bool INI::hasProperty(const StringView section, const StringView key) const noexcept
+	{
+		const auto it = m_sectionIndex.find(section);
 
+		if (it == m_sectionIndex.end())
+		{
+			return false;
+		}
 
+		return m_sections[it->second].hasProperty(key);
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getProperty
+	//
+	////////////////////////////////////////////////////////////////
 
+	const String& INI::getProperty(const StringView section, const StringView key) const
+	{
+		const auto it = m_sectionIndex.find(section);
 
+		if (it == m_sectionIndex.end())
+		{
+			ThrowGetProperty(section);
+		}
 
+		const Section& s = m_sections[it->second];
 
+		if (const auto itItem = s.items.find(key); itItem != s.items.end())
+		{
+			return itItem->second.value;
+		}
+		else
+		{
+			ThrowGetProperty(section, key);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasGlobalProperty
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool INI::hasGlobalProperty(const StringView key) const noexcept
+	{
+		return hasProperty(U"", key);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlobalProperty
+	//
+	////////////////////////////////////////////////////////////////
+
+	const String& INI::getGlobalProperty(const StringView key) const
+	{
+		return getProperty(U"", key);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addSection
+	//
+	////////////////////////////////////////////////////////////////
+
+	void INI::addSection(const StringView section)
+	{
+		// すでに同名のセクションが存在する場合は何もしない
+		if (m_sectionIndex.contains(section))
+		{
+			return;
+		}
+
+		m_sections.emplace_back(String{ section });
+		m_sectionIndex.emplace(section, (m_sections.size() - 1));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	removeSection
+	//
+	////////////////////////////////////////////////////////////////
+
+	void INI::removeSection(const StringView section)
+	{
+		const auto it = m_sectionIndex.find(section);
+		
+		if (it == m_sectionIndex.end())
+		{
+			return;
+		}
+
+		const size_t sectionIndex = it->second;
+
+		m_sections.erase(m_sections.begin() + sectionIndex);
+
+		m_sectionIndex.erase(it);
+
+		for (auto& [key, index] : m_sectionIndex)
+		{
+			if (sectionIndex < index)
+			{
+				--index;
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	removeGlobalSection
+	//
+	////////////////////////////////////////////////////////////////
+
+	void INI::removeGlobalSection()
+	{
+		removeSection(U"");
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addProperty
+	//
+	////////////////////////////////////////////////////////////////
+
+	void INI::addProperty(const StringView section, const StringView key, const String value)
+	{
+		const auto it = m_sectionIndex.find(section);
+
+		if (it == m_sectionIndex.end())
+		{
+			addSection(section);
+		}
+
+		m_sections[m_sectionIndex[section]].addProperty(key, value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addGlobalProperty
+	//
+	////////////////////////////////////////////////////////////////
+
+	void INI::addGlobalProperty(const StringView key, const String value)
+	{
+		addProperty(U"", key, value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	format
+	//
+	////////////////////////////////////////////////////////////////
+
+	//String INI::format() const;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	formatUTF8
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::string INI::formatUTF8() const
+	{
+		return Unicode::ToUTF8(format());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	save
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool INI::save(const FilePathView path) const
+	{
+		TextWriter writer{ path };
+
+		if (not writer)
+		{
+			return false;
+		}
+
+		writer.writeUTF8(formatUTF8());
+
+		return true;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -388,5 +651,32 @@ namespace s3d
 		}
 
 		return ini;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
+
+	const String* INI::getPropertyValue(const StringView section, const StringView key) const
+	{
+		const auto it = m_sectionIndex.find(section);
+
+		if (it == m_sectionIndex.end())
+		{
+			return nullptr;
+		}
+
+		const Section& s = m_sections[it->second];
+
+		const auto itItem = s.items.find(key);
+
+		if (itItem == s.items.end())
+		{
+			return nullptr;
+		}
+
+		return &(itItem->second.value);
 	}
 }

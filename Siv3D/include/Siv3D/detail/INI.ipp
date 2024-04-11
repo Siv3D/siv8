@@ -13,6 +13,11 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		[[noreturn]]
+		void ThrowINIGetError(const char* type, StringView section, StringView key);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -38,6 +43,56 @@ namespace s3d
 	bool INI::load(Reader&& reader)
 	{
 		return load(std::make_unique<Reader>(std::move(reader)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	get
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	Type INI::get(const StringView section, const StringView key) const
+	{
+		if (const auto opt = getOpt<Type>())
+		{
+			return *opt;
+		}
+		else
+		{
+			detail::ThrowINIGetError(typeid(Type).name(), section, key);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getOr
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class U>
+	Type INI::getOr(const StringView section, const StringView key, U&& defaultValue) const
+	{
+		return getOpt<Type>().value_or(std::forward<U>(defaultValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getOpt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	Optional<Type> INI::getOpt(const StringView section, const StringView key) const
+	{
+		if (const String* value = getPropertyValue(section, key))
+		{
+			return ParseOpt<Type>(*value);
+		}
+		else
+		{
+			return none;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
