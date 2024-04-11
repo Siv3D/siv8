@@ -877,6 +877,10 @@
 		F986F8A22BC8003B006A4C0F /* EnvironmentVariable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8A02BC8003B006A4C0F /* EnvironmentVariable.hpp */; };
 		F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8A32BC80100006A4C0F /* SivCommandLine.cpp */; };
 		F986F8A82BC80193006A4C0F /* SivEnvironmentVariable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8A62BC80193006A4C0F /* SivEnvironmentVariable.cpp */; };
+		F986F8AA2BC806A7006A4C0F /* Exif.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8A92BC806A7006A4C0F /* Exif.hpp */; };
+		F986F8AD2BC806BF006A4C0F /* SivExif.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8AB2BC806BF006A4C0F /* SivExif.cpp */; };
+		F986F8B12BC806DB006A4C0F /* exif.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8AE2BC806DB006A4C0F /* exif.cpp */; };
+		F986F8B22BC806DB006A4C0F /* exif.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8AF2BC806DB006A4C0F /* exif.h */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -1783,6 +1787,10 @@
 		F986F8A02BC8003B006A4C0F /* EnvironmentVariable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EnvironmentVariable.hpp; sourceTree = "<group>"; };
 		F986F8A32BC80100006A4C0F /* SivCommandLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCommandLine.cpp; sourceTree = "<group>"; };
 		F986F8A62BC80193006A4C0F /* SivEnvironmentVariable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEnvironmentVariable.cpp; sourceTree = "<group>"; };
+		F986F8A92BC806A7006A4C0F /* Exif.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Exif.hpp; sourceTree = "<group>"; };
+		F986F8AB2BC806BF006A4C0F /* SivExif.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivExif.cpp; sourceTree = "<group>"; };
+		F986F8AE2BC806DB006A4C0F /* exif.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = exif.cpp; sourceTree = "<group>"; };
+		F986F8AF2BC806DB006A4C0F /* exif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exif.h; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -2483,6 +2491,7 @@
 			children = (
 				F9070A5A2B9DEB5900383E4D /* absl */,
 				F9070A6A2B9DEB5900383E4D /* double-conversion */,
+				F986F8B02BC806DB006A4C0F /* easyexif */,
 				F9070A6C2B9DEB5900383E4D /* fast_float */,
 				F9070A6F2B9DEB5900383E4D /* fmt */,
 				F9070ED12B9F1C8900383E4D /* GLFW */,
@@ -2696,6 +2705,7 @@
 				F986F8A02BC8003B006A4C0F /* EnvironmentVariable.hpp */,
 				F9070BDE2B9F175000383E4D /* Error.hpp */,
 				F9070BDF2B9F175000383E4D /* EscapedFormatter.hpp */,
+				F986F8A92BC806A7006A4C0F /* Exif.hpp */,
 				F9070BE02B9F175000383E4D /* FastMath.hpp */,
 				F9070BE12B9F175000383E4D /* FileAction.hpp */,
 				F9070BE22B9F175000383E4D /* FileSystem.hpp */,
@@ -3396,6 +3406,7 @@
 				F9070D462B9F175E00383E4D /* EngineLog */,
 				F9070D482B9F175E00383E4D /* Error */,
 				F9070D4A2B9F175E00383E4D /* EscapedFormatter */,
+				F986F8AC2BC806BF006A4C0F /* Exif */,
 				F9070D4C2B9F175E00383E4D /* FileAction */,
 				F9070D4E2B9F175E00383E4D /* FileSystem */,
 				F9070D502B9F175E00383E4D /* FloatFormatter */,
@@ -4144,6 +4155,23 @@
 			path = EnvironmentVariable;
 			sourceTree = "<group>";
 		};
+		F986F8AC2BC806BF006A4C0F /* Exif */ = {
+			isa = PBXGroup;
+			children = (
+				F986F8AB2BC806BF006A4C0F /* SivExif.cpp */,
+			);
+			path = Exif;
+			sourceTree = "<group>";
+		};
+		F986F8B02BC806DB006A4C0F /* easyexif */ = {
+			isa = PBXGroup;
+			children = (
+				F986F8AE2BC806DB006A4C0F /* exif.cpp */,
+				F986F8AF2BC806DB006A4C0F /* exif.h */,
+			);
+			path = easyexif;
+			sourceTree = "<group>";
+		};
 		F9E5FC172BC12C340081A4F7 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -4270,6 +4298,7 @@
 				F907070C2B9DAEC900383E4D /* permutexvar.h in Headers */,
 				F9E5FCE72BC59EA00081A4F7 /* JSONIterator.hpp in Headers */,
 				F90706A72B9DAEC900383E4D /* beta_distribution.h in Headers */,
+				F986F8B22BC806DB006A4C0F /* exif.h in Headers */,
 				F90707592B9DAEC900383E4D /* simde-math.h in Headers */,
 				F90707482B9DAEC900383E4D /* ssse3.h in Headers */,
 				F90706A82B9DAEC900383E4D /* discrete_distribution.h in Headers */,
@@ -4358,6 +4387,7 @@
 				F9528C3D2BBF026F00222F45 /* zstd_decompress_internal.h in Headers */,
 				F9070CC12B9F175000383E4D /* FormatData.hpp in Headers */,
 				F9070D0D2B9F175100383E4D /* Utility.hpp in Headers */,
+				F986F8AA2BC806A7006A4C0F /* Exif.hpp in Headers */,
 				F90706A52B9DAEC900383E4D /* wide_multiply.h in Headers */,
 				F90706F02B9DAEC900383E4D /* fpclass.h in Headers */,
 				F9070B0A2B9DEB5900383E4D /* xxhash.h in Headers */,
@@ -5064,6 +5094,7 @@
 				F986F83C2BC7B043006A4C0F /* SivINISection.cpp in Sources */,
 				F9528C142BBF026F00222F45 /* threading.c in Sources */,
 				F9E5FC432BC19B110081A4F7 /* SivHalfFloat.cpp in Sources */,
+				F986F8B12BC806DB006A4C0F /* exif.cpp in Sources */,
 				F9070F312B9F252E00383E4D /* osmesa_context.c in Sources */,
 				F9070EE02B9F1C8900383E4D /* input.c in Sources */,
 				F9070DE42B9F175E00383E4D /* SivRandom.cpp in Sources */,
@@ -5242,6 +5273,7 @@
 				F9528C8B2BC05B5B00222F45 /* CImageDecoder.cpp in Sources */,
 				F9070E002B9F175E00383E4D /* SivVector4D.cpp in Sources */,
 				F9528B302BB0562C00222F45 /* SivMemoryMappedFileView.cpp in Sources */,
+				F986F8AD2BC806BF006A4C0F /* SivExif.cpp in Sources */,
 				F9528C162BBF026F00222F45 /* xxhash.c in Sources */,
 				F9070DB42B9F175E00383E4D /* SivByte.cpp in Sources */,
 				F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */,
