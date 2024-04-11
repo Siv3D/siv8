@@ -509,6 +509,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\PNG\PNGDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\PNG\PNGEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\INI\SivINI.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Int128\SivInt128.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />

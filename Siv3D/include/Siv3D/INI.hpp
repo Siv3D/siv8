@@ -63,10 +63,10 @@ namespace s3d
 		template <class Reader>
 			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
 		[[nodiscard]]
-		INI(Reader&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+		explicit INI(Reader&& reader);
 
 		[[nodiscard]]
-		INI(std::unique_ptr<IReader>&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+		explicit INI(std::unique_ptr<IReader>&& reader);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -155,12 +155,14 @@ namespace s3d
 		/// @brief セクションへの参照を返します。
 		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
 		/// @return セクションへの参照
+		/// @throw Error 指定したセクションが存在しない場合
 		[[nodiscard]]
 		const INISection& getSection(StringView section) const;
 
 		/// @brief セクションへの参照を返します。
 		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
 		/// @return セクションへの参照
+		/// @throw Error 指定したセクションが存在しない場合
 		[[nodiscard]]
 		INISection& getSection(StringView section);
 
@@ -173,12 +175,16 @@ namespace s3d
 		/// @brief セクションへの参照を返します。
 		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
 		/// @return セクションへの参照
+		/// @throw Error 指定したセクションが存在しない場合
+		/// @remark `getSection()` と同じです。
 		[[nodiscard]]
 		const INISection& operator [](StringView section) const;
 
 		/// @brief セクションへの参照を返します。
 		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション
 		/// @return セクションへの参照
+		/// @throw Error 指定したセクションが存在しない場合
+		/// @remark `getSection()` と同じです。
 		[[nodiscard]]
 		INISection& operator [](StringView section);
 
@@ -285,6 +291,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addProperty
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addProperty(StringView section, StringView key, String value);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	format
 		//
 		////////////////////////////////////////////////////////////////
@@ -316,9 +330,35 @@ namespace s3d
 		/// @return 保存に成功した場合 true, それ以外の場合は false
 		bool save(FilePathView path) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Load
+		//
+		////////////////////////////////////////////////////////////////
+
+		static INI Load(FilePathView path);
+
+		template <class Reader>
+			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+		static INI Load(Reader&& reader);
+
+		static INI Load(std::unique_ptr<IReader>&& reader);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Parse
+		//
+		////////////////////////////////////////////////////////////////
+
+		static INI Parse(std::string_view s);
+
+		static INI Parse(StringView s);
+
 	private:
 
 		Array<INISection> m_sections;
+
+		HashTable<String, size_t> m_sectionIndex;
 	};
 }
 
