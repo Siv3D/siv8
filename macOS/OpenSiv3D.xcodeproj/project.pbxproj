@@ -869,6 +869,10 @@
 		F986F8922BC7EEF4006A4C0F /* utf16le_shortCRLF.txt in Resources */ = {isa = PBXBuildFile; fileRef = F986F86A2BC7EEF3006A4C0F /* utf16le_shortCRLF.txt */; };
 		F986F8932BC7EEF4006A4C0F /* utf16le_shortLF.txt in Resources */ = {isa = PBXBuildFile; fileRef = F986F86B2BC7EEF3006A4C0F /* utf16le_shortLF.txt */; };
 		F986F8942BC7EEF4006A4C0F /* utf16le_あ.txt in Resources */ = {isa = PBXBuildFile; fileRef = F986F86C2BC7EEF3006A4C0F /* utf16le_あ.txt */; };
+		F986F8972BC7FB32006A4C0F /* Colormap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8952BC7FB32006A4C0F /* Colormap.hpp */; };
+		F986F8982BC7FB32006A4C0F /* ColorScale.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8962BC7FB32006A4C0F /* ColorScale.hpp */; };
+		F986F89B2BC7FB4D006A4C0F /* SivColormap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8992BC7FB4D006A4C0F /* SivColormap.cpp */; };
+		F986F89E2BC7FB74006A4C0F /* tinycolormap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F89C2BC7FB74006A4C0F /* tinycolormap.hpp */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -1767,6 +1771,10 @@
 		F986F86A2BC7EEF3006A4C0F /* utf16le_shortCRLF.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = utf16le_shortCRLF.txt; sourceTree = "<group>"; };
 		F986F86B2BC7EEF3006A4C0F /* utf16le_shortLF.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = utf16le_shortLF.txt; sourceTree = "<group>"; };
 		F986F86C2BC7EEF3006A4C0F /* utf16le_あ.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "utf16le_あ.txt"; sourceTree = "<group>"; };
+		F986F8952BC7FB32006A4C0F /* Colormap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Colormap.hpp; sourceTree = "<group>"; };
+		F986F8962BC7FB32006A4C0F /* ColorScale.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ColorScale.hpp; sourceTree = "<group>"; };
+		F986F8992BC7FB4D006A4C0F /* SivColormap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivColormap.cpp; sourceTree = "<group>"; };
+		F986F89C2BC7FB74006A4C0F /* tinycolormap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tinycolormap.hpp; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -2475,6 +2483,7 @@
 				F9070A752B9DEB5900383E4D /* RFC1321 */,
 				F9070A782B9DEB5900383E4D /* simdutf */,
 				F9070A7A2B9DEB5900383E4D /* stduuid */,
+				F986F89D2BC7FB74006A4C0F /* tinycolormap */,
 				F9070A7C2B9DEB5900383E4D /* wyhash */,
 				F9070A7E2B9DEB5900383E4D /* xxHash */,
 				F9528C022BBF026F00222F45 /* zstd */,
@@ -2651,6 +2660,8 @@
 				F9070BC72B9F175000383E4D /* Color.hpp */,
 				F9070BC82B9F175000383E4D /* ColorF.hpp */,
 				F9070BC92B9F175000383E4D /* ColorHSV.hpp */,
+				F986F8952BC7FB32006A4C0F /* Colormap.hpp */,
+				F986F8962BC7FB32006A4C0F /* ColorScale.hpp */,
 				F9070BCA2B9F175000383E4D /* Common.hpp */,
 				F9070BCB2B9F175000383E4D /* CommonFloat.hpp */,
 				F9070BCC2B9F175000383E4D /* CompilerVersion.hpp */,
@@ -3358,6 +3369,7 @@
 				F9528B6D2BB7089A00222F45 /* CacheDirectory */,
 				F9070D272B9F175E00383E4D /* Color */,
 				F9070D292B9F175E00383E4D /* ColorF */,
+				F986F89A2BC7FB4D006A4C0F /* Colormap */,
 				F9528BB72BBF024D00222F45 /* Compression */,
 				F9070D2D2B9F175E00383E4D /* Console */,
 				F9070D2F2B9F175E00383E4D /* ConsoleBuffer */,
@@ -4088,6 +4100,22 @@
 			path = data;
 			sourceTree = "<group>";
 		};
+		F986F89A2BC7FB4D006A4C0F /* Colormap */ = {
+			isa = PBXGroup;
+			children = (
+				F986F8992BC7FB4D006A4C0F /* SivColormap.cpp */,
+			);
+			path = Colormap;
+			sourceTree = "<group>";
+		};
+		F986F89D2BC7FB74006A4C0F /* tinycolormap */ = {
+			isa = PBXGroup;
+			children = (
+				F986F89C2BC7FB74006A4C0F /* tinycolormap.hpp */,
+			);
+			path = tinycolormap;
+			sourceTree = "<group>";
+		};
 		F9E5FC172BC12C340081A4F7 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -4544,6 +4572,7 @@
 				F9070CBC2B9F175000383E4D /* FloatFormatter.hpp in Headers */,
 				F90707302B9DAEC900383E4D /* sub.h in Headers */,
 				F90706F92B9DAEC900383E4D /* lzcnt.h in Headers */,
+				F986F89E2BC7FB74006A4C0F /* tinycolormap.hpp in Headers */,
 				F9070D032B9F175100383E4D /* TextWriter.hpp in Headers */,
 				F9070EEF2B9F1C8900383E4D /* platform.h in Headers */,
 				F90706E12B9DAEC900383E4D /* div.h in Headers */,
@@ -4627,6 +4656,7 @@
 				F907073C2B9DAEC900383E4D /* avx2.h in Headers */,
 				F9528B2B2BAFCDB400222F45 /* MappedMemory.hpp in Headers */,
 				F9070C6E2B9F175000383E4D /* Number.ipp in Headers */,
+				F986F8982BC7FB32006A4C0F /* ColorScale.hpp in Headers */,
 				F9070CCE2B9F175100383E4D /* IntFormatter.hpp in Headers */,
 				F9070CC32B9F175000383E4D /* Formatter.hpp in Headers */,
 				F9528B842BBC5D3100222F45 /* Step2D.hpp in Headers */,
@@ -4803,6 +4833,7 @@
 				F9070C7D2B9F175000383E4D /* String.ipp in Headers */,
 				F9E5FC2F2BC15B060081A4F7 /* HalfFloat.ipp in Headers */,
 				F9070C7E2B9F175000383E4D /* StringView.ipp in Headers */,
+				F986F8972BC7FB32006A4C0F /* Colormap.hpp in Headers */,
 				F9528C272BBF026F00222F45 /* zstd_compress_superblock.h in Headers */,
 				F9070CE62B9F175100383E4D /* Parse.hpp in Headers */,
 				F9070ED62B9F1C8900383E4D /* cocoa_platform.h in Headers */,
@@ -5068,6 +5099,7 @@
 				F9070E612B9F176B00383E4D /* CLogger.cpp in Sources */,
 				F9528C352BBF026F00222F45 /* zstdmt_compress.c in Sources */,
 				F9528B662BB6DC9200222F45 /* SivMillisecClock.cpp in Sources */,
+				F986F89B2BC7FB4D006A4C0F /* SivColormap.cpp in Sources */,
 				F9070DCF2B9F175E00383E4D /* SivFmtExtension.cpp in Sources */,
 				F9070DE12B9F175E00383E4D /* SivParseFloat.cpp in Sources */,
 				F9070AF02B9DEB5900383E4D /* gaussian_distribution.cc in Sources */,
