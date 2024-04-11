@@ -2375,12 +2375,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\SivRegExp.cpp">
       <Filter>src\Siv3D\RegExp</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\sjis.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\sjis_prop.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\st.c">
       <Filter>src\ThirdParty\Oniguruma</Filter>
     </ClCompile>
@@ -2421,18 +2415,6 @@
       <Filter>src\ThirdParty\Oniguruma</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\cp1251.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\euc_jp.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\euc_jp_prop.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\euc_kr.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\euc_tw.c">
       <Filter>src\ThirdParty\Oniguruma</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\gb18030.c">
