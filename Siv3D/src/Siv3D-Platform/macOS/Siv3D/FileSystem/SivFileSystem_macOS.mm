@@ -17,11 +17,22 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/SpecialFolder.hpp>
+# include "macOSFileSystem.hpp"
 
 namespace s3d
 {
 	namespace detail
 	{
+		namespace init
+		{
+			const static FilePathCache g_filePathCache{};
+		
+			const Array<FilePath>& GetResourceFiles() noexcept
+			{
+				return g_filePathCache.resourceFilePaths;
+			}
+		}
+	
 		[[nodiscard]]
 		static std::filesystem::path ToPath(const FilePathView path)
 		{
@@ -142,35 +153,9 @@ namespace s3d
 			}
 		}
 	
-		namespace init
+		FilePathCache::FilePathCache()
 		{
-			[[nodiscard]]
-			static FilePath ParentPath(FilePath path, isize n)
-			{
-				if (path.count(U'/') <= n)
-				{
-					return{};
-				}
-
-				while (path)
-				{
-					if (path.back() == U'/')
-					{
-						if (n == 0)
-						{
-							break;
-						}
-						
-						--n;
-					}
-					
-					path.pop_back();
-				}
-				
-				return path;
-			}
-		
-			const static FilePath g_initialPath = []() -> FilePath
+			initialDirectory = []() -> FilePath
 			{
 				char path_str[4096];
 				uint32_t bufferSize = sizeof(path_str);
@@ -195,8 +180,8 @@ namespace s3d
 
 				return initialPath;
 			}();
-
-			const static FilePath g_modulePath = []() -> FilePath
+			
+			modulePath = []() -> FilePath
 			{
 				char path_str[4096];
 				uint32_t bufferSize = sizeof(path_str);
@@ -217,8 +202,8 @@ namespace s3d
 
 				return modulePath;
 			}();
-		
-			const static std::array<FilePath, 12> g_specialFolderPaths = []()
+			
+			specialFolderPaths = []()
 			{
 				std::array<FilePath, 12> specialFolderPaths;
 
@@ -229,6 +214,46 @@ namespace s3d
 
 				return specialFolderPaths;
 			}();
+			
+			resourceFilePaths = [modulePath = modulePath]()
+			{
+				const FilePath resourcePath = (modulePath + U"/Contents/Resources/");
+
+				Array<FilePath> paths = FileSystem::DirectoryContents(resourcePath, Recursive::Yes);
+
+				paths.remove_if(FileSystem::IsDirectory);
+				
+				paths.remove(resourcePath + U"icon.icns");
+
+				paths.sort();
+				
+				return paths;
+			}();
+		}
+	
+		FilePath FilePathCache::ParentPath(FilePath path, isize n)
+		{
+			if (path.count(U'/') <= n)
+			{
+				return{};
+			}
+
+			while (path)
+			{
+				if (path.back() == U'/')
+				{
+					if (n == 0)
+					{
+						break;
+					}
+					
+					--n;
+				}
+				
+				path.pop_back();
+			}
+			
+			return path;
 		}
 	}
 
@@ -278,16 +303,41 @@ namespace s3d
 
 	
 	
-	
-	
+		Array<FilePath> DirectoryContents(const FilePathView path, const Recursive recursive)
+		{
+			Array<FilePath> paths;
+			
+			if (path.isEmpty() || !IsDirectory(path))
+			{
+				return paths;
+			}
+			
+			if (recursive)
+			{
+				for (const auto& v : std::filesystem::recursive_directory_iterator{ Unicode::ToUTF8(path) })
+				{
+					paths.push_back(FullPath(Unicode::FromUTF8(v.path().string())));
+				}
+			}
+			else
+			{
+				for (const auto& v : std::filesystem::directory_iterator{ Unicode::ToUTF8(path) })
+				{
+					paths.push_back(FullPath(Unicode::FromUTF8(v.path().string())));
+				}
+			}
+			
+			return paths;
+		}
+		
 		const FilePath& InitialDirectory() noexcept
 		{
-			return detail::init::g_initialPath;
+			return detail::init::g_filePathCache.initialDirectory;
 		}
 
 		const FilePath& ModulePath() noexcept
 		{
-			return detail::init::g_modulePath;
+			return detail::init::g_filePathCache.modulePath;
 		}
 	
 		bool ChangeCurrentDirectory(const FilePathView path)
@@ -302,9 +352,9 @@ namespace s3d
 	
 		const FilePath& GetFolderPath(const SpecialFolder folder)
 		{
-			assert(FromEnum(folder) < static_cast<int32>(std::size(detail::init::g_specialFolderPaths)));
+			assert(FromEnum(folder) < static_cast<int32>(std::size(detail::init::g_filePathCache.specialFolderPaths)));
 
-			return detail::init::g_specialFolderPaths[FromEnum(folder)];
+			return detail::init::g_filePathCache.specialFolderPaths[FromEnum(folder)];
 		}
 	
 	
