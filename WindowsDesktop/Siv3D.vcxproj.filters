@@ -475,6 +475,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Resource">
       <UniqueIdentifier>{7b6802fd-28d7-4bfb-8cbe-e35ea4a70cca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Colormap">
+      <UniqueIdentifier>{2b936faa-4d4b-40ce-bf05-61d822c76b5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\tinycolormap">
+      <UniqueIdentifier>{6bdc4787-7974-4386-9dac-e300da316b0d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1743,6 +1749,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Resource.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Colormap.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColorScale.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\tinycolormap\tinycolormap.hpp">
+      <Filter>src\ThirdParty\tinycolormap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -2275,6 +2290,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Resource\SivResource_Windows.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Colormap\SivColormap.cpp">
+      <Filter>src\Siv3D\Colormap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

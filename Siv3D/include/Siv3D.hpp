@@ -677,8 +677,11 @@
 // 色定数 | Color constants
 # include <Siv3D/Palette.hpp>
 
-//// カラーマップ | Colormap
-//# include <Siv3D/Colormap.hpp>
+// カラーマップ用のカラースケール | Color scale for colormap
+# include <Siv3D/ColorScale.hpp>
+
+// カラーマップ | Colormap
+# include <Siv3D/Colormap.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

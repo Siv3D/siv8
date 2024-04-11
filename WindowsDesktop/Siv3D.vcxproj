@@ -29,6 +29,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Color.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorF.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorHSV.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Colormap.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColorScale.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Common.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CommonFloat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CompilerVersion.hpp" />
@@ -392,6 +394,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\RFC1321\RFC1321.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\stduuid\uuid.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\tinycolormap\tinycolormap.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\wyhash\wyhash.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\xxHash\xxhash.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\common\allocations.h" />
@@ -475,6 +478,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Byte\SivByte.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ColorF\SivColorF.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Colormap\SivColormap.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Color\SivColor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Compression\SivCompression.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ConsoleBuffer\SivConsoleBuffer.cpp" />

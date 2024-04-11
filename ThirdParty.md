@@ -26,6 +26,7 @@ Name | Version
 [simdutf](https://github.com/simdutf/simdutf) | Version 5.2.2
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
+[tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
