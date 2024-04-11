@@ -16,6 +16,7 @@
 # include <Siv3D/Demangle.hpp>
 # include <Siv3D/TextReader.hpp>
 # include <Siv3D/TextWriter.hpp>
+# include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
@@ -46,55 +47,6 @@ namespace s3d
 		{
 			throw Error{ fmt::format("INI::get<{}>({}, {}) failed", DemangleUTF8(type), section, key) };
 		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	INI::Section
-	//
-	////////////////////////////////////////////////////////////////
-
-	bool INI::Section::hasProperty(const StringView key) const noexcept
-	{
-		return items.contains(key);
-	}
-
-	void INI::Section::addProperty(const StringView key, const StringView value)
-	{
-		auto it = items.find(key);
-
-		if (it != items.end())
-		{
-			it->second.value = value;
-		}
-		else
-		{
-			items.emplace(key, Item{ String{ value }, static_cast<int32>(items.size()) });
-		}
-	}
-
-	const INI::Item& INI::Section::operator [](const StringView key) const
-	{
-		const auto it = items.find(key);
-
-		if (it == items.end())
-		{
-			ThrowGetProperty(name, key);
-		}
-
-		return it->second;
-	}
-
-	INI::Item& INI::Section::operator [](const StringView key)
-	{
-		const auto it = items.find(key);
-
-		if (it == items.end())
-		{
-			ThrowGetProperty(name, key);
-		}
-
-		return it->second;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -241,7 +193,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<INI::Section>& INI::sections() const noexcept
+	const Array<INISection>& INI::sections() const noexcept
 	{
 		return m_sections;
 	}
@@ -263,7 +215,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const INI::Section& INI::getSection(const StringView section) const
+	const INISection& INI::getSection(const StringView section) const
 	{
 		const auto it = m_sectionIndex.find(section);
 
@@ -275,7 +227,7 @@ namespace s3d
 		return m_sections[it->second];
 	}
 
-	INI::Section& INI::getSection(const StringView section)
+	INISection& INI::getSection(const StringView section)
 	{
 		const auto it = m_sectionIndex.find(section);
 
@@ -295,7 +247,7 @@ namespace s3d
 
 	bool INI::hasGlobalSection() const noexcept
 	{
-		return m_sectionIndex.contains(U"");
+		return m_sectionIndex.contains(GlobalSection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -304,14 +256,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const INI::Section& INI::getGlobalSection() const
+	const INISection& INI::getGlobalSection() const
 	{
-		return getSection(U"");
+		return getSection(GlobalSection);
 	}
 
-	INI::Section& INI::getGlobalSection()
+	INISection& INI::getGlobalSection()
 	{
-		return getSection(U"");
+		return getSection(GlobalSection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -320,26 +272,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const INI::Section& INI::operator [](const StringView section) const
+	const INISection& INI::operator [](const StringView section) const
 	{
 		return getSection(section);
 	}
 
-	INI::Section& INI::operator [](const StringView section)
+	INISection& INI::operator [](const StringView section)
 	{
 		return getSection(section);
 	}
 
 # ifdef __cpp_multidimensional_subscript
 
-	const INI::Section& INI::operator []() const
+	const INISection& INI::operator []() const
 	{
-		return getSection(U"");
+		return getSection(GlobalSection);
 	}
 
-	INI::Section& INI::operator []()
+	INISection& INI::operator []()
 	{
-		return getSection(U"");
+		return getSection(GlobalSection);
 	}
 
 # endif
@@ -377,7 +329,7 @@ namespace s3d
 			ThrowGetProperty(section);
 		}
 
-		const Section& s = m_sections[it->second];
+		const INISection& s = m_sections[it->second];
 
 		if (const auto itItem = s.items.find(key); itItem != s.items.end())
 		{
@@ -397,7 +349,7 @@ namespace s3d
 
 	bool INI::hasGlobalProperty(const StringView key) const noexcept
 	{
-		return hasProperty(U"", key);
+		return hasProperty(GlobalSection, key);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -408,7 +360,7 @@ namespace s3d
 
 	const String& INI::getGlobalProperty(const StringView key) const
 	{
-		return getProperty(U"", key);
+		return getProperty(GlobalSection, key);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -467,7 +419,7 @@ namespace s3d
 
 	void INI::removeGlobalSection()
 	{
-		removeSection(U"");
+		removeSection(GlobalSection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -496,7 +448,36 @@ namespace s3d
 
 	void INI::addGlobalProperty(const StringView key, const String value)
 	{
-		addProperty(U"", key, value);
+		addProperty(GlobalSection, key, value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	removeProperty
+	//
+	////////////////////////////////////////////////////////////////
+
+	void INI::removeProperty(const StringView section, const StringView key)
+	{
+		const auto it = m_sectionIndex.find(section);
+
+		if (it == m_sectionIndex.end())
+		{
+			return;
+		}
+
+		m_sections[m_sectionIndex[section]].removeProperty(key);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	removeGlobalProperty
+	//
+	////////////////////////////////////////////////////////////////
+
+	void INI::removeGlobalProperty(const StringView key)
+	{
+		removeProperty(GlobalSection, key);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -505,7 +486,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//String INI::format() const;
+	String INI::format() const
+	{
+		return(U"");
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -586,11 +570,14 @@ namespace s3d
 		constexpr char32 LBracket = U'[';
 		constexpr char32 RBracket = U']';
 
+		size_t lineIndex = 0;
 		INI ini;
 		String currentSection;
 
 		for (auto&& _line : std::views::split(s, U'\n'))
 		{
+			++lineIndex;
+
 			String line{ _line.begin(), _line.end() };
 
 			line.trim();
@@ -617,7 +604,7 @@ namespace s3d
 
 				if (itRBracket == line.end())
 				{
-					throw Error{ U"INI::Parse(): Unmatched '['" };
+					throw Error{ fmt::format("INI::Parse(): ({}) Unmatched '['", lineIndex) };
 				}
 
 				currentSection = line.substr(1, itRBracket - (line.begin() + 1)).trim();
@@ -634,14 +621,16 @@ namespace s3d
 				if (itEqual == line.end())
 				{
 					// error: '=' character not found in line
-					throw Error{ U"INI::Parse(): '=' character not found in line" };
+					throw Error{ fmt::format("INI::Parse(): ({}) '=' character not found in line", lineIndex) };
 				}
+
+				LOG_TEST(U"line: {}, count: {}"_fmt(line, (itEqual - line.begin())));
 
 				const String key = line.substr(0, (itEqual - line.begin())).trim();
 
 				if (key.isEmpty())
 				{
-					throw Error{ U"INI::Parse(): key is empty" };
+					throw Error{ fmt::format("INI::Parse(): ({}) key is empty", lineIndex) };
 				}
 
 				const String value = line.substr(itEqual - line.begin() + 1).trim();
@@ -668,7 +657,7 @@ namespace s3d
 			return nullptr;
 		}
 
-		const Section& s = m_sections[it->second];
+		const INISection& s = m_sections[it->second];
 
 		const auto itItem = s.items.find(key);
 

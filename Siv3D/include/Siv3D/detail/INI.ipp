@@ -87,12 +87,55 @@ namespace s3d
 	{
 		if (const String* value = getPropertyValue(section, key))
 		{
-			return ParseOpt<Type>(*value);
+			if constexpr (std::is_same_v<Type, String>)
+			{
+				return *value;
+			}
+			else
+			{
+				return ParseOpt<Type>(*value);
+			}
 		}
 		else
 		{
 			return none;
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlobal
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	Type INI::getGlobal(const StringView key) const
+	{
+		return get<Type>(GlobalSection, key);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlobalOr
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class U>
+	Type INI::getGlobalOr(const StringView key, U&& defaultValue) const
+	{
+		return getOr<Type>(GlobalSection, key, std::forward<U>(defaultValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlobalOpt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	Optional<Type> INI::getGlobalOpt(const StringView key) const
+	{
+		return getOpt<Type>(GlobalSection, key);
 	}
 
 	////////////////////////////////////////////////////////////////

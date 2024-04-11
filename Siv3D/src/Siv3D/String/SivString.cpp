@@ -349,7 +349,7 @@ namespace s3d
 
 	String& String::leftTrim() & noexcept
 	{
-		m_string.erase(m_string.begin(), std::find_if(m_string.begin(), m_string.end(), IsTrimmable));
+		m_string.erase(m_string.begin(), std::find_if_not(m_string.begin(), m_string.end(), IsTrimmable));
 		return *this;
 	}
 
