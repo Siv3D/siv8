@@ -51,9 +51,9 @@ namespace s3d
 		return pImpl->findAll(s);
 	}
 
-	namespace Literals
+	inline namespace Literals
 	{
-		namespace RegExpLiterals
+		inline namespace RegExpLiterals
 		{
 			RegExp operator ""_re(const char32* s, const size_t length) noexcept
 			{
