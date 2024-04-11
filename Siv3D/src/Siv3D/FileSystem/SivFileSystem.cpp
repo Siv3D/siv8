@@ -159,16 +159,6 @@ namespace s3d
 				return{};
 			}
 
-			if constexpr (Platform::HasEmbeddedResource)
-			{
-				// リソースパスの場合は親ディレクトリ無し
-				if (IsResourcePath(path))
-				{
-					baseFullPath.clear();
-					return{};
-				}
-			}
-
 			FilePath result = FullPath(path);
 
 			baseFullPath = result;
