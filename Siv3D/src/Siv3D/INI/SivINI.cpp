@@ -599,8 +599,6 @@ namespace s3d
 					throw Error{ fmt::format("INI::Parse(): ({}) '=' character not found in line", lineIndex) };
 				}
 
-				LOG_TEST(U"line: {}, count: {}"_fmt(line, (itEqual - line.begin())));
-
 				const String key = line.substr(0, (itEqual - line.begin())).trim();
 
 				if (key.isEmpty())
