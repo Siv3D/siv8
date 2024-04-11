@@ -82,28 +82,6 @@ namespace s3d
 
 				return paths;
 			}();
-
-			resourceFilePaths = []()
-			{
-				Array<FilePath> paths;
-						
-				const HMODULE hModule = ::GetModuleHandleW(nullptr);
-
-				::EnumResourceNamesW(hModule, L"FILE", EnumResourceNameCallback, (LONG_PTR)&paths);
-
-				paths.sort();
-
-				return paths;
-			}();
-		}
-
-		BOOL CALLBACK FilePathCache::EnumResourceNameCallback(HMODULE, LPCWSTR, LPWSTR lpName, LONG_PTR lParam)
-		{
-			Array<FilePath>& paths = *reinterpret_cast<Array<FilePath>*>(lParam);
-					
-			paths.push_back(U'/' + Unicode::FromWstring(lpName));
-					
-			return true;
 		}
 
 		[[nodiscard]]

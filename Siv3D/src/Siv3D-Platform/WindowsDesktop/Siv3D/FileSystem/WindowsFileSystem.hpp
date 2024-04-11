@@ -51,12 +51,7 @@ namespace s3d
 			/// @brief 特殊フォルダのパス
 			std::array<FilePath, SpecialFolderCount> specialFolderPaths;
 
-			/// @brief リソースファイルの一覧
-			Array<FilePath> resourceFilePaths;
-
 			FilePathCache();
-
-			static BOOL CALLBACK EnumResourceNameCallback(HMODULE, LPCWSTR, LPWSTR lpName, LONG_PTR lParam);
 		};
 
 		[[nodiscard]]

@@ -46,6 +46,10 @@ namespace s3d
 
 	namespace Platform::Windows
 	{
+		/// @brief リソースパスをリソース名に変換します（内部関数）
+		/// @param resourcePath リソースパス
+		/// @return リソース名
+		/// @remark この関数は Siv3D エンジンの内部で使用されます。
 		[[nodiscard]]
 		std::wstring ToResourceName(FilePathView resourcePath);
 	}
