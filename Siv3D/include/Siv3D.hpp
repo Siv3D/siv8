@@ -379,9 +379,6 @@
 // 処理にかかった CPU サイクル数の測定 | Clock counter in CPU cycles
 # include <Siv3D/CycleClock.hpp>
 
-//// 時間の測定 | Time profiler
-//# include <Siv3D/TimeProfiler.hpp>
-
 ////////////////////////////////////////////////////////////////
 //
 //	ファイル I/O | File I/O
@@ -854,11 +851,11 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// 環境変数 | Environment variable
-//# include <Siv3D/EnvironmentVariable.hpp>
-//
-//// コマンドライン引数 | Command-line arguments
-//# include <Siv3D/CommandLine.hpp>
+// 環境変数 | Environment variable
+# include <Siv3D/EnvironmentVariable.hpp>
+
+// コマンドライン引数 | Command-line arguments
+# include <Siv3D/CommandLine.hpp>
 
 // CPU 情報 | CPU information
 # include <Siv3D/CPUInfo.hpp>
@@ -1023,7 +1020,6 @@
 //
 //// ファイル拡張子フィルタ | File extension filter
 //# include <Siv3D/FileFilter.hpp>
-
 
 ////////////////////////////////////////////////////////////////
 //

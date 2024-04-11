@@ -481,6 +481,12 @@
     <Filter Include="src\ThirdParty\tinycolormap">
       <UniqueIdentifier>{6bdc4787-7974-4386-9dac-e300da316b0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\EnvironmentVariable">
+      <UniqueIdentifier>{53b9259f-f35b-4939-89b5-cd6e69daf821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\CommandLine">
+      <UniqueIdentifier>{a6f9d547-38d5-4d49-afed-3f3360b40592}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1758,6 +1764,12 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\tinycolormap\tinycolormap.hpp">
       <Filter>src\ThirdParty\tinycolormap</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\EnvironmentVariable.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CommandLine.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -2293,6 +2305,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Colormap\SivColormap.cpp">
       <Filter>src\Siv3D\Colormap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EnvironmentVariable\SivEnvironmentVariable.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\EnvironmentVariable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\CommandLine\SivCommandLine.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\CommandLine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
