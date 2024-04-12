@@ -9,13 +9,12 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/Vector4D.hpp>
+# include <Siv3D/PointVector.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
 namespace s3d
 {
-
 	template <>
 	void Vector4D<double>::_Formatter(FormatData& formatData, const Vector4D<double>& value)
 	{

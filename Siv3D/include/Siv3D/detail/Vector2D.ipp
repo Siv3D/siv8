@@ -144,7 +144,9 @@ namespace s3d
 	template <class Type>
 	constexpr Vector2D<Type> Vector2D<Type>::operator /(const value_type s) const noexcept
 	{
-		return (*this * (static_cast<value_type>(1.0) / s));
+		const auto invS = (static_cast<value_type>(1.0) / s);
+
+		return{ (x * invS), (y * invS) };
 	}
 
 	template <class Type>
@@ -522,7 +524,7 @@ namespace s3d
 	template <class Type>
 	typename Vector2D<Type>::value_type Vector2D<Type>::distanceFrom(const Vector2D v) const noexcept
 	{
-		return distanceFrom(v.x, v.y);
+		return std::sqrt(distanceFromSq(v.x, v.y));
 	}
 
 	////////////////////////////////////////////////////////////////

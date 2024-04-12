@@ -9,13 +9,12 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/Vector3D.hpp>
+# include <Siv3D/PointVector.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
 namespace s3d
 {
-
 	template <>
 	void Vector3D<double>::_Formatter(FormatData& formatData, const Vector3D<double>& value)
 	{
@@ -42,4 +41,48 @@ namespace s3d
 
 	template struct Vector3D<float>;
 	template struct Vector3D<double>;
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+s3d::ParseContext::iterator fmt::formatter<s3d::Float3, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::Float3, s3d::char32>::format(const s3d::Float3& value, s3d::BufferContext& ctx)
+{
+	if (tag.empty())
+	{
+		return format_to(ctx.out(), U"({}, {}, {})", value.x, value.y, value.z);
+	}
+	else
+	{
+		const std::u32string format
+			= (U"({:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"})");
+		return format_to(ctx.out(), format, value.x, value.y, value.z);
+	}
+}
+
+s3d::ParseContext::iterator fmt::formatter<s3d::Vec3, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::Vec3, s3d::char32>::format(const s3d::Vec3& value, s3d::BufferContext& ctx)
+{
+	if (tag.empty())
+	{
+		return format_to(ctx.out(), U"({}, {}, {})", value.x, value.y, value.z);
+	}
+	else
+	{
+		const std::u32string format
+			= (U"({:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"})");
+		return format_to(ctx.out(), format, value.x, value.y, value.z);
+	}
 }
