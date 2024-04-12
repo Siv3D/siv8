@@ -380,6 +380,13 @@ MIT_LICENSE
 },
 
 {
+R"-(Oniguruma)-",
+R"-(Copyright (c) 2002-2021  K.Kosako  <kkosako0@gmail.com>
+All rights reserved.)-",
+BSD_2_LICENSE
+},
+
+{
 R"-(pcg-cpp)-",
 R"-(Copyright (c) 2014-2017 Melissa O'Neill and PCG Project contributors)-",
 MIT_LICENSE

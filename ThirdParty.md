@@ -22,6 +22,7 @@ Name | Version
 [miniutf](https://github.com/dropbox/miniutf) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
+[Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
 [simde](https://github.com/nemequ/simde) | v0.8.0
 [simdutf](https://github.com/simdutf/simdutf) | Version 5.2.2
