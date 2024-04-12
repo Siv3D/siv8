@@ -17,6 +17,7 @@
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/Array.hpp>
+# include <Siv3D/RegExp.hpp>
 
 namespace s3d
 {
@@ -553,6 +554,38 @@ namespace s3d
 		result.append(itCurrent, itNext);
 
 		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replaceFirst, replacedFirst
+	//
+	////////////////////////////////////////////////////////////////
+
+	String& String::replaceFirst(const RegExp& regexp, const StringView replacement)
+	{
+		return (*this = regexp.replaceFirst(*this, replacement));
+	}
+
+	String String::replacedFirst(const RegExp& regexp, const StringView replacement) const
+	{
+		return regexp.replaceFirst(*this, replacement);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replaceAll, replacedAll
+	//
+	////////////////////////////////////////////////////////////////
+
+	String& String::replaceAll(const RegExp& regexp, const StringView replacement)
+	{
+		return (*this = regexp.replaceAll(*this, replacement));
+	}
+
+	String String::replacedAll(const RegExp& regexp, const StringView replacement) const
+	{
+		return regexp.replaceAll(*this, replacement);
 	}
 
 	////////////////////////////////////////////////////////////////

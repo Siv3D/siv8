@@ -881,6 +881,61 @@
 		F986F8AD2BC806BF006A4C0F /* SivExif.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8AB2BC806BF006A4C0F /* SivExif.cpp */; };
 		F986F8B12BC806DB006A4C0F /* exif.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8AE2BC806DB006A4C0F /* exif.cpp */; };
 		F986F8B22BC806DB006A4C0F /* exif.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8AF2BC806DB006A4C0F /* exif.h */; };
+		F986F8B52BC843CF006A4C0F /* RegExp.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8B32BC843CF006A4C0F /* RegExp.hpp */; };
+		F986F8B62BC843CF006A4C0F /* MatchResults.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8B42BC843CF006A4C0F /* MatchResults.hpp */; };
+		F986F8B82BC843E0006A4C0F /* MatchResults.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8B72BC843E0006A4C0F /* MatchResults.ipp */; };
+		F986F8BD2BC843FD006A4C0F /* RegExpDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8B92BC843FD006A4C0F /* RegExpDetail.cpp */; };
+		F986F8BE2BC843FD006A4C0F /* RegExpDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8BA2BC843FD006A4C0F /* RegExpDetail.hpp */; };
+		F986F8BF2BC843FD006A4C0F /* SivRegExp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8BB2BC843FD006A4C0F /* SivRegExp.cpp */; };
+		F986F8FD2BC8441F006A4C0F /* ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C02BC8441F006A4C0F /* ascii.c */; };
+		F986F8FE2BC8441F006A4C0F /* big5.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C12BC8441F006A4C0F /* big5.c */; };
+		F986F8FF2BC8441F006A4C0F /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8C22BC8441F006A4C0F /* config.h */; };
+		F986F9002BC8441F006A4C0F /* cp1251.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C32BC8441F006A4C0F /* cp1251.c */; };
+		F986F9052BC8441F006A4C0F /* gb18030.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C82BC8441F006A4C0F /* gb18030.c */; };
+		F986F9062BC8441F006A4C0F /* iso8859_1.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C92BC8441F006A4C0F /* iso8859_1.c */; };
+		F986F9072BC8441F006A4C0F /* iso8859_2.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CA2BC8441F006A4C0F /* iso8859_2.c */; };
+		F986F9082BC8441F006A4C0F /* iso8859_3.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CB2BC8441F006A4C0F /* iso8859_3.c */; };
+		F986F9092BC8441F006A4C0F /* iso8859_4.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CC2BC8441F006A4C0F /* iso8859_4.c */; };
+		F986F90A2BC8441F006A4C0F /* iso8859_5.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CD2BC8441F006A4C0F /* iso8859_5.c */; };
+		F986F90B2BC8441F006A4C0F /* iso8859_6.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CE2BC8441F006A4C0F /* iso8859_6.c */; };
+		F986F90C2BC8441F006A4C0F /* iso8859_7.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CF2BC8441F006A4C0F /* iso8859_7.c */; };
+		F986F90D2BC8441F006A4C0F /* iso8859_8.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D02BC8441F006A4C0F /* iso8859_8.c */; };
+		F986F90E2BC8441F006A4C0F /* iso8859_9.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D12BC8441F006A4C0F /* iso8859_9.c */; };
+		F986F90F2BC8441F006A4C0F /* iso8859_10.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D22BC8441F006A4C0F /* iso8859_10.c */; };
+		F986F9102BC8441F006A4C0F /* iso8859_11.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D32BC8441F006A4C0F /* iso8859_11.c */; };
+		F986F9112BC8441F006A4C0F /* iso8859_13.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D42BC8441F006A4C0F /* iso8859_13.c */; };
+		F986F9122BC8441F006A4C0F /* iso8859_14.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D52BC8441F006A4C0F /* iso8859_14.c */; };
+		F986F9132BC8441F006A4C0F /* iso8859_15.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D62BC8441F006A4C0F /* iso8859_15.c */; };
+		F986F9142BC8441F006A4C0F /* iso8859_16.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D72BC8441F006A4C0F /* iso8859_16.c */; };
+		F986F9152BC8441F006A4C0F /* koi8_r.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D82BC8441F006A4C0F /* koi8_r.c */; };
+		F986F9172BC8441F006A4C0F /* onig_init.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8DA2BC8441F006A4C0F /* onig_init.c */; };
+		F986F9182BC8441F006A4C0F /* oniggnu.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8DB2BC8441F006A4C0F /* oniggnu.h */; };
+		F986F9192BC8441F006A4C0F /* oniguruma.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8DC2BC8441F006A4C0F /* oniguruma.h */; };
+		F986F91A2BC8441F006A4C0F /* regcomp.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8DD2BC8441F006A4C0F /* regcomp.c */; };
+		F986F91B2BC8441F006A4C0F /* regenc.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8DE2BC8441F006A4C0F /* regenc.c */; };
+		F986F91C2BC8441F006A4C0F /* regenc.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8DF2BC8441F006A4C0F /* regenc.h */; };
+		F986F91D2BC8441F006A4C0F /* regerror.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8E02BC8441F006A4C0F /* regerror.c */; };
+		F986F91E2BC8441F006A4C0F /* regexec.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8E12BC8441F006A4C0F /* regexec.c */; };
+		F986F91F2BC8441F006A4C0F /* regext.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8E22BC8441F006A4C0F /* regext.c */; };
+		F986F9202BC8441F006A4C0F /* reggnu.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8E32BC8441F006A4C0F /* reggnu.c */; };
+		F986F9212BC8441F006A4C0F /* regint.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8E42BC8441F006A4C0F /* regint.h */; };
+		F986F9222BC8441F006A4C0F /* regparse.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8E52BC8441F006A4C0F /* regparse.c */; };
+		F986F9232BC8441F006A4C0F /* regparse.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8E62BC8441F006A4C0F /* regparse.h */; };
+		F986F9242BC8441F006A4C0F /* regsyntax.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8E72BC8441F006A4C0F /* regsyntax.c */; };
+		F986F9252BC8441F006A4C0F /* regtrav.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8E82BC8441F006A4C0F /* regtrav.c */; };
+		F986F9262BC8441F006A4C0F /* regversion.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8E92BC8441F006A4C0F /* regversion.c */; };
+		F986F9292BC8441F006A4C0F /* st.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8EC2BC8441F006A4C0F /* st.c */; };
+		F986F92A2BC8441F006A4C0F /* st.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8ED2BC8441F006A4C0F /* st.h */; };
+		F986F92D2BC8441F006A4C0F /* unicode_fold1_key.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F02BC8441F006A4C0F /* unicode_fold1_key.c */; };
+		F986F92E2BC8441F006A4C0F /* unicode_fold2_key.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F12BC8441F006A4C0F /* unicode_fold2_key.c */; };
+		F986F92F2BC8441F006A4C0F /* unicode_fold3_key.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F22BC8441F006A4C0F /* unicode_fold3_key.c */; };
+		F986F9312BC8441F006A4C0F /* unicode_unfold_key.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F42BC8441F006A4C0F /* unicode_unfold_key.c */; };
+		F986F9332BC8441F006A4C0F /* unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F62BC8441F006A4C0F /* unicode.c */; settings = {COMPILER_FLAGS = "-Wno-missing-field-initializers"; }; };
+		F986F9342BC8441F006A4C0F /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F72BC8441F006A4C0F /* utf8.c */; };
+		F986F9352BC8441F006A4C0F /* utf16_be.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F82BC8441F006A4C0F /* utf16_be.c */; };
+		F986F9362BC8441F006A4C0F /* utf16_le.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F92BC8441F006A4C0F /* utf16_le.c */; };
+		F986F9372BC8441F006A4C0F /* utf32_be.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8FA2BC8441F006A4C0F /* utf32_be.c */; };
+		F986F9382BC8441F006A4C0F /* utf32_le.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8FB2BC8441F006A4C0F /* utf32_le.c */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -1791,6 +1846,61 @@
 		F986F8AB2BC806BF006A4C0F /* SivExif.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivExif.cpp; sourceTree = "<group>"; };
 		F986F8AE2BC806DB006A4C0F /* exif.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = exif.cpp; sourceTree = "<group>"; };
 		F986F8AF2BC806DB006A4C0F /* exif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exif.h; sourceTree = "<group>"; };
+		F986F8B32BC843CF006A4C0F /* RegExp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RegExp.hpp; sourceTree = "<group>"; };
+		F986F8B42BC843CF006A4C0F /* MatchResults.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MatchResults.hpp; sourceTree = "<group>"; };
+		F986F8B72BC843E0006A4C0F /* MatchResults.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MatchResults.ipp; sourceTree = "<group>"; };
+		F986F8B92BC843FD006A4C0F /* RegExpDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RegExpDetail.cpp; sourceTree = "<group>"; };
+		F986F8BA2BC843FD006A4C0F /* RegExpDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RegExpDetail.hpp; sourceTree = "<group>"; };
+		F986F8BB2BC843FD006A4C0F /* SivRegExp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRegExp.cpp; sourceTree = "<group>"; };
+		F986F8C02BC8441F006A4C0F /* ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ascii.c; sourceTree = "<group>"; };
+		F986F8C12BC8441F006A4C0F /* big5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = big5.c; sourceTree = "<group>"; };
+		F986F8C22BC8441F006A4C0F /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		F986F8C32BC8441F006A4C0F /* cp1251.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cp1251.c; sourceTree = "<group>"; };
+		F986F8C82BC8441F006A4C0F /* gb18030.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gb18030.c; sourceTree = "<group>"; };
+		F986F8C92BC8441F006A4C0F /* iso8859_1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_1.c; sourceTree = "<group>"; };
+		F986F8CA2BC8441F006A4C0F /* iso8859_2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_2.c; sourceTree = "<group>"; };
+		F986F8CB2BC8441F006A4C0F /* iso8859_3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_3.c; sourceTree = "<group>"; };
+		F986F8CC2BC8441F006A4C0F /* iso8859_4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_4.c; sourceTree = "<group>"; };
+		F986F8CD2BC8441F006A4C0F /* iso8859_5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_5.c; sourceTree = "<group>"; };
+		F986F8CE2BC8441F006A4C0F /* iso8859_6.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_6.c; sourceTree = "<group>"; };
+		F986F8CF2BC8441F006A4C0F /* iso8859_7.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_7.c; sourceTree = "<group>"; };
+		F986F8D02BC8441F006A4C0F /* iso8859_8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_8.c; sourceTree = "<group>"; };
+		F986F8D12BC8441F006A4C0F /* iso8859_9.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_9.c; sourceTree = "<group>"; };
+		F986F8D22BC8441F006A4C0F /* iso8859_10.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_10.c; sourceTree = "<group>"; };
+		F986F8D32BC8441F006A4C0F /* iso8859_11.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_11.c; sourceTree = "<group>"; };
+		F986F8D42BC8441F006A4C0F /* iso8859_13.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_13.c; sourceTree = "<group>"; };
+		F986F8D52BC8441F006A4C0F /* iso8859_14.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_14.c; sourceTree = "<group>"; };
+		F986F8D62BC8441F006A4C0F /* iso8859_15.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_15.c; sourceTree = "<group>"; };
+		F986F8D72BC8441F006A4C0F /* iso8859_16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_16.c; sourceTree = "<group>"; };
+		F986F8D82BC8441F006A4C0F /* koi8_r.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = koi8_r.c; sourceTree = "<group>"; };
+		F986F8DA2BC8441F006A4C0F /* onig_init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = onig_init.c; sourceTree = "<group>"; };
+		F986F8DB2BC8441F006A4C0F /* oniggnu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oniggnu.h; sourceTree = "<group>"; };
+		F986F8DC2BC8441F006A4C0F /* oniguruma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oniguruma.h; sourceTree = "<group>"; };
+		F986F8DD2BC8441F006A4C0F /* regcomp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regcomp.c; sourceTree = "<group>"; };
+		F986F8DE2BC8441F006A4C0F /* regenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regenc.c; sourceTree = "<group>"; };
+		F986F8DF2BC8441F006A4C0F /* regenc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = regenc.h; sourceTree = "<group>"; };
+		F986F8E02BC8441F006A4C0F /* regerror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regerror.c; sourceTree = "<group>"; };
+		F986F8E12BC8441F006A4C0F /* regexec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regexec.c; sourceTree = "<group>"; };
+		F986F8E22BC8441F006A4C0F /* regext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regext.c; sourceTree = "<group>"; };
+		F986F8E32BC8441F006A4C0F /* reggnu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = reggnu.c; sourceTree = "<group>"; };
+		F986F8E42BC8441F006A4C0F /* regint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = regint.h; sourceTree = "<group>"; };
+		F986F8E52BC8441F006A4C0F /* regparse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regparse.c; sourceTree = "<group>"; };
+		F986F8E62BC8441F006A4C0F /* regparse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = regparse.h; sourceTree = "<group>"; };
+		F986F8E72BC8441F006A4C0F /* regsyntax.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regsyntax.c; sourceTree = "<group>"; };
+		F986F8E82BC8441F006A4C0F /* regtrav.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regtrav.c; sourceTree = "<group>"; };
+		F986F8E92BC8441F006A4C0F /* regversion.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regversion.c; sourceTree = "<group>"; };
+		F986F8EC2BC8441F006A4C0F /* st.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = st.c; sourceTree = "<group>"; };
+		F986F8ED2BC8441F006A4C0F /* st.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = st.h; sourceTree = "<group>"; };
+		F986F8F02BC8441F006A4C0F /* unicode_fold1_key.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode_fold1_key.c; sourceTree = "<group>"; };
+		F986F8F12BC8441F006A4C0F /* unicode_fold2_key.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode_fold2_key.c; sourceTree = "<group>"; };
+		F986F8F22BC8441F006A4C0F /* unicode_fold3_key.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode_fold3_key.c; sourceTree = "<group>"; };
+		F986F8F42BC8441F006A4C0F /* unicode_unfold_key.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode_unfold_key.c; sourceTree = "<group>"; };
+		F986F8F62BC8441F006A4C0F /* unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode.c; sourceTree = "<group>"; };
+		F986F8F72BC8441F006A4C0F /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
+		F986F8F82BC8441F006A4C0F /* utf16_be.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf16_be.c; sourceTree = "<group>"; };
+		F986F8F92BC8441F006A4C0F /* utf16_le.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf16_le.c; sourceTree = "<group>"; };
+		F986F8FA2BC8441F006A4C0F /* utf32_be.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf32_be.c; sourceTree = "<group>"; };
+		F986F8FB2BC8441F006A4C0F /* utf32_le.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf32_le.c; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -2497,6 +2607,7 @@
 				F9070ED12B9F1C8900383E4D /* GLFW */,
 				F9070A712B9DEB5900383E4D /* levenshtein-sse */,
 				F9070A732B9DEB5900383E4D /* miniutf */,
+				F986F8FC2BC8441F006A4C0F /* Oniguruma */,
 				F9070A752B9DEB5900383E4D /* RFC1321 */,
 				F9070A782B9DEB5900383E4D /* simdutf */,
 				F9070A7A2B9DEB5900383E4D /* stduuid */,
@@ -2598,6 +2709,7 @@
 				F9070B8D2B9F175000383E4D /* MapFormatter.ipp */,
 				F9528B2C2BAFCDCF00222F45 /* MappedMemory.ipp */,
 				F9528C4F2BBFEC4D00222F45 /* MappedMemoryView.ipp */,
+				F986F8B72BC843E0006A4C0F /* MatchResults.ipp */,
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
 				F9070B8F2B9F175000383E4D /* MD5Value.ipp */,
 				F9070B902B9F175000383E4D /* Memory.ipp */,
@@ -2759,6 +2871,7 @@
 				F9070BFF2B9F175000383E4D /* MapFormatter.hpp */,
 				F9528B282BAFCDB400222F45 /* MappedMemory.hpp */,
 				F9528C4D2BBFEC3800222F45 /* MappedMemoryView.hpp */,
+				F986F8B42BC843CF006A4C0F /* MatchResults.hpp */,
 				F9070C002B9F175000383E4D /* MathConstants.hpp */,
 				F9070C012B9F175000383E4D /* MD5Value.hpp */,
 				F9070C022B9F175000383E4D /* Memory.hpp */,
@@ -2799,6 +2912,7 @@
 				F9070C1A2B9F175000383E4D /* Random.hpp */,
 				F9070C1B2B9F175000383E4D /* RandomDuration.hpp */,
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
+				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
@@ -3453,6 +3567,7 @@
 				F9528B9C2BBC771000222F45 /* Point3D */,
 				F9070D7C2B9F175E00383E4D /* Random */,
 				F9070D7E2B9F175E00383E4D /* Rect */,
+				F986F8BC2BC843FD006A4C0F /* RegExp */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9070D812B9F175E00383E4D /* String */,
 				F9070D832B9F175E00383E4D /* StringView */,
@@ -4172,6 +4287,72 @@
 			path = easyexif;
 			sourceTree = "<group>";
 		};
+		F986F8BC2BC843FD006A4C0F /* RegExp */ = {
+			isa = PBXGroup;
+			children = (
+				F986F8B92BC843FD006A4C0F /* RegExpDetail.cpp */,
+				F986F8BA2BC843FD006A4C0F /* RegExpDetail.hpp */,
+				F986F8BB2BC843FD006A4C0F /* SivRegExp.cpp */,
+			);
+			path = RegExp;
+			sourceTree = "<group>";
+		};
+		F986F8FC2BC8441F006A4C0F /* Oniguruma */ = {
+			isa = PBXGroup;
+			children = (
+				F986F8C02BC8441F006A4C0F /* ascii.c */,
+				F986F8C12BC8441F006A4C0F /* big5.c */,
+				F986F8C32BC8441F006A4C0F /* cp1251.c */,
+				F986F8C82BC8441F006A4C0F /* gb18030.c */,
+				F986F8C92BC8441F006A4C0F /* iso8859_1.c */,
+				F986F8CA2BC8441F006A4C0F /* iso8859_2.c */,
+				F986F8CB2BC8441F006A4C0F /* iso8859_3.c */,
+				F986F8CC2BC8441F006A4C0F /* iso8859_4.c */,
+				F986F8CD2BC8441F006A4C0F /* iso8859_5.c */,
+				F986F8CE2BC8441F006A4C0F /* iso8859_6.c */,
+				F986F8CF2BC8441F006A4C0F /* iso8859_7.c */,
+				F986F8D02BC8441F006A4C0F /* iso8859_8.c */,
+				F986F8D12BC8441F006A4C0F /* iso8859_9.c */,
+				F986F8D22BC8441F006A4C0F /* iso8859_10.c */,
+				F986F8D32BC8441F006A4C0F /* iso8859_11.c */,
+				F986F8D42BC8441F006A4C0F /* iso8859_13.c */,
+				F986F8D52BC8441F006A4C0F /* iso8859_14.c */,
+				F986F8D62BC8441F006A4C0F /* iso8859_15.c */,
+				F986F8D72BC8441F006A4C0F /* iso8859_16.c */,
+				F986F8D82BC8441F006A4C0F /* koi8_r.c */,
+				F986F8DA2BC8441F006A4C0F /* onig_init.c */,
+				F986F8DD2BC8441F006A4C0F /* regcomp.c */,
+				F986F8DE2BC8441F006A4C0F /* regenc.c */,
+				F986F8E02BC8441F006A4C0F /* regerror.c */,
+				F986F8E12BC8441F006A4C0F /* regexec.c */,
+				F986F8E22BC8441F006A4C0F /* regext.c */,
+				F986F8E32BC8441F006A4C0F /* reggnu.c */,
+				F986F8E52BC8441F006A4C0F /* regparse.c */,
+				F986F8E72BC8441F006A4C0F /* regsyntax.c */,
+				F986F8E82BC8441F006A4C0F /* regtrav.c */,
+				F986F8E92BC8441F006A4C0F /* regversion.c */,
+				F986F8EC2BC8441F006A4C0F /* st.c */,
+				F986F8F02BC8441F006A4C0F /* unicode_fold1_key.c */,
+				F986F8F12BC8441F006A4C0F /* unicode_fold2_key.c */,
+				F986F8F22BC8441F006A4C0F /* unicode_fold3_key.c */,
+				F986F8F42BC8441F006A4C0F /* unicode_unfold_key.c */,
+				F986F8F62BC8441F006A4C0F /* unicode.c */,
+				F986F8F72BC8441F006A4C0F /* utf8.c */,
+				F986F8F82BC8441F006A4C0F /* utf16_be.c */,
+				F986F8F92BC8441F006A4C0F /* utf16_le.c */,
+				F986F8FA2BC8441F006A4C0F /* utf32_be.c */,
+				F986F8FB2BC8441F006A4C0F /* utf32_le.c */,
+				F986F8C22BC8441F006A4C0F /* config.h */,
+				F986F8DB2BC8441F006A4C0F /* oniggnu.h */,
+				F986F8DC2BC8441F006A4C0F /* oniguruma.h */,
+				F986F8DF2BC8441F006A4C0F /* regenc.h */,
+				F986F8E42BC8441F006A4C0F /* regint.h */,
+				F986F8E62BC8441F006A4C0F /* regparse.h */,
+				F986F8ED2BC8441F006A4C0F /* st.h */,
+			);
+			path = Oniguruma;
+			sourceTree = "<group>";
+		};
 		F9E5FC172BC12C340081A4F7 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -4353,6 +4534,7 @@
 				F9070DB82B9F175E00383E4D /* IConsole.hpp in Headers */,
 				F90706B02B9DAEC900383E4D /* zipf_distribution.h in Headers */,
 				F9070D162B9F175100383E4D /* YesNo.hpp in Headers */,
+				F986F8B52BC843CF006A4C0F /* RegExp.hpp in Headers */,
 				F9070C662B9F175000383E4D /* KahanSummation.ipp in Headers */,
 				F9528C232BBF026F00222F45 /* zstd_compress_literals.h in Headers */,
 				F9070CEC2B9F175100383E4D /* PCG64.hpp in Headers */,
@@ -4409,6 +4591,7 @@
 				F9070C5E2B9F175000383E4D /* HSV.ipp in Headers */,
 				F9070CBF2B9F175000383E4D /* FmtHelper.hpp in Headers */,
 				F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */,
+				F986F91C2BC8441F006A4C0F /* regenc.h in Headers */,
 				F90706D92B9DAEC900383E4D /* compress.h in Headers */,
 				F90707252B9DAEC900383E4D /* slli.h in Headers */,
 				F90706B82B9DAEC900383E4D /* nanobench.h in Headers */,
@@ -4425,6 +4608,7 @@
 				F9070DEF2B9F175E00383E4D /* TextReaderDetail.hpp in Headers */,
 				F90706A32B9DAEC900383E4D /* traits.h in Headers */,
 				F9070C592B9F175000383E4D /* FormatData.ipp in Headers */,
+				F986F8FF2BC8441F006A4C0F /* config.h in Headers */,
 				F9528C6E2BC05B1A00222F45 /* ImageEncoder.ipp in Headers */,
 				F9070E922B9F183100383E4D /* CSystem.hpp in Headers */,
 				F9528BB52BBF023600222F45 /* Compression.hpp in Headers */,
@@ -4573,6 +4757,7 @@
 				F9528B5C2BB6DC6800222F45 /* MillisecClock.ipp in Headers */,
 				F9E5FC2D2BC15AEE0081A4F7 /* SIMDMath.hpp in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
+				F986F8B82BC843E0006A4C0F /* MatchResults.ipp in Headers */,
 				F90707162B9DAEC900383E4D /* round.h in Headers */,
 				F9E5FCD32BC3AD410081A4F7 /* JSONValueType.hpp in Headers */,
 				F907068F2B9DAEC900383E4D /* macros.h in Headers */,
@@ -4603,6 +4788,7 @@
 				F9528C6D2BC05B1A00222F45 /* ImageDecoder.ipp in Headers */,
 				F9528C362BBF026F00222F45 /* zstdmt_compress.h in Headers */,
 				F9070C7A2B9F175000383E4D /* Shuffle.ipp in Headers */,
+				F986F9182BC8441F006A4C0F /* oniggnu.h in Headers */,
 				F9070CD12B9F175100383E4D /* ISteadyClock.hpp in Headers */,
 				F90706E02B9DAEC900383E4D /* dbsad.h in Headers */,
 				F90707472B9DAEC900383E4D /* sse4.2.h in Headers */,
@@ -4656,12 +4842,15 @@
 				F9070CB62B9F175000383E4D /* EngineLog.hpp in Headers */,
 				F9528C622BC05B0200222F45 /* ImageInfo.hpp in Headers */,
 				F9070C582B9F175000383E4D /* Format.ipp in Headers */,
+				F986F92A2BC8441F006A4C0F /* st.h in Headers */,
 				F9528C132BBF026F00222F45 /* portability_macros.h in Headers */,
 				F9070C9D2B9F175000383E4D /* BoolToString.hpp in Headers */,
+				F986F8B62BC843CF006A4C0F /* MatchResults.hpp in Headers */,
 				F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */,
 				F9070C9B2B9F175000383E4D /* BinaryWriter.hpp in Headers */,
 				F90707332B9DAEC900383E4D /* test.h in Headers */,
 				F90707092B9DAEC900383E4D /* packus.h in Headers */,
+				F986F8BE2BC843FD006A4C0F /* RegExpDetail.hpp in Headers */,
 				F9070CB12B9F175000383E4D /* DisplayResolution.hpp in Headers */,
 				F9070CBB2B9F175000383E4D /* FileSystem.hpp in Headers */,
 				F907072D2B9DAEC900383E4D /* srlv.h in Headers */,
@@ -4674,6 +4863,7 @@
 				F90707202B9DAEC900383E4D /* setr4.h in Headers */,
 				F9070B082B9DEB5900383E4D /* uuid.h in Headers */,
 				F9070C842B9F175000383E4D /* Unicode.ipp in Headers */,
+				F986F9212BC8441F006A4C0F /* regint.h in Headers */,
 				F9070C542B9F175000383E4D /* EscapedFormatter.ipp in Headers */,
 				F986F83E2BC7DF06006A4C0F /* Resource.hpp in Headers */,
 				F9528C642BC05B0200222F45 /* ImageEncoder.hpp in Headers */,
@@ -4735,6 +4925,7 @@
 				F9070CC92B9F175000383E4D /* HashTable.hpp in Headers */,
 				F90706ED2B9DAEC900383E4D /* fmsub.h in Headers */,
 				F90706CD2B9DAEC900383E4D /* avg.h in Headers */,
+				F986F9232BC8441F006A4C0F /* regparse.h in Headers */,
 				F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */,
 				F90706D12B9DAEC900383E4D /* cast.h in Headers */,
 				F9528C852BC05B5B00222F45 /* BMPHeader.hpp in Headers */,
@@ -4834,6 +5025,7 @@
 				F90706C42B9DAEC900383E4D /* pcg_uint128.hpp in Headers */,
 				F90706EA2B9DAEC900383E4D /* fixupimm.h in Headers */,
 				F9070C672B9F175000383E4D /* Logger.ipp in Headers */,
+				F986F9192BC8441F006A4C0F /* oniguruma.h in Headers */,
 				F907072B2B9DAEC900383E4D /* srl.h in Headers */,
 				F9070CB22B9F175000383E4D /* Distribution.hpp in Headers */,
 				F9528C032BBF026F00222F45 /* allocations.h in Headers */,
@@ -5090,6 +5282,7 @@
 				F9070ED72B9F1C8900383E4D /* cocoa_time.c in Sources */,
 				F9528BB82BBF024D00222F45 /* SivCompression.cpp in Sources */,
 				F9070EE62B9F1C8900383E4D /* nsgl_context.m in Sources */,
+				F986F9222BC8441F006A4C0F /* regparse.c in Sources */,
 				F9070B062B9DEB5900383E4D /* simdutf.cpp in Sources */,
 				F986F83C2BC7B043006A4C0F /* SivINISection.cpp in Sources */,
 				F9528C142BBF026F00222F45 /* threading.c in Sources */,
@@ -5100,13 +5293,16 @@
 				F9070DE42B9F175E00383E4D /* SivRandom.cpp in Sources */,
 				F9070E632B9F176B00383E4D /* SivSystem_macOS_Linux.cpp in Sources */,
 				F9070DB22B9F175E00383E4D /* SivBlob.cpp in Sources */,
+				F986F9072BC8441F006A4C0F /* iso8859_2.c in Sources */,
 				F9070DD32B9F175E00383E4D /* SivHSV.cpp in Sources */,
 				F9070DED2B9F175E00383E4D /* SivTextReader.cpp in Sources */,
+				F986F91B2BC8441F006A4C0F /* regenc.c in Sources */,
 				F9070F042B9F1C8900383E4D /* window.c in Sources */,
 				F9070EE52B9F1C8900383E4D /* monitor.c in Sources */,
 				F9070DE82B9F175E00383E4D /* SivStringView.cpp in Sources */,
 				F9528C282BBF026F00222F45 /* zstd_compress.c in Sources */,
 				F9070DB72B9F175E00383E4D /* ConsoleFactory.cpp in Sources */,
+				F986F8BD2BC843FD006A4C0F /* RegExpDetail.cpp in Sources */,
 				F9528BA82BBDA25E00222F45 /* SivMemoryViewReader.cpp in Sources */,
 				F9070DE62B9F175E00383E4D /* Levenshtein.cpp in Sources */,
 				F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */,
@@ -5116,6 +5312,7 @@
 				F9070DD22B9F175E00383E4D /* SivHash.cpp in Sources */,
 				F9070DFC2B9F175E00383E4D /* UserActionFactory.cpp in Sources */,
 				F9070DC62B9F175E00383E4D /* Siv3DEngine.cpp in Sources */,
+				F986F90A2BC8441F006A4C0F /* iso8859_5.c in Sources */,
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
 				F9070ED42B9F1C8900383E4D /* cocoa_joystick.m in Sources */,
 				F9528C862BC05B5B00222F45 /* CImageEncoder.cpp in Sources */,
@@ -5130,26 +5327,36 @@
 				F9070DF72B9F175E00383E4D /* UnicodeUtility.cpp in Sources */,
 				F9528B362BB0567000222F45 /* MemoryMappedFileViewDetail.cpp in Sources */,
 				F9070DDC2B9F175E00383E4D /* SivMonitorInfo.cpp in Sources */,
+				F986F9002BC8441F006A4C0F /* cp1251.c in Sources */,
 				F9070EDB2B9F1C8900383E4D /* egl_context.c in Sources */,
 				F9E5FC462BC1AA820081A4F7 /* SivSIMDMath.cpp in Sources */,
 				F9070DE32B9F175E00383E4D /* SivPoint.cpp in Sources */,
 				F9528C832BC05B5B00222F45 /* BMPDecoder.cpp in Sources */,
+				F986F9102BC8441F006A4C0F /* iso8859_11.c in Sources */,
 				F9070DD12B9F175E00383E4D /* SivFormatUtility.cpp in Sources */,
 				F9070DDF2B9F175E00383E4D /* SivParseBoolExtended.cpp in Sources */,
 				F9070DAD2B9F175E00383E4D /* _TEMPLATE.cpp in Sources */,
+				F986F91E2BC8441F006A4C0F /* regexec.c in Sources */,
 				F9528C3E2BBF026F00222F45 /* zstd_decompress.c in Sources */,
+				F986F9142BC8441F006A4C0F /* iso8859_16.c in Sources */,
+				F986F90D2BC8441F006A4C0F /* iso8859_8.c in Sources */,
 				F9528C3F2BBF026F00222F45 /* cover.c in Sources */,
+				F986F9082BC8441F006A4C0F /* iso8859_3.c in Sources */,
 				F9070DE22B9F175E00383E4D /* SivParseInt.cpp in Sources */,
+				F986F9122BC8441F006A4C0F /* iso8859_14.c in Sources */,
 				F9E5FCEB2BC59EB50081A4F7 /* SivJSONIterator.cpp in Sources */,
+				F986F9352BC8441F006A4C0F /* utf16_be.c in Sources */,
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
 				F9528C2E2BBF026F00222F45 /* zstd_lazy.c in Sources */,
 				F9070EF02B9F1C8900383E4D /* posix_module.c in Sources */,
 				F9528B7C2BB708A700222F45 /* SivLicenseManager.cpp in Sources */,
+				F986F90C2BC8441F006A4C0F /* iso8859_7.c in Sources */,
 				F9528B7B2BB708A700222F45 /* LicenseManagerFactory.cpp in Sources */,
 				F9528C412BBF026F00222F45 /* divsufsort.c in Sources */,
 				F9528B652BB6DC9200222F45 /* SivCycleClock.cpp in Sources */,
 				F9070DB32B9F175E00383E4D /* SivBoolToString.cpp in Sources */,
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
+				F986F9292BC8441F006A4C0F /* st.c in Sources */,
 				F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */,
 				F9070F362B9F252E00383E4D /* null_joystick.c in Sources */,
 				F9528C842BC05B5B00222F45 /* BMPEncoder.cpp in Sources */,
@@ -5163,12 +5370,16 @@
 				F9528B662BB6DC9200222F45 /* SivMillisecClock.cpp in Sources */,
 				F986F89B2BC7FB4D006A4C0F /* SivColormap.cpp in Sources */,
 				F9070DCF2B9F175E00383E4D /* SivFmtExtension.cpp in Sources */,
+				F986F90B2BC8441F006A4C0F /* iso8859_6.c in Sources */,
 				F9070DE12B9F175E00383E4D /* SivParseFloat.cpp in Sources */,
 				F9070AF02B9DEB5900383E4D /* gaussian_distribution.cc in Sources */,
+				F986F9172BC8441F006A4C0F /* onig_init.c in Sources */,
 				F9070DEC2B9F175E00383E4D /* SivTextEncoding.cpp in Sources */,
+				F986F8BF2BC843FD006A4C0F /* SivRegExp.cpp in Sources */,
 				F9E5FCDB2BC3AD820081A4F7 /* SivJSON.cpp in Sources */,
 				F9528C822BC05B5B00222F45 /* SivIImageDecoder.cpp in Sources */,
 				F9528B9D2BBC771000222F45 /* SivPoint3D.cpp in Sources */,
+				F986F9382BC8441F006A4C0F /* utf32_le.c in Sources */,
 				F9070AFC2B9DEB5900383E4D /* fixed-dtoa.cc in Sources */,
 				F9070DFE2B9F175E00383E4D /* SivVector2D.cpp in Sources */,
 				F9070DE72B9F175E00383E4D /* SivString.cpp in Sources */,
@@ -5178,9 +5389,12 @@
 				F9070DDB2B9F175E00383E4D /* SivMD5Value.cpp in Sources */,
 				F9070DBA2B9F175E00383E4D /* SivConsoleBuffer.cpp in Sources */,
 				F9070AEE2B9DEB5900383E4D /* int128.cc in Sources */,
+				F986F9252BC8441F006A4C0F /* regtrav.c in Sources */,
 				F9070E8F2B9F183100383E4D /* CWindow.mm in Sources */,
 				F9070DC12B9F175E00383E4D /* CEmpty.cpp in Sources */,
+				F986F91A2BC8441F006A4C0F /* regcomp.c in Sources */,
 				F9070DD02B9F175E00383E4D /* SivFormatter.cpp in Sources */,
+				F986F8FD2BC8441F006A4C0F /* ascii.c in Sources */,
 				F9070E602B9F176B00383E4D /* SivFileSystem_macOS_Linux.cpp in Sources */,
 				F9528C2A2BBF026F00222F45 /* zstd_double_fast.c in Sources */,
 				F9070E5E2B9F176B00383E4D /* SivDate_macOS_Linux.cpp in Sources */,
@@ -5192,6 +5406,7 @@
 				F9070EDE2B9F1C8900383E4D /* glx_context.c in Sources */,
 				F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */,
 				F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */,
+				F986F92E2BC8441F006A4C0F /* unicode_fold2_key.c in Sources */,
 				F9070DBE2B9F175E00383E4D /* SivDayOfWeek.cpp in Sources */,
 				F9528B6E2BB7089A00222F45 /* CacheDirectory.cpp in Sources */,
 				F9070AFA2B9DEB5900383E4D /* fast-dtoa.cc in Sources */,
@@ -5205,14 +5420,18 @@
 				F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */,
 				F9070AEF2B9DEB5900383E4D /* discrete_distribution.cc in Sources */,
 				F9070EF32B9F1C8900383E4D /* posix_thread.c in Sources */,
+				F986F8FE2BC8441F006A4C0F /* big5.c in Sources */,
 				F9070DB52B9F175E00383E4D /* SivColor.cpp in Sources */,
 				F9528C0B2BBF026F00222F45 /* error_private.c in Sources */,
 				F9070DD92B9F175E00383E4D /* SivLogger.cpp in Sources */,
 				F9528C0D2BBF026F00222F45 /* fse_decompress.c in Sources */,
+				F986F9112BC8441F006A4C0F /* iso8859_13.c in Sources */,
 				F9E5FC242BC13CD00081A4F7 /* JPEGEncoder.cpp in Sources */,
 				F986F83A2BC7B043006A4C0F /* SivINIItem.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
+				F986F9132BC8441F006A4C0F /* iso8859_15.c in Sources */,
+				F986F9342BC8441F006A4C0F /* utf8.c in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
 				F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */,
 				F9528C2C2BBF026F00222F45 /* zstd_fast.c in Sources */,
@@ -5220,12 +5439,15 @@
 				F9070DF92B9F175E00383E4D /* CUserAction.cpp in Sources */,
 				F9070DB62B9F175E00383E4D /* SivColorF.cpp in Sources */,
 				F9070DC32B9F175E00383E4D /* EmptyFactory.cpp in Sources */,
+				F986F9052BC8441F006A4C0F /* gb18030.c in Sources */,
 				F9070ED52B9F1C8900383E4D /* cocoa_monitor.m in Sources */,
 				F9528B182BAC58D500222F45 /* SivStringView_SIMD.cpp in Sources */,
+				F986F9262BC8441F006A4C0F /* regversion.c in Sources */,
 				F9070DDA2B9F175E00383E4D /* SivLoggerBuffer.cpp in Sources */,
 				F9070E552B9F176B00383E4D /* SivFileSystem_macOS.mm in Sources */,
 				F9070E912B9F183100383E4D /* CSystem.cpp in Sources */,
 				F9070DB12B9F175E00383E4D /* SivBinaryWriter.cpp in Sources */,
+				F986F91F2BC8441F006A4C0F /* regext.c in Sources */,
 				F9070DC82B9F175E00383E4D /* SivEngineLog.cpp in Sources */,
 				F9070DE52B9F175E00383E4D /* SivRect.cpp in Sources */,
 				F9528B232BAFB68400222F45 /* SivBase64Value.cpp in Sources */,
@@ -5240,6 +5462,8 @@
 				F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */,
 				F9070EF52B9F1C8900383E4D /* posix_time.c in Sources */,
 				F9070DD52B9F175E00383E4D /* SivIntFormatter.cpp in Sources */,
+				F986F9332BC8441F006A4C0F /* unicode.c in Sources */,
+				F986F92D2BC8441F006A4C0F /* unicode_fold1_key.c in Sources */,
 				F9070EDA2B9F1C8900383E4D /* context.c in Sources */,
 				F9070E022B9F175E00383E4D /* WindowFactory.cpp in Sources */,
 				F9528C222BBF026F00222F45 /* zstd_compress_literals.c in Sources */,
@@ -5248,23 +5472,31 @@
 				F9070E5C2B9F176B00383E4D /* CConsole.cpp in Sources */,
 				F9070DF32B9F175E00383E4D /* SivThousandSeparate.cpp in Sources */,
 				F9070EDF2B9F1C8900383E4D /* init.c in Sources */,
+				F986F9312BC8441F006A4C0F /* unicode_unfold_key.c in Sources */,
 				F9070DEE2B9F175E00383E4D /* TextReaderDetail.cpp in Sources */,
 				F9070ED92B9F1C8900383E4D /* cocoa_window.m in Sources */,
 				F9528C202BBF026F00222F45 /* huf_compress.c in Sources */,
 				F9070DD42B9F175E00383E4D /* SivInt128.cpp in Sources */,
+				F986F9152BC8441F006A4C0F /* koi8_r.c in Sources */,
 				F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */,
 				F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */,
 				F9070AF52B9DEB5900383E4D /* cached-powers.cc in Sources */,
 				F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */,
+				F986F9362BC8441F006A4C0F /* utf16_le.c in Sources */,
 				F9070DCD2B9F175E00383E4D /* SivFloatFormatter.cpp in Sources */,
 				F9070E572B9F176B00383E4D /* Siv3DMain.cpp in Sources */,
 				F9528C1E2BBF026F00222F45 /* hist.c in Sources */,
+				F986F90E2BC8441F006A4C0F /* iso8859_9.c in Sources */,
 				F9528C382BBF026F00222F45 /* huf_decompress.c in Sources */,
 				F9528B642BB6DC9200222F45 /* SivMicrosecClock.cpp in Sources */,
 				F9070DB02B9F175E00383E4D /* SivBinaryReader.cpp in Sources */,
 				F9070DCE2B9F175E00383E4D /* SivFloatToString.cpp in Sources */,
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,
+				F986F9242BC8441F006A4C0F /* regsyntax.c in Sources */,
+				F986F90F2BC8441F006A4C0F /* iso8859_10.c in Sources */,
 				F9528C332BBF026F00222F45 /* zstd_opt.c in Sources */,
+				F986F91D2BC8441F006A4C0F /* regerror.c in Sources */,
+				F986F9202BC8441F006A4C0F /* reggnu.c in Sources */,
 				F9E5FC232BC13CD00081A4F7 /* JPEGDecoder.cpp in Sources */,
 				F9070DDE2B9F175E00383E4D /* SivParseBool.cpp in Sources */,
 				F9528C392BBF026F00222F45 /* zstd_ddict.c in Sources */,
@@ -5273,7 +5505,9 @@
 				F9528C8B2BC05B5B00222F45 /* CImageDecoder.cpp in Sources */,
 				F9070E002B9F175E00383E4D /* SivVector4D.cpp in Sources */,
 				F9528B302BB0562C00222F45 /* SivMemoryMappedFileView.cpp in Sources */,
+				F986F9062BC8441F006A4C0F /* iso8859_1.c in Sources */,
 				F986F8AD2BC806BF006A4C0F /* SivExif.cpp in Sources */,
+				F986F92F2BC8441F006A4C0F /* unicode_fold3_key.c in Sources */,
 				F9528C162BBF026F00222F45 /* xxhash.c in Sources */,
 				F9070DB42B9F175E00383E4D /* SivByte.cpp in Sources */,
 				F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */,
@@ -5288,8 +5522,10 @@
 				F9070DCA2B9F175E00383E4D /* SivEscapedFormatter.cpp in Sources */,
 				F986F83B2BC7B043006A4C0F /* SivINI.cpp in Sources */,
 				F9070DD82B9F175E00383E4D /* LoggerFactory.cpp in Sources */,
+				F986F9092BC8441F006A4C0F /* iso8859_4.c in Sources */,
 				F9528C262BBF026F00222F45 /* zstd_compress_superblock.c in Sources */,
 				F9070DBD2B9F175E00383E4D /* SivDateTime.cpp in Sources */,
+				F986F9372BC8441F006A4C0F /* utf32_be.c in Sources */,
 				F9528C372BBF026F00222F45 /* huf_decompress_amd64.S in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5534,6 +5770,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -5607,6 +5844,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
