@@ -26,14 +26,14 @@ namespace s3d
 			}
 
 			const UChar* pString = reinterpret_cast<const UChar*>(s.data());
-			const size_t stringLength = (s.size() * sizeof(char32_t));
+			const size_t stringLength = (s.size() * sizeof(char32));
 
 			const unsigned char* pStart = pString;
 			const unsigned char* pEnd = pString + stringLength;
 			const unsigned char* pRange = pEnd;
 
 			OnigRegion* region = ::onig_region_new();
-			ScopeExit sg = [=]() { ::onig_region_free(region, 1); };
+			ScopeExit cleanup = [=]() { ::onig_region_free(region, 1); };
 
 			const int r = search ? ::onig_match(regex, pString, pEnd, pStart, region, ONIG_OPTION_NONE)
 				: ::onig_search(regex, pString, pEnd, pStart, pRange, region, ONIG_OPTION_NONE);
@@ -51,32 +51,25 @@ namespace s3d
 						continue;
 					}
 
-					const size_t begIndex = (region->beg[i] / sizeof(char32_t));
-					const size_t endIndex = (region->end[i] / sizeof(char32_t));
+					const size_t begIndex = (region->beg[i] / sizeof(char32));
+					const size_t endIndex = (region->end[i] / sizeof(char32));
 					const size_t length = (endIndex - begIndex);
 					matches.push_back(s.substr(begIndex, length));
 				}
 
 				return MatchResults(std::move(matches));
 			}
-			else if (r == ONIG_MISMATCH)
-			{
-				return{};
-			}
 			else
 			{
-				// error
 				return{};
 			}
 		}
 	}
 
-	RegExp::RegExpDetail::RegExpDetail() {}
-
 	RegExp::RegExpDetail::RegExpDetail(const StringView pattern)
 	{
 		const UChar* pPattern = reinterpret_cast<const UChar*>(pattern.data());
-		const size_t patternLength = (pattern.size() * sizeof(char32_t));
+		const size_t patternLength = (pattern.size() * sizeof(char32));
 
 		OnigErrorInfo error;
 		if (const int r = ::onig_new(&m_regex, pPattern, pPattern + patternLength,
@@ -114,29 +107,24 @@ namespace s3d
 		}
 
 		const UChar* pString = reinterpret_cast<const UChar*>(s.data());
-		const size_t stringLength = (s.size() * sizeof(char32_t));
+		const size_t stringLength = (s.size() * sizeof(char32));
 
 		const unsigned char* pStart = pString;
 		const unsigned char* pEnd = pString + stringLength;
 
 		OnigRegion* region = ::onig_region_new();
+		ScopeExit cleanup = [=]() { ::onig_region_free(region, 1); };
+
 		const int r = ::onig_match(m_regex, pString, pEnd, pStart, region, ONIG_OPTION_NONE);
 
-		ScopeExit sg = [=]() { ::onig_region_free(region, 1); };
-
-		if (r >= 0)
+		if (0 <= r)
 		{
-			const size_t begIndex = (region->beg[0] / sizeof(char32_t));
-			const size_t endIndex = (region->end[0] / sizeof(char32_t));
+			const size_t begIndex = (region->beg[0] / sizeof(char32));
+			const size_t endIndex = (region->end[0] / sizeof(char32));
 			return ((begIndex == 0) && (endIndex == s.size()));
-		}
-		else if (r == ONIG_MISMATCH)
-		{
-			return false;
 		}
 		else
 		{
-			// error
 			return false;
 		}
 	}
@@ -159,7 +147,7 @@ namespace s3d
 		}
 
 		const UChar* pString = reinterpret_cast<const UChar*>(s.data());
-		const size_t stringLength = (s.size() * sizeof(char32_t));
+		const size_t stringLength = (s.size() * sizeof(char32));
 
 		const unsigned char* pStart = pString;
 		const unsigned char* pPreviousStart = pStart;
@@ -167,7 +155,7 @@ namespace s3d
 		const unsigned char* pRange = pEnd;
 
 		OnigRegion* region = ::onig_region_new();
-		ScopeExit sg = [=]() { ::onig_region_free(region, 1); };
+		ScopeExit cleanup = [=]() { ::onig_region_free(region, 1); };
 
 		Array<MatchResults> results;
 
@@ -177,7 +165,7 @@ namespace s3d
 
 			const int r = ::onig_search(m_regex, pString, pEnd, pStart, pRange, region, ONIG_OPTION_NONE);
 
-			if (r >= 0)
+			if (0 <= r)
 			{
 				for (int32 i = 0; i < region->num_regs; ++i)
 				{
@@ -188,16 +176,16 @@ namespace s3d
 						continue;
 					}
 
-					const size_t begIndex = (region->beg[i] / sizeof(char32_t));
-					const size_t endIndex = (region->end[i] / sizeof(char32_t));
+					const size_t begIndex = (region->beg[i] / sizeof(char32));
+					const size_t endIndex = (region->end[i] / sizeof(char32));
 					const size_t length = (endIndex - begIndex);
 					matches.push_back(s.substr(begIndex, length));
 				}
 
 				results.push_back(MatchResults{ std::move(matches) });
 
-				const size_t begIndex0 = (region->beg[0] / sizeof(char32_t));
-				const size_t endIndex0 = (region->end[0] / sizeof(char32_t));
+				const size_t begIndex0 = (region->beg[0] / sizeof(char32));
+				const size_t endIndex0 = (region->end[0] / sizeof(char32));
 				const size_t length0 = (endIndex0 - begIndex0);
 				pStart = pString + (begIndex0 + length0) * sizeof(char32);
 
@@ -208,14 +196,96 @@ namespace s3d
 
 				pPreviousStart = pStart;
 			}
-			else if (r == ONIG_MISMATCH)
+			else
 			{
 				return results;
 			}
+		}
+	}
+
+	String RegExp::RegExpDetail::replaceFirst(const StringView s, const StringView replacement) const
+	{
+		if (not isValid())
+		{
+			return{};
+		}
+
+		const UChar* pString = reinterpret_cast<const UChar*>(s.data());
+		const size_t stringLength = (s.size() * sizeof(char32));
+
+		const unsigned char* pStart = pString;
+		const unsigned char* pEnd = pString + stringLength;
+		const unsigned char* pRange = pEnd;
+
+		OnigRegion* region = ::onig_region_new();
+		ScopeExit cleanup = [=]() { ::onig_region_free(region, 1); };
+
+		const int r = ::onig_search(m_regex, pString, pEnd, pStart, pRange, region, ONIG_OPTION_NONE);
+
+		if (0 <= r)
+		{
+			const size_t begIndex = (region->beg[0] / sizeof(char32));
+			const size_t endIndex = (region->end[0] / sizeof(char32));
+			const size_t length = (endIndex - begIndex);
+
+			String result = s.substr(0, begIndex).toString();
+			result.append(replacement);
+			result.append(s.substr(begIndex + length));
+
+			return result;
+		}
+		else
+		{
+			return s.toString();
+		}
+	}
+
+	String RegExp::RegExpDetail::replaceAll(const StringView s, const StringView replacement) const
+	{
+		if (not isValid())
+		{
+			return{};
+		}
+
+		const UChar* pString = reinterpret_cast<const UChar*>(s.data());
+		const size_t stringLength = (s.size() * sizeof(char32));
+
+		const unsigned char* pStart = pString;
+		const unsigned char* pPreviousStart = pStart;
+		const unsigned char* pEnd = pString + stringLength;
+		const unsigned char* pRange = pEnd;
+
+		OnigRegion* region = ::onig_region_new();
+		ScopeExit cleanup = [=]() { ::onig_region_free(region, 1); };
+
+		String result;
+
+		for (;;)
+		{
+			const int r = ::onig_search(m_regex, pString, pEnd, pStart, pRange, region, ONIG_OPTION_NONE);
+
+			if (0 <= r)
+			{
+				const size_t begIndex = (region->beg[0] / sizeof(char32));
+				const size_t endIndex = (region->end[0] / sizeof(char32));
+				const size_t length = (endIndex - begIndex);
+
+				result.append(s.substr(((pPreviousStart - pString) / sizeof(char32)), (begIndex - (pPreviousStart - pString) / sizeof(char32))));
+				result.append(replacement);
+
+				pStart = (pString + (begIndex + length) * sizeof(char32));
+
+				if (pStart == pPreviousStart)
+				{
+					pStart += sizeof(char32);
+				}
+
+				pPreviousStart = pStart;
+			}
 			else
 			{
-				// error
-				return{};
+				result.append(s.substr((pPreviousStart - pString) / sizeof(char32)));
+				return result;
 			}
 		}
 	}

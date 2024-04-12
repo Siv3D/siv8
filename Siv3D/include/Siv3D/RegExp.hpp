@@ -65,6 +65,20 @@ namespace s3d
 		[[nodiscard]]
 		Array<MatchResults> findAll(StringView s) const;
 
+		/// @brief 文字列内で正規表現パターンにマッチする最初の部分文字列を置換します。
+		/// @param s 文字列
+		/// @param replacement マッチした部分文字列を置換する文字列
+		/// @return 置換後の文字列
+		[[nodiscard]]
+		String replaceFirst(StringView s, StringView replacement) const;
+
+		/// @brief 文字列内で正規表現パターンにマッチするすべての部分文字列を置換します。
+		/// @param s 文字列
+		/// @param replacement マッチした部分文字列を置換する文字列
+		/// @return 置換後の文字列
+		[[nodiscard]]
+		String replaceAll(StringView s, StringView replacement) const;
+
 	private:
 
 		class RegExpDetail;

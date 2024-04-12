@@ -51,6 +51,16 @@ namespace s3d
 		return pImpl->findAll(s);
 	}
 
+	String RegExp::replaceFirst(const StringView s, const StringView replacement) const
+	{
+		return pImpl->replaceFirst(s, replacement);
+	}
+
+	String RegExp::replaceAll(const StringView s, const StringView replacement) const
+	{
+		return pImpl->replaceAll(s, replacement);
+	}
+
 	inline namespace Literals
 	{
 		inline namespace RegExpLiterals

@@ -19,7 +19,7 @@ namespace s3d
 	{
 	public:
 
-		RegExpDetail();
+		RegExpDetail() = default;
 
 		explicit RegExpDetail(StringView pattern);
 
@@ -39,6 +39,12 @@ namespace s3d
 
 		[[nodiscard]]
 		Array<MatchResults> findAll(StringView s) const;
+
+		[[nodiscard]]
+		String replaceFirst(StringView s, StringView replacement) const;
+
+		[[nodiscard]]
+		String replaceAll(StringView s, StringView replacement) const;
 
 	private:
 
