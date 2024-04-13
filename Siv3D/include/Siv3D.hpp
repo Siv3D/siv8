@@ -608,9 +608,6 @@
 // 数学関数 | Math functions
 # include <Siv3D/Math.hpp> // ToDo
 
-// 数学関数 (BigInt, BigFloat) | Math functions (BigInt, BigFloat)
-# include <Siv3D/BigNumMath.hpp>
-
 // 精度を落とした高速な数学関数 | Fast math functions
 # include <Siv3D/FastMath.hpp>
 

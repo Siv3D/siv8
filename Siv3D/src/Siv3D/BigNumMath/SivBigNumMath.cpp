@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include <Siv3D/Math.hpp>
-# include <Siv3D/BigNumMath.hpp>
 # include <Siv3D/BigInt.hpp>
 # include <Siv3D/BigFloat.hpp>
 # include <Siv3D/BigInt/BigIntDetail.hpp>
@@ -37,9 +36,29 @@ namespace s3d
 
 			//////////////////////////////////////////////////
 			//
+			//	Fraction_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Fraction_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = (x._detail().value - boost::multiprecision::floor(x._detail().value));
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
 			//	Frexp_impl
 			//
 			//////////////////////////////////////////////////
+
+			BigFloat Frexp_impl::operator ()(const BigFloat& x, int32& exp) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::frexp(x._detail().value, &exp);
+				return result;
+			}
 
 			//////////////////////////////////////////////////
 			//
@@ -102,19 +121,7 @@ namespace s3d
 			}
 		}
 
-		BigFloat Fraction(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = (x._detail().value - boost::multiprecision::floor(x._detail().value));
-			return result;
-		}
 
-		BigFloat Frexp(const BigFloat& x, int32& exp)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::frexp(x._detail().value, &exp);
-			return result;
-		}
 
 		BigFloat Ldexp(const BigFloat& x, const BigFloat& y)
 		{

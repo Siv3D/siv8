@@ -87,9 +87,129 @@ namespace s3d
 
 			//////////////////////////////////////////////////
 			//
+			//	Fraction_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct Fraction_impl
+			{
+				[[nodiscard]]
+				float operator ()(const float x) const noexcept
+				{
+					return (x - std::floor(x));
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x) const noexcept
+				{
+					return (x - std::floor(x));
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)), (v.z - std::floor(v.z)) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)), (v.z - std::floor(v.z)) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)), (v.z - std::floor(v.z)), (v.w - std::floor(v.w)) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)), (v.z - std::floor(v.z)), (v.w - std::floor(v.w)) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
 			//	Frexp_impl
 			//
 			//////////////////////////////////////////////////
+
+			struct Frexp_impl
+			{
+				[[nodiscard]]
+				float operator ()(const float x, float& exp) const noexcept
+				{
+					int32 e;
+					const auto t = std::frexp(x, &e);
+					exp = static_cast<float>(e);
+					return t;
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x, double& exp) const noexcept
+				{
+					int32 e;
+					const auto t = std::frexp(x, &e);
+					exp = static_cast<double>(e);
+					return t;
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v, Float2& exp) const noexcept
+				{
+					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v, Vec2& exp) const noexcept
+				{
+					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v, Float3& exp) const noexcept
+				{
+					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y), operator ()(v.z, exp.z) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v, Vec3& exp) const noexcept
+				{
+					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y), operator ()(v.z, exp.z) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v, Float4& exp) const noexcept
+				{
+					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y), operator ()(v.z, exp.z), operator ()(v.w, exp.w) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v, Vec4& exp) const noexcept
+				{
+					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y), operator ()(v.z, exp.z), operator ()(v.w, exp.w) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x, int32& exp) const;
+			};
 
 			//////////////////////////////////////////////////
 			//
@@ -162,39 +282,39 @@ namespace s3d
 				}
 
 				[[nodiscard]]
-				Float2 operator ()(const Float2 x) const noexcept
+				Float2 operator ()(const Float2 v) const noexcept
 				{
-					return{ std::sqrt(x.x), std::sqrt(x.y) };
+					return{ std::sqrt(v.x), std::sqrt(v.y) };
 				}
 
 				[[nodiscard]]
-				Vec2 operator ()(const Vec2 x) const noexcept
+				Vec2 operator ()(const Vec2 v) const noexcept
 				{
-					return{ std::sqrt(x.x), std::sqrt(x.y) };
+					return{ std::sqrt(v.x), std::sqrt(v.y) };
 				}
 
 				[[nodiscard]]
-				Float3 operator ()(const Float3 x) const noexcept
+				Float3 operator ()(const Float3 v) const noexcept
 				{
-					return{ std::sqrt(x.x), std::sqrt(x.y), std::sqrt(x.z) };
+					return{ std::sqrt(v.x), std::sqrt(v.y), std::sqrt(v.z) };
 				}
 
 				[[nodiscard]]
-				Vec3 operator ()(const Vec3 x) const noexcept
+				Vec3 operator ()(const Vec3 v) const noexcept
 				{
-					return{ std::sqrt(x.x), std::sqrt(x.y), std::sqrt(x.z) };
+					return{ std::sqrt(v.x), std::sqrt(v.y), std::sqrt(v.z) };
 				}
 
 				[[nodiscard]]
-				Float4 operator ()(const Float4 x) const noexcept
+				Float4 operator ()(const Float4 v) const noexcept
 				{
-					return{ std::sqrt(x.x), std::sqrt(x.y), std::sqrt(x.z), std::sqrt(x.w) };
+					return{ std::sqrt(v.x), std::sqrt(v.y), std::sqrt(v.z), std::sqrt(v.w) };
 				}
 
 				[[nodiscard]]
-				Vec4 operator ()(const Vec4 x) const noexcept
+				Vec4 operator ()(const Vec4 v) const noexcept
 				{
-					return{ std::sqrt(x.x), std::sqrt(x.y), std::sqrt(x.z), std::sqrt(x.w) };
+					return{ std::sqrt(v.x), std::sqrt(v.y), std::sqrt(v.z), std::sqrt(v.w) };
 				}
 
 				[[nodiscard]]
