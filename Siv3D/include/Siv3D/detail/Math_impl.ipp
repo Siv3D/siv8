@@ -217,11 +217,125 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
+			struct Ldexp_impl
+			{
+				[[nodiscard]]
+				float operator ()(const float x, const float exp) const noexcept
+				{
+					return (x * std::exp2(exp));
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x, const double exp) const noexcept
+				{
+					return (x * std::exp2(exp));
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v, const Float2 exp) const noexcept
+				{
+					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v, const Vec2 exp) const noexcept
+				{
+					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v, const Float3 exp) const noexcept
+				{
+					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)), (v.z * std::exp2(exp.z)) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v, const Vec3 exp) const noexcept
+				{
+					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)), (v.z * std::exp2(exp.z)) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v, const Float4 exp) const noexcept
+				{
+					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)), (v.z * std::exp2(exp.z)), (v.w * std::exp2(exp.w)) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v, const Vec4 exp) const noexcept
+				{
+					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)), (v.z * std::exp2(exp.z)), (v.w * std::exp2(exp.w)) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x, const BigFloat& exp) const;
+			};
+
 			//////////////////////////////////////////////////
 			//
 			//	Log_impl
 			//
 			//////////////////////////////////////////////////
+
+			struct Log_impl
+			{
+				[[nodiscard]]
+				double operator ()(const Concept::Integral auto x) const noexcept
+				{
+					return std::log(static_cast<double>(x));
+				}
+
+				[[nodiscard]]
+				float operator ()(const float x) const noexcept
+				{
+					return std::log(x);
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x) const noexcept
+				{
+					return std::log(x);
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ std::log(v.x), std::log(v.y) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ std::log(v.x), std::log(v.y) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ std::log(v.x), std::log(v.y), std::log(v.z) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ std::log(v.x), std::log(v.y), std::log(v.z) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ std::log(v.x), std::log(v.y), std::log(v.z), std::log(v.w) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ std::log(v.x), std::log(v.y), std::log(v.z), std::log(v.w) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
 
 			//////////////////////////////////////////////////
 			//
@@ -229,11 +343,131 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
+			struct Log2_impl
+			{
+				[[nodiscard]]
+				double operator ()(const Concept::Integral auto x) const noexcept
+				{
+					return std::log2(static_cast<double>(x));
+				}
+
+				[[nodiscard]]
+				float operator ()(const float x) const noexcept
+				{
+					return std::log2(x);
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x) const noexcept
+				{
+					return std::log2(x);
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ std::log2(v.x), std::log2(v.y) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ std::log2(v.x), std::log2(v.y) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ std::log2(v.x), std::log2(v.y), std::log2(v.z) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ std::log2(v.x), std::log2(v.y), std::log2(v.z) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ std::log2(v.x), std::log2(v.y), std::log2(v.z), std::log2(v.w) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ std::log2(v.x), std::log2(v.y), std::log2(v.z), std::log2(v.w) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
+
 			//////////////////////////////////////////////////
 			//
 			//	Log10_impl
 			//
 			//////////////////////////////////////////////////
+
+			struct Log10_impl
+			{
+				[[nodiscard]]
+				double operator ()(const Concept::Integral auto x) const noexcept
+				{
+					return std::log10(static_cast<double>(x));
+				}
+
+				[[nodiscard]]
+				float operator ()(const float x) const noexcept
+				{
+					return std::log10(x);
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x) const noexcept
+				{
+					return std::log10(x);
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ std::log10(v.x), std::log10(v.y) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ std::log10(v.x), std::log10(v.y) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ std::log10(v.x), std::log10(v.y), std::log10(v.z) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ std::log10(v.x), std::log10(v.y), std::log10(v.z) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ std::log10(v.x), std::log10(v.y), std::log10(v.z), std::log10(v.w) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ std::log10(v.x), std::log10(v.y), std::log10(v.z), std::log10(v.w) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
 
 			//////////////////////////////////////////////////
 			//

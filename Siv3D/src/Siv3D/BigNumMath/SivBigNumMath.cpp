@@ -66,11 +66,25 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
+			BigFloat Ldexp_impl::operator ()(const BigFloat& x, const BigFloat& exp) const
+			{
+				BigFloat result;
+				result._detail().value = (x._detail().value * boost::multiprecision::exp2(exp._detail().value));
+				return result;
+			}
+
 			//////////////////////////////////////////////////
 			//
 			//	Log_impl
 			//
 			//////////////////////////////////////////////////
+
+			BigFloat Log_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::log(x._detail().value);
+				return result;
+			}
 
 			//////////////////////////////////////////////////
 			//
@@ -78,11 +92,25 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
+			BigFloat Log2_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::log2(x._detail().value);
+				return result;
+			}
+
 			//////////////////////////////////////////////////
 			//
 			//	Log10_impl
 			//
 			//////////////////////////////////////////////////
+
+			BigFloat Log10_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::log10(x._detail().value);
+				return result;
+			}
 
 			//////////////////////////////////////////////////
 			//
@@ -121,35 +149,6 @@ namespace s3d
 			}
 		}
 
-
-
-		BigFloat Ldexp(const BigFloat& x, const BigFloat& y)
-		{
-			BigFloat result;
-			result._detail().value = (x._detail().value * boost::multiprecision::pow(2, y._detail().value));
-			return result;
-		}
-
-		BigFloat Log(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::log(x._detail().value);
-			return result;
-		}
-
-		BigFloat Log2(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::log2(x._detail().value);
-			return result;
-		}
-
-		BigFloat Log10(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::log10(x._detail().value);
-			return result;
-		}
 
 		BigFloat Modf(const BigFloat& x, BigFloat& exp)
 		{
