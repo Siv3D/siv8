@@ -132,6 +132,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Stopwatch.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\String.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SVG.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextEncoding.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextReader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextWriter.ipp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\JPEGEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\PNGDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\PNGEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\SVGDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImagePixelFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\INI.hpp" />
@@ -282,6 +284,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Stopwatch.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\String.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringView.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SVG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\System.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEncoding.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextReader.hpp" />
@@ -370,6 +373,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseList.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.hpp" />
@@ -403,6 +407,27 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\fast_float\fast_float.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\fmt\format-inl.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\levenshtein-sse\levenshtein-sse.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\canvas.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\clippathelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\defselement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\element.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\gelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\geometryelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\graphicselement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\layoutcontext.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\lunasvg.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\markerelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\maskelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\paintelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\parser.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\parserutils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\property.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\stopelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\styledelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\styleelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svgelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\symbolelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\useelement.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\miniutf\miniutf.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\config.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\oniggnu.h" />
@@ -411,6 +436,12 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\regint.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\regparse.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\st.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-math.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-raster.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-stroker.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-types.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-private.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\RFC1321\RFC1321.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\stduuid\uuid.h" />
@@ -541,6 +572,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\JPEG\JPEGEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\PNG\PNGDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\PNG\PNGEncoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\SVG\SVGDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INIItem\SivINIItem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INISection\SivINISection.cpp" />
@@ -584,6 +616,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView_SIMD.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\Levenshtein.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SVG\SivSVG.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SivSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SystemFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEncoding\SivTextEncoding.cpp" />
@@ -619,6 +653,41 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\easyexif\exif.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\fmt\format.cc" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\canvas.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\clippathelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\defselement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\element.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\gelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\geometryelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\graphicselement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\layoutcontext.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\lunasvg.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\markerelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\maskelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\paintelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\parser.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\property.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\stopelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\styledelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\styleelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\symbolelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\useelement.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\ascii.c">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
@@ -791,6 +860,21 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-blend.c">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-dash.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-math.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-raster.c">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level2</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-stroker.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-geometry.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-paint.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-rle.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp">
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4127; 4310; 4505</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4127; 4310; 4505</DisableSpecificWarnings>

@@ -31,4 +31,7 @@ namespace s3d
 	
 	/// @brief アスキー文字のみになるよう変換する
 	using EnsureAscii		= YesNo<struct EnsureAscii_tag>;
+
+	/// @brief 乗算済みアルファを使用する
+	using PremultiplyAlpha	= YesNo<struct PremultiplyAlpha_tag>;
 }

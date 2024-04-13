@@ -18,12 +18,14 @@ Name | Version
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
+[lunasvg](https://github.com/sammycage/lunasvg) | v2.3.9
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
+[plutovg](https://github.com/sammycage/plutovg) | 
 [simde](https://github.com/nemequ/simde) | v0.8.0
 [simdutf](https://github.com/simdutf/simdutf) | Version 5.2.2
 [stduuid](https://github.com/mariusbancila/stduuid) | 

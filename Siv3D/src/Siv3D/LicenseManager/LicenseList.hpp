@@ -362,6 +362,12 @@ be appreciated.)-"
 },
 
 {
+R"-(lunasvg)-",
+R"-(Copyright (c) 2020 Nwutobo Samuel Ugochukwu <sammycageagle@gmail.com>)-",
+MIT_LICENSE
+},
+
+{
 R"-(mimalloc)-",
 R"-(Copyright (c) 2018-2021 Microsoft Corporation, Daan Leijen)-",
 MIT_LICENSE
@@ -389,6 +395,12 @@ BSD_2_LICENSE
 {
 R"-(pcg-cpp)-",
 R"-(Copyright (c) 2014-2017 Melissa O'Neill and PCG Project contributors)-",
+MIT_LICENSE
+},
+
+{
+R"-(plutovg)-",
+R"-(Copyright (c) 2020 Nwutobo Samuel Ugochukwu)-",
 MIT_LICENSE
 },
 
