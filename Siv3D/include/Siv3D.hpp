@@ -1200,10 +1200,10 @@
 //# include <Siv3D/ImageFormat/PPMEncoder.hpp>
 //
 //# include <Siv3D/ImageFormat/SVGDecoder.hpp>
-//
-//// SVG 画像 | SVG image
-//# include <Siv3D/SVG.hpp>
-//
+
+// SVG 画像 | SVG image
+# include <Siv3D/SVG.hpp> // ToDo
+
 //// アニメーション　GIF の読み込み | Animated GIF reader
 //# include <Siv3D/AnimatedGIFReader.hpp>
 //
