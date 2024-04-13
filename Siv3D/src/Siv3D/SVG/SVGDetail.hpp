@@ -33,7 +33,7 @@ namespace s3d
 		void clear();
 
 		[[nodiscard]]
-		Image render(const Optional<int32>& maxWidth, const Optional<int32>& maxHeight, const Color& background) const;
+		Image render(const Optional<int32>& maxWidth, const Optional<int32>& maxHeight, const Color& background, PremultiplyAlpha premultiplyAlpha) const;
 
 	private:
 

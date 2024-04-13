@@ -1198,8 +1198,8 @@
 //# include <Siv3D/PPMType.hpp>
 //# include <Siv3D/ImageFormat/PPMDecoder.hpp>
 //# include <Siv3D/ImageFormat/PPMEncoder.hpp>
-//
-//# include <Siv3D/ImageFormat/SVGDecoder.hpp>
+
+# include <Siv3D/ImageFormat/SVGDecoder.hpp>
 
 // SVG 画像 | SVG image
 # include <Siv3D/SVG.hpp> // ToDo

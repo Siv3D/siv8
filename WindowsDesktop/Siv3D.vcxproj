@@ -188,6 +188,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\JPEGEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\PNGDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\PNGEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\SVGDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ImagePixelFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\INI.hpp" />
@@ -571,6 +572,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\JPEG\JPEGEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\PNG\PNGDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\PNG\PNGEncoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\SVG\SVGDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INIItem\SivINIItem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INISection\SivINISection.cpp" />

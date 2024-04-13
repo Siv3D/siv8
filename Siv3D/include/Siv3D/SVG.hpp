@@ -18,6 +18,7 @@
 # include "ColorHSV.hpp"
 # include "Image.hpp"
 # include "Optional.hpp"
+# include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
@@ -153,15 +154,16 @@ namespace s3d
 
 		/// @brief SVG を Image にレンダリングします。
 		/// @param background 無色部分の背景色
+		/// @param premultiplyAlpha 乗算済みアルファを有効にするか
 		/// @return レンダリング結果
 		[[nodiscard]]
-		Image render(const Color& background) const;
+		Image render(const Color& background, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes) const;
 
 		[[nodiscard]]
-		Image render(const Optional<int32>& maxWidth, const Optional<int32>& maxHeight, const Color& background = Color{ 0, 0 }) const;
+		Image render(const Optional<int32>& maxWidth, const Optional<int32>& maxHeight, const Color& background = Color{ 0, 0 }, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes) const;
 
 		[[nodiscard]]
-		Image render(const Optional<Size>& maxSize = unspecified, const Color& background = Color{ 0, 0 }) const;
+		Image render(const Optional<Size>& maxSize = unspecified, const Color& background = Color{ 0, 0 }, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

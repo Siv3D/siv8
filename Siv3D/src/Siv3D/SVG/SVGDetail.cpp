@@ -52,7 +52,7 @@ namespace s3d
 		m_document.reset();
 	}
 
-	Image SVG::SVGDetail::render(const Optional<int32>& maxWidth, const Optional<int32>& maxHeight, const Color& background) const
+	Image SVG::SVGDetail::render(const Optional<int32>& maxWidth, const Optional<int32>& maxHeight, const Color& background, const PremultiplyAlpha premultiplyAlpha) const
 	{
 		if (not m_document)
 		{
@@ -63,7 +63,8 @@ namespace s3d
 		const int32 maxImageHeight = maxHeight.value_or(static_cast<int32>(std::ceil(m_document->height())));
 		const uint32 color = background.abgr().asUint32();
 
-		const lunasvg::Bitmap bitmap = m_document->renderToBitmap(maxImageWidth, maxImageHeight, color);
+		lunasvg::Bitmap bitmap = m_document->renderToBitmap(maxImageWidth, maxImageHeight, color);
+		bitmap.convert(0, 1, 2, 3, (not premultiplyAlpha.getBool()));
 
 		Image image{ bitmap.width(), bitmap.height() };
 		assert(image.size_bytes() == (bitmap.stride() * bitmap.height()));
