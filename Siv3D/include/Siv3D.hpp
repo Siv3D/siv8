@@ -605,8 +605,8 @@
 // カハンの加算アルゴリズム | Kahan summation algorithm
 # include <Siv3D/KahanSummation.hpp>
 
-//// 数学関数 | Math functions
-//# include <Siv3D/Math.hpp>
+// 数学関数 | Math functions
+# include <Siv3D/Math.hpp> // ToDo
 
 // 数学関数 (BigInt, BigFloat) | Math functions (BigInt, BigFloat)
 # include <Siv3D/BigNumMath.hpp>

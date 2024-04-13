@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <Siv3D/Math.hpp>
 # include <Siv3D/BigNumMath.hpp>
 # include <Siv3D/BigInt.hpp>
 # include <Siv3D/BigFloat.hpp>
@@ -19,11 +20,86 @@ namespace s3d
 {
 	namespace Math
 	{
-		BigFloat Fmod(const BigFloat& x, const BigFloat& y)
+		namespace detail
 		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::fmod(x._detail().value, y._detail().value);
-			return result;
+			//////////////////////////////////////////////////
+			//
+			//	Fmod_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Fmod_impl::operator ()(const BigFloat& x, const BigFloat& y) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::fmod(x._detail().value, y._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Frexp_impl
+			//
+			//////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////
+			//
+			//	Ldexp_impl
+			//
+			//////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////
+			//
+			//	Log_impl
+			//
+			//////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////
+			//
+			//	Log2_impl
+			//
+			//////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////
+			//
+			//	Log10_impl
+			//
+			//////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////
+			//
+			//	Modf_impl
+			//
+			//////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////
+			//
+			//	Pow_impl
+			//
+			//////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////
+			//
+			//	Sign_impl
+			//
+			//////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////
+			//
+			//	Sqrt_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Sqrt_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Sqrt_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::sqrt(x._detail().value);
+				return result;
+			}
 		}
 
 		BigFloat Fraction(const BigFloat& x)
@@ -182,13 +258,6 @@ namespace s3d
 		{
 			BigFloat result;
 			result._detail().value = (1 / boost::multiprecision::sqrt(x._detail().value));
-			return result;
-		}
-
-		BigFloat Sqrt(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::sqrt(x._detail().value);
 			return result;
 		}
 

@@ -20,9 +20,6 @@ namespace s3d
 	namespace Math
 	{
 		[[nodiscard]]
-		BigFloat Fmod(const BigFloat& x, const BigFloat& y);
-
-		[[nodiscard]]
 		BigFloat Fraction(const BigFloat& x);
 
 		[[nodiscard]]
@@ -84,9 +81,6 @@ namespace s3d
 
 		[[nodiscard]]
 		BigFloat Rsqrt(const BigFloat& x);
-
-		[[nodiscard]]
-		BigFloat Sqrt(const BigFloat& x);
 
 		[[nodiscard]]
 		BigFloat Ceil(const BigFloat& x);
