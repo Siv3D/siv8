@@ -12,11 +12,18 @@
 # pragma once
 # include "Common.hpp"
 # include "PointVector.hpp"
+# include "ColorHSV.hpp"
 # include "PredefinedNamedParameter.hpp"
 
 namespace s3d
 {
 	struct FormatData;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Rect
+	//
+	////////////////////////////////////////////////////////////////
 
 	/// @brief 長方形 (成分が int32 型)
 	/// @remark
@@ -412,5 +419,3 @@ struct fmt::formatter<s3d::Rect, s3d::char32>
 
 	s3d::BufferContext::iterator format(const s3d::Rect& value, s3d::BufferContext& ctx);
 };
-
-# include "detail/Rect.ipp"

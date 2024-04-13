@@ -350,10 +350,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//Vector2D& clamp(const RectF& rect) noexcept;
+		Vector2D& clamp(const RectF& rect) noexcept;
 
-		//[[nodiscard]]
-		//Vector2D clamped(const RectF& rect) const noexcept;
+		[[nodiscard]]
+		Vector2D clamped(const RectF& rect) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

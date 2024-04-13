@@ -788,9 +788,9 @@
 // 長方形 (int32) | Rectangle (int32)
 # include <Siv3D/Rect.hpp> // ToDo
 
-//// 長方形 (double) | Rectangle (double)
-//# include <Siv3D/RectF.hpp>
-//
+// 長方形 (double) | Rectangle (double)
+# include <Siv3D/RectF.hpp> // ToDo
+
 //// 円 | Circle
 //# include <Siv3D/Circle.hpp>
 //

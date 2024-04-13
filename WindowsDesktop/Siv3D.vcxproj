@@ -99,6 +99,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Random.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomDuration.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Rect.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectF.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Result.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FastMath.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatFormatter.ipp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Random.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomDuration.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Rect.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RectF.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RegExp.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Resource.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Result.hpp" />
@@ -572,6 +574,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Point3D\SivPoint3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point\SivPoint.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Random\SivRandom.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\RectF\SivRectF.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Rect\SivRect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\SivRegExp.cpp" />

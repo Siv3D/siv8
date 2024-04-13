@@ -12,7 +12,7 @@
 # pragma once
 //# include "Line.hpp"
 # include "Rect.hpp"
-//# include "RectF.hpp"
+# include "RectF.hpp"
 //# include "Circle.hpp"
 //# include "Ellipse.hpp"
 //# include "Triangle.hpp"
@@ -21,7 +21,7 @@
 //# include "Geometry2D.hpp"
 //# include "detail/Line.ipp"
 # include "detail/Rect.ipp"
-//# include "detail/RectF.ipp"
+# include "detail/RectF.ipp"
 //# include "detail/Circle.ipp"
 //# include "detail/Ellipse.ipp"
 //# include "detail/Triangle.ipp"

@@ -499,6 +499,9 @@
     <Filter Include="src\ThirdParty\Oniguruma">
       <UniqueIdentifier>{dbe9d83b-4ddf-42c5-a250-7680798a9e61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\RectF">
+      <UniqueIdentifier>{08926c95-0049-4dcc-a86f-17e9923aa34b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1827,6 +1830,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vector4D.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RectF.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectF.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -2509,6 +2518,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\regversion.c">
       <Filter>src\ThirdParty\Oniguruma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RectF\SivRectF.cpp">
+      <Filter>src\Siv3D\RectF</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
