@@ -662,7 +662,6 @@
 		F9528B412BB69C8200222F45 /* SivImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B3F2BB69C8200222F45 /* SivImage.cpp */; };
 		F9528B432BB69CA900222F45 /* BigFloat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B422BB69CA900222F45 /* BigFloat.hpp */; };
 		F9528B452BB69D8500222F45 /* BigFloat.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B442BB69D8500222F45 /* BigFloat.ipp */; };
-		F9528B472BB69DA800222F45 /* BigNumMath.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B462BB69DA800222F45 /* BigNumMath.hpp */; };
 		F9528B4B2BB69EAD00222F45 /* BigFloatDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B482BB69EAD00222F45 /* BigFloatDetail.hpp */; };
 		F9528B4C2BB69EAD00222F45 /* SivBigFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B492BB69EAD00222F45 /* SivBigFloat.cpp */; };
 		F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B4D2BB69EC500222F45 /* SivBigNumMath.cpp */; };
@@ -936,6 +935,13 @@
 		F986F9362BC8441F006A4C0F /* utf16_le.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F92BC8441F006A4C0F /* utf16_le.c */; };
 		F986F9372BC8441F006A4C0F /* utf32_be.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8FA2BC8441F006A4C0F /* utf32_be.c */; };
 		F986F9382BC8441F006A4C0F /* utf32_le.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8FB2BC8441F006A4C0F /* utf32_le.c */; };
+		F986F93D2BCA7996006A4C0F /* RectF.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F9392BCA7996006A4C0F /* RectF.ipp */; };
+		F986F93E2BCA7996006A4C0F /* Vector3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F93A2BCA7996006A4C0F /* Vector3D.ipp */; };
+		F986F93F2BCA7996006A4C0F /* Math_impl.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F93B2BCA7996006A4C0F /* Math_impl.ipp */; };
+		F986F9402BCA7996006A4C0F /* Vector4D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F93C2BCA7996006A4C0F /* Vector4D.ipp */; };
+		F986F9422BCA79B4006A4C0F /* Math.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F9412BCA79B4006A4C0F /* Math.hpp */; };
+		F986F9442BCA79BB006A4C0F /* RectF.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F9432BCA79BB006A4C0F /* RectF.hpp */; };
+		F986F9472BCA79DC006A4C0F /* SivRectF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9452BCA79DC006A4C0F /* SivRectF.cpp */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -1627,7 +1633,6 @@
 		F9528B3F2BB69C8200222F45 /* SivImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImage.cpp; sourceTree = "<group>"; };
 		F9528B422BB69CA900222F45 /* BigFloat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.hpp; sourceTree = "<group>"; };
 		F9528B442BB69D8500222F45 /* BigFloat.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.ipp; sourceTree = "<group>"; };
-		F9528B462BB69DA800222F45 /* BigNumMath.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigNumMath.hpp; sourceTree = "<group>"; };
 		F9528B482BB69EAD00222F45 /* BigFloatDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloatDetail.hpp; sourceTree = "<group>"; };
 		F9528B492BB69EAD00222F45 /* SivBigFloat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBigFloat.cpp; sourceTree = "<group>"; };
 		F9528B4D2BB69EC500222F45 /* SivBigNumMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBigNumMath.cpp; sourceTree = "<group>"; };
@@ -1901,6 +1906,13 @@
 		F986F8F92BC8441F006A4C0F /* utf16_le.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf16_le.c; sourceTree = "<group>"; };
 		F986F8FA2BC8441F006A4C0F /* utf32_be.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf32_be.c; sourceTree = "<group>"; };
 		F986F8FB2BC8441F006A4C0F /* utf32_le.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf32_le.c; sourceTree = "<group>"; };
+		F986F9392BCA7996006A4C0F /* RectF.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RectF.ipp; sourceTree = "<group>"; };
+		F986F93A2BCA7996006A4C0F /* Vector3D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector3D.ipp; sourceTree = "<group>"; };
+		F986F93B2BCA7996006A4C0F /* Math_impl.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Math_impl.ipp; sourceTree = "<group>"; };
+		F986F93C2BCA7996006A4C0F /* Vector4D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector4D.ipp; sourceTree = "<group>"; };
+		F986F9412BCA79B4006A4C0F /* Math.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Math.hpp; sourceTree = "<group>"; };
+		F986F9432BCA79BB006A4C0F /* RectF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RectF.hpp; sourceTree = "<group>"; };
+		F986F9452BCA79DC006A4C0F /* SivRectF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRectF.cpp; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -2710,6 +2722,7 @@
 				F9528B2C2BAFCDCF00222F45 /* MappedMemory.ipp */,
 				F9528C4F2BBFEC4D00222F45 /* MappedMemoryView.ipp */,
 				F986F8B72BC843E0006A4C0F /* MatchResults.ipp */,
+				F986F93B2BCA7996006A4C0F /* Math_impl.ipp */,
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
 				F9070B8F2B9F175000383E4D /* MD5Value.ipp */,
 				F9070B902B9F175000383E4D /* Memory.ipp */,
@@ -2729,6 +2742,7 @@
 				F9070B982B9F175000383E4D /* Random.ipp */,
 				F9070B992B9F175000383E4D /* RandomDuration.ipp */,
 				F9070B9A2B9F175000383E4D /* Rect.ipp */,
+				F986F9392BCA7996006A4C0F /* RectF.ipp */,
 				F9070B9B2B9F175000383E4D /* Result.ipp */,
 				F9070B9C2B9F175000383E4D /* ScopeExit.ipp */,
 				F9070B9D2B9F175000383E4D /* SequenceFormatter.ipp */,
@@ -2752,6 +2766,8 @@
 				F9070BAC2B9F175000383E4D /* UtilityClass.ipp */,
 				F9070BAD2B9F175000383E4D /* UUIDValue.ipp */,
 				F9070BAE2B9F175000383E4D /* Vector2D.ipp */,
+				F986F93A2BCA7996006A4C0F /* Vector3D.ipp */,
+				F986F93C2BCA7996006A4C0F /* Vector4D.ipp */,
 				F9528A892BA0251E00222F45 /* Window.ipp */,
 				F9070BAF2B9F175000383E4D /* YesNo.ipp */,
 			);
@@ -2779,7 +2795,6 @@
 				F9528B1F2BAFB66200222F45 /* Base64Value.hpp */,
 				F9528B422BB69CA900222F45 /* BigFloat.hpp */,
 				F9070BC02B9F175000383E4D /* BigInt.hpp */,
-				F9528B462BB69DA800222F45 /* BigNumMath.hpp */,
 				F9070BC12B9F175000383E4D /* BinaryReader.hpp */,
 				F9070BC22B9F175000383E4D /* BinaryWriter.hpp */,
 				F9070BC32B9F175000383E4D /* Blob.hpp */,
@@ -2872,6 +2887,7 @@
 				F9528B282BAFCDB400222F45 /* MappedMemory.hpp */,
 				F9528C4D2BBFEC3800222F45 /* MappedMemoryView.hpp */,
 				F986F8B42BC843CF006A4C0F /* MatchResults.hpp */,
+				F986F9412BCA79B4006A4C0F /* Math.hpp */,
 				F9070C002B9F175000383E4D /* MathConstants.hpp */,
 				F9070C012B9F175000383E4D /* MD5Value.hpp */,
 				F9070C022B9F175000383E4D /* Memory.hpp */,
@@ -2912,6 +2928,7 @@
 				F9070C1A2B9F175000383E4D /* Random.hpp */,
 				F9070C1B2B9F175000383E4D /* RandomDuration.hpp */,
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
+				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
@@ -3567,6 +3584,7 @@
 				F9528B9C2BBC771000222F45 /* Point3D */,
 				F9070D7C2B9F175E00383E4D /* Random */,
 				F9070D7E2B9F175E00383E4D /* Rect */,
+				F986F9462BCA79DC006A4C0F /* RectF */,
 				F986F8BC2BC843FD006A4C0F /* RegExp */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9070D812B9F175E00383E4D /* String */,
@@ -4353,6 +4371,14 @@
 			path = Oniguruma;
 			sourceTree = "<group>";
 		};
+		F986F9462BCA79DC006A4C0F /* RectF */ = {
+			isa = PBXGroup;
+			children = (
+				F986F9452BCA79DC006A4C0F /* SivRectF.cpp */,
+			);
+			path = RectF;
+			sourceTree = "<group>";
+		};
 		F9E5FC172BC12C340081A4F7 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -4587,7 +4613,6 @@
 				F9070EF42B9F1C8900383E4D /* posix_thread.h in Headers */,
 				F9070C7F2B9F175000383E4D /* TextEncoding.ipp in Headers */,
 				F9070C8A2B9F175000383E4D /* Vector2D.ipp in Headers */,
-				F9528B472BB69DA800222F45 /* BigNumMath.hpp in Headers */,
 				F9070C5E2B9F175000383E4D /* HSV.ipp in Headers */,
 				F9070CBF2B9F175000383E4D /* FmtHelper.hpp in Headers */,
 				F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */,
@@ -4595,6 +4620,7 @@
 				F90706D92B9DAEC900383E4D /* compress.h in Headers */,
 				F90707252B9DAEC900383E4D /* slli.h in Headers */,
 				F90706B82B9DAEC900383E4D /* nanobench.h in Headers */,
+				F986F93E2BCA7996006A4C0F /* Vector3D.ipp in Headers */,
 				F9070C982B9F175000383E4D /* AsyncTask.hpp in Headers */,
 				F9528BA12BBD6F8800222F45 /* Timer.ipp in Headers */,
 				F9070C3F2B9F175000383E4D /* _TEMPLATE.ipp in Headers */,
@@ -4805,6 +4831,7 @@
 				F9070CF02B9F175100383E4D /* PredefinedNamedParameter.hpp in Headers */,
 				F9528BAB2BBE7CF300222F45 /* MemoryReader.hpp in Headers */,
 				F90706FC2B9DAEC900383E4D /* max.h in Headers */,
+				F986F9422BCA79B4006A4C0F /* Math.hpp in Headers */,
 				F9070D0A2B9F175100383E4D /* UnicodeConverter.hpp in Headers */,
 				F907069F2B9DAEC900383E4D /* fast_uniform_bits.h in Headers */,
 				F9070C992B9F175000383E4D /* BigInt.hpp in Headers */,
@@ -4916,6 +4943,7 @@
 				F9070C552B9F175000383E4D /* FastMath.ipp in Headers */,
 				F90706BA2B9DAEC900383E4D /* btree.h in Headers */,
 				F907073D2B9DAEC900383E4D /* avx512.h in Headers */,
+				F986F9402BCA7996006A4C0F /* Vector4D.ipp in Headers */,
 				F9070B0B2B9DEB5900383E4D /* mimalloc-new-delete.h in Headers */,
 				F90706972B9DAEC900383E4D /* function_ref.h in Headers */,
 				F90706BB2B9DAEC900383E4D /* phmap_base.h in Headers */,
@@ -4946,6 +4974,7 @@
 				F90707282B9DAEC900383E4D /* sra.h in Headers */,
 				F9070CCA2B9F175100383E4D /* HeterogeneousLookupHelper.hpp in Headers */,
 				F9070E622B9F176B00383E4D /* CLogger.hpp in Headers */,
+				F986F93F2BCA7996006A4C0F /* Math_impl.ipp in Headers */,
 				F9528B2D2BAFCDCF00222F45 /* MappedMemory.ipp in Headers */,
 				F9070DC52B9F175E00383E4D /* Siv3DComponent.hpp in Headers */,
 				F90707382B9DAEC900383E4D /* xor.h in Headers */,
@@ -5005,6 +5034,7 @@
 				F907071E2B9DAEC900383E4D /* setone.h in Headers */,
 				F90706AC2B9DAEC900383E4D /* log_uniform_int_distribution.h in Headers */,
 				F9528C252BBF026F00222F45 /* zstd_compress_sequences.h in Headers */,
+				F986F9442BCA79BB006A4C0F /* RectF.hpp in Headers */,
 				F9070CC52B9F175000383E4D /* FunctionRef.hpp in Headers */,
 				F9E5FCD22BC3AD410081A4F7 /* JSON.hpp in Headers */,
 				F907075B2B9DAEC900383E4D /* Siv3D.hpp in Headers */,
@@ -5014,6 +5044,7 @@
 				F90706C12B9DAEC900383E4D /* phmap.h in Headers */,
 				F9528C3A2BBF026F00222F45 /* zstd_ddict.h in Headers */,
 				F9528C172BBF026F00222F45 /* xxhash.h in Headers */,
+				F986F93D2BCA7996006A4C0F /* RectF.ipp in Headers */,
 				F907069A2B9DAEC900383E4D /* bits.h in Headers */,
 				F9528B9A2BBC76EA00222F45 /* Point3D.ipp in Headers */,
 				F9070CA62B9F175000383E4D /* Concepts.hpp in Headers */,
@@ -5481,6 +5512,7 @@
 				F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */,
 				F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */,
 				F9070AF52B9DEB5900383E4D /* cached-powers.cc in Sources */,
+				F986F9472BCA79DC006A4C0F /* SivRectF.cpp in Sources */,
 				F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */,
 				F986F9362BC8441F006A4C0F /* utf16_le.c in Sources */,
 				F9070DCD2B9F175E00383E4D /* SivFloatFormatter.cpp in Sources */,
