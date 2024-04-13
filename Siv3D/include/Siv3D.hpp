@@ -606,7 +606,7 @@
 # include <Siv3D/KahanSummation.hpp>
 
 // 数学関数 | Math functions
-# include <Siv3D/Math.hpp> // ToDo
+# include <Siv3D/Math.hpp>
 
 // 精度を落とした高速な数学関数 | Fast math functions
 # include <Siv3D/FastMath.hpp>
