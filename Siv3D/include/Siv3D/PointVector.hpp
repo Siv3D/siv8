@@ -19,6 +19,5 @@
 # include "detail/Point3D.ipp"
 # include "detail/Vector2D.ipp"
 # include "detail/Vector3D.ipp"
-//# include "detail/Vector4D.ipp"
-//# include "CommonFloat.hpp"
+# include "detail/Vector4D.ipp"
 //# include "CommonVector.hpp"
