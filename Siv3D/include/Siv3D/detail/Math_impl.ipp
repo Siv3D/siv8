@@ -475,11 +475,116 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
+			struct Modf_impl
+			{
+				[[nodiscard]]
+				float operator ()(const float x, float& ip) const noexcept
+				{
+					return std::modf(x, &ip);
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x, double& ip) const noexcept
+				{
+					return std::modf(x, &ip);
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v, Float2& ip) const noexcept
+				{
+					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v, Vec2& ip) const noexcept
+				{
+					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v, Float3& ip) const noexcept
+				{
+					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y), std::modf(v.z, &ip.z) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v, Vec3& ip) const noexcept
+				{
+					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y), std::modf(v.z, &ip.z) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v, Float4& ip) const noexcept
+				{
+					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y), std::modf(v.z, &ip.z), std::modf(v.w, &ip.w) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v, Vec4& ip) const noexcept
+				{
+					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y), std::modf(v.z, &ip.z), std::modf(v.w, &ip.w) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x, BigFloat& ip) const;
+			};
+
 			//////////////////////////////////////////////////
 			//
 			//	Pow_impl
 			//
 			//////////////////////////////////////////////////
+
+			struct Pow_impl
+			{
+				[[nodiscard]]
+				auto operator ()(const Concept::Arithmetic auto x, const Concept::Arithmetic auto exp) const noexcept
+				{
+					return std::pow(x, exp);
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v, const Concept::Arithmetic auto exp) const noexcept
+				{
+					return{ std::pow(v.x, exp), std::pow(v.y, exp) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v, const Concept::Arithmetic auto exp) const noexcept
+				{
+					return{ std::pow(v.x, exp), std::pow(v.y, exp) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v, const Concept::Arithmetic auto exp) const noexcept
+				{
+					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v, const Concept::Arithmetic auto exp) const noexcept
+				{
+					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v, const Concept::Arithmetic auto exp) const noexcept
+				{
+					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp), std::pow(v.w, exp) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v, const Concept::Arithmetic auto exp) const noexcept
+				{
+					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp), std::pow(v.w, exp) };
+				}
+
+				[[nodiscard]]
+				BigInt operator ()(const BigInt& x, uint32 exp) const;
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x, const BigFloat& exp) const;
+			};
 
 			//////////////////////////////////////////////////
 			//
@@ -487,7 +592,643 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			
+			struct Sign_impl
+			{
+				[[nodiscard]]
+				constexpr int32 operator ()(const Concept::Arithmetic auto x) const noexcept
+				{
+					if (x < 0)
+					{
+						return -1;
+					}
+					else if (0 < x)
+					{
+						return 1;
+					}
+					else
+					{
+						return 0;
+					}
+				}
+
+				[[nodiscard]]
+				constexpr Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ operator ()(v.x), operator ()(v.y) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ operator ()(v.x), operator ()(v.y) };
+				}
+
+				[[nodiscard]]
+				constexpr Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ operator ()(v.x), operator ()(v.y), operator ()(v.z) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ operator ()(v.x), operator ()(v.y), operator ()(v.z) };
+				}
+
+				[[nodiscard]]
+				constexpr Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ operator ()(v.x), operator ()(v.y), operator ()(v.z), operator ()(v.w) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ operator ()(v.x), operator ()(v.y), operator ()(v.z), operator ()(v.w) };
+				}
+
+				[[nodiscard]]
+				int32 operator ()(const BigInt& x) const;
+
+				[[nodiscard]]
+				int32 operator ()(const BigFloat& x) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
+			//	ToRadians_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct ToRadians_impl
+			{
+				[[nodiscard]]
+				constexpr double operator ()(const Concept::Integral auto x) const noexcept
+				{
+					return (static_cast<double>(x) * (Math::Pi / 180.0));
+				}
+
+				[[nodiscard]]
+				constexpr float operator ()(const float x) const noexcept
+				{
+					return (x * (Math::PiF / 180.0f));
+				}
+
+				[[nodiscard]]
+				constexpr double operator ()(const double x) const noexcept
+				{
+					return (x * (Math::Pi / 180.0));
+				}
+
+				[[nodiscard]]
+				constexpr Float2 operator ()(const Float2 v) const noexcept
+				{
+					const float rad = (Math::PiF / 180.0f);
+					return (v * rad);
+				}
+
+				[[nodiscard]]
+				constexpr Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					const double rad = (Math::Pi / 180.0);
+					return (v * rad);
+				}
+
+				[[nodiscard]]
+				constexpr Float3 operator ()(const Float3 v) const noexcept
+				{
+					const float rad = (Math::PiF / 180.0f);
+					return (v * rad);
+				}
+
+				[[nodiscard]]
+				constexpr Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					const double rad = (Math::Pi / 180.0);
+					return (v * rad);
+				}
+
+				[[nodiscard]]
+				constexpr Float4 operator ()(const Float4 v) const noexcept
+				{
+					const float rad = (Math::PiF / 180.0f);
+					return (v * rad);
+				}
+
+				[[nodiscard]]
+				constexpr Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					const double rad = (Math::Pi / 180.0);
+					return (v * rad);
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigInt& x) const;
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
+			//	ToDegrees_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct ToDegrees_impl
+			{
+				[[nodiscard]]
+				constexpr double operator ()(const Concept::Integral auto x) const noexcept
+				{
+					return (static_cast<double>(x) * (180.0 / Math::Pi));
+				}
+
+				[[nodiscard]]
+				constexpr float operator ()(const float x) const noexcept
+				{
+					return (x * (180.0f / Math::PiF));
+				}
+
+				[[nodiscard]]
+				constexpr double operator ()(const double x) const noexcept
+				{
+					return (x * (180.0 / Math::Pi));
+				}
+
+				[[nodiscard]]
+				constexpr Float2 operator ()(const Float2 v) const noexcept
+				{
+					const float deg = (180.0f / Math::PiF);
+					return (v * deg);
+				}
+
+				[[nodiscard]]
+				constexpr Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					const double deg = (180.0 / Math::Pi);
+					return (v * deg);
+				}
+
+				[[nodiscard]]
+				constexpr Float3 operator ()(const Float3 v) const noexcept
+				{
+					const float deg = (180.0f / Math::PiF);
+					return (v * deg);
+				}
+
+				[[nodiscard]]
+				constexpr Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					const double deg = (180.0 / Math::Pi);
+					return (v * deg);
+				}
+
+				[[nodiscard]]
+				constexpr Float4 operator ()(const Float4 v) const noexcept
+				{
+					const float deg = (180.0f / Math::PiF);
+					return (v * deg);
+				}
+
+				[[nodiscard]]
+				constexpr Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					const double deg = (180.0 / Math::Pi);
+					return (v * deg);
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigInt& x) const;
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
+			//	Abs_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct Abs_impl
+			{
+				[[nodiscard]]
+				constexpr auto operator ()(const Concept::SignedIntegral auto x) const noexcept
+				{
+					return s3d::Abs(x);
+				}
+
+				[[nodiscard]]
+				constexpr float operator ()(const float x) const noexcept
+				{
+					return s3d::Abs(x);
+				}
+
+				[[nodiscard]]
+				constexpr double operator ()(const double x) const noexcept
+				{
+					return s3d::Abs(x);
+				}
+
+				[[nodiscard]]
+				constexpr Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ s3d::Abs(v.x), s3d::Abs(v.y) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ s3d::Abs(v.x), s3d::Abs(v.y) };
+				}
+
+				[[nodiscard]]
+				constexpr Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ s3d::Abs(v.x), s3d::Abs(v.y), s3d::Abs(v.z) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ s3d::Abs(v.x), s3d::Abs(v.y), s3d::Abs(v.z) };
+				}
+
+				[[nodiscard]]
+				constexpr Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ s3d::Abs(v.x), s3d::Abs(v.y), s3d::Abs(v.z), s3d::Abs(v.w) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ s3d::Abs(v.x), s3d::Abs(v.y), s3d::Abs(v.z), s3d::Abs(v.w) };
+				}
+
+				[[nodiscard]]
+				BigInt operator ()(const BigInt& x) const;
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
+			//	AbsDiff_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct AbsDiff_impl
+			{
+				[[nodiscard]]
+				constexpr auto operator ()(const Concept::Arithmetic auto x, const Concept::Arithmetic auto y) const noexcept
+				{
+					using T1 = decltype(x);
+					using T2 = decltype(y);
+
+					if constexpr (std::conjunction_v<std::is_integral<T1>, std::is_integral<T2>>)
+					{
+						using U = std::make_unsigned_t<std::common_type_t<T1, T2>>;
+						return (x > y) ? (static_cast<U>(x) - static_cast<U>(y))
+							: (static_cast<U>(y) - static_cast<U>(x));
+					}
+					else
+					{
+						return Abs(x - y);
+					}
+				}
+
+				[[nodiscard]]
+				constexpr float operator ()(const float x, const float y) const noexcept
+				{
+					return Abs(x - y);
+				}
+
+				[[nodiscard]]
+				constexpr double operator ()(const double x, const double y) const noexcept
+				{
+					return Abs(x - y);
+				}
+
+				[[nodiscard]]
+				constexpr Float2 operator ()(const Float2 a, const Float2 b) const noexcept
+				{
+					return{ Abs(a.x - b.x), Abs(a.y - b.y) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec2 operator ()(const Vec2 a, const Vec2 b) const noexcept
+				{
+					return{ Abs(a.x - b.x), Abs(a.y - b.y) };
+				}
+
+				[[nodiscard]]
+				constexpr Float3 operator ()(const Float3 a, const Float3 b) const noexcept
+				{
+					return{ Abs(a.x - b.x), Abs(a.y - b.y), Abs(a.z - b.z) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec3 operator ()(const Vec3 a, const Vec3 b) const noexcept
+				{
+					return{ Abs(a.x - b.x), Abs(a.y - b.y), Abs(a.z - b.z) };
+				}
+
+				[[nodiscard]]
+				constexpr Float4 operator ()(const Float4 a, const Float4 b) const noexcept
+				{
+					return{ Abs(a.x - b.x), Abs(a.y - b.y), Abs(a.z - b.z), Abs(a.w - b.w) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec4 operator ()(const Vec4 a, const Vec4 b) const noexcept
+				{
+					return{ Abs(a.x - b.x), Abs(a.y - b.y), Abs(a.z - b.z), Abs(a.w - b.w) };
+				}
+
+				[[nodiscard]]
+				BigInt operator ()(const BigInt& x, const BigInt& y) const;
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x, const BigFloat& y) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
+			//	Square_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct Square_impl
+			{
+				[[nodiscard]]
+				constexpr auto operator ()(const Concept::Arithmetic auto x) const noexcept
+				{
+					return (x * x);
+				}
+
+				[[nodiscard]]
+				constexpr float operator ()(const float x) const noexcept
+				{
+					return (x * x);
+				}
+
+				[[nodiscard]]
+				constexpr double operator ()(const double x) const noexcept
+				{
+					return (x * x);
+				}
+
+				[[nodiscard]]
+				constexpr Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ (v.x * v.x), (v.y * v.y) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ (v.x * v.x), (v.y * v.y) };
+				}
+
+				[[nodiscard]]
+				constexpr Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ (v.x * v.x), (v.y * v.y), (v.z * v.z) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ (v.x * v.x), (v.y * v.y), (v.z * v.z) };
+				}
+
+				[[nodiscard]]
+				constexpr Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ (v.x * v.x), (v.y * v.y), (v.z * v.z), (v.w * v.w) };
+				}
+
+				[[nodiscard]]
+				constexpr Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ (v.x * v.x), (v.y * v.y), (v.z * v.z), (v.w * v.w) };
+				}
+
+				[[nodiscard]]
+				BigInt operator ()(const BigInt& x) const;
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
+			//	Exp_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct Exp_impl
+			{
+				[[nodiscard]]
+				double operator ()(const Concept::Integral auto x) const noexcept
+				{
+					return std::exp(static_cast<double>(x));
+				}
+
+				[[nodiscard]]
+				float operator ()(const float x) const noexcept
+				{
+					return std::exp(x);
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x) const noexcept
+				{
+					return std::exp(x);
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ std::exp(v.x), std::exp(v.y) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ std::exp(v.x), std::exp(v.y) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ std::exp(v.x), std::exp(v.y), std::exp(v.z) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ std::exp(v.x), std::exp(v.y), std::exp(v.z) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ std::exp(v.x), std::exp(v.y), std::exp(v.z), std::exp(v.w) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ std::exp(v.x), std::exp(v.y), std::exp(v.z), std::exp(v.w) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigInt& x) const;
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
+			//	Exp2_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct Exp2_impl
+			{
+				[[nodiscard]]
+				double operator ()(const Concept::Integral auto x) const noexcept
+				{
+					return std::exp2(static_cast<double>(x));
+				}
+
+				[[nodiscard]]
+				float operator ()(const float x) const noexcept
+				{
+					return std::exp2(x);
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x) const noexcept
+				{
+					return std::exp2(x);
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ std::exp2(v.x), std::exp2(v.y) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ std::exp2(v.x), std::exp2(v.y) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z), std::exp2(v.w) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z), std::exp2(v.w) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigInt& x) const;
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
+			//	Rsqrt_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct Rsqrt_impl
+			{
+				[[nodiscard]]
+				double operator ()(const Concept::Integral auto x) const noexcept
+				{
+					return (1.0 / std::sqrt(static_cast<double>(x)));
+				}
+
+				[[nodiscard]]
+				float operator ()(const float x) const noexcept
+				{
+					return (1.0f / std::sqrt(x));
+				}
+
+				[[nodiscard]]
+				double operator ()(const double x) const noexcept
+				{
+					return (1.0 / std::sqrt(x));
+				}
+
+				[[nodiscard]]
+				Float2 operator ()(const Float2 v) const noexcept
+				{
+					return{ (1.0f / std::sqrt(v.x)), (1.0f / std::sqrt(v.y)) };
+				}
+
+				[[nodiscard]]
+				Vec2 operator ()(const Vec2 v) const noexcept
+				{
+					return{ (1.0 / std::sqrt(v.x)), (1.0 / std::sqrt(v.y)) };
+				}
+
+				[[nodiscard]]
+				Float3 operator ()(const Float3 v) const noexcept
+				{
+					return{ (1.0f / std::sqrt(v.x)), (1.0f / std::sqrt(v.y)), (1.0f / std::sqrt(v.z)) };
+				}
+
+				[[nodiscard]]
+				Vec3 operator ()(const Vec3 v) const noexcept
+				{
+					return{ (1.0 / std::sqrt(v.x)), (1.0 / std::sqrt(v.y)), (1.0 / std::sqrt(v.z)) };
+				}
+
+				[[nodiscard]]
+				Float4 operator ()(const Float4 v) const noexcept
+				{
+					return{ (1.0f / std::sqrt(v.x)), (1.0f / std::sqrt(v.y)), (1.0f / std::sqrt(v.z)), (1.0f / std::sqrt(v.w)) };
+				}
+
+				[[nodiscard]]
+				Vec4 operator ()(const Vec4 v) const noexcept
+				{
+					return{ (1.0 / std::sqrt(v.x)), (1.0 / std::sqrt(v.y)), (1.0 / std::sqrt(v.z)), (1.0 / std::sqrt(v.w)) };
+				}
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigInt& x) const;
+
+				[[nodiscard]]
+				BigFloat operator ()(const BigFloat& x) const;
+			};
 
 			//////////////////////////////////////////////////
 			//
@@ -558,5 +1299,150 @@ namespace s3d
 				BigFloat operator ()(const BigFloat& x) const;
 			};
 		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Ceil_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Floor_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Round_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Trunc_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Max_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Min_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Clamp_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Saturate_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Acos_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Atan_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Atan2_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Cos_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Cosh_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Sin_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Sinh_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Tan_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Tanh_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Dot_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Cross_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Normalize_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Smoothstep_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	NormalizeAngle_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	GCD_impl
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	LCM_impl
+		//
+		//////////////////////////////////////////////////
+
 	}
 }
