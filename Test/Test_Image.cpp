@@ -11,8 +11,6 @@
 
 # include "Siv3DTest.hpp"
 
-# if SIV3D_RUN_BENCHMARK
-
 static Image MakeTestImage()
 {
 	Image image{ 512, 512, Palette::White };
@@ -28,6 +26,20 @@ static Image MakeTestImage()
 	return image;
 }
 
+TEST_CASE("Image.premultiplyAlpha")
+{
+	const Image testImage = MakeTestImage();
+	Image image1 = testImage;
+	Image image2 = testImage;
+
+	image1.premultiplyAlpha(false);
+	image2.premultiplyAlpha(true);
+
+	CHECK_EQ(image1, image2);
+}
+
+# if SIV3D_RUN_BENCHMARK
+
 TEST_CASE("Image.premultiplyAlpha.Benchmark")
 {
 	const ScopedLogSilencer logSilencer;
@@ -35,14 +47,10 @@ TEST_CASE("Image.premultiplyAlpha.Benchmark")
 	const Image testImage = MakeTestImage();
 	Image image1 = testImage;
 	Image image2 = testImage;
-	Image image3 = testImage;
-	Image image4 = testImage;
 
 	{
-		Bench{}.title("Image::premultiplyAlpha").run("premultiplyAlpha", [&]() { image1.premultiplyAlpha(); });
-		Bench{}.title("Image::premultiplyAlpha").run("premultiplyAlpha_sse41", [&]() { image2.premultiplyAlpha_sse41(); });
-		Bench{}.title("Image::premultiplyAlpha").run("premultiplyAlpha_avx2", [&]() { image3.premultiplyAlpha_avx2(); });
-		Bench{}.title("Image::premultiplyAlpha").run("premultiplyAlpha_gcc", [&]() { image4.premultiplyAlpha_gcc(); });
+		Bench{}.title("Image::premultiplyAlpha").run("SIMD off", [&]() { image1.premultiplyAlpha(false); });
+		Bench{}.title("Image::premultiplyAlpha").run("SIMD on", [&]() { image2.premultiplyAlpha(true); });
 	}
 }
 

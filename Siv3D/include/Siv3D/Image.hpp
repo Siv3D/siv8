@@ -612,16 +612,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void premultiplyAlpha();
-
-		void premultiplyAlpha_avx2();
-
-		void premultiplyAlpha_sse41();
-
-		void premultiplyAlpha_gcc();
-
-
-
+		void premultiplyAlpha(bool useSIMD = true);
 
 		////////////////////////////////////////////////////////////////
 		//
