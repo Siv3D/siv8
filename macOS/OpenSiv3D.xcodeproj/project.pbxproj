@@ -1004,6 +1004,7 @@
 		F986F9C42BCA9D0A006A4C0F /* useelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F98B2BCA9D0A006A4C0F /* useelement.h */; };
 		F986F9C62BCA9D25006A4C0F /* SVG.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F9C52BCA9D25006A4C0F /* SVG.hpp */; };
 		F986F9C82BCA9D3E006A4C0F /* SVG.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F9C72BCA9D3E006A4C0F /* SVG.ipp */; };
+		F986F9CA2BCBEC36006A4C0F /* SivImage_SIMD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9C92BCBEC36006A4C0F /* SivImage_SIMD.cpp */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -2038,6 +2039,7 @@
 		F986F98B2BCA9D0A006A4C0F /* useelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = useelement.h; sourceTree = "<group>"; };
 		F986F9C52BCA9D25006A4C0F /* SVG.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SVG.hpp; sourceTree = "<group>"; };
 		F986F9C72BCA9D3E006A4C0F /* SVG.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SVG.ipp; sourceTree = "<group>"; };
+		F986F9C92BCBEC36006A4C0F /* SivImage_SIMD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImage_SIMD.cpp; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -3983,6 +3985,7 @@
 		F9528B402BB69C8200222F45 /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				F986F9C92BCBEC36006A4C0F /* SivImage_SIMD.cpp */,
 				F9528B3F2BB69C8200222F45 /* SivImage.cpp */,
 			);
 			path = Image;
@@ -5566,6 +5569,7 @@
 				F986F9222BC8441F006A4C0F /* regparse.c in Sources */,
 				F9070B062B9DEB5900383E4D /* simdutf.cpp in Sources */,
 				F986F83C2BC7B043006A4C0F /* SivINISection.cpp in Sources */,
+				F986F9CA2BCBEC36006A4C0F /* SivImage_SIMD.cpp in Sources */,
 				F9528C142BBF026F00222F45 /* threading.c in Sources */,
 				F9E5FC432BC19B110081A4F7 /* SivHalfFloat.cpp in Sources */,
 				F986F9AA2BCA9D0A006A4C0F /* layoutcontext.cpp in Sources */,
