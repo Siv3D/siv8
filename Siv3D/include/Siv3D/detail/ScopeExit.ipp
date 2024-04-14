@@ -32,14 +32,14 @@ namespace s3d
 
 	template <detail::ExitFunction ExitFunction>
 	template <class Fty>
-		requires detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>>
 	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>)
+		requires detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit>
 		: m_exitFunction{ exitFunction } {}
 
 	template <detail::ExitFunction ExitFunction>
 	template <class Fty>
-		requires (detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>> && (not std::is_lvalue_reference_v<Fty>) && std::is_nothrow_constructible_v<ExitFunction, Fty>)
 	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept
+		requires (detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit> && (not std::is_lvalue_reference_v<Fty>) && std::is_nothrow_constructible_v<ExitFunction, Fty>)
 		: m_exitFunction{ std::forward<Fty>(exitFunction) } {}
 
 	////////////////////////////////////////////////////////////////

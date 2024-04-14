@@ -53,14 +53,14 @@ namespace s3d
 			requires std::is_nothrow_move_constructible_v<ExitFunction>;
 
 		template <class Fty>
-			requires detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>>
 		[[nodiscard]]
-		constexpr ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>);
+		constexpr ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>)
+			requires detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit>;
 
 		template <class Fty>
-			requires (detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit<ExitFunction>> && (not std::is_lvalue_reference_v<Fty>) && std::is_nothrow_constructible_v<ExitFunction, Fty>)
 		[[nodiscard]]
-		constexpr ScopeExit(Fty&& exitFunction) noexcept;
+		constexpr ScopeExit(Fty&& exitFunction) noexcept
+			requires (detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit> && (not std::is_lvalue_reference_v<Fty>) && std::is_nothrow_constructible_v<ExitFunction, Fty>);
 
 		constexpr ~ScopeExit() noexcept(std::is_nothrow_invocable_v<ExitFunction&>
 			&& std::is_nothrow_destructible_v<ExitFunction>);
