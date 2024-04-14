@@ -132,12 +132,12 @@ namespace s3d
 		return ImageInfo{ Size{ width, height }, ImageFormat::PNG, pixelFormat, false };
 	}
 
-	Image PNGDecoder::decode(const FilePathView path) const
+	Image PNGDecoder::decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha) const
 	{
-		return IImageDecoder::decode(path);
+		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image PNGDecoder::decode(IReader& reader, const FilePathView) const
+	Image PNGDecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha premultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("PNGDecoder::decode()");
 
@@ -258,6 +258,11 @@ namespace s3d
 		::png_read_end(png_ptr, nullptr);
 
 		LOG_TRACE(fmt::format("Image ({}x{}) decoded", width, height));
+
+		if (premultiplyAlpha)
+		{
+			image.premultiplyAlpha();
+		}
 
 		return image;
 	}

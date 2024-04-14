@@ -32,7 +32,7 @@ namespace s3d
 
 		Optional<ImageInfo> getImageInfo(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) override;
 
-		Image decode(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) override;
+		Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat) override;
 
 		Grid<uint16> decodeGray16(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) override;
 

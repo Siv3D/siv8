@@ -35,7 +35,7 @@ namespace s3d
 			return SIV3D_ENGINE(ImageDecoder)->getImageInfo(reader, {}, imageFormat);
 		}
 
-		Image Decode(const FilePathView path, const ImageFormat imageFormat)
+		Image Decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
 		{
 			BinaryReader reader{ path };
 
@@ -44,12 +44,12 @@ namespace s3d
 				return{};
 			}
 
-			return SIV3D_ENGINE(ImageDecoder)->decode(reader, path, imageFormat);
+			return SIV3D_ENGINE(ImageDecoder)->decode(reader, path, premultiplyAlpha, imageFormat);
 		}
 
-		Image Decode(IReader& reader, const ImageFormat imageFormat)
+		Image Decode(IReader& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
 		{
-			return SIV3D_ENGINE(ImageDecoder)->decode(reader, {}, imageFormat);
+			return SIV3D_ENGINE(ImageDecoder)->decode(reader, {}, premultiplyAlpha, imageFormat);
 		}
 
 		Grid<uint16> DecodeGray16(const FilePathView path, const ImageFormat imageFormat)

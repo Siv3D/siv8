@@ -16,7 +16,7 @@ namespace s3d
 {
 	namespace
 	{
-		static void PremultiplyAlpha(Color* pixels, const size_t num_pixels)
+		static void PremultiplyAlpha_plain(Color* pixels, const size_t num_pixels)
 		{
 			Color* p = pixels;
 			const Color* const pEnd = (pixels + num_pixels);
@@ -182,7 +182,7 @@ namespace s3d
 		}
 		else
 		{
-			return PremultiplyAlpha(m_pixels.data(), m_pixels.size());
+			return PremultiplyAlpha_plain(m_pixels.data(), m_pixels.size());
 		}
 		
 	# endif
@@ -203,7 +203,7 @@ namespace s3d
 
 	# endif
 
-		return PremultiplyAlpha(m_pixels.data(), m_pixels.size());
+		return PremultiplyAlpha_plain(m_pixels.data(), m_pixels.size());
 	}
 
 }

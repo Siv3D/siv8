@@ -97,15 +97,17 @@ namespace s3d
 
 		/// @brief JPEG 形式の画像ファイルをデコードして Image を作成します。
 		/// @param path 画像ファイルのパス
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか（JPEG では無視されます）
 		/// @return 作成した Image
 		[[nodiscard]]
-		Image decode(FilePathView path) const override;
+		Image decode(FilePathView path, PremultiplyAlpha premultiplyAlpha) const override;
 
 		/// @brief JPEG 形式の画像データをデコードして Image を作成します。
 		/// @param reader 画像データの IReader インタフェース
 		/// @param pathHint ファイルパス（オプション）
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか（JPEG では無視されます）
 		/// @return 作成した Image
 		[[nodiscard]]
-		Image decode(IReader& reader, FilePathView pathHint = {}) const override;
+		Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const override;
 	};
 }

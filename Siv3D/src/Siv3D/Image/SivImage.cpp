@@ -140,14 +140,14 @@ namespace s3d
 		}
 	}
 
-	Image::Image(const FilePathView path, const ImageFormat format)
+	Image::Image(const FilePathView path, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
 	{
-		*this = ImageDecoder::Decode(path, format);
+		*this = ImageDecoder::Decode(path, premultiplyAlpha, format);
 	}
 
-	Image::Image(IReader&& reader, const ImageFormat format)
+	Image::Image(IReader&& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
 	{
-		*this = ImageDecoder::Decode(reader, format);
+		*this = ImageDecoder::Decode(reader, premultiplyAlpha, format);
 	}
 
 	////////////////////////////////////////////////////////////////

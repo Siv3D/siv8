@@ -75,12 +75,12 @@ namespace s3d
 		return ImageInfo{ Size{ width, height }, ImageFormat::SVG, ImagePixelFormat::R8G8B8A8, false };
 	}
 
-	Image SVGDecoder::decode(const FilePathView path) const
+	Image SVGDecoder::decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha) const
 	{
-		return IImageDecoder::decode(path);
+		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image SVGDecoder::decode(IReader& reader, const FilePathView) const
+	Image SVGDecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha premultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("SVGDecoder::decode()");
 
@@ -101,7 +101,7 @@ namespace s3d
 			return{};
 		}
 
-		Image image = svg.render();
+		Image image = svg.render(unspecified, Color{ 0, 0 }, premultiplyAlpha);
 
 		if (not image)
 		{

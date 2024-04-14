@@ -15,6 +15,7 @@
 # include "AlignedAllocator.hpp"
 # include "ColorHSV.hpp"
 # include "ImageFormat.hpp"
+# include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
@@ -149,15 +150,17 @@ namespace s3d
 
 		/// @brief 画像ファイルの内容から画像データを作成します。
 		/// @param path 画像ファイルのパス
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
 		[[nodiscard]]
-		explicit Image(FilePathView path, ImageFormat format = ImageFormat::Unspecified);
+		explicit Image(FilePathView path, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
 
 		/// @brief IReader から画像データを作成します。
 		/// @param reader IReader オブジェクト
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
 		[[nodiscard]]
-		explicit Image(IReader&& reader, ImageFormat format = ImageFormat::Unspecified);
+		explicit Image(IReader&& reader, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
 
 		//[[nodiscard]]
 		//Image(FilePathView rgb, FilePathView alpha);
