@@ -355,18 +355,19 @@ namespace s3d
 	// https://github.com/Wizermil/premultiply_alpha
 	void Image::premultiplyAlpha_gcc()
 	{
-	# if (SIV3D_COMPILER(GCC) || SIV3D_COMPILER(CLANG))
+	# if (SIV3D_COMPILER(GCC) || SIV3D_COMPILER(CLANG) || SIV3D_COMPILER(APPLECLANG))
 
 		using u8x16 = __attribute__((ext_vector_type(16))) uint8_t;
 		using u16x8 = __attribute__((ext_vector_type(8))) uint16_t;
 
 		size_t const loopCount = ((m_pixels.size() + 3) / 4);
 
-		for (u8x16* ptr = reinterpret_cast<u8x16*>(data), *end = (ptr + loopCount); ptr != end; ++ptr)
+		for (u8x16* ptr = reinterpret_cast<u8x16*>(m_pixels.data()), *end = (ptr + loopCount); ptr != end; ++ptr)
 		{
-			u16x8 const alpha{ ptr[3], ptr[3], ptr[7], ptr[7], ptr[11], ptr[11], ptr[15], ptr[15] };
-			u16x8 color_even{ (reinterpret_cast<u16x8>(ptr) >> 8) | u16x8{ 0x0000, 0x00FF, 0x0000, 0x00FF, 0x0000, 0x00FF, 0x0000, 0x00FF } };
-			u16x8 color_odd{ reinterpret_cast<u16x8>(ptr) & u16x8 { 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF } };
+			const auto p = *ptr;
+			u16x8 const alpha{ p[3], p[3], p[7], p[7], p[11], p[11], p[15], p[15] };
+			u16x8 color_even{ (reinterpret_cast<u16x8>(p) >> 8) | u16x8{ 0x0000, 0x00FF, 0x0000, 0x00FF, 0x0000, 0x00FF, 0x0000, 0x00FF } };
+			u16x8 color_odd{ reinterpret_cast<u16x8>(p) & u16x8 { 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF, 0x00FF } };
 			color_even = color_even * alpha;
 			color_odd = color_odd * alpha;
 			color_even /= 255U;
