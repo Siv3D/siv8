@@ -361,6 +361,8 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\BigInt\BigIntDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Console\IConsole.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Emoji\CEmoji.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Emoji\IEmoji.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DComponent.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.hpp" />
@@ -381,6 +383,149 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\IUserAction.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Window\IWindow.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\ftconfig.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\ftheader.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\ftmodule.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\ftoption.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\ftstdlib.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\integer-types.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\mac-support.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\config\public-macros.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\freetype.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftadvanc.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftbbox.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftbdf.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftbitmap.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftbzip2.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftcache.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftchapters.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftcid.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftcolor.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftdriver.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\fterrdef.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\fterrors.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftfntfmt.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftgasp.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftglyph.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftgxval.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftgzip.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftimage.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftincrem.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftlcdfil.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftlist.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftlogging.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftlzw.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftmac.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftmm.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftmodapi.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftmoderr.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftotval.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftoutln.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftparams.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftpfr.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftrender.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftsizes.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftsnames.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftstroke.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftsynth.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftsystem.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\fttrigon.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\fttypes.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ftwinfnt.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\autohint.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\cffotypes.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\cfftypes.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\compiler-macros.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftcalc.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftdebug.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftdrv.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\fthash.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftmemory.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftmmtypes.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftobjs.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftpsprop.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftrfork.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftserv.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftstream.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\fttrace.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\ftvalid.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\psaux.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\pshints.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svbdf.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svcfftl.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svcid.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svfntfmt.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svgldict.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svgxval.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svkern.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svmetric.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svmm.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svotval.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svpfr.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svpostnm.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svprop.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svpscmap.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svpsinfo.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svsfnt.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svttcmap.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svtteng.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svttglyf.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\services\svwinfnt.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\sfnt.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\svginterface.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\t1types.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\tttypes.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\internal\wofftypes.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\otsvg.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\t1tables.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\ttnameid.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\tttables.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\freetype\tttags.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\ft2build.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-aat-layout.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-aat.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-blob.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-buffer.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-cairo.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-common.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-coretext.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-deprecated.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-directwrite.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-draw.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-face.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-font.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ft.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gdi.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-glib.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gobject-structs.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gobject.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-graphite2.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-icu.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-map.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-color.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-deprecated.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-font.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-layout.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-math.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-meta.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-metrics.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-name.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-shape.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-var.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-paint.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-set.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-shape-plan.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-shape.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-style.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-subset-repacker.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-subset.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-unicode.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-uniscribe.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-version.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-wasm-api.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\libjpeg-turbo\turbojpeg.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\libpng\png.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\libpng\pngconf.h" />
@@ -544,6 +689,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\DayOfWeek\SivDayOfWeek.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Demangle\SivDemangle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\CEmoji.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\EmojiFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\EngineLog\SivEngineLog.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Error\SivError.cpp" />
@@ -957,13 +1104,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\Siv3D\include;..\Siv3D\include\ThirdParty;..\Siv3D\src;..\Siv3D\src\Siv3D-Platform\WindowsDesktop;..\Siv3D\src\ThirdParty;..\Dependencies\boost_1_83_0;$(IncludePath)</IncludePath>
+    <IncludePath>..\Siv3D\include;..\Siv3D\include\ThirdParty;..\Siv3D\src;..\Siv3D\src\Siv3D-Platform\WindowsDesktop;..\Siv3D\src\ThirdParty;..\Siv3D\src\ThirdParty-prebuilt\freetype;..\Dependencies\boost_1_83_0;$(IncludePath)</IncludePath>
     <OutDir>..\Siv3D\lib\Windows\siv3d\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Debug\Intermediate\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\Siv3D\include;..\Siv3D\include\ThirdParty;..\Siv3D\src;..\Siv3D\src\Siv3D-Platform\WindowsDesktop;..\Siv3D\src\ThirdParty;..\Dependencies\boost_1_83_0;$(IncludePath)</IncludePath>
+    <IncludePath>..\Siv3D\include;..\Siv3D\include\ThirdParty;..\Siv3D\src;..\Siv3D\src\Siv3D-Platform\WindowsDesktop;..\Siv3D\src\ThirdParty;..\Siv3D\src\ThirdParty-prebuilt\freetype;..\Dependencies\boost_1_83_0;$(IncludePath)</IncludePath>
     <OutDir>..\Siv3D\lib\Windows\siv3d\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
   </PropertyGroup>
