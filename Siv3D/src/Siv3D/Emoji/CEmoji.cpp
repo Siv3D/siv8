@@ -132,11 +132,15 @@ namespace s3d
 			if (SkPixmap map;
 				canvas->peekPixels(&map))
 			{
+			# if SIV3D_PLATFORM(WINDOWS)
+				
 				for (auto& pixel : image)
 				{
 					const Color c = pixel;
 					pixel = Color{ c.b, c.g, c.r, c.a };
 				}
+				
+			# endif
 			}
 		}
 
