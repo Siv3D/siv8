@@ -1488,48 +1488,24 @@
 		F98603902BCFBB54006A4C0F /* SkSFNTHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE692BCFBB53006A4C0F /* SkSFNTHeader.h */; };
 		F98603912BCFBB54006A4C0F /* SkTTCFHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE6A2BCFBB53006A4C0F /* SkTTCFHeader.h */; };
 		F98603922BCFBB54006A4C0F /* SkConicalGradient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE6C2BCFBB53006A4C0F /* SkConicalGradient.cpp */; };
-		F98603932BCFBB54006A4C0F /* SkConicalGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE6D2BCFBB53006A4C0F /* SkConicalGradient.h */; };
 		F98603942BCFBB54006A4C0F /* SkGradientBaseShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE6E2BCFBB53006A4C0F /* SkGradientBaseShader.cpp */; };
-		F98603952BCFBB54006A4C0F /* SkGradientBaseShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE6F2BCFBB53006A4C0F /* SkGradientBaseShader.h */; };
 		F98603962BCFBB54006A4C0F /* SkLinearGradient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE702BCFBB53006A4C0F /* SkLinearGradient.cpp */; };
-		F98603972BCFBB54006A4C0F /* SkLinearGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE712BCFBB53006A4C0F /* SkLinearGradient.h */; };
 		F98603982BCFBB54006A4C0F /* SkRadialGradient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE722BCFBB53006A4C0F /* SkRadialGradient.cpp */; };
-		F98603992BCFBB54006A4C0F /* SkRadialGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE732BCFBB53006A4C0F /* SkRadialGradient.h */; };
 		F986039A2BCFBB54006A4C0F /* SkSweepGradient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE742BCFBB53006A4C0F /* SkSweepGradient.cpp */; };
-		F986039B2BCFBB54006A4C0F /* SkSweepGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE752BCFBB53006A4C0F /* SkSweepGradient.h */; };
 		F986039C2BCFBB54006A4C0F /* SkBitmapProcShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE772BCFBB53006A4C0F /* SkBitmapProcShader.cpp */; };
-		F986039D2BCFBB54006A4C0F /* SkBitmapProcShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE782BCFBB53006A4C0F /* SkBitmapProcShader.h */; };
 		F986039E2BCFBB54006A4C0F /* SkBlendShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE792BCFBB53006A4C0F /* SkBlendShader.cpp */; };
-		F986039F2BCFBB54006A4C0F /* SkBlendShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE7A2BCFBB53006A4C0F /* SkBlendShader.h */; };
 		F98603A02BCFBB54006A4C0F /* SkColorFilterShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE7B2BCFBB53006A4C0F /* SkColorFilterShader.cpp */; };
-		F98603A12BCFBB54006A4C0F /* SkColorFilterShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE7C2BCFBB53006A4C0F /* SkColorFilterShader.h */; };
 		F98603A22BCFBB54006A4C0F /* SkColorShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE7D2BCFBB53006A4C0F /* SkColorShader.cpp */; };
-		F98603A32BCFBB54006A4C0F /* SkColorShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE7E2BCFBB53006A4C0F /* SkColorShader.h */; };
-		F98603A42BCFBB54006A4C0F /* SkCoordClampShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE7F2BCFBB53006A4C0F /* SkCoordClampShader.cpp */; };
-		F98603A52BCFBB54006A4C0F /* SkCoordClampShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE802BCFBB53006A4C0F /* SkCoordClampShader.h */; };
 		F98603A62BCFBB54006A4C0F /* SkEmptyShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE812BCFBB53006A4C0F /* SkEmptyShader.cpp */; };
-		F98603A72BCFBB54006A4C0F /* SkEmptyShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE822BCFBB53006A4C0F /* SkEmptyShader.h */; };
-		F98603A82BCFBB54006A4C0F /* SkGainmapShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE832BCFBB53006A4C0F /* SkGainmapShader.cpp */; };
 		F98603A92BCFBB54006A4C0F /* SkImageShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE842BCFBB53006A4C0F /* SkImageShader.cpp */; };
-		F98603AA2BCFBB54006A4C0F /* SkImageShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE852BCFBB53006A4C0F /* SkImageShader.h */; };
 		F98603AB2BCFBB54006A4C0F /* SkLocalMatrixShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE862BCFBB53006A4C0F /* SkLocalMatrixShader.cpp */; };
-		F98603AC2BCFBB54006A4C0F /* SkLocalMatrixShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE872BCFBB53006A4C0F /* SkLocalMatrixShader.h */; };
-		F98603AD2BCFBB54006A4C0F /* SkPerlinNoiseShaderImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE882BCFBB53006A4C0F /* SkPerlinNoiseShaderImpl.cpp */; };
-		F98603AE2BCFBB54006A4C0F /* SkPerlinNoiseShaderImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE892BCFBB53006A4C0F /* SkPerlinNoiseShaderImpl.h */; };
-		F98603AF2BCFBB54006A4C0F /* SkPerlinNoiseShaderType.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE8A2BCFBB53006A4C0F /* SkPerlinNoiseShaderType.h */; };
 		F98603B02BCFBB54006A4C0F /* SkPictureShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE8B2BCFBB53006A4C0F /* SkPictureShader.cpp */; };
-		F98603B12BCFBB54006A4C0F /* SkPictureShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE8C2BCFBB53006A4C0F /* SkPictureShader.h */; };
 		F98603B22BCFBB54006A4C0F /* SkRuntimeShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE8D2BCFBB53006A4C0F /* SkRuntimeShader.cpp */; };
-		F98603B32BCFBB54006A4C0F /* SkRuntimeShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE8E2BCFBB53006A4C0F /* SkRuntimeShader.h */; };
 		F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE8F2BCFBB53006A4C0F /* SkShader.cpp */; };
 		F98603B52BCFBB54006A4C0F /* SkShaderBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE902BCFBB53006A4C0F /* SkShaderBase.cpp */; };
-		F98603B62BCFBB54006A4C0F /* SkShaderBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE912BCFBB53006A4C0F /* SkShaderBase.h */; };
 		F98603B72BCFBB54006A4C0F /* SkTransformShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE922BCFBB53006A4C0F /* SkTransformShader.cpp */; };
-		F98603B82BCFBB54006A4C0F /* SkTransformShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE932BCFBB53006A4C0F /* SkTransformShader.h */; };
 		F98603B92BCFBB54006A4C0F /* SkTriColorShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE942BCFBB53006A4C0F /* SkTriColorShader.cpp */; };
-		F98603BA2BCFBB54006A4C0F /* SkTriColorShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE952BCFBB53006A4C0F /* SkTriColorShader.h */; };
 		F98603BB2BCFBB54006A4C0F /* SkWorkingColorSpaceShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE962BCFBB53006A4C0F /* SkWorkingColorSpaceShader.cpp */; };
-		F98603BC2BCFBB54006A4C0F /* SkWorkingColorSpaceShader.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FE972BCFBB53006A4C0F /* SkWorkingColorSpaceShader.h */; };
 		F98603BD2BCFBB54006A4C0F /* SkSLCanExitWithoutReturningValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE992BCFBB53006A4C0F /* SkSLCanExitWithoutReturningValue.cpp */; };
 		F98603BE2BCFBB54006A4C0F /* SkSLCheckProgramStructure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE9A2BCFBB53006A4C0F /* SkSLCheckProgramStructure.cpp */; };
 		F98603BF2BCFBB54006A4C0F /* SkSLCheckSymbolTableCorrectness.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FE9B2BCFBB53006A4C0F /* SkSLCheckSymbolTableCorrectness.cpp */; };
@@ -1841,26 +1817,7 @@
 		F986F8BE2BC843FD006A4C0F /* RegExpDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8BA2BC843FD006A4C0F /* RegExpDetail.hpp */; };
 		F986F8BF2BC843FD006A4C0F /* SivRegExp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8BB2BC843FD006A4C0F /* SivRegExp.cpp */; };
 		F986F8FD2BC8441F006A4C0F /* ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C02BC8441F006A4C0F /* ascii.c */; };
-		F986F8FE2BC8441F006A4C0F /* big5.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C12BC8441F006A4C0F /* big5.c */; };
 		F986F8FF2BC8441F006A4C0F /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8C22BC8441F006A4C0F /* config.h */; };
-		F986F9002BC8441F006A4C0F /* cp1251.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C32BC8441F006A4C0F /* cp1251.c */; };
-		F986F9052BC8441F006A4C0F /* gb18030.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C82BC8441F006A4C0F /* gb18030.c */; };
-		F986F9062BC8441F006A4C0F /* iso8859_1.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8C92BC8441F006A4C0F /* iso8859_1.c */; };
-		F986F9072BC8441F006A4C0F /* iso8859_2.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CA2BC8441F006A4C0F /* iso8859_2.c */; };
-		F986F9082BC8441F006A4C0F /* iso8859_3.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CB2BC8441F006A4C0F /* iso8859_3.c */; };
-		F986F9092BC8441F006A4C0F /* iso8859_4.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CC2BC8441F006A4C0F /* iso8859_4.c */; };
-		F986F90A2BC8441F006A4C0F /* iso8859_5.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CD2BC8441F006A4C0F /* iso8859_5.c */; };
-		F986F90B2BC8441F006A4C0F /* iso8859_6.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CE2BC8441F006A4C0F /* iso8859_6.c */; };
-		F986F90C2BC8441F006A4C0F /* iso8859_7.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8CF2BC8441F006A4C0F /* iso8859_7.c */; };
-		F986F90D2BC8441F006A4C0F /* iso8859_8.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D02BC8441F006A4C0F /* iso8859_8.c */; };
-		F986F90E2BC8441F006A4C0F /* iso8859_9.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D12BC8441F006A4C0F /* iso8859_9.c */; };
-		F986F90F2BC8441F006A4C0F /* iso8859_10.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D22BC8441F006A4C0F /* iso8859_10.c */; };
-		F986F9102BC8441F006A4C0F /* iso8859_11.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D32BC8441F006A4C0F /* iso8859_11.c */; };
-		F986F9112BC8441F006A4C0F /* iso8859_13.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D42BC8441F006A4C0F /* iso8859_13.c */; };
-		F986F9122BC8441F006A4C0F /* iso8859_14.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D52BC8441F006A4C0F /* iso8859_14.c */; };
-		F986F9132BC8441F006A4C0F /* iso8859_15.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D62BC8441F006A4C0F /* iso8859_15.c */; };
-		F986F9142BC8441F006A4C0F /* iso8859_16.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D72BC8441F006A4C0F /* iso8859_16.c */; };
-		F986F9152BC8441F006A4C0F /* koi8_r.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8D82BC8441F006A4C0F /* koi8_r.c */; };
 		F986F9172BC8441F006A4C0F /* onig_init.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8DA2BC8441F006A4C0F /* onig_init.c */; };
 		F986F9182BC8441F006A4C0F /* oniggnu.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8DB2BC8441F006A4C0F /* oniggnu.h */; };
 		F986F9192BC8441F006A4C0F /* oniguruma.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F8DC2BC8441F006A4C0F /* oniguruma.h */; };
@@ -3018,26 +2975,7 @@
 		F986F8BA2BC843FD006A4C0F /* RegExpDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RegExpDetail.hpp; sourceTree = "<group>"; };
 		F986F8BB2BC843FD006A4C0F /* SivRegExp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRegExp.cpp; sourceTree = "<group>"; };
 		F986F8C02BC8441F006A4C0F /* ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ascii.c; sourceTree = "<group>"; };
-		F986F8C12BC8441F006A4C0F /* big5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = big5.c; sourceTree = "<group>"; };
 		F986F8C22BC8441F006A4C0F /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
-		F986F8C32BC8441F006A4C0F /* cp1251.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cp1251.c; sourceTree = "<group>"; };
-		F986F8C82BC8441F006A4C0F /* gb18030.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gb18030.c; sourceTree = "<group>"; };
-		F986F8C92BC8441F006A4C0F /* iso8859_1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_1.c; sourceTree = "<group>"; };
-		F986F8CA2BC8441F006A4C0F /* iso8859_2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_2.c; sourceTree = "<group>"; };
-		F986F8CB2BC8441F006A4C0F /* iso8859_3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_3.c; sourceTree = "<group>"; };
-		F986F8CC2BC8441F006A4C0F /* iso8859_4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_4.c; sourceTree = "<group>"; };
-		F986F8CD2BC8441F006A4C0F /* iso8859_5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_5.c; sourceTree = "<group>"; };
-		F986F8CE2BC8441F006A4C0F /* iso8859_6.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_6.c; sourceTree = "<group>"; };
-		F986F8CF2BC8441F006A4C0F /* iso8859_7.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_7.c; sourceTree = "<group>"; };
-		F986F8D02BC8441F006A4C0F /* iso8859_8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_8.c; sourceTree = "<group>"; };
-		F986F8D12BC8441F006A4C0F /* iso8859_9.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_9.c; sourceTree = "<group>"; };
-		F986F8D22BC8441F006A4C0F /* iso8859_10.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_10.c; sourceTree = "<group>"; };
-		F986F8D32BC8441F006A4C0F /* iso8859_11.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_11.c; sourceTree = "<group>"; };
-		F986F8D42BC8441F006A4C0F /* iso8859_13.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_13.c; sourceTree = "<group>"; };
-		F986F8D52BC8441F006A4C0F /* iso8859_14.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_14.c; sourceTree = "<group>"; };
-		F986F8D62BC8441F006A4C0F /* iso8859_15.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_15.c; sourceTree = "<group>"; };
-		F986F8D72BC8441F006A4C0F /* iso8859_16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iso8859_16.c; sourceTree = "<group>"; };
-		F986F8D82BC8441F006A4C0F /* koi8_r.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = koi8_r.c; sourceTree = "<group>"; };
 		F986F8DA2BC8441F006A4C0F /* onig_init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = onig_init.c; sourceTree = "<group>"; };
 		F986F8DB2BC8441F006A4C0F /* oniggnu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oniggnu.h; sourceTree = "<group>"; };
 		F986F8DC2BC8441F006A4C0F /* oniguruma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oniguruma.h; sourceTree = "<group>"; };
@@ -3940,48 +3878,24 @@
 		F986FE692BCFBB53006A4C0F /* SkSFNTHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkSFNTHeader.h; sourceTree = "<group>"; };
 		F986FE6A2BCFBB53006A4C0F /* SkTTCFHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkTTCFHeader.h; sourceTree = "<group>"; };
 		F986FE6C2BCFBB53006A4C0F /* SkConicalGradient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkConicalGradient.cpp; sourceTree = "<group>"; };
-		F986FE6D2BCFBB53006A4C0F /* SkConicalGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkConicalGradient.h; sourceTree = "<group>"; };
 		F986FE6E2BCFBB53006A4C0F /* SkGradientBaseShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkGradientBaseShader.cpp; sourceTree = "<group>"; };
-		F986FE6F2BCFBB53006A4C0F /* SkGradientBaseShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkGradientBaseShader.h; sourceTree = "<group>"; };
 		F986FE702BCFBB53006A4C0F /* SkLinearGradient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkLinearGradient.cpp; sourceTree = "<group>"; };
-		F986FE712BCFBB53006A4C0F /* SkLinearGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkLinearGradient.h; sourceTree = "<group>"; };
 		F986FE722BCFBB53006A4C0F /* SkRadialGradient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkRadialGradient.cpp; sourceTree = "<group>"; };
-		F986FE732BCFBB53006A4C0F /* SkRadialGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkRadialGradient.h; sourceTree = "<group>"; };
 		F986FE742BCFBB53006A4C0F /* SkSweepGradient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkSweepGradient.cpp; sourceTree = "<group>"; };
-		F986FE752BCFBB53006A4C0F /* SkSweepGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkSweepGradient.h; sourceTree = "<group>"; };
 		F986FE772BCFBB53006A4C0F /* SkBitmapProcShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkBitmapProcShader.cpp; sourceTree = "<group>"; };
-		F986FE782BCFBB53006A4C0F /* SkBitmapProcShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkBitmapProcShader.h; sourceTree = "<group>"; };
 		F986FE792BCFBB53006A4C0F /* SkBlendShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkBlendShader.cpp; sourceTree = "<group>"; };
-		F986FE7A2BCFBB53006A4C0F /* SkBlendShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkBlendShader.h; sourceTree = "<group>"; };
 		F986FE7B2BCFBB53006A4C0F /* SkColorFilterShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkColorFilterShader.cpp; sourceTree = "<group>"; };
-		F986FE7C2BCFBB53006A4C0F /* SkColorFilterShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkColorFilterShader.h; sourceTree = "<group>"; };
 		F986FE7D2BCFBB53006A4C0F /* SkColorShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkColorShader.cpp; sourceTree = "<group>"; };
-		F986FE7E2BCFBB53006A4C0F /* SkColorShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkColorShader.h; sourceTree = "<group>"; };
-		F986FE7F2BCFBB53006A4C0F /* SkCoordClampShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkCoordClampShader.cpp; sourceTree = "<group>"; };
-		F986FE802BCFBB53006A4C0F /* SkCoordClampShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkCoordClampShader.h; sourceTree = "<group>"; };
 		F986FE812BCFBB53006A4C0F /* SkEmptyShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkEmptyShader.cpp; sourceTree = "<group>"; };
-		F986FE822BCFBB53006A4C0F /* SkEmptyShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkEmptyShader.h; sourceTree = "<group>"; };
-		F986FE832BCFBB53006A4C0F /* SkGainmapShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkGainmapShader.cpp; sourceTree = "<group>"; };
 		F986FE842BCFBB53006A4C0F /* SkImageShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkImageShader.cpp; sourceTree = "<group>"; };
-		F986FE852BCFBB53006A4C0F /* SkImageShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkImageShader.h; sourceTree = "<group>"; };
 		F986FE862BCFBB53006A4C0F /* SkLocalMatrixShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkLocalMatrixShader.cpp; sourceTree = "<group>"; };
-		F986FE872BCFBB53006A4C0F /* SkLocalMatrixShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkLocalMatrixShader.h; sourceTree = "<group>"; };
-		F986FE882BCFBB53006A4C0F /* SkPerlinNoiseShaderImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkPerlinNoiseShaderImpl.cpp; sourceTree = "<group>"; };
-		F986FE892BCFBB53006A4C0F /* SkPerlinNoiseShaderImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkPerlinNoiseShaderImpl.h; sourceTree = "<group>"; };
-		F986FE8A2BCFBB53006A4C0F /* SkPerlinNoiseShaderType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkPerlinNoiseShaderType.h; sourceTree = "<group>"; };
 		F986FE8B2BCFBB53006A4C0F /* SkPictureShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkPictureShader.cpp; sourceTree = "<group>"; };
-		F986FE8C2BCFBB53006A4C0F /* SkPictureShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkPictureShader.h; sourceTree = "<group>"; };
 		F986FE8D2BCFBB53006A4C0F /* SkRuntimeShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkRuntimeShader.cpp; sourceTree = "<group>"; };
-		F986FE8E2BCFBB53006A4C0F /* SkRuntimeShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkRuntimeShader.h; sourceTree = "<group>"; };
 		F986FE8F2BCFBB53006A4C0F /* SkShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkShader.cpp; sourceTree = "<group>"; };
 		F986FE902BCFBB53006A4C0F /* SkShaderBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkShaderBase.cpp; sourceTree = "<group>"; };
-		F986FE912BCFBB53006A4C0F /* SkShaderBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkShaderBase.h; sourceTree = "<group>"; };
 		F986FE922BCFBB53006A4C0F /* SkTransformShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkTransformShader.cpp; sourceTree = "<group>"; };
-		F986FE932BCFBB53006A4C0F /* SkTransformShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkTransformShader.h; sourceTree = "<group>"; };
 		F986FE942BCFBB53006A4C0F /* SkTriColorShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkTriColorShader.cpp; sourceTree = "<group>"; };
-		F986FE952BCFBB53006A4C0F /* SkTriColorShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkTriColorShader.h; sourceTree = "<group>"; };
 		F986FE962BCFBB53006A4C0F /* SkWorkingColorSpaceShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkWorkingColorSpaceShader.cpp; sourceTree = "<group>"; };
-		F986FE972BCFBB53006A4C0F /* SkWorkingColorSpaceShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkWorkingColorSpaceShader.h; sourceTree = "<group>"; };
 		F986FE992BCFBB53006A4C0F /* SkSLCanExitWithoutReturningValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkSLCanExitWithoutReturningValue.cpp; sourceTree = "<group>"; };
 		F986FE9A2BCFBB53006A4C0F /* SkSLCheckProgramStructure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkSLCheckProgramStructure.cpp; sourceTree = "<group>"; };
 		F986FE9B2BCFBB53006A4C0F /* SkSLCheckSymbolTableCorrectness.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkSLCheckSymbolTableCorrectness.cpp; sourceTree = "<group>"; };
@@ -6636,25 +6550,6 @@
 			isa = PBXGroup;
 			children = (
 				F986F8C02BC8441F006A4C0F /* ascii.c */,
-				F986F8C12BC8441F006A4C0F /* big5.c */,
-				F986F8C32BC8441F006A4C0F /* cp1251.c */,
-				F986F8C82BC8441F006A4C0F /* gb18030.c */,
-				F986F8C92BC8441F006A4C0F /* iso8859_1.c */,
-				F986F8CA2BC8441F006A4C0F /* iso8859_2.c */,
-				F986F8CB2BC8441F006A4C0F /* iso8859_3.c */,
-				F986F8CC2BC8441F006A4C0F /* iso8859_4.c */,
-				F986F8CD2BC8441F006A4C0F /* iso8859_5.c */,
-				F986F8CE2BC8441F006A4C0F /* iso8859_6.c */,
-				F986F8CF2BC8441F006A4C0F /* iso8859_7.c */,
-				F986F8D02BC8441F006A4C0F /* iso8859_8.c */,
-				F986F8D12BC8441F006A4C0F /* iso8859_9.c */,
-				F986F8D22BC8441F006A4C0F /* iso8859_10.c */,
-				F986F8D32BC8441F006A4C0F /* iso8859_11.c */,
-				F986F8D42BC8441F006A4C0F /* iso8859_13.c */,
-				F986F8D52BC8441F006A4C0F /* iso8859_14.c */,
-				F986F8D62BC8441F006A4C0F /* iso8859_15.c */,
-				F986F8D72BC8441F006A4C0F /* iso8859_16.c */,
-				F986F8D82BC8441F006A4C0F /* koi8_r.c */,
 				F986F8DA2BC8441F006A4C0F /* onig_init.c */,
 				F986F8DD2BC8441F006A4C0F /* regcomp.c */,
 				F986F8DE2BC8441F006A4C0F /* regenc.c */,
@@ -7854,15 +7749,10 @@
 			isa = PBXGroup;
 			children = (
 				F986FE6C2BCFBB53006A4C0F /* SkConicalGradient.cpp */,
-				F986FE6D2BCFBB53006A4C0F /* SkConicalGradient.h */,
 				F986FE6E2BCFBB53006A4C0F /* SkGradientBaseShader.cpp */,
-				F986FE6F2BCFBB53006A4C0F /* SkGradientBaseShader.h */,
 				F986FE702BCFBB53006A4C0F /* SkLinearGradient.cpp */,
-				F986FE712BCFBB53006A4C0F /* SkLinearGradient.h */,
 				F986FE722BCFBB53006A4C0F /* SkRadialGradient.cpp */,
-				F986FE732BCFBB53006A4C0F /* SkRadialGradient.h */,
 				F986FE742BCFBB53006A4C0F /* SkSweepGradient.cpp */,
-				F986FE752BCFBB53006A4C0F /* SkSweepGradient.h */,
 			);
 			path = gradients;
 			sourceTree = "<group>";
@@ -7872,38 +7762,19 @@
 			children = (
 				F986FE762BCFBB53006A4C0F /* gradients */,
 				F986FE772BCFBB53006A4C0F /* SkBitmapProcShader.cpp */,
-				F986FE782BCFBB53006A4C0F /* SkBitmapProcShader.h */,
 				F986FE792BCFBB53006A4C0F /* SkBlendShader.cpp */,
-				F986FE7A2BCFBB53006A4C0F /* SkBlendShader.h */,
 				F986FE7B2BCFBB53006A4C0F /* SkColorFilterShader.cpp */,
-				F986FE7C2BCFBB53006A4C0F /* SkColorFilterShader.h */,
 				F986FE7D2BCFBB53006A4C0F /* SkColorShader.cpp */,
-				F986FE7E2BCFBB53006A4C0F /* SkColorShader.h */,
-				F986FE7F2BCFBB53006A4C0F /* SkCoordClampShader.cpp */,
-				F986FE802BCFBB53006A4C0F /* SkCoordClampShader.h */,
 				F986FE812BCFBB53006A4C0F /* SkEmptyShader.cpp */,
-				F986FE822BCFBB53006A4C0F /* SkEmptyShader.h */,
-				F986FE832BCFBB53006A4C0F /* SkGainmapShader.cpp */,
 				F986FE842BCFBB53006A4C0F /* SkImageShader.cpp */,
-				F986FE852BCFBB53006A4C0F /* SkImageShader.h */,
 				F986FE862BCFBB53006A4C0F /* SkLocalMatrixShader.cpp */,
-				F986FE872BCFBB53006A4C0F /* SkLocalMatrixShader.h */,
-				F986FE882BCFBB53006A4C0F /* SkPerlinNoiseShaderImpl.cpp */,
-				F986FE892BCFBB53006A4C0F /* SkPerlinNoiseShaderImpl.h */,
-				F986FE8A2BCFBB53006A4C0F /* SkPerlinNoiseShaderType.h */,
 				F986FE8B2BCFBB53006A4C0F /* SkPictureShader.cpp */,
-				F986FE8C2BCFBB53006A4C0F /* SkPictureShader.h */,
 				F986FE8D2BCFBB53006A4C0F /* SkRuntimeShader.cpp */,
-				F986FE8E2BCFBB53006A4C0F /* SkRuntimeShader.h */,
 				F986FE8F2BCFBB53006A4C0F /* SkShader.cpp */,
 				F986FE902BCFBB53006A4C0F /* SkShaderBase.cpp */,
-				F986FE912BCFBB53006A4C0F /* SkShaderBase.h */,
 				F986FE922BCFBB53006A4C0F /* SkTransformShader.cpp */,
-				F986FE932BCFBB53006A4C0F /* SkTransformShader.h */,
 				F986FE942BCFBB53006A4C0F /* SkTriColorShader.cpp */,
-				F986FE952BCFBB53006A4C0F /* SkTriColorShader.h */,
 				F986FE962BCFBB53006A4C0F /* SkWorkingColorSpaceShader.cpp */,
-				F986FE972BCFBB53006A4C0F /* SkWorkingColorSpaceShader.h */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -8402,7 +8273,6 @@
 				F98600AF2BCFBB53006A4C0F /* SkParse.h in Headers */,
 				F986F9AD2BCA9D0A006A4C0F /* lunasvg.h in Headers */,
 				F90706BD2B9DAEC900383E4D /* phmap_config.h in Headers */,
-				F986039F2BCFBB54006A4C0F /* SkBlendShader.h in Headers */,
 				F9070B012B9DEB5900383E4D /* format-inl.h in Headers */,
 				F9070CA12B9F175000383E4D /* ColorF.hpp in Headers */,
 				F986FA7A2BCFB53B006A4C0F /* ftcid.h in Headers */,
@@ -8432,7 +8302,6 @@
 				F98602182BCFBB54006A4C0F /* SkPathPriv.h in Headers */,
 				F90706992B9DAEC900383E4D /* bits.h in Headers */,
 				F98600052BCFBB53006A4C0F /* SkClipOp.h in Headers */,
-				F986039B2BCFBB54006A4C0F /* SkSweepGradient.h in Headers */,
 				F9070C5B2B9F175000383E4D /* FormatUtility.ipp in Headers */,
 				F986007B2BCFBB53006A4C0F /* SkMalloc.h in Headers */,
 				F90706902B9DAEC900383E4D /* optimization.h in Headers */,
@@ -8528,7 +8397,6 @@
 				F9070C952B9F175000383E4D /* 2DShapesFwd.hpp in Headers */,
 				F9528C152BBF026F00222F45 /* threading.h in Headers */,
 				F986045F2BCFBB54006A4C0F /* SkSLProgramWriter.h in Headers */,
-				F98603AC2BCFBB54006A4C0F /* SkLocalMatrixShader.h in Headers */,
 				F90706CE2B9DAEC900383E4D /* bitshuffle.h in Headers */,
 				F98600B02BCFBB53006A4C0F /* SkParsePath.h in Headers */,
 				F98600062BCFBB53006A4C0F /* SkColor.h in Headers */,
@@ -8625,7 +8493,6 @@
 				F9070CBF2B9F175000383E4D /* FmtHelper.hpp in Headers */,
 				F98600082BCFBB53006A4C0F /* SkColorPriv.h in Headers */,
 				F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */,
-				F98603A32BCFBB54006A4C0F /* SkColorShader.h in Headers */,
 				F986F91C2BC8441F006A4C0F /* regenc.h in Headers */,
 				F98601712BCFBB53006A4C0F /* SkBlitter.h in Headers */,
 				F90706D92B9DAEC900383E4D /* compress.h in Headers */,
@@ -8651,7 +8518,6 @@
 				F98601F92BCFBB53006A4C0F /* SkMemset.h in Headers */,
 				F98600A62BCFBB53006A4C0F /* SkCamera.h in Headers */,
 				F98604352BCFBB54006A4C0F /* SkSLStatement.h in Headers */,
-				F98603A52BCFBB54006A4C0F /* SkCoordClampShader.h in Headers */,
 				F9528B6F2BB7089A00222F45 /* CacheDirectory.hpp in Headers */,
 				F9070DEF2B9F175E00383E4D /* TextReaderDetail.hpp in Headers */,
 				F98601992BCFBB53006A4C0F /* SkDebugUtils.h in Headers */,
@@ -8740,7 +8606,6 @@
 				F986F9B82BCA9D0A006A4C0F /* property.h in Headers */,
 				F9528C452BBF026F00222F45 /* zdict.h in Headers */,
 				F9070C5F2B9F175000383E4D /* Indexed.ipp in Headers */,
-				F98603992BCFBB54006A4C0F /* SkRadialGradient.h in Headers */,
 				F9070B072B9DEB5900383E4D /* simdutf.h in Headers */,
 				F90707132B9DAEC900383E4D /* rolv.h in Headers */,
 				F9070CF72B9F175100383E4D /* ScopeExit.hpp in Headers */,
@@ -8780,7 +8645,6 @@
 				F986019F2BCFBB53006A4C0F /* SkDistanceFieldGen.h in Headers */,
 				F9070C432B9F175000383E4D /* BigInt.ipp in Headers */,
 				F9E5FC3C2BC15B260081A4F7 /* DirectXCollision.h in Headers */,
-				F98603B32BCFBB54006A4C0F /* SkRuntimeShader.h in Headers */,
 				F9070CC72B9F175000383E4D /* Hash.hpp in Headers */,
 				F98600832BCFBB53006A4C0F /* SkSpan_impl.h in Headers */,
 				F98601A92BCFBB53006A4C0F /* SkDrawProcs.h in Headers */,
@@ -8806,7 +8670,6 @@
 				F986FA642BCFB53B006A4C0F /* ftobjs.h in Headers */,
 				F9070CFA2B9F175100383E4D /* SIMD.hpp in Headers */,
 				F986023F2BCFBB54006A4C0F /* SkRecord.h in Headers */,
-				F986039D2BCFBB54006A4C0F /* SkBitmapProcShader.h in Headers */,
 				F98600A42BCFBB53006A4C0F /* SkSLVersion.h in Headers */,
 				F986FFEE2BCFBB53006A4C0F /* SkEncodedImageFormat.h in Headers */,
 				F9070DF82B9F175E00383E4D /* UnicodeUtility.hpp in Headers */,
@@ -8926,7 +8789,6 @@
 				F986014A2BCFBB53006A4C0F /* SkAnalyticEdge.h in Headers */,
 				F9070CA22B9F175000383E4D /* ColorHSV.hpp in Headers */,
 				F98600AC2BCFBB53006A4C0F /* SkNWayCanvas.h in Headers */,
-				F98603B12BCFBB54006A4C0F /* SkPictureShader.h in Headers */,
 				F986007C2BCFBB53006A4C0F /* SkMath.h in Headers */,
 				F90706E32B9DAEC900383E4D /* dpbusd.h in Headers */,
 				F98601762BCFBB53006A4C0F /* SkBlurMaskFilterImpl.h in Headers */,
@@ -8936,7 +8798,6 @@
 				F98600472BCFBB53006A4C0F /* SkSwizzle.h in Headers */,
 				F9070CE72B9F175100383E4D /* ParseBool.hpp in Headers */,
 				F98600BC2BCFBB53006A4C0F /* skcms.h in Headers */,
-				F98603BC2BCFBB54006A4C0F /* SkWorkingColorSpaceShader.h in Headers */,
 				F9070AFD2B9DEB5900383E4D /* fixed-dtoa.h in Headers */,
 				F98604002BCFBB54006A4C0F /* SkSLDiscardStatement.h in Headers */,
 				F98603742BCFBB54006A4C0F /* SkIBMFamilyClass.h in Headers */,
@@ -8989,10 +8850,8 @@
 				F98604182BCFBB54006A4C0F /* SkSLIfStatement.h in Headers */,
 				F9070CAD2B9F175000383E4D /* DayOfWeek.hpp in Headers */,
 				F98604852BCFBB54006A4C0F /* SkSLParser.h in Headers */,
-				F98603A72BCFBB54006A4C0F /* SkEmptyShader.h in Headers */,
 				F9070DC42B9F175E00383E4D /* IEmpty.hpp in Headers */,
 				F907070E2B9DAEC900383E4D /* range_round.h in Headers */,
-				F98603B62BCFBB54006A4C0F /* SkShaderBase.h in Headers */,
 				F90707462B9DAEC900383E4D /* sse4.1.h in Headers */,
 				F98604472BCFBB54006A4C0F /* SkSLTypeReference.h in Headers */,
 				F90707292B9DAEC900383E4D /* srai.h in Headers */,
@@ -9021,7 +8880,6 @@
 				F98601D72BCFBB53006A4C0F /* SkIPoint16.h in Headers */,
 				F98600AB2BCFBB53006A4C0F /* SkNullCanvas.h in Headers */,
 				F986FA752BCFB53B006A4C0F /* ftbdf.h in Headers */,
-				F98603B82BCFBB54006A4C0F /* SkTransformShader.h in Headers */,
 				F9070C7A2B9F175000383E4D /* Shuffle.ipp in Headers */,
 				F986F9182BC8441F006A4C0F /* oniggnu.h in Headers */,
 				F9070CD12B9F175100383E4D /* ISteadyClock.hpp in Headers */,
@@ -9087,7 +8945,6 @@
 				F90706E12B9DAEC900383E4D /* div.h in Headers */,
 				F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */,
 				F986024C2BCFBB54006A4C0F /* SkRectPriv.h in Headers */,
-				F98603BA2BCFBB54006A4C0F /* SkTriColorShader.h in Headers */,
 				F907068E2B9DAEC900383E4D /* config.h in Headers */,
 				F90706DB2B9DAEC900383E4D /* copysign.h in Headers */,
 				F986042C2BCFBB54006A4C0F /* SkSLPostfixExpression.h in Headers */,
@@ -9173,7 +9030,6 @@
 				F986FA882BCFB53B006A4C0F /* ftlogging.h in Headers */,
 				F9070C762B9F175000383E4D /* Rect.ipp in Headers */,
 				F986037E2BCFBB54006A4C0F /* SkOTTable_loca.h in Headers */,
-				F98603AA2BCFBB54006A4C0F /* SkImageShader.h in Headers */,
 				F90706A62B9DAEC900383E4D /* bernoulli_distribution.h in Headers */,
 				F986FA962BCFB53B006A4C0F /* ftsynth.h in Headers */,
 				F98600182BCFBB53006A4C0F /* SkFontMgr.h in Headers */,
@@ -9362,7 +9218,6 @@
 				F986FA472BCFB53B006A4C0F /* svcid.h in Headers */,
 				F986F93F2BCA7996006A4C0F /* Math_impl.ipp in Headers */,
 				F98600022BCFBB53006A4C0F /* SkCanvas.h in Headers */,
-				F98603AE2BCFBB54006A4C0F /* SkPerlinNoiseShaderImpl.h in Headers */,
 				F98602862BCFBB54006A4C0F /* SkTaskGroup.h in Headers */,
 				F9528B2D2BAFCDCF00222F45 /* MappedMemory.ipp in Headers */,
 				F98603FD2BCFBB54006A4C0F /* SkSLConstructorStruct.h in Headers */,
@@ -9371,7 +9226,6 @@
 				F98600122BCFBB53006A4C0F /* SkDrawable.h in Headers */,
 				F98600AE2BCFBB53006A4C0F /* SkPaintFilterCanvas.h in Headers */,
 				F98602132BCFBB54006A4C0F /* SkPathEffectBase.h in Headers */,
-				F98603952BCFBB54006A4C0F /* SkGradientBaseShader.h in Headers */,
 				F90707382B9DAEC900383E4D /* xor.h in Headers */,
 				F9070C852B9F175000383E4D /* UnicodeConverter.ipp in Headers */,
 				F90706C22B9DAEC900383E4D /* pcg_extras.hpp in Headers */,
@@ -9455,7 +9309,6 @@
 				F907073F2B9DAEC900383E4D /* f16c.h in Headers */,
 				F90706E72B9DAEC900383E4D /* expand.h in Headers */,
 				F98600952BCFBB53006A4C0F /* SkImageChromium.h in Headers */,
-				F98603972BCFBB54006A4C0F /* SkLinearGradient.h in Headers */,
 				F986FA8E2BCFB53B006A4C0F /* ftotval.h in Headers */,
 				F98600382BCFBB53006A4C0F /* SkRefCnt.h in Headers */,
 				F986026C2BCFBB54006A4C0F /* SkSpecialImage.h in Headers */,
@@ -9531,7 +9384,6 @@
 				F986FA992BCFB53B006A4C0F /* fttypes.h in Headers */,
 				F90707262B9DAEC900383E4D /* sllv.h in Headers */,
 				F9528C062BBF026F00222F45 /* compiler.h in Headers */,
-				F98603A12BCFBB54006A4C0F /* SkColorFilterShader.h in Headers */,
 				F98601DB2BCFBB53006A4C0F /* SkLatticeIter.h in Headers */,
 				F9528A8A2BA0251E00222F45 /* Window.ipp in Headers */,
 				F986040B2BCFBB54006A4C0F /* SkSLFieldAccess.h in Headers */,
@@ -9574,7 +9426,6 @@
 				F98603802BCFBB54006A4C0F /* SkOTTable_maxp_TT.h in Headers */,
 				F986FA662BCFB53B006A4C0F /* ftrfork.h in Headers */,
 				F986F9C02BCA9D0A006A4C0F /* svgelement.h in Headers */,
-				F98603932BCFBB54006A4C0F /* SkConicalGradient.h in Headers */,
 				F98600872BCFBB53006A4C0F /* SkTFitsIn.h in Headers */,
 				F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */,
 				F907075A2B9DAEC900383E4D /* XoshiroCpp.hpp in Headers */,
@@ -9654,7 +9505,6 @@
 				F9070C6C2B9F175000383E4D /* Memory.ipp in Headers */,
 				F9528BA52BBD707100222F45 /* MemoryViewReader.ipp in Headers */,
 				F90707322B9DAEC900383E4D /* ternarylogic.h in Headers */,
-				F98603AF2BCFBB54006A4C0F /* SkPerlinNoiseShaderType.h in Headers */,
 				F98601B32BCFBB53006A4C0F /* SkEnumerate.h in Headers */,
 				F98600512BCFBB53006A4C0F /* SkYUVAInfo.h in Headers */,
 				F9070C7D2B9F175000383E4D /* String.ipp in Headers */,
@@ -9918,7 +9768,6 @@
 				F98604082BCFBB54006A4C0F /* SkSLExtension.cpp in Sources */,
 				F98602832BCFBB54006A4C0F /* SkSwizzler_opts_ssse3.cpp in Sources */,
 				F986042D2BCFBB54006A4C0F /* SkSLPrefixExpression.cpp in Sources */,
-				F986F9072BC8441F006A4C0F /* iso8859_2.c in Sources */,
 				F98604522BCFBB54006A4C0F /* SkSLTraceHook.cpp in Sources */,
 				F98601ED2BCFBB53006A4C0F /* SkMasks.cpp in Sources */,
 				F98600EB2BCFBB53006A4C0F /* SkThreadID.cpp in Sources */,
@@ -9983,7 +9832,6 @@
 				F98603FC2BCFBB54006A4C0F /* SkSLConstructorStruct.cpp in Sources */,
 				F98601F02BCFBB53006A4C0F /* SkMatrixInvert.cpp in Sources */,
 				F986023E2BCFBB54006A4C0F /* SkRecord.cpp in Sources */,
-				F986F90A2BC8441F006A4C0F /* iso8859_5.c in Sources */,
 				F98603D72BCFBB54006A4C0F /* SkSLPipelineStageCodeGenerator.cpp in Sources */,
 				F98601962BCFBB53006A4C0F /* SkCubicMap.cpp in Sources */,
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
@@ -10022,13 +9870,11 @@
 				F98604842BCFBB54006A4C0F /* SkSLParser.cpp in Sources */,
 				F9528B362BB0567000222F45 /* MemoryMappedFileViewDetail.cpp in Sources */,
 				F9070DDC2B9F175E00383E4D /* SivMonitorInfo.cpp in Sources */,
-				F986F9002BC8441F006A4C0F /* cp1251.c in Sources */,
 				F9070EDB2B9F1C8900383E4D /* egl_context.c in Sources */,
 				F9E5FC462BC1AA820081A4F7 /* SivSIMDMath.cpp in Sources */,
 				F9070DE32B9F175E00383E4D /* SivPoint.cpp in Sources */,
 				F98601DE2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.cpp in Sources */,
 				F9528C832BC05B5B00222F45 /* BMPDecoder.cpp in Sources */,
-				F986F9102BC8441F006A4C0F /* iso8859_11.c in Sources */,
 				F9070DD12B9F175E00383E4D /* SivFormatUtility.cpp in Sources */,
 				F986F99C2BCA9D0A006A4C0F /* canvas.cpp in Sources */,
 				F9070DDF2B9F175E00383E4D /* SivParseBoolExtended.cpp in Sources */,
@@ -10047,15 +9893,10 @@
 				F9528C3E2BBF026F00222F45 /* zstd_decompress.c in Sources */,
 				F98602AD2BCFBB54006A4C0F /* SkComposeColorFilter.cpp in Sources */,
 				F98604882BCFBB54006A4C0F /* SkSLPosition.cpp in Sources */,
-				F986F9142BC8441F006A4C0F /* iso8859_16.c in Sources */,
 				F986019C2BCFBB53006A4C0F /* SkDevice.cpp in Sources */,
-				F986F90D2BC8441F006A4C0F /* iso8859_8.c in Sources */,
 				F9528C3F2BBF026F00222F45 /* cover.c in Sources */,
-				F986F9082BC8441F006A4C0F /* iso8859_3.c in Sources */,
-				F98603A42BCFBB54006A4C0F /* SkCoordClampShader.cpp in Sources */,
 				F9070DE22B9F175E00383E4D /* SivParseInt.cpp in Sources */,
 				F98601552BCFBB53006A4C0F /* SkBitmap.cpp in Sources */,
-				F986F9122BC8441F006A4C0F /* iso8859_14.c in Sources */,
 				F9E5FCEB2BC59EB50081A4F7 /* SivJSONIterator.cpp in Sources */,
 				F986F9352BC8441F006A4C0F /* utf16_be.c in Sources */,
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
@@ -10067,7 +9908,6 @@
 				F9528B7C2BB708A700222F45 /* SivLicenseManager.cpp in Sources */,
 				F98604572BCFBB54006A4C0F /* SkSLEliminateDeadLocalVariables.cpp in Sources */,
 				F986016A2BCFBB53006A4C0F /* SkBlitRow_opts.cpp in Sources */,
-				F986F90C2BC8441F006A4C0F /* iso8859_7.c in Sources */,
 				F98603B22BCFBB54006A4C0F /* SkRuntimeShader.cpp in Sources */,
 				F9528B7B2BB708A700222F45 /* LicenseManagerFactory.cpp in Sources */,
 				F9528C412BBF026F00222F45 /* divsufsort.c in Sources */,
@@ -10124,12 +9964,10 @@
 				F986050D2BCFBE42006A4C0F /* SkOSFile_stdio.cpp in Sources */,
 				F986019A2BCFBB53006A4C0F /* SkDescriptor.cpp in Sources */,
 				F9070DCF2B9F175E00383E4D /* SivFmtExtension.cpp in Sources */,
-				F986F90B2BC8441F006A4C0F /* iso8859_6.c in Sources */,
 				F9070DE12B9F175E00383E4D /* SivParseFloat.cpp in Sources */,
 				F9070AF02B9DEB5900383E4D /* gaussian_distribution.cc in Sources */,
 				F98602962BCFBB54006A4C0F /* SkVertices.cpp in Sources */,
 				F986F9172BC8441F006A4C0F /* onig_init.c in Sources */,
-				F98603AD2BCFBB54006A4C0F /* SkPerlinNoiseShaderImpl.cpp in Sources */,
 				F9070DEC2B9F175E00383E4D /* SivTextEncoding.cpp in Sources */,
 				F98604D32BCFBB54006A4C0F /* SkCustomTypeface.cpp in Sources */,
 				F986016E2BCFBB53006A4C0F /* SkBlitter_ARGB32.cpp in Sources */,
@@ -10262,7 +10100,6 @@
 				F986039E2BCFBB54006A4C0F /* SkBlendShader.cpp in Sources */,
 				F9070EF32B9F1C8900383E4D /* posix_thread.c in Sources */,
 				F98600F32BCFBB53006A4C0F /* SkUTF.cpp in Sources */,
-				F986F8FE2BC8441F006A4C0F /* big5.c in Sources */,
 				F986F9B72BCA9D0A006A4C0F /* property.cpp in Sources */,
 				F98603A02BCFBB54006A4C0F /* SkColorFilterShader.cpp in Sources */,
 				F9070DB52B9F175E00383E4D /* SivColor.cpp in Sources */,
@@ -10274,7 +10111,6 @@
 				F9528C0D2BBF026F00222F45 /* fse_decompress.c in Sources */,
 				F98601602BCFBB53006A4C0F /* SkBlendMode.cpp in Sources */,
 				F98603142BCFBB54006A4C0F /* SkOpSegment.cpp in Sources */,
-				F986F9112BC8441F006A4C0F /* iso8859_13.c in Sources */,
 				F986F9BD2BCA9D0A006A4C0F /* styleelement.cpp in Sources */,
 				F98600C72BCFBB53006A4C0F /* SkBlockAllocator.cpp in Sources */,
 				F98600C42BCFBB53006A4C0F /* SkBezierCurves.cpp in Sources */,
@@ -10290,7 +10126,6 @@
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,
-				F986F9132BC8441F006A4C0F /* iso8859_15.c in Sources */,
 				F986F9342BC8441F006A4C0F /* utf8.c in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
 				F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */,
@@ -10311,7 +10146,6 @@
 				F9070DC32B9F175E00383E4D /* EmptyFactory.cpp in Sources */,
 				F98602112BCFBB54006A4C0F /* SkPathBuilder.cpp in Sources */,
 				F98601D12BCFBB53006A4C0F /* SkImageFilterTypes.cpp in Sources */,
-				F986F9052BC8441F006A4C0F /* gb18030.c in Sources */,
 				F98603BD2BCFBB54006A4C0F /* SkSLCanExitWithoutReturningValue.cpp in Sources */,
 				F9070ED52B9F1C8900383E4D /* cocoa_monitor.m in Sources */,
 				F9528B182BAC58D500222F45 /* SivStringView_SIMD.cpp in Sources */,
@@ -10408,7 +10242,6 @@
 				F9070E5C2B9F176B00383E4D /* CConsole.cpp in Sources */,
 				F98602292BCFBB54006A4C0F /* SkPixmapDraw.cpp in Sources */,
 				F98604CF2BCFBB54006A4C0F /* SkCharToGlyphCache.cpp in Sources */,
-				F98603A82BCFBB54006A4C0F /* SkGainmapShader.cpp in Sources */,
 				F98600B82BCFBB53006A4C0F /* skcms_TransformHsw.cc in Sources */,
 				F98602232BCFBB54006A4C0F /* SkPictureRecord.cpp in Sources */,
 				F986040A2BCFBB54006A4C0F /* SkSLFieldAccess.cpp in Sources */,
@@ -10429,7 +10262,6 @@
 				F98604DA2BCFBB54006A4C0F /* SkJSON.cpp in Sources */,
 				F98603EE2BCFBB54006A4C0F /* SkSLConstructorArrayCast.cpp in Sources */,
 				F986F9992BCA9D0A006A4C0F /* plutovg-rle.c in Sources */,
-				F986F9152BC8441F006A4C0F /* koi8_r.c in Sources */,
 				F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */,
 				F98601D82BCFBB53006A4C0F /* SkKnownRuntimeEffects.cpp in Sources */,
 				F98603362BCFBB54006A4C0F /* SkReduceOrder.cpp in Sources */,
@@ -10456,7 +10288,6 @@
 				F9070E572B9F176B00383E4D /* Siv3DMain.cpp in Sources */,
 				F9528C1E2BBF026F00222F45 /* hist.c in Sources */,
 				F98603182BCFBB54006A4C0F /* SkPathOpsAsWinding.cpp in Sources */,
-				F986F90E2BC8441F006A4C0F /* iso8859_9.c in Sources */,
 				F98604012BCFBB54006A4C0F /* SkSLDoStatement.cpp in Sources */,
 				F986F9A82BCA9D0A006A4C0F /* graphicselement.cpp in Sources */,
 				F98603122BCFBB54006A4C0F /* SkOpEdgeBuilder.cpp in Sources */,
@@ -10490,7 +10321,6 @@
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,
 				F986F9242BC8441F006A4C0F /* regsyntax.c in Sources */,
 				F98604332BCFBB54006A4C0F /* SkSLSetting.cpp in Sources */,
-				F986F90F2BC8441F006A4C0F /* iso8859_10.c in Sources */,
 				F9528C332BBF026F00222F45 /* zstd_opt.c in Sources */,
 				F986F9B42BCA9D0A006A4C0F /* parser.cpp in Sources */,
 				F986F9A62BCA9D0A006A4C0F /* geometryelement.cpp in Sources */,
@@ -10516,7 +10346,6 @@
 				F98600C92BCFBB53006A4C0F /* SkBuffer.cpp in Sources */,
 				F98602122BCFBB54006A4C0F /* SkPathEffect.cpp in Sources */,
 				F98604622BCFBB54006A4C0F /* SkSLRewriteIndexedSwizzle.cpp in Sources */,
-				F986F9062BC8441F006A4C0F /* iso8859_1.c in Sources */,
 				F98601872BCFBB53006A4C0F /* SkColorSpace.cpp in Sources */,
 				F98601662BCFBB53006A4C0F /* SkBlitMask_opts.cpp in Sources */,
 				F98603C02BCFBB54006A4C0F /* SkSLFinalizationChecks.cpp in Sources */,
@@ -10545,7 +10374,6 @@
 				F98602B32BCFBB54006A4C0F /* SkRuntimeColorFilter.cpp in Sources */,
 				F98600DF2BCFBB53006A4C0F /* SkSafeMath.cpp in Sources */,
 				F9070DD82B9F175E00383E4D /* LoggerFactory.cpp in Sources */,
-				F986F9092BC8441F006A4C0F /* iso8859_4.c in Sources */,
 				F986024B2BCFBB54006A4C0F /* SkRect.cpp in Sources */,
 				F986046D2BCFBB54006A4C0F /* SkSLContext.cpp in Sources */,
 				F986015A2BCFBB53006A4C0F /* SkBitmapProcState_matrixProcs.cpp in Sources */,
