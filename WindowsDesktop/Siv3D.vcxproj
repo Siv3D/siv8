@@ -159,6 +159,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Distribution.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DLL.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Duration.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Emoji.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Endian.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\EngineLog.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\EnvironmentVariable.hpp" />
@@ -1031,6 +1032,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\CEmoji.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\EmojiFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\SivEmoji.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\EngineLog\SivEngineLog.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Error\SivError.cpp" />

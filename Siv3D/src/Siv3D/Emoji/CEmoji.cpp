@@ -82,12 +82,6 @@ namespace s3d
 		m_fileStream = SkFILEStream::Make("Noto-COLRv1.ttf");
 		m_typeface = SkTypeface_FreeType::MakeFromStream(std::move(m_fileStream), SkFontArguments{});
 		m_font.setTypeface(m_typeface);
-
-		renderEmoji(U"🍣", 64).save(U"emoji1.png");
-		renderEmoji(U"🐈‍⬛", 128).save(U"emoji2.png");
-		renderEmoji(U"🎉", 2048).save(U"emoji3.png");
-		renderEmoji(U"🥭", 512).save(U"emoji4.png");
-		renderEmoji(U"🍔", 512).save(U"emoji5.png");
 	}
 
 	bool CEmoji::hasEmoji(StringView emoji) const
