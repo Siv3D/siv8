@@ -1932,7 +1932,6 @@
 		F98604F72BCFBB54006A4C0F /* SkTextUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986FFE52BCFBB53006A4C0F /* SkTextUtils.cpp */; };
 		F98604FB2BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h in Headers */ = {isa = PBXBuildFile; fileRef = F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */; };
 		F98604FC2BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98604F92BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp */; };
-		F98604FD2BCFBBA1006A4C0F /* SkFontHost_win.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98604FA2BCFBBA1006A4C0F /* SkFontHost_win.cpp */; };
 		F98605032BCFBC12006A4C0F /* SkImageGenerator_FromEncoded.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98604FE2BCFBC11006A4C0F /* SkImageGenerator_FromEncoded.cpp */; };
 		F98605042BCFBC12006A4C0F /* SkCodecImageGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98604FF2BCFBC11006A4C0F /* SkCodecImageGenerator.cpp */; };
 		F98605052BCFBC12006A4C0F /* SkSampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605002BCFBC11006A4C0F /* SkSampler.cpp */; };
@@ -1944,6 +1943,7 @@
 		F986050F2BCFBE69006A4C0F /* SkOSFile_posix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986050E2BCFBE69006A4C0F /* SkOSFile_posix.cpp */; };
 		F98605112BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605102BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp */; };
 		F98605132BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605122BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp */; };
+		F98605152BCFC3E3006A4C0F /* SkTypeface_mac_ct.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605142BCFC3E3006A4C0F /* SkTypeface_mac_ct.h */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -3109,7 +3109,6 @@
 		F9528CA32BC1209900222F45 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
 		F98604F92BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkFontHost_FreeType.cpp; sourceTree = "<group>"; };
-		F98604FA2BCFBBA1006A4C0F /* SkFontHost_win.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkFontHost_win.cpp; sourceTree = "<group>"; };
 		F98604FE2BCFBC11006A4C0F /* SkImageGenerator_FromEncoded.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkImageGenerator_FromEncoded.cpp; sourceTree = "<group>"; };
 		F98604FF2BCFBC11006A4C0F /* SkCodecImageGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkCodecImageGenerator.cpp; sourceTree = "<group>"; };
 		F98605002BCFBC11006A4C0F /* SkSampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkSampler.cpp; sourceTree = "<group>"; };
@@ -3121,6 +3120,7 @@
 		F986050E2BCFBE69006A4C0F /* SkOSFile_posix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkOSFile_posix.cpp; sourceTree = "<group>"; };
 		F98605102BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkFontHost_FreeType_common.cpp; sourceTree = "<group>"; };
 		F98605122BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkGlobalInitialization_default.cpp; sourceTree = "<group>"; };
+		F98605142BCFC3E3006A4C0F /* SkTypeface_mac_ct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkTypeface_mac_ct.h; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -8259,12 +8259,12 @@
 				F986050A2BCFBE2D006A4C0F /* SkDebug_stdio.cpp */,
 				F98605102BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp */,
 				F98604F92BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp */,
-				F98604FA2BCFBBA1006A4C0F /* SkFontHost_win.cpp */,
 				F98605122BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp */,
 				F98605082BCFBE11006A4C0F /* SkMemory_malloc.cpp */,
 				F986050E2BCFBE69006A4C0F /* SkOSFile_posix.cpp */,
 				F986050C2BCFBE42006A4C0F /* SkOSFile_stdio.cpp */,
 				F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */,
+				F98605142BCFC3E3006A4C0F /* SkTypeface_mac_ct.h */,
 			);
 			path = ports;
 			sourceTree = "<group>";
@@ -9345,6 +9345,7 @@
 				F98601C32BCFBB53006A4C0F /* SkGaussFilter.h in Headers */,
 				F9070D022B9F175100383E4D /* TextReader.hpp in Headers */,
 				F986FA852BCFB53B006A4C0F /* ftincrem.h in Headers */,
+				F98605152BCFC3E3006A4C0F /* SkTypeface_mac_ct.h in Headers */,
 				F986019F2BCFBB53006A4C0F /* SkDistanceFieldGen.h in Headers */,
 				F9070C432B9F175000383E4D /* BigInt.ipp in Headers */,
 				F9E5FC3C2BC15B260081A4F7 /* DirectXCollision.h in Headers */,
@@ -11169,7 +11170,6 @@
 				F98602C92BCFBB54006A4C0F /* SkShaderImageFilter.cpp in Sources */,
 				F9070DB02B9F175E00383E4D /* SivBinaryReader.cpp in Sources */,
 				F98601A42BCFBB53006A4C0F /* SkDraw.cpp in Sources */,
-				F98604FD2BCFBBA1006A4C0F /* SkFontHost_win.cpp in Sources */,
 				F986027C2BCFBB54006A4C0F /* SkStrokeRec.cpp in Sources */,
 				F98602522BCFBB54006A4C0F /* SkRRect.cpp in Sources */,
 				F98604212BCFBB54006A4C0F /* SkSLLiteral.cpp in Sources */,
