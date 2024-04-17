@@ -1747,6 +1747,8 @@
 		F98605112BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605102BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp */; };
 		F98605132BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605122BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp */; };
 		F98605152BCFC3E3006A4C0F /* SkTypeface_mac_ct.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605142BCFC3E3006A4C0F /* SkTypeface_mac_ct.h */; };
+		F98605172BCFF7C2006A4C0F /* Emoji.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605162BCFF7C2006A4C0F /* Emoji.hpp */; };
+		F98605192BCFF7DF006A4C0F /* SivEmoji.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605182BCFF7DE006A4C0F /* SivEmoji.cpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2905,6 +2907,8 @@
 		F98605102BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkFontHost_FreeType_common.cpp; sourceTree = "<group>"; };
 		F98605122BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkGlobalInitialization_default.cpp; sourceTree = "<group>"; };
 		F98605142BCFC3E3006A4C0F /* SkTypeface_mac_ct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkTypeface_mac_ct.h; sourceTree = "<group>"; };
+		F98605162BCFF7C2006A4C0F /* Emoji.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Emoji.hpp; sourceTree = "<group>"; };
+		F98605182BCFF7DE006A4C0F /* SivEmoji.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEmoji.cpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -5053,6 +5057,7 @@
 				F9070BD92B9F175000383E4D /* Distribution.hpp */,
 				F9070BDA2B9F175000383E4D /* DLL.hpp */,
 				F9070BDB2B9F175000383E4D /* Duration.hpp */,
+				F98605162BCFF7C2006A4C0F /* Emoji.hpp */,
 				F9070BDC2B9F175000383E4D /* Endian.hpp */,
 				F9070BDD2B9F175000383E4D /* EngineLog.hpp */,
 				F986F8A02BC8003B006A4C0F /* EnvironmentVariable.hpp */,
@@ -6684,8 +6689,9 @@
 			isa = PBXGroup;
 			children = (
 				F986F9CB2BCFB514006A4C0F /* CEmoji.cpp */,
-				F986F9CC2BCFB514006A4C0F /* CEmoji.hpp */,
 				F986F9CD2BCFB514006A4C0F /* EmojiFactory.cpp */,
+				F98605182BCFF7DE006A4C0F /* SivEmoji.cpp */,
+				F986F9CC2BCFB514006A4C0F /* CEmoji.hpp */,
 				F986F9CE2BCFB514006A4C0F /* IEmoji.hpp */,
 			);
 			path = Emoji;
@@ -8368,6 +8374,7 @@
 				F98603852BCFBB54006A4C0F /* SkOTTable_OS_2_V1.h in Headers */,
 				F986009B2BCFBB53006A4C0F /* SkGainmapShader.h in Headers */,
 				F9070C822B9F175000383E4D /* ThousandSeparate.ipp in Headers */,
+				F98605172BCFF7C2006A4C0F /* Emoji.hpp in Headers */,
 				F9070DB82B9F175E00383E4D /* IConsole.hpp in Headers */,
 				F90706B02B9DAEC900383E4D /* zipf_distribution.h in Headers */,
 				F9070D162B9F175100383E4D /* YesNo.hpp in Headers */,
@@ -10033,6 +10040,7 @@
 				F98601972BCFBB53006A4C0F /* SkData.cpp in Sources */,
 				F986040F2BCFBB54006A4C0F /* SkSLFunctionCall.cpp in Sources */,
 				F98602572BCFBB54006A4C0F /* SkRuntimeBlender.cpp in Sources */,
+				F98605192BCFF7DF006A4C0F /* SivEmoji.cpp in Sources */,
 				F98601A62BCFBB53006A4C0F /* SkDrawable.cpp in Sources */,
 				F986F8FD2BC8441F006A4C0F /* ascii.c in Sources */,
 				F9070E602B9F176B00383E4D /* SivFileSystem_macOS_Linux.cpp in Sources */,
