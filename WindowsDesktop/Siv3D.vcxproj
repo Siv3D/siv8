@@ -822,27 +822,6 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sfnt\SkPanose.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sfnt\SkSFNTHeader.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sfnt\SkTTCFHeader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkConicalGradient.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkGradientBaseShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkLinearGradient.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkRadialGradient.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkSweepGradient.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkBitmapProcShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkBlendShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkColorFilterShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkColorShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkCoordClampShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkEmptyShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkImageShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkLocalMatrixShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkPerlinNoiseShaderImpl.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkPerlinNoiseShaderType.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkPictureShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkRuntimeShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkShaderBase.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkTransformShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkTriColorShader.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkWorkingColorSpaceShader.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sksl\analysis\SkSLNoOpErrorReporter.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sksl\analysis\SkSLProgramUsage.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sksl\analysis\SkSLProgramVisitor.h" />
@@ -1198,86 +1177,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\symbolelement.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\useelement.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\ascii.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\big5.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\cp1251.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\gb18030.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_1.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_10.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_11.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_13.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_14.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_15.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_16.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_2.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_3.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_4.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_5.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_6.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_7.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_8.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_9.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\koi8.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\koi8_r.c">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
     </ClCompile>
@@ -1685,9 +1584,7 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkBlendShader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkColorFilterShader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkColorShader.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkCoordClampShader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkEmptyShader.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkGainmapShader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkImageShader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkLocalMatrixShader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkRuntimeShader.cpp">

@@ -538,9 +538,6 @@
     <Filter Include="src\ThirdParty\skia">
       <UniqueIdentifier>{d16b16e1-b65f-4d12-90c0-eb8edb619645}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\ThirdParty\skia\include">
-      <UniqueIdentifier>{4c846049-2fc8-4cf3-a745-692378b41b86}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\ThirdParty\skia\src">
       <UniqueIdentifier>{559d2de2-8df8-41f6-a145-307667d3c474}</UniqueIdentifier>
     </Filter>
@@ -3003,71 +3000,8 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\opts\SkMemset_opts.h">
       <Filter>src\ThirdParty\skia\src\opts</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkBitmapProcShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkBlendShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkColorFilterShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkColorShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkCoordClampShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkEmptyShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkImageShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkLocalMatrixShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkPerlinNoiseShaderImpl.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkPerlinNoiseShaderType.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkPictureShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkRuntimeShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkShaderBase.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkTransformShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkTriColorShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkWorkingColorSpaceShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\modules\skcms\skcms.h">
       <Filter>src\ThirdParty\skia\modules\skcms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkConicalGradient.h">
-      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkGradientBaseShader.h">
-      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkLinearGradient.h">
-      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkRadialGradient.h">
-      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkSweepGradient.h">
-      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sksl\ir\SkSLBlock.h">
       <Filter>src\ThirdParty\skia\src\sksl\ir</Filter>
@@ -4154,66 +4088,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\ascii.c">
       <Filter>src\ThirdParty\Oniguruma</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\big5.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\cp1251.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\gb18030.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_1.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_2.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_3.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_4.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_5.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_6.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_7.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_8.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_9.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_10.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_11.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_13.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_14.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_15.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\iso8859_16.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\koi8.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\koi8_r.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\onig_init.c">
       <Filter>src\ThirdParty\Oniguruma</Filter>
     </ClCompile>
@@ -4838,18 +4712,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkBlendShader.cpp">
       <Filter>src\ThirdParty\skia\src\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkColorShader.cpp">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkCoordClampShader.cpp">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkEmptyShader.cpp">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkGainmapShader.cpp">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkRuntimeShader.cpp">
       <Filter>src\ThirdParty\skia\src\shaders</Filter>
     </ClCompile>
@@ -4857,9 +4719,6 @@
       <Filter>src\ThirdParty\skia\src\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkTransformShader.cpp">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkTriColorShader.cpp">
       <Filter>src\ThirdParty\skia\src\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkWorkingColorSpaceShader.cpp">
@@ -4880,19 +4739,10 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\modules\skcms\skcms.cc">
       <Filter>src\ThirdParty\skia\modules\skcms</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkConicalGradient.cpp">
-      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkGradientBaseShader.cpp">
       <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkLinearGradient.cpp">
-      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkRadialGradient.cpp">
-      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkSweepGradient.cpp">
       <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\sksl\ir\SkSLChildCall.cpp">
@@ -5543,9 +5393,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkShaderBase.cpp">
       <Filter>src\ThirdParty\skia\src\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkLocalMatrixShader.cpp">
-      <Filter>src\ThirdParty\skia\src\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkBitmapProcShader.cpp">
       <Filter>src\ThirdParty\skia\src\shaders</Filter>
     </ClCompile>
@@ -5584,6 +5431,27 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkWorkingFormatColorFilter.cpp">
       <Filter>src\ThirdParty\skia\src\effects\colorfilters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkConicalGradient.cpp">
+      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkRadialGradient.cpp">
+      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\gradients\SkSweepGradient.cpp">
+      <Filter>src\ThirdParty\skia\src\shaders\gradients</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkEmptyShader.cpp">
+      <Filter>src\ThirdParty\skia\src\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkTriColorShader.cpp">
+      <Filter>src\ThirdParty\skia\src\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkLocalMatrixShader.cpp">
+      <Filter>src\ThirdParty\skia\src\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkColorShader.cpp">
+      <Filter>src\ThirdParty\skia\src\shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
