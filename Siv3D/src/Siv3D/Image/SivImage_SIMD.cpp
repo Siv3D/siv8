@@ -206,4 +206,18 @@ namespace s3d
 		return PremultiplyAlpha_plain(m_pixels.data(), m_pixels.size());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	swapBGRAtoRGBA
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Image::swapBGRAtoRGBA(const bool useSIMD)
+	{
+		// [Siv3D ToDo]
+		for (auto& pixel : m_pixels)
+		{
+			std::swap(pixel.r, pixel.b);
+		}
+	}
 }

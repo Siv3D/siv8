@@ -21,9 +21,6 @@
 # include <ThirdParty/skia/include/core/SkFont.h>
 # include <ThirdParty/skia/include/core/SkStream.h>
 # include <ThirdParty/skia/include/core/SkBitmap.h>
-# include <ThirdParty/skia/include/core/SkCanvas.h>
-# include <ThirdParty/skia/include/core/SkTextBlob.h>
-# include <ThirdParty/skia/include/core/SkFontMetrics.h>
 # include <ThirdParty/skia/src/ports/SkTypeface_FreeType.h>
 
 namespace s3d

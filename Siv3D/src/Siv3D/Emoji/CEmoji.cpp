@@ -11,8 +11,10 @@
 
 # include "CEmoji.hpp"
 # include <Siv3D/EngineLog.hpp>
-# include <Siv3D/MicrosecClock.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
+# include <ThirdParty/skia/include/core/SkCanvas.h>
+# include <ThirdParty/skia/include/core/SkTextBlob.h>
+# include <ThirdParty/skia/include/core/SkFontMetrics.h>
 
 namespace s3d
 {
@@ -78,13 +80,14 @@ namespace s3d
 		m_hbBuffer = ::hb_buffer_create();
 
 		m_fileStream = SkFILEStream::Make("Noto-COLRv1.ttf");
-		m_typeface = SkTypeface_FreeType::MakeFromStream(std::move(m_fileStream), SkFontArguments());
+		m_typeface = SkTypeface_FreeType::MakeFromStream(std::move(m_fileStream), SkFontArguments{});
 		m_font.setTypeface(m_typeface);
 
 		renderEmoji(U"🍣", 64).save(U"emoji1.png");
 		renderEmoji(U"🐈‍⬛", 128).save(U"emoji2.png");
-		renderEmoji(U"🌳", 256).save(U"emoji3.png");
-		renderEmoji(U"🌻", 512).save(U"emoji4.png");
+		renderEmoji(U"🎉", 2048).save(U"emoji3.png");
+		renderEmoji(U"🥭", 512).save(U"emoji4.png");
+		renderEmoji(U"🍔", 512).save(U"emoji5.png");
 	}
 
 	bool CEmoji::hasEmoji(StringView emoji) const
@@ -132,13 +135,9 @@ namespace s3d
 			if (SkPixmap map;
 				canvas->peekPixels(&map))
 			{
-			# if SIV3D_PLATFORM(WINDOWS)
+			#if SK_PMCOLOR_BYTE_ORDER(B,G,R,A)
 				
-				for (auto& pixel : image)
-				{
-					const Color c = pixel;
-					pixel = Color{ c.b, c.g, c.r, c.a };
-				}
+				image.swapBGRAtoRGBA();
 				
 			# endif
 			}
