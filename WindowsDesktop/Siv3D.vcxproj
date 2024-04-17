@@ -594,48 +594,6 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\modules\skcms\src\skcms_public.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\modules\skcms\src\skcms_Transform.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\modules\skcms\src\Transform_inl.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkArenaAlloc.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkArenaAllocList.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkASAN.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkAutoMalloc.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkBase64.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkBezierCurves.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkBitmaskEnum.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkBlockAllocator.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkBuffer.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkCubics.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkEndian.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkEnumBitMask.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkHalf.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkLeanWindows.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkMathPriv.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkMSAN.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkNoDestructor.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkQuads.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkRandom.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkRectMemcpy.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkSafeMath.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkScopeExit.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkSharedMutex.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkSpinlock.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkStringView.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTBlockList.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTDPQueue.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTime.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTInternalLList.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTLazy.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTSearch.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTSort.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkUTF.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkUtils.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkVx.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\base\SkZip.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\codec\SkCodecImageGenerator.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\codec\SkCodecPriv.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\codec\SkColorPalette.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\codec\SkFrameHolder.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\codec\SkPixmapUtilsPriv.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\codec\SkSampler.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\core\Sk4px.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\core\SkAAClip.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\core\SkAdvancedTypefaceMetrics.h" />
@@ -802,15 +760,6 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\core\SkYUVAInfoLocation.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\core\SkYUVMath.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\core\SkYUVPlanesCache.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkBlendModeColorFilter.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkColorFilterBase.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkColorSpaceXformColorFilter.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkComposeColorFilter.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkGaussianColorFilter.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkMatrixColorFilter.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkRuntimeColorFilter.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkTableColorFilter.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkWorkingFormatColorFilter.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImageGeneratorPriv.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage_Base.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage_Lazy.h" />
@@ -1453,7 +1402,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\modules\skcms\src\skcms_TransformHsw.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\modules\skcms\src\skcms_TransformSkx.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkArenaAlloc.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkBase64.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkBezierCurves.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkBlockAllocator.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkBuffer.cpp" />
@@ -1472,7 +1420,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkSpinlock.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTDArray.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkThreadID.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTime.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkTSearch.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkUTF.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\base\SkUtils.cpp" />
@@ -1484,8 +1431,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkAAClip.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkAlphaRuns.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkAnalyticEdge.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkAnnotation.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkATrace.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkAutoPixmapStorage.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkBBHFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkBigPicture.cpp" />
@@ -1516,7 +1461,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkCapabilities.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkChecksum.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkClipStack.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkClipStackDevice.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkColor.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkColorFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkColorSpace.cpp" />
@@ -1529,11 +1473,8 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkCubicClipper.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkCubicMap.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkData.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkDataTable.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkDescriptor.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkDevice.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkDistanceFieldGen.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkDocument.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkDraw.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkDrawable.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkDrawBase.cpp">
@@ -1553,7 +1494,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkFontDescriptor.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkFontMetricsPriv.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkFontMgr.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkFontStream.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkFont_serial.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkGaussFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkGeometry.cpp" />
@@ -1581,13 +1521,12 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMasks.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMatrix.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMatrixInvert.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMD5.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMemset_opts.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMemset_opts_avx.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMemset_opts_erms.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMesh.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMipmap.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMipmapAccessor.cpp" />
@@ -1595,7 +1534,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMipmapDrawDownSampler.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkMipmapHQDownSampler.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkOpts.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkOverdrawCanvas.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkPaint.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkPaintPriv.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkPath.cpp" />
@@ -1649,7 +1587,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkScan_AntiPath.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkScan_Hairline.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkScan_Path.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkSLTypeShared.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkSpecialImage.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkSpriteBlitter_ARGB32.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkStream.cpp" />
@@ -1672,7 +1609,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkTextBlob.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkTypeface.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkTypefaceCache.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkTypeface_remote.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkUnPreMultiply.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkVertices.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkVertState.cpp" />
@@ -1684,59 +1620,25 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkWriter32.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkYUVAInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkYUVAPixmaps.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkYUVMath.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\core\SkYUVPlanesCache.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkBlendModeColorFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkColorFilterBase.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkColorSpaceXformColorFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkComposeColorFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkGaussianColorFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkMatrixColorFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkRuntimeColorFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkTableColorFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\colorfilters\SkWorkingFormatColorFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkBlendImageFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkBlurImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkColorFilterImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkComposeImageFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkCropImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkDisplacementMapImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkDropShadowImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkImageImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkLightingImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkMagnifierImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkMatrixConvolutionImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkMatrixTransformImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkMergeImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkMorphologyImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkPictureImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkRuntimeImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\imagefilters\SkShaderImageFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\Sk1DPathEffect.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\Sk2DPathEffect.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\SkBlenders.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\SkCornerPathEffect.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\SkDashPathEffect.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\SkDiscretePathEffect.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\SkEmbossMask.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\SkEmbossMaskFilter.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\SkShaderMaskFilterImpl.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\effects\SkTrimPathEffect.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage_AndroidFactories.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage_Base.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage_Lazy.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage_LazyFactories.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage_Picture.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage_Raster.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkImage_RasterFactories.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkPictureImageGenerator.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkRescaleAndReadPixels.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkSurface.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkSurface_Base.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkSurface_Null.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkSurface_Raster.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\image\SkTiledImageUtils.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\opts\SkOpts_hsw.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\opts\SkOpts_skx.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\pathops\SkAddIntersections.cpp" />
@@ -1798,7 +1700,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkImageShader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkLocalMatrixShader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkPerlinNoiseShaderImpl.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkPictureShader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\shaders\SkRuntimeShader.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -2156,14 +2057,8 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\sksl\SkSLSampleUsage.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\sksl\SkSLString.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\sksl\SkSLSampleUsage.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\sksl\SkSLString.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\sksl\SkSLUtil.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -2344,7 +2239,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -2369,7 +2264,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
