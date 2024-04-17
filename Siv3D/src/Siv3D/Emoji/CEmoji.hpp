@@ -14,18 +14,10 @@
 # if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS) | SIV3D_PLATFORM(WEB)
 #	include <ThirdParty-prebuilt/harfbuzz/hb.h>
 #	include <ThirdParty-prebuilt/harfbuzz/hb-ft.h>
-#	include <ThirdParty-prebuilt/freeType/freetype/freetype.h>
-#	include <ThirdParty-prebuilt/freeType/freetype/ftbitmap.h>
-#	include <ThirdParty-prebuilt/freeType/freetype/ftcolor.h>
-#	include <ThirdParty-prebuilt/freeType/freetype/ftimage.h>
-#	include <ThirdParty-prebuilt/freeType/freetype/ftoutln.h>
-#	include <ThirdParty-prebuilt/freeType/freetype/ftsizes.h>
-#	include <ThirdParty-prebuilt/freeType/freetype/ftsynth.h>
 # else
 #	include <harfbuzz/hb.h>
 #	include <harfbuzz/hb-ft.h>
 # endif
-
 # include <ThirdParty/skia/include/core/SkFont.h>
 # include <ThirdParty/skia/include/core/SkStream.h>
 # include <ThirdParty/skia/include/core/SkBitmap.h>

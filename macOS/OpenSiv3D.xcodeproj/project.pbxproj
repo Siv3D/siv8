@@ -3789,7 +3789,7 @@
 		F986FDD12BCFBB53006A4C0F /* SkOpts_SetTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkOpts_SetTarget.h; sourceTree = "<group>"; };
 		F986FDD22BCFBB53006A4C0F /* SkOpts_skx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkOpts_skx.cpp; sourceTree = "<group>"; };
 		F986FDD32BCFBB53006A4C0F /* SkRasterPipeline_opts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkRasterPipeline_opts.h; sourceTree = "<group>"; };
-		F986FDD42BCFBB53006A4C0F /* SkSwizzler_opts.inc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.pascal; path = SkSwizzler_opts.inc; sourceTree = "<group>"; };
+		F986FDD42BCFBB53006A4C0F /* SkSwizzler_opts.inc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = SkSwizzler_opts.inc; sourceTree = "<group>"; };
 		F986FDD62BCFBB53006A4C0F /* SkAddIntersections.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkAddIntersections.cpp; sourceTree = "<group>"; };
 		F986FDD72BCFBB53006A4C0F /* SkAddIntersections.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkAddIntersections.h; sourceTree = "<group>"; };
 		F986FDD82BCFBB53006A4C0F /* SkDConicLineIntersection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkDConicLineIntersection.cpp; sourceTree = "<group>"; };
