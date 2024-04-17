@@ -3402,12 +3402,6 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sksl\analysis\SkSLProgramVisitor.h">
       <Filter>src\ThirdParty\skia\src\sksl\analysis</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\text\GlyphRun.h">
-      <Filter>src\ThirdParty\skia\src\text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\text\StrikeForGPU.h">
-      <Filter>src\ThirdParty\skia\src\text</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\pathops\SkAddIntersections.h">
       <Filter>src\ThirdParty\skia\src\pathops</Filter>
     </ClInclude>
@@ -3482,63 +3476,6 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\pathops\SkReduceOrder.h">
       <Filter>src\ThirdParty\skia\src\pathops</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkPatchUtils.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkPolyUtils.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkShaderUtils.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkShadowTessellator.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkTestCanvas.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkBitSet.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCallableTraits.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCanvasStack.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCharToGlyphCache.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkClipStackUtils.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkDashPathPriv.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkFloatToDecimal.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkFloatUtils.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkJSON.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkJSONWriter.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkMatrix22.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkMultiPictureDocument.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkMultiPictureDocumentPriv.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkOSPath.h">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sksl\codegen\SkSLGLSLCodeGenerator.h">
       <Filter>src\ThirdParty\skia\src\sksl\codegen</Filter>
@@ -5600,15 +5537,6 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\sksl\analysis\SkSLFinalizationChecks.cpp">
       <Filter>src\ThirdParty\skia\src\sksl\analysis</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\text\GlyphRun.cpp">
-      <Filter>src\ThirdParty\skia\src\text</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\text\SlugFromBuffer.cpp">
-      <Filter>src\ThirdParty\skia\src\text</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\text\StrikeForGPU.cpp">
-      <Filter>src\ThirdParty\skia\src\text</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\pathops\SkAddIntersections.cpp">
       <Filter>src\ThirdParty\skia\src\pathops</Filter>
     </ClCompile>
@@ -5705,88 +5633,7 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\pathops\SkReduceOrder.cpp">
       <Filter>src\ThirdParty\skia\src\pathops</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkPolyUtils.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkShaderUtils.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkShadowTessellator.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkShadowUtils.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkTestCanvas.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkTextUtils.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCamera.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCanvasStack.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCanvasStateUtils.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCharToGlyphCache.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkClipStackUtils.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCustomTypeface.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkDashPath.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkEventTracer.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkFloatToDecimal.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkJSON.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkJSONWriter.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkMatrix22.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkMultiPictureDocument.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkNullCanvas.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkNWayCanvas.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkOrderedFontMgr.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkOSPath.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkPaintFilterCanvas.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkParse.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkParseColor.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkParsePath.cpp">
-      <Filter>src\ThirdParty\skia\src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkPatchUtils.cpp">
       <Filter>src\ThirdParty\skia\src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\ports\SkOSFile_win.cpp">
@@ -6028,6 +5875,42 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\codec\SkCodecImageGenerator.cpp">
       <Filter>src\ThirdParty\skia\src\codec</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\text\GlyphRun.cpp">
+      <Filter>src\ThirdParty\skia\src\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\text\SlugFromBuffer.cpp">
+      <Filter>src\ThirdParty\skia\src\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\text\StrikeForGPU.cpp">
+      <Filter>src\ThirdParty\skia\src\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCharToGlyphCache.cpp">
+      <Filter>src\ThirdParty\skia\src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkCustomTypeface.cpp">
+      <Filter>src\ThirdParty\skia\src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkDashPath.cpp">
+      <Filter>src\ThirdParty\skia\src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkJSON.cpp">
+      <Filter>src\ThirdParty\skia\src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkJSONWriter.cpp">
+      <Filter>src\ThirdParty\skia\src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkMatrix22.cpp">
+      <Filter>src\ThirdParty\skia\src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkParse.cpp">
+      <Filter>src\ThirdParty\skia\src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkPatchUtils.cpp">
+      <Filter>src\ThirdParty\skia\src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\skia\src\utils\SkShadowUtils.cpp">
+      <Filter>src\ThirdParty\skia\src\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
