@@ -108,7 +108,7 @@ namespace s3d
 
 		const SkGlyphID glyphIndex = static_cast<SkGlyphID>(glyphInfo[0].codepoint);
 
-		Image image{ size_t(size), Color{ 0, 0, 0, 0 } };
+		Image image{ size, Color{ 0, 0, 0, 0 } };
 		{
 			const float scalingFactor = (436.90667f / 512);
 			m_font.setSize(scalingFactor * size);

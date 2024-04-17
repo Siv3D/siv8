@@ -22,34 +22,34 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image::Image(const size_t size, Arg::generator_<FunctionRef<Color()>> generator)
+	Image::Image(const Concept::Integral auto size, Arg::generator_<FunctionRef<Color()>> generator)
 		: Image{ Size{ size, size }, generator } {}
 
-	Image::Image(const size_t size, Arg::generator_<FunctionRef<Color(int32, int32)>> generator)
+	Image::Image(const Concept::Integral auto size, Arg::generator_<FunctionRef<Color(int32, int32)>> generator)
 		: Image{ Size{ size, size }, generator } {}
 
-	Image::Image(const size_t size, Arg::generator_<FunctionRef<Color(Point)>> generator)
+	Image::Image(const Concept::Integral auto size, Arg::generator_<FunctionRef<Color(Point)>> generator)
 		: Image{ Size{ size, size }, generator } {}
 
-	Image::Image(const size_t size, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator)
+	Image::Image(const Concept::Integral auto size, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator)
 		: Image{ Size{ size, size }, generator } {}
 
-	Image::Image(const size_t size, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator)
+	Image::Image(const Concept::Integral auto size, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator)
 		: Image{ Size{ size, size }, generator } {}
 
-	Image::Image(const size_t width, const  size_t height, Arg::generator_<FunctionRef<Color()>> generator)
+	Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator_<FunctionRef<Color()>> generator)
 		: Image{ Size{ width, height }, generator } {}
 
-	Image::Image(const size_t width, const size_t height, Arg::generator_<FunctionRef<Color(int32, int32)>> generator)
+	Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator_<FunctionRef<Color(int32, int32)>> generator)
 		: Image{ Size{ width, height }, generator } {}
 
-	Image::Image(const size_t width, const size_t height, Arg::generator_<FunctionRef<Color(Point)>> generator)
+	Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator_<FunctionRef<Color(Point)>> generator)
 		: Image{ Size{ width, height }, generator } {}
 
-	Image::Image(const size_t width, const size_t height, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator)
+	Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator)
 		: Image{ Size{ width, height }, generator } {}
 
-	Image::Image(const size_t width, const size_t height, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator)
+	Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator)
 		: Image{ Size{ width, height }, generator } {}
 
 	Image::Image(const Size size, Arg::generator_<FunctionRef<Color()>> generator)

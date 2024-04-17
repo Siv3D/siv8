@@ -26,16 +26,16 @@ namespace s3d
 		image.m_size.clear();
 	}
 
-	inline Image::Image(const size_t size)
+	inline Image::Image(const Concept::Integral auto size)
 		: Image{ size, size } {}
 
-	inline Image::Image(const size_t size, const Color color)
+	inline Image::Image(const Concept::Integral auto size, const Color color)
 		: Image{ size, size, color } {}
 
-	inline Image::Image(const size_t width, const size_t height)
+	inline Image::Image(const Concept::Integral auto width, const Concept::Integral auto height)
 		: Image{ Size{ width, height } } {}
 
-	inline Image::Image(const size_t width, const size_t height, const Color color)
+	inline Image::Image(const Concept::Integral auto width, const Concept::Integral auto height, const Color color)
 		: Image{ Size{ width, height }, color } {}
 
 	inline Image::Image(const Size size)
