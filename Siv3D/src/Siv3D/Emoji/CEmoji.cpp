@@ -11,6 +11,7 @@
 
 # include "CEmoji.hpp"
 # include <Siv3D/EngineLog.hpp>
+# include <Siv3D/MicrosecClock.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 
 namespace s3d
@@ -66,21 +67,6 @@ namespace s3d
 			return;
 		}
 
-		if (m_face->face_flags & FT_FACE_FLAG_COLOR)
-		{
-			LOG_TRACE(U"FT_FACE_FLAG_COLOR supported");
-		}
-
-		LOG_DEBUG(fmt::format("m_face->face_flags: 0x{:X}", m_face->face_flags));
-
-		const String familyName = Unicode::FromUTF8(m_face->family_name);
-		const String styleName = Unicode::FromUTF8(m_face->style_name);
-		const uint32 numGlyphs = static_cast<uint32>(m_face->num_glyphs);
-
-		LOG_DEBUG(fmt::format("family_name: {}", familyName));
-		LOG_DEBUG(fmt::format("style_name: {}", styleName));
-		LOG_DEBUG(fmt::format("num_glyphs: {}", numGlyphs));
-
 		m_hbFont = ::hb_ft_font_create(m_face, nullptr);
 
 		if (not m_hbFont)
@@ -91,8 +77,14 @@ namespace s3d
 
 		m_hbBuffer = ::hb_buffer_create();
 
-		renderEmoji(U"🍣", { 64, 64 });
-		renderEmoji(U"🐈‍⬛", { 128, 128 });
+		m_fileStream = SkFILEStream::Make("Noto-COLRv1.ttf");
+		m_typeface = SkTypeface_FreeType::MakeFromStream(std::move(m_fileStream), SkFontArguments());
+		m_font.setTypeface(m_typeface);
+
+		renderEmoji(U"🍣", 64).save(U"emoji1.png");
+		renderEmoji(U"🐈‍⬛", 128).save(U"emoji2.png");
+		renderEmoji(U"🌳", 256).save(U"emoji3.png");
+		renderEmoji(U"🌻", 512).save(U"emoji4.png");
 	}
 
 	bool CEmoji::hasEmoji(StringView emoji) const
@@ -100,7 +92,7 @@ namespace s3d
 		return(false);
 	}
 
-	Image CEmoji::renderEmoji(const StringView emoji, const Size& size)
+	Image CEmoji::renderEmoji(const StringView emoji, const int32 size)
 	{
 		::hb_buffer_reset(m_hbBuffer);
 		::hb_buffer_add_utf32(m_hbBuffer,
@@ -111,118 +103,43 @@ namespace s3d
 
 		uint32 glyphCount;
 		hb_glyph_info_t* glyphInfo = ::hb_buffer_get_glyph_infos(m_hbBuffer, &glyphCount);
-		//hb_glyph_position_t* glyphPos = ::hb_buffer_get_glyph_positions(m_hbBuffer, nullptr);
 
 		if (glyphCount != 1)
 		{
 			return{};
 		}
 
-		const uint32 glyphIndex = glyphInfo[0].codepoint;
-		LOG_DEBUG(fmt::format("renderEmoji: glyphIndex = {}", glyphIndex));
+		const SkGlyphID glyphIndex = static_cast<SkGlyphID>(glyphInfo[0].codepoint);
 
-		uint32_t flags = 0;
-		flags |= FT_LOAD_BITMAP_METRICS_ONLY;  // Don't decode any bitmaps.
-		flags |= FT_LOAD_NO_BITMAP; // Ignore embedded bitmaps.
-		flags &= ~FT_LOAD_RENDER;  // Don't scan convert.
-		flags &= ~FT_LOAD_COLOR;  // Ignore SVG.
-		flags |= FT_LOAD_NO_HINTING;
-		flags |= FT_LOAD_NO_AUTOHINT;
-		flags |= FT_LOAD_IGNORE_TRANSFORM;
-
-		if (::FT_Load_Glyph(m_face, glyphIndex, flags))
+		Image image{ size_t(size), Color{ 0, 0, 0, 0 } };
 		{
-			return{};
-		}
+			const float scalingFactor = (436.90667f / 512);
+			m_font.setSize(scalingFactor * size);
 
-		FT_OpaquePaint opaquePaint{ nullptr, 1 };
-		if (!FT_Get_Color_Glyph_Paint(m_face, glyphIndex, FT_COLOR_INCLUDE_ROOT_TRANSFORM, &opaquePaint)) {
-			return{};
-		}
+			auto canvas = SkCanvas::MakeRasterDirectN32(size, size, (uint32*)image.data(), static_cast<int32>(image.stride()));
 
-		LOG_DEBUG("ok");
+			SkFontMetrics metrics;
+			m_font.getMetrics(&metrics);
+			const SkScalar textWidth = m_font.measureText(&glyphIndex, sizeof(glyphIndex), SkTextEncoding::kGlyphID);
+			//const SkScalar textHeight = (metrics.fDescent - metrics.fAscent);
 
+			const auto blob = SkTextBlob::MakeFromText(&glyphIndex, sizeof(glyphIndex), m_font, SkTextEncoding::kGlyphID);
+			const SkScalar offsetX = ((size - textWidth) / 2);
+			const SkScalar offsetY = (size - metrics.fDescent);
 
-		//FT_Palette_Data paletteData;
-		//FT_Palette_Data_Get(m_face, &paletteData);
-		//LOG_DEBUG(fmt::format("renderEmoji: paletteData.num_palettes = {}", paletteData.num_palettes));
+			canvas->drawTextBlob(blob.get(), offsetX, offsetY, SkPaint{});
 
-		FT_Color* palette = nullptr;
-		const unsigned short paletteIndex = 0;
-		if (FT_Palette_Select(m_face, paletteIndex, &palette) != 0) {
-			palette = nullptr;
-		}
-
-		//LOG_DEBUG(fmt::format("renderEmoji: palette->red = {}", palette->red));
-		//LOG_DEBUG(fmt::format("renderEmoji: palette->green = {}", palette->green));
-		//LOG_DEBUG(fmt::format("renderEmoji: palette->blue = {}", palette->blue));
-		//LOG_DEBUG(fmt::format("renderEmoji: palette->alpha = {}", palette->alpha));
-
-
-		FT_LayerIterator  iterator{};
-		FT_UInt layer_glyph_index = 0;
-		FT_UInt layer_color_index = 0;
-
-		FT_Bool have_layers = ::FT_Get_Color_Glyph_Layer(m_face,
-			glyphIndex,
-			&layer_glyph_index,
-			&layer_color_index,
-			&iterator);
-
-		LOG_DEBUG(fmt::format("renderEmoji: have_layers = {}", have_layers));
-
-		if (have_layers)
-		{
-			do
+			if (SkPixmap map;
+				canvas->peekPixels(&map))
 			{
-				FT_Color  layer_color;
-
-				LOG_DEBUG(fmt::format("renderEmoji: layer_glyph_index = {}", layer_glyph_index));
-
-				//if (layer_color_index == 0xFFFF)
-				//	layer_color = text_foreground_color;
-				//else
-				//	layer_color = palette[layer_color_index];
-
-				// Load and render glyph `layer_glyph_index', then
-				// blend resulting pixmap (using color `layer_color')
-				// with previously created pixmaps.
-
-			} while (FT_Get_Color_Glyph_Layer(m_face,
-				glyphIndex,
-				&layer_glyph_index,
-				&layer_color_index,
-				&iterator));
+				for (auto& pixel : image)
+				{
+					const Color c = pixel;
+					pixel = Color{ c.b, c.g, c.r, c.a };
+				}
+			}
 		}
 
-
-
-
-
-
-
-
-		//if (::FT_Load_Glyph(m_face, glyphIndex, FT_LOAD_COLOR))
-		//{
-		//	return{};
-		//}
-
-		//const bool isOutline = (m_face->glyph->format == FT_GLYPH_FORMAT_OUTLINE);
-
-		//LOG_DEBUG(fmt::format("renderEmoji: isOutline = {}", isOutline));
-
-		//const size_t bitmapWidth = m_face->glyph->bitmap.width;
-		//const size_t bitmapHeight = m_face->glyph->bitmap.rows;
-		//const int32 bitmapStride = m_face->glyph->bitmap.pitch;
-
-		//LOG_DEBUG(fmt::format("renderEmoji: bitmapWidth = {}", bitmapWidth));
-		//LOG_DEBUG(fmt::format("renderEmoji: bitmapHeight = {}", bitmapHeight));
-		//LOG_DEBUG(fmt::format("renderEmoji: bitmapStride = {}", bitmapStride));
-
-
-
-
-
-		return{};
+		return image;
 	}
 }

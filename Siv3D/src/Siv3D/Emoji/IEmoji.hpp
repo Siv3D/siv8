@@ -28,6 +28,6 @@ namespace s3d
 
 		virtual bool hasEmoji(StringView emoji) const = 0;
 
-		virtual Image renderEmoji(StringView emoji, const Size& size) = 0;
+		virtual Image renderEmoji(StringView emoji, int32 size) = 0;
 	};
 }

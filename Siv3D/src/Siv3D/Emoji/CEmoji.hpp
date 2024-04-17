@@ -26,6 +26,14 @@
 #	include <harfbuzz/hb-ft.h>
 # endif
 
+# include <ThirdParty/skia/include/core/SkFont.h>
+# include <ThirdParty/skia/include/core/SkStream.h>
+# include <ThirdParty/skia/include/core/SkBitmap.h>
+# include <ThirdParty/skia/include/core/SkCanvas.h>
+# include <ThirdParty/skia/include/core/SkTextBlob.h>
+# include <ThirdParty/skia/include/core/SkFontMetrics.h>
+# include <ThirdParty/skia/src/ports/SkTypeface_FreeType.h>
+
 namespace s3d
 {
 	class CEmoji final : public ISiv3DEmoji
@@ -38,7 +46,7 @@ namespace s3d
 
 		bool hasEmoji(StringView emoji) const override;
 
-		Image renderEmoji(StringView emoji, const Size& size) override;
+		Image renderEmoji(StringView emoji, int32 size) override;
 
 	private:
 
@@ -49,5 +57,11 @@ namespace s3d
 		hb_font_t* m_hbFont = nullptr;
 
 		hb_buffer_t* m_hbBuffer = nullptr;
+
+		std::unique_ptr<SkStreamAsset> m_fileStream;
+
+		sk_sp<SkTypeface> m_typeface;
+
+		SkFont m_font;
 	};
 }
