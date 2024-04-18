@@ -1601,6 +1601,10 @@
 		F98605172BCFF7C2006A4C0F /* Emoji.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605162BCFF7C2006A4C0F /* Emoji.hpp */; };
 		F98605192BCFF7DF006A4C0F /* SivEmoji.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605182BCFF7DE006A4C0F /* SivEmoji.cpp */; };
 		F986051B2BD0AC0E006A4C0F /* GlyphIndex.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986051A2BD0AC0E006A4C0F /* GlyphIndex.hpp */; };
+		F98605212BD0E2A3006A4C0F /* CEngineResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986051C2BD0E2A3006A4C0F /* CEngineResource.cpp */; };
+		F98605222BD0E2A3006A4C0F /* CEngineResource.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986051D2BD0E2A3006A4C0F /* CEngineResource.hpp */; };
+		F98605232BD0E2A3006A4C0F /* EngineResourceFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986051E2BD0E2A3006A4C0F /* EngineResourceFactory.cpp */; };
+		F98605242BD0E2A3006A4C0F /* IEngineResource.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986051F2BD0E2A3006A4C0F /* IEngineResource.hpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2613,6 +2617,10 @@
 		F98605162BCFF7C2006A4C0F /* Emoji.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Emoji.hpp; sourceTree = "<group>"; };
 		F98605182BCFF7DE006A4C0F /* SivEmoji.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEmoji.cpp; sourceTree = "<group>"; };
 		F986051A2BD0AC0E006A4C0F /* GlyphIndex.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GlyphIndex.hpp; sourceTree = "<group>"; };
+		F986051C2BD0E2A3006A4C0F /* CEngineResource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CEngineResource.cpp; sourceTree = "<group>"; };
+		F986051D2BD0E2A3006A4C0F /* CEngineResource.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CEngineResource.hpp; sourceTree = "<group>"; };
+		F986051E2BD0E2A3006A4C0F /* EngineResourceFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EngineResourceFactory.cpp; sourceTree = "<group>"; };
+		F986051F2BD0E2A3006A4C0F /* IEngineResource.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IEngineResource.hpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -5300,6 +5308,7 @@
 				F9070D402B9F175E00383E4D /* Empty */,
 				F9070D442B9F175E00383E4D /* Engine */,
 				F9070D462B9F175E00383E4D /* EngineLog */,
+				F98605202BD0E2A3006A4C0F /* EngineResource */,
 				F9070D482B9F175E00383E4D /* Error */,
 				F9070D4A2B9F175E00383E4D /* EscapedFormatter */,
 				F986F8AC2BC806BF006A4C0F /* Exif */,
@@ -5937,6 +5946,17 @@
 				F9528CA32BC1209900222F45 /* zlib.h */,
 			);
 			path = zlib;
+			sourceTree = "<group>";
+		};
+		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
+			isa = PBXGroup;
+			children = (
+				F986051C2BD0E2A3006A4C0F /* CEngineResource.cpp */,
+				F986051D2BD0E2A3006A4C0F /* CEngineResource.hpp */,
+				F986051E2BD0E2A3006A4C0F /* EngineResourceFactory.cpp */,
+				F986051F2BD0E2A3006A4C0F /* IEngineResource.hpp */,
+			);
+			path = EngineResource;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8662,6 +8682,7 @@
 				F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */,
 				F986F99F2BCA9D0A006A4C0F /* clippathelement.h in Headers */,
 				F986038B2BCFBB54006A4C0F /* SkOTTable_post.h in Headers */,
+				F98605242BD0E2A3006A4C0F /* IEngineResource.hpp in Headers */,
 				F98602892BCFBB54006A4C0F /* SkTextBlobPriv.h in Headers */,
 				F986051B2BD0AC0E006A4C0F /* GlyphIndex.hpp in Headers */,
 				F9070CE52B9F175100383E4D /* Palette.hpp in Headers */,
@@ -8784,6 +8805,7 @@
 				F986017C2BCFBB53006A4C0F /* SkCanvasPriv.h in Headers */,
 				F986014F2BCFBB53006A4C0F /* SkAutoBlitterChoose.h in Headers */,
 				F986FA442BCFB53B006A4C0F /* public-macros.h in Headers */,
+				F98605222BD0E2A3006A4C0F /* CEngineResource.hpp in Headers */,
 				F986FA742BCFB53B006A4C0F /* ftbbox.h in Headers */,
 				F986030B2BCFBB54006A4C0F /* SkOpAngle.h in Headers */,
 				F986FA992BCFB53B006A4C0F /* fttypes.h in Headers */,
@@ -9429,6 +9451,7 @@
 				F986F8FD2BC8441F006A4C0F /* ascii.c in Sources */,
 				F9070E602B9F176B00383E4D /* SivFileSystem_macOS_Linux.cpp in Sources */,
 				F98603FF2BCFBB54006A4C0F /* SkSLDiscardStatement.cpp in Sources */,
+				F98605212BD0E2A3006A4C0F /* CEngineResource.cpp in Sources */,
 				F9528C2A2BBF026F00222F45 /* zstd_double_fast.c in Sources */,
 				F98600D32BCFBB53006A4C0F /* SkHalf.cpp in Sources */,
 				F9070E5E2B9F176B00383E4D /* SivDate_macOS_Linux.cpp in Sources */,
@@ -9723,6 +9746,7 @@
 				F986032E2BCFBB54006A4C0F /* SkPathOpsTightBounds.cpp in Sources */,
 				F98603BE2BCFBB54006A4C0F /* SkSLCheckProgramStructure.cpp in Sources */,
 				F9E5FC232BC13CD00081A4F7 /* JPEGDecoder.cpp in Sources */,
+				F98605232BD0E2A3006A4C0F /* EngineResourceFactory.cpp in Sources */,
 				F986F9912BCA9D0A006A4C0F /* plutovg-ft-raster.c in Sources */,
 				F9070DDE2B9F175E00383E4D /* SivParseBool.cpp in Sources */,
 				F9528C392BBF026F00222F45 /* zstd_ddict.c in Sources */,
