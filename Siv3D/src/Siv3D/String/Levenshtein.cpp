@@ -81,7 +81,7 @@ namespace s3d
 
 		return levenshteinSSE::levenshtein(m_string, other.view());
 
-	# elif
+	# else
 
 		return LevenshteinDistance(m_string, other);
 

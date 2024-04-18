@@ -96,155 +96,6 @@
 		F90706C22B9DAEC900383E4D /* pcg_extras.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F907042E2B9DAEC900383E4D /* pcg_extras.hpp */; };
 		F90706C32B9DAEC900383E4D /* pcg_random.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F907042F2B9DAEC900383E4D /* pcg_random.hpp */; };
 		F90706C42B9DAEC900383E4D /* pcg_uint128.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90704302B9DAEC900383E4D /* pcg_uint128.hpp */; };
-		F90706C52B9DAEC900383E4D /* 2intersect.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704322B9DAEC900383E4D /* 2intersect.h */; };
-		F90706C62B9DAEC900383E4D /* 4dpwssd.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704332B9DAEC900383E4D /* 4dpwssd.h */; };
-		F90706C72B9DAEC900383E4D /* 4dpwssds.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704342B9DAEC900383E4D /* 4dpwssds.h */; };
-		F90706C82B9DAEC900383E4D /* abs.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704352B9DAEC900383E4D /* abs.h */; };
-		F90706C92B9DAEC900383E4D /* add.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704362B9DAEC900383E4D /* add.h */; };
-		F90706CA2B9DAEC900383E4D /* adds.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704372B9DAEC900383E4D /* adds.h */; };
-		F90706CB2B9DAEC900383E4D /* and.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704382B9DAEC900383E4D /* and.h */; };
-		F90706CC2B9DAEC900383E4D /* andnot.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704392B9DAEC900383E4D /* andnot.h */; };
-		F90706CD2B9DAEC900383E4D /* avg.h in Headers */ = {isa = PBXBuildFile; fileRef = F907043A2B9DAEC900383E4D /* avg.h */; };
-		F90706CE2B9DAEC900383E4D /* bitshuffle.h in Headers */ = {isa = PBXBuildFile; fileRef = F907043B2B9DAEC900383E4D /* bitshuffle.h */; };
-		F90706CF2B9DAEC900383E4D /* blend.h in Headers */ = {isa = PBXBuildFile; fileRef = F907043C2B9DAEC900383E4D /* blend.h */; };
-		F90706D02B9DAEC900383E4D /* broadcast.h in Headers */ = {isa = PBXBuildFile; fileRef = F907043D2B9DAEC900383E4D /* broadcast.h */; };
-		F90706D12B9DAEC900383E4D /* cast.h in Headers */ = {isa = PBXBuildFile; fileRef = F907043E2B9DAEC900383E4D /* cast.h */; };
-		F90706D22B9DAEC900383E4D /* cmp.h in Headers */ = {isa = PBXBuildFile; fileRef = F907043F2B9DAEC900383E4D /* cmp.h */; };
-		F90706D32B9DAEC900383E4D /* cmpeq.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704402B9DAEC900383E4D /* cmpeq.h */; };
-		F90706D42B9DAEC900383E4D /* cmpge.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704412B9DAEC900383E4D /* cmpge.h */; };
-		F90706D52B9DAEC900383E4D /* cmpgt.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704422B9DAEC900383E4D /* cmpgt.h */; };
-		F90706D62B9DAEC900383E4D /* cmple.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704432B9DAEC900383E4D /* cmple.h */; };
-		F90706D72B9DAEC900383E4D /* cmplt.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704442B9DAEC900383E4D /* cmplt.h */; };
-		F90706D82B9DAEC900383E4D /* cmpneq.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704452B9DAEC900383E4D /* cmpneq.h */; };
-		F90706D92B9DAEC900383E4D /* compress.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704462B9DAEC900383E4D /* compress.h */; };
-		F90706DA2B9DAEC900383E4D /* conflict.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704472B9DAEC900383E4D /* conflict.h */; };
-		F90706DB2B9DAEC900383E4D /* copysign.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704482B9DAEC900383E4D /* copysign.h */; };
-		F90706DC2B9DAEC900383E4D /* cvt.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704492B9DAEC900383E4D /* cvt.h */; };
-		F90706DD2B9DAEC900383E4D /* cvts.h in Headers */ = {isa = PBXBuildFile; fileRef = F907044A2B9DAEC900383E4D /* cvts.h */; };
-		F90706DE2B9DAEC900383E4D /* cvtt.h in Headers */ = {isa = PBXBuildFile; fileRef = F907044B2B9DAEC900383E4D /* cvtt.h */; };
-		F90706DF2B9DAEC900383E4D /* cvtus.h in Headers */ = {isa = PBXBuildFile; fileRef = F907044C2B9DAEC900383E4D /* cvtus.h */; };
-		F90706E02B9DAEC900383E4D /* dbsad.h in Headers */ = {isa = PBXBuildFile; fileRef = F907044D2B9DAEC900383E4D /* dbsad.h */; };
-		F90706E12B9DAEC900383E4D /* div.h in Headers */ = {isa = PBXBuildFile; fileRef = F907044E2B9DAEC900383E4D /* div.h */; };
-		F90706E22B9DAEC900383E4D /* dpbf16.h in Headers */ = {isa = PBXBuildFile; fileRef = F907044F2B9DAEC900383E4D /* dpbf16.h */; };
-		F90706E32B9DAEC900383E4D /* dpbusd.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704502B9DAEC900383E4D /* dpbusd.h */; };
-		F90706E42B9DAEC900383E4D /* dpbusds.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704512B9DAEC900383E4D /* dpbusds.h */; };
-		F90706E52B9DAEC900383E4D /* dpwssd.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704522B9DAEC900383E4D /* dpwssd.h */; };
-		F90706E62B9DAEC900383E4D /* dpwssds.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704532B9DAEC900383E4D /* dpwssds.h */; };
-		F90706E72B9DAEC900383E4D /* expand.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704542B9DAEC900383E4D /* expand.h */; };
-		F90706E82B9DAEC900383E4D /* extract.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704552B9DAEC900383E4D /* extract.h */; };
-		F90706E92B9DAEC900383E4D /* fixupimm_round.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704562B9DAEC900383E4D /* fixupimm_round.h */; };
-		F90706EA2B9DAEC900383E4D /* fixupimm.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704572B9DAEC900383E4D /* fixupimm.h */; };
-		F90706EB2B9DAEC900383E4D /* flushsubnormal.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704582B9DAEC900383E4D /* flushsubnormal.h */; };
-		F90706EC2B9DAEC900383E4D /* fmadd.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704592B9DAEC900383E4D /* fmadd.h */; };
-		F90706ED2B9DAEC900383E4D /* fmsub.h in Headers */ = {isa = PBXBuildFile; fileRef = F907045A2B9DAEC900383E4D /* fmsub.h */; };
-		F90706EE2B9DAEC900383E4D /* fnmadd.h in Headers */ = {isa = PBXBuildFile; fileRef = F907045B2B9DAEC900383E4D /* fnmadd.h */; };
-		F90706EF2B9DAEC900383E4D /* fnmsub.h in Headers */ = {isa = PBXBuildFile; fileRef = F907045C2B9DAEC900383E4D /* fnmsub.h */; };
-		F90706F02B9DAEC900383E4D /* fpclass.h in Headers */ = {isa = PBXBuildFile; fileRef = F907045D2B9DAEC900383E4D /* fpclass.h */; };
-		F90706F12B9DAEC900383E4D /* gather.h in Headers */ = {isa = PBXBuildFile; fileRef = F907045E2B9DAEC900383E4D /* gather.h */; };
-		F90706F22B9DAEC900383E4D /* insert.h in Headers */ = {isa = PBXBuildFile; fileRef = F907045F2B9DAEC900383E4D /* insert.h */; };
-		F90706F32B9DAEC900383E4D /* kand.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704602B9DAEC900383E4D /* kand.h */; };
-		F90706F42B9DAEC900383E4D /* knot.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704612B9DAEC900383E4D /* knot.h */; };
-		F90706F52B9DAEC900383E4D /* kshift.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704622B9DAEC900383E4D /* kshift.h */; };
-		F90706F62B9DAEC900383E4D /* kxor.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704632B9DAEC900383E4D /* kxor.h */; };
-		F90706F72B9DAEC900383E4D /* load.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704642B9DAEC900383E4D /* load.h */; };
-		F90706F82B9DAEC900383E4D /* loadu.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704652B9DAEC900383E4D /* loadu.h */; };
-		F90706F92B9DAEC900383E4D /* lzcnt.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704662B9DAEC900383E4D /* lzcnt.h */; };
-		F90706FA2B9DAEC900383E4D /* madd.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704672B9DAEC900383E4D /* madd.h */; };
-		F90706FB2B9DAEC900383E4D /* maddubs.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704682B9DAEC900383E4D /* maddubs.h */; };
-		F90706FC2B9DAEC900383E4D /* max.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704692B9DAEC900383E4D /* max.h */; };
-		F90706FD2B9DAEC900383E4D /* min.h in Headers */ = {isa = PBXBuildFile; fileRef = F907046A2B9DAEC900383E4D /* min.h */; };
-		F90706FE2B9DAEC900383E4D /* mov_mask.h in Headers */ = {isa = PBXBuildFile; fileRef = F907046B2B9DAEC900383E4D /* mov_mask.h */; };
-		F90706FF2B9DAEC900383E4D /* mov.h in Headers */ = {isa = PBXBuildFile; fileRef = F907046C2B9DAEC900383E4D /* mov.h */; };
-		F90707002B9DAEC900383E4D /* movm.h in Headers */ = {isa = PBXBuildFile; fileRef = F907046D2B9DAEC900383E4D /* movm.h */; };
-		F90707012B9DAEC900383E4D /* mul.h in Headers */ = {isa = PBXBuildFile; fileRef = F907046E2B9DAEC900383E4D /* mul.h */; };
-		F90707022B9DAEC900383E4D /* mulhi.h in Headers */ = {isa = PBXBuildFile; fileRef = F907046F2B9DAEC900383E4D /* mulhi.h */; };
-		F90707032B9DAEC900383E4D /* mulhrs.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704702B9DAEC900383E4D /* mulhrs.h */; };
-		F90707042B9DAEC900383E4D /* mullo.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704712B9DAEC900383E4D /* mullo.h */; };
-		F90707052B9DAEC900383E4D /* multishift.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704722B9DAEC900383E4D /* multishift.h */; };
-		F90707062B9DAEC900383E4D /* negate.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704732B9DAEC900383E4D /* negate.h */; };
-		F90707072B9DAEC900383E4D /* or.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704742B9DAEC900383E4D /* or.h */; };
-		F90707082B9DAEC900383E4D /* packs.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704752B9DAEC900383E4D /* packs.h */; };
-		F90707092B9DAEC900383E4D /* packus.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704762B9DAEC900383E4D /* packus.h */; };
-		F907070A2B9DAEC900383E4D /* permutex.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704772B9DAEC900383E4D /* permutex.h */; };
-		F907070B2B9DAEC900383E4D /* permutex2var.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704782B9DAEC900383E4D /* permutex2var.h */; };
-		F907070C2B9DAEC900383E4D /* permutexvar.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704792B9DAEC900383E4D /* permutexvar.h */; };
-		F907070D2B9DAEC900383E4D /* popcnt.h in Headers */ = {isa = PBXBuildFile; fileRef = F907047A2B9DAEC900383E4D /* popcnt.h */; };
-		F907070E2B9DAEC900383E4D /* range_round.h in Headers */ = {isa = PBXBuildFile; fileRef = F907047B2B9DAEC900383E4D /* range_round.h */; };
-		F907070F2B9DAEC900383E4D /* range.h in Headers */ = {isa = PBXBuildFile; fileRef = F907047C2B9DAEC900383E4D /* range.h */; };
-		F90707102B9DAEC900383E4D /* rcp.h in Headers */ = {isa = PBXBuildFile; fileRef = F907047D2B9DAEC900383E4D /* rcp.h */; };
-		F90707112B9DAEC900383E4D /* reduce.h in Headers */ = {isa = PBXBuildFile; fileRef = F907047E2B9DAEC900383E4D /* reduce.h */; };
-		F90707122B9DAEC900383E4D /* rol.h in Headers */ = {isa = PBXBuildFile; fileRef = F907047F2B9DAEC900383E4D /* rol.h */; };
-		F90707132B9DAEC900383E4D /* rolv.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704802B9DAEC900383E4D /* rolv.h */; };
-		F90707142B9DAEC900383E4D /* ror.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704812B9DAEC900383E4D /* ror.h */; };
-		F90707152B9DAEC900383E4D /* rorv.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704822B9DAEC900383E4D /* rorv.h */; };
-		F90707162B9DAEC900383E4D /* round.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704832B9DAEC900383E4D /* round.h */; };
-		F90707172B9DAEC900383E4D /* roundscale_round.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704842B9DAEC900383E4D /* roundscale_round.h */; };
-		F90707182B9DAEC900383E4D /* roundscale.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704852B9DAEC900383E4D /* roundscale.h */; };
-		F90707192B9DAEC900383E4D /* sad.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704862B9DAEC900383E4D /* sad.h */; };
-		F907071A2B9DAEC900383E4D /* scalef.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704872B9DAEC900383E4D /* scalef.h */; };
-		F907071B2B9DAEC900383E4D /* set.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704882B9DAEC900383E4D /* set.h */; };
-		F907071C2B9DAEC900383E4D /* set1.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704892B9DAEC900383E4D /* set1.h */; };
-		F907071D2B9DAEC900383E4D /* set4.h in Headers */ = {isa = PBXBuildFile; fileRef = F907048A2B9DAEC900383E4D /* set4.h */; };
-		F907071E2B9DAEC900383E4D /* setone.h in Headers */ = {isa = PBXBuildFile; fileRef = F907048B2B9DAEC900383E4D /* setone.h */; };
-		F907071F2B9DAEC900383E4D /* setr.h in Headers */ = {isa = PBXBuildFile; fileRef = F907048C2B9DAEC900383E4D /* setr.h */; };
-		F90707202B9DAEC900383E4D /* setr4.h in Headers */ = {isa = PBXBuildFile; fileRef = F907048D2B9DAEC900383E4D /* setr4.h */; };
-		F90707212B9DAEC900383E4D /* setzero.h in Headers */ = {isa = PBXBuildFile; fileRef = F907048E2B9DAEC900383E4D /* setzero.h */; };
-		F90707222B9DAEC900383E4D /* shldv.h in Headers */ = {isa = PBXBuildFile; fileRef = F907048F2B9DAEC900383E4D /* shldv.h */; };
-		F90707232B9DAEC900383E4D /* shuffle.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704902B9DAEC900383E4D /* shuffle.h */; };
-		F90707242B9DAEC900383E4D /* sll.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704912B9DAEC900383E4D /* sll.h */; };
-		F90707252B9DAEC900383E4D /* slli.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704922B9DAEC900383E4D /* slli.h */; };
-		F90707262B9DAEC900383E4D /* sllv.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704932B9DAEC900383E4D /* sllv.h */; };
-		F90707272B9DAEC900383E4D /* sqrt.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704942B9DAEC900383E4D /* sqrt.h */; };
-		F90707282B9DAEC900383E4D /* sra.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704952B9DAEC900383E4D /* sra.h */; };
-		F90707292B9DAEC900383E4D /* srai.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704962B9DAEC900383E4D /* srai.h */; };
-		F907072A2B9DAEC900383E4D /* srav.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704972B9DAEC900383E4D /* srav.h */; };
-		F907072B2B9DAEC900383E4D /* srl.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704982B9DAEC900383E4D /* srl.h */; };
-		F907072C2B9DAEC900383E4D /* srli.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704992B9DAEC900383E4D /* srli.h */; };
-		F907072D2B9DAEC900383E4D /* srlv.h in Headers */ = {isa = PBXBuildFile; fileRef = F907049A2B9DAEC900383E4D /* srlv.h */; };
-		F907072E2B9DAEC900383E4D /* store.h in Headers */ = {isa = PBXBuildFile; fileRef = F907049B2B9DAEC900383E4D /* store.h */; };
-		F907072F2B9DAEC900383E4D /* storeu.h in Headers */ = {isa = PBXBuildFile; fileRef = F907049C2B9DAEC900383E4D /* storeu.h */; };
-		F90707302B9DAEC900383E4D /* sub.h in Headers */ = {isa = PBXBuildFile; fileRef = F907049D2B9DAEC900383E4D /* sub.h */; };
-		F90707312B9DAEC900383E4D /* subs.h in Headers */ = {isa = PBXBuildFile; fileRef = F907049E2B9DAEC900383E4D /* subs.h */; };
-		F90707322B9DAEC900383E4D /* ternarylogic.h in Headers */ = {isa = PBXBuildFile; fileRef = F907049F2B9DAEC900383E4D /* ternarylogic.h */; };
-		F90707332B9DAEC900383E4D /* test.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704A02B9DAEC900383E4D /* test.h */; };
-		F90707342B9DAEC900383E4D /* testn.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704A12B9DAEC900383E4D /* testn.h */; };
-		F90707352B9DAEC900383E4D /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704A22B9DAEC900383E4D /* types.h */; };
-		F90707362B9DAEC900383E4D /* unpackhi.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704A32B9DAEC900383E4D /* unpackhi.h */; };
-		F90707372B9DAEC900383E4D /* unpacklo.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704A42B9DAEC900383E4D /* unpacklo.h */; };
-		F90707382B9DAEC900383E4D /* xor.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704A52B9DAEC900383E4D /* xor.h */; };
-		F90707392B9DAEC900383E4D /* xorsign.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704A62B9DAEC900383E4D /* xorsign.h */; };
-		F907073A2B9DAEC900383E4D /* aes.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704A82B9DAEC900383E4D /* aes.h */; };
-		F907073B2B9DAEC900383E4D /* avx.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704A92B9DAEC900383E4D /* avx.h */; };
-		F907073C2B9DAEC900383E4D /* avx2.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704AA2B9DAEC900383E4D /* avx2.h */; };
-		F907073D2B9DAEC900383E4D /* avx512.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704AB2B9DAEC900383E4D /* avx512.h */; };
-		F907073E2B9DAEC900383E4D /* clmul.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704AC2B9DAEC900383E4D /* clmul.h */; };
-		F907073F2B9DAEC900383E4D /* f16c.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704AD2B9DAEC900383E4D /* f16c.h */; };
-		F90707402B9DAEC900383E4D /* fma.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704AE2B9DAEC900383E4D /* fma.h */; };
-		F90707412B9DAEC900383E4D /* gfni.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704AF2B9DAEC900383E4D /* gfni.h */; };
-		F90707422B9DAEC900383E4D /* mmx.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704B02B9DAEC900383E4D /* mmx.h */; };
-		F90707432B9DAEC900383E4D /* sse.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704B12B9DAEC900383E4D /* sse.h */; };
-		F90707442B9DAEC900383E4D /* sse2.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704B22B9DAEC900383E4D /* sse2.h */; };
-		F90707452B9DAEC900383E4D /* sse3.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704B32B9DAEC900383E4D /* sse3.h */; };
-		F90707462B9DAEC900383E4D /* sse4.1.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704B42B9DAEC900383E4D /* sse4.1.h */; };
-		F90707472B9DAEC900383E4D /* sse4.2.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704B52B9DAEC900383E4D /* sse4.2.h */; };
-		F90707482B9DAEC900383E4D /* ssse3.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704B62B9DAEC900383E4D /* ssse3.h */; };
-		F90707492B9DAEC900383E4D /* svml.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704B72B9DAEC900383E4D /* svml.h */; };
-		F907074A2B9DAEC900383E4D /* xop.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704B82B9DAEC900383E4D /* xop.h */; };
-		F907074B2B9DAEC900383E4D /* check.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704BA2B9DAEC900383E4D /* check.h */; };
-		F907074C2B9DAEC900383E4D /* debug-trap.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704BB2B9DAEC900383E4D /* debug-trap.h */; };
-		F907074D2B9DAEC900383E4D /* hedley.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704BC2B9DAEC900383E4D /* hedley.h */; };
-		F907074E2B9DAEC900383E4D /* simde-aes.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704BD2B9DAEC900383E4D /* simde-aes.h */; };
-		F907074F2B9DAEC900383E4D /* simde-align.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704BE2B9DAEC900383E4D /* simde-align.h */; };
-		F90707502B9DAEC900383E4D /* simde-arch.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704BF2B9DAEC900383E4D /* simde-arch.h */; };
-		F90707512B9DAEC900383E4D /* simde-bf16.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704C02B9DAEC900383E4D /* simde-bf16.h */; };
-		F90707522B9DAEC900383E4D /* simde-common.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704C12B9DAEC900383E4D /* simde-common.h */; };
-		F90707532B9DAEC900383E4D /* simde-complex.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704C22B9DAEC900383E4D /* simde-complex.h */; };
-		F90707542B9DAEC900383E4D /* simde-constify.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704C32B9DAEC900383E4D /* simde-constify.h */; };
-		F90707552B9DAEC900383E4D /* simde-detect-clang.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704C42B9DAEC900383E4D /* simde-detect-clang.h */; };
-		F90707562B9DAEC900383E4D /* simde-diagnostic.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704C52B9DAEC900383E4D /* simde-diagnostic.h */; };
-		F90707572B9DAEC900383E4D /* simde-f16.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704C62B9DAEC900383E4D /* simde-f16.h */; };
-		F90707582B9DAEC900383E4D /* simde-features.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704C72B9DAEC900383E4D /* simde-features.h */; };
-		F90707592B9DAEC900383E4D /* simde-math.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704C82B9DAEC900383E4D /* simde-math.h */; };
 		F907075A2B9DAEC900383E4D /* XoshiroCpp.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90704CA2B9DAEC900383E4D /* XoshiroCpp.hpp */; };
 		F907075B2B9DAEC900383E4D /* Siv3D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90704CD2B9DAEC900383E4D /* Siv3D.hpp */; };
 		F9070AEE2B9DEB5900383E4D /* int128.cc in Sources */ = {isa = PBXBuildFile; fileRef = F9070A552B9DEB5900383E4D /* int128.cc */; };
@@ -1749,6 +1600,7 @@
 		F98605152BCFC3E3006A4C0F /* SkTypeface_mac_ct.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605142BCFC3E3006A4C0F /* SkTypeface_mac_ct.h */; };
 		F98605172BCFF7C2006A4C0F /* Emoji.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605162BCFF7C2006A4C0F /* Emoji.hpp */; };
 		F98605192BCFF7DF006A4C0F /* SivEmoji.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605182BCFF7DE006A4C0F /* SivEmoji.cpp */; };
+		F986051B2BD0AC0E006A4C0F /* GlyphIndex.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986051A2BD0AC0E006A4C0F /* GlyphIndex.hpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2172,155 +2024,6 @@
 		F907042E2B9DAEC900383E4D /* pcg_extras.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pcg_extras.hpp; sourceTree = "<group>"; };
 		F907042F2B9DAEC900383E4D /* pcg_random.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pcg_random.hpp; sourceTree = "<group>"; };
 		F90704302B9DAEC900383E4D /* pcg_uint128.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pcg_uint128.hpp; sourceTree = "<group>"; };
-		F90704322B9DAEC900383E4D /* 2intersect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = 2intersect.h; sourceTree = "<group>"; };
-		F90704332B9DAEC900383E4D /* 4dpwssd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = 4dpwssd.h; sourceTree = "<group>"; };
-		F90704342B9DAEC900383E4D /* 4dpwssds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = 4dpwssds.h; sourceTree = "<group>"; };
-		F90704352B9DAEC900383E4D /* abs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = abs.h; sourceTree = "<group>"; };
-		F90704362B9DAEC900383E4D /* add.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = add.h; sourceTree = "<group>"; };
-		F90704372B9DAEC900383E4D /* adds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = adds.h; sourceTree = "<group>"; };
-		F90704382B9DAEC900383E4D /* and.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = and.h; sourceTree = "<group>"; };
-		F90704392B9DAEC900383E4D /* andnot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = andnot.h; sourceTree = "<group>"; };
-		F907043A2B9DAEC900383E4D /* avg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avg.h; sourceTree = "<group>"; };
-		F907043B2B9DAEC900383E4D /* bitshuffle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bitshuffle.h; sourceTree = "<group>"; };
-		F907043C2B9DAEC900383E4D /* blend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blend.h; sourceTree = "<group>"; };
-		F907043D2B9DAEC900383E4D /* broadcast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = broadcast.h; sourceTree = "<group>"; };
-		F907043E2B9DAEC900383E4D /* cast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cast.h; sourceTree = "<group>"; };
-		F907043F2B9DAEC900383E4D /* cmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmp.h; sourceTree = "<group>"; };
-		F90704402B9DAEC900383E4D /* cmpeq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmpeq.h; sourceTree = "<group>"; };
-		F90704412B9DAEC900383E4D /* cmpge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmpge.h; sourceTree = "<group>"; };
-		F90704422B9DAEC900383E4D /* cmpgt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmpgt.h; sourceTree = "<group>"; };
-		F90704432B9DAEC900383E4D /* cmple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmple.h; sourceTree = "<group>"; };
-		F90704442B9DAEC900383E4D /* cmplt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmplt.h; sourceTree = "<group>"; };
-		F90704452B9DAEC900383E4D /* cmpneq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmpneq.h; sourceTree = "<group>"; };
-		F90704462B9DAEC900383E4D /* compress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compress.h; sourceTree = "<group>"; };
-		F90704472B9DAEC900383E4D /* conflict.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = conflict.h; sourceTree = "<group>"; };
-		F90704482B9DAEC900383E4D /* copysign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = copysign.h; sourceTree = "<group>"; };
-		F90704492B9DAEC900383E4D /* cvt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cvt.h; sourceTree = "<group>"; };
-		F907044A2B9DAEC900383E4D /* cvts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cvts.h; sourceTree = "<group>"; };
-		F907044B2B9DAEC900383E4D /* cvtt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cvtt.h; sourceTree = "<group>"; };
-		F907044C2B9DAEC900383E4D /* cvtus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cvtus.h; sourceTree = "<group>"; };
-		F907044D2B9DAEC900383E4D /* dbsad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbsad.h; sourceTree = "<group>"; };
-		F907044E2B9DAEC900383E4D /* div.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = div.h; sourceTree = "<group>"; };
-		F907044F2B9DAEC900383E4D /* dpbf16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dpbf16.h; sourceTree = "<group>"; };
-		F90704502B9DAEC900383E4D /* dpbusd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dpbusd.h; sourceTree = "<group>"; };
-		F90704512B9DAEC900383E4D /* dpbusds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dpbusds.h; sourceTree = "<group>"; };
-		F90704522B9DAEC900383E4D /* dpwssd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dpwssd.h; sourceTree = "<group>"; };
-		F90704532B9DAEC900383E4D /* dpwssds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dpwssds.h; sourceTree = "<group>"; };
-		F90704542B9DAEC900383E4D /* expand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = expand.h; sourceTree = "<group>"; };
-		F90704552B9DAEC900383E4D /* extract.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extract.h; sourceTree = "<group>"; };
-		F90704562B9DAEC900383E4D /* fixupimm_round.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fixupimm_round.h; sourceTree = "<group>"; };
-		F90704572B9DAEC900383E4D /* fixupimm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fixupimm.h; sourceTree = "<group>"; };
-		F90704582B9DAEC900383E4D /* flushsubnormal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = flushsubnormal.h; sourceTree = "<group>"; };
-		F90704592B9DAEC900383E4D /* fmadd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fmadd.h; sourceTree = "<group>"; };
-		F907045A2B9DAEC900383E4D /* fmsub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fmsub.h; sourceTree = "<group>"; };
-		F907045B2B9DAEC900383E4D /* fnmadd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fnmadd.h; sourceTree = "<group>"; };
-		F907045C2B9DAEC900383E4D /* fnmsub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fnmsub.h; sourceTree = "<group>"; };
-		F907045D2B9DAEC900383E4D /* fpclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpclass.h; sourceTree = "<group>"; };
-		F907045E2B9DAEC900383E4D /* gather.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gather.h; sourceTree = "<group>"; };
-		F907045F2B9DAEC900383E4D /* insert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = insert.h; sourceTree = "<group>"; };
-		F90704602B9DAEC900383E4D /* kand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kand.h; sourceTree = "<group>"; };
-		F90704612B9DAEC900383E4D /* knot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = knot.h; sourceTree = "<group>"; };
-		F90704622B9DAEC900383E4D /* kshift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kshift.h; sourceTree = "<group>"; };
-		F90704632B9DAEC900383E4D /* kxor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kxor.h; sourceTree = "<group>"; };
-		F90704642B9DAEC900383E4D /* load.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = load.h; sourceTree = "<group>"; };
-		F90704652B9DAEC900383E4D /* loadu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = loadu.h; sourceTree = "<group>"; };
-		F90704662B9DAEC900383E4D /* lzcnt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lzcnt.h; sourceTree = "<group>"; };
-		F90704672B9DAEC900383E4D /* madd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = madd.h; sourceTree = "<group>"; };
-		F90704682B9DAEC900383E4D /* maddubs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = maddubs.h; sourceTree = "<group>"; };
-		F90704692B9DAEC900383E4D /* max.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = max.h; sourceTree = "<group>"; };
-		F907046A2B9DAEC900383E4D /* min.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = min.h; sourceTree = "<group>"; };
-		F907046B2B9DAEC900383E4D /* mov_mask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mov_mask.h; sourceTree = "<group>"; };
-		F907046C2B9DAEC900383E4D /* mov.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mov.h; sourceTree = "<group>"; };
-		F907046D2B9DAEC900383E4D /* movm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = movm.h; sourceTree = "<group>"; };
-		F907046E2B9DAEC900383E4D /* mul.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mul.h; sourceTree = "<group>"; };
-		F907046F2B9DAEC900383E4D /* mulhi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mulhi.h; sourceTree = "<group>"; };
-		F90704702B9DAEC900383E4D /* mulhrs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mulhrs.h; sourceTree = "<group>"; };
-		F90704712B9DAEC900383E4D /* mullo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mullo.h; sourceTree = "<group>"; };
-		F90704722B9DAEC900383E4D /* multishift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = multishift.h; sourceTree = "<group>"; };
-		F90704732B9DAEC900383E4D /* negate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = negate.h; sourceTree = "<group>"; };
-		F90704742B9DAEC900383E4D /* or.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = or.h; sourceTree = "<group>"; };
-		F90704752B9DAEC900383E4D /* packs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = packs.h; sourceTree = "<group>"; };
-		F90704762B9DAEC900383E4D /* packus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = packus.h; sourceTree = "<group>"; };
-		F90704772B9DAEC900383E4D /* permutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = permutex.h; sourceTree = "<group>"; };
-		F90704782B9DAEC900383E4D /* permutex2var.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = permutex2var.h; sourceTree = "<group>"; };
-		F90704792B9DAEC900383E4D /* permutexvar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = permutexvar.h; sourceTree = "<group>"; };
-		F907047A2B9DAEC900383E4D /* popcnt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = popcnt.h; sourceTree = "<group>"; };
-		F907047B2B9DAEC900383E4D /* range_round.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = range_round.h; sourceTree = "<group>"; };
-		F907047C2B9DAEC900383E4D /* range.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = range.h; sourceTree = "<group>"; };
-		F907047D2B9DAEC900383E4D /* rcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rcp.h; sourceTree = "<group>"; };
-		F907047E2B9DAEC900383E4D /* reduce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reduce.h; sourceTree = "<group>"; };
-		F907047F2B9DAEC900383E4D /* rol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rol.h; sourceTree = "<group>"; };
-		F90704802B9DAEC900383E4D /* rolv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rolv.h; sourceTree = "<group>"; };
-		F90704812B9DAEC900383E4D /* ror.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ror.h; sourceTree = "<group>"; };
-		F90704822B9DAEC900383E4D /* rorv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rorv.h; sourceTree = "<group>"; };
-		F90704832B9DAEC900383E4D /* round.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = round.h; sourceTree = "<group>"; };
-		F90704842B9DAEC900383E4D /* roundscale_round.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = roundscale_round.h; sourceTree = "<group>"; };
-		F90704852B9DAEC900383E4D /* roundscale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = roundscale.h; sourceTree = "<group>"; };
-		F90704862B9DAEC900383E4D /* sad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sad.h; sourceTree = "<group>"; };
-		F90704872B9DAEC900383E4D /* scalef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scalef.h; sourceTree = "<group>"; };
-		F90704882B9DAEC900383E4D /* set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = set.h; sourceTree = "<group>"; };
-		F90704892B9DAEC900383E4D /* set1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = set1.h; sourceTree = "<group>"; };
-		F907048A2B9DAEC900383E4D /* set4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = set4.h; sourceTree = "<group>"; };
-		F907048B2B9DAEC900383E4D /* setone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = setone.h; sourceTree = "<group>"; };
-		F907048C2B9DAEC900383E4D /* setr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = setr.h; sourceTree = "<group>"; };
-		F907048D2B9DAEC900383E4D /* setr4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = setr4.h; sourceTree = "<group>"; };
-		F907048E2B9DAEC900383E4D /* setzero.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = setzero.h; sourceTree = "<group>"; };
-		F907048F2B9DAEC900383E4D /* shldv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shldv.h; sourceTree = "<group>"; };
-		F90704902B9DAEC900383E4D /* shuffle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shuffle.h; sourceTree = "<group>"; };
-		F90704912B9DAEC900383E4D /* sll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sll.h; sourceTree = "<group>"; };
-		F90704922B9DAEC900383E4D /* slli.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = slli.h; sourceTree = "<group>"; };
-		F90704932B9DAEC900383E4D /* sllv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sllv.h; sourceTree = "<group>"; };
-		F90704942B9DAEC900383E4D /* sqrt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqrt.h; sourceTree = "<group>"; };
-		F90704952B9DAEC900383E4D /* sra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sra.h; sourceTree = "<group>"; };
-		F90704962B9DAEC900383E4D /* srai.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srai.h; sourceTree = "<group>"; };
-		F90704972B9DAEC900383E4D /* srav.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srav.h; sourceTree = "<group>"; };
-		F90704982B9DAEC900383E4D /* srl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srl.h; sourceTree = "<group>"; };
-		F90704992B9DAEC900383E4D /* srli.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srli.h; sourceTree = "<group>"; };
-		F907049A2B9DAEC900383E4D /* srlv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srlv.h; sourceTree = "<group>"; };
-		F907049B2B9DAEC900383E4D /* store.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = store.h; sourceTree = "<group>"; };
-		F907049C2B9DAEC900383E4D /* storeu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = storeu.h; sourceTree = "<group>"; };
-		F907049D2B9DAEC900383E4D /* sub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sub.h; sourceTree = "<group>"; };
-		F907049E2B9DAEC900383E4D /* subs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = subs.h; sourceTree = "<group>"; };
-		F907049F2B9DAEC900383E4D /* ternarylogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ternarylogic.h; sourceTree = "<group>"; };
-		F90704A02B9DAEC900383E4D /* test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
-		F90704A12B9DAEC900383E4D /* testn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testn.h; sourceTree = "<group>"; };
-		F90704A22B9DAEC900383E4D /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
-		F90704A32B9DAEC900383E4D /* unpackhi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unpackhi.h; sourceTree = "<group>"; };
-		F90704A42B9DAEC900383E4D /* unpacklo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unpacklo.h; sourceTree = "<group>"; };
-		F90704A52B9DAEC900383E4D /* xor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xor.h; sourceTree = "<group>"; };
-		F90704A62B9DAEC900383E4D /* xorsign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xorsign.h; sourceTree = "<group>"; };
-		F90704A82B9DAEC900383E4D /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
-		F90704A92B9DAEC900383E4D /* avx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avx.h; sourceTree = "<group>"; };
-		F90704AA2B9DAEC900383E4D /* avx2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avx2.h; sourceTree = "<group>"; };
-		F90704AB2B9DAEC900383E4D /* avx512.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avx512.h; sourceTree = "<group>"; };
-		F90704AC2B9DAEC900383E4D /* clmul.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clmul.h; sourceTree = "<group>"; };
-		F90704AD2B9DAEC900383E4D /* f16c.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = f16c.h; sourceTree = "<group>"; };
-		F90704AE2B9DAEC900383E4D /* fma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fma.h; sourceTree = "<group>"; };
-		F90704AF2B9DAEC900383E4D /* gfni.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gfni.h; sourceTree = "<group>"; };
-		F90704B02B9DAEC900383E4D /* mmx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mmx.h; sourceTree = "<group>"; };
-		F90704B12B9DAEC900383E4D /* sse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sse.h; sourceTree = "<group>"; };
-		F90704B22B9DAEC900383E4D /* sse2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sse2.h; sourceTree = "<group>"; };
-		F90704B32B9DAEC900383E4D /* sse3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sse3.h; sourceTree = "<group>"; };
-		F90704B42B9DAEC900383E4D /* sse4.1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sse4.1.h; sourceTree = "<group>"; };
-		F90704B52B9DAEC900383E4D /* sse4.2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sse4.2.h; sourceTree = "<group>"; };
-		F90704B62B9DAEC900383E4D /* ssse3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssse3.h; sourceTree = "<group>"; };
-		F90704B72B9DAEC900383E4D /* svml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svml.h; sourceTree = "<group>"; };
-		F90704B82B9DAEC900383E4D /* xop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xop.h; sourceTree = "<group>"; };
-		F90704BA2B9DAEC900383E4D /* check.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = check.h; sourceTree = "<group>"; };
-		F90704BB2B9DAEC900383E4D /* debug-trap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "debug-trap.h"; sourceTree = "<group>"; };
-		F90704BC2B9DAEC900383E4D /* hedley.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hedley.h; sourceTree = "<group>"; };
-		F90704BD2B9DAEC900383E4D /* simde-aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-aes.h"; sourceTree = "<group>"; };
-		F90704BE2B9DAEC900383E4D /* simde-align.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-align.h"; sourceTree = "<group>"; };
-		F90704BF2B9DAEC900383E4D /* simde-arch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-arch.h"; sourceTree = "<group>"; };
-		F90704C02B9DAEC900383E4D /* simde-bf16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-bf16.h"; sourceTree = "<group>"; };
-		F90704C12B9DAEC900383E4D /* simde-common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-common.h"; sourceTree = "<group>"; };
-		F90704C22B9DAEC900383E4D /* simde-complex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-complex.h"; sourceTree = "<group>"; };
-		F90704C32B9DAEC900383E4D /* simde-constify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-constify.h"; sourceTree = "<group>"; };
-		F90704C42B9DAEC900383E4D /* simde-detect-clang.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-detect-clang.h"; sourceTree = "<group>"; };
-		F90704C52B9DAEC900383E4D /* simde-diagnostic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-diagnostic.h"; sourceTree = "<group>"; };
-		F90704C62B9DAEC900383E4D /* simde-f16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-f16.h"; sourceTree = "<group>"; };
-		F90704C72B9DAEC900383E4D /* simde-features.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-features.h"; sourceTree = "<group>"; };
-		F90704C82B9DAEC900383E4D /* simde-math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "simde-math.h"; sourceTree = "<group>"; };
 		F90704CA2B9DAEC900383E4D /* XoshiroCpp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = XoshiroCpp.hpp; sourceTree = "<group>"; };
 		F90704CD2B9DAEC900383E4D /* Siv3D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3D.hpp; sourceTree = "<group>"; };
 		F9070A552B9DEB5900383E4D /* int128.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = int128.cc; sourceTree = "<group>"; };
@@ -2909,6 +2612,7 @@
 		F98605142BCFC3E3006A4C0F /* SkTypeface_mac_ct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkTypeface_mac_ct.h; sourceTree = "<group>"; };
 		F98605162BCFF7C2006A4C0F /* Emoji.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Emoji.hpp; sourceTree = "<group>"; };
 		F98605182BCFF7DE006A4C0F /* SivEmoji.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEmoji.cpp; sourceTree = "<group>"; };
+		F986051A2BD0AC0E006A4C0F /* GlyphIndex.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GlyphIndex.hpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -4501,178 +4205,6 @@
 			path = pcg;
 			sourceTree = "<group>";
 		};
-		F90704A72B9DAEC900383E4D /* avx512 */ = {
-			isa = PBXGroup;
-			children = (
-				F90704322B9DAEC900383E4D /* 2intersect.h */,
-				F90704332B9DAEC900383E4D /* 4dpwssd.h */,
-				F90704342B9DAEC900383E4D /* 4dpwssds.h */,
-				F90704352B9DAEC900383E4D /* abs.h */,
-				F90704362B9DAEC900383E4D /* add.h */,
-				F90704372B9DAEC900383E4D /* adds.h */,
-				F90704382B9DAEC900383E4D /* and.h */,
-				F90704392B9DAEC900383E4D /* andnot.h */,
-				F907043A2B9DAEC900383E4D /* avg.h */,
-				F907043B2B9DAEC900383E4D /* bitshuffle.h */,
-				F907043C2B9DAEC900383E4D /* blend.h */,
-				F907043D2B9DAEC900383E4D /* broadcast.h */,
-				F907043E2B9DAEC900383E4D /* cast.h */,
-				F907043F2B9DAEC900383E4D /* cmp.h */,
-				F90704402B9DAEC900383E4D /* cmpeq.h */,
-				F90704412B9DAEC900383E4D /* cmpge.h */,
-				F90704422B9DAEC900383E4D /* cmpgt.h */,
-				F90704432B9DAEC900383E4D /* cmple.h */,
-				F90704442B9DAEC900383E4D /* cmplt.h */,
-				F90704452B9DAEC900383E4D /* cmpneq.h */,
-				F90704462B9DAEC900383E4D /* compress.h */,
-				F90704472B9DAEC900383E4D /* conflict.h */,
-				F90704482B9DAEC900383E4D /* copysign.h */,
-				F90704492B9DAEC900383E4D /* cvt.h */,
-				F907044A2B9DAEC900383E4D /* cvts.h */,
-				F907044B2B9DAEC900383E4D /* cvtt.h */,
-				F907044C2B9DAEC900383E4D /* cvtus.h */,
-				F907044D2B9DAEC900383E4D /* dbsad.h */,
-				F907044E2B9DAEC900383E4D /* div.h */,
-				F907044F2B9DAEC900383E4D /* dpbf16.h */,
-				F90704502B9DAEC900383E4D /* dpbusd.h */,
-				F90704512B9DAEC900383E4D /* dpbusds.h */,
-				F90704522B9DAEC900383E4D /* dpwssd.h */,
-				F90704532B9DAEC900383E4D /* dpwssds.h */,
-				F90704542B9DAEC900383E4D /* expand.h */,
-				F90704552B9DAEC900383E4D /* extract.h */,
-				F90704562B9DAEC900383E4D /* fixupimm_round.h */,
-				F90704572B9DAEC900383E4D /* fixupimm.h */,
-				F90704582B9DAEC900383E4D /* flushsubnormal.h */,
-				F90704592B9DAEC900383E4D /* fmadd.h */,
-				F907045A2B9DAEC900383E4D /* fmsub.h */,
-				F907045B2B9DAEC900383E4D /* fnmadd.h */,
-				F907045C2B9DAEC900383E4D /* fnmsub.h */,
-				F907045D2B9DAEC900383E4D /* fpclass.h */,
-				F907045E2B9DAEC900383E4D /* gather.h */,
-				F907045F2B9DAEC900383E4D /* insert.h */,
-				F90704602B9DAEC900383E4D /* kand.h */,
-				F90704612B9DAEC900383E4D /* knot.h */,
-				F90704622B9DAEC900383E4D /* kshift.h */,
-				F90704632B9DAEC900383E4D /* kxor.h */,
-				F90704642B9DAEC900383E4D /* load.h */,
-				F90704652B9DAEC900383E4D /* loadu.h */,
-				F90704662B9DAEC900383E4D /* lzcnt.h */,
-				F90704672B9DAEC900383E4D /* madd.h */,
-				F90704682B9DAEC900383E4D /* maddubs.h */,
-				F90704692B9DAEC900383E4D /* max.h */,
-				F907046A2B9DAEC900383E4D /* min.h */,
-				F907046B2B9DAEC900383E4D /* mov_mask.h */,
-				F907046C2B9DAEC900383E4D /* mov.h */,
-				F907046D2B9DAEC900383E4D /* movm.h */,
-				F907046E2B9DAEC900383E4D /* mul.h */,
-				F907046F2B9DAEC900383E4D /* mulhi.h */,
-				F90704702B9DAEC900383E4D /* mulhrs.h */,
-				F90704712B9DAEC900383E4D /* mullo.h */,
-				F90704722B9DAEC900383E4D /* multishift.h */,
-				F90704732B9DAEC900383E4D /* negate.h */,
-				F90704742B9DAEC900383E4D /* or.h */,
-				F90704752B9DAEC900383E4D /* packs.h */,
-				F90704762B9DAEC900383E4D /* packus.h */,
-				F90704772B9DAEC900383E4D /* permutex.h */,
-				F90704782B9DAEC900383E4D /* permutex2var.h */,
-				F90704792B9DAEC900383E4D /* permutexvar.h */,
-				F907047A2B9DAEC900383E4D /* popcnt.h */,
-				F907047B2B9DAEC900383E4D /* range_round.h */,
-				F907047C2B9DAEC900383E4D /* range.h */,
-				F907047D2B9DAEC900383E4D /* rcp.h */,
-				F907047E2B9DAEC900383E4D /* reduce.h */,
-				F907047F2B9DAEC900383E4D /* rol.h */,
-				F90704802B9DAEC900383E4D /* rolv.h */,
-				F90704812B9DAEC900383E4D /* ror.h */,
-				F90704822B9DAEC900383E4D /* rorv.h */,
-				F90704832B9DAEC900383E4D /* round.h */,
-				F90704842B9DAEC900383E4D /* roundscale_round.h */,
-				F90704852B9DAEC900383E4D /* roundscale.h */,
-				F90704862B9DAEC900383E4D /* sad.h */,
-				F90704872B9DAEC900383E4D /* scalef.h */,
-				F90704882B9DAEC900383E4D /* set.h */,
-				F90704892B9DAEC900383E4D /* set1.h */,
-				F907048A2B9DAEC900383E4D /* set4.h */,
-				F907048B2B9DAEC900383E4D /* setone.h */,
-				F907048C2B9DAEC900383E4D /* setr.h */,
-				F907048D2B9DAEC900383E4D /* setr4.h */,
-				F907048E2B9DAEC900383E4D /* setzero.h */,
-				F907048F2B9DAEC900383E4D /* shldv.h */,
-				F90704902B9DAEC900383E4D /* shuffle.h */,
-				F90704912B9DAEC900383E4D /* sll.h */,
-				F90704922B9DAEC900383E4D /* slli.h */,
-				F90704932B9DAEC900383E4D /* sllv.h */,
-				F90704942B9DAEC900383E4D /* sqrt.h */,
-				F90704952B9DAEC900383E4D /* sra.h */,
-				F90704962B9DAEC900383E4D /* srai.h */,
-				F90704972B9DAEC900383E4D /* srav.h */,
-				F90704982B9DAEC900383E4D /* srl.h */,
-				F90704992B9DAEC900383E4D /* srli.h */,
-				F907049A2B9DAEC900383E4D /* srlv.h */,
-				F907049B2B9DAEC900383E4D /* store.h */,
-				F907049C2B9DAEC900383E4D /* storeu.h */,
-				F907049D2B9DAEC900383E4D /* sub.h */,
-				F907049E2B9DAEC900383E4D /* subs.h */,
-				F907049F2B9DAEC900383E4D /* ternarylogic.h */,
-				F90704A02B9DAEC900383E4D /* test.h */,
-				F90704A12B9DAEC900383E4D /* testn.h */,
-				F90704A22B9DAEC900383E4D /* types.h */,
-				F90704A32B9DAEC900383E4D /* unpackhi.h */,
-				F90704A42B9DAEC900383E4D /* unpacklo.h */,
-				F90704A52B9DAEC900383E4D /* xor.h */,
-				F90704A62B9DAEC900383E4D /* xorsign.h */,
-			);
-			path = avx512;
-			sourceTree = "<group>";
-		};
-		F90704B92B9DAEC900383E4D /* x86 */ = {
-			isa = PBXGroup;
-			children = (
-				F90704A72B9DAEC900383E4D /* avx512 */,
-				F90704A82B9DAEC900383E4D /* aes.h */,
-				F90704A92B9DAEC900383E4D /* avx.h */,
-				F90704AA2B9DAEC900383E4D /* avx2.h */,
-				F90704AB2B9DAEC900383E4D /* avx512.h */,
-				F90704AC2B9DAEC900383E4D /* clmul.h */,
-				F90704AD2B9DAEC900383E4D /* f16c.h */,
-				F90704AE2B9DAEC900383E4D /* fma.h */,
-				F90704AF2B9DAEC900383E4D /* gfni.h */,
-				F90704B02B9DAEC900383E4D /* mmx.h */,
-				F90704B12B9DAEC900383E4D /* sse.h */,
-				F90704B22B9DAEC900383E4D /* sse2.h */,
-				F90704B32B9DAEC900383E4D /* sse3.h */,
-				F90704B42B9DAEC900383E4D /* sse4.1.h */,
-				F90704B52B9DAEC900383E4D /* sse4.2.h */,
-				F90704B62B9DAEC900383E4D /* ssse3.h */,
-				F90704B72B9DAEC900383E4D /* svml.h */,
-				F90704B82B9DAEC900383E4D /* xop.h */,
-			);
-			path = x86;
-			sourceTree = "<group>";
-		};
-		F90704C92B9DAEC900383E4D /* simde */ = {
-			isa = PBXGroup;
-			children = (
-				F90704B92B9DAEC900383E4D /* x86 */,
-				F90704BA2B9DAEC900383E4D /* check.h */,
-				F90704BB2B9DAEC900383E4D /* debug-trap.h */,
-				F90704BC2B9DAEC900383E4D /* hedley.h */,
-				F90704BD2B9DAEC900383E4D /* simde-aes.h */,
-				F90704BE2B9DAEC900383E4D /* simde-align.h */,
-				F90704BF2B9DAEC900383E4D /* simde-arch.h */,
-				F90704C02B9DAEC900383E4D /* simde-bf16.h */,
-				F90704C12B9DAEC900383E4D /* simde-common.h */,
-				F90704C22B9DAEC900383E4D /* simde-complex.h */,
-				F90704C32B9DAEC900383E4D /* simde-constify.h */,
-				F90704C42B9DAEC900383E4D /* simde-detect-clang.h */,
-				F90704C52B9DAEC900383E4D /* simde-diagnostic.h */,
-				F90704C62B9DAEC900383E4D /* simde-f16.h */,
-				F90704C72B9DAEC900383E4D /* simde-features.h */,
-				F90704C82B9DAEC900383E4D /* simde-math.h */,
-			);
-			path = simde;
-			sourceTree = "<group>";
-		};
 		F90704CB2B9DAEC900383E4D /* Xoshiro-cpp */ = {
 			isa = PBXGroup;
 			children = (
@@ -4695,7 +4227,6 @@
 				F90704242B9DAEC900383E4D /* Obfuscate */,
 				F907042D2B9DAEC900383E4D /* parallel_hashmap */,
 				F90704312B9DAEC900383E4D /* pcg */,
-				F90704C92B9DAEC900383E4D /* simde */,
 				F90704CB2B9DAEC900383E4D /* Xoshiro-cpp */,
 			);
 			path = ThirdParty;
@@ -5077,6 +4608,7 @@
 				F9070BEA2B9F175000383E4D /* Formatter.hpp */,
 				F9070BEB2B9F175000383E4D /* FormatUtility.hpp */,
 				F9070BEC2B9F175000383E4D /* FunctionRef.hpp */,
+				F986051A2BD0AC0E006A4C0F /* GlyphIndex.hpp */,
 				F9528B192BADCC7C00222F45 /* Grid.hpp */,
 				F9E5FC2A2BC15AEE0081A4F7 /* HalfFloat.hpp */,
 				F9070BED2B9F175000383E4D /* HardwareRNG.hpp */,
@@ -8243,9 +7775,6 @@
 				F9E5FCD52BC3AD580081A4F7 /* JSON.ipp in Headers */,
 				F9528B1E2BAFB65000222F45 /* Base64Value.ipp in Headers */,
 				F9528C632BC05B0200222F45 /* ImagePixelFormat.hpp in Headers */,
-				F907072C2B9DAEC900383E4D /* srli.h in Headers */,
-				F90707002B9DAEC900383E4D /* movm.h in Headers */,
-				F907070C2B9DAEC900383E4D /* permutexvar.h in Headers */,
 				F98601EE2BCFBB53006A4C0F /* SkMasks.h in Headers */,
 				F9E5FCE72BC59EA00081A4F7 /* JSONIterator.hpp in Headers */,
 				F90706A72B9DAEC900383E4D /* beta_distribution.h in Headers */,
@@ -8253,14 +7782,10 @@
 				F986004F2BCFBB53006A4C0F /* SkUnPreMultiply.h in Headers */,
 				F986F8B22BC806DB006A4C0F /* exif.h in Headers */,
 				F98603812BCFBB54006A4C0F /* SkOTTable_maxp.h in Headers */,
-				F90707592B9DAEC900383E4D /* simde-math.h in Headers */,
-				F90707482B9DAEC900383E4D /* ssse3.h in Headers */,
 				F90706A82B9DAEC900383E4D /* discrete_distribution.h in Headers */,
 				F9070CCD2B9F175100383E4D /* Int128.hpp in Headers */,
 				F98600272BCFBB53006A4C0F /* SkOpenTypeSVGDecoder.h in Headers */,
 				F90706C02B9DAEC900383E4D /* phmap_utils.h in Headers */,
-				F907071F2B9DAEC900383E4D /* setr.h in Headers */,
-				F90707582B9DAEC900383E4D /* simde-features.h in Headers */,
 				F986FA562BCFB53B006A4C0F /* svtteng.h in Headers */,
 				F9070C462B9F175000383E4D /* Blob.ipp in Headers */,
 				F9070CB52B9F175000383E4D /* Endian.hpp in Headers */,
@@ -8273,7 +7798,6 @@
 				F98601AB2BCFBB53006A4C0F /* SkDrawShadowInfo.h in Headers */,
 				F9528B992BBC76EA00222F45 /* Step3D.ipp in Headers */,
 				F986FA9E2BCFB53B006A4C0F /* tttables.h in Headers */,
-				F90707572B9DAEC900383E4D /* simde-f16.h in Headers */,
 				F9528C3C2BBF026F00222F45 /* zstd_decompress_block.h in Headers */,
 				F98601FB2BCFBB53006A4C0F /* SkMeshPriv.h in Headers */,
 				F98600AF2BCFBB53006A4C0F /* SkParse.h in Headers */,
@@ -8282,7 +7806,6 @@
 				F9070B012B9DEB5900383E4D /* format-inl.h in Headers */,
 				F9070CA12B9F175000383E4D /* ColorF.hpp in Headers */,
 				F986FA7A2BCFB53B006A4C0F /* ftcid.h in Headers */,
-				F90707372B9DAEC900383E4D /* unpacklo.h in Headers */,
 				F98600A92BCFBB53006A4C0F /* SkEventTracer.h in Headers */,
 				F98602562BCFBB54006A4C0F /* SkRTree.h in Headers */,
 				F986FFF02BCFBB53006A4C0F /* SkGifDecoder.h in Headers */,
@@ -8296,7 +7819,6 @@
 				F9070CE92B9F175100383E4D /* ParseErrorReason.hpp in Headers */,
 				F9070CFB2B9F175100383E4D /* SpecialFolder.hpp in Headers */,
 				F98604282BCFBB54006A4C0F /* SkSLModifiersDeclaration.h in Headers */,
-				F90706CF2B9DAEC900383E4D /* blend.h in Headers */,
 				F986005E2BCFBB53006A4C0F /* SkDiscretePathEffect.h in Headers */,
 				F9070CBD2B9F175000383E4D /* FloatToString.hpp in Headers */,
 				F9070CE22B9F175100383E4D /* Optional.hpp in Headers */,
@@ -8312,12 +7834,9 @@
 				F986007B2BCFBB53006A4C0F /* SkMalloc.h in Headers */,
 				F90706902B9DAEC900383E4D /* optimization.h in Headers */,
 				F98604682BCFBB54006A4C0F /* SkSLBuiltinTypes.h in Headers */,
-				F90706DA2B9DAEC900383E4D /* conflict.h in Headers */,
 				F98603D62BCFBB54006A4C0F /* SkSLMetalCodeGenerator.h in Headers */,
 				F98603272BCFBB54006A4C0F /* SkPathOpsPoint.h in Headers */,
-				F90706D72B9DAEC900383E4D /* cmplt.h in Headers */,
 				F986FA7F2BCFB53B006A4C0F /* ftfntfmt.h in Headers */,
-				F90707542B9DAEC900383E4D /* simde-constify.h in Headers */,
 				F986002B2BCFBB53006A4C0F /* SkPathBuilder.h in Headers */,
 				F9070EF22B9F1C8900383E4D /* posix_poll.h in Headers */,
 				F9070C452B9F175000383E4D /* BinaryWriter.ipp in Headers */,
@@ -8343,19 +7862,16 @@
 				F98603352BCFBB54006A4C0F /* SkPathWriter.h in Headers */,
 				F90706B72B9DAEC900383E4D /* mimalloc.h in Headers */,
 				F98603892BCFBB54006A4C0F /* SkOTTable_OS_2_VA.h in Headers */,
-				F90706E92B9DAEC900383E4D /* fixupimm_round.h in Headers */,
 				F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */,
 				F986019D2BCFBB53006A4C0F /* SkDevice.h in Headers */,
 				F98600722BCFBB53006A4C0F /* SkCPUTypes.h in Headers */,
 				F98600552BCFBB53006A4C0F /* SkXPSDocument.h in Headers */,
 				F98600632BCFBB53006A4C0F /* SkOverdrawColorFilter.h in Headers */,
 				F98603782BCFBB54006A4C0F /* SkOTTable_fvar.h in Headers */,
-				F90706E82B9DAEC900383E4D /* extract.h in Headers */,
 				F98604732BCFBB54006A4C0F /* SkSLGLSL.h in Headers */,
 				F9070C412B9F175000383E4D /* Array.ipp in Headers */,
 				F98600A32BCFBB53006A4C0F /* SkSLDebugTrace.h in Headers */,
 				F98603062BCFBB54006A4C0F /* SkIntersectionHelper.h in Headers */,
-				F907074A2B9DAEC900383E4D /* xop.h in Headers */,
 				F9528C2B2BBF026F00222F45 /* zstd_double_fast.h in Headers */,
 				F986028A2BCFBB54006A4C0F /* SkTextFormatParams.h in Headers */,
 				F98601462BCFBB53006A4C0F /* SkAdvancedTypefaceMetrics.h in Headers */,
@@ -8366,11 +7882,9 @@
 				F98602812BCFBB54006A4C0F /* SkSwizzlePriv.h in Headers */,
 				F98601E62BCFBB53006A4C0F /* SkMaskBlurFilter.h in Headers */,
 				F9528C2F2BBF026F00222F45 /* zstd_lazy.h in Headers */,
-				F90706F72B9DAEC900383E4D /* load.h in Headers */,
 				F9528C8C2BC05B5B00222F45 /* CImageDecoder.hpp in Headers */,
 				F98604722BCFBB54006A4C0F /* SkSLFileOutputStream.h in Headers */,
 				F986001E2BCFBB53006A4C0F /* SkImageFilter.h in Headers */,
-				F907073B2B9DAEC900383E4D /* avx.h in Headers */,
 				F98603852BCFBB54006A4C0F /* SkOTTable_OS_2_V1.h in Headers */,
 				F986009B2BCFBB53006A4C0F /* SkGainmapShader.h in Headers */,
 				F9070C822B9F175000383E4D /* ThousandSeparate.ipp in Headers */,
@@ -8404,14 +7918,12 @@
 				F9070C952B9F175000383E4D /* 2DShapesFwd.hpp in Headers */,
 				F9528C152BBF026F00222F45 /* threading.h in Headers */,
 				F986045F2BCFBB54006A4C0F /* SkSLProgramWriter.h in Headers */,
-				F90706CE2B9DAEC900383E4D /* bitshuffle.h in Headers */,
 				F98600B02BCFBB53006A4C0F /* SkParsePath.h in Headers */,
 				F98600062BCFBB53006A4C0F /* SkColor.h in Headers */,
 				F98602412BCFBB54006A4C0F /* SkRecordDraw.h in Headers */,
 				F98600662BCFBB53006A4C0F /* SkShaderMaskFilter.h in Headers */,
 				F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */,
 				F9528CA62BC1209900222F45 /* zlib.h in Headers */,
-				F907070F2B9DAEC900383E4D /* range.h in Headers */,
 				F9070E5D2B9F176B00383E4D /* CConsole.hpp in Headers */,
 				F98600292BCFBB53006A4C0F /* SkPaint.h in Headers */,
 				F9070C472B9F175000383E4D /* BoolArray.ipp in Headers */,
@@ -8420,7 +7932,6 @@
 				F9070CF92B9F175100383E4D /* Shuffle.hpp in Headers */,
 				F907069D2B9DAEC900383E4D /* int128.h in Headers */,
 				F9070D072B9F175100383E4D /* TupleFormatter.hpp in Headers */,
-				F90706D32B9DAEC900383E4D /* cmpeq.h in Headers */,
 				F9528B552BB6DC2C00222F45 /* MillisecClock.hpp in Headers */,
 				F9070CAA2B9F175000383E4D /* CPUInfo.hpp in Headers */,
 				F9070AFE2B9DEB5900383E4D /* ieee.h in Headers */,
@@ -8428,8 +7939,6 @@
 				F98600242BCFBB53006A4C0F /* SkMatrix.h in Headers */,
 				F98600412BCFBB53006A4C0F /* SkSpan.h in Headers */,
 				F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */,
-				F90707122B9DAEC900383E4D /* rol.h in Headers */,
-				F90706DD2B9DAEC900383E4D /* cvts.h in Headers */,
 				F986FA6F2BCFB53B006A4C0F /* t1types.h in Headers */,
 				F986FA9C2BCFB53B006A4C0F /* t1tables.h in Headers */,
 				F98601C82BCFBB53006A4C0F /* SkGlyph.h in Headers */,
@@ -8444,7 +7953,6 @@
 				F9070CDE2B9F175100383E4D /* NonNull.hpp in Headers */,
 				F986FA672BCFB53B006A4C0F /* ftserv.h in Headers */,
 				F98601832BCFBB53006A4C0F /* SkClipStackDevice.h in Headers */,
-				F907070B2B9DAEC900383E4D /* permutex2var.h in Headers */,
 				F98600B12BCFBB53006A4C0F /* SkShadowUtils.h in Headers */,
 				F98602A42BCFBB54006A4C0F /* SkYUVMath.h in Headers */,
 				F9528C3D2BBF026F00222F45 /* zstd_decompress_internal.h in Headers */,
@@ -8456,7 +7964,6 @@
 				F986004D2BCFBB53006A4C0F /* SkTypeface.h in Headers */,
 				F98600AA2BCFBB53006A4C0F /* SkNoDrawCanvas.h in Headers */,
 				F90706A52B9DAEC900383E4D /* wide_multiply.h in Headers */,
-				F90706F02B9DAEC900383E4D /* fpclass.h in Headers */,
 				F9070B0A2B9DEB5900383E4D /* xxhash.h in Headers */,
 				F9070D012B9F175100383E4D /* TextEncoding.hpp in Headers */,
 				F98600202BCFBB53006A4C0F /* SkImageInfo.h in Headers */,
@@ -8471,13 +7978,11 @@
 				F98600032BCFBB53006A4C0F /* SkCanvasVirtualEnforcer.h in Headers */,
 				F9E5FC3F2BC15B260081A4F7 /* DirectXPackedVector.h in Headers */,
 				F98602972BCFBB54006A4C0F /* SkVerticesPriv.h in Headers */,
-				F90706C52B9DAEC900383E4D /* 2intersect.h in Headers */,
 				F9070EE42B9F1C8900383E4D /* mappings.h in Headers */,
 				F98600482BCFBB53006A4C0F /* SkTextBlob.h in Headers */,
 				F98602932BCFBB54006A4C0F /* SkTypefaceCache.h in Headers */,
 				F986FA9D2BCFB53B006A4C0F /* ttnameid.h in Headers */,
 				F98601F12BCFBB53006A4C0F /* SkMatrixInvert.h in Headers */,
-				F90706FB2B9DAEC900383E4D /* maddubs.h in Headers */,
 				F9070AF92B9DEB5900383E4D /* double-to-string.h in Headers */,
 				F986F9952BCA9D0A006A4C0F /* plutovg-ft-types.h in Headers */,
 				F98603902BCFBB54006A4C0F /* SkSFNTHeader.h in Headers */,
@@ -8502,10 +8007,8 @@
 				F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */,
 				F986F91C2BC8441F006A4C0F /* regenc.h in Headers */,
 				F98601712BCFBB53006A4C0F /* SkBlitter.h in Headers */,
-				F90706D92B9DAEC900383E4D /* compress.h in Headers */,
 				F98603002BCFBB54006A4C0F /* SkAddIntersections.h in Headers */,
 				F98604892BCFBB54006A4C0F /* SkSLPosition.h in Headers */,
-				F90707252B9DAEC900383E4D /* slli.h in Headers */,
 				F90706B82B9DAEC900383E4D /* nanobench.h in Headers */,
 				F98603E42BCFBB54006A4C0F /* SkSLBinaryExpression.h in Headers */,
 				F986020C2BCFBB54006A4C0F /* SkPaintDefaults.h in Headers */,
@@ -8519,8 +8022,6 @@
 				F986032D2BCFBB54006A4C0F /* SkPathOpsTCurve.h in Headers */,
 				F9070C4E2B9F175000383E4D /* Date.ipp in Headers */,
 				F9070D132B9F175100383E4D /* Window.hpp in Headers */,
-				F90707502B9DAEC900383E4D /* simde-arch.h in Headers */,
-				F90706DC2B9DAEC900383E4D /* cvt.h in Headers */,
 				F9528C092BBF026F00222F45 /* debug.h in Headers */,
 				F98601F92BCFBB53006A4C0F /* SkMemset.h in Headers */,
 				F98600A62BCFBB53006A4C0F /* SkCamera.h in Headers */,
@@ -8534,11 +8035,9 @@
 				F9528C6E2BC05B1A00222F45 /* ImageEncoder.ipp in Headers */,
 				F9070E922B9F183100383E4D /* CSystem.hpp in Headers */,
 				F9528BB52BBF023600222F45 /* Compression.hpp in Headers */,
-				F90707402B9DAEC900383E4D /* fma.h in Headers */,
 				F90706982B9DAEC900383E4D /* type_traits.h in Headers */,
 				F9070D142B9F175100383E4D /* WindowState.hpp in Headers */,
 				F9070DC22B9F175E00383E4D /* CEmpty.hpp in Headers */,
-				F907072F2B9DAEC900383E4D /* storeu.h in Headers */,
 				F986F9902BCA9D0A006A4C0F /* plutovg-ft-math.h in Headers */,
 				F98603772BCFBB54006A4C0F /* SkOTTable_EBSC.h in Headers */,
 				F9070CC02B9F175000383E4D /* Format.hpp in Headers */,
@@ -8546,10 +8045,8 @@
 				F98600A02BCFBB53006A4C0F /* SkSLSampleUsage.h in Headers */,
 				F986FA9F2BCFB53B006A4C0F /* tttags.h in Headers */,
 				F98602452BCFBB54006A4C0F /* SkRecorder.h in Headers */,
-				F90706EB2B9DAEC900383E4D /* flushsubnormal.h in Headers */,
 				F98600862BCFBB53006A4C0F /* SkTemplates.h in Headers */,
 				F986FA7B2BCFB53B006A4C0F /* ftcolor.h in Headers */,
-				F90706FF2B9DAEC900383E4D /* mov.h in Headers */,
 				F9070DF22B9F175E00383E4D /* TextWriterDetail.hpp in Headers */,
 				F98604872BCFBB54006A4C0F /* SkSLPool.h in Headers */,
 				F9070C5C2B9F175000383E4D /* HardwareRNG.ipp in Headers */,
@@ -8559,7 +8056,6 @@
 				F986041A2BCFBB54006A4C0F /* SkSLIndexExpression.h in Headers */,
 				F9528B5D2BB6DC6800222F45 /* CycleClock.ipp in Headers */,
 				F9528C102BBF026F00222F45 /* mem.h in Headers */,
-				F90707072B9DAEC900383E4D /* or.h in Headers */,
 				F986041D2BCFBB54006A4C0F /* SkSLIRHelpers.h in Headers */,
 				F986FA712BCFB53B006A4C0F /* wofftypes.h in Headers */,
 				F986FA812BCFB53B006A4C0F /* ftglyph.h in Headers */,
@@ -8572,14 +8068,12 @@
 				F9070C612B9F175000383E4D /* IntFormatter.ipp in Headers */,
 				F98601882BCFBB53006A4C0F /* SkColorSpacePriv.h in Headers */,
 				F9528C8D2BC05B5B00222F45 /* IImageDecoder.hpp in Headers */,
-				F90706F22B9DAEC900383E4D /* insert.h in Headers */,
 				F9528C922BC1204200222F45 /* PNGEncoder.hpp in Headers */,
 				F9070C9C2B9F175000383E4D /* Blob.hpp in Headers */,
 				F9070C752B9F175000383E4D /* RandomDuration.ipp in Headers */,
 				F98604122BCFBB54006A4C0F /* SkSLFunctionDeclaration.h in Headers */,
 				F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */,
 				F98603252BCFBB54006A4C0F /* SkPathOpsLine.h in Headers */,
-				F90706C62B9DAEC900383E4D /* 4dpwssd.h in Headers */,
 				F9070DC72B9F175E00383E4D /* Siv3DEngine.hpp in Headers */,
 				F986F9A12BCA9D0A006A4C0F /* defselement.h in Headers */,
 				F98602022BCFBB53006A4C0F /* SkMipmapBuilder.h in Headers */,
@@ -8587,7 +8081,6 @@
 				F9070F342B9F252E00383E4D /* null_joystick.h in Headers */,
 				F9070D102B9F175100383E4D /* Vector3D.hpp in Headers */,
 				F986002E2BCFBB53006A4C0F /* SkPathTypes.h in Headers */,
-				F90707242B9DAEC900383E4D /* sll.h in Headers */,
 				F986FA462BCFB53B006A4C0F /* svcfftl.h in Headers */,
 				F98600912BCFBB53006A4C0F /* GrSurfaceCharacterization.h in Headers */,
 				F98600302BCFBB53006A4C0F /* SkPicture.h in Headers */,
@@ -8606,7 +8099,6 @@
 				F9528CA52BC1209900222F45 /* zconf.h in Headers */,
 				F98604032BCFBB54006A4C0F /* SkSLEmptyExpression.h in Headers */,
 				F986022E2BCFBB54006A4C0F /* SkPtrRecorder.h in Headers */,
-				F90706EC2B9DAEC900383E4D /* fmadd.h in Headers */,
 				F90706B22B9DAEC900383E4D /* doctest.h in Headers */,
 				F986037A2BCFBB54006A4C0F /* SkOTTable_glyf.h in Headers */,
 				F986F9C42BCA9D0A006A4C0F /* useelement.h in Headers */,
@@ -8614,14 +8106,11 @@
 				F9528C452BBF026F00222F45 /* zdict.h in Headers */,
 				F9070C5F2B9F175000383E4D /* Indexed.ipp in Headers */,
 				F9070B072B9DEB5900383E4D /* simdutf.h in Headers */,
-				F90707132B9DAEC900383E4D /* rolv.h in Headers */,
 				F9070CF72B9F175100383E4D /* ScopeExit.hpp in Headers */,
 				F9070CA32B9F175000383E4D /* Common.hpp in Headers */,
 				F986041C2BCFBB54006A4C0F /* SkSLInterfaceBlock.h in Headers */,
 				F90706C32B9DAEC900383E4D /* pcg_random.hpp in Headers */,
 				F90706952B9DAEC900383E4D /* function_ref.h in Headers */,
-				F90707232B9DAEC900383E4D /* shuffle.h in Headers */,
-				F90707082B9DAEC900383E4D /* packs.h in Headers */,
 				F98602272BCFBB54006A4C0F /* SkPixelRefPriv.h in Headers */,
 				F9070CF52B9F175100383E4D /* Rect.hpp in Headers */,
 				F986FFFB2BCFBB53006A4C0F /* SkAlphaType.h in Headers */,
@@ -8631,7 +8120,6 @@
 				F98602992BCFBB54006A4C0F /* SkVertState.h in Headers */,
 				F98603152BCFBB54006A4C0F /* SkOpSegment.h in Headers */,
 				F98600442BCFBB53006A4C0F /* SkStrokeRec.h in Headers */,
-				F907074E2B9DAEC900383E4D /* simde-aes.h in Headers */,
 				F9070B002B9DEB5900383E4D /* fast_float.h in Headers */,
 				F986FA982BCFB53B006A4C0F /* fttrigon.h in Headers */,
 				F986FAA02BCFB53B006A4C0F /* ft2build.h in Headers */,
@@ -8641,8 +8129,6 @@
 				F986FA542BCFB53B006A4C0F /* svsfnt.h in Headers */,
 				F9070CE42B9F175100383E4D /* OrderedTable.hpp in Headers */,
 				F98601B22BCFBB53006A4C0F /* SkEffectPriv.h in Headers */,
-				F90707442B9DAEC900383E4D /* sse2.h in Headers */,
-				F90707172B9DAEC900383E4D /* roundscale_round.h in Headers */,
 				F9070C8B2B9F175000383E4D /* YesNo.ipp in Headers */,
 				F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */,
 				F98601C32BCFBB53006A4C0F /* SkGaussFilter.h in Headers */,
@@ -8656,7 +8142,6 @@
 				F98600832BCFBB53006A4C0F /* SkSpan_impl.h in Headers */,
 				F98601A92BCFBB53006A4C0F /* SkDrawProcs.h in Headers */,
 				F9070C4A2B9F175000383E4D /* Color.ipp in Headers */,
-				F90707352B9DAEC900383E4D /* types.h in Headers */,
 				F98600092BCFBB53006A4C0F /* SkColorSpace.h in Headers */,
 				F986023B2BCFBB54006A4C0F /* SkReadBuffer.h in Headers */,
 				F9070AF42B9DEB5900383E4D /* bignum.h in Headers */,
@@ -8673,7 +8158,6 @@
 				F9E5FC3E2BC15B260081A4F7 /* DirectXMath.h in Headers */,
 				F986032B2BCFBB54006A4C0F /* SkPathOpsRect.h in Headers */,
 				F9070B032B9DEB5900383E4D /* levenshtein-sse.hpp in Headers */,
-				F90707042B9DAEC900383E4D /* mullo.h in Headers */,
 				F986FA642BCFB53B006A4C0F /* ftobjs.h in Headers */,
 				F9070CFA2B9F175100383E4D /* SIMD.hpp in Headers */,
 				F986023F2BCFBB54006A4C0F /* SkRecord.h in Headers */,
@@ -8685,7 +8169,6 @@
 				F986047C2BCFBB54006A4C0F /* SkSLMemoryLayout.h in Headers */,
 				F9528C462BBF026F00222F45 /* zstd_errors.h in Headers */,
 				F98603E92BCFBB54006A4C0F /* SkSLChildCall.h in Headers */,
-				F90707032B9DAEC900383E4D /* mulhrs.h in Headers */,
 				F9070C942B9F175000383E4D /* 2DShapes.hpp in Headers */,
 				F986F9982BCA9D0A006A4C0F /* plutovg-private.h in Headers */,
 				F9528C0E2BBF026F00222F45 /* fse.h in Headers */,
@@ -8702,8 +8185,6 @@
 				F9528B952BBC76D300222F45 /* Step3D.hpp in Headers */,
 				F9070AF22B9DEB5900383E4D /* bignum-dtoa.h in Headers */,
 				F98603762BCFBB54006A4C0F /* SkOTTable_EBLC.h in Headers */,
-				F90707512B9DAEC900383E4D /* simde-bf16.h in Headers */,
-				F90706D62B9DAEC900383E4D /* cmple.h in Headers */,
 				F9070CB72B9F175000383E4D /* Error.hpp in Headers */,
 				F986028D2BCFBB54006A4C0F /* SkTraceEvent.h in Headers */,
 				F98603752BCFBB54006A4C0F /* SkOTTable_EBDT.h in Headers */,
@@ -8712,7 +8193,6 @@
 				F98600492BCFBB53006A4C0F /* SkTextureCompressionType.h in Headers */,
 				F9070C732B9F175000383E4D /* Point.ipp in Headers */,
 				F986FA612BCFB53B006A4C0F /* fthash.h in Headers */,
-				F90706D02B9DAEC900383E4D /* broadcast.h in Headers */,
 				F986FA702BCFB53B006A4C0F /* tttypes.h in Headers */,
 				F9528B572BB6DC3700222F45 /* CycleClock.hpp in Headers */,
 				F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */,
@@ -8723,10 +8203,7 @@
 				F986008E2BCFBB53006A4C0F /* GrDeferredDisplayList.h in Headers */,
 				F9070CDC2B9F175100383E4D /* MonitorInfo.hpp in Headers */,
 				F98601FC2BCFBB53006A4C0F /* SkMessageBus.h in Headers */,
-				F90707312B9DAEC900383E4D /* subs.h in Headers */,
-				F90706F52B9DAEC900383E4D /* kshift.h in Headers */,
 				F986021D2BCFBB54006A4C0F /* SkPictureData.h in Headers */,
-				F90706C82B9DAEC900383E4D /* abs.h in Headers */,
 				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
 				F90706892B9DAEC900383E4D /* fast_type_id.h in Headers */,
 				F986FFEC2BCFBB53006A4C0F /* SkCodec.h in Headers */,
@@ -8736,12 +8213,10 @@
 				F9528C932BC1204200222F45 /* PNGDecoder.hpp in Headers */,
 				F9070B042B9DEB5900383E4D /* miniutf.hpp in Headers */,
 				F9070CF82B9F175100383E4D /* SequenceFormatter.hpp in Headers */,
-				F90706DF2B9DAEC900383E4D /* cvtus.h in Headers */,
 				F98600282BCFBB53006A4C0F /* SkOverdrawCanvas.h in Headers */,
 				F986005B2BCFBB53006A4C0F /* SkColorMatrixFilter.h in Headers */,
 				F9070ED82B9F1C8900383E4D /* cocoa_time.h in Headers */,
 				F98603E22BCFBB54006A4C0F /* SkSLWGSLCodeGenerator.h in Headers */,
-				F90706FE2B9DAEC900383E4D /* mov_mask.h in Headers */,
 				F986FA692BCFB53B006A4C0F /* fttrace.h in Headers */,
 				F98603372BCFBB54006A4C0F /* SkReduceOrder.h in Headers */,
 				F98601A82BCFBB53006A4C0F /* SkDrawBase.h in Headers */,
@@ -8769,7 +8244,6 @@
 				F98603D02BCFBB54006A4C0F /* SkSLCodeGenerator.h in Headers */,
 				F98604052BCFBB54006A4C0F /* SkSLExpression.h in Headers */,
 				F9070CFE2B9F175100383E4D /* String.hpp in Headers */,
-				F90706F32B9DAEC900383E4D /* kand.h in Headers */,
 				F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */,
 				F986007E2BCFBB53006A4C0F /* SkNoncopyable.h in Headers */,
 				F9528B6A2BB7087700222F45 /* LicenseManager.hpp in Headers */,
@@ -8781,14 +8255,10 @@
 				F9E5FC1F2BC13CAB0081A4F7 /* JPEGEncoder.hpp in Headers */,
 				F9528C6A2BC05B0200222F45 /* IImageEncoder.hpp in Headers */,
 				F98600162BCFBB53006A4C0F /* SkFontArguments.h in Headers */,
-				F90707142B9DAEC900383E4D /* ror.h in Headers */,
 				F9528B802BB71F9900222F45 /* Profiler.hpp in Headers */,
 				F98600772BCFBB53006A4C0F /* SkFloatBits.h in Headers */,
 				F9528C072BBF026F00222F45 /* cpu.h in Headers */,
 				F9070C882B9F175000383E4D /* UtilityClass.ipp in Headers */,
-				F907071A2B9DAEC900383E4D /* scalef.h in Headers */,
-				F907071C2B9DAEC900383E4D /* set1.h in Headers */,
-				F90706D82B9DAEC900383E4D /* cmpneq.h in Headers */,
 				F90706B52B9DAEC900383E4D /* format.h in Headers */,
 				F9070C572B9F175000383E4D /* FmtHelper.ipp in Headers */,
 				F9070C932B9F175000383E4D /* _TEMPLATE.hpp in Headers */,
@@ -8797,7 +8267,6 @@
 				F9070CA22B9F175000383E4D /* ColorHSV.hpp in Headers */,
 				F98600AC2BCFBB53006A4C0F /* SkNWayCanvas.h in Headers */,
 				F986007C2BCFBB53006A4C0F /* SkMath.h in Headers */,
-				F90706E32B9DAEC900383E4D /* dpbusd.h in Headers */,
 				F98601762BCFBB53006A4C0F /* SkBlurMaskFilterImpl.h in Headers */,
 				F9070CEB2B9F175100383E4D /* ParseInt.hpp in Headers */,
 				F98603DC2BCFBB54006A4C0F /* SkSLRasterPipelineCodeGenerator.h in Headers */,
@@ -8816,10 +8285,8 @@
 				F986023D2BCFBB54006A4C0F /* SkReadPixelsRec.h in Headers */,
 				F986F9922BCA9D0A006A4C0F /* plutovg-ft-raster.h in Headers */,
 				F986014E2BCFBB53006A4C0F /* SkATrace.h in Headers */,
-				F90707012B9DAEC900383E4D /* mul.h in Headers */,
 				F986042A2BCFBB54006A4C0F /* SkSLPoison.h in Headers */,
 				F986FA622BCFB53B006A4C0F /* ftmemory.h in Headers */,
-				F90707222B9DAEC900383E4D /* shldv.h in Headers */,
 				F98602322BCFBB54006A4C0F /* SkRasterClip.h in Headers */,
 				F98604392BCFBB54006A4C0F /* SkSLSwitchCase.h in Headers */,
 				F9070DFB2B9F175E00383E4D /* IUserAction.hpp in Headers */,
@@ -8833,46 +8300,35 @@
 				F986FA492BCFB53B006A4C0F /* svgldict.h in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
 				F986F8B82BC843E0006A4C0F /* MatchResults.ipp in Headers */,
-				F90707162B9DAEC900383E4D /* round.h in Headers */,
 				F9E5FCD32BC3AD410081A4F7 /* JSONValueType.hpp in Headers */,
 				F907068F2B9DAEC900383E4D /* macros.h in Headers */,
-				F90706E52B9DAEC900383E4D /* dpwssd.h in Headers */,
 				F9070C792B9F175000383E4D /* SequenceFormatter.ipp in Headers */,
 				F98601FE2BCFBB53006A4C0F /* SkMipmap.h in Headers */,
 				F9070E5B2B9F176B00383E4D /* BinaryWriterDetail.hpp in Headers */,
 				F98602FA2BCFBB54006A4C0F /* SkOpts_RestoreTarget.h in Headers */,
 				F90706962B9DAEC900383E4D /* any_invocable.h in Headers */,
-				F90706DE2B9DAEC900383E4D /* cvtt.h in Headers */,
 				F986044D2BCFBB54006A4C0F /* SkSLVariableReference.h in Headers */,
 				F986001F2BCFBB53006A4C0F /* SkImageGenerator.h in Headers */,
 				F986018D2BCFBB53006A4C0F /* SkCompressedDataUtils.h in Headers */,
 				F98600252BCFBB53006A4C0F /* SkMesh.h in Headers */,
 				F98601812BCFBB53006A4C0F /* SkClipStack.h in Headers */,
 				F986FA5D2BCFB53B006A4C0F /* ftcalc.h in Headers */,
-				F90706E22B9DAEC900383E4D /* dpbf16.h in Headers */,
 				F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */,
-				F90706D52B9DAEC900383E4D /* cmpgt.h in Headers */,
 				F9070CB32B9F175000383E4D /* DLL.hpp in Headers */,
 				F986FA8C2BCFB53B006A4C0F /* ftmodapi.h in Headers */,
 				F98604182BCFBB54006A4C0F /* SkSLIfStatement.h in Headers */,
 				F9070CAD2B9F175000383E4D /* DayOfWeek.hpp in Headers */,
 				F98604852BCFBB54006A4C0F /* SkSLParser.h in Headers */,
 				F9070DC42B9F175E00383E4D /* IEmpty.hpp in Headers */,
-				F907070E2B9DAEC900383E4D /* range_round.h in Headers */,
-				F90707462B9DAEC900383E4D /* sse4.1.h in Headers */,
 				F98604472BCFBB54006A4C0F /* SkSLTypeReference.h in Headers */,
-				F90707292B9DAEC900383E4D /* srai.h in Headers */,
 				F98604152BCFBB54006A4C0F /* SkSLFunctionPrototype.h in Headers */,
 				F9070CA72B9F175000383E4D /* Console.hpp in Headers */,
-				F907073A2B9DAEC900383E4D /* aes.h in Headers */,
 				F9528C882BC05B5B00222F45 /* IImageEncoder.hpp in Headers */,
 				F98600212BCFBB53006A4C0F /* SkM44.h in Headers */,
 				F98601902BCFBB53006A4C0F /* SkConvertPixels.h in Headers */,
 				F9070CFC2B9F175100383E4D /* Step.hpp in Headers */,
-				F90706F82B9DAEC900383E4D /* loadu.h in Headers */,
 				F9070CA82B9F175000383E4D /* ConsoleBuffer.hpp in Headers */,
 				F98601EC2BCFBB53006A4C0F /* SkMaskGamma.h in Headers */,
-				F90706CC2B9DAEC900383E4D /* andnot.h in Headers */,
 				F986FA5C2BCFB53B006A4C0F /* compiler-macros.h in Headers */,
 				F9528C402BBF026F00222F45 /* cover.h in Headers */,
 				F9070CE02B9F175100383E4D /* Obfuscation.hpp in Headers */,
@@ -8890,9 +8346,6 @@
 				F9070C7A2B9F175000383E4D /* Shuffle.ipp in Headers */,
 				F986F9182BC8441F006A4C0F /* oniggnu.h in Headers */,
 				F9070CD12B9F175100383E4D /* ISteadyClock.hpp in Headers */,
-				F90706E02B9DAEC900383E4D /* dbsad.h in Headers */,
-				F90707472B9DAEC900383E4D /* sse4.2.h in Headers */,
-				F907070D2B9DAEC900383E4D /* popcnt.h in Headers */,
 				F90706AD2B9DAEC900383E4D /* poisson_distribution.h in Headers */,
 				F90706942B9DAEC900383E4D /* any_invocable.h in Headers */,
 				F98602152BCFBB54006A4C0F /* SkPathMakers.h in Headers */,
@@ -8904,7 +8357,6 @@
 				F986025B2BCFBB54006A4C0F /* SkSafeRange.h in Headers */,
 				F9070C8D2B9F175000383E4D /* ParseError.hpp in Headers */,
 				F9070C5D2B9F175000383E4D /* Hash.ipp in Headers */,
-				F90706D42B9DAEC900383E4D /* cmpge.h in Headers */,
 				F986FA7E2BCFB53B006A4C0F /* fterrors.h in Headers */,
 				F90706912B9DAEC900383E4D /* options.h in Headers */,
 				F986024F2BCFBB54006A4C0F /* SkRegionPriv.h in Headers */,
@@ -8912,7 +8364,6 @@
 				F9070CF02B9F175100383E4D /* PredefinedNamedParameter.hpp in Headers */,
 				F9528BAB2BBE7CF300222F45 /* MemoryReader.hpp in Headers */,
 				F98602F72BCFBB54006A4C0F /* SkBlitRow_opts.h in Headers */,
-				F90706FC2B9DAEC900383E4D /* max.h in Headers */,
 				F98602532BCFBB54006A4C0F /* SkRRectPriv.h in Headers */,
 				F986F9422BCA79B4006A4C0F /* Math.hpp in Headers */,
 				F986006E2BCFBB53006A4C0F /* SkAPI.h in Headers */,
@@ -8924,8 +8375,6 @@
 				F986FA4B2BCFB53B006A4C0F /* svkern.h in Headers */,
 				F9070C992B9F175000383E4D /* BigInt.hpp in Headers */,
 				F986F9B32BCA9D0A006A4C0F /* paintelement.h in Headers */,
-				F907074B2B9DAEC900383E4D /* check.h in Headers */,
-				F90707432B9DAEC900383E4D /* sse.h in Headers */,
 				F9070F352B9F252E00383E4D /* null_platform.h in Headers */,
 				F986FA4F2BCFB53B006A4C0F /* svpfr.h in Headers */,
 				F98600342BCFBB53006A4C0F /* SkPoint.h in Headers */,
@@ -8938,8 +8387,6 @@
 				F9528C2D2BBF026F00222F45 /* zstd_fast.h in Headers */,
 				F98604532BCFBB54006A4C0F /* SkSLTraceHook.h in Headers */,
 				F9070CBC2B9F175000383E4D /* FloatFormatter.hpp in Headers */,
-				F90707302B9DAEC900383E4D /* sub.h in Headers */,
-				F90706F92B9DAEC900383E4D /* lzcnt.h in Headers */,
 				F98600882BCFBB53006A4C0F /* SkThreadAnnotations.h in Headers */,
 				F986F89E2BC7FB74006A4C0F /* tinycolormap.hpp in Headers */,
 				F986FA942BCFB53B006A4C0F /* ftsnames.h in Headers */,
@@ -8949,11 +8396,9 @@
 				F9070EEF2B9F1C8900383E4D /* platform.h in Headers */,
 				F98602F52BCFBB54006A4C0F /* SkBitmapProcState_opts.h in Headers */,
 				F98603DE2BCFBB54006A4C0F /* SkSLSPIRVCodeGenerator.h in Headers */,
-				F90706E12B9DAEC900383E4D /* div.h in Headers */,
 				F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */,
 				F986024C2BCFBB54006A4C0F /* SkRectPriv.h in Headers */,
 				F907068E2B9DAEC900383E4D /* config.h in Headers */,
-				F90706DB2B9DAEC900383E4D /* copysign.h in Headers */,
 				F986042C2BCFBB54006A4C0F /* SkSLPostfixExpression.h in Headers */,
 				F986031D2BCFBB54006A4C0F /* SkPathOpsConic.h in Headers */,
 				F986000E2BCFBB53006A4C0F /* SkCubicMap.h in Headers */,
@@ -8961,15 +8406,12 @@
 				F9070C4D2B9F175000383E4D /* ConsoleBuffer.ipp in Headers */,
 				F9070CE12B9F175100383E4D /* OpenMode.hpp in Headers */,
 				F9070DD72B9F175E00383E4D /* ILogger.hpp in Headers */,
-				F90706E62B9DAEC900383E4D /* dpwssds.h in Headers */,
 				F986026A2BCFBB54006A4C0F /* SkSLTypeShared.h in Headers */,
 				F98601D92BCFBB53006A4C0F /* SkKnownRuntimeEffects.h in Headers */,
 				F98604712BCFBB54006A4C0F /* SkSLErrorReporter.h in Headers */,
-				F90706D22B9DAEC900383E4D /* cmp.h in Headers */,
 				F986FA952BCFB53B006A4C0F /* ftstroke.h in Headers */,
 				F9528C342BBF026F00222F45 /* zstd_opt.h in Headers */,
 				F90706BF2B9DAEC900383E4D /* phmap_fwd_decl.h in Headers */,
-				F90707192B9DAEC900383E4D /* sad.h in Headers */,
 				F9070CD02B9F175100383E4D /* IReader.hpp in Headers */,
 				F90706B42B9DAEC900383E4D /* core.h in Headers */,
 				F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */,
@@ -8998,15 +8440,11 @@
 				F986004C2BCFBB53006A4C0F /* SkTraceMemoryDump.h in Headers */,
 				F986038F2BCFBB54006A4C0F /* SkPanose.h in Headers */,
 				F9070C9B2B9F175000383E4D /* BinaryWriter.hpp in Headers */,
-				F90707332B9DAEC900383E4D /* test.h in Headers */,
-				F90707092B9DAEC900383E4D /* packus.h in Headers */,
 				F986008B2BCFBB53006A4C0F /* SkTo.h in Headers */,
 				F986002D2BCFBB53006A4C0F /* SkPathMeasure.h in Headers */,
 				F986F8BE2BC843FD006A4C0F /* RegExpDetail.hpp in Headers */,
 				F9070CB12B9F175000383E4D /* DisplayResolution.hpp in Headers */,
 				F9070CBB2B9F175000383E4D /* FileSystem.hpp in Headers */,
-				F907072D2B9DAEC900383E4D /* srlv.h in Headers */,
-				F907074D2B9DAEC900383E4D /* hedley.h in Headers */,
 				F986F9BC2BCA9D0A006A4C0F /* styledelement.h in Headers */,
 				F986008D2BCFBB53006A4C0F /* SkTypeTraits.h in Headers */,
 				F986001C2BCFBB53006A4C0F /* SkGraphics.h in Headers */,
@@ -9020,7 +8458,6 @@
 				F986F9D12BCFB514006A4C0F /* CEmoji.hpp in Headers */,
 				F98603082BCFBB54006A4C0F /* SkIntersections.h in Headers */,
 				F90706A22B9DAEC900383E4D /* iostream_state_saver.h in Headers */,
-				F90707202B9DAEC900383E4D /* setr4.h in Headers */,
 				F9070B082B9DEB5900383E4D /* uuid.h in Headers */,
 				F9070C842B9F175000383E4D /* Unicode.ipp in Headers */,
 				F986022C2BCFBB54006A4C0F /* SkPointPriv.h in Headers */,
@@ -9045,16 +8482,13 @@
 				F986005C2BCFBB53006A4C0F /* SkCornerPathEffect.h in Headers */,
 				F9528B7A2BB708A700222F45 /* LicenseList.hpp in Headers */,
 				F98602F82BCFBB54006A4C0F /* SkMemset_opts.h in Headers */,
-				F90706FD2B9DAEC900383E4D /* min.h in Headers */,
 				F986FA5E2BCFB53B006A4C0F /* ftdebug.h in Headers */,
-				F907071B2B9DAEC900383E4D /* set.h in Headers */,
 				F98601DD2BCFBB53006A4C0F /* SkLineClipper.h in Headers */,
 				F98600562BCFBB53006A4C0F /* Sk1DPathEffect.h in Headers */,
 				F9070D112B9F175100383E4D /* Vector4D.hpp in Headers */,
 				F986047B2BCFBB54006A4C0F /* SkSLMangler.h in Headers */,
 				F9070C702B9F175000383E4D /* Parse.ipp in Headers */,
 				F907069E2B9DAEC900383E4D /* distribution_caller.h in Headers */,
-				F90706EE2B9DAEC900383E4D /* fnmadd.h in Headers */,
 				F986046A2BCFBB54006A4C0F /* SkSLCompiler.h in Headers */,
 				F98604232BCFBB54006A4C0F /* SkSLMethodReference.h in Headers */,
 				F986016B2BCFBB53006A4C0F /* SkBlitRow.h in Headers */,
@@ -9066,15 +8500,11 @@
 				F986030E2BCFBB54006A4C0F /* SkOpCoincidence.h in Headers */,
 				F98600602BCFBB53006A4C0F /* SkHighContrastFilter.h in Headers */,
 				F986000A2BCFBB53006A4C0F /* SkColorTable.h in Headers */,
-				F90707532B9DAEC900383E4D /* simde-complex.h in Headers */,
 				F986F9C62BCA9D25006A4C0F /* SVG.hpp in Headers */,
 				F90706AE2B9DAEC900383E4D /* uniform_int_distribution.h in Headers */,
-				F90707102B9DAEC900383E4D /* rcp.h in Headers */,
 				F9070C6F2B9F175000383E4D /* Optional.ipp in Headers */,
 				F98600352BCFBB53006A4C0F /* SkPoint3.h in Headers */,
-				F907073E2B9DAEC900383E4D /* clmul.h in Headers */,
 				F98600372BCFBB53006A4C0F /* SkRect.h in Headers */,
-				F90707452B9DAEC900383E4D /* sse3.h in Headers */,
 				F9070C562B9F175000383E4D /* FloatFormatter.ipp in Headers */,
 				F98600072BCFBB53006A4C0F /* SkColorFilter.h in Headers */,
 				F986040E2BCFBB54006A4C0F /* SkSLForStatement.h in Headers */,
@@ -9087,7 +8517,6 @@
 				F986046F2BCFBB54006A4C0F /* SkSLDefines.h in Headers */,
 				F98604832BCFBB54006A4C0F /* SkSLOutputStream.h in Headers */,
 				F98601862BCFBB53006A4C0F /* SkColorFilterPriv.h in Headers */,
-				F90707412B9DAEC900383E4D /* gfni.h in Headers */,
 				F986006B2BCFBB53006A4C0F /* SkAlign.h in Headers */,
 				F98601432BCFBB53006A4C0F /* Sk4px.h in Headers */,
 				F9070CAF2B9F175000383E4D /* DiscreteDistribution.hpp in Headers */,
@@ -9101,7 +8530,6 @@
 				F98601782BCFBB53006A4C0F /* SkCachedData.h in Headers */,
 				F986FA422BCFB53B006A4C0F /* integer-types.h in Headers */,
 				F986029F2BCFBB54006A4C0F /* SkWriter32.h in Headers */,
-				F907071D2B9DAEC900383E4D /* set4.h in Headers */,
 				F986F9A52BCA9D0A006A4C0F /* gelement.h in Headers */,
 				F9528C692BC05B0200222F45 /* ImageFormat.hpp in Headers */,
 				F986003D2BCFBB53006A4C0F /* SkScalar.h in Headers */,
@@ -9109,7 +8537,6 @@
 				F98603E62BCFBB54006A4C0F /* SkSLBlock.h in Headers */,
 				F9070C722B9F175000383E4D /* PCG64.ipp in Headers */,
 				F9528C1F2BBF026F00222F45 /* hist.h in Headers */,
-				F907073C2B9DAEC900383E4D /* avx2.h in Headers */,
 				F9528B2B2BAFCDB400222F45 /* MappedMemory.hpp in Headers */,
 				F9070C6E2B9F175000383E4D /* Number.ipp in Headers */,
 				F98600822BCFBB53006A4C0F /* SkSemaphore.h in Headers */,
@@ -9128,7 +8555,6 @@
 				F9528B842BBC5D3100222F45 /* Step2D.hpp in Headers */,
 				F986003A2BCFBB53006A4C0F /* SkRRect.h in Headers */,
 				F98600322BCFBB53006A4C0F /* SkPixelRef.h in Headers */,
-				F90706C72B9DAEC900383E4D /* 4dpwssds.h in Headers */,
 				F9E5FCE82BC59EA00081A4F7 /* JSONPointer.hpp in Headers */,
 				F986015F2BCFBB53006A4C0F /* SkBlenderBase.h in Headers */,
 				F98600102BCFBB53006A4C0F /* SkDataTable.h in Headers */,
@@ -9141,11 +8567,9 @@
 				F98600A82BCFBB53006A4C0F /* SkCustomTypeface.h in Headers */,
 				F986005F2BCFBB53006A4C0F /* SkGradientShader.h in Headers */,
 				F986FA3D2BCFB53B006A4C0F /* ftconfig.h in Headers */,
-				F90707492B9DAEC900383E4D /* svml.h in Headers */,
 				F98603882BCFBB54006A4C0F /* SkOTTable_OS_2_V4.h in Headers */,
 				F9070C552B9F175000383E4D /* FastMath.ipp in Headers */,
 				F90706BA2B9DAEC900383E4D /* btree.h in Headers */,
-				F907073D2B9DAEC900383E4D /* avx512.h in Headers */,
 				F986F9402BCA7996006A4C0F /* Vector4D.ipp in Headers */,
 				F986FA7C2BCFB53B006A4C0F /* ftdriver.h in Headers */,
 				F986FFF52BCFBB53006A4C0F /* SkPngChunkReader.h in Headers */,
@@ -9172,13 +8596,10 @@
 				F98600672BCFBB53006A4C0F /* SkTableMaskFilter.h in Headers */,
 				F986006A2BCFBB53006A4C0F /* SingleOwner.h in Headers */,
 				F98602722BCFBB54006A4C0F /* SkStrike.h in Headers */,
-				F90706ED2B9DAEC900383E4D /* fmsub.h in Headers */,
-				F90706CD2B9DAEC900383E4D /* avg.h in Headers */,
 				F98602872BCFBB54006A4C0F /* SkTDynamicHash.h in Headers */,
 				F986F9232BC8441F006A4C0F /* regparse.h in Headers */,
 				F986021F2BCFBB54006A4C0F /* SkPictureFlat.h in Headers */,
 				F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */,
-				F90706D12B9DAEC900383E4D /* cast.h in Headers */,
 				F98600A72BCFBB53006A4C0F /* SkCanvasStateUtils.h in Headers */,
 				F98603232BCFBB54006A4C0F /* SkPathOpsDebug.h in Headers */,
 				F98603C92BCFBB54006A4C0F /* SkSLNoOpErrorReporter.h in Headers */,
@@ -9197,13 +8618,11 @@
 				F986000C2BCFBB53006A4C0F /* SkContourMeasure.h in Headers */,
 				F98601E02BCFBB53006A4C0F /* SkLRUCache.h in Headers */,
 				F98603172BCFBB54006A4C0F /* SkOpSpan.h in Headers */,
-				F90707342B9DAEC900383E4D /* testn.h in Headers */,
 				F9070CA42B9F175000383E4D /* CommonFloat.hpp in Headers */,
 				F986014C2BCFBB53006A4C0F /* SkAnnotationKeys.h in Headers */,
 				F9528B1C2BADCC9900222F45 /* Grid.ipp in Headers */,
 				F9528C122BBF026F00222F45 /* pool.h in Headers */,
 				F9070CB42B9F175000383E4D /* Duration.hpp in Headers */,
-				F907074F2B9DAEC900383E4D /* simde-align.h in Headers */,
 				F98604452BCFBB54006A4C0F /* SkSLType.h in Headers */,
 				F98604792BCFBB54006A4C0F /* SkSLLexer.h in Headers */,
 				F98600792BCFBB53006A4C0F /* SkLoadUserConfig.h in Headers */,
@@ -9211,9 +8630,6 @@
 				F986F99D2BCA9D0A006A4C0F /* canvas.h in Headers */,
 				F9070C5A2B9F175000383E4D /* FormatLiteral.ipp in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,
-				F90707362B9DAEC900383E4D /* unpackhi.h in Headers */,
-				F90706F62B9DAEC900383E4D /* kxor.h in Headers */,
-				F90707282B9DAEC900383E4D /* sra.h in Headers */,
 				F98603862BCFBB54006A4C0F /* SkOTTable_OS_2_V2.h in Headers */,
 				F98604752BCFBB54006A4C0F /* SkSLInliner.h in Headers */,
 				F9070CCA2B9F175100383E4D /* HeterogeneousLookupHelper.hpp in Headers */,
@@ -9233,33 +8649,26 @@
 				F98600122BCFBB53006A4C0F /* SkDrawable.h in Headers */,
 				F98600AE2BCFBB53006A4C0F /* SkPaintFilterCanvas.h in Headers */,
 				F98602132BCFBB54006A4C0F /* SkPathEffectBase.h in Headers */,
-				F90707382B9DAEC900383E4D /* xor.h in Headers */,
 				F9070C852B9F175000383E4D /* UnicodeConverter.ipp in Headers */,
 				F90706C22B9DAEC900383E4D /* pcg_extras.hpp in Headers */,
 				F98600542BCFBB53006A4C0F /* SkPDFDocument.h in Headers */,
 				F9070C512B9F175000383E4D /* DisjointSet.ipp in Headers */,
 				F986F9D32BCFB514006A4C0F /* IEmoji.hpp in Headers */,
-				F90707422B9DAEC900383E4D /* mmx.h in Headers */,
 				F9070CAB2B9F175000383E4D /* Date.hpp in Headers */,
 				F98600452BCFBB53006A4C0F /* SkSurface.h in Headers */,
 				F98603ED2BCFBB54006A4C0F /* SkSLConstructorArray.h in Headers */,
-				F90707212B9DAEC900383E4D /* setzero.h in Headers */,
 				F98600B22BCFBB53006A4C0F /* SkTextUtils.h in Headers */,
 				F98604412BCFBB54006A4C0F /* SkSLSymbolTable.h in Headers */,
 				F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */,
 				F986F99F2BCA9D0A006A4C0F /* clippathelement.h in Headers */,
-				F90707112B9DAEC900383E4D /* reduce.h in Headers */,
 				F986038B2BCFBB54006A4C0F /* SkOTTable_post.h in Headers */,
 				F98602892BCFBB54006A4C0F /* SkTextBlobPriv.h in Headers */,
-				F90707392B9DAEC900383E4D /* xorsign.h in Headers */,
+				F986051B2BD0AC0E006A4C0F /* GlyphIndex.hpp in Headers */,
 				F9070CE52B9F175100383E4D /* Palette.hpp in Headers */,
 				F98604142BCFBB54006A4C0F /* SkSLFunctionDefinition.h in Headers */,
 				F986FA5B2BCFB53B006A4C0F /* cfftypes.h in Headers */,
-				F90707272B9DAEC900383E4D /* sqrt.h in Headers */,
 				F986FFF42BCFBB53006A4C0F /* SkPixmapUtils.h in Headers */,
-				F90706F12B9DAEC900383E4D /* gather.h in Headers */,
 				F98602682BCFBB54006A4C0F /* SkScanPriv.h in Headers */,
-				F90707022B9DAEC900383E4D /* mulhi.h in Headers */,
 				F98601E42BCFBB53006A4C0F /* SkMask.h in Headers */,
 				F9070CD92B9F175100383E4D /* MathConstants.hpp in Headers */,
 				F986008C2BCFBB53006A4C0F /* SkTPin.h in Headers */,
@@ -9275,10 +8684,8 @@
 				F9070D052B9F175100383E4D /* Threading.hpp in Headers */,
 				F98603D82BCFBB54006A4C0F /* SkSLPipelineStageCodeGenerator.h in Headers */,
 				F986FA9B2BCFB53B006A4C0F /* otsvg.h in Headers */,
-				F90706CA2B9DAEC900383E4D /* adds.h in Headers */,
 				F986047D2BCFBB54006A4C0F /* SkSLMemoryPool.h in Headers */,
 				F9070E902B9F183100383E4D /* CWindow.hpp in Headers */,
-				F90707182B9DAEC900383E4D /* roundscale.h in Headers */,
 				F986FA4D2BCFB53B006A4C0F /* svmm.h in Headers */,
 				F986FA4A2BCFB53B006A4C0F /* svgxval.h in Headers */,
 				F9070C492B9F175000383E4D /* Char.ipp in Headers */,
@@ -9290,7 +8697,6 @@
 				F986F9C82BCA9D3E006A4C0F /* SVG.ipp in Headers */,
 				F9070C972B9F175000383E4D /* Array.hpp in Headers */,
 				F98601AF2BCFBB53006A4C0F /* SkEdgeBuilder.h in Headers */,
-				F90706EF2B9DAEC900383E4D /* fnmsub.h in Headers */,
 				F9070C422B9F175000383E4D /* AsyncTask.ipp in Headers */,
 				F986FA922BCFB53B006A4C0F /* ftrender.h in Headers */,
 				F9070CDD2B9F175100383E4D /* NamedParameter.hpp in Headers */,
@@ -9303,18 +8709,14 @@
 				F986FA522BCFB53B006A4C0F /* svpscmap.h in Headers */,
 				F9528B962BBC76D300222F45 /* Point3D.hpp in Headers */,
 				F98603D22BCFBB54006A4C0F /* SkSLGLSLCodeGenerator.h in Headers */,
-				F90707152B9DAEC900383E4D /* rorv.h in Headers */,
 				F9070D0F2B9F175100383E4D /* Vector2D.hpp in Headers */,
 				F9070CD52B9F175100383E4D /* Logger.hpp in Headers */,
 				F98600942BCFBB53006A4C0F /* SkDiscardableMemory.h in Headers */,
 				F9070B052B9DEB5900383E4D /* RFC1321.hpp in Headers */,
 				F986003C2BCFBB53006A4C0F /* SkSamplingOptions.h in Headers */,
-				F90706CB2B9DAEC900383E4D /* and.h in Headers */,
 				F9528C0F2BBF026F00222F45 /* huf.h in Headers */,
 				F986FA5F2BCFB53B006A4C0F /* ftdrv.h in Headers */,
 				F9070B092B9DEB5900383E4D /* wyhash.h in Headers */,
-				F907073F2B9DAEC900383E4D /* f16c.h in Headers */,
-				F90706E72B9DAEC900383E4D /* expand.h in Headers */,
 				F98600952BCFBB53006A4C0F /* SkImageChromium.h in Headers */,
 				F986FA8E2BCFB53B006A4C0F /* ftotval.h in Headers */,
 				F98600382BCFBB53006A4C0F /* SkRefCnt.h in Headers */,
@@ -9334,11 +8736,9 @@
 				F9528B792BB708A700222F45 /* ILicenseManager.hpp in Headers */,
 				F986FA8B2BCFB53B006A4C0F /* ftmm.h in Headers */,
 				F907068A2B9DAEC900383E4D /* identity.h in Headers */,
-				F907072E2B9DAEC900383E4D /* store.h in Headers */,
 				F9070CD72B9F175100383E4D /* LogType.hpp in Headers */,
 				F9070C6D2B9F175000383E4D /* NonNull.ipp in Headers */,
 				F98603E02BCFBB54006A4C0F /* SkSLSPIRVtoHLSL.h in Headers */,
-				F907071E2B9DAEC900383E4D /* setone.h in Headers */,
 				F90706AC2B9DAEC900383E4D /* log_uniform_int_distribution.h in Headers */,
 				F98600462BCFBB53006A4C0F /* SkSurfaceProps.h in Headers */,
 				F9528C252BBF026F00222F45 /* zstd_compress_sequences.h in Headers */,
@@ -9352,7 +8752,6 @@
 				F9E5FCD22BC3AD410081A4F7 /* JSON.hpp in Headers */,
 				F907075B2B9DAEC900383E4D /* Siv3D.hpp in Headers */,
 				F98604262BCFBB54006A4C0F /* SkSLModifiers.h in Headers */,
-				F90706E42B9DAEC900383E4D /* dpbusds.h in Headers */,
 				F907068B2B9DAEC900383E4D /* inline_variable.h in Headers */,
 				F986F9BA2BCA9D0A006A4C0F /* stopelement.h in Headers */,
 				F98600502BCFBB53006A4C0F /* SkVertices.h in Headers */,
@@ -9386,23 +8785,19 @@
 				F986014F2BCFBB53006A4C0F /* SkAutoBlitterChoose.h in Headers */,
 				F986FA442BCFB53B006A4C0F /* public-macros.h in Headers */,
 				F986FA742BCFB53B006A4C0F /* ftbbox.h in Headers */,
-				F90707562B9DAEC900383E4D /* simde-diagnostic.h in Headers */,
 				F986030B2BCFBB54006A4C0F /* SkOpAngle.h in Headers */,
 				F986FA992BCFB53B006A4C0F /* fttypes.h in Headers */,
-				F90707262B9DAEC900383E4D /* sllv.h in Headers */,
 				F9528C062BBF026F00222F45 /* compiler.h in Headers */,
 				F98601DB2BCFBB53006A4C0F /* SkLatticeIter.h in Headers */,
 				F9528A8A2BA0251E00222F45 /* Window.ipp in Headers */,
 				F986040B2BCFBB54006A4C0F /* SkSLFieldAccess.h in Headers */,
 				F90706C42B9DAEC900383E4D /* pcg_uint128.hpp in Headers */,
-				F90706EA2B9DAEC900383E4D /* fixupimm.h in Headers */,
 				F986004A2BCFBB53006A4C0F /* SkTiledImageUtils.h in Headers */,
 				F986008A2BCFBB53006A4C0F /* SkTLogic.h in Headers */,
 				F9070C672B9F175000383E4D /* Logger.ipp in Headers */,
 				F986F9192BC8441F006A4C0F /* oniguruma.h in Headers */,
 				F98601BA2BCFBB53006A4C0F /* SkFontDescriptor.h in Headers */,
 				F98604922BCFBB54006A4C0F /* spirv.h in Headers */,
-				F907072B2B9DAEC900383E4D /* srl.h in Headers */,
 				F986FA972BCFB53B006A4C0F /* ftsystem.h in Headers */,
 				F98600B32BCFBB53006A4C0F /* SkTraceEventPhase.h in Headers */,
 				F986038A2BCFBB54006A4C0F /* SkOTTable_OS_2.h in Headers */,
@@ -9427,7 +8822,6 @@
 				F986FA912BCFB53B006A4C0F /* ftpfr.h in Headers */,
 				F986F9AB2BCA9D0A006A4C0F /* layoutcontext.h in Headers */,
 				F98604642BCFBB54006A4C0F /* GLSL.std.450.h in Headers */,
-				F90706F42B9DAEC900383E4D /* knot.h in Headers */,
 				F986FFF72BCFBB53006A4C0F /* SkRawDecoder.h in Headers */,
 				F98603F72BCFBB54006A4C0F /* SkSLConstructorMatrixResize.h in Headers */,
 				F98603802BCFBB54006A4C0F /* SkOTTable_maxp_TT.h in Headers */,
@@ -9436,7 +8830,6 @@
 				F98600872BCFBB53006A4C0F /* SkTFitsIn.h in Headers */,
 				F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */,
 				F907075A2B9DAEC900383E4D /* XoshiroCpp.hpp in Headers */,
-				F90707522B9DAEC900383E4D /* simde-common.h in Headers */,
 				F90706B12B9DAEC900383E4D /* utility.h in Headers */,
 				F9E5FC402BC15B260081A4F7 /* sal.h in Headers */,
 				F98601F32BCFBB53006A4C0F /* SkMatrixUtils.h in Headers */,
@@ -9450,7 +8843,6 @@
 				F9070CE32B9F175100383E4D /* OrderedSet.hpp in Headers */,
 				F98602672BCFBB54006A4C0F /* SkScan.h in Headers */,
 				F986FA732BCFB53B006A4C0F /* ftadvanc.h in Headers */,
-				F907072A2B9DAEC900383E4D /* srav.h in Headers */,
 				F9070C502B9F175000383E4D /* DiscreteDistribution.ipp in Headers */,
 				F98602472BCFBB54006A4C0F /* SkRecordOpts.h in Headers */,
 				F98603212BCFBB54006A4C0F /* SkPathOpsCurve.h in Headers */,
@@ -9462,15 +8854,12 @@
 				F9528BAC2BBE7CF300222F45 /* MemoryWriter.hpp in Headers */,
 				F90706A92B9DAEC900383E4D /* distributions.h in Headers */,
 				F986FA5A2BCFB53B006A4C0F /* cffotypes.h in Headers */,
-				F90707062B9DAEC900383E4D /* negate.h in Headers */,
 				F986027B2BCFBB54006A4C0F /* SkStroke.h in Headers */,
-				F90707052B9DAEC900383E4D /* multishift.h in Headers */,
 				F9070CFD2B9F175100383E4D /* Stopwatch.hpp in Headers */,
 				F9528C502BBFEC4D00222F45 /* MappedMemoryView.ipp in Headers */,
 				F986FA832BCFB53B006A4C0F /* ftgzip.h in Headers */,
 				F90706922B9DAEC900383E4D /* policy_checks.h in Headers */,
 				F90706B32B9DAEC900383E4D /* EnumBitmask.hpp in Headers */,
-				F907074C2B9DAEC900383E4D /* debug-trap.h in Headers */,
 				F98603102BCFBB54006A4C0F /* SkOpContour.h in Headers */,
 				F98604342BCFBB54006A4C0F /* SkSLSetting.h in Headers */,
 				F986024A2BCFBB54006A4C0F /* SkRecords.h in Headers */,
@@ -9487,7 +8876,6 @@
 				F9528C1C2BBF026F00222F45 /* clevels.h in Headers */,
 				F98604222BCFBB54006A4C0F /* SkSLLiteral.h in Headers */,
 				F9528B542BB6DC2C00222F45 /* MicrosecClock.hpp in Headers */,
-				F90706FA2B9DAEC900383E4D /* madd.h in Headers */,
 				F9070C482B9F175000383E4D /* Byte.ipp in Headers */,
 				F9528C0C2BBF026F00222F45 /* error_private.h in Headers */,
 				F9528B782BB708A700222F45 /* CLicenseManager.hpp in Headers */,
@@ -9511,7 +8899,6 @@
 				F98602352BCFBB54006A4C0F /* SkRasterPipeline.h in Headers */,
 				F9070C6C2B9F175000383E4D /* Memory.ipp in Headers */,
 				F9528BA52BBD707100222F45 /* MemoryViewReader.ipp in Headers */,
-				F90707322B9DAEC900383E4D /* ternarylogic.h in Headers */,
 				F98601B32BCFBB53006A4C0F /* SkEnumerate.h in Headers */,
 				F98600512BCFBB53006A4C0F /* SkYUVAInfo.h in Headers */,
 				F9070C7D2B9F175000383E4D /* String.ipp in Headers */,
@@ -9527,14 +8914,11 @@
 				F9070ED62B9F1C8900383E4D /* cocoa_platform.h in Headers */,
 				F986FA932BCFB53B006A4C0F /* ftsizes.h in Headers */,
 				F986025A2BCFBB54006A4C0F /* SkRuntimeEffectPriv.h in Headers */,
-				F90706C92B9DAEC900383E4D /* add.h in Headers */,
-				F90707552B9DAEC900383E4D /* simde-detect-clang.h in Headers */,
 				F986025F2BCFBB54006A4C0F /* SkScalerContext.h in Headers */,
 				F986009F2BCFBB53006A4C0F /* SkPathRef.h in Headers */,
 				F90706A42B9DAEC900383E4D /* uniform_helper.h in Headers */,
 				F98601CA2BCFBB53006A4C0F /* SkGlyphRunPainter.h in Headers */,
 				F9070CE82B9F175100383E4D /* ParseBoolExtended.hpp in Headers */,
-				F907070A2B9DAEC900383E4D /* permutex.h in Headers */,
 				F9070CD32B9F175100383E4D /* KahanSummation.hpp in Headers */,
 				F9070D092B9F175100383E4D /* Unicode.hpp in Headers */,
 				F98601D02BCFBB53006A4C0F /* SkImageFilterCache.h in Headers */,
