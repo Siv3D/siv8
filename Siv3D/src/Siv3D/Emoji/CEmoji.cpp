@@ -131,7 +131,7 @@ namespace s3d
 			{
 			#if SK_PMCOLOR_BYTE_ORDER(B,G,R,A)
 				
-				image.swapBGRAtoRGBA();
+				image.bgraToRGBA();
 				
 			# endif
 			}

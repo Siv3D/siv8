@@ -262,7 +262,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Image::swapBGRAtoRGBA(const bool useSIMD)
+	void Image::bgraToRGBA(const bool useSIMD)
 	{
 	# if SIV3D_PLATFORM(MACOS)
 
