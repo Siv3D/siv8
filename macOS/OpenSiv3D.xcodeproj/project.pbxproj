@@ -1710,10 +1710,6 @@
 		F986F92F2BC8441F006A4C0F /* unicode_fold3_key.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F22BC8441F006A4C0F /* unicode_fold3_key.c */; };
 		F986F9312BC8441F006A4C0F /* unicode_unfold_key.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F42BC8441F006A4C0F /* unicode_unfold_key.c */; };
 		F986F9332BC8441F006A4C0F /* unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F62BC8441F006A4C0F /* unicode.c */; settings = {COMPILER_FLAGS = "-Wno-missing-field-initializers"; }; };
-		F986F9342BC8441F006A4C0F /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F72BC8441F006A4C0F /* utf8.c */; };
-		F986F9352BC8441F006A4C0F /* utf16_be.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F82BC8441F006A4C0F /* utf16_be.c */; };
-		F986F9362BC8441F006A4C0F /* utf16_le.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8F92BC8441F006A4C0F /* utf16_le.c */; };
-		F986F9372BC8441F006A4C0F /* utf32_be.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8FA2BC8441F006A4C0F /* utf32_be.c */; };
 		F986F9382BC8441F006A4C0F /* utf32_le.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F8FB2BC8441F006A4C0F /* utf32_le.c */; };
 		F986F93D2BCA7996006A4C0F /* RectF.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F9392BCA7996006A4C0F /* RectF.ipp */; };
 		F986F93E2BCA7996006A4C0F /* Vector3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F93A2BCA7996006A4C0F /* Vector3D.ipp */; };
@@ -2737,10 +2733,6 @@
 		F986F8F22BC8441F006A4C0F /* unicode_fold3_key.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode_fold3_key.c; sourceTree = "<group>"; };
 		F986F8F42BC8441F006A4C0F /* unicode_unfold_key.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode_unfold_key.c; sourceTree = "<group>"; };
 		F986F8F62BC8441F006A4C0F /* unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode.c; sourceTree = "<group>"; };
-		F986F8F72BC8441F006A4C0F /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
-		F986F8F82BC8441F006A4C0F /* utf16_be.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf16_be.c; sourceTree = "<group>"; };
-		F986F8F92BC8441F006A4C0F /* utf16_le.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf16_le.c; sourceTree = "<group>"; };
-		F986F8FA2BC8441F006A4C0F /* utf32_be.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf32_be.c; sourceTree = "<group>"; };
 		F986F8FB2BC8441F006A4C0F /* utf32_le.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf32_le.c; sourceTree = "<group>"; };
 		F986F9392BCA7996006A4C0F /* RectF.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RectF.ipp; sourceTree = "<group>"; };
 		F986F93A2BCA7996006A4C0F /* Vector3D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector3D.ipp; sourceTree = "<group>"; };
@@ -6173,10 +6165,6 @@
 				F986F8F22BC8441F006A4C0F /* unicode_fold3_key.c */,
 				F986F8F42BC8441F006A4C0F /* unicode_unfold_key.c */,
 				F986F8F62BC8441F006A4C0F /* unicode.c */,
-				F986F8F72BC8441F006A4C0F /* utf8.c */,
-				F986F8F82BC8441F006A4C0F /* utf16_be.c */,
-				F986F8F92BC8441F006A4C0F /* utf16_le.c */,
-				F986F8FA2BC8441F006A4C0F /* utf32_be.c */,
 				F986F8FB2BC8441F006A4C0F /* utf32_le.c */,
 				F986F8C22BC8441F006A4C0F /* config.h */,
 				F986F8DB2BC8441F006A4C0F /* oniggnu.h */,
@@ -9368,7 +9356,6 @@
 				F9070DE22B9F175E00383E4D /* SivParseInt.cpp in Sources */,
 				F98601552BCFBB53006A4C0F /* SkBitmap.cpp in Sources */,
 				F9E5FCEB2BC59EB50081A4F7 /* SivJSONIterator.cpp in Sources */,
-				F986F9352BC8441F006A4C0F /* utf16_be.c in Sources */,
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
 				F98604552BCFBB54006A4C0F /* SkSLEliminateDeadFunctions.cpp in Sources */,
 				F98604132BCFBB54006A4C0F /* SkSLFunctionDefinition.cpp in Sources */,
@@ -9599,7 +9586,6 @@
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,
-				F986F9342BC8441F006A4C0F /* utf8.c in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
 				F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */,
 				F98601582BCFBB53006A4C0F /* SkBitmapDevice.cpp in Sources */,
@@ -9750,7 +9736,6 @@
 				F98604FC2BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp in Sources */,
 				F986021C2BCFBB54006A4C0F /* SkPictureData.cpp in Sources */,
 				F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */,
-				F986F9362BC8441F006A4C0F /* utf16_le.c in Sources */,
 				F986022F2BCFBB54006A4C0F /* SkQuadClipper.cpp in Sources */,
 				F98601FA2BCFBB53006A4C0F /* SkMesh.cpp in Sources */,
 				F986F9B02BCA9D0A006A4C0F /* maskelement.cpp in Sources */,
@@ -9866,7 +9851,6 @@
 				F98601702BCFBB53006A4C0F /* SkBlitter.cpp in Sources */,
 				F986F9B92BCA9D0A006A4C0F /* stopelement.cpp in Sources */,
 				F986F9B22BCA9D0A006A4C0F /* paintelement.cpp in Sources */,
-				F986F9372BC8441F006A4C0F /* utf32_be.c in Sources */,
 				F98603C12BCFBB54006A4C0F /* SkSLGetLoopControlFlowInfo.cpp in Sources */,
 				F9528C372BBF026F00222F45 /* huf_decompress_amd64.S in Sources */,
 			);
