@@ -38,7 +38,10 @@
 #	include <nmmintrin.h>
 # endif
 
-# else
+# elif SIV3D_INTRINSIC(NEON)
 
+# if __has_include(<arm_neon.h>)
+#	include <arm_neon.h>
+# endif
 
 # endif

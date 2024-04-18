@@ -11,6 +11,7 @@
 
 # include <Siv3D/Image.hpp>
 # include <Siv3D/CPUInfo.hpp>
+# include <Siv3D/SIMD.hpp>
 
 namespace s3d
 {
@@ -79,7 +80,7 @@ namespace s3d
 
 	# endif
 
-	# if SIV3D_CPU(X86_64)
+	# if SIV3D_INTRINSIC(SSE)
 
 		static void PremultiplyAlpha_SSE41(Color* pixels, const size_t num_pixels)
 		{
@@ -179,7 +180,7 @@ namespace s3d
 			}
 		}
 
-		# if SIV3D_CPU(X86_64)
+	# if SIV3D_INTRINSIC(SSE)
 
 		static void BGRAtoRGBA_SSE3(Color* pixels, const size_t num_pixels)
 		{
@@ -217,7 +218,31 @@ namespace s3d
 			}
 		}
 
-		# endif
+	# endif
+			
+	# if SIV3D_INTRINSIC(NEON)
+
+		static void BGRAtoRGBA_NEON(Color* pixels, const size_t num_pixels)
+		{
+			const size_t loopCount = ((num_pixels + 7) / 8);
+			uint8* ptr = reinterpret_cast<uint8*>(pixels);
+			const uint8* const end = reinterpret_cast<const uint8*>(pixels + loopCount * 8);
+			
+			for (; ptr != end; ptr += (8 * 4))
+			{
+				uint8x8x4_t bgra = vld4_u8(reinterpret_cast<const uint8_t*>(ptr));
+
+				uint8x8x4_t rgba;
+				rgba.val[0] = bgra.val[2];
+				rgba.val[1] = bgra.val[1];
+				rgba.val[2] = bgra.val[0];
+				rgba.val[3] = bgra.val[3];
+
+				vst4_u8(reinterpret_cast<uint8_t*>(ptr), rgba);
+			}
+		}
+			
+	# endif
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -228,15 +253,6 @@ namespace s3d
 
 	void Image::premultiplyAlpha(const bool useSIMD)
 	{
-	# if SIV3D_PLATFORM(MACOS)
-
-		if (useSIMD)
-		{
-			return PremultiplyAlpha_GCC(m_pixels.data(), m_pixels.size());
-		}
-		
-	# endif
-
 	# if SIV3D_CPU(X86_64)
 
 		if (useSIMD)
@@ -251,6 +267,13 @@ namespace s3d
 			}
 		}
 
+	# elif SIV3D_PLATFORM(MACOS)
+
+		if (useSIMD)
+		{
+			return PremultiplyAlpha_GCC(m_pixels.data(), m_pixels.size());
+		}
+		
 	# endif
 
 		return PremultiplyAlpha_plain(m_pixels.data(), m_pixels.size());
@@ -264,16 +287,7 @@ namespace s3d
 
 	void Image::bgraToRGBA(const bool useSIMD)
 	{
-	# if SIV3D_PLATFORM(MACOS)
-
-		//if (useSIMD)
-		//{
-		//	return BGRAtoRGBA_NEON(m_pixels.data(), m_pixels.size());
-		//}
-		
-	# endif
-
-	# if SIV3D_CPU(X86_64)
+	# if SIV3D_INTRINSIC(SSE)
 
 		if (useSIMD)
 		{
@@ -287,6 +301,13 @@ namespace s3d
 			}
 		}
 
+	# elif SIV3D_INTRINSIC(NEON)
+
+		if (useSIMD)
+		{
+			return BGRAtoRGBA_NEON(m_pixels.data(), m_pixels.size());
+		}
+		
 	# endif
 
 		return BGRAtoRGBA_plain(m_pixels.data(), m_pixels.size());
