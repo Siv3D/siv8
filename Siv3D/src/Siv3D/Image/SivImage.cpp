@@ -10,9 +10,9 @@
 //-----------------------------------------------
 
 # include <Siv3D/Image.hpp>
+# include <Siv3D/Emoji.hpp>
 # include <Siv3D/ImageDecoder.hpp>
 # include <Siv3D/ImageEncoder.hpp>
-# include <Siv3D/CPUInfo.hpp>
 
 namespace s3d
 {
@@ -148,6 +148,11 @@ namespace s3d
 	Image::Image(IReader&& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
 	{
 		*this = ImageDecoder::Decode(reader, premultiplyAlpha, format);
+	}
+
+	Image::Image(const Emoji& emoji, const int32 size)
+	{
+		*this = Emoji::CreateImage(emoji.codePoints, size);
 	}
 
 	////////////////////////////////////////////////////////////////

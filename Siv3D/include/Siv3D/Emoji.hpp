@@ -12,11 +12,13 @@
 # pragma once
 # include "Common.hpp"
 # include "String.hpp"
-# include "Image.hpp"
+# include "PointVector.hpp"
 # include "GlyphIndex.hpp"
 
 namespace s3d
 {
+	class Image;
+
 	/// @brief 絵文字
 	struct Emoji
 	{

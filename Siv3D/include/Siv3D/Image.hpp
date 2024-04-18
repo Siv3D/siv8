@@ -14,6 +14,7 @@
 # include "Array.hpp"
 # include "AlignedAllocator.hpp"
 # include "ColorHSV.hpp"
+# include "Emoji.hpp"
 # include "ImageFormat.hpp"
 # include "PredefinedYesNo.hpp"
 
@@ -168,8 +169,8 @@ namespace s3d
 		//[[nodiscard]]
 		//Image(Color rgb, FilePathView alpha);
 
-		//[[nodiscard]]
-		//explicit Image(const Emoji& emoji);
+		[[nodiscard]]
+		explicit Image(const Emoji& emoji, int32 size = Emoji::DefaultSize);
 
 		//[[nodiscard]]
 		//explicit Image(const Icon& icon, int32 size);
