@@ -57,6 +57,8 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CEmoji::~CEmoji()");
 
+		m_typeface.reset();
+
 		if (m_hbBuffer)
 		{
 			::hb_buffer_destroy(m_hbBuffer);
@@ -114,13 +116,20 @@ namespace s3d
 
 		m_hbBuffer = ::hb_buffer_create();
 
-		m_fileStream = SkFILEStream::Make("Noto-COLRv1.ttf");
-		m_typeface = SkTypeface_FreeType::MakeFromStream(std::move(m_fileStream), SkFontArguments{});
+		std::unique_ptr<SkStreamAsset> fileStream = SkFILEStream::Make("Noto-COLRv1.ttf");
+		m_typeface = SkTypeface_FreeType::MakeFromStream(std::move(fileStream), SkFontArguments{});
 		m_font.setTypeface(m_typeface);
+
+		m_available = true;
 	}
 
 	bool CEmoji::hasEmoji(StringView emoji) const
 	{
+		if (not m_available)
+		{
+			return false;
+		}
+
 		::hb_buffer_reset(m_hbBuffer);
 		::hb_buffer_add_utf32(m_hbBuffer,
 			reinterpret_cast<const uint32*>(emoji.data()),
@@ -136,6 +145,11 @@ namespace s3d
 
 	GlyphIndex CEmoji::getGlyphIndex(const StringView emoji) const
 	{
+		if (not m_available)
+		{
+			return InvalidGlyphIndex;
+		}
+
 		::hb_buffer_reset(m_hbBuffer);
 		::hb_buffer_add_utf32(m_hbBuffer,
 			reinterpret_cast<const uint32*>(emoji.data()),
@@ -151,29 +165,48 @@ namespace s3d
 			return InvalidGlyphIndex;
 		}
 
+		{
+			SkGlyphID glyphID = 0;
+			m_font.textToGlyphs(emoji.data(), emoji.size_bytes(), SkTextEncoding::kUTF32, &glyphID, 1);
+
+			LOG_DEBUG(U"{} vs {}"_fmt(glyphID, glyphInfo[0].codepoint));
+		}
+
 		return static_cast<GlyphIndex>(glyphInfo[0].codepoint);
 	}
 
 	Image CEmoji::renderEmoji(const GlyphIndex emoji, const int32 size)
 	{
+		if (not m_available)
+		{
+			return{};
+		}
+
 		Image image = RenderEmoji(emoji, size, m_font);
-				
-	#if SK_PMCOLOR_BYTE_ORDER(B,G,R,A)
+		{
+		#if SK_PMCOLOR_BYTE_ORDER(B,G,R,A)
 
-		image.bgraToRGBA();
+			image.bgraToRGBA();
 
-	# endif
+		# endif
+		}
 
 		return image;
 	}
 
 	Image CEmoji::renderFilledEmoji(const GlyphIndex emoji, const int32 size)
 	{
-		Image image = RenderEmoji(emoji, size, m_font);
-
-		for (auto& pixel : image)
+		if (not m_available)
 		{
-			pixel.r = pixel.g = pixel.b = pixel.a;
+			return{};
+		}
+
+		Image image = RenderEmoji(emoji, size, m_font);
+		{
+			for (auto& pixel : image)
+			{
+				pixel.r = pixel.g = pixel.b = pixel.a;
+			}
 		}
 
 		return image;

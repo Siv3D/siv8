@@ -43,6 +43,8 @@ namespace s3d
 
 	private:
 
+		bool m_available = false;
+
 		FT_Library m_freeType = nullptr;
 
 		FT_Face m_face = nullptr;
@@ -50,8 +52,6 @@ namespace s3d
 		hb_font_t* m_hbFont = nullptr;
 
 		hb_buffer_t* m_hbBuffer = nullptr;
-
-		std::unique_ptr<SkStreamAsset> m_fileStream;
 
 		sk_sp<SkTypeface> m_typeface;
 
