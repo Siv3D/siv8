@@ -97,7 +97,7 @@ namespace s3d
 		
 		if (not svg)
 		{
-			LOG_FAIL(U"❌ SVGDecoder::decode(): Failed to parse the SVG document");
+			LOG_FAIL("❌ SVGDecoder::decode(): Failed to parse the SVG document");
 			return{};
 		}
 
@@ -105,7 +105,7 @@ namespace s3d
 
 		if (not image)
 		{
-			LOG_FAIL(U"❌ SVGDecoder::decode(): Failed to render the SVG document");
+			LOG_FAIL("❌ SVGDecoder::decode(): Failed to render the SVG document");
 			return{};
 		}
 

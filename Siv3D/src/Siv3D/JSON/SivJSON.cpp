@@ -38,43 +38,43 @@ namespace s3d
 		[[noreturn]]
 		static void ThrowNotString()
 		{
-			throw Error{ U"JSON::getString(): This JSON value is not a string" };
+			throw Error{ "JSON::getString(): This JSON value is not a string" };
 		}
 
 		[[noreturn]]
 		static void ThrowNotStringUTF8()
 		{
-			throw Error{ U"JSON::getUTF8(): This JSON value is not a string" };
+			throw Error{ "JSON::getUTF8(): This JSON value is not a string" };
 		}
 
 		[[noreturn]]
 		static void ThrowNotBinary()
 		{
-			throw Error{ U"JSON::getBinary(): This JSON value is not a binary" };
+			throw Error{ "JSON::getBinary(): This JSON value is not a binary" };
 		}
 
 		[[noreturn]]
 		static void ThrowOpSubscriptNotArray()
 		{
-			throw Error{ U"JSON::operator [](size_t): This JSON value is not an array" };
+			throw Error{ "JSON::operator [](size_t): This JSON value is not an array" };
 		}
 
 		[[noreturn]]
 		static void ThrowOpSubscriptIndexOutOfRange()
 		{
-			throw Error{ U"JSON::operator [](size_t): Index out of range" };
+			throw Error{ "JSON::operator [](size_t): Index out of range" };
 		}
 
 		[[noreturn]]
 		static void ThrowEraseNotArray()
 		{
-			throw Error{ U"JSON::erase(size_t): This JSON value is not an array" };
+			throw Error{ "JSON::erase(size_t): This JSON value is not an array" };
 		}
 
 		[[noreturn]]
 		static void ThrowEraseIndexOutOfRange()
 		{
-			throw Error{ U"JSON::erase(size_t): Index out of range" };
+			throw Error{ "JSON::erase(size_t): Index out of range" };
 		}
 	}
 

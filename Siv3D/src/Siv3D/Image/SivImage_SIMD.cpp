@@ -11,6 +11,7 @@
 
 # include <Siv3D/Image.hpp>
 # include <Siv3D/CPUInfo.hpp>
+# include <Siv3D/SIMD.hpp>
 
 namespace s3d
 {
@@ -79,7 +80,7 @@ namespace s3d
 
 	# endif
 
-	# if SIV3D_CPU(X86_64)
+	# if SIV3D_INTRINSIC(SSE)
 
 		static void PremultiplyAlpha_SSE41(Color* pixels, const size_t num_pixels)
 		{
@@ -164,6 +165,84 @@ namespace s3d
 
 		//
 		////////////////////////////////////////////////////////////////
+
+		static void BGRAtoRGBA_plain(Color* pixels, const size_t num_pixels)
+		{
+			Color* p = pixels;
+			const Color* const pEnd = (pixels + num_pixels);
+
+			while (p != pEnd)
+			{
+				const uint8 r = p->r;
+				p->r = p->b;
+				p->b = r;
+				++p;
+			}
+		}
+
+	# if SIV3D_INTRINSIC(SSE)
+
+		static void BGRAtoRGBA_SSE3(Color* pixels, const size_t num_pixels)
+		{
+			const size_t loopCount = (((num_pixels + 7) / 8) * 2);
+			const __m128i mask = ::_mm_set_epi8(15, 12, 13, 14, 11, 8, 9, 10, 7, 4, 5, 6, 3, 0, 1, 2);
+			
+			for (__m128i* ptr = reinterpret_cast<__m128i*>(pixels), *end = (ptr + loopCount); ptr != end; ptr += 2)
+			{
+				__m128i t1 = ::_mm_load_si128(ptr);
+				__m128i t2 = ::_mm_load_si128(ptr + 1);
+
+				t1 = ::_mm_shuffle_epi8(t1, mask);
+				t2 = ::_mm_shuffle_epi8(t2, mask);
+				
+				::_mm_store_si128(ptr, t1);
+				::_mm_store_si128(ptr + 1, t2);
+			}
+		}
+
+		static void BGRAtoRGBA_AVX2(Color* pixels, const size_t num_pixels)
+		{
+			const size_t loopCount = ((num_pixels + 7) / 8);
+			const __m256i mask = ::_mm256_setr_epi8(
+				2, 1, 0, 3, 6, 5, 4, 7, 
+				10, 9, 8, 11, 14, 13, 12, 15,
+				18, 17, 16, 19, 22, 21, 20, 23,
+				26, 25, 24, 27, 30, 29, 28, 31
+			);
+
+			for (__m256i* ptr = reinterpret_cast<__m256i*>(pixels), *end = (ptr + loopCount); ptr != end; ++ptr)
+			{
+				__m256i t = ::_mm256_load_si256(ptr);
+				t = ::_mm256_shuffle_epi8(t, mask);
+				::_mm256_store_si256(ptr, t);
+			}
+		}
+
+	# endif
+			
+	# if SIV3D_INTRINSIC(NEON)
+
+		static void BGRAtoRGBA_NEON(Color* pixels, const size_t num_pixels)
+		{
+			const size_t loopCount = ((num_pixels + 7) / 8);
+			uint8* ptr = reinterpret_cast<uint8*>(pixels);
+			const uint8* const end = reinterpret_cast<const uint8*>(pixels + loopCount * 8);
+			
+			for (; ptr != end; ptr += (8 * 4))
+			{
+				uint8x8x4_t bgra = vld4_u8(reinterpret_cast<const uint8_t*>(ptr));
+
+				uint8x8x4_t rgba;
+				rgba.val[0] = bgra.val[2];
+				rgba.val[1] = bgra.val[1];
+				rgba.val[2] = bgra.val[0];
+				rgba.val[3] = bgra.val[3];
+
+				vst4_u8(reinterpret_cast<uint8_t*>(ptr), rgba);
+			}
+		}
+			
+	# endif
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -174,19 +253,6 @@ namespace s3d
 
 	void Image::premultiplyAlpha(const bool useSIMD)
 	{
-	# if SIV3D_PLATFORM(MACOS)
-
-		if (useSIMD)
-		{
-			return PremultiplyAlpha_GCC(m_pixels.data(), m_pixels.size());
-		}
-		else
-		{
-			return PremultiplyAlpha_plain(m_pixels.data(), m_pixels.size());
-		}
-		
-	# endif
-
 	# if SIV3D_CPU(X86_64)
 
 		if (useSIMD)
@@ -201,9 +267,49 @@ namespace s3d
 			}
 		}
 
+	# elif SIV3D_PLATFORM(MACOS)
+
+		if (useSIMD)
+		{
+			return PremultiplyAlpha_GCC(m_pixels.data(), m_pixels.size());
+		}
+		
 	# endif
 
 		return PremultiplyAlpha_plain(m_pixels.data(), m_pixels.size());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	swapBGRAtoRGBA
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Image::bgraToRGBA(const bool useSIMD)
+	{
+	# if SIV3D_INTRINSIC(SSE)
+
+		if (useSIMD)
+		{
+			if (SupportsAVX2())
+			{
+				return BGRAtoRGBA_AVX2(m_pixels.data(), m_pixels.size());
+			}
+			else
+			{
+				return BGRAtoRGBA_SSE3(m_pixels.data(), m_pixels.size());
+			}
+		}
+
+	# elif SIV3D_INTRINSIC(NEON)
+
+		if (useSIMD)
+		{
+			return BGRAtoRGBA_NEON(m_pixels.data(), m_pixels.size());
+		}
+		
+	# endif
+
+		return BGRAtoRGBA_plain(m_pixels.data(), m_pixels.size());
+	}
 }

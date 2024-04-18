@@ -18,57 +18,43 @@ TEST_CASE("PRNG.Benchmark")
 	const ScopedLogSilencer logSilencer;
 	
 	{
-		HardwareRNG rng{};
+		HardwareRNG hardwareRNG{};
+		std::mt19937_64 stdMT;
+		PRNG::SplitMix64 splitMix;
+		PRNG::Xoshiro256PlusPlus xoshiro;
+		PRNG::PCG64 pcg;
 
-		Bench{}.title("HardwareRNG").run("rng()", [&]()
+		Bench{}.title("rng()").run("HardwareRNG", [&]()
 			{
-				auto r = rng();
+				auto r = hardwareRNG();
 				doNotOptimizeAway(r);
 			});
-	}
 
-	{
-		std::mt19937_64 rng;
-
-		Bench{}.title("std::mt19937_64").run("rng()", [&]()
+		Bench{}.title("rng()").run("std::mt19937_64", [&]()
 			{
-				auto r = rng();
+				auto r = stdMT();
 				doNotOptimizeAway(r);
 			});
-	}
 
-	{
-		PRNG::SplitMix64 rng;
-
-		Bench{}.title("PRNG::SplitMix64").run("rng()", [&]()
+		Bench{}.title("rng()").run("PRNG::SplitMix64", [&]()
 			{
-				auto r = rng();
+				auto r = splitMix();
 				doNotOptimizeAway(r);
 			});
-	}
 
-	{
-		PRNG::Xoshiro256PlusPlus rng;
-
-		Bench{}.title("PRNG::Xoshiro256PlusPlus").run("rng()", [&]()
+		Bench{}.title("rng()").run("PRNG::Xoshiro256PlusPlus", [&]()
 			{
-				auto r = rng();
+				auto r = xoshiro();
 				doNotOptimizeAway(r);
 			});
-	}
 
-	{
-		PRNG::PCG64 rng;
-
-		Bench{}.title("PRNG::PCG64").run("rng()", [&]()
+		Bench{}.title("rng()").run("PRNG::PCG64", [&]()
 			{
-				auto r = rng();
+				auto r = pcg();
 				doNotOptimizeAway(r);
 			});
-	}
 
-	{
-		Bench{}.title("GetDefaultRNG()").run("rng()", [&]()
+		Bench{}.title("rng()").run("GetDefaultRNG()", [&]()
 			{
 				auto r = GetDefaultRNG()();
 				doNotOptimizeAway(r);

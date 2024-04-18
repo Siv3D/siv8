@@ -14,6 +14,7 @@
 # include "Array.hpp"
 # include "AlignedAllocator.hpp"
 # include "ColorHSV.hpp"
+# include "Emoji.hpp"
 # include "ImageFormat.hpp"
 # include "PredefinedYesNo.hpp"
 
@@ -71,26 +72,26 @@ namespace s3d
 		/// @brief 画像データを作成します。
 		/// @param size 画像の幅と高さ（ピクセル）
 		[[nodiscard]]
-		explicit Image(size_t size);
+		explicit Image(Concept::Integral auto size);
 
 		/// @brief 画像データを作成します。
 		/// @param size 画像の幅と高さ（ピクセル）
 		/// @param color 塗りつぶしの色
 		[[nodiscard]]
-		explicit Image(size_t size, Color color);
+		explicit Image(Concept::Integral auto size, Color color);
 
 		/// @brief 画像データを作成します。
 		/// @param width 画像の幅（ピクセル）
 		/// @param height 画像の高さ（ピクセル）
 		[[nodiscard]]
-		Image(size_t width, size_t height);
+		Image(Concept::Integral auto width, Concept::Integral auto height);
 
 		/// @brief 画像データを作成します。
 		/// @param width 画像の幅（ピクセル）
 		/// @param height 画像の高さ（ピクセル）
 		/// @param color 塗りつぶしの色
 		[[nodiscard]]
-		Image(size_t width, size_t height, Color color);
+		Image(Concept::Integral auto width, Concept::Integral auto height, Color color);
 
 		/// @brief 画像データを作成します。
 		/// @param size 画像の幅と高さ（ピクセル）
@@ -104,34 +105,34 @@ namespace s3d
 		Image(Size size, Color color);
 
 		[[nodiscard]]
-		Image(size_t size, Arg::generator_<FunctionRef<Color()>> generator);
+		Image(Concept::Integral auto size, Arg::generator_<FunctionRef<Color()>> generator);
 
 		[[nodiscard]]
-		Image(size_t size, Arg::generator_<FunctionRef<Color(int32, int32)>> generator);
+		Image(Concept::Integral auto size, Arg::generator_<FunctionRef<Color(int32, int32)>> generator);
 
 		[[nodiscard]]
-		Image(size_t size, Arg::generator_<FunctionRef<Color(Point)>> generator);
+		Image(Concept::Integral auto size, Arg::generator_<FunctionRef<Color(Point)>> generator);
 
 		[[nodiscard]]
-		Image(size_t size, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator);
+		Image(Concept::Integral auto size, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator);
 
 		[[nodiscard]]
-		Image(size_t size, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator);
+		Image(Concept::Integral auto size, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator);
 
 		[[nodiscard]]
-		Image(size_t width, size_t height, Arg::generator_<FunctionRef<Color()>> generator);
+		Image(Concept::Integral auto width, Concept::Integral auto height, Arg::generator_<FunctionRef<Color()>> generator);
 
 		[[nodiscard]]
-		Image(size_t width, size_t height, Arg::generator_<FunctionRef<Color(int32, int32)>> generator);
+		Image(Concept::Integral auto width, Concept::Integral auto height, Arg::generator_<FunctionRef<Color(int32, int32)>> generator);
 
 		[[nodiscard]]
-		Image(size_t width, size_t height, Arg::generator_<FunctionRef<Color(Point)>> generator);
+		Image(Concept::Integral auto width, Concept::Integral auto height, Arg::generator_<FunctionRef<Color(Point)>> generator);
 
 		[[nodiscard]]
-		Image(size_t width, size_t height, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator);
+		Image(Concept::Integral auto width, Concept::Integral auto height, Arg::generator0_1_<FunctionRef<Color(double, double)>> generator);
 
 		[[nodiscard]]
-		Image(size_t width, size_t height, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator);
+		Image(Concept::Integral auto width, Concept::Integral auto height, Arg::generator0_1_<FunctionRef<Color(Vec2)>> generator);
 
 		[[nodiscard]]
 		Image(Size size, Arg::generator_<FunctionRef<Color()>> generator);
@@ -168,8 +169,8 @@ namespace s3d
 		//[[nodiscard]]
 		//Image(Color rgb, FilePathView alpha);
 
-		//[[nodiscard]]
-		//explicit Image(const Emoji& emoji);
+		[[nodiscard]]
+		explicit Image(const Emoji& emoji, int32 size = Emoji::DefaultSize);
 
 		//[[nodiscard]]
 		//explicit Image(const Icon& icon, int32 size);
@@ -616,6 +617,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		void premultiplyAlpha(bool useSIMD = true);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	bgraToRGBA
+		//
+		////////////////////////////////////////////////////////////////
+
+		void bgraToRGBA(bool useSIMD = true);
 
 		////////////////////////////////////////////////////////////////
 		//

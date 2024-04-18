@@ -94,6 +94,36 @@ TEST_CASE("String.operator ==")
 
 # if SIV3D_RUN_BENCHMARK
 
+TEST_CASE("String.levenshteinDistanceFrom.Benchmark")
+{
+	const ScopedLogSilencer logSilencer;
+
+	{
+		const String s0a = RandomString(0);
+		const String s0b = RandomString(0);
+
+		const String s10a = RandomString(10);
+		const String s10b = RandomString(10);
+
+		const String s100a = RandomString(100);
+		const String s100b = RandomString(100);
+
+		const String s1000a = RandomString(1000);
+		const String s1000b = RandomString(1000);
+
+		const String s4000a = RandomString(4000);
+		const String s4000b = RandomString(4000);
+
+		{
+			Bench{}.title("String::levenshteinDistanceFrom").run("s0", [&]() { doNotOptimizeAway(s0a.levenshteinDistanceFrom(s0b)); });
+			Bench{}.title("String::levenshteinDistanceFrom").run("s10", [&]() { doNotOptimizeAway(s10a.levenshteinDistanceFrom(s10b)); });
+			Bench{}.title("String::levenshteinDistanceFrom").run("s100", [&]() { doNotOptimizeAway(s100a.levenshteinDistanceFrom(s100b)); });
+			Bench{}.title("String::levenshteinDistanceFrom").run("s1000", [&]() { doNotOptimizeAway(s1000a.levenshteinDistanceFrom(s1000b)); });
+			Bench{}.title("String::levenshteinDistanceFrom").run("s4000", [&]() { doNotOptimizeAway(s4000a.levenshteinDistanceFrom(s4000b)); });
+		}
+	}
+}
+
 TEST_CASE("String.operator ==.Benchmark")
 {
 	const ScopedLogSilencer logSilencer;

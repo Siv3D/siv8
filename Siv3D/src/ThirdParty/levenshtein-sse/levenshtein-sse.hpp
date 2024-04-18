@@ -14,20 +14,6 @@
 #include <cassert>
 #include <limits>
 
-# include <Siv3D/SIMD.hpp>
-# ifndef __SSE2__
-#   define __SSE2__ 1
-# endif
-# ifndef __SSSE3__
-#   define __SSSE3__ 1
-# endif
-# ifndef __SSE4_1__
-#   define __SSE4_1__ 1
-# endif
-# ifdef __AVX2__
-#   include <immintrin.h>
-# endif
-
 namespace levenshteinSSE {
 
 /**
@@ -315,10 +301,10 @@ static inline void performSSE(const T* a, const T* b,
   // We support 1, 2, and 4 byte objects for SSE comparison.
   // We always process 16 entries at once, so we may need multiple fetches
   // depending on object size.
-  if (sizeof(T) <= 2) {
+  if constexpr (sizeof(T) <= 2) {
     __m128i substitutionCost16LX, substitutionCost16HX;
     
-    if (sizeof(T) == 1) {
+    if constexpr (sizeof(T) == 1) {
       __m128i a_ = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&a[i-16]));
       __m128i b_ = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&b[j-1]));
       a_ = _mm_shuffle_epi8(a_, reversedIdentity128_epi8);

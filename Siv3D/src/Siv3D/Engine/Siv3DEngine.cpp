@@ -13,10 +13,12 @@
 # include <Siv3D/LicenseManager/ILicenseManager.hpp>
 # include <Siv3D/Logger/ILogger.hpp>
 # include <Siv3D/System/ISystem.hpp>
+# include <Siv3D/EngineResource/IEngineResource.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
+# include <Siv3D/Emoji/IEmoji.hpp>
 # include <Siv3D/Console/IConsole.hpp>
 
 namespace s3d
