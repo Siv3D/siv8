@@ -11,6 +11,8 @@
 
 # include "CEmoji.hpp"
 # include <Siv3D/EngineLog.hpp>
+# include <Siv3D/FileSystem.hpp>
+# include <Siv3D/CacheDirectory/CacheDirectory.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <ThirdParty/skia/include/core/SkCanvas.h>
 # include <ThirdParty/skia/include/core/SkTextBlob.h>
@@ -87,12 +89,22 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CEmoji::init()");
 
-		if (const FT_Error error = FT_Init_FreeType(&m_freeType))
+		const FilePath emojiFilePath = (CacheDirectory::Engine() + U"font/noto-emoji/Noto-COLRv1.ttf");
+
+		if (not FileSystem::Exists(emojiFilePath))
 		{
-			throw InternalEngineError{ U"FT_Init_FreeType() failed" };
+			LOG_INFO("Emoji font file not found");
+			return;
 		}
 
-		if (const FT_Error error = ::FT_New_Face(m_freeType, "Noto-COLRv1.ttf", static_cast<FT_Long>(0), &m_face))
+		if (const FT_Error error = FT_Init_FreeType(&m_freeType))
+		{
+			throw InternalEngineError{ "FT_Init_FreeType() failed" };
+		}
+
+		const std::string emojiFontPathUTF8 = Unicode::ToUTF8(emojiFilePath);
+
+		if (const FT_Error error = ::FT_New_Face(m_freeType, emojiFontPathUTF8.c_str(), static_cast<FT_Long>(0), &m_face))
 		{
 			if (error == FT_Err_Unknown_File_Format)
 			{
@@ -116,7 +128,7 @@ namespace s3d
 
 		m_hbBuffer = ::hb_buffer_create();
 
-		std::unique_ptr<SkStreamAsset> fileStream = SkFILEStream::Make("Noto-COLRv1.ttf");
+		std::unique_ptr<SkStreamAsset> fileStream = SkFILEStream::Make(emojiFontPathUTF8.c_str());
 		m_typeface = SkTypeface_FreeType::MakeFromStream(std::move(fileStream), SkFontArguments{});
 		m_font.setTypeface(m_typeface);
 
@@ -163,13 +175,6 @@ namespace s3d
 		if (glyphCount != 1)
 		{
 			return InvalidGlyphIndex;
-		}
-
-		{
-			SkGlyphID glyphID = 0;
-			m_font.textToGlyphs(emoji.data(), emoji.size_bytes(), SkTextEncoding::kUTF32, &glyphID, 1);
-
-			LOG_DEBUG(U"{} vs {}"_fmt(glyphID, glyphInfo[0].codepoint));
 		}
 
 		return static_cast<GlyphIndex>(glyphInfo[0].codepoint);

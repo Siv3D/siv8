@@ -613,6 +613,9 @@
     <Filter Include="src\ThirdParty\skia\src\sfnt">
       <UniqueIdentifier>{e46d707d-caac-4c62-99ee-0bb0d1de08e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\EngineResource">
+      <UniqueIdentifier>{547d980e-5de8-4fb4-930f-777b1ca436dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3504,6 +3507,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphIndex.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\EngineResource\CEngineResource.hpp">
+      <Filter>src\Siv3D\EngineResource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\EngineResource\IEngineResource.hpp">
+      <Filter>src\Siv3D\EngineResource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5461,6 +5470,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\SivEmoji.cpp">
       <Filter>src\Siv3D\Emoji</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\EngineResource\EngineResourceFactory.cpp">
+      <Filter>src\Siv3D\EngineResource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\EngineResource\CEngineResource.cpp">
+      <Filter>src\Siv3D\EngineResource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

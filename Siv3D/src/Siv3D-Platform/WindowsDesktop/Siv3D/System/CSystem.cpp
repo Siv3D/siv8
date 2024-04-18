@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "CSystem.hpp"
+# include <Siv3D/EngineResource/IEngineResource.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/CWindow.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
@@ -35,6 +36,8 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CSystem::init()");
 
 		m_setupProgress = SetupProgress::EngineInitialized;
+
+		SIV3D_ENGINE(EngineResource)->init();
 
 		SIV3D_ENGINE(ImageDecoder)->init();
 
