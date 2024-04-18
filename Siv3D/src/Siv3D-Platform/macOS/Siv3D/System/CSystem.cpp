@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "CSystem.hpp"
+# include <ThirdParty/Oniguruma/oniguruma.h>
 # include <Siv3D/EngineResource/IEngineResource.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/IWindow.hpp>
@@ -29,6 +30,11 @@ namespace s3d
 	void CSystem::init()
 	{
 		LOG_SCOPED_DEBUG("CSystem::init()");
+
+		{
+			OnigEncoding encodings = ONIG_ENCODING_UTF32_LE;
+			onig_initialize(&encodings, 1);
+		}
 
 		SIV3D_ENGINE(EngineResource)->init();
 

@@ -3218,22 +3218,7 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\unicode_unfold_key.c">
       <Filter>src\ThirdParty\Oniguruma</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\utf8.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\utf16_be.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\utf16_le.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\utf32_be.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\utf32_le.c">
-      <Filter>src\ThirdParty\Oniguruma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\ascii.c">
       <Filter>src\ThirdParty\Oniguruma</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\onig_init.c">
@@ -4621,6 +4606,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ImagePixelFormat\SivImagePixelFormat.cpp">
       <Filter>src\Siv3D\ImagePixelFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\ascii.c">
+      <Filter>src\ThirdParty\Oniguruma</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
