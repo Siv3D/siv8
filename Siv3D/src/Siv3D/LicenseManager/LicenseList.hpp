@@ -621,12 +621,6 @@ MIT_LICENSE
 },
 
 {
-R"-(simde)-",
-R"-(Copyright (c) 2017 Evan Nemerson <evan@nemerson.com>)-",
-MIT_LICENSE
-},
-
-{
 R"-(simdutf)-",
 R"-(Copyright 2021 The simdutf authors)-",
 MIT_LICENSE

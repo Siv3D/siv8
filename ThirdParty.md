@@ -28,7 +28,6 @@ Name | Version
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
 [plutovg](https://github.com/sammycage/plutovg) | 
-[simde](https://github.com/nemequ/simde) | v0.8.0
 [simdutf](https://github.com/simdutf/simdutf) | Version 5.2.2
 [skia](https://github.com/google/skia) |
 [stduuid](https://github.com/mariusbancila/stduuid) | 
