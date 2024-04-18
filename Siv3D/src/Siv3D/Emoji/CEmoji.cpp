@@ -18,6 +18,41 @@
 
 namespace s3d
 {
+	namespace
+	{
+		static Image RenderEmoji(const GlyphIndex emoji, const int32 size, SkFont& font)
+		{
+			if (emoji == InvalidGlyphIndex)
+			{
+				return{};
+			}
+
+			const SkGlyphID glyphIndex = static_cast<SkGlyphID>(emoji);
+
+			Image image{ size, Color{ 0, 0, 0, 0 } };
+			{
+				constexpr float ScalingFactor = (436.90667f / 512);
+				font.setSize(ScalingFactor * size);
+
+				auto canvas = SkCanvas::MakeRasterDirectN32(size, size, (uint32*)image.data(), static_cast<int32>(image.stride()));
+
+				SkFontMetrics metrics;
+				font.getMetrics(&metrics);
+				const SkScalar textWidth = font.measureText(&glyphIndex, sizeof(glyphIndex), SkTextEncoding::kGlyphID);
+				const auto blob = SkTextBlob::MakeFromText(&glyphIndex, sizeof(glyphIndex), font, SkTextEncoding::kGlyphID);
+				const SkScalar offsetX = ((size - textWidth) / 2);
+				const SkScalar offsetY = (size - metrics.fDescent);
+
+				canvas->drawTextBlob(blob.get(), offsetX, offsetY, SkPaint{});
+
+				SkPixmap map;
+				canvas->peekPixels(&map);
+			}
+
+			return image;
+		}
+	}
+
 	CEmoji::~CEmoji()
 	{
 		LOG_SCOPED_DEBUG("CEmoji::~CEmoji()");
@@ -94,7 +129,7 @@ namespace s3d
 		::hb_shape(m_hbFont, m_hbBuffer, nullptr, 0);
 
 		uint32 glyphCount;
-		hb_glyph_info_t* glyphInfo = ::hb_buffer_get_glyph_infos(m_hbBuffer, &glyphCount);
+		::hb_buffer_get_glyph_infos(m_hbBuffer, &glyphCount);
 
 		return (glyphCount == 1);
 	}
@@ -119,47 +154,26 @@ namespace s3d
 		return static_cast<GlyphIndex>(glyphInfo[0].codepoint);
 	}
 
-	Image CEmoji::renderEmoji(const StringView emoji, const int32 size)
-	{
-		return renderEmoji(getGlyphIndex(emoji), size);
-	}
-
 	Image CEmoji::renderEmoji(const GlyphIndex emoji, const int32 size)
 	{
-		if (emoji == InvalidGlyphIndex)
-		{
-			return{};
-		}
-
-		const SkGlyphID glyphIndex = static_cast<SkGlyphID>(emoji);
-
-		Image image{ size, Color{ 0, 0, 0, 0 } };
-		{
-			const float scalingFactor = (436.90667f / 512);
-			m_font.setSize(scalingFactor * size);
-
-			auto canvas = SkCanvas::MakeRasterDirectN32(size, size, (uint32*)image.data(), static_cast<int32>(image.stride()));
-
-			SkFontMetrics metrics;
-			m_font.getMetrics(&metrics);
-			const SkScalar textWidth = m_font.measureText(&glyphIndex, sizeof(glyphIndex), SkTextEncoding::kGlyphID);
-			//const SkScalar textHeight = (metrics.fDescent - metrics.fAscent);
-
-			const auto blob = SkTextBlob::MakeFromText(&glyphIndex, sizeof(glyphIndex), m_font, SkTextEncoding::kGlyphID);
-			const SkScalar offsetX = ((size - textWidth) / 2);
-			const SkScalar offsetY = (size - metrics.fDescent);
-
-			canvas->drawTextBlob(blob.get(), offsetX, offsetY, SkPaint{});
-
-			if (SkPixmap map;
-				canvas->peekPixels(&map))
-			{
-			#if SK_PMCOLOR_BYTE_ORDER(B,G,R,A)
+		Image image = RenderEmoji(emoji, size, m_font);
 				
-				image.bgraToRGBA();
-				
-			# endif
-			}
+	#if SK_PMCOLOR_BYTE_ORDER(B,G,R,A)
+
+		image.bgraToRGBA();
+
+	# endif
+
+		return image;
+	}
+
+	Image CEmoji::renderFilledEmoji(const GlyphIndex emoji, const int32 size)
+	{
+		Image image = RenderEmoji(emoji, size, m_font);
+
+		for (auto& pixel : image)
+		{
+			pixel.r = pixel.g = pixel.b = pixel.a;
 		}
 
 		return image;

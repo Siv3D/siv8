@@ -36,7 +36,7 @@ namespace s3d
 
 	Image Emoji::CreateImage(const StringView emoji, const int32 size)
 	{
-		return SIV3D_ENGINE(Emoji)->renderEmoji(emoji, size);
+		return SIV3D_ENGINE(Emoji)->renderEmoji(SIV3D_ENGINE(Emoji)->getGlyphIndex(emoji), size);
 	}
 
 	Image Emoji::CreateImageByGlyphIndex(const GlyphIndex glyphIndex, const int32 size)
@@ -44,24 +44,15 @@ namespace s3d
 		return SIV3D_ENGINE(Emoji)->renderEmoji(glyphIndex, size);
 	}
 
-	//Image Emoji::CreateSilhouetteImage(const StringView emoji)
-	//{
-	//	const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getEmojiGlyphIndex(emoji);
+	Image Emoji::CreateFilledImage(const StringView emoji, const int32 size)
+	{
+		return SIV3D_ENGINE(Emoji)->renderFilledEmoji(SIV3D_ENGINE(Emoji)->getGlyphIndex(emoji), size);
+	}
 
-	//	return CreateSilhouetteImageByGlyphIndex(glyphIndex);
-	//}
-
-	//Image Emoji::CreateSilhouetteImageByGlyphIndex(const GlyphIndex glyphIndex)
-	//{
-	//	Image image = CreateImageByGlyphIndex(glyphIndex);
-
-	//	for (auto& pixel : image)
-	//	{
-	//		pixel.setRGB(255, 255, 255);
-	//	}
-
-	//	return image;
-	//}
+	Image Emoji::CreateFilledImageByGlyphIndex(const GlyphIndex glyphIndex, const int32 size)
+	{
+		return SIV3D_ENGINE(Emoji)->renderFilledEmoji(glyphIndex, size);
+	}
 
 	inline namespace Literals
 	{

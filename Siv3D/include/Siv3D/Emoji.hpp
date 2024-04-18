@@ -54,11 +54,11 @@ namespace s3d
 		[[nodiscard]]
 		static Image CreateImageByGlyphIndex(GlyphIndex glyphIndex, int32 size = DefaultSize);
 
-		//[[nodiscard]]
-		//static Image CreateSilhouetteImage(StringView emoji, int32 size = DefaultSize);
+		[[nodiscard]]
+		static Image CreateFilledImage(StringView emoji, int32 size = DefaultSize);
 
-		//[[nodiscard]]
-		//static Image CreateSilhouetteImageByGlyphIndex(GlyphIndex glyphIndex, int32 size = DefaultSize);
+		[[nodiscard]]
+		static Image CreateFilledImageByGlyphIndex(GlyphIndex glyphIndex, int32 size = DefaultSize);
 	};
 
 	inline namespace Literals

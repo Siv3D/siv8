@@ -31,8 +31,8 @@ namespace s3d
 
 		virtual GlyphIndex getGlyphIndex(StringView emoji) const = 0;
 
-		virtual Image renderEmoji(StringView emoji, int32 size) = 0;
-
 		virtual Image renderEmoji(GlyphIndex emoji, int32 size) = 0;
+
+		virtual Image renderFilledEmoji(GlyphIndex emoji, int32 size) = 0;
 	};
 }
