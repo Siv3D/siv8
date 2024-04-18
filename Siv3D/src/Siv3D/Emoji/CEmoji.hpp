@@ -35,7 +35,11 @@ namespace s3d
 
 		bool hasEmoji(StringView emoji) const override;
 
+		GlyphIndex getGlyphIndex(StringView emoji) const override;
+
 		Image renderEmoji(StringView emoji, int32 size) override;
+
+		Image renderEmoji(GlyphIndex emoji, int32 size) override;
 
 	private:
 

@@ -1233,6 +1233,9 @@
 
 
 
+# include <Siv3D/GlyphIndex.hpp>
+
+
 
 # include <Siv3D/Emoji.hpp>
 

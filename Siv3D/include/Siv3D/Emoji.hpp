@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "String.hpp"
 # include "Image.hpp"
+# include "GlyphIndex.hpp"
 
 namespace s3d
 {
@@ -44,20 +45,20 @@ namespace s3d
 		[[nodiscard]]
 		static bool HasGlyph(StringView emoji);
 
-		//[[nodiscard]]
-		//static GlyphIndex GetGlyphIndex(StringView emoji);
+		[[nodiscard]]
+		static GlyphIndex GetGlyphIndex(StringView emoji);
 
 		[[nodiscard]]
 		static Image CreateImage(StringView emoji, int32 size = DefaultSize);
 
-		//[[nodiscard]]
-		//static Image CreateImageByGlyphIndex(GlyphIndex glyphIndex);
-
 		[[nodiscard]]
-		static Image CreateSilhouetteImage(StringView emoji);
+		static Image CreateImageByGlyphIndex(GlyphIndex glyphIndex, int32 size = DefaultSize);
 
 		//[[nodiscard]]
-		//static Image CreateSilhouetteImageByGlyphIndex(GlyphIndex glyphIndex);
+		//static Image CreateSilhouetteImage(StringView emoji, int32 size = DefaultSize);
+
+		//[[nodiscard]]
+		//static Image CreateSilhouetteImageByGlyphIndex(GlyphIndex glyphIndex, int32 size = DefaultSize);
 	};
 
 	inline namespace Literals

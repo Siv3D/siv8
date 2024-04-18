@@ -86,10 +86,20 @@ namespace s3d
 
 	bool CEmoji::hasEmoji(StringView emoji) const
 	{
-		return(false);
+		::hb_buffer_reset(m_hbBuffer);
+		::hb_buffer_add_utf32(m_hbBuffer,
+			reinterpret_cast<const uint32*>(emoji.data()),
+			static_cast<int32>(emoji.length()), 0, static_cast<int32>(emoji.length()));
+		::hb_buffer_guess_segment_properties(m_hbBuffer);
+		::hb_shape(m_hbFont, m_hbBuffer, nullptr, 0);
+
+		uint32 glyphCount;
+		hb_glyph_info_t* glyphInfo = ::hb_buffer_get_glyph_infos(m_hbBuffer, &glyphCount);
+
+		return (glyphCount == 1);
 	}
 
-	Image CEmoji::renderEmoji(const StringView emoji, const int32 size)
+	GlyphIndex CEmoji::getGlyphIndex(const StringView emoji) const
 	{
 		::hb_buffer_reset(m_hbBuffer);
 		::hb_buffer_add_utf32(m_hbBuffer,
@@ -103,10 +113,25 @@ namespace s3d
 
 		if (glyphCount != 1)
 		{
+			return InvalidGlyphIndex;
+		}
+
+		return static_cast<GlyphIndex>(glyphInfo[0].codepoint);
+	}
+
+	Image CEmoji::renderEmoji(const StringView emoji, const int32 size)
+	{
+		return renderEmoji(getGlyphIndex(emoji), size);
+	}
+
+	Image CEmoji::renderEmoji(const GlyphIndex emoji, const int32 size)
+	{
+		if (emoji == InvalidGlyphIndex)
+		{
 			return{};
 		}
 
-		const SkGlyphID glyphIndex = static_cast<SkGlyphID>(glyphInfo[0].codepoint);
+		const SkGlyphID glyphIndex = static_cast<SkGlyphID>(emoji);
 
 		Image image{ size, Color{ 0, 0, 0, 0 } };
 		{

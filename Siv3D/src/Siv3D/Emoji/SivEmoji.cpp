@@ -29,25 +29,20 @@ namespace s3d
 		return SIV3D_ENGINE(Emoji)->hasEmoji(emoji);
 	}
 
-	//GlyphIndex Emoji::GetGlyphIndex(const StringView emoji)
-	//{
-	//	return SIV3D_ENGINE(Font)->getEmojiGlyphIndex(emoji);
-	//}
+	GlyphIndex Emoji::GetGlyphIndex(const StringView emoji)
+	{
+		return SIV3D_ENGINE(Emoji)->getGlyphIndex(emoji);
+	}
 
 	Image Emoji::CreateImage(const StringView emoji, const int32 size)
 	{
 		return SIV3D_ENGINE(Emoji)->renderEmoji(emoji, size);
 	}
 
-	//Image Emoji::CreateImageByGlyphIndex(const GlyphIndex glyphIndex)
-	//{
-	//	if (glyphIndex == 0)
-	//	{
-	//		return{};
-	//	}
-
-	//	return SIV3D_ENGINE(Font)->renderEmojiBitmap(glyphIndex);
-	//}
+	Image Emoji::CreateImageByGlyphIndex(const GlyphIndex glyphIndex, const int32 size)
+	{
+		return SIV3D_ENGINE(Emoji)->renderEmoji(glyphIndex, size);
+	}
 
 	//Image Emoji::CreateSilhouetteImage(const StringView emoji)
 	//{

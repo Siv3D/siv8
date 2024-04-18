@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Image.hpp>
+# include <Siv3D/GlyphIndex.hpp>
 
 namespace s3d
 {
@@ -28,6 +29,10 @@ namespace s3d
 
 		virtual bool hasEmoji(StringView emoji) const = 0;
 
+		virtual GlyphIndex getGlyphIndex(StringView emoji) const = 0;
+
 		virtual Image renderEmoji(StringView emoji, int32 size) = 0;
+
+		virtual Image renderEmoji(GlyphIndex emoji, int32 size) = 0;
 	};
 }
