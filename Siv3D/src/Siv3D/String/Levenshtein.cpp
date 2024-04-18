@@ -12,18 +12,10 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Array.hpp>
+# include <Siv3D/SIMD.hpp>
 
-# if SIV3D_CPU(X86_64)
-# ifndef __SSE2__
-#   define __SSE2__ 1
-# endif
-# ifndef __SSSE3__
-#   define __SSSE3__ 1
-# endif
-# ifndef __SSE4_1__
-#   define __SSE4_1__ 1
-# endif
-# include <ThirdParty/levenshtein-sse/levenshtein-sse.hpp>
+# if SIV3D_INTRINSIC(SSE)
+#	include <ThirdParty/levenshtein-sse/levenshtein-sse.hpp>
 # endif
 
 namespace s3d
@@ -77,9 +69,9 @@ namespace s3d
 
 	String::size_type String::levenshteinDistanceFrom(const StringView other) const noexcept
 	{
-	# if SIV3D_CPU(X86_64)
+	# if SIV3D_INTRINSIC(SSE)
 
-		return levenshteinSSE::levenshtein(m_string, other.view());
+		return levenshteinSSE::levenshtein(m_string, other);
 
 	# else
 
