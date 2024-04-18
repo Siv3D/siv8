@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/ParseErrorReason.hpp>
+# include <Siv3D/ImageFormat.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FormatData.hpp>
 
@@ -18,13 +18,21 @@ namespace s3d
 {
 	namespace
 	{
-		static constexpr std::array ParseErrorReasonStrings =
+		static constexpr std::array ImageFormatStrings =
 		{
-			U"EmptyInput"_sv,
-			U"InvalidRadix"_sv,
-			U"InvalidFormat"_sv,
-			U"NumericOverflow"_sv,
-			U"InvalidValueForType"_sv,
+			U"Unknown"_sv,
+			U"DDS"_sv,
+			U"PNG"_sv,
+			U"JPEG"_sv,
+			U"JPEG2000"_sv,
+			U"JPEG_XL"_sv,
+			U"BMP"_sv,
+			U"WebP"_sv,
+			U"GIF"_sv,
+			U"TIFF"_sv,
+			U"TGA"_sv,
+			U"PPM"_sv,
+			U"SVG"_sv,
 		};
 	}
 
@@ -34,8 +42,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const ParseErrorReason value)
+	void Formatter(FormatData& formatData, const ImageFormat value)
 	{
-		formatData.string.append(ParseErrorReasonStrings[FromEnum(value)]);
+		formatData.string.append(ImageFormatStrings[FromEnum(value)]);
 	}
 }

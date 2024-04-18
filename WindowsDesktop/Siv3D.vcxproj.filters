@@ -616,6 +616,12 @@
     <Filter Include="src\Siv3D\EngineResource">
       <UniqueIdentifier>{547d980e-5de8-4fb4-930f-777b1ca436dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ImageFormat\TGA">
+      <UniqueIdentifier>{b54a25ae-3b7c-4ebb-87ee-39ab31da31f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ImagePixelFormat">
+      <UniqueIdentifier>{51e62a79-1e0c-4551-b908-19614a92ea8b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2619,6 +2625,27 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\EngineResource\IEngineResource.hpp">
       <Filter>src\Siv3D\EngineResource</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Circle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Line.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Triangle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Quad.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\TGAEncoder.hpp">
+      <Filter>include\Siv3D\ImageFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\TGADecoder.hpp">
+      <Filter>include\Siv3D\ImageFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ImageFormat\TGA\TGAHeader.hpp">
+      <Filter>src\Siv3D\ImageFormat\TGA</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4582,6 +4609,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\EngineResource\CEngineResource.cpp">
       <Filter>src\Siv3D\EngineResource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\TGA\TGADecoder.cpp">
+      <Filter>src\Siv3D\ImageFormat\TGA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\TGA\TGAEncoder.cpp">
+      <Filter>src\Siv3D\ImageFormat\TGA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\SivImageFormat.cpp">
+      <Filter>src\Siv3D\ImageFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImagePixelFormat\SivImagePixelFormat.cpp">
+      <Filter>src\Siv3D\ImagePixelFormat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -772,15 +772,15 @@
 //
 //// 3x3 行列 | 3x3 matrix
 //# include <Siv3D/Mat3x3.hpp>
-//
-//// 2D 図形コレクション | 2D shape collection
-//# include <Siv3D/2DShapes.hpp>
-//
+
+// 2D 図形コレクション | 2D shape collection
+# include <Siv3D/2DShapes.hpp> // ToDo
+
 //// 線のスタイル | Line style
 //# include <Siv3D/LineStyle.hpp>
-//
-//// 線分 | Line segment
-//# include <Siv3D/Line.hpp>
+
+// 線分 | Line segment
+# include <Siv3D/Line.hpp> // ToDo
 
 // 長方形 (int32) | Rectangle (int32)
 # include <Siv3D/Rect.hpp> // ToDo
@@ -788,18 +788,18 @@
 // 長方形 (double) | Rectangle (double)
 # include <Siv3D/RectF.hpp> // ToDo
 
-//// 円 | Circle
-//# include <Siv3D/Circle.hpp>
-//
+// 円 | Circle
+# include <Siv3D/Circle.hpp> // ToDo
+
 //// 楕円 | Ellipse
 //# include <Siv3D/Ellipse.hpp>
-//
-//// 三角形 | Triangle
-//# include <Siv3D/Triangle.hpp>
-//
-//// 凸四角形 | Convex quadrilateral
-//# include <Siv3D/Quad.hpp>
-//
+
+// 三角形 | Triangle
+# include <Siv3D/Triangle.hpp> // ToDo
+
+// 凸四角形 | Convex quadrilateral
+# include <Siv3D/Quad.hpp> // ToDo
+
 //// 角丸長方形 | Rounded rectangle
 //# include <Siv3D/RoundRect.hpp>
 //
@@ -1191,18 +1191,17 @@
 //
 //# include <Siv3D/ImageFormat/TIFFDecoder.hpp>
 ////# include <Siv3D/ImageFormat/TIFFEncoder.hpp>
-//
-//# include <Siv3D/ImageFormat/TGADecoder.hpp>
-//# include <Siv3D/ImageFormat/TGAEncoder.hpp>
-//
+
+// SVG 画像 | SVG image
+# include <Siv3D/SVG.hpp>
+# include <Siv3D/ImageFormat/SVGDecoder.hpp>
+
 //# include <Siv3D/PPMType.hpp>
 //# include <Siv3D/ImageFormat/PPMDecoder.hpp>
 //# include <Siv3D/ImageFormat/PPMEncoder.hpp>
 
-# include <Siv3D/ImageFormat/SVGDecoder.hpp>
-
-// SVG 画像 | SVG image
-# include <Siv3D/SVG.hpp> // ToDo
+# include <Siv3D/ImageFormat/TGADecoder.hpp>
+# include <Siv3D/ImageFormat/TGAEncoder.hpp>
 
 //// アニメーション　GIF の読み込み | Animated GIF reader
 //# include <Siv3D/AnimatedGIFReader.hpp>

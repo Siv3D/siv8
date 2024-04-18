@@ -10,13 +10,13 @@
 //-----------------------------------------------
 
 # pragma once
-//# include "Line.hpp"
+# include "Line.hpp"
 # include "Rect.hpp"
 # include "RectF.hpp"
-//# include "Circle.hpp"
+# include "Circle.hpp"
 //# include "Ellipse.hpp"
-//# include "Triangle.hpp"
-//# include "Quad.hpp"
+# include "Triangle.hpp"
+# include "Quad.hpp"
 //# include "RoundRect.hpp"
 //# include "Geometry2D.hpp"
 //# include "detail/Line.ipp"
