@@ -18,10 +18,12 @@
 #	include <harfbuzz/hb.h>
 #	include <harfbuzz/hb-ft.h>
 # endif
+SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4244)
 # include <ThirdParty/skia/include/core/SkFont.h>
 # include <ThirdParty/skia/include/core/SkStream.h>
 # include <ThirdParty/skia/include/core/SkBitmap.h>
 # include <ThirdParty/skia/src/ports/SkTypeface_FreeType.h>
+SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
 {
