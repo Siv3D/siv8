@@ -596,6 +596,13 @@ MIT_LICENSE
 },
 
 {
+R"-(muparser)-",
+R"-(Copyright 2020 Ingo Berg
+All rights reserved.)-",
+BSD_2_LICENSE
+},
+
+{
 R"-(nanobench)-",
 R"-(Copyright (c) 2019-2023 Martin Leitner-Ankerl)-",
 MIT_LICENSE

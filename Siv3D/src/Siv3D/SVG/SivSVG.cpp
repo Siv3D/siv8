@@ -11,7 +11,7 @@
 
 # include <Siv3D/SVG.hpp>
 # include <Siv3D/BinaryReader.hpp>
-# include <Siv3D/SVG/SVGDetail.hpp>
+# include "SVGDetail.hpp"
 
 namespace s3d
 {

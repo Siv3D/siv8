@@ -213,6 +213,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MappedMemoryView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MatchResults.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Math.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MathParser.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MD5Value.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFile.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryMappedFileView.hpp" />
@@ -385,6 +386,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\ILicenseManager.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseList.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
@@ -585,6 +587,17 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\symbolelement.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\useelement.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\miniutf\miniutf.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParser.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserBase.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserBytecode.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserCallback.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserDef.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserError.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserFixes.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserInt.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserTemplateMagic.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserToken.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\muparser\muParserTokenReader.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\config.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\oniggnu.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\oniguruma.h" />
@@ -797,6 +810,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\LoggerBuffer\SivLoggerBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\LoggerFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\SivLogger.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MathParser\SivMathParser.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MD5Value\SivMD5Value.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFileView\SivMemoryMappedFileView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFile\SivMemoryMappedFile.cpp" />
@@ -896,6 +911,13 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgelement.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\symbolelement.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\useelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\muparser\muParser.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\muparser\muParserBase.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\muparser\muParserBytecode.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\muparser\muParserCallback.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\muparser\muParserError.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\muparser\muParserInt.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\muparser\muParserTokenReader.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\Oniguruma\ascii.c">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
@@ -2940,7 +2962,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -2965,7 +2987,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
