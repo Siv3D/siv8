@@ -29,7 +29,7 @@ namespace s3d
 		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
 	INI::INI(Reader&& reader)
 	{
-		return load(std::make_unique<Reader>(std::move(reader)));
+		load(std::make_unique<Reader>(std::move(reader)));
 	}
 
 	////////////////////////////////////////////////////////////////

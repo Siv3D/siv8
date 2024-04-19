@@ -18,10 +18,12 @@ namespace s3d
 	class ISiv3DLicenseManager;
 	class ISiv3DLogger;
 	class ISiv3DSystem;
+	class ISiv3DEngineResource;
 	class ISiv3DUserAction;
 	class ISiv3DWindow;
 	class ISiv3DImageDecoder;
 	class ISiv3DImageEncoder;
+	class ISiv3DEmoji;
 	class ISiv3DConsole;
 
 	class Siv3DEngine
@@ -34,10 +36,12 @@ namespace s3d
 			Siv3DComponent<ISiv3DLicenseManager>,
 			Siv3DComponent<ISiv3DLogger>,
 			Siv3DComponent<ISiv3DSystem>,
+			Siv3DComponent<ISiv3DEngineResource>,
 			Siv3DComponent<ISiv3DUserAction>,
 			Siv3DComponent<ISiv3DWindow>,
 			Siv3DComponent<ISiv3DImageDecoder>,
 			Siv3DComponent<ISiv3DImageEncoder>,
+			Siv3DComponent<ISiv3DEmoji>,
 			Siv3DComponent<ISiv3DConsole>> m_components;
 
 	public:

@@ -17,6 +17,7 @@ namespace s3d
 	using Size		= Point;
 	
 	struct Point3D;
+	using Size3D	= Point3D;
 	
 	template <class Type> struct Vector2D;
 	using Float2	= Vector2D<float>;
@@ -26,6 +27,7 @@ namespace s3d
 	template <class Type> struct Vector3D;
 	using Float3	= Vector3D<float>;
 	using Vec3		= Vector3D<double>;	
+	using Size3DF	= Vec3;
 	
 	template <class Type> struct Vector4D;
 	using Float4	= Vector4D<float>;

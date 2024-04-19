@@ -71,12 +71,12 @@ namespace s3d
 		return ImageInfo{ size, ImageFormat::BMP, pixelFormat, false };
 	}
 
-	Image BMPDecoder::decode(const FilePathView path) const
+	Image BMPDecoder::decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha) const
 	{
-		return IImageDecoder::decode(path);
+		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image BMPDecoder::decode(IReader& reader, const FilePathView) const
+	Image BMPDecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("BMPDecoder::decode()");
 

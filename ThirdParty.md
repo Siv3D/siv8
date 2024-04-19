@@ -14,17 +14,23 @@ Name | Version
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
 [fast_float](https://github.com/fastfloat/fast_float) | Version 6.1.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
+[FreeType](https://www.freetype.org/) | 2.13.2
 [GLFW](https://github.com/glfw/glfw) | 3.4
+[HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 8.3.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
+[lunasvg](https://github.com/sammycage/lunasvg) | v2.3.9
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
+[muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
+[Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
-[simde](https://github.com/nemequ/simde) | v0.8.0
+[plutovg](https://github.com/sammycage/plutovg) | 
 [simdutf](https://github.com/simdutf/simdutf) | Version 5.2.2
+[skia](https://github.com/google/skia) |
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 

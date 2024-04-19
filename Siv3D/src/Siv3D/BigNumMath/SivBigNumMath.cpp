@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/BigNumMath.hpp>
+# include <Siv3D/Math.hpp>
 # include <Siv3D/BigInt.hpp>
 # include <Siv3D/BigFloat.hpp>
 # include <Siv3D/BigInt/BigIntDetail.hpp>
@@ -19,336 +19,684 @@ namespace s3d
 {
 	namespace Math
 	{
-		BigFloat Fmod(const BigFloat& x, const BigFloat& y)
+		namespace detail
 		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::fmod(x._detail().value, y._detail().value);
-			return result;
-		}
-
-		BigFloat Fraction(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = (x._detail().value - boost::multiprecision::floor(x._detail().value));
-			return result;
-		}
-
-		BigFloat Frexp(const BigFloat& x, int32& exp)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::frexp(x._detail().value, &exp);
-			return result;
-		}
-
-		BigFloat Ldexp(const BigFloat& x, const BigFloat& y)
-		{
-			BigFloat result;
-			result._detail().value = (x._detail().value * boost::multiprecision::pow(2, y._detail().value));
-			return result;
-		}
-
-		BigFloat Log(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::log(x._detail().value);
-			return result;
-		}
-
-		BigFloat Log2(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::log2(x._detail().value);
-			return result;
-		}
-
-		BigFloat Log10(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::log10(x._detail().value);
-			return result;
-		}
-
-		BigFloat Modf(const BigFloat& x, BigFloat& exp)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::modf(x._detail().value, &exp._detail().value);
-			return result;
-		}
-
-		BigInt Pow(const BigInt& x, const uint32 y)
-		{
-			BigInt result;
-			result._detail().value = boost::multiprecision::pow(x._detail().value, y);
-			return result;
-		}
-
-		BigFloat Pow(const BigFloat& x, const BigFloat& y)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::pow(x._detail().value, y._detail().value);
-			return result;
-		}
-
-		int32 Sign(const BigInt& x)
-		{
-			const int32 c = x.compare(0);
-
-			if (c < 0)
+			namespace
 			{
-				return -1;
+				static const auto cRad = (boost::math::constants::pi<boost::multiprecision::cpp_dec_float_100>() / 180);
+
+				static const auto cDeg = (180 / boost::math::constants::pi<boost::multiprecision::cpp_dec_float_100>());
 			}
-			else if (0 < c)
+
+			//////////////////////////////////////////////////
+			//
+			//	Fmod_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Fmod_impl::operator ()(const BigFloat& x, const BigFloat& y) const
 			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::fmod(x._detail().value, y._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Fraction_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Fraction_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = (x._detail().value - boost::multiprecision::floor(x._detail().value));
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Frexp_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Frexp_impl::operator ()(const BigFloat& x, int32& exp) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::frexp(x._detail().value, &exp);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Ldexp_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Ldexp_impl::operator ()(const BigFloat& x, const BigFloat& exp) const
+			{
+				BigFloat result;
+				result._detail().value = (x._detail().value * boost::multiprecision::exp2(exp._detail().value));
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Log_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Log_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::log(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Log2_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Log2_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::log2(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Log10_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Log10_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::log10(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Modf_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Modf_impl::operator ()(const BigFloat& x, BigFloat& ip) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::modf(x._detail().value, &ip._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Pow_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigInt Pow_impl::operator ()(const BigInt& x, const uint32 exp) const
+			{
+				BigInt result;
+				result._detail().value = boost::multiprecision::pow(x._detail().value, exp);
+				return result;
+			}
+
+			BigFloat Pow_impl::operator ()(const BigFloat& x, const BigFloat& exp) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::pow(x._detail().value, exp._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Sign_impl
+			//
+			//////////////////////////////////////////////////
+
+			int32 Sign_impl::operator ()(const BigInt& x) const
+			{
+				return x._detail().value.sign();
+			}
+
+			int32 Sign_impl::operator ()(const BigFloat& x) const
+			{
+				return x._detail().value.sign();
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	ToRadians_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat ToRadians_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat ToRadians_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = (x._detail().value * cRad);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	ToDegrees_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat ToDegrees_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat ToDegrees_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = (x._detail().value * cDeg);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Abs_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigInt Abs_impl::operator ()(const BigInt& x) const
+			{
+				return x.abs();
+			}
+
+			BigFloat Abs_impl::operator ()(const BigFloat& x) const
+			{
+				return x.abs();
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	AbsDiff_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigInt AbsDiff_impl::operator ()(const BigInt& x, const BigInt& y) const
+			{
+				return (x - y).abs();
+			}
+
+			BigFloat AbsDiff_impl::operator ()(const BigFloat& x, const BigFloat& y) const
+			{
+				return (x - y).abs();
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Square_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigInt Square_impl::operator ()(const BigInt& x) const
+			{
+				return (x * x);
+			}
+
+			BigFloat Square_impl::operator ()(const BigFloat& x) const
+			{
+				return (x * x);
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Exp_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Exp_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Exp_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::exp(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Exp2_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Exp2_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Exp2_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::exp2(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Rsqrt_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Rsqrt_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Rsqrt_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = (1 / boost::multiprecision::sqrt(x._detail().value));
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Sqrt_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Sqrt_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Sqrt_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::sqrt(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Ceil_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Ceil_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::ceil(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Floor_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Floor_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::floor(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Round_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Round_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::round(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Trunc_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Trunc_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::trunc(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Max_impl
+			//
+			//////////////////////////////////////////////////
+
+			const BigInt& Max_impl::operator ()(const BigInt& x, const BigInt& y) const
+			{
+				return std::max(x, y);
+			}
+
+			const BigFloat& Max_impl::operator ()(const BigFloat& x, const BigFloat& y) const
+			{
+				return std::max(x, y);
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Min_impl
+			//
+			//////////////////////////////////////////////////
+
+			const BigInt& Min_impl::operator ()(const BigInt& x, const BigInt& y) const
+			{
+				return std::min(x, y);
+			}
+
+			const BigFloat& Min_impl::operator ()(const BigFloat& x, const BigFloat& y) const
+			{
+				return std::min(x, y);
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Clamp_impl
+			//
+			//////////////////////////////////////////////////
+
+			const BigInt& Clamp_impl::operator ()(const BigInt& x, const BigInt& min, const BigInt& max) const
+			{
+				return s3d::Clamp(x, min, max);
+			}
+
+			const BigFloat& Clamp_impl::operator ()(const BigFloat& x, const BigFloat& min, const BigFloat& max) const
+			{
+				return s3d::Clamp(x, min, max);
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Saturate_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Saturate_impl::operator ()(const BigFloat& x) const
+			{
+				if (1 < x)
+				{
+					return 1;
+				}
+				else if (x < 0)
+				{
+					return 0;
+				}
+
+				return x;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Acos_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Acos_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Acos_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::acos(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Asin_impl
+			//
+			//////////////////////////////////////////////////
+			
+			BigFloat Asin_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Asin_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::asin(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Atan_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Atan_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Atan_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::atan(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Atan2_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Atan2_impl::operator ()(const BigInt& y, const BigInt& x) const
+			{
+				return operator()(BigFloat{ y }, BigFloat{ x });
+			}
+
+			BigFloat Atan2_impl::operator ()(const BigFloat& y, const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::atan2(y._detail().value, x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Cos_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Cos_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Cos_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::cos(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Cosh_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Cosh_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Cosh_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::cosh(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Sin_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Sin_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Sin_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::sin(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Sinh_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Sinh_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Sinh_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::sinh(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Tan_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Tan_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Tan_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::tan(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Tanh_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Tanh_impl::operator ()(const BigInt& x) const
+			{
+				return operator()(BigFloat{ x });
+			}
+
+			BigFloat Tanh_impl::operator ()(const BigFloat& x) const
+			{
+				BigFloat result;
+				result._detail().value = boost::multiprecision::tanh(x._detail().value);
+				return result;
+			}
+
+			//////////////////////////////////////////////////
+			//
+			//	Normalize_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Normalize_impl::operator ()(const BigFloat& x) const
+			{
+				if (x.isZero())
+				{
+					return 0;
+				}
+
 				return 1;
 			}
-			else
+
+			//////////////////////////////////////////////////
+			//
+			//	Smoothstep_impl
+			//
+			//////////////////////////////////////////////////
+
+			BigFloat Smoothstep_impl::operator ()(const BigFloat& min, const BigFloat& max, const BigFloat& t) const
 			{
-				return 0;
-			}
-		}
+				if (t <= min)
+				{
+					return 0;
+				}
+				else if (max <= t)
+				{
+					return 1;
+				}
 
-		int32 Sign(const BigFloat& x)
-		{
-			const int32 c = x.compare(0);
+				const BigFloat _t = ((t - min) / (max - min));
 
-			if (c < 0)
-			{
-				return -1;
-			}
-			else if (0 < c)
-			{
-				return 1;
-			}
-			else
-			{
-				return 0;
-			}
-		}
-
-		BigFloat ToRadians(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = (x._detail().value * (boost::math::constants::pi<boost::multiprecision::cpp_dec_float_100>() / 180));
-			return result;
-		}
-
-		BigFloat ToDegrees(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = (x._detail().value * (180 / boost::math::constants::pi<boost::multiprecision::cpp_dec_float_100>()));
-			return result;
-		}
-
-		BigFloat Abs(const BigInt& x)
-		{
-			return x.abs();
-		}
-
-		BigFloat Abs(const BigFloat& x)
-		{
-			return x.abs();
-		}
-
-		BigFloat AbsDiff(const BigFloat& x, const BigFloat& y)
-		{
-			return (x - y).abs();
-		}
-
-		BigFloat Square(const BigInt& x)
-		{
-			return (x * x);
-		}
-
-		BigFloat Square(const BigFloat& x)
-		{
-			return (x * x);
-		}
-
-		BigFloat Exp(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::exp(x._detail().value);
-			return result;
-		}
-
-		BigFloat Exp2(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::exp2(x._detail().value);
-			return result;
-		}
-
-		BigFloat Rsqrt(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = (1 / boost::multiprecision::sqrt(x._detail().value));
-			return result;
-		}
-
-		BigFloat Sqrt(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::sqrt(x._detail().value);
-			return result;
-		}
-
-		BigFloat Ceil(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::ceil(x._detail().value);
-			return result;
-		}
-
-		BigFloat Floor(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::floor(x._detail().value);
-			return result;
-		}
-
-		BigFloat Round(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::round(x._detail().value);
-			return result;
-		}
-
-		BigFloat Clamp(const BigFloat& x, const BigFloat& min, const BigFloat& max)
-		{
-			if (max < x)
-			{
-				return max;
-			}
-			else if (x < min)
-			{
-				return min;
+				return (_t * _t * (3 - 2 * _t));
 			}
 
-			return x;
-		}
-
-		BigFloat Saturate(const BigFloat& x)
-		{
-			if (1 < x)
+			BigFloat Smoothstep_impl::operator ()(const BigFloat& x) const
 			{
-				return 1;
-			}
-			else if (x < 0)
-			{
-				return 0;
-			}
+				if (x <= 0)
+				{
+					return 0;
+				}
+				else if (1 <= x)
+				{
+					return 1;
+				}
 
-			return x;
-		}
-
-		BigFloat Acos(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::acos(x._detail().value);
-			return result;
-		}
-
-		BigFloat Asin(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::asin(x._detail().value);
-			return result;
-		}
-
-		BigFloat Atan(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::atan(x._detail().value);
-			return result;
-		}
-
-		BigFloat Atan2(const BigFloat& y, const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::atan2(y._detail().value, x._detail().value);
-			return result;
-		}
-
-		BigFloat Cos(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::cos(x._detail().value);
-			return result;
-		}
-
-		BigFloat Cosh(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::cosh(x._detail().value);
-			return result;
-		}
-
-		BigFloat Sin(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::sin(x._detail().value);
-			return result;
-		}
-
-		BigFloat Sinh(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::sinh(x._detail().value);
-			return result;
-		}
-
-		BigFloat Tan(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::tan(x._detail().value);
-			return result;
-		}
-
-		BigFloat Tanh(const BigFloat& x)
-		{
-			BigFloat result;
-			result._detail().value = boost::multiprecision::tanh(x._detail().value);
-			return result;
-		}
-
-		BigFloat Normalize(const BigFloat& x)
-		{
-			if (x.isZero())
-			{
-				return 0;
+				return (x * x * (3 - 2 * x));
 			}
 
-			return 1;
-		}
-
-		BigFloat Smoothstep(const BigFloat& min, const BigFloat& max, const BigFloat& x)
-		{
-			if (x <= min)
+			//////////////////////////////////////////////////
+			//
+			//	GCD_impl
+			//
+			//////////////////////////////////////////////////
+			
+			BigInt GCD_impl::operator ()(const BigInt& a, const BigInt& b) const
 			{
-				return 0;
-			}
-			else if (max <= x)
-			{
-				return 1;
+				return a.gcd(b);
 			}
 
-			const BigFloat t = ((x - min) / (max - min));
-
-			return (t * t * (3 - 2 * t));
-		}
-
-		BigFloat Smoothstep(const BigFloat& x)
-		{
-			if (x <= 0)
+			//////////////////////////////////////////////////
+			//
+			//	LCM_impl
+			//
+			//////////////////////////////////////////////////
+			
+			BigInt LCM_impl::operator ()(const BigInt& a, const BigInt& b) const
 			{
-				return 0;
+				return a.lcm(b);
 			}
-			else if (1 <= x)
-			{
-				return 1;
-			}
-
-			return (x * x * (3 - 2 * x));
 		}
 	}
 }

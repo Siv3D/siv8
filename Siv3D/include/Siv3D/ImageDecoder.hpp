@@ -45,17 +45,19 @@ namespace s3d
 
 		/// @brief 画像ファイルをデコードします。
 		/// @param path 画像ファイルのパス
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @param imageFormat 画像フォーマット、指定しない場合はファイルの拡張子から判断
 		/// @return デコードされた画像、デコードに失敗した場合は空の画像
 		[[nodiscard]]
-		Image Decode(FilePathView path, ImageFormat imageFormat = ImageFormat::Unspecified);
+		Image Decode(FilePathView path, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat = ImageFormat::Unspecified);
 
 		/// @brief 画像ファイルをデコードします。
 		/// @param reader 画像ファイルをさす IReader
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @param imageFormat 画像フォーマット、指定しない場合はファイルの拡張子から判断
 		/// @return デコードされた画像、デコードに失敗した場合は空の画像
 		[[nodiscard]]
-		Image Decode(IReader& reader, ImageFormat imageFormat = ImageFormat::Unspecified);
+		Image Decode(IReader& reader, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat = ImageFormat::Unspecified);
 	
 		////////////////////////////////////////////////////////////////
 		//

@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/TextReader.hpp>
-# include <Siv3D/TextReader/TextReaderDetail.hpp>
+# include "TextReaderDetail.hpp"
 
 namespace s3d
 {

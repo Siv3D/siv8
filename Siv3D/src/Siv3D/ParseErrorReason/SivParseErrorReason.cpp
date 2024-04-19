@@ -34,7 +34,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, ParseErrorReason value)
+	void Formatter(FormatData& formatData, const ParseErrorReason value)
 	{
 		formatData.string.append(ParseErrorReasonStrings[FromEnum(value)]);
 	}

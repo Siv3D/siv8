@@ -323,7 +323,7 @@ TEST_CASE("Compression")
 
 # endif
 
-# if SIV3D_RUN_BENCHMARK
+# if SIV3D_RUN_BENCHMARK && SIV3D_RUN_HEAVY_TEST
 
 TEST_CASE("Compression.Benchmark")
 {

@@ -17,6 +17,7 @@
 # include "Image.hpp"
 # include "Optional.hpp"
 # include "Grid.hpp"
+# include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
@@ -111,16 +112,18 @@ namespace s3d
 
 		/// @brief 画像ファイルをデコードします。
 		/// @param path 画像ファイルのパス
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @return デコードされた画像
 		[[nodiscard]]
-		virtual Image decode(FilePathView path) const;
+		virtual Image decode(FilePathView path, PremultiplyAlpha premultiplyAlpha) const;
 
 		/// @brief 画像ファイルをデコードします。
 		/// @param reader IReader
 		/// @param pathHint 画像ファイルのパス（わかる場合）
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @return デコードされた画像
 		[[nodiscard]]
-		virtual Image decode(IReader& reader, FilePathView pathHint) const = 0;
+		virtual Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//

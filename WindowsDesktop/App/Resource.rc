@@ -94,13 +94,13 @@ Resource("engine/texture/box-shadow/8.png")
 //Resource(engine/font/mplus/mplus-1p-black.ttf.zstdcmp)
 //Resource(engine/font/noto-cjk/NotoSansCJK-Regular.ttc.zstdcmp)
 ////Resource(engine/font/noto-cjk/NotoSansJP-Regular.otf.zstdcmp)
+
 //
-////
-////	Emoji Fonts
-////
-//Resource(engine/font/noto-emoji/NotoColorEmoji.ttf.zstdcmp)
+//	Emoji Fonts
+//
+Resource("engine/font/noto-emoji/Noto-COLRv1.ttf.zstdcmp")
 //Resource(engine/font/noto-emoji/NotoEmoji-Regular.ttf.zstdcmp)
-//
+
 ////
 ////	Icons
 ////

@@ -114,12 +114,12 @@ namespace s3d
 		return none;
 	}
 
-	Image JPEGDecoder::decode(const FilePathView path) const
+	Image JPEGDecoder::decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha) const
 	{
-		return IImageDecoder::decode(path);
+		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image JPEGDecoder::decode(IReader& reader, const FilePathView) const
+	Image JPEGDecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("JPEGDecoder::decode()");
 

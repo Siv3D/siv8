@@ -77,22 +77,22 @@ namespace s3d
 
 			inline constexpr double operator ""_deg(const long double deg) noexcept
 			{
-				return static_cast<double>(deg * Math::Pi_v<long double> / 180);
+				return static_cast<double>(deg * (Math::Pi_v<long double> / 180));
 			}
 
 			inline constexpr double operator ""_deg(const unsigned long long deg) noexcept
 			{
-				return static_cast<double>(deg * Math::Pi_v<long double> / 180);
+				return static_cast<double>(deg * (Math::Pi_v<long double> / 180));
 			}
 
 			inline constexpr float operator ""_degF(const long double deg) noexcept
 			{
-				return static_cast<float>(deg * Math::Pi_v<long double> / 180);
+				return static_cast<float>(deg * (Math::Pi_v<long double> / 180));
 			}
 
 			inline constexpr float operator ""_degF(const unsigned long long deg) noexcept
 			{
-				return static_cast<float>(deg * Math::Pi_v<long double> / 180);
+				return static_cast<float>(deg * (Math::Pi_v<long double> / 180));
 			}
 		}
 	}

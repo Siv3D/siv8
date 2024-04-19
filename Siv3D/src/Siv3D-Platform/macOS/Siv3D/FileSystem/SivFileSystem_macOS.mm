@@ -98,10 +98,10 @@ namespace s3d
 					NSPicturesDirectory,
 					NSMusicDirectory,
 					NSMoviesDirectory,
-					NSLibraryDirectory, // (dummy)
-					NSLibraryDirectory, // (dummy)
-					NSLibraryDirectory, // (dummy)
-					NSLibraryDirectory, // (dummy)
+					NSLibraryDirectory, // (placeholder)
+					NSLibraryDirectory, // (placeholder)
+					NSLibraryDirectory, // (placeholder)
+					NSLibraryDirectory, // (placeholder)
 					NSApplicationDirectory,
 					NSDownloadsDirectory,
 				};
