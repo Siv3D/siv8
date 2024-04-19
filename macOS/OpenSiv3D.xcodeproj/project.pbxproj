@@ -1616,6 +1616,28 @@
 		F98605382BD1049D006A4C0F /* TGAEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605342BD1049D006A4C0F /* TGAEncoder.cpp */; };
 		F98605392BD1049D006A4C0F /* TGAHeader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605352BD1049D006A4C0F /* TGAHeader.hpp */; };
 		F986053C2BD104B4006A4C0F /* SivImagePixelFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986053A2BD104B4006A4C0F /* SivImagePixelFormat.cpp */; };
+		F986053E2BD2039F006A4C0F /* MathParser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986053D2BD2039F006A4C0F /* MathParser.hpp */; };
+		F98605432BD203BC006A4C0F /* MathParserDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986053F2BD203BC006A4C0F /* MathParserDetail.cpp */; };
+		F98605442BD203BC006A4C0F /* MathParserDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605402BD203BC006A4C0F /* MathParserDetail.hpp */; };
+		F98605452BD203BC006A4C0F /* SivMathParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605412BD203BC006A4C0F /* SivMathParser.cpp */; };
+		F98605592BD203D4006A4C0F /* muParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605462BD203D4006A4C0F /* muParser.cpp */; };
+		F986055A2BD203D4006A4C0F /* muParser.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605472BD203D4006A4C0F /* muParser.h */; };
+		F986055B2BD203D4006A4C0F /* muParserBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605482BD203D4006A4C0F /* muParserBase.cpp */; };
+		F986055C2BD203D4006A4C0F /* muParserBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605492BD203D4006A4C0F /* muParserBase.h */; };
+		F986055D2BD203D4006A4C0F /* muParserBytecode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986054A2BD203D4006A4C0F /* muParserBytecode.cpp */; };
+		F986055E2BD203D4006A4C0F /* muParserBytecode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986054B2BD203D4006A4C0F /* muParserBytecode.h */; };
+		F986055F2BD203D4006A4C0F /* muParserCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986054C2BD203D4006A4C0F /* muParserCallback.cpp */; };
+		F98605602BD203D4006A4C0F /* muParserCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = F986054D2BD203D4006A4C0F /* muParserCallback.h */; };
+		F98605612BD203D4006A4C0F /* muParserDef.h in Headers */ = {isa = PBXBuildFile; fileRef = F986054E2BD203D4006A4C0F /* muParserDef.h */; };
+		F98605622BD203D4006A4C0F /* muParserError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986054F2BD203D4006A4C0F /* muParserError.cpp */; };
+		F98605632BD203D4006A4C0F /* muParserError.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605502BD203D4006A4C0F /* muParserError.h */; };
+		F98605642BD203D4006A4C0F /* muParserFixes.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605512BD203D4006A4C0F /* muParserFixes.h */; };
+		F98605652BD203D4006A4C0F /* muParserInt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605522BD203D4006A4C0F /* muParserInt.cpp */; };
+		F98605662BD203D4006A4C0F /* muParserInt.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605532BD203D4006A4C0F /* muParserInt.h */; };
+		F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605542BD203D4006A4C0F /* muParserTemplateMagic.h */; };
+		F98605682BD203D4006A4C0F /* muParserToken.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605552BD203D4006A4C0F /* muParserToken.h */; };
+		F98605692BD203D4006A4C0F /* muParserTokenReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605562BD203D4006A4C0F /* muParserTokenReader.cpp */; };
+		F986056A2BD203D4006A4C0F /* muParserTokenReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605572BD203D4006A4C0F /* muParserTokenReader.h */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2639,6 +2661,28 @@
 		F98605342BD1049D006A4C0F /* TGAEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TGAEncoder.cpp; sourceTree = "<group>"; };
 		F98605352BD1049D006A4C0F /* TGAHeader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TGAHeader.hpp; sourceTree = "<group>"; };
 		F986053A2BD104B4006A4C0F /* SivImagePixelFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImagePixelFormat.cpp; sourceTree = "<group>"; };
+		F986053D2BD2039F006A4C0F /* MathParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MathParser.hpp; sourceTree = "<group>"; };
+		F986053F2BD203BC006A4C0F /* MathParserDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathParserDetail.cpp; sourceTree = "<group>"; };
+		F98605402BD203BC006A4C0F /* MathParserDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MathParserDetail.hpp; sourceTree = "<group>"; };
+		F98605412BD203BC006A4C0F /* SivMathParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMathParser.cpp; sourceTree = "<group>"; };
+		F98605462BD203D4006A4C0F /* muParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = muParser.cpp; sourceTree = "<group>"; };
+		F98605472BD203D4006A4C0F /* muParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParser.h; sourceTree = "<group>"; };
+		F98605482BD203D4006A4C0F /* muParserBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = muParserBase.cpp; sourceTree = "<group>"; };
+		F98605492BD203D4006A4C0F /* muParserBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserBase.h; sourceTree = "<group>"; };
+		F986054A2BD203D4006A4C0F /* muParserBytecode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = muParserBytecode.cpp; sourceTree = "<group>"; };
+		F986054B2BD203D4006A4C0F /* muParserBytecode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserBytecode.h; sourceTree = "<group>"; };
+		F986054C2BD203D4006A4C0F /* muParserCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = muParserCallback.cpp; sourceTree = "<group>"; };
+		F986054D2BD203D4006A4C0F /* muParserCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserCallback.h; sourceTree = "<group>"; };
+		F986054E2BD203D4006A4C0F /* muParserDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserDef.h; sourceTree = "<group>"; };
+		F986054F2BD203D4006A4C0F /* muParserError.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = muParserError.cpp; sourceTree = "<group>"; };
+		F98605502BD203D4006A4C0F /* muParserError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserError.h; sourceTree = "<group>"; };
+		F98605512BD203D4006A4C0F /* muParserFixes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserFixes.h; sourceTree = "<group>"; };
+		F98605522BD203D4006A4C0F /* muParserInt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = muParserInt.cpp; sourceTree = "<group>"; };
+		F98605532BD203D4006A4C0F /* muParserInt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserInt.h; sourceTree = "<group>"; };
+		F98605542BD203D4006A4C0F /* muParserTemplateMagic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserTemplateMagic.h; sourceTree = "<group>"; };
+		F98605552BD203D4006A4C0F /* muParserToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserToken.h; sourceTree = "<group>"; };
+		F98605562BD203D4006A4C0F /* muParserTokenReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = muParserTokenReader.cpp; sourceTree = "<group>"; };
+		F98605572BD203D4006A4C0F /* muParserTokenReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserTokenReader.h; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -4398,6 +4442,7 @@
 				F9070A712B9DEB5900383E4D /* levenshtein-sse */,
 				F986F98C2BCA9D0A006A4C0F /* lunasvg */,
 				F9070A732B9DEB5900383E4D /* miniutf */,
+				F98605582BD203D4006A4C0F /* muparser */,
 				F986F8FC2BC8441F006A4C0F /* Oniguruma */,
 				F986F9622BCA9D0A006A4C0F /* plutovg */,
 				F9070A752B9DEB5900383E4D /* RFC1321 */,
@@ -4676,6 +4721,7 @@
 				F986F8B42BC843CF006A4C0F /* MatchResults.hpp */,
 				F986F9412BCA79B4006A4C0F /* Math.hpp */,
 				F9070C002B9F175000383E4D /* MathConstants.hpp */,
+				F986053D2BD2039F006A4C0F /* MathParser.hpp */,
 				F9070C012B9F175000383E4D /* MD5Value.hpp */,
 				F9070C022B9F175000383E4D /* Memory.hpp */,
 				F9528B272BAFCDB400222F45 /* MemoryMappedFile.hpp */,
@@ -5358,6 +5404,7 @@
 				F9528B762BB708A700222F45 /* LicenseManager */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
+				F98605422BD203BC006A4C0F /* MathParser */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
 				F9528C4B2BBFEC2400222F45 /* MemoryMappedFile */,
 				F9528B2F2BB0562C00222F45 /* MemoryMappedFileView */,
@@ -5998,6 +6045,41 @@
 				F986053A2BD104B4006A4C0F /* SivImagePixelFormat.cpp */,
 			);
 			path = ImagePixelFormat;
+			sourceTree = "<group>";
+		};
+		F98605422BD203BC006A4C0F /* MathParser */ = {
+			isa = PBXGroup;
+			children = (
+				F986053F2BD203BC006A4C0F /* MathParserDetail.cpp */,
+				F98605402BD203BC006A4C0F /* MathParserDetail.hpp */,
+				F98605412BD203BC006A4C0F /* SivMathParser.cpp */,
+			);
+			path = MathParser;
+			sourceTree = "<group>";
+		};
+		F98605582BD203D4006A4C0F /* muparser */ = {
+			isa = PBXGroup;
+			children = (
+				F98605462BD203D4006A4C0F /* muParser.cpp */,
+				F98605472BD203D4006A4C0F /* muParser.h */,
+				F98605482BD203D4006A4C0F /* muParserBase.cpp */,
+				F98605492BD203D4006A4C0F /* muParserBase.h */,
+				F986054A2BD203D4006A4C0F /* muParserBytecode.cpp */,
+				F986054B2BD203D4006A4C0F /* muParserBytecode.h */,
+				F986054C2BD203D4006A4C0F /* muParserCallback.cpp */,
+				F986054D2BD203D4006A4C0F /* muParserCallback.h */,
+				F986054E2BD203D4006A4C0F /* muParserDef.h */,
+				F986054F2BD203D4006A4C0F /* muParserError.cpp */,
+				F98605502BD203D4006A4C0F /* muParserError.h */,
+				F98605512BD203D4006A4C0F /* muParserFixes.h */,
+				F98605522BD203D4006A4C0F /* muParserInt.cpp */,
+				F98605532BD203D4006A4C0F /* muParserInt.h */,
+				F98605542BD203D4006A4C0F /* muParserTemplateMagic.h */,
+				F98605552BD203D4006A4C0F /* muParserToken.h */,
+				F98605562BD203D4006A4C0F /* muParserTokenReader.cpp */,
+				F98605572BD203D4006A4C0F /* muParserTokenReader.h */,
+			);
+			path = muparser;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8132,6 +8214,7 @@
 				F9070C9C2B9F175000383E4D /* Blob.hpp in Headers */,
 				F9070C752B9F175000383E4D /* RandomDuration.ipp in Headers */,
 				F98604122BCFBB54006A4C0F /* SkSLFunctionDeclaration.h in Headers */,
+				F98605612BD203D4006A4C0F /* muParserDef.h in Headers */,
 				F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */,
 				F98603252BCFBB54006A4C0F /* SkPathOpsLine.h in Headers */,
 				F9070DC72B9F175E00383E4D /* Siv3DEngine.hpp in Headers */,
@@ -8139,14 +8222,17 @@
 				F98602022BCFBB53006A4C0F /* SkMipmapBuilder.h in Headers */,
 				F9070C802B9F175000383E4D /* TextReader.ipp in Headers */,
 				F9070F342B9F252E00383E4D /* null_joystick.h in Headers */,
+				F98605642BD203D4006A4C0F /* muParserFixes.h in Headers */,
 				F9070D102B9F175100383E4D /* Vector3D.hpp in Headers */,
 				F986002E2BCFBB53006A4C0F /* SkPathTypes.h in Headers */,
 				F986FA462BCFB53B006A4C0F /* svcfftl.h in Headers */,
+				F98605662BD203D4006A4C0F /* muParserInt.h in Headers */,
 				F98600912BCFBB53006A4C0F /* GrSurfaceCharacterization.h in Headers */,
 				F98600302BCFBB53006A4C0F /* SkPicture.h in Headers */,
 				F9070C7B2B9F175000383E4D /* Step.ipp in Headers */,
 				F986FA532BCFB53B006A4C0F /* svpsinfo.h in Headers */,
 				F9070CB92B9F175000383E4D /* FastMath.hpp in Headers */,
+				F986055C2BD203D4006A4C0F /* muParserBase.h in Headers */,
 				F986F99B2BCA9D0A006A4C0F /* plutovg.h in Headers */,
 				F9070CC22B9F175000383E4D /* FormatLiteral.hpp in Headers */,
 				F98600042BCFBB53006A4C0F /* SkCapabilities.h in Headers */,
@@ -8191,6 +8277,7 @@
 				F98601B22BCFBB53006A4C0F /* SkEffectPriv.h in Headers */,
 				F9070C8B2B9F175000383E4D /* YesNo.ipp in Headers */,
 				F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */,
+				F98605442BD203BC006A4C0F /* MathParserDetail.hpp in Headers */,
 				F98601C32BCFBB53006A4C0F /* SkGaussFilter.h in Headers */,
 				F9070D022B9F175100383E4D /* TextReader.hpp in Headers */,
 				F986FA852BCFB53B006A4C0F /* ftincrem.h in Headers */,
@@ -8238,7 +8325,9 @@
 				F986FA6D2BCFB53B006A4C0F /* sfnt.h in Headers */,
 				F98600842BCFBB53006A4C0F /* SkTArray.h in Headers */,
 				F98601622BCFBB53006A4C0F /* SkBlendModeBlender.h in Headers */,
+				F98605632BD203D4006A4C0F /* muParserError.h in Headers */,
 				F98603F32BCFBB54006A4C0F /* SkSLConstructorCompoundCast.h in Headers */,
+				F986055E2BD203D4006A4C0F /* muParserBytecode.h in Headers */,
 				F98603EB2BCFBB54006A4C0F /* SkSLConstructor.h in Headers */,
 				F9070C442B9F175000383E4D /* BinaryReader.ipp in Headers */,
 				F9528C212BBF026F00222F45 /* zstd_compress_internal.h in Headers */,
@@ -8446,6 +8535,7 @@
 				F98603FE2BCFBB54006A4C0F /* SkSLContinueStatement.h in Headers */,
 				F98601592BCFBB53006A4C0F /* SkBitmapDevice.h in Headers */,
 				F98603E72BCFBB54006A4C0F /* SkSLBreakStatement.h in Headers */,
+				F986055A2BD203D4006A4C0F /* muParser.h in Headers */,
 				F986048B2BCFBB54006A4C0F /* SkSLProgramSettings.h in Headers */,
 				F9528C2D2BBF026F00222F45 /* zstd_fast.h in Headers */,
 				F98604532BCFBB54006A4C0F /* SkSLTraceHook.h in Headers */,
@@ -8599,6 +8689,7 @@
 				F9070CB02B9F175000383E4D /* DisjointSet.hpp in Headers */,
 				F98603E62BCFBB54006A4C0F /* SkSLBlock.h in Headers */,
 				F9070C722B9F175000383E4D /* PCG64.ipp in Headers */,
+				F98605602BD203D4006A4C0F /* muParserCallback.h in Headers */,
 				F9528C1F2BBF026F00222F45 /* hist.h in Headers */,
 				F9528B2B2BAFCDB400222F45 /* MappedMemory.hpp in Headers */,
 				F9070C6E2B9F175000383E4D /* Number.ipp in Headers */,
@@ -8692,6 +8783,7 @@
 				F986FA482BCFB53B006A4C0F /* svfntfmt.h in Headers */,
 				F986F99D2BCA9D0A006A4C0F /* canvas.h in Headers */,
 				F9070C5A2B9F175000383E4D /* FormatLiteral.ipp in Headers */,
+				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,
 				F98603862BCFBB54006A4C0F /* SkOTTable_OS_2_V2.h in Headers */,
 				F98604752BCFBB54006A4C0F /* SkSLInliner.h in Headers */,
@@ -8720,6 +8812,7 @@
 				F9070CAB2B9F175000383E4D /* Date.hpp in Headers */,
 				F98600452BCFBB53006A4C0F /* SkSurface.h in Headers */,
 				F98603ED2BCFBB54006A4C0F /* SkSLConstructorArray.h in Headers */,
+				F986056A2BD203D4006A4C0F /* muParserTokenReader.h in Headers */,
 				F98600B22BCFBB53006A4C0F /* SkTextUtils.h in Headers */,
 				F98604412BCFBB54006A4C0F /* SkSLSymbolTable.h in Headers */,
 				F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */,
@@ -8896,9 +8989,11 @@
 				F98600872BCFBB53006A4C0F /* SkTFitsIn.h in Headers */,
 				F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */,
 				F907075A2B9DAEC900383E4D /* XoshiroCpp.hpp in Headers */,
+				F98605682BD203D4006A4C0F /* muParserToken.h in Headers */,
 				F90706B12B9DAEC900383E4D /* utility.h in Headers */,
 				F9E5FC402BC15B260081A4F7 /* sal.h in Headers */,
 				F98601F32BCFBB53006A4C0F /* SkMatrixUtils.h in Headers */,
+				F986053E2BD2039F006A4C0F /* MathParser.hpp in Headers */,
 				F986028E2BCFBB54006A4C0F /* SkTraceEventCommon.h in Headers */,
 				F9070CEF2B9F175100383E4D /* PointVector.hpp in Headers */,
 				F9528C4E2BBFEC3800222F45 /* MappedMemoryView.hpp in Headers */,
@@ -9179,6 +9274,7 @@
 				F98601F82BCFBB53006A4C0F /* SkMemset_opts.cpp in Sources */,
 				F98601612BCFBB53006A4C0F /* SkBlendModeBlender.cpp in Sources */,
 				F9070ED72B9F1C8900383E4D /* cocoa_time.c in Sources */,
+				F986055B2BD203D4006A4C0F /* muParserBase.cpp in Sources */,
 				F98603342BCFBB54006A4C0F /* SkPathWriter.cpp in Sources */,
 				F986043E2BCFBB54006A4C0F /* SkSLSymbol.cpp in Sources */,
 				F98601E12BCFBB53006A4C0F /* SkM44.cpp in Sources */,
@@ -9216,6 +9312,7 @@
 				F9070DE42B9F175E00383E4D /* SivRandom.cpp in Sources */,
 				F9070E632B9F176B00383E4D /* SivSystem_macOS_Linux.cpp in Sources */,
 				F986046B2BCFBB54006A4C0F /* SkSLConstantFolder.cpp in Sources */,
+				F98605692BD203D4006A4C0F /* muParserTokenReader.cpp in Sources */,
 				F98602252BCFBB54006A4C0F /* SkPictureRecorder.cpp in Sources */,
 				F98602652BCFBB54006A4C0F /* SkScan_Path.cpp in Sources */,
 				F98600BB2BCFBB53006A4C0F /* skcms.cc in Sources */,
@@ -9302,6 +9399,7 @@
 				F98603DB2BCFBB54006A4C0F /* SkSLRasterPipelineCodeGenerator.cpp in Sources */,
 				F98602752BCFBB54006A4C0F /* SkStrikeSpec.cpp in Sources */,
 				F98604822BCFBB54006A4C0F /* SkSLOutputStream.cpp in Sources */,
+				F986055F2BD203D4006A4C0F /* muParserCallback.cpp in Sources */,
 				F9528C562BC02A3100222F45 /* MemoryMappedFileDetail.cpp in Sources */,
 				F986053C2BD104B4006A4C0F /* SivImagePixelFormat.cpp in Sources */,
 				F98602202BCFBB54006A4C0F /* SkPicturePlayback.cpp in Sources */,
@@ -9552,6 +9650,7 @@
 				F98602B92BCFBB54006A4C0F /* SkBlendImageFilter.cpp in Sources */,
 				F9528C442BBF026F00222F45 /* zdict.c in Sources */,
 				F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */,
+				F98605592BD203D4006A4C0F /* muParser.cpp in Sources */,
 				F986042F2BCFBB54006A4C0F /* SkSLProgram.cpp in Sources */,
 				F986017B2BCFBB53006A4C0F /* SkCanvasPriv.cpp in Sources */,
 				F9070AEF2B9DEB5900383E4D /* discrete_distribution.cc in Sources */,
@@ -9584,6 +9683,7 @@
 				F9E5FC242BC13CD00081A4F7 /* JPEGEncoder.cpp in Sources */,
 				F986F83A2BC7B043006A4C0F /* SivINIItem.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
+				F98605452BD203BC006A4C0F /* SivMathParser.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
@@ -9637,6 +9737,7 @@
 				F98603C52BCFBB54006A4C0F /* SkSLIsConstantExpression.cpp in Sources */,
 				F98601EB2BCFBB53006A4C0F /* SkMaskGamma.cpp in Sources */,
 				F9070DB12B9F175E00383E4D /* SivBinaryWriter.cpp in Sources */,
+				F98605432BD203BC006A4C0F /* MathParserDetail.cpp in Sources */,
 				F98602852BCFBB54006A4C0F /* SkTaskGroup.cpp in Sources */,
 				F986045D2BCFBB54006A4C0F /* SkSLFindAndDeclareBuiltinVariables.cpp in Sources */,
 				F98604902BCFBB54006A4C0F /* SkSLUtil.cpp in Sources */,
@@ -9679,6 +9780,7 @@
 				F986026D2BCFBB54006A4C0F /* SkSpriteBlitter_ARGB32.cpp in Sources */,
 				F98603942BCFBB54006A4C0F /* SkGradientBaseShader.cpp in Sources */,
 				F986030C2BCFBB54006A4C0F /* SkOpBuilder.cpp in Sources */,
+				F98605652BD203D4006A4C0F /* muParserInt.cpp in Sources */,
 				F98603042BCFBB54006A4C0F /* SkDLineIntersection.cpp in Sources */,
 				F986F9332BC8441F006A4C0F /* unicode.c in Sources */,
 				F98604862BCFBB54006A4C0F /* SkSLPool.cpp in Sources */,
@@ -9709,6 +9811,7 @@
 				F98601532BCFBB53006A4C0F /* SkBigPicture.cpp in Sources */,
 				F9070EDF2B9F1C8900383E4D /* init.c in Sources */,
 				F986F9312BC8441F006A4C0F /* unicode_unfold_key.c in Sources */,
+				F986055D2BD203D4006A4C0F /* muParserBytecode.cpp in Sources */,
 				F986F9A22BCA9D0A006A4C0F /* element.cpp in Sources */,
 				F98600B92BCFBB53006A4C0F /* skcms_TransformSkx.cc in Sources */,
 				F98605322BD10495006A4C0F /* SivImageFormat.cpp in Sources */,
@@ -9771,6 +9874,7 @@
 				F98600DB2BCFBB53006A4C0F /* SkQuads.cpp in Sources */,
 				F98604382BCFBB54006A4C0F /* SkSLSwitchCase.cpp in Sources */,
 				F9070DCE2B9F175E00383E4D /* SivFloatToString.cpp in Sources */,
+				F98605622BD203D4006A4C0F /* muParserError.cpp in Sources */,
 				F98602F32BCFBB54006A4C0F /* SkSurface.cpp in Sources */,
 				F986022B2BCFBB54006A4C0F /* SkPoint3.cpp in Sources */,
 				F98603A92BCFBB54006A4C0F /* SkImageShader.cpp in Sources */,
