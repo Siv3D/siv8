@@ -39,6 +39,8 @@ namespace s3d
 
 		void* getHandle() const noexcept override;
 
+		const WindowState& getState() const noexcept override;
+
 		void show();
 
 		void destroy();

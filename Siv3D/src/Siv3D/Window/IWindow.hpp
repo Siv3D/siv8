@@ -15,6 +15,7 @@
 namespace s3d
 {
 	class String;
+	struct WindowState;
 
 	class SIV3D_NOVTABLE ISiv3DWindow
 	{
@@ -34,5 +35,7 @@ namespace s3d
 		virtual const String& getWindowTitle() const noexcept = 0;
 
 		virtual void* getHandle() const noexcept = 0;
+	
+		virtual const WindowState& getState() const noexcept = 0;
 	};
 }

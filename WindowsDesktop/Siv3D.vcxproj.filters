@@ -631,6 +631,12 @@
     <Filter Include="src\Siv3D\Mat3x2">
       <UniqueIdentifier>{ebaa989e-f906-4973-905d-5793e7bf5233}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Cursor">
+      <UniqueIdentifier>{47a53eaa-4a0a-48d9-9686-cc954072b8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor">
+      <UniqueIdentifier>{b5afc4a0-df75-422f-90a1-3abe851baa7a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2709,6 +2715,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\CursorStyle.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\CursorState.hpp">
+      <Filter>src\Siv3D\Cursor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\ICursor.hpp">
+      <Filter>src\Siv3D\Cursor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor\CCursor.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4702,6 +4717,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mat3x2\SivMat3x2.cpp">
       <Filter>src\Siv3D\Mat3x2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Cursor\SivCursor.cpp">
+      <Filter>src\Siv3D\Cursor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Cursor\CursorFactory.cpp">
+      <Filter>src\Siv3D\Cursor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor\CCursor.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

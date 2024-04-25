@@ -1,0 +1,39 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+# include <Siv3D/Cursor/ICursor.hpp>
+
+namespace s3d
+{
+	class CCursor final : public ISiv3DCursor
+	{
+	public:
+
+		CCursor() = default;
+
+		~CCursor() override;
+
+		void init() override;
+
+		bool update() override;
+
+		void updateHighTemporalResolutionCursorPos(Point rawClientPos) override;
+
+		const CursorState& getState() const override;
+
+		Array<std::pair<int64, Point>> getHighTemporalResolutionCursorPos() const override;
+
+	private:
+
+		CursorState m_state;
+	};
+}

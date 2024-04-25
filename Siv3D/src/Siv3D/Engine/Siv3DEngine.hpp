@@ -25,6 +25,7 @@ namespace s3d
 	class ISiv3DImageEncoder;
 	class ISiv3DEmoji;
 	class ISiv3DConsole;
+	class ISiv3DCursor;
 
 	class Siv3DEngine
 	{
@@ -42,7 +43,9 @@ namespace s3d
 			Siv3DComponent<ISiv3DImageDecoder>,
 			Siv3DComponent<ISiv3DImageEncoder>,
 			Siv3DComponent<ISiv3DEmoji>,
-			Siv3DComponent<ISiv3DConsole>> m_components;
+			Siv3DComponent<ISiv3DConsole>,
+			Siv3DComponent<ISiv3DCursor>
+		> m_components;
 
 	public:
 
@@ -51,7 +54,10 @@ namespace s3d
 		~Siv3DEngine();
 
 		[[nodiscard]]
-		static bool isActive() noexcept;
+		static bool isNotNull() noexcept;
+
+		[[nodiscard]]
+		static bool isAvailable() noexcept;
 
 		template <class Interface>
 		[[nodiscard]]

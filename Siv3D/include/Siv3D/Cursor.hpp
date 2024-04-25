@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "PointVector.hpp"
+# include "Array.hpp"
 
 namespace s3d
 {
@@ -56,19 +57,19 @@ namespace s3d
 		[[nodiscard]]
 		Vec2 DeltaF() noexcept;
 
-		/// @brief 現在のフレームにおける、未変換のマウスカーソルのクライアント座標（ピクセル）を返します。
-		/// @return 現在のフレームおける、未変換のマウスカーソルの座標 (ピクセル)
+		/// @brief 現在のフレームにおける、補正前のマウスカーソルのクライアント座標（ピクセル）を返します。
+		/// @return 現在のフレームおける、補正前のマウスカーソルの座標 (ピクセル)
 		[[nodiscard]]
 		Point PosRaw() noexcept;
 
-		/// @brief 直前のフレームにおける、未変換のマウスカーソルのクライアント座標（ピクセル）を返します。
-		/// @return 直前のフレームおける、未変換のマウスカーソルの座標 (ピクセル)
+		/// @brief 直前のフレームにおける、補正前のマウスカーソルのクライアント座標（ピクセル）を返します。
+		/// @return 直前のフレームおける、補正前のマウスカーソルの座標 (ピクセル)
 		[[nodiscard]]
 		Point PreviousPosRaw() noexcept;
 
-		/// @brief 直前のフレームから現在のフレームまでの未変換のマウスカーソルの移動量（ピクセル）を返します。
+		/// @brief 直前のフレームから現在のフレームまでの、補正前のマウスカーソルの移動量（ピクセル）を返します。
 		/// @remark `Cursor::PosRaw() - Cursor::PreviousPosRaw()` と同値です。
-		/// @return 直前のフレームから現在のフレームまでの未変換のマウスカーソルの移動量 (ピクセル)
+		/// @return 直前のフレームから現在のフレームまでの、補正前のマウスカーソルの移動量 (ピクセル)
 		[[nodiscard]]
 		Point DeltaRaw() noexcept;
 
@@ -87,6 +88,11 @@ namespace s3d
 		/// @return 直前のフレームから現在のフレームまでのスクリーン上でのマウスカーソルの移動量 (ピクセル)
 		[[nodiscard]]
 		Point ScreenDelta() noexcept;
+
+		/// @brief 高頻度で記録された、マウスカーソルのクライアント座標（ピクセル）の情報を返します。
+		/// @return タイムポイント（`Time::GetMicrosec()`）と、補正前のマウスカーソルのクライアント座標 (ピクセル) からなるペアの配列
+		[[nodiscard]]
+		Array<std::pair<int64, Point>> GetBuffer();
 
 		/// @brief マウスカーソルを指定したクライアント座標に移動させます。
 		/// @param x 移動先の X 座標 (ピクセル)

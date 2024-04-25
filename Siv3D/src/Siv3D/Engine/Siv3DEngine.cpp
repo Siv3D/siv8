@@ -20,6 +20,7 @@
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
 # include <Siv3D/Emoji/IEmoji.hpp>
 # include <Siv3D/Console/IConsole.hpp>
+# include <Siv3D/Cursor/ICursor.hpp>
 
 namespace s3d
 {
@@ -47,8 +48,14 @@ namespace s3d
 		pEngine = nullptr;
 	}
 
-	bool Siv3DEngine::isActive() noexcept
+	bool Siv3DEngine::isNotNull() noexcept
 	{
 		return (pEngine != nullptr);
+	}
+
+	bool Siv3DEngine::isAvailable() noexcept
+	{
+		constexpr auto LastIndex = (std::tuple_size<decltype(m_components)>::value - 1);	
+		return (std::get<10>(pEngine->m_components).get() != nullptr);
 	}
 }

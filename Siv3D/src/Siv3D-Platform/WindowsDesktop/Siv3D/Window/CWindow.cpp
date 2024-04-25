@@ -120,6 +120,11 @@ namespace s3d
 		return m_hWnd;
 	}
 
+	const WindowState& CWindow::getState() const noexcept
+	{
+		return m_state;
+	}
+
 	void CWindow::show()
 	{
 		WindowMisc::ShowWindow(m_hWnd);

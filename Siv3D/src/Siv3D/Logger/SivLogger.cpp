@@ -32,9 +32,9 @@ namespace s3d
 
 		void Logger_impl::write(const std::string_view s) const
 		{
-			if (Siv3DEngine::isActive())
+			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				SIV3D_ENGINE(Logger)->write(LogType::App, s);
+				pLogger->write(LogType::App, s);
 			}
 		}
 
@@ -50,9 +50,9 @@ namespace s3d
 
 		void Logger_impl::write(const StringView s) const
 		{
-			if (Siv3DEngine::isActive())
+			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				SIV3D_ENGINE(Logger)->write(LogType::App, s);
+				pLogger->write(LogType::App, s);
 			}
 		}
 
