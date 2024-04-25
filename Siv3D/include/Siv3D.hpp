@@ -766,10 +766,10 @@
 //
 //// 球面座標 | Spherical coordinate system
 //# include <Siv3D/Spherical.hpp>
-//
-//// 3x2 行列 | 3x2 matrix
-//# include <Siv3D/Mat3x2.hpp>
-//
+
+// 3x2 行列 | 3x2 matrix
+# include <Siv3D/Mat3x2.hpp>
+
 //// 3x3 行列 | 3x3 matrix
 //# include <Siv3D/Mat3x3.hpp>
 

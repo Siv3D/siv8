@@ -85,6 +85,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MapFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MappedMemoryView.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat3x2.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MatchResults.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Math_impl.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MD5Value.ipp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MapFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MappedMemoryView.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mat3x2.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MatchResults.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Math.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MathParser.hpp" />
@@ -810,6 +812,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\LoggerBuffer\SivLoggerBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\LoggerFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\SivLogger.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mat3x2\SivMat3x2.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MathParser\SivMathParser.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MD5Value\SivMD5Value.cpp" />

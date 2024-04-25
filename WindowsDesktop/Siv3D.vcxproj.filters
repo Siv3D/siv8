@@ -628,6 +628,9 @@
     <Filter Include="src\Siv3D\MathParser">
       <UniqueIdentifier>{92b88900-747f-4091-8f7c-248aba721be2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Mat3x2">
+      <UniqueIdentifier>{ebaa989e-f906-4973-905d-5793e7bf5233}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2691,6 +2694,12 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp">
       <Filter>src\Siv3D\MathParser</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mat3x2.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat3x2.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4681,6 +4690,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\MathParser\SivMathParser.cpp">
       <Filter>src\Siv3D\MathParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mat3x2\SivMat3x2.cpp">
+      <Filter>src\Siv3D\Mat3x2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
