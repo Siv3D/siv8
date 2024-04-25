@@ -1638,6 +1638,9 @@
 		F98605682BD203D4006A4C0F /* muParserToken.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605552BD203D4006A4C0F /* muParserToken.h */; };
 		F98605692BD203D4006A4C0F /* muParserTokenReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605562BD203D4006A4C0F /* muParserTokenReader.cpp */; };
 		F986056A2BD203D4006A4C0F /* muParserTokenReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F98605572BD203D4006A4C0F /* muParserTokenReader.h */; };
+		F986056C2BDA329E006A4C0F /* Mat3x2.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986056B2BDA329E006A4C0F /* Mat3x2.hpp */; };
+		F986056E2BDA32B4006A4C0F /* Mat3x2.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986056D2BDA32B4006A4C0F /* Mat3x2.ipp */; };
+		F98605712BDA32D4006A4C0F /* SivMat3x2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986056F2BDA32D4006A4C0F /* SivMat3x2.cpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2683,6 +2686,9 @@
 		F98605552BD203D4006A4C0F /* muParserToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserToken.h; sourceTree = "<group>"; };
 		F98605562BD203D4006A4C0F /* muParserTokenReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = muParserTokenReader.cpp; sourceTree = "<group>"; };
 		F98605572BD203D4006A4C0F /* muParserTokenReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = muParserTokenReader.h; sourceTree = "<group>"; };
+		F986056B2BDA329E006A4C0F /* Mat3x2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Mat3x2.hpp; sourceTree = "<group>"; };
+		F986056D2BDA32B4006A4C0F /* Mat3x2.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Mat3x2.ipp; sourceTree = "<group>"; };
+		F986056F2BDA32D4006A4C0F /* SivMat3x2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMat3x2.cpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -4548,6 +4554,7 @@
 				F9070B8D2B9F175000383E4D /* MapFormatter.ipp */,
 				F9528B2C2BAFCDCF00222F45 /* MappedMemory.ipp */,
 				F9528C4F2BBFEC4D00222F45 /* MappedMemoryView.ipp */,
+				F986056D2BDA32B4006A4C0F /* Mat3x2.ipp */,
 				F986F8B72BC843E0006A4C0F /* MatchResults.ipp */,
 				F986F93B2BCA7996006A4C0F /* Math_impl.ipp */,
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
@@ -4718,6 +4725,7 @@
 				F9070BFF2B9F175000383E4D /* MapFormatter.hpp */,
 				F9528B282BAFCDB400222F45 /* MappedMemory.hpp */,
 				F9528C4D2BBFEC3800222F45 /* MappedMemoryView.hpp */,
+				F986056B2BDA329E006A4C0F /* Mat3x2.hpp */,
 				F986F8B42BC843CF006A4C0F /* MatchResults.hpp */,
 				F986F9412BCA79B4006A4C0F /* Math.hpp */,
 				F9070C002B9F175000383E4D /* MathConstants.hpp */,
@@ -5404,6 +5412,7 @@
 				F9528B762BB708A700222F45 /* LicenseManager */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
+				F98605702BDA32D4006A4C0F /* Mat3x2 */,
 				F98605422BD203BC006A4C0F /* MathParser */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
 				F9528C4B2BBFEC2400222F45 /* MemoryMappedFile */,
@@ -6080,6 +6089,14 @@
 				F98605572BD203D4006A4C0F /* muParserTokenReader.h */,
 			);
 			path = muparser;
+			sourceTree = "<group>";
+		};
+		F98605702BDA32D4006A4C0F /* Mat3x2 */ = {
+			isa = PBXGroup;
+			children = (
+				F986056F2BDA32D4006A4C0F /* SivMat3x2.cpp */,
+			);
+			path = Mat3x2;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8192,6 +8209,7 @@
 				F9070DF22B9F175E00383E4D /* TextWriterDetail.hpp in Headers */,
 				F98604872BCFBB54006A4C0F /* SkSLPool.h in Headers */,
 				F9070C5C2B9F175000383E4D /* HardwareRNG.ipp in Headers */,
+				F986056C2BDA329E006A4C0F /* Mat3x2.hpp in Headers */,
 				F9070C622B9F175000383E4D /* IntToString.ipp in Headers */,
 				F98600112BCFBB53006A4C0F /* SkDocument.h in Headers */,
 				F9528B432BB69CA900222F45 /* BigFloat.hpp in Headers */,
@@ -8883,6 +8901,7 @@
 				F98604252BCFBB54006A4C0F /* SkSLModifierFlags.h in Headers */,
 				F9070CD42B9F175100383E4D /* LetterCase.hpp in Headers */,
 				F9528C9F2BC1208B00222F45 /* png.h in Headers */,
+				F986056E2BDA32B4006A4C0F /* Mat3x2.ipp in Headers */,
 				F9070CDA2B9F175100383E4D /* MD5Value.hpp in Headers */,
 				F9528C662BC05B0200222F45 /* BMPDecoder.hpp in Headers */,
 				F98602372BCFBB54006A4C0F /* SkRasterPipelineContextUtils.h in Headers */,
@@ -9911,6 +9930,7 @@
 				F98602122BCFBB54006A4C0F /* SkPathEffect.cpp in Sources */,
 				F98604622BCFBB54006A4C0F /* SkSLRewriteIndexedSwizzle.cpp in Sources */,
 				F98601872BCFBB53006A4C0F /* SkColorSpace.cpp in Sources */,
+				F98605712BDA32D4006A4C0F /* SivMat3x2.cpp in Sources */,
 				F98601662BCFBB53006A4C0F /* SkBlitMask_opts.cpp in Sources */,
 				F98603C02BCFBB54006A4C0F /* SkSLFinalizationChecks.cpp in Sources */,
 				F98604F72BCFBB54006A4C0F /* SkTextUtils.cpp in Sources */,
