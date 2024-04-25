@@ -59,7 +59,7 @@ namespace s3d
 
 	UUIDValue::Variant UUIDValue::variant() const noexcept
 	{
-		return UUIDValue::Variant{ FromEnum(uuids::uuid{ m_data }.variant()) };
+		return UUIDValue::Variant{ static_cast<uint8>(FromEnum(uuids::uuid{ m_data }.variant())) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ namespace s3d
 
 	UUIDValue::Version UUIDValue::version() const noexcept
 	{
-		return UUIDValue::Version{ FromEnum(uuids::uuid{ m_data }.version()) };
+		return UUIDValue::Version{ static_cast<uint8>(FromEnum(uuids::uuid{ m_data }.version())) };
 	}
 
 	////////////////////////////////////////////////////////////////

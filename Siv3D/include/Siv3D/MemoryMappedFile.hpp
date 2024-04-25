@@ -30,7 +30,7 @@ namespace s3d
 	public:
 
 		/// @brief 存在するファイルをオープンする際のオプション
-		enum class OpenMode_if_Exists
+		enum class OpenMode_if_Exists : uint8
 		{
 			/// @brief ファイルが存在する場合、失敗にします。
 			Fail,
@@ -43,7 +43,7 @@ namespace s3d
 		};
 
 		/// @brief 存在しないファイルをオープンする際のオプション
-		enum class OpenMode_if_NotFound
+		enum class OpenMode_if_NotFound : uint8
 		{
 			/// @brief ファイルが存在しない場合、失敗にします。
 			Fail,

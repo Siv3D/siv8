@@ -22,7 +22,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief ファイルのオープンモード | File open mode
-	enum class OpenMode
+	enum class OpenMode : uint8
 	{
 		/// @brief 新規作成 | Truncate
 		Trunc	= (1 << 1),

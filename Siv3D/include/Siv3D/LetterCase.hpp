@@ -20,7 +20,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief アルファベットの大文字・小文字 | Letter case
-	enum class LetterCase
+	enum class LetterCase : uint8
 	{
 		/// @brief 小文字 | Lowercase
 		Lower,

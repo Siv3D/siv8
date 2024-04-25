@@ -15,7 +15,7 @@ namespace s3d
 {
 	/// @brief カラーマップ用のカラースケールの種類
 	/// @remark https://github.com/yuki-koyama/tinycolormap
-	enum class ColorScale
+	enum class ColorScale : uint8
 	{
 		/// @url https://raw.githubusercontent.com/yuki-koyama/tinycolormap/master/docs/samples/Parula.png
 		Parula,

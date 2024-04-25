@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
 
 namespace s3d
 {
@@ -21,7 +22,7 @@ namespace s3d
 
 	/// @brief 特殊フォルダ | Special folder
 	/// @remark `FileSystem::GetFolderPath()` で使用します。 | Used in `FileSystem::GetFolderPath()`.
-	enum class SpecialFolder
+	enum class SpecialFolder : uint8
 	{
 		/// @brief デスクトップ | Desktop
 		Desktop,

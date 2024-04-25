@@ -29,7 +29,7 @@ namespace s3d
 	{
 	public:
 
-		enum class Variant
+		enum class Variant : uint8
 		{
 			NCS,
 			RFC,
@@ -37,7 +37,7 @@ namespace s3d
 			Reserved,
 		};
 
-		enum class Version
+		enum class Version : uint8
 		{
 			Nil,
 			TimeBased,
