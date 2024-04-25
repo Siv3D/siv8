@@ -157,10 +157,12 @@ TEST_CASE("Image.rotate90.Benchmark")
 		Image image4 = testImage;
 		Image image8 = testImage;
 		Image image16 = testImage;
+		Image image32 = testImage;
 		Bench{}.title("Image::rotate90").run("old 512x512", [&]() { image1.rotate90(); doNotOptimizeAway(image1); });
 		Bench{}.title("Image::rotate90").run("_4 new 512x512", [&]() { image4.rotate90_4(); doNotOptimizeAway(image4); });
 		Bench{}.title("Image::rotate90").run("_8 new 512x512", [&]() { image8.rotate90_8(); doNotOptimizeAway(image8); });
 		Bench{}.title("Image::rotate90").run("_16 new 512x512", [&]() { image16.rotate90_16(); doNotOptimizeAway(image16); });
+		Bench{}.title("Image::rotate90").run("_32 new 512x512", [&]() { image32.rotate90_32(); doNotOptimizeAway(image32); });
 	}
 
 	{
@@ -169,10 +171,12 @@ TEST_CASE("Image.rotate90.Benchmark")
 		Image image4 = testImage;
 		Image image8 = testImage;
 		Image image16 = testImage;
+		Image image32 = testImage;
 		Bench{}.title("Image::rotate90").run("old 1024x512", [&]() { image1.rotate90(); doNotOptimizeAway(image1); });
 		Bench{}.title("Image::rotate90").run("_4 new 1024x512", [&]() { image4.rotate90_4(); doNotOptimizeAway(image4); });
 		Bench{}.title("Image::rotate90").run("_8 new 1024x512", [&]() { image8.rotate90_8(); doNotOptimizeAway(image8); });
 		Bench{}.title("Image::rotate90").run("_16 new 1024x512", [&]() { image16.rotate90_16(); doNotOptimizeAway(image16); });
+		Bench{}.title("Image::rotate90").run("_32 new 1024x512", [&]() { image32.rotate90_32(); doNotOptimizeAway(image32); });
 	}
 
 	{
@@ -181,10 +185,12 @@ TEST_CASE("Image.rotate90.Benchmark")
 		Image image4 = testImage;
 		Image image8 = testImage;
 		Image image16 = testImage;
+		Image image32 = testImage;
 		Bench{}.title("Image::rotate90").run("old 999x1111", [&]() { image1.rotate90(); doNotOptimizeAway(image1); });
 		Bench{}.title("Image::rotate90").run("_4 new 999x1111", [&]() { image4.rotate90_4(); doNotOptimizeAway(image4); });
 		Bench{}.title("Image::rotate90").run("_8 new 999x1111", [&]() { image8.rotate90_8(); doNotOptimizeAway(image8); });
 		Bench{}.title("Image::rotate90").run("_16 new 999x1111", [&]() { image16.rotate90_16(); doNotOptimizeAway(image16); });
+		Bench{}.title("Image::rotate90").run("_32 new 999x1111", [&]() { image32.rotate90_32(); doNotOptimizeAway(image32); });
 	}
 }
 
@@ -198,11 +204,12 @@ TEST_CASE("Image.rotated90.Benchmark")
 		Image image4 = testImage;
 		Image image8 = testImage;
 		Image image16 = testImage;
+		Image image32 = testImage;
 		Bench{}.title("Image::rotated90").run("old 512x512", [&]() { doNotOptimizeAway(image1.rotated90()); });
 		Bench{}.title("Image::rotated90").run("_4 new 512x512", [&]() { doNotOptimizeAway(image4.rotated90_4()); });
 		Bench{}.title("Image::rotated90").run("_8 new 512x512", [&]() { doNotOptimizeAway(image8.rotated90_8()); });
 		Bench{}.title("Image::rotated90").run("_16 new 512x512", [&]() { doNotOptimizeAway(image16.rotated90_16()); });
-
+		Bench{}.title("Image::rotated90").run("_32 new 512x512", [&]() { doNotOptimizeAway(image32.rotated90_32()); });
 	}
 
 	{
@@ -211,10 +218,12 @@ TEST_CASE("Image.rotated90.Benchmark")
 		Image image4 = testImage;
 		Image image8 = testImage;
 		Image image16 = testImage;
+		Image image32 = testImage;
 		Bench{}.title("Image::rotated90").run("old 1024x512", [&]() { doNotOptimizeAway(image1.rotated90()); });
 		Bench{}.title("Image::rotated90").run("_4 new 1024x512", [&]() { doNotOptimizeAway(image4.rotated90_4()); });
 		Bench{}.title("Image::rotated90").run("_8 new 1024x512", [&]() { doNotOptimizeAway(image8.rotated90_8()); });
 		Bench{}.title("Image::rotated90").run("_16 new 1024x512", [&]() { doNotOptimizeAway(image16.rotated90_16()); });
+		Bench{}.title("Image::rotated90").run("_32 new 1024x512", [&]() { doNotOptimizeAway(image32.rotated90_32()); });
 	}
 
 	{
@@ -223,10 +232,12 @@ TEST_CASE("Image.rotated90.Benchmark")
 		Image image4 = testImage;
 		Image image8 = testImage;
 		Image image16 = testImage;
+		Image image32 = testImage;
 		Bench{}.title("Image::rotated90").run("old 999x1111", [&]() { doNotOptimizeAway(image1.rotated90()); });
 		Bench{}.title("Image::rotated90").run("_4 new 999x1111", [&]() { doNotOptimizeAway(image4.rotated90_4()); });
 		Bench{}.title("Image::rotated90").run("_8 new 999x1111", [&]() { doNotOptimizeAway(image8.rotated90_8()); });
 		Bench{}.title("Image::rotated90").run("_16 new 999x1111", [&]() { doNotOptimizeAway(image16.rotated90_16()); });
+		Bench{}.title("Image::rotated90").run("_32 new 999x1111", [&]() { doNotOptimizeAway(image32.rotated90_32()); });
 	}
 }
 

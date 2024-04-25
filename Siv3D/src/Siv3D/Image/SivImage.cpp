@@ -522,6 +522,90 @@ namespace s3d
 		return *this;
 	}
 
+	Image& Image::rotate90_32()
+	{
+		// 1. パラメータチェック
+		{
+			if (isEmpty())
+			{
+				return *this;
+			}
+		}
+
+		// 2. 処理
+		{
+			constexpr size_t BlockSize = 32;
+
+			if (m_size.x == m_size.y)
+			{
+				Color* const pData = data();
+				const size_t halfHeight = (m_size.y / 2);
+				const size_t halfWidth = (halfHeight + m_size.y % 2);
+
+				// 以下のように画像を4つの領域 A, B, C, D に分け、各画素を A←B, B←C, C←D, D←A とそれぞれコピーする
+				//     AADD    AAADD
+				//     AADD    AAADD
+				//     BBCC    BB.DD
+				//     BBCC    BBCCC
+				//             BBCCC
+				for (size_t b = 0; b < halfWidth; b += BlockSize)
+				{
+					for (size_t y = 0; y < halfHeight; ++y)
+					{
+						Color* p1 = (pData + y * m_size.x + b);
+						Color* p2 = (pData + (m_size.y - b - 1) * m_size.x + y);
+						Color* p3 = (pData + (m_size.y - y) * m_size.x - b - 1);
+						Color* p4 = (pData + (b + 1) * m_size.x - y - 1);
+						const size_t w = Min((halfWidth - b), BlockSize);
+
+						for (size_t x = 0; x < w; ++x)
+						{
+							const Color tmp = *p1;
+							*p1 = *p2;
+							*p2 = *p3;
+							*p3 = *p4;
+							*p4 = tmp;
+							++p1;
+							p2 -= m_size.x;
+							--p3;
+							p4 += m_size.x;
+						}
+					}
+				}
+			}
+			else
+			{
+				Image tmp{ m_size.y, m_size.x };
+
+				const Color* const pData = data();
+				Color* const pDstBase = tmp.data();
+
+				for (size_t b = 0; b < m_size.x; b += BlockSize)
+				{
+					Color* const pDstLine = (pDstBase + b * m_size.y);
+					const size_t w = Min((m_size.x - b), BlockSize);
+
+					for (size_t y = 0; y < m_size.y; ++y)
+					{
+						const Color* pSrc = (pData + y * m_size.x + b);
+						Color* pDst = (pDstLine + (m_size.y - y - 1));
+
+						for (size_t x = 0; x < w; ++x)
+						{
+							*pDst = *pSrc;
+							++pSrc;
+							pDst += m_size.y;
+						}
+					}
+				}
+
+				swap(tmp);
+			}
+		}
+
+		return *this;
+	}
+
 	Image Image::rotated90() const&
 	{
 		// 1. パラメータチェック
@@ -810,6 +894,91 @@ namespace s3d
 		}
 	}
 
+	Image Image::rotated90_32() const&
+	{
+		// 1. パラメータチェック
+		{
+			if (isEmpty())
+			{
+				return *this;
+			}
+		}
+
+		// 2. 処理
+		{
+			constexpr size_t BlockSize = 32;
+
+			if (m_size.x == m_size.y)
+			{
+				Image image = *this;
+
+				Color* const pData = image.data();
+				const size_t halfHeight = (m_size.y / 2);
+				const size_t halfWidth = (halfHeight + m_size.y % 2);
+
+				// 以下のように画像を4つの領域 A, B, C, D に分け、各画素を A←B, B←C, C←D, D←A とそれぞれコピーする
+				//     AADD    AAADD
+				//     AADD    AAADD
+				//     BBCC    BB.DD
+				//     BBCC    BBCCC
+				//             BBCCC
+				for (size_t b = 0; b < halfWidth; b += BlockSize)
+				{
+					for (size_t y = 0; y < halfHeight; ++y)
+					{
+						Color* p1 = (pData + y * m_size.x + b);
+						Color* p2 = (pData + (m_size.y - b - 1) * m_size.x + y);
+						Color* p3 = (pData + (m_size.y - y) * m_size.x - b - 1);
+						Color* p4 = (pData + (b + 1) * m_size.x - y - 1);
+						const size_t w = Min((halfWidth - b), BlockSize);
+
+						for (size_t x = 0; x < w; ++x)
+						{
+							const Color tmp = *p1;
+							*p1 = *p2;
+							*p2 = *p3;
+							*p3 = *p4;
+							*p4 = tmp;
+							++p1;
+							p2 -= m_size.x;
+							--p3;
+							p4 += m_size.x;
+						}
+					}
+				}
+
+				return image;
+			}
+			else
+			{
+				Image image{ m_size.y, m_size.x };
+
+				const Color* const pData = data();
+				Color* const pDstBase = image.data();
+
+				for (size_t b = 0; b < m_size.x; b += BlockSize)
+				{
+					Color* const pDstLine = (pDstBase + b * m_size.y);
+					const size_t w = Min((m_size.x - b), BlockSize);
+
+					for (size_t y = 0; y < m_size.y; ++y)
+					{
+						const Color* pSrc = (pData + y * m_size.x + b);
+						Color* pDst = (pDstLine + (m_size.y - y - 1));
+
+						for (size_t x = 0; x < w; ++x)
+						{
+							*pDst = *pSrc;
+							++pSrc;
+							pDst += m_size.y;
+						}
+					}
+				}
+
+				return image;
+			}
+		}
+	}
 
 
 	////////////////////////////////////////////////////////////////

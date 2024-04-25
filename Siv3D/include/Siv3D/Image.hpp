@@ -612,6 +612,8 @@ namespace s3d
 
 		Image& rotate90_16();
 
+		Image& rotate90_32();
+
 		Image rotated90() const&;
 
 		Image rotated90_4() const&;
@@ -619,6 +621,8 @@ namespace s3d
 		Image rotated90_8() const&;
 
 		Image rotated90_16() const&;
+
+		Image rotated90_32() const&;
 
 
 		////////////////////////////////////////////////////////////////
