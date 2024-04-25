@@ -35,11 +35,15 @@ namespace s3d
 		const String& getWindowTitle() const noexcept override;
 
 		void* getHandle() const noexcept override;
+		
+		const WindowState& getState() const noexcept override;
 
 	private:
 
 		GLFWwindow* m_glfwWindow = nullptr;
 		
 		WindowTitle m_windowTitle;
+		
+		WindowState m_state;
 	};
 }

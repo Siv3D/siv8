@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/GLFW/GLFW.hpp>
 
 namespace s3d
 {
@@ -33,6 +34,8 @@ namespace s3d
 		Array<std::pair<int64, Point>> getHighTemporalResolutionCursorPos() const override;
 
 	private:
+		
+		GLFWwindow* m_window = nullptr;
 
 		CursorState m_state;
 	};

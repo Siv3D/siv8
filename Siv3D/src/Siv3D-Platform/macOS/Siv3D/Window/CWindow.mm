@@ -82,4 +82,9 @@ namespace s3d
 	{
 		return m_glfwWindow;
 	}
+
+	const WindowState& CWindow::getState() const noexcept
+	{
+		return m_state;
+	}
 }
