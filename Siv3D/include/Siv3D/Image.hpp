@@ -604,10 +604,21 @@ namespace s3d
 
 
 
+		Image& rotate90();
 
+		Image& rotate90_4();
 
+		Image& rotate90_8();
 
+		Image& rotate90_16();
 
+		Image rotated90() const&;
+
+		Image rotated90_4() const&;
+
+		Image rotated90_8() const&;
+
+		Image rotated90_16() const&;
 
 
 		////////////////////////////////////////////////////////////////
