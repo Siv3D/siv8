@@ -2724,6 +2724,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor\CCursor.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\HighTemporalResolutionCursor.hpp">
+      <Filter>src\Siv3D\Cursor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4726,6 +4729,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor\CCursor.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Cursor\HighTemporalResolutionCursor.cpp">
+      <Filter>src\Siv3D\Cursor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

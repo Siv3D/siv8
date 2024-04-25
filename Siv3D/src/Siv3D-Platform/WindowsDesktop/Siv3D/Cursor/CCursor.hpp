@@ -12,6 +12,7 @@
 # pragma once
 # include <mutex>
 # include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/Cursor/HighTemporalResolutionCursor.hpp>
 # include <Siv3D/Windows/MinWindows.hpp>
 
 namespace s3d
@@ -38,34 +39,8 @@ namespace s3d
 
 		HWND m_hWnd = nullptr;
 
-		////////////////////////////////////////////////////////////////
-		//
-		class ClientPosBuffer
-		{
-		public:
-
-			/// @brief 補正前カーソル座標を追加します。
-			/// @param pos 補正前カーソル座標
-			void add(Point rawClientPos);
-
-			/// @brief 指定したタイムポイント以前のデータを削除します。
-			/// @param timePoint タイムポイント
-			void remove(int64 timePoint);
-
-			[[nodiscard]]
-			Array<std::pair<int64, Point>> get() const;
-
-		private:
-
-			mutable std::mutex m_mutex;
-
-			/// @brief タイムポイントと補正前カーソル座標のペアの配列
-			Array<std::pair<int64, Point>> m_buffer;
-
-		} m_clientPosBuffer;
-		//
-		////////////////////////////////////////////////////////////////
-
 		CursorState m_state;
+
+		HighTemporalResolutionCursor m_highTemporalResolutionCursor;
 	};
 }

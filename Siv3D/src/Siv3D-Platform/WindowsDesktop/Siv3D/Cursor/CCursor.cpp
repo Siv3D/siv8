@@ -43,29 +43,6 @@ namespace s3d
 		}
 	}
 
-	void CCursor::ClientPosBuffer::add(const Point rawClientPos)
-	{
-		const int64 time = Time::GetMicrosec();
-
-		std::lock_guard lock{ m_mutex };
-
-		m_buffer.emplace_back(time, rawClientPos);
-	}
-
-	void CCursor::ClientPosBuffer::remove(const int64 timePoint)
-	{
-		std::lock_guard lock{ m_mutex };
-
-		m_buffer.remove_if([timePoint](const auto& data) { return (data.first < timePoint); });
-	}
-
-	Array<std::pair<int64, Point>> CCursor::ClientPosBuffer::get() const
-	{
-		std::lock_guard lock{ m_mutex };
-
-		return m_buffer;
-	}
-
 	CCursor::~CCursor()
 	{
 		LOG_SCOPED_DEBUG("CCursor::~CCursor()");
@@ -91,17 +68,12 @@ namespace s3d
 
 	void CCursor::updateHighTemporalResolutionCursorPos(const Point rawClientPos)
 	{
-		m_clientPosBuffer.add(rawClientPos);
+		m_highTemporalResolutionCursor.add(rawClientPos);
 	}
 	
 	bool CCursor::update()
 	{
-		{
-			// 現在より 1 秒前のタイムポイント
-			const int64 timePoint = (Time::GetMicrosec() - 1'000'000);
-
-			m_clientPosBuffer.remove(timePoint);
-		}
+		m_highTemporalResolutionCursor.update();
 
 		{
 			Point screenPos;
@@ -136,6 +108,6 @@ namespace s3d
 
 	Array<std::pair<int64, Point>> CCursor::getHighTemporalResolutionCursorPos() const
 	{
-		return m_clientPosBuffer.get();
+		return m_highTemporalResolutionCursor.get();
 	}
 }
