@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/Cursor/HighTemporalResolutionCursor.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 
 namespace s3d
@@ -38,5 +39,7 @@ namespace s3d
 		GLFWwindow* m_window = nullptr;
 
 		CursorState m_state;
+		
+		HighTemporalResolutionCursor m_highTemporalResolutionCursor;
 	};
 }

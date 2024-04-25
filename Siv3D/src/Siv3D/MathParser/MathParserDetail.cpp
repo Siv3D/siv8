@@ -244,7 +244,7 @@ namespace s3d
 				dst[i] = v[i];
 			}
 
-			for (; i < count; ++i)
+			for (; i < static_cast<int32>(count); ++i)
 			{
 				dst[i] = Math::NaN;
 			}

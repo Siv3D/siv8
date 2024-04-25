@@ -45,5 +45,21 @@ namespace s3d
 		WindowTitle m_windowTitle;
 		
 		WindowState m_state;
+		
+		void updateState();
+		
+		static void OnMove(GLFWwindow* glfwWindow, int x, int y);
+		
+		static void OnResize(GLFWwindow* glfwWindow, int width, int height);
+		
+		static void OnFrameBufferSize(GLFWwindow* glfwWindow, int width, int height);
+		
+		static void OnScalingChange(GLFWwindow* glfwWindow, float sx, float sy);
+		
+		static void OnIconify(GLFWwindow* glfwWindow, int iconified);
+		
+		static void OnMaximize(GLFWwindow* glfwWindow, int maximized);
+		
+		static void OnFocus(GLFWwindow* glfwWindow, int focused);
 	};
 }

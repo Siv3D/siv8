@@ -68,11 +68,24 @@ namespace s3d
 
 	void CCursor::updateHighTemporalResolutionCursorPos(const Point rawClientPos)
 	{
-
+		m_highTemporalResolutionCursor.add(rawClientPos);
 	}
 	
 	bool CCursor::update()
 	{
+		m_highTemporalResolutionCursor.update();
+		
+		{
+			const Point screenPos = GetScreenPos();
+			const Point rawClientPos = GetCursorRawClientPos(m_window);
+			updateHighTemporalResolutionCursorPos(rawClientPos);
+			
+			const double windowScaling = SIV3D_ENGINE(Window)->getState().scaling;
+			//const Vec2 clientPos = m_transformAllInv.transformPoint(lastClientPos / scaling);
+			const Vec2 clientPos = (rawClientPos / windowScaling);
+			m_state.update(screenPos, rawClientPos, clientPos);
+		}
+		
 		return true;
 	}
 
@@ -83,6 +96,6 @@ namespace s3d
 
 	Array<std::pair<int64, Point>> CCursor::getHighTemporalResolutionCursorPos() const
 	{
-		return{};
+		return m_highTemporalResolutionCursor.get();
 	}
 }
