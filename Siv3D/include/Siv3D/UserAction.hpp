@@ -14,6 +14,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	UserAction
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief アプリケーションを終了させるためのユーザアクションを表します。 | User Actions for Application Termination
 	/// @remark System::SetTerminationTriggers(), System::GetTerminationTriggers(), System::GetUserActions() で使われる定数
 	/// @remark | 演算子で複数の値を組み合わせることができます。

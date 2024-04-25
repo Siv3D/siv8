@@ -32,16 +32,34 @@ namespace s3d
 {
 	namespace System
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetArgc
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief プログラムに渡されたコマンドライン引数の個数を返します。 | Returns the number of command-line arguments passed to the program.
 		/// @return コマンドライン引数の個数 | The number of command-line arguments.
 		[[nodiscard]]
 		int32 GetArgc() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetArgv
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief コマンドライン引数へのポインタの配列を返します。 | Returns a pointer to an array of pointers to the command-line arguments.
 		/// @return コマンドライン引数へのポインタの配列の先頭要素へのポインタ | A pointer to the first element in the array of pointers to the command-line arguments.
 		/// @note 返される配列の最初の要素は、プログラム自体の名前を表します。 | The first element in the array returned represents the name of the program itself.
 		[[nodiscard]]
 		char** GetArgv() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetCommandLineArgs
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief コマンドライン引数を配列で返します。 | Returns an array of the command-line arguments.
 		/// @return コマンドライン引数を格納した配列 | An array containing the command-line arguments.
