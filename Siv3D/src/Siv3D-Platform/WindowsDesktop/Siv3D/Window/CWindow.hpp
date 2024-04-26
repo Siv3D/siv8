@@ -42,6 +42,17 @@ namespace s3d
 
 		const WindowState& getState() const noexcept override;
 
+		void setStyle(WindowStyle style) override;
+
+		void setPos(Point pos) override;
+
+		void maximize() override;
+
+		void restore() override;
+
+		void minimize() override;
+
+
 		void show();
 
 		void destroy();

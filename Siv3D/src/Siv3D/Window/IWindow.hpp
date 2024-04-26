@@ -16,6 +16,8 @@ namespace s3d
 {
 	class String;
 	struct WindowState;
+	enum class WindowStyle : uint8;
+	struct Point;
 
 	class SIV3D_NOVTABLE ISiv3DWindow
 	{
@@ -37,5 +39,15 @@ namespace s3d
 		virtual void* getHandle() const noexcept = 0;
 	
 		virtual const WindowState& getState() const noexcept = 0;
+
+		virtual void setStyle(WindowStyle style) = 0;
+
+		virtual void setPos(Point pos) = 0;
+
+		virtual void maximize() = 0;
+
+		virtual void restore() = 0;
+
+		virtual void minimize() = 0;
 	};
 }

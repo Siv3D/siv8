@@ -90,6 +90,7 @@ namespace s3d
 		//	current frame
 		//
 
+		SIV3D_ENGINE(Window)->update();
 		SIV3D_ENGINE(Cursor)->update();
 
 

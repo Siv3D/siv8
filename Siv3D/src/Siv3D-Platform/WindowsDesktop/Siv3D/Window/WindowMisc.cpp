@@ -145,7 +145,7 @@ namespace s3d::WindowMisc
 	Rect AdjustWindowRect(const HWND hWnd, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
 		const int32 dpi, const Point& windowPos, const Size& size, const uint32 windowStyleFlags)
 	{
-		LOG_DEBUG(U"AdjustWindowRect({}, {}, {:#x})"_fmt(windowPos, size, windowStyleFlags));
+		LOG_DEBUG(fmt::format("AdjustWindowRect({}, {}, {:#x})", windowPos, size, windowStyleFlags));
 
 		const DWORD windowExStyleFlags = static_cast<DWORD>(::GetWindowLongPtrW(hWnd, GWL_EXSTYLE));
 		
