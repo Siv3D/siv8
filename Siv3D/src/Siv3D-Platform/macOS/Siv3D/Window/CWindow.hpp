@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/Window.hpp>
+# include <Siv3D/Stopwatch.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
@@ -45,6 +46,8 @@ namespace s3d
 		WindowTitle m_windowTitle;
 		
 		WindowState m_state;
+		
+		Stopwatch m_moveResizeStabilizer;
 		
 		void updateState();
 		

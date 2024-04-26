@@ -64,10 +64,10 @@ namespace s3d
 		::glfwSetWindowPosCallback(m_glfwWindow, CWindow::OnMove);
 		::glfwSetWindowSizeCallback(m_glfwWindow, CWindow::OnResize);
 		::glfwSetFramebufferSizeCallback(m_glfwWindow, CWindow::OnFrameBufferSize);
-		//::glfwSetWindowContentScaleCallback(m_glfwWindow, CWindow::OnScalingChange);
-		//::glfwSetWindowIconifyCallback(m_glfwWindow, CWindow::OnIconify);
-		//::glfwSetWindowMaximizeCallback(m_glfwWindow, CWindow::OnMaximize);
-		//::glfwSetWindowFocusCallback(m_glfwWindow, CWindow::OnFocus);
+		::glfwSetWindowContentScaleCallback(m_glfwWindow, CWindow::OnScalingChange);
+		::glfwSetWindowIconifyCallback(m_glfwWindow, CWindow::OnIconify);
+		::glfwSetWindowMaximizeCallback(m_glfwWindow, CWindow::OnMaximize);
+		::glfwSetWindowFocusCallback(m_glfwWindow, CWindow::OnFocus);
 
 		updateState();
 	}
@@ -151,16 +151,25 @@ namespace s3d
 		m_state.focused = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_FOCUSED) == GLFW_TRUE);
 
 		// sizeMove
-		m_state.sizeMove = false; // [Siv3D ToDo]
+		if (m_state.sizeMove)
+		{
+			if (SecondsF{ 0.2 } < m_moveResizeStabilizer)
+			{
+				m_state.sizeMove = false;
+				m_moveResizeStabilizer.reset();
+			}
+		}
 	}
 
-	void CWindow::OnMove(GLFWwindow* glfwWindow, const int x, const int y)
+	void CWindow::OnMove(GLFWwindow* glfwWindow, const int flag, const int)
 	{
-		LOG_DEBUG(U"CWindow::OnMove({})"_fmt(Point{ x, y }));
+		const bool move = (flag == 1);
+		LOG_DEBUG(U"CWindow::OnMove({})"_fmt(move));
 		
 		if (CWindow* pWindow = GetWindow(glfwWindow))
 		{
-			pWindow->m_state.bounds.pos.set(x, y);
+			pWindow->m_state.sizeMove = true;
+			pWindow->m_moveResizeStabilizer.restart();
 		}
 	}
 
@@ -188,63 +197,67 @@ namespace s3d
 		}
 	}
 
-/*
 	void CWindow::OnScalingChange(GLFWwindow* glfwWindow, const float sx, const float sy)
 	{
-		LOG_TRACE(U"CWindow::OnScalingChange({}, {})"_fmt(sx, sy));
+		LOG_DEBUG(fmt::format("CWindow::OnScalingChange({}, {})", sx, sy));
 		
-		CWindow* pWindow = static_cast<CWindow*>(::glfwGetWindowUserPointer(window));
-		
-		pWindow->m_state.scaling = Max(sx, sy);
+		if (CWindow* pWindow = GetWindow(glfwWindow))
+		{
+			pWindow->m_state.scaling = Max(sx, sy);
+		}
 	}
 
 	void CWindow::OnIconify(GLFWwindow* glfwWindow, const int iconified)
 	{
-		LOG_TRACE(U"CWindow::OnIconify({})"_fmt((iconified == GLFW_TRUE)));
+		LOG_DEBUG(fmt::format("CWindow::OnIconify({})", (iconified == GLFW_TRUE)));
 		
-		CWindow* pWindow = static_cast<CWindow*>(::glfwGetWindowUserPointer(window));
-		
-		if (iconified)
+		if (CWindow* pWindow = GetWindow(glfwWindow))
 		{
-			pWindow->m_state.minimized = true;
-			pWindow->m_state.maximized = false;
-		}
-		else
-		{
-			pWindow->m_state.minimized = false;
-			pWindow->m_state.maximized = false;
+			if (iconified) // 最小化
+			{
+				pWindow->m_state.minimized = true;
+				pWindow->m_state.maximized = false;
+			}
+			else // 最小化解除
+			{
+				pWindow->m_state.minimized = false;
+				pWindow->m_state.maximized = false;
+			}
 		}
 	}
 
 	void CWindow::OnMaximize(GLFWwindow* glfwWindow, const int maximized)
 	{
-		LOG_TRACE(U"CWindow::OnMaximize({})"_fmt((maximized == GLFW_TRUE)));
+		LOG_DEBUG(fmt::format("CWindow::OnMaximize({})", (maximized == GLFW_TRUE)));
 		
-		CWindow* pWindow = static_cast<CWindow*>(::glfwGetWindowUserPointer(window));
-		
-		if (maximized)
+		if (CWindow* pWindow = GetWindow(glfwWindow))
 		{
-			pWindow->m_state.minimized = false;
-			pWindow->m_state.maximized = true;
-		}
-		else
-		{
-			pWindow->m_state.minimized = false;
-			pWindow->m_state.maximized = false;
+			if (maximized) // 最大化
+			{
+				pWindow->m_state.minimized = false;
+				pWindow->m_state.maximized = true;
+			}
+			else // 最大化解除
+			{
+				pWindow->m_state.minimized = false;
+				pWindow->m_state.maximized = false;
+			}
 		}
 	}
 
 	void CWindow::OnFocus(GLFWwindow* glfwWindow, const int focused)
 	{
-		LOG_TRACE(U"CWindow::OnFocus({})"_fmt((focused == GLFW_TRUE)));
+		const bool hasFocus = (focused == GLFW_TRUE);
+		LOG_DEBUG(fmt::format("CWindow::OnFocus({})", hasFocus));
 		
-		CWindow* pWindow = static_cast<CWindow*>(::glfwGetWindowUserPointer(window));
-		pWindow->m_state.focused = (focused == GLFW_TRUE);
-		
-		if (!focused)
+		if (CWindow* pWindow = GetWindow(glfwWindow))
 		{
-			SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::WindowDeactivated);
+			pWindow->m_state.focused = hasFocus;
+			
+			if (not hasFocus) // フォーカスが外れた場合
+			{
+				SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::WindowDeactivated);
+			}
 		}
 	}
- */
 }

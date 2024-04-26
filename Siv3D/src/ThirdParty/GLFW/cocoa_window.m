@@ -24,6 +24,17 @@
 //
 //========================================================================
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
 #include "internal.h"
 
 #if defined(_GLFW_COCOA)
@@ -261,6 +272,15 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     }
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+- (void)windowWillMove:(NSNotification *)notification
+{
+	_glfwInputWindowPos(window, 1, 0);
+}
+
 - (void)windowDidMove:(NSNotification *)notification
 {
     if (window->context.source == GLFW_NATIVE_CONTEXT_API)
@@ -269,10 +289,10 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     if (_glfw.ns.disabledCursorWindow == window)
         _glfwCenterCursorInContentArea(window);
 
-    int x, y;
-    _glfwGetWindowPosCocoa(window, &x, &y);
-    _glfwInputWindowPos(window, x, y);
+    _glfwInputWindowPos(window, 0, 0);
 }
+//
+//-----------------------------------------------
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
 {
@@ -1585,6 +1605,11 @@ void _glfwPostEmptyEventCocoa(void)
     } // autoreleasepool
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+/*
 void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos)
 {
     @autoreleasepool {
@@ -1600,6 +1625,29 @@ void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos)
 
     } // autoreleasepool
 }
+*/
+void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos)
+{
+	@autoreleasepool {
+
+	const NSRect contentRect = [window->ns.view frame];
+	const NSRect contebtRectRetina = [window->ns.view convertRectToBacking:contentRect];
+		
+	// NOTE: The returned location uses base 0,1 not 0,0
+	const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
+	const NSPoint posRetina = [window->ns.object convertPointToBacking:pos];
+
+	if (xpos)
+		*xpos = posRetina.x;
+	if (ypos)
+		*ypos = (contebtRectRetina.size.height - posRetina.y);
+
+	} // autoreleasepool
+}
+//
+//-----------------------------------------------
+ 
+ 
 
 void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
 {
