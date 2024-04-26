@@ -440,7 +440,7 @@
 		F9070E612B9F176B00383E4D /* CLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E192B9F176B00383E4D /* CLogger.cpp */; };
 		F9070E622B9F176B00383E4D /* CLogger.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070E1A2B9F176B00383E4D /* CLogger.hpp */; };
 		F9070E632B9F176B00383E4D /* SivSystem_macOS_Linux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E1C2B9F176B00383E4D /* SivSystem_macOS_Linux.cpp */; };
-		F9070E8F2B9F183100383E4D /* CWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9070E882B9F183100383E4D /* CWindow.mm */; };
+		F9070E8F2B9F183100383E4D /* CWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E882B9F183100383E4D /* CWindow.cpp */; };
 		F9070E902B9F183100383E4D /* CWindow.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070E892B9F183100383E4D /* CWindow.hpp */; };
 		F9070E912B9F183100383E4D /* CSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070E8B2B9F183100383E4D /* CSystem.cpp */; };
 		F9070E922B9F183100383E4D /* CSystem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070E8C2B9F183100383E4D /* CSystem.hpp */; };
@@ -1651,6 +1651,8 @@
 		F98605832BDA7E32006A4C0F /* CCursor.mm in Sources */ = {isa = PBXBuildFile; fileRef = F98605802BDA7E32006A4C0F /* CCursor.mm */; };
 		F98605862BDA869C006A4C0F /* HighTemporalResolutionCursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605842BDA869C006A4C0F /* HighTemporalResolutionCursor.cpp */; };
 		F98605872BDA869C006A4C0F /* HighTemporalResolutionCursor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605852BDA869C006A4C0F /* HighTemporalResolutionCursor.hpp */; };
+		F986058A2BDBDB37006A4C0F /* WindowMisc.mm in Sources */ = {isa = PBXBuildFile; fileRef = F98605882BDBDB37006A4C0F /* WindowMisc.mm */; };
+		F986058B2BDBDB37006A4C0F /* WindowMisc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605892BDBDB37006A4C0F /* WindowMisc.hpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2414,7 +2416,7 @@
 		F9070E192B9F176B00383E4D /* CLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CLogger.cpp; sourceTree = "<group>"; };
 		F9070E1A2B9F176B00383E4D /* CLogger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CLogger.hpp; sourceTree = "<group>"; };
 		F9070E1C2B9F176B00383E4D /* SivSystem_macOS_Linux.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSystem_macOS_Linux.cpp; sourceTree = "<group>"; };
-		F9070E882B9F183100383E4D /* CWindow.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CWindow.mm; sourceTree = "<group>"; };
+		F9070E882B9F183100383E4D /* CWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CWindow.cpp; sourceTree = "<group>"; };
 		F9070E892B9F183100383E4D /* CWindow.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CWindow.hpp; sourceTree = "<group>"; };
 		F9070E8B2B9F183100383E4D /* CSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSystem.cpp; sourceTree = "<group>"; };
 		F9070E8C2B9F183100383E4D /* CSystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CSystem.hpp; sourceTree = "<group>"; };
@@ -2709,6 +2711,8 @@
 		F98605802BDA7E32006A4C0F /* CCursor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CCursor.mm; sourceTree = "<group>"; };
 		F98605842BDA869C006A4C0F /* HighTemporalResolutionCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HighTemporalResolutionCursor.cpp; sourceTree = "<group>"; };
 		F98605852BDA869C006A4C0F /* HighTemporalResolutionCursor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HighTemporalResolutionCursor.hpp; sourceTree = "<group>"; };
+		F98605882BDBDB37006A4C0F /* WindowMisc.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowMisc.mm; sourceTree = "<group>"; };
+		F98605892BDBDB37006A4C0F /* WindowMisc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowMisc.hpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -5626,9 +5630,11 @@
 		F9070E8A2B9F183100383E4D /* Window */ = {
 			isa = PBXGroup;
 			children = (
+				F98605892BDBDB37006A4C0F /* WindowMisc.hpp */,
+				F98605882BDBDB37006A4C0F /* WindowMisc.mm */,
 				F9528A862BA018CF00222F45 /* WindowTitle.cpp */,
 				F9528A852BA018CE00222F45 /* WindowTitle.hpp */,
-				F9070E882B9F183100383E4D /* CWindow.mm */,
+				F9070E882B9F183100383E4D /* CWindow.cpp */,
 				F9070E892B9F183100383E4D /* CWindow.hpp */,
 			);
 			path = Window;
@@ -8888,6 +8894,7 @@
 				F986038B2BCFBB54006A4C0F /* SkOTTable_post.h in Headers */,
 				F98605242BD0E2A3006A4C0F /* IEngineResource.hpp in Headers */,
 				F98602892BCFBB54006A4C0F /* SkTextBlobPriv.h in Headers */,
+				F986058B2BDBDB37006A4C0F /* WindowMisc.hpp in Headers */,
 				F986051B2BD0AC0E006A4C0F /* GlyphIndex.hpp in Headers */,
 				F9070CE52B9F175100383E4D /* Palette.hpp in Headers */,
 				F98604142BCFBB54006A4C0F /* SkSLFunctionDefinition.h in Headers */,
@@ -9647,7 +9654,7 @@
 				F986F9252BC8441F006A4C0F /* regtrav.c in Sources */,
 				F98602102BCFBB54006A4C0F /* SkPath.cpp in Sources */,
 				F98602492BCFBB54006A4C0F /* SkRecords.cpp in Sources */,
-				F9070E8F2B9F183100383E4D /* CWindow.mm in Sources */,
+				F9070E8F2B9F183100383E4D /* CWindow.cpp in Sources */,
 				F986023A2BCFBB54006A4C0F /* SkReadBuffer.cpp in Sources */,
 				F98602162BCFBB54006A4C0F /* SkPathMeasure.cpp in Sources */,
 				F9070DC12B9F175E00383E4D /* CEmpty.cpp in Sources */,
@@ -10003,6 +10010,7 @@
 				F986F98D2BCA9D0A006A4C0F /* plutovg-blend.c in Sources */,
 				F9528B772BB708A700222F45 /* CLicenseManager.cpp in Sources */,
 				F9528C3B2BBF026F00222F45 /* zstd_decompress_block.c in Sources */,
+				F986058A2BDBDB37006A4C0F /* WindowMisc.mm in Sources */,
 				F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */,
 				F9070DEB2B9F175E00383E4D /* SystemFactory.cpp in Sources */,
 				F9070AF32B9DEB5900383E4D /* bignum.cc in Sources */,

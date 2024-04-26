@@ -15,6 +15,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include "WindowMisc.hpp"
 
 namespace s3d
 {
@@ -27,12 +28,24 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	~CWindow
+	//
+	////////////////////////////////////////////////////////////////
+
 	CWindow::~CWindow()
 	{
 		LOG_SCOPED_DEBUG("CWindow::~CWindow()");
 
 		::glfwTerminate();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	init
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CWindow::init()
 	{
@@ -72,6 +85,12 @@ namespace s3d
 		updateState();
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	update
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CWindow::update()
 	{
 		::glfwPollEvents();
@@ -90,33 +109,163 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setWindowTitle
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CWindow::setWindowTitle(const String& title)
 	{
 		m_windowTitle.set(m_glfwWindow, title);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getWindowTitle
+	//
+	////////////////////////////////////////////////////////////////
 
 	const String& CWindow::getWindowTitle() const noexcept
 	{
 		return m_windowTitle.title;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getHandle
+	//
+	////////////////////////////////////////////////////////////////
+
 	void* CWindow::getHandle() const noexcept
 	{
 		return m_glfwWindow;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getState
+	//
+	////////////////////////////////////////////////////////////////
 
 	const WindowState& CWindow::getState() const noexcept
 	{
 		return m_state;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setStyle
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setStyle(const WindowStyle style)
+	{
+		LOG_DEBUG(fmt::format("CWindow::setStyle(style = {})", FromEnum(style)));
+		
+		if (m_state.fullscreen)
+		{
+			LOG_FAIL("A window in fullscreen mode cannot change its style");
+			return;
+		}
+
+		if (m_state.style == style)
+		{
+			return;
+		}
+
+		if (style == WindowStyle::Fixed)
+		{
+			::glfwSetWindowAttrib(m_glfwWindow, GLFW_RESIZABLE, GLFW_FALSE);
+			::glfwSetWindowAttrib(m_glfwWindow, GLFW_DECORATED, GLFW_TRUE);
+		}
+		else if (style == WindowStyle::Sizable)
+		{
+			::glfwSetWindowAttrib(m_glfwWindow, GLFW_RESIZABLE, GLFW_TRUE);
+			::glfwSetWindowAttrib(m_glfwWindow, GLFW_DECORATED, GLFW_TRUE);
+		}
+		else if (style == WindowStyle::Frameless)
+		{
+			::glfwSetWindowAttrib(m_glfwWindow, GLFW_RESIZABLE, GLFW_FALSE);
+			::glfwSetWindowAttrib(m_glfwWindow, GLFW_DECORATED, GLFW_FALSE);
+		}
+		
+		m_state.style = style;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setPos
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setPos(const Point pos)
+	{
+		LOG_DEBUG(fmt::format("CWindow::setPos(pos = {})", pos));
+
+		if (m_state.fullscreen)
+		{
+			LOG_FAIL("A window in fullscreen mode cannot be moved");
+			return;
+		}
+		
+		::glfwSetWindowPos(m_glfwWindow, pos.x, (pos.y + m_state.titleBarHeight));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	maximize
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::maximize()
+	{
+		LOG_DEBUG("CWindow::maximize()");
+
+		if (m_state.style == WindowStyle::Fixed)
+		{
+			LOG_FAIL("A window with WindowStyle::Fixed cannot be maximized");
+			return;
+		}
+		
+		::glfwMaximizeWindow(m_glfwWindow);
+	}
+	
+	////////////////////////////////////////////////////////////////
+	//
+	//	restore
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::restore()
+	{
+		LOG_DEBUG("CWindow::restore()");
+		
+		::glfwRestoreWindow(m_glfwWindow);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	minimize
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::minimize()
+	{
+		LOG_DEBUG("CWindow::minimize()");
+		
+		::glfwIconifyWindow(m_glfwWindow);
+	}
 
 
 
 
 
-
-
+	////////////////////////////////////////////////////////////////
+	//
+	//	updateState
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CWindow::updateState()
 	{
@@ -129,8 +278,7 @@ namespace s3d
 		m_state.scaling = Max(xScale, yScale);
 		
 		// titleBarHeight
-		//Siv3D_MacOS_UpdateWindowState(m_glfwWindow, m_state);
-		//LOG_TEST(U"title bar: {}"_fmt(m_state.titleBarHeight));
+		m_state.titleBarHeight = WindowMisc::GetTitleBarHeight(m_glfwWindow);
 		
 		// bounds
 		int32 windowPosX, windowPosY, windowSizeX, windowSizeY;
@@ -161,10 +309,16 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	OnMove
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CWindow::OnMove(GLFWwindow* glfwWindow, const int flag, const int)
 	{
 		const bool move = (flag == 1);
-		LOG_DEBUG(U"CWindow::OnMove({})"_fmt(move));
+		LOG_DEBUG(fmt::format("CWindow::OnMove({})", move));
 		
 		if (CWindow* pWindow = GetWindow(glfwWindow))
 		{
@@ -173,10 +327,16 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	OnResize
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CWindow::OnResize(GLFWwindow* glfwWindow, const int width, const int height)
 	{
 		const Size size{ width, height };
-		LOG_DEBUG(U"CWindow::OnResize({})"_fmt(size));
+		LOG_DEBUG(fmt::format("CWindow::OnResize({})", size));
 		
 		if (CWindow* pWindow = GetWindow(glfwWindow))
 		{
@@ -185,10 +345,16 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	OnFrameBufferSize
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CWindow::OnFrameBufferSize(GLFWwindow* glfwWindow, const int width, const int height)
 	{
 		const Size size{ width, height };
-		LOG_DEBUG(U"CWindow::OnFrameBufferSize({})"_fmt(size));
+		LOG_DEBUG(fmt::format("CWindow::OnFrameBufferSize({})", size));
 		
 		if (CWindow* pWindow = GetWindow(glfwWindow))
 		{
@@ -196,6 +362,12 @@ namespace s3d
 			//pWindow->m_state.clientSize = size;
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	OnScalingChange
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CWindow::OnScalingChange(GLFWwindow* glfwWindow, const float sx, const float sy)
 	{
@@ -206,6 +378,12 @@ namespace s3d
 			pWindow->m_state.scaling = Max(sx, sy);
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	OnIconify
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CWindow::OnIconify(GLFWwindow* glfwWindow, const int iconified)
 	{
@@ -226,6 +404,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	OnMaximize
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CWindow::OnMaximize(GLFWwindow* glfwWindow, const int maximized)
 	{
 		LOG_DEBUG(fmt::format("CWindow::OnMaximize({})", (maximized == GLFW_TRUE)));
@@ -244,6 +428,12 @@ namespace s3d
 			}
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	OnFocus
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CWindow::OnFocus(GLFWwindow* glfwWindow, const int focused)
 	{
