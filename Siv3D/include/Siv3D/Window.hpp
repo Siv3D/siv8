@@ -16,6 +16,8 @@
 
 namespace s3d
 {
+	struct WindowState;
+
 	namespace Window
 	{
 		////////////////////////////////////////////////////////////////
@@ -52,6 +54,17 @@ namespace s3d
 		/// @return  現在のウィンドウのタイトル
 		[[nodiscard]]
 		const String& GetTitle() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetState
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 現在のウィンドウの状態を返します。
+		/// @return 現在のウィンドウの状態
+		[[nodiscard]]
+		const WindowState& GetState() noexcept;
 	}
 }
 

@@ -26,5 +26,10 @@ namespace s3d
 		{
 			return SIV3D_ENGINE(Window)->getWindowTitle();
 		}
+
+		const WindowState& GetState() noexcept
+		{
+			return SIV3D_ENGINE(Window)->getState();
+		}
 	}
 }
