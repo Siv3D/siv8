@@ -20,6 +20,15 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static CWindow* GetWindow()
+		{
+			return static_cast<CWindow*>(SIV3D_ENGINE(Window));
+		}
+	}
+
 	LRESULT CALLBACK WindowProc(const HWND hWnd, const UINT message, const WPARAM wParam, LPARAM lParam)
 	{
 		// エンジンコンポーネントにアクセスできるか
@@ -43,56 +52,111 @@ namespace s3d
 
 		switch (message)
 		{
-		case WM_CLOSE:
-		{
-			LOG_DEBUG("WM_CLOSE");
-
-			if (engineAvailable)
+		case WM_DESTROY:
 			{
-				SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::CloseButtonClicked);
+				LOG_DEBUG("WM_DESTROY");
+
+				::PostQuitMessage(0);
+
+				return 0;
 			}
-
-			return 0; // WM_DESTROY を発生させない
-		}
-		case WM_SETFOCUS:
-		{
-			LOG_DEBUG("WM_SETFOCUS");
-
-			if (engineAvailable)
+		case WM_MOVE:
 			{
-				//static_cast<CWindow*>(SIV3D_ENGINE(Window))->onFocus(true);
-			}
+				LOG_DEBUG("WM_MOVE");
 
-			break;
-		}
-		case WM_SYSKEYDOWN:
-		{
-			if (engineAvailable)
-			{
-				if ((wParam == VK_RETURN) && (lParam & (1 << 29))) // Alt + Enter
+				if (engineAvailable)
 				{
-					//static_cast<CWindow*>(SIV3D_ENGINE(Window))->requestToggleFullscreen();
-					return 0;
+					GetWindow()->onBoundsUpdate();
 				}
+
+				return 0;
 			}
-
-			break;
-		}
-		case WM_SYSKEYUP:
-		{
-			break;
-		}
-		case WM_KILLFOCUS:
-		{
-			LOG_DEBUG("WM_KILLFOCUS");
-
-			if (engineAvailable)
+		case WM_SIZE:
 			{
-				//static_cast<CWindow*>(SIV3D_ENGINE(Window))->onFocus(false);
-			}
+				LOG_DEBUG("WM_SIZE");
 
-			break;
-		}
+				if (engineAvailable)
+				{
+					auto pWindow = GetWindow();
+					pWindow->onBoundsUpdate();
+
+					const bool minimized = (wParam == SIZE_MINIMIZED);
+					const bool maximized = ((wParam == SIZE_MAXIMIZED) || (pWindow->getState().maximized && (wParam != SIZE_RESTORED)));		
+					pWindow->onResize(minimized, maximized);
+
+					const Size frameBufferSize{ LOWORD(lParam), HIWORD(lParam) };
+					pWindow->onFrameBufferResize(frameBufferSize);
+				}
+
+				return 0;
+			}
+		case WM_SETFOCUS:
+			{
+				LOG_DEBUG("WM_SETFOCUS");
+
+				if (engineAvailable)
+				{
+					GetWindow()->onFocus(true);
+				}
+
+				break;
+			}
+		case WM_KILLFOCUS:
+			{
+				LOG_DEBUG("WM_KILLFOCUS");
+
+				if (engineAvailable)
+				{
+					GetWindow()->onFocus(false);
+				}
+
+				break;
+			}
+		case WM_CLOSE:
+			{
+				LOG_DEBUG("WM_CLOSE");
+
+				if (engineAvailable)
+				{
+					SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::CloseButtonClicked);
+				}
+
+				return 0; // WM_DESTROY を発生させない
+			}
+		case WM_ERASEBKGND:
+			{
+				return true;
+			}
+		case WM_GETMINMAXINFO:
+			{
+				if (engineAvailable)
+				{
+					const Size minSize = GetWindow()->getMinTrackSize();
+					
+					LPMINMAXINFO pMinMaxInfo = reinterpret_cast<LPMINMAXINFO>(lParam);
+					pMinMaxInfo->ptMinTrackSize.x = minSize.x;
+					pMinMaxInfo->ptMinTrackSize.y = minSize.y;
+				}
+
+				break;
+			}
+		case WM_SYSKEYDOWN:
+			{
+				if (engineAvailable)
+				{
+					if ((wParam == VK_RETURN) && (lParam & (1 << 29))) // Alt + Enter
+					{
+						//static_cast<CWindow*>(SIV3D_ENGINE(Window))->requestToggleFullscreen();
+						return 0;
+					}
+				}
+
+				break;
+			}
+		case WM_SYSKEYUP:
+			{
+				break;
+			}
 		//case WM_KEYDOWN:
 		//	{
 		//		LOG_VERBOSE(U"WM_KEYDOWN");
@@ -119,76 +183,24 @@ namespace s3d
 		//		break;
 		//	}
 		case WM_SYSCOMMAND:
-		{
-			LOG_DEBUG("WM_SYSCOMMAND");
-
-			switch (wParam & 0xffF0)
 			{
-			case SC_SCREENSAVE:
-			case SC_MONITORPOWER:
-			case SC_KEYMENU:
-				return 0;
+				LOG_DEBUG("WM_SYSCOMMAND");
+
+				switch (wParam & 0xffF0)
+				{
+				case SC_SCREENSAVE:
+				case SC_MONITORPOWER:
+				case SC_KEYMENU:
+					return 0;
+				}
+
+				break;
 			}
-
-			break;
-		}
 		case WM_DISPLAYCHANGE:
-		{
-			LOG_DEBUG("WM_DISPLAYCHANGE");
-
-			return true;
-		}
-		//case WM_DPICHANGED:
-		//	{
-		//		LOG_DEBUG("WM_DPICHANGED");
-				//if (engineAvailable)
-				//{
-				//	const uint32 newDPI = HIWORD(wParam);
-				//	const RECT rect = *reinterpret_cast<const RECT*>(lParam);
-				//	const Point pos(rect.left, rect.top);
-
-				//	static_cast<CWindow*>(SIV3D_ENGINE(Window))->onDPIChange(newDPI, pos);
-
-				//	return true;
-				//}
-		//	}
-		//case WM_SIZE:
-		//	{
-		//		LOG_DEBUG("WM_SIZE");
-				//if (engineAvailable)
-				//{
-				//	auto pCWindow = static_cast<CWindow*>(SIV3D_ENGINE(Window));
-				//	pCWindow->onBoundsUpdate();
-
-				//	const bool minimized = (wParam == SIZE_MINIMIZED);
-				//	const bool maximized = (wParam == SIZE_MAXIMIZED)
-				//		|| (pCWindow->getState().maximized && (wParam != SIZE_RESTORED));
-				//	pCWindow->onResize(minimized, maximized);
-
-				//	const Size frameBufferSize(LOWORD(lParam), HIWORD(lParam));
-				//	pCWindow->onFrameBufferResize(frameBufferSize);
-				//}
-
-		//		return 0;
-		//	}
-		//case WM_MOVE:
-		//	{
-		//		LOG_DEBUG("WM_MOVE");
-		//
-		//		if (engineAvailable)
-		//		{
-		//			static_cast<CWindow*>(SIV3D_ENGINE(Window))->onBoundsUpdate();
-		//		}
-		//
-		//		return 0;
-		//	}
-		case WM_DESTROY:
 			{
-				LOG_DEBUG("WM_DESTROY");
+				LOG_DEBUG("WM_DISPLAYCHANGE");
 
-				::PostQuitMessage(0);
-
-				return 0;
+				return true;
 			}
 		//case WM_CHAR:
 		//	{
@@ -265,44 +277,6 @@ namespace s3d
 
 		//		break;
 		//	}
-		case WM_ERASEBKGND:
-			{
-				return true;
-			}
-		//case WM_GETMINMAXINFO:
-		//	{
-		//		//LOG_VERBOSE(U"WM_GETMINMAXINFO");
-			
-				//if (engineAvailable)
-				//{
-				//	LPMINMAXINFO pMinMaxInfo = reinterpret_cast<LPMINMAXINFO>(lParam);
-				//	static_cast<CWindow*>(SIV3D_ENGINE(Window))->onMinMaxInfo(pMinMaxInfo);
-				//}
-
-		//		break;
-		//	}
-		//case WM_ENTERSIZEMOVE:
-		//	{
-		//		LOG_DEBUG("WM_ENTERSIZEMOVE");
-		
-				//if (engineAvailable)
-				//{
-				//	static_cast<CWindow*>(SIV3D_ENGINE(Window))->onEnterSizeMove();
-				//}
-
-		//		break;
-		//	}
-		//case WM_EXITSIZEMOVE:
-		//	{
-		//		LOG_DEBUG("WM_EXITSIZEMOVE");
-
-				//if (engineAvailable)
-				//{
-				//	static_cast<CWindow*>(SIV3D_ENGINE(Window))->onExitSizeMove();
-				//}
-
-		//		break;
-		//	}
 		case WM_MOUSEMOVE:
 			{
 				if (engineAvailable)
@@ -312,6 +286,41 @@ namespace s3d
 				}
 				
 				break;
+			}
+		case WM_ENTERSIZEMOVE:
+			{
+				LOG_DEBUG("WM_ENTERSIZEMOVE");
+		
+				if (engineAvailable)
+				{
+					GetWindow()->onEnterSizeMove();
+				}
+
+				break;
+			}
+		case WM_EXITSIZEMOVE:
+			{
+				LOG_DEBUG("WM_EXITSIZEMOVE");
+
+				if (engineAvailable)
+				{
+					GetWindow()->onExitSizeMove();
+				}
+
+				break;
+			}
+		case WM_DPICHANGED:
+			{
+				LOG_DEBUG("WM_DPICHANGED");
+				
+				if (engineAvailable)
+				{
+					const uint32 newDPI = HIWORD(wParam);
+					const RECT* rect = reinterpret_cast<const RECT*>(lParam);
+					GetWindow()->onDPIChange(newDPI, Point{ rect->left, rect->top });
+				}
+
+				return true;
 			}
 		//case WM_SETCURSOR:
 		//	{

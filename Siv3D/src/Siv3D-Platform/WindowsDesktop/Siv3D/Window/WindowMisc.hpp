@@ -69,7 +69,7 @@ namespace s3d::WindowMisc
 
 	[[nodiscard]]
 	Rect AdjustWindowRect(HWND hWnd, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
-		int32 dpi, const Point& windowPos, const Size& size, int32 windowStyleFlags);
+		int32 dpi, const Point& windowPos, const Size& size, uint32 windowStyleFlags);
 
 	////////////////////////////////////////////////////////////////
 	//

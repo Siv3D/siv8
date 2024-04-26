@@ -12,12 +12,26 @@
 # include "CWindow.hpp"
 # include "WindowMisc.hpp"
 # include <Siv3D/MonitorInfo.hpp>
+# include <Siv3D/Math.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
+# include <Siv3D/UserAction/IUserAction.hpp>
+# include <Siv3D/UserAction.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <dwmapi.h>
 
 namespace s3d
 {
 	extern std::atomic_flag g_shouldDestroyWindow;
+
+	namespace
+	{
+		[[nodiscard]]
+		static constexpr Rect ToRect(const RECT& rect) noexcept
+		{
+			return{ rect.left, rect.top, (rect.right - rect.left), (rect.bottom - rect.top) };
+		}
+	}
 
 	CWindow::~CWindow()
 	{
@@ -98,6 +112,7 @@ namespace s3d
 
 	void CWindow::update()
 	{
+		m_state.sizeMove = m_moving.load();
 
 		if constexpr (SIV3D_BUILD(DEBUG))
 		{
@@ -154,5 +169,157 @@ namespace s3d
 		}
 
 		m_windowClass.unregisterClass(m_hInstance);
+	}
+
+
+
+	void CWindow::onResize(const bool minimized, const bool maximized)
+	{
+		LOG_DEBUG(fmt::format("CWindow::onResize(minimized = {}, maximized = {})", minimized, maximized));
+
+		if (minimized)
+		{
+			m_state.minimized = true;
+			m_state.maximized = false;
+		}
+		else if (maximized)
+		{
+			m_state.minimized = false;
+			m_state.maximized = true;
+		}
+		else
+		{
+			m_state.minimized = false;
+			m_state.maximized = false;
+		}
+	}
+
+	void CWindow::onFocus(const bool focused)
+	{
+		LOG_DEBUG(fmt::format("CWindow::onFocus(focused = {})", focused));
+
+		if (not focused)
+		{
+			SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::WindowDeactivated);
+		}
+
+		m_state.focused = focused;
+	}
+
+	void CWindow::onFrameBufferResize(const Size size)
+	{
+		LOG_DEBUG(U"CWindow::onFrameBufferResize(size = {})"_fmt(size));
+
+		if (size.isZero())
+		{
+			// window minimized
+		}
+		else
+		{
+			m_state.frameBufferSize = size;
+			m_state.virtualSize = Math::Round(m_state.frameBufferSize * (1.0 / m_state.scaling)).asPoint();
+		}
+	}
+
+	void CWindow::onBoundsUpdate()
+	{
+		LOG_TRACE("CWindow::onBoundsUpdate()");
+
+		// bounds
+		{
+			RECT windowRect;
+			::DwmGetWindowAttribute(m_hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &windowRect, sizeof(RECT));
+			m_state.bounds = ToRect(windowRect);
+		}
+
+		// frame thickness
+		{
+			m_state.frameSize.set(getSystemMetrics(SM_CXBORDER), getSystemMetrics(SM_CYBORDER));
+		}
+
+		// title bar height
+		{
+			m_state.titleBarHeight = (getSystemMetrics(SM_CYCAPTION)
+				+ getSystemMetrics(SM_CYFRAME)
+				+ getSystemMetrics(SM_CXPADDEDBORDER));
+		}
+
+		// border
+		{
+			const DWORD windowStyleFlags = static_cast<DWORD>(::GetWindowLongPtrW(m_hWnd, GWL_STYLE));
+			const Rect placeholderWindowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi, Point{ 0, 0 }, Size{ 0, 0 }, windowStyleFlags);
+			m_border = placeholderWindowRect.size;
+		}
+
+		LOG_TRACE(U"- bounds: {}, frameSize: {}, titleBarHeight: {}, border: {}"_fmt(
+			m_state.bounds, m_state.frameSize, m_state.titleBarHeight, m_border));
+	}
+
+	void CWindow::onDPIChange(const uint32 dpi, const Point suggestedPos)
+	{
+		const double scaling = WindowMisc::GetScaling(dpi);
+		
+		LOG_SCOPED_DEBUG("CWindow::onDPIChange()");
+		LOG_TRACE(U"- dpi = {}({:.0f}%), suggestedPos = {}"_fmt(dpi, (scaling * 100), suggestedPos));
+
+		m_dpi = dpi;
+		m_state.scaling = scaling;
+
+		onBoundsUpdate();
+
+		const Size newFrameBufferSize = (m_state.virtualSize * scaling).asPoint();
+		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
+		Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
+			suggestedPos, newFrameBufferSize, windowStyleFlags);
+
+		if (m_state.style != WindowStyle::Frameless)
+		{
+			windowRect.y = (suggestedPos.y - m_state.titleBarHeight);
+		}
+
+		setWindowPos(windowRect, (SWP_NOACTIVATE | SWP_NOZORDER));
+	}
+
+	void CWindow::onEnterSizeMove()
+	{
+		m_moving.store(true);
+	}
+
+	void CWindow::onExitSizeMove()
+	{
+		m_moving.store(false);
+	}
+
+	Size CWindow::getMinTrackSize() const noexcept
+	{
+		return (m_state.minFrameBufferSize + m_border);
+	}
+
+	int32 CWindow::getSystemMetrics(const int32 index) const
+	{
+		if (m_user32.pGetSystemMetricsForDpi)
+		{
+			return m_user32.pGetSystemMetricsForDpi(index, m_dpi);
+		}
+		else
+		{
+			return ::GetSystemMetrics(index);
+		}
+	}
+
+	void CWindow::setWindowPos(const Rect& rect, const uint32 flags)
+	{
+		Point pos = rect.pos;
+	
+		if (m_state.style != WindowStyle::Frameless)
+		{
+			pos.x += m_state.frameSize.x;
+			pos.y += m_state.titleBarHeight;
+		}
+
+		const Size size = rect.size;
+
+		LOG_DEBUG(fmt::format("SetWindowPos({}, {}, {}, {}, {:#x})", pos.x, pos.y, size.x, size.y, flags));
+		::SetWindowPos(m_hWnd, HWND_TOP, pos.x, pos.y, size.x, size.y, flags);
 	}
 }
