@@ -22,7 +22,7 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static Point GetScreenPos()
+		static Point GetCursorScreenPos()
 		{
 			@autoreleasepool
 			{
@@ -52,11 +52,10 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Point GetCursorRawClientPos(GLFWwindow* window)
+		static Point GetCursorRawClientPos(const Point screenPos)
 		{
-			double clientX, clientY;
-			::glfwGetCursorPos(window, &clientX, &clientY);
-			return Vec2{ clientX, clientY }.asPoint();
+			const WindowState windowState = SIV3D_ENGINE(Window)->getState();
+			return (screenPos - windowState.bounds.pos - Point{ 0, windowState.titleBarHeight });
 		}
 	}
 
@@ -72,8 +71,8 @@ namespace s3d
 		m_window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 
 		{
-			const Point screenPos = GetScreenPos();
-			const Point rawClientPos = GetCursorRawClientPos(m_window);
+			const Point screenPos = GetCursorScreenPos();
+			const Point rawClientPos = GetCursorRawClientPos(screenPos);
 			updateHighTemporalResolutionCursorPos(rawClientPos);
 			
 			const double windowScaling = SIV3D_ENGINE(Window)->getState().scaling;
@@ -93,8 +92,8 @@ namespace s3d
 		m_highTemporalResolutionCursor.update();
 		
 		{
-			const Point screenPos = GetScreenPos();
-			const Point rawClientPos = GetCursorRawClientPos(m_window);
+			const Point screenPos = GetCursorScreenPos();
+			const Point rawClientPos = GetCursorRawClientPos(screenPos);
 			updateHighTemporalResolutionCursorPos(rawClientPos);
 			
 			const double windowScaling = SIV3D_ENGINE(Window)->getState().scaling;
