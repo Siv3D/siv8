@@ -1072,35 +1072,38 @@ void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)
 		}
 		
 		const float zeroScreenHeight = [screens[0] frame].size.height;
-
+		const NSScreen* currentWindowScreen = [window->ns.object screen];
+		
 		const NSRect frameRect = [window->ns.object frame];
+		const NSRect retinaFrameRect = [currentWindowScreen convertRectToBacking: frameRect];
 		
 		// ウィンドウの左上の座標（macOS 座標系）
-		const float fax = frameRect.origin.x;
-		const float fay = (frameRect.origin.y + frameRect.size.height);
-		
-		const NSScreen* currentWindowScreen = [window->ns.object screen];
+		const float retinaFax = retinaFrameRect.origin.x;
+		const float retinaFay = (retinaFrameRect.origin.y + retinaFrameRect.size.height);
+				
 		const NSRect screenRect = [currentWindowScreen frame];
-		
-		// スクリーンの左上の座標（macOS 座標系）
-		const float ax = screenRect.origin.x;
-		const float ay = (screenRect.origin.y + screenRect.size.height);
-		
-		// スクリーンの左上の座標（Siv3D 座標系）
-		const float sx = ax;
-		const float sy = (zeroScreenHeight - ay);
-		
-		// スクリーン左上からのウィンドウ位置オフセット
-		const float ox = (fax - ax);
-		const float oy = (screenRect.size.height - (fay - screenRect.origin.y));
-		
+		const NSRect retinaScreenRect = [currentWindowScreen convertRectToBacking: screenRect];
 		const float scaleFactor = [currentWindowScreen backingScaleFactor];
 		
+		// スクリーンの左上の座標（macOS 座標系）
+		const float retinaAx = retinaScreenRect.origin.x;
+		const float retinaAy = (retinaScreenRect.origin.y + retinaScreenRect.size.height);
+		
+		// スクリーンの左上の座標（Siv3D 座標系）
+		const float retinaSx = retinaAx;
+		const float retinaSy = (zeroScreenHeight * scaleFactor - retinaAy);
+		
+		// スクリーン左上からのウィンドウ位置オフセット
+		const float retinaOx = (retinaFax - retinaAx);
+		const float retinaOy = (retinaScreenRect.size.height - (retinaFay - retinaScreenRect.origin.y));
+		
+		//const float scaleFactor = [currentWindowScreen backingScaleFactor];
+		
 		if (xpos)
-			*xpos = (int)(roundf(sx + ox * scaleFactor));
+			*xpos = (int)(roundf(retinaSx + retinaOx));
 		
 		if (ypos)
-			*ypos = (int)(roundf(sy + oy * scaleFactor));
+			*ypos = (int)(roundf(retinaSy + retinaOy));
 				
     } // autoreleasepool
 }
@@ -1117,9 +1120,7 @@ void _glfwSetWindowPosCocoa(_GLFWwindow* window, int retinaX, int retinaY)
 		}
 		
 		const float zeroScreenHeight = [screens[0] frame].size.height; // 956
-		const CGFloat zeroScreenScaleFactor = [screens[0] backingScaleFactor];
-		const float retinaZeroScreenHeight = (zeroScreenHeight * zeroScreenScaleFactor);
-		
+	
 		for (NSScreen* screen in screens)
 		{
 			const NSRect screenRect = [screen frame];

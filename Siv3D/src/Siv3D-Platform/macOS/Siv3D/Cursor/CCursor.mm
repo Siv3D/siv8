@@ -36,31 +36,39 @@ namespace s3d
 				const float zeroScreenHeight = [screens[0] frame].size.height;
 				const float zeroScreenScaleFactor = [screens[0] backingScaleFactor];
 				const NSPoint mouseLocation = [NSEvent mouseLocation];
+				//NSLog(@"%f %f", mouseLocation.x, mouseLocation.y);
 
 				for (NSScreen* screen in screens)
 				{
 					const NSRect screenRect = [screen frame];
-
-					// マウスカーソルが screenRect 上にあるか
-					if ((screenRect.origin.x <= mouseLocation.x)
-						&& (mouseLocation.x <= (screenRect.origin.x + screenRect.size.width))
-						&& (screenRect.origin.y <= mouseLocation.y)
-						&& (mouseLocation.y <= (screenRect.origin.y + screenRect.size.height)))
+					const NSRect retinaScreenRect = [screen convertRectToBacking: screenRect];
+					
+					const NSRect placeholderRect = NSMakeRect(mouseLocation.x, mouseLocation.y, 0, 0);
+					const NSRect retinaPlaceholderRect = [screen convertRectToBacking: placeholderRect];
+					const NSPoint retinaMouseLocation = retinaPlaceholderRect.origin;
+					//NSLog(@"%f %f", retinaMouseLocation.x, retinaMouseLocation.y);
+					
+					// マウスカーソルが retinaScreenRect 上にあるか
+					if ((retinaScreenRect.origin.x <= retinaMouseLocation.x)
+						&& (retinaMouseLocation.x <= (retinaScreenRect.origin.x + retinaScreenRect.size.width))
+						&& (retinaScreenRect.origin.y <= retinaMouseLocation.y)
+						&& (retinaMouseLocation.y <= (retinaScreenRect.origin.y + retinaScreenRect.size.height)))
 					{
+						const float scaleFactor = [screen backingScaleFactor];
+						
 						// スクリーンの左上の座標（macOS 座標系）
-						const float ax = screenRect.origin.x;
-						const float ay = (screenRect.origin.y + screenRect.size.height);
+						const float retinaAx = retinaScreenRect.origin.x;
+						const float retinaAy = (retinaScreenRect.origin.y + retinaScreenRect.size.height);
 						
 						// スクリーンの左上の座標（Siv3D 座標系）
-						const float sx = ax;
-						const float sy = (zeroScreenHeight - ay);
+						const float retinaSx = retinaAx;
+						const float retinaSy = (zeroScreenHeight * scaleFactor - retinaAy);
 						
 						// スクリーン左上からのマウスカーソル位置オフセット
-						const float ox = (mouseLocation.x - ax);
-						const float oy = (screenRect.size.height - (mouseLocation.y - screenRect.origin.y));
-						
-						const float scaleFactor = [screen backingScaleFactor];
-						return Math::Round(Vec2{ (sx + ox * scaleFactor), (sy + oy * scaleFactor) }).asPoint();
+						const float retinaOx = (retinaMouseLocation.x - retinaAx);
+						const float retinaOy = (retinaScreenRect.size.height - (retinaMouseLocation.y - retinaScreenRect.origin.y));
+
+						return Math::Round(Vec2{ (retinaSx + retinaOx), (retinaSy + retinaOy) }).asPoint();
 					}
 				}
 				
