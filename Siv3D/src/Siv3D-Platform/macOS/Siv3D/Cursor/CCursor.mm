@@ -26,12 +26,28 @@ namespace s3d
 		{
 			@autoreleasepool
 			{
-				NSScreen* mainScreen = [NSScreen mainScreen];
-				const int32 screenHeight = [mainScreen frame].size.height;
-				const float scaleFactor = [mainScreen backingScaleFactor];
-				const float scaledHeight = (screenHeight * scaleFactor);
-				const NSPoint screenPos = [NSEvent mouseLocation];
-				return Math::Round(Vec2{ (screenPos.x * scaleFactor), (scaledHeight - (screenPos.y * scaleFactor)) }).asPoint();
+				const NSScreen* mainScreen = [NSScreen mainScreen];
+				const int32 mainScreenHeight = [mainScreen frame].size.height;
+				const float mainScaleFactor = [mainScreen backingScaleFactor];
+				const NSPoint mouseLocation = [NSEvent mouseLocation];
+				
+				for (NSScreen* screen in [NSScreen screens])
+				{
+					const NSRect frame = [screen frame];
+					
+					if ((frame.origin.x <= mouseLocation.x)
+						&& (mouseLocation.x <= (frame.origin.x + frame.size.width))
+						&& (frame.origin.y <= mouseLocation.y)
+						&& (mouseLocation.y <= (frame.origin.y + frame.size.height)))
+					{
+						const float scaleFactor = [screen backingScaleFactor];
+						return Math::Round(Vec2{ (mouseLocation.x * scaleFactor),
+							((mainScreenHeight * scaleFactor) - (mouseLocation.y * scaleFactor)) }).asPoint();
+					}
+				}
+				
+				// fallback
+				return Math::Round(Vec2{ (mouseLocation.x * mainScaleFactor), ((mainScreenHeight * mainScaleFactor) - (mouseLocation.y * mainScaleFactor)) }).asPoint();
 			}
 		}
 

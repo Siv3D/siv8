@@ -1647,16 +1647,16 @@ void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos)
 	@autoreleasepool {
 
 	const NSRect contentRect = [window->ns.view frame];
-	const NSRect contebtRectRetina = [window->ns.view convertRectToBacking:contentRect];
+	const NSRect retinaContentRect = [window->ns.view convertRectToBacking:contentRect];
 		
 	// NOTE: The returned location uses base 0,1 not 0,0
 	const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
-	const NSPoint posRetina = [window->ns.object convertPointToBacking:pos];
+	const NSPoint retinaPos = [window->ns.object convertPointToBacking:pos];
 
 	if (xpos)
-		*xpos = posRetina.x;
+		*xpos = retinaPos.x;
 	if (ypos)
-		*ypos = (contebtRectRetina.size.height - posRetina.y);
+		*ypos = (retinaContentRect.size.height - retinaPos.y);
 
 	} // autoreleasepool
 }
