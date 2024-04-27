@@ -44,6 +44,8 @@ namespace s3d
 
 		virtual void setPos(Point pos) = 0;
 
+		virtual void show() = 0;
+
 		virtual void maximize() = 0;
 
 		virtual void restore() = 0;

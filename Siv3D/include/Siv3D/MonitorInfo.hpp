@@ -110,6 +110,7 @@ namespace s3d
 
 		/// @brief ウィンドウが配置されているモニターの情報を取得します。
 		/// @return ウィンドウが配置されているモニターの情報
+		/// @throw Error 情報の取得に失敗した場合
 		[[nodiscard]]
 		MonitorInfo GetCurrentMonitor();
 	}

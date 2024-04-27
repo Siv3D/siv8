@@ -121,12 +121,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ウィンドウを現在のモニターのワークエリアの中央に移動させます。
-		void CenterToScreen();
+		/// @brief 現在のモニターのワークエリアの中央にウィンドウを移動させます。
+		/// @return 移動に成功した場合 true, それ以外の場合は false
+		bool CenterToScreen();
 
-		/// @brief ウィンドウを指定したモニターのワークエリアの中央に移動させます。
+		/// @brief 指定したモニターのワークエリアの中央にウィンドウを移動させます。
 		/// @param monitorIndex モニターのインデックス
-		void CenterToScreen(size_t monitorIndex);
+		/// @return 移動に成功した場合 true, それ以外の場合は false
+		bool CenterToScreen(size_t monitorIndex);
 
 		////////////////////////////////////////////////////////////////
 		//

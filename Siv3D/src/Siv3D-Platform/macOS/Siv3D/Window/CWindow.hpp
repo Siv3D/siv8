@@ -43,6 +43,8 @@ namespace s3d
 
 		void setPos(Point pos) override;
 
+		void show() override;
+
 		void maximize() override;
 
 		void restore() override;
