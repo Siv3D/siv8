@@ -96,13 +96,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ウィンドウを指定したスクリーン座標に移動させます。
-		/// @param pos 移動先のスクリーン座標
-		void SetPos(Point pos);
+		/// @param screenPos 移動先のスクリーン座標
+		void SetPos(Point screenPos);
 
 		/// @brief ウィンドウを指定したスクリーン座標に移動させます。
-		/// @param x 移動先のスクリーン X 座標
-		/// @param y 移動先のスクリーン Y 座標
-		void SetPos(int32 x, int32 y);
+		/// @param screenX 移動先のスクリーン X 座標
+		/// @param screenY 移動先のスクリーン Y 座標
+		void SetPos(int32 screenX, int32 screenY);
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -544,7 +544,7 @@ namespace s3d
 	
 		if (m_state.style != WindowStyle::Frameless)
 		{
-			pos += Size{ m_state.frameThickness.x, m_state.titleBarHeight };
+			pos += Math::Round(Vec2{ (m_state.frameThickness.x * m_state.scaling), m_state.titleBarHeight }).asPoint();
 		}
 
 		const Size size = rect.size;
