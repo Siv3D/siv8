@@ -1119,7 +1119,7 @@ void _glfwSetWindowPosCocoa(_GLFWwindow* window, int retinaX, int retinaY)
 			return;
 		}
 		
-		const float zeroScreenHeight = [screens[0] frame].size.height; // 956
+		const float zeroScreenHeight = [screens[0] frame].size.height;
 	
 		for (NSScreen* screen in screens)
 		{
@@ -1159,7 +1159,7 @@ void _glfwSetWindowPosCocoa(_GLFWwindow* window, int retinaX, int retinaY)
 				const float awy = (ay - retinaOy / scaleFactor);
 				
 				const NSRect frameRect = [window->ns.object frame];
-				const float awoy = awy - frameRect.size.height;
+				const float awoy = (awy - frameRect.size.height);
 				
 				NSPoint pos;
 				pos.x = awx;
