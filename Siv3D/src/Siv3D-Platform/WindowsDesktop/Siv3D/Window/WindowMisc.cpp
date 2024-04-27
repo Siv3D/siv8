@@ -169,7 +169,7 @@ namespace s3d::WindowMisc
 	//
 	////////////////////////////////////////////////////////////////
 
-	HWND CreateMainWindow(HINSTANCE hInstance, const MonitorInfo& monitor,
+	HWND CreateMainWindow(HMODULE moduleHandle, const MonitorInfo& monitor,
 		const std::wstring& windowClassName, const String& windowName, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
 		int32& dpi, WindowState& windowState)
 	{
@@ -192,7 +192,7 @@ namespace s3d::WindowMisc
 			windowRect.w, windowRect.h,
 			nullptr, // No parent window
 			nullptr, // No menu
-			hInstance,
+			moduleHandle,
 			nullptr);
 	}
 

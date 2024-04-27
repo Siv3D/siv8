@@ -17,7 +17,7 @@
 
 namespace s3d
 {
-	void WindowClass::registerClass(HINSTANCE hInstance)
+	void WindowClass::registerClass(const HMODULE moduleHandle)
 	{
 		// WindowClass の名前を生成
 		name = FileSystem::ModulePath().toWstr();
@@ -27,8 +27,8 @@ namespace s3d
 			.cbSize			= sizeof(WNDCLASSEX),
 			.style			= (CS_HREDRAW | CS_VREDRAW),
 			.lpfnWndProc	= WindowProc,
-			.hInstance		= hInstance,
-			.hIcon			= ::LoadIconW(hInstance, MAKEINTRESOURCEW(100)),
+			.hInstance		= moduleHandle,
+			.hIcon			= ::LoadIconW(moduleHandle, MAKEINTRESOURCEW(100)),
 			.hCursor		= nullptr,
 			.hbrBackground	= static_cast<HBRUSH>(::GetStockObject(DKGRAY_BRUSH)),
 			.lpszClassName	= name.c_str(),
@@ -42,11 +42,11 @@ namespace s3d
 		}
 	}
 	
-	void WindowClass::unregisterClass(HINSTANCE hInstance)
+	void WindowClass::unregisterClass(const HMODULE moduleHandle)
 	{
 		LOG_DEBUG("UnregisterClassW()");
 		
-		[[maybe_unused]] const BOOL b = ::UnregisterClassW(name.c_str(), hInstance);
+		[[maybe_unused]] const BOOL b = ::UnregisterClassW(name.c_str(), moduleHandle);
 		
 		name.clear();
 

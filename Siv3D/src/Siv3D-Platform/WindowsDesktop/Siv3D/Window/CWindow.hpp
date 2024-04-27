@@ -78,7 +78,7 @@ namespace s3d
 
 		HWND m_hWnd = nullptr;
 
-		HINSTANCE m_hInstance = nullptr;
+		HMODULE m_moduleHandle = nullptr;
 
 		User32Lib m_user32;
 

@@ -72,8 +72,8 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CWindow::init()");
 
-		// hInstance を取得する
-		m_hInstance = ::GetModuleHandleW(nullptr);
+		// モジュールハンドルを取得する
+		m_moduleHandle = ::GetModuleHandleW(nullptr);
 
 		// User32.dll の関数をロードする
 		m_user32.load();
@@ -82,7 +82,7 @@ namespace s3d
 		WindowMisc::SetDPIAwareness(m_user32.library);
 
 		// ウィンドウクラスを登録する
-		m_windowClass.registerClass(m_hInstance);
+		m_windowClass.registerClass(m_moduleHandle);
 
 		// プライマリモニターにウィンドウを作成する
 		for (const auto& monitor : WindowMisc::GetMonitors())
@@ -91,7 +91,7 @@ namespace s3d
 			{
 				// ウィンドウを作成する
 				m_hWnd = WindowMisc::CreateMainWindow(
-					m_hInstance,
+					m_moduleHandle,
 					monitor,
 					m_windowClass.name,
 					m_windowTitle.actual,
@@ -341,7 +341,7 @@ namespace s3d
 			LOG_DEBUG(fmt::format("DestroyWindow() -> {}", static_cast<bool>(b)));
 		}
 
-		m_windowClass.unregisterClass(m_hInstance);
+		m_windowClass.unregisterClass(m_moduleHandle);
 	}
 
 	////////////////////////////////////////////////////////////////
