@@ -22,7 +22,7 @@ namespace s3d
 		{
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->write(type, s);
+				pLogger->writeln(type, s);
 			}
 		}
 
@@ -30,7 +30,7 @@ namespace s3d
 		{
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->write(type, s);
+				pLogger->writeln(type, s);
 			}
 		}
 
@@ -40,7 +40,7 @@ namespace s3d
 		{
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->write(m_type, (m_message + " ---"));
+				pLogger->writeln(m_type, (m_message + " ---"));
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace s3d
 		{
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->write(m_type, ("--- " + m_message));
+				pLogger->writeln(m_type, ("--- " + m_message));
 			}
 		}
 	}

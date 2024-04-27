@@ -26,13 +26,13 @@ namespace s3d
 
 		virtual ~ISiv3DLogger() = default;
 
-		virtual void write(std::string_view s) = 0;
+		virtual void writeln(std::string_view s) = 0;
 
-		virtual void write(StringView s) = 0;
+		virtual void writeln(StringView s) = 0;
 
-		virtual void write(LogType type, std::string_view s) = 0;
+		virtual void writeln(LogType type, std::string_view s) = 0;
 
-		virtual void write(LogType type, StringView s) = 0;
+		virtual void writeln(LogType type, StringView s) = 0;
 
 		virtual void setOutputLevel(LogType logType) noexcept = 0;
 

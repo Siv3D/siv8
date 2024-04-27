@@ -14,19 +14,7 @@
 namespace s3d
 {
 	namespace detail
-	{		
-		////////////////////////////////////////////////////////////////
-		//
-		//	write
-		//
-		////////////////////////////////////////////////////////////////
-
-		template <Concept::Formattable... Args>
-		void Logger_impl::write(const Args&... args) const
-		{
-			return write(Format(args...));
-		}
-		
+	{
 		////////////////////////////////////////////////////////////////
 		//
 		//	writeln
@@ -36,7 +24,7 @@ namespace s3d
 		template <Concept::Formattable... Args>
 		void Logger_impl::writeln(const Args&... args) const
 		{
-			return write(Format(args..., U'\n'));
+			return writeln(Format(args...));
 		}
 			
 		////////////////////////////////////////////////////////////////
