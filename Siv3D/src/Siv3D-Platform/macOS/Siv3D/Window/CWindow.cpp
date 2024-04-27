@@ -284,9 +284,8 @@ namespace s3d
 		int32 windowPosX, windowPosY, windowSizeX, windowSizeY;
 		::glfwGetWindowPos(m_glfwWindow, &windowPosX, &windowPosY);
 		::glfwGetWindowSize(m_glfwWindow, &windowSizeX, &windowSizeY);
-		
-		m_state.bounds.pos.set(windowPosX, (windowPosY - m_state.titleBarHeight));
-		m_state.bounds.size.set(windowSizeX, (windowSizeY + m_state.titleBarHeight));
+		m_state.bounds.pos.set(windowPosX, windowPosY);
+		m_state.bounds.size.set(windowSizeX, windowSizeY);
 				
 		// minimized
 		m_state.maximized = (::glfwGetWindowAttrib(m_glfwWindow, GLFW_ICONIFIED) == GLFW_TRUE);

@@ -11,6 +11,7 @@
 
 # include "CCursor.hpp"
 # include <Siv3D/Time.hpp>
+# include <Siv3D/Math.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Window/IWindow.hpp>
@@ -30,7 +31,7 @@ namespace s3d
 				const float scaleFactor = [mainScreen backingScaleFactor];
 				const float scaledHeight = (screenHeight * scaleFactor);
 				const NSPoint screenPos = [NSEvent mouseLocation];
-				return Vec2{ (screenPos.x * scaleFactor), (scaledHeight - (screenPos.y * scaleFactor)) }.asPoint();
+				return Math::Round(Vec2{ (screenPos.x * scaleFactor), (scaledHeight - (screenPos.y * scaleFactor)) }).asPoint();
 			}
 		}
 

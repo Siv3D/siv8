@@ -16,8 +16,14 @@ namespace s3d::WindowMisc
 {
 	int32 GetTitleBarHeight(GLFWwindow* glfwWindow)
 	{
-		NSWindow* window = ::glfwGetCocoaWindow(glfwWindow);
-		CGFloat contentHeight = [window contentRectForFrameRect: window.frame].size.height;
-		return (window.frame.size.height - contentHeight);
+		@autoreleasepool
+		{
+			NSWindow* window = ::glfwGetCocoaWindow(glfwWindow);
+			const NSRect frameRect = [window frame];
+			const NSRect retinaFrameRect = [window convertRectToBacking:frameRect];
+			const NSRect contentRect = [window contentRectForFrameRect: frameRect];
+			const NSRect retinaContentRect = [window convertRectToBacking: contentRect];
+			return (retinaFrameRect.size.height - retinaContentRect.size.height);
+		}
 	}
 }

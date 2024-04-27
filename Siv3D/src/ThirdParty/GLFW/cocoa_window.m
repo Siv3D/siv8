@@ -1055,20 +1055,29 @@ void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                     "Cocoa: Regular windows do not have icons on macOS");
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)
 {
     @autoreleasepool {
-
-    const NSRect contentRect =
-        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
-
-    if (xpos)
-        *xpos = contentRect.origin.x;
-    if (ypos)
-        *ypos = _glfwTransformYCocoa(contentRect.origin.y + contentRect.size.height - 1);
-
+		
+		const NSRect frameRect = [window->ns.object frame];
+		const NSRect retinaFrameRect = [window->ns.view convertRectToBacking:frameRect];
+		const CGFloat contentHeight = [window->ns.object contentRectForFrameRect: frameRect].size.height;
+		const NSScreen* screen = [window->ns.object screen];
+		const NSRect retinaScreenRect = [screen convertRectToBacking: screen.frame];
+			
+		if (xpos)
+			*xpos = retinaFrameRect.origin.x;
+		if (ypos)
+			*ypos = (retinaScreenRect.size.height - retinaFrameRect.origin.y - retinaFrameRect.size.height);
+		
     } // autoreleasepool
 }
+//
+//-----------------------------------------------
 
 void _glfwSetWindowPosCocoa(_GLFWwindow* window, int x, int y)
 {
@@ -1082,19 +1091,26 @@ void _glfwSetWindowPosCocoa(_GLFWwindow* window, int x, int y)
     } // autoreleasepool
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
 void _glfwGetWindowSizeCocoa(_GLFWwindow* window, int* width, int* height)
 {
     @autoreleasepool {
 
-    const NSRect contentRect = [window->ns.view frame];
+	const NSRect frameRect = [window->ns.object frame];
+	const NSRect retinaFrameRect = [window->ns.object convertRectToBacking:frameRect];
 
     if (width)
-        *width = contentRect.size.width;
+        *width = retinaFrameRect.size.width;
     if (height)
-        *height = contentRect.size.height;
+        *height = retinaFrameRect.size.height;
 
     } // autoreleasepool
 }
+//
+//-----------------------------------------------
 
 void _glfwSetWindowSizeCocoa(_GLFWwindow* window, int width, int height)
 {
