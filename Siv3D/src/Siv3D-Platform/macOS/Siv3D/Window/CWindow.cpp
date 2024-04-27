@@ -209,7 +209,7 @@ namespace s3d
 			return;
 		}
 		
-		::glfwSetWindowPos(m_glfwWindow, pos.x, (pos.y + m_state.titleBarHeight));
+		::glfwSetWindowPos(m_glfwWindow, pos.x, pos.y);
 	}
 
 	////////////////////////////////////////////////////////////////
