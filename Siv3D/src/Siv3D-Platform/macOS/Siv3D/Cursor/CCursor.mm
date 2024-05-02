@@ -140,4 +140,12 @@ namespace s3d
 	{
 		return m_highTemporalResolutionCursor.get();
 	}
+
+	void CCursor::setPos(const Point pos)
+	{
+		//const Vec2 rawPos = m_transformAll.transformPoint(pos);
+		const Vec2 rawPos = pos;
+		
+		::glfwSetCursorPos(m_window, rawPos.x, rawPos.y);
+	}
 }

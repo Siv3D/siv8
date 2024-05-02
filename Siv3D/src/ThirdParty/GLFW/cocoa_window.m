@@ -1739,11 +1739,8 @@ void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos)
 
 	} // autoreleasepool
 }
-//
-//-----------------------------------------------
- 
- 
 
+/*
 void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
 {
     @autoreleasepool {
@@ -1779,7 +1776,75 @@ void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
 
     } // autoreleasepool
 }
+*/
 
+void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
+{
+	@autoreleasepool
+	{
+		updateCursorImage(window);
+
+		const NSArray<NSScreen*>* screens = [NSScreen screens];
+		
+		if (screens.count < 1)
+		{
+			return;
+		}
+		
+		const float zeroScreenHeight = [screens[0] frame].size.height;
+		const NSScreen* currentWindowScreen = [window->ns.object screen];
+		
+		const NSRect frameRect = [window->ns.object frame];
+		const NSRect retinaFrameRect = [currentWindowScreen convertRectToBacking: frameRect];
+		
+		const NSRect contentRect = [window->ns.object contentRectForFrameRect: frameRect];
+		const NSRect retinaContentRect = [window->ns.object convertRectToBacking: contentRect];
+		const float titleBarHeight = (retinaFrameRect.size.height - retinaContentRect.size.height);
+		
+		// ウィンドウの左上の座標（macOS 座標系）
+		const float retinaFax = retinaFrameRect.origin.x;
+		const float retinaFay = (retinaFrameRect.origin.y + retinaFrameRect.size.height);
+				
+		const NSRect screenRect = [currentWindowScreen frame];
+		const NSRect retinaScreenRect = [currentWindowScreen convertRectToBacking: screenRect];
+		const float scaleFactor = [currentWindowScreen backingScaleFactor];
+		
+		// スクリーンの左上の座標（macOS 座標系）
+		const float retinaAx = retinaScreenRect.origin.x;
+		const float retinaAy = (retinaScreenRect.origin.y + retinaScreenRect.size.height);
+		
+		// スクリーンの左上の座標（Siv3D 座標系）
+		const float retinaSx = retinaAx;
+		const float retinaSy = (zeroScreenHeight * scaleFactor - retinaAy);
+
+		// スクリーン左上からのウィンドウ位置オフセット
+		const float retinaOx = (retinaFax - retinaAx);
+		const float retinaOy = (retinaScreenRect.size.height - (retinaFay - retinaScreenRect.origin.y));
+
+		// スクリーン左上からのシーン位置オフセット
+		const float retinaCx = retinaOx;
+		const float retinaCy = (retinaOy + titleBarHeight);
+
+		// ターゲットのマウスカーソル座標（Siv3D 座標系）
+		const float retinaCSX = (retinaSx + retinaCx + x);
+		const float retinaCSY = (retinaSy + retinaCy + y);
+		
+		// ターゲットのマウスカーソル座標（global 座標系）
+		const float CSX = retinaCSX / scaleFactor;
+		const float CSY = retinaCSY / scaleFactor;
+
+		CGWarpMouseCursorPosition(CGPointMake(CSX, CSY));
+
+		// HACK: Calling this right after setting the cursor position prevents macOS
+		//       from freezing the cursor for a fraction of a second afterwards
+		if (window->cursorMode != GLFW_CURSOR_DISABLED)
+			CGAssociateMouseAndMouseCursorPosition(true);
+	} // autoreleasepool
+}
+
+//
+//-----------------------------------------------
+ 
 void _glfwSetCursorModeCocoa(_GLFWwindow* window, int mode)
 {
     @autoreleasepool {
