@@ -36,6 +36,11 @@ namespace s3d
 
 		void setPos(Point pos) override;
 		
+		
+		bool isClippedToWindow() const noexcept override;
+
+		void clipToWindow(bool clip) override;
+		
 	private:
 		
 		GLFWwindow* m_window = nullptr;
@@ -43,5 +48,7 @@ namespace s3d
 		CursorState m_state;
 		
 		HighTemporalResolutionCursor m_highTemporalResolutionCursor;
+		
+		bool m_clippedToWindow = false;
 	};
 }

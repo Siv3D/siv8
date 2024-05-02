@@ -115,6 +115,11 @@ namespace s3d
 	
 	bool CCursor::update()
 	{
+		if (m_clippedToWindow)
+		{
+			// [Siv3D ToDo]
+		}
+		
 		m_highTemporalResolutionCursor.update();
 		
 		{
@@ -147,5 +152,21 @@ namespace s3d
 		const Vec2 rawPos = pos;
 		
 		::glfwSetCursorPos(m_window, rawPos.x, rawPos.y);
+	}
+
+
+	bool CCursor::isClippedToWindow() const noexcept
+	{
+		return m_clippedToWindow;
+	}
+
+	void CCursor::clipToWindow(const bool clip)
+	{
+		if (clip == m_clippedToWindow)
+		{
+			return;
+		}
+
+		m_clippedToWindow = clip;
 	}
 }
