@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # pragma once
-# include <mutex>
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/Cursor/HighTemporalResolutionCursor.hpp>
 # include <Siv3D/Windows/MinWindows.hpp>

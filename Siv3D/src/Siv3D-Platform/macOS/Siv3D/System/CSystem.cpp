@@ -18,6 +18,7 @@
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
 # include <Siv3D/Emoji/IEmoji.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -48,6 +49,8 @@ namespace s3d
 		SIV3D_ENGINE(Emoji)->init();
 		
 		SIV3D_ENGINE(Cursor)->init();
+
+		SIV3D_ENGINE(CursorStyle)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}

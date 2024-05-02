@@ -26,6 +26,7 @@ namespace s3d
 	class ISiv3DEmoji;
 	class ISiv3DConsole;
 	class ISiv3DCursor;
+	class ISiv3DCursorStyle;
 
 	class Siv3DEngine
 	{
@@ -44,7 +45,8 @@ namespace s3d
 			Siv3DComponent<ISiv3DImageEncoder>,
 			Siv3DComponent<ISiv3DEmoji>,
 			Siv3DComponent<ISiv3DConsole>,
-			Siv3DComponent<ISiv3DCursor>
+			Siv3DComponent<ISiv3DCursor>,
+			Siv3DComponent<ISiv3DCursorStyle>
 		> m_components;
 
 	public:
