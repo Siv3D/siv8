@@ -37,7 +37,7 @@ namespace s3d
 
 		virtual Array<std::pair<int64, Point>> getHighTemporalResolutionCursorPos() const = 0;
 
-		//virtual void setPos(Point pos) = 0;
+		virtual void setPos(Point pos) = 0;
 
 		//virtual const Mat3x2& getBaseWindowTransform() const noexcept = 0;
 

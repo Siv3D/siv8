@@ -110,4 +110,16 @@ namespace s3d
 	{
 		return m_highTemporalResolutionCursor.get();
 	}
+
+	void CCursor::setPos(const Point pos)
+	{
+		//const Vec2 rawPos = m_transformAll.transformPoint(pos);
+		const Vec2 rawPos = pos;
+
+		POINT point{ static_cast<int32>(rawPos.x), static_cast<int32>(rawPos.y) };
+		::ClientToScreen(m_hWnd, &point);
+		::SetCursorPos(point.x, point.y);
+
+		update();
+	}
 }

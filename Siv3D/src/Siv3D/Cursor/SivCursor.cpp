@@ -141,5 +141,22 @@ namespace s3d
 		{
 			return SIV3D_ENGINE(Cursor)->getHighTemporalResolutionCursorPos();
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetPos
+		//
+		////////////////////////////////////////////////////////////////
+
+		void SetPos(const int32 x, const int32 y)
+		{
+			SetPos(Point{ x, y });
+		}
+
+		void SetPos(Point pos)
+		{
+			SIV3D_ENGINE(Cursor)->setPos(pos);
+		}
+
 	}
 }

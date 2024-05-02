@@ -35,6 +35,8 @@ namespace s3d
 
 		Array<std::pair<int64, Point>> getHighTemporalResolutionCursorPos() const override;
 
+		void setPos(Point pos) override;
+
 	private:
 
 		HWND m_hWnd = nullptr;
