@@ -10,7 +10,9 @@
 //-----------------------------------------------
 
 # include <Siv3D/Cursor.hpp>
+# include <Siv3D/WindowState.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
@@ -156,6 +158,21 @@ namespace s3d
 		void SetPos(Point pos)
 		{
 			SIV3D_ENGINE(Cursor)->setPos(pos);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	OnClientRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool OnClientRect()
+		{
+			const Size frameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
+			const Point cursorRawPos = SIV3D_ENGINE(Cursor)->getState().raw.current;
+
+			return (InRange(cursorRawPos.x, 0, frameBufferSize.x)
+				 && InRange(cursorRawPos.y, 0, frameBufferSize.y));
 		}
 
 	}

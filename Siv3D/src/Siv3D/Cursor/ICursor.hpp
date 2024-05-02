@@ -50,5 +50,9 @@ namespace s3d
 		//virtual void setCameraTransform(const Mat3x2& matrix) = 0;
 
 		//virtual void setLocalTransform(const Mat3x2& matrix) = 0;
+
+		virtual bool isClippedToWindow() const noexcept = 0;
+
+		virtual void clipToWindow(bool clip) = 0;
 	};
 }

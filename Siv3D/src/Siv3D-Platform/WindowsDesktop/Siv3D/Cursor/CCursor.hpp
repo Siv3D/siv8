@@ -37,6 +37,12 @@ namespace s3d
 
 		void setPos(Point pos) override;
 
+
+
+		bool isClippedToWindow() const noexcept override;
+
+		void clipToWindow(bool clip) override;
+
 	private:
 
 		HWND m_hWnd = nullptr;
@@ -44,5 +50,7 @@ namespace s3d
 		CursorState m_state;
 
 		HighTemporalResolutionCursor m_highTemporalResolutionCursor;
+
+		bool m_clippedToWindow = false;
 	};
 }

@@ -41,6 +41,20 @@ namespace s3d
 			::ScreenToClient(hWnd, &clientPos);	
 			return{ clientPos.x, clientPos.y };
 		}
+
+		static void ConfineCursor(const HWND hWnd)
+		{
+			RECT clientRect;
+			::GetClientRect(hWnd, &clientRect);
+
+			POINT leftTop{ clientRect.left, clientRect.top };
+			::ClientToScreen(hWnd, &leftTop);
+
+			RECT clipRect{ leftTop.x, leftTop.y,
+				leftTop.x + Max<int32>(clientRect.right - 1, 0),
+				leftTop.y + Max<int32>(clientRect.bottom - 1, 0) };
+			::ClipCursor(&clipRect);
+		}
 	}
 
 	CCursor::~CCursor()
@@ -73,6 +87,11 @@ namespace s3d
 	
 	bool CCursor::update()
 	{
+		if (m_clippedToWindow)
+		{
+			ConfineCursor(m_hWnd);
+		}
+
 		m_highTemporalResolutionCursor.update();
 
 		{
@@ -97,7 +116,6 @@ namespace s3d
 			m_state.update(screenPos, rawClientPos, clientPos);
 		}
 
-
 		return true;
 	}
 
@@ -121,5 +139,30 @@ namespace s3d
 		::SetCursorPos(point.x, point.y);
 
 		update();
+	}
+
+
+	bool CCursor::isClippedToWindow() const noexcept
+	{
+		return m_clippedToWindow;
+	}
+
+	void CCursor::clipToWindow(const bool clip)
+	{
+		if (clip == m_clippedToWindow)
+		{
+			return;
+		}
+
+		m_clippedToWindow = clip;
+
+		if (m_clippedToWindow)
+		{
+			ConfineCursor(m_hWnd);
+		}
+		else
+		{
+			::ClipCursor(nullptr);
+		}
 	}
 }
