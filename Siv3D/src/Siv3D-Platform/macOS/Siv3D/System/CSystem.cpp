@@ -79,6 +79,7 @@ namespace s3d
 		
 		SIV3D_ENGINE(Window)->update();
 		SIV3D_ENGINE(Cursor)->update();
+		SIV3D_ENGINE(CursorStyle)->update();
 
 		return true;
 	}

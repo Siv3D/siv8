@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -10,7 +10,10 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/HashTable.hpp>
+# include <Siv3D/UniqueResource.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
+# include <Siv3D/GLFW/GLFW.hpp>
 
 namespace s3d
 {
@@ -28,13 +31,32 @@ namespace s3d
 
 		void setDefaultStyle(CursorStyle style) override;
 
-		bool registerCursor(StringView name, const Image& image, Point hotSpot) override;
+		bool registerCustomStyle(StringView name, const Image& image, Point hotSpot, AlphaPremultiplied alphaPremultiplied) override;
 
+		void unregisterCustomStyle(StringView name) override;
+
+		void clearCustomStyles() override;
+		
 		void requestStyle(CursorStyle style) override;
 
 		void requestStyle(StringView name) override;
+		
+		void onSetCursor() override;
 
 	private:
+		
+		GLFWwindow* m_window = nullptr;
 
+		std::array<GLFWcursor*, 11> m_systemCursors;
+		
+		GLFWcursor* m_currentCursor;
+		
+		GLFWcursor* m_defaultCursor;
+		
+		GLFWcursor* m_requestedCursor;
+
+		static void CursorDeleter(GLFWcursor* h);
+		
+		HashTable<String, UniqueResource<GLFWcursor*, decltype(&CursorDeleter)>> m_customCursors;
 	};
 }
