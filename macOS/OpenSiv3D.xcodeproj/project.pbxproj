@@ -1654,6 +1654,11 @@
 		F986058A2BDBDB37006A4C0F /* WindowMisc.mm in Sources */ = {isa = PBXBuildFile; fileRef = F98605882BDBDB37006A4C0F /* WindowMisc.mm */; };
 		F986058B2BDBDB37006A4C0F /* WindowMisc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605892BDBDB37006A4C0F /* WindowMisc.hpp */; };
 		F986058E2BDCAF65006A4C0F /* SivMonitorInfo_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986058C2BDCAF65006A4C0F /* SivMonitorInfo_macOS.cpp */; };
+		F98605932BE33124006A4C0F /* CursorStyleFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986058F2BE33124006A4C0F /* CursorStyleFactory.cpp */; };
+		F98605942BE33124006A4C0F /* ICursorStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605902BE33124006A4C0F /* ICursorStyle.hpp */; };
+		F98605952BE33124006A4C0F /* SivCursorStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605912BE33124006A4C0F /* SivCursorStyle.cpp */; };
+		F98605992BE3314D006A4C0F /* CCursorStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605962BE3314D006A4C0F /* CCursorStyle.cpp */; };
+		F986059A2BE3314D006A4C0F /* CCursorStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605972BE3314D006A4C0F /* CCursorStyle.hpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2715,6 +2720,11 @@
 		F98605882BDBDB37006A4C0F /* WindowMisc.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowMisc.mm; sourceTree = "<group>"; };
 		F98605892BDBDB37006A4C0F /* WindowMisc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowMisc.hpp; sourceTree = "<group>"; };
 		F986058C2BDCAF65006A4C0F /* SivMonitorInfo_macOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMonitorInfo_macOS.cpp; sourceTree = "<group>"; };
+		F986058F2BE33124006A4C0F /* CursorStyleFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CursorStyleFactory.cpp; sourceTree = "<group>"; };
+		F98605902BE33124006A4C0F /* ICursorStyle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ICursorStyle.hpp; sourceTree = "<group>"; };
+		F98605912BE33124006A4C0F /* SivCursorStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCursorStyle.cpp; sourceTree = "<group>"; };
+		F98605962BE3314D006A4C0F /* CCursorStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCursorStyle.cpp; sourceTree = "<group>"; };
+		F98605972BE3314D006A4C0F /* CCursorStyle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CCursorStyle.hpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -5399,6 +5409,7 @@
 				F9070D2F2B9F175E00383E4D /* ConsoleBuffer */,
 				F9070D312B9F175E00383E4D /* CPUInfo */,
 				F986057A2BDA7DFC006A4C0F /* Cursor */,
+				F98605922BE33124006A4C0F /* CursorStyle */,
 				F9528B612BB6DC9200222F45 /* CycleClock */,
 				F9070D332B9F175E00383E4D /* Date */,
 				F9070D352B9F175E00383E4D /* DateTime */,
@@ -5601,6 +5612,7 @@
 				F9070E0C2B9F176B00383E4D /* BinaryReader */,
 				F9070E0F2B9F176B00383E4D /* BinaryWriter */,
 				F9070E122B9F176B00383E4D /* Console */,
+				F98605982BE3314D006A4C0F /* CursorStyle */,
 				F9070E142B9F176B00383E4D /* Date */,
 				F9070E162B9F176B00383E4D /* DateTime */,
 				F986F8A72BC80193006A4C0F /* EnvironmentVariable */,
@@ -6160,6 +6172,25 @@
 				F986058C2BDCAF65006A4C0F /* SivMonitorInfo_macOS.cpp */,
 			);
 			path = MonitorInfo;
+			sourceTree = "<group>";
+		};
+		F98605922BE33124006A4C0F /* CursorStyle */ = {
+			isa = PBXGroup;
+			children = (
+				F986058F2BE33124006A4C0F /* CursorStyleFactory.cpp */,
+				F98605902BE33124006A4C0F /* ICursorStyle.hpp */,
+				F98605912BE33124006A4C0F /* SivCursorStyle.cpp */,
+			);
+			path = CursorStyle;
+			sourceTree = "<group>";
+		};
+		F98605982BE3314D006A4C0F /* CursorStyle */ = {
+			isa = PBXGroup;
+			children = (
+				F98605962BE3314D006A4C0F /* CCursorStyle.cpp */,
+				F98605972BE3314D006A4C0F /* CCursorStyle.hpp */,
+			);
+			path = CursorStyle;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -7997,6 +8028,7 @@
 				F98601EE2BCFBB53006A4C0F /* SkMasks.h in Headers */,
 				F9E5FCE72BC59EA00081A4F7 /* JSONIterator.hpp in Headers */,
 				F90706A72B9DAEC900383E4D /* beta_distribution.h in Headers */,
+				F986059A2BE3314D006A4C0F /* CCursorStyle.hpp in Headers */,
 				F986FA6E2BCFB53B006A4C0F /* svginterface.h in Headers */,
 				F986004F2BCFBB53006A4C0F /* SkUnPreMultiply.h in Headers */,
 				F986F8B22BC806DB006A4C0F /* exif.h in Headers */,
@@ -8759,6 +8791,7 @@
 				F98601432BCFBB53006A4C0F /* Sk4px.h in Headers */,
 				F9070CAF2B9F175000383E4D /* DiscreteDistribution.hpp in Headers */,
 				F986FA862BCFB53B006A4C0F /* ftlcdfil.h in Headers */,
+				F98605942BE33124006A4C0F /* ICursorStyle.hpp in Headers */,
 				F9070C402B9F175000383E4D /* AlignedAllocator.ipp in Headers */,
 				F9070CF42B9F175100383E4D /* RandomDuration.hpp in Headers */,
 				F9528C322BBF026F00222F45 /* zstd_ldm.h in Headers */,
@@ -9828,6 +9861,7 @@
 				F98603C52BCFBB54006A4C0F /* SkSLIsConstantExpression.cpp in Sources */,
 				F98601EB2BCFBB53006A4C0F /* SkMaskGamma.cpp in Sources */,
 				F9070DB12B9F175E00383E4D /* SivBinaryWriter.cpp in Sources */,
+				F98605932BE33124006A4C0F /* CursorStyleFactory.cpp in Sources */,
 				F98605432BD203BC006A4C0F /* MathParserDetail.cpp in Sources */,
 				F98602852BCFBB54006A4C0F /* SkTaskGroup.cpp in Sources */,
 				F986045D2BCFBB54006A4C0F /* SkSLFindAndDeclareBuiltinVariables.cpp in Sources */,
@@ -10012,6 +10046,7 @@
 				F986F92F2BC8441F006A4C0F /* unicode_fold3_key.c in Sources */,
 				F98602342BCFBB54006A4C0F /* SkRasterPipeline.cpp in Sources */,
 				F9528C162BBF026F00222F45 /* xxhash.c in Sources */,
+				F98605952BE33124006A4C0F /* SivCursorStyle.cpp in Sources */,
 				F986F94D2BCA9CD7006A4C0F /* SVGDetail.cpp in Sources */,
 				F986031A2BCFBB54006A4C0F /* SkPathOpsCommon.cpp in Sources */,
 				F986F9932BCA9D0A006A4C0F /* plutovg-ft-stroker.c in Sources */,
@@ -10039,6 +10074,7 @@
 				F986015A2BCFBB53006A4C0F /* SkBitmapProcState_matrixProcs.cpp in Sources */,
 				F98602612BCFBB54006A4C0F /* SkScan_AAAPath.cpp in Sources */,
 				F9528C262BBF026F00222F45 /* zstd_compress_superblock.c in Sources */,
+				F98605992BE3314D006A4C0F /* CCursorStyle.cpp in Sources */,
 				F98603312BCFBB54006A4C0F /* SkPathOpsTypes.cpp in Sources */,
 				F986027A2BCFBB54006A4C0F /* SkStroke.cpp in Sources */,
 				F986F9D22BCFB514006A4C0F /* EmojiFactory.cpp in Sources */,
