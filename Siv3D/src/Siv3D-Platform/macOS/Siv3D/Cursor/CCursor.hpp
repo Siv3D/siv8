@@ -1,4 +1,4 @@
-//-----------------------------------------------
+﻿//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -40,6 +40,10 @@ namespace s3d
 		bool isClippedToWindow() const noexcept override;
 
 		void clipToWindow(bool clip) override;
+
+		void setCapture(bool captured) noexcept override;
+
+		bool isCaptured() const noexcept override;
 		
 	private:
 		
@@ -50,5 +54,7 @@ namespace s3d
 		HighTemporalResolutionCursor m_highTemporalResolutionCursor;
 		
 		bool m_clippedToWindow = false;
+		
+		bool m_captured = false;
 	};
 }

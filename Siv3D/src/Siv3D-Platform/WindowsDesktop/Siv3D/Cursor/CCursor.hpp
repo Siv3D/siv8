@@ -43,6 +43,10 @@ namespace s3d
 
 		void clipToWindow(bool clip) override;
 
+		void setCapture(bool captured) noexcept override;
+
+		bool isCaptured() const noexcept override;
+
 	private:
 
 		HWND m_hWnd = nullptr;
@@ -52,5 +56,7 @@ namespace s3d
 		HighTemporalResolutionCursor m_highTemporalResolutionCursor;
 
 		bool m_clippedToWindow = false;
+
+		bool m_captured = false;
 	};
 }

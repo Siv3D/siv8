@@ -54,5 +54,9 @@ namespace s3d
 		virtual bool isClippedToWindow() const noexcept = 0;
 
 		virtual void clipToWindow(bool clip) = 0;
+
+		virtual void setCapture(bool captured) noexcept = 0;
+
+		virtual bool isCaptured() const noexcept = 0;
 	};
 }
