@@ -30,13 +30,35 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	RegisterCustomCursorStyle
+		//	Register
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool RegisterCustomCursorStyle(const StringView name, const Image& image, const Point hotSpot)
+		bool Register(const StringView name, const Image& image, const Point hotSpot, const AlphaPremultiplied alphaPremultiplied)
 		{
-			return SIV3D_ENGINE(CursorStyle)->registerCursor(name, image, hotSpot);
+			return SIV3D_ENGINE(CursorStyle)->registerCustomStyle(name, image, hotSpot, alphaPremultiplied);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Unregister
+		//
+		////////////////////////////////////////////////////////////////
+
+		void Unregister(const StringView name)
+		{
+			SIV3D_ENGINE(CursorStyle)->unregisterCustomStyle(name);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	UnregisterAll
+		//
+		////////////////////////////////////////////////////////////////
+
+		void UnregisterAll()
+		{
+			SIV3D_ENGINE(CursorStyle)->clearCustomStyles();
 		}
 
 		////////////////////////////////////////////////////////////////

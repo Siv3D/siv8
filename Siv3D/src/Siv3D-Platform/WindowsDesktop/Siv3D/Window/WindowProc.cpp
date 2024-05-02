@@ -13,6 +13,7 @@
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/UserAction/IUSerAction.hpp>
 # include "CWindow.hpp"
@@ -127,6 +128,21 @@ namespace s3d
 			{
 				return true;
 			}
+		case WM_SETCURSOR:
+		{
+			if (engineAvailable)
+			{
+				if (const uint32 hitTest = (lParam & 0xFFFF);
+					(hitTest == HTCLIENT))
+				{
+					SIV3D_ENGINE(CursorStyle)->onSetCursor();
+
+					return 1;
+				}
+			}
+
+			break;
+		}
 		case WM_GETMINMAXINFO:
 			{
 				if (engineAvailable)
@@ -322,24 +338,6 @@ namespace s3d
 
 				return true;
 			}
-		//case WM_SETCURSOR:
-		//	{
-				//if (engineAvailable)
-				//{
-				//	if (const uint32 hitTest = (lParam & 0xFFFF);
-				//		(hitTest == HTCLIENT))
-				//	{
-				//		if (auto p = static_cast<CCursor*>(SIV3D_ENGINE(Cursor)))
-				//		{
-				//			p->onSetCursor();
-				//		}
-
-				//		return 1;
-				//	}
-				//}
-
-		//		break;
-		//	}
 		//case WM_MOUSEWHEEL:
 		//	{
 				//

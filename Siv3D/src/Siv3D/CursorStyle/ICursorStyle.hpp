@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <Siv3D/PredefinedYesNo.hpp>
 
 namespace s3d
 {
@@ -34,10 +35,16 @@ namespace s3d
 
 		virtual void setDefaultStyle(CursorStyle style) = 0;
 
-		virtual bool registerCursor(StringView name, const Image& image, Point hotSpot) = 0;
+		virtual bool registerCustomStyle(StringView name, const Image& image, Point hotSpot, AlphaPremultiplied alphaPremultiplied) = 0;
+
+		virtual void unregisterCustomStyle(StringView name) = 0;
+
+		virtual void clearCustomStyles() = 0;
 
 		virtual void requestStyle(CursorStyle style) = 0;
 
 		virtual void requestStyle(StringView name) = 0;
+
+		virtual void onSetCursor() = 0;
 	};
 }

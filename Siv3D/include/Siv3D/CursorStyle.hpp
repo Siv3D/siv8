@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "PointVector.hpp"
+# include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
@@ -77,7 +78,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	RegisterCustomCursorStyle
+		//	Register
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -85,8 +86,28 @@ namespace s3d
 		/// @param name カスタムマウスカーソルの名前
 		/// @param image カスタムマウスカーソルの画像
 		/// @param hotSpot 画像中のクリック位置
+		/// @param alphaPremultiplied 画像がアルファ乗算済みの場合は `AlphaPremultiplied::Yes`, それ以外の場合は `AlphaPremultiplied::No`
 		/// @return カスタムのマウスカーソルの登録に成功した場合 true, それ以外の場合は false
-		bool RegisterCustomCursorStyle(StringView name, const Image& image, Point hotSpot = Point{ 0, 0 });
+		bool Register(StringView name, const Image& image, Point hotSpot = Point{ 0, 0 }, AlphaPremultiplied alphaPremultiplied = AlphaPremultiplied::Yes);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Unregister
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief カスタムのマウスカーソルを登録解除します。
+		/// @param name カスタムマウスカーソルの名前
+		void UnregisterCustomStyle(StringView name);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	UnregisterAll
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 登録されているすべてのカスタムマウスカーソルを登録解除します。
+		void UnregisterAll();
 
 		////////////////////////////////////////////////////////////////
 		//

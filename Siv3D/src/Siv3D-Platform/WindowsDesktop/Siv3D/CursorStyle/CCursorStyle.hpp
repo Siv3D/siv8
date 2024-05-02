@@ -10,7 +10,10 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/HashTable.hpp>
+# include <Siv3D/UniqueResource.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
+# include <Siv3D/Windows/Windows.hpp>
 
 namespace s3d
 {
@@ -28,13 +31,30 @@ namespace s3d
 
 		void setDefaultStyle(CursorStyle style) override;
 
-		bool registerCursor(StringView name, const Image& image, Point hotSpot) override;
+		bool registerCustomStyle(StringView name, const Image& image, Point hotSpot, AlphaPremultiplied alphaPremultiplied) override;
+
+		void unregisterCustomStyle(StringView name) override;
+
+		void clearCustomStyles() override;
 
 		void requestStyle(CursorStyle style) override;
 
 		void requestStyle(StringView name) override;
 
-	private:
+		void onSetCursor() override;
 
+	private:
+		
+		std::array<HICON, 11> m_systemCursors;
+		
+		HICON m_currentCursor = nullptr;
+		
+		HICON m_defaultCursor = nullptr;
+		
+		HICON m_requestedCursor = nullptr;
+
+		static void CursorDeleter(HICON h);
+
+		HashTable<String, UniqueResource<HICON, decltype(&CursorDeleter)>> m_customCursors;
 	};
 }
