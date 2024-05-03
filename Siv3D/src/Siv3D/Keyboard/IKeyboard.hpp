@@ -11,9 +11,13 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <Siv3D/Array.hpp>
+# include <Siv3D/Input.hpp>
 
 namespace s3d
 {
+	struct InputState;
+
 	class SIV3D_NOVTABLE ISiv3DKeyboard
 	{
 	public:
@@ -25,6 +29,14 @@ namespace s3d
 
 		virtual void init() = 0;
 
-		virtual bool update() = 0;
+		virtual void update() = 0;
+
+		virtual InputState& getInputState(size_t index) noexcept = 0;
+
+		virtual const String& name(uint32 index) const noexcept = 0;
+
+		virtual const Array<Input>& getAllInput() const noexcept = 0;
+
+		//virtual Array<KeyEvent> getEvents() const noexcept = 0;
 	};
 }

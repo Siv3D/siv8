@@ -18,6 +18,8 @@ namespace s3d
 {
 	namespace Mouse
 	{
+		inline constexpr size_t NumButtons = 8;
+
 		///// @brief 現在のフレームで何らかの入力操作があるマウスのボタンの一覧を取得します。
 		///// @return 現在のフレームで何らかの入力操作があるマウスのボタンの一覧
 		//[[nodiscard]]

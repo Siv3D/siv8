@@ -69,7 +69,7 @@ namespace s3d
 		/// @brief 現在のフレームで clearInput() が呼ばれたかを返します。
 		/// @return 現在のフレームで clearInput() が呼ばれている場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool cleared() const;
+		bool isCleared() const;
 
 		/// @brief 入力オブジェクトが押され続けている時間を返します。
 		/// @remark `up()` が true を返すフレームまで計測結果は有効なため、`if (KeyA.up()) Print << KeyA.pressedDuration()` と書けます。

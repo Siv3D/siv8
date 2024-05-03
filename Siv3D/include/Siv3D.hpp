@@ -1243,6 +1243,8 @@
 // マウスカーソル | Mouse cursor
 # include <Siv3D/Cursor.hpp>
 
+# include <Siv3D/InputState.hpp>
+
 // 入力デバイス | Input device
 # include <Siv3D/InputDevice.hpp>
 

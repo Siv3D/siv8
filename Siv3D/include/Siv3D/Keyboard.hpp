@@ -19,6 +19,8 @@ namespace s3d
 {
 	namespace Keyboard
 	{
+		inline constexpr size_t NumKeys = 256;
+
 		/// @brief 現在のフレームで何らかの入力操作があるキーの一覧を取得します。
 		/// @return 現在のフレームで何らかの入力操作があるキーの一覧
 		[[nodiscard]]
@@ -27,7 +29,7 @@ namespace s3d
 		//[[nodiscard]]
 		//Array<KeyEvent> GetEvents();
 	}
-	
+
 	/// @brief Ctrl + break キー
 	inline constexpr Input KeyCancel{ InputDevice::Keyboard, 0x03 };
 	

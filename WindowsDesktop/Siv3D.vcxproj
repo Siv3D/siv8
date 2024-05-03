@@ -86,6 +86,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Input.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\InputCombination.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\InputGroup.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\InputState.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\JSON.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\InputDevice.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\InputGroup.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\InputGroups.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSON.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONIterator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONPointer.hpp" />
@@ -834,7 +836,10 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\INIItem\SivINIItem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INISection\SivINISection.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INI\SivINI.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\InputCombination\SivInputCombination.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\InputDevice\SivInputDevice.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\InputGroup\SivInputGroup.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\InputState\SivInputState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Input\SivInput.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Int128\SivInt128.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
