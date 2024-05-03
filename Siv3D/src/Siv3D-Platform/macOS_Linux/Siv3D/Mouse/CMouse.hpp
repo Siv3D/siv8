@@ -11,6 +11,8 @@
 
 # pragma once
 # include <mutex>
+# include <Siv3D/Mouse.hpp>
+# include <Siv3D/InputState.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 
@@ -34,8 +36,6 @@ namespace s3d
 
 		Vec2 wheel() const noexcept override;
 
-		void onMouseButtonUpdated(int32 index, bool pressed) override;
-
 		void onScroll(double x, double y) override;
 
 		Optional<Point> getPrimaryTouchPos() override;
@@ -43,6 +43,14 @@ namespace s3d
 	private:
 		
 		GLFWwindow* m_window = nullptr;
+
+		struct MouseButton
+		{
+			std::array<InputState, Mouse::NumButtons> states;
+
+			Array<Input> allInputs;
+		
+		} m_mouseButton;
 		
 		////////////////////////////////////////////////////////////////
 		//
@@ -53,8 +61,6 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		Vec2 m_wheel{ 0.0, 0.0 };
-		
-		static void OnMouseButtonUpdated(GLFWwindow*, int button, int action, int mods);
 
 		static void OnScroll(GLFWwindow*, double xOffset, double yOffset);
 	};

@@ -10,7 +10,9 @@
 //-----------------------------------------------
 
 # include "CMouse.hpp"
+# include <Siv3D/UserAction.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -41,7 +43,6 @@ namespace s3d
 
 		if (m_window)
 		{
-			::glfwSetMouseButtonCallback(m_window, OnMouseButtonUpdated);
 			::glfwSetScrollCallback(m_window, OnScroll);
 		}
 	}
@@ -54,13 +55,61 @@ namespace s3d
 
 	void CMouse::update()
 	{
+		// マウスボタンの状態を更新
+		{
+			for (int i = 0; i < static_cast<int32>(Mouse::NumButtons); ++i)
+			{
+				const bool pressed = (::glfwGetMouseButton(m_window, i) == GLFW_PRESS);
+				m_mouseButton.states[i].update(pressed);
+			}
+		}
 
+		{
+			m_mouseButton.allInputs.clear();
+
+			for (uint32 i = 0; i < Mouse::NumButtons; ++i)
+			{
+				const auto& state = m_mouseButton.states[i];
+
+				if (state.pressed() || state.up())
+				{
+					m_mouseButton.allInputs.emplace_back(InputDevice::Mouse, static_cast<uint8>(i));
+				}
+			}
+
+			if(m_mouseButton.allInputs.any([](const Input& input) { return input.down(); }))
+			{
+				SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::MouseButtonDown);
+			}
+		}
+
+		// マウスホイールの状態を更新
 		{
 			std::lock_guard lock{ m_wheelMutex };
 			m_wheel = std::exchange(m_wheelInternal, Vec2{ 0, 0 });
 		}
+	}
+	////////////////////////////////////////////////////////////////
+	//
+	//	getInputState
+	//
+	////////////////////////////////////////////////////////////////
 
-		return true;
+	InputState& CMouse::getInputState(const uint32 index) noexcept
+	{
+		assert(index < Mouse::NumButtons);
+		return m_mouseButton.states[index];
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getAllInput
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Array<Input>& CMouse::getAllInput() const noexcept
+	{
+		return m_mouseButton.allInputs;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -72,17 +121,6 @@ namespace s3d
 	Vec2 CMouse::wheel() const noexcept
 	{
 		return m_wheel;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	onMouseButtonUpdated
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CMouse::onMouseButtonUpdated(const int32, const bool)
-	{
-
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -113,11 +151,6 @@ namespace s3d
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
-
-	void CMouse::OnMouseButtonUpdated(GLFWwindow*, const int button, const int action, int)
-	{
-		SIV3D_ENGINE(Mouse)->onMouseButtonUpdated(button, (action == GLFW_PRESS));
-	}
 
 	void CMouse::OnScroll(GLFWwindow*, double xOffset, double yOffset)
 	{
