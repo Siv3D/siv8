@@ -31,7 +31,7 @@ namespace s3d
 
 		InputState& getInputState(uint32 index) noexcept override;
 
-		const String& name(uint32 index) const noexcept override;
+		const String& getName(uint32 index) const noexcept override;
 
 		const Array<Input>& getAllInput() const noexcept override;
 		

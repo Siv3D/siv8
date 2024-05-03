@@ -18,12 +18,24 @@ namespace s3d
 {
 	namespace DLL
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	LoadSystemLibraryNoThrow
+		//
+		////////////////////////////////////////////////////////////////
+
 		LibraryHandle LoadSystemLibraryNoThrow(const wchar_t* library)
 		{
 			LOG_DEBUG(fmt::format("DLL::LoadSystemLibraryNoThrow(\"{0}\")", Unicode::FromWstring(library)));
 
 			return ::LoadLibraryExW(library, nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	LoadSystemLibrary
+		//
+		////////////////////////////////////////////////////////////////
 
 		LibraryHandle LoadSystemLibrary(const wchar_t* library)
 		{
@@ -39,12 +51,24 @@ namespace s3d
 			return hModule;
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Load
+		//
+		////////////////////////////////////////////////////////////////
+
 		LibraryHandle Load(const StringView path)
 		{
 			LOG_DEBUG(fmt::format("DLL::Load(\"path = `{}`\")", path));
 
 			return ::LoadLibraryW(path.toWstr().c_str());
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Unload
+		//
+		////////////////////////////////////////////////////////////////
 
 		void Unload(LibraryHandle& library)
 		{
@@ -57,6 +81,12 @@ namespace s3d
 
 			library = nullptr;
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
 
 		GetFunctionNoThrow::GetFunctionNoThrow(LibraryHandle _module, const char* name)
 			: p{ static_cast<const void*>(::GetProcAddress(_module, name)) }

@@ -31,6 +31,12 @@ namespace s3d
 		constexpr StringView UnS{ U"UN" };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
 	void Formatter(FormatData& formatData, const bool value)
 	{
 		formatData.string.append(BoolS[value]);

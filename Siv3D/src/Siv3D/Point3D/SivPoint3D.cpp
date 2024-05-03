@@ -15,6 +15,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
 	void Formatter(FormatData& formatData, const Point3D& value)
 	{
 		constexpr size_t BufferSize = ((detail::Int32Width * 3) + 6 + 1);

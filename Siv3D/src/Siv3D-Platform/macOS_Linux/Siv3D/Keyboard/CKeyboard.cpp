@@ -296,11 +296,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	name
+	//	getName
 	//
 	////////////////////////////////////////////////////////////////
 
-	const String& CKeyboard::name(const uint32 index) const noexcept
+	const String& CKeyboard::getName(const uint32 index) const noexcept
 	{
 		assert(index < Keyboard::NumKeys);
 		return m_names[index];

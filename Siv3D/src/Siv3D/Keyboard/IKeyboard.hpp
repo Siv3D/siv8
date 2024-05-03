@@ -33,7 +33,7 @@ namespace s3d
 
 		virtual InputState& getInputState(uint32 index) noexcept = 0;
 
-		virtual const String& name(uint32 index) const noexcept = 0;
+		virtual const String& getName(uint32 index) const noexcept = 0;
 
 		virtual const Array<Input>& getAllInput() const noexcept = 0;
 

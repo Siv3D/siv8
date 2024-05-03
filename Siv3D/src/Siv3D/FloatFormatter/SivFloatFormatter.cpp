@@ -19,8 +19,20 @@ namespace s3d
 	constexpr int FormatFlags = (double_conversion::DoubleToStringConverter::UNIQUE_ZERO |
 		double_conversion::DoubleToStringConverter::EMIT_POSITIVE_EXPONENT_SIGN);
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	FloatFormatter::FloatFormatter(const double value, const int32 decimalPlace, const bool fixed)
 		: m_view{ formatFloat(value, decimalPlace, fixed) } {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	formatFloat
+	//
+	////////////////////////////////////////////////////////////////
 
 	std::string_view FloatFormatter::formatFloat(const double value, const int32 decimalPlace, const bool fixed)
 	{
