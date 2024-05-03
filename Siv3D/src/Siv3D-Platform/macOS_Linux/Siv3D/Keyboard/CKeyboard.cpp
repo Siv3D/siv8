@@ -11,6 +11,11 @@
 
 # include "CKeyboard.hpp"
 # include <Siv3D/Keyboard.hpp>
+# include <Siv3D/UserAction.hpp>
+# include <Siv3D/Keyboard/FallbackNameList.hpp>
+# include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/UserAction/IUserAction.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 extern"C"
@@ -20,9 +25,9 @@ extern"C"
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
-		constexpr std::pair<uint8, uint16> KeyConversionTable[]
+		static constexpr std::pair<uint8, uint16> KeyConversionTable[]
 		{
 			{ 0x03, 0 },
 			{ 0x08, GLFW_KEY_BACKSPACE },
@@ -145,11 +150,40 @@ namespace s3d
 			{ 0xDA, GLFW_KEY_RIGHT_SUPER },
 			{ 0xDB, GLFW_KEY_LEFT_BRACKET }, // ? [Siv3D TODO]
 			{ 0xDC, GLFW_KEY_BACKSLASH }, // ? [Siv3D TODO]
-			//{ 0xDC, SIV3D_KEY_JIS_YEN }, // ¥ (JIS)
+			{ 0xDC, SIV3D_KEY_JIS_YEN }, // ¥ (JIS)
 			{ 0xDD, GLFW_KEY_RIGHT_BRACKET }, // ? [Siv3D TODO]
 			{ 0xDE, 0 }, // ? [Siv3D TODO]
-			//{ 0xE2, SIV3D_KEY_JIS_UNDERSCORE }, // _ (JIS)
+			{ 0xE2, SIV3D_KEY_JIS_UNDERSCORE }, // _ (JIS)
 		};
+	
+		[[nodiscard]]
+		static String GetKeyName(const uint32 index, const uint32 glfwKey)
+		{
+			String result;
+			
+		# if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+			if (const char* name = ::glfwGetKeyName(glfwKey, 0))
+			{
+				result = Unicode::FromUTF8(name);
+			}
+			else
+		# endif
+			if (FallbackKeyNames[index])
+			{
+				result = FallbackKeyNames[index];
+			}
+			else
+			{
+				result = U"{:#04x}"_fmt(index);
+			}
+			
+			if (result.size() == 1)
+			{
+				result.uppercase();
+			}
+			
+			return result;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -172,6 +206,13 @@ namespace s3d
 	void CKeyboard::init()
 	{
 		LOG_SCOPED_DEBUG("CKeyboard::init()");
+		
+		m_window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
+		
+		for (const auto& [index, glfwKey] : KeyConversionTable)
+		{
+			m_names[index] = GetKeyName(index, glfwKey);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -182,7 +223,63 @@ namespace s3d
 
 	void CKeyboard::update()
 	{
+		if (not m_window)
+		{
+			return;
+		}
+		
+		const char* keys = ::glfwGetKeysSiv3D(m_window);
 
+		for (const auto& [index, glfwKey] : KeyConversionTable)
+		{
+			const bool pressed = (keys[glfwKey] == GLFW_PRESS);
+			m_states[index].update(pressed);
+		}
+		
+		{
+			const bool shiftPressed = (keys[GLFW_KEY_LEFT_SHIFT] == GLFW_PRESS) || (keys[GLFW_KEY_RIGHT_SHIFT] == GLFW_PRESS);
+			m_states[0x10].update(shiftPressed);
+		}
+		
+		{
+			const bool controlPressed = (keys[GLFW_KEY_LEFT_CONTROL] == GLFW_PRESS) || (keys[GLFW_KEY_RIGHT_CONTROL] == GLFW_PRESS);
+			m_states[0x11].update(controlPressed);
+		}
+		
+		{
+			const bool altPressed = (keys[GLFW_KEY_LEFT_ALT] == GLFW_PRESS) || (keys[GLFW_KEY_RIGHT_ALT] == GLFW_PRESS);
+			m_states[0x12].update(altPressed);
+		}
+		
+		{
+			const bool commandPressed = (keys[GLFW_KEY_LEFT_SUPER] == GLFW_PRESS) || (keys[GLFW_KEY_RIGHT_SUPER] == GLFW_PRESS);
+			m_states[0xD8].update(commandPressed);
+		}
+		
+		{
+			m_allInputs.clear();
+			
+			for (uint32 i = 8; i < 0xEF; ++i)
+			{
+				const auto& state = m_states[i];
+
+				if (state.pressed() || state.up())
+				{
+					m_allInputs.emplace_back(InputDevice::Keyboard, static_cast<uint8>(i));
+				}
+			}
+		}
+		
+		{
+			if (m_states[0x1B].down()) // Esc
+			{
+				SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::AnyKeyDown | UserAction::EscapeKeyDown);
+			}
+			else if(m_allInputs.any([](const Input& input) { return input.down(); }))
+			{
+				SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::AnyKeyDown);
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

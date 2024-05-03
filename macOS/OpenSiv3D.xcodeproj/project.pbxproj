@@ -1692,6 +1692,7 @@
 		F98605E42BE50038006A4C0F /* SivInputCombination.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605DE2BE50038006A4C0F /* SivInputCombination.cpp */; };
 		F98605E52BE50038006A4C0F /* SivInputGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605E02BE50038006A4C0F /* SivInputGroup.cpp */; };
 		F98605E62BE50038006A4C0F /* SivInputState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605E22BE50038006A4C0F /* SivInputState.cpp */; };
+		F98605E82BE50394006A4C0F /* FallbackNameList.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605E72BE50393006A4C0F /* FallbackNameList.hpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2788,6 +2789,7 @@
 		F98605DE2BE50038006A4C0F /* SivInputCombination.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInputCombination.cpp; sourceTree = "<group>"; };
 		F98605E02BE50038006A4C0F /* SivInputGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInputGroup.cpp; sourceTree = "<group>"; };
 		F98605E22BE50038006A4C0F /* SivInputState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInputState.cpp; sourceTree = "<group>"; };
+		F98605E72BE50393006A4C0F /* FallbackNameList.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FallbackNameList.hpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -6334,9 +6336,10 @@
 		F98605D62BE4BE80006A4C0F /* Keyboard */ = {
 			isa = PBXGroup;
 			children = (
-				F98605D32BE4BE80006A4C0F /* IKeyboard.hpp */,
 				F98605D42BE4BE80006A4C0F /* KeyboardFactory.cpp */,
 				F98605D52BE4BE80006A4C0F /* SivKeyboard.cpp */,
+				F98605E72BE50393006A4C0F /* FallbackNameList.hpp */,
+				F98605D32BE4BE80006A4C0F /* IKeyboard.hpp */,
 			);
 			path = Keyboard;
 			sourceTree = "<group>";
@@ -8513,6 +8516,7 @@
 				F9070CB92B9F175000383E4D /* FastMath.hpp in Headers */,
 				F986055C2BD203D4006A4C0F /* muParserBase.h in Headers */,
 				F986F99B2BCA9D0A006A4C0F /* plutovg.h in Headers */,
+				F98605E82BE50394006A4C0F /* FallbackNameList.hpp in Headers */,
 				F9070CC22B9F175000383E4D /* FormatLiteral.hpp in Headers */,
 				F98600042BCFBB53006A4C0F /* SkCapabilities.h in Headers */,
 				F9070AF62B9DEB5900383E4D /* cached-powers.h in Headers */,
