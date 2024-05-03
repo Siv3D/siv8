@@ -67,6 +67,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	levenshteinDistanceFrom
+	//
+	////////////////////////////////////////////////////////////////
+
 	String::size_type String::levenshteinDistanceFrom(const StringView other) const noexcept
 	{
 	# if SIV3D_INTRINSIC(SSE)

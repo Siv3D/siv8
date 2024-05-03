@@ -591,6 +591,39 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	PremultiplyAlpha
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Color Color::PremultiplyAlpha(const Color color) noexcept
+	{
+		const uint8 r = static_cast<uint8>((static_cast<uint16>(color.r) * color.a) / 255);
+		const uint8 g = static_cast<uint8>((static_cast<uint16>(color.g) * color.a) / 255);
+		const uint8 b = static_cast<uint8>((static_cast<uint16>(color.b) * color.a) / 255);	
+		return{ r, g, b, color.a };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	UnpremultiplyAlpha
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Color Color::UnpremultiplyAlpha(const Color color) noexcept
+	{
+		if (color.a == 0)
+		{
+			return Color{ 0, 0, 0, 0 };
+		}
+
+		const uint8 r = static_cast<uint8>((static_cast<uint16>(color.r) * 255) / color.a);
+		const uint8 g = static_cast<uint8>((static_cast<uint16>(color.g) * 255) / color.a);
+		const uint8 b = static_cast<uint8>((static_cast<uint16>(color.b) * 255) / color.a);
+		return{ r, g, b, color.a };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Alpha
 	//
 	////////////////////////////////////////////////////////////////

@@ -61,6 +61,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	ToString
+	//
+	////////////////////////////////////////////////////////////////
+
 	String ToString(const int8 value)
 	{
 		return ToString(static_cast<int32>(value));
@@ -128,6 +134,12 @@ namespace s3d
 		const IntFormatter formatter{ static_cast<uint64>(value) };
 		return String(formatter.data(), (formatter.data() + formatter.size()));
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ToBaseN
+	//
+	////////////////////////////////////////////////////////////////
 
 	String ToBaseN(const int8 value, const int32 radix, const LetterCase letterCase)
 	{

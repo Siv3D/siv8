@@ -21,48 +21,6 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
-		//	write
-		//
-		////////////////////////////////////////////////////////////////
-
-		void Logger_impl::write(const char* s) const
-		{
-			write(std::string_view{ s });
-		}
-
-		void Logger_impl::write(const std::string_view s) const
-		{
-			if (Siv3DEngine::isActive())
-			{
-				SIV3D_ENGINE(Logger)->write(LogType::App, s);
-			}
-		}
-
-		void Logger_impl::write(const std::string& s) const
-		{
-			write(std::string_view{ s });
-		}
-
-		void Logger_impl::write(const char32* s) const
-		{
-			write(StringView{ s });
-		}
-
-		void Logger_impl::write(const StringView s) const
-		{
-			if (Siv3DEngine::isActive())
-			{
-				SIV3D_ENGINE(Logger)->write(LogType::App, s);
-			}
-		}
-
-		void Logger_impl::write(const String& s) const
-		{
-			write(StringView{ s });
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	writeln
 		//
 		////////////////////////////////////////////////////////////////
@@ -77,8 +35,11 @@ namespace s3d
 			std::string output;
 			output.reserve(s.size() + 1);
 			output.append(s);
-			output.push_back('\n');
-			write(std::string_view{ output });
+
+			if (const auto pLogger = SIV3D_ENGINE(Logger))
+			{
+				pLogger->writeln(LogType::App, output);
+			}
 		}
 
 		void Logger_impl::writeln(const std::string& s) const
@@ -93,7 +54,10 @@ namespace s3d
 
 		void Logger_impl::writeln(const StringView s) const
 		{
-			write(s + U'\n');
+			if (const auto pLogger = SIV3D_ENGINE(Logger))
+			{
+				pLogger->writeln(LogType::App, s);
+			}
 		}
 
 		void Logger_impl::writeln(const String& s) const

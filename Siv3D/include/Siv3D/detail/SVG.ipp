@@ -13,6 +13,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	template <class Reader>
 		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
 	SVG::SVG(Reader&& reader)
@@ -21,12 +27,24 @@ namespace s3d
 		load(std::make_unique<Reader>(std::move(reader)));
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	load
+	//
+	////////////////////////////////////////////////////////////////
+
 	template <class Reader>
 		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
 	bool SVG::load(Reader&& reader)
 	{
 		return load(std::make_unique<Reader>(std::forward<Reader>(reader)));
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Load
+	//
+	////////////////////////////////////////////////////////////////
 
 	template <class Reader>
 		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))

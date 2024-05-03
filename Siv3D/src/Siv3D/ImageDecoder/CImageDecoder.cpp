@@ -102,10 +102,22 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	CImageDecoder::~CImageDecoder()
 	{
 		LOG_SCOPED_DEBUG("CImageDecoder::~CImageDecoder()");
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	init
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CImageDecoder::init()
 	{
@@ -117,6 +129,12 @@ namespace s3d
 		m_decoders.push_back(std::make_unique<SVGDecoder>());
 		m_decoders.push_back(std::make_unique<TGADecoder>());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	add
+	//
+	////////////////////////////////////////////////////////////////
 
 	bool CImageDecoder::add(std::unique_ptr<IImageDecoder>&& decoder)
 	{
@@ -141,6 +159,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	remove
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CImageDecoder::remove(const StringView decoderName)
 	{
 		const auto it = FindDecoderByName(m_decoders, decoderName);
@@ -157,10 +181,22 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	enumDecoder
+	//
+	////////////////////////////////////////////////////////////////
+
 	const Array<std::unique_ptr<IImageDecoder>>& CImageDecoder::enumDecoder() const noexcept
 	{
 		return m_decoders;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getImageInfo
+	//
+	////////////////////////////////////////////////////////////////
 
 	Optional<ImageInfo> CImageDecoder::getImageInfo(IReader& reader, const FilePathView pathHint, const ImageFormat imageFormat)
 	{
@@ -178,6 +214,12 @@ namespace s3d
 		return (*it)->getImageInfo(reader, pathHint);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	decode
+	//
+	////////////////////////////////////////////////////////////////
+
 	Image CImageDecoder::decode(IReader& reader, const FilePathView pathHint, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
 	{
 		LOG_SCOPED_DEBUG("CImageDecoder::decode()");
@@ -193,6 +235,12 @@ namespace s3d
 
 		return (*it)->decode(reader, pathHint, premultiplyAlpha);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	decodeGray16
+	//
+	////////////////////////////////////////////////////////////////
 
 	Grid<uint16> CImageDecoder::decodeGray16(IReader& reader, const FilePathView pathHint, const ImageFormat imageFormat)
 	{

@@ -25,6 +25,17 @@
 //
 //========================================================================
 
+//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
 #include "internal.h"
 
 #if defined(_GLFW_COCOA)
@@ -285,6 +296,127 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
     IOObjectRelease(it);
     return refreshRate;
 }
+
+
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+GLFWAPI void glfwGetMonitorRect_Siv3D(GLFWmonitor* handle, int* xpos, int* ypos, int* w, int* h)
+{
+	_GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+	assert(monitor != NULL);
+	
+	_GLFW_REQUIRE_INIT();
+	
+	const CGRect bounds = CGDisplayBounds(monitor->ns.displayID);
+	
+	if (xpos)
+		*xpos = (int) bounds.origin.x;
+	if (ypos)
+		*ypos = (int) bounds.origin.y;
+	if (w)
+		*w = (int) bounds.size.width;
+	if (h)
+		*h = (int) bounds.size.height;
+}
+
+GLFWAPI void glfwGetMonitorInfo_Siv3D(GLFWmonitor* handle, uint32_t* displayID, uint32_t* unitNumber,
+									  int* xpos, int* ypos, int* w, int* h,
+									  int* wx, int* wy, int* ww, int* wh)
+{
+	_GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+	assert(monitor != NULL);
+	
+	_GLFW_REQUIRE_INIT();
+	
+	if (displayID)
+		*displayID = monitor->ns.displayID;
+	
+	if (unitNumber)
+		*unitNumber = monitor->ns.unitNumber;
+	
+	const CGRect bounds = CGDisplayBounds(monitor->ns.displayID);
+	
+	if (xpos)
+		*xpos = (int) bounds.origin.x;
+	if (ypos)
+		*ypos = (int) bounds.origin.y;
+	if (w)
+		*w = (int) bounds.size.width;
+	if (h)
+		*h = (int) bounds.size.height;
+	
+	NSScreen *result = NULL;
+	bool isPrimary = true;
+	
+	for (NSScreen *screen in [NSScreen screens])
+	{
+		const uint32_t value = [[[screen deviceDescription] valueForKey:@"NSScreenNumber"] intValue];
+		
+		if (value == monitor->ns.displayID)
+		{
+			result = screen;
+			break;
+		}
+		
+		isPrimary = false;
+	}
+	
+	if (result)
+	{
+		NSRect frame = [result frame];
+		NSRect visibleFrame = [result visibleFrame];
+		CGRect rect = NSRectToCGRect(visibleFrame);
+		
+		if(isPrimary)
+		{
+			rect.origin.y = frame.size.height - visibleFrame.origin.y - visibleFrame.size.height;
+		}
+		else
+		{
+			NSScreen* primaryScreen = [[NSScreen screens] objectAtIndex:0];
+			const float primaryScreenHeight = [primaryScreen frame].size.height;
+			rect.origin.y = primaryScreenHeight - rect.origin.y - rect.size.height;
+		}
+		
+		NSRect retinaRect = [result convertRectToBacking:rect];
+		
+		if (wx)
+			*wx = (int) retinaRect.origin.x;
+		if (wy)
+			*wy = (int) retinaRect.origin.y;
+		if (ww)
+			*ww = (int) retinaRect.size.width;
+		if (wh)
+			*wh = (int) retinaRect.size.height;
+	}
+	else
+	{// 取得に失敗することがある原因を調べる [Siv3D ToDo]
+		if (wx)
+			*wx = (int) bounds.origin.x;
+		if (wy)
+			*wy = (int) bounds.origin.y;
+		if (ww)
+			*ww = (int) bounds.size.width;
+		if (wh)
+			*wh = (int) bounds.size.height;
+	}
+}
+
+int glfwIsCurrentMonitor_Siv3D(GLFWwindow* _window, GLFWmonitor* handle)
+{
+	const _GLFWwindow* window = (_GLFWwindow*) _window;
+	const NSScreen* screen = [window->ns.object screen];
+	const uint32_t value = [[[screen deviceDescription] valueForKey:@"NSScreenNumber"] intValue];
+	
+	const _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+	assert(monitor != NULL);
+
+	return (monitor->ns.displayID == value);
+}
+//
+//-----------------------------------------------
 
 
 //////////////////////////////////////////////////////////////////////////

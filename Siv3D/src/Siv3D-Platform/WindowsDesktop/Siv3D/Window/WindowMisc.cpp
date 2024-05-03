@@ -143,11 +143,12 @@ namespace s3d::WindowMisc
 	////////////////////////////////////////////////////////////////
 
 	Rect AdjustWindowRect(const HWND hWnd, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
-		const int32 dpi, const Point& windowPos, const Size& size, const int32 windowStyleFlags)
+		const int32 dpi, const Point& windowPos, const Size& size, const uint32 windowStyleFlags)
 	{
-		LOG_DEBUG(U"AdjustWindowRect({}, {}, {:#x})"_fmt(windowPos, size, windowStyleFlags));
+		LOG_DEBUG(fmt::format("AdjustWindowRect({}, {}, {:#x})", windowPos, size, windowStyleFlags));
 
 		const DWORD windowExStyleFlags = static_cast<DWORD>(::GetWindowLongPtrW(hWnd, GWL_EXSTYLE));
+		
 		RECT rect{ windowPos.x, windowPos.y, (windowPos.x + size.x), (windowPos.y + size.y) };
 
 		if (pAdjustWindowRectExForDpi)
@@ -168,7 +169,7 @@ namespace s3d::WindowMisc
 	//
 	////////////////////////////////////////////////////////////////
 
-	HWND CreateMainWindow(HINSTANCE hInstance, const MonitorInfo& monitor,
+	HWND CreateMainWindow(HMODULE moduleHandle, const MonitorInfo& monitor,
 		const std::wstring& windowClassName, const String& windowName, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
 		int32& dpi, WindowState& windowState)
 	{
@@ -191,7 +192,7 @@ namespace s3d::WindowMisc
 			windowRect.w, windowRect.h,
 			nullptr, // No parent window
 			nullptr, // No menu
-			hInstance,
+			moduleHandle,
 			nullptr);
 	}
 

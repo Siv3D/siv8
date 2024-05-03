@@ -13,6 +13,7 @@
 # include <vector>
 # include <numeric>
 # include <future>
+# include "Platform.hpp"
 # if SIV3D_PLATFORM(WINDOWS)
 #	include <execution>
 # endif

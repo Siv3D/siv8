@@ -58,10 +58,22 @@ namespace s3d
 		/// @brief リフレッシュレート
 		Optional<double> refreshRate;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	format
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief モニターの情報を文字列に変換します。
 		/// @return モニターの情報
 		[[nodiscard]]
 		String format() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
 
 		friend void Formatter(FormatData& formatData, const MonitorInfo& value);
 	};
@@ -98,6 +110,7 @@ namespace s3d
 
 		/// @brief ウィンドウが配置されているモニターの情報を取得します。
 		/// @return ウィンドウが配置されているモニターの情報
+		/// @throw Error 情報の取得に失敗した場合
 		[[nodiscard]]
 		MonitorInfo GetCurrentMonitor();
 	}

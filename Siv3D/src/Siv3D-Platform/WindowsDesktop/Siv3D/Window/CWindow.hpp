@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <atomic>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Windows/Windows.hpp>
@@ -39,15 +40,45 @@ namespace s3d
 
 		void* getHandle() const noexcept override;
 
-		void show();
+		const WindowState& getState() const noexcept override;
+
+		void setStyle(WindowStyle style) override;
+
+		void setPos(Point pos) override;
+
+		void show() override;
+
+		void maximize() override;
+
+		void restore() override;
+
+		void minimize() override;
+
 
 		void destroy();
+
+
+		void onResize(bool minimized, bool maximized);
+
+		void onFocus(bool focused);
+
+		void onFrameBufferResize(Size size);
+
+		void onBoundsUpdate();
+
+		void onDPIChange(uint32 dpi, Point suggestedPos);
+
+		void onEnterSizeMove();
+
+		void onExitSizeMove();
+
+		Size getMinTrackSize() const noexcept;
 
 	private:
 
 		HWND m_hWnd = nullptr;
 
-		HINSTANCE m_hInstance = nullptr;
+		HMODULE m_moduleHandle = nullptr;
 
 		User32Lib m_user32;
 
@@ -59,10 +90,19 @@ namespace s3d
 
 		int32 m_dpi = USER_DEFAULT_SCREEN_DPI;
 
+		Size m_border{ 0, 0 };
+
+		std::atomic<bool> m_moving = false;
+
+
 		HDEVNOTIFY m_deviceNotificationHandle = nullptr;
 
 		ComPtr<ITaskbarList3> m_taskbarList;
 
 		bool m_windowShown = false;
+
+		int32 getSystemMetrics(int32 index) const;
+
+		void setWindowPos(const Rect& rect, uint32 flags);
 	};
 }

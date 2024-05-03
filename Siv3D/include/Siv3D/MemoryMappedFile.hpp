@@ -29,8 +29,14 @@ namespace s3d
 	{
 	public:
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	OpenMode_if_Exists
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 存在するファイルをオープンする際のオプション
-		enum class OpenMode_if_Exists
+		enum class OpenMode_if_Exists : uint8
 		{
 			/// @brief ファイルが存在する場合、失敗にします。
 			Fail,
@@ -42,8 +48,14 @@ namespace s3d
 			Truncate,
 		};
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	OpenMode_if_NotFound
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 存在しないファイルをオープンする際のオプション
-		enum class OpenMode_if_NotFound
+		enum class OpenMode_if_NotFound : uint8
 		{
 			/// @brief ファイルが存在しない場合、失敗にします。
 			Fail,

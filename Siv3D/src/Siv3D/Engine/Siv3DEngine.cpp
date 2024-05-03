@@ -12,6 +12,7 @@
 # include "Siv3DEngine.hpp"
 # include <Siv3D/LicenseManager/ILicenseManager.hpp>
 # include <Siv3D/Logger/ILogger.hpp>
+# include <Siv3D/RegExp/IRegExp.hpp>
 # include <Siv3D/System/ISystem.hpp>
 # include <Siv3D/EngineResource/IEngineResource.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
@@ -20,6 +21,10 @@
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
 # include <Siv3D/Emoji/IEmoji.hpp>
 # include <Siv3D/Console/IConsole.hpp>
+# include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/CursorStyle/ICursorStyle.hpp>
+# include <Siv3D/Mouse/IMouse.hpp>
+# include <Siv3D/Keyboard/IKeyboard.hpp>
 
 namespace s3d
 {
@@ -36,10 +41,22 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	Siv3DEngine::Siv3DEngine() noexcept
 	{
 		pEngine = this;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
 
 	Siv3DEngine::~Siv3DEngine()
 	{
@@ -47,8 +64,26 @@ namespace s3d
 		pEngine = nullptr;
 	}
 
-	bool Siv3DEngine::isActive() noexcept
+	////////////////////////////////////////////////////////////////
+	//
+	//	isNotNull
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Siv3DEngine::isNotNull() noexcept
 	{
 		return (pEngine != nullptr);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isAvailable
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Siv3DEngine::isAvailable() noexcept
+	{
+		constexpr auto LastIndex = (std::tuple_size<decltype(m_components)>::value - 1);	
+		return (std::get<LastIndex>(pEngine->m_components).get() != nullptr);
 	}
 }

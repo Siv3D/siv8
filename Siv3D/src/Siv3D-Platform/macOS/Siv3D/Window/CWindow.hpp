@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/Window.hpp>
+# include <Siv3D/Stopwatch.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
@@ -35,11 +36,45 @@ namespace s3d
 		const String& getWindowTitle() const noexcept override;
 
 		void* getHandle() const noexcept override;
+		
+		const WindowState& getState() const noexcept override;
 
+		void setStyle(WindowStyle style) override;
+
+		void setPos(Point pos) override;
+
+		void show() override;
+
+		void maximize() override;
+
+		void restore() override;
+
+		void minimize() override;
+		
 	private:
 
 		GLFWwindow* m_glfwWindow = nullptr;
 		
 		WindowTitle m_windowTitle;
+		
+		WindowState m_state;
+		
+		Stopwatch m_moveResizeStabilizer;
+		
+		void updateState();
+		
+		static void OnMove(GLFWwindow* glfwWindow, int x, int y);
+		
+		static void OnResize(GLFWwindow* glfwWindow, int width, int height);
+		
+		static void OnFrameBufferSize(GLFWwindow* glfwWindow, int width, int height);
+		
+		static void OnScalingChange(GLFWwindow* glfwWindow, float sx, float sy);
+		
+		static void OnIconify(GLFWwindow* glfwWindow, int iconified);
+		
+		static void OnMaximize(GLFWwindow* glfwWindow, int maximized);
+		
+		static void OnFocus(GLFWwindow* glfwWindow, int focused);
 	};
 }

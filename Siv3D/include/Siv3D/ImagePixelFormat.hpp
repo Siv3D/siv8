@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
 
 namespace s3d
 {
@@ -22,7 +23,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 画像のピクセルフォーマット
-	enum class ImagePixelFormat
+	enum class ImagePixelFormat : uint8
 	{
 		/// @brief 不明
 		Unknown,

@@ -30,20 +30,32 @@ namespace s3d
 		};
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	CLogger::CLogger()
 		: m_outputLevel{ SIV3D_BUILD(DEBUG) ? LogType::Trace : LogType::Info } {}
 
-	void CLogger::write(const std::string_view s)
+	////////////////////////////////////////////////////////////////
+	//
+	//	writeln
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CLogger::writeln(const std::string_view s)
 	{
 		writeImpl((Unicode::ToWstring(s) + L'\n').c_str());
 	}
 
-	void CLogger::write(const StringView s)
+	void CLogger::writeln(const StringView s)
 	{
 		writeImpl((s.toWstr() + L'\n').c_str());
 	}
 
-	void CLogger::write(const LogType type, const std::string_view s)
+	void CLogger::writeln(const LogType type, const std::string_view s)
 	{
 		if (m_outputLevel < type)
 		{
@@ -58,7 +70,7 @@ namespace s3d
 		writeImpl(output.c_str());
 	}
 
-	void CLogger::write(const LogType type, const StringView s)
+	void CLogger::writeln(const LogType type, const StringView s)
 	{
 		if (m_outputLevel < type)
 		{
@@ -72,16 +84,34 @@ namespace s3d
 
 		writeImpl(output.c_str());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setOutputLevel
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CLogger::setOutputLevel(const LogType logType) noexcept
 	{
 		m_outputLevel.store(logType);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getOutputLevel
+	//
+	////////////////////////////////////////////////////////////////
+
 	LogType CLogger::getOutputLevel() const noexcept
 	{
 		return m_outputLevel.load();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CLogger::writeImpl(const wchar_t* s)
 	{

@@ -14,6 +14,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	Colormap
+	//
+	////////////////////////////////////////////////////////////////
+
 	ColorF Colormap(const double t, const ColorScale scale)
 	{
 		const auto c = tinycolormap::GetColor(t, ToEnum<tinycolormap::ColormapType>(FromEnum(scale)));

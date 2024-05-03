@@ -1,0 +1,227 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# include <Siv3D/Cursor.hpp>
+# include <Siv3D/WindowState.hpp>
+# include <Siv3D/Cursor/ICursor.hpp>
+# include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
+
+namespace s3d
+{
+	namespace Cursor
+	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	Pos, PosF
+		//
+		////////////////////////////////////////////////////////////////
+
+		Point Pos() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().point.current;
+		}
+
+		Vec2 PosF() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().vec2.current;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	PreciousPos, PreciousPosF
+		//
+		////////////////////////////////////////////////////////////////
+
+		Point PreviousPos() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().point.previous;
+		}
+
+		Vec2 PreviousPosF() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().vec2.previous;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Delta, DeltaF
+		//
+		////////////////////////////////////////////////////////////////
+
+		Point Delta() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().point.delta;
+		}
+
+		Vec2 DeltaF() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().vec2.delta;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	PosRaw
+		//
+		////////////////////////////////////////////////////////////////
+
+		Point PosRaw() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().raw.current;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	PreviousPosRaw
+		//
+		////////////////////////////////////////////////////////////////
+
+		Point PreviousPosRaw() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().raw.previous;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	DeltaRaw
+		//
+		////////////////////////////////////////////////////////////////
+
+		Point DeltaRaw() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().raw.delta;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ScreenPos
+		//
+		////////////////////////////////////////////////////////////////
+
+		Point ScreenPos() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().screen.current;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ScreenPreviousPos
+		//
+		////////////////////////////////////////////////////////////////
+
+		Point ScreenPreviousPos() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().screen.previous;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ScreenDelta
+		//
+		////////////////////////////////////////////////////////////////
+
+		Point ScreenDelta() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getState().screen.delta;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
+		Array<std::pair<int64, Point>> GetBuffer()
+		{
+			return SIV3D_ENGINE(Cursor)->getHighTemporalResolutionCursorPos();
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetPos
+		//
+		////////////////////////////////////////////////////////////////
+
+		void SetPos(const int32 x, const int32 y)
+		{
+			SetPos(Point{ x, y });
+		}
+
+		void SetPos(Point pos)
+		{
+			SIV3D_ENGINE(Cursor)->setPos(pos);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	OnClientRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool OnClientRect()
+		{
+			const Size frameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
+			const Point cursorRawPos = SIV3D_ENGINE(Cursor)->getState().raw.current;
+
+			return (InRange(cursorRawPos.x, 0, frameBufferSize.x)
+				 && InRange(cursorRawPos.y, 0, frameBufferSize.y));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsClippedToWindow
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool IsClippedToWindow() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->isClippedToWindow();
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ClipToWindow
+		//
+		////////////////////////////////////////////////////////////////
+
+		void ClipToWindow(const bool clip)
+		{
+			SIV3D_ENGINE(Cursor)->clipToWindow(clip);
+		}
+
+
+
+
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetCapture
+		//
+		////////////////////////////////////////////////////////////////
+
+		void SetCapture(const bool captured) noexcept
+		{
+			SIV3D_ENGINE(Cursor)->setCapture(captured);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsCaptured
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool IsCaptured() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->isCaptured();
+		}
+	}
+}

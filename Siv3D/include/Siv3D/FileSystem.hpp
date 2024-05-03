@@ -20,7 +20,7 @@
 
 namespace s3d
 {
-	enum class SpecialFolder;
+	enum class SpecialFolder : uint8;
 
 # if SIV3D_PLATFORM(WINDOWS)
 

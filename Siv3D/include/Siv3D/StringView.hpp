@@ -736,6 +736,12 @@ namespace s3d
 	{
 		inline namespace StringViewLiterals
 		{
+			////////////////////////////////////////////////////////////////
+			//
+			//	_sv
+			//
+			////////////////////////////////////////////////////////////////
+
 			[[nodiscard]]
 			inline constexpr StringView operator ""_sv(const char32_t* s, size_t length) noexcept;
 		}

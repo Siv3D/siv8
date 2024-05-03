@@ -24,6 +24,17 @@
 //
 //========================================================================
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
 #include "internal.h"
 
 #if defined(_GLFW_COCOA)
@@ -295,6 +306,15 @@ static void createKeyTables(void)
     _glfw.ns.keycodes[0x43] = GLFW_KEY_KP_MULTIPLY;
     _glfw.ns.keycodes[0x4E] = GLFW_KEY_KP_SUBTRACT;
 
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+	_glfw.ns.keycodes[0x5D] = SIV3D_KEY_JIS_YEN;
+	_glfw.ns.keycodes[0x5E] = SIV3D_KEY_JIS_UNDERSCORE;
+	//
+	//-----------------------------------------------
+	
     for (int scancode = 0;  scancode < 256;  scancode++)
     {
         // Store the reverse translation for faster key name lookup

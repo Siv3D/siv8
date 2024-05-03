@@ -19,8 +19,8 @@ namespace s3d
 	{
 		std::wstring name;
 
-		void registerClass(HINSTANCE hInstance);
+		void registerClass(HMODULE moduleHandle);
 
-		void unregisterClass(HINSTANCE hInstance);
+		void unregisterClass(HMODULE moduleHandle);
 	};
 }

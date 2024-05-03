@@ -24,6 +24,17 @@
 //
 //========================================================================
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
 #include "internal.h"
 
 #if defined(_GLFW_COCOA)
@@ -261,6 +272,15 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     }
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+- (void)windowWillMove:(NSNotification *)notification
+{
+	_glfwInputWindowPos(window, 1, 0);
+}
+
 - (void)windowDidMove:(NSNotification *)notification
 {
     if (window->context.source == GLFW_NATIVE_CONTEXT_API)
@@ -269,10 +289,10 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     if (_glfw.ns.disabledCursorWindow == window)
         _glfwCenterCursorInContentArea(window);
 
-    int x, y;
-    _glfwGetWindowPosCocoa(window, &x, &y);
-    _glfwInputWindowPos(window, x, y);
+    _glfwInputWindowPos(window, 0, 0);
 }
+//
+//-----------------------------------------------
 
 - (void)windowDidMiniaturize:(NSNotification *)notification
 {
@@ -1035,30 +1055,122 @@ void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                     "Cocoa: Regular windows do not have icons on macOS");
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)
 {
-    @autoreleasepool {
-
-    const NSRect contentRect =
-        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
-
-    if (xpos)
-        *xpos = contentRect.origin.x;
-    if (ypos)
-        *ypos = _glfwTransformYCocoa(contentRect.origin.y + contentRect.size.height - 1);
-
+    @autoreleasepool
+	{
+		const NSArray<NSScreen*>* screens = [NSScreen screens];
+		
+		if (screens.count < 1)
+		{
+			xpos = ypos = 0;
+			return;
+		}
+		
+		const float zeroScreenHeight = [screens[0] frame].size.height;
+		const NSScreen* currentWindowScreen = [window->ns.object screen];
+		
+		const NSRect frameRect = [window->ns.object frame];
+		const NSRect retinaFrameRect = [currentWindowScreen convertRectToBacking: frameRect];
+		
+		// ウィンドウの左上の座標（macOS 座標系）
+		const float retinaFax = retinaFrameRect.origin.x;
+		const float retinaFay = (retinaFrameRect.origin.y + retinaFrameRect.size.height);
+				
+		const NSRect screenRect = [currentWindowScreen frame];
+		const NSRect retinaScreenRect = [currentWindowScreen convertRectToBacking: screenRect];
+		const float scaleFactor = [currentWindowScreen backingScaleFactor];
+		
+		// スクリーンの左上の座標（macOS 座標系）
+		const float retinaAx = retinaScreenRect.origin.x;
+		const float retinaAy = (retinaScreenRect.origin.y + retinaScreenRect.size.height);
+		
+		// スクリーンの左上の座標（Siv3D 座標系）
+		const float retinaSx = retinaAx;
+		const float retinaSy = (zeroScreenHeight * scaleFactor - retinaAy);
+		
+		// スクリーン左上からのウィンドウ位置オフセット
+		const float retinaOx = (retinaFax - retinaAx);
+		const float retinaOy = (retinaScreenRect.size.height - (retinaFay - retinaScreenRect.origin.y));
+		
+		//const float scaleFactor = [currentWindowScreen backingScaleFactor];
+		
+		if (xpos)
+			*xpos = (int)(roundf(retinaSx + retinaOx));
+		
+		if (ypos)
+			*ypos = (int)(roundf(retinaSy + retinaOy));
+				
     } // autoreleasepool
 }
 
-void _glfwSetWindowPosCocoa(_GLFWwindow* window, int x, int y)
+void _glfwSetWindowPosCocoa(_GLFWwindow* window, int retinaX, int retinaY)
 {
-    @autoreleasepool {
+    @autoreleasepool
+	{
+		const NSArray<NSScreen*>* screens = [NSScreen screens];
+		
+		if (screens.count < 1)
+		{
+			return;
+		}
+		
+		const float zeroScreenHeight = [screens[0] frame].size.height;
+	
+		for (NSScreen* screen in screens)
+		{
+			const NSRect screenRect = [screen frame];
+			const NSRect retinaScreenRect = [screen convertRectToBacking: screenRect];
+			const float scaleFactor = [screen backingScaleFactor];
 
-    const NSRect contentRect = [window->ns.view frame];
-    const NSRect dummyRect = NSMakeRect(x, _glfwTransformYCocoa(y + contentRect.size.height - 1), 0, 0);
-    const NSRect frameRect = [window->ns.object frameRectForContentRect:dummyRect];
-    [window->ns.object setFrameOrigin:frameRect.origin];
-
+			// スクリーンの左上の座標（macOS 座標系）
+			const float ax = screenRect.origin.x;
+			const float ay = (screenRect.origin.y + screenRect.size.height);
+			const float retinaAx = retinaScreenRect.origin.x;
+			const float retinaAy = (retinaScreenRect.origin.y + retinaScreenRect.size.height);
+			
+			// スクリーンの左上の座標（Siv3D 座標系）
+			const float retinaSx = retinaAx;
+			const float retinaSy = (zeroScreenHeight * scaleFactor - retinaAy);
+			
+			//NSLog(@"retinaZeroScreenHeight %f retinaAy %f", retinaZeroScreenHeight, retinaAy);
+			
+			// スクリーンの幅と高さ
+			const float retinaW = retinaScreenRect.size.width;
+			const float retinaH = retinaScreenRect.size.height;
+	
+			//NSLog(@"check %f %f %f %f", retinaSx, retinaSy, (retinaSx + retinaW), (retinaSy + retinaH));
+			
+			if ((retinaSx <= retinaX) && (retinaX <= (retinaSx + retinaW))
+				&& (retinaSy <= retinaY) && (retinaY <= (retinaSy + retinaH)))
+			{
+				// スクリーン左上からの位置オフセット
+				const float retinaOx = (retinaX - retinaSx);
+				const float retinaOy = (retinaY - retinaSy);
+				
+				//NSLog(@"retinaSy %f retinaAy %f", retinaSy, retinaAy);
+				//NSLog(@"retinaOx %f retinaOy %f", retinaOx, retinaOy);
+				
+				const float awx = (ax + retinaOx / scaleFactor);
+				const float awy = (ay - retinaOy / scaleFactor);
+				
+				const NSRect frameRect = [window->ns.object frame];
+				const float awoy = (awy - frameRect.size.height);
+				
+				NSPoint pos;
+				pos.x = awx;
+				pos.y = awoy;
+				
+				//NSLog(@"pos.x %f pos.y %f", pos.x, pos.y);
+				
+				[window->ns.object setFrameOrigin:pos];
+				return;
+			}
+		}
     } // autoreleasepool
 }
 
@@ -1066,15 +1178,18 @@ void _glfwGetWindowSizeCocoa(_GLFWwindow* window, int* width, int* height)
 {
     @autoreleasepool {
 
-    const NSRect contentRect = [window->ns.view frame];
+	const NSRect frameRect = [window->ns.object frame];
+	const NSRect retinaFrameRect = [window->ns.object convertRectToBacking:frameRect];
 
     if (width)
-        *width = contentRect.size.width;
+        *width = retinaFrameRect.size.width;
     if (height)
-        *height = contentRect.size.height;
+        *height = retinaFrameRect.size.height;
 
     } // autoreleasepool
 }
+//
+//-----------------------------------------------
 
 void _glfwSetWindowSizeCocoa(_GLFWwindow* window, int width, int height)
 {
@@ -1585,6 +1700,11 @@ void _glfwPostEmptyEventCocoa(void)
     } // autoreleasepool
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+/*
 void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos)
 {
     @autoreleasepool {
@@ -1600,7 +1720,27 @@ void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos)
 
     } // autoreleasepool
 }
+*/
+void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos)
+{
+	@autoreleasepool {
 
+	const NSRect contentRect = [window->ns.view frame];
+	const NSRect retinaContentRect = [window->ns.view convertRectToBacking:contentRect];
+		
+	// NOTE: The returned location uses base 0,1 not 0,0
+	const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
+	const NSPoint retinaPos = [window->ns.object convertPointToBacking:pos];
+
+	if (xpos)
+		*xpos = retinaPos.x;
+	if (ypos)
+		*ypos = (retinaContentRect.size.height - retinaPos.y);
+
+	} // autoreleasepool
+}
+
+/*
 void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
 {
     @autoreleasepool {
@@ -1636,7 +1776,75 @@ void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
 
     } // autoreleasepool
 }
+*/
 
+void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
+{
+	@autoreleasepool
+	{
+		updateCursorImage(window);
+
+		const NSArray<NSScreen*>* screens = [NSScreen screens];
+		
+		if (screens.count < 1)
+		{
+			return;
+		}
+		
+		const float zeroScreenHeight = [screens[0] frame].size.height;
+		const NSScreen* currentWindowScreen = [window->ns.object screen];
+		
+		const NSRect frameRect = [window->ns.object frame];
+		const NSRect retinaFrameRect = [currentWindowScreen convertRectToBacking: frameRect];
+		
+		const NSRect contentRect = [window->ns.object contentRectForFrameRect: frameRect];
+		const NSRect retinaContentRect = [window->ns.object convertRectToBacking: contentRect];
+		const float titleBarHeight = (retinaFrameRect.size.height - retinaContentRect.size.height);
+		
+		// ウィンドウの左上の座標（macOS 座標系）
+		const float retinaFax = retinaFrameRect.origin.x;
+		const float retinaFay = (retinaFrameRect.origin.y + retinaFrameRect.size.height);
+				
+		const NSRect screenRect = [currentWindowScreen frame];
+		const NSRect retinaScreenRect = [currentWindowScreen convertRectToBacking: screenRect];
+		const float scaleFactor = [currentWindowScreen backingScaleFactor];
+		
+		// スクリーンの左上の座標（macOS 座標系）
+		const float retinaAx = retinaScreenRect.origin.x;
+		const float retinaAy = (retinaScreenRect.origin.y + retinaScreenRect.size.height);
+		
+		// スクリーンの左上の座標（Siv3D 座標系）
+		const float retinaSx = retinaAx;
+		const float retinaSy = (zeroScreenHeight * scaleFactor - retinaAy);
+
+		// スクリーン左上からのウィンドウ位置オフセット
+		const float retinaOx = (retinaFax - retinaAx);
+		const float retinaOy = (retinaScreenRect.size.height - (retinaFay - retinaScreenRect.origin.y));
+
+		// スクリーン左上からのシーン位置オフセット
+		const float retinaCx = retinaOx;
+		const float retinaCy = (retinaOy + titleBarHeight);
+
+		// ターゲットのマウスカーソル座標（Siv3D 座標系）
+		const float retinaCSX = (retinaSx + retinaCx + x);
+		const float retinaCSY = (retinaSy + retinaCy + y);
+		
+		// ターゲットのマウスカーソル座標（global 座標系）
+		const float CSX = retinaCSX / scaleFactor;
+		const float CSY = retinaCSY / scaleFactor;
+
+		CGWarpMouseCursorPosition(CGPointMake(CSX, CSY));
+
+		// HACK: Calling this right after setting the cursor position prevents macOS
+		//       from freezing the cursor for a fraction of a second afterwards
+		if (window->cursorMode != GLFW_CURSOR_DISABLED)
+			CGAssociateMouseAndMouseCursorPosition(true);
+	} // autoreleasepool
+}
+
+//
+//-----------------------------------------------
+ 
 void _glfwSetCursorModeCocoa(_GLFWwindow* window, int mode)
 {
     @autoreleasepool {

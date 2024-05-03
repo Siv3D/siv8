@@ -20,17 +20,17 @@ namespace s3d
 	{
 		void OutputEngineLog(const LogType type, const std::string_view s)
 		{
-			if (Siv3DEngine::isActive())
+			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				SIV3D_ENGINE(Logger)->write(type, s);
+				pLogger->writeln(type, s);
 			}
 		}
 
 		void OutputEngineLog(const LogType type, const StringView s)
 		{
-			if (Siv3DEngine::isActive())
+			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				SIV3D_ENGINE(Logger)->write(type, s);
+				pLogger->writeln(type, s);
 			}
 		}
 
@@ -38,17 +38,17 @@ namespace s3d
 			: m_message{ std::move(message) }
 			, m_type{ type }
 		{
-			if (Siv3DEngine::isActive())
+			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				SIV3D_ENGINE(Logger)->write(m_type, (m_message + " ---"));
+				pLogger->writeln(m_type, (m_message + " ---"));
 			}
 		}
 
 		ScopedEngineLog::~ScopedEngineLog()
 		{
-			if (Siv3DEngine::isActive())
+			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				SIV3D_ENGINE(Logger)->write(m_type, ("--- " + m_message));
+				pLogger->writeln(m_type, ("--- " + m_message));
 			}
 		}
 	}

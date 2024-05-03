@@ -14,6 +14,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	getImageInfo
+	//
+	////////////////////////////////////////////////////////////////
+
 	Optional<ImageInfo> IImageDecoder::getImageInfo(const FilePathView path) const
 	{
 		BinaryReader reader{ path };
@@ -26,6 +32,12 @@ namespace s3d
 		return getImageInfo(reader, path);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	decode
+	//
+	////////////////////////////////////////////////////////////////
+
 	Image IImageDecoder::decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha) const
 	{
 		BinaryReader reader{ path };
@@ -37,6 +49,12 @@ namespace s3d
 
 		return decode(reader, path, premultiplyAlpha);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	decodeGray16
+	//
+	////////////////////////////////////////////////////////////////
 
 	Grid<uint16> IImageDecoder::decodeGray16(const FilePathView path) const
 	{

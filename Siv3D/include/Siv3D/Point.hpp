@@ -24,6 +24,12 @@ namespace s3d
 {
 	struct FormatData;
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	Point
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief 2 次元のベクトル（整数）
 	struct Point
 	{
@@ -856,6 +862,19 @@ namespace s3d
 //	fmt
 //
 ////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::Point>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::Point& value, format_context& ctx);
+};
 
 template <>
 struct fmt::formatter<s3d::Point, s3d::char32>

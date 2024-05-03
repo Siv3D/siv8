@@ -26,6 +26,17 @@
  *
  *************************************************************************/
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
 #ifndef _glfw3_h_
 #define _glfw3_h_
 
@@ -443,6 +454,15 @@ extern "C" {
 #define GLFW_KEY_GRAVE_ACCENT       96  /* ` */
 #define GLFW_KEY_WORLD_1            161 /* non-US #1 */
 #define GLFW_KEY_WORLD_2            162 /* non-US #2 */
+
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+#define SIV3D_KEY_JIS_YEN			200
+#define SIV3D_KEY_JIS_UNDERSCORE	201
+//
+//-----------------------------------------------
 
 /* Function keys */
 #define GLFW_KEY_ESCAPE             256

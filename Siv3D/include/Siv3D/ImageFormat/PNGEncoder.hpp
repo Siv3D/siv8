@@ -26,21 +26,45 @@ namespace s3d
 	class PNGEncoder : public IImageEncoder
 	{
 	public:
-	
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	name
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief エンコーダの対応形式 `U"PNG"` を返します。
 		/// @return 文字列 `U"PNG"`
 		[[nodiscard]]
 		StringView name() const noexcept override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	imageFormat
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief PNG 形式を示す ImageFormat を返します。
 		/// @return `ImageFormat::PNG`
 		[[nodiscard]]
 		ImageFormat imageFormat() const noexcept override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	possibleExtensions
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief PNG 形式のファイルに想定される拡張子一覧 `{ U"png" }` を返します。
 		/// @return 配列 `{ U"png" }` 
 		[[nodiscard]]
 		const Array<String>& possibleExtensions() const override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	save
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief Image を PNG 形式でエンコードしてファイルに保存します。
 		/// @param image エンコードする Image
@@ -61,6 +85,12 @@ namespace s3d
 		/// @param filter 使用するフィルタ
 		/// @return 保存に成功した場合 true, それ以外の場合は false
 		bool save(const Grid<uint16>& image, FilePathView path, PNGFilter filter = PNGFilter::Default) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	encode
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief Image を PNG 形式でエンコードして書き出します。
 		/// @param image エンコードする Image

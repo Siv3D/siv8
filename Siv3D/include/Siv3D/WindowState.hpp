@@ -31,11 +31,17 @@ namespace s3d
 	/// @brief ウィンドウの状態 | Window state
 	struct WindowState
 	{
-		/// @brief クライアントの仮想サイズ
-		Size virtualSize = Window::DefaultClientSize;
+		/// @brief スクリーン座標におけるウィンドウの矩形
+		Rect bounds = Rect::Empty();
+
+		/// @brief フレームの幅
+		Size frameThickness{ 0, 0 };
 
 		/// @brief フレームバッファのサイズ
 		Size frameBufferSize = Window::DefaultClientSize;
+
+		/// @brief クライアントの仮想サイズ
+		Size virtualSize = Window::DefaultClientSize;
 
 		/// @brief 最小のフレームバッファのサイズ
 		Size minFrameBufferSize{ 1, 1 };
@@ -43,17 +49,11 @@ namespace s3d
 		/// @brief ユーザが設定しているデスクトップのスケーリング
 		double scaling = 1.0;
 
-		/// @brief スクリーン座標におけるウィンドウの矩形
-		Rect bounds = Rect::Empty();
-
-		/// @brief フレームの幅
-		Size frameSize{ 0, 0 };
+		/// @brief タイトルバーの高さ
+		int32 titleBarHeight = 0;
 
 		/// @brief スタイル
 		WindowStyle style = WindowStyle::Fixed;
-
-		/// @brief タイトルバーの高さ
-		int32 titleBarHeight = 0;
 
 		/// @brief フルスクリーンであるか
 		bool fullscreen = false;
@@ -69,5 +69,13 @@ namespace s3d
 
 		/// @brief 移動やリサイズの途中であるか
 		bool sizeMove = false;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ==
+		//
+		////////////////////////////////////////////////////////////////
+
+		friend constexpr bool operator ==(const WindowState&, const WindowState&) = default;
 	};
 }

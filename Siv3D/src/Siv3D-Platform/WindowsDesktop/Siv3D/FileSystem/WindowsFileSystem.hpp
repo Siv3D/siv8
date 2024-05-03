@@ -25,7 +25,7 @@ namespace s3d
 	{
 		/// @brief 引数のファイルパスの種類
 		/// @remark ファイルやディレクトリであることが分かっている場合、一部の処理を省略できます。
-		enum class PathType
+		enum class PathType : uint8
 		{
 			/// @brief ファイルであるかディレクトリであるか不明
 			Unknown,

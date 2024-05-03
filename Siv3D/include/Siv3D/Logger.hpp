@@ -27,31 +27,6 @@ namespace s3d
 		{
 			////////////////////////////////////////////////////////////////
 			//
-			//	write
-			//
-			////////////////////////////////////////////////////////////////
-
-			void write(const char* s) const;
-
-			void write(std::string_view s) const;
-
-			void write(const std::string& s) const;
-
-			void write(const char32* s) const;
-
-			void write(StringView s) const;
-
-			void write(const String& s) const;
-
-			template <Concept::Formattable... Args>
-			void write(const Args&... args) const;
-
-			// Format できない値を Logger.write() に渡すとコンパイルエラーになります。
-			template <class... Args>
-			void write(const Args&... args) const = delete;
-
-			////////////////////////////////////////////////////////////////
-			//
 			//	writeln
 			//
 			////////////////////////////////////////////////////////////////
@@ -135,6 +110,12 @@ namespace s3d
 
 	inline namespace cpo
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	Logger
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief ログ出力 | Logger
 		inline constexpr detail::Logger_impl Logger;
 	}

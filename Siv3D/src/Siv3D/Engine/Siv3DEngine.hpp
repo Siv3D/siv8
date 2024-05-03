@@ -17,6 +17,7 @@ namespace s3d
 {
 	class ISiv3DLicenseManager;
 	class ISiv3DLogger;
+	class ISiv3DRegExp;
 	class ISiv3DSystem;
 	class ISiv3DEngineResource;
 	class ISiv3DUserAction;
@@ -25,6 +26,10 @@ namespace s3d
 	class ISiv3DImageEncoder;
 	class ISiv3DEmoji;
 	class ISiv3DConsole;
+	class ISiv3DCursor;
+	class ISiv3DCursorStyle;
+	class ISiv3DKeyboard;
+	class ISiv3DMouse;
 
 	class Siv3DEngine
 	{
@@ -35,6 +40,7 @@ namespace s3d
 		std::tuple<
 			Siv3DComponent<ISiv3DLicenseManager>,
 			Siv3DComponent<ISiv3DLogger>,
+			Siv3DComponent<ISiv3DRegExp>,
 			Siv3DComponent<ISiv3DSystem>,
 			Siv3DComponent<ISiv3DEngineResource>,
 			Siv3DComponent<ISiv3DUserAction>,
@@ -42,7 +48,12 @@ namespace s3d
 			Siv3DComponent<ISiv3DImageDecoder>,
 			Siv3DComponent<ISiv3DImageEncoder>,
 			Siv3DComponent<ISiv3DEmoji>,
-			Siv3DComponent<ISiv3DConsole>> m_components;
+			Siv3DComponent<ISiv3DConsole>,
+			Siv3DComponent<ISiv3DCursor>,
+			Siv3DComponent<ISiv3DCursorStyle>,
+			Siv3DComponent<ISiv3DKeyboard>,
+			Siv3DComponent<ISiv3DMouse>
+		> m_components;
 
 	public:
 
@@ -51,7 +62,10 @@ namespace s3d
 		~Siv3DEngine();
 
 		[[nodiscard]]
-		static bool isActive() noexcept;
+		static bool isNotNull() noexcept;
+
+		[[nodiscard]]
+		static bool isAvailable() noexcept;
 
 		template <class Interface>
 		[[nodiscard]]

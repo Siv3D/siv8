@@ -31,7 +31,7 @@ namespace s3d
 
 	private:
 
-		enum class SetupProgress
+		enum class SetupProgress : uint8
 		{
 			Uninitialized,
 		

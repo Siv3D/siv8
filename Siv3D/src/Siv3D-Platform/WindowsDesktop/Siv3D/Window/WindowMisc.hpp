@@ -69,7 +69,7 @@ namespace s3d::WindowMisc
 
 	[[nodiscard]]
 	Rect AdjustWindowRect(HWND hWnd, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
-		int32 dpi, const Point& windowPos, const Size& size, int32 windowStyleFlags);
+		int32 dpi, const Point& windowPos, const Size& size, uint32 windowStyleFlags);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -78,7 +78,7 @@ namespace s3d::WindowMisc
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	HWND CreateMainWindow(HINSTANCE hInstance, const MonitorInfo& monitor,
+	HWND CreateMainWindow(HMODULE moduleHandle, const MonitorInfo& monitor,
 		const std::wstring& windowClassName, const String& windowName, decltype(AdjustWindowRectExForDpi)* pAdjustWindowRectExForDpi,
 		int32& dpi, WindowState& windowState);
 

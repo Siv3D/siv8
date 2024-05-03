@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
 
 namespace s3d
 {
@@ -22,7 +23,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief JSON が持つ要素の値の種類を表す列挙体
-	enum class JSONValueType
+	enum class JSONValueType : uint8
 	{
 		Null,
 

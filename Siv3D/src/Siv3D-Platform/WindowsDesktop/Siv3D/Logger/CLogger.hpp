@@ -22,13 +22,13 @@ namespace s3d
 
 		CLogger();
 
-		void write(std::string_view s) override;
+		void writeln(std::string_view s) override;
 
-		void write(StringView s) override;
+		void writeln(StringView s) override;
 
-		void write(LogType type, std::string_view s) override;
+		void writeln(LogType type, std::string_view s) override;
 
-		void write(LogType type, StringView s) override;
+		void writeln(LogType type, StringView s) override;
 
 		void setOutputLevel(LogType logType) noexcept override;
 

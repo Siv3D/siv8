@@ -20,7 +20,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief ウィンドウスタイル | Window style
-	enum class WindowStyle
+	enum class WindowStyle : uint8
 	{
 		/// @brief サイズ変更できない枠付きのウィンドウ | Fixed size window with a frame
 		Fixed,

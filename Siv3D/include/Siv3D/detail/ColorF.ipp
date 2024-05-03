@@ -588,6 +588,40 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	PremultiplyAlpha
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr ColorF ColorF::PremultiplyAlpha(const ColorF color) noexcept
+	{
+		const double r = (color.r * color.a);
+		const double g = (color.g * color.a);
+		const double b = (color.b * color.a);
+		return{ r, g, b, color.a };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	UnpremultiplyAlpha
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr ColorF ColorF::UnpremultiplyAlpha(const ColorF color) noexcept
+	{
+		if (color.a == 0.0)
+		{
+			return{ 0.0, 0.0, 0.0, 0.0 };
+		}
+
+		const double invA = (1.0 / color.a);
+		const double r = (color.r * invA);
+		const double g = (color.g * invA);
+		const double b = (color.b * invA);
+		return{ r, g, b, color.a };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Zero
 	//
 	////////////////////////////////////////////////////////////////
