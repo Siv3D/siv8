@@ -28,6 +28,7 @@ namespace s3d
 	class ISiv3DConsole;
 	class ISiv3DCursor;
 	class ISiv3DCursorStyle;
+	class ISiv3DKeyboard;
 	class ISiv3DMouse;
 
 	class Siv3DEngine
@@ -50,6 +51,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DConsole>,
 			Siv3DComponent<ISiv3DCursor>,
 			Siv3DComponent<ISiv3DCursorStyle>,
+			Siv3DComponent<ISiv3DKeyboard>,
 			Siv3DComponent<ISiv3DMouse>
 		> m_components;
 

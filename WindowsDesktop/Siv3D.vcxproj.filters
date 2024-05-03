@@ -655,6 +655,12 @@
     <Filter Include="src\Siv3D\Input">
       <UniqueIdentifier>{b6f3b005-c892-4b2d-8266-3eea65257820}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Keyboard">
+      <UniqueIdentifier>{5ac74955-7a5f-4526-aecd-ce90d6ab948b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard">
+      <UniqueIdentifier>{7529551e-18f6-4029-bb8f-7e7b4a73912c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2793,6 +2799,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Keyboard.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Keyboard\IKeyboard.hpp">
+      <Filter>src\Siv3D\Keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard\CKeyboard.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4828,6 +4840,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Input\SivInput.cpp">
       <Filter>src\Siv3D\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Keyboard\KeyboardFactory.cpp">
+      <Filter>src\Siv3D\Keyboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Keyboard\SivKeyboard.cpp">
+      <Filter>src\Siv3D\Keyboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard\CKeyboard.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

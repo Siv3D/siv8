@@ -19,6 +19,7 @@
 # include <Siv3D/Emoji/IEmoji.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
+# include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -48,6 +49,7 @@ namespace s3d
 		SIV3D_ENGINE(Emoji)->init();
 		SIV3D_ENGINE(Cursor)->init();
 		SIV3D_ENGINE(CursorStyle)->init();
+		SIV3D_ENGINE(Keyboard)->init();
 		SIV3D_ENGINE(Mouse)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
@@ -89,6 +91,7 @@ namespace s3d
 		SIV3D_ENGINE(Window)->update();
 		SIV3D_ENGINE(Cursor)->update();
 		SIV3D_ENGINE(CursorStyle)->update();
+		SIV3D_ENGINE(Keyboard)->update();
 		SIV3D_ENGINE(Mouse)->update();
 
 
