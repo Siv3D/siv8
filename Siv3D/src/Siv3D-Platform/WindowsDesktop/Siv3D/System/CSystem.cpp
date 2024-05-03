@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "CSystem.hpp"
+# include <Siv3D/LicenseManager/ILicenseManager.hpp>
 # include <Siv3D/RegExp/IRegExp.hpp>
 # include <Siv3D/EngineResource/IEngineResource.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
@@ -93,7 +94,7 @@ namespace s3d
 		SIV3D_ENGINE(CursorStyle)->update();
 		SIV3D_ENGINE(Keyboard)->update();
 		SIV3D_ENGINE(Mouse)->update();
-
+		SIV3D_ENGINE(LicenseManager)->update();
 
 		return true;
 	}

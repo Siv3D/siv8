@@ -9,6 +9,8 @@
 //
 //-----------------------------------------------
 
+# include <Siv3D/Keyboard.hpp>
+# include <Siv3D/LicenseManager.hpp>
 # include <Siv3D/FileSystem.hpp>
 # include "CLicenseManager.hpp"
 # include "LicenseList.hpp"
@@ -19,13 +21,12 @@ namespace s3d
 		: m_licenses(std::begin(detail::licenses), std::end(detail::licenses))
 		, m_applicationName{ FileSystem::BaseName(FileSystem::ModulePath()) } {}
 
-
 	void CLicenseManager::update()
 	{
-		//if (m_openLicenseWithF1Key && KeyF1.down())
-		//{
-		//	LicenseManager::ShowInBrowser();
-		//}
+		if (m_openLicenseWithF1Key && KeyF1.down())
+		{
+			LicenseManager::ShowInBrowser();
+		}
 	}
 
 	void CLicenseManager::setApplicationLicense(const String& applicationName, const LicenseInfo& license)

@@ -37,6 +37,12 @@ namespace s3d
 
 	namespace Platform::Windows
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetLastErrorMessage
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief GetLastError() の結果を文字列で取得します。 | Returns the result of GetLastError() as a string.
 		/// @return 文字列化された GetLastError() の結果 | The result of GetLastError() as a string
 		String GetLastErrorMessage();

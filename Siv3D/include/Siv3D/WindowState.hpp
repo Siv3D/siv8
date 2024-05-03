@@ -69,7 +69,13 @@ namespace s3d
 
 		/// @brief 移動やリサイズの途中であるか
 		bool sizeMove = false;
-		
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ==
+		//
+		////////////////////////////////////////////////////////////////
+
 		friend constexpr bool operator ==(const WindowState&, const WindowState&) = default;
 	};
 }

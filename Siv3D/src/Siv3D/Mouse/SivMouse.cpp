@@ -17,6 +17,17 @@ namespace s3d
 {
 	namespace Mouse
 	{
+		const Array<Input>& GetAllInputs() noexcept
+		{
+			return SIV3D_ENGINE(Mouse)->getAllInput();
+		}
+
+		void ClearLRInput()
+		{
+			MouseL.clearInput();
+			MouseR.clearInput();
+		}
+
 		double Wheel() noexcept
 		{
 			return SIV3D_ENGINE(Mouse)->wheel().y;

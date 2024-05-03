@@ -13,6 +13,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr Mat3x2::Mat3x2(const Concept::Arithmetic auto s) noexcept
 		: _11{ static_cast<value_type>(s) }, _12{ 0.0f }
 		, _21{ 0.0f }, _22{ static_cast<value_type>(s) }
@@ -22,6 +28,12 @@ namespace s3d
 		: _11{ m11 }, _12{ m12 }
 		, _21{ m21 }, _22{ m22 }
 		, _31{ m31 }, _32{ m32 } {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	translated
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Mat3x2 Mat3x2::translated(const Float2 v) const noexcept
 	{
@@ -38,6 +50,12 @@ namespace s3d
 		mat._32 += static_cast<value_type>(y);
 		return mat;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaled
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Mat3x2 Mat3x2::scaled(const Concept::Arithmetic auto s, const Float2 center) const noexcept
 	{
@@ -75,12 +93,24 @@ namespace s3d
 				(_31 * b_11 + b_31), (_32 * b_22 + b_32) };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotated
+	//
+	////////////////////////////////////////////////////////////////
+
 	inline Mat3x2 Mat3x2::rotated(const Concept::Arithmetic auto angle, const Float2 center) const noexcept
 	{
 		Mat3x2 result;
 		result.setProduct(*this, Rotate(angle, center));
 		return result;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shearedX, shearedY
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Mat3x2 Mat3x2::shearedX(const Concept::Arithmetic auto sx) const noexcept
 	{
@@ -100,10 +130,22 @@ namespace s3d
 				_31, (_31 * b_12 + _32) };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	determinant
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr float Mat3x2::determinant() const noexcept
 	{
 		return ((_11 * _22) - (_12 * _21));
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	inverse
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Mat3x2 Mat3x2::inverse() const noexcept
 	{
@@ -122,6 +164,12 @@ namespace s3d
 		return result;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setProduct
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr void Mat3x2::setProduct(const Mat3x2& a, const Mat3x2& b) noexcept
 	{
 		_11 = (a._11 * b._11) + (a._12 * b._21);
@@ -132,12 +180,24 @@ namespace s3d
 		_32 = (a._31 * b._12) + (a._32 * b._22) + b._32;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator *
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr Mat3x2 Mat3x2::operator *(const Mat3x2& other) const noexcept
 	{
 		return{ (_11 * other._11 + _12 * other._21), (_11 * other._12 + _12 * other._22),
 				(_21 * other._11 + _22 * other._21), (_21 * other._12 + _22 * other._22),
 				(_31 * other._11 + _32 * other._21 + other._31), (_31 * other._12 + _32 * other._22 + other._32) };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	transformPoint
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Float2 Mat3x2::transformPoint(const Point pos) const noexcept
 	{
@@ -154,10 +214,22 @@ namespace s3d
 		return{ (pos.x * _11 + pos.y * _21 + _31), (pos.x * _12 + pos.y * _22 + _32) };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	hash
+	//
+	////////////////////////////////////////////////////////////////
+
 	inline uint64 Mat3x2::hash() const noexcept
 	{
 		return Hash(*this);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Identity
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Mat3x2 Mat3x2::Identity() noexcept
 	{
@@ -165,6 +237,12 @@ namespace s3d
 				0.0f, 1.0f,
 				0.0f, 0.0f };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Translate
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Mat3x2 Mat3x2::Translate(const Float2 v) noexcept
 	{
@@ -179,6 +257,12 @@ namespace s3d
 				0.0f, 1.0f,
 				static_cast<value_type>(x), static_cast<value_type>(y) };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Scale
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Mat3x2 Mat3x2::Scale(const Float2 scale, const Float2 center) noexcept
 	{
@@ -201,6 +285,12 @@ namespace s3d
 				((1.0f - static_cast<value_type>(sx)) * center.x), ((1.0f - static_cast<value_type>(sy)) * center.y) };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	Rotate
+	//
+	////////////////////////////////////////////////////////////////
+
 	inline Mat3x2 Mat3x2::Rotate(const Concept::Arithmetic auto angle, const Float2 center) noexcept
 	{
 		const float s = std::sin(static_cast<value_type>(angle));
@@ -209,6 +299,12 @@ namespace s3d
 				-s, c,
 				(center.x - center.x * c + center.y * s), (center.y - center.x * s - center.y * c) };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ShearX, ShearY
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Mat3x2 Mat3x2::ShearX(const Concept::Arithmetic auto sx) noexcept
 	{
@@ -223,6 +319,12 @@ namespace s3d
 				0.0f, 1.0f,
 				0.0f, 0.0f };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Screen
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Mat3x2 Mat3x2::Screen(const Concept::Arithmetic auto width, const Concept::Arithmetic auto height) noexcept
 	{

@@ -98,7 +98,7 @@ namespace s3d
 
 		/// @brief カスタムのマウスカーソルを登録解除します。
 		/// @param name カスタムマウスカーソルの名前
-		void UnregisterCustomStyle(StringView name);
+		void Unregister(StringView name);
 
 		////////////////////////////////////////////////////////////////
 		//
