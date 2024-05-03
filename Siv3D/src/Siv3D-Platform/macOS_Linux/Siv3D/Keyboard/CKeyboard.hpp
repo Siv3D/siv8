@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -10,7 +10,10 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/InputState.hpp>
+# include <Siv3D/Keyboard.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
+# include <Siv3D/GLFW/GLFW.hpp>
 
 namespace s3d
 {
@@ -24,9 +27,22 @@ namespace s3d
 
 		void init() override;
 
-		bool update() override;
+		void update() override;
 
+		InputState& getInputState(size_t index) noexcept override;
+
+		const String& name(uint32 index) const noexcept override;
+
+		const Array<Input>& getAllInput() const noexcept override;
+		
 	private:
 
+		GLFWwindow* m_window = nullptr;
+
+		std::array<String, Keyboard::NumKeys> m_names;
+
+		std::array<InputState, Keyboard::NumKeys> m_states;
+
+		Array<Input> m_allInputs;
 	};
 }

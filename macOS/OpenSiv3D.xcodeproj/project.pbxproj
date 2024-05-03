@@ -1687,6 +1687,11 @@
 		F98605D72BE4BE80006A4C0F /* IKeyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605D32BE4BE80006A4C0F /* IKeyboard.hpp */; };
 		F98605D82BE4BE80006A4C0F /* KeyboardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605D42BE4BE80006A4C0F /* KeyboardFactory.cpp */; };
 		F98605D92BE4BE80006A4C0F /* SivKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605D52BE4BE80006A4C0F /* SivKeyboard.cpp */; };
+		F98605DB2BE50001006A4C0F /* InputState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605DA2BE50001006A4C0F /* InputState.hpp */; };
+		F98605DD2BE50013006A4C0F /* InputState.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605DC2BE50013006A4C0F /* InputState.ipp */; };
+		F98605E42BE50038006A4C0F /* SivInputCombination.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605DE2BE50038006A4C0F /* SivInputCombination.cpp */; };
+		F98605E52BE50038006A4C0F /* SivInputGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605E02BE50038006A4C0F /* SivInputGroup.cpp */; };
+		F98605E62BE50038006A4C0F /* SivInputState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605E22BE50038006A4C0F /* SivInputState.cpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2778,6 +2783,11 @@
 		F98605D32BE4BE80006A4C0F /* IKeyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IKeyboard.hpp; sourceTree = "<group>"; };
 		F98605D42BE4BE80006A4C0F /* KeyboardFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardFactory.cpp; sourceTree = "<group>"; };
 		F98605D52BE4BE80006A4C0F /* SivKeyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivKeyboard.cpp; sourceTree = "<group>"; };
+		F98605DA2BE50001006A4C0F /* InputState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InputState.hpp; sourceTree = "<group>"; };
+		F98605DC2BE50013006A4C0F /* InputState.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InputState.ipp; sourceTree = "<group>"; };
+		F98605DE2BE50038006A4C0F /* SivInputCombination.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInputCombination.cpp; sourceTree = "<group>"; };
+		F98605E02BE50038006A4C0F /* SivInputGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInputGroup.cpp; sourceTree = "<group>"; };
+		F98605E22BE50038006A4C0F /* SivInputState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInputState.cpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -4631,6 +4641,7 @@
 				F98605C42BE4B680006A4C0F /* Input.ipp */,
 				F98605C22BE4B680006A4C0F /* InputCombination.ipp */,
 				F98605C32BE4B680006A4C0F /* InputGroup.ipp */,
+				F98605DC2BE50013006A4C0F /* InputState.ipp */,
 				F9070B842B9F175000383E4D /* Int128.ipp */,
 				F9070B852B9F175000383E4D /* IntFormatter.ipp */,
 				F9070B862B9F175000383E4D /* IntToString.ipp */,
@@ -4800,6 +4811,7 @@
 				F98605BA2BE4B65B006A4C0F /* InputDevice.hpp */,
 				F98605B82BE4B65B006A4C0F /* InputGroup.hpp */,
 				F98605B92BE4B65B006A4C0F /* InputGroups.hpp */,
+				F98605DA2BE50001006A4C0F /* InputState.hpp */,
 				F9070BF42B9F175000383E4D /* Int128.hpp */,
 				F9070BF52B9F175000383E4D /* IntFormatter.hpp */,
 				F9070BF62B9F175000383E4D /* IntToString.hpp */,
@@ -5503,7 +5515,10 @@
 				F986F8352BC7B043006A4C0F /* INIItem */,
 				F986F8392BC7B043006A4C0F /* INISection */,
 				F98605CB2BE4B6A4006A4C0F /* Input */,
+				F98605DF2BE50038006A4C0F /* InputCombination */,
 				F98605C92BE4B6A4006A4C0F /* InputDevice */,
+				F98605E12BE50038006A4C0F /* InputGroup */,
+				F98605E32BE50038006A4C0F /* InputState */,
 				F9070D5E2B9F175E00383E4D /* Int128 */,
 				F9070D602B9F175E00383E4D /* IntFormatter */,
 				F9070D622B9F175E00383E4D /* IntToString */,
@@ -6324,6 +6339,30 @@
 				F98605D52BE4BE80006A4C0F /* SivKeyboard.cpp */,
 			);
 			path = Keyboard;
+			sourceTree = "<group>";
+		};
+		F98605DF2BE50038006A4C0F /* InputCombination */ = {
+			isa = PBXGroup;
+			children = (
+				F98605DE2BE50038006A4C0F /* SivInputCombination.cpp */,
+			);
+			path = InputCombination;
+			sourceTree = "<group>";
+		};
+		F98605E12BE50038006A4C0F /* InputGroup */ = {
+			isa = PBXGroup;
+			children = (
+				F98605E02BE50038006A4C0F /* SivInputGroup.cpp */,
+			);
+			path = InputGroup;
+			sourceTree = "<group>";
+		};
+		F98605E32BE50038006A4C0F /* InputState */ = {
+			isa = PBXGroup;
+			children = (
+				F98605E22BE50038006A4C0F /* SivInputState.cpp */,
+			);
+			path = InputState;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8316,6 +8355,7 @@
 				F98600412BCFBB53006A4C0F /* SkSpan.h in Headers */,
 				F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */,
 				F986FA6F2BCFB53B006A4C0F /* t1types.h in Headers */,
+				F98605DB2BE50001006A4C0F /* InputState.hpp in Headers */,
 				F986FA9C2BCFB53B006A4C0F /* t1tables.h in Headers */,
 				F98601C82BCFBB53006A4C0F /* SkGlyph.h in Headers */,
 				F98600012BCFBB53006A4C0F /* SkBlurTypes.h in Headers */,
@@ -8677,6 +8717,7 @@
 				F9070CCC2B9F175100383E4D /* Indexed.hpp in Headers */,
 				F986023D2BCFBB54006A4C0F /* SkReadPixelsRec.h in Headers */,
 				F98605732BDA7DB7006A4C0F /* Cursor.hpp in Headers */,
+				F98605DD2BE50013006A4C0F /* InputState.ipp in Headers */,
 				F986F9922BCA9D0A006A4C0F /* plutovg-ft-raster.h in Headers */,
 				F986014E2BCFBB53006A4C0F /* SkATrace.h in Headers */,
 				F986042A2BCFBB54006A4C0F /* SkSLPoison.h in Headers */,
@@ -9616,6 +9657,7 @@
 				F986026B2BCFBB54006A4C0F /* SkSpecialImage.cpp in Sources */,
 				F9528BA82BBDA25E00222F45 /* SivMemoryViewReader.cpp in Sources */,
 				F986043C2BCFBB54006A4C0F /* SkSLSwizzle.cpp in Sources */,
+				F98605E52BE50038006A4C0F /* SivInputGroup.cpp in Sources */,
 				F98601682BCFBB53006A4C0F /* SkBlitRow_D32.cpp in Sources */,
 				F9070DE62B9F175E00383E4D /* Levenshtein.cpp in Sources */,
 				F986047E2BCFBB54006A4C0F /* SkSLModuleLoader.cpp in Sources */,
@@ -9624,6 +9666,7 @@
 				F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */,
 				F98604242BCFBB54006A4C0F /* SkSLModifierFlags.cpp in Sources */,
 				F9070DEA2B9F175E00383E4D /* SivSystem.cpp in Sources */,
+				F98605E62BE50038006A4C0F /* SivInputState.cpp in Sources */,
 				F98603EA2BCFBB54006A4C0F /* SkSLConstructor.cpp in Sources */,
 				F98603FA2BCFBB54006A4C0F /* SkSLConstructorSplat.cpp in Sources */,
 				F98603982BCFBB54006A4C0F /* SkRadialGradient.cpp in Sources */,
@@ -9822,6 +9865,7 @@
 				F98604612BCFBB54006A4C0F /* SkSLReplaceConstVarsWithLiterals.cpp in Sources */,
 				F9528C1D2BBF026F00222F45 /* fse_compress.c in Sources */,
 				F98602E52BCFBB54006A4C0F /* SkImage_Raster.cpp in Sources */,
+				F98605E42BE50038006A4C0F /* SivInputCombination.cpp in Sources */,
 				F98602662BCFBB54006A4C0F /* SkScan.cpp in Sources */,
 				F986031E2BCFBB54006A4C0F /* SkPathOpsCubic.cpp in Sources */,
 				F98601C62BCFBB53006A4C0F /* SkGlobalInitialization_core.cpp in Sources */,
