@@ -1671,6 +1671,17 @@
 		F98605B02BE49BE0006A4C0F /* SivMouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605AC2BE49BE0006A4C0F /* SivMouse.cpp */; };
 		F98605B42BE49C00006A4C0F /* CMouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605B12BE49C00006A4C0F /* CMouse.cpp */; };
 		F98605B52BE49C00006A4C0F /* CMouse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605B22BE49C00006A4C0F /* CMouse.hpp */; };
+		F98605BC2BE4B65B006A4C0F /* InputCombination.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605B62BE4B65A006A4C0F /* InputCombination.hpp */; };
+		F98605BD2BE4B65B006A4C0F /* Input.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605B72BE4B65A006A4C0F /* Input.hpp */; };
+		F98605BE2BE4B65B006A4C0F /* InputGroup.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605B82BE4B65B006A4C0F /* InputGroup.hpp */; };
+		F98605BF2BE4B65B006A4C0F /* InputGroups.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605B92BE4B65B006A4C0F /* InputGroups.hpp */; };
+		F98605C02BE4B65B006A4C0F /* InputDevice.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605BA2BE4B65B006A4C0F /* InputDevice.hpp */; };
+		F98605C12BE4B65B006A4C0F /* Keyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605BB2BE4B65B006A4C0F /* Keyboard.hpp */; };
+		F98605C52BE4B680006A4C0F /* InputCombination.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605C22BE4B680006A4C0F /* InputCombination.ipp */; };
+		F98605C62BE4B680006A4C0F /* InputGroup.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605C32BE4B680006A4C0F /* InputGroup.ipp */; };
+		F98605C72BE4B680006A4C0F /* Input.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605C42BE4B680006A4C0F /* Input.ipp */; };
+		F98605CC2BE4B6A4006A4C0F /* SivInputDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605C82BE4B6A4006A4C0F /* SivInputDevice.cpp */; };
+		F98605CD2BE4B6A4006A4C0F /* SivInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605CA2BE4B6A4006A4C0F /* SivInput.cpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2746,6 +2757,17 @@
 		F98605AC2BE49BE0006A4C0F /* SivMouse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMouse.cpp; sourceTree = "<group>"; };
 		F98605B12BE49C00006A4C0F /* CMouse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMouse.cpp; sourceTree = "<group>"; };
 		F98605B22BE49C00006A4C0F /* CMouse.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CMouse.hpp; sourceTree = "<group>"; };
+		F98605B62BE4B65A006A4C0F /* InputCombination.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InputCombination.hpp; sourceTree = "<group>"; };
+		F98605B72BE4B65A006A4C0F /* Input.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Input.hpp; sourceTree = "<group>"; };
+		F98605B82BE4B65B006A4C0F /* InputGroup.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InputGroup.hpp; sourceTree = "<group>"; };
+		F98605B92BE4B65B006A4C0F /* InputGroups.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InputGroups.hpp; sourceTree = "<group>"; };
+		F98605BA2BE4B65B006A4C0F /* InputDevice.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InputDevice.hpp; sourceTree = "<group>"; };
+		F98605BB2BE4B65B006A4C0F /* Keyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Keyboard.hpp; sourceTree = "<group>"; };
+		F98605C22BE4B680006A4C0F /* InputCombination.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InputCombination.ipp; sourceTree = "<group>"; };
+		F98605C32BE4B680006A4C0F /* InputGroup.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InputGroup.ipp; sourceTree = "<group>"; };
+		F98605C42BE4B680006A4C0F /* Input.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Input.ipp; sourceTree = "<group>"; };
+		F98605C82BE4B6A4006A4C0F /* SivInputDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInputDevice.cpp; sourceTree = "<group>"; };
+		F98605CA2BE4B6A4006A4C0F /* SivInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInput.cpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -4596,6 +4618,9 @@
 				F986F82E2BC7B024006A4C0F /* INI.ipp */,
 				F986F82F2BC7B024006A4C0F /* INIItem.ipp */,
 				F986F8302BC7B024006A4C0F /* INISection.ipp */,
+				F98605C42BE4B680006A4C0F /* Input.ipp */,
+				F98605C22BE4B680006A4C0F /* InputCombination.ipp */,
+				F98605C32BE4B680006A4C0F /* InputGroup.ipp */,
 				F9070B842B9F175000383E4D /* Int128.ipp */,
 				F9070B852B9F175000383E4D /* IntFormatter.ipp */,
 				F9070B862B9F175000383E4D /* IntToString.ipp */,
@@ -4760,6 +4785,11 @@
 				F986F8292BC7B00A006A4C0F /* INI.hpp */,
 				F986F82A2BC7B00A006A4C0F /* INIItem.hpp */,
 				F986F8282BC7B00A006A4C0F /* INISection.hpp */,
+				F98605B72BE4B65A006A4C0F /* Input.hpp */,
+				F98605B62BE4B65A006A4C0F /* InputCombination.hpp */,
+				F98605BA2BE4B65B006A4C0F /* InputDevice.hpp */,
+				F98605B82BE4B65B006A4C0F /* InputGroup.hpp */,
+				F98605B92BE4B65B006A4C0F /* InputGroups.hpp */,
 				F9070BF42B9F175000383E4D /* Int128.hpp */,
 				F9070BF52B9F175000383E4D /* IntFormatter.hpp */,
 				F9070BF62B9F175000383E4D /* IntToString.hpp */,
@@ -4771,6 +4801,7 @@
 				F9E5FCE62BC59EA00081A4F7 /* JSONPointer.hpp */,
 				F9E5FCD12BC3AD400081A4F7 /* JSONValueType.hpp */,
 				F9070BFA2B9F175000383E4D /* KahanSummation.hpp */,
+				F98605BB2BE4B65B006A4C0F /* Keyboard.hpp */,
 				F9070BFB2B9F175000383E4D /* LetterCase.hpp */,
 				F9528B502BB6DC2C00222F45 /* LicenseInfo.hpp */,
 				F9528B692BB7087700222F45 /* LicenseManager.hpp */,
@@ -5461,6 +5492,8 @@
 				F986F8372BC7B043006A4C0F /* INI */,
 				F986F8352BC7B043006A4C0F /* INIItem */,
 				F986F8392BC7B043006A4C0F /* INISection */,
+				F98605CB2BE4B6A4006A4C0F /* Input */,
+				F98605C92BE4B6A4006A4C0F /* InputDevice */,
 				F9070D5E2B9F175E00383E4D /* Int128 */,
 				F9070D602B9F175E00383E4D /* IntFormatter */,
 				F9070D622B9F175E00383E4D /* IntToString */,
@@ -6244,6 +6277,22 @@
 				F98605B22BE49C00006A4C0F /* CMouse.hpp */,
 			);
 			path = Mouse;
+			sourceTree = "<group>";
+		};
+		F98605C92BE4B6A4006A4C0F /* InputDevice */ = {
+			isa = PBXGroup;
+			children = (
+				F98605C82BE4B6A4006A4C0F /* SivInputDevice.cpp */,
+			);
+			path = InputDevice;
+			sourceTree = "<group>";
+		};
+		F98605CB2BE4B6A4006A4C0F /* Input */ = {
+			isa = PBXGroup;
+			children = (
+				F98605CA2BE4B6A4006A4C0F /* SivInput.cpp */,
+			);
+			path = Input;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8399,6 +8448,7 @@
 				F986FA572BCFB53B006A4C0F /* svttglyf.h in Headers */,
 				F9528B5B2BB6DC6800222F45 /* MicrosecClock.ipp in Headers */,
 				F986F9BE2BCA9D0A006A4C0F /* styleelement.h in Headers */,
+				F98605C02BE4B65B006A4C0F /* InputDevice.hpp in Headers */,
 				F986043B2BCFBB54006A4C0F /* SkSLSwitchStatement.h in Headers */,
 				F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */,
 				F9528CA52BC1209900222F45 /* zconf.h in Headers */,
@@ -8508,6 +8558,7 @@
 				F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */,
 				F98601DF2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.h in Headers */,
 				F986F9A92BCA9D0A006A4C0F /* graphicselement.h in Headers */,
+				F98605C72BE4B680006A4C0F /* Input.ipp in Headers */,
 				F9070AFF2B9DEB5900383E4D /* utils.h in Headers */,
 				F9070EF62B9F1C8900383E4D /* posix_time.h in Headers */,
 				F986008E2BCFBB53006A4C0F /* GrDeferredDisplayList.h in Headers */,
@@ -8517,6 +8568,7 @@
 				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
 				F90706892B9DAEC900383E4D /* fast_type_id.h in Headers */,
 				F986FFEC2BCFBB53006A4C0F /* SkCodec.h in Headers */,
+				F98605BE2BE4B65B006A4C0F /* InputGroup.hpp in Headers */,
 				F986029D2BCFBB54006A4C0F /* SkWritePixelsRec.h in Headers */,
 				F98600892BCFBB53006A4C0F /* SkThreadID.h in Headers */,
 				F98600BA2BCFBB53006A4C0F /* Transform_inl.h in Headers */,
@@ -8692,12 +8744,14 @@
 				F98600342BCFBB53006A4C0F /* SkPoint.h in Headers */,
 				F90706AB2B9DAEC900383E4D /* gaussian_distribution.h in Headers */,
 				F98604302BCFBB54006A4C0F /* SkSLProgram.h in Headers */,
+				F98605C12BE4B65B006A4C0F /* Keyboard.hpp in Headers */,
 				F98603FE2BCFBB54006A4C0F /* SkSLContinueStatement.h in Headers */,
 				F98601592BCFBB53006A4C0F /* SkBitmapDevice.h in Headers */,
 				F98603E72BCFBB54006A4C0F /* SkSLBreakStatement.h in Headers */,
 				F986055A2BD203D4006A4C0F /* muParser.h in Headers */,
 				F986048B2BCFBB54006A4C0F /* SkSLProgramSettings.h in Headers */,
 				F9528C2D2BBF026F00222F45 /* zstd_fast.h in Headers */,
+				F98605BD2BE4B65B006A4C0F /* Input.hpp in Headers */,
 				F98604532BCFBB54006A4C0F /* SkSLTraceHook.h in Headers */,
 				F9070CBC2B9F175000383E4D /* FloatFormatter.hpp in Headers */,
 				F98600882BCFBB53006A4C0F /* SkThreadAnnotations.h in Headers */,
@@ -8912,6 +8966,7 @@
 				F98600672BCFBB53006A4C0F /* SkTableMaskFilter.h in Headers */,
 				F986006A2BCFBB53006A4C0F /* SingleOwner.h in Headers */,
 				F98602722BCFBB54006A4C0F /* SkStrike.h in Headers */,
+				F98605BC2BE4B65B006A4C0F /* InputCombination.hpp in Headers */,
 				F98602872BCFBB54006A4C0F /* SkTDynamicHash.h in Headers */,
 				F986F9232BC8441F006A4C0F /* regparse.h in Headers */,
 				F986021F2BCFBB54006A4C0F /* SkPictureFlat.h in Headers */,
@@ -8921,6 +8976,7 @@
 				F98603C92BCFBB54006A4C0F /* SkSLNoOpErrorReporter.h in Headers */,
 				F98603292BCFBB54006A4C0F /* SkPathOpsQuad.h in Headers */,
 				F9528C852BC05B5B00222F45 /* BMPHeader.hpp in Headers */,
+				F98605BF2BE4B65B006A4C0F /* InputGroups.hpp in Headers */,
 				F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */,
 				F9070CEA2B9F175100383E4D /* ParseFloat.hpp in Headers */,
 				F9528C1B2BBF026F00222F45 /* zstd_trace.h in Headers */,
@@ -9078,6 +9134,7 @@
 				F907068B2B9DAEC900383E4D /* inline_variable.h in Headers */,
 				F986F9BA2BCA9D0A006A4C0F /* stopelement.h in Headers */,
 				F98600502BCFBB53006A4C0F /* SkVertices.h in Headers */,
+				F98605C52BE4B680006A4C0F /* InputCombination.ipp in Headers */,
 				F986FA582BCFB53B006A4C0F /* svwinfnt.h in Headers */,
 				F986FFEA2BCFBB53006A4C0F /* SkAvifDecoder.h in Headers */,
 				F9070CC82B9F175000383E4D /* HashSet.hpp in Headers */,
@@ -9182,6 +9239,7 @@
 				F9528BAC2BBE7CF300222F45 /* MemoryWriter.hpp in Headers */,
 				F98605A52BE4887C006A4C0F /* IRegExp.hpp in Headers */,
 				F90706A92B9DAEC900383E4D /* distributions.h in Headers */,
+				F98605C62BE4B680006A4C0F /* InputGroup.ipp in Headers */,
 				F986FA5A2BCFB53B006A4C0F /* cffotypes.h in Headers */,
 				F986027B2BCFBB54006A4C0F /* SkStroke.h in Headers */,
 				F9070CFD2B9F175100383E4D /* Stopwatch.hpp in Headers */,
@@ -9668,6 +9726,7 @@
 				F9528C842BC05B5B00222F45 /* BMPEncoder.cpp in Sources */,
 				F9070E932B9F183100383E4D /* SivSystem_macOS.mm in Sources */,
 				F9070DF02B9F175E00383E4D /* SivTextWriter.cpp in Sources */,
+				F98605CD2BE4B6A4006A4C0F /* SivInput.cpp in Sources */,
 				F98602542BCFBB54006A4C0F /* SkRSXform.cpp in Sources */,
 				F986039C2BCFBB54006A4C0F /* SkBitmapProcShader.cpp in Sources */,
 				F986044A2BCFBB54006A4C0F /* SkSLVariable.cpp in Sources */,
@@ -9715,6 +9774,7 @@
 				F98601D42BCFBB53006A4C0F /* SkImageInfo.cpp in Sources */,
 				F98602A72BCFBB54006A4C0F /* SkBlendModeColorFilter.cpp in Sources */,
 				F986F9382BC8441F006A4C0F /* utf32_le.c in Sources */,
+				F98605CC2BE4B6A4006A4C0F /* SivInputDevice.cpp in Sources */,
 				F986025D2BCFBB54006A4C0F /* SkScalar.cpp in Sources */,
 				F98602A52BCFBB54006A4C0F /* SkYUVPlanesCache.cpp in Sources */,
 				F9070AFC2B9DEB5900383E4D /* fixed-dtoa.cc in Sources */,

@@ -119,8 +119,11 @@ namespace s3d
 		SIV3D_ENGINE(Mouse)->onMouseButtonUpdated(button, (action == GLFW_PRESS));
 	}
 
-	void CMouse::OnScroll(GLFWwindow*, const double xOffset, const double yOffset)
+	void CMouse::OnScroll(GLFWwindow*, double xOffset, double yOffset)
 	{
+		// 浮動小数点数誤差による端数を除去する
+		xOffset = (std::round(100 * xOffset) / 100.0);
+		yOffset = (std::round(100 * yOffset) / 100.0);
 		SIV3D_ENGINE(Mouse)->onScroll(-xOffset, -yOffset);
 	}
 }
