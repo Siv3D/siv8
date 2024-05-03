@@ -11,6 +11,8 @@
 
 # pragma once
 # include <Siv3D/Array.hpp>
+# include <Siv3D/Mouse.hpp>
+# include <Siv3D/InputState.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 
@@ -26,7 +28,11 @@ namespace s3d
 
 		void init() override;
 
-		bool update() override;
+		void update() override;
+
+		InputState& getInputState(uint32 index) noexcept override;
+
+		const Array<Input>& getAllInput() const noexcept override;
 
 		Vec2 wheel() const noexcept override;
 
@@ -44,24 +50,36 @@ namespace s3d
 	
 		bool m_touchAvailable = false;
 
-		////////////////////////////////////////////////////////////////
-		//
-		std::mutex m_wheelMutex;
+		struct MouseButton
+		{
+			std::array<InputState, Mouse::NumButtons> states;
 
-		Vec2 m_wheelInternal{ 0.0, 0.0 };
-		//
-		////////////////////////////////////////////////////////////////
+			Array<Input> allInputs;
+		
+		} m_mouseButton;
 
-		Vec2 m_wheel{ 0.0, 0.0 };
+		struct Wheel
+		{
+			////////////////////////////////////////////////////////////////
+			//
+			std::mutex mutex;
 
-		////////////////////////////////////////////////////////////////
-		//
-		std::mutex m_touchMutex;
+			Vec2 wheelInternal{ 0.0, 0.0 };
+			//
+			////////////////////////////////////////////////////////////////
 
-		Optional<DWORD> m_currentPrimaryTouchID;
+			Vec2 wheel{ 0.0, 0.0 };
+		
+		} m_wheel;
 
-		Optional<Point> m_primaryTouchScreenPos;
-		//
-		////////////////////////////////////////////////////////////////
+		struct Touch
+		{
+			std::mutex mutex;
+
+			Optional<DWORD> currentPrimaryTouchID;
+
+			Optional<Point> primaryTouchScreenPos;
+
+		} m_touch;
 	};
 }

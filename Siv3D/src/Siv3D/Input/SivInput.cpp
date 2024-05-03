@@ -69,6 +69,8 @@ namespace s3d
 			{
 			case InputDevice::Keyboard:
 				return &SIV3D_ENGINE(Keyboard)->getInputState(code);
+			case InputDevice::Mouse:
+				return &SIV3D_ENGINE(Mouse)->getInputState(code);
 			default:
 				return nullptr;
 			}

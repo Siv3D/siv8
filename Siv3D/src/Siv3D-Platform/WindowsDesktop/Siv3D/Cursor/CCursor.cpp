@@ -109,7 +109,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CCursor::update()
+	void CCursor::update()
 	{
 		if (m_clippedToWindow)
 		{
@@ -139,8 +139,6 @@ namespace s3d
 			const Vec2 clientPos = (rawClientPos / windowScaling);
 			m_state.update(screenPos, rawClientPos, clientPos);
 		}
-
-		return true;
 	}
 
 	////////////////////////////////////////////////////////////////

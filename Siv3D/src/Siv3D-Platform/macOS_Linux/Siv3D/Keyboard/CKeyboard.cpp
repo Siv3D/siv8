@@ -288,7 +288,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	InputState& CKeyboard::getInputState(const size_t index) noexcept
+	InputState& CKeyboard::getInputState(const uint32 index) noexcept
 	{
 		assert(index < Keyboard::NumKeys);
 		return m_states[index];

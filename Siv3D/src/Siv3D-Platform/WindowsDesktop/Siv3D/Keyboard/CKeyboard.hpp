@@ -29,7 +29,7 @@ namespace s3d
 
 		void update() override;
 
-		InputState& getInputState(size_t index) noexcept override;
+		InputState& getInputState(uint32 index) noexcept override;
 
 		const String& name(uint32 index) const noexcept override;
 

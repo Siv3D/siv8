@@ -90,7 +90,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CCursorStyle::update()
+	void CCursorStyle::update()
 	{
 		if (not Cursor::OnClientRect())
 		{
@@ -104,8 +104,6 @@ namespace s3d
 		}
 
 		m_requestedCursor = m_defaultCursor;
-
-		return true;
 	}
 
 	////////////////////////////////////////////////////////////////

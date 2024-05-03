@@ -26,7 +26,11 @@ namespace s3d
 
 		void init() override;
 
-		bool update() override;
+		void update() override;
+
+		InputState& getInputState(uint32 index) noexcept override;
+
+		const Array<Input>& getAllInput() const noexcept override;
 
 		Vec2 wheel() const noexcept override;
 

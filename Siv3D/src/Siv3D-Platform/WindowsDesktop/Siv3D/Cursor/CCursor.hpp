@@ -26,7 +26,7 @@ namespace s3d
 
 		void init() override;
 
-		bool update() override;
+		void update() override;
 
 		void updateHighTemporalResolutionCursorPos(Point rawClientPos) override;
 

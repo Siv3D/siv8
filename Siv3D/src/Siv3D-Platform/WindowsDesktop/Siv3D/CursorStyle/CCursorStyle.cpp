@@ -62,7 +62,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CCursorStyle::update()
+	void CCursorStyle::update()
 	{
 		if (m_currentCursor != m_requestedCursor)
 		{
@@ -77,8 +77,6 @@ namespace s3d
 		}
 
 		m_requestedCursor = m_defaultCursor;
-
-		return true;
 	}
 
 	////////////////////////////////////////////////////////////////

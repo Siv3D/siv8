@@ -31,7 +31,7 @@ namespace s3d
 
 		virtual void update() = 0;
 
-		virtual InputState& getInputState(size_t index) noexcept = 0;
+		virtual InputState& getInputState(uint32 index) noexcept = 0;
 
 		virtual const String& name(uint32 index) const noexcept = 0;
 

@@ -52,7 +52,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CMouse::update()
+	void CMouse::update()
 	{
 
 		{

@@ -29,7 +29,7 @@ namespace s3d
 
 		void init() override;
 
-		bool update() override;
+		void update() override;
 
 		void setDefaultStyle(CursorStyle style) override;
 

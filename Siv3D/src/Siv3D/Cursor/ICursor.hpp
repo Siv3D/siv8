@@ -29,7 +29,7 @@ namespace s3d
 
 		virtual void init() = 0;
 
-		virtual bool update() = 0;
+		virtual void update() = 0;
 
 		virtual void updateHighTemporalResolutionCursorPos(Point rawClientPos) = 0;
 
