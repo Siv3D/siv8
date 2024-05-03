@@ -1666,6 +1666,11 @@
 		F98605A72BE4887C006A4C0F /* RegExpDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986059F2BE4887C006A4C0F /* RegExpDetail.hpp */; };
 		F98605A82BE4887C006A4C0F /* RegExpFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605A02BE4887C006A4C0F /* RegExpFactory.cpp */; };
 		F98605A92BE4887C006A4C0F /* SivRegExp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605A12BE4887C006A4C0F /* SivRegExp.cpp */; };
+		F98605AE2BE49BE0006A4C0F /* IMouse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605AA2BE49BE0006A4C0F /* IMouse.hpp */; };
+		F98605AF2BE49BE0006A4C0F /* MouseFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605AB2BE49BE0006A4C0F /* MouseFactory.cpp */; };
+		F98605B02BE49BE0006A4C0F /* SivMouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605AC2BE49BE0006A4C0F /* SivMouse.cpp */; };
+		F98605B42BE49C00006A4C0F /* CMouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605B12BE49C00006A4C0F /* CMouse.cpp */; };
+		F98605B52BE49C00006A4C0F /* CMouse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605B22BE49C00006A4C0F /* CMouse.hpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2736,6 +2741,11 @@
 		F986059F2BE4887C006A4C0F /* RegExpDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RegExpDetail.hpp; sourceTree = "<group>"; };
 		F98605A02BE4887C006A4C0F /* RegExpFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RegExpFactory.cpp; sourceTree = "<group>"; };
 		F98605A12BE4887C006A4C0F /* SivRegExp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRegExp.cpp; sourceTree = "<group>"; };
+		F98605AA2BE49BE0006A4C0F /* IMouse.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IMouse.hpp; sourceTree = "<group>"; };
+		F98605AB2BE49BE0006A4C0F /* MouseFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MouseFactory.cpp; sourceTree = "<group>"; };
+		F98605AC2BE49BE0006A4C0F /* SivMouse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMouse.cpp; sourceTree = "<group>"; };
+		F98605B12BE49C00006A4C0F /* CMouse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMouse.cpp; sourceTree = "<group>"; };
+		F98605B22BE49C00006A4C0F /* CMouse.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CMouse.hpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -5470,6 +5480,7 @@
 				F9528B5F2BB6DC9200222F45 /* MicrosecClock */,
 				F9528B632BB6DC9200222F45 /* MillisecClock */,
 				F9070D6C2B9F175E00383E4D /* MonitorInfo */,
+				F98605AD2BE49BE0006A4C0F /* Mouse */,
 				F9070D6E2B9F175E00383E4D /* Optional */,
 				F9E5FCE32BC59E7E0081A4F7 /* Parse */,
 				F9070D702B9F175E00383E4D /* ParseBool */,
@@ -5628,6 +5639,7 @@
 				F9070E1B2B9F176B00383E4D /* Logger */,
 				F9528C552BC02A3100222F45 /* MemoryMappedFile */,
 				F9528B352BB0567000222F45 /* MemoryMappedFileView */,
+				F98605B32BE49C00006A4C0F /* Mouse */,
 				F9070E1D2B9F176B00383E4D /* System */,
 			);
 			path = Siv3D;
@@ -6213,6 +6225,25 @@
 				F98605A12BE4887C006A4C0F /* SivRegExp.cpp */,
 			);
 			path = RegExp;
+			sourceTree = "<group>";
+		};
+		F98605AD2BE49BE0006A4C0F /* Mouse */ = {
+			isa = PBXGroup;
+			children = (
+				F98605AA2BE49BE0006A4C0F /* IMouse.hpp */,
+				F98605AB2BE49BE0006A4C0F /* MouseFactory.cpp */,
+				F98605AC2BE49BE0006A4C0F /* SivMouse.cpp */,
+			);
+			path = Mouse;
+			sourceTree = "<group>";
+		};
+		F98605B32BE49C00006A4C0F /* Mouse */ = {
+			isa = PBXGroup;
+			children = (
+				F98605B12BE49C00006A4C0F /* CMouse.cpp */,
+				F98605B22BE49C00006A4C0F /* CMouse.hpp */,
+			);
+			path = Mouse;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8188,6 +8219,7 @@
 				F98600662BCFBB53006A4C0F /* SkShaderMaskFilter.h in Headers */,
 				F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */,
 				F9528CA62BC1209900222F45 /* zlib.h in Headers */,
+				F98605AE2BE49BE0006A4C0F /* IMouse.hpp in Headers */,
 				F9070E5D2B9F176B00383E4D /* CConsole.hpp in Headers */,
 				F98600292BCFBB53006A4C0F /* SkPaint.h in Headers */,
 				F9070C472B9F175000383E4D /* BoolArray.ipp in Headers */,
@@ -8937,6 +8969,7 @@
 				F9070C852B9F175000383E4D /* UnicodeConverter.ipp in Headers */,
 				F90706C22B9DAEC900383E4D /* pcg_extras.hpp in Headers */,
 				F98600542BCFBB53006A4C0F /* SkPDFDocument.h in Headers */,
+				F98605B52BE49C00006A4C0F /* CMouse.hpp in Headers */,
 				F9070C512B9F175000383E4D /* DisjointSet.ipp in Headers */,
 				F986F9D32BCFB514006A4C0F /* IEmoji.hpp in Headers */,
 				F9070CAB2B9F175000383E4D /* Date.hpp in Headers */,
@@ -9441,6 +9474,7 @@
 				F9070F312B9F252E00383E4D /* osmesa_context.c in Sources */,
 				F9070EE02B9F1C8900383E4D /* input.c in Sources */,
 				F98601C72BCFBB53006A4C0F /* SkGlyph.cpp in Sources */,
+				F98605B02BE49BE0006A4C0F /* SivMouse.cpp in Sources */,
 				F986050B2BCFBE2D006A4C0F /* SkDebug_stdio.cpp in Sources */,
 				F986F9D02BCFB514006A4C0F /* CEmoji.cpp in Sources */,
 				F986032F2BCFBB54006A4C0F /* SkPathOpsTSect.cpp in Sources */,
@@ -9515,6 +9549,7 @@
 				F98601522BCFBB53006A4C0F /* SkBBHFactory.cpp in Sources */,
 				F9070DFC2B9F175E00383E4D /* UserActionFactory.cpp in Sources */,
 				F98604782BCFBB54006A4C0F /* SkSLLexer.cpp in Sources */,
+				F98605B42BE49C00006A4C0F /* CMouse.cpp in Sources */,
 				F986041F2BCFBB54006A4C0F /* SkSLLayout.cpp in Sources */,
 				F9070DC62B9F175E00383E4D /* Siv3DEngine.cpp in Sources */,
 				F98602FE2BCFBB54006A4C0F /* SkSwizzler_opts.inc in Sources */,
@@ -9750,6 +9785,7 @@
 				F98602982BCFBB54006A4C0F /* SkVertState.cpp in Sources */,
 				F98600E32BCFBB53006A4C0F /* SkSharedMutex.cpp in Sources */,
 				F9070DF12B9F175E00383E4D /* TextWriterDetail.cpp in Sources */,
+				F98605AF2BE49BE0006A4C0F /* MouseFactory.cpp in Sources */,
 				F9070F302B9F252E00383E4D /* null_init.c in Sources */,
 				F986015B2BCFBB53006A4C0F /* SkBitmapProcState_opts_ssse3.cpp in Sources */,
 				F9528C312BBF026F00222F45 /* zstd_ldm.c in Sources */,

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <mutex>
 # include <Siv3D/Mouse/IMouse.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 
@@ -38,5 +39,19 @@ namespace s3d
 	private:
 		
 		GLFWwindow* m_window = nullptr;
+		
+		////////////////////////////////////////////////////////////////
+		//
+		std::mutex m_wheelMutex;
+
+		Vec2 m_wheelInternal{ 0.0, 0.0 };
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vec2 m_wheel{ 0.0, 0.0 };
+		
+		static void OnMouseButtonUpdated(GLFWwindow*, int button, int action, int mods);
+
+		static void OnScroll(GLFWwindow*, double xOffset, double yOffset);
 	};
 }

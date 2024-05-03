@@ -38,6 +38,12 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CMouse::init()");
 
 		m_window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
+
+		if (m_window)
+		{
+			::glfwSetMouseButtonCallback(m_window, OnMouseButtonUpdated);
+			::glfwSetScrollCallback(m_window, OnScroll);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -48,6 +54,73 @@ namespace s3d
 
 	bool CMouse::update()
 	{
+
+		{
+			std::lock_guard lock{ m_wheelMutex };
+			m_wheel = std::exchange(m_wheelInternal, Vec2{ 0, 0 });
+		}
+
 		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	wheel
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 CMouse::wheel() const noexcept
+	{
+		return m_wheel;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	onMouseButtonUpdated
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CMouse::onMouseButtonUpdated(const int32, const bool)
+	{
+
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	onScroll
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CMouse::onScroll(const double x, const double y)
+	{
+		std::lock_guard lock{ m_wheelMutex };
+		m_wheelInternal.moveBy(x, y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getPrimaryTouchPos
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<Point> CMouse::getPrimaryTouchPos()
+	{
+		return none;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CMouse::OnMouseButtonUpdated(GLFWwindow*, const int button, const int action, int)
+	{
+		SIV3D_ENGINE(Mouse)->onMouseButtonUpdated(button, (action == GLFW_PRESS));
+	}
+
+	void CMouse::OnScroll(GLFWwindow*, const double xOffset, const double yOffset)
+	{
+		SIV3D_ENGINE(Mouse)->onScroll(-xOffset, -yOffset);
 	}
 }
