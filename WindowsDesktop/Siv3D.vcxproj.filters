@@ -2739,6 +2739,12 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\CursorStyle\CCursorStyle.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\CursorStyle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.hpp">
+      <Filter>src\Siv3D\RegExp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\IRegExp.hpp">
+      <Filter>src\Siv3D\RegExp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4753,6 +4759,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\CursorStyle\CCursorStyle.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\CursorStyle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\RegExpFactory.cpp">
+      <Filter>src\Siv3D\RegExp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.cpp">
+      <Filter>src\Siv3D\RegExp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

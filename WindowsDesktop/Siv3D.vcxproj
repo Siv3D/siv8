@@ -398,6 +398,8 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseList.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\IRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
@@ -851,7 +853,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Random\SivRandom.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RectF\SivRectF.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Rect\SivRect.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\RegExpFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\SivRegExp.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />

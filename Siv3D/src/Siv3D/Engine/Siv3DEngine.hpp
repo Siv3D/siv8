@@ -17,6 +17,7 @@ namespace s3d
 {
 	class ISiv3DLicenseManager;
 	class ISiv3DLogger;
+	class ISiv3DRegExp;
 	class ISiv3DSystem;
 	class ISiv3DEngineResource;
 	class ISiv3DUserAction;
@@ -37,6 +38,7 @@ namespace s3d
 		std::tuple<
 			Siv3DComponent<ISiv3DLicenseManager>,
 			Siv3DComponent<ISiv3DLogger>,
+			Siv3DComponent<ISiv3DRegExp>,
 			Siv3DComponent<ISiv3DSystem>,
 			Siv3DComponent<ISiv3DEngineResource>,
 			Siv3DComponent<ISiv3DUserAction>,

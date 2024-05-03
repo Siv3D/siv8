@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include "CSystem.hpp"
-# include <ThirdParty/Oniguruma/oniguruma.h>
+# include <Siv3D/RegExp/IRegExp.hpp>
 # include <Siv3D/EngineResource/IEngineResource.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/CWindow.hpp>
@@ -40,10 +40,7 @@ namespace s3d
 
 		m_setupProgress = SetupProgress::EngineInitialized;
 
-		{
-			OnigEncoding encodings = ONIG_ENCODING_UTF32_LE;
-			onig_initialize(&encodings, 1);
-		}
+		SIV3D_ENGINE(RegExp)->init();
 
 		SIV3D_ENGINE(EngineResource)->init();
 
