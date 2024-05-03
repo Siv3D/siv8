@@ -14,6 +14,7 @@
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
+# include <Siv3D/Mouse/CMouse.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/UserAction/IUSerAction.hpp>
 # include "CWindow.hpp"
@@ -303,6 +304,24 @@ namespace s3d
 				
 				break;
 			}
+		case WM_MOUSEWHEEL:
+			{
+				if (engineAvailable)
+				{
+					SIV3D_ENGINE(Mouse)->onScroll(0, static_cast<short>(HIWORD(wParam)) / -double(WHEEL_DELTA));
+				}
+		
+				return 0;
+			}
+		case WM_MOUSEHWHEEL:
+			{
+				if (engineAvailable)
+				{
+					SIV3D_ENGINE(Mouse)->onScroll(static_cast<short>(HIWORD(wParam)) / double(WHEEL_DELTA), 0);
+				}
+
+				return 0;
+			}
 		case WM_ENTERSIZEMOVE:
 			{
 				LOG_DEBUG("WM_ENTERSIZEMOVE");
@@ -325,6 +344,32 @@ namespace s3d
 
 				break;
 			}
+		case WM_TOUCH:
+			{
+				if (engineAvailable)
+				{
+					if (const size_t num_inputs = LOWORD(wParam))
+					{
+						Array<TOUCHINPUT> touchInputs(num_inputs);
+
+						if (::GetTouchInputInfo(reinterpret_cast<HTOUCHINPUT>(lParam),
+							static_cast<uint32>(touchInputs.size()), touchInputs.data(),
+							sizeof(TOUCHINPUT)))
+						{
+							if (auto pMouse = static_cast<CMouse*>(SIV3D_ENGINE(Mouse)))
+							{
+								pMouse->onTouchInput(touchInputs);
+							}
+
+							::CloseTouchInputHandle(reinterpret_cast<HTOUCHINPUT>(lParam));
+
+							return 0;
+						}
+					}
+				}
+
+				break;
+			}
 		case WM_DPICHANGED:
 			{
 				LOG_DEBUG("WM_DPICHANGED");
@@ -338,51 +383,6 @@ namespace s3d
 
 				return true;
 			}
-		//case WM_MOUSEWHEEL:
-		//	{
-				//
-				//if (engineAvailable)
-				//{
-				//	SIV3D_ENGINE(Mouse)->onScroll(0, static_cast<short>(HIWORD(wParam)) / -double(WHEEL_DELTA));
-				//}
-		
-				//		return 0;
-		//	}
-		//case WM_MOUSEHWHEEL:
-		//	{
-				//if (engineAvailable)
-				//{
-				//	SIV3D_ENGINE(Mouse)->onScroll(static_cast<short>(HIWORD(wParam)) / double(WHEEL_DELTA), 0);
-				//}
-
-		//		return 0;
-		//	}
-		//case WM_TOUCH:
-		//	{
-		//		if (engineAvailable)
-		//		{
-			//		if (const size_t num_inputs = LOWORD(wParam))
-			//		{
-			//			Array<TOUCHINPUT> touchInputs(num_inputs);
-
-			//			if (::GetTouchInputInfo(reinterpret_cast<HTOUCHINPUT>(lParam),
-			//				static_cast<uint32>(touchInputs.size()), touchInputs.data(),
-			//				sizeof(TOUCHINPUT)))
-			//			{
-			//				if (auto pMouse = static_cast<CMouse*>(SIV3D_ENGINE(Mouse)))
-			//				{
-			//					pMouse->onTouchInput(touchInputs);
-			//				}
-
-			//				::CloseTouchInputHandle(reinterpret_cast<HTOUCHINPUT>(lParam));
-
-			//				return 0;
-			//			}
-			//		}
-			//	}
-
-		//		break;
-		//	}
 		}
 
 		return ::DefWindowProcW(hWnd, message, wParam, lParam);

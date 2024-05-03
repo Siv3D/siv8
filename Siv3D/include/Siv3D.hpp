@@ -1243,6 +1243,49 @@
 // マウスカーソル | Mouse cursor
 # include <Siv3D/Cursor.hpp>
 
+//# include <Siv3D/InputDevice.hpp>
+//
+//# include <Siv3D/InputGroups.hpp>
+//
+//# include <Siv3D/Input.hpp>
+//
+//# include <Siv3D/InputCombination.hpp>
+//
+//# include <Siv3D/InputGroup.hpp>
+//
+//// キーボード | Keyboard
+//# include <Siv3D/Keyboard.hpp>
+
+// マウス | Mouse
+# include <Siv3D/Mouse.hpp>
+
+//// ゲームパッドの情報 | Gamepad information
+//# include <Siv3D/GamepadInfo.hpp>
+//
+//// ゲームパッド | Gamepad
+//# include <Siv3D/Gamepad.hpp>
+//
+//// Joy-Con | Joy-Con
+//# include <Siv3D/JoyCon.hpp>
+//
+//// Pro コントローラー | Pro-Controller
+//# include <Siv3D/ProController.hpp>
+//
+//// デッドゾーン | Deadzone
+//# include <Siv3D/DeadZone.hpp>
+//
+//// XInput コントローラの振動 | XInput controller vibration 
+//# include <Siv3D/XInputVibration.hpp>
+//
+//// XInput コントローラ | XInput controller
+//# include <Siv3D/XInput.hpp>
+//
+//// ペンタブレット | Digitizer
+//# include <Siv3D/Pentablet.hpp>
+//
+//// Leap デバイス | Leap Device
+//# include <Siv3D/Leap.hpp>
+
 
 
 

@@ -23,6 +23,7 @@
 # include <Siv3D/Console/IConsole.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
+# include <Siv3D/Mouse/IMouse.hpp>
 
 namespace s3d
 {

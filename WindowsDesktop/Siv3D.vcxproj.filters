@@ -643,6 +643,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\CursorStyle">
       <UniqueIdentifier>{c41c2d19-df70-4d0f-83a8-6894ab458c87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Mouse">
+      <UniqueIdentifier>{caca8aca-9ced-4f14-9ea2-d63d17f6fda4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse">
+      <UniqueIdentifier>{785c3016-019a-42fe-924a-5e525f1dcc54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2745,6 +2751,15 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\IRegExp.hpp">
       <Filter>src\Siv3D\RegExp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp">
+      <Filter>src\Siv3D\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mouse.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4765,6 +4780,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.cpp">
       <Filter>src\Siv3D\RegExp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mouse\MouseFactory.cpp">
+      <Filter>src\Siv3D\Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mouse\SivMouse.cpp">
+      <Filter>src\Siv3D\Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
