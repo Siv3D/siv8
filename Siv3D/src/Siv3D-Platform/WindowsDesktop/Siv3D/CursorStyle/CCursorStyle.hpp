@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include <mutex>
+# include <Siv3D/Array.hpp>
 # include <Siv3D/HashTable.hpp>
 # include <Siv3D/UniqueResource.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
@@ -56,5 +58,13 @@ namespace s3d
 		static void CursorDeleter(HICON h);
 
 		HashTable<String, UniqueResource<HICON, decltype(&CursorDeleter)>> m_customCursors;
+
+		//////////////////////////////////////////////////
+		//
+		std::mutex m_mutex;
+
+		Array<UniqueResource<HICON, decltype(&CursorDeleter)>> m_garbage;
+		//
+		//////////////////////////////////////////////////
 	};
 }

@@ -185,8 +185,7 @@ namespace s3d
 
 		if (HICON hIcon = ::CreateIconIndirect(&iconInfo))
 		{
-			m_customCursors.emplace(name, UniqueResource{ hIcon, CursorDeleter });
-			
+			m_customCursors.emplace(name, UniqueResource{ hIcon, CursorDeleter });	
 			return true;
 		}
 		else
@@ -213,17 +212,19 @@ namespace s3d
 				m_defaultCursor = m_systemCursors[FromEnum(CursorStyle::Arrow)];
 			}
 
-			if (m_currentCursor == hIcon)
-			{
-				m_currentCursor = m_defaultCursor;
-			}
-
 			if (m_requestedCursor == hIcon)
 			{
 				m_requestedCursor = m_defaultCursor;
 			}
 
+			{
+				std::lock_guard lock{ m_mutex };
+				m_garbage.emplace_back(std::move(it->second));
+			}
+
 			m_customCursors.erase(it);
+
+			::SetCursor(nullptr);
 		}
 	}
 
@@ -235,27 +236,30 @@ namespace s3d
 
 	void CCursorStyle::clearCustomStyles()
 	{
-		for (const auto& cursor : m_customCursors)
 		{
-			const HICON hIcon = cursor.second.get();
+			std::lock_guard lock{ m_mutex };
 
-			if (m_defaultCursor == hIcon)
+			for (auto& cursor : m_customCursors)
 			{
-				m_defaultCursor = m_systemCursors[FromEnum(CursorStyle::Arrow)];
-			}
+				const HICON hIcon = cursor.second.get();
 
-			if (m_currentCursor == hIcon)
-			{
-				m_currentCursor = m_defaultCursor;
-			}
+				if (m_defaultCursor == hIcon)
+				{
+					m_defaultCursor = m_systemCursors[FromEnum(CursorStyle::Arrow)];
+				}
 
-			if (m_requestedCursor == hIcon)
-			{
-				m_requestedCursor = m_defaultCursor;
+				if (m_requestedCursor == hIcon)
+				{
+					m_requestedCursor = m_defaultCursor;
+				}
+
+				m_garbage.emplace_back(std::move(cursor.second));
 			}
 		}
 
 		m_customCursors.clear();
+
+		::SetCursor(nullptr);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -293,6 +297,11 @@ namespace s3d
 	void CCursorStyle::onSetCursor()
 	{
 		::SetCursor(m_currentCursor);
+
+		{
+			std::lock_guard lock{ m_mutex };
+			m_garbage.clear();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -303,6 +312,7 @@ namespace s3d
 
 	void CCursorStyle::CursorDeleter(const HICON h)
 	{
-		::DestroyIcon(h);
+		[[maybe_unused]] const BOOL result = ::DestroyIcon(h);
+		LOG_DEBUG(fmt::format("DestroyIcon -> {}", (result != 0)));
 	}
 }
