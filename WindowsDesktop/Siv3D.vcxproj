@@ -83,6 +83,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\INI.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\INIItem.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\INISection.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Input.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\InputCombination.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\InputGroup.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\JSON.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
@@ -203,10 +206,16 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\INI.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\INIItem.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\INISection.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Input.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputCombination.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputDevice.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputGroup.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputGroups.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSON.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONIterator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONPointer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONValueType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Keyboard.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseManager.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Line.hpp" />
@@ -822,6 +831,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\INIItem\SivINIItem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INISection\SivINISection.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INI\SivINI.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\InputDevice\SivInputDevice.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Input\SivInput.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Int128\SivInt128.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />

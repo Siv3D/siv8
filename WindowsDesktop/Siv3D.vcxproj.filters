@@ -649,6 +649,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse">
       <UniqueIdentifier>{785c3016-019a-42fe-924a-5e525f1dcc54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\InputDevice">
+      <UniqueIdentifier>{58d18840-00bf-45f3-9bc7-75e55189a3fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Input">
+      <UniqueIdentifier>{b6f3b005-c892-4b2d-8266-3eea65257820}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2760,6 +2766,33 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Input.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputDevice.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Input.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputGroups.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputCombination.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\InputCombination.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputGroup.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\InputGroup.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Keyboard.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4789,6 +4822,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\InputDevice\SivInputDevice.cpp">
+      <Filter>src\Siv3D\InputDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Input\SivInput.cpp">
+      <Filter>src\Siv3D\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

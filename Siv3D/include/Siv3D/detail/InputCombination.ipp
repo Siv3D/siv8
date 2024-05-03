@@ -1,0 +1,34 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+
+namespace s3d
+{
+	constexpr InputCombination::InputCombination(const Input input1, const Input input2) noexcept
+		: m_input1{ input1 }
+		, m_input2{ input2 } {}
+
+	constexpr const Input& InputCombination::input1() const noexcept
+	{
+		return m_input1;
+	}
+
+	constexpr const Input& InputCombination::input2() const noexcept
+	{
+		return m_input2;
+	}
+
+	constexpr uint64 InputCombination::asUint64() const noexcept
+	{
+		return std::bit_cast<uint64>(*this);
+	}
+}

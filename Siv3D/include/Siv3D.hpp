@@ -1243,18 +1243,19 @@
 // マウスカーソル | Mouse cursor
 # include <Siv3D/Cursor.hpp>
 
-//# include <Siv3D/InputDevice.hpp>
-//
-//# include <Siv3D/InputGroups.hpp>
-//
-//# include <Siv3D/Input.hpp>
-//
-//# include <Siv3D/InputCombination.hpp>
-//
-//# include <Siv3D/InputGroup.hpp>
-//
-//// キーボード | Keyboard
-//# include <Siv3D/Keyboard.hpp>
+// 入力デバイス | Input device
+# include <Siv3D/InputDevice.hpp>
+
+# include <Siv3D/InputGroups.hpp>
+
+# include <Siv3D/Input.hpp>
+
+# include <Siv3D/InputCombination.hpp>
+
+# include <Siv3D/InputGroup.hpp>
+
+// キーボード | Keyboard
+# include <Siv3D/Keyboard.hpp>
 
 // マウス | Mouse
 # include <Siv3D/Mouse.hpp>
