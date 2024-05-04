@@ -112,6 +112,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomDuration.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomPoint.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec2.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec4.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Rect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectF.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Result.ipp" />
@@ -266,6 +267,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomDuration.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomPoint.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec2.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec4.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Rect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RectF.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RegExp.hpp" />
