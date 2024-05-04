@@ -71,5 +71,16 @@ namespace s3d
 		/// @return ユーザーの情報 | User information
 		[[nodiscard]]
 		const UserInfo& GetUserInfo();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsRunningInVisualStudio
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief プログラムが Visual Studio で実行されているかを返します。 | Returns whether the program is running in Visual Studio.
+		/// @return プログラムが Visual Studio で実行されている場合 true, それ以外の場合は false | Returns true if the program is running in Visual Studio, false otherwise
+		[[nodiscard]]
+		bool IsRunningInVisualStudio();
 	}
 }

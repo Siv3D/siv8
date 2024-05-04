@@ -103,6 +103,23 @@ namespace s3d
 
 			return DefaultLocale();
 		}
+
+		[[nodiscard]]
+		static bool IsRunningInVisualStudio_impl()
+		{
+			wchar_t* pValue;
+			size_t len;
+			errno_t err = ::_wdupenv_s(&pValue, &len, L"VisualStudioDir");
+
+			if (err || (not pValue))
+			{
+				return false;
+			}
+
+			std::free(pValue);
+
+			return true;
+		}
 	}
 
 	namespace System
@@ -127,6 +144,19 @@ namespace s3d
 			}();
 
 			return userInfo;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsRunningInVisualStudio
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool IsRunningInVisualStudio()
+		{
+			static const bool result = IsRunningInVisualStudio_impl();
+
+			return result;
 		}
 	}
 }
