@@ -88,6 +88,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\InputGroup.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\InputState.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\JSON.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Line.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Logger.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MapFormatter.ipp" />
@@ -105,8 +106,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PCG64.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Point.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Point3D.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Quad.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Random.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomColor.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomDuration.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomPoint.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec2.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Rect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectF.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Result.ipp" />
@@ -147,6 +152,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextWriter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ThousandSeparate.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Timer.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Triangle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TupleFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Unicode.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\UnicodeConverter.ipp" />
@@ -256,7 +262,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ProfilerStat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Quad.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Random.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomColor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomDuration.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomPoint.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec2.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Rect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RectF.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RegExp.hpp" />

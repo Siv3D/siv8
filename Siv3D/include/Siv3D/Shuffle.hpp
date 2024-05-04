@@ -29,7 +29,6 @@ namespace s3d
 
 	/// @brief 範囲の要素をランダムにシャッフルします。
 	/// @tparam Range 範囲の型
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param range 範囲
 	/// @param urbg 乱数エンジン
 	template <class Range> requires std::permutable<std::ranges::iterator_t<Range>>
@@ -44,7 +43,6 @@ namespace s3d
 
 	/// @brief 指定した範囲の要素をランダムにシャッフルします。
 	/// @tparam RandomIt イテレータの型
-	/// @tparam URBG 使用する乱数エンジンの型
 	/// @param first 範囲の開始位置を指すイテレータ
 	/// @param last 範囲の終端位置を指すイテレータ
 	/// @param urbg 乱数エンジン
