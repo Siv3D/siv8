@@ -850,6 +850,9 @@
 //
 ////////////////////////////////////////////////////////////////
 
+// ユーザー情報 | User information
+# include <Siv3D/UserInfo.hpp>
+
 // 環境変数 | Environment variable
 # include <Siv3D/EnvironmentVariable.hpp>
 

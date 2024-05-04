@@ -670,6 +670,18 @@
     <Filter Include="src\Siv3D\InputCombination">
       <UniqueIdentifier>{81ad0345-02a6-43c0-b84f-d1d635861ed0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\FreestandingMessageBox">
+      <UniqueIdentifier>{b155bc2a-e163-4dcf-b8f8-14e3c93751d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox">
+      <UniqueIdentifier>{1b997a72-fb3d-4b94-8efe-faf4e20731fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\UserInfo">
+      <UniqueIdentifier>{1bcbe446-3112-4970-ae3c-d508f7cea60e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\UserInfo">
+      <UniqueIdentifier>{215cc3d0-1eb2-47c9-a4eb-f8ae00321d32}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2859,6 +2871,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteralObject.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp">
+      <Filter>src\Siv3D\FreestandingMessageBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\UserInfo.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4912,6 +4930,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\InputCombination\SivInputCombination.cpp">
       <Filter>src\Siv3D\InputCombination</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox\FreestandingMessageBox.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\UserInfo\SivUserInfo.cpp">
+      <Filter>src\Siv3D\UserInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\UserInfo\SivUserInfo_Windows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\UserInfo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

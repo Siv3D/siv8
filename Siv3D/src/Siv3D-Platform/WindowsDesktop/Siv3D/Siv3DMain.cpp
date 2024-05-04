@@ -18,6 +18,7 @@
 # include <Siv3D/Window/CWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Windows/Windows.hpp>
+# include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
 # include "Siv3DMainHelper.hpp"
 
 //        [THREAD #0]                        [THREAD #1]
@@ -99,7 +100,7 @@ namespace s3d
 				catch (const std::exception& error)
 				{
 					::OutputDebugStringW((Unicode::ToWstring(error.what()) + L'\n').c_str());
-					//FreestandingMessageBox::ShowError(error.what());
+					FreestandingMessageBox::ShowError(error.what());
 
 					g_hasCriticalError = true;
 
