@@ -11,7 +11,6 @@
 
 # include <Siv3D/INI.hpp>
 # include <Siv3D/FormatLiteral.hpp>
-# include <Siv3D/FmtExtension.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Demangle.hpp>
 # include <Siv3D/TextReader.hpp>

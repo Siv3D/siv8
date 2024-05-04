@@ -13,7 +13,6 @@
 # include <Siv3D/JSONIterator.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/FormatLiteral.hpp>
-# include <Siv3D/FmtExtension.hpp>
 # include <Siv3D/Demangle.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/TextWriter.hpp>

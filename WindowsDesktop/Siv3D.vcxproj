@@ -73,6 +73,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Duration.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Endian.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\EscapedFormatter.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteralObject.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Grid.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HalfFloat.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HardwareRNG.ipp" />
@@ -121,7 +122,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FmtHelper.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Format.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatData.ipp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteral.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatUtility.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Hash.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Indexed.ipp" />
@@ -186,6 +186,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Exif.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FormatLiteralObject.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphIndex.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Grid.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HalfFloat.hpp" />

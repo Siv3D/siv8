@@ -15,7 +15,7 @@
 # include "Utility.hpp"
 # include "StringView.hpp"
 # include "Char.hpp"
-# include "FmtHelper.hpp"
+# include "FormatLiteral.hpp"
 
 namespace s3d
 {

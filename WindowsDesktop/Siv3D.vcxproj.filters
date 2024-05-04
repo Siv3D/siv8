@@ -969,9 +969,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FormatLiteral.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteral.ipp">
-      <Filter>include\Siv3D\detail</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtExtension.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -2854,6 +2851,12 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec4.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FormatLiteralObject.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteralObject.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
   </ItemGroup>

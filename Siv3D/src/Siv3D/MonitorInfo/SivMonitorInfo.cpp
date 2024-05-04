@@ -11,7 +11,6 @@
 
 # include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/FormatLiteral.hpp>
-# include <Siv3D/FmtExtension.hpp>
 # include <Siv3D/Error.hpp>
 
 namespace s3d

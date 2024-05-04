@@ -13,7 +13,7 @@
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "2DShapesFwd.hpp"
-# include "FmtHelper.hpp"
+# include "FormatLiteral.hpp"
 
 namespace s3d
 {

@@ -13,7 +13,7 @@
 # include "Common.hpp"
 # include "FormatData.hpp"
 # include "PointVector.hpp"
-# include "FmtHelper.hpp"
+# include "FormatLiteral.hpp"
 
 namespace s3d
 {
