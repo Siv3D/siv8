@@ -1705,6 +1705,10 @@
 		F98605FE2BE61586006A4C0F /* Triangle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F72BE61586006A4C0F /* Triangle.ipp */; };
 		F98606002BE615B4006A4C0F /* FormatLiteralObject.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605FF2BE615B4006A4C0F /* FormatLiteralObject.ipp */; };
 		F98606022BE615C5006A4C0F /* FormatLiteralObject.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606012BE615C5006A4C0F /* FormatLiteralObject.hpp */; };
+		F98606042BE7173F006A4C0F /* UserInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606032BE7173F006A4C0F /* UserInfo.hpp */; };
+		F98606092BE71763006A4C0F /* SivUserInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98606052BE71763006A4C0F /* SivUserInfo.cpp */; };
+		F986060A2BE71763006A4C0F /* FreestandingMessageBox.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606072BE71763006A4C0F /* FreestandingMessageBox.hpp */; };
+		F986060D2BE71918006A4C0F /* SivUserInfo_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F986060B2BE71918006A4C0F /* SivUserInfo_macOS.mm */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2814,6 +2818,10 @@
 		F98605F72BE61586006A4C0F /* Triangle.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Triangle.ipp; sourceTree = "<group>"; };
 		F98605FF2BE615B4006A4C0F /* FormatLiteralObject.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FormatLiteralObject.ipp; sourceTree = "<group>"; };
 		F98606012BE615C5006A4C0F /* FormatLiteralObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FormatLiteralObject.hpp; sourceTree = "<group>"; };
+		F98606032BE7173F006A4C0F /* UserInfo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UserInfo.hpp; sourceTree = "<group>"; };
+		F98606052BE71763006A4C0F /* SivUserInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUserInfo.cpp; sourceTree = "<group>"; };
+		F98606072BE71763006A4C0F /* FreestandingMessageBox.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FreestandingMessageBox.hpp; sourceTree = "<group>"; };
+		F986060B2BE71918006A4C0F /* SivUserInfo_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivUserInfo_macOS.mm; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -4948,6 +4956,7 @@
 				F9070C312B9F175000383E4D /* UnicodeConverter.hpp */,
 				F9070C322B9F175000383E4D /* UniqueResource.hpp */,
 				F9070C332B9F175000383E4D /* UserAction.hpp */,
+				F98606032BE7173F006A4C0F /* UserInfo.hpp */,
 				F9070C342B9F175000383E4D /* Utility.hpp */,
 				F9070C352B9F175000383E4D /* UUIDValue.hpp */,
 				F9528B9E2BBD6F6500222F45 /* VariableSpeedStopwatch.hpp */,
@@ -5498,6 +5507,8 @@
 		F9070DAC2B9F175E00383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
+				F98606082BE71763006A4C0F /* FreestandingMessageBox */,
+				F98606062BE71763006A4C0F /* UserInfo */,
 				F9070D182B9F175E00383E4D /* _TEMPLATE */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
 				F9528B4A2BB69EAD00222F45 /* BigFloat */,
@@ -5641,6 +5652,7 @@
 				F986F8432BC7E84D006A4C0F /* Resource */,
 				F9070E8E2B9F183100383E4D /* System */,
 				F9070E062B9F176B00383E4D /* Time */,
+				F986060C2BE71918006A4C0F /* UserInfo */,
 				F9070E8A2B9F183100383E4D /* Window */,
 			);
 			path = Siv3D;
@@ -6402,6 +6414,30 @@
 				F98605E22BE50038006A4C0F /* SivInputState.cpp */,
 			);
 			path = InputState;
+			sourceTree = "<group>";
+		};
+		F98606062BE71763006A4C0F /* UserInfo */ = {
+			isa = PBXGroup;
+			children = (
+				F98606052BE71763006A4C0F /* SivUserInfo.cpp */,
+			);
+			path = UserInfo;
+			sourceTree = "<group>";
+		};
+		F98606082BE71763006A4C0F /* FreestandingMessageBox */ = {
+			isa = PBXGroup;
+			children = (
+				F98606072BE71763006A4C0F /* FreestandingMessageBox.hpp */,
+			);
+			path = FreestandingMessageBox;
+			sourceTree = "<group>";
+		};
+		F986060C2BE71918006A4C0F /* UserInfo */ = {
+			isa = PBXGroup;
+			children = (
+				F986060B2BE71918006A4C0F /* SivUserInfo_macOS.mm */,
+			);
+			path = UserInfo;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8603,6 +8639,7 @@
 				F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */,
 				F98605442BD203BC006A4C0F /* MathParserDetail.hpp in Headers */,
 				F98601C32BCFBB53006A4C0F /* SkGaussFilter.h in Headers */,
+				F986060A2BE71763006A4C0F /* FreestandingMessageBox.hpp in Headers */,
 				F9070D022B9F175100383E4D /* TextReader.hpp in Headers */,
 				F986FA852BCFB53B006A4C0F /* ftincrem.h in Headers */,
 				F98605152BCFC3E3006A4C0F /* SkTypeface_mac_ct.h in Headers */,
@@ -9157,6 +9194,7 @@
 				F98600B22BCFBB53006A4C0F /* SkTextUtils.h in Headers */,
 				F98604412BCFBB54006A4C0F /* SkSLSymbolTable.h in Headers */,
 				F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */,
+				F98606042BE7173F006A4C0F /* UserInfo.hpp in Headers */,
 				F986F99F2BCA9D0A006A4C0F /* clippathelement.h in Headers */,
 				F986038B2BCFBB54006A4C0F /* SkOTTable_post.h in Headers */,
 				F98605242BD0E2A3006A4C0F /* IEngineResource.hpp in Headers */,
@@ -10107,6 +10145,7 @@
 				F9070DB12B9F175E00383E4D /* SivBinaryWriter.cpp in Sources */,
 				F98605932BE33124006A4C0F /* CursorStyleFactory.cpp in Sources */,
 				F98605432BD203BC006A4C0F /* MathParserDetail.cpp in Sources */,
+				F98606092BE71763006A4C0F /* SivUserInfo.cpp in Sources */,
 				F98602852BCFBB54006A4C0F /* SkTaskGroup.cpp in Sources */,
 				F986045D2BCFBB54006A4C0F /* SkSLFindAndDeclareBuiltinVariables.cpp in Sources */,
 				F98604902BCFBB54006A4C0F /* SkSLUtil.cpp in Sources */,
@@ -10207,6 +10246,7 @@
 				F98603C62BCFBB54006A4C0F /* SkSLIsDynamicallyUniformExpression.cpp in Sources */,
 				F98604652BCFBB54006A4C0F /* SkSLAnalysis.cpp in Sources */,
 				F98604FC2BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp in Sources */,
+				F986060D2BE71918006A4C0F /* SivUserInfo_macOS.mm in Sources */,
 				F986021C2BCFBB54006A4C0F /* SkPictureData.cpp in Sources */,
 				F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */,
 				F986022F2BCFBB54006A4C0F /* SkQuadClipper.cpp in Sources */,
