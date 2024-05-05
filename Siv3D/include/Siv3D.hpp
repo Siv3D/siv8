@@ -793,8 +793,8 @@
 // 円 | Circle
 # include <Siv3D/Circle.hpp> // ToDo
 
-//// 楕円 | Ellipse
-//# include <Siv3D/Ellipse.hpp>
+// 楕円 | Ellipse
+# include <Siv3D/Ellipse.hpp> // ToDo
 
 // 三角形 | Triangle
 # include <Siv3D/Triangle.hpp> // ToDo
@@ -802,9 +802,9 @@
 // 凸四角形 | Convex quadrilateral
 # include <Siv3D/Quad.hpp> // ToDo
 
-//// 角丸長方形 | Rounded rectangle
-//# include <Siv3D/RoundRect.hpp>
-//
+// 角丸長方形 | Rounded rectangle
+# include <Siv3D/RoundRect.hpp> // ToDo
+
 //// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
 //# include <Siv3D/LineString.hpp>
 //

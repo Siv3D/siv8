@@ -60,6 +60,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BoolArray.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Byte.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Char.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Circle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Color.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ColorF.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Console.ipp" />
@@ -71,6 +72,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\DiscreteDistribution.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\DisjointSet.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Duration.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Ellipse.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Endian.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\EscapedFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteralObject.ipp" />
@@ -138,6 +140,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Number.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Optional.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ParseInt.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RoundRect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SequenceFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ScopeExit.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Shuffle.ipp" />
@@ -175,6 +178,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Distribution.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DLL.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Duration.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Ellipse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Emoji.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Endian.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\EngineLog.hpp" />
@@ -309,6 +313,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Platform.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedNamedParameter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedYesNo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RoundRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SequenceFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopeExit.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Shuffle.hpp" />
