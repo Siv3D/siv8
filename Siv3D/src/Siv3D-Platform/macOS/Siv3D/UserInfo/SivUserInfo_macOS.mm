@@ -144,5 +144,18 @@ namespace s3d
 		{
 			return false;
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsRunningInXcode
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool IsRunningInXcode()
+		{
+			static const bool result = IsRunningInXcode_impl();
+
+			return result;
+		}
 	}
 }

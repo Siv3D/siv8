@@ -12,6 +12,7 @@
 # include "Siv3DMainHelper.hpp"
 # include <Siv3D/Error.hpp>
 # include <Siv3D/UserInfo.hpp>
+# include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Window.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Windows/Windows.hpp>
@@ -154,6 +155,19 @@ namespace s3d
 
 				FreestandingMessageBox::ShowError(errorMessage);
 			}
+		}
+	}
+
+	void SetWorkingDirectory()
+	{
+		if (System::IsRunningInVisualStudio())
+		{
+			return;
+		}
+
+		if (const FilePath workingDirectory = FileSystem::ParentPath(FileSystem::ModulePath()))
+		{
+			FileSystem::ChangeCurrentDirectory(workingDirectory);
 		}
 	}
 

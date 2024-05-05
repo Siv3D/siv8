@@ -109,7 +109,7 @@ namespace s3d
 		{
 			wchar_t* pValue;
 			size_t len;
-			errno_t err = ::_wdupenv_s(&pValue, &len, L"VisualStudioDir");
+			errno_t err = ::_wdupenv_s(&pValue, &len, L"VisualStudioVersion");
 
 			if (err || (not pValue))
 			{
@@ -157,6 +157,17 @@ namespace s3d
 			static const bool result = IsRunningInVisualStudio_impl();
 
 			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsRunningInXcode
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool IsRunningInXcode()
+		{
+			return false;
 		}
 	}
 }

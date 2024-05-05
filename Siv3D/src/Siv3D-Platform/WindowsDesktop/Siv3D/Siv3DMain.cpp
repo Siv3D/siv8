@@ -156,6 +156,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 
 	detail::init::InitCommandLines(__argc, __argv);
 
+	SetWorkingDirectory();
+
 	WinMainInit();
 
 	std::unique_lock lock{ g_mutex }; // (0)--
