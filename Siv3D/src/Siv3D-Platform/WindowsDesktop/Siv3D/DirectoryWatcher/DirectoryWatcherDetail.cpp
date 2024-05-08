@@ -9,9 +9,10 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/EngineLog.hpp>
+# include <Siv3D/DLL.hpp>
 # include <Siv3D/SequenceFormatter.hpp>
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include "DirectoryWatcherDetail.hpp"
 
 namespace s3d
@@ -34,6 +35,38 @@ namespace s3d
 			default:
 				return FileAction::Unknown;
 			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	DirectoryWatcher::DirectoryWatcherDetail::DirectoryWatcherDetail()
+	{
+		if (not m_ReadDirectoryChangesExW_initialized)
+		{
+			if (LibraryHandle kernel32 = DLL::LoadSystemLibraryNoThrow(L"kernel32.dll"))
+			{
+				m_pReadDirectoryChangesExW = DLL::GetFunctionNoThrow(kernel32, "ReadDirectoryChangesExW");
+			}
+			else
+			{
+				m_pReadDirectoryChangesExW = nullptr;
+			}
+
+			if (not m_pReadDirectoryChangesExW)
+			{
+				LOG_INFO("ℹ️ DirectoryWatcher: ReadDirectoryChangesExW is not available");
+			}
+			else
+			{
+				LOG_INFO("ℹ️ DirectoryWatcher: ReadDirectoryChangesExW is available");
+			}
+
+			m_ReadDirectoryChangesExW_initialized = true;
 		}
 	}
 
@@ -80,7 +113,7 @@ namespace s3d
 		}
 
 		m_directory = FileSystem::FullPath(directory);
-		m_sortedApplicableExtensions = applicableExtensions.sorted_and_uniqued();
+		m_extensionFilter.set(applicableExtensions);
 		m_thread = std::jthread{ DirectoryWatcherDetail::Run, this };
 
 		while (not m_initCalled)
@@ -149,7 +182,7 @@ namespace s3d
 
 	const Array<String>& DirectoryWatcher::DirectoryWatcherDetail::applicableExtensions() const
 	{
-		return m_sortedApplicableExtensions;
+		return m_extensionFilter.getSortedExtensions();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -180,15 +213,33 @@ namespace s3d
 		m_backBuffer.resize(BufferSize);
 		m_overlapped.hEvent = this;
 
-		const bool result = static_cast<bool>(::ReadDirectoryChangesW(
-			m_directoryHandle,
-			m_buffer.data(),
-			static_cast<DWORD>(m_buffer.size()),
-			WatchSubtree,
-			NotificationFilter,
-			nullptr,
-			&m_overlapped,
-			&DirectoryWatcherDetail::OnChangeNotification));
+		bool result = false;
+
+		if (m_pReadDirectoryChangesExW)
+		{
+			result = static_cast<bool>(m_pReadDirectoryChangesExW(
+				m_directoryHandle,
+				m_buffer.data(),
+				static_cast<DWORD>(m_buffer.size()),
+				WatchSubtree,
+				NotificationFilter,
+				nullptr,
+				&m_overlapped,
+				&DirectoryWatcherDetail::OnChangeNotification,
+				ReadDirectoryNotifyExtendedInformation));
+		}
+		else
+		{
+			result = static_cast<bool>(::ReadDirectoryChangesW(
+				m_directoryHandle,
+				m_buffer.data(),
+				static_cast<DWORD>(m_buffer.size()),
+				WatchSubtree,
+				NotificationFilter,
+				nullptr,
+				&m_overlapped,
+				&DirectoryWatcherDetail::OnChangeNotification));
+		}
 
 		if (not result)
 		{
@@ -199,9 +250,9 @@ namespace s3d
 			return false;
 		}
 
-		if (m_sortedApplicableExtensions)
+		if (m_extensionFilter)
 		{
-			LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Started to watch `{}`. applicableExtensions = {}", m_directory, Format(m_sortedApplicableExtensions)));
+			LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Started to watch `{}`. applicableExtensions = {}", m_directory, Format(m_extensionFilter.getSortedExtensions())));
 		}
 		else
 		{
@@ -226,15 +277,33 @@ namespace s3d
 			m_backBuffer.swap(m_buffer);
 		}
 
-		const bool result = static_cast<bool>(::ReadDirectoryChangesW(
-			m_directoryHandle,
-			m_buffer.data(),
-			static_cast<DWORD>(m_buffer.size()),
-			WatchSubtree,
-			NotificationFilter,
-			nullptr,
-			&m_overlapped,
-			&DirectoryWatcherDetail::OnChangeNotification));
+		bool result = false;
+
+		if (m_pReadDirectoryChangesExW)
+		{
+			result = static_cast<bool>(m_pReadDirectoryChangesExW(
+				m_directoryHandle,
+				m_buffer.data(),
+				static_cast<DWORD>(m_buffer.size()),
+				WatchSubtree,
+				NotificationFilter,
+				nullptr,
+				&m_overlapped,
+				&DirectoryWatcherDetail::OnChangeNotification,
+				ReadDirectoryNotifyExtendedInformation));
+		}
+		else
+		{
+			result = static_cast<bool>(::ReadDirectoryChangesW(
+				m_directoryHandle,
+				m_buffer.data(),
+				static_cast<DWORD>(m_buffer.size()),
+				WatchSubtree,
+				NotificationFilter,
+				nullptr,
+				&m_overlapped,
+				&DirectoryWatcherDetail::OnChangeNotification));
+		}
 
 		if (not result)
 		{
@@ -252,34 +321,72 @@ namespace s3d
 
 		std::lock_guard lock{ m_fileChanges.mutex };
 
-		for (const uint8* pInfo = m_backBuffer.data();;)
+		if (m_pReadDirectoryChangesExW)
 		{
-			const FILE_NOTIFY_INFORMATION* notifyInfo = reinterpret_cast<const FILE_NOTIFY_INFORMATION*>(pInfo);
-			const std::wstring_view localPathView{ notifyInfo->FileName, (notifyInfo->FileNameLength / sizeof(WCHAR)) };
-			const String localPath = Unicode::FromWstring(localPathView).replace('\\', '/');
-			const FilePath fullPath = (m_directory + localPath);
-			const FileAction action = ToFileAction(notifyInfo->Action);
-
-			if (m_sortedApplicableExtensions) // 拡張子フィルタがある場合
+			for (const uint8* pInfo = m_backBuffer.data();;)
 			{
-				const String extension = FileSystem::Extension(localPath);
-				
-				if (std::binary_search(m_sortedApplicableExtensions.begin(), m_sortedApplicableExtensions.end(), extension))
+				const FILE_NOTIFY_EXTENDED_INFORMATION* notifyInfo = reinterpret_cast<const FILE_NOTIFY_EXTENDED_INFORMATION*>(pInfo);
+				const std::wstring_view localPathView{ notifyInfo->FileName, (notifyInfo->FileNameLength / sizeof(WCHAR)) };
+				const bool isDirectory = (notifyInfo->FileAttributes & FILE_ATTRIBUTE_DIRECTORY);
+				const String localPath = Unicode::FromWstring(localPathView).replace('\\', '/');
+				const FilePath fullPath = (m_directory + localPath + (isDirectory ? U"/" : U""));
+				const FileAction action = ToFileAction(notifyInfo->Action);
+
+				if (m_extensionFilter) // 拡張子フィルタがある場合
+				{
+					if (m_extensionFilter.includes(FileSystem::Extension(localPath)))
+					{
+						m_fileChanges.fileChanges.emplace_back(fullPath, action);
+					}
+				}
+				else
 				{
 					m_fileChanges.fileChanges.emplace_back(fullPath, action);
 				}
-			}
-			else
-			{
-				m_fileChanges.fileChanges.emplace_back(fullPath, action);
-			}
 
-			if (notifyInfo->NextEntryOffset == 0)
-			{
-				break;
-			}
+				if (notifyInfo->NextEntryOffset == 0)
+				{
+					break;
+				}
 
-			pInfo += notifyInfo->NextEntryOffset;
+				pInfo += notifyInfo->NextEntryOffset;
+			}
+		}
+		else
+		{
+			for (const uint8* pInfo = m_backBuffer.data();;)
+			{
+				const FILE_NOTIFY_INFORMATION* notifyInfo = reinterpret_cast<const FILE_NOTIFY_INFORMATION*>(pInfo);
+				const std::wstring_view localPathView{ notifyInfo->FileName, (notifyInfo->FileNameLength / sizeof(WCHAR)) };
+				const String localPath = Unicode::FromWstring(localPathView).replace('\\', '/');
+				FilePath fullPath = (m_directory + localPath);
+				
+				if (FileSystem::IsDirectory(fullPath))
+				{
+					fullPath += U'/';
+				}
+		
+				const FileAction action = ToFileAction(notifyInfo->Action);
+
+				if (m_extensionFilter) // 拡張子フィルタがある場合
+				{
+					if (m_extensionFilter.includes(FileSystem::Extension(localPath)))
+					{
+						m_fileChanges.fileChanges.emplace_back(fullPath, action);
+					}
+				}
+				else
+				{
+					m_fileChanges.fileChanges.emplace_back(fullPath, action);
+				}
+
+				if (notifyInfo->NextEntryOffset == 0)
+				{
+					break;
+				}
+
+				pInfo += notifyInfo->NextEntryOffset;
+			}
 		}
 	}
 

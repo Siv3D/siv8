@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/DirectoryWatcher.hpp>
+# include <Siv3D/ExtensionFilter/ExtensionFilter.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 
 namespace s3d
@@ -24,7 +25,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		DirectoryWatcherDetail() = default;
+		DirectoryWatcherDetail();
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -91,9 +92,13 @@ namespace s3d
 
 		static constexpr uint32 NotificationFilter = (FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_CREATION);
 
+		inline static decltype(ReadDirectoryChangesExW)* m_pReadDirectoryChangesExW;
+
+		inline static bool m_ReadDirectoryChangesExW_initialized = false;
+
 		FilePath m_directory;
 
-		Array<String> m_sortedApplicableExtensions;
+		ExtensionFilter m_extensionFilter;
 
 		std::jthread m_thread;
 

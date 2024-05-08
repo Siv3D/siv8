@@ -26,6 +26,8 @@ namespace s3d
 	struct FileChange
 	{
 		/// @brief ファイルパス | File path
+		/// @remark Windows 10 1703 およびそれ以前のバージョンでは、`FileAction::Removed` の際、ディレクトリ名の末尾に '/' が付加されません。
+		/// @remark On Windows 10 1703 and earlier, '/' is not appended to the end of the directory name when `FileAction::Removed`.
 		FilePath path;
 
 		/// @brief ファイルの操作 | File action

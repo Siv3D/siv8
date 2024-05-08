@@ -422,6 +422,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\EngineResource\IEngineResource.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DComponent.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\ExtensionFilter\ExtensionFilter.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\IImageDecoder.hpp" />
@@ -830,6 +831,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Error\SivError.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\EscapedFormatter\SivEscapedFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Exif\SivExif.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ExtensionFilter\ExtensionFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FileAction\SivFileAction.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FileSystem\SivFileSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\SivFloatFormatter.cpp" />
