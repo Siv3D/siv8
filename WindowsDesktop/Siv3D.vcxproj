@@ -438,6 +438,8 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\IProfiler.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\IRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
@@ -906,6 +908,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point3D\SivPoint3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point\SivPoint.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\ProfilerFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\SivProfiler.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Random\SivRandom.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RectF\SivRectF.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Rect\SivRect.cpp" />

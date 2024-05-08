@@ -20,6 +20,7 @@ namespace s3d
 	class ISiv3DRegExp;
 	class ISiv3DSystem;
 	class ISiv3DEngineResource;
+	class ISiv3DProfiler;
 	class ISiv3DUserAction;
 	class ISiv3DWindow;
 	class ISiv3DImageDecoder;
@@ -43,6 +44,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DRegExp>,
 			Siv3DComponent<ISiv3DSystem>,
 			Siv3DComponent<ISiv3DEngineResource>,
+			Siv3DComponent<ISiv3DProfiler>,
 			Siv3DComponent<ISiv3DUserAction>,
 			Siv3DComponent<ISiv3DWindow>,
 			Siv3DComponent<ISiv3DImageDecoder>,

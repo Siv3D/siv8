@@ -13,6 +13,7 @@
 # include <Siv3D/LicenseManager/ILicenseManager.hpp>
 # include <Siv3D/RegExp/IRegExp.hpp>
 # include <Siv3D/EngineResource/IEngineResource.hpp>
+# include <Siv3D/Profiler/IProfiler.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
@@ -38,6 +39,7 @@ namespace s3d
 
 		SIV3D_ENGINE(RegExp)->init();
 		SIV3D_ENGINE(EngineResource)->init();
+		SIV3D_ENGINE(Profiler)->init();
 		SIV3D_ENGINE(Window)->init();
 		SIV3D_ENGINE(ImageDecoder)->init();
 		SIV3D_ENGINE(ImageEncoder)->init();
@@ -63,7 +65,9 @@ namespace s3d
 			
 			return false;
 		}
-		
+	
+		SIV3D_ENGINE(Profiler)->endFrame();
+	
 		//
 		//	previous frame
 		//
@@ -72,6 +76,7 @@ namespace s3d
 		//	current frame
 		//
 		
+		SIV3D_ENGINE(Profiler)->beginFrame();
 		SIV3D_ENGINE(Window)->update();
 		SIV3D_ENGINE(Cursor)->update();
 		SIV3D_ENGINE(CursorStyle)->update();

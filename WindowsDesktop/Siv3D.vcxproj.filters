@@ -691,6 +691,9 @@
     <Filter Include="src\Siv3D\ExtensionFilter">
       <UniqueIdentifier>{57f8e522-0fec-421b-9126-379356d6f1c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Profiler">
+      <UniqueIdentifier>{7d72ab92-ff90-464a-a9cd-24e272170440}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2913,6 +2916,12 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\ExtensionFilter\ExtensionFilter.hpp">
       <Filter>src\Siv3D\ExtensionFilter</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.hpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\IProfiler.hpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4984,6 +4993,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ExtensionFilter\ExtensionFilter.cpp">
       <Filter>src\Siv3D\ExtensionFilter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\ProfilerFactory.cpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.cpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\SivProfiler.cpp">
+      <Filter>src\Siv3D\Profiler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

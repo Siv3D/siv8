@@ -11,6 +11,8 @@
 
 # include <Siv3D/Unicode.hpp>
 # include "WindowTitle.hpp"
+# include <Siv3D/Profiler/IProfiler.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
@@ -18,12 +20,12 @@ namespace s3d
 	{
 		String newActualTitle = newTitle;
 
-		//if constexpr (SIV3D_BUILD(DEBUG))
-		//{
-		//	const String statistics = SIV3D_ENGINE(Profiler)->getSimpleStatistics();
-		//	newActualTitle += U" (Debug Build) | ";
-		//	newActualTitle += statistics;
-		//}
+		if constexpr (SIV3D_BUILD(DEBUG))
+		{
+			const String statistics = SIV3D_ENGINE(Profiler)->getSimpleStatistics();
+			newActualTitle += U" (Debug Build) | ";
+			newActualTitle += statistics;
+		}
 
 		if (actual != newActualTitle)
 		{
