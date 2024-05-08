@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/DirectoryWatcher.hpp>
-# include <Siv3D/Windows/Windows.hpp>
+# include <CoreServices/CoreServices.h>
 
 namespace s3d
 {
@@ -84,10 +84,27 @@ namespace s3d
 		const Array<String>& applicableExtensions() const;
 
 	private:
+		
+		static constexpr double LatencySec = 0.25;
 
 		FilePath m_directory;
 
 		Array<String> m_sortedApplicableExtensions;
 
+		FSEventStreamRef m_eventStream = nullptr;
+		
+		std::atomic<bool> m_abort = false;
+
+		struct FileChanges
+		{
+			std::mutex mutex;
+
+			Array<FileChange> fileChanges;
+		
+		} m_fileChanges;
+		
+		void onFileChange(const size_t eventCount, void* paths, const FSEventStreamEventFlags flags[]);
+		
+		static void OnFileChange(ConstFSEventStreamRef, void* pWatch, size_t eventCount, void* paths, const FSEventStreamEventFlags flags[], const FSEventStreamEventId[]);
 	};
 }

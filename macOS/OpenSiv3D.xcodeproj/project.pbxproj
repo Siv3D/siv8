@@ -1709,6 +1709,16 @@
 		F98606092BE71763006A4C0F /* SivUserInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98606052BE71763006A4C0F /* SivUserInfo.cpp */; };
 		F986060A2BE71763006A4C0F /* FreestandingMessageBox.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606072BE71763006A4C0F /* FreestandingMessageBox.hpp */; };
 		F986060D2BE71918006A4C0F /* SivUserInfo_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F986060B2BE71918006A4C0F /* SivUserInfo_macOS.mm */; };
+		F986060F2BEB75DB006A4C0F /* DirectoryWatcher.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986060E2BEB75DB006A4C0F /* DirectoryWatcher.hpp */; };
+		F98606132BEB760D006A4C0F /* Circle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98606102BEB760C006A4C0F /* Circle.ipp */; };
+		F98606142BEB760D006A4C0F /* RoundRect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98606112BEB760C006A4C0F /* RoundRect.ipp */; };
+		F98606152BEB760D006A4C0F /* Ellipse.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98606122BEB760C006A4C0F /* Ellipse.ipp */; };
+		F98606192BEB7651006A4C0F /* FileChange.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606162BEB7651006A4C0F /* FileChange.hpp */; };
+		F986061A2BEB7651006A4C0F /* Ellipse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606172BEB7651006A4C0F /* Ellipse.hpp */; };
+		F986061B2BEB7651006A4C0F /* RoundRect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606182BEB7651006A4C0F /* RoundRect.hpp */; };
+		F986061E2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986061C2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp */; };
+		F98606222BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986061F2BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp */; };
+		F98606232BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606202BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2822,6 +2832,16 @@
 		F98606052BE71763006A4C0F /* SivUserInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUserInfo.cpp; sourceTree = "<group>"; };
 		F98606072BE71763006A4C0F /* FreestandingMessageBox.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FreestandingMessageBox.hpp; sourceTree = "<group>"; };
 		F986060B2BE71918006A4C0F /* SivUserInfo_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivUserInfo_macOS.mm; sourceTree = "<group>"; };
+		F986060E2BEB75DB006A4C0F /* DirectoryWatcher.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DirectoryWatcher.hpp; sourceTree = "<group>"; };
+		F98606102BEB760C006A4C0F /* Circle.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Circle.ipp; sourceTree = "<group>"; };
+		F98606112BEB760C006A4C0F /* RoundRect.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RoundRect.ipp; sourceTree = "<group>"; };
+		F98606122BEB760C006A4C0F /* Ellipse.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ellipse.ipp; sourceTree = "<group>"; };
+		F98606162BEB7651006A4C0F /* FileChange.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FileChange.hpp; sourceTree = "<group>"; };
+		F98606172BEB7651006A4C0F /* Ellipse.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ellipse.hpp; sourceTree = "<group>"; };
+		F98606182BEB7651006A4C0F /* RoundRect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RoundRect.hpp; sourceTree = "<group>"; };
+		F986061C2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivDirectoryWatcher.cpp; sourceTree = "<group>"; };
+		F986061F2BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DirectoryWatcherDetail.cpp; sourceTree = "<group>"; };
+		F98606202BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DirectoryWatcherDetail.hpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -4640,6 +4660,7 @@
 				F9070B6B2B9F175000383E4D /* BoolArray.ipp */,
 				F9070B6C2B9F175000383E4D /* Byte.ipp */,
 				F9070B6D2B9F175000383E4D /* Char.ipp */,
+				F98606102BEB760C006A4C0F /* Circle.ipp */,
 				F9070B6E2B9F175000383E4D /* Color.ipp */,
 				F9070B6F2B9F175000383E4D /* ColorF.ipp */,
 				F9070B702B9F175000383E4D /* Console.ipp */,
@@ -4651,6 +4672,7 @@
 				F9070B742B9F175000383E4D /* DiscreteDistribution.ipp */,
 				F9070B752B9F175000383E4D /* DisjointSet.ipp */,
 				F9070B762B9F175000383E4D /* Duration.ipp */,
+				F98606122BEB760C006A4C0F /* Ellipse.ipp */,
 				F9070B772B9F175000383E4D /* Endian.ipp */,
 				F9070B782B9F175000383E4D /* EscapedFormatter.ipp */,
 				F9070B792B9F175000383E4D /* FastMath.ipp */,
@@ -4719,6 +4741,7 @@
 				F9070B9A2B9F175000383E4D /* Rect.ipp */,
 				F986F9392BCA7996006A4C0F /* RectF.ipp */,
 				F9070B9B2B9F175000383E4D /* Result.ipp */,
+				F98606112BEB760C006A4C0F /* RoundRect.ipp */,
 				F9070B9C2B9F175000383E4D /* ScopeExit.ipp */,
 				F9070B9D2B9F175000383E4D /* SequenceFormatter.ipp */,
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
@@ -4800,12 +4823,14 @@
 				F9070BD32B9F175000383E4D /* DateTime.hpp */,
 				F9070BD42B9F175000383E4D /* DayOfWeek.hpp */,
 				F9070BD52B9F175000383E4D /* Demangle.hpp */,
+				F986060E2BEB75DB006A4C0F /* DirectoryWatcher.hpp */,
 				F9070BD62B9F175000383E4D /* DiscreteDistribution.hpp */,
 				F9070BD72B9F175000383E4D /* DisjointSet.hpp */,
 				F9070BD82B9F175000383E4D /* DisplayResolution.hpp */,
 				F9070BD92B9F175000383E4D /* Distribution.hpp */,
 				F9070BDA2B9F175000383E4D /* DLL.hpp */,
 				F9070BDB2B9F175000383E4D /* Duration.hpp */,
+				F98606172BEB7651006A4C0F /* Ellipse.hpp */,
 				F98605162BCFF7C2006A4C0F /* Emoji.hpp */,
 				F9070BDC2B9F175000383E4D /* Endian.hpp */,
 				F9070BDD2B9F175000383E4D /* EngineLog.hpp */,
@@ -4815,6 +4840,7 @@
 				F986F8A92BC806A7006A4C0F /* Exif.hpp */,
 				F9070BE02B9F175000383E4D /* FastMath.hpp */,
 				F9070BE12B9F175000383E4D /* FileAction.hpp */,
+				F98606162BEB7651006A4C0F /* FileChange.hpp */,
 				F9070BE22B9F175000383E4D /* FileSystem.hpp */,
 				F9070BE32B9F175000383E4D /* FloatFormatter.hpp */,
 				F9070BE42B9F175000383E4D /* FloatToString.hpp */,
@@ -4929,6 +4955,7 @@
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
+				F98606182BEB7651006A4C0F /* RoundRect.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9070C1F2B9F175000383E4D /* SequenceFormatter.hpp */,
 				F9070C202B9F175000383E4D /* Shuffle.hpp */,
@@ -5507,8 +5534,6 @@
 		F9070DAC2B9F175E00383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
-				F98606082BE71763006A4C0F /* FreestandingMessageBox */,
-				F98606062BE71763006A4C0F /* UserInfo */,
 				F9070D182B9F175E00383E4D /* _TEMPLATE */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
 				F9528B4A2BB69EAD00222F45 /* BigFloat */,
@@ -5535,6 +5560,7 @@
 				F9070D352B9F175E00383E4D /* DateTime */,
 				F9070D372B9F175E00383E4D /* DayOfWeek */,
 				F9070D392B9F175E00383E4D /* Demangle */,
+				F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */,
 				F9070D3B2B9F175E00383E4D /* Duration */,
 				F986F9CF2BCFB514006A4C0F /* Emoji */,
 				F9070D402B9F175E00383E4D /* Empty */,
@@ -5551,6 +5577,7 @@
 				F9070D542B9F175E00383E4D /* FmtExtension */,
 				F9070D562B9F175E00383E4D /* Formatter */,
 				F9070D582B9F175E00383E4D /* FormatUtility */,
+				F98606082BE71763006A4C0F /* FreestandingMessageBox */,
 				F9E5FC422BC19B110081A4F7 /* HalfFloat */,
 				F9070D5A2B9F175E00383E4D /* Hash */,
 				F9070D5C2B9F175E00383E4D /* HSV */,
@@ -5615,6 +5642,7 @@
 				F9070D972B9F175E00383E4D /* Unicode */,
 				F9070D9B2B9F175E00383E4D /* UnicodeConverter */,
 				F9070DA02B9F175E00383E4D /* UserAction */,
+				F98606062BE71763006A4C0F /* UserInfo */,
 				F9070DA22B9F175E00383E4D /* UUIDValue */,
 				F9070DA42B9F175E00383E4D /* Vector2D */,
 				F9070DA62B9F175E00383E4D /* Vector3D */,
@@ -5646,6 +5674,7 @@
 			children = (
 				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
 				F98605812BDA7E32006A4C0F /* Cursor */,
+				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
 				F9070E042B9F176B00383E4D /* FileSystem */,
 				F95289C62B9FEA0D00222F45 /* GLFW */,
 				F986058D2BDCAF65006A4C0F /* MonitorInfo */,
@@ -6438,6 +6467,23 @@
 				F986060B2BE71918006A4C0F /* SivUserInfo_macOS.mm */,
 			);
 			path = UserInfo;
+			sourceTree = "<group>";
+		};
+		F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */ = {
+			isa = PBXGroup;
+			children = (
+				F986061C2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp */,
+			);
+			path = DirectoryWatcher;
+			sourceTree = "<group>";
+		};
+		F98606212BEB7CFF006A4C0F /* DirectoryWatcher */ = {
+			isa = PBXGroup;
+			children = (
+				F986061F2BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp */,
+				F98606202BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp */,
+			);
+			path = DirectoryWatcher;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8309,6 +8355,7 @@
 				F98604282BCFBB54006A4C0F /* SkSLModifiersDeclaration.h in Headers */,
 				F986005E2BCFBB53006A4C0F /* SkDiscretePathEffect.h in Headers */,
 				F9070CBD2B9F175000383E4D /* FloatToString.hpp in Headers */,
+				F986061B2BEB7651006A4C0F /* RoundRect.hpp in Headers */,
 				F9070CE22B9F175100383E4D /* Optional.hpp in Headers */,
 				F90706932B9DAEC900383E4D /* port.h in Headers */,
 				F98602FB2BCFBB54006A4C0F /* SkOpts_SetTarget.h in Headers */,
@@ -8691,6 +8738,7 @@
 				F986055E2BD203D4006A4C0F /* muParserBytecode.h in Headers */,
 				F98603EB2BCFBB54006A4C0F /* SkSLConstructor.h in Headers */,
 				F9070C442B9F175000383E4D /* BinaryReader.ipp in Headers */,
+				F986060F2BEB75DB006A4C0F /* DirectoryWatcher.hpp in Headers */,
 				F9528C212BBF026F00222F45 /* zstd_compress_internal.h in Headers */,
 				F98604092BCFBB54006A4C0F /* SkSLExtension.h in Headers */,
 				F9528B952BBC76D300222F45 /* Step3D.hpp in Headers */,
@@ -8947,10 +8995,12 @@
 				F9E5FC272BC13CF00081A4F7 /* turbojpeg.h in Headers */,
 				F98604072BCFBB54006A4C0F /* SkSLExpressionStatement.h in Headers */,
 				F98600692BCFBB53006A4C0F /* SkPathOps.h in Headers */,
+				F98606132BEB760D006A4C0F /* Circle.ipp in Headers */,
 				F986FA872BCFB53B006A4C0F /* ftlist.h in Headers */,
 				F9070CCB2B9F175100383E4D /* HSV.hpp in Headers */,
 				F9528C052BBF026F00222F45 /* bitstream.h in Headers */,
 				F98603872BCFBB54006A4C0F /* SkOTTable_OS_2_V3.h in Headers */,
+				F98606192BEB7651006A4C0F /* FileChange.hpp in Headers */,
 				F9070CB62B9F175000383E4D /* EngineLog.hpp in Headers */,
 				F98605D72BE4BE80006A4C0F /* IKeyboard.hpp in Headers */,
 				F9528C622BC05B0200222F45 /* ImageInfo.hpp in Headers */,
@@ -9131,6 +9181,7 @@
 				F986021F2BCFBB54006A4C0F /* SkPictureFlat.h in Headers */,
 				F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */,
 				F98600A72BCFBB53006A4C0F /* SkCanvasStateUtils.h in Headers */,
+				F98606142BEB760D006A4C0F /* RoundRect.ipp in Headers */,
 				F98603232BCFBB54006A4C0F /* SkPathOpsDebug.h in Headers */,
 				F98603C92BCFBB54006A4C0F /* SkSLNoOpErrorReporter.h in Headers */,
 				F98603292BCFBB54006A4C0F /* SkPathOpsQuad.h in Headers */,
@@ -9182,6 +9233,7 @@
 				F98600AE2BCFBB53006A4C0F /* SkPaintFilterCanvas.h in Headers */,
 				F98602132BCFBB54006A4C0F /* SkPathEffectBase.h in Headers */,
 				F9070C852B9F175000383E4D /* UnicodeConverter.ipp in Headers */,
+				F98606232BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp in Headers */,
 				F90706C22B9DAEC900383E4D /* pcg_extras.hpp in Headers */,
 				F98600542BCFBB53006A4C0F /* SkPDFDocument.h in Headers */,
 				F98605B52BE49C00006A4C0F /* CMouse.hpp in Headers */,
@@ -9246,6 +9298,7 @@
 				F986FA522BCFB53B006A4C0F /* svpscmap.h in Headers */,
 				F9528B962BBC76D300222F45 /* Point3D.hpp in Headers */,
 				F98603D22BCFBB54006A4C0F /* SkSLGLSLCodeGenerator.h in Headers */,
+				F98606152BEB760D006A4C0F /* Ellipse.ipp in Headers */,
 				F9070D0F2B9F175100383E4D /* Vector2D.hpp in Headers */,
 				F9070CD52B9F175100383E4D /* Logger.hpp in Headers */,
 				F98600942BCFBB53006A4C0F /* SkDiscardableMemory.h in Headers */,
@@ -9319,6 +9372,7 @@
 				F986003B2BCFBB53006A4C0F /* SkRSXform.h in Headers */,
 				F9528B9A2BBC76EA00222F45 /* Point3D.ipp in Headers */,
 				F9070CA62B9F175000383E4D /* Concepts.hpp in Headers */,
+				F986061A2BEB7651006A4C0F /* Ellipse.hpp in Headers */,
 				F9070D042B9F175100383E4D /* ThousandSeparate.hpp in Headers */,
 				F986FA822BCFB53B006A4C0F /* ftgxval.h in Headers */,
 				F986FA8F2BCFB53B006A4C0F /* ftoutln.h in Headers */,
@@ -9924,6 +9978,7 @@
 				F9070DEC2B9F175E00383E4D /* SivTextEncoding.cpp in Sources */,
 				F98604D32BCFBB54006A4C0F /* SkCustomTypeface.cpp in Sources */,
 				F986016E2BCFBB53006A4C0F /* SkBlitter_ARGB32.cpp in Sources */,
+				F98606222BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp in Sources */,
 				F986025E2BCFBB54006A4C0F /* SkScalerContext.cpp in Sources */,
 				F986024E2BCFBB54006A4C0F /* SkRegion.cpp in Sources */,
 				F9E5FCDB2BC3AD820081A4F7 /* SivJSON.cpp in Sources */,
@@ -10089,6 +10144,7 @@
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F98605452BD203BC006A4C0F /* SivMathParser.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
+				F986061E2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp in Sources */,
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
 				F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */,
