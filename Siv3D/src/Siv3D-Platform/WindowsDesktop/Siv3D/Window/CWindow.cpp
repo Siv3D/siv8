@@ -387,6 +387,8 @@ namespace s3d
 
 	void CWindow::setMinimumFrameBufferSize(const Size size)
 	{
+		LOG_DEBUG(fmt::format("CWindow::setMinimumFrameBufferSize(size = {})", size));
+		
 		m_state.minFrameBufferSize = size;
 	}
 

@@ -50,6 +50,14 @@ namespace s3d
 		void restore() override;
 
 		void minimize() override;
+
+		bool resizeByVirtualSize(Size virtualSize) override;
+
+		bool resizeByFrameBufferSize(Size frameBufferSize) override;
+
+		void setMinimumFrameBufferSize(Size size) override;
+
+		void setFullscreen(bool fullscreen, size_t monitorIndex) override;
 		
 	private:
 
@@ -61,6 +69,8 @@ namespace s3d
 		
 		Stopwatch m_moveResizeStabilizer;
 		
+		Rect m_storedWindowRect = { 0, 0, 0, 0 };
+
 		void updateState();
 		
 		static void OnMove(GLFWwindow* glfwWindow, int x, int y);
