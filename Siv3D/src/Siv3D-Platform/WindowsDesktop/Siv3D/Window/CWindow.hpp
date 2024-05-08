@@ -81,7 +81,7 @@ namespace s3d
 
 		void onExitSizeMove();
 
-		Size getMinTrackSize() const noexcept;
+		Size getMinTrackSize() noexcept;
 
 	private:
 
@@ -102,6 +102,8 @@ namespace s3d
 		Size m_border{ 0, 0 };
 
 		std::atomic<bool> m_moving = false;
+
+		std::mutex m_minimumFrameBufferSizeMutex;
 
 
 		HDEVNOTIFY m_deviceNotificationHandle = nullptr;

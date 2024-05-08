@@ -389,6 +389,8 @@ namespace s3d
 	{
 		LOG_DEBUG(fmt::format("CWindow::setMinimumFrameBufferSize(size = {})", size));
 		
+		std::lock_guard lock{ m_minimumFrameBufferSizeMutex };
+
 		m_state.minFrameBufferSize = size;
 	}
 
@@ -569,6 +571,8 @@ namespace s3d
 
 		constexpr uint32 Flags = (SWP_NOACTIVATE | SWP_NOZORDER);
 		setWindowPos(windowRect, Flags);
+	
+		m_state.virtualSize = Math::Round(m_state.frameBufferSize / m_state.scaling).asPoint();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -599,8 +603,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Size CWindow::getMinTrackSize() const noexcept
+	Size CWindow::getMinTrackSize() noexcept
 	{
+		std::lock_guard lock{ m_minimumFrameBufferSizeMutex };
+
 		return (m_state.minFrameBufferSize + m_border);
 	}
 
