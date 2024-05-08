@@ -13,6 +13,9 @@
 # include "Common.hpp"
 # include "StringView.hpp"
 # include "Format.hpp"
+# include "MonitorInfo.hpp"
+# include "PointVector.hpp"
+# include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
@@ -157,6 +160,110 @@ namespace s3d
 		/// @brief ウィンドウを最小化します。
 		void Minimize();
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Resize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
+		/// @param size 新しいサイズ（ピクセル）
+		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
+		/// @remark `ResizeVirtual(size, centering)` と同じです。
+		bool Resize(Size size, Centering centering = Centering::Yes);
+
+		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
+		/// @param width 新しい幅（ピクセル）
+		/// @param height 新しい高さ（ピクセル）
+		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
+		/// @remark `ResizeVirtual(width, height, centering)` と同じです。
+		bool Resize(int32 width, int32 height, Centering centering = Centering::Yes);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ResizeVirtual
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
+		/// @param size 新しいサイズ（ピクセル）
+		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
+		/// @remark `Resize(size, centering)` と同じです。
+		bool ResizeVirtual(Size size, Centering centering = Centering::Yes);
+
+		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
+		/// @param width 新しい幅（ピクセル）
+		/// @param height 新しい高さ（ピクセル）
+		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
+		/// @remark `Resize(width, height, centering)` と同じです。
+		bool ResizeVirtual(int32 width, int32 height, Centering centering = Centering::Yes);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ResizeActual
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ウィンドウのクライアントサイズを実サイズ基準で変更します。
+		/// @param size 新しいサイズ（ピクセル）
+		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
+		bool ResizeActual(Size size, Centering centering = Centering::Yes);
+
+		/// @brief ウィンドウのクライアントサイズを実サイズ基準で変更します。
+		/// @param width 新しい幅（ピクセル）
+		/// @param height 新しい高さ（ピクセル）
+		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
+		bool ResizeActual(int32 width, int32 height, Centering centering = Centering::Yes);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetMinimumFrameBufferSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ウィンドウを手動でリサイズするときの最小サイズを実サイズ基準で設定します。
+		/// @param size 設定するサイズ（ピクセル）
+		void SetMinimumFrameBufferSize(Size size);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetFullscreen
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ウィンドウモードとフルスクリーンモードを切り替えます。
+		/// @param fullscreen フルスクリーンモードにする場合 true, ウィンドウモードにする場合 false
+		/// @param monitorIndex 表示するモニタのインデックス
+		void SetFullscreen(bool fullscreen, size_t monitorIndex = System::GetCurrentMonitorIndex());
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetToggleFullscreenEnabled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Windows 版において、Alt + Enter キーによるウィンドウモードとフルスクリーンモードの切り替えを有効にするかを設定します。
+		/// @param enabled Alt + Enter キーによるウィンドウモードとフルスクリーンモードの切り替えを有効にする場合は true, 無効にする場合は false
+		/// @remark Windows 版ではデフォルトで有効、それ以外のプラットフォームでは常に無効です。
+		void SetToggleFullscreenEnabled(bool enabled);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsToggleFullscreenEnabled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Alt + Enter キーによるウィンドウモードとフルスクリーンモードの切り替えが有効であるかを返します。
+		/// @return Alt + Enter キーによるウィンドウモードとフルスクリーンモードの切り替えが有効である場合 true, それ以外の場合は false
+		/// @remark Windows 版以外では常に false を返します。
+		[[nodiscard]]
+		bool IsToggleFullscreenEnabled();
 	}
 }
 

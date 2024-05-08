@@ -207,5 +207,149 @@ namespace s3d
 		{
 			SIV3D_ENGINE(Window)->minimize();
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Resize
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Resize(const Size size, const Centering centering)
+		{
+			return ResizeVirtual(size, centering);
+		}
+
+		bool Resize(const int32 width, const int32 height, const Centering centering)
+		{
+			return ResizeVirtual(Size{ width, height }, centering);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ResizeVirtual
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool ResizeVirtual(const Size size, const Centering centering)
+		{
+			if ((not InRange(size.x, 1, 8192))
+				|| (not InRange(size.y, 1, 8192)))
+			{
+				throw Error{ U"Window::ResizeVirtual(): width and height must be in the range [1, 8192]" };
+			}
+
+			//if (not SIV3D_ENGINE(Window)->resizeByVirtualSize(size))
+			//{
+			//	return false;
+			//}
+
+			//if (const auto resizeMode = Scene::GetResizeMode();
+			//	resizeMode == ResizeMode::Actual)
+			//{
+			//	Scene::Resize(SIV3D_ENGINE(Window)->getState().frameBufferSize);
+			//}
+			//else if (resizeMode == ResizeMode::Virtual)
+			//{
+			//	Scene::Resize(size);
+			//}
+
+			if (centering)
+			{
+				CenterToScreen();
+			}
+
+			return true;
+		}
+
+		bool ResizeVirtual(const int32 width, const int32 height, const Centering centering)
+		{
+			return ResizeVirtual(Size{ width, height }, centering);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ResizeActual
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool ResizeActual(const Size size, const Centering centering)
+		{
+			if ((not InRange(size.x, 1, 8192))
+				|| (not InRange(size.y, 1, 8192)))
+			{
+				throw Error{ U"Window::ResizeActual(): width and height must be in the range [1, 8192]" };
+			}
+
+			//if (not SIV3D_ENGINE(Window)->resizeByFrameBufferSize(size))
+			//{
+			//	return false;
+			//}
+
+			//if (const auto resizeMode = Scene::GetResizeMode();
+			//	resizeMode == ResizeMode::Actual)
+			//{
+			//	Scene::Resize(SIV3D_ENGINE(Window)->getState().frameBufferSize);
+			//}
+			//else if (resizeMode == ResizeMode::Virtual)
+			//{
+			//	Scene::Resize(size);
+			//}
+
+			if (centering)
+			{
+				CenterToScreen();
+			}
+
+			return true;
+		}
+
+		bool ResizeActual(const int32 width, const int32 height, const Centering centering)
+		{
+			return ResizeActual(Size{ width, height }, centering);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetMinimumFrameBufferSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		//void SetMinimumFrameBufferSize(const Size size)
+		//{
+		//	SIV3D_ENGINE(Window)->setMinimumFrameBufferSize(size);
+		//}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetFullscreen
+		//
+		////////////////////////////////////////////////////////////////
+
+		//void SetFullscreen(const bool fullscreen, const size_t monitorIndex)
+		//{
+		//	SIV3D_ENGINE(Window)->setFullscreen(fullscreen, monitorIndex);
+		//}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetToggleFullscreenEnabled
+		//
+		////////////////////////////////////////////////////////////////
+
+		//void SetToggleFullscreenEnabled(const bool enabled)
+		//{
+		//	SIV3D_ENGINE(Window)->setToggleFullscreenEnabled(enabled);
+		//}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsToggleFullscreenEnabled
+		//
+		////////////////////////////////////////////////////////////////
+
+		//bool IsToggleFullscreenEnabled()
+		//{
+		//	return SIV3D_ENGINE(Window)->isToggleFullscreenEnabled();
+		//}
 	}
 }
