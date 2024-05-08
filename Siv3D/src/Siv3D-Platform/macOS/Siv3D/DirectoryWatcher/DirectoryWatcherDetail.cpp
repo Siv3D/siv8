@@ -243,7 +243,7 @@ namespace s3d
 			
 			Convert((CFStringRef)CFArrayGetValueAtIndex(eventPathArray, i), buffer);
 			
-			FilePath fullPath(buffer);
+			FilePath fullPath{ buffer };
 			
 			if (isDirectory)
 			{
