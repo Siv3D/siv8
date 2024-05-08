@@ -54,6 +54,15 @@ namespace s3d
 
 		void minimize() override;
 
+		bool resizeByVirtualSize(Size virtualSize) override;
+
+		bool resizeByFrameBufferSize(Size frameBufferSize) override;
+
+		void setMinimumFrameBufferSize(Size size) override;
+
+		void setFullscreen(bool fullscreen, size_t monitorIndex) override;
+
+
 
 		void destroy();
 
@@ -104,5 +113,7 @@ namespace s3d
 		int32 getSystemMetrics(int32 index) const;
 
 		void setWindowPos(const Rect& rect, uint32 flags);
+
+		void setFullscreen(bool fullscreen, size_t monitorIndex, bool skipSceneResize);
 	};
 }

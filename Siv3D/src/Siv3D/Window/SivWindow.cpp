@@ -238,10 +238,10 @@ namespace s3d
 				throw Error{ U"Window::ResizeVirtual(): width and height must be in the range [1, 8192]" };
 			}
 
-			//if (not SIV3D_ENGINE(Window)->resizeByVirtualSize(size))
-			//{
-			//	return false;
-			//}
+			if (not SIV3D_ENGINE(Window)->resizeByVirtualSize(size))
+			{
+				return false;
+			}
 
 			//if (const auto resizeMode = Scene::GetResizeMode();
 			//	resizeMode == ResizeMode::Actual)
@@ -280,10 +280,10 @@ namespace s3d
 				throw Error{ U"Window::ResizeActual(): width and height must be in the range [1, 8192]" };
 			}
 
-			//if (not SIV3D_ENGINE(Window)->resizeByFrameBufferSize(size))
-			//{
-			//	return false;
-			//}
+			if (not SIV3D_ENGINE(Window)->resizeByFrameBufferSize(size))
+			{
+				return false;
+			}
 
 			//if (const auto resizeMode = Scene::GetResizeMode();
 			//	resizeMode == ResizeMode::Actual)
@@ -314,10 +314,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//void SetMinimumFrameBufferSize(const Size size)
-		//{
-		//	SIV3D_ENGINE(Window)->setMinimumFrameBufferSize(size);
-		//}
+		void SetMinimumFrameBufferSize(const Size size)
+		{
+			SIV3D_ENGINE(Window)->setMinimumFrameBufferSize(size);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//

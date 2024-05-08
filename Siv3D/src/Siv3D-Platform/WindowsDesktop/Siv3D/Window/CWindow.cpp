@@ -221,8 +221,8 @@ namespace s3d
 			const Size newFrameBufferSize = Math::Round(m_state.virtualSize * scaling).asPoint();
 			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
 				pos, newFrameBufferSize, windowStyleFlags);
+			
 			const uint32 flags = ((triggerWindowResize ? 0 : SWP_NOSIZE) | SWP_NOZORDER | SWP_NOREDRAW | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-
 			setWindowPos(windowRect, flags);
 		}
 
@@ -252,9 +252,9 @@ namespace s3d
 			const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
 			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
 				pos, newFrameBufferSize, windowStyleFlags);
-			const uint32 flags = (SWP_DEFERERASE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-
-			setWindowPos(windowRect, flags);
+			
+			constexpr uint32 Flags = (SWP_DEFERERASE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+			setWindowPos(windowRect, Flags);
 		}
 	}
 
@@ -312,6 +312,93 @@ namespace s3d
 	{
 		LOG_DEBUG("CWindow::minimize()");
 		::ShowWindow(m_hWnd, SW_MINIMIZE);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resizeByVirtualSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CWindow::resizeByVirtualSize(const Size virtualSize)
+	{
+		LOG_DEBUG(fmt::format("CWindow::resizeByVirtualSize(size = {})", virtualSize));
+
+		const double scaling = WindowMisc::GetScaling(m_dpi);
+		
+		const Size newFrameBufferSize = Math::Round(virtualSize * scaling).asPoint();
+
+		return resizeByFrameBufferSize(newFrameBufferSize);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resizeByFrameBufferSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CWindow::resizeByFrameBufferSize(const Size frameBufferSize)
+	{
+		LOG_DEBUG(fmt::format("CWindow::resizeByFrameBufferSize(size = {})", frameBufferSize));
+
+		if (m_state.frameBufferSize == frameBufferSize)
+		{
+			return true;
+		}
+
+		if (m_state.fullscreen)
+		{
+			setFullscreen(false, System::GetCurrentMonitorIndex());
+		}
+
+		if (m_state.maximized)
+		{
+			restore();
+		}
+
+		const Size newFrameBufferSize = frameBufferSize;
+
+		if ((newFrameBufferSize.x < m_state.minFrameBufferSize.x)
+			|| (newFrameBufferSize.y < m_state.minFrameBufferSize.y))
+		{
+			LOG_FAIL("✖ Failed to resize the window: The specified size is smaller than the minimum size");
+			return false;
+		}
+
+		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
+		const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
+			m_state.bounds.pos, newFrameBufferSize, windowStyleFlags);
+
+		m_state.virtualSize = Math::Round(m_state.frameBufferSize / m_state.scaling).asPoint();
+		
+		constexpr uint32 Flags = (SWP_NOACTIVATE | SWP_NOZORDER);
+		setWindowPos(windowRect, Flags);
+
+		::ShowWindow(m_hWnd, SW_NORMAL);
+
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setMinimumFrameBufferSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setMinimumFrameBufferSize(const Size size)
+	{
+		m_state.minFrameBufferSize = size;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setFullscreen
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex)
+	{
+		setFullscreen(fullscreen, monitorIndex, false);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -446,7 +533,7 @@ namespace s3d
 			m_border = placeholderWindowRect.size;
 		}
 
-		LOG_TRACE(U"- bounds: {}, frameThickness: {}, titleBarHeight: {}, border: {}"_fmt(
+		LOG_TRACE(fmt::format("- bounds: {}, frameThickness: {}, titleBarHeight: {}, border: {}",
 			m_state.bounds, m_state.frameThickness, m_state.titleBarHeight, m_border));
 	}
 
@@ -468,7 +555,7 @@ namespace s3d
 
 		onBoundsUpdate();
 
-		const Size newFrameBufferSize = (m_state.virtualSize * scaling).asPoint();
+		const Size newFrameBufferSize = Math::Round(m_state.virtualSize * scaling).asPoint();
 		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
 		Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
 			suggestedPos, newFrameBufferSize, windowStyleFlags);
@@ -478,7 +565,8 @@ namespace s3d
 			windowRect.y = (suggestedPos.y - m_state.titleBarHeight);
 		}
 
-		setWindowPos(windowRect, (SWP_NOACTIVATE | SWP_NOZORDER));
+		constexpr uint32 Flags = (SWP_NOACTIVATE | SWP_NOZORDER);
+		setWindowPos(windowRect, Flags);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -534,9 +622,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setWindowPos
+	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
+
+	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex, const bool skipSceneResize)
+	{
+		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
+
+
+
+
+	}
 
 	void CWindow::setWindowPos(const Rect& rect, const uint32 flags)
 	{

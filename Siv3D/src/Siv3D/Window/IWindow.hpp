@@ -18,6 +18,7 @@ namespace s3d
 	struct WindowState;
 	enum class WindowStyle : uint8;
 	struct Point;
+	using Size = Point;
 
 	class SIV3D_NOVTABLE ISiv3DWindow
 	{
@@ -51,5 +52,13 @@ namespace s3d
 		virtual void restore() = 0;
 
 		virtual void minimize() = 0;
+
+		virtual bool resizeByVirtualSize(Size virtualSize) = 0;
+
+		virtual bool resizeByFrameBufferSize(Size frameBufferSize) = 0;
+
+		virtual void setMinimumFrameBufferSize(Size size) = 0;
+
+		virtual void setFullscreen(bool fullscreen, size_t monitorIndex) = 0;
 	};
 }
