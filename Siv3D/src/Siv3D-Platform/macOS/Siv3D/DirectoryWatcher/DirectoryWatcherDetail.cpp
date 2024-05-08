@@ -68,7 +68,7 @@ namespace s3d
 		}
 
 		m_directory = FileSystem::FullPath(directory);
-		m_sortedApplicableExtensions = applicableExtensions.sorted_and_uniqued();
+		m_extensionFilter.set(applicableExtensions);
 
 		CFStringRef fullPath = CFStringCreateWithBytes(kCFAllocatorDefault,
 													   reinterpret_cast<const uint8*>(m_directory.c_str()),
@@ -103,9 +103,9 @@ namespace s3d
 		FSEventStreamScheduleWithRunLoop(m_eventStream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 		FSEventStreamStart(m_eventStream);
 		
-		if (m_sortedApplicableExtensions)
+		if (m_extensionFilter)
 		{
-			LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Started to watch `{}`. applicableExtensions = {}", m_directory, Format(m_sortedApplicableExtensions)));
+			LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Started to watch `{}`. applicableExtensions = {}", m_directory, Format(m_extensionFilter.getSortedExtensions())));
 		}
 		else
 		{
@@ -173,7 +173,7 @@ namespace s3d
 
 	const Array<String>& DirectoryWatcher::DirectoryWatcherDetail::applicableExtensions() const
 	{
-		return m_sortedApplicableExtensions;
+		return m_extensionFilter.getSortedExtensions();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -255,7 +255,17 @@ namespace s3d
 				action = FileAction::Removed;
 			}
 			
-			m_fileChanges.fileChanges.push_back({ std::move(fullPath), action });
+			if (isFile && m_extensionFilter)
+			{
+				if (m_extensionFilter.includes(FileSystem::Extension(fullPath)))
+				{
+					m_fileChanges.fileChanges.push_back({ std::move(fullPath), action });
+				}
+			}
+			else
+			{
+				m_fileChanges.fileChanges.push_back({ std::move(fullPath), action });
+			}
 		}
 	}
 

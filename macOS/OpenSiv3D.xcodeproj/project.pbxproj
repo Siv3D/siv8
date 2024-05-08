@@ -1719,6 +1719,8 @@
 		F986061E2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986061C2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp */; };
 		F98606222BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986061F2BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp */; };
 		F98606232BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606202BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp */; };
+		F98606272BEBA1B5006A4C0F /* ExtensionFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98606242BEBA1B5006A4C0F /* ExtensionFilter.cpp */; };
+		F98606282BEBA1B5006A4C0F /* ExtensionFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606252BEBA1B5006A4C0F /* ExtensionFilter.hpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2842,6 +2844,8 @@
 		F986061C2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivDirectoryWatcher.cpp; sourceTree = "<group>"; };
 		F986061F2BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DirectoryWatcherDetail.cpp; sourceTree = "<group>"; };
 		F98606202BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DirectoryWatcherDetail.hpp; sourceTree = "<group>"; };
+		F98606242BEBA1B5006A4C0F /* ExtensionFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtensionFilter.cpp; sourceTree = "<group>"; };
+		F98606252BEBA1B5006A4C0F /* ExtensionFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ExtensionFilter.hpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -5570,6 +5574,7 @@
 				F9070D482B9F175E00383E4D /* Error */,
 				F9070D4A2B9F175E00383E4D /* EscapedFormatter */,
 				F986F8AC2BC806BF006A4C0F /* Exif */,
+				F98606262BEBA1B5006A4C0F /* ExtensionFilter */,
 				F9070D4C2B9F175E00383E4D /* FileAction */,
 				F9070D4E2B9F175E00383E4D /* FileSystem */,
 				F9070D502B9F175E00383E4D /* FloatFormatter */,
@@ -6484,6 +6489,15 @@
 				F98606202BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp */,
 			);
 			path = DirectoryWatcher;
+			sourceTree = "<group>";
+		};
+		F98606262BEBA1B5006A4C0F /* ExtensionFilter */ = {
+			isa = PBXGroup;
+			children = (
+				F98606242BEBA1B5006A4C0F /* ExtensionFilter.cpp */,
+				F98606252BEBA1B5006A4C0F /* ExtensionFilter.hpp */,
+			);
+			path = ExtensionFilter;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8764,6 +8778,7 @@
 				F986008E2BCFBB53006A4C0F /* GrDeferredDisplayList.h in Headers */,
 				F9070CDC2B9F175100383E4D /* MonitorInfo.hpp in Headers */,
 				F98601FC2BCFBB53006A4C0F /* SkMessageBus.h in Headers */,
+				F98606282BEBA1B5006A4C0F /* ExtensionFilter.hpp in Headers */,
 				F986021D2BCFBB54006A4C0F /* SkPictureData.h in Headers */,
 				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
 				F90706892B9DAEC900383E4D /* fast_type_id.h in Headers */,
@@ -10385,6 +10400,7 @@
 				F986F8AD2BC806BF006A4C0F /* SivExif.cpp in Sources */,
 				F986F92F2BC8441F006A4C0F /* unicode_fold3_key.c in Sources */,
 				F98602342BCFBB54006A4C0F /* SkRasterPipeline.cpp in Sources */,
+				F98606272BEBA1B5006A4C0F /* ExtensionFilter.cpp in Sources */,
 				F9528C162BBF026F00222F45 /* xxhash.c in Sources */,
 				F98605952BE33124006A4C0F /* SivCursorStyle.cpp in Sources */,
 				F986F94D2BCA9CD7006A4C0F /* SVGDetail.cpp in Sources */,

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/DirectoryWatcher.hpp>
+# include <Siv3D/ExtensionFilter/ExtensionFilter.hpp>
 # include <CoreServices/CoreServices.h>
 
 namespace s3d
@@ -89,7 +90,7 @@ namespace s3d
 
 		FilePath m_directory;
 
-		Array<String> m_sortedApplicableExtensions;
+		ExtensionFilter m_extensionFilter;
 
 		FSEventStreamRef m_eventStream = nullptr;
 		
