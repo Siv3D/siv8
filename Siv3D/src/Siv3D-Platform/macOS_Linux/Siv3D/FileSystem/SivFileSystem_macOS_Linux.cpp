@@ -47,7 +47,13 @@ namespace s3d
 	}
 
 	namespace FileSystem
-	{
+	{			
+		////////////////////////////////////////////////////////////////
+		//
+		//	FullPath
+		//
+		////////////////////////////////////////////////////////////////
+
 		FilePath FullPath(const FilePathView path)
 		{
 			if (path.isEmpty())
@@ -64,7 +70,13 @@ namespace s3d
 			
 			return fullpath;
 		}
-	
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreationTime
+		//
+		////////////////////////////////////////////////////////////////
+
 		Optional<DateTime> CreationTime(const FilePathView path)
 		{
 			struct stat s;
@@ -80,6 +92,12 @@ namespace s3d
 		# endif
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	WriteTime
+		//
+		////////////////////////////////////////////////////////////////
+
 		Optional<DateTime> WriteTime(const FilePathView path)
 		{
 			struct stat s;
@@ -94,7 +112,13 @@ namespace s3d
 			return detail::ToDateTime(s.st_mtim);
 		# endif
 		}
-		
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	AccessTime
+		//
+		////////////////////////////////////////////////////////////////
+
 		Optional<DateTime> AccessTime(const FilePathView path)
 		{
 			struct stat s;
@@ -109,6 +133,12 @@ namespace s3d
 			return detail::ToDateTime(s.st_atim);
 		# endif
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CurrentDirectory
+		//
+		////////////////////////////////////////////////////////////////
 	
 		FilePath CurrentDirectory()
 		{
@@ -121,6 +151,61 @@ namespace s3d
 			
 			return currentDirectory;
 		}
+	
+		////////////////////////////////////////////////////////////////
+		//
+		//	Size
+		//
+		////////////////////////////////////////////////////////////////
+
+		size_t Size(const FilePathView path)
+		{
+			if (not path)
+			{
+				return 0;
+			}
+
+			const FilePath fullPath = FullPath(path);
+			
+			struct stat s;
+			if (not detail::GetStat(fullPath, s))
+			{
+				return 0;
+			}
+
+			if (S_ISREG(s.st_mode))
+			{
+				return s.st_size;
+			}
+			else if (S_ISDIR(s.st_mode))
+			{
+				size_t result = 0;
+
+				for (const auto& v : std::filesystem::recursive_directory_iterator(Unicode::ToUTF8(path)))
+				{
+					struct stat s;
+					
+					if ((::stat(v.path().c_str(), &s) != 0) || S_ISDIR(s.st_mode))
+					{
+						continue;
+					}
+
+					result += s.st_size;
+				}
+				
+				return result;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+	
+		////////////////////////////////////////////////////////////////
+		//
+		//	FileSize
+		//
+		////////////////////////////////////////////////////////////////
 	
 		size_t FileSize(const FilePathView path)
 		{
@@ -141,6 +226,27 @@ namespace s3d
 			}
 			
 			return s.st_size;
+		}
+	
+		////////////////////////////////////////////////////////////////
+		//
+		//	RemoveContents
+		//
+		////////////////////////////////////////////////////////////////
+	
+		bool RemoveContents(const FilePathView path, const AllowUndo allowUndo)
+		{
+			if (not IsDirectory(path))
+			{
+				return false;
+			}
+
+			if (not Remove(path, allowUndo))
+			{
+				return false;
+			}
+
+			return CreateDirectories(path);
 		}
 	}
 }

@@ -75,7 +75,20 @@ namespace s3d
 			
 			return S_ISDIR(s.st_mode);
 		}
-	
+		
+		[[nodiscard]]
+		static std::string MacOS_FullPath(const char* _path)
+		{
+			@autoreleasepool
+			{
+				NSString* path = [NSString stringWithUTF8String:_path];
+				NSURL* file = [NSURL fileURLWithPath:path];
+				NSURL* absolutePath = [file absoluteURL];
+				NSString* str = [absolutePath path];
+				return std::string([str UTF8String], [str lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+			}
+		}
+		
 		[[nodiscard]]
 		static bool MacOS_ChangeCurrentDirectory(const char* _path)
 		{
@@ -259,12 +272,24 @@ namespace s3d
 
 	namespace FileSystem
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsResourcePath
+		//
+		////////////////////////////////////////////////////////////////
+
 		bool IsResourcePath(const FilePathView path) noexcept
 		{
 			const FilePath resourceDirectory = (FileSystem::ModulePath() + U"/Contents/Resources/");
 			return FullPath(path).starts_with(resourceDirectory);
 		}
-	
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	Exists
+		//
+		////////////////////////////////////////////////////////////////
+
 		bool Exists(const FilePathView path)
 		{
 			if (path.isEmpty())
@@ -274,7 +299,13 @@ namespace s3d
 
 			return detail::Exists(path);
 		}
-	
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsDirectory
+		//
+		////////////////////////////////////////////////////////////////
+
 		bool IsDirectory(const FilePathView path)
 		{
 			if (path.isEmpty())
@@ -285,6 +316,12 @@ namespace s3d
 			return detail::IsDirectory(path);
 		}
 	
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsFile
+		//
+		////////////////////////////////////////////////////////////////
+
 		bool IsFile(const FilePathView path)
 		{
 			if (path.isEmpty())
@@ -294,15 +331,53 @@ namespace s3d
 
 			return detail::IsRegular(path);
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsResource
+		//
+		////////////////////////////////////////////////////////////////
 	
 		bool IsResource(const FilePathView path)
 		{
 			return (IsResourcePath(path) && detail::Exists(path));
 		}
-	
 
-	
-	
+		////////////////////////////////////////////////////////////////
+		//
+		//	NativePath
+		//
+		////////////////////////////////////////////////////////////////
+
+		NativeFilePath NativePath(const FilePathView path)
+		{
+			if (not path)
+			{
+				return{};
+			}
+			
+			const FilePath fullpath = FullPath(path);
+			
+			return detail::MacOS_FullPath(Unicode::ToUTF8(fullpath).c_str());			
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	VolumePath
+		//
+		////////////////////////////////////////////////////////////////
+
+		FilePath VolumePath(const FilePathView)
+		{
+			return U"/";
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	DirectoryContents
+		//
+		////////////////////////////////////////////////////////////////
+
 		Array<FilePath> DirectoryContents(const FilePathView path, const Recursive recursive)
 		{
 			Array<FilePath> paths;
@@ -329,16 +404,34 @@ namespace s3d
 			
 			return paths;
 		}
-		
+	
+		////////////////////////////////////////////////////////////////
+		//
+		//	InitialDirectory
+		//
+		////////////////////////////////////////////////////////////////
+	
 		const FilePath& InitialDirectory() noexcept
 		{
 			return detail::init::g_filePathCache.initialDirectory;
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	ModulePath
+		//
+		////////////////////////////////////////////////////////////////
+
 		const FilePath& ModulePath() noexcept
 		{
 			return detail::init::g_filePathCache.modulePath;
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ChangeCurrentDirectory
+		//
+		////////////////////////////////////////////////////////////////
 	
 		bool ChangeCurrentDirectory(const FilePathView path)
 		{
@@ -349,6 +442,12 @@ namespace s3d
 			
 			return detail::MacOS_ChangeCurrentDirectory(Unicode::ToUTF8(path).c_str());
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetFolderPath
+		//
+		////////////////////////////////////////////////////////////////
 	
 		const FilePath& GetFolderPath(const SpecialFolder folder)
 		{
@@ -356,8 +455,12 @@ namespace s3d
 
 			return detail::init::g_filePathCache.specialFolderPaths[FromEnum(folder)];
 		}
-	
-	
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Remove
+		//
+		////////////////////////////////////////////////////////////////
 	
 		bool Remove(const FilePathView path, const AllowUndo allowUndo)
 		{
