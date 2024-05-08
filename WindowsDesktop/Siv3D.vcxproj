@@ -172,6 +172,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MappedMemory.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\YesNo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Byte.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DirectoryWatcher.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DiscreteDistribution.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DisjointSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DisplayResolution.hpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\EscapedFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Exif.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileChange.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FormatLiteralObject.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphIndex.hpp" />
@@ -391,6 +393,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\CursorStyle\CCursorStyle.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor\CCursor.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher\DirectoryWatcherDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard\CKeyboard.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.hpp" />
@@ -756,6 +759,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor\CCursor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DateTime\SivDateTime_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Date\SivDate_Windows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher\DirectoryWatcherDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL\SivDLL.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EnvironmentVariable\SivEnvironmentVariable.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\SivFileSystem_Windows.cpp" />
@@ -814,6 +818,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Date\SivDate.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DayOfWeek\SivDayOfWeek.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Demangle\SivDemangle.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\DirectoryWatcher\SivDirectoryWatcher.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\CEmoji.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\EmojiFactory.cpp" />

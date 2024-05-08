@@ -411,8 +411,11 @@
 // ファイル操作のイベント | File action
 # include <Siv3D/FileAction.hpp>
 
-//// ファイルとディレクトリの変更の監視 | Directory watcher
-//# include <Siv3D/DirectoryWatcher.hpp>
+// 変更されたファイルの情報 | Information about changed files
+# include <Siv3D/FileChange.hpp>
+
+// ファイルとディレクトリの変更の監視 | Directory watcher
+# include <Siv3D/DirectoryWatcher.hpp>
 
 // 所有権を持たない、メモリ範囲への IReader インタフェース | IReader Wrapper for Non-Owning Memory Range 
 # include <Siv3D/MemoryViewReader.hpp>
