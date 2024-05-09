@@ -62,6 +62,10 @@ namespace s3d
 
 		void setFullscreen(bool fullscreen, size_t monitorIndex) override;
 
+		void setToggleFullscreenEnabled(bool enabled) override;
+
+		bool isToggleFullscreenEnabled() const override;
+
 
 
 		void destroy();
@@ -82,6 +86,8 @@ namespace s3d
 		void onExitSizeMove();
 
 		Size getMinTrackSize() noexcept;
+
+		void requestToggleFullscreen();
 
 	private:
 
@@ -104,10 +110,13 @@ namespace s3d
 		/// @brief フルスクリーンからウィンドウモードに復帰するときのウィンドウサイズ
 		RECT m_storedWindowRect{ 0, 0, 0, 0 };
 
+		bool m_toggleFullscreenEnabled = true;
+
+		std::atomic<bool> m_toggleFullscreenRequested = false;
+
 		std::atomic<bool> m_moving = false;
 
 		std::mutex m_minimumFrameBufferSizeMutex;
-
 
 		HDEVNOTIFY m_deviceNotificationHandle = nullptr;
 

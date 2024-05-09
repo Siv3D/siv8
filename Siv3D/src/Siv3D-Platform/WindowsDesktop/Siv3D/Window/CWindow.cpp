@@ -130,6 +130,33 @@ namespace s3d
 
 	void CWindow::update()
 	{
+		if (m_toggleFullscreenRequested.load())
+		{
+			if (m_toggleFullscreenEnabled)
+			{
+				//if (not m_oldResizeMode)
+				//{
+				//	m_oldResizeMode = Scene::GetResizeMode();
+				//}
+
+				const bool toFullScreen = (not m_state.fullscreen);
+
+				setFullscreen(toFullScreen, System::GetCurrentMonitorIndex(), true);
+
+				//if (toFullScreen)
+				//{
+				//	Scene::SetResizeMode(ResizeMode::Keep);
+				//}
+				//else if (m_oldResizeMode)
+				//{
+				//	Scene::SetResizeMode(*m_oldResizeMode);
+				//	m_oldResizeMode.reset();
+				//}
+			}
+
+			m_toggleFullscreenRequested.store(false);
+		}
+
 		m_state.sizeMove = m_moving.load();
 
 		if constexpr (SIV3D_BUILD(DEBUG))
@@ -407,6 +434,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	setToggleFullscreenEnabled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setToggleFullscreenEnabled(const bool enabled)
+	{
+		m_toggleFullscreenEnabled = enabled;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isToggleFullscreenEnabled
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CWindow::isToggleFullscreenEnabled() const
+	{
+		return m_toggleFullscreenEnabled;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	destroy
 	//
 	////////////////////////////////////////////////////////////////
@@ -608,6 +657,17 @@ namespace s3d
 		std::lock_guard lock{ m_minimumFrameBufferSizeMutex };
 
 		return (m_state.minFrameBufferSize + m_border);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	requestToggleFullscreen
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::requestToggleFullscreen()
+	{
+		m_toggleFullscreenRequested.store(true);
 	}
 
 	////////////////////////////////////////////////////////////////

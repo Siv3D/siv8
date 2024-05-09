@@ -59,6 +59,10 @@ namespace s3d
 
 		void setFullscreen(bool fullscreen, size_t monitorIndex) override;
 		
+		void setToggleFullscreenEnabled(bool enabled) override;
+
+		bool isToggleFullscreenEnabled() const override;
+
 	private:
 
 		GLFWwindow* m_glfwWindow = nullptr;

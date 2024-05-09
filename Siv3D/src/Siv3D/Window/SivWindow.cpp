@@ -336,10 +336,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//void SetToggleFullscreenEnabled(const bool enabled)
-		//{
-		//	SIV3D_ENGINE(Window)->setToggleFullscreenEnabled(enabled);
-		//}
+		void SetToggleFullscreenEnabled(const bool enabled)
+		{
+			SIV3D_ENGINE(Window)->setToggleFullscreenEnabled(enabled);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -347,9 +347,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//bool IsToggleFullscreenEnabled()
+		bool IsToggleFullscreenEnabled()
+		{
+			return SIV3D_ENGINE(Window)->isToggleFullscreenEnabled();
+		}
+	}
+
+# if SIV3D_PLATFORM(WINDOWS)
+
+	namespace Platform::Windows::Window
+	{
+		void* GetHWND()
+		{
+			return SIV3D_ENGINE(Window)->getHandle();
+		}
+
+		//void SetTaskbarProgressBar(const double progress0_1)
 		//{
-		//	return SIV3D_ENGINE(Window)->isToggleFullscreenEnabled();
+		//	SIV3D_ENGINE(Window)->setTaskbarProgressBar(progress0_1);
 		//}
 	}
+
+# endif
 }
