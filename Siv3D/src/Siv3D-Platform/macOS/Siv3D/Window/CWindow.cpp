@@ -350,7 +350,9 @@ namespace s3d
 			}
 
 			::glfwGetWindowPos(m_glfwWindow, &m_storedWindowRect.x, &m_storedWindowRect.y);
-			::glfwGetWindowSize(m_glfwWindow, &m_storedWindowRect.w, &m_storedWindowRect.h);
+			m_storedWindowRect.y += m_state.titleBarHeight;
+			m_storedWindowRect.pos = (m_storedWindowRect.pos / monitors[monitorIndex].scaling.value_or(1.0)).asPoint();
+			m_storedWindowRect.size = m_state.virtualSize;
 			
 			const Size fullscreenResolution = monitors[monitorIndex].fullscreenResolution;
 			
@@ -465,16 +467,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CWindow::OnFrameBufferSize(GLFWwindow* glfwWindow, const int width, const int height)
+	void CWindow::OnFrameBufferSize(GLFWwindow*, const int width, const int height)
 	{
 		const Size size{ width, height };
 		LOG_DEBUG(fmt::format("CWindow::OnFrameBufferSize({})", size));
-		
-		if (CWindow* pWindow = GetWindow(glfwWindow))
-		{
-			pWindow->m_state.frameBufferSize = size;
-			//pWindow->m_state.clientSize = size;
-		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -483,14 +479,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CWindow::OnScalingChange(GLFWwindow* glfwWindow, const float sx, const float sy)
+	void CWindow::OnScalingChange(GLFWwindow*, const float sx, const float sy)
 	{
 		LOG_DEBUG(fmt::format("CWindow::OnScalingChange({}, {})", sx, sy));
-		
-		if (CWindow* pWindow = GetWindow(glfwWindow))
-		{
-			pWindow->m_state.scaling = Max(sx, sy);
-		}
 	}
 
 	////////////////////////////////////////////////////////////////
