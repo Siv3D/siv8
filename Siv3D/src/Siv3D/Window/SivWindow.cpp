@@ -325,10 +325,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//void SetFullscreen(const bool fullscreen, const size_t monitorIndex)
-		//{
-		//	SIV3D_ENGINE(Window)->setFullscreen(fullscreen, monitorIndex);
-		//}
+		void SetFullscreen(const bool fullscreen, const size_t monitorIndex)
+		{
+			SIV3D_ENGINE(Window)->setFullscreen(fullscreen, monitorIndex);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//

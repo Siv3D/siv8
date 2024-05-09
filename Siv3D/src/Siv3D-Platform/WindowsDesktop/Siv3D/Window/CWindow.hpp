@@ -101,6 +101,9 @@ namespace s3d
 
 		Size m_border{ 0, 0 };
 
+		/// @brief フルスクリーンからウィンドウモードに復帰するときのウィンドウサイズ
+		RECT m_storedWindowRect{ 0, 0, 0, 0 };
+
 		std::atomic<bool> m_moving = false;
 
 		std::mutex m_minimumFrameBufferSizeMutex;

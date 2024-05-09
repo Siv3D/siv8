@@ -149,9 +149,8 @@ namespace s3d
 
 			if (not errorMessage.empty())
 			{
-				//static_cast<void>(Window::SetFullscreen(false)); // メッセージボックスを表示するためにフルスクリーンモードを解除
-
-				//errorMessage += "For more information, [Debug] -> [Windows] -> [Exception Settings] -> Tick the C++ Exceptions checkbox under the [Break When Thrown] heading.";
+				// メッセージボックスを表示するためにフルスクリーンモードを解除する
+				static_cast<void>(Window::SetFullscreen(false));
 
 				FreestandingMessageBox::ShowError(errorMessage);
 			}
