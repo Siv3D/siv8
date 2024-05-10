@@ -703,6 +703,15 @@
     <Filter Include="src\Siv3D\Scene">
       <UniqueIdentifier>{08ff0da8-f638-42ff-9d61-d56ba2e020c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Renderer">
+      <UniqueIdentifier>{6578ffec-4a05-4b65-bf62-3c41be205973}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer">
+      <UniqueIdentifier>{767fc7f6-4e8c-4ae3-aeea-830b978dd821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11">
+      <UniqueIdentifier>{5063698c-ba49-4d00-8b7e-6e6e29bef8bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2949,6 +2958,12 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneTime.hpp">
       <Filter>src\Siv3D\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer\IRenderer.hpp">
+      <Filter>src\Siv3D\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\CRenderer_D3D11.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5047,6 +5062,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneTime.cpp">
       <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\RendererFactory.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\CRenderer_D3D11.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

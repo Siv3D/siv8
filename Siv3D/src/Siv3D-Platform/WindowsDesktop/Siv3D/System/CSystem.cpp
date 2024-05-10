@@ -24,6 +24,7 @@
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
+# include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -49,6 +50,9 @@ namespace s3d
 	void CSystem::preInit()
 	{
 		LOG_SCOPED_DEBUG("CSystem::preInit()");
+
+		SIV3D_ENGINE(EngineResource)->init();
+		SIV3D_ENGINE(Profiler)->init();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -64,8 +68,6 @@ namespace s3d
 		m_setupProgress = SetupProgress::EngineInitialized;
 
 		SIV3D_ENGINE(RegExp)->init();
-		SIV3D_ENGINE(EngineResource)->init();
-		SIV3D_ENGINE(Profiler)->init();
 		SIV3D_ENGINE(ImageDecoder)->init();
 		SIV3D_ENGINE(ImageEncoder)->init();
 		SIV3D_ENGINE(Emoji)->init();
@@ -73,6 +75,7 @@ namespace s3d
 		SIV3D_ENGINE(CursorStyle)->init();
 		SIV3D_ENGINE(Keyboard)->init();
 		SIV3D_ENGINE(Mouse)->init();
+		SIV3D_ENGINE(Renderer)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}
@@ -107,7 +110,9 @@ namespace s3d
 			return false;
 		}
 
+		SIV3D_ENGINE(Renderer)->flush();
 		SIV3D_ENGINE(Profiler)->endFrame();
+		SIV3D_ENGINE(Renderer)->present();
 
 		//
 		//	previous frame
