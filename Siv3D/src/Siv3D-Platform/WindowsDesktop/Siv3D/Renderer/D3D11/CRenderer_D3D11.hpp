@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/Renderer/IRenderer.hpp>
+# include "Device/D3D11Device.hpp"
 
 namespace s3d
 {
@@ -30,5 +31,6 @@ namespace s3d
 
 	private:
 
+		D3D11Device m_device;
 	};
 }
