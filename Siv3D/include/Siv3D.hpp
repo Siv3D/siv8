@@ -1318,6 +1318,22 @@
 
 
 
+
+////////////////////////////////////////////////////////////////
+//
+//	シーン | Scene
+//
+////////////////////////////////////////////////////////////////
+
+# include <Siv3D/ResizeMode.hpp>
+
+# include <Siv3D/TextureFilter.hpp>
+
+# include <Siv3D/Scene.hpp> // ToDo
+
+
+
+
 # if SIV3D_PLATFORM(WINDOWS)
 
 	// Windows 用の静的リンクライブラリ | Static link libraries for Windows

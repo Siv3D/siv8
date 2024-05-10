@@ -16,6 +16,7 @@
 # include <Siv3D/Profiler/IProfiler.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Scene/CScene.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
 # include <Siv3D/Emoji/IEmoji.hpp>
@@ -78,6 +79,7 @@ namespace s3d
 		
 		SIV3D_ENGINE(Profiler)->beginFrame();
 		SIV3D_ENGINE(Window)->update();
+		SIV3D_ENGINE(Scene)->update();
 		SIV3D_ENGINE(Cursor)->update();
 		SIV3D_ENGINE(CursorStyle)->update();
 		SIV3D_ENGINE(Keyboard)->update();

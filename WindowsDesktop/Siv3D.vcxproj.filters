@@ -694,6 +694,15 @@
     <Filter Include="src\Siv3D\Profiler">
       <UniqueIdentifier>{7d72ab92-ff90-464a-a9cd-24e272170440}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ResizeMode">
+      <UniqueIdentifier>{e1b912b6-75cc-42af-9275-dcd202afc743}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TextureFilter">
+      <UniqueIdentifier>{19bc6a87-791f-4531-a1f5-05c3f972ef6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Scene">
+      <UniqueIdentifier>{08ff0da8-f638-42ff-9d61-d56ba2e020c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2922,6 +2931,24 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\IProfiler.hpp">
       <Filter>src\Siv3D\Profiler</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Scene.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ResizeMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureFilter.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\CScene.hpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\IScene.hpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneTime.hpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5002,6 +5029,24 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\SivProfiler.cpp">
       <Filter>src\Siv3D\Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ResizeMode\SivResizeMode.cpp">
+      <Filter>src\Siv3D\ResizeMode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextureFilter\SivTextureFilter.cpp">
+      <Filter>src\Siv3D\TextureFilter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\CScene.cpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneFactory.cpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SivScene.cpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneTime.cpp">
+      <Filter>src\Siv3D\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
