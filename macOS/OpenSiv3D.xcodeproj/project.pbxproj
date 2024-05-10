@@ -667,6 +667,18 @@
 		F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528C9D2BC1208B00222F45 /* pnglibconf.h */; };
 		F9528CA52BC1209900222F45 /* zconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA22BC1209900222F45 /* zconf.h */; };
 		F9528CA62BC1209900222F45 /* zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA32BC1209900222F45 /* zlib.h */; };
+		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
+		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
+		F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */; };
+		F97203072BEDF2FF000E21DD /* CScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FB2BEDF2FF000E21DD /* CScene.cpp */; };
+		F97203082BEDF2FF000E21DD /* CScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FC2BEDF2FF000E21DD /* CScene.hpp */; };
+		F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FD2BEDF2FF000E21DD /* IScene.hpp */; };
+		F972030A2BEDF2FF000E21DD /* SceneFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FE2BEDF2FF000E21DD /* SceneFactory.cpp */; };
+		F972030B2BEDF2FF000E21DD /* SceneTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */; };
+		F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203002BEDF2FF000E21DD /* SceneTime.hpp */; };
+		F972030D2BEDF2FF000E21DD /* SivScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203012BEDF2FF000E21DD /* SivScene.cpp */; };
+		F972030E2BEDF2FF000E21DD /* SivResizeMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */; };
+		F972030F2BEDF2FF000E21DD /* SivTextureFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
 		F98600012BCFBB53006A4C0F /* SkBlurTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABF2BCFBB53006A4C0F /* SkBlurTypes.h */; };
 		F98600022BCFBB53006A4C0F /* SkCanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FAC02BCFBB53006A4C0F /* SkCanvas.h */; };
@@ -2713,6 +2725,18 @@
 		F9528C9D2BC1208B00222F45 /* pnglibconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglibconf.h; sourceTree = "<group>"; };
 		F9528CA22BC1209900222F45 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
 		F9528CA32BC1209900222F45 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
+		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
+		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
+		F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ResizeMode.hpp; sourceTree = "<group>"; };
+		F97202FB2BEDF2FF000E21DD /* CScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CScene.cpp; sourceTree = "<group>"; };
+		F97202FC2BEDF2FF000E21DD /* CScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CScene.hpp; sourceTree = "<group>"; };
+		F97202FD2BEDF2FF000E21DD /* IScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IScene.hpp; sourceTree = "<group>"; };
+		F97202FE2BEDF2FF000E21DD /* SceneFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneFactory.cpp; sourceTree = "<group>"; };
+		F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTime.cpp; sourceTree = "<group>"; };
+		F97203002BEDF2FF000E21DD /* SceneTime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneTime.hpp; sourceTree = "<group>"; };
+		F97203012BEDF2FF000E21DD /* SivScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScene.cpp; sourceTree = "<group>"; };
+		F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivResizeMode.cpp; sourceTree = "<group>"; };
+		F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTextureFilter.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
 		F98604F92BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkFontHost_FreeType.cpp; sourceTree = "<group>"; };
 		F98604FE2BCFBC11006A4C0F /* SkImageGenerator_FromEncoded.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkImageGenerator_FromEncoded.cpp; sourceTree = "<group>"; };
@@ -4967,9 +4991,11 @@
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
 				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
+				F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */,
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
 				F98606182BEB7651006A4C0F /* RoundRect.hpp */,
+				F97202F52BEDF2D8000E21DD /* Scene.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9070C1F2B9F175000383E4D /* SequenceFormatter.hpp */,
 				F9070C202B9F175000383E4D /* Shuffle.hpp */,
@@ -4986,6 +5012,7 @@
 				F9070C272B9F175000383E4D /* System.hpp */,
 				F9070C282B9F175000383E4D /* TextEncoding.hpp */,
 				F9070C292B9F175000383E4D /* TextReader.hpp */,
+				F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */,
 				F9070C2A2B9F175000383E4D /* TextWriter.hpp */,
 				F9070C2B2B9F175000383E4D /* ThousandSeparate.hpp */,
 				F9070C2C2B9F175000383E4D /* Threading.hpp */,
@@ -5645,6 +5672,8 @@
 				F9070D7E2B9F175E00383E4D /* Rect */,
 				F986F9462BCA79DC006A4C0F /* RectF */,
 				F98605A22BE4887C006A4C0F /* RegExp */,
+				F97203042BEDF2FF000E21DD /* ResizeMode */,
+				F97203022BEDF2FF000E21DD /* Scene */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9070D812B9F175E00383E4D /* String */,
 				F9070D832B9F175E00383E4D /* StringView */,
@@ -5652,6 +5681,7 @@
 				F9070D872B9F175E00383E4D /* System */,
 				F9070D892B9F175E00383E4D /* TextEncoding */,
 				F9070D8D2B9F175E00383E4D /* TextReader */,
+				F97203062BEDF2FF000E21DD /* TextureFilter */,
 				F9070D912B9F175E00383E4D /* TextWriter */,
 				F9070D932B9F175E00383E4D /* ThousandSeparate */,
 				F9070D952B9F175E00383E4D /* Threading */,
@@ -6245,6 +6275,36 @@
 				F9528CA32BC1209900222F45 /* zlib.h */,
 			);
 			path = zlib;
+			sourceTree = "<group>";
+		};
+		F97203022BEDF2FF000E21DD /* Scene */ = {
+			isa = PBXGroup;
+			children = (
+				F97202FB2BEDF2FF000E21DD /* CScene.cpp */,
+				F97202FC2BEDF2FF000E21DD /* CScene.hpp */,
+				F97202FD2BEDF2FF000E21DD /* IScene.hpp */,
+				F97202FE2BEDF2FF000E21DD /* SceneFactory.cpp */,
+				F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */,
+				F97203002BEDF2FF000E21DD /* SceneTime.hpp */,
+				F97203012BEDF2FF000E21DD /* SivScene.cpp */,
+			);
+			path = Scene;
+			sourceTree = "<group>";
+		};
+		F97203042BEDF2FF000E21DD /* ResizeMode */ = {
+			isa = PBXGroup;
+			children = (
+				F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */,
+			);
+			path = ResizeMode;
+			sourceTree = "<group>";
+		};
+		F97203062BEDF2FF000E21DD /* TextureFilter */ = {
+			isa = PBXGroup;
+			children = (
+				F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */,
+			);
+			path = TextureFilter;
 			sourceTree = "<group>";
 		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
@@ -8558,6 +8618,7 @@
 				F9070EE42B9F1C8900383E4D /* mappings.h in Headers */,
 				F98600482BCFBB53006A4C0F /* SkTextBlob.h in Headers */,
 				F98605A72BE4887C006A4C0F /* RegExpDetail.hpp in Headers */,
+				F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */,
 				F98602932BCFBB54006A4C0F /* SkTypefaceCache.h in Headers */,
 				F986FA9D2BCFB53B006A4C0F /* ttnameid.h in Headers */,
 				F98601F12BCFBB53006A4C0F /* SkMatrixInvert.h in Headers */,
@@ -8656,6 +8717,7 @@
 				F9528C922BC1204200222F45 /* PNGEncoder.hpp in Headers */,
 				F9070C9C2B9F175000383E4D /* Blob.hpp in Headers */,
 				F9070C752B9F175000383E4D /* RandomDuration.ipp in Headers */,
+				F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */,
 				F98604122BCFBB54006A4C0F /* SkSLFunctionDeclaration.h in Headers */,
 				F98605612BD203D4006A4C0F /* muParserDef.h in Headers */,
 				F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */,
@@ -8733,6 +8795,7 @@
 				F9E5FC3C2BC15B260081A4F7 /* DirectXCollision.h in Headers */,
 				F9070CC72B9F175000383E4D /* Hash.hpp in Headers */,
 				F98600832BCFBB53006A4C0F /* SkSpan_impl.h in Headers */,
+				F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */,
 				F98601A92BCFBB53006A4C0F /* SkDrawProcs.h in Headers */,
 				F9070C4A2B9F175000383E4D /* Color.ipp in Headers */,
 				F98600092BCFBB53006A4C0F /* SkColorSpace.h in Headers */,
@@ -8901,6 +8964,7 @@
 				F9528B5C2BB6DC6800222F45 /* MillisecClock.ipp in Headers */,
 				F98602742BCFBB54006A4C0F /* SkStrikeCache.h in Headers */,
 				F986FA512BCFB53B006A4C0F /* svprop.h in Headers */,
+				F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */,
 				F9E5FC2D2BC15AEE0081A4F7 /* SIMDMath.hpp in Headers */,
 				F986FA492BCFB53B006A4C0F /* svgldict.h in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
@@ -8985,6 +9049,7 @@
 				F9070F352B9F252E00383E4D /* null_platform.h in Headers */,
 				F986FA4F2BCFB53B006A4C0F /* svpfr.h in Headers */,
 				F98600342BCFBB53006A4C0F /* SkPoint.h in Headers */,
+				F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */,
 				F90706AB2B9DAEC900383E4D /* gaussian_distribution.h in Headers */,
 				F98604302BCFBB54006A4C0F /* SkSLProgram.h in Headers */,
 				F98605C12BE4B65B006A4C0F /* Keyboard.hpp in Headers */,
@@ -9491,6 +9556,7 @@
 				F9070C692B9F175000383E4D /* MapFormatter.ipp in Headers */,
 				F98600192BCFBB53006A4C0F /* SkFontParameters.h in Headers */,
 				F9070C642B9F175000383E4D /* ISteadyClock.ipp in Headers */,
+				F97203082BEDF2FF000E21DD /* CScene.hpp in Headers */,
 				F98600A52BCFBB53006A4C0F /* SkCGUtils.h in Headers */,
 				F986FA892BCFB53B006A4C0F /* ftlzw.h in Headers */,
 				F9528BAC2BBE7CF300222F45 /* MemoryWriter.hpp in Headers */,
@@ -9797,6 +9863,7 @@
 				F98604762BCFBB54006A4C0F /* SkSLIntrinsicList.cpp in Sources */,
 				F9070DE42B9F175E00383E4D /* SivRandom.cpp in Sources */,
 				F9070E632B9F176B00383E4D /* SivSystem_macOS_Linux.cpp in Sources */,
+				F972030F2BEDF2FF000E21DD /* SivTextureFilter.cpp in Sources */,
 				F986046B2BCFBB54006A4C0F /* SkSLConstantFolder.cpp in Sources */,
 				F98605692BD203D4006A4C0F /* muParserTokenReader.cpp in Sources */,
 				F98602252BCFBB54006A4C0F /* SkPictureRecorder.cpp in Sources */,
@@ -9922,6 +9989,7 @@
 				F9528C832BC05B5B00222F45 /* BMPDecoder.cpp in Sources */,
 				F9070DD12B9F175E00383E4D /* SivFormatUtility.cpp in Sources */,
 				F98605A82BE4887C006A4C0F /* RegExpFactory.cpp in Sources */,
+				F972030D2BEDF2FF000E21DD /* SivScene.cpp in Sources */,
 				F986F99C2BCA9D0A006A4C0F /* canvas.cpp in Sources */,
 				F9070DDF2B9F175E00383E4D /* SivParseBoolExtended.cpp in Sources */,
 				F9070DAD2B9F175E00383E4D /* _TEMPLATE.cpp in Sources */,
@@ -10065,6 +10133,7 @@
 				F986027D2BCFBB54006A4C0F /* SkStrokerPriv.cpp in Sources */,
 				F9070AEE2B9DEB5900383E4D /* int128.cc in Sources */,
 				F986022D2BCFBB54006A4C0F /* SkPtrRecorder.cpp in Sources */,
+				F972030B2BEDF2FF000E21DD /* SceneTime.cpp in Sources */,
 				F98602842BCFBB54006A4C0F /* SkSwizzler_opts.cpp in Sources */,
 				F98601CE2BCFBB53006A4C0F /* SkImageFilter.cpp in Sources */,
 				F986016C2BCFBB53006A4C0F /* SkBlitter_A8.cpp in Sources */,
@@ -10093,6 +10162,7 @@
 				F98603FF2BCFBB54006A4C0F /* SkSLDiscardStatement.cpp in Sources */,
 				F98605212BD0E2A3006A4C0F /* CEngineResource.cpp in Sources */,
 				F9528C2A2BBF026F00222F45 /* zstd_double_fast.c in Sources */,
+				F972030A2BEDF2FF000E21DD /* SceneFactory.cpp in Sources */,
 				F98600D32BCFBB53006A4C0F /* SkHalf.cpp in Sources */,
 				F9070E5E2B9F176B00383E4D /* SivDate_macOS_Linux.cpp in Sources */,
 				F986F99E2BCA9D0A006A4C0F /* clippathelement.cpp in Sources */,
@@ -10390,6 +10460,7 @@
 				F98601B62BCFBB53006A4C0F /* SkFlattenable.cpp in Sources */,
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,
 				F986F9242BC8441F006A4C0F /* regsyntax.c in Sources */,
+				F972030E2BEDF2FF000E21DD /* SivResizeMode.cpp in Sources */,
 				F98604332BCFBB54006A4C0F /* SkSLSetting.cpp in Sources */,
 				F9528C332BBF026F00222F45 /* zstd_opt.c in Sources */,
 				F986F9B42BCA9D0A006A4C0F /* parser.cpp in Sources */,
@@ -10406,6 +10477,7 @@
 				F9070DDE2B9F175E00383E4D /* SivParseBool.cpp in Sources */,
 				F9528C392BBF026F00222F45 /* zstd_ddict.c in Sources */,
 				F9528C242BBF026F00222F45 /* zstd_compress_sequences.c in Sources */,
+				F97203072BEDF2FF000E21DD /* CScene.cpp in Sources */,
 				F98605832BDA7E32006A4C0F /* CCursor.mm in Sources */,
 				F9070E5A2B9F176B00383E4D /* BinaryWriterDetail.cpp in Sources */,
 				F98603F62BCFBB54006A4C0F /* SkSLConstructorMatrixResize.cpp in Sources */,
