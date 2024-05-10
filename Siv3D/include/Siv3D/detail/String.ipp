@@ -306,12 +306,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String::value_type& String::front() noexcept
+	constexpr String::value_type& String::front()& noexcept
 	{
 		return m_string.front();
 	}
 
-	constexpr const String::value_type& String::front() const noexcept
+	constexpr const String::value_type& String::front() const& noexcept
+	{
+		return m_string.front();
+	}
+
+	constexpr String::value_type String::front()&& noexcept
 	{
 		return m_string.front();
 	}
@@ -322,12 +327,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String::value_type& String::back() noexcept
+	constexpr String::value_type& String::back()& noexcept
 	{
 		return m_string.back();
 	}
 
-	constexpr const String::value_type& String::back() const noexcept
+	constexpr const String::value_type& String::back() const& noexcept
+	{
+		return m_string.back();
+	}
+
+	constexpr String::value_type String::back()&& noexcept
 	{
 		return m_string.back();
 	}

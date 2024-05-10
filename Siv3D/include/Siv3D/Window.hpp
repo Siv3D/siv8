@@ -56,7 +56,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 現在のウィンドウのタイトルを返します。
-		/// @return  現在のウィンドウのタイトル
+		/// @return 現在のウィンドウのタイトル
 		[[nodiscard]]
 		const String& GetTitle() noexcept;
 
