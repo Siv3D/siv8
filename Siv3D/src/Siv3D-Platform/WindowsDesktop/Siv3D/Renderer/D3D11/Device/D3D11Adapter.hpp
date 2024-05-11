@@ -13,7 +13,6 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Renderer/D3D11/D3D11.hpp>
-# include <Siv3D/Windows/ComPtr.hpp>
 
 namespace s3d
 {

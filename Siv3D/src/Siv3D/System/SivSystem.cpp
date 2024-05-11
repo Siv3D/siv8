@@ -27,7 +27,11 @@ namespace s3d
 		bool Update()
 		{
 			// [Siv3D ToDo] VSync を実装したら外す
+		# if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+		
 			Sleep(16);
+
+		# endif
 
 			return SIV3D_ENGINE(System)->update();
 		}

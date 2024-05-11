@@ -1334,6 +1334,10 @@
 
 
 
+# include <Siv3D/Graphics.hpp>
+# include <Siv3D/EngineOption.hpp>
+
+
 # if SIV3D_PLATFORM(WINDOWS)
 
 	// Windows 用の静的リンクライブラリ | Static link libraries for Windows

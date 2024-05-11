@@ -715,6 +715,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device">
       <UniqueIdentifier>{d528c4d3-6165-4509-9b08-8bd698c9298a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain">
+      <UniqueIdentifier>{0ddb3602-2ea4-42fc-89a6-f60366cceb0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer">
+      <UniqueIdentifier>{db81ee82-29ff-4f08-9b75-d75a0a7a05f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2988,6 +2994,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\EngineOption.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain\D3D11SwapChain.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11BackBuffer.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11ClearTarget.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11InternalTexture2D.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Graphics.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5098,6 +5119,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Misc.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain\D3D11SwapChain.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11BackBuffer.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11InternalTexture2D.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

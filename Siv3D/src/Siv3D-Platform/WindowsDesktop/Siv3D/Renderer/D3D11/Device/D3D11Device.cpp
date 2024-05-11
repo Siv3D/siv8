@@ -75,7 +75,7 @@ namespace s3d
 			
 			if (m_hasDebugLayer)
 			{
-				LOG_INFO(U"ℹ️ D3D11 debug layer is available");
+				LOG_INFO("ℹ️ D3D11 debug layer is available");
 			}
 		}
 

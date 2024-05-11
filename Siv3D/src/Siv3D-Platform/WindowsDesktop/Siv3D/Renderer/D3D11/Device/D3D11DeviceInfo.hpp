@@ -13,13 +13,14 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Optional.hpp>
 # include <Siv3D/Renderer/D3D11/D3D11.hpp>
-# include <Siv3D/Windows/ComPtr.hpp>
 
 namespace s3d
 {
 	struct D3D11DeviceInfo
 	{
 		ComPtr<ID3D11Device> device;
+
+		ComPtr<IDXGIDevice1> dxgiDevice;
 
 		ComPtr<ID3D11DeviceContext> context;
 

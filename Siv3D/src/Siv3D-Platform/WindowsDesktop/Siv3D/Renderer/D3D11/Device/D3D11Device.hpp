@@ -23,6 +23,42 @@ namespace s3d
 
 		void init();
 
+		[[nodiscard]]
+		IDXGIFactory2* getDXGIFactory2() const noexcept
+		{
+			return m_DXGIFactory2.Get();
+		}
+
+		[[nodiscard]]
+		IDXGIFactory6* getDXGIFactory6() const noexcept
+		{
+			return m_DXGIFactory6.Get();
+		}
+
+		[[nodiscard]]
+		ID3D11Device* getDevice() const noexcept
+		{
+			return m_deviceInfo.device.Get();
+		}
+
+		[[nodiscard]]
+		IDXGIDevice1* getDXGIDevice1() const noexcept
+		{
+			return m_deviceInfo.dxgiDevice.Get();
+		}
+
+		[[nodiscard]]
+		ID3D11DeviceContext* getContext() const noexcept
+		{
+			return m_deviceInfo.context.Get();
+		}
+
+		[[nodiscard]]
+		bool supportsDXGI1_4() const noexcept
+		{
+			return (m_DXGIFactory6 != nullptr);
+		}
+
 	private:
 
 		PFN_D3D11_CREATE_DEVICE m_pD3D11CreateDevice = nullptr;

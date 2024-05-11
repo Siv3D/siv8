@@ -12,6 +12,8 @@
 # pragma once
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include "Device/D3D11Device.hpp"
+# include "SwapChain/D3D11SwapChain.hpp"
+# include "BackBuffer/D3D11BackBuffer.hpp"
 
 namespace s3d
 {
@@ -32,5 +34,11 @@ namespace s3d
 	private:
 
 		D3D11Device m_device;
+
+		D3D11SwapChain m_swapChain;
+
+		D3D11BackBuffer m_backBuffer;
+
+		bool m_vSyncEnabled = true;
 	};
 }

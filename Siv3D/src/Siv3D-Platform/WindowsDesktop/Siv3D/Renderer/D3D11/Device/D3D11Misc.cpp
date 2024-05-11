@@ -171,6 +171,14 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		static ComPtr<IDXGIDevice1> GetDXGIDevice1(ID3D11Device* pDevice)
+		{
+			ComPtr<IDXGIDevice1> dxgiDevice;
+			pDevice->QueryInterface(__uuidof(IDXGIDevice1), &dxgiDevice);
+			return dxgiDevice;
+		}
+
+		[[nodiscard]]
 		static D3D_FEATURE_LEVEL CheckFeatureLevel(IDXGIAdapter1* pAdapter, PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice)
 		{
 			LOG_SCOPED_DEBUG("CheckFeatureLevel()");
@@ -456,6 +464,7 @@ namespace s3d
 				return D3D11DeviceInfo
 				{
 					.device					= device,
+					.dxgiDevice				= GetDXGIDevice1(device.Get()),
 					.context				= context,
 					.adapterIndex			= adapterIndex,
 					.deviceType				= D3D_DRIVER_TYPE_HARDWARE,
@@ -481,6 +490,7 @@ namespace s3d
 					return D3D11DeviceInfo
 					{
 						.device					= device,
+						.dxgiDevice				= GetDXGIDevice1(device.Get()),
 						.context				= context,
 						.adapterIndex			= adapterIndex,
 						.deviceType				= D3D_DRIVER_TYPE_HARDWARE,
@@ -518,6 +528,7 @@ namespace s3d
 				return D3D11DeviceInfo
 				{
 					.device					= device,
+					.dxgiDevice				= GetDXGIDevice1(device.Get()),
 					.context				= context,
 					.adapterIndex			= none,
 					.deviceType				= D3D_DRIVER_TYPE_WARP,
@@ -554,6 +565,7 @@ namespace s3d
 				return D3D11DeviceInfo
 				{
 					.device					= device,
+					.dxgiDevice				= GetDXGIDevice1(device.Get()),
 					.context				= context,
 					.adapterIndex			= none,
 					.deviceType				= D3D_DRIVER_TYPE_REFERENCE,

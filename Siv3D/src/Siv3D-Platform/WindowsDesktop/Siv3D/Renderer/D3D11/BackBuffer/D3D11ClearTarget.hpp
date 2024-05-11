@@ -11,12 +11,15 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
-# include <Siv3D/Windows/Windows.hpp>
-# include <Siv3D/Windows/ComPtr.hpp>
-# include <d3d11.h>
-# include <d3d11_1.h>
-# include <dxgi1_6.h>
-# include <d3dcompiler.h>
+# include <ThirdParty/EnumBitmask/EnumBitmask.hpp>
 
-# define SIV3D_USE_DIRECT3D11_3
-//# define SIV3D_USE_DIRECT3D11_4
+namespace s3d
+{
+	enum class D3D11ClearTarget : uint8
+	{
+		Scene		= (1 << 0),
+
+		BackBuffer	= (1 << 1),
+	};
+	DEFINE_BITMASK_OPERATORS(D3D11ClearTarget);
+}
