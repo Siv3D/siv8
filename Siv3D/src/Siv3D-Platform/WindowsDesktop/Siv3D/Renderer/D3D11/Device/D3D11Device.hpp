@@ -33,7 +33,7 @@ namespace s3d
 
 		ComPtr<IDXGIFactory6> m_DXGIFactory6;
 
-		Array<D3D11Adapter> m_adapters;
+		Array<D3D11Adapter> m_hardwareAdapters;
 
 		D3D11DeviceInfo m_deviceInfo;
 

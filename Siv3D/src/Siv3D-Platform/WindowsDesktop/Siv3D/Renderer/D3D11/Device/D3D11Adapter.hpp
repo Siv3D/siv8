@@ -19,15 +19,13 @@ namespace s3d
 {
 	struct D3D11Adapter
 	{
-		ComPtr<IDXGIAdapter> pAdapter;
+		ComPtr<IDXGIAdapter1> pAdapter;
+
+		uint32 adapterIndex = 0;
 
 		String name;
 
-		D3D_FEATURE_LEVEL maxLevel = D3D_FEATURE_LEVEL_9_1;
-
-		D3D_FEATURE_LEVEL selectedLevel = D3D_FEATURE_LEVEL_9_1;
-
-		uint32 adapterIndex = 0;
+		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_9_1;
 
 		enum class Vendor : uint8
 		{
@@ -43,8 +41,6 @@ namespace s3d
 
 		} vendor = Vendor::Unknown;
 
-		bool d3d11_1_runtimeSupport = false;
-
-		bool computeShaders_Plus_RawAndStructuredBuffers_Via_Shader_4_x = false;
+		DXGI_ADAPTER_DESC1 desc{};
 	};
 }

@@ -183,6 +183,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Emoji.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Endian.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\EngineLog.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\EngineOption.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\EnvironmentVariable.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Error.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Error\InternalEngineError.hpp" />

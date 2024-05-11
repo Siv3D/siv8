@@ -11,6 +11,7 @@
 
 # include "D3D11Device.hpp"
 # include <Siv3D/DLL.hpp>
+# include <Siv3D/EngineOption.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "D3D11Misc.hpp"
@@ -71,11 +72,28 @@ namespace s3d
 		if constexpr (SIV3D_BUILD(DEBUG))
 		{
 			m_hasDebugLayer = HasDebugLayer();
+			
+			if (m_hasDebugLayer)
+			{
+				LOG_INFO(U"ℹ️ D3D11 debug layer is available");
+			}
 		}
 
 		CreateDXGIFactories(m_pCreateDXGIFactory1, m_DXGIFactory2, m_DXGIFactory6);
 
-		const bool GPU_Preference_HighPerformance = true;
-		m_adapters = D3D11Misc::GetAdapters(m_DXGIFactory2.Get(), m_pD3D11CreateDevice, GPU_Preference_HighPerformance);
+		{
+			constexpr EngineOption::D3D11Driver targetDriverType = EngineOption::D3D11Driver::Hardware;
+
+			if (targetDriverType == EngineOption::D3D11Driver::Hardware)
+			{
+				m_hardwareAdapters = D3D11Misc::EnumHardwareAdapters(m_DXGIFactory6.Get(), m_DXGIFactory2.Get(), m_pD3D11CreateDevice, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
+			}
+			else if (targetDriverType == EngineOption::D3D11Driver::Hardware_FavorIntegrated)
+			{
+				m_hardwareAdapters = D3D11Misc::EnumHardwareAdapters(m_DXGIFactory6.Get(), m_DXGIFactory2.Get(), m_pD3D11CreateDevice, DXGI_GPU_PREFERENCE_MINIMUM_POWER);
+			}
+
+			m_deviceInfo = D3D11Misc::CreateDevice(m_pD3D11CreateDevice, m_hardwareAdapters, targetDriverType, m_hasDebugLayer);
+		}
 	}
 }

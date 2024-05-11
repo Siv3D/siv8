@@ -27,15 +27,9 @@ namespace s3d
 
 		UINT revision = 0;
 
-		D3D_FEATURE_LEVEL maxLevel = D3D_FEATURE_LEVEL_9_1;
+		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_9_1;
 
-		D3D_FEATURE_LEVEL selectedLevel = D3D_FEATURE_LEVEL_9_1;
-
-		bool d3d11_1_runtimeSupport = false;
-
-		bool computeShaders_Plus_RawAndStructuredBuffers_Via_Shader_4_x = false;
-
-		uint16 _unused = 0;
+		uint8 unused[4] = {};
 	};
-	static_assert(sizeof(D3D11AdapterCache) == 36);
+	static_assert(sizeof(D3D11AdapterCache) == 32);
 }

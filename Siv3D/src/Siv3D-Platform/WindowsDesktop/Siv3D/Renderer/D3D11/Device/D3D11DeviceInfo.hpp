@@ -28,7 +28,5 @@ namespace s3d
 		D3D_DRIVER_TYPE deviceType = D3D_DRIVER_TYPE_UNKNOWN;
 
 		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_9_1;
-
-		bool d3d11_1_runtimeSupport = 0;
 	};
 }
