@@ -32,8 +32,10 @@ namespace s3d
 		const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
 
 		m_swapChain.init(hWnd, m_device, windowFrameBufferSize);
-
 		m_backBuffer.init(m_device, m_swapChain.getSwapChain1());
+
+
+		m_device.getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
 	void CRenderer_D3D11::clear()

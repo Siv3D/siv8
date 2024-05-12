@@ -53,5 +53,12 @@ namespace s3d
 			D3D11InternalTexture2D resolved;
 		
 		} m_sceneBuffers;
+
+		ColorF m_letterboxColor			= Scene::DefaultLetterboxColor;
+
+		ColorF m_backgroundColor		= Scene::DefaultBackgroundColor;
+		
+		/// @brief すべてのレンダーターゲットを解除します。
+		void unbindAllRenderTargets();
 	};
 }

@@ -35,7 +35,7 @@ namespace s3d
 		inline constexpr ColorF DefaultBackgroundColor = Palette::DefaultBackground;
 
 		/// @brief ウィンドウのクライアント領域がシーンよりも大きい場合に余白となるスペース「レターボックス」のデフォルト色です。
-		inline constexpr ColorF DefaultLetterBoxColor = Palette::DefaultLetterbox;
+		inline constexpr ColorF DefaultLetterboxColor = Palette::DefaultLetterbox;
 
 		/// @brief `Scene::DeltaTime()` が返す最大の時間（秒）のデフォルト値です。
 		inline constexpr double DefaultMaxDeltaTime = 0.1;
@@ -122,14 +122,14 @@ namespace s3d
 		//const ColorF& GetBackground() noexcept;
 
 		///// @brief シーンとウィンドウのアスペクト比が異なる際に、余白となるスペース「レターボックス」の色を設定します。
-		///// @remark デフォルトは `Scene::DefaultLetterBoxColor` です。
+		///// @remark デフォルトは `Scene::DefaultLetterboxColor` です。
 		///// @param color レターボックスの色
 		//void SetLetterbox(const ColorF& color);
 
 		///// @brief 現在のレターボックスの色を返します。
 		///// @return レターボックスの色
 		//[[nodiscard]]
-		//const ColorF& GetLetterBox() noexcept;
+		//const ColorF& GetLetterbox() noexcept;
 
 		/// @brief `Scene::DeltaTime()` が返す最大の時間（秒）を設定します。
 		/// @param timeSec 最大の時間（秒）

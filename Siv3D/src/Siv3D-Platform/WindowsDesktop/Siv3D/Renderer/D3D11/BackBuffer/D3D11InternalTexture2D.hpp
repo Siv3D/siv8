@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/PointVector.hpp>
+# include <Siv3D/ColorHSV.hpp>
 # include <Siv3D/Renderer/D3D11/D3D11.hpp>
 
 namespace s3d
@@ -20,11 +21,27 @@ namespace s3d
 	{
 	public:
 
+		void clear(ID3D11DeviceContext* context, const ColorF& color);
+
+		[[nodiscard]]
+		bool isEmpty() const noexcept
+		{
+			return m_size.isZero();
+		}
+
+		[[nodiscard]]
+		operator bool() const noexcept
+		{
+			return (not isEmpty());
+		}
+
 		[[nodiscard]]
 		const Size& size() const noexcept
 		{
 			return m_size;
 		}
+
+		void reset();
 
 		[[nodiscard]]
 		static D3D11InternalTexture2D CreateFromSwapChain(ID3D11Device* device, IDXGISwapChain1* swapChain1);
@@ -44,5 +61,7 @@ namespace s3d
 		ComPtr<ID3D11ShaderResourceView> m_shaderResourceView;
 
 		Size m_size{ 0, 0 };
+
+		DXGI_SAMPLE_DESC m_sampleDesc{ 1, 0 };
 	};
 }
