@@ -33,6 +33,8 @@ namespace s3d
 		}
 
 	private:
+
+		static constexpr uint32 DefaultMaximumFrameLatency = 2;
 		
 		HWND m_hWnd						= nullptr;
 		
