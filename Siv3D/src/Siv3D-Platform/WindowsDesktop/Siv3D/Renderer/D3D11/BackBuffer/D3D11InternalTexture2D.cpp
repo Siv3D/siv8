@@ -67,7 +67,7 @@ namespace s3d
 			}
 
 			texture.m_size.set(desc.Width, desc.Height);
-			LOG_DEBUG(fmt::format("Back buffer size = {}", texture.m_size));
+			LOG_DEBUG(fmt::format("Back buffer size: {}", texture.m_size));
 		}
 
 		if (FAILED(swapChain1->GetBuffer(0, __uuidof(ID3D11Texture2D), &texture.m_texture)))

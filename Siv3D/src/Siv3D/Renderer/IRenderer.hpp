@@ -11,10 +11,12 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <Siv3D/PointVector.hpp>
 
 namespace s3d
 {
 	struct SceneStyle;
+	enum class ResizeMode : uint8;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer
 	{
@@ -34,5 +36,13 @@ namespace s3d
 		virtual bool present() = 0;
 
 		virtual SceneStyle& getSceneStyle() noexcept = 0;
+
+		virtual void setSceneResizeMode(ResizeMode resizeMode) = 0;
+
+		virtual ResizeMode getSceneResizeMode() const noexcept = 0;
+
+		virtual void resizeSceneBuffer(Size size) = 0;
+
+		virtual const Size& getSceneBufferSize() const noexcept = 0;
 	};
 }

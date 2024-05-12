@@ -33,6 +33,14 @@ namespace s3d
 
 		SceneStyle& getSceneStyle() noexcept override;
 
+		void setSceneResizeMode(ResizeMode resizeMode) override;
+
+		ResizeMode getSceneResizeMode() const noexcept override;
+
+		void resizeSceneBuffer(Size size) override;
+
+		const Size& getSceneBufferSize() const noexcept override;
+
 	private:
 
 		D3D11Device m_device;

@@ -69,5 +69,25 @@ namespace s3d
 	{
 		return m_backBuffer.getSceneStyle();
 	}
+
+	void CRenderer_D3D11::setSceneResizeMode(const ResizeMode resizeMode)
+	{
+		m_backBuffer.setSceneResizeMode(resizeMode);
+	}
+
+	ResizeMode CRenderer_D3D11::getSceneResizeMode() const noexcept
+	{
+		return m_backBuffer.getSceneResizeMode();
+	}
+
+	void CRenderer_D3D11::resizeSceneBuffer(const Size size)
+	{
+		m_backBuffer.resizeSceneBuffer(size);
+	}
+
+	const Size& CRenderer_D3D11::getSceneBufferSize() const noexcept
+	{
+		return m_backBuffer.getSceneBufferSize();
+	}
 }
  

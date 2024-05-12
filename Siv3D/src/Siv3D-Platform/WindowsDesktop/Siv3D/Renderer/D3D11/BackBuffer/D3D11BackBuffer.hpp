@@ -40,10 +40,15 @@ namespace s3d
 
 		void renderSceneToBackBuffer();
 
+		void resizeBackBuffer(Size backBufferSize);
+
 		[[nodiscard]]
 		const Size& getBackBufferSize() const noexcept;
 
-		void resizeBackBuffer(Size backBufferSize);
+		void resizeSceneBuffer(Size size);
+
+		[[nodiscard]]
+		const Size& getSceneBufferSize() const noexcept;
 
 	private:
 		
@@ -68,8 +73,6 @@ namespace s3d
 			D3D11InternalTexture2D resolved;
 		
 		} m_sceneBuffers;
-
-		void resizeSceneBuffer(Size size);
 
 		/// @brief すべてのレンダーターゲットを解除します。
 		void unbindAllRenderTargets();

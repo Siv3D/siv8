@@ -43,63 +43,63 @@ namespace s3d
 
 	namespace Scene
 	{
-		///// @brief シーンの幅と高さを変更します。
-		///// @remark シーンのリサイズモードが `ResizeMode::Keep` でなければ、ウィンドウのリサイズ時に自動的にシーンのサイズも変更されます。
-		///// @param size 新しいシーンの幅と高さ（ピクセル）
-		//void Resize(s3d::Size size);
+		/// @brief シーンの幅と高さを変更します。
+		/// @remark シーンのリサイズモードが `ResizeMode::Keep` でなければ、ウィンドウのリサイズ時に自動的にシーンのサイズも変更されます。
+		/// @param size 新しいシーンの幅と高さ（ピクセル）
+		void Resize(s3d::Size size);
 
-		///// @brief シーンの幅と高さを変更します。
-		///// @remark シーンのリサイズモードが `ResizeMode::Keep` でなければ、ウィンドウのリサイズ時に自動的にシーンのサイズも変更されます。
-		///// @param width 新しいシーンの幅（ピクセル）
-		///// @param height 新しいシーンの高さ（ピクセル）
-		//void Resize(int32 width, int32 height);
+		/// @brief シーンの幅と高さを変更します。
+		/// @remark シーンのリサイズモードが `ResizeMode::Keep` でなければ、ウィンドウのリサイズ時に自動的にシーンのサイズも変更されます。
+		/// @param width 新しいシーンの幅（ピクセル）
+		/// @param height 新しいシーンの高さ（ピクセル）
+		void Resize(int32 width, int32 height);
 
-		///// @brief 現在のシーンの幅と高さ（ピクセル）を返します。
-		///// @return シーンの幅と高さ（ピクセル）
-		//[[nodiscard]]
-		//s3d::Size Size() noexcept;
+		/// @brief 現在のシーンの幅と高さ（ピクセル）を返します。
+		/// @return シーンの幅と高さ（ピクセル）
+		[[nodiscard]]
+		s3d::Size Size() noexcept;
 
-		///// @brief 現在のシーンの幅（ピクセル）を返します。
-		///// @return シーンの幅（ピクセル）
-		//[[nodiscard]]
-		//int32 Width() noexcept;
+		/// @brief 現在のシーンの幅（ピクセル）を返します。
+		/// @return シーンの幅（ピクセル）
+		[[nodiscard]]
+		int32 Width() noexcept;
 
-		///// @brief 現在のシーンの高さ（ピクセル）を返します。
-		///// @return シーンの高さ（ピクセル）
-		//[[nodiscard]]
-		//int32 Height() noexcept;
+		/// @brief 現在のシーンの高さ（ピクセル）を返します。
+		/// @return シーンの高さ（ピクセル）
+		[[nodiscard]]
+		int32 Height() noexcept;
 
-		///// @brief シーンの中心の座標を `Point` 型で返します。
-		///// @return シーンの中心の座標
-		//[[nodiscard]]
-		//Point Center() noexcept;
+		/// @brief シーンの中心の座標を `Point` 型で返します。
+		/// @return シーンの中心の座標
+		[[nodiscard]]
+		Point Center() noexcept;
 
-		///// @brief シーンの中心の座標を `Vec2` 型で返します。
-		///// @return シーンの中心の座標
-		//[[nodiscard]]
-		//Vec2 CenterF() noexcept;
+		/// @brief シーンの中心の座標を `Vec2` 型で返します。
+		/// @return シーンの中心の座標
+		[[nodiscard]]
+		Vec2 CenterF() noexcept;
 
-		///// @brief 左上が (0, 0) で現在のシーンと同じ大きさの `Rect` を返します。
-		///// @return シーンと同じ大きさの `Rect`
-		//[[nodiscard]]
-		//s3d::Rect Rect() noexcept;
+		/// @brief 左上が (0, 0) で現在のシーンと同じ大きさの `Rect` を返します。
+		/// @return シーンと同じ大きさの `Rect`
+		[[nodiscard]]
+		s3d::Rect Rect() noexcept;
 
-		///// @brief シーンのアスペクト比（幅 / 高さ）を返します。
-		///// @tparam Type アスペクト比の型
-		///// @return シーンのアスペクト比（幅 / 高さ）
-		//template <class Type = double>
-		//[[nodiscard]]
-		//inline Type HorizontalAspectRatio() noexcept;
+		/// @brief シーンのアスペクト比（幅 / 高さ）を返します。
+		/// @tparam Type アスペクト比の型
+		/// @return シーンのアスペクト比（幅 / 高さ）
+		template <class Type = double>
+		[[nodiscard]]
+		Type HorizontalAspectRatio() noexcept;
 
-		///// @brief ウィンドウのサイズを変更したときに、シーンをどのようにリサイズするかを設定します。
-		///// @remark デフォルトは `Scene::DefaultResizeMode` です。	
-		///// @param resizeMode シーンのリサイズモード
-		//void SetResizeMode(ResizeMode resizeMode);
+		/// @brief ウィンドウのサイズを変更したときに、シーンをどのようにリサイズするかを設定します。
+		/// @remark デフォルトは `Scene::DefaultResizeMode` です。	
+		/// @param resizeMode シーンのリサイズモード
+		void SetResizeMode(ResizeMode resizeMode);
 
-		///// @brief ウィンドウのサイズを変更したときに、シーンをどのようにリサイズするかの現在の設定を返します。
-		///// @return シーンのリサイズモード
-		//[[nodiscard]]
-		//ResizeMode GetResizeMode() noexcept;
+		/// @brief ウィンドウのサイズを変更したときに、シーンをどのようにリサイズするかの現在の設定を返します。
+		/// @return シーンのリサイズモード
+		[[nodiscard]]
+		ResizeMode GetResizeMode() noexcept;
 
 		/// @brief シーンの背景色を設定します。色のアルファ成分は無視されます。
 		/// @remark デフォルトは `Scene::DefaultBackgroundColor` です。
@@ -168,3 +168,5 @@ namespace s3d
 		//Vec2 ClientToScene(Vec2 pos) noexcept;
 	}
 }
+
+# include "detail/Scene.ipp"

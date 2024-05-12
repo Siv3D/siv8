@@ -20,55 +20,55 @@ namespace s3d
 {
 	namespace Scene
 	{
-		//void Resize(const s3d::Size size)
-		//{
-		//	SIV3D_ENGINE(Renderer)->setSceneBufferSize(size);
-		//}
+		void Resize(const s3d::Size size)
+		{
+			SIV3D_ENGINE(Renderer)->resizeSceneBuffer(size);
+		}
 
-		//void Resize(const int32 width, const int32 height)
-		//{
-		//	Resize(s3d::Size{ width, height });
-		//}
+		void Resize(const int32 width, const int32 height)
+		{
+			Resize(s3d::Size{ width, height });
+		}
 
-		//s3d::Size Size() noexcept
-		//{
-		//	return SIV3D_ENGINE(Renderer)->getSceneBufferSize();
-		//}
+		s3d::Size Size() noexcept
+		{
+			return SIV3D_ENGINE(Renderer)->getSceneBufferSize();
+		}
 
-		//int32 Width() noexcept
-		//{
-		//	return Size().x;
-		//}
+		int32 Width() noexcept
+		{
+			return Size().x;
+		}
 
-		//int32 Height() noexcept
-		//{
-		//	return Size().y;
-		//}
+		int32 Height() noexcept
+		{
+			return Size().y;
+		}
 
-		//Point Center() noexcept
-		//{
-		//	return (Size() / 2);
-		//}
+		Point Center() noexcept
+		{
+			return (Size() / 2);
+		}
 
-		//Vec2 CenterF() noexcept
-		//{
-		//	return (Size() * 0.5);
-		//}
+		Vec2 CenterF() noexcept
+		{
+			return (Size() * 0.5);
+		}
 
-		//s3d::Rect Rect() noexcept
-		//{
-		//	return s3d::Rect{ Size() };
-		//}
+		s3d::Rect Rect() noexcept
+		{
+			return s3d::Rect{ Size() };
+		}
 
-		//void SetResizeMode(const ResizeMode resizeMode)
-		//{
-		//	return SIV3D_ENGINE(Renderer)->setSceneResizeMode(resizeMode);
-		//}
+		void SetResizeMode(const ResizeMode resizeMode)
+		{
+			return SIV3D_ENGINE(Renderer)->setSceneResizeMode(resizeMode);
+		}
 
-		//ResizeMode GetResizeMode() noexcept
-		//{
-		//	return SIV3D_ENGINE(Renderer)->getSceneResizeMode();
-		//}
+		ResizeMode GetResizeMode() noexcept
+		{
+			return SIV3D_ENGINE(Renderer)->getSceneResizeMode();
+		}
 
 		void SetBackground(const ColorF& color)
 		{

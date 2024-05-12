@@ -125,11 +125,6 @@ namespace s3d
 		}
 	}
 
-	const Size& D3D11BackBuffer::getBackBufferSize() const noexcept
-	{
-		return m_backBuffer.size();
-	}
-
 	void D3D11BackBuffer::resizeBackBuffer(const Size backBufferSize)
 	{
 		assert((0 < backBufferSize.x) && (0 < backBufferSize.y));
@@ -156,11 +151,16 @@ namespace s3d
 		updateSceneBufferSize();
 	}
 
+	const Size& D3D11BackBuffer::getBackBufferSize() const noexcept
+	{
+		return m_backBuffer.size();
+	}
+
 	void D3D11BackBuffer::resizeSceneBuffer(const Size size)
 	{
 		assert((0 < size.x) && (0 < size.y));
 
-		if (m_backBuffer.size() == size)
+		if (getSceneBufferSize() == size)
 		{
 			return;
 		}
@@ -181,6 +181,11 @@ namespace s3d
 		}
 
 		clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
+	}
+
+	const Size& D3D11BackBuffer::getSceneBufferSize() const noexcept
+	{
+		return m_sceneBuffers.scene.size();
 	}
 
 	void D3D11BackBuffer::unbindAllRenderTargets()

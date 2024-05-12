@@ -141,6 +141,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Optional.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ParseInt.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RoundRect.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Scene.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SequenceFormatter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ScopeExit.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Shuffle.ipp" />

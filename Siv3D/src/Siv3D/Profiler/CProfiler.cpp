@@ -13,7 +13,7 @@
 # include <Siv3D/Time.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
-//# include <Siv3D/Keyboard/Renderer.hpp>
+# include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -79,7 +79,7 @@ namespace s3d
 	String CProfiler::getSimpleStatistics() const
 	{
 		const auto& state = SIV3D_ENGINE(Window)->getState();
-		const Size sceneSize{ 0, 0 };// = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
+		const Size& sceneSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		return U"{} | {} FPS | F {}x{} | V {}x{} | S {}x{}"_fmt(
 			U"Null renderer", //SIV3D_ENGINE(Renderer)->getName(),
 			m_fpsCounter.currentFPS,
