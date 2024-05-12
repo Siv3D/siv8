@@ -138,7 +138,7 @@ namespace s3d
 
 			if (const auto pDXGIDevice1 = device.getDXGIDevice1())
 			{
-				pDXGIDevice1->SetMaximumFrameLatency(2);
+				pDXGIDevice1->SetMaximumFrameLatency(DefaultMaximumFrameLatency);
 			}
 		}
 
