@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -47,7 +47,7 @@ namespace s3d
 
 	SceneStyle& CRenderer_Metal::getSceneStyle() noexcept
 	{
-
+		return(m_sceneStyle);
 	}
 
 	void CRenderer_Metal::setSceneResizeMode(const ResizeMode resizeMode)
@@ -57,7 +57,7 @@ namespace s3d
 
 	ResizeMode CRenderer_Metal::getSceneResizeMode() const noexcept
 	{
-
+		return m_sceneResizeMode;
 	}
 
 	void CRenderer_Metal::resizeSceneBuffer(const Size size)
@@ -67,7 +67,7 @@ namespace s3d
 
 	const Size& CRenderer_Metal::getSceneBufferSize() const noexcept
 	{
-
+		return(m_sceneBufferSize);
 	}
 }
  

@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -11,6 +11,8 @@
 
 # pragma once
 # include <Siv3D/Renderer/IRenderer.hpp>
+# include <Siv3D/ResizeMode.hpp>
+# include <Siv3D/Scene/SceneStyle.hpp>
 
 namespace s3d
 {
@@ -40,5 +42,10 @@ namespace s3d
 
 	private:
 
+		SceneStyle m_sceneStyle;
+		
+		ResizeMode m_sceneResizeMode = ResizeMode::Virtual;
+		
+		Size m_sceneBufferSize{ 0, 0 };
 	};
 }
