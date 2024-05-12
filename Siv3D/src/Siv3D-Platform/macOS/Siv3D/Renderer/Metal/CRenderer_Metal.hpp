@@ -66,6 +66,7 @@ namespace s3d
 		
 		
 		MTL::Texture* m_sceneTexture = nullptr;
+		MTL::Buffer* m_sceneVertexBuffer = nullptr;
 		MTL::RenderPipelineState* m_metalRenderPSO1 = nullptr;
 		MTL::RenderPipelineState* m_metalRenderPSO2 = nullptr;
 		

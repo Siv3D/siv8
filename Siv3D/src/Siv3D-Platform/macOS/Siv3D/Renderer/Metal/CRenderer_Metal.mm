@@ -18,6 +18,12 @@
 
 namespace s3d
 {
+	struct VertexData
+	{
+		simd::float4 position;
+		simd::float2 textureCoordinate;
+	};
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -74,32 +80,56 @@ namespace s3d
 		m_metalWindow.contentView.layer = m_metalLayer;
 		m_metalWindow.contentView.wantsLayer = YES;
 		
-		simd::float3 triangleVertices[] = {
-			{-0.5f, -0.5f, 0.0f},
-			{ 0.5f, -0.5f, 0.0f},
-			{ 0.0f,  0.5f, 0.0f}
-		};
+		{
+			simd::float3 triangleVertices[] = {
+				{-0.5f, -0.5f, 0.0f},
+				{ 0.5f, -0.5f, 0.0f},
+				{ 0.0f,  0.5f, 0.0f}
+			};
+			
+			m_triangleVertexBuffer = m_metalDevice->newBuffer(&triangleVertices,
+															  sizeof(triangleVertices),
+															  MTL::ResourceStorageModeShared);
+		}
+		
+		{
+			VertexData sceneVertices[] {
+				{{-1.0,  1.0,  0.0, 1.0f}, {0.0f, 0.0f}},
+				{{ 1.0,  1.0,  0.0, 1.0f}, {1.0f, 0.0f}},
+				{{-1.0, -1.0,  0.0, 1.0f}, {0.0f, 1.0f}},
+				{{-1.0, -1.0,  0.0, 1.0f}, {0.0f, 1.0f}},
+				{{ 1.0,  1.0,  0.0, 1.0f}, {1.0f, 0.0f}},
+				{{ 1.0, -1.0,  0.0, 1.0f}, {1.0f, 1.0f}}
+			};
 
-		m_triangleVertexBuffer = m_metalDevice->newBuffer(&triangleVertices,
-													  sizeof(triangleVertices),
-													  MTL::ResourceStorageModeShared);
-
+			m_sceneVertexBuffer = m_metalDevice->newBuffer(&sceneVertices, sizeof(sceneVertices), MTL::ResourceStorageModeShared);
+		}
+		
 		m_metalDefaultLibrary = m_metalDevice->newDefaultLibrary();
 		
 		if(not m_metalDefaultLibrary)
 		{
 			throw InternalEngineError{ "Failed to create a default library" };
 		}
-		
+
+		// list function names in the default library
+		/*
+		NS::Array* functionNames = m_metalDefaultLibrary->functionNames();
+
+		for (NS::UInteger i = 0; i < functionNames->count(); ++i)
+		{
+
+		}
+		 */
+
 		m_metalCommandQueue = m_metalDevice->newCommandQueue();
 		
-		
-		MTL::Function* vertexShader = m_metalDefaultLibrary->newFunction(NS::String::string("vertexShader", NS::ASCIIStringEncoding));
-		assert(vertexShader);
-		MTL::Function* fragmentShader = m_metalDefaultLibrary->newFunction(NS::String::string("fragmentShader", NS::ASCIIStringEncoding));
-		assert(fragmentShader);
-
 		{
+			MTL::Function* vertexShader = m_metalDefaultLibrary->newFunction(NS::String::string("vertexShader", NS::ASCIIStringEncoding));
+			assert(vertexShader);
+			MTL::Function* fragmentShader = m_metalDefaultLibrary->newFunction(NS::String::string("fragmentShader", NS::ASCIIStringEncoding));
+			assert(fragmentShader);
+			
 			MTL::RenderPipelineDescriptor* renderPipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();
 			renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
 			renderPipelineDescriptor->setVertexFunction(vertexShader);
@@ -114,8 +144,13 @@ namespace s3d
 		}
 		
 		{
+			MTL::Function* vertexShader = m_metalDefaultLibrary->newFunction(NS::String::string("sceneVertexShader", NS::ASCIIStringEncoding));
+			assert(vertexShader);
+			MTL::Function* fragmentShader = m_metalDefaultLibrary->newFunction(NS::String::string("sceneFragmentShader", NS::ASCIIStringEncoding));
+			assert(fragmentShader);
+		
 			MTL::RenderPipelineDescriptor* renderPipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();
-			renderPipelineDescriptor->setLabel(NS::String::string("Triangle Rendering Pipeline", NS::ASCIIStringEncoding));
+			renderPipelineDescriptor->setLabel(NS::String::string("Scene Rendering Pipeline", NS::ASCIIStringEncoding));
 			
 			renderPipelineDescriptor->setVertexFunction(vertexShader);
 			renderPipelineDescriptor->setFragmentFunction(fragmentShader);
@@ -256,7 +291,7 @@ namespace s3d
 			MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
 			cd->setTexture(m_sceneTexture);
 			cd->setLoadAction(MTL::LoadActionClear);
-			cd->setClearColor(MTL::ClearColor(0.8, 0.9, 1.0, 1));
+			cd->setClearColor(MTL::ClearColor(m_sceneStyle.backgroundColor.r, m_sceneStyle.backgroundColor.g, m_sceneStyle.backgroundColor.b, 1));
 			cd->setStoreAction(MTL::StoreActionStore);
 
 			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor);
@@ -276,17 +311,18 @@ namespace s3d
 			MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
 			cd->setTexture(m_metalDrawable->texture());
 			cd->setLoadAction(MTL::LoadActionClear);
-			cd->setClearColor(MTL::ClearColor{ m_sceneStyle.backgroundColor.r, m_sceneStyle.backgroundColor.g, m_sceneStyle.backgroundColor.b, 1.0 });
+			cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
 			cd->setStoreAction(MTL::StoreActionStore);
 			
 			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(renderPassDescriptor);
 			renderPassDescriptor->release();
 			
 			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO2);
-			renderCommandEncoder->setVertexBuffer(m_triangleVertexBuffer, 0, 0);
+			renderCommandEncoder->setVertexBuffer(m_sceneVertexBuffer, 0, 0);
 			MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
 			NS::UInteger vertexStart = 0;
-			NS::UInteger vertexCount = 3;
+			NS::UInteger vertexCount = 6;
+			renderCommandEncoder->setFragmentTexture(m_sceneTexture, 0);
 			renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
 			renderCommandEncoder->endEncoding();
 		}

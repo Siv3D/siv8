@@ -691,6 +691,8 @@
 		F97204312BF0A314000E21DD /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97204302BF0A314000E21DD /* Metal.framework */; };
 		F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97204322BF0A31C000E21DD /* QuartzCore.framework */; };
 		F97204352BF0A39F000E21DD /* Metal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97204342BF0A39F000E21DD /* Metal.cpp */; };
+		F9807D792BF1092600D9B590 /* triangle.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D762BF1092600D9B590 /* triangle.metal */; };
+		F9807D7B2BF10A3100D9B590 /* scene.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7A2BF10A3100D9B590 /* scene.metal */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
 		F98600012BCFBB53006A4C0F /* SkBlurTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABF2BCFBB53006A4C0F /* SkBlurTypes.h */; };
 		F98600022BCFBB53006A4C0F /* SkCanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FAC02BCFBB53006A4C0F /* SkCanvas.h */; };
@@ -2848,6 +2850,8 @@
 		F97204302BF0A314000E21DD /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		F97204322BF0A31C000E21DD /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F97204342BF0A39F000E21DD /* Metal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Metal.cpp; sourceTree = "<group>"; };
+		F9807D762BF1092600D9B590 /* triangle.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = triangle.metal; sourceTree = "<group>"; };
+		F9807D7A2BF10A3100D9B590 /* scene.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = scene.metal; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
 		F98604F92BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkFontHost_FreeType.cpp; sourceTree = "<group>"; };
 		F98604FE2BCFBC11006A4C0F /* SkImageGenerator_FromEncoded.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkImageGenerator_FromEncoded.cpp; sourceTree = "<group>"; };
@@ -4314,6 +4318,7 @@
 		2CA7F74D1CA7F43D00495647 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				F9807D782BF1092600D9B590 /* shader */,
 				F986F83F2BC7DF26006A4C0F /* engine */,
 				F90702CF2B9DAEB900383E4D /* Test */,
 				2CA7F74E1CA7F43D00495647 /* Main.cpp */,
@@ -6565,6 +6570,24 @@
 				F972042E2BF0A25B000E21DD /* NSURL.hpp */,
 			);
 			path = Foundation;
+			sourceTree = "<group>";
+		};
+		F9807D772BF1092600D9B590 /* metal */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D7A2BF10A3100D9B590 /* scene.metal */,
+				F9807D762BF1092600D9B590 /* triangle.metal */,
+			);
+			path = metal;
+			sourceTree = "<group>";
+		};
+		F9807D782BF1092600D9B590 /* shader */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D772BF1092600D9B590 /* metal */,
+			);
+			name = shader;
+			path = App/engine/shader;
 			sourceTree = "<group>";
 		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
@@ -10066,6 +10089,7 @@
 				F90702FF2B9DAEB900383E4D /* Test_Hash.cpp in Sources */,
 				F90702FE2B9DAEB900383E4D /* Test_FunctionRef.cpp in Sources */,
 				F90703002B9DAEB900383E4D /* Test_Indexed.cpp in Sources */,
+				F9807D792BF1092600D9B590 /* triangle.metal in Sources */,
 				F90703042B9DAEB900383E4D /* Test_PRNG.cpp in Sources */,
 				F90703072B9DAEB900383E4D /* Test_StringView.cpp in Sources */,
 				F90702F92B9DAEB900383E4D /* Test_Color.cpp in Sources */,
@@ -10074,6 +10098,7 @@
 				F90703092B9DAEB900383E4D /* Test_TupleFormatter.cpp in Sources */,
 				F90702FD2B9DAEB900383E4D /* Test_FmtExtension.cpp in Sources */,
 				F907030E2B9DAEB900383E4D /* Test_YesNo.cpp in Sources */,
+				F9807D7B2BF10A3100D9B590 /* scene.metal in Sources */,
 				F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */,
 				F90703012B9DAEB900383E4D /* Test_Memory.cpp in Sources */,
 				F907030A2B9DAEB900383E4D /* Test_Types.cpp in Sources */,
