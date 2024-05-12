@@ -69,7 +69,9 @@ namespace s3d
 			return false;
 		}
 	
+		SIV3D_ENGINE(Renderer)->flush();
 		SIV3D_ENGINE(Profiler)->endFrame();
+		SIV3D_ENGINE(Renderer)->present();
 	
 		//
 		//	previous frame
@@ -82,6 +84,7 @@ namespace s3d
 		SIV3D_ENGINE(Profiler)->beginFrame();
 		SIV3D_ENGINE(Window)->update();
 		SIV3D_ENGINE(Scene)->update();
+		SIV3D_ENGINE(Renderer)->clear();
 		SIV3D_ENGINE(Cursor)->update();
 		SIV3D_ENGINE(CursorStyle)->update();
 		SIV3D_ENGINE(Keyboard)->update();

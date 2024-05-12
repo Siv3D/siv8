@@ -55,5 +55,15 @@ namespace s3d
 		ResizeMode m_sceneResizeMode = ResizeMode::Virtual;
 		
 		Size m_sceneBufferSize{ 0, 0 };
+		
+		CA::MetalDrawable* m_metalDrawable;
+		MTL::Library* m_metalDefaultLibrary;
+		MTL::CommandQueue* m_metalCommandQueue;
+		MTL::CommandBuffer* m_metalCommandBuffer;
+		MTL::RenderPipelineState* m_metalRenderPSO;
+		MTL::Buffer* m_triangleVertexBuffer;
+		
+		void sendRenderCommand();
+		void encodeRenderCommand(MTL::RenderCommandEncoder* renderCommandEncoder);
 	};
 }
