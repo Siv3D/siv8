@@ -13,6 +13,8 @@
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/ResizeMode.hpp>
 # include <Siv3D/Scene/SceneStyle.hpp>
+# include <Siv3D/GLFW/GLFW.hpp>
+# include "Metal.hpp"
 
 namespace s3d
 {
@@ -41,6 +43,12 @@ namespace s3d
 		const Size& getSceneBufferSize() const noexcept override;
 
 	private:
+		
+		NSWindow* m_metalWindow = nullptr;
+		
+		MTL::Device* m_metalDevice = nullptr;
+		
+		CAMetalLayer* m_metalLayer = nullptr;
 
 		SceneStyle m_sceneStyle;
 		

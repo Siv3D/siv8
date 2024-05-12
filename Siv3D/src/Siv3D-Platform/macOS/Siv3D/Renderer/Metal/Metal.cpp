@@ -9,10 +9,9 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include <Siv3D/Common.hpp>
+# define NS_PRIVATE_IMPLEMENTATION
+# define CA_PRIVATE_IMPLEMENTATION
+# define MTL_PRIVATE_IMPLEMENTATION
+# include <Foundation/Foundation.hpp>
 # include <Metal/Metal.hpp>
-# include <Metal/Metal.h>
-# include <QuartzCore/CAMetalLayer.hpp>
-# include <QuartzCore/CAMetalLayer.h>
 # include <QuartzCore/QuartzCore.hpp>
