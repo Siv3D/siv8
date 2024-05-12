@@ -67,5 +67,8 @@ namespace s3d
 		
 		void sendRenderCommand();
 		void encodeRenderCommand(MTL::RenderCommandEncoder* renderCommandEncoder);
+		
+		void resizeBackBuffer(Size backBufferSize);
+		Size getBackBufferSize() const;
 	};
 }

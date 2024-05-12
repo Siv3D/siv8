@@ -115,7 +115,11 @@ namespace s3d
 
 	void CRenderer_Metal::clear()
 	{
-
+		if (const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
+			windowFrameBufferSize != getBackBufferSize())
+		{
+			resizeBackBuffer(windowFrameBufferSize);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -199,7 +203,7 @@ namespace s3d
 
 	const Size& CRenderer_Metal::getSceneBufferSize() const noexcept
 	{
-		return(m_sceneBufferSize);
+		return m_sceneBufferSize;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -238,6 +242,23 @@ namespace s3d
 		NS::UInteger vertexStart = 0;
 		NS::UInteger vertexCount = 3;
 		renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
+	}
+
+	void CRenderer_Metal::resizeBackBuffer(const Size backBufferSize)
+	{
+		assert((0 < backBufferSize.x) && (0 < backBufferSize.y));
+	
+		LOG_DEBUG(fmt::format("CRenderer_Metal::resizeBackBuffer({})", backBufferSize));
+
+		m_metalLayer.drawableSize = CGSizeMake(backBufferSize.x, backBufferSize.y);
+	}
+
+	Size CRenderer_Metal::getBackBufferSize() const
+	{
+		const CGSize backBufferSizeCGSize = m_metalLayer.drawableSize;
+		return{
+			static_cast<int32>(backBufferSizeCGSize.width),
+			static_cast<int32>(backBufferSizeCGSize.height) };
 	}
 }
  
