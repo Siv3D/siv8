@@ -31,6 +31,8 @@ namespace s3d
 
 		bool present() override;
 
+		SceneStyle& getSceneStyle() noexcept override;
+
 	private:
 
 		D3D11Device m_device;

@@ -28,13 +28,13 @@ namespace s3d
 		{
 			const Size sceneSize = Window::GetState().virtualSize;
 
-			if (m_sampleCount == 1)
+			if (m_sceneSampleCount == 1)
 			{
 				m_sceneBuffers.scene = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneSize);
 			}
 			else
 			{
-				m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sampleCount);
+				m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneSampleCount);
 			}
 		}
 
@@ -45,19 +45,84 @@ namespace s3d
 	{
 		if (clearTarget & D3D11ClearTarget::Scene)
 		{
-			m_sceneBuffers.scene.clear(m_context, m_backgroundColor);
+			m_sceneBuffers.scene.clear(m_context, m_sceneStyle.backgroundColor);
 		}
 
 		if (clearTarget & D3D11ClearTarget::BackBuffer)
 		{
-			m_backBuffer.clear(m_context, ColorF{0.3,0.4,0.5});
+			m_backBuffer.clear(m_context, m_sceneStyle.letterboxColor);
 		}
 	}
 
-	void D3D11BackBuffer::updateFromSceneBuffer()
+	SceneStyle& D3D11BackBuffer::getSceneStyle() noexcept
+	{
+		return m_sceneStyle;
+	}
+
+	void D3D11BackBuffer::setSceneResizeMode(const ResizeMode resizeMode)
+	{
+		m_sceneResizeMode = resizeMode;
+
+		updateSceneBufferSize();
+	}
+
+	ResizeMode D3D11BackBuffer::getSceneResizeMode() const noexcept
+	{
+		return m_sceneResizeMode;
+	}
+
+	void D3D11BackBuffer::updateSceneBufferSize()
+	{
+		if (m_sceneResizeMode == ResizeMode::Actual)
+		{
+			resizeSceneBuffer(Window::GetState().frameBufferSize);
+		}
+		else if (m_sceneResizeMode == ResizeMode::Virtual)
+		{
+			resizeSceneBuffer(Window::GetState().virtualSize);
+		}
+	}
+
+	void D3D11BackBuffer::renderSceneToBackBuffer()
 	{
 		unbindAllRenderTargets();
 
+		if (m_sceneSampleCount == 1)
+		{
+			if (m_backBuffer.size() == m_sceneBuffers.scene.size())
+			{
+				m_sceneBuffers.scene.copyTo(m_context, m_backBuffer);
+			}
+			else
+			{
+			//	setRenderTarget(m_backBuffer);
+			//	m_context->PSSetShaderResources(0, 1, m_sceneBuffers.scene.getSRVPtr());
+			//	pRenderer2D->drawFullScreenTriangle(m_sceneTextureFilter);
+
+			//	D3D11::ResetPSShaderResources(m_context);
+			}
+		}
+		else
+		{
+			if (m_backBuffer.size() == m_sceneBuffers.scene.size())
+			{
+				m_sceneBuffers.scene.resolveTo(m_context, m_backBuffer);
+			}
+			else
+			{
+			//	if (m_sceneBuffers.resolved.size() != m_sceneBuffers.scene.size())
+			//	{
+			//		m_sceneBuffers.resolved = D3D11InternalTexture2D::CreateRenderTargetTexture2D(m_device, m_sceneSize);
+			//	}
+			//	m_sceneBuffers.scene.resolveTo(m_context, m_sceneBuffers.resolved);
+
+			//	setRenderTarget(m_backBuffer);
+			//	m_context->PSSetShaderResources(0, 1, m_sceneBuffers.resolved.getSRVPtr());
+			//	pRenderer2D->drawFullScreenTriangle(m_sceneTextureFilter);
+
+			//	D3D11::ResetPSShaderResources(m_context);
+			}
+		}
 	}
 
 	const Size& D3D11BackBuffer::getBackBufferSize() const noexcept
@@ -88,34 +153,34 @@ namespace s3d
 			clear(D3D11ClearTarget::BackBuffer);
 		}
 
-		//updateSceneSize();
+		updateSceneBufferSize();
+	}
 
+	void D3D11BackBuffer::resizeSceneBuffer(const Size size)
+	{
+		assert((0 < size.x) && (0 < size.y));
 
+		if (m_backBuffer.size() == size)
+		{
+			return;
+		}
 
+		LOG_DEBUG(fmt::format("D3D11BackBuffer::resizeSceneBuffer({})", size));
 
-		//assert((0 < backBufferSize.x) && (0 < backBufferSize.y));
+		unbindAllRenderTargets();
 
-		//if (m_backBuffer.size() == backBufferSize)
-		//{
-		//	return;
-		//}
+		m_sceneBuffers = {};
 
-		//LOG_DEBUG(fmt::format("D3D11BackBuffer::resizeBackBuffer({})", backBufferSize));
+		if (m_sceneSampleCount == 1)
+		{
+			m_sceneBuffers.scene = D3D11InternalTexture2D::CreateRenderTexture(m_device, size);
+		}
+		else
+		{
+			m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneSampleCount);
+		}
 
-		////unbindAllRenderTargets();
-
-		//m_sceneBuffers = {};
-
-		//if (m_sampleCount == 1)
-		//{
-		//	m_sceneBuffers.scene = D3D11InternalTexture2D::CreateRenderTexture(m_device, backBufferSize);
-		//}
-		//else
-		//{
-		//	m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, backBufferSize, m_sampleCount);
-		//}
-
-		//clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
+		clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
 	}
 
 	void D3D11BackBuffer::unbindAllRenderTargets()

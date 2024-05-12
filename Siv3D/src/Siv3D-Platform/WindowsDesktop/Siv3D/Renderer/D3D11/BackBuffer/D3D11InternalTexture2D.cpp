@@ -36,6 +36,20 @@ namespace s3d
 		m_sampleDesc = { 1, 0 };
 	}
 
+	void D3D11InternalTexture2D::copyTo(ID3D11DeviceContext* context, D3D11InternalTexture2D& dst)
+	{
+		assert(size() == dst.size());
+
+		context->CopyResource(dst.m_texture.Get(), m_texture.Get());
+	}
+
+	void D3D11InternalTexture2D::resolveTo(ID3D11DeviceContext* context, D3D11InternalTexture2D& dst)
+	{
+		assert(size() == dst.size());
+
+		context->ResolveSubresource(dst.m_texture.Get(), 0, m_texture.Get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM);
+	}
+
 	[[nodiscard]]
 	D3D11InternalTexture2D D3D11InternalTexture2D::CreateFromSwapChain(ID3D11Device* device, IDXGISwapChain1* swapChain1)
 	{

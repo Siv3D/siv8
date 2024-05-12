@@ -55,7 +55,7 @@ namespace s3d
 			}
 
 			// DXGI 1.6
-			if (SUCCEEDED(pCreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory6))))
+			if (SUCCEEDED(dxgiFactory2->QueryInterface(IID_PPV_ARGS(&dxgiFactory6))))
 			{
 				LOG_INFO("ℹ️ DXGI 1.6 is available");
 			}

@@ -57,12 +57,17 @@ namespace s3d
 
 		//pRenderer2D->flush();
 
-		m_backBuffer.updateFromSceneBuffer();
+		m_backBuffer.renderSceneToBackBuffer();
 	}
 
 	bool CRenderer_D3D11::present()
 	{
 		return m_swapChain.present(m_vSyncEnabled);
+	}
+
+	SceneStyle& CRenderer_D3D11::getSceneStyle() noexcept
+	{
+		return m_backBuffer.getSceneStyle();
 	}
 }
  

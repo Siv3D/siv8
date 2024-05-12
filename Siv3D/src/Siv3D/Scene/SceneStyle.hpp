@@ -11,28 +11,16 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <Siv3D/Scene.hpp>
 
 namespace s3d
 {
-	struct SceneStyle;
-
-	class SIV3D_NOVTABLE ISiv3DRenderer
+	struct SceneStyle
 	{
-	public:
+		ColorF letterboxColor		= Scene::DefaultLetterboxColor;
 
-		[[nodiscard]]
-		static ISiv3DRenderer* Create();
+		ColorF backgroundColor		= Scene::DefaultBackgroundColor;
 
-		virtual ~ISiv3DRenderer() = default;
-
-		virtual void init() = 0;
-
-		virtual void clear() = 0;
-
-		virtual void flush() = 0;
-
-		virtual bool present() = 0;
-
-		virtual SceneStyle& getSceneStyle() noexcept = 0;
+		TextureFilter textureFilter	= Scene::DefaultTextureFilter;
 	};
 }

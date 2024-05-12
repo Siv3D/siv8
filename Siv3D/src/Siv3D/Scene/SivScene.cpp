@@ -12,7 +12,8 @@
 # include <Siv3D/Scene.hpp>
 # include "IScene.hpp"
 # include "SceneTime.hpp"
-//# include <Siv3D/Renderer/IRenderer.hpp>
+# include "SceneStyle.hpp"
+# include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
@@ -69,35 +70,35 @@ namespace s3d
 		//	return SIV3D_ENGINE(Renderer)->getSceneResizeMode();
 		//}
 
-		//void SetTextureFilter(const TextureFilter textureFilter)
-		//{
-		//	SIV3D_ENGINE(Renderer)->setSceneTextureFilter(textureFilter);
-		//}
+		void SetBackground(const ColorF& color)
+		{
+			SIV3D_ENGINE(Renderer)->getSceneStyle().backgroundColor = color;
+		}
 
-		//TextureFilter GetTextureFilter() noexcept
-		//{
-		//	return SIV3D_ENGINE(Renderer)->getSceneTextureFilter();
-		//}
+		const ColorF& GetBackground() noexcept
+		{
+			return SIV3D_ENGINE(Renderer)->getSceneStyle().backgroundColor;
+		}
 
-		//void SetBackground(const ColorF& color)
-		//{
-		//	SIV3D_ENGINE(Renderer)->setBackgroundColor(color);
-		//}
+		void SetLetterbox(const ColorF& color)
+		{
+			SIV3D_ENGINE(Renderer)->getSceneStyle().letterboxColor = color;
+		}
 
-		//const ColorF& GetBackground() noexcept
-		//{
-		//	return SIV3D_ENGINE(Renderer)->getBackgroundColor();
-		//}
+		const ColorF& GetLetterbox() noexcept
+		{
+			return SIV3D_ENGINE(Renderer)->getSceneStyle().letterboxColor;
+		}
 
-		//void SetLetterbox(const ColorF& color)
-		//{
-		//	SIV3D_ENGINE(Renderer)->setLetterboxColor(color);
-		//}
+		void SetTextureFilter(const TextureFilter textureFilter)
+		{
+			SIV3D_ENGINE(Renderer)->getSceneStyle().textureFilter = textureFilter;
+		}
 
-		//const ColorF& GetLetterBox() noexcept
-		//{
-		//	return SIV3D_ENGINE(Renderer)->getLetterboxColor();
-		//}
+		TextureFilter GetTextureFilter() noexcept
+		{
+			return SIV3D_ENGINE(Renderer)->getSceneStyle().textureFilter;
+		}
 
 		void SetMaxDeltaTime(const double timeSec)
 		{

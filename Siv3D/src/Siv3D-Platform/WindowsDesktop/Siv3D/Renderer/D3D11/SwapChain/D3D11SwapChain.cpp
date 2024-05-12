@@ -129,7 +129,7 @@ namespace s3d
 
 			if (FAILED(device.getDXGIFactory2()->MakeWindowAssociation(hWnd, Flags)))
 			{
-				throw InternalEngineError{ "IDXGIFactory2::MakeWindowAssociation() failed" };
+				throw InternalEngineError{ "IDXGIFactory::MakeWindowAssociation() failed" };
 			}
 		}
 

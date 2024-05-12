@@ -101,35 +101,35 @@ namespace s3d
 		//[[nodiscard]]
 		//ResizeMode GetResizeMode() noexcept;
 
-		///// @brief ウィンドウのクライアント領域がシーンのサイズと異なる場合にシーンを拡大縮小描画するために使うテクスチャフィルタを設定します。
-		///// @remark デフォルトは `Scene::DefaultTextureFilter` です。	
-		///// @param textureFilter シーンを拡大縮小描画する際に使うテクスチャフィルタ
-		//void SetTextureFilter(TextureFilter textureFilter);
+		/// @brief シーンの背景色を設定します。色のアルファ成分は無視されます。
+		/// @remark デフォルトは `Scene::DefaultBackgroundColor` です。
+		/// @param color 色
+		void SetBackground(const ColorF& color);
 
-		///// @brief ウィンドウのクライアント領域がシーンのサイズと異なる場合にシーンを拡大縮小描画するために使うテクスチャフィルタの現在の設定を返します。
-		///// @return シーンを拡大縮小描画する際に使うテクスチャフィルタ
-		//[[nodiscard]]
-		//TextureFilter GetTextureFilter() noexcept;
+		/// @brief 現在のシーンをクリアする色（背景色）を返します。
+		/// @return シーンをクリアする色
+		[[nodiscard]]
+		const ColorF& GetBackground() noexcept;
 
-		///// @brief シーンの背景色を設定します。色のアルファ成分は無視されます。
-		///// @remark デフォルトは `Scene::DefaultBackgroundColor` です。
-		///// @param color 色
-		//void SetBackground(const ColorF& color);
+		/// @brief シーンとウィンドウのアスペクト比が異なる際に、余白となるスペース「レターボックス」の色を設定します。
+		/// @remark デフォルトは `Scene::DefaultLetterboxColor` です。
+		/// @param color レターボックスの色
+		void SetLetterbox(const ColorF& color);
 
-		///// @brief 現在のシーンをクリアする色（背景色）を返します。
-		///// @return シーンをクリアする色
-		//[[nodiscard]]
-		//const ColorF& GetBackground() noexcept;
+		/// @brief 現在のレターボックスの色を返します。
+		/// @return レターボックスの色
+		[[nodiscard]]
+		const ColorF& GetLetterbox() noexcept;
 
-		///// @brief シーンとウィンドウのアスペクト比が異なる際に、余白となるスペース「レターボックス」の色を設定します。
-		///// @remark デフォルトは `Scene::DefaultLetterboxColor` です。
-		///// @param color レターボックスの色
-		//void SetLetterbox(const ColorF& color);
+		/// @brief ウィンドウのクライアント領域がシーンのサイズと異なる場合にシーンを拡大縮小描画するために使うテクスチャフィルタを設定します。
+		/// @remark デフォルトは `Scene::DefaultTextureFilter` です。	
+		/// @param textureFilter シーンを拡大縮小描画する際に使うテクスチャフィルタ
+		void SetTextureFilter(TextureFilter textureFilter);
 
-		///// @brief 現在のレターボックスの色を返します。
-		///// @return レターボックスの色
-		//[[nodiscard]]
-		//const ColorF& GetLetterbox() noexcept;
+		/// @brief ウィンドウのクライアント領域がシーンのサイズと異なる場合にシーンを拡大縮小描画するために使うテクスチャフィルタの現在の設定を返します。
+		/// @return シーンを拡大縮小描画する際に使うテクスチャフィルタ
+		[[nodiscard]]
+		TextureFilter GetTextureFilter() noexcept;
 
 		/// @brief `Scene::DeltaTime()` が返す最大の時間（秒）を設定します。
 		/// @param timeSec 最大の時間（秒）

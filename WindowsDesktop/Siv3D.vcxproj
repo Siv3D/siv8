@@ -462,6 +462,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer\IRenderer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\CScene.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\IScene.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneStyle.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneTime.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />

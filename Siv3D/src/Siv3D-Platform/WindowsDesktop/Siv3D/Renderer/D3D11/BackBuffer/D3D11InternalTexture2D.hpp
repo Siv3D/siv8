@@ -23,6 +23,12 @@ namespace s3d
 
 		void clear(ID3D11DeviceContext* context, const ColorF& color);
 
+		void reset();
+
+		void copyTo(ID3D11DeviceContext* context, D3D11InternalTexture2D& dst);
+
+		void resolveTo(ID3D11DeviceContext* context, D3D11InternalTexture2D& dst);
+
 		[[nodiscard]]
 		bool isEmpty() const noexcept
 		{
@@ -40,8 +46,6 @@ namespace s3d
 		{
 			return m_size;
 		}
-
-		void reset();
 
 		[[nodiscard]]
 		static D3D11InternalTexture2D CreateFromSwapChain(ID3D11Device* device, IDXGISwapChain1* swapChain1);

@@ -13,6 +13,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/Graphics.hpp>
+# include <Siv3D/Scene/SceneStyle.hpp>
 # include "../Device/D3D11Device.hpp"
 # include "D3D11ClearTarget.hpp"
 # include "D3D11InternalTexture2D.hpp"
@@ -27,7 +28,17 @@ namespace s3d
 
 		void clear(D3D11ClearTarget clearTarget);
 
-		void updateFromSceneBuffer();
+		[[nodiscard]]
+		SceneStyle& getSceneStyle() noexcept;
+
+		void setSceneResizeMode(ResizeMode resizeMode);
+
+		[[nodiscard]]
+		ResizeMode getSceneResizeMode() const noexcept;
+
+		void updateSceneBufferSize();
+
+		void renderSceneToBackBuffer();
 
 		[[nodiscard]]
 		const Size& getBackBufferSize() const noexcept;
@@ -42,7 +53,11 @@ namespace s3d
 
 		IDXGISwapChain1* m_swapChain1	= nullptr;
 
-		uint32 m_sampleCount			= Graphics::DefaultSampleCount;
+		uint32 m_sceneSampleCount		= Graphics::DefaultSampleCount;
+
+		SceneStyle m_sceneStyle;
+
+		ResizeMode m_sceneResizeMode	= Scene::DefaultResizeMode;
 
 		D3D11InternalTexture2D m_backBuffer;
 
@@ -54,10 +69,8 @@ namespace s3d
 		
 		} m_sceneBuffers;
 
-		ColorF m_letterboxColor			= Scene::DefaultLetterboxColor;
+		void resizeSceneBuffer(Size size);
 
-		ColorF m_backgroundColor		= Scene::DefaultBackgroundColor;
-		
 		/// @brief すべてのレンダーターゲットを解除します。
 		void unbindAllRenderTargets();
 	};
