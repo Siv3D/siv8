@@ -24,6 +24,8 @@ namespace s3d
 
 		~CRenderer_Metal() override;
 
+		StringView getName() const override;
+
 		void init() override;
 
 		void clear() override;

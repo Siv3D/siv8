@@ -23,6 +23,8 @@ namespace s3d
 
 		~CRenderer_D3D11() override;
 
+		StringView getName() const override;
+
 		void init() override;
 
 		void clear() override;

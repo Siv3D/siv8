@@ -28,6 +28,12 @@ namespace s3d
 		}
 	}
 
+	StringView CRenderer_Metal::getName() const
+	{
+		static constexpr StringView name{ U"Metal" };
+		return name;
+	}
+
 	void CRenderer_Metal::init()
 	{
 		LOG_SCOPED_DEBUG("CRenderer_Metal::init()");

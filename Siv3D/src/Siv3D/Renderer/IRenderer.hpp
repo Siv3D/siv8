@@ -27,6 +27,8 @@ namespace s3d
 
 		virtual ~ISiv3DRenderer() = default;
 
+		virtual StringView getName() const = 0;
+
 		virtual void init() = 0;
 
 		virtual void clear() = 0;

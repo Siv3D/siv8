@@ -81,7 +81,7 @@ namespace s3d
 		const auto& state = SIV3D_ENGINE(Window)->getState();
 		const Size& sceneSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		return U"{} | {} FPS | F {}x{} | V {}x{} | S {}x{}"_fmt(
-			U"Null renderer", //SIV3D_ENGINE(Renderer)->getName(),
+			SIV3D_ENGINE(Renderer)->getName(),
 			m_fpsCounter.currentFPS,
 			state.frameBufferSize.x, state.frameBufferSize.y,
 			state.virtualSize.x, state.virtualSize.y,

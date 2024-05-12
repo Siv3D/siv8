@@ -22,6 +22,12 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CRenderer_D3D11::~CRenderer_D3D11()");
 	}
 
+	StringView CRenderer_D3D11::getName() const
+	{
+		static constexpr StringView name{ U"D3D11" };
+		return name;
+	}
+
 	void CRenderer_D3D11::init()
 	{
 		LOG_SCOPED_DEBUG("CRenderer_D3D11::init()");
