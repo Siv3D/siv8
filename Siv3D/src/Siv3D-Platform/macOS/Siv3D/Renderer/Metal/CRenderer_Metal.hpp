@@ -58,12 +58,16 @@ namespace s3d
 		
 		Size m_sceneBufferSize{ 0, 0 };
 		
-		CA::MetalDrawable* m_metalDrawable;
-		MTL::Library* m_metalDefaultLibrary;
-		MTL::CommandQueue* m_metalCommandQueue;
-		MTL::CommandBuffer* m_metalCommandBuffer;
-		MTL::RenderPipelineState* m_metalRenderPSO;
-		MTL::Buffer* m_triangleVertexBuffer;
+		CA::MetalDrawable* m_metalDrawable = nullptr;
+		MTL::Library* m_metalDefaultLibrary = nullptr;
+		MTL::CommandQueue* m_metalCommandQueue = nullptr;
+		MTL::CommandBuffer* m_metalCommandBuffer = nullptr;
+		MTL::Buffer* m_triangleVertexBuffer = nullptr;
+		
+		
+		MTL::Texture* m_sceneTexture = nullptr;
+		MTL::RenderPipelineState* m_metalRenderPSO1 = nullptr;
+		MTL::RenderPipelineState* m_metalRenderPSO2 = nullptr;
 		
 		void sendRenderCommand();
 		void encodeRenderCommand(MTL::RenderCommandEncoder* renderCommandEncoder);
