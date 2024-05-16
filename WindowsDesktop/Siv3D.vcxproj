@@ -16,6 +16,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\2DShapesFwd.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AlignedAllocator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AssetHandle.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AssetID.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AssetIDWrapper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AsyncTask.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Base64Value.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BigFloat.hpp" />
@@ -50,6 +53,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Demangle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AlignedAllocator.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Array.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AssetHandle.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AssetID.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AssetIDWrapper.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AsyncTask.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Base64Value.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BigFloat.ipp" />
@@ -253,6 +259,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryReader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryViewReader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MemoryWriter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MessageBox.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MessageBoxResult.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MessageBoxStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MicrosecClock.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MillisecClock.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MonitorInfo.hpp" />
@@ -469,6 +478,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UnicodeConverter\UnicodeUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\IUserAction.hpp" />
@@ -923,6 +933,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFile\SivMemoryMappedFile.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryReader\SivMemoryReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryViewReader\SivMemoryViewReader.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MicrosecClock\SivMicrosecClock.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MillisecClock\SivMillisecClock.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MonitorInfo\SivMonitorInfo.cpp" />
@@ -969,6 +980,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ThousandSeparate\SivThousandSeparate.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Threading\SivThreading.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\UnicodeConverter\SivUnicodeConverter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\UnicodeConverter\UnicodeUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp" />

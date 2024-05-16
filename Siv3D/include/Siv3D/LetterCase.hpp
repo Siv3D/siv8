@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Types.hpp"
 
 namespace s3d
 {

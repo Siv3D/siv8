@@ -721,6 +721,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer">
       <UniqueIdentifier>{db81ee82-29ff-4f08-9b75-d75a0a7a05f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Troubleshooting">
+      <UniqueIdentifier>{c7cb5a5b-4bff-4f63-bd32-bdc4a35ba18a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MessageBox">
+      <UniqueIdentifier>{ba5724d4-7c5e-4dda-90be-d377904c6454}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3015,6 +3021,36 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Scene.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.hpp">
+      <Filter>src\Siv3D\Troubleshooting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AssetID.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AssetID.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AssetIDWrapper.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AssetIDWrapper.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AssetHandle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AssetHandle.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MessageBoxResult.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MessageBoxStyle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MessageBox.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5134,6 +5170,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11InternalTexture2D.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.cpp">
+      <Filter>src\Siv3D\Troubleshooting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp">
+      <Filter>src\Siv3D\MessageBox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

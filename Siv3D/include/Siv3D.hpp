@@ -1089,14 +1089,14 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// メッセージボックスの結果 | Result from message box
-//# include <Siv3D/MessageBoxResult.hpp>
-//
-//// メッセージボックスのスタイル | Message box style
-//# include <Siv3D/MessageBoxStyle.hpp>
-//
-//// メッセージボックス | Message box
-//# include <Siv3D/MessageBox.hpp>
+// メッセージボックスの結果 | Result from message box
+# include <Siv3D/MessageBoxResult.hpp>
+
+// メッセージボックスのスタイル | Message box style
+# include <Siv3D/MessageBoxStyle.hpp>
+
+// メッセージボックス | Message box
+# include <Siv3D/MessageBox.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1297,6 +1297,17 @@
 //// Leap デバイス | Leap Device
 //# include <Siv3D/Leap.hpp>
 
+
+
+
+
+
+
+
+
+# include <Siv3D/AssetID.hpp>
+# include <Siv3D/AssetIDWrapper.hpp>
+# include <Siv3D/AssetHandle.hpp>
 
 
 
