@@ -708,6 +708,7 @@
 		F9807D992BF667C300D9B590 /* Troubleshooting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D942BF667C200D9B590 /* Troubleshooting.hpp */; };
 		F9807D9A2BF667C300D9B590 /* SivMessageBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9807D962BF667C300D9B590 /* SivMessageBox.cpp */; };
 		F9807D9D2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */; };
+		F9807DA02BF6690B00D9B590 /* SivMessageBox_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
 		F98600012BCFBB53006A4C0F /* SkBlurTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABF2BCFBB53006A4C0F /* SkBlurTypes.h */; };
 		F98600022BCFBB53006A4C0F /* SkCanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FAC02BCFBB53006A4C0F /* SkCanvas.h */; };
@@ -2882,6 +2883,7 @@
 		F9807D942BF667C200D9B590 /* Troubleshooting.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Troubleshooting.hpp; sourceTree = "<group>"; };
 		F9807D962BF667C300D9B590 /* SivMessageBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMessageBox.cpp; sourceTree = "<group>"; };
 		F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FreestandingMessageBox_macOS.cpp; sourceTree = "<group>"; };
+		F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivMessageBox_macOS.mm; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
 		F98604F92BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkFontHost_FreeType.cpp; sourceTree = "<group>"; };
 		F98604FE2BCFBC11006A4C0F /* SkImageGenerator_FromEncoded.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkImageGenerator_FromEncoded.cpp; sourceTree = "<group>"; };
@@ -5892,6 +5894,7 @@
 				F9070E042B9F176B00383E4D /* FileSystem */,
 				F9807D9C2BF667E600D9B590 /* FreestandingMessageBox */,
 				F95289C62B9FEA0D00222F45 /* GLFW */,
+				F9807D9F2BF6690B00D9B590 /* MessageBox */,
 				F986058D2BDCAF65006A4C0F /* MonitorInfo */,
 				F97203202BF09E80000E21DD /* Renderer */,
 				F986F8432BC7E84D006A4C0F /* Resource */,
@@ -6665,6 +6668,14 @@
 				F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */,
 			);
 			path = FreestandingMessageBox;
+			sourceTree = "<group>";
+		};
+		F9807D9F2BF6690B00D9B590 /* MessageBox */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */,
+			);
+			path = MessageBox;
 			sourceTree = "<group>";
 		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
@@ -10326,6 +10337,7 @@
 				F98601F02BCFBB53006A4C0F /* SkMatrixInvert.cpp in Sources */,
 				F986023E2BCFBB54006A4C0F /* SkRecord.cpp in Sources */,
 				F98603D72BCFBB54006A4C0F /* SkSLPipelineStageCodeGenerator.cpp in Sources */,
+				F9807DA02BF6690B00D9B590 /* SivMessageBox_macOS.mm in Sources */,
 				F98601962BCFBB53006A4C0F /* SkCubicMap.cpp in Sources */,
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
 				F98601AC2BCFBB53006A4C0F /* SkEdge.cpp in Sources */,
