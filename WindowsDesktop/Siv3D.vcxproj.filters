@@ -727,6 +727,12 @@
     <Filter Include="src\Siv3D\MessageBox">
       <UniqueIdentifier>{ba5724d4-7c5e-4dda-90be-d377904c6454}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\VertexShader">
+      <UniqueIdentifier>{c34ffcc0-2ac8-49e3-bb15-7b60744f52d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\PixelShader">
+      <UniqueIdentifier>{9377c41a-957b-4616-ad17-c3aee0cb7ccc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3051,6 +3057,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MessageBox.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PixelShader.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\VertexShader.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5176,6 +5188,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp">
       <Filter>src\Siv3D\MessageBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\VertexShader\SivVertexShader.cpp">
+      <Filter>src\Siv3D\VertexShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PixelShader\SivPixelShader.cpp">
+      <Filter>src\Siv3D\PixelShader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1330,6 +1330,43 @@
 
 
 
+
+////////////////////////////////////////////////////////////////
+//
+//	シェーダー | Shader
+//
+////////////////////////////////////////////////////////////////
+
+//// シェーダ | Shader
+//# include <Siv3D/Shader.hpp>
+//
+//// シェーダステージ | Shader stage
+//# include <Siv3D/ShaderStage.hpp>
+//
+//// 定数バッファバインディング | Constant buffer binding
+//# include <Siv3D/ConstantBufferBinding.hpp>
+
+// 頂点シェーダ | Vertex shader
+# include <Siv3D/VertexShader.hpp>
+
+// ピクセルシェーダ | Pixel/Fragment shader
+# include <Siv3D/PixelShader.hpp>
+
+//// シェーダユーティリティ | Shader utilities
+//# include <Siv3D/ShaderCommon.hpp>
+//
+//// 定数バッファ | Constant buffer
+//# include <Siv3D/ConstantBuffer.hpp>
+//
+//// 2D シェーダスコープ | 2D shader scope
+//# include <Siv3D/ScopedCustomShader2D.hpp>
+//
+//// 3D シェーダスコープ | 3D shader scope
+//# include <Siv3D/ScopedCustomShader3D.hpp>
+
+
+
+
 ////////////////////////////////////////////////////////////////
 //
 //	シーン | Scene
