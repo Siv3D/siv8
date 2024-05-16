@@ -15,6 +15,7 @@
 # include <Siv3D/Scene/SceneStyle.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "Metal.hpp"
+# include "BackBuffer/MetalInternalTexture2D.hpp"
 
 namespace s3d
 {
@@ -64,8 +65,7 @@ namespace s3d
 		MTL::CommandBuffer* m_metalCommandBuffer = nullptr;
 		MTL::Buffer* m_triangleVertexBuffer = nullptr;
 		
-		
-		MTL::Texture* m_sceneTexture = nullptr;
+		MetalInternalTexture2D m_sceneBuffer;
 		MTL::Buffer* m_sceneVertexBuffer = nullptr;
 		MTL::RenderPipelineState* m_metalRenderPSO1 = nullptr;
 		MTL::RenderPipelineState* m_metalRenderPSO2 = nullptr;

@@ -34,10 +34,7 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CRenderer_Metal::~CRenderer_Metal()");
 
-		if (m_sceneTexture)
-		{
-			m_sceneTexture->release();
-		}
+		m_sceneBuffer.reset();
 
 		if (m_metalDevice)
 		{
@@ -163,6 +160,7 @@ namespace s3d
 			renderPipelineDescriptor->release();
 		}
 
+		/*
 		{
 			MTL::TextureDescriptor* textureDescriptor = MTL::TextureDescriptor::alloc()->init();
 			textureDescriptor->setTextureType(MTL::TextureType2D);
@@ -174,7 +172,9 @@ namespace s3d
 
 			m_sceneTexture = m_metalDevice->newTexture(textureDescriptor);
 			textureDescriptor->release();
-		}
+		}*/
+		
+		m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_metalDevice, Size{ 800, 600 });
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -289,7 +289,7 @@ namespace s3d
 		{
 			MTL::RenderPassDescriptor* offscreenRenderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
 			MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
-			cd->setTexture(m_sceneTexture);
+			cd->setTexture(m_sceneBuffer.getTexture());
 			cd->setLoadAction(MTL::LoadActionClear);
 			cd->setClearColor(MTL::ClearColor(m_sceneStyle.backgroundColor.r, m_sceneStyle.backgroundColor.g, m_sceneStyle.backgroundColor.b, 1));
 			cd->setStoreAction(MTL::StoreActionStore);
@@ -322,7 +322,7 @@ namespace s3d
 			MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
 			NS::UInteger vertexStart = 0;
 			NS::UInteger vertexCount = 6;
-			renderCommandEncoder->setFragmentTexture(m_sceneTexture, 0);
+			renderCommandEncoder->setFragmentTexture(m_sceneBuffer.getTexture(), 0);
 			renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
 			renderCommandEncoder->endEncoding();
 		}
