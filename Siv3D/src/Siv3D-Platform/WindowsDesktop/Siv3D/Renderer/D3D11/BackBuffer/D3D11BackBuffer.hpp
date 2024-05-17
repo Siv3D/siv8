@@ -50,6 +50,8 @@ namespace s3d
 		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept;
 
+		std::pair<double, RectF> getLetterboxComposition() const noexcept;
+
 	private:
 		
 		ID3D11Device* m_device			= nullptr;
@@ -74,7 +76,17 @@ namespace s3d
 		
 		} m_sceneBuffers;
 
-		/// @brief すべてのレンダーターゲットを解除します。
+		/// @brief レンダーターゲットをバインドします。
+		/// @param rtv バインドするレンダーターゲット
+		void bindRenderTarget(ID3D11RenderTargetView* const rtv);
+
+		/// @brief すべてのレンダーターゲットのバインドを解除します。
 		void unbindAllRenderTargets();
+
+		void bindPSTexture(ID3D11ShaderResourceView* const srv);
+
+		void unbindAllPSTextures();
+
+		void drawFullScreenTriangle();
 	};
 }

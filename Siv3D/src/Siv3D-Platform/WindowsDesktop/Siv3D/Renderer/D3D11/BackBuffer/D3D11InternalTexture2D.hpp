@@ -48,6 +48,18 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		ID3D11ShaderResourceView* getSRV() const noexcept
+		{
+			return m_shaderResourceView.Get();
+		}
+
+		[[nodiscard]]
+		ID3D11RenderTargetView* getRTV() const noexcept
+		{
+			return m_renderTargetView.Get();
+		}
+
+		[[nodiscard]]
 		static D3D11InternalTexture2D CreateFromSwapChain(ID3D11Device* device, IDXGISwapChain1* swapChain1);
 
 		[[nodiscard]]

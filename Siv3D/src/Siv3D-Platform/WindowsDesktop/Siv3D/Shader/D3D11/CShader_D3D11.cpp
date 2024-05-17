@@ -156,12 +156,12 @@ namespace s3d
 
 	void CShader_D3D11::setVS(const VertexShader::IDType handleID)
 	{
-
+		m_context->VSSetShader(m_vertexShaders[handleID]->getShader(), nullptr, 0);
 	}
 
 	void CShader_D3D11::setPS(const PixelShader::IDType handleID)
 	{
-
+		m_context->PSSetShader(m_pixelShaders[handleID]->getShader(), nullptr, 0);
 	}
 
 	const Blob& CShader_D3D11::getBinaryVS(const VertexShader::IDType handleID)

@@ -11,6 +11,9 @@
 
 # include "D3D11BackBuffer.hpp"
 # include <Siv3D/Error/InternalEngineError.hpp>
+# include <Siv3D/Shader/IShader.hpp>
+# include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -129,40 +132,43 @@ namespace s3d
 	{
 		unbindAllRenderTargets();
 
+		const Size backBufferSize = m_backBuffer.size();
+		const Size sceneBufferSize = m_sceneBuffers.scene.size();
+
 		if (m_sceneSampleCount == 1)
 		{
-			if (m_backBuffer.size() == m_sceneBuffers.scene.size())
+			if (backBufferSize == sceneBufferSize)
 			{
 				m_sceneBuffers.scene.copyTo(m_context, m_backBuffer);
 			}
 			else
 			{
-			//	setRenderTarget(m_backBuffer);
-			//	m_context->PSSetShaderResources(0, 1, m_sceneBuffers.scene.getSRVPtr());
-			//	pRenderer2D->drawFullScreenTriangle(m_sceneTextureFilter);
-
-			//	D3D11::ResetPSShaderResources(m_context);
+				bindRenderTarget(m_backBuffer.getRTV());
+				bindPSTexture(m_sceneBuffers.scene.getSRV());
+				drawFullScreenTriangle();
+				unbindAllPSTextures();
+				unbindAllRenderTargets();
 			}
 		}
 		else
 		{
-			if (m_backBuffer.size() == m_sceneBuffers.scene.size())
+			if (backBufferSize == sceneBufferSize)
 			{
 				m_sceneBuffers.scene.resolveTo(m_context, m_backBuffer);
 			}
 			else
 			{
-			//	if (m_sceneBuffers.resolved.size() != m_sceneBuffers.scene.size())
-			//	{
-			//		m_sceneBuffers.resolved = D3D11InternalTexture2D::CreateRenderTargetTexture2D(m_device, m_sceneSize);
-			//	}
-			//	m_sceneBuffers.scene.resolveTo(m_context, m_sceneBuffers.resolved);
+				if (m_sceneBuffers.resolved.size() != sceneBufferSize)
+				{
+					m_sceneBuffers.resolved = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, sceneBufferSize, m_sceneSampleCount);
+				}
+				m_sceneBuffers.scene.resolveTo(m_context, m_sceneBuffers.resolved);
 
-			//	setRenderTarget(m_backBuffer);
-			//	m_context->PSSetShaderResources(0, 1, m_sceneBuffers.resolved.getSRVPtr());
-			//	pRenderer2D->drawFullScreenTriangle(m_sceneTextureFilter);
-
-			//	D3D11::ResetPSShaderResources(m_context);
+				bindRenderTarget(m_backBuffer.getRTV());
+				bindPSTexture(m_sceneBuffers.resolved.getSRV());
+				drawFullScreenTriangle();
+				unbindAllPSTextures();
+				unbindAllRenderTargets();
 			}
 		}
 	}
@@ -256,12 +262,107 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getLetterboxComposition
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::pair<double, RectF> D3D11BackBuffer::getLetterboxComposition() const noexcept
+	{
+		const SizeF sceneSize = m_sceneBuffers.scene.size();
+		const SizeF backBufferSize = m_backBuffer.size();
+
+		const double sx = (backBufferSize.x / sceneSize.x);
+		const double sy = (backBufferSize.y / sceneSize.y);
+		const double s = Min(sx, sy);
+
+		if (sx <= sy)
+		{
+			const double offsetY = ((backBufferSize.y - sceneSize.y * s) * 0.5);
+			const double width = backBufferSize.x;
+			const double height = (backBufferSize.y - offsetY * 2.0);
+			return{ s, RectF{ 0.0, offsetY, width, height } };
+		}
+		else
+		{
+			const double offsetX = ((backBufferSize.x - sceneSize.x * s) * 0.5);
+			const double width = (backBufferSize.x - offsetX * 2.0);
+			const double height = backBufferSize.y;
+			return{ s, RectF{ offsetX, 0.0, width, height } };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
 
+	void D3D11BackBuffer::bindRenderTarget(ID3D11RenderTargetView* const rtv)
+	{
+		ID3D11RenderTargetView* const rtvs[8] = { rtv };
+		m_context->OMSetRenderTargets(8, rtvs, nullptr);
+	}
+
 	void D3D11BackBuffer::unbindAllRenderTargets()
 	{
-		m_context->OMSetRenderTargets(0, nullptr, nullptr);
+		constexpr ID3D11RenderTargetView* nullRTVs[8] = { nullptr };
+		m_context->OMSetRenderTargets(8, nullRTVs, nullptr);
+	}
+
+	void D3D11BackBuffer::bindPSTexture(ID3D11ShaderResourceView* const srv)
+	{
+		m_context->PSSetShaderResources(0, 1, &srv);
+	}
+
+	void D3D11BackBuffer::unbindAllPSTextures()
+	{
+		constexpr ID3D11ShaderResourceView* nullSRVs[16] = { nullptr };
+		m_context->PSSetShaderResources(0, 16, nullSRVs);
+	}
+
+	void D3D11BackBuffer::drawFullScreenTriangle()
+	{
+		// view port
+		{
+			const auto [s, viewRect] = getLetterboxComposition();
+			const D3D11_VIEWPORT viewport{
+				.TopLeftX	= static_cast<float>(viewRect.x),
+				.TopLeftY	= static_cast<float>(viewRect.y),
+				.Width		= static_cast<float>(viewRect.w),
+				.Height		= static_cast<float>(viewRect.h),
+				.MinDepth	= 0.0f,
+				.MaxDepth	= 1.0f,
+			};
+			m_context->RSSetViewports(1, &viewport);
+
+			LOG_TEST(fmt::format("drawFullScreenTriangle: {} {} {} {}", viewRect.x, viewRect.y, viewRect.w, viewRect.h));
+		}
+
+		// render states
+		//{
+		//	const SamplerState samplerState = (textureFilter == TextureFilter::Linear) ?
+		//		SamplerState::ClampLinear : SamplerState::ClampNearest;
+		//	pRenderer->getSamplerState().setPS(0, samplerState);
+		//	pRenderer->getBlendState().set(BlendState::Opaque);
+		//	pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
+		//	pRenderer->getRasterizerState().set(RasterizerState::Default2D);
+		//}
+
+		// shaders
+		{
+			const auto& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::FullScreenTriangle);
+			const auto& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FullScreenTriangle);
+
+			SIV3D_ENGINE(Shader)->setVS(vs.id());
+			SIV3D_ENGINE(Shader)->setPS(ps.id());
+		}
+
+		// draw null vertex buffer
+		{
+			m_context->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+			m_context->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+			m_context->IASetInputLayout(nullptr);
+			m_context->Draw(3, 0);
+		}
 	}
 }

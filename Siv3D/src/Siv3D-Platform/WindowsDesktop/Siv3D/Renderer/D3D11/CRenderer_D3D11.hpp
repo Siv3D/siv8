@@ -43,6 +43,8 @@ namespace s3d
 
 		const Size& getSceneBufferSize() const noexcept override;
 
+		std::pair<double, RectF> getLetterboxComposition() const noexcept override;
+
 
 
 		const D3D11Device& getDevice() const noexcept;
