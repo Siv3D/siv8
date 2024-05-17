@@ -34,6 +34,7 @@ namespace s3d
 	class ISiv3DMouse;
 	class ISiv3DRenderer;
 	class ISiv3DShader;
+	class ISiv3DEngineShader;
 
 	class Siv3DEngine
 	{
@@ -60,7 +61,8 @@ namespace s3d
 			Siv3DComponent<ISiv3DKeyboard>,
 			Siv3DComponent<ISiv3DMouse>,
 			Siv3DComponent<ISiv3DRenderer>,
-			Siv3DComponent<ISiv3DShader>
+			Siv3DComponent<ISiv3DShader>,
+			Siv3DComponent<ISiv3DEngineShader>
 		> m_components;
 
 	public:

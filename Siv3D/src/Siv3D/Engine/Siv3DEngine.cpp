@@ -29,6 +29,7 @@
 # include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Shader/IShader.hpp>
+# include <Siv3D/EngineShader/IEngineShader.hpp>
 
 namespace s3d
 {
