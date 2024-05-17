@@ -733,6 +733,24 @@
     <Filter Include="src\Siv3D\PixelShader">
       <UniqueIdentifier>{9377c41a-957b-4616-ad17-c3aee0cb7ccc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Shader">
+      <UniqueIdentifier>{5ee0b328-e4e6-411d-ac8b-f4288ea4626f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader">
+      <UniqueIdentifier>{808cacc1-2bce-4caf-8c40-4da3d5fc24e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11">
+      <UniqueIdentifier>{d3a35418-6606-4f81-85f6-98de24ed0a71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\AssetHandleManager">
+      <UniqueIdentifier>{6759cb2c-e07f-4c9f-830d-37e95f9ed07a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader">
+      <UniqueIdentifier>{0c6a7544-8496-42ca-b971-f8ed2f8aa2fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader">
+      <UniqueIdentifier>{5fa92590-abd2-4894-8252-f9098816ff39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3063,6 +3081,24 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\VertexShader.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Shader\IShader.hpp">
+      <Filter>src\Siv3D\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\CShader_D3D11.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\AssetHandleManager\AssetHandleManager.hpp">
+      <Filter>src\Siv3D\AssetHandleManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\AssetHandleManager\AssetHandleManager.ipp">
+      <Filter>src\Siv3D\AssetHandleManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader\D3D11VertexShader.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader\D3D11PixelShader.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5194,6 +5230,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\PixelShader\SivPixelShader.cpp">
       <Filter>src\Siv3D\PixelShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\ShaderFactory.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\CShader_D3D11.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader\D3D11VertexShader.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader\D3D11PixelShader.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

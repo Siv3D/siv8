@@ -36,13 +36,13 @@ namespace s3d
 	}
 
 	template <class AssetTag>
-	constexpr AssetID<AssetTag> AssetID<AssetTag>::NullAsset() noexcept
+	constexpr AssetID<AssetTag> AssetID<AssetTag>::Null() noexcept
 	{
 		return AssetID{ NullID };
 	}
 
 	template <class AssetTag>
-	constexpr AssetID<AssetTag> AssetID<AssetTag>::InvalidValue() noexcept
+	constexpr AssetID<AssetTag> AssetID<AssetTag>::Invalid() noexcept
 	{
 		return AssetID{ InvalidID };
 	}

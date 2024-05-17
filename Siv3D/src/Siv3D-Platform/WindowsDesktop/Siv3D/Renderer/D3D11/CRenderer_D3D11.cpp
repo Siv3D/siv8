@@ -58,8 +58,11 @@ namespace s3d
 		m_swapChain.init(hWnd, m_device, windowFrameBufferSize);
 		m_backBuffer.init(m_device, m_swapChain.getSwapChain1());
 
-
 		m_device.getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+		
+
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -160,6 +163,12 @@ namespace s3d
 	const Size& CRenderer_D3D11::getSceneBufferSize() const noexcept
 	{
 		return m_backBuffer.getSceneBufferSize();
+	}
+
+
+	const D3D11Device& CRenderer_D3D11::getDevice() const noexcept
+	{
+		return m_device;
 	}
 }
  

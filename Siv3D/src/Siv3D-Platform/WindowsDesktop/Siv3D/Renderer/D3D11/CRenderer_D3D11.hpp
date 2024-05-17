@@ -43,6 +43,10 @@ namespace s3d
 
 		const Size& getSceneBufferSize() const noexcept override;
 
+
+
+		const D3D11Device& getDevice() const noexcept;
+
 	private:
 
 		D3D11Device m_device;

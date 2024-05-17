@@ -28,6 +28,7 @@
 # include <Siv3D/Mouse/IMouse.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
+# include <Siv3D/Shader/IShader.hpp>
 
 namespace s3d
 {

@@ -68,12 +68,12 @@ namespace s3d
 		/// @brief Null アセット ID を作成します。
 		/// @return Null アセット ID
 		[[nodiscard]]
-		static constexpr AssetID NullAsset() noexcept;
+		static constexpr AssetID Null() noexcept;
 
 		/// @brief Invalid アセット ID を作成します。
 		/// @return Invalid アセット ID
 		[[nodiscard]]
-		static constexpr AssetID InvalidValue() noexcept;
+		static constexpr AssetID Invalid() noexcept;
 
 	private:
 
