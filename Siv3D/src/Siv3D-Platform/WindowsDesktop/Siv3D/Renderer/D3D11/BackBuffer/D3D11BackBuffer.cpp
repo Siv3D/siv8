@@ -27,6 +27,7 @@ namespace s3d
 	void D3D11BackBuffer::init(const D3D11Device& device, IDXGISwapChain1* swapChain)
 	{
 		LOG_SCOPED_DEBUG("D3D11BackBuffer::init()");
+		LOG_INFO(fmt::format(U"ℹ️ Scene MSAA: x{}", m_sceneSampleCount));
 
 		m_device		= device.getDevice();
 		m_context		= device.getContext();

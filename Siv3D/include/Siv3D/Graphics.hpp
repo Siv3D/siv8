@@ -16,8 +16,6 @@ namespace s3d
 {
 	namespace Graphics
 	{
-		inline constexpr uint32 DefaultSampleCount = 4;
-
 		/// @brief VSync の有効無効を設定します（デフォルトでは有効）。
 		/// @param enabled VSync を有効にする場合 true, 無効にする場合 false
 		void SetVSyncEnabled(bool enabled);

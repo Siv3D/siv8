@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Scene.hpp>
+# include <Siv3D/EngineOption.hpp>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/Scene/SceneStyle.hpp>
 # include "../Device/D3D11Device.hpp"
@@ -62,7 +63,7 @@ namespace s3d
 
 		IDXGISwapChain1* m_swapChain1	= nullptr;
 
-		uint32 m_sceneSampleCount		= Graphics::DefaultSampleCount;
+		uint32 m_sceneSampleCount		= FromEnum(g_engineOptions.sceneMSAA);
 
 		SceneStyle m_sceneStyle;
 

@@ -28,5 +28,11 @@ namespace s3d
 			g_engineOptions.d3d11Driver = value;
 			return 0;
 		}
+
+		int SetEngineOption(const EngineOption::SceneMSAA sceneMSAA) noexcept
+		{
+			g_engineOptions.sceneMSAA = sceneMSAA;
+			return 0;
+		}
 	}
 }
