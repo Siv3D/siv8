@@ -430,6 +430,7 @@ namespace s3d
 
 			if (FAILED(hr))
 			{
+				LOG_FAIL("❌ Failed to create D3D11 device with Reference driver");
 				return D3D_FEATURE_LEVEL_10_1;
 			}
 			else

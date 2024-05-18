@@ -82,7 +82,7 @@ namespace s3d
 		CreateDXGIFactories(m_pCreateDXGIFactory1, m_DXGIFactory2, m_DXGIFactory6);
 
 		{
-			constexpr EngineOption::D3D11Driver targetDriverType = EngineOption::D3D11Driver::Hardware;
+			const EngineOption::D3D11Driver targetDriverType = g_engineOptions.d3d11Driver;
 
 			if (targetDriverType == EngineOption::D3D11Driver::Hardware)
 			{

@@ -760,6 +760,9 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11">
       <UniqueIdentifier>{9e3332a3-b76d-400b-9401-d44cc2e42b94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\EngineOption">
+      <UniqueIdentifier>{83182778-032e-4f0a-8836-311318981c09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5266,6 +5269,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\EngineShaderFactory.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\EngineOption\SivEngineOption.cpp">
+      <Filter>src\Siv3D\EngineOption</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

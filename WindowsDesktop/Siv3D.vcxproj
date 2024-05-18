@@ -883,6 +883,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\EmojiFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\SivEmoji.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\EngineLog\SivEngineLog.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\EngineOption\SivEngineOption.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\EngineResource\CEngineResource.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\EngineResource\EngineResourceFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.cpp" />

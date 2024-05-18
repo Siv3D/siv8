@@ -17,16 +17,6 @@ namespace s3d
 	/// @brief エンジンの設定
 	struct EngineOption
 	{
-		///// @brief デバッグヒープマネージャ (Windows のみ)
-		//enum class DebugHeap : uint8
-		//{
-		//	/// @brief 有効
-		//	Yes,
-
-		//	/// @brief 無効
-		//	No,
-		//};
-
 		///// @brief レンダラー
 		//enum class Renderer : uint8
 		//{
@@ -82,16 +72,13 @@ namespace s3d
 
 	struct EngineOptions
 	{
-		//EngineOption::DebugHeap debugHeap		= EngineOption::DebugHeap::No;
-
 		//EngineOption::Renderer renderer			= EngineOption::Renderer::PlatformDefault;
 
 		EngineOption::D3D11Driver d3d11Driver	= EngineOption::D3D11Driver::Hardware;
 	};
 
-	namespace detail
+	namespace Internal
 	{
-		//int SetEngineOption(EngineOption::DebugHeap) noexcept;
 		//int SetEngineOption(EngineOption::Renderer) noexcept;
 		int SetEngineOption(EngineOption::D3D11Driver) noexcept;
 	}
@@ -101,4 +88,4 @@ namespace s3d
 
 # define SIV3D_COMBINE_(X,Y) X##Y
 # define SIV3D_COMBINE(X,Y) SIV3D_COMBINE_(X,Y)
-# define SIV3D_SET(value) const int SIV3D_COMBINE(siv3d_engine_otpion_,__LINE__) = s3d::detail::SetEngineOption(value);
+# define SIV3D_SET(value) const int SIV3D_COMBINE(siv3d_engine_otpion_,__LINE__) = s3d::Internal::SetEngineOption(value);
