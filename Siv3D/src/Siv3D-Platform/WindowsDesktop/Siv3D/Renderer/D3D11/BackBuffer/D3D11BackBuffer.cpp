@@ -160,7 +160,7 @@ namespace s3d
 			{
 				if (m_sceneBuffers.resolved.size() != sceneBufferSize)
 				{
-					m_sceneBuffers.resolved = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, sceneBufferSize, m_sceneSampleCount);
+					m_sceneBuffers.resolved = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneBufferSize);
 				}
 				m_sceneBuffers.scene.resolveTo(m_context, m_sceneBuffers.resolved);
 
@@ -334,8 +334,6 @@ namespace s3d
 				.MaxDepth	= 1.0f,
 			};
 			m_context->RSSetViewports(1, &viewport);
-
-			LOG_TEST(fmt::format("drawFullScreenTriangle: {} {} {} {}", viewRect.x, viewRect.y, viewRect.w, viewRect.h));
 		}
 
 		// render states

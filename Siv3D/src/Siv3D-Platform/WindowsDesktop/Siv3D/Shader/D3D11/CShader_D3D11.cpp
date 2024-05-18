@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include "CShader_D3D11.hpp"
+# include <Siv3D/ShaderStage.hpp>
+# include <Siv3D/TextReader.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -31,6 +33,39 @@ namespace s3d
 				&& (blob[1] == Byte{ 'X' })
 				&& (blob[2] == Byte{ 'B' })
 				&& (blob[3] == Byte{ 'C' });
+		}
+
+		static constexpr const char* ToTargetName(const ShaderStage stage) noexcept
+		{
+			switch (stage)
+			{
+			case ShaderStage::Vertex:
+				return "vs_4_0";
+			case ShaderStage::Pixel:
+				return "ps_4_0";
+			default:
+				return "";
+			}
+		}
+
+		[[nodiscard]]
+		static Blob CompileHLSLFromFile(ShaderCompiler& shaderCompiler, const FilePathView path, const ShaderStage stage, const StringView entryPoint, const uint32 flags)
+		{
+			LOG_DEBUG(fmt::format("CompileHLSLFromFile(path = {}, stage = {}, entryPoint = {}, flags = {:#X})", path, ToTargetName(stage), entryPoint, flags));
+
+			TextReader reader{ path };
+
+			if (not reader)
+			{
+				LOG_FAIL(fmt::format("CompileHLSLFromFile: Failed to open file `{}`", path));
+				
+				return{};
+			}
+
+			const std::string source = reader.readAllUTF8();
+			std::string message;
+
+			return shaderCompiler.compile(source, Unicode::ToUTF8(path), Unicode::ToUTF8(entryPoint), ToTargetName(stage), flags, message);
 		}
 	}
 
@@ -102,11 +137,14 @@ namespace s3d
 			return createVS(std::move(blob));
 		}
 
-		return(VertexShader::IDType::Null());
-
-		//Blob binary = compileHLSLFromFile(path, ShaderStage::Vertex, entryPoint);
-
-		//return createVS(std::move(binary), bindings);
+		if (Blob byteCode = CompileHLSLFromFile(m_shaderCompiler, path, ShaderStage::Vertex, entryPoint, (D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_WARNINGS_ARE_ERRORS)))
+		{
+			return createVS(std::move(byteCode));
+		}
+		else
+		{
+			return VertexShader::IDType::Null();
+		}
 	}
 
 	VertexShader::IDType CShader_D3D11::createVSFromSource(const StringView source, StringView entryPoint)
@@ -132,11 +170,14 @@ namespace s3d
 			return createPS(std::move(blob));
 		}
 
-		return PixelShader::IDType::Null();
-
-		//Blob binary = compileHLSLFromFile(path, ShaderStage::Pixel, entryPoint);
-
-		//return createPS(std::move(binary), bindings);
+		if (Blob byteCode = CompileHLSLFromFile(m_shaderCompiler, path, ShaderStage::Pixel, entryPoint, (D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_WARNINGS_ARE_ERRORS)))
+		{
+			return createPS(std::move(byteCode));
+		}
+		else
+		{
+			return PixelShader::IDType::Null();
+		}
 	}
 
 	PixelShader::IDType CShader_D3D11::createPSFromSource(const StringView source, StringView entryPoint)
@@ -198,5 +239,41 @@ namespace s3d
 		}
 
 		return m_pixelShaders.add(std::move(pixelShader));
+	}
+
+	Blob ShaderCompiler::compile(const std::string_view source, const std::string& sourceName, const std::string& entryPoint, const char* target, const uint32 flags, std::string& message)
+	{
+		message.clear();
+
+		if (not p_D3DCompile)
+		{
+			d3dCompiler		= DLL::LoadSystemLibrary(L"d3dcompiler_47.dll");
+			p_D3DCompile	= DLL::GetFunction(d3dCompiler, "D3DCompile");
+		}
+
+		ComPtr<ID3DBlob> binary, error;
+		const HRESULT hr = p_D3DCompile(source.data(), source.size(),
+			sourceName.c_str(), nullptr, nullptr,
+			entryPoint.c_str(),
+			target,
+			flags, 0, &binary, &error);
+
+		if (error)
+		{
+			message.assign(static_cast<const char*>(error->GetBufferPointer()));
+		}
+
+		if (FAILED(hr)) // 失敗したら
+		{
+			LOG_FAIL("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile(): " + message);
+
+			return{};
+		}
+		else if (error)
+		{
+			LOG_WARN("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile(): " + message);
+		}
+
+		return Blob{ binary->GetBufferPointer(), binary->GetBufferSize() };
 	}
 }

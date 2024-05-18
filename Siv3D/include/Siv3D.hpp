@@ -1339,10 +1339,10 @@
 
 //// シェーダ | Shader
 //# include <Siv3D/Shader.hpp>
-//
-//// シェーダステージ | Shader stage
-//# include <Siv3D/ShaderStage.hpp>
-//
+
+// シェーダステージ | Shader stage
+# include <Siv3D/ShaderStage.hpp>
+
 //// 定数バッファバインディング | Constant buffer binding
 //# include <Siv3D/ConstantBufferBinding.hpp>
 

@@ -132,7 +132,7 @@ namespace s3d
 
 	D3D11InternalTexture2D D3D11InternalTexture2D::CreateMSRenderTexture(ID3D11Device* device, const Size& size, const uint32 sampleCount)
 	{
-		LOG_SCOPED_DEBUG("D3D11InternalTexture2D::CreateMSRenderTexture()");
+		LOG_SCOPED_DEBUG(fmt::format("D3D11InternalTexture2D::CreateMSRenderTexture(size = {}, sampleCount= {})", size, sampleCount));
 
 		const CD3D11_TEXTURE2D_DESC desc{
 			DXGI_FORMAT_R8G8B8A8_UNORM,
