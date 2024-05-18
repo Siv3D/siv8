@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -20,7 +20,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	CEngineShader_Metal::~CEngineShader_D3D11()
+	CEngineShader_Metal::~CEngineShader_Metal()
 	{
 		LOG_SCOPED_DEBUG("CEngineShader_Metal::~CEngineShader_Metal()");
 	}
