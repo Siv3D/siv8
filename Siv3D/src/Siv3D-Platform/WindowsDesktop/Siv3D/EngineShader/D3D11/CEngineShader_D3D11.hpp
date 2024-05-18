@@ -19,6 +19,8 @@ namespace s3d
 	{
 	public:
 
+		~CEngineShader_D3D11() override;
+
 		void init() override;
 
 		const VertexShader& getVS(EngineVS vs) const override;
