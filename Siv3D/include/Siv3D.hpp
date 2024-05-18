@@ -1377,7 +1377,7 @@
 
 # include <Siv3D/TextureFilter.hpp>
 
-# include <Siv3D/Scene.hpp> // ToDo
+# include <Siv3D/Scene.hpp>
 
 
 

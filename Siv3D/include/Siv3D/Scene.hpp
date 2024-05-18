@@ -286,12 +286,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief クライアント座標をシーンの座標に変換します。
-		///// @remark `Cursor::PosRaw()` が返す座標をシーンの座標に変換できます。
-		///// @param pos クライアント座標（ピクセル）
-		///// @return シーン座標（ピクセル）
-		//[[nodiscard]]
-		//Vec2 ClientToScene(Vec2 pos) noexcept;
+		/// @brief クライアント座標をシーンの座標に変換します。
+		/// @remark `Cursor::PosRaw()` が返す座標をシーンの座標に変換できます。
+		/// @param pos クライアント座標（ピクセル）
+		/// @return シーン座標（ピクセル）
+		[[nodiscard]]
+		Vec2 ClientToScene(Vec2 pos) noexcept;
 	}
 }
 

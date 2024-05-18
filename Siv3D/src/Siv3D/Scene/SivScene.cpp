@@ -245,10 +245,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//Vec2 ClientToScene(const Vec2 pos) noexcept
-		//{
-		//	auto [s, viewRect] = SIV3D_ENGINE(Renderer)->getLetterboxComposition();
-		//	return (pos - viewRect.pos) / s;
-		//}
+		Vec2 ClientToScene(const Vec2 pos) noexcept
+		{
+			auto [s, viewRect] = SIV3D_ENGINE(Renderer)->getLetterboxComposition();
+			return ((pos - viewRect.pos) / s);
+		}
 	}
 }

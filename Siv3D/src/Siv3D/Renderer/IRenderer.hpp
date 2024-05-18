@@ -48,5 +48,7 @@ namespace s3d
 		virtual const Size& getSceneBufferSize() const noexcept = 0;
 
 		virtual std::pair<double, RectF> getLetterboxComposition() const noexcept = 0;
+
+		virtual void updateSceneSize() = 0;
 	};
 }

@@ -12,6 +12,7 @@
 # pragma once
 # include <atomic>
 # include <Siv3D/WindowState.hpp>
+# include <Siv3D/ResizeMode.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/Windows/ComPtr.hpp>
@@ -109,6 +110,8 @@ namespace s3d
 
 		/// @brief フルスクリーンからウィンドウモードに復帰するときのウィンドウサイズ
 		RECT m_storedWindowRect{ 0, 0, 0, 0 };
+
+		Optional<ResizeMode> m_oldResizeMode;
 
 		bool m_toggleFullscreenEnabled = true;
 

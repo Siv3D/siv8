@@ -59,10 +59,6 @@ namespace s3d
 		m_backBuffer.init(m_device, m_swapChain.getSwapChain1());
 
 		m_device.getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-
-		
-
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -174,6 +170,17 @@ namespace s3d
 	std::pair<double, RectF> CRenderer_D3D11::getLetterboxComposition() const noexcept
 	{
 		return m_backBuffer.getLetterboxComposition();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	updateSceneSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer_D3D11::updateSceneSize()
+	{
+		m_backBuffer.updateSceneSize();
 	}
 
 	////////////////////////////////////////////////////////////////

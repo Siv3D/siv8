@@ -13,8 +13,10 @@
 # include "WindowMisc.hpp"
 # include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/Math.hpp>
+# include <Siv3D/Scene.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
+# include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -134,24 +136,24 @@ namespace s3d
 		{
 			if (m_toggleFullscreenEnabled)
 			{
-				//if (not m_oldResizeMode)
-				//{
-				//	m_oldResizeMode = Scene::GetResizeMode();
-				//}
+				if (not m_oldResizeMode)
+				{
+					m_oldResizeMode = Scene::GetResizeMode();
+				}
 
 				const bool toFullScreen = (not m_state.fullscreen);
 
 				setFullscreen(toFullScreen, System::GetCurrentMonitorIndex(), true);
 
-				//if (toFullScreen)
-				//{
-				//	Scene::SetResizeMode(ResizeMode::Keep);
-				//}
-				//else if (m_oldResizeMode)
-				//{
-				//	Scene::SetResizeMode(*m_oldResizeMode);
-				//	m_oldResizeMode.reset();
-				//}
+				if (toFullScreen)
+				{
+					Scene::SetResizeMode(ResizeMode::Keep);
+				}
+				else if (m_oldResizeMode)
+				{
+					Scene::SetResizeMode(*m_oldResizeMode);
+					m_oldResizeMode.reset();
+				}
 			}
 
 			m_toggleFullscreenRequested.store(false);
@@ -315,6 +317,11 @@ namespace s3d
 		}
 
 		::ShowWindow(m_hWnd, SW_MAXIMIZE);
+
+		if (Scene::GetResizeMode() != ResizeMode::Keep)
+		{
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -327,6 +334,11 @@ namespace s3d
 	{
 		LOG_DEBUG("CWindow::restore()");
 		::ShowWindow(m_hWnd, SW_RESTORE);
+
+		if (Scene::GetResizeMode() != ResizeMode::Keep)
+		{
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -735,19 +747,19 @@ namespace s3d
 
 		m_state.fullscreen = fullscreen;
 
-		//if (not skipSceneResize)
-		//{
-		//	if (m_oldResizeMode)
-		//	{
-		//		Scene::SetResizeMode(*m_oldResizeMode);
-		//		m_oldResizeMode.reset();
-		//	}
+		if (not skipSceneResize)
+		{
+			if (m_oldResizeMode)
+			{
+				Scene::SetResizeMode(*m_oldResizeMode);
+				m_oldResizeMode.reset();
+			}
 
-		//	if (Scene::GetResizeMode() != ResizeMode::Keep)
-		//	{
-		//		SIV3D_ENGINE(Renderer)->updateSceneSize();
-		//	}
-		//}
+			if (Scene::GetResizeMode() != ResizeMode::Keep)
+			{
+				SIV3D_ENGINE(Renderer)->updateSceneSize();
+			}
+		}
 	}
 
 	void CWindow::setWindowPos(const Rect& rect, const uint32 flags)

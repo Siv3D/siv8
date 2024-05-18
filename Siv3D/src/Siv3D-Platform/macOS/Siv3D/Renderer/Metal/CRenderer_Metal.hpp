@@ -47,6 +47,8 @@ namespace s3d
 
 		std::pair<double, RectF> getLetterboxComposition() const noexcept override;
 
+		void updateSceneSize() override;
+
 	private:
 		
 		NSWindow* m_metalWindow = nullptr;

@@ -291,6 +291,18 @@ namespace s3d
 		}
 	}
 
+	void D3D11BackBuffer::updateSceneSize()
+	{
+		if (m_sceneResizeMode == ResizeMode::Actual)
+		{
+			resizeSceneBuffer(Window::GetState().frameBufferSize);
+		}
+		else if (m_sceneResizeMode == ResizeMode::Virtual)
+		{
+			resizeSceneBuffer(Window::GetState().virtualSize);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(private function)
