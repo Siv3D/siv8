@@ -485,6 +485,21 @@
 		F9070F352B9F252E00383E4D /* null_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070F2E2B9F252E00383E4D /* null_platform.h */; };
 		F9070F362B9F252E00383E4D /* null_joystick.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2F2B9F252E00383E4D /* null_joystick.c */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
+		F934BD712BF880330003EAD5 /* PixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6E2BF880330003EAD5 /* PixelShader.hpp */; };
+		F934BD722BF880330003EAD5 /* VertexShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6F2BF880330003EAD5 /* VertexShader.hpp */; };
+		F934BD732BF880330003EAD5 /* ShaderStage.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD702BF880330003EAD5 /* ShaderStage.hpp */; };
+		F934BD782BF880620003EAD5 /* SivVertexShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD742BF880620003EAD5 /* SivVertexShader.cpp */; };
+		F934BD792BF880620003EAD5 /* SivPixelShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD762BF880620003EAD5 /* SivPixelShader.cpp */; };
+		F934BD7D2BF880860003EAD5 /* AssetHandleManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD7A2BF880860003EAD5 /* AssetHandleManager.hpp */; };
+		F934BD7E2BF880860003EAD5 /* AssetHandleManager.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD7B2BF880860003EAD5 /* AssetHandleManager.ipp */; };
+		F934BD812BF880A10003EAD5 /* IShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD7F2BF880A10003EAD5 /* IShader.hpp */; };
+		F934BD872BF881110003EAD5 /* CShader_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD822BF881110003EAD5 /* CShader_Metal.hpp */; };
+		F934BD882BF881110003EAD5 /* CShader_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F934BD832BF881110003EAD5 /* CShader_Metal.mm */; };
+		F934BD892BF881110003EAD5 /* ShaderFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD852BF881110003EAD5 /* ShaderFactory.cpp */; };
+		F934BD8C2BF882020003EAD5 /* IEngineShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD8A2BF882020003EAD5 /* IEngineShader.hpp */; };
+		F934BD922BF8824B0003EAD5 /* CEngineShader_Metal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD8D2BF8824B0003EAD5 /* CEngineShader_Metal.cpp */; };
+		F934BD932BF8824B0003EAD5 /* CEngineShader_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD8E2BF8824B0003EAD5 /* CEngineShader_Metal.hpp */; };
+		F934BD942BF8824B0003EAD5 /* EngineShaderFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD902BF8824B0003EAD5 /* EngineShaderFactory.cpp */; };
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
 		F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A852BA018CE00222F45 /* WindowTitle.hpp */; };
 		F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A862BA018CF00222F45 /* WindowTitle.cpp */; };
@@ -2573,6 +2588,21 @@
 		F9070F2E2B9F252E00383E4D /* null_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = null_platform.h; sourceTree = "<group>"; };
 		F9070F2F2B9F252E00383E4D /* null_joystick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_joystick.c; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F934BD6E2BF880330003EAD5 /* PixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PixelShader.hpp; sourceTree = "<group>"; };
+		F934BD6F2BF880330003EAD5 /* VertexShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VertexShader.hpp; sourceTree = "<group>"; };
+		F934BD702BF880330003EAD5 /* ShaderStage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ShaderStage.hpp; sourceTree = "<group>"; };
+		F934BD742BF880620003EAD5 /* SivVertexShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVertexShader.cpp; sourceTree = "<group>"; };
+		F934BD762BF880620003EAD5 /* SivPixelShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivPixelShader.cpp; sourceTree = "<group>"; };
+		F934BD7A2BF880860003EAD5 /* AssetHandleManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetHandleManager.hpp; sourceTree = "<group>"; };
+		F934BD7B2BF880860003EAD5 /* AssetHandleManager.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetHandleManager.ipp; sourceTree = "<group>"; };
+		F934BD7F2BF880A10003EAD5 /* IShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IShader.hpp; sourceTree = "<group>"; };
+		F934BD822BF881110003EAD5 /* CShader_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CShader_Metal.hpp; sourceTree = "<group>"; };
+		F934BD832BF881110003EAD5 /* CShader_Metal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CShader_Metal.mm; sourceTree = "<group>"; };
+		F934BD852BF881110003EAD5 /* ShaderFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderFactory.cpp; sourceTree = "<group>"; };
+		F934BD8A2BF882020003EAD5 /* IEngineShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IEngineShader.hpp; sourceTree = "<group>"; };
+		F934BD8D2BF8824B0003EAD5 /* CEngineShader_Metal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CEngineShader_Metal.cpp; sourceTree = "<group>"; };
+		F934BD8E2BF8824B0003EAD5 /* CEngineShader_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CEngineShader_Metal.hpp; sourceTree = "<group>"; };
+		F934BD902BF8824B0003EAD5 /* EngineShaderFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EngineShaderFactory.cpp; sourceTree = "<group>"; };
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
 		F9528A852BA018CE00222F45 /* WindowTitle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowTitle.hpp; sourceTree = "<group>"; };
 		F9528A862BA018CF00222F45 /* WindowTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowTitle.cpp; sourceTree = "<group>"; };
@@ -5138,6 +5168,7 @@
 				F9070C112B9F175000383E4D /* ParseFloat.hpp */,
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
+				F934BD6E2BF880330003EAD5 /* PixelShader.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
 				F9528C942BC1205300222F45 /* PNGFilter.hpp */,
 				F9070C152B9F175000383E4D /* Point.hpp */,
@@ -5165,6 +5196,7 @@
 				F97202F52BEDF2D8000E21DD /* Scene.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9070C1F2B9F175000383E4D /* SequenceFormatter.hpp */,
+				F934BD702BF880330003EAD5 /* ShaderStage.hpp */,
 				F9070C202B9F175000383E4D /* Shuffle.hpp */,
 				F9070C212B9F175000383E4D /* SIMD.hpp */,
 				F9E5FC2B2BC15AEE0081A4F7 /* SIMDMath.hpp */,
@@ -5199,6 +5231,7 @@
 				F9070C372B9F175000383E4D /* Vector3D.hpp */,
 				F9070C382B9F175000383E4D /* Vector4D.hpp */,
 				F9070C392B9F175000383E4D /* Version.hpp */,
+				F934BD6F2BF880330003EAD5 /* VertexShader.hpp */,
 				F9070C3A2B9F175000383E4D /* Window.hpp */,
 				F9070C3B2B9F175000383E4D /* WindowState.hpp */,
 				F9070C3C2B9F175000383E4D /* WindowStyle.hpp */,
@@ -5743,6 +5776,7 @@
 			isa = PBXGroup;
 			children = (
 				F9070D182B9F175E00383E4D /* _TEMPLATE */,
+				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
 				F9528B4A2BB69EAD00222F45 /* BigFloat */,
 				F9070D1B2B9F175E00383E4D /* BigInt */,
@@ -5775,6 +5809,7 @@
 				F9070D442B9F175E00383E4D /* Engine */,
 				F9070D462B9F175E00383E4D /* EngineLog */,
 				F98605202BD0E2A3006A4C0F /* EngineResource */,
+				F934BD8B2BF882020003EAD5 /* EngineShader */,
 				F9070D482B9F175E00383E4D /* Error */,
 				F9070D4A2B9F175E00383E4D /* EscapedFormatter */,
 				F986F8AC2BC806BF006A4C0F /* Exif */,
@@ -5833,6 +5868,7 @@
 				F9070D742B9F175E00383E4D /* ParseErrorReason */,
 				F9070D762B9F175E00383E4D /* ParseFloat */,
 				F9070D782B9F175E00383E4D /* ParseInt */,
+				F934BD772BF880620003EAD5 /* PixelShader */,
 				F9070D7A2B9F175E00383E4D /* Point */,
 				F9528B9C2BBC771000222F45 /* Point3D */,
 				F986062E2BEBBBC7006A4C0F /* Profiler */,
@@ -5843,6 +5879,7 @@
 				F97203112BF09DA3000E21DD /* Renderer */,
 				F97203042BEDF2FF000E21DD /* ResizeMode */,
 				F97203022BEDF2FF000E21DD /* Scene */,
+				F934BD802BF880A10003EAD5 /* Shader */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9070D812B9F175E00383E4D /* String */,
 				F9070D832B9F175E00383E4D /* StringView */,
@@ -5863,6 +5900,7 @@
 				F9070DA42B9F175E00383E4D /* Vector2D */,
 				F9070DA62B9F175E00383E4D /* Vector3D */,
 				F9070DA82B9F175E00383E4D /* Vector4D */,
+				F934BD752BF880620003EAD5 /* VertexShader */,
 				F9070DAB2B9F175E00383E4D /* Window */,
 			);
 			path = Siv3D;
@@ -5891,6 +5929,7 @@
 				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
 				F98605812BDA7E32006A4C0F /* Cursor */,
 				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
+				F934BD912BF8824B0003EAD5 /* EngineShader */,
 				F9070E042B9F176B00383E4D /* FileSystem */,
 				F9807D9C2BF667E600D9B590 /* FreestandingMessageBox */,
 				F95289C62B9FEA0D00222F45 /* GLFW */,
@@ -5898,6 +5937,7 @@
 				F986058D2BDCAF65006A4C0F /* MonitorInfo */,
 				F97203202BF09E80000E21DD /* Renderer */,
 				F986F8432BC7E84D006A4C0F /* Resource */,
+				F934BD862BF881110003EAD5 /* Shader */,
 				F9070E8E2B9F183100383E4D /* System */,
 				F9070E062B9F176B00383E4D /* Time */,
 				F986060C2BE71918006A4C0F /* UserInfo */,
@@ -6088,6 +6128,83 @@
 				F9070ED02B9F1C8900383E4D /* xkb_unicode.h */,
 			);
 			path = GLFW;
+			sourceTree = "<group>";
+		};
+		F934BD752BF880620003EAD5 /* VertexShader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD742BF880620003EAD5 /* SivVertexShader.cpp */,
+			);
+			path = VertexShader;
+			sourceTree = "<group>";
+		};
+		F934BD772BF880620003EAD5 /* PixelShader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD762BF880620003EAD5 /* SivPixelShader.cpp */,
+			);
+			path = PixelShader;
+			sourceTree = "<group>";
+		};
+		F934BD7C2BF880860003EAD5 /* AssetHandleManager */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD7A2BF880860003EAD5 /* AssetHandleManager.hpp */,
+				F934BD7B2BF880860003EAD5 /* AssetHandleManager.ipp */,
+			);
+			path = AssetHandleManager;
+			sourceTree = "<group>";
+		};
+		F934BD802BF880A10003EAD5 /* Shader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD7F2BF880A10003EAD5 /* IShader.hpp */,
+			);
+			path = Shader;
+			sourceTree = "<group>";
+		};
+		F934BD842BF881110003EAD5 /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD822BF881110003EAD5 /* CShader_Metal.hpp */,
+				F934BD832BF881110003EAD5 /* CShader_Metal.mm */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		F934BD862BF881110003EAD5 /* Shader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD842BF881110003EAD5 /* Metal */,
+				F934BD852BF881110003EAD5 /* ShaderFactory.cpp */,
+			);
+			path = Shader;
+			sourceTree = "<group>";
+		};
+		F934BD8B2BF882020003EAD5 /* EngineShader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD8A2BF882020003EAD5 /* IEngineShader.hpp */,
+			);
+			path = EngineShader;
+			sourceTree = "<group>";
+		};
+		F934BD8F2BF8824B0003EAD5 /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD8D2BF8824B0003EAD5 /* CEngineShader_Metal.cpp */,
+				F934BD8E2BF8824B0003EAD5 /* CEngineShader_Metal.hpp */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		F934BD912BF8824B0003EAD5 /* EngineShader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD8F2BF8824B0003EAD5 /* Metal */,
+				F934BD902BF8824B0003EAD5 /* EngineShaderFactory.cpp */,
+			);
+			path = EngineShader;
 			sourceTree = "<group>";
 		};
 		F95289C62B9FEA0D00222F45 /* GLFW */ = {
@@ -8811,6 +8928,7 @@
 				F986FA7A2BCFB53B006A4C0F /* ftcid.h in Headers */,
 				F98600A92BCFBB53006A4C0F /* SkEventTracer.h in Headers */,
 				F98602562BCFBB54006A4C0F /* SkRTree.h in Headers */,
+				F934BD812BF880A10003EAD5 /* IShader.hpp in Headers */,
 				F986FFF02BCFBB53006A4C0F /* SkGifDecoder.h in Headers */,
 				F986FA432BCFB53B006A4C0F /* mac-support.h in Headers */,
 				F9070C772B9F175000383E4D /* Result.ipp in Headers */,
@@ -9090,6 +9208,7 @@
 				F9070C612B9F175000383E4D /* IntFormatter.ipp in Headers */,
 				F98601882BCFBB53006A4C0F /* SkColorSpacePriv.h in Headers */,
 				F9528C8D2BC05B5B00222F45 /* IImageDecoder.hpp in Headers */,
+				F934BD8C2BF882020003EAD5 /* IEngineShader.hpp in Headers */,
 				F9528C922BC1204200222F45 /* PNGEncoder.hpp in Headers */,
 				F9070C9C2B9F175000383E4D /* Blob.hpp in Headers */,
 				F9070C752B9F175000383E4D /* RandomDuration.ipp in Headers */,
@@ -9148,6 +9267,7 @@
 				F98604022BCFBB54006A4C0F /* SkSLDoStatement.h in Headers */,
 				F986046E2BCFBB54006A4C0F /* SkSLContext.h in Headers */,
 				F98602992BCFBB54006A4C0F /* SkVertState.h in Headers */,
+				F934BD932BF8824B0003EAD5 /* CEngineShader_Metal.hpp in Headers */,
 				F98603152BCFBB54006A4C0F /* SkOpSegment.h in Headers */,
 				F98600442BCFBB53006A4C0F /* SkStrokeRec.h in Headers */,
 				F9070B002B9DEB5900383E4D /* fast_float.h in Headers */,
@@ -9231,6 +9351,7 @@
 				F9528C672BC05B0200222F45 /* BMPEncoder.hpp in Headers */,
 				F986000B2BCFBB53006A4C0F /* SkColorType.h in Headers */,
 				F98600492BCFBB53006A4C0F /* SkTextureCompressionType.h in Headers */,
+				F934BD732BF880330003EAD5 /* ShaderStage.hpp in Headers */,
 				F986052C2BD10459006A4C0F /* Line.hpp in Headers */,
 				F9070C732B9F175000383E4D /* Point.ipp in Headers */,
 				F986FA612BCFB53B006A4C0F /* fthash.h in Headers */,
@@ -9558,6 +9679,7 @@
 				F98604232BCFBB54006A4C0F /* SkSLMethodReference.h in Headers */,
 				F986016B2BCFBB53006A4C0F /* SkBlitRow.h in Headers */,
 				F9528B292BAFCDB400222F45 /* MemoryMappedFileView.hpp in Headers */,
+				F934BD7D2BF880860003EAD5 /* AssetHandleManager.hpp in Headers */,
 				F9528C952BC1205300222F45 /* PNGFilter.hpp in Headers */,
 				F9070DAE2B9F175E00383E4D /* BigIntDetail.hpp in Headers */,
 				F9070C6A2B9F175000383E4D /* MathConstants.ipp in Headers */,
@@ -9653,6 +9775,7 @@
 				F986006C2BCFBB53006A4C0F /* SkAlignedStorage.h in Headers */,
 				F986FA782BCFB53B006A4C0F /* ftcache.h in Headers */,
 				F98600172BCFBB53006A4C0F /* SkFontMetrics.h in Headers */,
+				F934BD712BF880330003EAD5 /* PixelShader.hpp in Headers */,
 				F90706972B9DAEC900383E4D /* function_ref.h in Headers */,
 				F90706BB2B9DAEC900383E4D /* phmap_base.h in Headers */,
 				F98606002BE615B4006A4C0F /* FormatLiteralObject.ipp in Headers */,
@@ -9866,6 +9989,7 @@
 				F986003B2BCFBB53006A4C0F /* SkRSXform.h in Headers */,
 				F9528B9A2BBC76EA00222F45 /* Point3D.ipp in Headers */,
 				F9070CA62B9F175000383E4D /* Concepts.hpp in Headers */,
+				F934BD722BF880330003EAD5 /* VertexShader.hpp in Headers */,
 				F986061A2BEB7651006A4C0F /* Ellipse.hpp in Headers */,
 				F9070D042B9F175100383E4D /* ThousandSeparate.hpp in Headers */,
 				F986FA822BCFB53B006A4C0F /* ftgxval.h in Headers */,
@@ -9881,6 +10005,7 @@
 				F9528C062BBF026F00222F45 /* compiler.h in Headers */,
 				F98601DB2BCFBB53006A4C0F /* SkLatticeIter.h in Headers */,
 				F9528A8A2BA0251E00222F45 /* Window.ipp in Headers */,
+				F934BD872BF881110003EAD5 /* CShader_Metal.hpp in Headers */,
 				F986040B2BCFBB54006A4C0F /* SkSLFieldAccess.h in Headers */,
 				F90706C42B9DAEC900383E4D /* pcg_uint128.hpp in Headers */,
 				F986004A2BCFBB53006A4C0F /* SkTiledImageUtils.h in Headers */,
@@ -9979,6 +10104,7 @@
 				F9528B542BB6DC2C00222F45 /* MicrosecClock.hpp in Headers */,
 				F9070C482B9F175000383E4D /* Byte.ipp in Headers */,
 				F9528C0C2BBF026F00222F45 /* error_private.h in Headers */,
+				F934BD7E2BF880860003EAD5 /* AssetHandleManager.ipp in Headers */,
 				F9528B782BB708A700222F45 /* CLicenseManager.hpp in Headers */,
 				F9528C472BBF026F00222F45 /* zstd.h in Headers */,
 				F986025C2BCFBB54006A4C0F /* SkSamplingPriv.h in Headers */,
@@ -10311,6 +10437,7 @@
 				F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */,
 				F98604242BCFBB54006A4C0F /* SkSLModifierFlags.cpp in Sources */,
 				F9070DEA2B9F175E00383E4D /* SivSystem.cpp in Sources */,
+				F934BD882BF881110003EAD5 /* CShader_Metal.mm in Sources */,
 				F98605E62BE50038006A4C0F /* SivInputState.cpp in Sources */,
 				F98603EA2BCFBB54006A4C0F /* SkSLConstructor.cpp in Sources */,
 				F98603FA2BCFBB54006A4C0F /* SkSLConstructorSplat.cpp in Sources */,
@@ -10341,6 +10468,7 @@
 				F98601962BCFBB53006A4C0F /* SkCubicMap.cpp in Sources */,
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
 				F98601AC2BCFBB53006A4C0F /* SkEdge.cpp in Sources */,
+				F934BD942BF8824B0003EAD5 /* EngineShaderFactory.cpp in Sources */,
 				F98602FC2BCFBB54006A4C0F /* SkOpts_skx.cpp in Sources */,
 				F986031C2BCFBB54006A4C0F /* SkPathOpsConic.cpp in Sources */,
 				F9070ED42B9F1C8900383E4D /* cocoa_joystick.m in Sources */,
@@ -10534,6 +10662,7 @@
 				F98602842BCFBB54006A4C0F /* SkSwizzler_opts.cpp in Sources */,
 				F98601CE2BCFBB53006A4C0F /* SkImageFilter.cpp in Sources */,
 				F986016C2BCFBB53006A4C0F /* SkBlitter_A8.cpp in Sources */,
+				F934BD792BF880620003EAD5 /* SivPixelShader.cpp in Sources */,
 				F986F9252BC8441F006A4C0F /* regtrav.c in Sources */,
 				F98602102BCFBB54006A4C0F /* SkPath.cpp in Sources */,
 				F98602492BCFBB54006A4C0F /* SkRecords.cpp in Sources */,
@@ -10574,6 +10703,7 @@
 				F98604442BCFBB54006A4C0F /* SkSLType.cpp in Sources */,
 				F98601752BCFBB53006A4C0F /* SkBlurMaskFilterImpl.cpp in Sources */,
 				F9070DBC2B9F175E00383E4D /* SivDate.cpp in Sources */,
+				F934BD892BF881110003EAD5 /* ShaderFactory.cpp in Sources */,
 				F98602982BCFBB54006A4C0F /* SkVertState.cpp in Sources */,
 				F98600E32BCFBB53006A4C0F /* SkSharedMutex.cpp in Sources */,
 				F9070DF12B9F175E00383E4D /* TextWriterDetail.cpp in Sources */,
@@ -10800,9 +10930,11 @@
 				F98604DA2BCFBB54006A4C0F /* SkJSON.cpp in Sources */,
 				F98603EE2BCFBB54006A4C0F /* SkSLConstructorArrayCast.cpp in Sources */,
 				F986F9992BCA9D0A006A4C0F /* plutovg-rle.c in Sources */,
+				F934BD782BF880620003EAD5 /* SivVertexShader.cpp in Sources */,
 				F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */,
 				F98601D82BCFBB53006A4C0F /* SkKnownRuntimeEffects.cpp in Sources */,
 				F98603362BCFBB54006A4C0F /* SkReduceOrder.cpp in Sources */,
+				F934BD922BF8824B0003EAD5 /* CEngineShader_Metal.cpp in Sources */,
 				F98600D22BCFBB53006A4C0F /* SkFloatingPoint.cpp in Sources */,
 				F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */,
 				F9070AF52B9DEB5900383E4D /* cached-powers.cc in Sources */,

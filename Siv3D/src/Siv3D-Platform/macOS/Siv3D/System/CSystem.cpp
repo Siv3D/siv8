@@ -25,6 +25,8 @@
 # include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
+# include <Siv3D/Shader/IShader.hpp>
+# include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -51,6 +53,8 @@ namespace s3d
 		SIV3D_ENGINE(Keyboard)->init();
 		SIV3D_ENGINE(Mouse)->init();
 		SIV3D_ENGINE(Renderer)->init();
+		SIV3D_ENGINE(Shader)->init();
+		SIV3D_ENGINE(EngineShader)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}
