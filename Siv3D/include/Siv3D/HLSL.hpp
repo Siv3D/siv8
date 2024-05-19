@@ -71,7 +71,7 @@ namespace s3d
 
 	DEFINE_BITMASK_OPERATORS(HLSL::CompileOption);
 
-	namespace Shader
+	namespace Platform::Windows
 	{
 		/// @brief HLSL ファイルからシェーダをコンパイルします。
 		/// @param hlslFilePath HLSL ファイルのパス
@@ -89,7 +89,6 @@ namespace s3d
 		/// @param entryPoint エントリーポイント
 		/// @param option コンパイルオプション
 		/// @return 保存に成功した場合 true, それ以外の場合は false
-	
 		[[nodiscard]]
 		bool CompileHLSLToFile(FilePathView hlslFilePath, FilePathView outputPath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
 	}

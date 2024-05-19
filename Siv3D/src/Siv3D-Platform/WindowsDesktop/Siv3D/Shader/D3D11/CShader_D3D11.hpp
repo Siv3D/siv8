@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/DLL.hpp>
+# include <Siv3D/HLSL.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
@@ -56,6 +57,8 @@ namespace s3d
 		const Blob& getBinaryVS(VertexShader::IDType handleID) override;
 
 		const Blob& getBinaryPS(PixelShader::IDType handleID) override;
+
+		Blob compileHLSL(std::string_view source, const std::string& sourceName, const std::string& entryPoint, ShaderStage shaderStage, HLSL::CompileOption option, std::string& message);
 
 	private:
 

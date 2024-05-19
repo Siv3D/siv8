@@ -769,6 +769,9 @@
     <Filter Include="src\Siv3D\HLSL">
       <UniqueIdentifier>{1dbed38d-0db0-40c7-abb8-0ab7d0c95c5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL">
+      <UniqueIdentifier>{5670f361-13a6-4c5c-b047-11e97d4e35ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5287,6 +5290,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\HLSL\SivHLSL.cpp">
       <Filter>src\Siv3D\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL\SivHLSL_Windows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

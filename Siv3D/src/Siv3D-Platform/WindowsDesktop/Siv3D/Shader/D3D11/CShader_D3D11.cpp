@@ -217,6 +217,11 @@ namespace s3d
 		return blob;
 	}
 
+	Blob CShader_D3D11::compileHLSL(const std::string_view source, const std::string& sourceName, const std::string& entryPoint, const ShaderStage shaderStage, const HLSL::CompileOption option, std::string& message)
+	{
+		return m_shaderCompiler.compile(source, sourceName, entryPoint, ToTargetName(shaderStage), FromEnum(option), message);
+	}
+
 	VertexShader::IDType CShader_D3D11::createVS(Blob&& binary)
 	{
 		auto vertexShader = std::make_unique<D3D11VertexShader>(std::move(binary), m_device);
