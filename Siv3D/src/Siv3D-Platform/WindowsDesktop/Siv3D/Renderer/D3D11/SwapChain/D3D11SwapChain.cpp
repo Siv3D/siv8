@@ -89,6 +89,7 @@ namespace s3d
 		m_hWnd = hWnd;
 		m_device = device.getDevice();
 		m_context = device.getContext();
+		m_dxgiDevice1 = device.getDXGIDevice1();
 		m_tearingSupport = CheckTearingSupport(device);
 
 		const DXGI_SWAP_CHAIN_DESC1 desc =
@@ -134,12 +135,8 @@ namespace s3d
 		}
 
 		{
-			LOG_TRACE(U"IDXGIDevice1::SetMaximumFrameLatency()");
-
-			if (const auto pDXGIDevice1 = device.getDXGIDevice1())
-			{
-				pDXGIDevice1->SetMaximumFrameLatency(DefaultMaximumFrameLatency);
-			}
+			LOG_DEBUG(fmt::format("IDXGIDevice1::SetMaximumFrameLatency({})", m_maximumFrameLatency));
+			m_dxgiDevice1->SetMaximumFrameLatency(m_maximumFrameLatency);
 		}
 
 		m_displayFrequency = GetDisplayFrequency(m_swapChain1.Get());
@@ -148,7 +145,7 @@ namespace s3d
 		m_previousWindowBounds = Window::GetState().bounds;
 	}
 
-	bool D3D11SwapChain::present(const bool vSync)
+	bool D3D11SwapChain::present()
 	{
 		if (const Rect windowBounds = Window::GetState().bounds;
 			windowBounds != m_previousWindowBounds)
@@ -159,7 +156,7 @@ namespace s3d
 			LOG_INFO(fmt::format("ℹ️ Display refresh rate: {:.1f} Hz", m_displayFrequency));
 		}
 
-		if (vSync)
+		if (m_vSyncEnabled)
 		{
 			return presentVSync();
 		}
@@ -167,6 +164,36 @@ namespace s3d
 		{
 			return presentNonVSync();
 		}
+	}
+
+	void D3D11SwapChain::setVSyncEnabled(const bool enabled) noexcept
+	{
+		m_vSyncEnabled = enabled;
+	}
+
+	bool D3D11SwapChain::isVSyncEnabled() const noexcept
+	{
+		return m_vSyncEnabled;
+	}
+
+	void D3D11SwapChain::setLowLatencyMode(const bool enabled) noexcept
+	{
+		const uint32 maximumFrameLatency = (enabled ? MaximumFrameLatency_LowLatency : MaximumFrameLatency_Default);
+
+		if (m_maximumFrameLatency != maximumFrameLatency)
+		{
+			m_maximumFrameLatency = maximumFrameLatency;
+
+			{
+				LOG_DEBUG(fmt::format("IDXGIDevice1::SetMaximumFrameLatency({})", m_maximumFrameLatency));
+				m_dxgiDevice1->SetMaximumFrameLatency(m_maximumFrameLatency);
+			}
+		}
+	}
+
+	bool D3D11SwapChain::isLowLatencyMode() const noexcept
+	{
+		return (m_maximumFrameLatency == MaximumFrameLatency_LowLatency);
 	}
 
 	bool D3D11SwapChain::presentVSync()

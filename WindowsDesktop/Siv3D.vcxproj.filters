@@ -763,6 +763,9 @@
     <Filter Include="src\Siv3D\EngineOption">
       <UniqueIdentifier>{83182778-032e-4f0a-8836-311318981c09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Graphics">
+      <UniqueIdentifier>{da935cbc-dce2-47ef-9f5b-e5b4a7414476}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5272,6 +5275,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\EngineOption\SivEngineOption.cpp">
       <Filter>src\Siv3D\EngineOption</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Graphics\SivGraphics.cpp">
+      <Filter>src\Siv3D\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

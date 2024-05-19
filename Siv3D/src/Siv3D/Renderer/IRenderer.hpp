@@ -50,5 +50,13 @@ namespace s3d
 		virtual std::pair<double, RectF> getLetterboxComposition() const noexcept = 0;
 
 		virtual void updateSceneSize() = 0;
+
+		virtual void setVSyncEnabled(bool enabled) = 0;
+
+		virtual bool isVSyncEnabled() const = 0;
+
+		virtual void setLowLatencyMode(bool enabled) = 0;
+
+		virtual bool isLowLatencyMode() const = 0;
 	};
 }

@@ -47,6 +47,14 @@ namespace s3d
 
 		void updateSceneSize() override;
 
+		void setVSyncEnabled(bool enabled) override;
+
+		bool isVSyncEnabled() const override;
+
+		void setLowLatencyMode(bool enabled) override;
+
+		bool isLowLatencyMode() const override;
+
 		const D3D11Device& getDevice() const noexcept;
 
 	private:
@@ -56,7 +64,5 @@ namespace s3d
 		D3D11SwapChain m_swapChain;
 
 		D3D11BackBuffer m_backBuffer;
-
-		bool m_vSyncEnabled = true;
 	};
 }

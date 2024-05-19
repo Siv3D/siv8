@@ -49,6 +49,14 @@ namespace s3d
 
 		void updateSceneSize() override;
 
+		void setVSyncEnabled(bool enabled) override;
+
+		bool isVSyncEnabled() const override;
+
+		void setLowLatencyMode(bool enabled) override;
+
+		bool isLowLatencyMode() const override;
+
 	private:
 		
 		NSWindow* m_metalWindow = nullptr;

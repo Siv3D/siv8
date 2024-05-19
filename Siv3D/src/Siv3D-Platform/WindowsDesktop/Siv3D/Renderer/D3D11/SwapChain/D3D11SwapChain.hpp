@@ -24,7 +24,7 @@ namespace s3d
 		void init(const HWND hWnd, const D3D11Device& device, const Size& frameBufferSize);
 
 		[[nodiscard]]
-		bool present(bool vSync);
+		bool present();
 
 		[[nodiscard]]
 		IDXGISwapChain1* getSwapChain1() const noexcept
@@ -32,15 +32,29 @@ namespace s3d
 			return m_swapChain1.Get();
 		}
 
+		void setVSyncEnabled(const bool enabled) noexcept;
+
+		[[nodiscard]]
+		bool isVSyncEnabled() const noexcept;
+
+		void setLowLatencyMode(const bool enabled) noexcept;
+
+		[[nodiscard]]
+		bool isLowLatencyMode() const noexcept;
+
 	private:
 
-		static constexpr uint32 DefaultMaximumFrameLatency = 2;
+		static constexpr uint32 MaximumFrameLatency_Default = 2;
+
+		static constexpr uint32 MaximumFrameLatency_LowLatency = 1;
 		
 		HWND m_hWnd						= nullptr;
 		
 		ID3D11Device* m_device			= nullptr;
 		
 		ID3D11DeviceContext* m_context	= nullptr;
+
+		IDXGIDevice1* m_dxgiDevice1		= nullptr;
 
 		bool m_tearingSupport			= false;
 
@@ -49,6 +63,10 @@ namespace s3d
 		double m_displayFrequency		= 60.0;
 
 		Rect m_previousWindowBounds		= Rect::Empty();
+
+		uint32 m_maximumFrameLatency	= MaximumFrameLatency_Default;
+
+		bool m_vSyncEnabled				= true;
 
 		[[nodiscard]]
 		bool presentVSync();
