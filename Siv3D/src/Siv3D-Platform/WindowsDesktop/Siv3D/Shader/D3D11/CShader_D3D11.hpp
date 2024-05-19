@@ -11,25 +11,16 @@
 
 # pragma once
 # include <Siv3D/Blob.hpp>
-# include <Siv3D/DLL.hpp>
 # include <Siv3D/HLSL.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
 # include "VertexShader/D3D11VertexShader.hpp"
 # include "PixelShader/D3D11PixelShader.hpp"
+# include "HLSLCompiler.hpp"
 
 namespace s3d
 {
-	struct ShaderCompiler
-	{
-		LibraryHandle d3dCompiler = nullptr;
-
-		decltype(D3DCompile)* p_D3DCompile = nullptr;
-
-		Blob compile(std::string_view source, const std::string& sourceName, const std::string& entryPoint, const char* target, uint32 flags, std::string& message);
-	};
-
 	class CShader_D3D11 final : public ISiv3DShader
 	{
 	public:
@@ -74,7 +65,7 @@ namespace s3d
 		// context のコピー
 		ID3D11DeviceContext* m_context = nullptr;
 
-		ShaderCompiler m_shaderCompiler;
+		HLSLCompiler m_shaderCompiler;
 
 		// VS の管理
 		AssetHandleManager<VertexShader::IDType, D3D11VertexShader> m_vertexShaders{ "VertexShader" };

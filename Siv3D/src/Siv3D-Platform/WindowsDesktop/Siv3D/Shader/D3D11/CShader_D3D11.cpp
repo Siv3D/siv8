@@ -29,10 +29,10 @@ namespace s3d
 				return false;
 			}
 
-			return (blob[0] == Byte{ 'D' })
-				&& (blob[1] == Byte{ 'X' })
-				&& (blob[2] == Byte{ 'B' })
-				&& (blob[3] == Byte{ 'C' });
+			return ((blob[0] == Byte{ 'D' })
+				 && (blob[1] == Byte{ 'X' })
+				 && (blob[2] == Byte{ 'B' })
+				 && (blob[3] == Byte{ 'C' }));
 		}
 
 		static constexpr const char* ToTargetName(const ShaderStage stage) noexcept
@@ -49,7 +49,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Blob CompileHLSLFromFile(ShaderCompiler& shaderCompiler, const FilePathView path, const ShaderStage stage, const StringView entryPoint, const uint32 flags)
+		static Blob CompileHLSLFromFile(HLSLCompiler& shaderCompiler, const FilePathView path, const ShaderStage stage, const StringView entryPoint, const uint32 flags)
 		{
 			LOG_DEBUG(fmt::format("CompileHLSLFromFile(path = {}, stage = {}, entryPoint = {}, flags = {:#X})", path, ToTargetName(stage), entryPoint, flags));
 
@@ -119,6 +119,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	createVSFromFile
+	//
+	////////////////////////////////////////////////////////////////
+
 	VertexShader::IDType CShader_D3D11::createVSFromFile(const FilePathView path, StringView entryPoint)
 	{
 		Blob blob{ path };
@@ -147,15 +153,33 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	createVSFromSource
+	//
+	////////////////////////////////////////////////////////////////
+
 	VertexShader::IDType CShader_D3D11::createVSFromSource(const StringView source, StringView entryPoint)
 	{
 		return(VertexShader::IDType::Null());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	createVSFromBytecode
+	//
+	////////////////////////////////////////////////////////////////
+
 	VertexShader::IDType CShader_D3D11::createVSFromBytecode(const Blob& bytecode)
 	{
 		return createVS(Blob{ bytecode });
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	createPSFromFile
+	//
+	////////////////////////////////////////////////////////////////
 
 	PixelShader::IDType CShader_D3D11::createPSFromFile(const FilePathView path, StringView entryPoint)
 	{
@@ -185,35 +209,77 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	createPSFromSource
+	//
+	////////////////////////////////////////////////////////////////
+
 	PixelShader::IDType CShader_D3D11::createPSFromSource(const StringView source, StringView entryPoint)
 	{
 		return(PixelShader::IDType::Null());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	createPSFromBytecode
+	//
+	////////////////////////////////////////////////////////////////
 
 	PixelShader::IDType CShader_D3D11::createPSFromBytecode(const Blob& bytecode)
 	{
 		return createPS(Blob{ bytecode });
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	releaseVS
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CShader_D3D11::releaseVS(const VertexShader::IDType handleID)
 	{
 		m_vertexShaders.erase(handleID);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	releasePS
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CShader_D3D11::releasePS(const PixelShader::IDType handleID)
 	{
 		m_pixelShaders.erase(handleID);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setVS
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CShader_D3D11::setVS(const VertexShader::IDType handleID)
 	{
 		m_context->VSSetShader(m_vertexShaders[handleID]->getShader(), nullptr, 0);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setPS
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CShader_D3D11::setPS(const PixelShader::IDType handleID)
 	{
 		m_context->PSSetShader(m_pixelShaders[handleID]->getShader(), nullptr, 0);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBytecodeVS
+	//
+	////////////////////////////////////////////////////////////////
 
 	const Blob& CShader_D3D11::getBytecodeVS(const VertexShader::IDType handleID)
 	{
@@ -221,16 +287,34 @@ namespace s3d
 		return blob;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBytecodePS
+	//
+	////////////////////////////////////////////////////////////////
+
 	const Blob& CShader_D3D11::getBytecodePS(const PixelShader::IDType handleID)
 	{
 		static const Blob blob;
 		return blob;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	complieHLSL
+	//
+	////////////////////////////////////////////////////////////////
+
 	Blob CShader_D3D11::compileHLSL(const std::string_view source, const std::string& sourceName, const std::string& entryPoint, const ShaderStage shaderStage, const HLSL::CompileOption option, std::string& message)
 	{
 		return m_shaderCompiler.compile(source, sourceName, entryPoint, ToTargetName(shaderStage), FromEnum(option), message);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
 
 	VertexShader::IDType CShader_D3D11::createVS(Blob&& bytecode)
 	{
@@ -254,41 +338,5 @@ namespace s3d
 		}
 
 		return m_pixelShaders.add(std::move(pixelShader));
-	}
-
-	Blob ShaderCompiler::compile(const std::string_view source, const std::string& sourceName, const std::string& entryPoint, const char* target, const uint32 flags, std::string& message)
-	{
-		message.clear();
-
-		if (not p_D3DCompile)
-		{
-			d3dCompiler		= DLL::LoadSystemLibrary(L"d3dcompiler_47.dll");
-			p_D3DCompile	= DLL::GetFunction(d3dCompiler, "D3DCompile");
-		}
-
-		ComPtr<ID3DBlob> binary, error;
-		const HRESULT hr = p_D3DCompile(source.data(), source.size(),
-			sourceName.c_str(), nullptr, nullptr,
-			entryPoint.c_str(),
-			target,
-			flags, 0, &binary, &error);
-
-		if (error)
-		{
-			message.assign(static_cast<const char*>(error->GetBufferPointer()));
-		}
-
-		if (FAILED(hr)) // 失敗したら
-		{
-			LOG_FAIL("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile():\n" + message);
-
-			return{};
-		}
-		else if (error)
-		{
-			LOG_WARN("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile():\n" + message);
-		}
-
-		return Blob{ binary->GetBufferPointer(), binary->GetBufferSize() };
 	}
 }
