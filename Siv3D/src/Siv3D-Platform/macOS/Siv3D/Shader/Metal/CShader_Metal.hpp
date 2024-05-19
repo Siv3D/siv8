@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -28,9 +28,13 @@ namespace s3d
 
 		VertexShader::IDType createVSFromSource(StringView source, StringView entryPoint) override;
 
+		VertexShader::IDType createVSFromBytecode(const Blob& bytecode) override;
+
 		PixelShader::IDType createPSFromFile(FilePathView path, StringView entryPoint) override;
 
 		PixelShader::IDType createPSFromSource(StringView source, StringView entryPoint) override;
+
+		PixelShader::IDType createPSFromBytecode(const Blob& bytecode) override;
 
 		void releaseVS(VertexShader::IDType handleID) override;
 

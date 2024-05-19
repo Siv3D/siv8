@@ -57,12 +57,22 @@ namespace s3d
 		return(VertexShader::IDType::Null());
 	}
 
+	VertexShader::IDType CShader_Metal::createVSFromBytecode(const Blob& bytecode)
+	{
+		return(VertexShader::IDType::Null());
+	}
+
 	PixelShader::IDType CShader_Metal::createPSFromFile(const FilePathView path, StringView entryPoint)
 	{
 		return(PixelShader::IDType::Null());
 	}
 
 	PixelShader::IDType CShader_Metal::createPSFromSource(const StringView source, StringView entryPoint)
+	{
+		return(PixelShader::IDType::Null());
+	}
+
+	PixelShader::IDType CShader_Metal::createPSFromBytecode(const Blob& bytecode)
 	{
 		return(PixelShader::IDType::Null());
 	}
