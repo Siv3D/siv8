@@ -209,6 +209,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HashSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashTable.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HeterogeneousLookupHelper.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\HLSL.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HSV.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IImageEncoder.hpp" />
@@ -901,6 +902,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics\SivGraphics.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HalfFloat\SivHalfFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Hash\SivHash.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\HLSL\SivHLSL.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HSV\SivHSV.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IImageDecoder\SivIImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.cpp" />

@@ -1340,6 +1340,9 @@
 //// シェーダ | Shader
 //# include <Siv3D/Shader.hpp>
 
+
+# include <Siv3D/HLSL.hpp>
+
 // シェーダステージ | Shader stage
 # include <Siv3D/ShaderStage.hpp>
 
