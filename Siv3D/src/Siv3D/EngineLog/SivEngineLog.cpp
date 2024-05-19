@@ -20,6 +20,11 @@ namespace s3d
 	{
 		void OutputEngineLog(const LogType type, const std::string_view s)
 		{
+			if (Siv3DEngine::isNull())
+			{
+				return;
+			}
+
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
 				pLogger->writeln(type, s);
@@ -28,6 +33,11 @@ namespace s3d
 
 		void OutputEngineLog(const LogType type, const StringView s)
 		{
+			if (Siv3DEngine::isNull())
+			{
+				return;
+			}
+
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
 				pLogger->writeln(type, s);

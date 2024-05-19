@@ -20,7 +20,7 @@ namespace s3d
 	{
 		static void CheckEngine()
 		{
-			if (not Siv3DEngine::isAvailable())
+			if (Siv3DEngine::isNull())
 			{
 				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, U"VertexShader");
 				std::exit(EXIT_FAILURE);

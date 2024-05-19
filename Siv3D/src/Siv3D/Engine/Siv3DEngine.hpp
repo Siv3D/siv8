@@ -72,7 +72,7 @@ namespace s3d
 		~Siv3DEngine();
 
 		[[nodiscard]]
-		static bool isNotNull() noexcept;
+		static bool isNull() noexcept;
 
 		[[nodiscard]]
 		static bool isAvailable() noexcept;
