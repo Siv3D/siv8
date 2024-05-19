@@ -22,7 +22,7 @@ namespace s3d
 	{
 		m_data.emplace(IDType::Null(), std::move(data));
 
-		LOG_TRACE(fmt::format("💠 Created {0}[0(null)]", m_assetTypeName));
+		LOG_DEBUG(fmt::format("💠 Created {0}[0(null)]", m_assetTypeName));
 	}
 
 	template <class IDType, class Data>
@@ -48,7 +48,7 @@ namespace s3d
 		{
 			m_data.emplace(m_idCount, std::move(data));
 
-			LOG_TRACE(fmt::format("💠 Created {0}[{1}] {2}", m_assetTypeName, m_idCount, info));
+			LOG_DEBUG(fmt::format("💠 Created {0}[{1}] {2}", m_assetTypeName, m_idCount, info));
 
 			return IDType(m_idCount);
 		}
@@ -67,7 +67,7 @@ namespace s3d
 				{
 					m_data.emplace(m_idCount, std::move(data));
 
-					LOG_TRACE(fmt::format("💠 Created {0}[{1}] {2}", m_assetTypeName, m_idCount, info));
+					LOG_DEBUG(fmt::format("💠 Created {0}[{1}] {2}", m_assetTypeName, m_idCount, info));
 
 					return IDType(m_idCount);
 				}
@@ -91,7 +91,7 @@ namespace s3d
 
 		assert(it != m_data.end());
 
-		LOG_TRACE(fmt::format("♻️ Released {0}[{1}]", m_assetTypeName, id.value()));
+		LOG_DEBUG(fmt::format("♻️ Released {0}[{1}]", m_assetTypeName, id.value()));
 
 		m_data.erase(it);
 
@@ -107,11 +107,11 @@ namespace s3d
 		{
 			if (const auto id = data.first; (not id.isNull()))
 			{
-				LOG_TRACE(fmt::format("♻️ Released {0}[{1}]", m_assetTypeName, id.value()));
+				LOG_DEBUG(fmt::format("♻️ Released {0}[{1}]", m_assetTypeName, id.value()));
 			}
 			else
 			{
-				LOG_TRACE(fmt::format("♻️ Released {0}[0(null)]", m_assetTypeName));
+				LOG_DEBUG(fmt::format("♻️ Released {0}[0(null)]", m_assetTypeName));
 			}
 		}
 

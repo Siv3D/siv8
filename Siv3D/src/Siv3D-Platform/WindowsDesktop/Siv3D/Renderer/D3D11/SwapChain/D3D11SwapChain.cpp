@@ -124,7 +124,7 @@ namespace s3d
 		}
 
 		{
-			LOG_TRACE(U"IDXGIFactory::MakeWindowAssociation()");
+			LOG_TRACE("IDXGIFactory::MakeWindowAssociation()");
 
 			constexpr uint32 Flags = (DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER);
 
@@ -135,7 +135,7 @@ namespace s3d
 		}
 
 		{
-			LOG_DEBUG(fmt::format("IDXGIDevice1::SetMaximumFrameLatency({})", m_maximumFrameLatency));
+			LOG_TRACE(fmt::format("IDXGIDevice1::SetMaximumFrameLatency({})", m_maximumFrameLatency));
 			m_dxgiDevice1->SetMaximumFrameLatency(m_maximumFrameLatency);
 		}
 
@@ -185,7 +185,7 @@ namespace s3d
 			m_maximumFrameLatency = maximumFrameLatency;
 
 			{
-				LOG_DEBUG(fmt::format("IDXGIDevice1::SetMaximumFrameLatency({})", m_maximumFrameLatency));
+				LOG_TRACE(fmt::format("IDXGIDevice1::SetMaximumFrameLatency({})", m_maximumFrameLatency));
 				m_dxgiDevice1->SetMaximumFrameLatency(m_maximumFrameLatency);
 			}
 		}
@@ -230,12 +230,12 @@ namespace s3d
 		}
 		else if (hr == DXGI_ERROR_DEVICE_RESET)
 		{
-			LOG_FAIL(U"❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_RESET)");
+			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_RESET)");
 			return false;
 		}
 		else if (hr == DXGI_ERROR_DEVICE_REMOVED)
 		{
-			LOG_FAIL(U"❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_REMOVED)");
+			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_REMOVED)");
 			return false;
 		}
 
