@@ -29,7 +29,7 @@ namespace s3d
 		virtual ~VertexShader();
 
 		[[nodiscard]]
-		const Blob& getBinary() const noexcept;
+		const Blob& getBytecode() const noexcept;
 
 		void swap(VertexShader& other) noexcept;
 
@@ -48,11 +48,17 @@ namespace s3d
 		static VertexShader HLSL(FilePathView path, StringView entryPoint = U"VS");
 
 		[[nodiscard]]
+		static VertexShader HLSL(const Blob& bytecode);
+
+		[[nodiscard]]
 		static VertexShader MSL(StringView entryPoint, FilePathView path = {});
 
 	private:
 
 		[[nodiscard]]
 		VertexShader(FilePathView path, StringView entryPoint);
+
+		[[nodiscard]]
+		explicit VertexShader(const Blob& bytecode);
 	};
 }

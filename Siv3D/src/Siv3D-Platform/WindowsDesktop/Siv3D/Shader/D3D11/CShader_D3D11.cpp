@@ -149,7 +149,12 @@ namespace s3d
 
 	VertexShader::IDType CShader_D3D11::createVSFromSource(const StringView source, StringView entryPoint)
 	{
-		return VertexShader::IDType::Null();
+		return(VertexShader::IDType::Null());
+	}
+
+	VertexShader::IDType CShader_D3D11::createVSFromBytecode(const Blob& bytecode)
+	{
+		return createVS(Blob{ bytecode });
 	}
 
 	PixelShader::IDType CShader_D3D11::createPSFromFile(const FilePathView path, StringView entryPoint)
@@ -182,7 +187,12 @@ namespace s3d
 
 	PixelShader::IDType CShader_D3D11::createPSFromSource(const StringView source, StringView entryPoint)
 	{
-		return PixelShader::IDType::Null();
+		return(PixelShader::IDType::Null());
+	}
+
+	PixelShader::IDType CShader_D3D11::createPSFromBytecode(const Blob& bytecode)
+	{
+		return createPS(Blob{ bytecode });
 	}
 
 	void CShader_D3D11::releaseVS(const VertexShader::IDType handleID)
@@ -205,13 +215,13 @@ namespace s3d
 		m_context->PSSetShader(m_pixelShaders[handleID]->getShader(), nullptr, 0);
 	}
 
-	const Blob& CShader_D3D11::getBinaryVS(const VertexShader::IDType handleID)
+	const Blob& CShader_D3D11::getBytecodeVS(const VertexShader::IDType handleID)
 	{
 		static const Blob blob;
 		return blob;
 	}
 
-	const Blob& CShader_D3D11::getBinaryPS(const PixelShader::IDType handleID)
+	const Blob& CShader_D3D11::getBytecodePS(const PixelShader::IDType handleID)
 	{
 		static const Blob blob;
 		return blob;
@@ -222,9 +232,9 @@ namespace s3d
 		return m_shaderCompiler.compile(source, sourceName, entryPoint, ToTargetName(shaderStage), FromEnum(option), message);
 	}
 
-	VertexShader::IDType CShader_D3D11::createVS(Blob&& binary)
+	VertexShader::IDType CShader_D3D11::createVS(Blob&& bytecode)
 	{
-		auto vertexShader = std::make_unique<D3D11VertexShader>(std::move(binary), m_device);
+		auto vertexShader = std::make_unique<D3D11VertexShader>(std::move(bytecode), m_device);
 
 		if (not vertexShader->isInitialized())
 		{
@@ -234,9 +244,9 @@ namespace s3d
 		return m_vertexShaders.add(std::move(vertexShader));
 	}
 
-	PixelShader::IDType CShader_D3D11::createPS(Blob&& binary)
+	PixelShader::IDType CShader_D3D11::createPS(Blob&& bytecode)
 	{
-		auto pixelShader = std::make_unique<D3D11PixelShader>(std::move(binary), m_device);
+		auto pixelShader = std::make_unique<D3D11PixelShader>(std::move(bytecode), m_device);
 
 		if (not pixelShader->isInitialized())
 		{
@@ -270,13 +280,13 @@ namespace s3d
 
 		if (FAILED(hr)) // 失敗したら
 		{
-			LOG_FAIL("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile(): " + message);
+			LOG_FAIL("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile():\n" + message);
 
 			return{};
 		}
 		else if (error)
 		{
-			LOG_WARN("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile(): " + message);
+			LOG_WARN("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile():\n" + message);
 		}
 
 		return Blob{ binary->GetBufferPointer(), binary->GetBufferSize() };

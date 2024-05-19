@@ -42,9 +42,13 @@ namespace s3d
 
 		VertexShader::IDType createVSFromSource(StringView source, StringView entryPoint) override;
 
+		VertexShader::IDType createVSFromBytecode(const Blob& bytecode) override;
+
 		PixelShader::IDType createPSFromFile(FilePathView path, StringView entryPoint) override;
 
 		PixelShader::IDType createPSFromSource(StringView source, StringView entryPoint) override;
+
+		PixelShader::IDType createPSFromBytecode(const Blob& bytecode) override;
 
 		void releaseVS(VertexShader::IDType handleID) override;
 
@@ -54,9 +58,9 @@ namespace s3d
 
 		void setPS(PixelShader::IDType handleID) override;
 
-		const Blob& getBinaryVS(VertexShader::IDType handleID) override;
+		const Blob& getBytecodeVS(VertexShader::IDType handleID) override;
 
-		const Blob& getBinaryPS(PixelShader::IDType handleID) override;
+		const Blob& getBytecodePS(PixelShader::IDType handleID) override;
 
 		Blob compileHLSL(std::string_view source, const std::string& sourceName, const std::string& entryPoint, ShaderStage shaderStage, HLSL::CompileOption option, std::string& message);
 
@@ -78,8 +82,8 @@ namespace s3d
 		// PS の管理
 		AssetHandleManager<PixelShader::IDType, D3D11PixelShader> m_pixelShaders{ "PixelShader" };
 
-		VertexShader::IDType createVS(Blob&& binary);
+		VertexShader::IDType createVS(Blob&& bytecode);
 
-		PixelShader::IDType createPS(Blob&& binary);
+		PixelShader::IDType createPS(Blob&& bytecode);
 	};
 }

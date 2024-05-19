@@ -29,7 +29,7 @@ namespace s3d
 		virtual ~PixelShader();
 
 		[[nodiscard]]
-		const Blob& getBinary() const noexcept;
+		const Blob& getBytecode() const noexcept;
 
 		void swap(PixelShader& other) noexcept;
 
@@ -48,11 +48,17 @@ namespace s3d
 		static PixelShader HLSL(FilePathView path, StringView entryPoint = U"PS");
 
 		[[nodiscard]]
+		static PixelShader HLSL(const Blob& bytecode);
+
+		[[nodiscard]]
 		static PixelShader MSL(StringView entryPoint, FilePathView path = {});
 
 	private:
 
 		[[nodiscard]]
 		PixelShader(FilePathView path, StringView entryPoint);
+
+		[[nodiscard]]
+		explicit PixelShader(const Blob& bytecode);
 	};
 }

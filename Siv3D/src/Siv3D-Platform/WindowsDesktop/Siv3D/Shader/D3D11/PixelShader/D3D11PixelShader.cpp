@@ -16,10 +16,10 @@ namespace s3d
 	D3D11PixelShader::D3D11PixelShader(Null)
 		: m_initialized{ true } {}
 
-	D3D11PixelShader::D3D11PixelShader(Blob&& binary, ID3D11Device* device)
-		: m_binary{ std::move(binary) }
+	D3D11PixelShader::D3D11PixelShader(Blob&& bytecode, ID3D11Device* device)
+		: m_bytecode{ std::move(bytecode) }
 	{
-		if (FAILED(device->CreatePixelShader(m_binary.data(), static_cast<size_t>(m_binary.size()), nullptr, &m_shader)))
+		if (FAILED(device->CreatePixelShader(m_bytecode.data(), static_cast<size_t>(m_bytecode.size()), nullptr, &m_shader)))
 		{
 			return;
 		}
@@ -37,8 +37,8 @@ namespace s3d
 		return m_shader.Get();
 	}
 
-	const Blob& D3D11PixelShader::getBinary() const noexcept
+	const Blob& D3D11PixelShader::getBytecode() const noexcept
 	{
-		return m_binary;
+		return m_bytecode;
 	}
 }

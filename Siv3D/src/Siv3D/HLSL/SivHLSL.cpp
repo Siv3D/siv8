@@ -22,6 +22,9 @@ namespace s3d
 		: path{ std::move(_path) }
 		, entryPoint{ std::move(_entryPoint) } {}
 
+	HLSL::HLSL(const Blob& bytecode)
+		: bytecode{ bytecode } {}
+
 	HLSL::operator VertexShader() const
 	{
 		if (entryPoint)

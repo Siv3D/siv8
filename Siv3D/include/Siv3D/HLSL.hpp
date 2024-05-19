@@ -50,11 +50,16 @@ namespace s3d
 
 		String entryPoint;
 
+		Blob bytecode;
+
 		[[nodiscard]]
 		explicit HLSL(FilePath _path);
 
 		[[nodiscard]]
 		HLSL(FilePath _path, String _entryPoint);
+
+		[[nodiscard]]
+		explicit HLSL(const Blob& bytecode);
 
 		//[[nodiscard]]
 		//ShaderGroup operator |(const GLSL& glsl) const;
@@ -73,14 +78,23 @@ namespace s3d
 
 	namespace Platform::Windows
 	{
-		/// @brief HLSL ファイルからシェーダをコンパイルします。
-		/// @param hlslFilePath HLSL ファイルのパス
+		/// @brief HLSL コードをコンパイルします。
+		/// @param source HLSL コード
 		/// @param shaderStage シェーダの種類
 		/// @param entryPoint エントリーポイント
 		/// @param option コンパイルオプション
 		/// @return コンパイルされたシェーダのバイトコード、失敗した場合はエラーメッセージ
 		[[nodiscard]]
-		Result<Blob, String> CompileHLSL(FilePathView hlslFilePath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
+		Result<Blob, String> CompileHLSLFromSource(std::string_view source, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
+
+		/// @brief HLSL コードをコンパイルします。
+		/// @param source HLSL コード
+		/// @param shaderStage シェーダの種類
+		/// @param entryPoint エントリーポイント
+		/// @param option コンパイルオプション
+		/// @return コンパイルされたシェーダのバイトコード、失敗した場合はエラーメッセージ
+		[[nodiscard]]
+		Result<Blob, String> CompileHLSLFromSource(StringView source, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
 
 		/// @brief HLSL ファイルからシェーダをコンパイルした結果をファイルに保存します。
 		/// @param hlslFilePath HLSL ファイルのパス
@@ -90,6 +104,35 @@ namespace s3d
 		/// @param option コンパイルオプション
 		/// @return 保存に成功した場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool CompileHLSLToFile(FilePathView hlslFilePath, FilePathView outputPath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
+		bool CompileHLSLFromSource(std::string_view source, FilePathView outputPath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
+
+		/// @brief HLSL ファイルからシェーダをコンパイルした結果をファイルに保存します。
+		/// @param hlslFilePath HLSL ファイルのパス
+		/// @param outputPath 保存先のファイルパス
+		/// @param shaderStage シェーダの種類
+		/// @param entryPoint エントリーポイント
+		/// @param option コンパイルオプション
+		/// @return 保存に成功した場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool CompileHLSLFromSource(FilePathView source, FilePathView outputPath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
+
+		/// @brief HLSL ファイルからシェーダをコンパイルします。
+		/// @param hlslFilePath HLSL ファイルのパス
+		/// @param shaderStage シェーダの種類
+		/// @param entryPoint エントリーポイント
+		/// @param option コンパイルオプション
+		/// @return コンパイルされたシェーダのバイトコード、失敗した場合はエラーメッセージ
+		[[nodiscard]]
+		Result<Blob, String> CompileHLSLFromFile(FilePathView hlslFilePath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
+
+		/// @brief HLSL ファイルからシェーダをコンパイルした結果をファイルに保存します。
+		/// @param hlslFilePath HLSL ファイルのパス
+		/// @param outputPath 保存先のファイルパス
+		/// @param shaderStage シェーダの種類
+		/// @param entryPoint エントリーポイント
+		/// @param option コンパイルオプション
+		/// @return 保存に成功した場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool CompileHLSLFromFile(FilePathView hlslFilePath, FilePathView outputPath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
 	}
 }

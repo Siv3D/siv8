@@ -53,11 +53,17 @@ namespace s3d
 		//SIV3D_ENGINE(AssetMonitor)->created();
 	}
 
+	VertexShader::VertexShader(const Blob& bytecode)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromBytecode(bytecode))) }
+	{
+		//SIV3D_ENGINE(AssetMonitor)->created();
+	}
+
 	VertexShader::~VertexShader() {}
 
-	const Blob& VertexShader::getBinary() const noexcept
+	const Blob& VertexShader::getBytecode() const noexcept
 	{
-		return SIV3D_ENGINE(Shader)->getBinaryVS(m_handle->id());
+		return SIV3D_ENGINE(Shader)->getBytecodeVS(m_handle->id());
 	}
 
 	void VertexShader::swap(VertexShader& other) noexcept
@@ -73,6 +79,16 @@ namespace s3d
 		//}
 
 		return VertexShader{ path, entryPoint };
+	}
+
+	VertexShader VertexShader::HLSL(const Blob& bytecode)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
+		//{
+		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//}
+
+		return VertexShader{ bytecode };
 	}
 
 	VertexShader VertexShader::MSL(const StringView entryPoint, const FilePathView path)

@@ -40,9 +40,9 @@ namespace s3d
 
 		void setPS(PixelShader::IDType handleID) override;
 
-		const Blob& getBinaryVS(VertexShader::IDType handleID) override;
+		const Blob& getBytecodeVS(VertexShader::IDType handleID) override;
 
-		const Blob& getBinaryPS(PixelShader::IDType handleID) override;
+		const Blob& getBytecodePS(PixelShader::IDType handleID) override;
 
 	private:
 

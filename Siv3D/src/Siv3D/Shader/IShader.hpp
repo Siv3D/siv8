@@ -31,9 +31,13 @@ namespace s3d
 
 		virtual VertexShader::IDType createVSFromSource(StringView source, StringView entryPoint) = 0;
 
+		virtual VertexShader::IDType createVSFromBytecode(const Blob& bytecode) = 0;
+
 		virtual PixelShader::IDType createPSFromFile(FilePathView path, StringView entryPoint) = 0;
 
 		virtual PixelShader::IDType createPSFromSource(StringView source, StringView entryPoint) = 0;
+
+		virtual PixelShader::IDType createPSFromBytecode(const Blob& bytecode) = 0;
 
 		virtual void releaseVS(VertexShader::IDType handleID) = 0;
 
@@ -43,8 +47,8 @@ namespace s3d
 
 		virtual void setPS(PixelShader::IDType handleID) = 0;
 
-		virtual const Blob& getBinaryVS(VertexShader::IDType handleID) = 0;
+		virtual const Blob& getBytecodeVS(VertexShader::IDType handleID) = 0;
 
-		virtual const Blob& getBinaryPS(PixelShader::IDType handleID) = 0;
+		virtual const Blob& getBytecodePS(PixelShader::IDType handleID) = 0;
 	};
 }

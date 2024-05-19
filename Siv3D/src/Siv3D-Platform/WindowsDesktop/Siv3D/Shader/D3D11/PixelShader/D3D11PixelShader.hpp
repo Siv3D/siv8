@@ -29,7 +29,7 @@ namespace s3d
 		D3D11PixelShader(Null);
 
 		[[nodiscard]]
-		D3D11PixelShader(Blob&& binary, ID3D11Device* device);
+		D3D11PixelShader(Blob&& bytecode, ID3D11Device* device);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;
@@ -38,11 +38,11 @@ namespace s3d
 		ID3D11PixelShader* getShader() const;
 
 		[[nodiscard]]
-		const Blob& getBinary() const noexcept;
+		const Blob& getBytecode() const noexcept;
 
 	private:
 
-		Blob m_binary;
+		Blob m_bytecode;
 
 		ComPtr<ID3D11PixelShader> m_shader;
 

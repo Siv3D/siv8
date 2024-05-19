@@ -87,13 +87,13 @@ namespace s3d
 		//m_context->PSSetShader(m_pixelShaders[handleID]->getShader(), nullptr, 0);
 	}
 
-	const Blob& CShader_Metal::getBinaryVS(const VertexShader::IDType handleID)
+	const Blob& CShader_Metal::getBytecodeVS(const VertexShader::IDType handleID)
 	{
 		static const Blob blob;
 		return blob;
 	}
 
-	const Blob& CShader_Metal::getBinaryPS(const PixelShader::IDType handleID)
+	const Blob& CShader_Metal::getBytecodePS(const PixelShader::IDType handleID)
 	{
 		static const Blob blob;
 		return blob;

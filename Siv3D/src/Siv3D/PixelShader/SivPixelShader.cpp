@@ -53,11 +53,17 @@ namespace s3d
 		//SIV3D_ENGINE(AssetMonitor)->created();
 	}
 
+	PixelShader::PixelShader(const Blob& bytecode)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createPSFromBytecode(bytecode))) }
+	{
+		//SIV3D_ENGINE(AssetMonitor)->created();
+	}
+
 	PixelShader::~PixelShader() {}
 
-	const Blob& PixelShader::getBinary() const noexcept
+	const Blob& PixelShader::getBytecode() const noexcept
 	{
-		return SIV3D_ENGINE(Shader)->getBinaryPS(m_handle->id());
+		return SIV3D_ENGINE(Shader)->getBytecodePS(m_handle->id());
 	}
 
 	void PixelShader::swap(PixelShader& other) noexcept
@@ -73,6 +79,16 @@ namespace s3d
 		//}
 
 		return PixelShader{ path, entryPoint };
+	}
+
+	PixelShader PixelShader::HLSL(const Blob& bytecode)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
+		//{
+		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//}
+
+		return PixelShader{ bytecode };
 	}
 
 	PixelShader PixelShader::MSL(const StringView entryPoint, const FilePathView path)
