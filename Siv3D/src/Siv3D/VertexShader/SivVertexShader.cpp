@@ -42,10 +42,7 @@ namespace s3d
 			return;
 		}
 
-		if (auto p = SIV3D_ENGINE(Shader))
-		{
-			p->releaseVS(m_id);
-		}
+		SIV3D_ENGINE(Shader)->releaseVS(m_id);
 	}
 
 	VertexShader::VertexShader() {}

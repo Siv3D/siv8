@@ -89,6 +89,6 @@ namespace s3d
 	bool Siv3DEngine::isAvailable() noexcept
 	{
 		constexpr auto LastIndex = (std::tuple_size<decltype(m_components)>::value - 1);	
-		return (std::get<LastIndex>(pEngine->m_components).get() != nullptr);
+		return (pEngine && (std::get<LastIndex>(pEngine->m_components).get() != nullptr));
 	}
 }

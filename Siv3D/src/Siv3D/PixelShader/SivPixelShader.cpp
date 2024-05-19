@@ -42,10 +42,7 @@ namespace s3d
 			return;
 		}
 
-		if (auto p = SIV3D_ENGINE(Shader))
-		{
-			p->releasePS(m_id);
-		}
+		SIV3D_ENGINE(Shader)->releasePS(m_id);
 	}
 
 	PixelShader::PixelShader() {}
