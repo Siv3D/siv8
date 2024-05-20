@@ -17,6 +17,3 @@
 # include <d3d11_1.h>
 # include <dxgi1_6.h>
 # include <d3dcompiler.h>
-
-# define SIV3D_USE_DIRECT3D11_3
-//# define SIV3D_USE_DIRECT3D11_4

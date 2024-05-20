@@ -37,6 +37,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief HLSL のコンパイルオプション
 		enum class CompileOption
 		{
 			Debug					= (1 << 0),
@@ -58,10 +59,13 @@ namespace s3d
 			Default					= (OptimizationLevel3 | WarningsAreErrors),
 		};
 
+		/// @brief HLSL ファイルのパス
 		FilePath path;
 
+		/// @brief エントリーポイント
 		String entryPoint;
 
+		/// @brief バイトコード
 		Blob bytecode;
 
 		////////////////////////////////////////////////////////////////
@@ -70,12 +74,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ファイルパスで HLSL を指定します。
+		/// @param _path HLSL ファイルのパス
 		[[nodiscard]]
 		explicit HLSL(FilePath _path);
 
+		/// @brief ファイルパスとエントリーポイントで HLSL を指定します。
+		/// @param _path HLSL ファイルのパス
+		/// @param _entryPoint エントリーポイント
 		[[nodiscard]]
 		HLSL(FilePath _path, String _entryPoint);
 
+		/// @brief バイトコードで HLSL を指定します。
+		/// @param bytecode HLSL バイトコード
 		[[nodiscard]]
 		explicit HLSL(const Blob& bytecode);
 
@@ -91,6 +102,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief HLSL から頂点シェーダを作成します。
 		[[nodiscard]]
 		operator VertexShader() const;
 
@@ -100,6 +112,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief HLSL からピクセルシェーダを作成します。
 		[[nodiscard]]
 		operator PixelShader() const;
 	};

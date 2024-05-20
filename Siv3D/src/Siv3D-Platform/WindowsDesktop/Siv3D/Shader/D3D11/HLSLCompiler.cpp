@@ -16,6 +16,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	compile
+	//
+	////////////////////////////////////////////////////////////////
+
 	Blob HLSLCompiler::compile(const std::string_view source, const std::string& sourceName, const std::string& entryPoint, const char* target, const uint32 flags, std::string& message)
 	{
 		message.clear();

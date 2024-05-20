@@ -580,6 +580,12 @@ namespace s3d
 
 	namespace D3D11Misc
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	EneumHardwareAdapters
+		//
+		////////////////////////////////////////////////////////////////
+
 		Array<D3D11Adapter> EnumHardwareAdapters(IDXGIFactory6* pDXGIFactory6, IDXGIFactory2* pDXGIFactory2, PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const DXGI_GPU_PREFERENCE GPU_Preference)
 		{
 			LOG_SCOPED_DEBUG("EnumHardwareAdapters()");
@@ -593,6 +599,12 @@ namespace s3d
 
 			return EnumHardwareAdapters_impl(pDXGIFactory6, pDXGIFactory2, pD3D11CreateDevice, cache, GPU_Preference);
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateDevice
+		//
+		////////////////////////////////////////////////////////////////
 
 		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const Array<D3D11Adapter>& hardwareAdapters,
 			EngineOption::D3D11Driver targetDriverType, bool useDebugLayer)

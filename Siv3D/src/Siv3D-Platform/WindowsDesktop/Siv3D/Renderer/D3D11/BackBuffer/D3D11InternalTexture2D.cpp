@@ -15,6 +15,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	clear
+	//
+	////////////////////////////////////////////////////////////////
+
 	void D3D11InternalTexture2D::clear(ID3D11DeviceContext* context, const ColorF& color)
 	{
 		if (isEmpty())
@@ -27,6 +33,12 @@ namespace s3d
 		context->ClearRenderTargetView(m_renderTargetView.Get(), rgba.getPointer());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	reset
+	//
+	////////////////////////////////////////////////////////////////
+
 	void D3D11InternalTexture2D::reset()
 	{
 		m_texture.Reset();
@@ -36,12 +48,24 @@ namespace s3d
 		m_sampleDesc = { 1, 0 };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	copyTo
+	//
+	////////////////////////////////////////////////////////////////
+
 	void D3D11InternalTexture2D::copyTo(ID3D11DeviceContext* context, D3D11InternalTexture2D& dst)
 	{
 		assert(size() == dst.size());
 
 		context->CopyResource(dst.m_texture.Get(), m_texture.Get());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resolveTo
+	//
+	////////////////////////////////////////////////////////////////
 
 	void D3D11InternalTexture2D::resolveTo(ID3D11DeviceContext* context, D3D11InternalTexture2D& dst)
 	{
@@ -50,7 +74,12 @@ namespace s3d
 		context->ResolveSubresource(dst.m_texture.Get(), 0, m_texture.Get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
 
-	[[nodiscard]]
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateFromSwapChain
+	//
+	////////////////////////////////////////////////////////////////
+
 	D3D11InternalTexture2D D3D11InternalTexture2D::CreateFromSwapChain(ID3D11Device* device, IDXGISwapChain1* swapChain1)
 	{
 		LOG_SCOPED_DEBUG("D3D11InternalTexture2D::CreateFromSwapChain()");
@@ -82,6 +111,12 @@ namespace s3d
 
 		return texture;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateRenderTexture
+	//
+	////////////////////////////////////////////////////////////////
 
 	D3D11InternalTexture2D D3D11InternalTexture2D::CreateRenderTexture(ID3D11Device* device, const Size& size)
 	{
@@ -129,6 +164,12 @@ namespace s3d
 
 		return texture;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateMSRenderTexture
+	//
+	////////////////////////////////////////////////////////////////
 
 	D3D11InternalTexture2D D3D11InternalTexture2D::CreateMSRenderTexture(ID3D11Device* device, const Size& size, const uint32 sampleCount)
 	{
