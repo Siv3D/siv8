@@ -728,6 +728,8 @@
 		F9807D9A2BF667C300D9B590 /* SivMessageBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9807D962BF667C300D9B590 /* SivMessageBox.cpp */; };
 		F9807D9D2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */; };
 		F9807DA02BF6690B00D9B590 /* SivMessageBox_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */; };
+		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
+		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
 		F98600012BCFBB53006A4C0F /* SkBlurTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABF2BCFBB53006A4C0F /* SkBlurTypes.h */; };
 		F98600022BCFBB53006A4C0F /* SkCanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FAC02BCFBB53006A4C0F /* SkCanvas.h */; };
@@ -2922,6 +2924,8 @@
 		F9807D962BF667C300D9B590 /* SivMessageBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMessageBox.cpp; sourceTree = "<group>"; };
 		F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FreestandingMessageBox_macOS.cpp; sourceTree = "<group>"; };
 		F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivMessageBox_macOS.mm; sourceTree = "<group>"; };
+		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
+		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
 		F98604F92BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkFontHost_FreeType.cpp; sourceTree = "<group>"; };
 		F98604FE2BCFBC11006A4C0F /* SkImageGenerator_FromEncoded.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkImageGenerator_FromEncoded.cpp; sourceTree = "<group>"; };
@@ -6606,6 +6610,8 @@
 		F97203022BEDF2FF000E21DD /* Scene */ = {
 			isa = PBXGroup;
 			children = (
+				F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */,
+				F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */,
 				F97202FB2BEDF2FF000E21DD /* CScene.cpp */,
 				F97202FE2BEDF2FF000E21DD /* SceneFactory.cpp */,
 				F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */,
@@ -10120,6 +10126,7 @@
 				F9528C502BBFEC4D00222F45 /* MappedMemoryView.ipp in Headers */,
 				F986FA832BCFB53B006A4C0F /* ftgzip.h in Headers */,
 				F90706922B9DAEC900383E4D /* policy_checks.h in Headers */,
+				F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */,
 				F90706B32B9DAEC900383E4D /* EnumBitmask.hpp in Headers */,
 				F98603102BCFBB54006A4C0F /* SkOpContour.h in Headers */,
 				F98604342BCFBB54006A4C0F /* SkSLSetting.h in Headers */,
@@ -10430,6 +10437,7 @@
 				F98603F02BCFBB54006A4C0F /* SkSLConstructorCompound.cpp in Sources */,
 				F97203242BF09E80000E21DD /* RendererFactory.mm in Sources */,
 				F98604082BCFBB54006A4C0F /* SkSLExtension.cpp in Sources */,
+				F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */,
 				F98602832BCFBB54006A4C0F /* SkSwizzler_opts_ssse3.cpp in Sources */,
 				F986057B2BDA7DFC006A4C0F /* CursorFactory.cpp in Sources */,
 				F986042D2BCFBB54006A4C0F /* SkSLPrefixExpression.cpp in Sources */,

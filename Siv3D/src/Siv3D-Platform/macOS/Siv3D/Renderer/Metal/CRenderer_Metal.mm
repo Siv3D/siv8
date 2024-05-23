@@ -160,20 +160,6 @@ namespace s3d
 			m_metalRenderPSO2 = m_metalDevice->newRenderPipelineState(renderPipelineDescriptor, &error);
 			renderPipelineDescriptor->release();
 		}
-
-		/*
-		{
-			MTL::TextureDescriptor* textureDescriptor = MTL::TextureDescriptor::alloc()->init();
-			textureDescriptor->setTextureType(MTL::TextureType2D);
-			textureDescriptor->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
-			textureDescriptor->setWidth(800);
-			textureDescriptor->setHeight(600);
-			textureDescriptor->setStorageMode(MTL::StorageModePrivate);  // GPU-private storage
-			textureDescriptor->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
-
-			m_sceneTexture = m_metalDevice->newTexture(textureDescriptor);
-			textureDescriptor->release();
-		}*/
 		
 		m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_metalDevice, Size{ 800, 600 });
 	}
@@ -390,6 +376,18 @@ namespace s3d
 			
 			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO2);
 			renderCommandEncoder->setVertexBuffer(m_sceneVertexBuffer, 0, 0);
+			
+			const auto [s, viewRect] = getLetterboxComposition();
+			const MTL::Viewport viewport = {
+				.originX = viewRect.x,
+				.originY = viewRect.y,
+				.width = viewRect.w,
+				.height = viewRect.h,
+				.znear = 0.0,
+				.zfar = 1.0
+			};
+			renderCommandEncoder->setViewport(viewport);
+			
 			MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
 			NS::UInteger vertexStart = 0;
 			NS::UInteger vertexCount = 6;

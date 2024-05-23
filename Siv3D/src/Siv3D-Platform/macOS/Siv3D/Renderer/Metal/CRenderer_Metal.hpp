@@ -69,7 +69,7 @@ namespace s3d
 		
 		ResizeMode m_sceneResizeMode = ResizeMode::Virtual;
 		
-		Size m_sceneBufferSize{ 0, 0 };
+		Size m_sceneBufferSize{ 800, 600 };
 		
 		CA::MetalDrawable* m_metalDrawable = nullptr;
 		MTL::Library* m_metalDefaultLibrary = nullptr;
