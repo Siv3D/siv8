@@ -80,7 +80,6 @@ namespace s3d
 		MTL::Buffer* m_triangleVertexBuffer = nullptr;
 		
 		MetalInternalTexture2D m_sceneBuffer;
-		MTL::Buffer* m_sceneVertexBuffer = nullptr;
 		MTL::RenderPipelineState* m_metalRenderPSO1 = nullptr;
 		MTL::RenderPipelineState* m_metalRenderPSO2 = nullptr;
 		

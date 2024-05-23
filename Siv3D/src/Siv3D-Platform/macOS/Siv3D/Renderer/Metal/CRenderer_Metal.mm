@@ -90,19 +90,6 @@ namespace s3d
 															  MTL::ResourceStorageModeShared);
 		}
 		
-		{
-			VertexData sceneVertices[] {
-				{{-1.0,  1.0,  0.0, 1.0f}, {0.0f, 0.0f}},
-				{{ 1.0,  1.0,  0.0, 1.0f}, {1.0f, 0.0f}},
-				{{-1.0, -1.0,  0.0, 1.0f}, {0.0f, 1.0f}},
-				{{-1.0, -1.0,  0.0, 1.0f}, {0.0f, 1.0f}},
-				{{ 1.0,  1.0,  0.0, 1.0f}, {1.0f, 0.0f}},
-				{{ 1.0, -1.0,  0.0, 1.0f}, {1.0f, 1.0f}}
-			};
-
-			m_sceneVertexBuffer = m_metalDevice->newBuffer(&sceneVertices, sizeof(sceneVertices), MTL::ResourceStorageModeShared);
-		}
-		
 		m_metalDefaultLibrary = m_metalDevice->newDefaultLibrary();
 		
 		if(not m_metalDefaultLibrary)
@@ -411,7 +398,6 @@ namespace s3d
 			renderPassDescriptor->release();
 			
 			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO2);
-			renderCommandEncoder->setVertexBuffer(m_sceneVertexBuffer, 0, 0);
 			
 			const auto [s, viewRect] = getLetterboxComposition();
 			const MTL::Viewport viewport = {
@@ -426,7 +412,7 @@ namespace s3d
 			
 			MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
 			NS::UInteger vertexStart = 0;
-			NS::UInteger vertexCount = 6;
+			NS::UInteger vertexCount = 3;
 			renderCommandEncoder->setFragmentTexture(m_sceneBuffer.getTexture(), 0);
 			renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
 			renderCommandEncoder->endEncoding();

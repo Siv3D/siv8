@@ -1,25 +1,24 @@
 #include <metal_stdlib>
 using namespace metal;
 
-struct VertexData
-{
-	float4 position;
-	float2 textureCoordinate;
-};
-
 struct VertexOut
 {
 	float4 position [[position]];
-	float2 textureCoordinate;
+	float2 uv;
 };
 
 vertex
-VertexOut sceneVertexShader(uint vertexID [[vertex_id]], constant VertexData* vertices)
+VertexOut sceneVertexShader(uint vertexID [[vertex_id]])
 {
-	VertexOut out;
-	out.position = vertices[vertexID].position;
-	out.textureCoordinate = vertices[vertexID].textureCoordinate;
-	return out;
+	VertexOut result;
+	result.position = float4((vertexID == 2 ? 3.0 : -1.0),
+							 (vertexID == 1 ? 3.0 : -1.0),
+							 0.0,
+							 1.0);
+	result.uv = float2((vertexID == 2 ? 2.0 : 0.0),
+					   (vertexID == 1 ? -1.0 : 1.0));
+	
+	return result;
 }
 
 fragment
@@ -27,5 +26,5 @@ float4 sceneFragmentShader(VertexOut in [[stage_in]], texture2d<float> colorText
 {
 	constexpr sampler textureSampler(mag_filter::linear, min_filter::linear);
 
-	return colorTexture.sample(textureSampler, in.textureCoordinate);
+	return colorTexture.sample(textureSampler, in.uv);
 }
