@@ -70,6 +70,8 @@ namespace s3d
 		SceneStyle m_sceneStyle;
 		
 		ResizeMode m_sceneResizeMode = ResizeMode::Virtual;
+
+		bool m_vSyncEnabled = true;
 		
 		CA::MetalDrawable* m_metalDrawable = nullptr;
 		MTL::Library* m_metalDefaultLibrary = nullptr;

@@ -335,7 +335,7 @@ namespace s3d
 
 	bool CRenderer_Metal::isVSyncEnabled() const
 	{
-		return(true);
+		return m_vSyncEnabled;
 	}
 
 	////////////////////////////////////////////////////////////////
