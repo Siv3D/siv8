@@ -311,7 +311,13 @@ namespace s3d
 
 	void CRenderer_Metal::setVSyncEnabled(const bool enabled)
 	{
-
+		if (m_vSyncEnabled == enabled)
+		{
+			return;
+		}
+		
+		m_vSyncEnabled = enabled;
+		m_metalLayer.displaySyncEnabled = enabled;
 	}
 
 	////////////////////////////////////////////////////////////////
