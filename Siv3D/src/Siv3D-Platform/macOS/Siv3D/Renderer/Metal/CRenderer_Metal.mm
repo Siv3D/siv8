@@ -13,6 +13,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Scene/SceneUtility.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -284,27 +285,7 @@ namespace s3d
 
 	std::pair<double, RectF> CRenderer_Metal::getLetterboxComposition() const noexcept
 	{
-		const SizeF sceneSize = m_sceneBufferSize;
-		const SizeF backBufferSize = getBackBufferSize();
-
-		const double sx = (backBufferSize.x / sceneSize.x);
-		const double sy = (backBufferSize.y / sceneSize.y);
-		const double s = Min(sx, sy);
-
-		if (sx <= sy)
-		{
-			const double offsetY = ((backBufferSize.y - sceneSize.y * s) * 0.5);
-			const double width = backBufferSize.x;
-			const double height = (backBufferSize.y - offsetY * 2.0);
-			return{ s, RectF{ 0.0, offsetY, width, height } };
-		}
-		else
-		{
-			const double offsetX = ((backBufferSize.x - sceneSize.x * s) * 0.5);
-			const double width = (backBufferSize.x - offsetX * 2.0);
-			const double height = backBufferSize.y;
-			return{ s, RectF{ offsetX, 0.0, width, height } };
-		}
+		return SceneMisc::CalculateLetterboxComposition(getBackBufferSize(), m_sceneBufferSize);
 	}
 
 	////////////////////////////////////////////////////////////////

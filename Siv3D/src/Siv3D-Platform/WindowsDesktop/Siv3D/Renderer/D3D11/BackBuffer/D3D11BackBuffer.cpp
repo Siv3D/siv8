@@ -12,6 +12,7 @@
 # include "D3D11BackBuffer.hpp"
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Shader/IShader.hpp>
+# include <Siv3D/Scene/SceneUtility.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -269,27 +270,7 @@ namespace s3d
 
 	std::pair<double, RectF> D3D11BackBuffer::getLetterboxComposition() const noexcept
 	{
-		const SizeF sceneSize = m_sceneBuffers.scene.size();
-		const SizeF backBufferSize = m_backBuffer.size();
-
-		const double sx = (backBufferSize.x / sceneSize.x);
-		const double sy = (backBufferSize.y / sceneSize.y);
-		const double s = Min(sx, sy);
-
-		if (sx <= sy)
-		{
-			const double offsetY = ((backBufferSize.y - sceneSize.y * s) * 0.5);
-			const double width = backBufferSize.x;
-			const double height = (backBufferSize.y - offsetY * 2.0);
-			return{ s, RectF{ 0.0, offsetY, width, height } };
-		}
-		else
-		{
-			const double offsetX = ((backBufferSize.x - sceneSize.x * s) * 0.5);
-			const double width = (backBufferSize.x - offsetX * 2.0);
-			const double height = backBufferSize.y;
-			return{ s, RectF{ offsetX, 0.0, width, height } };
-		}
+		return SceneMisc::CalculateLetterboxComposition(m_backBuffer.size(), m_sceneBuffers.scene.size());
 	}
 
 	void D3D11BackBuffer::updateSceneSize()

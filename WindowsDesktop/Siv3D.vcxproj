@@ -486,6 +486,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\IScene.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneStyle.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneTime.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Shader\IShader.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
@@ -987,6 +988,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\CScene.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneTime.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SivScene.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
