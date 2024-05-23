@@ -160,8 +160,12 @@ namespace s3d
 			m_metalRenderPSO2 = m_metalDevice->newRenderPipelineState(renderPipelineDescriptor, &error);
 			renderPipelineDescriptor->release();
 		}
-		
-		m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_metalDevice, Size{ 800, 600 });
+
+		{
+			const Size sceneSize = Window::GetState().virtualSize;
+			
+			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_metalDevice, sceneSize);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -227,7 +231,9 @@ namespace s3d
 
 	void CRenderer_Metal::setSceneResizeMode(const ResizeMode resizeMode)
 	{
+		m_sceneResizeMode = resizeMode;
 
+		updateSceneBufferSize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -249,7 +255,25 @@ namespace s3d
 
 	void CRenderer_Metal::resizeSceneBuffer(const Size size)
 	{
+		assert((0 < size.x) && (0 < size.y));
 
+		if (getSceneBufferSize() == size)
+		{
+			return;
+		}
+
+		LOG_DEBUG(fmt::format("CRenderer_Metal::resizeSceneBuffer({})", size));
+
+		m_sceneBuffer = {};
+		
+		//if (m_sceneSampleCount == 1)
+		{
+			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_metalDevice, size);
+		}
+		//else
+		//{
+		//	m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneSampleCount);
+		//}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -260,7 +284,7 @@ namespace s3d
 
 	const Size& CRenderer_Metal::getSceneBufferSize() const noexcept
 	{
-		return m_sceneBufferSize;
+		return m_sceneBuffer.size();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -271,7 +295,7 @@ namespace s3d
 
 	std::pair<double, RectF> CRenderer_Metal::getLetterboxComposition() const noexcept
 	{
-		return SceneMisc::CalculateLetterboxComposition(getBackBufferSize(), m_sceneBufferSize);
+		return SceneMisc::CalculateLetterboxComposition(getBackBufferSize(), m_sceneBuffer.size());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -331,6 +355,18 @@ namespace s3d
 	bool CRenderer_Metal::isLowLatencyMode() const
 	{
 		return false;
+	}
+
+	void CRenderer_Metal::updateSceneBufferSize()
+	{
+		if (m_sceneResizeMode == ResizeMode::Actual)
+		{
+			resizeSceneBuffer(Window::GetState().frameBufferSize);
+		}
+		else if (m_sceneResizeMode == ResizeMode::Virtual)
+		{
+			resizeSceneBuffer(Window::GetState().virtualSize);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -401,18 +437,6 @@ namespace s3d
 		m_metalCommandBuffer->waitUntilCompleted();
 	}
 
-	void CRenderer_Metal::encodeRenderCommand(MTL::RenderCommandEncoder* renderCommandEncoder)
-	{
-		/*
-		renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO);
-		renderCommandEncoder->setVertexBuffer(m_triangleVertexBuffer, 0, 0);
-		MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
-		NS::UInteger vertexStart = 0;
-		NS::UInteger vertexCount = 3;
-		renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
-		 */
-	}
-
 	void CRenderer_Metal::resizeBackBuffer(const Size backBufferSize)
 	{
 		assert((0 < backBufferSize.x) && (0 < backBufferSize.y));
@@ -420,6 +444,8 @@ namespace s3d
 		LOG_DEBUG(fmt::format("CRenderer_Metal::resizeBackBuffer({})", backBufferSize));
 
 		m_metalLayer.drawableSize = CGSizeMake(backBufferSize.x, backBufferSize.y);
+
+		updateSceneBufferSize();
 	}
 
 	Size CRenderer_Metal::getBackBufferSize() const

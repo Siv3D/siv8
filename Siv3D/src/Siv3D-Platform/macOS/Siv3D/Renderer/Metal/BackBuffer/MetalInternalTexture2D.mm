@@ -39,8 +39,9 @@ namespace s3d
 
 		MetalInternalTexture2D texture;
 		texture.m_texture = device->newTexture(textureDescriptor);
+		texture.m_size = size;
 		textureDescriptor->release();
-		
+
 		return texture;
 	}
 

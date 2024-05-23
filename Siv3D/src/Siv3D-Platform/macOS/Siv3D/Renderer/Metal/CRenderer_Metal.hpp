@@ -56,7 +56,9 @@ namespace s3d
 		void setLowLatencyMode(bool enabled) override;
 
 		bool isLowLatencyMode() const override;
-
+		
+		void updateSceneBufferSize();
+		
 	private:
 		
 		NSWindow* m_metalWindow = nullptr;
@@ -68,8 +70,6 @@ namespace s3d
 		SceneStyle m_sceneStyle;
 		
 		ResizeMode m_sceneResizeMode = ResizeMode::Virtual;
-		
-		Size m_sceneBufferSize{ 800, 600 };
 		
 		CA::MetalDrawable* m_metalDrawable = nullptr;
 		MTL::Library* m_metalDefaultLibrary = nullptr;
@@ -83,9 +83,9 @@ namespace s3d
 		MTL::RenderPipelineState* m_metalRenderPSO2 = nullptr;
 		
 		void sendRenderCommand();
-		void encodeRenderCommand(MTL::RenderCommandEncoder* renderCommandEncoder);
 		
 		void resizeBackBuffer(Size backBufferSize);
 		Size getBackBufferSize() const;
+		
 	};
 }
