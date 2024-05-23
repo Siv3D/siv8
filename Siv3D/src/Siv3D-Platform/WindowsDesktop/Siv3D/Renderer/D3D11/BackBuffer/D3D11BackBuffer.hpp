@@ -53,8 +53,6 @@ namespace s3d
 
 		std::pair<double, RectF> getLetterboxComposition() const noexcept;
 
-		void updateSceneSize();
-
 	private:
 		
 		ID3D11Device* m_device			= nullptr;

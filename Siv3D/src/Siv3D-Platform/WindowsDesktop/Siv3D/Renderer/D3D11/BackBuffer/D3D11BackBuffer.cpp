@@ -114,6 +114,8 @@ namespace s3d
 
 	void D3D11BackBuffer::updateSceneBufferSize()
 	{
+		LOG_TRACE("D3D11BackBuffer::updateSceneBufferSize()");
+
 		if (m_sceneResizeMode == ResizeMode::Actual)
 		{
 			resizeSceneBuffer(Window::GetState().frameBufferSize);
@@ -271,18 +273,6 @@ namespace s3d
 	std::pair<double, RectF> D3D11BackBuffer::getLetterboxComposition() const noexcept
 	{
 		return SceneMisc::CalculateLetterboxComposition(m_backBuffer.size(), m_sceneBuffers.scene.size());
-	}
-
-	void D3D11BackBuffer::updateSceneSize()
-	{
-		if (m_sceneResizeMode == ResizeMode::Actual)
-		{
-			resizeSceneBuffer(Window::GetState().frameBufferSize);
-		}
-		else if (m_sceneResizeMode == ResizeMode::Virtual)
-		{
-			resizeSceneBuffer(Window::GetState().virtualSize);
-		}
 	}
 
 	////////////////////////////////////////////////////////////////

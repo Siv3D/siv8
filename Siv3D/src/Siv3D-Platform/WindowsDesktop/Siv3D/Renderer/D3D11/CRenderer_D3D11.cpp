@@ -180,7 +180,7 @@ namespace s3d
 
 	void CRenderer_D3D11::updateSceneSize()
 	{
-		m_backBuffer.updateSceneSize();
+		m_backBuffer.updateSceneBufferSize();
 	}
 
 	////////////////////////////////////////////////////////////////
