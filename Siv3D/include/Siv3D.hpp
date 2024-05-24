@@ -1391,6 +1391,29 @@
 # include <Siv3D/EngineOption.hpp>
 
 
+
+# include <Siv3D/BlendFactor.hpp>
+
+# include <Siv3D/BlendOperation.hpp>
+
+// ブレンドステート | Blend state
+# include <Siv3D/BlendState.hpp> // ToDo
+
+# include <Siv3D/TriangleFillMode.hpp>
+
+# include <Siv3D/CullMode.hpp>
+
+// ラスタライザーステート | Rasterizer state
+# include <Siv3D/RasterizerState.hpp> // ToDo
+
+// 深度ステンシルステート | Depth stencil state
+# include <Siv3D/DepthStencilState.hpp>
+
+// サンプラーステート | Sampler state
+# include <Siv3D/SamplerState.hpp>
+
+
+
 # if SIV3D_PLATFORM(WINDOWS)
 
 	// Windows 用の静的リンクライブラリ | Static link libraries for Windows

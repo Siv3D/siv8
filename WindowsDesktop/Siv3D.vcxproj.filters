@@ -775,6 +775,24 @@
     <Filter Include="src\Siv3D\MSAASampleCount">
       <UniqueIdentifier>{19be14f2-78bd-4643-b505-0dcbafe81f5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\BlendFactor">
+      <UniqueIdentifier>{e78bc2ee-0e92-4be6-a64b-8c3e6bfc816a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\BlendState">
+      <UniqueIdentifier>{fccb28ad-99d4-487f-8791-0e78b2e1af40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\BlendOperation">
+      <UniqueIdentifier>{52551cc4-effc-4bf2-933e-577d171a799c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TriangleFillMode">
+      <UniqueIdentifier>{9e6809db-e40e-4b5b-98a5-ecdd2ffa89b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\CullMode">
+      <UniqueIdentifier>{8b0b428b-a71e-4d4b-ad9d-3e9a136c8128}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\RasterizerState">
+      <UniqueIdentifier>{eacb2d55-206a-4012-9a73-e01d28f29d59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3144,6 +3162,36 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MSAASampleCount.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BlendState.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RasterizerState.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DepthStencilState.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SamplerState.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BlendFactor.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BlendOperation.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BlendState.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TriangleFillMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CullMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RasterizerState.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5314,6 +5362,24 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\MSAASampleCount\SivMSAASampleCount.cpp">
       <Filter>src\Siv3D\MSAASampleCount</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BlendFactor\SivBlendFactor.cpp">
+      <Filter>src\Siv3D\BlendFactor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BlendState\SivBlendState.cpp">
+      <Filter>src\Siv3D\BlendState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BlendOperation\SivBlendOperation.cpp">
+      <Filter>src\Siv3D\BlendOperation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TriangleFillMode\SivTriangleFillMode.cpp">
+      <Filter>src\Siv3D\TriangleFillMode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\CullMode\SivCullMode.cpp">
+      <Filter>src\Siv3D\CullMode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RasterizerState\SivRasterizerState.cpp">
+      <Filter>src\Siv3D\RasterizerState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
