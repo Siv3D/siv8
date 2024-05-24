@@ -50,7 +50,7 @@ namespace s3d
 		static MetalInternalTexture2D CreateRenderTexture(MTL::Device* device, const Size& size);
 
 		[[nodiscard]]
-		static MetalInternalTexture2D CreateMSRenderTexture(const Size& size, uint32 sampleCount);
+		static MetalInternalTexture2D CreateMSRenderTexture(MTL::Device* device, const Size& size, uint32 sampleCount);
 
 	private:
 

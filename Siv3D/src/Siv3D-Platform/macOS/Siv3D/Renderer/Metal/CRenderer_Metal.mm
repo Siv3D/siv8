@@ -37,7 +37,7 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CRenderer_Metal::~CRenderer_Metal()");
 
-		m_sceneBuffer.reset();
+		m_sceneBuffers = {};
 
 		if (m_device)
 		{
@@ -102,7 +102,7 @@ namespace s3d
 			
 			if (m_sceneSampleCount == 1)
 			{
-				m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
+				m_sceneBuffers.scene = MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
 			}
 			else
 			{
@@ -182,7 +182,7 @@ namespace s3d
 			{
 				NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 				MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
-				cd->setTexture(m_sceneBuffer.getTexture());
+				cd->setTexture(m_sceneBuffers.scene.getTexture());
 				cd->setLoadAction(MTL::LoadActionClear);
 				cd->setClearColor(MTL::ClearColor(m_sceneStyle.backgroundColor.r, m_sceneStyle.backgroundColor.g, m_sceneStyle.backgroundColor.b, 1));
 				cd->setStoreAction(MTL::StoreActionStore);
@@ -232,7 +232,7 @@ namespace s3d
 					.zfar = 1.0
 				};
 				renderCommandEncoder->setViewport(viewport);
-				renderCommandEncoder->setFragmentTexture(m_sceneBuffer.getTexture(), 0);
+				renderCommandEncoder->setFragmentTexture(m_sceneBuffers.scene.getTexture(), 0);
 				renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
 				renderCommandEncoder->endEncoding();
 			}
@@ -297,11 +297,11 @@ namespace s3d
 
 		LOG_DEBUG(fmt::format("CRenderer_Metal::resizeSceneBuffer({})", size));
 
-		m_sceneBuffer = {};
+		m_sceneBuffers = {};
 		
 		if (m_sceneSampleCount == 1)
 		{
-			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_device, size);
+			m_sceneBuffers.scene = MetalInternalTexture2D::CreateRenderTexture(m_device, size);
 		}
 		else
 		{
@@ -317,7 +317,7 @@ namespace s3d
 
 	const Size& CRenderer_Metal::getSceneBufferSize() const noexcept
 	{
-		return m_sceneBuffer.size();
+		return m_sceneBuffers.scene.size();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -328,7 +328,7 @@ namespace s3d
 
 	std::pair<double, RectF> CRenderer_Metal::getLetterboxComposition() const noexcept
 	{
-		return SceneMisc::CalculateLetterboxComposition(getBackBufferSize(), m_sceneBuffer.size());
+		return SceneMisc::CalculateLetterboxComposition(getBackBufferSize(), m_sceneBuffers.scene.size());
 	}
 
 	////////////////////////////////////////////////////////////////

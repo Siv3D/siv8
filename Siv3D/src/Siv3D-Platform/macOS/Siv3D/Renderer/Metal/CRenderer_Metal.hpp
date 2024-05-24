@@ -85,8 +85,12 @@ namespace s3d
 		NS::SharedPtr<MTL::Buffer> m_triangleVertexBuffer;
 		MTL::CommandBuffer* m_commandBuffer = nullptr;
 		
-		MetalInternalTexture2D m_sceneBuffer;
-		
+		struct SceneBuffer
+		{
+			MetalInternalTexture2D scene;
+			
+		} m_sceneBuffers;
+			
 		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineStateFullScreenTriangle;
 		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTest;
 

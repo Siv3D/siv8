@@ -34,7 +34,7 @@ namespace s3d
 		textureDescriptor->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
 		textureDescriptor->setWidth(size.x);
 		textureDescriptor->setHeight(size.y);
-		textureDescriptor->setStorageMode(MTL::StorageModePrivate);  // GPU-private storage
+		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
 		textureDescriptor->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
 
 		MetalInternalTexture2D texture;
@@ -45,10 +45,23 @@ namespace s3d
 		return texture;
 	}
 
-	MetalInternalTexture2D MetalInternalTexture2D::CreateMSRenderTexture(const Size& size, const uint32 sampleCount)
+	MetalInternalTexture2D MetalInternalTexture2D::CreateMSRenderTexture(MTL::Device* device, const Size& size, const uint32 sampleCount)
 	{
 		LOG_SCOPED_DEBUG("MetalInternalTexture2D::CreateMSRenderTexture()");
 
+		NS::SharedPtr<MTL::TextureDescriptor> textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
+		textureDescriptor->setTextureType(MTL::TextureType2DMultisample); // Multisample texture type
+		textureDescriptor->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
+		textureDescriptor->setWidth(size.x);
+		textureDescriptor->setHeight(size.y);
+		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
+		textureDescriptor->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
+		textureDescriptor->setSampleCount(sampleCount); // Set the sample count for multisampling
+
+		MetalInternalTexture2D texture;
+		texture.m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
+		texture.m_size = size;
+		texture.m_sampleCount = sampleCount;
 		
 		return{};
 	}
