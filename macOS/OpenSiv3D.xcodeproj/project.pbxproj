@@ -732,6 +732,8 @@
 		F980C41A2C0023BB00A86B68 /* MetalVertexShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4142C0023BB00A86B68 /* MetalVertexShader.hpp */; };
 		F980C41B2C0023BB00A86B68 /* MetalPixelShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C4162C0023BB00A86B68 /* MetalPixelShader.mm */; };
 		F980C41C2C0023BB00A86B68 /* MetalPixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */; };
+		F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C41D2C004B3000A86B68 /* MSAASampleCount.hpp */; };
+		F980C4212C004B5000A86B68 /* SivMSAASampleCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C41F2C004B5000A86B68 /* SivMSAASampleCount.cpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -2932,6 +2934,8 @@
 		F980C4142C0023BB00A86B68 /* MetalVertexShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalVertexShader.hpp; sourceTree = "<group>"; };
 		F980C4162C0023BB00A86B68 /* MetalPixelShader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalPixelShader.mm; sourceTree = "<group>"; };
 		F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalPixelShader.hpp; sourceTree = "<group>"; };
+		F980C41D2C004B3000A86B68 /* MSAASampleCount.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MSAASampleCount.hpp; sourceTree = "<group>"; };
+		F980C41F2C004B5000A86B68 /* SivMSAASampleCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMSAASampleCount.cpp; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -5173,6 +5177,7 @@
 				F9528B512BB6DC2C00222F45 /* MicrosecClock.hpp */,
 				F9528B522BB6DC2C00222F45 /* MillisecClock.hpp */,
 				F9070C032B9F175000383E4D /* MonitorInfo.hpp */,
+				F980C41D2C004B3000A86B68 /* MSAASampleCount.hpp */,
 				F9070C042B9F175000383E4D /* NamedParameter.hpp */,
 				F9070C052B9F175000383E4D /* NonNull.hpp */,
 				F9070C062B9F175000383E4D /* Number.hpp */,
@@ -5885,6 +5890,7 @@
 				F9528B632BB6DC9200222F45 /* MillisecClock */,
 				F9070D6C2B9F175E00383E4D /* MonitorInfo */,
 				F98605AD2BE49BE0006A4C0F /* Mouse */,
+				F980C4202C004B5000A86B68 /* MSAASampleCount */,
 				F9070D6E2B9F175E00383E4D /* Optional */,
 				F9E5FCE32BC59E7E0081A4F7 /* Parse */,
 				F9070D702B9F175E00383E4D /* ParseBool */,
@@ -6863,6 +6869,14 @@
 				F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */,
 			);
 			path = PixelShader;
+			sourceTree = "<group>";
+		};
+		F980C4202C004B5000A86B68 /* MSAASampleCount */ = {
+			isa = PBXGroup;
+			children = (
+				F980C41F2C004B5000A86B68 /* SivMSAASampleCount.cpp */,
+			);
+			path = MSAASampleCount;
 			sourceTree = "<group>";
 		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
@@ -9642,6 +9656,7 @@
 				F98600882BCFBB53006A4C0F /* SkThreadAnnotations.h in Headers */,
 				F986F89E2BC7FB74006A4C0F /* tinycolormap.hpp in Headers */,
 				F986FA942BCFB53B006A4C0F /* ftsnames.h in Headers */,
+				F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */,
 				F9070D032B9F175100383E4D /* TextWriter.hpp in Headers */,
 				F98603F52BCFBB54006A4C0F /* SkSLConstructorDiagonalMatrix.h in Headers */,
 				F986003E2BCFBB53006A4C0F /* SkSerialProcs.h in Headers */,
@@ -10707,6 +10722,7 @@
 				F98601D42BCFBB53006A4C0F /* SkImageInfo.cpp in Sources */,
 				F98602A72BCFBB54006A4C0F /* SkBlendModeColorFilter.cpp in Sources */,
 				F986F9382BC8441F006A4C0F /* utf32_le.c in Sources */,
+				F980C4212C004B5000A86B68 /* SivMSAASampleCount.cpp in Sources */,
 				F98605CC2BE4B6A4006A4C0F /* SivInputDevice.cpp in Sources */,
 				F986025D2BCFBB54006A4C0F /* SkScalar.cpp in Sources */,
 				F98602A52BCFBB54006A4C0F /* SkYUVPlanesCache.cpp in Sources */,

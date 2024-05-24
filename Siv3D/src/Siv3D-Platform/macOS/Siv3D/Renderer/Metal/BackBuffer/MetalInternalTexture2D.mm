@@ -21,7 +21,7 @@ namespace s3d
 			return;
 		}
 
-		m_texture->release();
+		m_texture.reset();
 		m_size = Size{ 0, 0 };
 	}
 
@@ -29,7 +29,7 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("MetalInternalTexture2D::CreateRenderTexture()");
 		
-		MTL::TextureDescriptor* textureDescriptor = MTL::TextureDescriptor::alloc()->init();
+		NS::SharedPtr<MTL::TextureDescriptor> textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
 		textureDescriptor->setWidth(size.x);
@@ -38,9 +38,9 @@ namespace s3d
 		textureDescriptor->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
 
 		MetalInternalTexture2D texture;
-		texture.m_texture = device->newTexture(textureDescriptor);
+		texture.m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
 		texture.m_size = size;
-		textureDescriptor->release();
+		texture.m_sampleCount = 1;
 
 		return texture;
 	}
@@ -48,6 +48,8 @@ namespace s3d
 	MetalInternalTexture2D MetalInternalTexture2D::CreateMSRenderTexture(const Size& size, const uint32 sampleCount)
 	{
 		LOG_SCOPED_DEBUG("MetalInternalTexture2D::CreateMSRenderTexture()");
+
+		
 		return{};
 	}
 }

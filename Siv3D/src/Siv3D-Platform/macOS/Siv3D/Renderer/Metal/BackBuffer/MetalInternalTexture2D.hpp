@@ -43,7 +43,7 @@ namespace s3d
 		[[nodiscard]]
         const MTL::Texture* getTexture() const noexcept
         {
-            return m_texture;
+            return m_texture.get();
         }
 		
 		[[nodiscard]]
@@ -54,8 +54,10 @@ namespace s3d
 
 	private:
 
-		MTL::Texture* m_texture;
+		NS::SharedPtr<MTL::Texture> m_texture;
 
 		Size m_size{ 0, 0 };
+
+		uint32 m_sampleCount = 1;
 	};
 }
