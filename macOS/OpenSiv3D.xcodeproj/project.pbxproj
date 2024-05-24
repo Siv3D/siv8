@@ -711,7 +711,7 @@
 		F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97204322BF0A31C000E21DD /* QuartzCore.framework */; };
 		F97204352BF0A39F000E21DD /* Metal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97204342BF0A39F000E21DD /* Metal.cpp */; };
 		F9807D792BF1092600D9B590 /* triangle.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D762BF1092600D9B590 /* triangle.metal */; };
-		F9807D7B2BF10A3100D9B590 /* scene.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7A2BF10A3100D9B590 /* scene.metal */; };
+		F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */; };
 		F9807D7F2BF1229700D9B590 /* MetalInternalTexture2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */; };
 		F9807D802BF1229700D9B590 /* MetalInternalTexture2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7D2BF1229700D9B590 /* MetalInternalTexture2D.mm */; };
 		F9807D842BF6676100D9B590 /* AssetHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D812BF6676100D9B590 /* AssetHandle.hpp */; };
@@ -2911,7 +2911,7 @@
 		F97204322BF0A31C000E21DD /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F97204342BF0A39F000E21DD /* Metal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Metal.cpp; sourceTree = "<group>"; };
 		F9807D762BF1092600D9B590 /* triangle.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = triangle.metal; sourceTree = "<group>"; };
-		F9807D7A2BF10A3100D9B590 /* scene.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = scene.metal; sourceTree = "<group>"; };
+		F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = fullscreen_triangle.metal; sourceTree = "<group>"; };
 		F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalInternalTexture2D.hpp; sourceTree = "<group>"; };
 		F9807D7D2BF1229700D9B590 /* MetalInternalTexture2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalInternalTexture2D.mm; sourceTree = "<group>"; };
 		F9807D812BF6676100D9B590 /* AssetHandle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetHandle.hpp; sourceTree = "<group>"; };
@@ -6790,7 +6790,7 @@
 		F9807D772BF1092600D9B590 /* metal */ = {
 			isa = PBXGroup;
 			children = (
-				F9807D7A2BF10A3100D9B590 /* scene.metal */,
+				F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */,
 				F9807D762BF1092600D9B590 /* triangle.metal */,
 			);
 			path = metal;
@@ -10397,7 +10397,7 @@
 				F90703092B9DAEB900383E4D /* Test_TupleFormatter.cpp in Sources */,
 				F90702FD2B9DAEB900383E4D /* Test_FmtExtension.cpp in Sources */,
 				F907030E2B9DAEB900383E4D /* Test_YesNo.cpp in Sources */,
-				F9807D7B2BF10A3100D9B590 /* scene.metal in Sources */,
+				F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */,
 				F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */,
 				F90703012B9DAEB900383E4D /* Test_Memory.cpp in Sources */,
 				F907030A2B9DAEB900383E4D /* Test_Types.cpp in Sources */,

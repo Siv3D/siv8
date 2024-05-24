@@ -35,11 +35,11 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CEngineShader_Metal::init()");
 
+		m_vertexShaders << VertexShader::MSL(U"fullscreen_triangle_vs");
 		m_vertexShaders << VertexShader::MSL(U"vertexShader");
-		m_vertexShaders << VertexShader::MSL(U"sceneVertexShader");
 
+		m_pixelShaders << PixelShader::MSL(U"fullscreen_triangle_ps");
 		m_pixelShaders << PixelShader::MSL(U"fragmentShader");
-		m_pixelShaders << PixelShader::MSL(U"sceneFragmentShader");
 	}
 
 	////////////////////////////////////////////////////////////////

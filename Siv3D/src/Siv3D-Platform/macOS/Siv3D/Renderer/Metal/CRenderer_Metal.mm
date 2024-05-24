@@ -159,9 +159,9 @@ namespace s3d
 		
 		if (not m_metalRenderPSO2)
 		{
-			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("sceneVertexShader", NS::ASCIIStringEncoding)));
+			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("fullscreen_triangle_vs", NS::ASCIIStringEncoding)));
 			assert(vertexShader);
-			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("sceneFragmentShader", NS::ASCIIStringEncoding)));
+			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("fullscreen_triangle_ps", NS::ASCIIStringEncoding)));
 			assert(fragmentShader);
 		
 			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
