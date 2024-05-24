@@ -6,10 +6,12 @@ void Main()
 {
 	//RunTest();
 	
-	int32 count = 0;
+	//Scene::SetResizeMode(ResizeMode::Keep);
+	//Scene::SetResizeMode(ResizeMode::Actual);
+	//Window::SetStyle(WindowStyle::Sizable);
 	
 	while (System::Update())
 	{
-		Window::SetTitle(U"Siv3D App: frame {}"_fmt(++count));
+		Scene::SetBackground(HSV{ (Scene::Time() * 60), 0.8, 1.0});
 	}
 }
