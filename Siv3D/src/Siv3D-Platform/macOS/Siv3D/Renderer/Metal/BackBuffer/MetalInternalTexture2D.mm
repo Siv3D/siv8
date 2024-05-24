@@ -55,7 +55,7 @@ namespace s3d
 		textureDescriptor->setWidth(size.x);
 		textureDescriptor->setHeight(size.y);
 		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-		textureDescriptor->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
+		textureDescriptor->setUsage(MTL::TextureUsageRenderTarget);
 		textureDescriptor->setSampleCount(sampleCount); // Set the sample count for multisampling
 
 		MetalInternalTexture2D texture;

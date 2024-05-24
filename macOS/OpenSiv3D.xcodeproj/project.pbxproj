@@ -734,6 +734,22 @@
 		F980C41C2C0023BB00A86B68 /* MetalPixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */; };
 		F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C41D2C004B3000A86B68 /* MSAASampleCount.hpp */; };
 		F980C4212C004B5000A86B68 /* SivMSAASampleCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C41F2C004B5000A86B68 /* SivMSAASampleCount.cpp */; };
+		F980C42A2C00D2B500A86B68 /* CullMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4222C00D2B500A86B68 /* CullMode.hpp */; };
+		F980C42B2C00D2B500A86B68 /* DepthStencilState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4232C00D2B500A86B68 /* DepthStencilState.hpp */; };
+		F980C42C2C00D2B500A86B68 /* BlendOperation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4242C00D2B500A86B68 /* BlendOperation.hpp */; };
+		F980C42D2C00D2B500A86B68 /* TriangleFillMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4252C00D2B500A86B68 /* TriangleFillMode.hpp */; };
+		F980C42E2C00D2B500A86B68 /* SamplerState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4262C00D2B500A86B68 /* SamplerState.hpp */; };
+		F980C42F2C00D2B500A86B68 /* BlendFactor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4272C00D2B500A86B68 /* BlendFactor.hpp */; };
+		F980C4302C00D2B500A86B68 /* RasterizerState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4282C00D2B500A86B68 /* RasterizerState.hpp */; };
+		F980C4312C00D2B500A86B68 /* BlendState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4292C00D2B500A86B68 /* BlendState.hpp */; };
+		F980C4342C00D2DF00A86B68 /* BlendState.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4322C00D2DF00A86B68 /* BlendState.ipp */; };
+		F980C4352C00D2DF00A86B68 /* RasterizerState.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4332C00D2DF00A86B68 /* RasterizerState.ipp */; };
+		F980C4422C00D31000A86B68 /* SivCullMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4362C00D31000A86B68 /* SivCullMode.cpp */; };
+		F980C4432C00D31000A86B68 /* SivTriangleFillMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4382C00D31000A86B68 /* SivTriangleFillMode.cpp */; };
+		F980C4442C00D31000A86B68 /* SivBlendState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C43A2C00D31000A86B68 /* SivBlendState.cpp */; };
+		F980C4452C00D31000A86B68 /* SivRasterizerState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C43C2C00D31000A86B68 /* SivRasterizerState.cpp */; };
+		F980C4462C00D31000A86B68 /* SivBlendOperation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C43E2C00D31000A86B68 /* SivBlendOperation.cpp */; };
+		F980C4472C00D31000A86B68 /* SivBlendFactor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4402C00D31000A86B68 /* SivBlendFactor.cpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -2936,6 +2952,22 @@
 		F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalPixelShader.hpp; sourceTree = "<group>"; };
 		F980C41D2C004B3000A86B68 /* MSAASampleCount.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MSAASampleCount.hpp; sourceTree = "<group>"; };
 		F980C41F2C004B5000A86B68 /* SivMSAASampleCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMSAASampleCount.cpp; sourceTree = "<group>"; };
+		F980C4222C00D2B500A86B68 /* CullMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CullMode.hpp; sourceTree = "<group>"; };
+		F980C4232C00D2B500A86B68 /* DepthStencilState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DepthStencilState.hpp; sourceTree = "<group>"; };
+		F980C4242C00D2B500A86B68 /* BlendOperation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BlendOperation.hpp; sourceTree = "<group>"; };
+		F980C4252C00D2B500A86B68 /* TriangleFillMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TriangleFillMode.hpp; sourceTree = "<group>"; };
+		F980C4262C00D2B500A86B68 /* SamplerState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SamplerState.hpp; sourceTree = "<group>"; };
+		F980C4272C00D2B500A86B68 /* BlendFactor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BlendFactor.hpp; sourceTree = "<group>"; };
+		F980C4282C00D2B500A86B68 /* RasterizerState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RasterizerState.hpp; sourceTree = "<group>"; };
+		F980C4292C00D2B500A86B68 /* BlendState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BlendState.hpp; sourceTree = "<group>"; };
+		F980C4322C00D2DF00A86B68 /* BlendState.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BlendState.ipp; sourceTree = "<group>"; };
+		F980C4332C00D2DF00A86B68 /* RasterizerState.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RasterizerState.ipp; sourceTree = "<group>"; };
+		F980C4362C00D31000A86B68 /* SivCullMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCullMode.cpp; sourceTree = "<group>"; };
+		F980C4382C00D31000A86B68 /* SivTriangleFillMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTriangleFillMode.cpp; sourceTree = "<group>"; };
+		F980C43A2C00D31000A86B68 /* SivBlendState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBlendState.cpp; sourceTree = "<group>"; };
+		F980C43C2C00D31000A86B68 /* SivRasterizerState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRasterizerState.cpp; sourceTree = "<group>"; };
+		F980C43E2C00D31000A86B68 /* SivBlendOperation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBlendOperation.cpp; sourceTree = "<group>"; };
+		F980C4402C00D31000A86B68 /* SivBlendFactor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBlendFactor.cpp; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -4906,6 +4938,7 @@
 				F9070B672B9F175000383E4D /* BigInt.ipp */,
 				F9070B682B9F175000383E4D /* BinaryReader.ipp */,
 				F9070B692B9F175000383E4D /* BinaryWriter.ipp */,
+				F980C4322C00D2DF00A86B68 /* BlendState.ipp */,
 				F9070B6A2B9F175000383E4D /* Blob.ipp */,
 				F9070B6B2B9F175000383E4D /* BoolArray.ipp */,
 				F9070B6C2B9F175000383E4D /* Byte.ipp */,
@@ -4988,6 +5021,7 @@
 				F98605F52BE61586006A4C0F /* RandomPoint.ipp */,
 				F98605F12BE61586006A4C0F /* RandomVec2.ipp */,
 				F98605F32BE61586006A4C0F /* RandomVec4.ipp */,
+				F980C4332C00D2DF00A86B68 /* RasterizerState.ipp */,
 				F9070B9A2B9F175000383E4D /* Rect.ipp */,
 				F986F9392BCA7996006A4C0F /* RectF.ipp */,
 				F9070B9B2B9F175000383E4D /* Result.ipp */,
@@ -5051,6 +5085,9 @@
 				F9070BC02B9F175000383E4D /* BigInt.hpp */,
 				F9070BC12B9F175000383E4D /* BinaryReader.hpp */,
 				F9070BC22B9F175000383E4D /* BinaryWriter.hpp */,
+				F980C4272C00D2B500A86B68 /* BlendFactor.hpp */,
+				F980C4242C00D2B500A86B68 /* BlendOperation.hpp */,
+				F980C4292C00D2B500A86B68 /* BlendState.hpp */,
 				F9070BC32B9F175000383E4D /* Blob.hpp */,
 				F9070BC42B9F175000383E4D /* BoolToString.hpp */,
 				F9070BC52B9F175000383E4D /* Byte.hpp */,
@@ -5071,12 +5108,14 @@
 				F9070BCF2B9F175000383E4D /* ConsoleBuffer.hpp */,
 				F9070BD02B9F175000383E4D /* CopyOption.hpp */,
 				F9070BD12B9F175000383E4D /* CPUInfo.hpp */,
+				F980C4222C00D2B500A86B68 /* CullMode.hpp */,
 				F98605722BDA7DB7006A4C0F /* Cursor.hpp */,
 				F9528B562BB6DC3700222F45 /* CycleClock.hpp */,
 				F9070BD22B9F175000383E4D /* Date.hpp */,
 				F9070BD32B9F175000383E4D /* DateTime.hpp */,
 				F9070BD42B9F175000383E4D /* DayOfWeek.hpp */,
 				F9070BD52B9F175000383E4D /* Demangle.hpp */,
+				F980C4232C00D2B500A86B68 /* DepthStencilState.hpp */,
 				F986060E2BEB75DB006A4C0F /* DirectoryWatcher.hpp */,
 				F9070BD62B9F175000383E4D /* DiscreteDistribution.hpp */,
 				F9070BD72B9F175000383E4D /* DisjointSet.hpp */,
@@ -5212,6 +5251,7 @@
 				F98605EB2BE61564006A4C0F /* RandomPoint.hpp */,
 				F98605EC2BE61564006A4C0F /* RandomVec2.hpp */,
 				F98605E92BE61563006A4C0F /* RandomVec4.hpp */,
+				F980C4282C00D2B500A86B68 /* RasterizerState.hpp */,
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
 				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
@@ -5219,6 +5259,7 @@
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
 				F98606182BEB7651006A4C0F /* RoundRect.hpp */,
+				F980C4262C00D2B500A86B68 /* SamplerState.hpp */,
 				F97202F52BEDF2D8000E21DD /* Scene.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9070C1F2B9F175000383E4D /* SequenceFormatter.hpp */,
@@ -5243,6 +5284,7 @@
 				F9070C2C2B9F175000383E4D /* Threading.hpp */,
 				F9070C2D2B9F175000383E4D /* Time.hpp */,
 				F98605252BD10459006A4C0F /* Triangle.hpp */,
+				F980C4252C00D2B500A86B68 /* TriangleFillMode.hpp */,
 				F9070C2E2B9F175000383E4D /* TupleFormatter.hpp */,
 				F9070C2F2B9F175000383E4D /* Types.hpp */,
 				F9070C302B9F175000383E4D /* Unicode.hpp */,
@@ -5809,6 +5851,9 @@
 				F9528B4E2BB69EC500222F45 /* BigNumMath */,
 				F9070D1D2B9F175E00383E4D /* BinaryReader */,
 				F9070D1F2B9F175E00383E4D /* BinaryWriter */,
+				F980C4412C00D31000A86B68 /* BlendFactor */,
+				F980C43F2C00D31000A86B68 /* BlendOperation */,
+				F980C43B2C00D31000A86B68 /* BlendState */,
 				F9070D212B9F175E00383E4D /* Blob */,
 				F9070D232B9F175E00383E4D /* BoolToString */,
 				F9070D252B9F175E00383E4D /* Byte */,
@@ -5821,6 +5866,7 @@
 				F9070D2D2B9F175E00383E4D /* Console */,
 				F9070D2F2B9F175E00383E4D /* ConsoleBuffer */,
 				F9070D312B9F175E00383E4D /* CPUInfo */,
+				F980C4372C00D31000A86B68 /* CullMode */,
 				F986057A2BDA7DFC006A4C0F /* Cursor */,
 				F98605922BE33124006A4C0F /* CursorStyle */,
 				F9528B612BB6DC9200222F45 /* CycleClock */,
@@ -5903,6 +5949,7 @@
 				F9528B9C2BBC771000222F45 /* Point3D */,
 				F986062E2BEBBBC7006A4C0F /* Profiler */,
 				F9070D7C2B9F175E00383E4D /* Random */,
+				F980C43D2C00D31000A86B68 /* RasterizerState */,
 				F9070D7E2B9F175E00383E4D /* Rect */,
 				F986F9462BCA79DC006A4C0F /* RectF */,
 				F98605A22BE4887C006A4C0F /* RegExp */,
@@ -5921,6 +5968,7 @@
 				F9070D912B9F175E00383E4D /* TextWriter */,
 				F9070D932B9F175E00383E4D /* ThousandSeparate */,
 				F9070D952B9F175E00383E4D /* Threading */,
+				F980C4392C00D31000A86B68 /* TriangleFillMode */,
 				F9807D952BF667C200D9B590 /* Troubleshooting */,
 				F9070D972B9F175E00383E4D /* Unicode */,
 				F9070D9B2B9F175E00383E4D /* UnicodeConverter */,
@@ -6877,6 +6925,54 @@
 				F980C41F2C004B5000A86B68 /* SivMSAASampleCount.cpp */,
 			);
 			path = MSAASampleCount;
+			sourceTree = "<group>";
+		};
+		F980C4372C00D31000A86B68 /* CullMode */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4362C00D31000A86B68 /* SivCullMode.cpp */,
+			);
+			path = CullMode;
+			sourceTree = "<group>";
+		};
+		F980C4392C00D31000A86B68 /* TriangleFillMode */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4382C00D31000A86B68 /* SivTriangleFillMode.cpp */,
+			);
+			path = TriangleFillMode;
+			sourceTree = "<group>";
+		};
+		F980C43B2C00D31000A86B68 /* BlendState */ = {
+			isa = PBXGroup;
+			children = (
+				F980C43A2C00D31000A86B68 /* SivBlendState.cpp */,
+			);
+			path = BlendState;
+			sourceTree = "<group>";
+		};
+		F980C43D2C00D31000A86B68 /* RasterizerState */ = {
+			isa = PBXGroup;
+			children = (
+				F980C43C2C00D31000A86B68 /* SivRasterizerState.cpp */,
+			);
+			path = RasterizerState;
+			sourceTree = "<group>";
+		};
+		F980C43F2C00D31000A86B68 /* BlendOperation */ = {
+			isa = PBXGroup;
+			children = (
+				F980C43E2C00D31000A86B68 /* SivBlendOperation.cpp */,
+			);
+			path = BlendOperation;
+			sourceTree = "<group>";
+		};
+		F980C4412C00D31000A86B68 /* BlendFactor */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4402C00D31000A86B68 /* SivBlendFactor.cpp */,
+			);
+			path = BlendFactor;
 			sourceTree = "<group>";
 		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
@@ -8980,6 +9076,7 @@
 				F98601EE2BCFBB53006A4C0F /* SkMasks.h in Headers */,
 				F9E5FCE72BC59EA00081A4F7 /* JSONIterator.hpp in Headers */,
 				F97203162BF09DD9000E21DD /* EngineOption.hpp in Headers */,
+				F980C42D2C00D2B500A86B68 /* TriangleFillMode.hpp in Headers */,
 				F90706A72B9DAEC900383E4D /* beta_distribution.h in Headers */,
 				F986059A2BE3314D006A4C0F /* CCursorStyle.hpp in Headers */,
 				F986FA6E2BCFB53B006A4C0F /* svginterface.h in Headers */,
@@ -9314,6 +9411,7 @@
 				F98600912BCFBB53006A4C0F /* GrSurfaceCharacterization.h in Headers */,
 				F98600302BCFBB53006A4C0F /* SkPicture.h in Headers */,
 				F9070C7B2B9F175000383E4D /* Step.ipp in Headers */,
+				F980C42E2C00D2B500A86B68 /* SamplerState.hpp in Headers */,
 				F986FA532BCFB53B006A4C0F /* svpsinfo.h in Headers */,
 				F9070CB92B9F175000383E4D /* FastMath.hpp in Headers */,
 				F986055C2BD203D4006A4C0F /* muParserBase.h in Headers */,
@@ -9419,6 +9517,7 @@
 				F98600842BCFBB53006A4C0F /* SkTArray.h in Headers */,
 				F98601622BCFBB53006A4C0F /* SkBlendModeBlender.h in Headers */,
 				F98605632BD203D4006A4C0F /* muParserError.h in Headers */,
+				F980C42A2C00D2B500A86B68 /* CullMode.hpp in Headers */,
 				F98603F32BCFBB54006A4C0F /* SkSLConstructorCompoundCast.h in Headers */,
 				F986055E2BD203D4006A4C0F /* muParserBytecode.h in Headers */,
 				F98603EB2BCFBB54006A4C0F /* SkSLConstructor.h in Headers */,
@@ -9704,6 +9803,7 @@
 				F9070C582B9F175000383E4D /* Format.ipp in Headers */,
 				F986F92A2BC8441F006A4C0F /* st.h in Headers */,
 				F986028C2BCFBB54006A4C0F /* SkTMultiMap.h in Headers */,
+				F980C4342C00D2DF00A86B68 /* BlendState.ipp in Headers */,
 				F986007D2BCFBB53006A4C0F /* SkMutex.h in Headers */,
 				F9528C132BBF026F00222F45 /* portability_macros.h in Headers */,
 				F9070C9D2B9F175000383E4D /* BoolToString.hpp in Headers */,
@@ -9723,6 +9823,7 @@
 				F98604492BCFBB54006A4C0F /* SkSLVarDeclarations.h in Headers */,
 				F986006F2BCFBB53006A4C0F /* SkAssert.h in Headers */,
 				F98604322BCFBB54006A4C0F /* SkSLReturnStatement.h in Headers */,
+				F980C4312C00D2B500A86B68 /* BlendState.hpp in Headers */,
 				F9528B2A2BAFCDB400222F45 /* MemoryMappedFile.hpp in Headers */,
 				F9070CED2B9F175100383E4D /* Platform.hpp in Headers */,
 				F9070CF12B9F175100383E4D /* PredefinedYesNo.hpp in Headers */,
@@ -9744,6 +9845,7 @@
 				F986003F2BCFBB53006A4C0F /* SkShader.h in Headers */,
 				F9070D0B2B9F175100383E4D /* UniqueResource.hpp in Headers */,
 				F986FA882BCFB53B006A4C0F /* ftlogging.h in Headers */,
+				F980C4352C00D2DF00A86B68 /* RasterizerState.ipp in Headers */,
 				F9807D8A2BF6677600D9B590 /* MessageBoxStyle.hpp in Headers */,
 				F9070C762B9F175000383E4D /* Rect.ipp in Headers */,
 				F986037E2BCFBB54006A4C0F /* SkOTTable_loca.h in Headers */,
@@ -9766,6 +9868,7 @@
 				F986046A2BCFBB54006A4C0F /* SkSLCompiler.h in Headers */,
 				F98604232BCFBB54006A4C0F /* SkSLMethodReference.h in Headers */,
 				F986016B2BCFBB53006A4C0F /* SkBlitRow.h in Headers */,
+				F980C42F2C00D2B500A86B68 /* BlendFactor.hpp in Headers */,
 				F9528B292BAFCDB400222F45 /* MemoryMappedFileView.hpp in Headers */,
 				F934BD7D2BF880860003EAD5 /* AssetHandleManager.hpp in Headers */,
 				F9528C952BC1205300222F45 /* PNGFilter.hpp in Headers */,
@@ -9802,6 +9905,7 @@
 				F9070C402B9F175000383E4D /* AlignedAllocator.ipp in Headers */,
 				F9070CF42B9F175100383E4D /* RandomDuration.hpp in Headers */,
 				F9528C322BBF026F00222F45 /* zstd_ldm.h in Headers */,
+				F980C42B2C00D2B500A86B68 /* DepthStencilState.hpp in Headers */,
 				F9070CF22B9F175100383E4D /* PRNG.hpp in Headers */,
 				F986FA8A2BCFB53B006A4C0F /* ftmac.h in Headers */,
 				F98601482BCFBB53006A4C0F /* SkAlphaRuns.h in Headers */,
@@ -10040,6 +10144,7 @@
 				F9528C252BBF026F00222F45 /* zstd_compress_sequences.h in Headers */,
 				F986F9442BCA79BB006A4C0F /* RectF.hpp in Headers */,
 				F986007A2BCFBB53006A4C0F /* SkMacros.h in Headers */,
+				F980C42C2C00D2B500A86B68 /* BlendOperation.hpp in Headers */,
 				F98604632BCFBB54006A4C0F /* SkSLTransform.h in Headers */,
 				F986001A2BCFBB53006A4C0F /* SkFontStyle.h in Headers */,
 				F9070CC52B9F175000383E4D /* FunctionRef.hpp in Headers */,
@@ -10129,6 +10234,7 @@
 				F98604642BCFBB54006A4C0F /* GLSL.std.450.h in Headers */,
 				F986FFF72BCFBB53006A4C0F /* SkRawDecoder.h in Headers */,
 				F98603F72BCFBB54006A4C0F /* SkSLConstructorMatrixResize.h in Headers */,
+				F980C4302C00D2B500A86B68 /* RasterizerState.hpp in Headers */,
 				F98603802BCFBB54006A4C0F /* SkOTTable_maxp_TT.h in Headers */,
 				F986FA662BCFB53B006A4C0F /* ftrfork.h in Headers */,
 				F986F9C02BCA9D0A006A4C0F /* svgelement.h in Headers */,
@@ -10642,6 +10748,8 @@
 				F934BD9B2BFA59000003EAD5 /* SivGraphics.cpp in Sources */,
 				F98602E02BCFBB54006A4C0F /* SkImage_Lazy.cpp in Sources */,
 				F986017E2BCFBB53006A4C0F /* SkChecksum.cpp in Sources */,
+				F980C4442C00D31000A86B68 /* SivBlendState.cpp in Sources */,
+				F980C4472C00D31000A86B68 /* SivBlendFactor.cpp in Sources */,
 				F9528B652BB6DC9200222F45 /* SivCycleClock.cpp in Sources */,
 				F986F9AE2BCA9D0A006A4C0F /* markerelement.cpp in Sources */,
 				F98602592BCFBB54006A4C0F /* SkRuntimeEffect.cpp in Sources */,
@@ -10730,6 +10838,7 @@
 				F98602552BCFBB54006A4C0F /* SkRTree.cpp in Sources */,
 				F986039A2BCFBB54006A4C0F /* SkSweepGradient.cpp in Sources */,
 				F98605372BD1049D006A4C0F /* TGADecoder.cpp in Sources */,
+				F980C4462C00D31000A86B68 /* SivBlendOperation.cpp in Sources */,
 				F98601652BCFBB53006A4C0F /* SkBlitMask_opts_ssse3.cpp in Sources */,
 				F9070DFE2B9F175E00383E4D /* SivVector2D.cpp in Sources */,
 				F9070DE72B9F175E00383E4D /* SivString.cpp in Sources */,
@@ -10986,6 +11095,7 @@
 				F98604862BCFBB54006A4C0F /* SkSLPool.cpp in Sources */,
 				F986024D2BCFBB54006A4C0F /* SkRegion_path.cpp in Sources */,
 				F986F92D2BC8441F006A4C0F /* unicode_fold1_key.c in Sources */,
+				F980C4432C00D31000A86B68 /* SivTriangleFillMode.cpp in Sources */,
 				F98600E52BCFBB53006A4C0F /* SkSpinlock.cpp in Sources */,
 				F98602F12BCFBB54006A4C0F /* SkSurface_Raster.cpp in Sources */,
 				F9070EDA2B9F1C8900383E4D /* context.c in Sources */,
@@ -11003,6 +11113,7 @@
 				F9070E5C2B9F176B00383E4D /* CConsole.cpp in Sources */,
 				F98602292BCFBB54006A4C0F /* SkPixmapDraw.cpp in Sources */,
 				F98604CF2BCFBB54006A4C0F /* SkCharToGlyphCache.cpp in Sources */,
+				F980C4422C00D31000A86B68 /* SivCullMode.cpp in Sources */,
 				F98600B82BCFBB53006A4C0F /* skcms_TransformHsw.cc in Sources */,
 				F98602232BCFBB54006A4C0F /* SkPictureRecord.cpp in Sources */,
 				F986040A2BCFBB54006A4C0F /* SkSLFieldAccess.cpp in Sources */,
@@ -11070,6 +11181,7 @@
 				F98601C42BCFBB53006A4C0F /* SkGeometry.cpp in Sources */,
 				F98601D32BCFBB53006A4C0F /* SkImageGenerator.cpp in Sources */,
 				F9070DB02B9F175E00383E4D /* SivBinaryReader.cpp in Sources */,
+				F980C4452C00D31000A86B68 /* SivRasterizerState.cpp in Sources */,
 				F98601A42BCFBB53006A4C0F /* SkDraw.cpp in Sources */,
 				F986027C2BCFBB54006A4C0F /* SkStrokeRec.cpp in Sources */,
 				F98602522BCFBB54006A4C0F /* SkRRect.cpp in Sources */,
