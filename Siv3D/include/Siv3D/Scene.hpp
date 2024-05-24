@@ -15,8 +15,9 @@
 # include "ColorHSV.hpp"
 # include "Window.hpp"
 # include "WindowState.hpp"
-# include "TextureFilter.hpp"
 # include "ResizeMode.hpp"
+# include "TextureFilter.hpp"
+# include "MSAASampleCount.hpp"
 
 namespace s3d
 {
@@ -24,12 +25,6 @@ namespace s3d
 	{
 		/// @brief シーンの幅と高さ（ピクセル）のデフォルト値です。
 		inline constexpr s3d::Size DefaultSceneSize = Window::DefaultClientSize;
-
-		/// @brief ウィンドウをリサイズしたときのシーンのサイズの扱いのデフォルト値です。
-		inline constexpr ResizeMode DefaultResizeMode = ResizeMode::Virtual;
-
-		/// @brief ウィンドウのフレームバッファのサイズがシーンのサイズと異なる際、シーンの拡大縮小描画に用いるテクスチャフィルタのデフォルト値です。
-		inline constexpr TextureFilter DefaultTextureFilter = TextureFilter::Linear;
 
 		/// @brief シーンの背景色のデフォルト色です。
 		inline constexpr ColorF DefaultBackgroundColor = Palette::DefaultBackground;
@@ -39,6 +34,15 @@ namespace s3d
 
 		/// @brief `Scene::DeltaTime()` が返す最大の時間（秒）のデフォルト値です。
 		inline constexpr double DefaultMaxDeltaTime = 0.1;
+
+		/// @brief ウィンドウをリサイズしたときのシーンのサイズの扱いのデフォルト値です。
+		inline constexpr ResizeMode DefaultResizeMode = ResizeMode::Virtual;
+
+		/// @brief ウィンドウのフレームバッファのサイズがシーンのサイズと異なる際、シーンの拡大縮小描画に用いるテクスチャフィルタのデフォルト値です。
+		inline constexpr TextureFilter DefaultTextureFilter = TextureFilter::Linear;
+
+		/// @brief シーンのマルチサンプリングのデフォルト値です。
+		inline constexpr MSAASampleCount DefaultMSAASampleCount = MSAASampleCount::X4MSAA;
 	}
 
 	namespace Scene
@@ -223,6 +227,23 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	SetMSAASampleCount
+		//
+		////////////////////////////////////////////////////////////////
+
+		void SetMSAASampleCount(MSAASampleCount sampleCount);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetMSAASampleCount
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MSAASampleCount GetMSAASampleCount() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	SetMaxDeltaTime
 		//
 		////////////////////////////////////////////////////////////////
@@ -262,8 +283,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief アプリケーションが起動してからのシーンの経過時間（秒）を返します。
-		/// @ `System::Update()` を呼ぶことで値が更新されます。
 		/// @return アプリケーションが起動してからのシーンの経過時間（秒）
+		/// @remark `System::Update()` を呼ぶことで値が更新されます。
 		/// @remark `GetMaxDeltaTime()` の設定によっては、実際のアプリケーション起動時間よりも小さくなることがあります。
 		[[nodiscard]]
 		double Time() noexcept;

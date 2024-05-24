@@ -61,8 +61,6 @@ namespace s3d
 
 		IDXGISwapChain1* m_swapChain1	= nullptr;
 
-		uint32 m_sceneSampleCount		= FromEnum(g_engineOptions.sceneMSAA);
-
 		SceneStyle m_sceneStyle;
 
 		ResizeMode m_sceneResizeMode	= Scene::DefaultResizeMode;
@@ -71,6 +69,8 @@ namespace s3d
 
 		struct SceneBuffer
 		{
+			uint32 sampleCount = FromEnum(Scene::DefaultMSAASampleCount);
+
 			D3D11InternalTexture2D scene;
 		
 			D3D11InternalTexture2D resolved;

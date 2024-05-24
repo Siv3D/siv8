@@ -68,19 +68,6 @@ namespace s3d
 			/// @brief リファレンスドライバーを使用
 			Reference
 		};
-
-		/// @brief シーンのマルチサンプリングアンチエイリアス (MSAA) の設定
-		enum class SceneMSAA : uint8
-		{
-			/// @brief MSAA を使用しない
-			NoAA	= 1,
-
-			/// @brief 2x MSAA を使用する
-			X2MSAA	= 2,
-
-			/// @brief 4x MSAA を使用する
-			X4MSAA	= 4,
-		};
 	};
 
 	struct EngineOptions
@@ -88,15 +75,12 @@ namespace s3d
 		//EngineOption::Renderer renderer			= EngineOption::Renderer::PlatformDefault;
 
 		EngineOption::D3D11Driver d3d11Driver	= EngineOption::D3D11Driver::Hardware;
-
-		EngineOption::SceneMSAA sceneMSAA		= EngineOption::SceneMSAA::X4MSAA;
 	};
 
 	namespace Internal
 	{
 		//int SetEngineOption(EngineOption::Renderer) noexcept;
 		int SetEngineOption(EngineOption::D3D11Driver) noexcept;
-		int SetEngineOption(EngineOption::SceneMSAA) noexcept;
 	}
 
 	extern EngineOptions g_engineOptions;

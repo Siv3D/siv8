@@ -18,21 +18,21 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ResizeMode
+	//	MSAASampleCount
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief シーンの自動リサイズモード
-	enum class ResizeMode : uint8
+	/// @brief シーンのマルチサンプリングアンチエイリアス (MSAA) の設定
+	enum class MSAASampleCount : uint8
 	{
-		/// @brief シーンのサイズをウィンドウの実サイズに合わせる
-		Actual,
+		/// @brief MSAA を使用しない
+		NoAA	= 1,
 
-		/// @brief シーンのサイズをウィンドウの仮想サイズに合わせる（デフォルト）
-		Virtual,
+		/// @brief 2x MSAA を使用する
+		X2MSAA	= 2,
 
-		/// @brief シーンのサイズは変更しない
-		Keep,
+		/// @brief 4x MSAA を使用する
+		X4MSAA	= 4,
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -41,5 +41,5 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, ResizeMode value);
+	void Formatter(FormatData& formatData, MSAASampleCount value);
 }

@@ -1380,6 +1380,8 @@
 
 # include <Siv3D/TextureFilter.hpp>
 
+# include <Siv3D/MSAASampleCount.hpp>
+
 # include <Siv3D/Scene.hpp>
 
 

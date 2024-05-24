@@ -28,7 +28,7 @@ namespace s3d
 	void D3D11BackBuffer::init(const D3D11Device& device, IDXGISwapChain1* swapChain)
 	{
 		LOG_SCOPED_DEBUG("D3D11BackBuffer::init()");
-		LOG_INFO(fmt::format("ℹ️ Scene MSAA: x{}", m_sceneSampleCount));
+		LOG_INFO(fmt::format("ℹ️ Scene MSAA: x{}", m_sceneBuffers.sampleCount));
 
 		m_device		= device.getDevice();
 		m_context		= device.getContext();
@@ -39,13 +39,13 @@ namespace s3d
 		{
 			const Size sceneSize = Window::GetState().virtualSize;
 
-			if (m_sceneSampleCount == 1)
+			if (m_sceneBuffers.sampleCount == 1)
 			{
 				m_sceneBuffers.scene = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneSize);
 			}
 			else
 			{
-				m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneSampleCount);
+				m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneBuffers.sampleCount);
 			}
 		}
 
@@ -139,7 +139,7 @@ namespace s3d
 		const Size backBufferSize = m_backBuffer.size();
 		const Size sceneBufferSize = m_sceneBuffers.scene.size();
 
-		if (m_sceneSampleCount == 1)
+		if (m_sceneBuffers.sampleCount == 1)
 		{
 			if (backBufferSize == sceneBufferSize)
 			{
@@ -241,13 +241,13 @@ namespace s3d
 
 		m_sceneBuffers = {};
 
-		if (m_sceneSampleCount == 1)
+		if (m_sceneBuffers.sampleCount == 1)
 		{
 			m_sceneBuffers.scene = D3D11InternalTexture2D::CreateRenderTexture(m_device, size);
 		}
 		else
 		{
-			m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneSampleCount);
+			m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneBuffers.sampleCount);
 		}
 
 		clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);

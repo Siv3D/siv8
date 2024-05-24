@@ -772,6 +772,9 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL">
       <UniqueIdentifier>{5670f361-13a6-4c5c-b047-11e97d4e35ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\MSAASampleCount">
+      <UniqueIdentifier>{19be14f2-78bd-4643-b505-0dcbafe81f5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3138,6 +3141,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneUtility.hpp">
       <Filter>src\Siv3D\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MSAASampleCount.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5305,6 +5311,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneUtility.cpp">
       <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MSAASampleCount\SivMSAASampleCount.cpp">
+      <Filter>src\Siv3D\MSAASampleCount</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
