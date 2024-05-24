@@ -71,9 +71,19 @@ namespace s3d
 		{
 			uint32 sampleCount = FromEnum(Scene::DefaultMSAASampleCount);
 
-			D3D11InternalTexture2D scene;
+			D3D11InternalTexture2D msaa;
 		
-			D3D11InternalTexture2D resolved;
+			D3D11InternalTexture2D nonMSAA;
+
+			D3D11InternalTexture2D& getSceneTexture() noexcept
+			{
+				return ((sampleCount == 1) ? nonMSAA : msaa);
+			}
+			
+			const D3D11InternalTexture2D& getSceneTexture() const noexcept
+			{
+				return ((sampleCount == 1) ? nonMSAA : msaa);
+			}
 		
 		} m_sceneBuffers;
 
