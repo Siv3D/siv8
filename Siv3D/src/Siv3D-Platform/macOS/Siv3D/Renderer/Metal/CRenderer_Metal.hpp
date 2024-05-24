@@ -76,8 +76,6 @@ namespace s3d
 		
 		ResizeMode m_sceneResizeMode = ResizeMode::Virtual;
 
-		uint32 m_sceneSampleCount = 1;
-
 		bool m_vSyncEnabled = true;
 		
 		CA::MetalDrawable* m_metalDrawable = nullptr;
@@ -87,7 +85,11 @@ namespace s3d
 		
 		struct SceneBuffer
 		{
+			uint32 sampleCount = 1;
+
 			MetalInternalTexture2D scene;
+
+			MetalInternalTexture2D resolved;
 			
 		} m_sceneBuffers;
 			

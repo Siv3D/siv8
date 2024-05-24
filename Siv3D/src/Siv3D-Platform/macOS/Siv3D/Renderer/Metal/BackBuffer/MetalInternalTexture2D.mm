@@ -63,6 +63,6 @@ namespace s3d
 		texture.m_size = size;
 		texture.m_sampleCount = sampleCount;
 		
-		return{};
+		return texture;
 	}
 }

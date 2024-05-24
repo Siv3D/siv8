@@ -100,13 +100,14 @@ namespace s3d
 		{
 			const Size sceneSize = Window::GetState().virtualSize;
 			
-			if (m_sceneSampleCount == 1)
+			if (m_sceneBuffers.sampleCount == 1)
 			{
-				m_sceneBuffers.scene = MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
+				m_sceneBuffers.scene	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
 			}
 			else
 			{
-			//	m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneSampleCount);
+				m_sceneBuffers.scene	= MetalInternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneBuffers.sampleCount);
+				m_sceneBuffers.resolved	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
 			}
 		}
 		
@@ -170,15 +171,15 @@ namespace s3d
 			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
 			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
 			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
+			//renderPipelineDescriptor->setSampleCount(4);
 			
 			NS::Error* error;
 			m_pipeLineTest = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
 		}
-				
+
+		// Draw2D
 		@autoreleasepool
 		{
-			m_metalDrawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable];
-			
 			{
 				NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 				MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
@@ -207,10 +208,12 @@ namespace s3d
 
 	bool CRenderer_Metal::present()
 	{
+		// SceneToBackBuffer
 		@autoreleasepool
 		{
 			m_metalDrawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable];
 			
+			if (m_sceneBuffers.sampleCount == 1)
 			{
 				NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 				
@@ -235,6 +238,34 @@ namespace s3d
 				renderCommandEncoder->setFragmentTexture(m_sceneBuffers.scene.getTexture(), 0);
 				renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
 				renderCommandEncoder->endEncoding();
+			}
+			else
+			{
+				/*
+				NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+				
+				MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
+				cd->setTexture(m_metalDrawable->texture());
+				cd->setLoadAction(MTL::LoadActionClear);
+				cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
+				cd->setStoreAction(MTL::StoreActionStore);
+				
+				MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
+				renderCommandEncoder->setRenderPipelineState(m_pipeLineStateFullScreenTriangle.get());
+				const auto [s, viewRect] = getLetterboxComposition();
+				const MTL::Viewport viewport = {
+					.originX = viewRect.x,
+					.originY = viewRect.y,
+					.width = viewRect.w,
+					.height = viewRect.h,
+					.znear = 0.0,
+					.zfar = 1.0
+				};
+				renderCommandEncoder->setViewport(viewport);
+				renderCommandEncoder->setFragmentTexture(m_sceneBuffers.resolved.getTexture(), 0);
+				renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
+				renderCommandEncoder->endEncoding();
+				*/
 			}
 			
 			m_commandBuffer->presentDrawable(m_metalDrawable);
@@ -299,13 +330,14 @@ namespace s3d
 
 		m_sceneBuffers = {};
 		
-		if (m_sceneSampleCount == 1)
+		if (m_sceneBuffers.sampleCount == 1)
 		{
-			m_sceneBuffers.scene = MetalInternalTexture2D::CreateRenderTexture(m_device, size);
+			m_sceneBuffers.scene	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
 		}
 		else
 		{
-		//	m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneSampleCount);
+			m_sceneBuffers.scene	= MetalInternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneBuffers.sampleCount);
+			m_sceneBuffers.resolved	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
 		}
 	}
 
