@@ -1378,8 +1378,6 @@
 
 # include <Siv3D/ResizeMode.hpp>
 
-# include <Siv3D/TextureFilter.hpp>
-
 # include <Siv3D/MSAASampleCount.hpp>
 
 # include <Siv3D/Scene.hpp>
@@ -1406,12 +1404,17 @@
 // ラスタライザーステート | Rasterizer state
 # include <Siv3D/RasterizerState.hpp> // ToDo
 
-// 深度ステンシルステート | Depth stencil state
-# include <Siv3D/DepthStencilState.hpp>
+# include <Siv3D/TextureAddressMode.hpp>
+
+# include <Siv3D/TextureFilter.hpp>
+
+# include <Siv3D/CompareFunction.hpp>
 
 // サンプラーステート | Sampler state
-# include <Siv3D/SamplerState.hpp>
+# include <Siv3D/SamplerState.hpp> // ToDo
 
+// 深度ステンシルステート | Depth stencil state
+# include <Siv3D/DepthStencilState.hpp> // ToDo
 
 
 # if SIV3D_PLATFORM(WINDOWS)

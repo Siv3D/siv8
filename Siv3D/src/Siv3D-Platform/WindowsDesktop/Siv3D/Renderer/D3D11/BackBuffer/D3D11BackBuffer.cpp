@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "D3D11BackBuffer.hpp"
+# include <Siv3D/SamplerState.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
@@ -303,8 +304,8 @@ namespace s3d
 
 	void D3D11BackBuffer::unbindAllPSTextures()
 	{
-		constexpr ID3D11ShaderResourceView* nullSRVs[16] = { nullptr };
-		m_context->PSSetShaderResources(0, 16, nullSRVs);
+		constexpr ID3D11ShaderResourceView* nullSRVs[SamplerState::TextureSlotCount] = { nullptr };
+		m_context->PSSetShaderResources(0, SamplerState::TextureSlotCount, nullSRVs);
 	}
 
 	void D3D11BackBuffer::drawFullScreenTriangle()

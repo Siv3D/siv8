@@ -18,18 +18,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	TextureFilter
+	//	CompareFunction
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief テクスチャフィルタの手法
-	enum class TextureFilter : uint8
+	enum class CompareFunction : uint8
 	{
-		/// @brief 最近傍補間
-		Nearest	= 0,
+		Never			= 1,
 
-		/// @brief バイリニア補間
-		Linear	= 1,
+		Less			= 2,
+
+		Equal			= 3,
+
+		LessEqual		= 4,
+
+		Greater			= 5,
+
+		NotEqual		= 6,
+
+		GreaterEqual	= 7,
+
+		Always			= 8,
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -38,5 +47,5 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, TextureFilter value);
+	void Formatter(FormatData& formatData, CompareFunction value);
 }

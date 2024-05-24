@@ -18,18 +18,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	TextureFilter
+	//	TextureAddressMode
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief テクスチャフィルタの手法
-	enum class TextureFilter : uint8
+	/// @brief テクスチャアドレスモード
+	enum class TextureAddressMode : uint8
 	{
-		/// @brief 最近傍補間
-		Nearest	= 0,
+		/// @brief 繰り返し
+		Repeat		= 1,
 
-		/// @brief バイリニア補間
-		Linear	= 1,
+		/// @brief ミラーで繰り返し
+		Mirror		= 2,
+
+		/// @brief -1.0 ～ 1.0 の範囲にクランプ
+		MirrorClamp	= 3,
+
+		/// @brief 0.0 ～ 1.0 の範囲にクランプ
+		Clamp		= 4,
+
+		/// @brief 0.0 ～ 1.0 の範囲にクランプし、範囲外のピクセルは `borderColor`
+		BorderColor = 5,
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -38,5 +47,5 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, TextureFilter value);
+	void Formatter(FormatData& formatData, TextureAddressMode value);
 }
