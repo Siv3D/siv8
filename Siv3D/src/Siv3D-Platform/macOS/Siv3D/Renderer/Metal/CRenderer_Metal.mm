@@ -99,7 +99,15 @@ namespace s3d
 		
 		{
 			const Size sceneSize = Window::GetState().virtualSize;
-			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
+			
+			if (m_sceneSampleCount == 1)
+			{
+				m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
+			}
+			else
+			{
+			//	m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneSampleCount);
+			}
 		}
 		
 		SIV3D_ENGINE(Shader)->init();
@@ -291,14 +299,14 @@ namespace s3d
 
 		m_sceneBuffer = {};
 		
-		//if (m_sceneSampleCount == 1)
+		if (m_sceneSampleCount == 1)
 		{
 			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_device, size);
 		}
-		//else
-		//{
+		else
+		{
 		//	m_sceneBuffers.scene = D3D11InternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneSampleCount);
-		//}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -76,6 +76,8 @@ namespace s3d
 		
 		ResizeMode m_sceneResizeMode = ResizeMode::Virtual;
 
+		uint32 m_sceneSampleCount = 1;
+
 		bool m_vSyncEnabled = true;
 		
 		CA::MetalDrawable* m_metalDrawable = nullptr;
