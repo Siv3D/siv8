@@ -90,7 +90,7 @@ namespace s3d
 															  MTL::ResourceStorageModeShared));
 		}
 		
-		m_metalDefaultLibrary = m_metalDevice->newDefaultLibrary();
+		m_metalDefaultLibrary = NS::TransferPtr(m_metalDevice->newDefaultLibrary());
 		
 		if(not m_metalDefaultLibrary)
 		{
@@ -119,9 +119,7 @@ namespace s3d
 			renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
 			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
 			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
-			assert(renderPipelineDescriptor);
-			MTL::PixelFormat pixelFormat = MTL::PixelFormatRGBA8Unorm;
-			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(pixelFormat);
+			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
 			
 			NS::Error* error;
 			m_metalRenderPSO1 = NS::TransferPtr(m_metalDevice->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
@@ -133,17 +131,14 @@ namespace s3d
 			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("sceneFragmentShader", NS::ASCIIStringEncoding)));
 			assert(fragmentShader);
 		
-			MTL::RenderPipelineDescriptor* renderPipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();
-			renderPipelineDescriptor->setLabel(NS::String::string("Scene Rendering Pipeline", NS::ASCIIStringEncoding));
-			
+			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
+			renderPipelineDescriptor->setLabel(NS::String::string("Scene Rendering Pipeline", NS::ASCIIStringEncoding));		
 			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
 			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
-			assert(renderPipelineDescriptor);
-			MTL::PixelFormat pixelFormat = (MTL::PixelFormat)m_metalLayer.pixelFormat;
-			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(pixelFormat);
+			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat((MTL::PixelFormat)m_metalLayer.pixelFormat);
 			
 			NS::Error* error;
-			m_metalRenderPSO2 = NS::TransferPtr(m_metalDevice->newRenderPipelineState(renderPipelineDescriptor, &error));
+			m_metalRenderPSO2 = NS::TransferPtr(m_metalDevice->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
 		}
 
 		{
@@ -370,15 +365,14 @@ namespace s3d
 		m_metalCommandBuffer = m_metalCommandQueue->commandBuffer();
 
 		{
-			MTL::RenderPassDescriptor* offscreenRenderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+			NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 			MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
 			cd->setTexture(m_sceneBuffer.getTexture());
 			cd->setLoadAction(MTL::LoadActionClear);
 			cd->setClearColor(MTL::ClearColor(m_sceneStyle.backgroundColor.r, m_sceneStyle.backgroundColor.g, m_sceneStyle.backgroundColor.b, 1));
 			cd->setStoreAction(MTL::StoreActionStore);
 
-			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor);
-			offscreenRenderPassDescriptor->release();
+			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
 
 			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO1.get());
 			renderCommandEncoder->setVertexBuffer(m_triangleVertexBuffer.get(), 0, 0);
@@ -390,15 +384,14 @@ namespace s3d
 		}
 		
 		{
-			MTL::RenderPassDescriptor* renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+			NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 			MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
 			cd->setTexture(m_metalDrawable->texture());
 			cd->setLoadAction(MTL::LoadActionClear);
 			cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
 			cd->setStoreAction(MTL::StoreActionStore);
 			
-			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(renderPassDescriptor);
-			renderPassDescriptor->release();
+			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 			
 			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO2.get());
 			

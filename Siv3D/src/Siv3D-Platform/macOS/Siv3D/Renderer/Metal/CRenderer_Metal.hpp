@@ -74,7 +74,7 @@ namespace s3d
 		bool m_vSyncEnabled = true;
 		
 		CA::MetalDrawable* m_metalDrawable = nullptr;
-		MTL::Library* m_metalDefaultLibrary = nullptr;
+		NS::SharedPtr<MTL::Library> m_metalDefaultLibrary;
 		NS::SharedPtr<MTL::CommandQueue> m_metalCommandQueue;
 		MTL::CommandBuffer* m_metalCommandBuffer = nullptr;
 		NS::SharedPtr<MTL::Buffer> m_triangleVertexBuffer;
