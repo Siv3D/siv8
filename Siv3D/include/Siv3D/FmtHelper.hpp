@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # pragma once
-# include "FormatLiteral.hpp"
 
 namespace s3d
 {
@@ -44,5 +43,3 @@ namespace s3d
 		auto FormatSequence(const std::u32string& tag, const std::span<Type> sequence, auto& ctx);
 	}
 }
-
-# include "detail/FmtHelper.ipp"

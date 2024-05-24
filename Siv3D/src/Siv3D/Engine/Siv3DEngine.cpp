@@ -15,8 +15,10 @@
 # include <Siv3D/RegExp/IRegExp.hpp>
 # include <Siv3D/System/ISystem.hpp>
 # include <Siv3D/EngineResource/IEngineResource.hpp>
+# include <Siv3D/Profiler/IProfiler.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Scene/IScene.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
 # include <Siv3D/Emoji/IEmoji.hpp>
@@ -25,6 +27,9 @@
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
+# include <Siv3D/Renderer/IRenderer.hpp>
+# include <Siv3D/Shader/IShader.hpp>
+# include <Siv3D/EngineShader/IEngineShader.hpp>
 
 namespace s3d
 {
@@ -66,13 +71,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	isNotNull
+	//	isNull
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Siv3DEngine::isNotNull() noexcept
+	bool Siv3DEngine::isNull() noexcept
 	{
-		return (pEngine != nullptr);
+		return (pEngine == nullptr);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -84,6 +89,6 @@ namespace s3d
 	bool Siv3DEngine::isAvailable() noexcept
 	{
 		constexpr auto LastIndex = (std::tuple_size<decltype(m_components)>::value - 1);	
-		return (std::get<LastIndex>(pEngine->m_components).get() != nullptr);
+		return (pEngine && (std::get<LastIndex>(pEngine->m_components).get() != nullptr));
 	}
 }

@@ -20,8 +20,10 @@ namespace s3d
 	class ISiv3DRegExp;
 	class ISiv3DSystem;
 	class ISiv3DEngineResource;
+	class ISiv3DProfiler;
 	class ISiv3DUserAction;
 	class ISiv3DWindow;
+	class ISiv3DScene;
 	class ISiv3DImageDecoder;
 	class ISiv3DImageEncoder;
 	class ISiv3DEmoji;
@@ -30,6 +32,9 @@ namespace s3d
 	class ISiv3DCursorStyle;
 	class ISiv3DKeyboard;
 	class ISiv3DMouse;
+	class ISiv3DRenderer;
+	class ISiv3DShader;
+	class ISiv3DEngineShader;
 
 	class Siv3DEngine
 	{
@@ -43,8 +48,10 @@ namespace s3d
 			Siv3DComponent<ISiv3DRegExp>,
 			Siv3DComponent<ISiv3DSystem>,
 			Siv3DComponent<ISiv3DEngineResource>,
+			Siv3DComponent<ISiv3DProfiler>,
 			Siv3DComponent<ISiv3DUserAction>,
 			Siv3DComponent<ISiv3DWindow>,
+			Siv3DComponent<ISiv3DScene>,
 			Siv3DComponent<ISiv3DImageDecoder>,
 			Siv3DComponent<ISiv3DImageEncoder>,
 			Siv3DComponent<ISiv3DEmoji>,
@@ -52,7 +59,10 @@ namespace s3d
 			Siv3DComponent<ISiv3DCursor>,
 			Siv3DComponent<ISiv3DCursorStyle>,
 			Siv3DComponent<ISiv3DKeyboard>,
-			Siv3DComponent<ISiv3DMouse>
+			Siv3DComponent<ISiv3DMouse>,
+			Siv3DComponent<ISiv3DRenderer>,
+			Siv3DComponent<ISiv3DShader>,
+			Siv3DComponent<ISiv3DEngineShader>
 		> m_components;
 
 	public:
@@ -62,7 +72,7 @@ namespace s3d
 		~Siv3DEngine();
 
 		[[nodiscard]]
-		static bool isNotNull() noexcept;
+		static bool isNull() noexcept;
 
 		[[nodiscard]]
 		static bool isAvailable() noexcept;

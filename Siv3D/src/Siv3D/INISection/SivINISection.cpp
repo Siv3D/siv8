@@ -12,7 +12,6 @@
 # include <Siv3D/INISection.hpp>
 # include <Siv3D/Array.hpp>
 # include <Siv3D/FormatLiteral.hpp>
-# include <Siv3D/FmtExtension.hpp>
 # include <Siv3D/Demangle.hpp>
 
 namespace s3d

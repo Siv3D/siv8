@@ -37,4 +37,8 @@ namespace s3d
 
 	/// @brief 乗算済みアルファが使用されている
 	using AlphaPremultiplied	= YesNo<struct AlphaPremultiplied_tag>;
+
+	/// @brief 中心にそろえる
+	using Centering				= YesNo<struct Centering_tag>;
+
 }

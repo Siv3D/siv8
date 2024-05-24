@@ -584,6 +584,12 @@ MIT_LICENSE
 },
 
 {
+R"-(Metal-cpp)-",
+R"-(Copyright (c) 2023 Apple Inc.)-",
+APACHE_2_LICENSE
+},
+
+{
 R"-(mimalloc)-",
 R"-(Copyright (c) 2018-2021 Microsoft Corporation, Daan Leijen)-",
 MIT_LICENSE

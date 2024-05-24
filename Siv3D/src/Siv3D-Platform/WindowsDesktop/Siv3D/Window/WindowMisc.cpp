@@ -118,6 +118,26 @@ namespace s3d::WindowMisc
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	GetBaseWindowStyle
+	//
+	////////////////////////////////////////////////////////////////
+
+	uint32 GetBaseWindowStyle(const WindowStyle style) noexcept
+	{
+		switch (style)
+		{
+		case WindowStyle::Fixed:
+			return (WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX | WS_THICKFRAME));
+		case WindowStyle::Frameless:
+			return (WS_POPUP | WS_VISIBLE | WS_MINIMIZEBOX);
+		case WindowStyle::Sizable:
+		default:
+			return WS_OVERLAPPEDWINDOW;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	GetWindowStyleFlags
 	//
 	////////////////////////////////////////////////////////////////
@@ -307,10 +327,46 @@ namespace s3d::WindowMisc
 
 		::ShowWindow(hWnd, SW_SHOW);
 
-		::ValidateRect(hWnd, 0);
+		::ValidateRect(hWnd, nullptr);
 
 		::UpdateWindow(hWnd);
 
 		::SetForegroundWindow(hWnd);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	SetFullscreen
+	//
+	////////////////////////////////////////////////////////////////
+
+	Size SetFullscreen(const HWND hWnd, size_t monitorIndex, RECT& storedWindowRect, const uint32 baseWindowStyle)
+	{
+		::GetWindowRect(hWnd, &storedWindowRect);
+		::SetWindowLongW(hWnd, GWL_STYLE, (baseWindowStyle & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME)));
+
+		const Array<MonitorInfo> monitors = System::EnumerateMonitors();
+
+		if (monitors.size() <= monitorIndex)
+		{
+			monitorIndex = System::GetCurrentMonitorIndex();
+		}
+
+		const Rect fullscreenRect = monitors[monitorIndex].displayRect;
+		const Size result = fullscreenRect.size;
+
+		::SetWindowPos(
+			hWnd,
+			HWND_TOPMOST,
+			fullscreenRect.x,
+			fullscreenRect.y,
+			(fullscreenRect.x + fullscreenRect.w),
+			(fullscreenRect.y + fullscreenRect.h),
+			SWP_FRAMECHANGED | SWP_NOACTIVATE);
+
+		::ShowWindow(hWnd, SW_MAXIMIZE);
+		::ValidateRect(hWnd, nullptr);
+
+		return result;
 	}
 }

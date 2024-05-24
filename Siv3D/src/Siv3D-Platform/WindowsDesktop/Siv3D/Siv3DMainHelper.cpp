@@ -11,8 +11,12 @@
 
 # include "Siv3DMainHelper.hpp"
 # include <Siv3D/Error.hpp>
+# include <Siv3D/UserInfo.hpp>
+# include <Siv3D/FileSystem.hpp>
+# include <Siv3D/Window.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Windows/Windows.hpp>
+# include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
 
 // ユーザが実装するエントリーポイント | User-defined entry point
 void Main();
@@ -77,11 +81,40 @@ namespace s3d
 
 			LOG_ERROR(fmt::format("🛑 Application terminated due to an exception `{}`", message));
 
-			//Window::Minimize();
+			Window::Minimize();
 
-			//FreestandingMessageBox::ShowError(fmt::format("Application terminated due to an exception `{}`", message));
+			FreestandingMessageBox::ShowError(fmt::format("Application terminated due to an exception `{}`", message));
 
 			return EXCEPTION_EXECUTE_HANDLER;
+		}
+
+		static std::string MakeErrorMessage(const std::string_view error, const std::string_view what)
+		{
+			std::string errorMessage;
+
+			const bool isJapanese = System::GetUserInfo().defaultLanguage.lowercased().contains(U"ja-jp");
+
+			if (isJapanese) // 日本語
+			{
+				errorMessage = "プログラムでエラーが発生しました。\n内容: ";
+			}
+			else
+			{
+				errorMessage = "An error occurred in the program.\n";
+			}
+
+			errorMessage += fmt::format("[{}] {}\n\n", error, what);
+	
+			if (isJapanese)
+			{
+				errorMessage += fmt::format("（開発者向け情報）例外の発生場所を特定するには、Visual Studio メニュー［デバッグ］→［ウィンドウ］→［例外設定］→［スローされたときに中断］→［C++ Exceptions］において、`{}` を追加または有効にしてください。", error);
+			}
+			else
+			{
+				errorMessage += fmt::format("(For developers) To identify the location where the exception occurred, add or enable `{}` in [Debug] -> [Windows] -> [Exception Settings] -> [Break When Thrown] -> [C++ Exceptions].", error);
+			}
+
+			return errorMessage;
 		}
 
 		static void TryMain()
@@ -95,33 +128,45 @@ namespace s3d
 			}
 			catch (const Error& error)
 			{
-				errorMessage = error.messageUTF8();
+				errorMessage = MakeErrorMessage("s3d::Error", error.messageUTF8());
 			}
 			catch (const fmt::format_error& error)
 			{
-				errorMessage = fmt::format("[fmt::format_error]: {}", error.what());
+				errorMessage = MakeErrorMessage("fmt::format_error", error.what());
 			}
 			catch (const std::runtime_error& error)
 			{
-				errorMessage = fmt::format("[std::runtime_error]: {}", error.what());
+				errorMessage = MakeErrorMessage("std::runtime_error", error.what());
 			}
 			catch (const std::out_of_range& error)
 			{
-				errorMessage = fmt::format("[std::out_of_range]: {}", error.what());
+				errorMessage = MakeErrorMessage("std::out_of_range", error.what());
 			}
 			catch (const std::exception& error)
 			{
-				errorMessage = fmt::format("[std::exception]: {}", error.what());
+				errorMessage = MakeErrorMessage("std::exception", error.what());
 			}
 
 			if (not errorMessage.empty())
 			{
-				//static_cast<void>(Window::SetFullscreen(false)); // メッセージボックスを表示するためにフルスクリーンモードを解除
+				// メッセージボックスを表示するためにフルスクリーンモードを解除する
+				static_cast<void>(Window::SetFullscreen(false));
 
-				errorMessage += "\n\nFor more information, [Debug] -> [Windows] -> [Exception Settings] -> Tick the C++ Exceptions checkbox under the [Break When Thrown] heading.";
-
-				//FreestandingMessageBox::ShowError(errorMessage);
+				FreestandingMessageBox::ShowError(errorMessage);
 			}
+		}
+	}
+
+	void SetWorkingDirectory()
+	{
+		if (System::IsRunningInVisualStudio())
+		{
+			return;
+		}
+
+		if (const FilePath workingDirectory = FileSystem::ParentPath(FileSystem::ModulePath()))
+		{
+			FileSystem::ChangeCurrentDirectory(workingDirectory);
 		}
 	}
 

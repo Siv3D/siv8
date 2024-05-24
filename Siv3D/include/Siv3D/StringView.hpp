@@ -165,6 +165,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置の要素を返します。 | Returns the element at the specified index.
+		/// @param index インデックス | Index
+		/// @return 指定したインデックスの要素 | Element at the specified index
 		[[nodiscard]]
 		constexpr const_reference operator [](size_type index) const noexcept;
 
@@ -174,6 +177,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置の要素を返します。 | Returns the element at the specified index.
+		/// @param index インデックス | Index
+		/// @return 指定したインデックスの要素 | Element at the specified index
+		/// @throw std::out_of_range index が範囲外の場合 | Throws if index is out of range
 		[[nodiscard]]
 		constexpr const_reference at(size_type index) const;
 

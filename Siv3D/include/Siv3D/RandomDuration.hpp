@@ -28,6 +28,10 @@ namespace s3d
 	[[nodiscard]]
 	Duration Random(const Duration& max) noexcept;
 
+	/// @brief 0 以上 max 以下の範囲の時間を生成して返します。
+	/// @param max 生成する時間の最大値
+	/// @param urbg 乱数エンジン
+	/// @return 生成されたランダムな時間
 	[[nodiscard]]
 	Duration Random(const Duration& max, Concept::UniformRandomBitGenerator auto&& urbg) noexcept;
 
@@ -38,6 +42,11 @@ namespace s3d
 	[[nodiscard]]
 	Duration Random(const Duration& min, const Duration& max) noexcept;
 
+	/// @brief min 以上 max 以下の範囲の時間を生成して返します。
+	/// @param min 生成する時間の最小値
+	/// @param max 生成する時間の最大値
+	/// @param urbg 乱数エンジン
+	/// @return 生成されたランダムな時間
 	[[nodiscard]]
 	Duration Random(const Duration& min, const Duration& max, Concept::UniformRandomBitGenerator auto&& urbg) noexcept;
 }

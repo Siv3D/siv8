@@ -36,5 +36,10 @@ namespace s3d
 
 		position_type p2;
 
+
+
+		[[nodiscard]]
+		constexpr value_type area() const noexcept;
+
 	};
 }

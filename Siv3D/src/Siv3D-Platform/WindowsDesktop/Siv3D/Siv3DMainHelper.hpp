@@ -14,6 +14,8 @@
 
 namespace s3d
 {
+	void SetWorkingDirectory();
+
 	void WinMainInit();
 
 	void WinMainExit();

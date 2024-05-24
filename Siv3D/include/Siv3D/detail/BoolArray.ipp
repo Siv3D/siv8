@@ -926,7 +926,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 配列の要素を全て消去し、メモリも解放します。
+		/// @brief 配列の要素をすべて消去し、メモリも解放します。
 		constexpr void release()
 		{
 			m_container.clear();
@@ -1145,7 +1145,7 @@ namespace s3d
 
 		/// @brief 配列の先頭から指定した個数の要素を削除します。
 		/// @param n 削除する個数
-		/// @remark n が `size()` より多い場合は全ての要素を削除します。
+		/// @remark n が `size()` より多い場合はすべての要素を削除します。
 		constexpr void pop_front_N(size_type n)
 		{
 			m_container.erase(m_container.begin(), (m_container.begin() + Min(n, m_container.size())));
@@ -1159,7 +1159,7 @@ namespace s3d
 
 		/// @brief 配列の末尾から指定した個数の要素を削除します。
 		/// @param n 削除する個数
-		/// @remark n が `size()` より多い場合は全ての要素を削除します。
+		/// @remark n が `size()` より多い場合はすべての要素を削除します。
 		constexpr void pop_back_N(size_type n)
 		{
 			m_container.erase((m_container.end() - Min(n, m_container.size())), m_container.end());
@@ -1212,10 +1212,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 全ての要素が条件を満たすかを返します。
+		/// @brief すべての要素が条件を満たすかを返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return 全ての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
+		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
 		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>
@@ -1451,7 +1451,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
@@ -1461,7 +1461,7 @@ namespace s3d
 			std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
-		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
@@ -1477,7 +1477,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
@@ -1490,7 +1490,7 @@ namespace s3d
 			}
 		}
 
-		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
@@ -1509,7 +1509,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto& x : xs) f(i++, x);` と同じです。
@@ -1522,7 +1522,7 @@ namespace s3d
 			}
 		}
 
-		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto x : xs) f(i++, x);` と同じです。
@@ -1563,7 +1563,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した値を全ての要素に代入します。
+		/// @brief 指定した値をすべての要素に代入します。
 		/// @param value 代入する値
 		/// @return *this
 		constexpr Array& fill(const value_type& value)
@@ -1773,7 +1773,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した値と等しい全ての要素を削除します。
+		/// @brief 指定した値と等しいすべての要素を削除します。
 		/// @param value 削除する値
 		/// @return *this
 		constexpr Array& remove(const value_type& value)&
@@ -1782,7 +1782,7 @@ namespace s3d
 			return *this;
 		}
 
-		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
 		/// @param value 削除する値
 		/// @return 新しい配列
 		[[nodiscard]]
@@ -1791,7 +1791,7 @@ namespace s3d
 			return std::move(remove(value));
 		}
 
-		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
 		/// @param value 削除する値
 		/// @return 新しい配列
 		[[nodiscard]]
@@ -1802,7 +1802,7 @@ namespace s3d
 			return Array(newSize, (not value));
 		}
 
-		/// @brief 指定した値と等しい全ての要素を削除した新しい配列を返します。
+		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
 		/// @param value 削除する値
 		/// @return 新しい配列
 		[[nodiscard]]
@@ -1934,7 +1934,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した値と等しい全ての要素を別の値に置き換えます。
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えます。
 		/// @param oldValue 置き換えられる値
 		/// @param newValue 新しい値
 		/// @return *this
@@ -1951,7 +1951,7 @@ namespace s3d
 			}
 		}
 
-		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @param oldValue 置き換えられる値
 		/// @param newValue 新しい値
 		/// @return 新しい配列
@@ -1961,7 +1961,7 @@ namespace s3d
 			return std::move(replace(oldValue, newValue));
 		}
 
-		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @param oldValue 置き換えられる値
 		/// @param newValue 新しい値
 		/// @return 新しい配列
@@ -1978,7 +1978,7 @@ namespace s3d
 			}
 		}
 
-		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @param oldValue 置き換えられる値
 		/// @param newValue 新しい値
 		/// @return 新しい配列
@@ -1994,7 +1994,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えます。
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えます。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件
 		/// @param newValue 新しい値
@@ -2006,7 +2006,7 @@ namespace s3d
 			return *this;
 		}
 
-		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件
 		/// @param newValue 新しい値
@@ -2018,7 +2018,7 @@ namespace s3d
 			return std::move(replace_if(f, newValue));
 		}
 
-		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件
 		/// @param newValue 新しい値
@@ -2037,7 +2037,7 @@ namespace s3d
 			return result;
 		}
 
-		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件
 		/// @param newValue 新しい値
@@ -2093,7 +2093,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 末尾から順番に、全ての要素に対して関数を呼び出します。
+		/// @brief 末尾から順番に、すべての要素に対して関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
@@ -2103,7 +2103,7 @@ namespace s3d
 			std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
-		/// @brief 末尾から順番に、全ての要素に対して関数を呼び出します。
+		/// @brief 末尾から順番に、すべての要素に対して関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。

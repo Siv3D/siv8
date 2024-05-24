@@ -56,6 +56,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 結果またはエラーを表現する型。
 	template <class Type, class E>
 	using Result = std::expected<Type, E>;
 

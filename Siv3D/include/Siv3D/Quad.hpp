@@ -37,5 +37,11 @@ namespace s3d
 		position_type p2;
 
 		position_type p3;
+
+
+
+		[[nodiscard]]
+		constexpr Triangle triangle(size_t index) const;
+
 	};
 }

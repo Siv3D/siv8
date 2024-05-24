@@ -670,6 +670,111 @@
     <Filter Include="src\Siv3D\InputCombination">
       <UniqueIdentifier>{81ad0345-02a6-43c0-b84f-d1d635861ed0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\FreestandingMessageBox">
+      <UniqueIdentifier>{b155bc2a-e163-4dcf-b8f8-14e3c93751d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox">
+      <UniqueIdentifier>{1b997a72-fb3d-4b94-8efe-faf4e20731fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\UserInfo">
+      <UniqueIdentifier>{1bcbe446-3112-4970-ae3c-d508f7cea60e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\UserInfo">
+      <UniqueIdentifier>{215cc3d0-1eb2-47c9-a4eb-f8ae00321d32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher">
+      <UniqueIdentifier>{8a48a2f3-de5e-4967-aa0e-85dfdd14f0a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\DirectoryWatcher">
+      <UniqueIdentifier>{b03d86c1-306b-45a2-acd5-5d6d4ec31f86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ExtensionFilter">
+      <UniqueIdentifier>{57f8e522-0fec-421b-9126-379356d6f1c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Profiler">
+      <UniqueIdentifier>{7d72ab92-ff90-464a-a9cd-24e272170440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ResizeMode">
+      <UniqueIdentifier>{e1b912b6-75cc-42af-9275-dcd202afc743}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TextureFilter">
+      <UniqueIdentifier>{19bc6a87-791f-4531-a1f5-05c3f972ef6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Scene">
+      <UniqueIdentifier>{08ff0da8-f638-42ff-9d61-d56ba2e020c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Renderer">
+      <UniqueIdentifier>{6578ffec-4a05-4b65-bf62-3c41be205973}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer">
+      <UniqueIdentifier>{767fc7f6-4e8c-4ae3-aeea-830b978dd821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11">
+      <UniqueIdentifier>{5063698c-ba49-4d00-8b7e-6e6e29bef8bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device">
+      <UniqueIdentifier>{d528c4d3-6165-4509-9b08-8bd698c9298a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain">
+      <UniqueIdentifier>{0ddb3602-2ea4-42fc-89a6-f60366cceb0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer">
+      <UniqueIdentifier>{db81ee82-29ff-4f08-9b75-d75a0a7a05f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Troubleshooting">
+      <UniqueIdentifier>{c7cb5a5b-4bff-4f63-bd32-bdc4a35ba18a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MessageBox">
+      <UniqueIdentifier>{ba5724d4-7c5e-4dda-90be-d377904c6454}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\VertexShader">
+      <UniqueIdentifier>{c34ffcc0-2ac8-49e3-bb15-7b60744f52d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\PixelShader">
+      <UniqueIdentifier>{9377c41a-957b-4616-ad17-c3aee0cb7ccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Shader">
+      <UniqueIdentifier>{5ee0b328-e4e6-411d-ac8b-f4288ea4626f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader">
+      <UniqueIdentifier>{808cacc1-2bce-4caf-8c40-4da3d5fc24e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11">
+      <UniqueIdentifier>{d3a35418-6606-4f81-85f6-98de24ed0a71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\AssetHandleManager">
+      <UniqueIdentifier>{6759cb2c-e07f-4c9f-830d-37e95f9ed07a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader">
+      <UniqueIdentifier>{0c6a7544-8496-42ca-b971-f8ed2f8aa2fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader">
+      <UniqueIdentifier>{5fa92590-abd2-4894-8252-f9098816ff39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\EngineShader">
+      <UniqueIdentifier>{abfe96cc-1896-4601-8992-a97643fba97f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader">
+      <UniqueIdentifier>{b44bfc68-828f-4a16-a316-44ec3a47487a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11">
+      <UniqueIdentifier>{9e3332a3-b76d-400b-9401-d44cc2e42b94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\EngineOption">
+      <UniqueIdentifier>{83182778-032e-4f0a-8836-311318981c09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Graphics">
+      <UniqueIdentifier>{da935cbc-dce2-47ef-9f5b-e5b4a7414476}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\HLSL">
+      <UniqueIdentifier>{1dbed38d-0db0-40c7-abb8-0ab7d0c95c5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL">
+      <UniqueIdentifier>{5670f361-13a6-4c5c-b047-11e97d4e35ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MSAASampleCount">
+      <UniqueIdentifier>{19be14f2-78bd-4643-b505-0dcbafe81f5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -968,9 +1073,6 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\FormatLiteral.hpp">
       <Filter>include\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteral.ipp">
-      <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtExtension.hpp">
       <Filter>include\Siv3D</Filter>
@@ -2822,6 +2924,225 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Keyboard\FallbackNameList.hpp">
       <Filter>src\Siv3D\Keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomColor.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomPoint.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec2.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec2.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomColor.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomPoint.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Line.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Quad.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Triangle.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec4.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec4.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FormatLiteralObject.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FormatLiteralObject.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp">
+      <Filter>src\Siv3D\FreestandingMessageBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\UserInfo.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Ellipse.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RoundRect.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Circle.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Ellipse.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RoundRect.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DirectoryWatcher.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileChange.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher\DirectoryWatcherDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ExtensionFilter\ExtensionFilter.hpp">
+      <Filter>src\Siv3D\ExtensionFilter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.hpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\IProfiler.hpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Scene.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ResizeMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureFilter.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\CScene.hpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\IScene.hpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneTime.hpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer\IRenderer.hpp">
+      <Filter>src\Siv3D\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\CRenderer_D3D11.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Device.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11DeviceInfo.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\D3D11.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Adapter.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Misc.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11AdapterCache.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\EngineOption.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain\D3D11SwapChain.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11BackBuffer.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11ClearTarget.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11InternalTexture2D.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Graphics.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneStyle.hpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Scene.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.hpp">
+      <Filter>src\Siv3D\Troubleshooting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AssetID.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AssetID.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AssetIDWrapper.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AssetIDWrapper.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AssetHandle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AssetHandle.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MessageBoxResult.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MessageBoxStyle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MessageBox.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PixelShader.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\VertexShader.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Shader\IShader.hpp">
+      <Filter>src\Siv3D\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\CShader_D3D11.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\AssetHandleManager\AssetHandleManager.hpp">
+      <Filter>src\Siv3D\AssetHandleManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\AssetHandleManager\AssetHandleManager.ipp">
+      <Filter>src\Siv3D\AssetHandleManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader\D3D11VertexShader.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader\D3D11PixelShader.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\EngineShader\IEngineShader.hpp">
+      <Filter>src\Siv3D\EngineShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11\CEngineShader_D3D11.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ShaderStage.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\HLSL.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\HLSLCompiler.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneUtility.hpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MSAASampleCount.hpp">
+      <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -4876,6 +5197,123 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\InputCombination\SivInputCombination.cpp">
       <Filter>src\Siv3D\InputCombination</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox\FreestandingMessageBox.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\FreestandingMessageBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\UserInfo\SivUserInfo.cpp">
+      <Filter>src\Siv3D\UserInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\UserInfo\SivUserInfo_Windows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\UserInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DirectoryWatcher\SivDirectoryWatcher.cpp">
+      <Filter>src\Siv3D\DirectoryWatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher\DirectoryWatcherDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ExtensionFilter\ExtensionFilter.cpp">
+      <Filter>src\Siv3D\ExtensionFilter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\ProfilerFactory.cpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.cpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\SivProfiler.cpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ResizeMode\SivResizeMode.cpp">
+      <Filter>src\Siv3D\ResizeMode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextureFilter\SivTextureFilter.cpp">
+      <Filter>src\Siv3D\TextureFilter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\CScene.cpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneFactory.cpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SivScene.cpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneTime.cpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\RendererFactory.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\CRenderer_D3D11.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Device.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Misc.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain\D3D11SwapChain.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11BackBuffer.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11InternalTexture2D.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.cpp">
+      <Filter>src\Siv3D\Troubleshooting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp">
+      <Filter>src\Siv3D\MessageBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\VertexShader\SivVertexShader.cpp">
+      <Filter>src\Siv3D\VertexShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PixelShader\SivPixelShader.cpp">
+      <Filter>src\Siv3D\PixelShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\ShaderFactory.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\CShader_D3D11.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader\D3D11VertexShader.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader\D3D11PixelShader.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\PixelShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11\CEngineShader_D3D11.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\EngineShaderFactory.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\EngineOption\SivEngineOption.cpp">
+      <Filter>src\Siv3D\EngineOption</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Graphics\SivGraphics.cpp">
+      <Filter>src\Siv3D\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\HLSL\SivHLSL.cpp">
+      <Filter>src\Siv3D\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL\SivHLSL_Windows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\HLSLCompiler.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneUtility.cpp">
+      <Filter>src\Siv3D\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MSAASampleCount\SivMSAASampleCount.cpp">
+      <Filter>src\Siv3D\MSAASampleCount</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

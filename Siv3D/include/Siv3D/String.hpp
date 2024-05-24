@@ -71,6 +71,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr String(const String& other) = default;
 
+		/// @brief 文字列をムーブして新しい文字列を作成します。
+		/// @param other ムーブする文字列
 		[[nodiscard]]
 		constexpr String(String&& other) noexcept = default;
 
@@ -79,45 +81,78 @@ namespace s3d
 		[[nodiscard]]
 		constexpr String(const string_type& other);
 
+		/// @brief 文字列をムーブして新しい文字列を作成します。
+		/// @param other ムーブする文字列
 		[[nodiscard]]
 		constexpr String(string_type&& other) noexcept;
 
+		/// @brief 文字列の指定位置以降をコピーして新しい文字列を作成します。
+		/// @param other 対象の文字列
+		/// @param pos コピーを開始する位置
 		[[nodiscard]]
 		constexpr String(const String& other, size_type pos);
 
+		/// @brief 文字列の指定位置から指定文字数をコピーして新しい文字列を作成します。
+		/// @param other 対象の文字列
+		/// @param pos コピーを開始する位置
+		/// @param count コピーする文字数
 		[[nodiscard]]
 		constexpr String(const String& other, size_type pos, size_type count);
 
+		/// @brief 文字列をコピーして新しい文字列を作成します。
+		/// @param s コピーする文字列
 		[[nodiscard]]
 		constexpr String(const value_type* s);
 
+		/// @brief 文字列の指定位置以降をコピーして新しい文字列を作成します。
+		/// @param s 対象の文字列
+		/// @param count コピーする文字数
 		[[nodiscard]]
 		constexpr String(const value_type* s, size_type count);
 
+		/// @brief 指定した個数の同じ文字が連続した文字列を作成します。
+		/// @param count 繰り返す回数
+		/// @param ch 繰り返す文字
 		[[nodiscard]]
 		constexpr String(size_type count, value_type ch);
 
+		/// @brief 文字のリストから新しい文字列を作成します。
+		/// @param list 文字のリスト
 		[[nodiscard]]
 		constexpr String(std::initializer_list<value_type> list);
 
+		/// @brief 指定した範囲の文字列をコピーして新しい文字列を作成します。
+		/// @tparam Iterator イテレータの型
+		/// @param first イテレータの開始位置
+		/// @param last イテレータの終端位置
 		template <class Iterator>
 		[[nodiscard]]
 		constexpr String(Iterator first, Iterator last);
 
+		/// @brief 文字列をコピーして新しい文字列を作成します。
+		/// @param s コピーする文字列
 		[[nodiscard]]
 		explicit constexpr String(const StringViewLike auto& s);
 
+		/// @brief 文字列の指定位置以降をコピーして新しい文字列を作成します。
+		/// @param s 対象の文字列
+		/// @param pos コピーを開始する位置
+		/// @param count コピーする文字数
 		[[nodiscard]]
 		constexpr String(const StringViewLike auto& s, size_type pos, size_type count);
 
 	# ifdef __cpp_lib_containers_ranges
 		
+		/// @brief 範囲から新しい文字列を作成します。
+		/// @tparam Range 範囲の型
+		/// @param range 範囲
 		template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
 		[[nodiscard]]
 		constexpr String(std::from_range_t, Range&& range);
 	
 	# endif
 		
+		/// @brief nullptr からの構築は禁止されています。
 		constexpr String(std::nullptr_t) = delete;
 
 		////////////////////////////////////////////////////////////////
@@ -126,20 +161,42 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列をコピー代入します。
+		/// @param other コピーする文字列
+		/// @return *this
 		constexpr String& operator =(const String& other);
 
+		/// @brief 文字列をコピー代入します。
+		/// @param other コピーする文字列
+		/// @return *this
 		constexpr String& operator =(const string_type& other);
 
+		/// @brief 文字列をムーブ代入します。
+		/// @param other ムーブする文字列
+		/// @return *this
 		constexpr String& operator =(String&& other) noexcept;
 
+		/// @brief 文字列をムーブ代入します。
+		/// @param other ムーブする文字列
+		/// @return *this
 		constexpr String& operator =(string_type&& other) noexcept;
 
+		/// @brief 文字列をコピー代入します。
+		/// @param s コピーする文字列
+		/// @return *this
 		constexpr String& operator =(const value_type* s);
 
+		/// @brief 文字列を代入します。
+		/// @param list 文字列を表現した文字のリスト
+		/// @return *this
 		constexpr String& operator =(std::initializer_list<value_type> list);
 
+		/// @brief 文字列をコピー代入します。
+		/// @param s コピーする文字列
+		/// @return *this
 		constexpr String& operator =(const StringViewLike auto& s);
 
+		/// @brief nullptr の代入は禁止されています。
 		constexpr String& operator =(std::nullptr_t) = delete;
 
 		////////////////////////////////////////////////////////////////
@@ -190,6 +247,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列のアロケータを返します。
+		/// @return 文字列のアロケータ
 		[[nodiscard]]
 		constexpr allocator_type get_allocator() const noexcept;
 
@@ -214,12 +273,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置の要素への参照を返します。
+		/// @param index 要素の位置
+		/// @return 指定した位置の要素への参照
 		[[nodiscard]]
 		constexpr value_type& operator [](size_type index) & noexcept;
 
+		/// @brief 指定した位置の要素への参照を返します。
+		/// @param index 要素の位置
+		/// @return 指定した位置の要素への参照
 		[[nodiscard]]
 		constexpr const value_type& operator [](size_type index) const& noexcept;
 
+		/// @brief 指定した位置の要素を返します。
+		/// @param index 要素の位置
+		/// @return 指定した位置の要素
 		[[nodiscard]]
 		constexpr value_type operator [](size_type index) && noexcept;
 
@@ -233,13 +301,19 @@ namespace s3d
 		/// @remark 空の文字列に対しては使えません。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr value_type& front() noexcept;
+		constexpr value_type& front()& noexcept;
 
 		/// @brief 先頭の要素への参照を返します。
 		/// @remark 空の文字列に対しては使えません。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr const value_type& front() const noexcept;
+		constexpr const value_type& front() const& noexcept;
+
+		/// @brief 先頭の要素を返します。
+		/// @remark 空の文字列に対しては使えません。
+		/// @return 先頭の要素
+		[[nodiscard]]
+		constexpr value_type front()&& noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -251,13 +325,19 @@ namespace s3d
 		/// @remark 空の文字列に対しては使えません。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr value_type& back() noexcept;
+		constexpr value_type& back()& noexcept;
 
 		/// @brief 末尾の要素への参照を返します。
 		/// @remark 空の文字列に対しては使えません。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr const value_type& back() const noexcept;
+		constexpr const value_type& back() const& noexcept;
+
+		/// @brief 末尾の要素を返します。
+		/// @remark 空の文字列に対しては使えません。
+		/// @return 末尾の要素
+		[[nodiscard]]
+		constexpr value_type back()&& noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -521,6 +601,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 要素をすべて消去し、メモリも解放します。
 		constexpr void release();
 
 		////////////////////////////////////////////////////////////////
@@ -1155,10 +1236,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 全ての要素が条件を満たすかを返します。
+		/// @brief すべての要素が条件を満たすかを返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return 全ての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
+		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
 		constexpr bool all(Fty f) const requires std::predicate<Fty&, const value_type&>;
@@ -1281,14 +1362,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& ch : s) f(ch);` と同じです。
 		template <class Fty>
 		constexpr void each(Fty f) requires std::invocable<Fty&, value_type&>;
 
-		/// @brief 全ての要素を順番に引数にして関数を呼び出します。
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& ch : s) f(ch);` と同じです。
@@ -1301,14 +1382,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto& ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
 		constexpr void each_index(Fty f) requires std::invocable<Fty&, size_t, value_type&>;
 
-		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto ch : s) f(i++, ch);` と同じです。
@@ -1321,14 +1402,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto& ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
 		constexpr void each_sindex(Fty f) requires std::invocable<Fty&, isize, value_type&>;
 
-		/// @brief 全ての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto ch : s) f(i++, ch);` と同じです。
@@ -1356,7 +1437,7 @@ namespace s3d
 		/// @brief 指定したインデックスにある要素を返します。インデックスが範囲外の場合デフォルト値を返します。
 		/// @param index インデックス
 		/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
-		/// @return  指定したインデックスにある要素、範囲外の場合 defaultValue	
+		/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue	
 		[[nodiscard]]
 		constexpr value_type fetch(size_type index, value_type defaultValue) const noexcept;
 
@@ -1366,7 +1447,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した値を全ての要素に代入します。
+		/// @brief 指定した値をすべての要素に代入します。
 		/// @param value 代入する値
 		/// @return *this
 		constexpr void fill(value_type value);
@@ -2336,7 +2417,7 @@ namespace s3d
 		/// @return *this
 		String& xml_escape();
 
-		/// @brief  XML エスケープした文字列を返します。
+		/// @brief XML エスケープした文字列を返します。
 		/// @remark &quot;, \, &amp;, &gt;, &lt; のエスケープを行います
 		/// @return 新しい文字列
 		[[nodiscard]]

@@ -18,7 +18,7 @@
 # include "Utility.hpp"
 # include "CommonFloat.hpp"
 # include "MathConstants.hpp"
-# include "FmtHelper.hpp"
+# include "FormatLiteral.hpp"
 
 namespace s3d
 {
@@ -293,7 +293,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	withX
+		//	withX, withY
 		//
 		////////////////////////////////////////////////////////////////
 

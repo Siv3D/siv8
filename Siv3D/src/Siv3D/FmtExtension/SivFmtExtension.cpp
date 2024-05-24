@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/FmtExtension.hpp>
+# include <Siv3D/FormatLiteral.hpp>
 
 namespace s3d
 {

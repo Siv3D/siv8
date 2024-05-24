@@ -26,7 +26,7 @@ namespace s3d
 		{
 			wchar_t* pValue;
 			size_t len;
-			errno_t err = _wdupenv_s(&pValue, &len, Unicode::ToWstring(name).c_str());
+			errno_t err = ::_wdupenv_s(&pValue, &len, Unicode::ToWstring(name).c_str());
 
 			if (err || (not pValue))
 			{

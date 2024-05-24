@@ -261,6 +261,8 @@
 // フォーマットリテラル | Format literal
 # include <Siv3D/FormatLiteral.hpp>
 
+# include <Siv3D/FormatLiteralObject.hpp>
+
 // Fmt の拡張の補助 | Fmt helper
 # include <Siv3D/FmtHelper.hpp>
 
@@ -409,8 +411,11 @@
 // ファイル操作のイベント | File action
 # include <Siv3D/FileAction.hpp>
 
-//// ファイルとディレクトリの変更の監視 | Directory watcher
-//# include <Siv3D/DirectoryWatcher.hpp>
+// 変更されたファイルの情報 | Information about changed files
+# include <Siv3D/FileChange.hpp>
+
+// ファイルとディレクトリの変更の監視 | Directory watcher
+# include <Siv3D/DirectoryWatcher.hpp>
 
 // 所有権を持たない、メモリ範囲への IReader インタフェース | IReader Wrapper for Non-Owning Memory Range 
 # include <Siv3D/MemoryViewReader.hpp>
@@ -704,21 +709,21 @@
 // ランダムな時間 | Random duration
 # include <Siv3D/RandomDuration.hpp>
 
-//// ランダムな Point の作成 | Random Point generation
-//# include <Siv3D/RandomPoint.hpp>
-//
-//// ランダムな Vec2 の作成 | Random Vec2 generation
-//# include <Siv3D/RandomVec2.hpp>
-//
+// ランダムな Point の作成 | Random Point generation
+# include <Siv3D/RandomPoint.hpp>
+
+// ランダムな Vec2 の作成 | Random Vec2 generation
+# include <Siv3D/RandomVec2.hpp>
+
 //// ランダムな Vec3 の作成 | Random Vec3 generation
 //# include <Siv3D/RandomVec3.hpp>
-//
-//// ランダムな Vec4 の作成 | Random Vec4 generation
-//# include <Siv3D/RandomVec4.hpp>
-//
-//// ランダムな色の作成 | Random Color generation
-//# include <Siv3D/RandomColor.hpp>
-//
+
+// ランダムな Vec4 の作成 | Random Vec4 generation
+# include <Siv3D/RandomVec4.hpp>
+
+// ランダムな色の作成 | Random Color generation
+# include <Siv3D/RandomColor.hpp>
+
 //// ランダムなサンプリング | Random sampling
 //# include <Siv3D/Sample.hpp>
 
@@ -791,8 +796,8 @@
 // 円 | Circle
 # include <Siv3D/Circle.hpp> // ToDo
 
-//// 楕円 | Ellipse
-//# include <Siv3D/Ellipse.hpp>
+// 楕円 | Ellipse
+# include <Siv3D/Ellipse.hpp> // ToDo
 
 // 三角形 | Triangle
 # include <Siv3D/Triangle.hpp> // ToDo
@@ -800,9 +805,9 @@
 // 凸四角形 | Convex quadrilateral
 # include <Siv3D/Quad.hpp> // ToDo
 
-//// 角丸長方形 | Rounded rectangle
-//# include <Siv3D/RoundRect.hpp>
-//
+// 角丸長方形 | Rounded rectangle
+# include <Siv3D/RoundRect.hpp> // ToDo
+
 //// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
 //# include <Siv3D/LineString.hpp>
 //
@@ -847,6 +852,9 @@
 //	システム | System
 //
 ////////////////////////////////////////////////////////////////
+
+// ユーザー情報 | User information
+# include <Siv3D/UserInfo.hpp>
 
 // 環境変数 | Environment variable
 # include <Siv3D/EnvironmentVariable.hpp>
@@ -1081,14 +1089,14 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// メッセージボックスの結果 | Result from message box
-//# include <Siv3D/MessageBoxResult.hpp>
-//
-//// メッセージボックスのスタイル | Message box style
-//# include <Siv3D/MessageBoxStyle.hpp>
-//
-//// メッセージボックス | Message box
-//# include <Siv3D/MessageBox.hpp>
+// メッセージボックスの結果 | Result from message box
+# include <Siv3D/MessageBoxResult.hpp>
+
+// メッセージボックスのスタイル | Message box style
+# include <Siv3D/MessageBoxStyle.hpp>
+
+// メッセージボックス | Message box
+# include <Siv3D/MessageBox.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1292,6 +1300,17 @@
 
 
 
+
+
+
+
+
+# include <Siv3D/AssetID.hpp>
+# include <Siv3D/AssetIDWrapper.hpp>
+# include <Siv3D/AssetHandle.hpp>
+
+
+
 ////////////////////////////////////////////////////////////////
 //
 //	フォント | Font
@@ -1308,6 +1327,68 @@
 
 
 
+
+
+
+
+////////////////////////////////////////////////////////////////
+//
+//	シェーダー | Shader
+//
+////////////////////////////////////////////////////////////////
+
+//// シェーダ | Shader
+//# include <Siv3D/Shader.hpp>
+
+
+# include <Siv3D/HLSL.hpp>
+
+// シェーダステージ | Shader stage
+# include <Siv3D/ShaderStage.hpp>
+
+//// 定数バッファバインディング | Constant buffer binding
+//# include <Siv3D/ConstantBufferBinding.hpp>
+
+// 頂点シェーダ | Vertex shader
+# include <Siv3D/VertexShader.hpp>
+
+// ピクセルシェーダ | Pixel/Fragment shader
+# include <Siv3D/PixelShader.hpp>
+
+//// シェーダユーティリティ | Shader utilities
+//# include <Siv3D/ShaderCommon.hpp>
+//
+//// 定数バッファ | Constant buffer
+//# include <Siv3D/ConstantBuffer.hpp>
+//
+//// 2D シェーダスコープ | 2D shader scope
+//# include <Siv3D/ScopedCustomShader2D.hpp>
+//
+//// 3D シェーダスコープ | 3D shader scope
+//# include <Siv3D/ScopedCustomShader3D.hpp>
+
+
+
+
+////////////////////////////////////////////////////////////////
+//
+//	シーン | Scene
+//
+////////////////////////////////////////////////////////////////
+
+# include <Siv3D/ResizeMode.hpp>
+
+# include <Siv3D/TextureFilter.hpp>
+
+# include <Siv3D/MSAASampleCount.hpp>
+
+# include <Siv3D/Scene.hpp>
+
+
+
+
+# include <Siv3D/Graphics.hpp>
+# include <Siv3D/EngineOption.hpp>
 
 
 # if SIV3D_PLATFORM(WINDOWS)

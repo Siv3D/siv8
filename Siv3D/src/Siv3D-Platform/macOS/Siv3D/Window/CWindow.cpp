@@ -11,6 +11,7 @@
 
 # include "CWindow.hpp"
 # include <Siv3D/UserAction.hpp>
+# include <Siv3D/Math.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -191,6 +192,8 @@ namespace s3d
 		}
 		
 		m_state.style = style;
+		
+		updateState();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -210,6 +213,8 @@ namespace s3d
 		}
 		
 		::glfwSetWindowPos(m_glfwWindow, pos.x, pos.y);
+		
+		updateState();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -237,6 +242,8 @@ namespace s3d
 		}
 		
 		::glfwMaximizeWindow(m_glfwWindow);
+		
+		updateState();
 	}
 	
 	////////////////////////////////////////////////////////////////
@@ -250,6 +257,8 @@ namespace s3d
 		LOG_DEBUG("CWindow::restore()");
 		
 		::glfwRestoreWindow(m_glfwWindow);
+		
+		updateState();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -263,11 +272,130 @@ namespace s3d
 		LOG_DEBUG("CWindow::minimize()");
 		
 		::glfwIconifyWindow(m_glfwWindow);
+		
+		updateState();
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	resizeByVirtualSize
+	//
+	////////////////////////////////////////////////////////////////
 
+	bool CWindow::resizeByVirtualSize(const Size virtualSize)
+	{
+		LOG_DEBUG(fmt::format("CWindow::resizeByVirtualSize(size = {})", virtualSize));
 
+		::glfwSetWindowSize(m_glfwWindow, virtualSize.x, virtualSize.y);
 
+		updateState();
+		
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resizeByFrameBufferSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CWindow::resizeByFrameBufferSize(const Size frameBufferSize)
+	{
+		LOG_DEBUG(fmt::format("CWindow::resizeByFrameBufferSize(size = {})", frameBufferSize));
+		
+		const double scaling = m_state.scaling;
+		const Size newVirtualSize = Math::Round(frameBufferSize / scaling).asPoint();	
+		return resizeByVirtualSize(newVirtualSize);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setMinimumFrameBufferSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setMinimumFrameBufferSize(const Size size)
+	{
+		LOG_DEBUG(fmt::format("CWindow::setMinimumFrameBufferSize(size = {})", size));
+		
+		m_state.minFrameBufferSize = size;
+		
+		::glfwSetWindowSizeLimits(m_glfwWindow, size.x, size.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
+		
+		updateState();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setFullscreen
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setFullscreen(const bool fullscreen, size_t monitorIndex)
+	{
+		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
+
+		if (fullscreen == m_state.fullscreen)
+		{
+			return;
+		}
+		
+		if (m_state.fullscreen == false) // 現在ウィンドウモード
+		{
+			const auto monitors = System::EnumerateMonitors();
+			
+			if (monitors.size() <= monitorIndex)
+			{
+				monitorIndex = System::GetCurrentMonitorIndex();
+			}
+
+			::glfwGetWindowPos(m_glfwWindow, &m_storedWindowRect.x, &m_storedWindowRect.y);
+			m_storedWindowRect.y += m_state.titleBarHeight;
+			m_storedWindowRect.pos = (m_storedWindowRect.pos / monitors[monitorIndex].scaling.value_or(1.0)).asPoint();
+			m_storedWindowRect.size = m_state.virtualSize;
+			
+			const Size fullscreenResolution = monitors[monitorIndex].fullscreenResolution;
+			
+			int32 numMonitors;
+			if (GLFWmonitor** monitors = ::glfwGetMonitors(&numMonitors))
+			{
+				::glfwSetWindowMonitor(m_glfwWindow, monitors[monitorIndex], 0, 0, fullscreenResolution.x, fullscreenResolution.y, GLFW_DONT_CARE);
+			}
+		}
+		else
+		{
+			::glfwSetWindowMonitor(m_glfwWindow, nullptr, m_storedWindowRect.x, m_storedWindowRect.y,
+								   m_storedWindowRect.w, m_storedWindowRect.h, GLFW_DONT_CARE);
+		}
+		
+		m_state.fullscreen = fullscreen;
+		
+		updateState();
+
+		//if (Scene::GetResizeMode() != ResizeMode::Keep)
+		//{
+		//	SIV3D_ENGINE(Renderer)->updateSceneSize();
+		//}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setToggleFullscreenEnabled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setToggleFullscreenEnabled(const bool) {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isToggleFullscreenEnabled
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CWindow::isToggleFullscreenEnabled() const
+	{
+		return false;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -358,16 +486,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CWindow::OnFrameBufferSize(GLFWwindow* glfwWindow, const int width, const int height)
+	void CWindow::OnFrameBufferSize(GLFWwindow*, const int width, const int height)
 	{
 		const Size size{ width, height };
 		LOG_DEBUG(fmt::format("CWindow::OnFrameBufferSize({})", size));
-		
-		if (CWindow* pWindow = GetWindow(glfwWindow))
-		{
-			pWindow->m_state.frameBufferSize = size;
-			//pWindow->m_state.clientSize = size;
-		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -376,14 +498,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CWindow::OnScalingChange(GLFWwindow* glfwWindow, const float sx, const float sy)
+	void CWindow::OnScalingChange(GLFWwindow*, const float sx, const float sy)
 	{
 		LOG_DEBUG(fmt::format("CWindow::OnScalingChange({}, {})", sx, sy));
-		
-		if (CWindow* pWindow = GetWindow(glfwWindow))
-		{
-			pWindow->m_state.scaling = Max(sx, sy);
-		}
 	}
 
 	////////////////////////////////////////////////////////////////

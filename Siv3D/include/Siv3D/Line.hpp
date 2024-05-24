@@ -38,5 +38,13 @@ namespace s3d
 		/// @brief 線分の終点位置
 		position_type end;
 
+
+
+
+
+
+		[[nodiscard]]
+		constexpr position_type position(double t) const noexcept;
+
 	};
 }

@@ -146,6 +146,12 @@ namespace s3d
 			return String(fileName.begin(), (fileName.begin() + lastDotPos));
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	ParentPath
+		//
+		////////////////////////////////////////////////////////////////
+
 		FilePath ParentPath(const FilePathView path, const size_t level)
 		{
 			FilePath unused;

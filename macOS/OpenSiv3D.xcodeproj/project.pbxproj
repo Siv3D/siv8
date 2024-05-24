@@ -155,7 +155,6 @@
 		F9070C572B9F175000383E4D /* FmtHelper.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9070B7B2B9F175000383E4D /* FmtHelper.ipp */; };
 		F9070C582B9F175000383E4D /* Format.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9070B7C2B9F175000383E4D /* Format.ipp */; };
 		F9070C592B9F175000383E4D /* FormatData.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9070B7D2B9F175000383E4D /* FormatData.ipp */; };
-		F9070C5A2B9F175000383E4D /* FormatLiteral.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9070B7E2B9F175000383E4D /* FormatLiteral.ipp */; };
 		F9070C5B2B9F175000383E4D /* FormatUtility.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9070B7F2B9F175000383E4D /* FormatUtility.ipp */; };
 		F9070C5C2B9F175000383E4D /* HardwareRNG.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9070B802B9F175000383E4D /* HardwareRNG.ipp */; };
 		F9070C5D2B9F175000383E4D /* Hash.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9070B812B9F175000383E4D /* Hash.ipp */; };
@@ -486,6 +485,25 @@
 		F9070F352B9F252E00383E4D /* null_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070F2E2B9F252E00383E4D /* null_platform.h */; };
 		F9070F362B9F252E00383E4D /* null_joystick.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2F2B9F252E00383E4D /* null_joystick.c */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
+		F934BD712BF880330003EAD5 /* PixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6E2BF880330003EAD5 /* PixelShader.hpp */; };
+		F934BD722BF880330003EAD5 /* VertexShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6F2BF880330003EAD5 /* VertexShader.hpp */; };
+		F934BD732BF880330003EAD5 /* ShaderStage.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD702BF880330003EAD5 /* ShaderStage.hpp */; };
+		F934BD782BF880620003EAD5 /* SivVertexShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD742BF880620003EAD5 /* SivVertexShader.cpp */; };
+		F934BD792BF880620003EAD5 /* SivPixelShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD762BF880620003EAD5 /* SivPixelShader.cpp */; };
+		F934BD7D2BF880860003EAD5 /* AssetHandleManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD7A2BF880860003EAD5 /* AssetHandleManager.hpp */; };
+		F934BD7E2BF880860003EAD5 /* AssetHandleManager.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD7B2BF880860003EAD5 /* AssetHandleManager.ipp */; };
+		F934BD812BF880A10003EAD5 /* IShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD7F2BF880A10003EAD5 /* IShader.hpp */; };
+		F934BD872BF881110003EAD5 /* CShader_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD822BF881110003EAD5 /* CShader_Metal.hpp */; };
+		F934BD882BF881110003EAD5 /* CShader_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F934BD832BF881110003EAD5 /* CShader_Metal.mm */; };
+		F934BD892BF881110003EAD5 /* ShaderFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F934BD852BF881110003EAD5 /* ShaderFactory.mm */; };
+		F934BD8C2BF882020003EAD5 /* IEngineShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD8A2BF882020003EAD5 /* IEngineShader.hpp */; };
+		F934BD922BF8824B0003EAD5 /* CEngineShader_Metal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD8D2BF8824B0003EAD5 /* CEngineShader_Metal.cpp */; };
+		F934BD932BF8824B0003EAD5 /* CEngineShader_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD8E2BF8824B0003EAD5 /* CEngineShader_Metal.hpp */; };
+		F934BD942BF8824B0003EAD5 /* EngineShaderFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD902BF8824B0003EAD5 /* EngineShaderFactory.cpp */; };
+		F934BD9B2BFA59000003EAD5 /* SivGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD952BFA59000003EAD5 /* SivGraphics.cpp */; };
+		F934BD9C2BFA59000003EAD5 /* SivEngineOption.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD972BFA59000003EAD5 /* SivEngineOption.cpp */; };
+		F934BD9D2BFA59000003EAD5 /* SivHLSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD992BFA59000003EAD5 /* SivHLSL.cpp */; };
+		F934BD9F2BFA59320003EAD5 /* HLSL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD9E2BFA59320003EAD5 /* HLSL.hpp */; };
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
 		F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A852BA018CE00222F45 /* WindowTitle.hpp */; };
 		F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A862BA018CF00222F45 /* WindowTitle.cpp */; };
@@ -668,6 +686,56 @@
 		F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528C9D2BC1208B00222F45 /* pnglibconf.h */; };
 		F9528CA52BC1209900222F45 /* zconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA22BC1209900222F45 /* zconf.h */; };
 		F9528CA62BC1209900222F45 /* zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA32BC1209900222F45 /* zlib.h */; };
+		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
+		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
+		F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */; };
+		F97203072BEDF2FF000E21DD /* CScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FB2BEDF2FF000E21DD /* CScene.cpp */; };
+		F97203082BEDF2FF000E21DD /* CScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FC2BEDF2FF000E21DD /* CScene.hpp */; };
+		F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202FD2BEDF2FF000E21DD /* IScene.hpp */; };
+		F972030A2BEDF2FF000E21DD /* SceneFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FE2BEDF2FF000E21DD /* SceneFactory.cpp */; };
+		F972030B2BEDF2FF000E21DD /* SceneTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */; };
+		F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203002BEDF2FF000E21DD /* SceneTime.hpp */; };
+		F972030D2BEDF2FF000E21DD /* SivScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203012BEDF2FF000E21DD /* SivScene.cpp */; };
+		F972030E2BEDF2FF000E21DD /* SivResizeMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */; };
+		F972030F2BEDF2FF000E21DD /* SivTextureFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */; };
+		F97203122BF09DA4000E21DD /* IRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203102BF09DA3000E21DD /* IRenderer.hpp */; };
+		F97203152BF09DD9000E21DD /* Graphics.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203132BF09DD9000E21DD /* Graphics.hpp */; };
+		F97203162BF09DD9000E21DD /* EngineOption.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203142BF09DD9000E21DD /* EngineOption.hpp */; };
+		F97203182BF09E2E000E21DD /* SceneStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203172BF09E2E000E21DD /* SceneStyle.hpp */; };
+		F972031A2BF09E51000E21DD /* Scene.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97203192BF09E51000E21DD /* Scene.ipp */; };
+		F97203212BF09E80000E21DD /* CRenderer_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F972031B2BF09E80000E21DD /* CRenderer_Metal.mm */; };
+		F97203222BF09E80000E21DD /* CRenderer_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F972031C2BF09E80000E21DD /* CRenderer_Metal.hpp */; };
+		F97203232BF09E80000E21DD /* Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F972031D2BF09E80000E21DD /* Metal.hpp */; };
+		F97203242BF09E80000E21DD /* RendererFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F972031F2BF09E80000E21DD /* RendererFactory.mm */; };
+		F97204312BF0A314000E21DD /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97204302BF0A314000E21DD /* Metal.framework */; };
+		F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97204322BF0A31C000E21DD /* QuartzCore.framework */; };
+		F97204352BF0A39F000E21DD /* Metal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97204342BF0A39F000E21DD /* Metal.cpp */; };
+		F9807D792BF1092600D9B590 /* triangle.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D762BF1092600D9B590 /* triangle.metal */; };
+		F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */; };
+		F9807D7F2BF1229700D9B590 /* MetalInternalTexture2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */; };
+		F9807D802BF1229700D9B590 /* MetalInternalTexture2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7D2BF1229700D9B590 /* MetalInternalTexture2D.mm */; };
+		F9807D842BF6676100D9B590 /* AssetHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D812BF6676100D9B590 /* AssetHandle.hpp */; };
+		F9807D852BF6676100D9B590 /* AssetIDWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D822BF6676100D9B590 /* AssetIDWrapper.hpp */; };
+		F9807D862BF6676100D9B590 /* AssetID.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D832BF6676100D9B590 /* AssetID.hpp */; };
+		F9807D8A2BF6677600D9B590 /* MessageBoxStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D872BF6677600D9B590 /* MessageBoxStyle.hpp */; };
+		F9807D8B2BF6677600D9B590 /* MessageBox.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D882BF6677600D9B590 /* MessageBox.hpp */; };
+		F9807D8C2BF6677600D9B590 /* MessageBoxResult.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D892BF6677600D9B590 /* MessageBoxResult.hpp */; };
+		F9807D902BF6679000D9B590 /* AssetID.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D8D2BF6678F00D9B590 /* AssetID.ipp */; };
+		F9807D912BF6679000D9B590 /* AssetIDWrapper.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D8E2BF6679000D9B590 /* AssetIDWrapper.ipp */; };
+		F9807D922BF6679000D9B590 /* AssetHandle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D8F2BF6679000D9B590 /* AssetHandle.ipp */; };
+		F9807D982BF667C300D9B590 /* Troubleshooting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9807D932BF667C200D9B590 /* Troubleshooting.cpp */; };
+		F9807D992BF667C300D9B590 /* Troubleshooting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D942BF667C200D9B590 /* Troubleshooting.hpp */; };
+		F9807D9A2BF667C300D9B590 /* SivMessageBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9807D962BF667C300D9B590 /* SivMessageBox.cpp */; };
+		F9807D9D2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */; };
+		F9807DA02BF6690B00D9B590 /* SivMessageBox_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */; };
+		F980C4192C0023BB00A86B68 /* MetalVertexShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C4132C0023BB00A86B68 /* MetalVertexShader.mm */; };
+		F980C41A2C0023BB00A86B68 /* MetalVertexShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4142C0023BB00A86B68 /* MetalVertexShader.hpp */; };
+		F980C41B2C0023BB00A86B68 /* MetalPixelShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C4162C0023BB00A86B68 /* MetalPixelShader.mm */; };
+		F980C41C2C0023BB00A86B68 /* MetalPixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */; };
+		F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C41D2C004B3000A86B68 /* MSAASampleCount.hpp */; };
+		F980C4212C004B5000A86B68 /* SivMSAASampleCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C41F2C004B5000A86B68 /* SivMSAASampleCount.cpp */; };
+		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
+		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
 		F98600012BCFBB53006A4C0F /* SkBlurTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABF2BCFBB53006A4C0F /* SkBlurTypes.h */; };
 		F98600022BCFBB53006A4C0F /* SkCanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FAC02BCFBB53006A4C0F /* SkCanvas.h */; };
@@ -1693,6 +1761,40 @@
 		F98605E52BE50038006A4C0F /* SivInputGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605E02BE50038006A4C0F /* SivInputGroup.cpp */; };
 		F98605E62BE50038006A4C0F /* SivInputState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98605E22BE50038006A4C0F /* SivInputState.cpp */; };
 		F98605E82BE50394006A4C0F /* FallbackNameList.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605E72BE50393006A4C0F /* FallbackNameList.hpp */; };
+		F98605ED2BE61564006A4C0F /* RandomVec4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605E92BE61563006A4C0F /* RandomVec4.hpp */; };
+		F98605EE2BE61564006A4C0F /* RandomColor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605EA2BE61563006A4C0F /* RandomColor.hpp */; };
+		F98605EF2BE61564006A4C0F /* RandomPoint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605EB2BE61564006A4C0F /* RandomPoint.hpp */; };
+		F98605F02BE61564006A4C0F /* RandomVec2.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605EC2BE61564006A4C0F /* RandomVec2.hpp */; };
+		F98605F82BE61586006A4C0F /* RandomVec2.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F12BE61586006A4C0F /* RandomVec2.ipp */; };
+		F98605F92BE61586006A4C0F /* RandomColor.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F22BE61586006A4C0F /* RandomColor.ipp */; };
+		F98605FA2BE61586006A4C0F /* RandomVec4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F32BE61586006A4C0F /* RandomVec4.ipp */; };
+		F98605FB2BE61586006A4C0F /* Line.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F42BE61586006A4C0F /* Line.ipp */; };
+		F98605FC2BE61586006A4C0F /* RandomPoint.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F52BE61586006A4C0F /* RandomPoint.ipp */; };
+		F98605FD2BE61586006A4C0F /* Quad.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F62BE61586006A4C0F /* Quad.ipp */; };
+		F98605FE2BE61586006A4C0F /* Triangle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F72BE61586006A4C0F /* Triangle.ipp */; };
+		F98606002BE615B4006A4C0F /* FormatLiteralObject.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605FF2BE615B4006A4C0F /* FormatLiteralObject.ipp */; };
+		F98606022BE615C5006A4C0F /* FormatLiteralObject.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606012BE615C5006A4C0F /* FormatLiteralObject.hpp */; };
+		F98606042BE7173F006A4C0F /* UserInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606032BE7173F006A4C0F /* UserInfo.hpp */; };
+		F98606092BE71763006A4C0F /* SivUserInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98606052BE71763006A4C0F /* SivUserInfo.cpp */; };
+		F986060A2BE71763006A4C0F /* FreestandingMessageBox.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606072BE71763006A4C0F /* FreestandingMessageBox.hpp */; };
+		F986060D2BE71918006A4C0F /* SivUserInfo_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F986060B2BE71918006A4C0F /* SivUserInfo_macOS.mm */; };
+		F986060F2BEB75DB006A4C0F /* DirectoryWatcher.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986060E2BEB75DB006A4C0F /* DirectoryWatcher.hpp */; };
+		F98606132BEB760D006A4C0F /* Circle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98606102BEB760C006A4C0F /* Circle.ipp */; };
+		F98606142BEB760D006A4C0F /* RoundRect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98606112BEB760C006A4C0F /* RoundRect.ipp */; };
+		F98606152BEB760D006A4C0F /* Ellipse.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98606122BEB760C006A4C0F /* Ellipse.ipp */; };
+		F98606192BEB7651006A4C0F /* FileChange.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606162BEB7651006A4C0F /* FileChange.hpp */; };
+		F986061A2BEB7651006A4C0F /* Ellipse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606172BEB7651006A4C0F /* Ellipse.hpp */; };
+		F986061B2BEB7651006A4C0F /* RoundRect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606182BEB7651006A4C0F /* RoundRect.hpp */; };
+		F986061E2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986061C2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp */; };
+		F98606222BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986061F2BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp */; };
+		F98606232BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606202BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp */; };
+		F98606272BEBA1B5006A4C0F /* ExtensionFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98606242BEBA1B5006A4C0F /* ExtensionFilter.cpp */; };
+		F98606282BEBA1B5006A4C0F /* ExtensionFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98606252BEBA1B5006A4C0F /* ExtensionFilter.hpp */; };
+		F986062F2BEBBBC7006A4C0F /* CProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98606292BEBBBC7006A4C0F /* CProfiler.cpp */; };
+		F98606302BEBBBC7006A4C0F /* CProfiler.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986062A2BEBBBC7006A4C0F /* CProfiler.hpp */; };
+		F98606312BEBBBC7006A4C0F /* IProfiler.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986062B2BEBBBC7006A4C0F /* IProfiler.hpp */; };
+		F98606322BEBBBC7006A4C0F /* ProfilerFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986062C2BEBBBC7006A4C0F /* ProfilerFactory.cpp */; };
+		F98606332BEBBBC7006A4C0F /* SivProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986062D2BEBBBC7006A4C0F /* SivProfiler.cpp */; };
 		F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8282BC7B00A006A4C0F /* INISection.hpp */; };
 		F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8292BC7B00A006A4C0F /* INI.hpp */; };
 		F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F82A2BC7B00A006A4C0F /* INIItem.hpp */; };
@@ -2168,7 +2270,6 @@
 		F9070B7B2B9F175000383E4D /* FmtHelper.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FmtHelper.ipp; sourceTree = "<group>"; };
 		F9070B7C2B9F175000383E4D /* Format.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Format.ipp; sourceTree = "<group>"; };
 		F9070B7D2B9F175000383E4D /* FormatData.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FormatData.ipp; sourceTree = "<group>"; };
-		F9070B7E2B9F175000383E4D /* FormatLiteral.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FormatLiteral.ipp; sourceTree = "<group>"; };
 		F9070B7F2B9F175000383E4D /* FormatUtility.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FormatUtility.ipp; sourceTree = "<group>"; };
 		F9070B802B9F175000383E4D /* HardwareRNG.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HardwareRNG.ipp; sourceTree = "<group>"; };
 		F9070B812B9F175000383E4D /* Hash.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Hash.ipp; sourceTree = "<group>"; };
@@ -2499,6 +2600,25 @@
 		F9070F2E2B9F252E00383E4D /* null_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = null_platform.h; sourceTree = "<group>"; };
 		F9070F2F2B9F252E00383E4D /* null_joystick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_joystick.c; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F934BD6E2BF880330003EAD5 /* PixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PixelShader.hpp; sourceTree = "<group>"; };
+		F934BD6F2BF880330003EAD5 /* VertexShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VertexShader.hpp; sourceTree = "<group>"; };
+		F934BD702BF880330003EAD5 /* ShaderStage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ShaderStage.hpp; sourceTree = "<group>"; };
+		F934BD742BF880620003EAD5 /* SivVertexShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVertexShader.cpp; sourceTree = "<group>"; };
+		F934BD762BF880620003EAD5 /* SivPixelShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivPixelShader.cpp; sourceTree = "<group>"; };
+		F934BD7A2BF880860003EAD5 /* AssetHandleManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetHandleManager.hpp; sourceTree = "<group>"; };
+		F934BD7B2BF880860003EAD5 /* AssetHandleManager.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetHandleManager.ipp; sourceTree = "<group>"; };
+		F934BD7F2BF880A10003EAD5 /* IShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IShader.hpp; sourceTree = "<group>"; };
+		F934BD822BF881110003EAD5 /* CShader_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CShader_Metal.hpp; sourceTree = "<group>"; };
+		F934BD832BF881110003EAD5 /* CShader_Metal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CShader_Metal.mm; sourceTree = "<group>"; };
+		F934BD852BF881110003EAD5 /* ShaderFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ShaderFactory.mm; sourceTree = "<group>"; };
+		F934BD8A2BF882020003EAD5 /* IEngineShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IEngineShader.hpp; sourceTree = "<group>"; };
+		F934BD8D2BF8824B0003EAD5 /* CEngineShader_Metal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CEngineShader_Metal.cpp; sourceTree = "<group>"; };
+		F934BD8E2BF8824B0003EAD5 /* CEngineShader_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CEngineShader_Metal.hpp; sourceTree = "<group>"; };
+		F934BD902BF8824B0003EAD5 /* EngineShaderFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EngineShaderFactory.cpp; sourceTree = "<group>"; };
+		F934BD952BFA59000003EAD5 /* SivGraphics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivGraphics.cpp; sourceTree = "<group>"; };
+		F934BD972BFA59000003EAD5 /* SivEngineOption.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEngineOption.cpp; sourceTree = "<group>"; };
+		F934BD992BFA59000003EAD5 /* SivHLSL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivHLSL.cpp; sourceTree = "<group>"; };
+		F934BD9E2BFA59320003EAD5 /* HLSL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HLSL.hpp; sourceTree = "<group>"; };
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
 		F9528A852BA018CE00222F45 /* WindowTitle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowTitle.hpp; sourceTree = "<group>"; };
 		F9528A862BA018CF00222F45 /* WindowTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowTitle.cpp; sourceTree = "<group>"; };
@@ -2681,6 +2801,143 @@
 		F9528C9D2BC1208B00222F45 /* pnglibconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglibconf.h; sourceTree = "<group>"; };
 		F9528CA22BC1209900222F45 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
 		F9528CA32BC1209900222F45 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
+		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
+		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
+		F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ResizeMode.hpp; sourceTree = "<group>"; };
+		F97202FB2BEDF2FF000E21DD /* CScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CScene.cpp; sourceTree = "<group>"; };
+		F97202FC2BEDF2FF000E21DD /* CScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CScene.hpp; sourceTree = "<group>"; };
+		F97202FD2BEDF2FF000E21DD /* IScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IScene.hpp; sourceTree = "<group>"; };
+		F97202FE2BEDF2FF000E21DD /* SceneFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneFactory.cpp; sourceTree = "<group>"; };
+		F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTime.cpp; sourceTree = "<group>"; };
+		F97203002BEDF2FF000E21DD /* SceneTime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneTime.hpp; sourceTree = "<group>"; };
+		F97203012BEDF2FF000E21DD /* SivScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScene.cpp; sourceTree = "<group>"; };
+		F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivResizeMode.cpp; sourceTree = "<group>"; };
+		F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTextureFilter.cpp; sourceTree = "<group>"; };
+		F97203102BF09DA3000E21DD /* IRenderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IRenderer.hpp; sourceTree = "<group>"; };
+		F97203132BF09DD9000E21DD /* Graphics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Graphics.hpp; sourceTree = "<group>"; };
+		F97203142BF09DD9000E21DD /* EngineOption.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EngineOption.hpp; sourceTree = "<group>"; };
+		F97203172BF09E2E000E21DD /* SceneStyle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneStyle.hpp; sourceTree = "<group>"; };
+		F97203192BF09E51000E21DD /* Scene.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.ipp; sourceTree = "<group>"; };
+		F972031B2BF09E80000E21DD /* CRenderer_Metal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CRenderer_Metal.mm; sourceTree = "<group>"; };
+		F972031C2BF09E80000E21DD /* CRenderer_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CRenderer_Metal.hpp; sourceTree = "<group>"; };
+		F972031D2BF09E80000E21DD /* Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Metal.hpp; sourceTree = "<group>"; };
+		F972031F2BF09E80000E21DD /* RendererFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RendererFactory.mm; sourceTree = "<group>"; };
+		F97203D62BF0A24A000E21DD /* Metal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Metal.hpp; sourceTree = "<group>"; };
+		F97203D72BF0A24A000E21DD /* MTLAccelerationStructure.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLAccelerationStructure.hpp; sourceTree = "<group>"; };
+		F97203D82BF0A24A000E21DD /* MTLAccelerationStructureCommandEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLAccelerationStructureCommandEncoder.hpp; sourceTree = "<group>"; };
+		F97203D92BF0A24A000E21DD /* MTLAccelerationStructureTypes.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLAccelerationStructureTypes.hpp; sourceTree = "<group>"; };
+		F97203DA2BF0A24A000E21DD /* MTLArgument.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLArgument.hpp; sourceTree = "<group>"; };
+		F97203DB2BF0A24A000E21DD /* MTLArgumentEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLArgumentEncoder.hpp; sourceTree = "<group>"; };
+		F97203DC2BF0A24A000E21DD /* MTLBinaryArchive.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLBinaryArchive.hpp; sourceTree = "<group>"; };
+		F97203DD2BF0A24A000E21DD /* MTLBlitCommandEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLBlitCommandEncoder.hpp; sourceTree = "<group>"; };
+		F97203DE2BF0A24A000E21DD /* MTLBlitPass.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLBlitPass.hpp; sourceTree = "<group>"; };
+		F97203DF2BF0A24A000E21DD /* MTLBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLBuffer.hpp; sourceTree = "<group>"; };
+		F97203E02BF0A24A000E21DD /* MTLCaptureManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLCaptureManager.hpp; sourceTree = "<group>"; };
+		F97203E12BF0A24A000E21DD /* MTLCaptureScope.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLCaptureScope.hpp; sourceTree = "<group>"; };
+		F97203E22BF0A24A000E21DD /* MTLCommandBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLCommandBuffer.hpp; sourceTree = "<group>"; };
+		F97203E32BF0A24A000E21DD /* MTLCommandEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLCommandEncoder.hpp; sourceTree = "<group>"; };
+		F97203E42BF0A24A000E21DD /* MTLCommandQueue.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLCommandQueue.hpp; sourceTree = "<group>"; };
+		F97203E52BF0A24A000E21DD /* MTLComputeCommandEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLComputeCommandEncoder.hpp; sourceTree = "<group>"; };
+		F97203E62BF0A24A000E21DD /* MTLComputePass.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLComputePass.hpp; sourceTree = "<group>"; };
+		F97203E72BF0A24A000E21DD /* MTLComputePipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLComputePipeline.hpp; sourceTree = "<group>"; };
+		F97203E82BF0A24A000E21DD /* MTLCounters.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLCounters.hpp; sourceTree = "<group>"; };
+		F97203E92BF0A24A000E21DD /* MTLDefines.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLDefines.hpp; sourceTree = "<group>"; };
+		F97203EA2BF0A24A000E21DD /* MTLDepthStencil.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLDepthStencil.hpp; sourceTree = "<group>"; };
+		F97203EB2BF0A24A000E21DD /* MTLDevice.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLDevice.hpp; sourceTree = "<group>"; };
+		F97203EC2BF0A24A000E21DD /* MTLDrawable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLDrawable.hpp; sourceTree = "<group>"; };
+		F97203ED2BF0A24A000E21DD /* MTLDynamicLibrary.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLDynamicLibrary.hpp; sourceTree = "<group>"; };
+		F97203EE2BF0A24A000E21DD /* MTLEvent.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLEvent.hpp; sourceTree = "<group>"; };
+		F97203EF2BF0A24A000E21DD /* MTLFence.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLFence.hpp; sourceTree = "<group>"; };
+		F97203F02BF0A24A000E21DD /* MTLFunctionConstantValues.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLFunctionConstantValues.hpp; sourceTree = "<group>"; };
+		F97203F12BF0A24A000E21DD /* MTLFunctionDescriptor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLFunctionDescriptor.hpp; sourceTree = "<group>"; };
+		F97203F22BF0A24A000E21DD /* MTLFunctionHandle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLFunctionHandle.hpp; sourceTree = "<group>"; };
+		F97203F32BF0A24A000E21DD /* MTLFunctionLog.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLFunctionLog.hpp; sourceTree = "<group>"; };
+		F97203F42BF0A24A000E21DD /* MTLFunctionStitching.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLFunctionStitching.hpp; sourceTree = "<group>"; };
+		F97203F52BF0A24A000E21DD /* MTLHeaderBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLHeaderBridge.hpp; sourceTree = "<group>"; };
+		F97203F62BF0A24A000E21DD /* MTLHeap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLHeap.hpp; sourceTree = "<group>"; };
+		F97203F72BF0A24A000E21DD /* MTLIndirectCommandBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLIndirectCommandBuffer.hpp; sourceTree = "<group>"; };
+		F97203F82BF0A24A000E21DD /* MTLIndirectCommandEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLIndirectCommandEncoder.hpp; sourceTree = "<group>"; };
+		F97203F92BF0A24A000E21DD /* MTLIntersectionFunctionTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLIntersectionFunctionTable.hpp; sourceTree = "<group>"; };
+		F97203FA2BF0A24A000E21DD /* MTLIOCommandBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLIOCommandBuffer.hpp; sourceTree = "<group>"; };
+		F97203FB2BF0A24A000E21DD /* MTLIOCommandQueue.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLIOCommandQueue.hpp; sourceTree = "<group>"; };
+		F97203FC2BF0A24A000E21DD /* MTLIOCompressor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLIOCompressor.hpp; sourceTree = "<group>"; };
+		F97203FD2BF0A24A000E21DD /* MTLLibrary.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLLibrary.hpp; sourceTree = "<group>"; };
+		F97203FE2BF0A24A000E21DD /* MTLLinkedFunctions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLLinkedFunctions.hpp; sourceTree = "<group>"; };
+		F97203FF2BF0A24A000E21DD /* MTLParallelRenderCommandEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLParallelRenderCommandEncoder.hpp; sourceTree = "<group>"; };
+		F97204002BF0A24A000E21DD /* MTLPipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLPipeline.hpp; sourceTree = "<group>"; };
+		F97204012BF0A24A000E21DD /* MTLPixelFormat.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLPixelFormat.hpp; sourceTree = "<group>"; };
+		F97204022BF0A24A000E21DD /* MTLPrivate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLPrivate.hpp; sourceTree = "<group>"; };
+		F97204032BF0A24A000E21DD /* MTLRasterizationRate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLRasterizationRate.hpp; sourceTree = "<group>"; };
+		F97204042BF0A24A000E21DD /* MTLRenderCommandEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLRenderCommandEncoder.hpp; sourceTree = "<group>"; };
+		F97204052BF0A24A000E21DD /* MTLRenderPass.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLRenderPass.hpp; sourceTree = "<group>"; };
+		F97204062BF0A24A000E21DD /* MTLRenderPipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLRenderPipeline.hpp; sourceTree = "<group>"; };
+		F97204072BF0A24A000E21DD /* MTLResource.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLResource.hpp; sourceTree = "<group>"; };
+		F97204082BF0A24A000E21DD /* MTLResourceStateCommandEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLResourceStateCommandEncoder.hpp; sourceTree = "<group>"; };
+		F97204092BF0A24A000E21DD /* MTLResourceStatePass.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLResourceStatePass.hpp; sourceTree = "<group>"; };
+		F972040A2BF0A24A000E21DD /* MTLSampler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLSampler.hpp; sourceTree = "<group>"; };
+		F972040B2BF0A24A000E21DD /* MTLStageInputOutputDescriptor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLStageInputOutputDescriptor.hpp; sourceTree = "<group>"; };
+		F972040C2BF0A24A000E21DD /* MTLTexture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLTexture.hpp; sourceTree = "<group>"; };
+		F972040D2BF0A24A000E21DD /* MTLTypes.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLTypes.hpp; sourceTree = "<group>"; };
+		F972040E2BF0A24A000E21DD /* MTLVersion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLVersion.hpp; sourceTree = "<group>"; };
+		F972040F2BF0A24A000E21DD /* MTLVertexDescriptor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLVertexDescriptor.hpp; sourceTree = "<group>"; };
+		F97204102BF0A24A000E21DD /* MTLVisibleFunctionTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLVisibleFunctionTable.hpp; sourceTree = "<group>"; };
+		F97204122BF0A25B000E21DD /* CADefines.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CADefines.hpp; sourceTree = "<group>"; };
+		F97204132BF0A25B000E21DD /* CAMetalDrawable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CAMetalDrawable.hpp; sourceTree = "<group>"; };
+		F97204142BF0A25B000E21DD /* CAMetalLayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CAMetalLayer.hpp; sourceTree = "<group>"; };
+		F97204152BF0A25B000E21DD /* CAPrivate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CAPrivate.hpp; sourceTree = "<group>"; };
+		F97204162BF0A25B000E21DD /* QuartzCore.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QuartzCore.hpp; sourceTree = "<group>"; };
+		F97204182BF0A25B000E21DD /* Foundation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Foundation.hpp; sourceTree = "<group>"; };
+		F97204192BF0A25B000E21DD /* NSArray.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSArray.hpp; sourceTree = "<group>"; };
+		F972041A2BF0A25B000E21DD /* NSAutoreleasePool.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSAutoreleasePool.hpp; sourceTree = "<group>"; };
+		F972041B2BF0A25B000E21DD /* NSBundle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSBundle.hpp; sourceTree = "<group>"; };
+		F972041C2BF0A25B000E21DD /* NSData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSData.hpp; sourceTree = "<group>"; };
+		F972041D2BF0A25B000E21DD /* NSDate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSDate.hpp; sourceTree = "<group>"; };
+		F972041E2BF0A25B000E21DD /* NSDefines.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSDefines.hpp; sourceTree = "<group>"; };
+		F972041F2BF0A25B000E21DD /* NSDictionary.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSDictionary.hpp; sourceTree = "<group>"; };
+		F97204202BF0A25B000E21DD /* NSEnumerator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSEnumerator.hpp; sourceTree = "<group>"; };
+		F97204212BF0A25B000E21DD /* NSError.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSError.hpp; sourceTree = "<group>"; };
+		F97204222BF0A25B000E21DD /* NSLock.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSLock.hpp; sourceTree = "<group>"; };
+		F97204232BF0A25B000E21DD /* NSNotification.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSNotification.hpp; sourceTree = "<group>"; };
+		F97204242BF0A25B000E21DD /* NSNumber.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSNumber.hpp; sourceTree = "<group>"; };
+		F97204252BF0A25B000E21DD /* NSObjCRuntime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSObjCRuntime.hpp; sourceTree = "<group>"; };
+		F97204262BF0A25B000E21DD /* NSObject.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSObject.hpp; sourceTree = "<group>"; };
+		F97204272BF0A25B000E21DD /* NSPrivate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSPrivate.hpp; sourceTree = "<group>"; };
+		F97204282BF0A25B000E21DD /* NSProcessInfo.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSProcessInfo.hpp; sourceTree = "<group>"; };
+		F97204292BF0A25B000E21DD /* NSRange.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSRange.hpp; sourceTree = "<group>"; };
+		F972042A2BF0A25B000E21DD /* NSSet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSSet.hpp; sourceTree = "<group>"; };
+		F972042B2BF0A25B000E21DD /* NSSharedPtr.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSSharedPtr.hpp; sourceTree = "<group>"; };
+		F972042C2BF0A25B000E21DD /* NSString.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSString.hpp; sourceTree = "<group>"; };
+		F972042D2BF0A25B000E21DD /* NSTypes.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSTypes.hpp; sourceTree = "<group>"; };
+		F972042E2BF0A25B000E21DD /* NSURL.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSURL.hpp; sourceTree = "<group>"; };
+		F97204302BF0A314000E21DD /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		F97204322BF0A31C000E21DD /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		F97204342BF0A39F000E21DD /* Metal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Metal.cpp; sourceTree = "<group>"; };
+		F9807D762BF1092600D9B590 /* triangle.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = triangle.metal; sourceTree = "<group>"; };
+		F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = fullscreen_triangle.metal; sourceTree = "<group>"; };
+		F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalInternalTexture2D.hpp; sourceTree = "<group>"; };
+		F9807D7D2BF1229700D9B590 /* MetalInternalTexture2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalInternalTexture2D.mm; sourceTree = "<group>"; };
+		F9807D812BF6676100D9B590 /* AssetHandle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetHandle.hpp; sourceTree = "<group>"; };
+		F9807D822BF6676100D9B590 /* AssetIDWrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetIDWrapper.hpp; sourceTree = "<group>"; };
+		F9807D832BF6676100D9B590 /* AssetID.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetID.hpp; sourceTree = "<group>"; };
+		F9807D872BF6677600D9B590 /* MessageBoxStyle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MessageBoxStyle.hpp; sourceTree = "<group>"; };
+		F9807D882BF6677600D9B590 /* MessageBox.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MessageBox.hpp; sourceTree = "<group>"; };
+		F9807D892BF6677600D9B590 /* MessageBoxResult.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MessageBoxResult.hpp; sourceTree = "<group>"; };
+		F9807D8D2BF6678F00D9B590 /* AssetID.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetID.ipp; sourceTree = "<group>"; };
+		F9807D8E2BF6679000D9B590 /* AssetIDWrapper.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetIDWrapper.ipp; sourceTree = "<group>"; };
+		F9807D8F2BF6679000D9B590 /* AssetHandle.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AssetHandle.ipp; sourceTree = "<group>"; };
+		F9807D932BF667C200D9B590 /* Troubleshooting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Troubleshooting.cpp; sourceTree = "<group>"; };
+		F9807D942BF667C200D9B590 /* Troubleshooting.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Troubleshooting.hpp; sourceTree = "<group>"; };
+		F9807D962BF667C300D9B590 /* SivMessageBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMessageBox.cpp; sourceTree = "<group>"; };
+		F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FreestandingMessageBox_macOS.cpp; sourceTree = "<group>"; };
+		F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivMessageBox_macOS.mm; sourceTree = "<group>"; };
+		F980C4132C0023BB00A86B68 /* MetalVertexShader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalVertexShader.mm; sourceTree = "<group>"; };
+		F980C4142C0023BB00A86B68 /* MetalVertexShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalVertexShader.hpp; sourceTree = "<group>"; };
+		F980C4162C0023BB00A86B68 /* MetalPixelShader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalPixelShader.mm; sourceTree = "<group>"; };
+		F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalPixelShader.hpp; sourceTree = "<group>"; };
+		F980C41D2C004B3000A86B68 /* MSAASampleCount.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MSAASampleCount.hpp; sourceTree = "<group>"; };
+		F980C41F2C004B5000A86B68 /* SivMSAASampleCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMSAASampleCount.cpp; sourceTree = "<group>"; };
+		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
+		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
 		F98604F92BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkFontHost_FreeType.cpp; sourceTree = "<group>"; };
 		F98604FE2BCFBC11006A4C0F /* SkImageGenerator_FromEncoded.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkImageGenerator_FromEncoded.cpp; sourceTree = "<group>"; };
@@ -2790,6 +3047,40 @@
 		F98605E02BE50038006A4C0F /* SivInputGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInputGroup.cpp; sourceTree = "<group>"; };
 		F98605E22BE50038006A4C0F /* SivInputState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInputState.cpp; sourceTree = "<group>"; };
 		F98605E72BE50393006A4C0F /* FallbackNameList.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FallbackNameList.hpp; sourceTree = "<group>"; };
+		F98605E92BE61563006A4C0F /* RandomVec4.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomVec4.hpp; sourceTree = "<group>"; };
+		F98605EA2BE61563006A4C0F /* RandomColor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomColor.hpp; sourceTree = "<group>"; };
+		F98605EB2BE61564006A4C0F /* RandomPoint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomPoint.hpp; sourceTree = "<group>"; };
+		F98605EC2BE61564006A4C0F /* RandomVec2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomVec2.hpp; sourceTree = "<group>"; };
+		F98605F12BE61586006A4C0F /* RandomVec2.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomVec2.ipp; sourceTree = "<group>"; };
+		F98605F22BE61586006A4C0F /* RandomColor.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomColor.ipp; sourceTree = "<group>"; };
+		F98605F32BE61586006A4C0F /* RandomVec4.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomVec4.ipp; sourceTree = "<group>"; };
+		F98605F42BE61586006A4C0F /* Line.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Line.ipp; sourceTree = "<group>"; };
+		F98605F52BE61586006A4C0F /* RandomPoint.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomPoint.ipp; sourceTree = "<group>"; };
+		F98605F62BE61586006A4C0F /* Quad.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Quad.ipp; sourceTree = "<group>"; };
+		F98605F72BE61586006A4C0F /* Triangle.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Triangle.ipp; sourceTree = "<group>"; };
+		F98605FF2BE615B4006A4C0F /* FormatLiteralObject.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FormatLiteralObject.ipp; sourceTree = "<group>"; };
+		F98606012BE615C5006A4C0F /* FormatLiteralObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FormatLiteralObject.hpp; sourceTree = "<group>"; };
+		F98606032BE7173F006A4C0F /* UserInfo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UserInfo.hpp; sourceTree = "<group>"; };
+		F98606052BE71763006A4C0F /* SivUserInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUserInfo.cpp; sourceTree = "<group>"; };
+		F98606072BE71763006A4C0F /* FreestandingMessageBox.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FreestandingMessageBox.hpp; sourceTree = "<group>"; };
+		F986060B2BE71918006A4C0F /* SivUserInfo_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivUserInfo_macOS.mm; sourceTree = "<group>"; };
+		F986060E2BEB75DB006A4C0F /* DirectoryWatcher.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DirectoryWatcher.hpp; sourceTree = "<group>"; };
+		F98606102BEB760C006A4C0F /* Circle.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Circle.ipp; sourceTree = "<group>"; };
+		F98606112BEB760C006A4C0F /* RoundRect.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RoundRect.ipp; sourceTree = "<group>"; };
+		F98606122BEB760C006A4C0F /* Ellipse.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ellipse.ipp; sourceTree = "<group>"; };
+		F98606162BEB7651006A4C0F /* FileChange.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FileChange.hpp; sourceTree = "<group>"; };
+		F98606172BEB7651006A4C0F /* Ellipse.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ellipse.hpp; sourceTree = "<group>"; };
+		F98606182BEB7651006A4C0F /* RoundRect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RoundRect.hpp; sourceTree = "<group>"; };
+		F986061C2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivDirectoryWatcher.cpp; sourceTree = "<group>"; };
+		F986061F2BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DirectoryWatcherDetail.cpp; sourceTree = "<group>"; };
+		F98606202BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DirectoryWatcherDetail.hpp; sourceTree = "<group>"; };
+		F98606242BEBA1B5006A4C0F /* ExtensionFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtensionFilter.cpp; sourceTree = "<group>"; };
+		F98606252BEBA1B5006A4C0F /* ExtensionFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ExtensionFilter.hpp; sourceTree = "<group>"; };
+		F98606292BEBBBC7006A4C0F /* CProfiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CProfiler.cpp; sourceTree = "<group>"; };
+		F986062A2BEBBBC7006A4C0F /* CProfiler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CProfiler.hpp; sourceTree = "<group>"; };
+		F986062B2BEBBBC7006A4C0F /* IProfiler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IProfiler.hpp; sourceTree = "<group>"; };
+		F986062C2BEBBBC7006A4C0F /* ProfilerFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ProfilerFactory.cpp; sourceTree = "<group>"; };
+		F986062D2BEBBBC7006A4C0F /* SivProfiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivProfiler.cpp; sourceTree = "<group>"; };
 		F986F8282BC7B00A006A4C0F /* INISection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INISection.hpp; sourceTree = "<group>"; };
 		F986F8292BC7B00A006A4C0F /* INI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INI.hpp; sourceTree = "<group>"; };
 		F986F82A2BC7B00A006A4C0F /* INIItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = INIItem.hpp; sourceTree = "<group>"; };
@@ -4052,6 +4343,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */,
+				F97204312BF0A314000E21DD /* Metal.framework in Frameworks */,
+				F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */,
 				F986FAA22BCFB875006A4C0F /* libfreetype.a in Frameworks */,
 				F986FAA42BCFBB2E006A4C0F /* libharfbuzz.a in Frameworks */,
 				F9E5FC292BC13F950081A4F7 /* libturbojpeg.a in Frameworks */,
@@ -4074,6 +4367,8 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F97204322BF0A31C000E21DD /* QuartzCore.framework */,
+				F97204302BF0A314000E21DD /* Metal.framework */,
 				F986FAA32BCFBB2E006A4C0F /* libharfbuzz.a */,
 				F986FAA12BCFB875006A4C0F /* libfreetype.a */,
 				F9E5FC282BC13F950081A4F7 /* libturbojpeg.a */,
@@ -4109,6 +4404,7 @@
 		2CA7F74D1CA7F43D00495647 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				F9807D782BF1092600D9B590 /* shader */,
 				F986F83F2BC7DF26006A4C0F /* engine */,
 				F90702CF2B9DAEB900383E4D /* Test */,
 				2CA7F74E1CA7F43D00495647 /* Main.cpp */,
@@ -4542,13 +4838,16 @@
 				F986F8B02BC806DB006A4C0F /* easyexif */,
 				F9070A6C2B9DEB5900383E4D /* fast_float */,
 				F9070A6F2B9DEB5900383E4D /* fmt */,
+				F972042F2BF0A25B000E21DD /* Foundation */,
 				F9070ED12B9F1C8900383E4D /* GLFW */,
 				F9070A712B9DEB5900383E4D /* levenshtein-sse */,
 				F986F98C2BCA9D0A006A4C0F /* lunasvg */,
+				F97204112BF0A24A000E21DD /* Metal */,
 				F9070A732B9DEB5900383E4D /* miniutf */,
 				F98605582BD203D4006A4C0F /* muparser */,
 				F986F8FC2BC8441F006A4C0F /* Oniguruma */,
 				F986F9622BCA9D0A006A4C0F /* plutovg */,
+				F97204172BF0A25B000E21DD /* QuartzCore */,
 				F9070A752B9DEB5900383E4D /* RFC1321 */,
 				F9070A782B9DEB5900383E4D /* simdutf */,
 				F986FFE82BCFBB53006A4C0F /* skia */,
@@ -4598,6 +4897,9 @@
 				F9070B632B9F175000383E4D /* _TEMPLATE.ipp */,
 				F9070B642B9F175000383E4D /* AlignedAllocator.ipp */,
 				F9070B652B9F175000383E4D /* Array.ipp */,
+				F9807D8F2BF6679000D9B590 /* AssetHandle.ipp */,
+				F9807D8D2BF6678F00D9B590 /* AssetID.ipp */,
+				F9807D8E2BF6679000D9B590 /* AssetIDWrapper.ipp */,
 				F9070B662B9F175000383E4D /* AsyncTask.ipp */,
 				F9528B1D2BAFB65000222F45 /* Base64Value.ipp */,
 				F9528B442BB69D8500222F45 /* BigFloat.ipp */,
@@ -4608,6 +4910,7 @@
 				F9070B6B2B9F175000383E4D /* BoolArray.ipp */,
 				F9070B6C2B9F175000383E4D /* Byte.ipp */,
 				F9070B6D2B9F175000383E4D /* Char.ipp */,
+				F98606102BEB760C006A4C0F /* Circle.ipp */,
 				F9070B6E2B9F175000383E4D /* Color.ipp */,
 				F9070B6F2B9F175000383E4D /* ColorF.ipp */,
 				F9070B702B9F175000383E4D /* Console.ipp */,
@@ -4619,6 +4922,7 @@
 				F9070B742B9F175000383E4D /* DiscreteDistribution.ipp */,
 				F9070B752B9F175000383E4D /* DisjointSet.ipp */,
 				F9070B762B9F175000383E4D /* Duration.ipp */,
+				F98606122BEB760C006A4C0F /* Ellipse.ipp */,
 				F9070B772B9F175000383E4D /* Endian.ipp */,
 				F9070B782B9F175000383E4D /* EscapedFormatter.ipp */,
 				F9070B792B9F175000383E4D /* FastMath.ipp */,
@@ -4626,7 +4930,7 @@
 				F9070B7B2B9F175000383E4D /* FmtHelper.ipp */,
 				F9070B7C2B9F175000383E4D /* Format.ipp */,
 				F9070B7D2B9F175000383E4D /* FormatData.ipp */,
-				F9070B7E2B9F175000383E4D /* FormatLiteral.ipp */,
+				F98605FF2BE615B4006A4C0F /* FormatLiteralObject.ipp */,
 				F9070B7F2B9F175000383E4D /* FormatUtility.ipp */,
 				F9528B1B2BADCC9900222F45 /* Grid.ipp */,
 				F9E5FC2E2BC15B060081A4F7 /* HalfFloat.ipp */,
@@ -4652,6 +4956,7 @@
 				F9070B892B9F175000383E4D /* IWriter.ipp */,
 				F9E5FCD42BC3AD580081A4F7 /* JSON.ipp */,
 				F9070B8A2B9F175000383E4D /* KahanSummation.ipp */,
+				F98605F42BE61586006A4C0F /* Line.ipp */,
 				F9070B8B2B9F175000383E4D /* Logger.ipp */,
 				F9070B8C2B9F175000383E4D /* LoggerBuffer.ipp */,
 				F9070B8D2B9F175000383E4D /* MapFormatter.ipp */,
@@ -4676,11 +4981,18 @@
 				F9070B962B9F175000383E4D /* PCG64.ipp */,
 				F9070B972B9F175000383E4D /* Point.ipp */,
 				F9528B982BBC76EA00222F45 /* Point3D.ipp */,
+				F98605F62BE61586006A4C0F /* Quad.ipp */,
 				F9070B982B9F175000383E4D /* Random.ipp */,
+				F98605F22BE61586006A4C0F /* RandomColor.ipp */,
 				F9070B992B9F175000383E4D /* RandomDuration.ipp */,
+				F98605F52BE61586006A4C0F /* RandomPoint.ipp */,
+				F98605F12BE61586006A4C0F /* RandomVec2.ipp */,
+				F98605F32BE61586006A4C0F /* RandomVec4.ipp */,
 				F9070B9A2B9F175000383E4D /* Rect.ipp */,
 				F986F9392BCA7996006A4C0F /* RectF.ipp */,
 				F9070B9B2B9F175000383E4D /* Result.ipp */,
+				F98606112BEB760C006A4C0F /* RoundRect.ipp */,
+				F97203192BF09E51000E21DD /* Scene.ipp */,
 				F9070B9C2B9F175000383E4D /* ScopeExit.ipp */,
 				F9070B9D2B9F175000383E4D /* SequenceFormatter.ipp */,
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
@@ -4696,6 +5008,7 @@
 				F9070BA52B9F175000383E4D /* TextWriter.ipp */,
 				F9070BA62B9F175000383E4D /* ThousandSeparate.ipp */,
 				F9528BA02BBD6F8800222F45 /* Timer.ipp */,
+				F98605F72BE61586006A4C0F /* Triangle.ipp */,
 				F9070BA72B9F175000383E4D /* TupleFormatter.ipp */,
 				F9070BA82B9F175000383E4D /* Unicode.ipp */,
 				F9070BA92B9F175000383E4D /* UnicodeConverter.ipp */,
@@ -4729,6 +5042,9 @@
 				F9070BBC2B9F175000383E4D /* 2DShapesFwd.hpp */,
 				F9070BBD2B9F175000383E4D /* AlignedAllocator.hpp */,
 				F9070BBE2B9F175000383E4D /* Array.hpp */,
+				F9807D812BF6676100D9B590 /* AssetHandle.hpp */,
+				F9807D832BF6676100D9B590 /* AssetID.hpp */,
+				F9807D822BF6676100D9B590 /* AssetIDWrapper.hpp */,
 				F9070BBF2B9F175000383E4D /* AsyncTask.hpp */,
 				F9528B1F2BAFB66200222F45 /* Base64Value.hpp */,
 				F9528B422BB69CA900222F45 /* BigFloat.hpp */,
@@ -4761,21 +5077,25 @@
 				F9070BD32B9F175000383E4D /* DateTime.hpp */,
 				F9070BD42B9F175000383E4D /* DayOfWeek.hpp */,
 				F9070BD52B9F175000383E4D /* Demangle.hpp */,
+				F986060E2BEB75DB006A4C0F /* DirectoryWatcher.hpp */,
 				F9070BD62B9F175000383E4D /* DiscreteDistribution.hpp */,
 				F9070BD72B9F175000383E4D /* DisjointSet.hpp */,
 				F9070BD82B9F175000383E4D /* DisplayResolution.hpp */,
 				F9070BD92B9F175000383E4D /* Distribution.hpp */,
 				F9070BDA2B9F175000383E4D /* DLL.hpp */,
 				F9070BDB2B9F175000383E4D /* Duration.hpp */,
+				F98606172BEB7651006A4C0F /* Ellipse.hpp */,
 				F98605162BCFF7C2006A4C0F /* Emoji.hpp */,
 				F9070BDC2B9F175000383E4D /* Endian.hpp */,
 				F9070BDD2B9F175000383E4D /* EngineLog.hpp */,
+				F97203142BF09DD9000E21DD /* EngineOption.hpp */,
 				F986F8A02BC8003B006A4C0F /* EnvironmentVariable.hpp */,
 				F9070BDE2B9F175000383E4D /* Error.hpp */,
 				F9070BDF2B9F175000383E4D /* EscapedFormatter.hpp */,
 				F986F8A92BC806A7006A4C0F /* Exif.hpp */,
 				F9070BE02B9F175000383E4D /* FastMath.hpp */,
 				F9070BE12B9F175000383E4D /* FileAction.hpp */,
+				F98606162BEB7651006A4C0F /* FileChange.hpp */,
 				F9070BE22B9F175000383E4D /* FileSystem.hpp */,
 				F9070BE32B9F175000383E4D /* FloatFormatter.hpp */,
 				F9070BE42B9F175000383E4D /* FloatToString.hpp */,
@@ -4784,10 +5104,12 @@
 				F9070BE72B9F175000383E4D /* Format.hpp */,
 				F9070BE82B9F175000383E4D /* FormatData.hpp */,
 				F9070BE92B9F175000383E4D /* FormatLiteral.hpp */,
+				F98606012BE615C5006A4C0F /* FormatLiteralObject.hpp */,
 				F9070BEA2B9F175000383E4D /* Formatter.hpp */,
 				F9070BEB2B9F175000383E4D /* FormatUtility.hpp */,
 				F9070BEC2B9F175000383E4D /* FunctionRef.hpp */,
 				F986051A2BD0AC0E006A4C0F /* GlyphIndex.hpp */,
+				F97203132BF09DD9000E21DD /* Graphics.hpp */,
 				F9528B192BADCC7C00222F45 /* Grid.hpp */,
 				F9E5FC2A2BC15AEE0081A4F7 /* HalfFloat.hpp */,
 				F9070BED2B9F175000383E4D /* HardwareRNG.hpp */,
@@ -4795,6 +5117,7 @@
 				F9070BEF2B9F175000383E4D /* HashSet.hpp */,
 				F9070BF02B9F175000383E4D /* HashTable.hpp */,
 				F9070BF12B9F175000383E4D /* HeterogeneousLookupHelper.hpp */,
+				F934BD9E2BFA59320003EAD5 /* HLSL.hpp */,
 				F9070BF22B9F175000383E4D /* HSV.hpp */,
 				F9528C5F2BC05B0200222F45 /* IImageDecoder.hpp */,
 				F9528C612BC05B0200222F45 /* IImageEncoder.hpp */,
@@ -4848,9 +5171,13 @@
 				F9528BA92BBE7CF300222F45 /* MemoryReader.hpp */,
 				F9528BA22BBD706000222F45 /* MemoryViewReader.hpp */,
 				F9528BAA2BBE7CF300222F45 /* MemoryWriter.hpp */,
+				F9807D882BF6677600D9B590 /* MessageBox.hpp */,
+				F9807D892BF6677600D9B590 /* MessageBoxResult.hpp */,
+				F9807D872BF6677600D9B590 /* MessageBoxStyle.hpp */,
 				F9528B512BB6DC2C00222F45 /* MicrosecClock.hpp */,
 				F9528B522BB6DC2C00222F45 /* MillisecClock.hpp */,
 				F9070C032B9F175000383E4D /* MonitorInfo.hpp */,
+				F980C41D2C004B3000A86B68 /* MSAASampleCount.hpp */,
 				F9070C042B9F175000383E4D /* NamedParameter.hpp */,
 				F9070C052B9F175000383E4D /* NonNull.hpp */,
 				F9070C062B9F175000383E4D /* Number.hpp */,
@@ -4867,6 +5194,7 @@
 				F9070C112B9F175000383E4D /* ParseFloat.hpp */,
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
+				F934BD6E2BF880330003EAD5 /* PixelShader.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
 				F9528C942BC1205300222F45 /* PNGFilter.hpp */,
 				F9070C152B9F175000383E4D /* Point.hpp */,
@@ -4879,14 +5207,22 @@
 				F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */,
 				F98605262BD10459006A4C0F /* Quad.hpp */,
 				F9070C1A2B9F175000383E4D /* Random.hpp */,
+				F98605EA2BE61563006A4C0F /* RandomColor.hpp */,
 				F9070C1B2B9F175000383E4D /* RandomDuration.hpp */,
+				F98605EB2BE61564006A4C0F /* RandomPoint.hpp */,
+				F98605EC2BE61564006A4C0F /* RandomVec2.hpp */,
+				F98605E92BE61563006A4C0F /* RandomVec4.hpp */,
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
 				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
+				F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */,
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
+				F98606182BEB7651006A4C0F /* RoundRect.hpp */,
+				F97202F52BEDF2D8000E21DD /* Scene.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9070C1F2B9F175000383E4D /* SequenceFormatter.hpp */,
+				F934BD702BF880330003EAD5 /* ShaderStage.hpp */,
 				F9070C202B9F175000383E4D /* Shuffle.hpp */,
 				F9070C212B9F175000383E4D /* SIMD.hpp */,
 				F9E5FC2B2BC15AEE0081A4F7 /* SIMDMath.hpp */,
@@ -4901,6 +5237,7 @@
 				F9070C272B9F175000383E4D /* System.hpp */,
 				F9070C282B9F175000383E4D /* TextEncoding.hpp */,
 				F9070C292B9F175000383E4D /* TextReader.hpp */,
+				F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */,
 				F9070C2A2B9F175000383E4D /* TextWriter.hpp */,
 				F9070C2B2B9F175000383E4D /* ThousandSeparate.hpp */,
 				F9070C2C2B9F175000383E4D /* Threading.hpp */,
@@ -4912,6 +5249,7 @@
 				F9070C312B9F175000383E4D /* UnicodeConverter.hpp */,
 				F9070C322B9F175000383E4D /* UniqueResource.hpp */,
 				F9070C332B9F175000383E4D /* UserAction.hpp */,
+				F98606032BE7173F006A4C0F /* UserInfo.hpp */,
 				F9070C342B9F175000383E4D /* Utility.hpp */,
 				F9070C352B9F175000383E4D /* UUIDValue.hpp */,
 				F9528B9E2BBD6F6500222F45 /* VariableSpeedStopwatch.hpp */,
@@ -4919,6 +5257,7 @@
 				F9070C372B9F175000383E4D /* Vector3D.hpp */,
 				F9070C382B9F175000383E4D /* Vector4D.hpp */,
 				F9070C392B9F175000383E4D /* Version.hpp */,
+				F934BD6F2BF880330003EAD5 /* VertexShader.hpp */,
 				F9070C3A2B9F175000383E4D /* Window.hpp */,
 				F9070C3B2B9F175000383E4D /* WindowState.hpp */,
 				F9070C3C2B9F175000383E4D /* WindowStyle.hpp */,
@@ -5463,6 +5802,7 @@
 			isa = PBXGroup;
 			children = (
 				F9070D182B9F175E00383E4D /* _TEMPLATE */,
+				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
 				F9528B4A2BB69EAD00222F45 /* BigFloat */,
 				F9070D1B2B9F175E00383E4D /* BigInt */,
@@ -5488,15 +5828,19 @@
 				F9070D352B9F175E00383E4D /* DateTime */,
 				F9070D372B9F175E00383E4D /* DayOfWeek */,
 				F9070D392B9F175E00383E4D /* Demangle */,
+				F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */,
 				F9070D3B2B9F175E00383E4D /* Duration */,
 				F986F9CF2BCFB514006A4C0F /* Emoji */,
 				F9070D402B9F175E00383E4D /* Empty */,
 				F9070D442B9F175E00383E4D /* Engine */,
 				F9070D462B9F175E00383E4D /* EngineLog */,
+				F934BD982BFA59000003EAD5 /* EngineOption */,
 				F98605202BD0E2A3006A4C0F /* EngineResource */,
+				F934BD8B2BF882020003EAD5 /* EngineShader */,
 				F9070D482B9F175E00383E4D /* Error */,
 				F9070D4A2B9F175E00383E4D /* EscapedFormatter */,
 				F986F8AC2BC806BF006A4C0F /* Exif */,
+				F98606262BEBA1B5006A4C0F /* ExtensionFilter */,
 				F9070D4C2B9F175E00383E4D /* FileAction */,
 				F9070D4E2B9F175E00383E4D /* FileSystem */,
 				F9070D502B9F175E00383E4D /* FloatFormatter */,
@@ -5504,8 +5848,11 @@
 				F9070D542B9F175E00383E4D /* FmtExtension */,
 				F9070D562B9F175E00383E4D /* Formatter */,
 				F9070D582B9F175E00383E4D /* FormatUtility */,
+				F98606082BE71763006A4C0F /* FreestandingMessageBox */,
+				F934BD962BFA59000003EAD5 /* Graphics */,
 				F9E5FC422BC19B110081A4F7 /* HalfFloat */,
 				F9070D5A2B9F175E00383E4D /* Hash */,
+				F934BD9A2BFA59000003EAD5 /* HLSL */,
 				F9070D5C2B9F175E00383E4D /* HSV */,
 				F9528C702BC05B5A00222F45 /* IImageDecoder */,
 				F9528B402BB69C8200222F45 /* Image */,
@@ -5538,10 +5885,12 @@
 				F9528B2F2BB0562C00222F45 /* MemoryMappedFileView */,
 				F9528BB22BBE7D3400222F45 /* MemoryReader */,
 				F9528BA72BBDA25E00222F45 /* MemoryViewReader */,
+				F9807D972BF667C300D9B590 /* MessageBox */,
 				F9528B5F2BB6DC9200222F45 /* MicrosecClock */,
 				F9528B632BB6DC9200222F45 /* MillisecClock */,
 				F9070D6C2B9F175E00383E4D /* MonitorInfo */,
 				F98605AD2BE49BE0006A4C0F /* Mouse */,
+				F980C4202C004B5000A86B68 /* MSAASampleCount */,
 				F9070D6E2B9F175E00383E4D /* Optional */,
 				F9E5FCE32BC59E7E0081A4F7 /* Parse */,
 				F9070D702B9F175E00383E4D /* ParseBool */,
@@ -5549,12 +5898,18 @@
 				F9070D742B9F175E00383E4D /* ParseErrorReason */,
 				F9070D762B9F175E00383E4D /* ParseFloat */,
 				F9070D782B9F175E00383E4D /* ParseInt */,
+				F934BD772BF880620003EAD5 /* PixelShader */,
 				F9070D7A2B9F175E00383E4D /* Point */,
 				F9528B9C2BBC771000222F45 /* Point3D */,
+				F986062E2BEBBBC7006A4C0F /* Profiler */,
 				F9070D7C2B9F175E00383E4D /* Random */,
 				F9070D7E2B9F175E00383E4D /* Rect */,
 				F986F9462BCA79DC006A4C0F /* RectF */,
 				F98605A22BE4887C006A4C0F /* RegExp */,
+				F97203112BF09DA3000E21DD /* Renderer */,
+				F97203042BEDF2FF000E21DD /* ResizeMode */,
+				F97203022BEDF2FF000E21DD /* Scene */,
+				F934BD802BF880A10003EAD5 /* Shader */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9070D812B9F175E00383E4D /* String */,
 				F9070D832B9F175E00383E4D /* StringView */,
@@ -5562,16 +5917,20 @@
 				F9070D872B9F175E00383E4D /* System */,
 				F9070D892B9F175E00383E4D /* TextEncoding */,
 				F9070D8D2B9F175E00383E4D /* TextReader */,
+				F97203062BEDF2FF000E21DD /* TextureFilter */,
 				F9070D912B9F175E00383E4D /* TextWriter */,
 				F9070D932B9F175E00383E4D /* ThousandSeparate */,
 				F9070D952B9F175E00383E4D /* Threading */,
+				F9807D952BF667C200D9B590 /* Troubleshooting */,
 				F9070D972B9F175E00383E4D /* Unicode */,
 				F9070D9B2B9F175E00383E4D /* UnicodeConverter */,
 				F9070DA02B9F175E00383E4D /* UserAction */,
+				F98606062BE71763006A4C0F /* UserInfo */,
 				F9070DA22B9F175E00383E4D /* UUIDValue */,
 				F9070DA42B9F175E00383E4D /* Vector2D */,
 				F9070DA62B9F175E00383E4D /* Vector3D */,
 				F9070DA82B9F175E00383E4D /* Vector4D */,
+				F934BD752BF880620003EAD5 /* VertexShader */,
 				F9070DAB2B9F175E00383E4D /* Window */,
 			);
 			path = Siv3D;
@@ -5599,12 +5958,19 @@
 			children = (
 				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
 				F98605812BDA7E32006A4C0F /* Cursor */,
+				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
+				F934BD912BF8824B0003EAD5 /* EngineShader */,
 				F9070E042B9F176B00383E4D /* FileSystem */,
+				F9807D9C2BF667E600D9B590 /* FreestandingMessageBox */,
 				F95289C62B9FEA0D00222F45 /* GLFW */,
+				F9807D9F2BF6690B00D9B590 /* MessageBox */,
 				F986058D2BDCAF65006A4C0F /* MonitorInfo */,
+				F97203202BF09E80000E21DD /* Renderer */,
 				F986F8432BC7E84D006A4C0F /* Resource */,
+				F934BD862BF881110003EAD5 /* Shader */,
 				F9070E8E2B9F183100383E4D /* System */,
 				F9070E062B9F176B00383E4D /* Time */,
+				F986060C2BE71918006A4C0F /* UserInfo */,
 				F9070E8A2B9F183100383E4D /* Window */,
 			);
 			path = Siv3D;
@@ -5792,6 +6158,109 @@
 				F9070ED02B9F1C8900383E4D /* xkb_unicode.h */,
 			);
 			path = GLFW;
+			sourceTree = "<group>";
+		};
+		F934BD752BF880620003EAD5 /* VertexShader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD742BF880620003EAD5 /* SivVertexShader.cpp */,
+			);
+			path = VertexShader;
+			sourceTree = "<group>";
+		};
+		F934BD772BF880620003EAD5 /* PixelShader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD762BF880620003EAD5 /* SivPixelShader.cpp */,
+			);
+			path = PixelShader;
+			sourceTree = "<group>";
+		};
+		F934BD7C2BF880860003EAD5 /* AssetHandleManager */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD7A2BF880860003EAD5 /* AssetHandleManager.hpp */,
+				F934BD7B2BF880860003EAD5 /* AssetHandleManager.ipp */,
+			);
+			path = AssetHandleManager;
+			sourceTree = "<group>";
+		};
+		F934BD802BF880A10003EAD5 /* Shader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD7F2BF880A10003EAD5 /* IShader.hpp */,
+			);
+			path = Shader;
+			sourceTree = "<group>";
+		};
+		F934BD842BF881110003EAD5 /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4182C0023BB00A86B68 /* PixelShader */,
+				F980C4152C0023BB00A86B68 /* VertexShader */,
+				F934BD822BF881110003EAD5 /* CShader_Metal.hpp */,
+				F934BD832BF881110003EAD5 /* CShader_Metal.mm */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		F934BD862BF881110003EAD5 /* Shader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD842BF881110003EAD5 /* Metal */,
+				F934BD852BF881110003EAD5 /* ShaderFactory.mm */,
+			);
+			path = Shader;
+			sourceTree = "<group>";
+		};
+		F934BD8B2BF882020003EAD5 /* EngineShader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD8A2BF882020003EAD5 /* IEngineShader.hpp */,
+			);
+			path = EngineShader;
+			sourceTree = "<group>";
+		};
+		F934BD8F2BF8824B0003EAD5 /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD8D2BF8824B0003EAD5 /* CEngineShader_Metal.cpp */,
+				F934BD8E2BF8824B0003EAD5 /* CEngineShader_Metal.hpp */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		F934BD912BF8824B0003EAD5 /* EngineShader */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD8F2BF8824B0003EAD5 /* Metal */,
+				F934BD902BF8824B0003EAD5 /* EngineShaderFactory.cpp */,
+			);
+			path = EngineShader;
+			sourceTree = "<group>";
+		};
+		F934BD962BFA59000003EAD5 /* Graphics */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD952BFA59000003EAD5 /* SivGraphics.cpp */,
+			);
+			path = Graphics;
+			sourceTree = "<group>";
+		};
+		F934BD982BFA59000003EAD5 /* EngineOption */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD972BFA59000003EAD5 /* SivEngineOption.cpp */,
+			);
+			path = EngineOption;
+			sourceTree = "<group>";
+		};
+		F934BD9A2BFA59000003EAD5 /* HLSL */ = {
+			isa = PBXGroup;
+			children = (
+				F934BD992BFA59000003EAD5 /* SivHLSL.cpp */,
+			);
+			path = HLSL;
 			sourceTree = "<group>";
 		};
 		F95289C62B9FEA0D00222F45 /* GLFW */ = {
@@ -6154,6 +6623,262 @@
 			path = zlib;
 			sourceTree = "<group>";
 		};
+		F97203022BEDF2FF000E21DD /* Scene */ = {
+			isa = PBXGroup;
+			children = (
+				F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */,
+				F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */,
+				F97202FB2BEDF2FF000E21DD /* CScene.cpp */,
+				F97202FE2BEDF2FF000E21DD /* SceneFactory.cpp */,
+				F97202FF2BEDF2FF000E21DD /* SceneTime.cpp */,
+				F97203012BEDF2FF000E21DD /* SivScene.cpp */,
+				F97202FC2BEDF2FF000E21DD /* CScene.hpp */,
+				F97202FD2BEDF2FF000E21DD /* IScene.hpp */,
+				F97203172BF09E2E000E21DD /* SceneStyle.hpp */,
+				F97203002BEDF2FF000E21DD /* SceneTime.hpp */,
+			);
+			path = Scene;
+			sourceTree = "<group>";
+		};
+		F97203042BEDF2FF000E21DD /* ResizeMode */ = {
+			isa = PBXGroup;
+			children = (
+				F97203032BEDF2FF000E21DD /* SivResizeMode.cpp */,
+			);
+			path = ResizeMode;
+			sourceTree = "<group>";
+		};
+		F97203062BEDF2FF000E21DD /* TextureFilter */ = {
+			isa = PBXGroup;
+			children = (
+				F97203052BEDF2FF000E21DD /* SivTextureFilter.cpp */,
+			);
+			path = TextureFilter;
+			sourceTree = "<group>";
+		};
+		F97203112BF09DA3000E21DD /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				F97203102BF09DA3000E21DD /* IRenderer.hpp */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
+		F972031E2BF09E80000E21DD /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D7E2BF1229700D9B590 /* BackBuffer */,
+				F97204342BF0A39F000E21DD /* Metal.cpp */,
+				F972031B2BF09E80000E21DD /* CRenderer_Metal.mm */,
+				F972031C2BF09E80000E21DD /* CRenderer_Metal.hpp */,
+				F972031D2BF09E80000E21DD /* Metal.hpp */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		F97203202BF09E80000E21DD /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				F972031E2BF09E80000E21DD /* Metal */,
+				F972031F2BF09E80000E21DD /* RendererFactory.mm */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
+		F97204112BF0A24A000E21DD /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				F97203D62BF0A24A000E21DD /* Metal.hpp */,
+				F97203D72BF0A24A000E21DD /* MTLAccelerationStructure.hpp */,
+				F97203D82BF0A24A000E21DD /* MTLAccelerationStructureCommandEncoder.hpp */,
+				F97203D92BF0A24A000E21DD /* MTLAccelerationStructureTypes.hpp */,
+				F97203DA2BF0A24A000E21DD /* MTLArgument.hpp */,
+				F97203DB2BF0A24A000E21DD /* MTLArgumentEncoder.hpp */,
+				F97203DC2BF0A24A000E21DD /* MTLBinaryArchive.hpp */,
+				F97203DD2BF0A24A000E21DD /* MTLBlitCommandEncoder.hpp */,
+				F97203DE2BF0A24A000E21DD /* MTLBlitPass.hpp */,
+				F97203DF2BF0A24A000E21DD /* MTLBuffer.hpp */,
+				F97203E02BF0A24A000E21DD /* MTLCaptureManager.hpp */,
+				F97203E12BF0A24A000E21DD /* MTLCaptureScope.hpp */,
+				F97203E22BF0A24A000E21DD /* MTLCommandBuffer.hpp */,
+				F97203E32BF0A24A000E21DD /* MTLCommandEncoder.hpp */,
+				F97203E42BF0A24A000E21DD /* MTLCommandQueue.hpp */,
+				F97203E52BF0A24A000E21DD /* MTLComputeCommandEncoder.hpp */,
+				F97203E62BF0A24A000E21DD /* MTLComputePass.hpp */,
+				F97203E72BF0A24A000E21DD /* MTLComputePipeline.hpp */,
+				F97203E82BF0A24A000E21DD /* MTLCounters.hpp */,
+				F97203E92BF0A24A000E21DD /* MTLDefines.hpp */,
+				F97203EA2BF0A24A000E21DD /* MTLDepthStencil.hpp */,
+				F97203EB2BF0A24A000E21DD /* MTLDevice.hpp */,
+				F97203EC2BF0A24A000E21DD /* MTLDrawable.hpp */,
+				F97203ED2BF0A24A000E21DD /* MTLDynamicLibrary.hpp */,
+				F97203EE2BF0A24A000E21DD /* MTLEvent.hpp */,
+				F97203EF2BF0A24A000E21DD /* MTLFence.hpp */,
+				F97203F02BF0A24A000E21DD /* MTLFunctionConstantValues.hpp */,
+				F97203F12BF0A24A000E21DD /* MTLFunctionDescriptor.hpp */,
+				F97203F22BF0A24A000E21DD /* MTLFunctionHandle.hpp */,
+				F97203F32BF0A24A000E21DD /* MTLFunctionLog.hpp */,
+				F97203F42BF0A24A000E21DD /* MTLFunctionStitching.hpp */,
+				F97203F52BF0A24A000E21DD /* MTLHeaderBridge.hpp */,
+				F97203F62BF0A24A000E21DD /* MTLHeap.hpp */,
+				F97203F72BF0A24A000E21DD /* MTLIndirectCommandBuffer.hpp */,
+				F97203F82BF0A24A000E21DD /* MTLIndirectCommandEncoder.hpp */,
+				F97203F92BF0A24A000E21DD /* MTLIntersectionFunctionTable.hpp */,
+				F97203FA2BF0A24A000E21DD /* MTLIOCommandBuffer.hpp */,
+				F97203FB2BF0A24A000E21DD /* MTLIOCommandQueue.hpp */,
+				F97203FC2BF0A24A000E21DD /* MTLIOCompressor.hpp */,
+				F97203FD2BF0A24A000E21DD /* MTLLibrary.hpp */,
+				F97203FE2BF0A24A000E21DD /* MTLLinkedFunctions.hpp */,
+				F97203FF2BF0A24A000E21DD /* MTLParallelRenderCommandEncoder.hpp */,
+				F97204002BF0A24A000E21DD /* MTLPipeline.hpp */,
+				F97204012BF0A24A000E21DD /* MTLPixelFormat.hpp */,
+				F97204022BF0A24A000E21DD /* MTLPrivate.hpp */,
+				F97204032BF0A24A000E21DD /* MTLRasterizationRate.hpp */,
+				F97204042BF0A24A000E21DD /* MTLRenderCommandEncoder.hpp */,
+				F97204052BF0A24A000E21DD /* MTLRenderPass.hpp */,
+				F97204062BF0A24A000E21DD /* MTLRenderPipeline.hpp */,
+				F97204072BF0A24A000E21DD /* MTLResource.hpp */,
+				F97204082BF0A24A000E21DD /* MTLResourceStateCommandEncoder.hpp */,
+				F97204092BF0A24A000E21DD /* MTLResourceStatePass.hpp */,
+				F972040A2BF0A24A000E21DD /* MTLSampler.hpp */,
+				F972040B2BF0A24A000E21DD /* MTLStageInputOutputDescriptor.hpp */,
+				F972040C2BF0A24A000E21DD /* MTLTexture.hpp */,
+				F972040D2BF0A24A000E21DD /* MTLTypes.hpp */,
+				F972040E2BF0A24A000E21DD /* MTLVersion.hpp */,
+				F972040F2BF0A24A000E21DD /* MTLVertexDescriptor.hpp */,
+				F97204102BF0A24A000E21DD /* MTLVisibleFunctionTable.hpp */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		F97204172BF0A25B000E21DD /* QuartzCore */ = {
+			isa = PBXGroup;
+			children = (
+				F97204122BF0A25B000E21DD /* CADefines.hpp */,
+				F97204132BF0A25B000E21DD /* CAMetalDrawable.hpp */,
+				F97204142BF0A25B000E21DD /* CAMetalLayer.hpp */,
+				F97204152BF0A25B000E21DD /* CAPrivate.hpp */,
+				F97204162BF0A25B000E21DD /* QuartzCore.hpp */,
+			);
+			path = QuartzCore;
+			sourceTree = "<group>";
+		};
+		F972042F2BF0A25B000E21DD /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				F97204182BF0A25B000E21DD /* Foundation.hpp */,
+				F97204192BF0A25B000E21DD /* NSArray.hpp */,
+				F972041A2BF0A25B000E21DD /* NSAutoreleasePool.hpp */,
+				F972041B2BF0A25B000E21DD /* NSBundle.hpp */,
+				F972041C2BF0A25B000E21DD /* NSData.hpp */,
+				F972041D2BF0A25B000E21DD /* NSDate.hpp */,
+				F972041E2BF0A25B000E21DD /* NSDefines.hpp */,
+				F972041F2BF0A25B000E21DD /* NSDictionary.hpp */,
+				F97204202BF0A25B000E21DD /* NSEnumerator.hpp */,
+				F97204212BF0A25B000E21DD /* NSError.hpp */,
+				F97204222BF0A25B000E21DD /* NSLock.hpp */,
+				F97204232BF0A25B000E21DD /* NSNotification.hpp */,
+				F97204242BF0A25B000E21DD /* NSNumber.hpp */,
+				F97204252BF0A25B000E21DD /* NSObjCRuntime.hpp */,
+				F97204262BF0A25B000E21DD /* NSObject.hpp */,
+				F97204272BF0A25B000E21DD /* NSPrivate.hpp */,
+				F97204282BF0A25B000E21DD /* NSProcessInfo.hpp */,
+				F97204292BF0A25B000E21DD /* NSRange.hpp */,
+				F972042A2BF0A25B000E21DD /* NSSet.hpp */,
+				F972042B2BF0A25B000E21DD /* NSSharedPtr.hpp */,
+				F972042C2BF0A25B000E21DD /* NSString.hpp */,
+				F972042D2BF0A25B000E21DD /* NSTypes.hpp */,
+				F972042E2BF0A25B000E21DD /* NSURL.hpp */,
+			);
+			path = Foundation;
+			sourceTree = "<group>";
+		};
+		F9807D772BF1092600D9B590 /* metal */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */,
+				F9807D762BF1092600D9B590 /* triangle.metal */,
+			);
+			path = metal;
+			sourceTree = "<group>";
+		};
+		F9807D782BF1092600D9B590 /* shader */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D772BF1092600D9B590 /* metal */,
+			);
+			name = shader;
+			path = App/engine/shader;
+			sourceTree = "<group>";
+		};
+		F9807D7E2BF1229700D9B590 /* BackBuffer */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */,
+				F9807D7D2BF1229700D9B590 /* MetalInternalTexture2D.mm */,
+			);
+			path = BackBuffer;
+			sourceTree = "<group>";
+		};
+		F9807D952BF667C200D9B590 /* Troubleshooting */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D932BF667C200D9B590 /* Troubleshooting.cpp */,
+				F9807D942BF667C200D9B590 /* Troubleshooting.hpp */,
+			);
+			path = Troubleshooting;
+			sourceTree = "<group>";
+		};
+		F9807D972BF667C300D9B590 /* MessageBox */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D962BF667C300D9B590 /* SivMessageBox.cpp */,
+			);
+			path = MessageBox;
+			sourceTree = "<group>";
+		};
+		F9807D9C2BF667E600D9B590 /* FreestandingMessageBox */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */,
+			);
+			path = FreestandingMessageBox;
+			sourceTree = "<group>";
+		};
+		F9807D9F2BF6690B00D9B590 /* MessageBox */ = {
+			isa = PBXGroup;
+			children = (
+				F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */,
+			);
+			path = MessageBox;
+			sourceTree = "<group>";
+		};
+		F980C4152C0023BB00A86B68 /* VertexShader */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4132C0023BB00A86B68 /* MetalVertexShader.mm */,
+				F980C4142C0023BB00A86B68 /* MetalVertexShader.hpp */,
+			);
+			path = VertexShader;
+			sourceTree = "<group>";
+		};
+		F980C4182C0023BB00A86B68 /* PixelShader */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4162C0023BB00A86B68 /* MetalPixelShader.mm */,
+				F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */,
+			);
+			path = PixelShader;
+			sourceTree = "<group>";
+		};
+		F980C4202C004B5000A86B68 /* MSAASampleCount */ = {
+			isa = PBXGroup;
+			children = (
+				F980C41F2C004B5000A86B68 /* SivMSAASampleCount.cpp */,
+			);
+			path = MSAASampleCount;
+			sourceTree = "<group>";
+		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
 			isa = PBXGroup;
 			children = (
@@ -6366,6 +7091,68 @@
 				F98605E22BE50038006A4C0F /* SivInputState.cpp */,
 			);
 			path = InputState;
+			sourceTree = "<group>";
+		};
+		F98606062BE71763006A4C0F /* UserInfo */ = {
+			isa = PBXGroup;
+			children = (
+				F98606052BE71763006A4C0F /* SivUserInfo.cpp */,
+			);
+			path = UserInfo;
+			sourceTree = "<group>";
+		};
+		F98606082BE71763006A4C0F /* FreestandingMessageBox */ = {
+			isa = PBXGroup;
+			children = (
+				F98606072BE71763006A4C0F /* FreestandingMessageBox.hpp */,
+			);
+			path = FreestandingMessageBox;
+			sourceTree = "<group>";
+		};
+		F986060C2BE71918006A4C0F /* UserInfo */ = {
+			isa = PBXGroup;
+			children = (
+				F986060B2BE71918006A4C0F /* SivUserInfo_macOS.mm */,
+			);
+			path = UserInfo;
+			sourceTree = "<group>";
+		};
+		F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */ = {
+			isa = PBXGroup;
+			children = (
+				F986061C2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp */,
+			);
+			path = DirectoryWatcher;
+			sourceTree = "<group>";
+		};
+		F98606212BEB7CFF006A4C0F /* DirectoryWatcher */ = {
+			isa = PBXGroup;
+			children = (
+				F986061F2BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp */,
+				F98606202BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp */,
+			);
+			path = DirectoryWatcher;
+			sourceTree = "<group>";
+		};
+		F98606262BEBA1B5006A4C0F /* ExtensionFilter */ = {
+			isa = PBXGroup;
+			children = (
+				F98606242BEBA1B5006A4C0F /* ExtensionFilter.cpp */,
+				F98606252BEBA1B5006A4C0F /* ExtensionFilter.hpp */,
+			);
+			path = ExtensionFilter;
+			sourceTree = "<group>";
+		};
+		F986062E2BEBBBC7006A4C0F /* Profiler */ = {
+			isa = PBXGroup;
+			children = (
+				F98606292BEBBBC7006A4C0F /* CProfiler.cpp */,
+				F986062A2BEBBBC7006A4C0F /* CProfiler.hpp */,
+				F986062B2BEBBBC7006A4C0F /* IProfiler.hpp */,
+				F986062C2BEBBBC7006A4C0F /* ProfilerFactory.cpp */,
+				F986062D2BEBBBC7006A4C0F /* SivProfiler.cpp */,
+			);
+			path = Profiler;
 			sourceTree = "<group>";
 		};
 		F986F8352BC7B043006A4C0F /* INIItem */ = {
@@ -8192,6 +8979,7 @@
 				F9528C632BC05B0200222F45 /* ImagePixelFormat.hpp in Headers */,
 				F98601EE2BCFBB53006A4C0F /* SkMasks.h in Headers */,
 				F9E5FCE72BC59EA00081A4F7 /* JSONIterator.hpp in Headers */,
+				F97203162BF09DD9000E21DD /* EngineOption.hpp in Headers */,
 				F90706A72B9DAEC900383E4D /* beta_distribution.h in Headers */,
 				F986059A2BE3314D006A4C0F /* CCursorStyle.hpp in Headers */,
 				F986FA6E2BCFB53B006A4C0F /* svginterface.h in Headers */,
@@ -8224,6 +9012,7 @@
 				F986FA7A2BCFB53B006A4C0F /* ftcid.h in Headers */,
 				F98600A92BCFBB53006A4C0F /* SkEventTracer.h in Headers */,
 				F98602562BCFBB54006A4C0F /* SkRTree.h in Headers */,
+				F934BD812BF880A10003EAD5 /* IShader.hpp in Headers */,
 				F986FFF02BCFBB53006A4C0F /* SkGifDecoder.h in Headers */,
 				F986FA432BCFB53B006A4C0F /* mac-support.h in Headers */,
 				F9070C772B9F175000383E4D /* Result.ipp in Headers */,
@@ -8237,8 +9026,10 @@
 				F98604282BCFBB54006A4C0F /* SkSLModifiersDeclaration.h in Headers */,
 				F986005E2BCFBB53006A4C0F /* SkDiscretePathEffect.h in Headers */,
 				F9070CBD2B9F175000383E4D /* FloatToString.hpp in Headers */,
+				F986061B2BEB7651006A4C0F /* RoundRect.hpp in Headers */,
 				F9070CE22B9F175100383E4D /* Optional.hpp in Headers */,
 				F90706932B9DAEC900383E4D /* port.h in Headers */,
+				F9807D862BF6676100D9B590 /* AssetID.hpp in Headers */,
 				F98602FB2BCFBB54006A4C0F /* SkOpts_SetTarget.h in Headers */,
 				F986037D2BCFBB54006A4C0F /* SkOTTable_hmtx.h in Headers */,
 				F986052A2BD10459006A4C0F /* Quad.hpp in Headers */,
@@ -8252,11 +9043,13 @@
 				F90706902B9DAEC900383E4D /* optimization.h in Headers */,
 				F98604682BCFBB54006A4C0F /* SkSLBuiltinTypes.h in Headers */,
 				F98603D62BCFBB54006A4C0F /* SkSLMetalCodeGenerator.h in Headers */,
+				F9807D7F2BF1229700D9B590 /* MetalInternalTexture2D.hpp in Headers */,
 				F98603272BCFBB54006A4C0F /* SkPathOpsPoint.h in Headers */,
 				F986FA7F2BCFB53B006A4C0F /* ftfntfmt.h in Headers */,
 				F986002B2BCFBB53006A4C0F /* SkPathBuilder.h in Headers */,
 				F9070EF22B9F1C8900383E4D /* posix_poll.h in Headers */,
 				F9070C452B9F175000383E4D /* BinaryWriter.ipp in Headers */,
+				F972031A2BF09E51000E21DD /* Scene.ipp in Headers */,
 				F98602332BCFBB54006A4C0F /* SkRasterClipStack.h in Headers */,
 				F98602702BCFBB54006A4C0F /* SkStreamPriv.h in Headers */,
 				F98602FD2BCFBB54006A4C0F /* SkRasterPipeline_opts.h in Headers */,
@@ -8269,6 +9062,7 @@
 				F98600972BCFBB53006A4C0F /* SkColorData.h in Headers */,
 				F986028B2BCFBB54006A4C0F /* SkTHash.h in Headers */,
 				F986FA552BCFB53B006A4C0F /* svttcmap.h in Headers */,
+				F98606302BEBBBC7006A4C0F /* CProfiler.hpp in Headers */,
 				F9070C652B9F175000383E4D /* IWriter.ipp in Headers */,
 				F90706AA2B9DAEC900383E4D /* exponential_distribution.h in Headers */,
 				F98603912BCFBB54006A4C0F /* SkTTCFHeader.h in Headers */,
@@ -8291,6 +9085,7 @@
 				F98603062BCFBB54006A4C0F /* SkIntersectionHelper.h in Headers */,
 				F9528C2B2BBF026F00222F45 /* zstd_double_fast.h in Headers */,
 				F986028A2BCFBB54006A4C0F /* SkTextFormatParams.h in Headers */,
+				F98605FC2BE61586006A4C0F /* RandomPoint.ipp in Headers */,
 				F98601462BCFBB53006A4C0F /* SkAdvancedTypefaceMetrics.h in Headers */,
 				F986019B2BCFBB53006A4C0F /* SkDescriptor.h in Headers */,
 				F9070C872B9F175000383E4D /* Utility.ipp in Headers */,
@@ -8400,6 +9195,7 @@
 				F9070EE42B9F1C8900383E4D /* mappings.h in Headers */,
 				F98600482BCFBB53006A4C0F /* SkTextBlob.h in Headers */,
 				F98605A72BE4887C006A4C0F /* RegExpDetail.hpp in Headers */,
+				F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */,
 				F98602932BCFBB54006A4C0F /* SkTypefaceCache.h in Headers */,
 				F986FA9D2BCFB53B006A4C0F /* ttnameid.h in Headers */,
 				F98601F12BCFBB53006A4C0F /* SkMatrixInvert.h in Headers */,
@@ -8439,8 +9235,10 @@
 				F986FA632BCFB53B006A4C0F /* ftmmtypes.h in Headers */,
 				F9070C3F2B9F175000383E4D /* _TEMPLATE.ipp in Headers */,
 				F9E5FC2C2BC15AEE0081A4F7 /* HalfFloat.hpp in Headers */,
+				F98605F92BE61586006A4C0F /* RandomColor.ipp in Headers */,
 				F986032D2BCFBB54006A4C0F /* SkPathOpsTCurve.h in Headers */,
 				F9070C4E2B9F175000383E4D /* Date.ipp in Headers */,
+				F9807D852BF6676100D9B590 /* AssetIDWrapper.hpp in Headers */,
 				F9070D132B9F175100383E4D /* Window.hpp in Headers */,
 				F9528C092BBF026F00222F45 /* debug.h in Headers */,
 				F98601F92BCFBB53006A4C0F /* SkMemset.h in Headers */,
@@ -8451,6 +9249,7 @@
 				F98601992BCFBB53006A4C0F /* SkDebugUtils.h in Headers */,
 				F90706A32B9DAEC900383E4D /* traits.h in Headers */,
 				F9070C592B9F175000383E4D /* FormatData.ipp in Headers */,
+				F98605FD2BE61586006A4C0F /* Quad.ipp in Headers */,
 				F986F8FF2BC8441F006A4C0F /* config.h in Headers */,
 				F9528C6E2BC05B1A00222F45 /* ImageEncoder.ipp in Headers */,
 				F9070E922B9F183100383E4D /* CSystem.hpp in Headers */,
@@ -8485,6 +9284,7 @@
 				F986FA812BCFB53B006A4C0F /* ftglyph.h in Headers */,
 				F9528B452BB69D8500222F45 /* BigFloat.ipp in Headers */,
 				F98601EA2BCFBB53006A4C0F /* SkMaskFilterBase.h in Headers */,
+				F98605FA2BE61586006A4C0F /* RandomVec4.ipp in Headers */,
 				F98601672BCFBB53006A4C0F /* SkBlitMask.h in Headers */,
 				F986FFE92BCFBB53006A4C0F /* SkAndroidCodec.h in Headers */,
 				F98600392BCFBB53006A4C0F /* SkRegion.h in Headers */,
@@ -8492,9 +9292,11 @@
 				F9070C612B9F175000383E4D /* IntFormatter.ipp in Headers */,
 				F98601882BCFBB53006A4C0F /* SkColorSpacePriv.h in Headers */,
 				F9528C8D2BC05B5B00222F45 /* IImageDecoder.hpp in Headers */,
+				F934BD8C2BF882020003EAD5 /* IEngineShader.hpp in Headers */,
 				F9528C922BC1204200222F45 /* PNGEncoder.hpp in Headers */,
 				F9070C9C2B9F175000383E4D /* Blob.hpp in Headers */,
 				F9070C752B9F175000383E4D /* RandomDuration.ipp in Headers */,
+				F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */,
 				F98604122BCFBB54006A4C0F /* SkSLFunctionDeclaration.h in Headers */,
 				F98605612BD203D4006A4C0F /* muParserDef.h in Headers */,
 				F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */,
@@ -8539,6 +9341,7 @@
 				F9070CF72B9F175100383E4D /* ScopeExit.hpp in Headers */,
 				F9070CA32B9F175000383E4D /* Common.hpp in Headers */,
 				F986041C2BCFBB54006A4C0F /* SkSLInterfaceBlock.h in Headers */,
+				F97203232BF09E80000E21DD /* Metal.hpp in Headers */,
 				F90706C32B9DAEC900383E4D /* pcg_random.hpp in Headers */,
 				F90706952B9DAEC900383E4D /* function_ref.h in Headers */,
 				F98602272BCFBB54006A4C0F /* SkPixelRefPriv.h in Headers */,
@@ -8548,6 +9351,7 @@
 				F98604022BCFBB54006A4C0F /* SkSLDoStatement.h in Headers */,
 				F986046E2BCFBB54006A4C0F /* SkSLContext.h in Headers */,
 				F98602992BCFBB54006A4C0F /* SkVertState.h in Headers */,
+				F934BD932BF8824B0003EAD5 /* CEngineShader_Metal.hpp in Headers */,
 				F98603152BCFBB54006A4C0F /* SkOpSegment.h in Headers */,
 				F98600442BCFBB53006A4C0F /* SkStrokeRec.h in Headers */,
 				F9070B002B9DEB5900383E4D /* fast_float.h in Headers */,
@@ -8556,6 +9360,7 @@
 				F98602092BCFBB54006A4C0F /* SkOSFile.h in Headers */,
 				F98600852BCFBB53006A4C0F /* SkTDArray.h in Headers */,
 				F98600362BCFBB53006A4C0F /* SkRasterHandleAllocator.h in Headers */,
+				F980C41C2C0023BB00A86B68 /* MetalPixelShader.hpp in Headers */,
 				F986FA542BCFB53B006A4C0F /* svsfnt.h in Headers */,
 				F9070CE42B9F175100383E4D /* OrderedTable.hpp in Headers */,
 				F98601B22BCFBB53006A4C0F /* SkEffectPriv.h in Headers */,
@@ -8563,7 +9368,9 @@
 				F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */,
 				F98605442BD203BC006A4C0F /* MathParserDetail.hpp in Headers */,
 				F98601C32BCFBB53006A4C0F /* SkGaussFilter.h in Headers */,
+				F986060A2BE71763006A4C0F /* FreestandingMessageBox.hpp in Headers */,
 				F9070D022B9F175100383E4D /* TextReader.hpp in Headers */,
+				F9807D922BF6679000D9B590 /* AssetHandle.ipp in Headers */,
 				F986FA852BCFB53B006A4C0F /* ftincrem.h in Headers */,
 				F98605152BCFC3E3006A4C0F /* SkTypeface_mac_ct.h in Headers */,
 				F986019F2BCFBB53006A4C0F /* SkDistanceFieldGen.h in Headers */,
@@ -8571,6 +9378,8 @@
 				F9E5FC3C2BC15B260081A4F7 /* DirectXCollision.h in Headers */,
 				F9070CC72B9F175000383E4D /* Hash.hpp in Headers */,
 				F98600832BCFBB53006A4C0F /* SkSpan_impl.h in Headers */,
+				F97203222BF09E80000E21DD /* CRenderer_Metal.hpp in Headers */,
+				F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */,
 				F98601A92BCFBB53006A4C0F /* SkDrawProcs.h in Headers */,
 				F9070C4A2B9F175000383E4D /* Color.ipp in Headers */,
 				F98600092BCFBB53006A4C0F /* SkColorSpace.h in Headers */,
@@ -8613,7 +9422,9 @@
 				F98603F32BCFBB54006A4C0F /* SkSLConstructorCompoundCast.h in Headers */,
 				F986055E2BD203D4006A4C0F /* muParserBytecode.h in Headers */,
 				F98603EB2BCFBB54006A4C0F /* SkSLConstructor.h in Headers */,
+				F9807D992BF667C300D9B590 /* Troubleshooting.hpp in Headers */,
 				F9070C442B9F175000383E4D /* BinaryReader.ipp in Headers */,
+				F986060F2BEB75DB006A4C0F /* DirectoryWatcher.hpp in Headers */,
 				F9528C212BBF026F00222F45 /* zstd_compress_internal.h in Headers */,
 				F98604092BCFBB54006A4C0F /* SkSLExtension.h in Headers */,
 				F9528B952BBC76D300222F45 /* Step3D.hpp in Headers */,
@@ -8625,6 +9436,7 @@
 				F9528C672BC05B0200222F45 /* BMPEncoder.hpp in Headers */,
 				F986000B2BCFBB53006A4C0F /* SkColorType.h in Headers */,
 				F98600492BCFBB53006A4C0F /* SkTextureCompressionType.h in Headers */,
+				F934BD732BF880330003EAD5 /* ShaderStage.hpp in Headers */,
 				F986052C2BD10459006A4C0F /* Line.hpp in Headers */,
 				F9070C732B9F175000383E4D /* Point.ipp in Headers */,
 				F986FA612BCFB53B006A4C0F /* fthash.h in Headers */,
@@ -8639,6 +9451,7 @@
 				F986008E2BCFBB53006A4C0F /* GrDeferredDisplayList.h in Headers */,
 				F9070CDC2B9F175100383E4D /* MonitorInfo.hpp in Headers */,
 				F98601FC2BCFBB53006A4C0F /* SkMessageBus.h in Headers */,
+				F98606282BEBA1B5006A4C0F /* ExtensionFilter.hpp in Headers */,
 				F986021D2BCFBB54006A4C0F /* SkPictureData.h in Headers */,
 				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
 				F90706892B9DAEC900383E4D /* fast_type_id.h in Headers */,
@@ -8649,14 +9462,17 @@
 				F98600BA2BCFBB53006A4C0F /* Transform_inl.h in Headers */,
 				F9528C932BC1204200222F45 /* PNGDecoder.hpp in Headers */,
 				F9070B042B9DEB5900383E4D /* miniutf.hpp in Headers */,
+				F9807D8C2BF6677600D9B590 /* MessageBoxResult.hpp in Headers */,
 				F9070CF82B9F175100383E4D /* SequenceFormatter.hpp in Headers */,
 				F98600282BCFBB53006A4C0F /* SkOverdrawCanvas.h in Headers */,
+				F98606022BE615C5006A4C0F /* FormatLiteralObject.hpp in Headers */,
 				F986005B2BCFBB53006A4C0F /* SkColorMatrixFilter.h in Headers */,
 				F9070ED82B9F1C8900383E4D /* cocoa_time.h in Headers */,
 				F98603E22BCFBB54006A4C0F /* SkSLWGSLCodeGenerator.h in Headers */,
 				F986FA692BCFB53B006A4C0F /* fttrace.h in Headers */,
 				F98603372BCFBB54006A4C0F /* SkReduceOrder.h in Headers */,
 				F98601A82BCFBB53006A4C0F /* SkDrawBase.h in Headers */,
+				F9807D902BF6679000D9B590 /* AssetID.ipp in Headers */,
 				F986FA592BCFB53B006A4C0F /* autohint.h in Headers */,
 				F986FFF12BCFBB53006A4C0F /* SkIcoDecoder.h in Headers */,
 				F98604312BCFBB54006A4C0F /* SkSLProgramElement.h in Headers */,
@@ -8720,6 +9536,7 @@
 				F986F8312BC7B024006A4C0F /* INI.ipp in Headers */,
 				F9070CCC2B9F175100383E4D /* Indexed.hpp in Headers */,
 				F986023D2BCFBB54006A4C0F /* SkReadPixelsRec.h in Headers */,
+				F98605FE2BE61586006A4C0F /* Triangle.ipp in Headers */,
 				F98605732BDA7DB7006A4C0F /* Cursor.hpp in Headers */,
 				F98605DD2BE50013006A4C0F /* InputState.ipp in Headers */,
 				F986F9922BCA9D0A006A4C0F /* plutovg-ft-raster.h in Headers */,
@@ -8733,11 +9550,14 @@
 				F98603DA2BCFBB54006A4C0F /* SkSLRasterPipelineBuilder.h in Headers */,
 				F98603CC2BCFBB54006A4C0F /* SkSLProgramVisitor.h in Headers */,
 				F9528B5C2BB6DC6800222F45 /* MillisecClock.ipp in Headers */,
+				F980C41A2C0023BB00A86B68 /* MetalVertexShader.hpp in Headers */,
 				F98602742BCFBB54006A4C0F /* SkStrikeCache.h in Headers */,
 				F986FA512BCFB53B006A4C0F /* svprop.h in Headers */,
+				F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */,
 				F9E5FC2D2BC15AEE0081A4F7 /* SIMDMath.hpp in Headers */,
 				F986FA492BCFB53B006A4C0F /* svgldict.h in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
+				F97203182BF09E2E000E21DD /* SceneStyle.hpp in Headers */,
 				F986F8B82BC843E0006A4C0F /* MatchResults.ipp in Headers */,
 				F9E5FCD32BC3AD410081A4F7 /* JSONValueType.hpp in Headers */,
 				F907068F2B9DAEC900383E4D /* macros.h in Headers */,
@@ -8746,6 +9566,7 @@
 				F9070E5B2B9F176B00383E4D /* BinaryWriterDetail.hpp in Headers */,
 				F98602FA2BCFBB54006A4C0F /* SkOpts_RestoreTarget.h in Headers */,
 				F90706962B9DAEC900383E4D /* any_invocable.h in Headers */,
+				F98605F02BE61564006A4C0F /* RandomVec2.hpp in Headers */,
 				F986044D2BCFBB54006A4C0F /* SkSLVariableReference.h in Headers */,
 				F986001F2BCFBB53006A4C0F /* SkImageGenerator.h in Headers */,
 				F986018D2BCFBB53006A4C0F /* SkCompressedDataUtils.h in Headers */,
@@ -8796,6 +9617,7 @@
 				F98601952BCFBB53006A4C0F /* SkCubicClipper.h in Headers */,
 				F986025B2BCFBB54006A4C0F /* SkSafeRange.h in Headers */,
 				F9070C8D2B9F175000383E4D /* ParseError.hpp in Headers */,
+				F97203122BF09DA4000E21DD /* IRenderer.hpp in Headers */,
 				F9070C5D2B9F175000383E4D /* Hash.ipp in Headers */,
 				F986FA7E2BCFB53B006A4C0F /* fterrors.h in Headers */,
 				F90706912B9DAEC900383E4D /* options.h in Headers */,
@@ -8818,6 +9640,7 @@
 				F9070F352B9F252E00383E4D /* null_platform.h in Headers */,
 				F986FA4F2BCFB53B006A4C0F /* svpfr.h in Headers */,
 				F98600342BCFBB53006A4C0F /* SkPoint.h in Headers */,
+				F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */,
 				F90706AB2B9DAEC900383E4D /* gaussian_distribution.h in Headers */,
 				F98604302BCFBB54006A4C0F /* SkSLProgram.h in Headers */,
 				F98605C12BE4B65B006A4C0F /* Keyboard.hpp in Headers */,
@@ -8833,6 +9656,7 @@
 				F98600882BCFBB53006A4C0F /* SkThreadAnnotations.h in Headers */,
 				F986F89E2BC7FB74006A4C0F /* tinycolormap.hpp in Headers */,
 				F986FA942BCFB53B006A4C0F /* ftsnames.h in Headers */,
+				F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */,
 				F9070D032B9F175100383E4D /* TextWriter.hpp in Headers */,
 				F98603F52BCFBB54006A4C0F /* SkSLConstructorDiagonalMatrix.h in Headers */,
 				F986003E2BCFBB53006A4C0F /* SkSerialProcs.h in Headers */,
@@ -8840,6 +9664,8 @@
 				F98602F52BCFBB54006A4C0F /* SkBitmapProcState_opts.h in Headers */,
 				F98603DE2BCFBB54006A4C0F /* SkSLSPIRVCodeGenerator.h in Headers */,
 				F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */,
+				F98605F82BE61586006A4C0F /* RandomVec2.ipp in Headers */,
+				F934BD9F2BFA59320003EAD5 /* HLSL.hpp in Headers */,
 				F986024C2BCFBB54006A4C0F /* SkRectPriv.h in Headers */,
 				F907068E2B9DAEC900383E4D /* config.h in Headers */,
 				F986042C2BCFBB54006A4C0F /* SkSLPostfixExpression.h in Headers */,
@@ -8866,10 +9692,12 @@
 				F9E5FC272BC13CF00081A4F7 /* turbojpeg.h in Headers */,
 				F98604072BCFBB54006A4C0F /* SkSLExpressionStatement.h in Headers */,
 				F98600692BCFBB53006A4C0F /* SkPathOps.h in Headers */,
+				F98606132BEB760D006A4C0F /* Circle.ipp in Headers */,
 				F986FA872BCFB53B006A4C0F /* ftlist.h in Headers */,
 				F9070CCB2B9F175100383E4D /* HSV.hpp in Headers */,
 				F9528C052BBF026F00222F45 /* bitstream.h in Headers */,
 				F98603872BCFBB54006A4C0F /* SkOTTable_OS_2_V3.h in Headers */,
+				F98606192BEB7651006A4C0F /* FileChange.hpp in Headers */,
 				F9070CB62B9F175000383E4D /* EngineLog.hpp in Headers */,
 				F98605D72BE4BE80006A4C0F /* IKeyboard.hpp in Headers */,
 				F9528C622BC05B0200222F45 /* ImageInfo.hpp in Headers */,
@@ -8916,9 +9744,11 @@
 				F986003F2BCFBB53006A4C0F /* SkShader.h in Headers */,
 				F9070D0B2B9F175100383E4D /* UniqueResource.hpp in Headers */,
 				F986FA882BCFB53B006A4C0F /* ftlogging.h in Headers */,
+				F9807D8A2BF6677600D9B590 /* MessageBoxStyle.hpp in Headers */,
 				F9070C762B9F175000383E4D /* Rect.ipp in Headers */,
 				F986037E2BCFBB54006A4C0F /* SkOTTable_loca.h in Headers */,
 				F90706A62B9DAEC900383E4D /* bernoulli_distribution.h in Headers */,
+				F9807D842BF6676100D9B590 /* AssetHandle.hpp in Headers */,
 				F986FA962BCFB53B006A4C0F /* ftsynth.h in Headers */,
 				F98600182BCFBB53006A4C0F /* SkFontMgr.h in Headers */,
 				F986008F2BCFBB53006A4C0F /* GrDeferredDisplayListRecorder.h in Headers */,
@@ -8937,6 +9767,7 @@
 				F98604232BCFBB54006A4C0F /* SkSLMethodReference.h in Headers */,
 				F986016B2BCFBB53006A4C0F /* SkBlitRow.h in Headers */,
 				F9528B292BAFCDB400222F45 /* MemoryMappedFileView.hpp in Headers */,
+				F934BD7D2BF880860003EAD5 /* AssetHandleManager.hpp in Headers */,
 				F9528C952BC1205300222F45 /* PNGFilter.hpp in Headers */,
 				F9070DAE2B9F175E00383E4D /* BigIntDetail.hpp in Headers */,
 				F9070C6A2B9F175000383E4D /* MathConstants.ipp in Headers */,
@@ -8952,6 +9783,7 @@
 				F98600372BCFBB53006A4C0F /* SkRect.h in Headers */,
 				F9070C562B9F175000383E4D /* FloatFormatter.ipp in Headers */,
 				F98600072BCFBB53006A4C0F /* SkColorFilter.h in Headers */,
+				F9807D8B2BF6677600D9B590 /* MessageBox.hpp in Headers */,
 				F986040E2BCFBB54006A4C0F /* SkSLForStatement.h in Headers */,
 				F98600622BCFBB53006A4C0F /* SkLumaColorFilter.h in Headers */,
 				F9070C742B9F175000383E4D /* Random.ipp in Headers */,
@@ -9023,6 +9855,7 @@
 				F98602582BCFBB54006A4C0F /* SkRuntimeBlender.h in Headers */,
 				F986FA652BCFB53B006A4C0F /* ftpsprop.h in Headers */,
 				F98602512BCFBB54006A4C0F /* SkResourceCache.h in Headers */,
+				F97203152BF09DD9000E21DD /* Graphics.hpp in Headers */,
 				F98603F12BCFBB54006A4C0F /* SkSLConstructorCompound.h in Headers */,
 				F9070B0B2B9DEB5900383E4D /* mimalloc-new-delete.h in Headers */,
 				F986FA402BCFB53B006A4C0F /* ftoption.h in Headers */,
@@ -9030,8 +9863,10 @@
 				F986006C2BCFBB53006A4C0F /* SkAlignedStorage.h in Headers */,
 				F986FA782BCFB53B006A4C0F /* ftcache.h in Headers */,
 				F98600172BCFBB53006A4C0F /* SkFontMetrics.h in Headers */,
+				F934BD712BF880330003EAD5 /* PixelShader.hpp in Headers */,
 				F90706972B9DAEC900383E4D /* function_ref.h in Headers */,
 				F90706BB2B9DAEC900383E4D /* phmap_base.h in Headers */,
+				F98606002BE615B4006A4C0F /* FormatLiteralObject.ipp in Headers */,
 				F9070E592B9F176B00383E4D /* BinaryReaderDetail.hpp in Headers */,
 				F98601542BCFBB53006A4C0F /* SkBigPicture.h in Headers */,
 				F98601E82BCFBB53006A4C0F /* SkMaskCache.h in Headers */,
@@ -9049,6 +9884,7 @@
 				F986021F2BCFBB54006A4C0F /* SkPictureFlat.h in Headers */,
 				F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */,
 				F98600A72BCFBB53006A4C0F /* SkCanvasStateUtils.h in Headers */,
+				F98606142BEB760D006A4C0F /* RoundRect.ipp in Headers */,
 				F98603232BCFBB54006A4C0F /* SkPathOpsDebug.h in Headers */,
 				F98603C92BCFBB54006A4C0F /* SkSLNoOpErrorReporter.h in Headers */,
 				F98603292BCFBB54006A4C0F /* SkPathOpsQuad.h in Headers */,
@@ -9077,9 +9913,9 @@
 				F98600792BCFBB53006A4C0F /* SkLoadUserConfig.h in Headers */,
 				F986FA482BCFB53B006A4C0F /* svfntfmt.h in Headers */,
 				F986F99D2BCA9D0A006A4C0F /* canvas.h in Headers */,
-				F9070C5A2B9F175000383E4D /* FormatLiteral.ipp in Headers */,
 				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,
+				F98605EE2BE61564006A4C0F /* RandomColor.hpp in Headers */,
 				F98603862BCFBB54006A4C0F /* SkOTTable_OS_2_V2.h in Headers */,
 				F98604752BCFBB54006A4C0F /* SkSLInliner.h in Headers */,
 				F9070CCA2B9F175100383E4D /* HeterogeneousLookupHelper.hpp in Headers */,
@@ -9100,7 +9936,9 @@
 				F98600AE2BCFBB53006A4C0F /* SkPaintFilterCanvas.h in Headers */,
 				F98602132BCFBB54006A4C0F /* SkPathEffectBase.h in Headers */,
 				F9070C852B9F175000383E4D /* UnicodeConverter.ipp in Headers */,
+				F98606232BEB7CFF006A4C0F /* DirectoryWatcherDetail.hpp in Headers */,
 				F90706C22B9DAEC900383E4D /* pcg_extras.hpp in Headers */,
+				F9807D912BF6679000D9B590 /* AssetIDWrapper.ipp in Headers */,
 				F98600542BCFBB53006A4C0F /* SkPDFDocument.h in Headers */,
 				F98605B52BE49C00006A4C0F /* CMouse.hpp in Headers */,
 				F9070C512B9F175000383E4D /* DisjointSet.ipp in Headers */,
@@ -9112,6 +9950,7 @@
 				F98600B22BCFBB53006A4C0F /* SkTextUtils.h in Headers */,
 				F98604412BCFBB54006A4C0F /* SkSLSymbolTable.h in Headers */,
 				F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */,
+				F98606042BE7173F006A4C0F /* UserInfo.hpp in Headers */,
 				F986F99F2BCA9D0A006A4C0F /* clippathelement.h in Headers */,
 				F986038B2BCFBB54006A4C0F /* SkOTTable_post.h in Headers */,
 				F98605242BD0E2A3006A4C0F /* IEngineResource.hpp in Headers */,
@@ -9137,6 +9976,7 @@
 				F986FFF62BCFBB53006A4C0F /* SkPngDecoder.h in Headers */,
 				F9070D052B9F175100383E4D /* Threading.hpp in Headers */,
 				F98603D82BCFBB54006A4C0F /* SkSLPipelineStageCodeGenerator.h in Headers */,
+				F98606312BEBBBC7006A4C0F /* IProfiler.hpp in Headers */,
 				F986FA9B2BCFB53B006A4C0F /* otsvg.h in Headers */,
 				F986047D2BCFBB54006A4C0F /* SkSLMemoryPool.h in Headers */,
 				F9070E902B9F183100383E4D /* CWindow.hpp in Headers */,
@@ -9163,6 +10003,7 @@
 				F986FA522BCFB53B006A4C0F /* svpscmap.h in Headers */,
 				F9528B962BBC76D300222F45 /* Point3D.hpp in Headers */,
 				F98603D22BCFBB54006A4C0F /* SkSLGLSLCodeGenerator.h in Headers */,
+				F98606152BEB760D006A4C0F /* Ellipse.ipp in Headers */,
 				F9070D0F2B9F175100383E4D /* Vector2D.hpp in Headers */,
 				F9070CD52B9F175100383E4D /* Logger.hpp in Headers */,
 				F98600942BCFBB53006A4C0F /* SkDiscardableMemory.h in Headers */,
@@ -9236,6 +10077,8 @@
 				F986003B2BCFBB53006A4C0F /* SkRSXform.h in Headers */,
 				F9528B9A2BBC76EA00222F45 /* Point3D.ipp in Headers */,
 				F9070CA62B9F175000383E4D /* Concepts.hpp in Headers */,
+				F934BD722BF880330003EAD5 /* VertexShader.hpp in Headers */,
+				F986061A2BEB7651006A4C0F /* Ellipse.hpp in Headers */,
 				F9070D042B9F175100383E4D /* ThousandSeparate.hpp in Headers */,
 				F986FA822BCFB53B006A4C0F /* ftgxval.h in Headers */,
 				F986FA8F2BCFB53B006A4C0F /* ftoutln.h in Headers */,
@@ -9243,12 +10086,14 @@
 				F986014F2BCFBB53006A4C0F /* SkAutoBlitterChoose.h in Headers */,
 				F986FA442BCFB53B006A4C0F /* public-macros.h in Headers */,
 				F98605222BD0E2A3006A4C0F /* CEngineResource.hpp in Headers */,
+				F98605FB2BE61586006A4C0F /* Line.ipp in Headers */,
 				F986FA742BCFB53B006A4C0F /* ftbbox.h in Headers */,
 				F986030B2BCFBB54006A4C0F /* SkOpAngle.h in Headers */,
 				F986FA992BCFB53B006A4C0F /* fttypes.h in Headers */,
 				F9528C062BBF026F00222F45 /* compiler.h in Headers */,
 				F98601DB2BCFBB53006A4C0F /* SkLatticeIter.h in Headers */,
 				F9528A8A2BA0251E00222F45 /* Window.ipp in Headers */,
+				F934BD872BF881110003EAD5 /* CShader_Metal.hpp in Headers */,
 				F986040B2BCFBB54006A4C0F /* SkSLFieldAccess.h in Headers */,
 				F90706C42B9DAEC900383E4D /* pcg_uint128.hpp in Headers */,
 				F986004A2BCFBB53006A4C0F /* SkTiledImageUtils.h in Headers */,
@@ -9259,6 +10104,7 @@
 				F98604922BCFBB54006A4C0F /* spirv.h in Headers */,
 				F986FA972BCFB53B006A4C0F /* ftsystem.h in Headers */,
 				F98600B32BCFBB53006A4C0F /* SkTraceEventPhase.h in Headers */,
+				F98605EF2BE61564006A4C0F /* RandomPoint.hpp in Headers */,
 				F986038A2BCFBB54006A4C0F /* SkOTTable_OS_2.h in Headers */,
 				F98600B52BCFBB53006A4C0F /* skcms_public.h in Headers */,
 				F9070CB22B9F175000383E4D /* Distribution.hpp in Headers */,
@@ -9312,6 +10158,7 @@
 				F9070C692B9F175000383E4D /* MapFormatter.ipp in Headers */,
 				F98600192BCFBB53006A4C0F /* SkFontParameters.h in Headers */,
 				F9070C642B9F175000383E4D /* ISteadyClock.ipp in Headers */,
+				F97203082BEDF2FF000E21DD /* CScene.hpp in Headers */,
 				F98600A52BCFBB53006A4C0F /* SkCGUtils.h in Headers */,
 				F986FA892BCFB53B006A4C0F /* ftlzw.h in Headers */,
 				F9528BAC2BBE7CF300222F45 /* MemoryWriter.hpp in Headers */,
@@ -9324,11 +10171,13 @@
 				F9528C502BBFEC4D00222F45 /* MappedMemoryView.ipp in Headers */,
 				F986FA832BCFB53B006A4C0F /* ftgzip.h in Headers */,
 				F90706922B9DAEC900383E4D /* policy_checks.h in Headers */,
+				F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */,
 				F90706B32B9DAEC900383E4D /* EnumBitmask.hpp in Headers */,
 				F98603102BCFBB54006A4C0F /* SkOpContour.h in Headers */,
 				F98604342BCFBB54006A4C0F /* SkSLSetting.h in Headers */,
 				F986024A2BCFBB54006A4C0F /* SkRecords.h in Headers */,
 				F98600142BCFBB53006A4C0F /* SkFlattenable.h in Headers */,
+				F98605ED2BE61564006A4C0F /* RandomVec4.hpp in Headers */,
 				F986F8462BC7EA13006A4C0F /* macOSFileSystem.hpp in Headers */,
 				F986F8A12BC8003B006A4C0F /* CommandLine.hpp in Headers */,
 				F986F8A22BC8003B006A4C0F /* EnvironmentVariable.hpp in Headers */,
@@ -9344,6 +10193,7 @@
 				F9528B542BB6DC2C00222F45 /* MicrosecClock.hpp in Headers */,
 				F9070C482B9F175000383E4D /* Byte.ipp in Headers */,
 				F9528C0C2BBF026F00222F45 /* error_private.h in Headers */,
+				F934BD7E2BF880860003EAD5 /* AssetHandleManager.ipp in Headers */,
 				F9528B782BB708A700222F45 /* CLicenseManager.hpp in Headers */,
 				F9528C472BBF026F00222F45 /* zstd.h in Headers */,
 				F986025C2BCFBB54006A4C0F /* SkSamplingPriv.h in Headers */,
@@ -9553,6 +10403,7 @@
 				F90702FF2B9DAEB900383E4D /* Test_Hash.cpp in Sources */,
 				F90702FE2B9DAEB900383E4D /* Test_FunctionRef.cpp in Sources */,
 				F90703002B9DAEB900383E4D /* Test_Indexed.cpp in Sources */,
+				F9807D792BF1092600D9B590 /* triangle.metal in Sources */,
 				F90703042B9DAEB900383E4D /* Test_PRNG.cpp in Sources */,
 				F90703072B9DAEB900383E4D /* Test_StringView.cpp in Sources */,
 				F90702F92B9DAEB900383E4D /* Test_Color.cpp in Sources */,
@@ -9561,6 +10412,7 @@
 				F90703092B9DAEB900383E4D /* Test_TupleFormatter.cpp in Sources */,
 				F90702FD2B9DAEB900383E4D /* Test_FmtExtension.cpp in Sources */,
 				F907030E2B9DAEB900383E4D /* Test_YesNo.cpp in Sources */,
+				F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */,
 				F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */,
 				F90703012B9DAEB900383E4D /* Test_Memory.cpp in Sources */,
 				F907030A2B9DAEB900383E4D /* Test_Types.cpp in Sources */,
@@ -9595,6 +10447,7 @@
 				F98601692BCFBB53006A4C0F /* SkBlitRow_opts_hsw.cpp in Sources */,
 				F986018F2BCFBB53006A4C0F /* SkConvertPixels.cpp in Sources */,
 				F9070B062B9DEB5900383E4D /* simdutf.cpp in Sources */,
+				F97204352BF0A39F000E21DD /* Metal.cpp in Sources */,
 				F986F83C2BC7B043006A4C0F /* SivINISection.cpp in Sources */,
 				F98602882BCFBB54006A4C0F /* SkTextBlob.cpp in Sources */,
 				F986F9CA2BCBEC36006A4C0F /* SivImage_SIMD.cpp in Sources */,
@@ -9617,7 +10470,9 @@
 				F98604762BCFBB54006A4C0F /* SkSLIntrinsicList.cpp in Sources */,
 				F9070DE42B9F175E00383E4D /* SivRandom.cpp in Sources */,
 				F9070E632B9F176B00383E4D /* SivSystem_macOS_Linux.cpp in Sources */,
+				F972030F2BEDF2FF000E21DD /* SivTextureFilter.cpp in Sources */,
 				F986046B2BCFBB54006A4C0F /* SkSLConstantFolder.cpp in Sources */,
+				F9807D9D2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp in Sources */,
 				F98605692BD203D4006A4C0F /* muParserTokenReader.cpp in Sources */,
 				F98602252BCFBB54006A4C0F /* SkPictureRecorder.cpp in Sources */,
 				F98602652BCFBB54006A4C0F /* SkScan_Path.cpp in Sources */,
@@ -9625,7 +10480,9 @@
 				F9070DB22B9F175E00383E4D /* SivBlob.cpp in Sources */,
 				F98603202BCFBB54006A4C0F /* SkPathOpsCurve.cpp in Sources */,
 				F98603F02BCFBB54006A4C0F /* SkSLConstructorCompound.cpp in Sources */,
+				F97203242BF09E80000E21DD /* RendererFactory.mm in Sources */,
 				F98604082BCFBB54006A4C0F /* SkSLExtension.cpp in Sources */,
+				F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */,
 				F98602832BCFBB54006A4C0F /* SkSwizzler_opts_ssse3.cpp in Sources */,
 				F986057B2BDA7DFC006A4C0F /* CursorFactory.cpp in Sources */,
 				F986042D2BCFBB54006A4C0F /* SkSLPrefixExpression.cpp in Sources */,
@@ -9670,6 +10527,7 @@
 				F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */,
 				F98604242BCFBB54006A4C0F /* SkSLModifierFlags.cpp in Sources */,
 				F9070DEA2B9F175E00383E4D /* SivSystem.cpp in Sources */,
+				F934BD882BF881110003EAD5 /* CShader_Metal.mm in Sources */,
 				F98605E62BE50038006A4C0F /* SivInputState.cpp in Sources */,
 				F98603EA2BCFBB54006A4C0F /* SkSLConstructor.cpp in Sources */,
 				F98603FA2BCFBB54006A4C0F /* SkSLConstructorSplat.cpp in Sources */,
@@ -9696,9 +10554,11 @@
 				F98601F02BCFBB53006A4C0F /* SkMatrixInvert.cpp in Sources */,
 				F986023E2BCFBB54006A4C0F /* SkRecord.cpp in Sources */,
 				F98603D72BCFBB54006A4C0F /* SkSLPipelineStageCodeGenerator.cpp in Sources */,
+				F9807DA02BF6690B00D9B590 /* SivMessageBox_macOS.mm in Sources */,
 				F98601962BCFBB53006A4C0F /* SkCubicMap.cpp in Sources */,
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
 				F98601AC2BCFBB53006A4C0F /* SkEdge.cpp in Sources */,
+				F934BD942BF8824B0003EAD5 /* EngineShaderFactory.cpp in Sources */,
 				F98602FC2BCFBB54006A4C0F /* SkOpts_skx.cpp in Sources */,
 				F986031C2BCFBB54006A4C0F /* SkPathOpsConic.cpp in Sources */,
 				F9070ED42B9F1C8900383E4D /* cocoa_joystick.m in Sources */,
@@ -9718,6 +10578,7 @@
 				F98603E52BCFBB54006A4C0F /* SkSLBlock.cpp in Sources */,
 				F986032C2BCFBB54006A4C0F /* SkPathOpsSimplify.cpp in Sources */,
 				F986F8442BC7E84D006A4C0F /* SivResource_macOS.cpp in Sources */,
+				F934BD9C2BFA59000003EAD5 /* SivEngineOption.cpp in Sources */,
 				F98604F42BCFBB54006A4C0F /* SkShadowUtils.cpp in Sources */,
 				F98603922BCFBB54006A4C0F /* SkConicalGradient.cpp in Sources */,
 				F986030A2BCFBB54006A4C0F /* SkOpAngle.cpp in Sources */,
@@ -9741,7 +10602,9 @@
 				F98601DE2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.cpp in Sources */,
 				F9528C832BC05B5B00222F45 /* BMPDecoder.cpp in Sources */,
 				F9070DD12B9F175E00383E4D /* SivFormatUtility.cpp in Sources */,
+				F9807D9A2BF667C300D9B590 /* SivMessageBox.cpp in Sources */,
 				F98605A82BE4887C006A4C0F /* RegExpFactory.cpp in Sources */,
+				F972030D2BEDF2FF000E21DD /* SivScene.cpp in Sources */,
 				F986F99C2BCA9D0A006A4C0F /* canvas.cpp in Sources */,
 				F9070DDF2B9F175E00383E4D /* SivParseBoolExtended.cpp in Sources */,
 				F9070DAD2B9F175E00383E4D /* _TEMPLATE.cpp in Sources */,
@@ -9776,6 +10639,7 @@
 				F98603B22BCFBB54006A4C0F /* SkRuntimeShader.cpp in Sources */,
 				F9528B7B2BB708A700222F45 /* LicenseManagerFactory.cpp in Sources */,
 				F9528C412BBF026F00222F45 /* divsufsort.c in Sources */,
+				F934BD9B2BFA59000003EAD5 /* SivGraphics.cpp in Sources */,
 				F98602E02BCFBB54006A4C0F /* SkImage_Lazy.cpp in Sources */,
 				F986017E2BCFBB53006A4C0F /* SkChecksum.cpp in Sources */,
 				F9528B652BB6DC9200222F45 /* SivCycleClock.cpp in Sources */,
@@ -9824,6 +10688,7 @@
 				F98604592BCFBB54006A4C0F /* SkSLEliminateUnnecessaryBraces.cpp in Sources */,
 				F9528C352BBF026F00222F45 /* zstdmt_compress.c in Sources */,
 				F9528B662BB6DC9200222F45 /* SivMillisecClock.cpp in Sources */,
+				F97203212BF09E80000E21DD /* CRenderer_Metal.mm in Sources */,
 				F986F89B2BC7FB4D006A4C0F /* SivColormap.cpp in Sources */,
 				F98603AB2BCFBB54006A4C0F /* SkLocalMatrixShader.cpp in Sources */,
 				F986F9A42BCA9D0A006A4C0F /* gelement.cpp in Sources */,
@@ -9838,6 +10703,7 @@
 				F9070DEC2B9F175E00383E4D /* SivTextEncoding.cpp in Sources */,
 				F98604D32BCFBB54006A4C0F /* SkCustomTypeface.cpp in Sources */,
 				F986016E2BCFBB53006A4C0F /* SkBlitter_ARGB32.cpp in Sources */,
+				F98606222BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp in Sources */,
 				F986025E2BCFBB54006A4C0F /* SkScalerContext.cpp in Sources */,
 				F986024E2BCFBB54006A4C0F /* SkRegion.cpp in Sources */,
 				F9E5FCDB2BC3AD820081A4F7 /* SivJSON.cpp in Sources */,
@@ -9848,6 +10714,7 @@
 				F986043A2BCFBB54006A4C0F /* SkSLSwitchStatement.cpp in Sources */,
 				F9528C822BC05B5B00222F45 /* SivIImageDecoder.cpp in Sources */,
 				F98602402BCFBB54006A4C0F /* SkRecordDraw.cpp in Sources */,
+				F986062F2BEBBBC7006A4C0F /* CProfiler.cpp in Sources */,
 				F9528B9D2BBC771000222F45 /* SivPoint3D.cpp in Sources */,
 				F98602BA2BCFBB54006A4C0F /* SkBlurImageFilter.cpp in Sources */,
 				F986F9512BCA9CEC006A4C0F /* SVGDecoder.cpp in Sources */,
@@ -9855,6 +10722,7 @@
 				F98601D42BCFBB53006A4C0F /* SkImageInfo.cpp in Sources */,
 				F98602A72BCFBB54006A4C0F /* SkBlendModeColorFilter.cpp in Sources */,
 				F986F9382BC8441F006A4C0F /* utf32_le.c in Sources */,
+				F980C4212C004B5000A86B68 /* SivMSAASampleCount.cpp in Sources */,
 				F98605CC2BE4B6A4006A4C0F /* SivInputDevice.cpp in Sources */,
 				F986025D2BCFBB54006A4C0F /* SkScalar.cpp in Sources */,
 				F98602A52BCFBB54006A4C0F /* SkYUVPlanesCache.cpp in Sources */,
@@ -9883,9 +10751,11 @@
 				F986027D2BCFBB54006A4C0F /* SkStrokerPriv.cpp in Sources */,
 				F9070AEE2B9DEB5900383E4D /* int128.cc in Sources */,
 				F986022D2BCFBB54006A4C0F /* SkPtrRecorder.cpp in Sources */,
+				F972030B2BEDF2FF000E21DD /* SceneTime.cpp in Sources */,
 				F98602842BCFBB54006A4C0F /* SkSwizzler_opts.cpp in Sources */,
 				F98601CE2BCFBB53006A4C0F /* SkImageFilter.cpp in Sources */,
 				F986016C2BCFBB53006A4C0F /* SkBlitter_A8.cpp in Sources */,
+				F934BD792BF880620003EAD5 /* SivPixelShader.cpp in Sources */,
 				F986F9252BC8441F006A4C0F /* regtrav.c in Sources */,
 				F98602102BCFBB54006A4C0F /* SkPath.cpp in Sources */,
 				F98602492BCFBB54006A4C0F /* SkRecords.cpp in Sources */,
@@ -9911,6 +10781,7 @@
 				F98603FF2BCFBB54006A4C0F /* SkSLDiscardStatement.cpp in Sources */,
 				F98605212BD0E2A3006A4C0F /* CEngineResource.cpp in Sources */,
 				F9528C2A2BBF026F00222F45 /* zstd_double_fast.c in Sources */,
+				F972030A2BEDF2FF000E21DD /* SceneFactory.cpp in Sources */,
 				F98600D32BCFBB53006A4C0F /* SkHalf.cpp in Sources */,
 				F9070E5E2B9F176B00383E4D /* SivDate_macOS_Linux.cpp in Sources */,
 				F986F99E2BCA9D0A006A4C0F /* clippathelement.cpp in Sources */,
@@ -9925,6 +10796,7 @@
 				F98604442BCFBB54006A4C0F /* SkSLType.cpp in Sources */,
 				F98601752BCFBB53006A4C0F /* SkBlurMaskFilterImpl.cpp in Sources */,
 				F9070DBC2B9F175E00383E4D /* SivDate.cpp in Sources */,
+				F934BD892BF881110003EAD5 /* ShaderFactory.mm in Sources */,
 				F98602982BCFBB54006A4C0F /* SkVertState.cpp in Sources */,
 				F98600E32BCFBB53006A4C0F /* SkSharedMutex.cpp in Sources */,
 				F9070DF12B9F175E00383E4D /* TextWriterDetail.cpp in Sources */,
@@ -9999,10 +10871,12 @@
 				F98602312BCFBB54006A4C0F /* SkRasterClip.cpp in Sources */,
 				F986045E2BCFBB54006A4C0F /* SkSLHoistSwitchVarDeclarationsAtTopLevel.cpp in Sources */,
 				F9E5FC242BC13CD00081A4F7 /* JPEGEncoder.cpp in Sources */,
+				F934BD9D2BFA59000003EAD5 /* SivHLSL.cpp in Sources */,
 				F986F83A2BC7B043006A4C0F /* SivINIItem.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F98605452BD203BC006A4C0F /* SivMathParser.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
+				F986061E2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp in Sources */,
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
 				F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */,
@@ -10036,6 +10910,7 @@
 				F98604AE2BCFBB54006A4C0F /* SlugFromBuffer.cpp in Sources */,
 				F98601E52BCFBB53006A4C0F /* SkMaskBlurFilter.cpp in Sources */,
 				F986044E2BCFBB54006A4C0F /* SkSLDebugTracePlayer.cpp in Sources */,
+				F9807D802BF1229700D9B590 /* MetalInternalTexture2D.mm in Sources */,
 				F98601A12BCFBB53006A4C0F /* SkDraw_atlas.cpp in Sources */,
 				F9070DDA2B9F175E00383E4D /* SivLoggerBuffer.cpp in Sources */,
 				F9070E552B9F176B00383E4D /* SivFileSystem_macOS.mm in Sources */,
@@ -10059,6 +10934,7 @@
 				F9070DB12B9F175E00383E4D /* SivBinaryWriter.cpp in Sources */,
 				F98605932BE33124006A4C0F /* CursorStyleFactory.cpp in Sources */,
 				F98605432BD203BC006A4C0F /* MathParserDetail.cpp in Sources */,
+				F98606092BE71763006A4C0F /* SivUserInfo.cpp in Sources */,
 				F98602852BCFBB54006A4C0F /* SkTaskGroup.cpp in Sources */,
 				F986045D2BCFBB54006A4C0F /* SkSLFindAndDeclareBuiltinVariables.cpp in Sources */,
 				F98604902BCFBB54006A4C0F /* SkSLUtil.cpp in Sources */,
@@ -10076,6 +10952,7 @@
 				F986018B2BCFBB53006A4C0F /* SkColorTable.cpp in Sources */,
 				F98604602BCFBB54006A4C0F /* SkSLRenamePrivateSymbols.cpp in Sources */,
 				F9528B232BAFB68400222F45 /* SivBase64Value.cpp in Sources */,
+				F9807D982BF667C300D9B590 /* Troubleshooting.cpp in Sources */,
 				F9E5FCDA2BC3AD820081A4F7 /* SivJSONValueType.cpp in Sources */,
 				F98600F52BCFBB53006A4C0F /* SkUtils.cpp in Sources */,
 				F9070DF42B9F175E00383E4D /* SivThreading.cpp in Sources */,
@@ -10097,6 +10974,7 @@
 				F986F9AC2BCA9D0A006A4C0F /* lunasvg.cpp in Sources */,
 				F9070DAF2B9F175E00383E4D /* SivBigInt.cpp in Sources */,
 				F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */,
+				F980C41B2C0023BB00A86B68 /* MetalPixelShader.mm in Sources */,
 				F9070EF52B9F1C8900383E4D /* posix_time.c in Sources */,
 				F9070DD52B9F175E00383E4D /* SivIntFormatter.cpp in Sources */,
 				F986026D2BCFBB54006A4C0F /* SkSpriteBlitter_ARGB32.cpp in Sources */,
@@ -10147,9 +11025,11 @@
 				F98604DA2BCFBB54006A4C0F /* SkJSON.cpp in Sources */,
 				F98603EE2BCFBB54006A4C0F /* SkSLConstructorArrayCast.cpp in Sources */,
 				F986F9992BCA9D0A006A4C0F /* plutovg-rle.c in Sources */,
+				F934BD782BF880620003EAD5 /* SivVertexShader.cpp in Sources */,
 				F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */,
 				F98601D82BCFBB53006A4C0F /* SkKnownRuntimeEffects.cpp in Sources */,
 				F98603362BCFBB54006A4C0F /* SkReduceOrder.cpp in Sources */,
+				F934BD922BF8824B0003EAD5 /* CEngineShader_Metal.cpp in Sources */,
 				F98600D22BCFBB53006A4C0F /* SkFloatingPoint.cpp in Sources */,
 				F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */,
 				F9070AF52B9DEB5900383E4D /* cached-powers.cc in Sources */,
@@ -10159,6 +11039,7 @@
 				F98603C62BCFBB54006A4C0F /* SkSLIsDynamicallyUniformExpression.cpp in Sources */,
 				F98604652BCFBB54006A4C0F /* SkSLAnalysis.cpp in Sources */,
 				F98604FC2BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp in Sources */,
+				F986060D2BE71918006A4C0F /* SivUserInfo_macOS.mm in Sources */,
 				F986021C2BCFBB54006A4C0F /* SkPictureData.cpp in Sources */,
 				F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */,
 				F986022F2BCFBB54006A4C0F /* SkQuadClipper.cpp in Sources */,
@@ -10205,6 +11086,7 @@
 				F98601B62BCFBB53006A4C0F /* SkFlattenable.cpp in Sources */,
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,
 				F986F9242BC8441F006A4C0F /* regsyntax.c in Sources */,
+				F972030E2BEDF2FF000E21DD /* SivResizeMode.cpp in Sources */,
 				F98604332BCFBB54006A4C0F /* SkSLSetting.cpp in Sources */,
 				F9528C332BBF026F00222F45 /* zstd_opt.c in Sources */,
 				F986F9B42BCA9D0A006A4C0F /* parser.cpp in Sources */,
@@ -10221,6 +11103,7 @@
 				F9070DDE2B9F175E00383E4D /* SivParseBool.cpp in Sources */,
 				F9528C392BBF026F00222F45 /* zstd_ddict.c in Sources */,
 				F9528C242BBF026F00222F45 /* zstd_compress_sequences.c in Sources */,
+				F97203072BEDF2FF000E21DD /* CScene.cpp in Sources */,
 				F98605832BDA7E32006A4C0F /* CCursor.mm in Sources */,
 				F9070E5A2B9F176B00383E4D /* BinaryWriterDetail.cpp in Sources */,
 				F98603F62BCFBB54006A4C0F /* SkSLConstructorMatrixResize.cpp in Sources */,
@@ -10234,6 +11117,7 @@
 				F98602122BCFBB54006A4C0F /* SkPathEffect.cpp in Sources */,
 				F98604622BCFBB54006A4C0F /* SkSLRewriteIndexedSwizzle.cpp in Sources */,
 				F98601872BCFBB53006A4C0F /* SkColorSpace.cpp in Sources */,
+				F98606322BEBBBC7006A4C0F /* ProfilerFactory.cpp in Sources */,
 				F98605712BDA32D4006A4C0F /* SivMat3x2.cpp in Sources */,
 				F98601662BCFBB53006A4C0F /* SkBlitMask_opts.cpp in Sources */,
 				F98603C02BCFBB54006A4C0F /* SkSLFinalizationChecks.cpp in Sources */,
@@ -10241,9 +11125,11 @@
 				F986F8AD2BC806BF006A4C0F /* SivExif.cpp in Sources */,
 				F986F92F2BC8441F006A4C0F /* unicode_fold3_key.c in Sources */,
 				F98602342BCFBB54006A4C0F /* SkRasterPipeline.cpp in Sources */,
+				F98606272BEBA1B5006A4C0F /* ExtensionFilter.cpp in Sources */,
 				F9528C162BBF026F00222F45 /* xxhash.c in Sources */,
 				F98605952BE33124006A4C0F /* SivCursorStyle.cpp in Sources */,
 				F986F94D2BCA9CD7006A4C0F /* SVGDetail.cpp in Sources */,
+				F98606332BEBBBC7006A4C0F /* SivProfiler.cpp in Sources */,
 				F986031A2BCFBB54006A4C0F /* SkPathOpsCommon.cpp in Sources */,
 				F986F9932BCA9D0A006A4C0F /* plutovg-ft-stroker.c in Sources */,
 				F9070DB42B9F175E00383E4D /* SivByte.cpp in Sources */,
@@ -10260,6 +11146,7 @@
 				F98603CF2BCFBB54006A4C0F /* SkSLSymbolTableStackBuilder.cpp in Sources */,
 				F9528C4C2BBFEC2400222F45 /* SivMemoryMappedFile.cpp in Sources */,
 				F9070DCA2B9F175E00383E4D /* SivEscapedFormatter.cpp in Sources */,
+				F980C4192C0023BB00A86B68 /* MetalVertexShader.mm in Sources */,
 				F986F83B2BC7B043006A4C0F /* SivINI.cpp in Sources */,
 				F98602B32BCFBB54006A4C0F /* SkRuntimeColorFilter.cpp in Sources */,
 				F98600DF2BCFBB53006A4C0F /* SkSafeMath.cpp in Sources */,

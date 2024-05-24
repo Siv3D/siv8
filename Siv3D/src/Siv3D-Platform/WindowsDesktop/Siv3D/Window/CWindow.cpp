@@ -13,8 +13,10 @@
 # include "WindowMisc.hpp"
 # include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/Math.hpp>
+# include <Siv3D/Scene.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
+# include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -130,6 +132,33 @@ namespace s3d
 
 	void CWindow::update()
 	{
+		if (m_toggleFullscreenRequested.load())
+		{
+			if (m_toggleFullscreenEnabled)
+			{
+				if (not m_oldResizeMode)
+				{
+					m_oldResizeMode = Scene::GetResizeMode();
+				}
+
+				const bool toFullScreen = (not m_state.fullscreen);
+
+				setFullscreen(toFullScreen, System::GetCurrentMonitorIndex(), true);
+
+				if (toFullScreen)
+				{
+					Scene::SetResizeMode(ResizeMode::Keep);
+				}
+				else if (m_oldResizeMode)
+				{
+					Scene::SetResizeMode(*m_oldResizeMode);
+					m_oldResizeMode.reset();
+				}
+			}
+
+			m_toggleFullscreenRequested.store(false);
+		}
+
 		m_state.sizeMove = m_moving.load();
 
 		if constexpr (SIV3D_BUILD(DEBUG))
@@ -221,8 +250,8 @@ namespace s3d
 			const Size newFrameBufferSize = Math::Round(m_state.virtualSize * scaling).asPoint();
 			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
 				pos, newFrameBufferSize, windowStyleFlags);
+			
 			const uint32 flags = ((triggerWindowResize ? 0 : SWP_NOSIZE) | SWP_NOZORDER | SWP_NOREDRAW | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-
 			setWindowPos(windowRect, flags);
 		}
 
@@ -252,9 +281,9 @@ namespace s3d
 			const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
 			const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
 				pos, newFrameBufferSize, windowStyleFlags);
-			const uint32 flags = (SWP_DEFERERASE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-
-			setWindowPos(windowRect, flags);
+			
+			constexpr uint32 Flags = (SWP_DEFERERASE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+			setWindowPos(windowRect, Flags);
 		}
 	}
 
@@ -288,6 +317,11 @@ namespace s3d
 		}
 
 		::ShowWindow(m_hWnd, SW_MAXIMIZE);
+
+		if (Scene::GetResizeMode() != ResizeMode::Keep)
+		{
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -300,6 +334,11 @@ namespace s3d
 	{
 		LOG_DEBUG("CWindow::restore()");
 		::ShowWindow(m_hWnd, SW_RESTORE);
+
+		if (Scene::GetResizeMode() != ResizeMode::Keep)
+		{
+			SIV3D_ENGINE(Renderer)->updateSceneSize();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -312,6 +351,119 @@ namespace s3d
 	{
 		LOG_DEBUG("CWindow::minimize()");
 		::ShowWindow(m_hWnd, SW_MINIMIZE);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resizeByVirtualSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CWindow::resizeByVirtualSize(const Size virtualSize)
+	{
+		LOG_DEBUG(fmt::format("CWindow::resizeByVirtualSize(size = {})", virtualSize));
+
+		const double scaling = WindowMisc::GetScaling(m_dpi);
+		
+		const Size newFrameBufferSize = Math::Round(virtualSize * scaling).asPoint();
+
+		return resizeByFrameBufferSize(newFrameBufferSize);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resizeByFrameBufferSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CWindow::resizeByFrameBufferSize(const Size frameBufferSize)
+	{
+		LOG_DEBUG(fmt::format("CWindow::resizeByFrameBufferSize(size = {})", frameBufferSize));
+
+		if (m_state.frameBufferSize == frameBufferSize)
+		{
+			return true;
+		}
+
+		if (m_state.fullscreen)
+		{
+			setFullscreen(false, System::GetCurrentMonitorIndex());
+		}
+
+		if (m_state.maximized)
+		{
+			restore();
+		}
+
+		const Size newFrameBufferSize = frameBufferSize;
+
+		if ((newFrameBufferSize.x < m_state.minFrameBufferSize.x)
+			|| (newFrameBufferSize.y < m_state.minFrameBufferSize.y))
+		{
+			LOG_FAIL("✖ Failed to resize the window: The specified size is smaller than the minimum size");
+			return false;
+		}
+
+		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
+		const Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
+			m_state.bounds.pos, newFrameBufferSize, windowStyleFlags);
+
+		m_state.virtualSize = Math::Round(m_state.frameBufferSize / m_state.scaling).asPoint();
+		
+		constexpr uint32 Flags = (SWP_NOACTIVATE | SWP_NOZORDER);
+		setWindowPos(windowRect, Flags);
+
+		::ShowWindow(m_hWnd, SW_NORMAL);
+
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setMinimumFrameBufferSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setMinimumFrameBufferSize(const Size size)
+	{
+		LOG_DEBUG(fmt::format("CWindow::setMinimumFrameBufferSize(size = {})", size));
+		
+		std::lock_guard lock{ m_minimumFrameBufferSizeMutex };
+
+		m_state.minFrameBufferSize = size;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setFullscreen
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex)
+	{
+		setFullscreen(fullscreen, monitorIndex, false);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setToggleFullscreenEnabled
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setToggleFullscreenEnabled(const bool enabled)
+	{
+		m_toggleFullscreenEnabled = enabled;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isToggleFullscreenEnabled
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CWindow::isToggleFullscreenEnabled() const
+	{
+		return m_toggleFullscreenEnabled;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -446,7 +598,7 @@ namespace s3d
 			m_border = placeholderWindowRect.size;
 		}
 
-		LOG_TRACE(U"- bounds: {}, frameThickness: {}, titleBarHeight: {}, border: {}"_fmt(
+		LOG_TRACE(fmt::format("- bounds: {}, frameThickness: {}, titleBarHeight: {}, border: {}",
 			m_state.bounds, m_state.frameThickness, m_state.titleBarHeight, m_border));
 	}
 
@@ -468,7 +620,7 @@ namespace s3d
 
 		onBoundsUpdate();
 
-		const Size newFrameBufferSize = (m_state.virtualSize * scaling).asPoint();
+		const Size newFrameBufferSize = Math::Round(m_state.virtualSize * scaling).asPoint();
 		const uint32 windowStyleFlags = WindowMisc::GetWindowStyleFlags(m_state.style);
 		Rect windowRect = WindowMisc::AdjustWindowRect(m_hWnd, m_user32.pAdjustWindowRectExForDpi, m_dpi,
 			suggestedPos, newFrameBufferSize, windowStyleFlags);
@@ -478,7 +630,10 @@ namespace s3d
 			windowRect.y = (suggestedPos.y - m_state.titleBarHeight);
 		}
 
-		setWindowPos(windowRect, (SWP_NOACTIVATE | SWP_NOZORDER));
+		constexpr uint32 Flags = (SWP_NOACTIVATE | SWP_NOZORDER);
+		setWindowPos(windowRect, Flags);
+	
+		m_state.virtualSize = Math::Round(m_state.frameBufferSize / m_state.scaling).asPoint();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -509,9 +664,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Size CWindow::getMinTrackSize() const noexcept
+	Size CWindow::getMinTrackSize() noexcept
 	{
+		std::lock_guard lock{ m_minimumFrameBufferSizeMutex };
+
 		return (m_state.minFrameBufferSize + m_border);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	requestToggleFullscreen
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::requestToggleFullscreen()
+	{
+		m_toggleFullscreenRequested.store(true);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -534,9 +702,65 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setWindowPos
+	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
+
+	void CWindow::setFullscreen(const bool fullscreen, const size_t monitorIndex, const bool skipSceneResize)
+	{
+		LOG_DEBUG(fmt::format("CWindow::setFullscreen(fullscreen = {}, monitorIndex = {})", fullscreen, monitorIndex));
+
+		if (fullscreen == m_state.fullscreen)
+		{
+			return;
+		}
+
+		if (not m_windowShown)
+		{
+			show();
+		}
+
+		if (m_state.fullscreen == false) // 現在ウィンドウモードの場合
+		{
+			// フルスクリーンモードにする
+			[[maybe_unused]] const Size size = WindowMisc::SetFullscreen(m_hWnd, monitorIndex, m_storedWindowRect, WindowMisc::GetBaseWindowStyle(m_state.style));
+		}
+		else
+		{
+			const Size size{
+				(m_storedWindowRect.right - m_storedWindowRect.left),
+				(m_storedWindowRect.bottom - m_storedWindowRect.top) };
+
+			::SetWindowLongW(m_hWnd, GWL_STYLE, WindowMisc::GetBaseWindowStyle(m_state.style));
+			::SetWindowPos(
+				m_hWnd,
+				HWND_NOTOPMOST,
+				m_storedWindowRect.left,
+				m_storedWindowRect.top,
+				size.x,
+				size.y,
+				(SWP_FRAMECHANGED | SWP_NOACTIVATE));
+
+			::ShowWindow(m_hWnd, SW_NORMAL);
+			::ValidateRect(m_hWnd, nullptr);
+		}
+
+		m_state.fullscreen = fullscreen;
+
+		if (not skipSceneResize)
+		{
+			if (m_oldResizeMode)
+			{
+				Scene::SetResizeMode(*m_oldResizeMode);
+				m_oldResizeMode.reset();
+			}
+
+			if (Scene::GetResizeMode() != ResizeMode::Keep)
+			{
+				SIV3D_ENGINE(Renderer)->updateSceneSize();
+			}
+		}
+	}
 
 	void CWindow::setWindowPos(const Rect& rect, const uint32 flags)
 	{

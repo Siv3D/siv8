@@ -26,9 +26,6 @@ namespace s3d
 
 		bool Update()
 		{
-			// [Siv3D ToDo] VSync を実装したら外す
-			Sleep(16);
-
 			return SIV3D_ENGINE(System)->update();
 		}
 

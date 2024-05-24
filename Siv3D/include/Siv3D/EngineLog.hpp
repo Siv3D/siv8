@@ -13,7 +13,6 @@
 # include "LogType.hpp"
 # include "String.hpp"
 # include "FormatLiteral.hpp"
-# include "FmtExtension.hpp"
 
 namespace s3d
 {
