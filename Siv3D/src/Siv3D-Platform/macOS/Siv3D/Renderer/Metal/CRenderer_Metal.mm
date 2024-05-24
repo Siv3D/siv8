@@ -85,9 +85,9 @@ namespace s3d
 				{ 0.0f,  0.5f, 0.0f}
 			};
 			
-			m_triangleVertexBuffer = m_metalDevice->newBuffer(&triangleVertices,
+			m_triangleVertexBuffer = NS::TransferPtr(m_metalDevice->newBuffer(&triangleVertices,
 															  sizeof(triangleVertices),
-															  MTL::ResourceStorageModeShared);
+															  MTL::ResourceStorageModeShared));
 		}
 		
 		m_metalDefaultLibrary = m_metalDevice->newDefaultLibrary();
@@ -107,50 +107,47 @@ namespace s3d
 		}
 		 */
 
-		m_metalCommandQueue = m_metalDevice->newCommandQueue();
+		m_metalCommandQueue = NS::TransferPtr(m_metalDevice->newCommandQueue());
 		
 		{
-			MTL::Function* vertexShader = m_metalDefaultLibrary->newFunction(NS::String::string("vertexShader", NS::ASCIIStringEncoding));
+			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("vertexShader", NS::ASCIIStringEncoding)));
 			assert(vertexShader);
-			MTL::Function* fragmentShader = m_metalDefaultLibrary->newFunction(NS::String::string("fragmentShader", NS::ASCIIStringEncoding));
+			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("fragmentShader", NS::ASCIIStringEncoding)));
 			assert(fragmentShader);
 			
-			MTL::RenderPipelineDescriptor* renderPipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();
+			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
 			renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
-			renderPipelineDescriptor->setVertexFunction(vertexShader);
-			renderPipelineDescriptor->setFragmentFunction(fragmentShader);
+			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
+			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
 			assert(renderPipelineDescriptor);
 			MTL::PixelFormat pixelFormat = MTL::PixelFormatRGBA8Unorm;
 			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(pixelFormat);
 			
 			NS::Error* error;
-			m_metalRenderPSO1 = m_metalDevice->newRenderPipelineState(renderPipelineDescriptor, &error);
-			renderPipelineDescriptor->release();
+			m_metalRenderPSO1 = NS::TransferPtr(m_metalDevice->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
 		}
 		
 		{
-			MTL::Function* vertexShader = m_metalDefaultLibrary->newFunction(NS::String::string("sceneVertexShader", NS::ASCIIStringEncoding));
+			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("sceneVertexShader", NS::ASCIIStringEncoding)));
 			assert(vertexShader);
-			MTL::Function* fragmentShader = m_metalDefaultLibrary->newFunction(NS::String::string("sceneFragmentShader", NS::ASCIIStringEncoding));
+			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("sceneFragmentShader", NS::ASCIIStringEncoding)));
 			assert(fragmentShader);
 		
 			MTL::RenderPipelineDescriptor* renderPipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();
 			renderPipelineDescriptor->setLabel(NS::String::string("Scene Rendering Pipeline", NS::ASCIIStringEncoding));
 			
-			renderPipelineDescriptor->setVertexFunction(vertexShader);
-			renderPipelineDescriptor->setFragmentFunction(fragmentShader);
+			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
+			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
 			assert(renderPipelineDescriptor);
 			MTL::PixelFormat pixelFormat = (MTL::PixelFormat)m_metalLayer.pixelFormat;
 			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(pixelFormat);
 			
 			NS::Error* error;
-			m_metalRenderPSO2 = m_metalDevice->newRenderPipelineState(renderPipelineDescriptor, &error);
-			renderPipelineDescriptor->release();
+			m_metalRenderPSO2 = NS::TransferPtr(m_metalDevice->newRenderPipelineState(renderPipelineDescriptor, &error));
 		}
 
 		{
 			const Size sceneSize = Window::GetState().virtualSize;
-			
 			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_metalDevice, sceneSize);
 		}
 	}
@@ -383,8 +380,8 @@ namespace s3d
 			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor);
 			offscreenRenderPassDescriptor->release();
 
-			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO1);
-			renderCommandEncoder->setVertexBuffer(m_triangleVertexBuffer, 0, 0);
+			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO1.get());
+			renderCommandEncoder->setVertexBuffer(m_triangleVertexBuffer.get(), 0, 0);
 			MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
 			NS::UInteger vertexStart = 0;
 			NS::UInteger vertexCount = 3;
@@ -403,7 +400,7 @@ namespace s3d
 			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(renderPassDescriptor);
 			renderPassDescriptor->release();
 			
-			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO2);
+			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO2.get());
 			
 			const auto [s, viewRect] = getLetterboxComposition();
 			const MTL::Viewport viewport = {
