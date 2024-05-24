@@ -51,12 +51,26 @@ namespace s3d
 		
 		// null VS を管理に登録
 		{
+			auto nullVertexShader = std::make_unique<MetalVertexShader>(MetalVertexShader::Null{});
 
+			if (not nullVertexShader->isInitialized()) // もし作成に失敗していたら
+			{
+				throw InternalEngineError{ "Failed to create a null vertex shader" };
+			}
+
+			m_vertexShaders.setNullData(std::move(nullVertexShader));
 		}
 
 		// null PS を管理に登録
 		{
+			auto nullPixelShader = std::make_unique<MetalPixelShader>(MetalPixelShader::Null{});
 
+			if (not nullPixelShader->isInitialized()) // もし作成に失敗していたら
+			{
+				throw InternalEngineError{ "Failed to create a null pixel shader" };
+			}
+
+			m_pixelShaders.setNullData(std::move(nullPixelShader));
 		}
 	}
 
@@ -92,12 +106,12 @@ namespace s3d
 
 	void CShader_Metal::releaseVS(const VertexShader::IDType handleID)
 	{
-		//m_vertexShaders.erase(handleID);
+		m_vertexShaders.erase(handleID);
 	}
 
 	void CShader_Metal::releasePS(const PixelShader::IDType handleID)
 	{
-		//m_pixelShaders.erase(handleID);
+		m_pixelShaders.erase(handleID);
 	}
 
 	void CShader_Metal::setVS(const VertexShader::IDType handleID)

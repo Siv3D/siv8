@@ -728,6 +728,10 @@
 		F9807D9A2BF667C300D9B590 /* SivMessageBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9807D962BF667C300D9B590 /* SivMessageBox.cpp */; };
 		F9807D9D2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */; };
 		F9807DA02BF6690B00D9B590 /* SivMessageBox_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */; };
+		F980C4192C0023BB00A86B68 /* MetalVertexShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C4132C0023BB00A86B68 /* MetalVertexShader.mm */; };
+		F980C41A2C0023BB00A86B68 /* MetalVertexShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4142C0023BB00A86B68 /* MetalVertexShader.hpp */; };
+		F980C41B2C0023BB00A86B68 /* MetalPixelShader.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C4162C0023BB00A86B68 /* MetalPixelShader.mm */; };
+		F980C41C2C0023BB00A86B68 /* MetalPixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -2924,6 +2928,10 @@
 		F9807D962BF667C300D9B590 /* SivMessageBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMessageBox.cpp; sourceTree = "<group>"; };
 		F9807D9B2BF667E600D9B590 /* FreestandingMessageBox_macOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FreestandingMessageBox_macOS.cpp; sourceTree = "<group>"; };
 		F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SivMessageBox_macOS.mm; sourceTree = "<group>"; };
+		F980C4132C0023BB00A86B68 /* MetalVertexShader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalVertexShader.mm; sourceTree = "<group>"; };
+		F980C4142C0023BB00A86B68 /* MetalVertexShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalVertexShader.hpp; sourceTree = "<group>"; };
+		F980C4162C0023BB00A86B68 /* MetalPixelShader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalPixelShader.mm; sourceTree = "<group>"; };
+		F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalPixelShader.hpp; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -6182,6 +6190,8 @@
 		F934BD842BF881110003EAD5 /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				F980C4182C0023BB00A86B68 /* PixelShader */,
+				F980C4152C0023BB00A86B68 /* VertexShader */,
 				F934BD822BF881110003EAD5 /* CShader_Metal.hpp */,
 				F934BD832BF881110003EAD5 /* CShader_Metal.mm */,
 			);
@@ -6835,6 +6845,24 @@
 				F9807D9E2BF6690B00D9B590 /* SivMessageBox_macOS.mm */,
 			);
 			path = MessageBox;
+			sourceTree = "<group>";
+		};
+		F980C4152C0023BB00A86B68 /* VertexShader */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4132C0023BB00A86B68 /* MetalVertexShader.mm */,
+				F980C4142C0023BB00A86B68 /* MetalVertexShader.hpp */,
+			);
+			path = VertexShader;
+			sourceTree = "<group>";
+		};
+		F980C4182C0023BB00A86B68 /* PixelShader */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4162C0023BB00A86B68 /* MetalPixelShader.mm */,
+				F980C4172C0023BB00A86B68 /* MetalPixelShader.hpp */,
+			);
+			path = PixelShader;
 			sourceTree = "<group>";
 		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
@@ -9318,6 +9346,7 @@
 				F98602092BCFBB54006A4C0F /* SkOSFile.h in Headers */,
 				F98600852BCFBB53006A4C0F /* SkTDArray.h in Headers */,
 				F98600362BCFBB53006A4C0F /* SkRasterHandleAllocator.h in Headers */,
+				F980C41C2C0023BB00A86B68 /* MetalPixelShader.hpp in Headers */,
 				F986FA542BCFB53B006A4C0F /* svsfnt.h in Headers */,
 				F9070CE42B9F175100383E4D /* OrderedTable.hpp in Headers */,
 				F98601B22BCFBB53006A4C0F /* SkEffectPriv.h in Headers */,
@@ -9507,6 +9536,7 @@
 				F98603DA2BCFBB54006A4C0F /* SkSLRasterPipelineBuilder.h in Headers */,
 				F98603CC2BCFBB54006A4C0F /* SkSLProgramVisitor.h in Headers */,
 				F9528B5C2BB6DC6800222F45 /* MillisecClock.ipp in Headers */,
+				F980C41A2C0023BB00A86B68 /* MetalVertexShader.hpp in Headers */,
 				F98602742BCFBB54006A4C0F /* SkStrikeCache.h in Headers */,
 				F986FA512BCFB53B006A4C0F /* svprop.h in Headers */,
 				F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */,
@@ -10928,6 +10958,7 @@
 				F986F9AC2BCA9D0A006A4C0F /* lunasvg.cpp in Sources */,
 				F9070DAF2B9F175E00383E4D /* SivBigInt.cpp in Sources */,
 				F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */,
+				F980C41B2C0023BB00A86B68 /* MetalPixelShader.mm in Sources */,
 				F9070EF52B9F1C8900383E4D /* posix_time.c in Sources */,
 				F9070DD52B9F175E00383E4D /* SivIntFormatter.cpp in Sources */,
 				F986026D2BCFBB54006A4C0F /* SkSpriteBlitter_ARGB32.cpp in Sources */,
@@ -11099,6 +11130,7 @@
 				F98603CF2BCFBB54006A4C0F /* SkSLSymbolTableStackBuilder.cpp in Sources */,
 				F9528C4C2BBFEC2400222F45 /* SivMemoryMappedFile.cpp in Sources */,
 				F9070DCA2B9F175E00383E4D /* SivEscapedFormatter.cpp in Sources */,
+				F980C4192C0023BB00A86B68 /* MetalVertexShader.mm in Sources */,
 				F986F83B2BC7B043006A4C0F /* SivINI.cpp in Sources */,
 				F98602B32BCFBB54006A4C0F /* SkRuntimeColorFilter.cpp in Sources */,
 				F98600DF2BCFBB53006A4C0F /* SkSafeMath.cpp in Sources */,

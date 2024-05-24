@@ -13,6 +13,8 @@
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
+# include "VertexShader/MetalVertexShader.hpp"
+# include "PixelShader/MetalPixelShader.hpp"
 # include <Siv3D/Renderer/Metal/Metal.hpp>
 
 namespace s3d
@@ -54,5 +56,11 @@ namespace s3d
 		MTL::Device* m_device = nullptr;
 
 		NS::SharedPtr<MTL::Library> m_defaultLibrary;
+		
+		// VS の管理
+		AssetHandleManager<VertexShader::IDType, MetalVertexShader> m_vertexShaders{ "VertexShader" };
+
+		// PS の管理
+		AssetHandleManager<PixelShader::IDType, MetalPixelShader> m_pixelShaders{ "PixelShader" };
 	};
 }
