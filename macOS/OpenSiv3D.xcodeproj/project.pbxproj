@@ -750,6 +750,12 @@
 		F980C4452C00D31000A86B68 /* SivRasterizerState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C43C2C00D31000A86B68 /* SivRasterizerState.cpp */; };
 		F980C4462C00D31000A86B68 /* SivBlendOperation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C43E2C00D31000A86B68 /* SivBlendOperation.cpp */; };
 		F980C4472C00D31000A86B68 /* SivBlendFactor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4402C00D31000A86B68 /* SivBlendFactor.cpp */; };
+		F980C44A2C00E27800A86B68 /* CompareFunction.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4482C00E27800A86B68 /* CompareFunction.hpp */; };
+		F980C44B2C00E27800A86B68 /* TextureAddressMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4492C00E27800A86B68 /* TextureAddressMode.hpp */; };
+		F980C44D2C00E29000A86B68 /* SamplerState.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F980C44C2C00E29000A86B68 /* SamplerState.ipp */; };
+		F980C4542C00E2AE00A86B68 /* SivCompareFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C44E2C00E2AE00A86B68 /* SivCompareFunction.cpp */; };
+		F980C4552C00E2AE00A86B68 /* SivTextureAddressMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4502C00E2AE00A86B68 /* SivTextureAddressMode.cpp */; };
+		F980C4562C00E2AE00A86B68 /* SivSamplerState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4522C00E2AE00A86B68 /* SivSamplerState.cpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -2968,6 +2974,12 @@
 		F980C43C2C00D31000A86B68 /* SivRasterizerState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRasterizerState.cpp; sourceTree = "<group>"; };
 		F980C43E2C00D31000A86B68 /* SivBlendOperation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBlendOperation.cpp; sourceTree = "<group>"; };
 		F980C4402C00D31000A86B68 /* SivBlendFactor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBlendFactor.cpp; sourceTree = "<group>"; };
+		F980C4482C00E27800A86B68 /* CompareFunction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CompareFunction.hpp; sourceTree = "<group>"; };
+		F980C4492C00E27800A86B68 /* TextureAddressMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureAddressMode.hpp; sourceTree = "<group>"; };
+		F980C44C2C00E29000A86B68 /* SamplerState.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SamplerState.ipp; sourceTree = "<group>"; };
+		F980C44E2C00E2AE00A86B68 /* SivCompareFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCompareFunction.cpp; sourceTree = "<group>"; };
+		F980C4502C00E2AE00A86B68 /* SivTextureAddressMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTextureAddressMode.cpp; sourceTree = "<group>"; };
+		F980C4522C00E2AE00A86B68 /* SivSamplerState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSamplerState.cpp; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -5026,6 +5038,7 @@
 				F986F9392BCA7996006A4C0F /* RectF.ipp */,
 				F9070B9B2B9F175000383E4D /* Result.ipp */,
 				F98606112BEB760C006A4C0F /* RoundRect.ipp */,
+				F980C44C2C00E29000A86B68 /* SamplerState.ipp */,
 				F97203192BF09E51000E21DD /* Scene.ipp */,
 				F9070B9C2B9F175000383E4D /* ScopeExit.ipp */,
 				F9070B9D2B9F175000383E4D /* SequenceFormatter.ipp */,
@@ -5101,6 +5114,7 @@
 				F986F89F2BC8003B006A4C0F /* CommandLine.hpp */,
 				F9070BCA2B9F175000383E4D /* Common.hpp */,
 				F9070BCB2B9F175000383E4D /* CommonFloat.hpp */,
+				F980C4482C00E27800A86B68 /* CompareFunction.hpp */,
 				F9070BCC2B9F175000383E4D /* CompilerVersion.hpp */,
 				F9528BB42BBF023600222F45 /* Compression.hpp */,
 				F9070BCD2B9F175000383E4D /* Concepts.hpp */,
@@ -5278,6 +5292,7 @@
 				F9070C272B9F175000383E4D /* System.hpp */,
 				F9070C282B9F175000383E4D /* TextEncoding.hpp */,
 				F9070C292B9F175000383E4D /* TextReader.hpp */,
+				F980C4492C00E27800A86B68 /* TextureAddressMode.hpp */,
 				F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */,
 				F9070C2A2B9F175000383E4D /* TextWriter.hpp */,
 				F9070C2B2B9F175000383E4D /* ThousandSeparate.hpp */,
@@ -5862,6 +5877,7 @@
 				F9070D292B9F175E00383E4D /* ColorF */,
 				F986F89A2BC7FB4D006A4C0F /* Colormap */,
 				F986F8A42BC80100006A4C0F /* CommandLine */,
+				F980C44F2C00E2AE00A86B68 /* CompareFunction */,
 				F9528BB72BBF024D00222F45 /* Compression */,
 				F9070D2D2B9F175E00383E4D /* Console */,
 				F9070D2F2B9F175E00383E4D /* ConsoleBuffer */,
@@ -5955,6 +5971,7 @@
 				F98605A22BE4887C006A4C0F /* RegExp */,
 				F97203112BF09DA3000E21DD /* Renderer */,
 				F97203042BEDF2FF000E21DD /* ResizeMode */,
+				F980C4532C00E2AE00A86B68 /* SamplerState */,
 				F97203022BEDF2FF000E21DD /* Scene */,
 				F934BD802BF880A10003EAD5 /* Shader */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
@@ -5964,6 +5981,7 @@
 				F9070D872B9F175E00383E4D /* System */,
 				F9070D892B9F175E00383E4D /* TextEncoding */,
 				F9070D8D2B9F175E00383E4D /* TextReader */,
+				F980C4512C00E2AE00A86B68 /* TextureAddressMode */,
 				F97203062BEDF2FF000E21DD /* TextureFilter */,
 				F9070D912B9F175E00383E4D /* TextWriter */,
 				F9070D932B9F175E00383E4D /* ThousandSeparate */,
@@ -6973,6 +6991,30 @@
 				F980C4402C00D31000A86B68 /* SivBlendFactor.cpp */,
 			);
 			path = BlendFactor;
+			sourceTree = "<group>";
+		};
+		F980C44F2C00E2AE00A86B68 /* CompareFunction */ = {
+			isa = PBXGroup;
+			children = (
+				F980C44E2C00E2AE00A86B68 /* SivCompareFunction.cpp */,
+			);
+			path = CompareFunction;
+			sourceTree = "<group>";
+		};
+		F980C4512C00E2AE00A86B68 /* TextureAddressMode */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4502C00E2AE00A86B68 /* SivTextureAddressMode.cpp */,
+			);
+			path = TextureAddressMode;
+			sourceTree = "<group>";
+		};
+		F980C4532C00E2AE00A86B68 /* SamplerState */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4522C00E2AE00A86B68 /* SivSamplerState.cpp */,
+			);
+			path = SamplerState;
 			sourceTree = "<group>";
 		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
@@ -9376,6 +9418,7 @@
 				F9528B5D2BB6DC6800222F45 /* CycleClock.ipp in Headers */,
 				F9528C102BBF026F00222F45 /* mem.h in Headers */,
 				F986057D2BDA7DFC006A4C0F /* ICursor.hpp in Headers */,
+				F980C44A2C00E27800A86B68 /* CompareFunction.hpp in Headers */,
 				F986041D2BCFBB54006A4C0F /* SkSLIRHelpers.h in Headers */,
 				F986FA712BCFB53B006A4C0F /* wofftypes.h in Headers */,
 				F986FA812BCFB53B006A4C0F /* ftglyph.h in Headers */,
@@ -10107,6 +10150,7 @@
 				F986FA522BCFB53B006A4C0F /* svpscmap.h in Headers */,
 				F9528B962BBC76D300222F45 /* Point3D.hpp in Headers */,
 				F98603D22BCFBB54006A4C0F /* SkSLGLSLCodeGenerator.h in Headers */,
+				F980C44D2C00E29000A86B68 /* SamplerState.ipp in Headers */,
 				F98606152BEB760D006A4C0F /* Ellipse.ipp in Headers */,
 				F9070D0F2B9F175100383E4D /* Vector2D.hpp in Headers */,
 				F9070CD52B9F175100383E4D /* Logger.hpp in Headers */,
@@ -10240,6 +10284,7 @@
 				F986F9C02BCA9D0A006A4C0F /* svgelement.h in Headers */,
 				F98600872BCFBB53006A4C0F /* SkTFitsIn.h in Headers */,
 				F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */,
+				F980C44B2C00E27800A86B68 /* TextureAddressMode.hpp in Headers */,
 				F907075A2B9DAEC900383E4D /* XoshiroCpp.hpp in Headers */,
 				F98605682BD203D4006A4C0F /* muParserToken.h in Headers */,
 				F90706B12B9DAEC900383E4D /* utility.h in Headers */,
@@ -10880,6 +10925,7 @@
 				F98604482BCFBB54006A4C0F /* SkSLVarDeclarations.cpp in Sources */,
 				F9070DD02B9F175E00383E4D /* SivFormatter.cpp in Sources */,
 				F98601C22BCFBB53006A4C0F /* SkGaussFilter.cpp in Sources */,
+				F980C4562C00E2AE00A86B68 /* SivSamplerState.cpp in Sources */,
 				F98601972BCFBB53006A4C0F /* SkData.cpp in Sources */,
 				F986040F2BCFBB54006A4C0F /* SkSLFunctionCall.cpp in Sources */,
 				F98602572BCFBB54006A4C0F /* SkRuntimeBlender.cpp in Sources */,
@@ -10970,6 +11016,7 @@
 				F98601602BCFBB53006A4C0F /* SkBlendMode.cpp in Sources */,
 				F98603142BCFBB54006A4C0F /* SkOpSegment.cpp in Sources */,
 				F986F9BD2BCA9D0A006A4C0F /* styleelement.cpp in Sources */,
+				F980C4542C00E2AE00A86B68 /* SivCompareFunction.cpp in Sources */,
 				F98600C72BCFBB53006A4C0F /* SkBlockAllocator.cpp in Sources */,
 				F98600C42BCFBB53006A4C0F /* SkBezierCurves.cpp in Sources */,
 				F98602502BCFBB54006A4C0F /* SkResourceCache.cpp in Sources */,
@@ -11195,6 +11242,7 @@
 				F98603A92BCFBB54006A4C0F /* SkImageShader.cpp in Sources */,
 				F98603C42BCFBB54006A4C0F /* SkSLHasSideEffects.cpp in Sources */,
 				F98600CB2BCFBB53006A4C0F /* SkContainers.cpp in Sources */,
+				F980C4552C00E2AE00A86B68 /* SivTextureAddressMode.cpp in Sources */,
 				F98601B62BCFBB53006A4C0F /* SkFlattenable.cpp in Sources */,
 				F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */,
 				F986F9242BC8441F006A4C0F /* regsyntax.c in Sources */,
