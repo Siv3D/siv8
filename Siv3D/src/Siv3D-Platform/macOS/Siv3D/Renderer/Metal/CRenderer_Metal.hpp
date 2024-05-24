@@ -85,11 +85,21 @@ namespace s3d
 		
 		struct SceneBuffer
 		{
-			uint32 sampleCount = 1;
+			uint32 sampleCount = FromEnum(Scene::DefaultMSAASampleCount);;
 
-			MetalInternalTexture2D scene;
+			MetalInternalTexture2D msaa;
 
-			MetalInternalTexture2D resolved;
+			MetalInternalTexture2D nonMSAA;
+
+			MetalInternalTexture2D& getSceneTexture() noexcept
+			{
+				return ((sampleCount == 1) ? nonMSAA : msaa);
+			}
+			
+			const MetalInternalTexture2D& getSceneTexture() const noexcept
+			{
+				return ((sampleCount == 1) ? nonMSAA : msaa);
+			}
 			
 		} m_sceneBuffers;
 			

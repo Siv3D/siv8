@@ -102,12 +102,12 @@ namespace s3d
 			
 			if (m_sceneBuffers.sampleCount == 1)
 			{
-				m_sceneBuffers.scene	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
+				m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
 			}
 			else
 			{
-				m_sceneBuffers.scene	= MetalInternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneBuffers.sampleCount);
-				m_sceneBuffers.resolved	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
+				m_sceneBuffers.msaa		= MetalInternalTexture2D::CreateMSRenderTexture(m_device, sceneSize, m_sceneBuffers.sampleCount);
+				m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
 			}
 		}
 		
@@ -203,8 +203,17 @@ namespace s3d
 			{
 				NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 				MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
-				cd->setTexture(m_sceneBuffers.scene.getTexture());
-				cd->setResolveTexture(m_sceneBuffers.resolved.getTexture());
+				
+				if (m_sceneBuffers.sampleCount == 1)
+				{
+					cd->setTexture(m_sceneBuffers.nonMSAA.getTexture());
+				}
+				else
+				{
+					cd->setTexture(m_sceneBuffers.msaa.getTexture());
+					cd->setResolveTexture(m_sceneBuffers.nonMSAA.getTexture());
+				}
+
 				cd->setLoadAction(MTL::LoadActionClear);
 				cd->setClearColor(MTL::ClearColor(m_sceneStyle.backgroundColor.r, m_sceneStyle.backgroundColor.g, m_sceneStyle.backgroundColor.b, 1));
 				
@@ -272,16 +281,7 @@ namespace s3d
 					.zfar = 1.0
 				};
 				renderCommandEncoder->setViewport(viewport);
-				
-				if (m_sceneBuffers.sampleCount == 1)
-				{
-					renderCommandEncoder->setFragmentTexture(m_sceneBuffers.scene.getTexture(), 0);
-				}
-				else
-				{
-					renderCommandEncoder->setFragmentTexture(m_sceneBuffers.resolved.getTexture(), 0);
-				}
-				
+				renderCommandEncoder->setFragmentTexture(m_sceneBuffers.nonMSAA.getTexture(), 0);
 				renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
 				renderCommandEncoder->endEncoding();
 			}
@@ -350,12 +350,12 @@ namespace s3d
 		
 		if (m_sceneBuffers.sampleCount == 1)
 		{
-			m_sceneBuffers.scene	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
+			m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
 		}
 		else
 		{
-			m_sceneBuffers.scene	= MetalInternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneBuffers.sampleCount);
-			m_sceneBuffers.resolved	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
+			m_sceneBuffers.msaa		= MetalInternalTexture2D::CreateMSRenderTexture(m_device, size, m_sceneBuffers.sampleCount);
+			m_sceneBuffers.nonMSAA	= MetalInternalTexture2D::CreateRenderTexture(m_device, size);
 		}
 	}
 
@@ -367,7 +367,7 @@ namespace s3d
 
 	const Size& CRenderer_Metal::getSceneBufferSize() const noexcept
 	{
-		return m_sceneBuffers.scene.size();
+		return m_sceneBuffers.getSceneTexture().size();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -378,7 +378,7 @@ namespace s3d
 
 	std::pair<double, RectF> CRenderer_Metal::getLetterboxComposition() const noexcept
 	{
-		return SceneMisc::CalculateLetterboxComposition(getBackBufferSize(), m_sceneBuffers.scene.size());
+		return SceneMisc::CalculateLetterboxComposition(getBackBufferSize(), getSceneBufferSize());
 	}
 
 	////////////////////////////////////////////////////////////////
