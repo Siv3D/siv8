@@ -13,6 +13,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -70,11 +71,10 @@ namespace s3d
 
 		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 		m_metalWindow = ::glfwGetCocoaWindow(glfwWindow);
-		
-		const Size& frameBufferSize = Window::GetState().frameBufferSize;
 
 		m_device = MTL::CreateSystemDefaultDevice();
-		
+
+		const Size& frameBufferSize = Window::GetState().frameBufferSize;
 		m_metalLayer = [CAMetalLayer layer];
 		m_metalLayer.device = (__bridge id<MTLDevice>)m_device;
 		m_metalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
@@ -101,6 +101,25 @@ namespace s3d
 			const Size sceneSize = Window::GetState().virtualSize;
 			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
 		}
+		
+		SIV3D_ENGINE(Shader)->init();
+		SIV3D_ENGINE(EngineShader)->init();
+
+		{
+			const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::FullScreenTriangle);
+			const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FullScreenTriangle);
+
+			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
+			renderPipelineDescriptor->setLabel(NS::String::string("FullScreenTriangle Rendering Pipeline", NS::ASCIIStringEncoding));
+			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
+			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
+			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat((MTL::PixelFormat)m_metalLayer.pixelFormat);
+			
+			NS::Error* error;
+			m_pipeLineStateFullScreenTriangle = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+		}
+		
+		clear();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -116,6 +135,13 @@ namespace s3d
 		{
 			resizeBackBuffer(windowFrameBufferSize);
 		}
+		
+		if (m_commandBuffer)
+		{
+			m_commandBuffer->release();
+		}
+		
+		m_commandBuffer = m_metalCommandQueue->commandBuffer();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -126,7 +152,7 @@ namespace s3d
 
 	void CRenderer_Metal::flush()
 	{
-		if (not m_metalRenderPSO1)
+		if (not m_pipeLineTest)
 		{
 			const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle);
 			const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle);
@@ -138,22 +164,30 @@ namespace s3d
 			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
 			
 			NS::Error* error;
-			m_metalRenderPSO1 = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+			m_pipeLineTest = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
 		}
-		
-		if (not m_metalRenderPSO2)
+				
+		@autoreleasepool
 		{
-			const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::FullScreenTriangle);
-			const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FullScreenTriangle);
-
-			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
-			renderPipelineDescriptor->setLabel(NS::String::string("FullScreenTriangle Rendering Pipeline", NS::ASCIIStringEncoding));
-			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
-			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
-			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat((MTL::PixelFormat)m_metalLayer.pixelFormat);
+			m_metalDrawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable];
 			
-			NS::Error* error;
-			m_metalRenderPSO2 = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+			{
+				NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+				MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
+				cd->setTexture(m_sceneBuffer.getTexture());
+				cd->setLoadAction(MTL::LoadActionClear);
+				cd->setClearColor(MTL::ClearColor(m_sceneStyle.backgroundColor.r, m_sceneStyle.backgroundColor.g, m_sceneStyle.backgroundColor.b, 1));
+				cd->setStoreAction(MTL::StoreActionStore);
+				
+				MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
+				renderCommandEncoder->setRenderPipelineState(m_pipeLineTest.get());
+				renderCommandEncoder->setVertexBuffer(m_triangleVertexBuffer.get(), 0, 0);
+				MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
+				NS::UInteger vertexStart = 0;
+				NS::UInteger vertexCount = 3;
+				renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
+				renderCommandEncoder->endEncoding();
+			}
 		}
 	}
 
@@ -169,10 +203,38 @@ namespace s3d
 		{
 			m_metalDrawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable];
 			
-			sendRenderCommand();
+			{
+				NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+				
+				MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
+				cd->setTexture(m_metalDrawable->texture());
+				cd->setLoadAction(MTL::LoadActionClear);
+				cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
+				cd->setStoreAction(MTL::StoreActionStore);
+				
+				MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
+				renderCommandEncoder->setRenderPipelineState(m_pipeLineStateFullScreenTriangle.get());
+				const auto [s, viewRect] = getLetterboxComposition();
+				const MTL::Viewport viewport = {
+					.originX = viewRect.x,
+					.originY = viewRect.y,
+					.width = viewRect.w,
+					.height = viewRect.h,
+					.znear = 0.0,
+					.zfar = 1.0
+				};
+				renderCommandEncoder->setViewport(viewport);
+				renderCommandEncoder->setFragmentTexture(m_sceneBuffer.getTexture(), 0);
+				renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
+				renderCommandEncoder->endEncoding();
+			}
+			
+			m_commandBuffer->presentDrawable(m_metalDrawable);
+			m_commandBuffer->commit();
+			m_commandBuffer->waitUntilCompleted();
 		}
 
-		return(true);
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -348,65 +410,6 @@ namespace s3d
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
-
-	void CRenderer_Metal::sendRenderCommand()
-	{
-		m_metalCommandBuffer = m_metalCommandQueue->commandBuffer();
-
-		{
-			NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
-			MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
-			cd->setTexture(m_sceneBuffer.getTexture());
-			cd->setLoadAction(MTL::LoadActionClear);
-			cd->setClearColor(MTL::ClearColor(m_sceneStyle.backgroundColor.r, m_sceneStyle.backgroundColor.g, m_sceneStyle.backgroundColor.b, 1));
-			cd->setStoreAction(MTL::StoreActionStore);
-
-			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
-
-			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO1.get());
-			renderCommandEncoder->setVertexBuffer(m_triangleVertexBuffer.get(), 0, 0);
-			MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
-			NS::UInteger vertexStart = 0;
-			NS::UInteger vertexCount = 3;
-			renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
-			renderCommandEncoder->endEncoding();
-		}
-		
-		{
-			NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
-			MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
-			cd->setTexture(m_metalDrawable->texture());
-			cd->setLoadAction(MTL::LoadActionClear);
-			cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
-			cd->setStoreAction(MTL::StoreActionStore);
-			
-			MTL::RenderCommandEncoder* renderCommandEncoder = m_metalCommandBuffer->renderCommandEncoder(renderPassDescriptor.get());
-			
-			renderCommandEncoder->setRenderPipelineState(m_metalRenderPSO2.get());
-			
-			const auto [s, viewRect] = getLetterboxComposition();
-			const MTL::Viewport viewport = {
-				.originX = viewRect.x,
-				.originY = viewRect.y,
-				.width = viewRect.w,
-				.height = viewRect.h,
-				.znear = 0.0,
-				.zfar = 1.0
-			};
-			renderCommandEncoder->setViewport(viewport);
-			
-			MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
-			NS::UInteger vertexStart = 0;
-			NS::UInteger vertexCount = 3;
-			renderCommandEncoder->setFragmentTexture(m_sceneBuffer.getTexture(), 0);
-			renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
-			renderCommandEncoder->endEncoding();
-		}
-		
-		m_metalCommandBuffer->presentDrawable(m_metalDrawable);
-		m_metalCommandBuffer->commit();
-		m_metalCommandBuffer->waitUntilCompleted();
-	}
 
 	void CRenderer_Metal::resizeBackBuffer(const Size backBufferSize)
 	{

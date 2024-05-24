@@ -80,16 +80,14 @@ namespace s3d
 		
 		CA::MetalDrawable* m_metalDrawable = nullptr;
 		NS::SharedPtr<MTL::CommandQueue> m_metalCommandQueue;
-		MTL::CommandBuffer* m_metalCommandBuffer = nullptr;
 		NS::SharedPtr<MTL::Buffer> m_triangleVertexBuffer;
+		MTL::CommandBuffer* m_commandBuffer = nullptr;
 		
 		MetalInternalTexture2D m_sceneBuffer;
 		
-		NS::SharedPtr<MTL::RenderPipelineState> m_metalRenderPSO1;
-		NS::SharedPtr<MTL::RenderPipelineState> m_metalRenderPSO2;
-		
-		void sendRenderCommand();
-		
+		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineStateFullScreenTriangle;
+		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTest;
+
 		void resizeBackBuffer(Size backBufferSize);
 		Size getBackBufferSize() const;
 		
