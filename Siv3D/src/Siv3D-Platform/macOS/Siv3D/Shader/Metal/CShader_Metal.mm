@@ -76,7 +76,20 @@ namespace s3d
 
 	VertexShader::IDType CShader_Metal::createVSFromFile(const FilePathView path, StringView entryPoint)
 	{
-		return(VertexShader::IDType::Null());
+		// [Siv3D ToDo] ファイルからの読み込みは今後実装
+		if (path)
+		{
+			return VertexShader::IDType::Null();
+		}
+
+		auto vertexShader = std::make_unique<MetalVertexShader>(m_defaultLibrary.get(), Unicode::ToUTF8(entryPoint));
+
+		if (not vertexShader->isInitialized())
+		{
+			return VertexShader::IDType::Null();
+		}
+
+		return m_vertexShaders.add(std::move(vertexShader));
 	}
 
 	VertexShader::IDType CShader_Metal::createVSFromSource(const StringView source, StringView entryPoint)
@@ -91,7 +104,20 @@ namespace s3d
 
 	PixelShader::IDType CShader_Metal::createPSFromFile(const FilePathView path, StringView entryPoint)
 	{
-		return(PixelShader::IDType::Null());
+		// [Siv3D ToDo] ファイルからの読み込みは今後実装
+		if (path)
+		{
+			return PixelShader::IDType::Null();
+		}
+
+		auto pixelShader = std::make_unique<MetalPixelShader>(m_defaultLibrary.get(), Unicode::ToUTF8(entryPoint));
+
+		if (not pixelShader->isInitialized())
+		{
+			return PixelShader::IDType::Null();
+		}
+
+		return m_pixelShaders.add(std::move(pixelShader));
 	}
 
 	PixelShader::IDType CShader_Metal::createPSFromSource(const StringView source, StringView entryPoint)

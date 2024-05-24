@@ -29,7 +29,7 @@ namespace s3d
 		MetalVertexShader(Null);
 
 		[[nodiscard]]
-		MetalVertexShader(const std::string& name);
+		MetalVertexShader(MTL::Library* library, const std::string& name);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;

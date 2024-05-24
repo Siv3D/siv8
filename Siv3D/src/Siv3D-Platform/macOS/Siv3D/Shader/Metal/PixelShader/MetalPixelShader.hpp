@@ -29,7 +29,7 @@ namespace s3d
 		MetalPixelShader(Null);
 
 		[[nodiscard]]
-		MetalPixelShader(const std::string& name);
+		MetalPixelShader(MTL::Library* library, const std::string& name);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;

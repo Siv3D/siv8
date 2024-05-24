@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "MetalVertexShader.hpp"
+# include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
@@ -22,10 +23,13 @@ namespace s3d
 	MetalVertexShader::MetalVertexShader(Null)
 		: m_initialized{ true } {}
 
-	MetalVertexShader::MetalVertexShader(const std::string& name)
+	MetalVertexShader::MetalVertexShader(MTL::Library* library, const std::string& name)
 	{
-		//if (FAILED(device->CreateVertexShader(m_bytecode.data(), static_cast<size_t>(m_bytecode.size()), nullptr, &m_shader)))
+		m_shader = NS::TransferPtr(library->newFunction(NS::String::string(name.c_str(), NS::ASCIIStringEncoding)));
+
+		if (not m_shader)
 		{
+			LOG_FAIL(fmt::format("MetalVertexShader: Failed to create a vertex shader `{}`", name));
 			return;
 		}
 
