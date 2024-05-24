@@ -51,6 +51,10 @@ namespace s3d
 
 		const Blob& getBytecodePS(PixelShader::IDType handleID) override;
 
+		MTL::Function* getShaderVS(VertexShader::IDType handleID);
+
+		MTL::Function* getShaderPS(PixelShader::IDType handleID);
+
 	private:
 
 		MTL::Device* m_device = nullptr;

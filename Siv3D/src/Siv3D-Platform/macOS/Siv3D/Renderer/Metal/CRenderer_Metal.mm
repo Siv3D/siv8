@@ -13,6 +13,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -64,6 +65,8 @@ namespace s3d
 	void CRenderer_Metal::init()
 	{
 		LOG_SCOPED_DEBUG("CRenderer_Metal::init()");
+		
+		m_pShader = static_cast<CShader_Metal*>(SIV3D_ENGINE(Shader));
 
 		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 		m_metalWindow = ::glfwGetCocoaWindow(glfwWindow);
@@ -91,23 +94,6 @@ namespace s3d
 															  sizeof(triangleVertices),
 															  MTL::ResourceStorageModeShared));
 		}
-		
-		m_metalDefaultLibrary = NS::TransferPtr(m_device->newDefaultLibrary());
-		
-		if(not m_metalDefaultLibrary)
-		{
-			throw InternalEngineError{ "Failed to create a default library" };
-		}
-
-		// list function names in the default library
-		/*
-		NS::Array* functionNames = m_metalDefaultLibrary->functionNames();
-
-		for (NS::UInteger i = 0; i < functionNames->count(); ++i)
-		{
-
-		}
-		 */
 
 		m_metalCommandQueue = NS::TransferPtr(m_device->newCommandQueue());
 		
@@ -142,15 +128,13 @@ namespace s3d
 	{
 		if (not m_metalRenderPSO1)
 		{
-			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("vertexShader", NS::ASCIIStringEncoding)));
-			assert(vertexShader);
-			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("fragmentShader", NS::ASCIIStringEncoding)));
-			assert(fragmentShader);
+			const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle);
+			const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle);
 			
 			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
 			renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
-			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
-			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
+			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
+			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
 			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
 			
 			NS::Error* error;
@@ -159,15 +143,13 @@ namespace s3d
 		
 		if (not m_metalRenderPSO2)
 		{
-			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("fullscreen_triangle_vs", NS::ASCIIStringEncoding)));
-			assert(vertexShader);
-			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("fullscreen_triangle_ps", NS::ASCIIStringEncoding)));
-			assert(fragmentShader);
-		
+			const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::FullScreenTriangle);
+			const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FullScreenTriangle);
+
 			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
-			renderPipelineDescriptor->setLabel(NS::String::string("Scene Rendering Pipeline", NS::ASCIIStringEncoding));
-			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
-			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
+			renderPipelineDescriptor->setLabel(NS::String::string("FullScreenTriangle Rendering Pipeline", NS::ASCIIStringEncoding));
+			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
+			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
 			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat((MTL::PixelFormat)m_metalLayer.pixelFormat);
 			
 			NS::Error* error;

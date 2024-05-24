@@ -16,6 +16,7 @@
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "Metal.hpp"
 # include "BackBuffer/MetalInternalTexture2D.hpp"
+# include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 
 namespace s3d
 {
@@ -62,6 +63,8 @@ namespace s3d
 		MTL::Device* getDevice() const;
 		
 	private:
+
+		CShader_Metal* m_pShader = nullptr;
 		
 		NSWindow* m_metalWindow = nullptr;
 		
@@ -76,7 +79,6 @@ namespace s3d
 		bool m_vSyncEnabled = true;
 		
 		CA::MetalDrawable* m_metalDrawable = nullptr;
-		NS::SharedPtr<MTL::Library> m_metalDefaultLibrary;
 		NS::SharedPtr<MTL::CommandQueue> m_metalCommandQueue;
 		MTL::CommandBuffer* m_metalCommandBuffer = nullptr;
 		NS::SharedPtr<MTL::Buffer> m_triangleVertexBuffer;

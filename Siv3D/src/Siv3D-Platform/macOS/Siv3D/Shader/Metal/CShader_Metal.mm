@@ -48,6 +48,15 @@ namespace s3d
 		{
 			throw InternalEngineError{ "Metal::newDefaultLibrary() failed" };
 		}
+
+		NS::Array* functionNames = m_defaultLibrary->functionNames();
+		
+		LOG_TRACE(fmt::format("{} functions in the default library", functionNames->count()));
+
+		for (uint32 i = 0; i < functionNames->count(); ++i)
+		{
+			LOG_TRACE(fmt::format("- {}", static_cast<NS::String*>(functionNames->object(i))->utf8String()));
+		}
 		
 		// null VS を管理に登録
 		{
@@ -160,5 +169,15 @@ namespace s3d
 	{
 		static const Blob blob;
 		return blob;
+	}
+
+	MTL::Function* CShader_Metal::getShaderVS(const VertexShader::IDType handleID)
+	{
+		return m_vertexShaders[handleID]->getShader();
+	}
+
+	MTL::Function* CShader_Metal::getShaderPS(const PixelShader::IDType handleID)
+	{
+		return m_pixelShaders[handleID]->getShader();
 	}
 }
