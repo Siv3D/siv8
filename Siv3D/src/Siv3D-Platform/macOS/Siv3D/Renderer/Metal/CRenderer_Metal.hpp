@@ -79,8 +79,9 @@ namespace s3d
 		bool m_vSyncEnabled = true;
 		
 		CA::MetalDrawable* m_metalDrawable = nullptr;
-		NS::SharedPtr<MTL::CommandQueue> m_metalCommandQueue;
-		NS::SharedPtr<MTL::Buffer> m_triangleVertexBuffer;
+
+		NS::SharedPtr<MTL::CommandQueue> m_commandQueue;
+
 		MTL::CommandBuffer* m_commandBuffer = nullptr;
 		
 		struct SceneBuffer
@@ -107,8 +108,10 @@ namespace s3d
 		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestNoAA;
 		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestMSAAx4;
 
+		NS::SharedPtr<MTL::Buffer> m_triangleVertexBuffer;
+
 		void resizeBackBuffer(Size backBufferSize);
+
 		Size getBackBufferSize() const;
-		
 	};
 }

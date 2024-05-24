@@ -95,7 +95,7 @@ namespace s3d
 															  MTL::ResourceStorageModeShared));
 		}
 
-		m_metalCommandQueue = NS::TransferPtr(m_device->newCommandQueue());
+		m_commandQueue = NS::TransferPtr(m_device->newCommandQueue());
 		
 		{
 			const Size sceneSize = Window::GetState().virtualSize;
@@ -150,7 +150,7 @@ namespace s3d
 			m_commandBuffer->release();
 		}
 		
-		m_commandBuffer = m_metalCommandQueue->commandBuffer();
+		m_commandBuffer = m_commandQueue->commandBuffer();
 	}
 
 	////////////////////////////////////////////////////////////////
