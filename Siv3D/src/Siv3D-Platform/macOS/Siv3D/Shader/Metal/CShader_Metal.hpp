@@ -13,6 +13,7 @@
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
+# include <Siv3D/Renderer/Metal/Metal.hpp>
 
 namespace s3d
 {
@@ -50,5 +51,8 @@ namespace s3d
 
 	private:
 
+		MTL::Device* m_device = nullptr;
+
+		NS::SharedPtr<MTL::Library> m_defaultLibrary;
 	};
 }

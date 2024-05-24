@@ -495,7 +495,7 @@
 		F934BD812BF880A10003EAD5 /* IShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD7F2BF880A10003EAD5 /* IShader.hpp */; };
 		F934BD872BF881110003EAD5 /* CShader_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD822BF881110003EAD5 /* CShader_Metal.hpp */; };
 		F934BD882BF881110003EAD5 /* CShader_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F934BD832BF881110003EAD5 /* CShader_Metal.mm */; };
-		F934BD892BF881110003EAD5 /* ShaderFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD852BF881110003EAD5 /* ShaderFactory.cpp */; };
+		F934BD892BF881110003EAD5 /* ShaderFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F934BD852BF881110003EAD5 /* ShaderFactory.mm */; };
 		F934BD8C2BF882020003EAD5 /* IEngineShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD8A2BF882020003EAD5 /* IEngineShader.hpp */; };
 		F934BD922BF8824B0003EAD5 /* CEngineShader_Metal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD8D2BF8824B0003EAD5 /* CEngineShader_Metal.cpp */; };
 		F934BD932BF8824B0003EAD5 /* CEngineShader_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD8E2BF8824B0003EAD5 /* CEngineShader_Metal.hpp */; };
@@ -2604,7 +2604,7 @@
 		F934BD7F2BF880A10003EAD5 /* IShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IShader.hpp; sourceTree = "<group>"; };
 		F934BD822BF881110003EAD5 /* CShader_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CShader_Metal.hpp; sourceTree = "<group>"; };
 		F934BD832BF881110003EAD5 /* CShader_Metal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CShader_Metal.mm; sourceTree = "<group>"; };
-		F934BD852BF881110003EAD5 /* ShaderFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderFactory.cpp; sourceTree = "<group>"; };
+		F934BD852BF881110003EAD5 /* ShaderFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ShaderFactory.mm; sourceTree = "<group>"; };
 		F934BD8A2BF882020003EAD5 /* IEngineShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IEngineShader.hpp; sourceTree = "<group>"; };
 		F934BD8D2BF8824B0003EAD5 /* CEngineShader_Metal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CEngineShader_Metal.cpp; sourceTree = "<group>"; };
 		F934BD8E2BF8824B0003EAD5 /* CEngineShader_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CEngineShader_Metal.hpp; sourceTree = "<group>"; };
@@ -6192,7 +6192,7 @@
 			isa = PBXGroup;
 			children = (
 				F934BD842BF881110003EAD5 /* Metal */,
-				F934BD852BF881110003EAD5 /* ShaderFactory.cpp */,
+				F934BD852BF881110003EAD5 /* ShaderFactory.mm */,
 			);
 			path = Shader;
 			sourceTree = "<group>";
@@ -10750,7 +10750,7 @@
 				F98604442BCFBB54006A4C0F /* SkSLType.cpp in Sources */,
 				F98601752BCFBB53006A4C0F /* SkBlurMaskFilterImpl.cpp in Sources */,
 				F9070DBC2B9F175E00383E4D /* SivDate.cpp in Sources */,
-				F934BD892BF881110003EAD5 /* ShaderFactory.cpp in Sources */,
+				F934BD892BF881110003EAD5 /* ShaderFactory.mm in Sources */,
 				F98602982BCFBB54006A4C0F /* SkVertState.cpp in Sources */,
 				F98600E32BCFBB53006A4C0F /* SkSharedMutex.cpp in Sources */,
 				F9070DF12B9F175E00383E4D /* TextWriterDetail.cpp in Sources */,

@@ -58,12 +58,14 @@ namespace s3d
 		bool isLowLatencyMode() const override;
 		
 		void updateSceneBufferSize();
+
+		MTL::Device* getDevice() const;
 		
 	private:
 		
 		NSWindow* m_metalWindow = nullptr;
 		
-		MTL::Device* m_metalDevice = nullptr;
+		MTL::Device* m_device = nullptr;
 		
 		CAMetalLayer* m_metalLayer = nullptr;
 

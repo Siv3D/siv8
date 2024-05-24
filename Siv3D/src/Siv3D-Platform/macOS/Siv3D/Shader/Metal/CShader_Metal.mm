@@ -11,6 +11,9 @@
 
 # include "CShader_Metal.hpp"
 # include <Siv3D/ShaderStage.hpp>
+# include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
+# include <Siv3D/Error/InternalEngineError.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -36,6 +39,16 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CShader_Metal::init()");
 
+		CRenderer_Metal* pRenderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		m_device = pRenderer->getDevice();
+		
+		m_defaultLibrary = NS::TransferPtr(m_device->newDefaultLibrary());
+
+		if (not m_defaultLibrary)
+		{
+			throw InternalEngineError{ "Metal::newDefaultLibrary() failed" };
+		}
+		
 		// null VS を管理に登録
 		{
 

@@ -37,9 +37,9 @@ namespace s3d
 
 		m_sceneBuffer.reset();
 
-		if (m_metalDevice)
+		if (m_device)
 		{
-			m_metalDevice->release();
+			m_device->release();
 		}
 	}
 
@@ -70,11 +70,13 @@ namespace s3d
 		
 		const Size& frameBufferSize = Window::GetState().frameBufferSize;
 
-		m_metalDevice = MTL::CreateSystemDefaultDevice();
+		m_device = MTL::CreateSystemDefaultDevice();
+		
 		m_metalLayer = [CAMetalLayer layer];
-		m_metalLayer.device = (__bridge id<MTLDevice>)m_metalDevice;
+		m_metalLayer.device = (__bridge id<MTLDevice>)m_device;
 		m_metalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
 		m_metalLayer.drawableSize = CGSizeMake(frameBufferSize.x, frameBufferSize.y);
+		
 		m_metalWindow.contentView.layer = m_metalLayer;
 		m_metalWindow.contentView.wantsLayer = YES;
 		
@@ -85,12 +87,12 @@ namespace s3d
 				{ 0.0f,  0.5f, 0.0f}
 			};
 			
-			m_triangleVertexBuffer = NS::TransferPtr(m_metalDevice->newBuffer(&triangleVertices,
+			m_triangleVertexBuffer = NS::TransferPtr(m_device->newBuffer(&triangleVertices,
 															  sizeof(triangleVertices),
 															  MTL::ResourceStorageModeShared));
 		}
 		
-		m_metalDefaultLibrary = NS::TransferPtr(m_metalDevice->newDefaultLibrary());
+		m_metalDefaultLibrary = NS::TransferPtr(m_device->newDefaultLibrary());
 		
 		if(not m_metalDefaultLibrary)
 		{
@@ -107,43 +109,11 @@ namespace s3d
 		}
 		 */
 
-		m_metalCommandQueue = NS::TransferPtr(m_metalDevice->newCommandQueue());
+		m_metalCommandQueue = NS::TransferPtr(m_device->newCommandQueue());
 		
-		{
-			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("vertexShader", NS::ASCIIStringEncoding)));
-			assert(vertexShader);
-			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("fragmentShader", NS::ASCIIStringEncoding)));
-			assert(fragmentShader);
-			
-			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
-			renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
-			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
-			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
-			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
-			
-			NS::Error* error;
-			m_metalRenderPSO1 = NS::TransferPtr(m_metalDevice->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
-		}
-		
-		{
-			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("sceneVertexShader", NS::ASCIIStringEncoding)));
-			assert(vertexShader);
-			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("sceneFragmentShader", NS::ASCIIStringEncoding)));
-			assert(fragmentShader);
-		
-			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
-			renderPipelineDescriptor->setLabel(NS::String::string("Scene Rendering Pipeline", NS::ASCIIStringEncoding));		
-			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
-			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
-			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat((MTL::PixelFormat)m_metalLayer.pixelFormat);
-			
-			NS::Error* error;
-			m_metalRenderPSO2 = NS::TransferPtr(m_metalDevice->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
-		}
-
 		{
 			const Size sceneSize = Window::GetState().virtualSize;
-			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_metalDevice, sceneSize);
+			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_device, sceneSize);
 		}
 	}
 
@@ -170,7 +140,39 @@ namespace s3d
 
 	void CRenderer_Metal::flush()
 	{
-
+		if (not m_metalRenderPSO1)
+		{
+			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("vertexShader", NS::ASCIIStringEncoding)));
+			assert(vertexShader);
+			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("fragmentShader", NS::ASCIIStringEncoding)));
+			assert(fragmentShader);
+			
+			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
+			renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
+			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
+			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
+			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
+			
+			NS::Error* error;
+			m_metalRenderPSO1 = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+		}
+		
+		if (not m_metalRenderPSO2)
+		{
+			NS::SharedPtr<MTL::Function> vertexShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("sceneVertexShader", NS::ASCIIStringEncoding)));
+			assert(vertexShader);
+			NS::SharedPtr<MTL::Function> fragmentShader = NS::TransferPtr(m_metalDefaultLibrary->newFunction(NS::String::string("sceneFragmentShader", NS::ASCIIStringEncoding)));
+			assert(fragmentShader);
+		
+			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
+			renderPipelineDescriptor->setLabel(NS::String::string("Scene Rendering Pipeline", NS::ASCIIStringEncoding));
+			renderPipelineDescriptor->setVertexFunction(vertexShader.get());
+			renderPipelineDescriptor->setFragmentFunction(fragmentShader.get());
+			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat((MTL::PixelFormat)m_metalLayer.pixelFormat);
+			
+			NS::Error* error;
+			m_metalRenderPSO2 = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -247,7 +249,7 @@ namespace s3d
 		
 		//if (m_sceneSampleCount == 1)
 		{
-			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_metalDevice, size);
+			m_sceneBuffer = MetalInternalTexture2D::CreateRenderTexture(m_device, size);
 		}
 		//else
 		//{
@@ -352,6 +354,11 @@ namespace s3d
 		{
 			resizeSceneBuffer(Window::GetState().virtualSize);
 		}
+	}
+
+	MTL::Device* CRenderer_Metal::getDevice() const
+	{
+		return m_device;
 	}
 
 	////////////////////////////////////////////////////////////////
