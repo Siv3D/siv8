@@ -94,7 +94,8 @@ namespace s3d
 		} m_sceneBuffers;
 			
 		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineStateFullScreenTriangle;
-		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTest;
+		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestNoAA;
+		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestMSAAx4;
 
 		void resizeBackBuffer(Size backBufferSize);
 		Size getBackBufferSize() const;
