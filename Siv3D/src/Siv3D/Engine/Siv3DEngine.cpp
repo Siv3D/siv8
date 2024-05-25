@@ -30,6 +30,7 @@
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
 
 namespace s3d
 {
