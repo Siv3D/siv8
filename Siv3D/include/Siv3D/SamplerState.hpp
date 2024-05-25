@@ -29,8 +29,6 @@ namespace s3d
 	/// @brief サンプラーステート
 	struct SamplerState
 	{
-		static constexpr uint32 TextureSlotCount = 16;
-
 		TextureAddressMode uAddressMode	: 4 = TextureAddressMode::Clamp;
 
 		TextureAddressMode vAddressMode	: 4 = TextureAddressMode::Clamp;
@@ -105,6 +103,12 @@ namespace s3d
 		{
 			return (lhs.asValue() == rhs.asValue());
 		}
+
+		static constexpr SamplerStateBuilder ClampNearest{
+			TextureAddressMode::Clamp, TextureAddressMode::Clamp, TextureAddressMode::Clamp,
+			TextureFilter::Nearest, TextureFilter::Nearest, TextureFilter::Nearest };
+
+		static constexpr SamplerStateBuilder ClampLinear{};
 
 		////////////////////////////////////////////////////////////////
 		//

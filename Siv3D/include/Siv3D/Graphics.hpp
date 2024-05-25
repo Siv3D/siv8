@@ -16,6 +16,12 @@ namespace s3d
 {
 	namespace Graphics
 	{
+		/// @brief シェーダの最大テクスチャスロット数
+		inline constexpr uint32 TextureSlotCount = 16;
+
+		/// @brief シェーダの最大出力レンダーターゲット数
+		inline constexpr uint32 RenderTargetCount = 8;
+
 		/// @brief VSync の有効無効を設定します（デフォルトでは有効）。
 		/// @param enabled VSync を有効にする場合 true, 無効にする場合 false
 		void SetVSyncEnabled(bool enabled);

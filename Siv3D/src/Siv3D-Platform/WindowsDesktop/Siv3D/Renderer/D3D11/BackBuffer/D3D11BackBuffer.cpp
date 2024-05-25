@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "D3D11BackBuffer.hpp"
+# include <Siv3D/Graphics.hpp>
 # include <Siv3D/SamplerState.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Shader/IShader.hpp>
@@ -287,14 +288,14 @@ namespace s3d
 
 	void D3D11BackBuffer::bindRenderTarget(ID3D11RenderTargetView* const rtv)
 	{
-		ID3D11RenderTargetView* const rtvs[8] = { rtv };
-		m_context->OMSetRenderTargets(8, rtvs, nullptr);
+		ID3D11RenderTargetView* const rtvs[Graphics::RenderTargetCount] = { rtv };
+		m_context->OMSetRenderTargets(Graphics::RenderTargetCount, rtvs, nullptr);
 	}
 
 	void D3D11BackBuffer::unbindAllRenderTargets()
 	{
-		constexpr ID3D11RenderTargetView* nullRTVs[8] = { nullptr };
-		m_context->OMSetRenderTargets(8, nullRTVs, nullptr);
+		constexpr ID3D11RenderTargetView* nullRTVs[Graphics::RenderTargetCount] = { nullptr };
+		m_context->OMSetRenderTargets(Graphics::RenderTargetCount, nullRTVs, nullptr);
 	}
 
 	void D3D11BackBuffer::bindPSTexture(ID3D11ShaderResourceView* const srv)
@@ -304,8 +305,8 @@ namespace s3d
 
 	void D3D11BackBuffer::unbindAllPSTextures()
 	{
-		constexpr ID3D11ShaderResourceView* nullSRVs[SamplerState::TextureSlotCount] = { nullptr };
-		m_context->PSSetShaderResources(0, SamplerState::TextureSlotCount, nullSRVs);
+		constexpr ID3D11ShaderResourceView* nullSRVs[Graphics::TextureSlotCount] = { nullptr };
+		m_context->PSSetShaderResources(0, Graphics::TextureSlotCount, nullSRVs);
 	}
 
 	void D3D11BackBuffer::drawFullScreenTriangle()
@@ -326,8 +327,8 @@ namespace s3d
 
 		// render states
 		{
-		//	const SamplerState samplerState = (m_sceneStyle.textureFilter == TextureFilter::Linear) ?
-		//		SamplerState::ClampLinear : SamplerState::ClampNearest;
+			const SamplerState samplerState = (m_sceneStyle.textureFilter == TextureFilter::Linear) ?
+				SamplerState::ClampLinear : SamplerState::ClampNearest;
 		//	pRenderer->getSamplerState().setPS(0, samplerState);
 		//	pRenderer->getBlendState().set(BlendState::Opaque);
 		//	pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);

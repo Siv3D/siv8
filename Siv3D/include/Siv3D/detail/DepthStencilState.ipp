@@ -28,6 +28,11 @@ namespace s3d
 		, depthWriteEnabled{ _depthWriteEnabled }
 		, depthCompareFunction{ _depthCompareFunction } {}
 
+	constexpr DepthStencilState::DepthStencilState(const DepthStencilStateBuilder& builder) noexcept
+		: depthEnabled{ builder.depthEnabled() }
+		, depthWriteEnabled{ builder.depthWriteEnabled() }
+		, depthCompareFunction{ builder.depthCompareFunction() } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	asValue
