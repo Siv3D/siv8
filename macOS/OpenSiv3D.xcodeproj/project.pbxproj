@@ -769,6 +769,7 @@
 		F980C4732C01B4B600A86B68 /* SivDepthStencilStateBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C46B2C01B4B600A86B68 /* SivDepthStencilStateBuilder.cpp */; };
 		F980C4742C01B4B600A86B68 /* SivBlendStateBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C46D2C01B4B600A86B68 /* SivBlendStateBuilder.cpp */; };
 		F980C4752C01B4B600A86B68 /* SivRasterizerStateBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C46F2C01B4B600A86B68 /* SivRasterizerStateBuilder.cpp */; };
+		F980C4772C01BA5600A86B68 /* DepthStencilState.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4762C01BA5600A86B68 /* DepthStencilState.ipp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -3006,6 +3007,7 @@
 		F980C46B2C01B4B600A86B68 /* SivDepthStencilStateBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivDepthStencilStateBuilder.cpp; sourceTree = "<group>"; };
 		F980C46D2C01B4B600A86B68 /* SivBlendStateBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBlendStateBuilder.cpp; sourceTree = "<group>"; };
 		F980C46F2C01B4B600A86B68 /* SivRasterizerStateBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRasterizerStateBuilder.cpp; sourceTree = "<group>"; };
+		F980C4762C01BA5600A86B68 /* DepthStencilState.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DepthStencilState.ipp; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -4991,6 +4993,7 @@
 				F9528B5A2BB6DC6800222F45 /* CycleClock.ipp */,
 				F9070B722B9F175000383E4D /* Date.ipp */,
 				F9070B732B9F175000383E4D /* DateTime.ipp */,
+				F980C4762C01BA5600A86B68 /* DepthStencilState.ipp */,
 				F980C45F2C01B22900A86B68 /* DepthStencilStateBuilder.ipp */,
 				F9070B742B9F175000383E4D /* DiscreteDistribution.ipp */,
 				F9070B752B9F175000383E4D /* DisjointSet.ipp */,
@@ -9668,6 +9671,7 @@
 				F9528B572BB6DC3700222F45 /* CycleClock.hpp in Headers */,
 				F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */,
 				F98601DF2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.h in Headers */,
+				F980C4772C01BA5600A86B68 /* DepthStencilState.ipp in Headers */,
 				F980C45C2C01B20F00A86B68 /* RasterizerStateBuilder.hpp in Headers */,
 				F986F9A92BCA9D0A006A4C0F /* graphicselement.h in Headers */,
 				F98605C72BE4B680006A4C0F /* Input.ipp in Headers */,
