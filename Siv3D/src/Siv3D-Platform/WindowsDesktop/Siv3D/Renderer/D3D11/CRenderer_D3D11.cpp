@@ -60,6 +60,7 @@ namespace s3d
 		m_blendState.init(m_device);
 		m_rasterizerState.init(m_device);
 		m_samplerState.init(m_device);
+		m_depthStencilState.init(m_device);
 
 		m_device.getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
@@ -272,6 +273,17 @@ namespace s3d
 	D3D11SamplerState& CRenderer_D3D11::getSamplerState() noexcept
 	{
 		return m_samplerState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getDepthStencilState
+	//
+	////////////////////////////////////////////////////////////////
+
+	D3D11DepthStencilState& CRenderer_D3D11::getDepthStencilState() noexcept
+	{
+		return m_depthStencilState;
 	}
 }
  

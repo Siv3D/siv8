@@ -826,6 +826,9 @@
     <Filter Include="src\Siv3D\DepthStencilState">
       <UniqueIdentifier>{f5853455-2e30-4057-963b-b7e1d157a8be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\DepthStencilState">
+      <UniqueIdentifier>{bbaacadd-09c9-42e2-8047-493432414978}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3270,6 +3273,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SamplerState\D3D11SamplerState.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SamplerState</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\DepthStencilState\D3D11DepthStencilState.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\DepthStencilState</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5491,6 +5497,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SamplerState\D3D11SamplerState.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SamplerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\DepthStencilState\D3D11DepthStencilState.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\DepthStencilState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

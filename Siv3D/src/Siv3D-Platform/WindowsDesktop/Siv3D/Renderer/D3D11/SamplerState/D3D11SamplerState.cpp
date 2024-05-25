@@ -107,7 +107,7 @@ namespace s3d
 			| ((FromEnum(state.magFilter) & 1) << 1)
 			| (FromEnum(state.mipFilter) & 1);
 
-		D3D11_SAMPLER_DESC desc =
+		D3D11_SAMPLER_DESC desc
 		{
 			.Filter			= FilterTable[filterTableIndex],
 			.AddressU		= AddressModeTable[FromEnum(state.uAddressMode)],

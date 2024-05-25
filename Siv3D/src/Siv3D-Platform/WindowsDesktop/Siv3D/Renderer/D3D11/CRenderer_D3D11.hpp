@@ -17,6 +17,7 @@
 # include "BlendState/D3D11BlendState.hpp"
 # include "RasterizerState/D3D11RasterizerState.hpp"
 # include "SamplerState/D3D11SamplerState.hpp"
+# include "DepthStencilState/D3D11DepthStencilState.hpp"
 
 namespace s3d
 {
@@ -77,6 +78,9 @@ namespace s3d
 		[[nodiscard]]
 		D3D11SamplerState& getSamplerState() noexcept;
 
+		[[nodiscard]]
+		D3D11DepthStencilState& getDepthStencilState() noexcept;
+
 	private:
 
 		D3D11Device m_device;
@@ -90,5 +94,7 @@ namespace s3d
 		D3D11RasterizerState m_rasterizerState;
 
 		D3D11SamplerState m_samplerState;
+
+		D3D11DepthStencilState m_depthStencilState;
 	};
 }

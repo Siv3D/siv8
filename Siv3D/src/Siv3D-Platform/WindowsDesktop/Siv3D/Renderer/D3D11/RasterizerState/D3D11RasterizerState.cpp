@@ -54,7 +54,7 @@ namespace s3d
 
 	D3D11RasterizerState::StateTable::iterator D3D11RasterizerState::create(const RasterizerState& state)
 	{
-		const D3D11_RASTERIZER_DESC desc =
+		const D3D11_RASTERIZER_DESC desc
 		{
 			.FillMode				= static_cast<D3D11_FILL_MODE>(FromEnum(state.triangleFillMode) + 2),
 			.CullMode				= static_cast<D3D11_CULL_MODE>(state.cullMode),
