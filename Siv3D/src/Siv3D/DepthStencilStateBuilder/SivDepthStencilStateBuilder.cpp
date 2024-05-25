@@ -9,8 +9,12 @@
 //
 //-----------------------------------------------
 
+# include <Siv3D/DepthStencilState.hpp>
 
 namespace s3d
 {
-
+	void Formatter(FormatData& formatData, const DepthStencilStateBuilder& value)
+	{
+		Formatter(formatData, DepthStencilState{ value });
+	}
 }

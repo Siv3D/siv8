@@ -9,8 +9,23 @@
 //
 //-----------------------------------------------
 
+# include <Siv3D/DepthStencilState.hpp>
+# include <Siv3D/FormatLiteral.hpp>
 
 namespace s3d
 {
+	String DepthStencilState::format() const
+	{
+		String result = U"DepthStencilState\n{\n";
+		result += U"\tdepthEnabled: {}\n"_fmt(depthEnabled);
+		result += U"\tdepthWriteEnabled: {}\n"_fmt(depthWriteEnabled);
+		result += U"\tdepthCompareFunction: {}\n"_fmt(depthCompareFunction);
+		result += U"}";
+		return result;
+	}
 
+	void Formatter(FormatData& formatData, const DepthStencilState& value)
+	{
+		formatData.string.append(value.format());
+	}
 }
