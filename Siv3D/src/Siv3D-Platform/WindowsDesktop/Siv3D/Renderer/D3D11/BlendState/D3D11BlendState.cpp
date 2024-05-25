@@ -70,8 +70,12 @@ namespace s3d
 
 		ComPtr<ID3D11BlendState> blendState;
 
+		LOG_TRACE("ID3D11Device::CreateBlendState()");
+
 		if (FAILED(m_device->CreateBlendState(&desc, &blendState)))
 		{
+			LOG_FAIL("✖ ID3D11Device::CreateBlendState() failed");
+			
 			return m_states.end();
 		}
 

@@ -11,24 +11,26 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
-# include <Siv3D/BlendState.hpp>
+# include <Siv3D/SamplerState.hpp>
+# include <Siv3D/Graphics.hpp>
 # include <Siv3D/HashTable.hpp>
-# include <Siv3D/PointVector.hpp>
 # include "../Device/D3D11Device.hpp"
 
 namespace s3d
 {
-	class D3D11BlendState
+	class D3D11SamplerState
 	{
 	public:
 
 		void init(const D3D11Device& device);
 
-		void set(const BlendState& state, const Float4& blendColor = Float4{ 0, 0, 0, 0 });
+		void setVS(uint32 slot, const SamplerState& state);
+
+		void setPS(uint32 slot, const SamplerState& state);
 	
 	private:
 
-		using StateTable = HashTable<BlendState, ComPtr<ID3D11BlendState>>;
+		using StateTable = HashTable<SamplerState, ComPtr<ID3D11SamplerState>>;
 
 		ID3D11Device* m_device = nullptr;
 
@@ -36,8 +38,10 @@ namespace s3d
 
 		StateTable m_states;
 
-		std::pair<BlendState, Float4> m_currentState{ BlendState::Invalid(), Float4{ 0, 0, 0, 0} };
+		std::array<SamplerState, Graphics::TextureSlotCount> m_currentVSStates;
 
-		StateTable::iterator create(const BlendState& state);
+		std::array<SamplerState, Graphics::TextureSlotCount> m_currentPSStates;
+
+		StateTable::iterator create(const SamplerState& state);
 	};
 }

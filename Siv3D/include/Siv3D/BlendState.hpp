@@ -120,6 +120,8 @@ namespace s3d
 
 		static constexpr BlendStateBuilder Default2D{};
 
+		static constexpr BlendStateBuilder Opaque{ false };
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Invalid

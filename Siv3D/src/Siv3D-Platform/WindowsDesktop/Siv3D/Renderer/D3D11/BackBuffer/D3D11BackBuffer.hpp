@@ -21,11 +21,13 @@
 
 namespace s3d
 {
+	class CRenderer_D3D11;
+
 	class D3D11BackBuffer
 	{
 	public:
 
-		void init(const D3D11Device& device, IDXGISwapChain1* swapChain);
+		void init(const D3D11Device& device, IDXGISwapChain1* swapChain, CRenderer_D3D11* pRenderer);
 
 		void clear(D3D11ClearTarget clearTarget);
 
@@ -60,6 +62,8 @@ namespace s3d
 		ID3D11DeviceContext* m_context	= nullptr;
 
 		IDXGISwapChain1* m_swapChain1	= nullptr;
+
+		CRenderer_D3D11* m_pRenderer	= nullptr;
 
 		SceneStyle m_sceneStyle;
 

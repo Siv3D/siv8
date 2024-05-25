@@ -11,24 +11,26 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
-# include <Siv3D/BlendState.hpp>
+# include <Siv3D/RasterizerState.hpp>
+# include <Siv3D/2DShapes.hpp>
 # include <Siv3D/HashTable.hpp>
-# include <Siv3D/PointVector.hpp>
 # include "../Device/D3D11Device.hpp"
 
 namespace s3d
 {
-	class D3D11BlendState
+	class D3D11RasterizerState
 	{
 	public:
 
 		void init(const D3D11Device& device);
 
-		void set(const BlendState& state, const Float4& blendColor = Float4{ 0, 0, 0, 0 });
+		void set(const RasterizerState& state);
+
+		void setScissorRect(const Rect& scissorRect);
 	
 	private:
 
-		using StateTable = HashTable<BlendState, ComPtr<ID3D11BlendState>>;
+		using StateTable = HashTable<RasterizerState, ComPtr<ID3D11RasterizerState>>;
 
 		ID3D11Device* m_device = nullptr;
 
@@ -36,8 +38,8 @@ namespace s3d
 
 		StateTable m_states;
 
-		std::pair<BlendState, Float4> m_currentState{ BlendState::Invalid(), Float4{ 0, 0, 0, 0} };
+		RasterizerState m_currentState = RasterizerState::Invalid();
 
-		StateTable::iterator create(const BlendState& state);
+		StateTable::iterator create(const RasterizerState& state);
 	};
 }

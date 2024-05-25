@@ -15,6 +15,8 @@
 # include "SwapChain/D3D11SwapChain.hpp"
 # include "BackBuffer/D3D11BackBuffer.hpp"
 # include "BlendState/D3D11BlendState.hpp"
+# include "RasterizerState/D3D11RasterizerState.hpp"
+# include "SamplerState/D3D11SamplerState.hpp"
 
 namespace s3d
 {
@@ -24,6 +26,7 @@ namespace s3d
 
 		~CRenderer_D3D11() override;
 
+		[[nodiscard]]
 		StringView getName() const override;
 
 		void init() override;
@@ -34,29 +37,45 @@ namespace s3d
 
 		bool present() override;
 
+		[[nodiscard]]
 		SceneStyle& getSceneStyle() noexcept override;
 
 		void setSceneResizeMode(ResizeMode resizeMode) override;
 
+		[[nodiscard]]
 		ResizeMode getSceneResizeMode() const noexcept override;
 
 		void resizeSceneBuffer(Size size) override;
 
+		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept override;
 
+		[[nodiscard]]
 		std::pair<double, RectF> getLetterboxComposition() const noexcept override;
 
 		void updateSceneSize() override;
 
 		void setVSyncEnabled(bool enabled) override;
 
+		[[nodiscard]]
 		bool isVSyncEnabled() const override;
 
 		void setLowLatencyMode(bool enabled) override;
 
+		[[nodiscard]]
 		bool isLowLatencyMode() const override;
 
+		[[nodiscard]]
 		const D3D11Device& getDevice() const noexcept;
+
+		[[nodiscard]]
+		D3D11BlendState& getBlendState() noexcept;
+
+		[[nodiscard]]
+		D3D11RasterizerState& getRasterizerState() noexcept;
+
+		[[nodiscard]]
+		D3D11SamplerState& getSamplerState() noexcept;
 
 	private:
 
@@ -67,5 +86,9 @@ namespace s3d
 		D3D11BackBuffer m_backBuffer;
 
 		D3D11BlendState m_blendState;
+
+		D3D11RasterizerState m_rasterizerState;
+
+		D3D11SamplerState m_samplerState;
 	};
 }

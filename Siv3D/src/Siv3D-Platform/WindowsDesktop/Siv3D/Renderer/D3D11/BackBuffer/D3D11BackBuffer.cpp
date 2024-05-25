@@ -16,6 +16,7 @@
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -27,7 +28,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11BackBuffer::init(const D3D11Device& device, IDXGISwapChain1* swapChain)
+	void D3D11BackBuffer::init(const D3D11Device& device, IDXGISwapChain1* swapChain, CRenderer_D3D11* pRenderer)
 	{
 		LOG_SCOPED_DEBUG("D3D11BackBuffer::init()");
 		LOG_INFO(fmt::format("ℹ️ Scene MSAA: x{}", m_sceneBuffers.sampleCount));
@@ -35,6 +36,7 @@ namespace s3d
 		m_device		= device.getDevice();
 		m_context		= device.getContext();
 		m_swapChain1	= swapChain;
+		m_pRenderer		= pRenderer;
 
 		m_backBuffer	= D3D11InternalTexture2D::CreateFromSwapChain(m_device, m_swapChain1);
 		
@@ -327,12 +329,12 @@ namespace s3d
 
 		// render states
 		{
-			const SamplerState samplerState = (m_sceneStyle.textureFilter == TextureFilter::Linear) ?
-				SamplerState::ClampLinear : SamplerState::ClampNearest;
-		//	pRenderer->getSamplerState().setPS(0, samplerState);
-		//	pRenderer->getBlendState().set(BlendState::Opaque);
+			const SamplerState samplerState = ((m_sceneStyle.textureFilter == TextureFilter::Linear) ?
+				SamplerState::ClampLinear : SamplerState::ClampNearest);
+			m_pRenderer->getSamplerState().setPS(0, samplerState);
+			m_pRenderer->getBlendState().set(BlendState::Opaque);
 		//	pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
-		//	pRenderer->getRasterizerState().set(RasterizerState::Default2D);
+			m_pRenderer->getRasterizerState().set(RasterizerState::Default2D);
 		}
 
 		// shaders

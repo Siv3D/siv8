@@ -44,7 +44,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_enabled = _enabled;
-		return *this;
+		return result;
 	}
 
 	constexpr bool BlendStateBuilder::enabled() const noexcept
@@ -56,7 +56,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_sourceRGB = _sourceRGB;
-		return *this;
+		return result;
 	}
 
 	constexpr BlendFactor BlendStateBuilder::sourceRGB() const noexcept
@@ -68,7 +68,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_destinationRGB = _destinationRGB;
-		return *this;
+		return result;
 	}
 
 	constexpr BlendFactor BlendStateBuilder::destinationRGB() const noexcept
@@ -80,7 +80,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_rgbOperation = _rgbOperation;
-		return *this;
+		return result;
 	}
 
 	constexpr BlendOperation BlendStateBuilder::rgbOperation() const noexcept
@@ -92,7 +92,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_sourceAlpha = _sourceAlpha;
-		return *this;
+		return result;
 	}
 
 	constexpr BlendFactor BlendStateBuilder::sourceAlpha() const noexcept
@@ -104,7 +104,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_destinationAlpha = _destinationAlpha;
-		return *this;
+		return result;
 	}
 
 	constexpr BlendFactor BlendStateBuilder::destinationAlpha() const noexcept
@@ -116,7 +116,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_alphaOperation = _alphaOperation;
-		return *this;
+		return result;
 	}
 
 	constexpr BlendOperation BlendStateBuilder::alphaOperation() const noexcept
@@ -128,7 +128,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_alphaToCoverageEnabled = _alphaToCoverageEnabled;
-		return *this;
+		return result;
 	}
 
 	constexpr bool BlendStateBuilder::alphaToCoverageEnabled() const noexcept
@@ -140,7 +140,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_writeR = _writeR;
-		return *this;
+		return result;
 	}
 
 	constexpr bool BlendStateBuilder::writeR() const noexcept
@@ -152,7 +152,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_writeG = _writeG;
-		return *this;
+		return result;
 	}
 
 	constexpr bool BlendStateBuilder::writeG() const noexcept
@@ -164,7 +164,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_writeB = _writeB;
-		return *this;
+		return result;
 	}
 
 	constexpr bool BlendStateBuilder::writeB() const noexcept
@@ -176,7 +176,7 @@ namespace s3d
 	{
 		BlendStateBuilder result{ *this };
 		result.m_writeA = _writeA;
-		return *this;
+		return result;
 	}
 
 	constexpr bool BlendStateBuilder::writeA() const noexcept

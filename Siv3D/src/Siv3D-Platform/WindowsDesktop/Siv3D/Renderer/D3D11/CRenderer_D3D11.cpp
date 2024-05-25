@@ -56,8 +56,10 @@ namespace s3d
 		const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
 
 		m_swapChain.init(hWnd, m_device, windowFrameBufferSize);
-		m_backBuffer.init(m_device, m_swapChain.getSwapChain1());
+		m_backBuffer.init(m_device, m_swapChain.getSwapChain1(), this);
 		m_blendState.init(m_device);
+		m_rasterizerState.init(m_device);
+		m_samplerState.init(m_device);
 
 		m_device.getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
@@ -237,6 +239,39 @@ namespace s3d
 	const D3D11Device& CRenderer_D3D11::getDevice() const noexcept
 	{
 		return m_device;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBlendState
+	//
+	////////////////////////////////////////////////////////////////
+
+	D3D11BlendState& CRenderer_D3D11::getBlendState() noexcept
+	{
+		return m_blendState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getRasterizerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	D3D11RasterizerState& CRenderer_D3D11::getRasterizerState() noexcept
+	{
+		return m_rasterizerState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	D3D11SamplerState& CRenderer_D3D11::getSamplerState() noexcept
+	{
+		return m_samplerState;
 	}
 }
  
