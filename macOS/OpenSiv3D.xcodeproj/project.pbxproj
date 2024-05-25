@@ -756,6 +756,14 @@
 		F980C4542C00E2AE00A86B68 /* SivCompareFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C44E2C00E2AE00A86B68 /* SivCompareFunction.cpp */; };
 		F980C4552C00E2AE00A86B68 /* SivTextureAddressMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4502C00E2AE00A86B68 /* SivTextureAddressMode.cpp */; };
 		F980C4562C00E2AE00A86B68 /* SivSamplerState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4522C00E2AE00A86B68 /* SivSamplerState.cpp */; };
+		F980C45B2C01B20F00A86B68 /* SamplerStateBuilder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4572C01B20F00A86B68 /* SamplerStateBuilder.hpp */; };
+		F980C45C2C01B20F00A86B68 /* RasterizerStateBuilder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4582C01B20F00A86B68 /* RasterizerStateBuilder.hpp */; };
+		F980C45D2C01B20F00A86B68 /* DepthStencilStateBuilder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4592C01B20F00A86B68 /* DepthStencilStateBuilder.hpp */; };
+		F980C45E2C01B20F00A86B68 /* BlendStateBuilder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C45A2C01B20F00A86B68 /* BlendStateBuilder.hpp */; };
+		F980C4632C01B22900A86B68 /* DepthStencilStateBuilder.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F980C45F2C01B22900A86B68 /* DepthStencilStateBuilder.ipp */; };
+		F980C4642C01B22900A86B68 /* RasterizerStateBuilder.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4602C01B22900A86B68 /* RasterizerStateBuilder.ipp */; };
+		F980C4652C01B22900A86B68 /* BlendStateBuilder.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4612C01B22900A86B68 /* BlendStateBuilder.ipp */; };
+		F980C4662C01B22900A86B68 /* SamplerStateBuilder.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4622C01B22900A86B68 /* SamplerStateBuilder.ipp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -2980,6 +2988,14 @@
 		F980C44E2C00E2AE00A86B68 /* SivCompareFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCompareFunction.cpp; sourceTree = "<group>"; };
 		F980C4502C00E2AE00A86B68 /* SivTextureAddressMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTextureAddressMode.cpp; sourceTree = "<group>"; };
 		F980C4522C00E2AE00A86B68 /* SivSamplerState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivSamplerState.cpp; sourceTree = "<group>"; };
+		F980C4572C01B20F00A86B68 /* SamplerStateBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SamplerStateBuilder.hpp; sourceTree = "<group>"; };
+		F980C4582C01B20F00A86B68 /* RasterizerStateBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RasterizerStateBuilder.hpp; sourceTree = "<group>"; };
+		F980C4592C01B20F00A86B68 /* DepthStencilStateBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DepthStencilStateBuilder.hpp; sourceTree = "<group>"; };
+		F980C45A2C01B20F00A86B68 /* BlendStateBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BlendStateBuilder.hpp; sourceTree = "<group>"; };
+		F980C45F2C01B22900A86B68 /* DepthStencilStateBuilder.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DepthStencilStateBuilder.ipp; sourceTree = "<group>"; };
+		F980C4602C01B22900A86B68 /* RasterizerStateBuilder.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RasterizerStateBuilder.ipp; sourceTree = "<group>"; };
+		F980C4612C01B22900A86B68 /* BlendStateBuilder.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BlendStateBuilder.ipp; sourceTree = "<group>"; };
+		F980C4622C01B22900A86B68 /* SamplerStateBuilder.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SamplerStateBuilder.ipp; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -4951,6 +4967,7 @@
 				F9070B682B9F175000383E4D /* BinaryReader.ipp */,
 				F9070B692B9F175000383E4D /* BinaryWriter.ipp */,
 				F980C4322C00D2DF00A86B68 /* BlendState.ipp */,
+				F980C4612C01B22900A86B68 /* BlendStateBuilder.ipp */,
 				F9070B6A2B9F175000383E4D /* Blob.ipp */,
 				F9070B6B2B9F175000383E4D /* BoolArray.ipp */,
 				F9070B6C2B9F175000383E4D /* Byte.ipp */,
@@ -4964,6 +4981,7 @@
 				F9528B5A2BB6DC6800222F45 /* CycleClock.ipp */,
 				F9070B722B9F175000383E4D /* Date.ipp */,
 				F9070B732B9F175000383E4D /* DateTime.ipp */,
+				F980C45F2C01B22900A86B68 /* DepthStencilStateBuilder.ipp */,
 				F9070B742B9F175000383E4D /* DiscreteDistribution.ipp */,
 				F9070B752B9F175000383E4D /* DisjointSet.ipp */,
 				F9070B762B9F175000383E4D /* Duration.ipp */,
@@ -5034,11 +5052,13 @@
 				F98605F12BE61586006A4C0F /* RandomVec2.ipp */,
 				F98605F32BE61586006A4C0F /* RandomVec4.ipp */,
 				F980C4332C00D2DF00A86B68 /* RasterizerState.ipp */,
+				F980C4602C01B22900A86B68 /* RasterizerStateBuilder.ipp */,
 				F9070B9A2B9F175000383E4D /* Rect.ipp */,
 				F986F9392BCA7996006A4C0F /* RectF.ipp */,
 				F9070B9B2B9F175000383E4D /* Result.ipp */,
 				F98606112BEB760C006A4C0F /* RoundRect.ipp */,
 				F980C44C2C00E29000A86B68 /* SamplerState.ipp */,
+				F980C4622C01B22900A86B68 /* SamplerStateBuilder.ipp */,
 				F97203192BF09E51000E21DD /* Scene.ipp */,
 				F9070B9C2B9F175000383E4D /* ScopeExit.ipp */,
 				F9070B9D2B9F175000383E4D /* SequenceFormatter.ipp */,
@@ -5101,6 +5121,7 @@
 				F980C4272C00D2B500A86B68 /* BlendFactor.hpp */,
 				F980C4242C00D2B500A86B68 /* BlendOperation.hpp */,
 				F980C4292C00D2B500A86B68 /* BlendState.hpp */,
+				F980C45A2C01B20F00A86B68 /* BlendStateBuilder.hpp */,
 				F9070BC32B9F175000383E4D /* Blob.hpp */,
 				F9070BC42B9F175000383E4D /* BoolToString.hpp */,
 				F9070BC52B9F175000383E4D /* Byte.hpp */,
@@ -5130,6 +5151,7 @@
 				F9070BD42B9F175000383E4D /* DayOfWeek.hpp */,
 				F9070BD52B9F175000383E4D /* Demangle.hpp */,
 				F980C4232C00D2B500A86B68 /* DepthStencilState.hpp */,
+				F980C4592C01B20F00A86B68 /* DepthStencilStateBuilder.hpp */,
 				F986060E2BEB75DB006A4C0F /* DirectoryWatcher.hpp */,
 				F9070BD62B9F175000383E4D /* DiscreteDistribution.hpp */,
 				F9070BD72B9F175000383E4D /* DisjointSet.hpp */,
@@ -5266,6 +5288,7 @@
 				F98605EC2BE61564006A4C0F /* RandomVec2.hpp */,
 				F98605E92BE61563006A4C0F /* RandomVec4.hpp */,
 				F980C4282C00D2B500A86B68 /* RasterizerState.hpp */,
+				F980C4582C01B20F00A86B68 /* RasterizerStateBuilder.hpp */,
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
 				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
@@ -5274,6 +5297,7 @@
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
 				F98606182BEB7651006A4C0F /* RoundRect.hpp */,
 				F980C4262C00D2B500A86B68 /* SamplerState.hpp */,
+				F980C4572C01B20F00A86B68 /* SamplerStateBuilder.hpp */,
 				F97202F52BEDF2D8000E21DD /* Scene.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9070C1F2B9F175000383E4D /* SequenceFormatter.hpp */,
@@ -9176,6 +9200,7 @@
 				F98602242BCFBB54006A4C0F /* SkPictureRecord.h in Headers */,
 				F98602182BCFBB54006A4C0F /* SkPathPriv.h in Headers */,
 				F90706992B9DAEC900383E4D /* bits.h in Headers */,
+				F980C45B2C01B20F00A86B68 /* SamplerStateBuilder.hpp in Headers */,
 				F98600052BCFBB53006A4C0F /* SkClipOp.h in Headers */,
 				F9070C5B2B9F175000383E4D /* FormatUtility.ipp in Headers */,
 				F986007B2BCFBB53006A4C0F /* SkMalloc.h in Headers */,
@@ -9547,6 +9572,7 @@
 				F9070DF82B9F175E00383E4D /* UnicodeUtility.hpp in Headers */,
 				F986FA9A2BCFB53B006A4C0F /* ftwinfnt.h in Headers */,
 				F986031F2BCFBB54006A4C0F /* SkPathOpsCubic.h in Headers */,
+				F980C45D2C01B20F00A86B68 /* DepthStencilStateBuilder.hpp in Headers */,
 				F986047C2BCFBB54006A4C0F /* SkSLMemoryLayout.h in Headers */,
 				F9528C462BBF026F00222F45 /* zstd_errors.h in Headers */,
 				F98603E92BCFBB54006A4C0F /* SkSLChildCall.h in Headers */,
@@ -9580,12 +9606,14 @@
 				F98600492BCFBB53006A4C0F /* SkTextureCompressionType.h in Headers */,
 				F934BD732BF880330003EAD5 /* ShaderStage.hpp in Headers */,
 				F986052C2BD10459006A4C0F /* Line.hpp in Headers */,
+				F980C45E2C01B20F00A86B68 /* BlendStateBuilder.hpp in Headers */,
 				F9070C732B9F175000383E4D /* Point.ipp in Headers */,
 				F986FA612BCFB53B006A4C0F /* fthash.h in Headers */,
 				F986FA702BCFB53B006A4C0F /* tttypes.h in Headers */,
 				F9528B572BB6DC3700222F45 /* CycleClock.hpp in Headers */,
 				F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */,
 				F98601DF2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.h in Headers */,
+				F980C45C2C01B20F00A86B68 /* RasterizerStateBuilder.hpp in Headers */,
 				F986F9A92BCA9D0A006A4C0F /* graphicselement.h in Headers */,
 				F98605C72BE4B680006A4C0F /* Input.ipp in Headers */,
 				F9070AFF2B9DEB5900383E4D /* utils.h in Headers */,
@@ -9747,6 +9775,7 @@
 				F98600AB2BCFBB53006A4C0F /* SkNullCanvas.h in Headers */,
 				F986FA752BCFB53B006A4C0F /* ftbdf.h in Headers */,
 				F9070C7A2B9F175000383E4D /* Shuffle.ipp in Headers */,
+				F980C4632C01B22900A86B68 /* DepthStencilStateBuilder.ipp in Headers */,
 				F986F9182BC8441F006A4C0F /* oniggnu.h in Headers */,
 				F9070CD12B9F175100383E4D /* ISteadyClock.hpp in Headers */,
 				F90706AD2B9DAEC900383E4D /* poisson_distribution.h in Headers */,
@@ -9767,6 +9796,7 @@
 				F98600612BCFBB53006A4C0F /* SkImageFilters.h in Headers */,
 				F9070CF02B9F175100383E4D /* PredefinedNamedParameter.hpp in Headers */,
 				F9528BAB2BBE7CF300222F45 /* MemoryReader.hpp in Headers */,
+				F980C4662C01B22900A86B68 /* SamplerStateBuilder.ipp in Headers */,
 				F98602F72BCFBB54006A4C0F /* SkBlitRow_opts.h in Headers */,
 				F98602532BCFBB54006A4C0F /* SkRRectPriv.h in Headers */,
 				F986F9422BCA79B4006A4C0F /* Math.hpp in Headers */,
@@ -9921,6 +9951,7 @@
 				F986030E2BCFBB54006A4C0F /* SkOpCoincidence.h in Headers */,
 				F98600602BCFBB53006A4C0F /* SkHighContrastFilter.h in Headers */,
 				F986000A2BCFBB53006A4C0F /* SkColorTable.h in Headers */,
+				F980C4642C01B22900A86B68 /* RasterizerStateBuilder.ipp in Headers */,
 				F986F9C62BCA9D25006A4C0F /* SVG.hpp in Headers */,
 				F90706AE2B9DAEC900383E4D /* uniform_int_distribution.h in Headers */,
 				F9070C6F2B9F175000383E4D /* Optional.ipp in Headers */,
@@ -10300,6 +10331,7 @@
 				F986FA902BCFB53B006A4C0F /* ftparams.h in Headers */,
 				F9528C192BBF026F00222F45 /* zstd_deps.h in Headers */,
 				F9070CE32B9F175100383E4D /* OrderedSet.hpp in Headers */,
+				F980C4652C01B22900A86B68 /* BlendStateBuilder.ipp in Headers */,
 				F98602672BCFBB54006A4C0F /* SkScan.h in Headers */,
 				F986FA732BCFB53B006A4C0F /* ftadvanc.h in Headers */,
 				F98605872BDA869C006A4C0F /* HighTemporalResolutionCursor.hpp in Headers */,
