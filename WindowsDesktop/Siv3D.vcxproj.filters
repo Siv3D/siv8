@@ -811,6 +811,21 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\RasterizerState">
       <UniqueIdentifier>{070011d1-7b93-4839-b305-dcf364a3d0a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\BlendStateBuilder">
+      <UniqueIdentifier>{99ff162b-d7aa-4eed-aa4c-7cf144493471}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\RasterizerStateBuilder">
+      <UniqueIdentifier>{995c503d-f0c4-403d-b93a-a7a200032da5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\SamplerStateBuilder">
+      <UniqueIdentifier>{b385e792-057b-42c3-8ae7-b2faa3f9a7ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\DepthStencilStateBuilder">
+      <UniqueIdentifier>{0cbf6854-b389-434f-8cd3-b5bc0c53a9c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\DepthStencilState">
+      <UniqueIdentifier>{f5853455-2e30-4057-963b-b7e1d157a8be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5446,6 +5461,21 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BlendState\D3D11BlendState.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BlendState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BlendStateBuilder\SivBlendStateBuilder.cpp">
+      <Filter>src\Siv3D\BlendStateBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RasterizerStateBuilder\SivRasterizerStateBuilder.cpp">
+      <Filter>src\Siv3D\RasterizerStateBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SamplerStateBuilder\SivSamplerStateBuilder.cpp">
+      <Filter>src\Siv3D\SamplerStateBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilStateBuilder\SivDepthStencilStateBuilder.cpp">
+      <Filter>src\Siv3D\DepthStencilStateBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilState\SivDepthStencilState.cpp">
+      <Filter>src\Siv3D\DepthStencilState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

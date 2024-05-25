@@ -102,6 +102,14 @@ namespace s3d
 		[[nodiscard]]
 		constexpr float minLOD() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
+
+		friend void Formatter(FormatData& formatData, const SamplerStateBuilder& value);
+
 	private:
 
 		TextureAddressMode m_uAddressMode : 4 = TextureAddressMode::Clamp;

@@ -65,6 +65,14 @@ namespace s3d
 		[[nodiscard]]
 		constexpr int32 depthBias() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
+
+		friend void Formatter(FormatData& formatData, const RasterizerStateBuilder& value);
+
 	private:
 
 		TriangleFillMode m_triangleFillMode : 2 = TriangleFillMode::Solid;

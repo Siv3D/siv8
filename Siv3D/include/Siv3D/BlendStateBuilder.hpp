@@ -114,6 +114,14 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool writeA() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
+
+		friend void Formatter(FormatData& formatData, const BlendStateBuilder& value);
+
 	private:
 
 		bool m_enabled : 1 = true;
