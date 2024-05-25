@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "TriangleFillMode.hpp"
 # include "CullMode.hpp"
+# include "RasterizerStateBuilder.hpp"
 # include "String.hpp"
 
 namespace s3d
@@ -52,6 +53,9 @@ namespace s3d
 			bool _antialiasedLine3D = false,
 			int32 _depthBias = 0
 		) noexcept;
+
+		[[nodiscard]]
+		constexpr RasterizerState(const RasterizerStateBuilder& builder) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

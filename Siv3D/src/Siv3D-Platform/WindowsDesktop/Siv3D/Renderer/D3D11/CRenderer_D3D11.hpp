@@ -14,6 +14,7 @@
 # include "Device/D3D11Device.hpp"
 # include "SwapChain/D3D11SwapChain.hpp"
 # include "BackBuffer/D3D11BackBuffer.hpp"
+# include "BlendState/D3D11BlendState.hpp"
 
 namespace s3d
 {
@@ -64,5 +65,7 @@ namespace s3d
 		D3D11SwapChain m_swapChain;
 
 		D3D11BackBuffer m_backBuffer;
+
+		D3D11BlendState m_blendState;
 	};
 }

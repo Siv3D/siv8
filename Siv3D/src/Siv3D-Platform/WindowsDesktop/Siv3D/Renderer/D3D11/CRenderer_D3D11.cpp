@@ -57,6 +57,7 @@ namespace s3d
 
 		m_swapChain.init(hWnd, m_device, windowFrameBufferSize);
 		m_backBuffer.init(m_device, m_swapChain.getSwapChain1());
+		m_blendState.init(m_device);
 
 		m_device.getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}

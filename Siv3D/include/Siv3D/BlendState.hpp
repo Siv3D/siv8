@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "BlendFactor.hpp"
 # include "BlendOperation.hpp"
+# include "BlendStateBuilder.hpp"
 # include "String.hpp"
 
 namespace s3d
@@ -34,7 +35,7 @@ namespace s3d
 
 		bool writeG						: 1 = true;
 
-		BlendFactor sourceRGB			: 5 = BlendFactor::SourceAlpha;
+		BlendFactor sourceRGB			: 5 = BlendFactor::One;
 
 		BlendFactor destinationRGB		: 5 = BlendFactor::OneMinusSourceAlpha;
 
@@ -63,7 +64,7 @@ namespace s3d
 		[[nodiscard]]
 		explicit constexpr BlendState(
 			bool _enable = true,
-			BlendFactor _sourceRGB = BlendFactor::SourceAlpha,
+			BlendFactor _sourceRGB = BlendFactor::One,
 			BlendFactor _destinationRGB = BlendFactor::OneMinusSourceAlpha,
 			BlendOperation _rgbOperation = BlendOperation::Add,
 			BlendFactor _sourceAlpha = BlendFactor::Zero,
@@ -75,6 +76,9 @@ namespace s3d
 			bool _writeB = true,
 			bool _writeA = true
 		) noexcept;
+
+		[[nodiscard]]
+		constexpr BlendState(const BlendStateBuilder& builder) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -113,6 +117,8 @@ namespace s3d
 		{
 			return (lhs.asValue() == rhs.asValue());
 		}
+
+		static constexpr BlendStateBuilder Default2D{};
 
 		////////////////////////////////////////////////////////////////
 		//

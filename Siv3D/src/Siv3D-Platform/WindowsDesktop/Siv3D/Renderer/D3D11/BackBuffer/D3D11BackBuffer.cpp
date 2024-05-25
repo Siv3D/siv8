@@ -325,14 +325,14 @@ namespace s3d
 		}
 
 		// render states
-		//{
-		//	const SamplerState samplerState = (textureFilter == TextureFilter::Linear) ?
+		{
+		//	const SamplerState samplerState = (m_sceneStyle.textureFilter == TextureFilter::Linear) ?
 		//		SamplerState::ClampLinear : SamplerState::ClampNearest;
 		//	pRenderer->getSamplerState().setPS(0, samplerState);
 		//	pRenderer->getBlendState().set(BlendState::Opaque);
 		//	pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
 		//	pRenderer->getRasterizerState().set(RasterizerState::Default2D);
-		//}
+		}
 
 		// shaders
 		{

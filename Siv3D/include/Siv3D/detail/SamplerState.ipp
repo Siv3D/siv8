@@ -42,6 +42,18 @@ namespace s3d
 		, borderColor{ _borderColor }
 		, minLOD{ _minLOD } {}
 
+	constexpr SamplerState::SamplerState(const SamplerStateBuilder& builder) noexcept
+		: uAddressMode{ builder.uAddressMode() }
+		, vAddressMode{ builder.vAddressMode() }
+		, wAddressMode{ builder.wAddressMode() }
+		, minFilter{ builder.minFilter() }
+		, magFilter{ builder.magFilter() }
+		, mipFilter{ builder.mipFilter() }
+		, maxAnisotropy{ builder.maxAnisotropy() }
+		, compareFunction{ builder.compareFunction() }
+		, borderColor{ builder.borderColor() }
+		, minLOD{ builder.minLOD() } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	asValue

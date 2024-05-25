@@ -15,6 +15,7 @@
 # include "TextureFilter.hpp"
 # include "CompareFunction.hpp"
 # include "PointVector.hpp"
+# include "SamplerStateBuilder.hpp"
 # include "String.hpp"
 
 namespace s3d
@@ -71,6 +72,9 @@ namespace s3d
 			Float4 _borderColor = Float4{ 0.0f, 0.0f, 0.0f, 0.0f },
 			float _minLOD = 0.0f
 		) noexcept;
+
+		[[nodiscard]]
+		constexpr SamplerState(const SamplerStateBuilder& builder) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

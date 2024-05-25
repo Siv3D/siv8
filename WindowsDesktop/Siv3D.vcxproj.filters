@@ -802,6 +802,15 @@
     <Filter Include="src\Siv3D\CompareFunction">
       <UniqueIdentifier>{c70a635d-d691-43b6-ac40-8af3147a4529}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BlendState">
+      <UniqueIdentifier>{560f0b8a-fc19-4222-a02f-c786688b40ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SamplerState">
+      <UniqueIdentifier>{7f3e6f59-ce88-43c4-9447-1eae39511b82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\RasterizerState">
+      <UniqueIdentifier>{070011d1-7b93-4839-b305-dcf364a3d0a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3210,6 +3219,33 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SamplerState.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BlendState\D3D11BlendState.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BlendState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RasterizerStateBuilder.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SamplerStateBuilder.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BlendStateBuilder.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DepthStencilStateBuilder.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BlendStateBuilder.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RasterizerStateBuilder.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SamplerStateBuilder.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\DepthStencilStateBuilder.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5407,6 +5443,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\CompareFunction\SivCompareFunction.cpp">
       <Filter>src\Siv3D\CompareFunction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BlendState\D3D11BlendState.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BlendState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

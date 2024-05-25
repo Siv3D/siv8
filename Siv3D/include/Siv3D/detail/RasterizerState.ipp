@@ -32,6 +32,13 @@ namespace s3d
 		, antialiasedLine3D{ _antialiasedLine3D }
 		, depthBias{ _depthBias } {}
 
+	constexpr RasterizerState::RasterizerState(const RasterizerStateBuilder& builder) noexcept
+		: triangleFillMode{ builder.triangleFillMode() }
+		, cullMode{ builder.cullMode() }
+		, scissorEnabled{ builder.scissorEnabled() }
+		, antialiasedLine3D{ builder.antialiasedLine3D() }
+		, depthBias{ builder.depthBias() } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	asValue

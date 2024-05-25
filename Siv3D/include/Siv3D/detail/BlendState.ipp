@@ -46,6 +46,20 @@ namespace s3d
 		, destinationAlpha{ _destinationAlpha }
 		, alphaOperation{ _alphaOperation } {}
 
+	constexpr BlendState::BlendState(const BlendStateBuilder& builder) noexcept
+		: enabled{ builder.enabled() }
+		, writeR{ builder.writeR() }
+		, writeG{ builder.writeG() }
+		, sourceRGB{ builder.sourceRGB() }
+		, destinationRGB{ builder.destinationRGB() }
+		, rgbOperation{ builder.rgbOperation() }
+		, alphaToCoverageEnabled{ builder.alphaToCoverageEnabled() }
+		, writeB{ builder.writeB() }
+		, writeA{ builder.writeA() }
+		, sourceAlpha{ builder.sourceAlpha() }
+		, destinationAlpha{ builder.destinationAlpha() }
+		, alphaOperation{ builder.alphaOperation() } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	setColorWriteMask

@@ -1394,12 +1394,16 @@
 
 # include <Siv3D/BlendOperation.hpp>
 
+# include <Siv3D/BlendStateBuilder.hpp> // ToDo
+
 // ブレンドステート | Blend state
 # include <Siv3D/BlendState.hpp> // ToDo
 
 # include <Siv3D/TriangleFillMode.hpp>
 
 # include <Siv3D/CullMode.hpp>
+
+# include <Siv3D/RasterizerStateBuilder.hpp> // ToDo
 
 // ラスタライザーステート | Rasterizer state
 # include <Siv3D/RasterizerState.hpp> // ToDo
@@ -1410,8 +1414,12 @@
 
 # include <Siv3D/CompareFunction.hpp>
 
+# include <Siv3D/SamplerStateBuilder.hpp> // ToDo
+
 // サンプラーステート | Sampler state
 # include <Siv3D/SamplerState.hpp> // ToDo
+
+# include <Siv3D/DepthStencilStateBuilder.hpp> // ToDo
 
 // 深度ステンシルステート | Depth stencil state
 # include <Siv3D/DepthStencilState.hpp> // ToDo
