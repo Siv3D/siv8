@@ -54,33 +54,9 @@ namespace s3d
 	}
 
 	template <class Type>
-	Type& ConstantBuffer<Type>::get() noexcept
-	{
-		m_isDirty = true;
-		return m_wrapper->data;
-	}
-
-	template <class Type>
-	const Type& ConstantBuffer<Type>::get() const noexcept
-	{
-		return m_wrapper->data;
-	}
-
-	template <class Type>
 	bool ConstantBuffer<Type>::isDirty() const noexcept
 	{
 		return m_isDirty;
-	}
-
-	template <class Type>
-	IConstantBuffer* ConstantBuffer<Type>::base() const noexcept
-	{
-		if (not m_base->_internal_init())
-		{
-			return nullptr;
-		}
-
-		return m_base.get();
 	}
 
 	template <class Type>
@@ -107,6 +83,17 @@ namespace s3d
 	inline const Type* ConstantBuffer<Type>::operator ->() const noexcept
 	{
 		return std::addressof(m_wrapper->data);
+	}
+
+	template <class Type>
+	IConstantBuffer* ConstantBuffer<Type>::_base() const noexcept
+	{
+		if (not m_base->_internal_init())
+		{
+			return nullptr;
+		}
+
+		return m_base.get();
 	}
 
 	template <class Type>

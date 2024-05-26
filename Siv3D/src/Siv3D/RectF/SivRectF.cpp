@@ -12,9 +12,21 @@
 # include <Siv3D/RectF.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
+# include <Siv3D/FloatRect.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
+	const RectF& RectF::draw(const ColorF& color) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, color.toFloat4());
+
+		return *this;
+	}
+
+
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Formatter

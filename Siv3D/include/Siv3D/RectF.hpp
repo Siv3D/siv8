@@ -197,6 +197,11 @@ namespace s3d
 
 
 
+		/// @brief 長方形を描画します。
+		/// @param color 色
+		/// @return *this
+		const RectF& draw(const ColorF& color = Palette::White) const;
+
 	
 
 		friend void Formatter(FormatData& formatData, const RectF& value);

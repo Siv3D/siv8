@@ -825,10 +825,10 @@
 //
 //// Catmull-Rom スプライン曲線 | Catmull-Rom spline curves
 //# include <Siv3D/Spline2D.hpp>
-//
-//// float 型の長方形 | Rectangle (float)
-//# include <Siv3D/FloatRect.hpp>
-//
+
+// float 型の長方形 | Rectangle (float)
+# include <Siv3D/FloatRect.hpp>
+
 //// float 型の四角形 | Quad (float)
 //# include <Siv3D/FloatQuad.hpp>
 //

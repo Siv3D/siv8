@@ -15,6 +15,8 @@
 
 namespace s3d
 {
+	struct FloatRect;
+
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
 	public:
@@ -29,6 +31,8 @@ namespace s3d
 		virtual void beginFrame() = 0;
 
 		virtual void addTriangle(const Float2(&points)[3], const Float4& color) = 0;
+
+		virtual void addRect(const FloatRect& rect, const Float4& color) = 0;
 
 		virtual void flush() = 0;
 	};

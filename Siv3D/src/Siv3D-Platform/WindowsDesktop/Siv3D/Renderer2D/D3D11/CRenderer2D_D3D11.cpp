@@ -111,6 +111,24 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_D3D11::addRect(const FloatRect& rect, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, color))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
 	void CRenderer2D_D3D11::flush()
 	{
 		ScopeExit cleanUp = [this]()
@@ -123,7 +141,7 @@ namespace s3d
 
 		m_commandManager.flush();
 		m_context->IASetInputLayout(m_inputLayout.Get());
-		m_pShader->setConstantBufferVS(0, m_vsConstants.base());
+		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
 		//pShader->setConstantBufferPS(0, m_psConstants2D.base());
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();

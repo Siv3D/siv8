@@ -13,10 +13,17 @@
 # include <memory>
 # include "Common.hpp"
 # include "Memory.hpp"
+# include "Utility.hpp"
 # include "IConstantBuffer.hpp"
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	ConstantBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
 	template <class Type>
 	class ConstantBuffer
 	{
@@ -63,16 +70,7 @@ namespace s3d
 		const float* data() const noexcept;
 
 		[[nodiscard]]
-		Type& get() noexcept;
-
-		[[nodiscard]]
-		const Type& get() const noexcept;
-
-		[[nodiscard]]
 		bool isDirty() const noexcept;
-
-		[[nodiscard]]
-		IConstantBuffer* base() const noexcept;
 
 		[[nodiscard]]
 		Type& operator *() noexcept;
@@ -85,6 +83,9 @@ namespace s3d
 
 		[[nodiscard]]
 		const Type* operator ->() const noexcept;
+
+		[[nodiscard]]
+		IConstantBuffer* _base() const noexcept;
 
 		bool _update_if_dirty();
 

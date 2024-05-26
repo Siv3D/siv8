@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Vertex2D.hpp>
+# include <Siv3D/FloatRect.hpp>
 # include <Siv3D/FunctionRef.hpp>
 # include "Vertex2DBufferPointer.hpp"
 
@@ -23,5 +24,8 @@ namespace s3d
 	{
 		[[nodiscard]]
 		Vertex2D::IndexType BuildTriangle(const BufferCreatorFunc& bufferCreator, const Float2(&points)[3], const Float4& color);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const Float4& color);
 	}
 }
