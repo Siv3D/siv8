@@ -153,7 +153,7 @@ namespace s3d
 			else
 			{
 				bindRenderTarget(m_backBuffer.getRTV());
-				bindPSTexture(m_sceneBuffers.nonMSAA.getSRV());
+				bindTextureAsPSResource(m_sceneBuffers.nonMSAA.getSRV());
 				drawFullScreenTriangle();
 				unbindAllPSTextures();
 				unbindAllRenderTargets();
@@ -176,7 +176,7 @@ namespace s3d
 				m_sceneBuffers.msaa.resolveTo(m_context, m_sceneBuffers.nonMSAA);
 
 				bindRenderTarget(m_backBuffer.getRTV());
-				bindPSTexture(m_sceneBuffers.nonMSAA.getSRV());
+				bindTextureAsPSResource(m_sceneBuffers.nonMSAA.getSRV());
 				drawFullScreenTriangle();
 				unbindAllPSTextures();
 				unbindAllRenderTargets();
@@ -284,6 +284,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	bindSceneTextureAsRenderTarget
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11BackBuffer::bindSceneTextureAsRenderTarget()
+	{
+		bindRenderTarget(m_sceneBuffers.getSceneTexture().getRTV());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
@@ -300,7 +311,7 @@ namespace s3d
 		m_context->OMSetRenderTargets(Graphics::RenderTargetCount, nullRTVs, nullptr);
 	}
 
-	void D3D11BackBuffer::bindPSTexture(ID3D11ShaderResourceView* const srv)
+	void D3D11BackBuffer::bindTextureAsPSResource(ID3D11ShaderResourceView* const srv)
 	{
 		m_context->PSSetShaderResources(0, 1, &srv);
 	}

@@ -118,7 +118,11 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer)->flush();
 		SIV3D_ENGINE(Profiler)->endFrame();
-		SIV3D_ENGINE(Renderer)->present();
+		
+		if (not SIV3D_ENGINE(Renderer)->present())
+		{
+			return false;
+		}
 
 		//
 		//	previous frame

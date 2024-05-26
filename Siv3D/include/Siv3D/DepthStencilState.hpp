@@ -82,6 +82,8 @@ namespace s3d
 			return (lhs.asValue() == rhs.asValue());
 		}
 
+		static constexpr DepthStencilStateBuilder Default2D{};
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Invalid

@@ -12,7 +12,9 @@
 # pragma once
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
+# include <Siv3D/Shader/D3D11/CShader_D3D11.hpp>
 # include "D3D11VertexBufferManager2D.hpp"
+# include "D3D11Renderer2DCommandManager.hpp"
 
 namespace s3d
 {
@@ -34,7 +36,7 @@ namespace s3d
 
 		CRenderer_D3D11* m_pRenderer	= nullptr;
 		
-		//CShader_D3D11* m_pShader		= nullptr;
+		CShader_D3D11* m_pShader		= nullptr;
 		
 		//CTexture_D3D11* m_pTexture	= nullptr;
 
@@ -45,5 +47,9 @@ namespace s3d
 		ComPtr<ID3D11InputLayout> m_inputLayout;
 
 		D3D11VertexBufferManager2D m_vertexBufferManager2D;
+
+		D3D11Renderer2DCommandManager m_commandManager;
+
+		Vertex2DBufferPointer createBuffer(Vertex2D::IndexType vertexSize, Vertex2D::IndexType indexSize);
 	};
 }

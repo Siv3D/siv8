@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "D3D11VertexBufferManager2D.hpp"
+# include "D3D11Renderer2DCommandManager.hpp"
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -84,7 +85,7 @@ namespace s3d
 		return true;
 	}
 
-	Vertex2DBufferPointer D3D11VertexBufferManager2D::requestBuffer(const uint16 vertexSize, const uint32 indexSize/*D3D11Renderer2DCommandManager& commandManager*/)
+	Vertex2DBufferPointer D3D11VertexBufferManager2D::requestBuffer(const uint16 vertexSize, const uint32 indexSize, D3D11Renderer2DCommandManager& commandManager)
 	{
 		// VB
 		{
@@ -121,7 +122,7 @@ namespace s3d
 			if ((VertexBufferSize < (pLastBatch->vertexPos + vertexSize)
 				|| (IndexBufferSize < (pLastBatch->indexPos + indexSize))))
 			{
-				//commandManager.pushUpdateBuffers(static_cast<uint32>(m_batches.size()));
+				commandManager.pushUpdateBuffers(static_cast<uint32>(m_batches.size()));
 				m_batches.emplace_back();
 				pLastBatch = &m_batches.back();
 			}

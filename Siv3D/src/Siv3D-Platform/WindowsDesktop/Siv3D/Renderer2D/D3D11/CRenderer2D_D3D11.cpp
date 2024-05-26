@@ -13,13 +13,36 @@
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/Mat3x2.hpp>
+# include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
+///*
+#	define LOG_COMMAND(...) LOG_TRACE(__VA_ARGS__)
+/*/
+#	define LOG_COMMAND(...) ((void)0)
+//*/
+
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static constexpr D3D11_VIEWPORT MakeViewport(const Size size) noexcept
+		{
+			return{
+				.TopLeftX	= 0.0f,
+				.TopLeftY	= 0.0f,
+				.Width		= static_cast<float>(size.x),
+				.Height		= static_cast<float>(size.y),
+				.MinDepth	= D3D11_MIN_DEPTH,
+				.MaxDepth	= D3D11_MAX_DEPTH,
+			};
+		}
+	}
+
 	CRenderer2D_D3D11::~CRenderer2D_D3D11()
 	{
 		LOG_SCOPED_DEBUG("CRenderer2D_D3D11::~CRenderer2D_D3D11()");
@@ -31,8 +54,8 @@ namespace s3d
 
 		// 各種ポインタを保存
 		{
-			m_pRenderer = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
-			//m_pShader = static_cast<CShader_D3D11*>(SIV3D_ENGINE(Shader));
+			m_pRenderer	= static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
+			m_pShader	= static_cast<CShader_D3D11*>(SIV3D_ENGINE(Shader));
 			//m_pTexture = static_cast<CTexture_D3D11*>(SIV3D_ENGINE(Texture));
 			m_device	= m_pRenderer->getDevice().getDevice();
 			m_context	= m_pRenderer->getDevice().getContext();
@@ -69,7 +92,20 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTriangle(const Float2(&points)[3], const Float4& color)
 	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, color))
+		{
+			//if (not m_currentCustomVS)
+			//{
+			//	m_commandManager.pushStandardVS(m_standardVS->spriteID);
+			//}
 
+			//if (not m_currentCustomPS)
+			//{
+			//	m_commandManager.pushStandardPS(m_standardPS->shapeID);
+			//}
+
+			m_commandManager.pushDraw(indexCount);
+		}
 	}
 
 	void CRenderer2D_D3D11::flush()
@@ -77,38 +113,83 @@ namespace s3d
 		ScopeExit cleanUp = [this]()
 		{
 			m_vertexBufferManager2D.reset();
-			//m_commandManager.reset();
+			m_commandManager.reset();
 			//m_currentCustomVS.reset();
 			//m_currentCustomPS.reset();
 		};
 
-		//m_commandManager.flush();
-
+		m_commandManager.flush();
 		m_context->IASetInputLayout(m_inputLayout.Get());
 		//pShader->setConstantBufferVS(0, m_vsConstants2D.base());
 		//pShader->setConstantBufferPS(0, m_psConstants2D.base());
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
-
 		{
-			const D3D11_VIEWPORT viewport
-			{
-				.TopLeftX	= 0.0f,
-				.TopLeftY	= 0.0f,
-				.Width		= static_cast<float>(currentRenderTargetSize.x),
-				.Height		= static_cast<float>(currentRenderTargetSize.y),
-				.MinDepth	= D3D11_MIN_DEPTH,
-				.MaxDepth	= D3D11_MAX_DEPTH,
-			};
+			const D3D11_VIEWPORT viewport = MakeViewport(currentRenderTargetSize);
 			m_context->RSSetViewports(1, &viewport);
 		}
 
 		Mat3x2 transform = Mat3x2::Identity();
 		Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
 
-		//m_pRenderer->getBackBuffer().bindSceneToContext();
-		//m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
+		m_pRenderer->getBackBuffer().bindSceneTextureAsRenderTarget();
+		m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
+
+		////
+		m_pShader->setVS(SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle).id());
+		m_pShader->setPS(SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle).id());
+		////
+
+		LOG_COMMAND("----");
 
 		BatchInfo2D batchInfo;
+
+		for (const auto& command : m_commandManager.getCommands())
+		{
+			switch (command.type)
+			{
+			case D3D11Renderer2DCommandType::Null:
+				{
+					LOG_COMMAND("Null");
+					break;
+				}
+			case D3D11Renderer2DCommandType::SetBuffers:
+				{
+					m_vertexBufferManager2D.setBuffers();
+					LOG_COMMAND(fmt::format("SetBuffers[{}]", command.index));
+					break;
+				}
+			case D3D11Renderer2DCommandType::UpdateBuffers:
+				{
+					batchInfo = m_vertexBufferManager2D.commitBuffers(command.index);				
+					LOG_COMMAND(fmt::format("UpdateBuffers[{}] BatchInfo(indexCount = {}, startIndexLocation = {}, baseVertexLocation = {})",
+						command.index, batchInfo.indexCount, batchInfo.startIndexLocation, batchInfo.baseVertexLocation));
+					break;
+				}
+			case D3D11Renderer2DCommandType::Draw:
+				{
+					//m_vsConstants2D._update_if_dirty();
+					//m_psConstants2D._update_if_dirty();
+
+					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);
+					const uint32 indexCount = draw.indexCount;
+					const uint32 startIndexLocation = batchInfo.startIndexLocation;
+					const uint32 baseVertexLocation = batchInfo.baseVertexLocation;
+
+					m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
+					batchInfo.startIndexLocation += indexCount;
+					
+					//++m_stat.drawCalls;
+					//m_stat.triangleCount += (indexCount / 3);
+					LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
+					break;
+				}
+			}
+		}
+	}
+
+	Vertex2DBufferPointer CRenderer2D_D3D11::createBuffer(const Vertex2D::IndexType vertexSize, const Vertex2D::IndexType indexSize)
+	{
+		return m_vertexBufferManager2D.requestBuffer(vertexSize, indexSize, m_commandManager);
 	}
 }

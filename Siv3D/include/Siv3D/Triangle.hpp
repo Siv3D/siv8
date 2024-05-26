@@ -41,5 +41,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr value_type area() const noexcept;
 
+
+		const Triangle& draw(const ColorF& color = Palette::White) const;
+
 	};
 }

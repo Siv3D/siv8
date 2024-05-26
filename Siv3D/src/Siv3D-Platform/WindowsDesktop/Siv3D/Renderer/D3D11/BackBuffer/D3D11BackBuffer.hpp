@@ -55,6 +55,8 @@ namespace s3d
 
 		std::pair<double, RectF> getLetterboxComposition() const noexcept;
 
+		void bindSceneTextureAsRenderTarget();
+
 	private:
 		
 		ID3D11Device* m_device			= nullptr;
@@ -98,7 +100,7 @@ namespace s3d
 		/// @brief すべてのレンダーターゲットのバインドを解除します。
 		void unbindAllRenderTargets();
 
-		void bindPSTexture(ID3D11ShaderResourceView* const srv);
+		void bindTextureAsPSResource(ID3D11ShaderResourceView* const srv);
 
 		void unbindAllPSTextures();
 

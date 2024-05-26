@@ -70,6 +70,9 @@ namespace s3d
 		const D3D11Device& getDevice() const noexcept;
 
 		[[nodiscard]]
+		D3D11BackBuffer& getBackBuffer() noexcept;
+
+		[[nodiscard]]
 		D3D11BlendState& getBlendState() noexcept;
 
 		[[nodiscard]]
