@@ -191,6 +191,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vector2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vector3D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vector4D.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vertex2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Window.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MappedMemory.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\YesNo.ipp" />
@@ -393,6 +394,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector4D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Version.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Vertex2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\VertexShader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Window.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WindowState.hpp" />
@@ -444,6 +446,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11VertexBufferManager2D.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11BackBuffer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11ClearTarget.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11InternalTexture2D.hpp" />
@@ -509,7 +512,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\IRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\BatchInfo2D.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\IRenderer2D.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBufferPointer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer\IRenderer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\CScene.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\IScene.hpp" />
@@ -857,6 +862,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo\SivMonitorInfo_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11VertexBufferManager2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\Renderer2DFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11BackBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\BackBuffer\D3D11InternalTexture2D.cpp" />

@@ -3291,6 +3291,21 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11VertexBufferManager2D.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Vertex2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vertex2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBufferPointer.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\BatchInfo2D.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5520,6 +5535,9 @@
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11VertexBufferManager2D.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,25 +11,16 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
-# include <Siv3D/PointVector.hpp>
+# include <Siv3D/Vertex2D.hpp>
 
 namespace s3d
 {
-	class SIV3D_NOVTABLE ISiv3DRenderer2D
+	struct Vertex2DBufferPointer
 	{
-	public:
+		Vertex2D* pVertex;
 
-		[[nodiscard]]
-		static ISiv3DRenderer2D* Create();
+		Vertex2D::IndexType* pIndex;
 
-		virtual ~ISiv3DRenderer2D() = default;
-
-		virtual void init() = 0;
-
-		virtual void beginFrame() = 0;
-
-		virtual void addTriangle(const Float2(&points)[3], const Float4& color) = 0;
-
-		virtual void flush() = 0;
+		Vertex2D::IndexType indexOffset;
 	};
 }

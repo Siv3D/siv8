@@ -1384,6 +1384,8 @@
 
 
 
+# include <Siv3D/Vertex2D.hpp>
+
 
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/EngineOption.hpp>

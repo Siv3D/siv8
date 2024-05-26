@@ -133,11 +133,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	clear
+	//	beginFrame
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_Metal::clear()
+	void CRenderer_Metal::beginFrame()
 	{
 		if (const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
 			windowFrameBufferSize != getBackBufferSize())

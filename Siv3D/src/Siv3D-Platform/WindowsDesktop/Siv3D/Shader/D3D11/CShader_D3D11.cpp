@@ -283,8 +283,7 @@ namespace s3d
 
 	const Blob& CShader_D3D11::getBytecodeVS(const VertexShader::IDType handleID)
 	{
-		static const Blob blob;
-		return blob;
+		return m_vertexShaders[handleID]->getBytecode();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -295,8 +294,7 @@ namespace s3d
 
 	const Blob& CShader_D3D11::getBytecodePS(const PixelShader::IDType handleID)
 	{
-		static const Blob blob;
-		return blob;
+		return m_pixelShaders[handleID]->getBytecode();
 	}
 
 	////////////////////////////////////////////////////////////////

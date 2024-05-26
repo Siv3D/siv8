@@ -12,6 +12,7 @@
 # include "CRenderer_D3D11.hpp"
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -67,11 +68,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	clear
+	//	beginFrame
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_D3D11::clear()
+	void CRenderer_D3D11::beginFrame()
 	{
 		m_backBuffer.clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
 
@@ -80,8 +81,6 @@ namespace s3d
 		{
 			m_backBuffer.resizeBackBuffer(windowFrameBufferSize);
 		}
-
-		//pRenderer2D->update();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -94,7 +93,7 @@ namespace s3d
 	{
 		//pRenderer3D->flush();
 
-		//pRenderer2D->flush();
+		SIV3D_ENGINE(Renderer2D)->flush();
 
 		m_backBuffer.renderSceneToBackBuffer();
 	}

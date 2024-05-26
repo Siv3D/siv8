@@ -11,6 +11,8 @@
 
 # pragma once
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
+# include "D3D11VertexBufferManager2D.hpp"
 
 namespace s3d
 {
@@ -24,7 +26,24 @@ namespace s3d
 
 		void beginFrame() override;
 
+		void addTriangle(const Float2(&points)[3], const Float4& color) override;
+
+		void flush() override;
+
 	private:
 
+		CRenderer_D3D11* m_pRenderer	= nullptr;
+		
+		//CShader_D3D11* m_pShader		= nullptr;
+		
+		//CTexture_D3D11* m_pTexture	= nullptr;
+
+		ID3D11Device* m_device			= nullptr;
+
+		ID3D11DeviceContext* m_context	= nullptr;
+
+		ComPtr<ID3D11InputLayout> m_inputLayout;
+
+		D3D11VertexBufferManager2D m_vertexBufferManager2D;
 	};
 }

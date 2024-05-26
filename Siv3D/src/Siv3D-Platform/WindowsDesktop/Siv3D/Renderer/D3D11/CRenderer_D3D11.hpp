@@ -32,7 +32,7 @@ namespace s3d
 
 		void init() override;
 
-		void clear() override;
+		void beginFrame() override;
 
 		void flush() override;
 
