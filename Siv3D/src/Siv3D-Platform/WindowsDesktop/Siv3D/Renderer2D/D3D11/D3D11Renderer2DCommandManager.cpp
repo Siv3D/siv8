@@ -52,8 +52,8 @@ namespace s3d
 			//m_internalPSConstants = { m_internalPSConstants.back() };
 			//m_RTs = { m_RTs.back() };
 
-			//m_VSs = { VertexShader::IDType::InvalidValue() };
-			//m_PSs = { PixelShader::IDType::InvalidValue() };
+			m_buffer.vertexShaders	= { VertexShader::IDType::Invalid() };
+			m_buffer.pixelShaders	= { PixelShader::IDType::Invalid() };
 			//m_combinedTransforms = { m_combinedTransforms.back() };
 			//m_constants.clear();
 			//m_constantBufferCommands.clear();
@@ -112,11 +112,11 @@ namespace s3d
 			//m_commands.emplace_back(D3D11Renderer2DCommandType::SetRT, 0);
 			//m_currentRT = m_RTs.front();
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::SetVS, 0);
-			//m_currentVS = VertexShader::IDType::InvalidValue();
+			m_commands.emplace_back(D3D11Renderer2DCommandType::SetVS, 0);
+			m_current.vertexShader = VertexShader::IDType::Invalid();
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::SetPS, 0);
-			//m_currentPS = PixelShader::IDType::InvalidValue();
+			m_commands.emplace_back(D3D11Renderer2DCommandType::SetPS, 0);
+			m_current.pixelShader = PixelShader::IDType::Invalid();
 
 			//m_commands.emplace_back(D3D11Renderer2DCommandType::Transform, 0);
 			//m_currentCombinedTransform = m_combinedTransforms.front();
@@ -233,17 +233,17 @@ namespace s3d
 		//	m_RTs.push_back(m_currentRT);
 		//}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::SetVS))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::SetVS, static_cast<uint32>(m_VSs.size()));
-		//	m_VSs.push_back(m_currentVS);
-		//}
+		if (m_stateTracker.has(D3D11Renderer2DCommandType::SetVS))
+		{
+			m_commands.emplace_back(D3D11Renderer2DCommandType::SetVS, static_cast<uint32>(m_buffer.vertexShaders.size()));
+			m_buffer.vertexShaders.push_back(m_current.vertexShader);
+		}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::SetPS))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::SetPS, static_cast<uint32>(m_PSs.size()));
-		//	m_PSs.push_back(m_currentPS);
-		//}
+		if (m_stateTracker.has(D3D11Renderer2DCommandType::SetPS))
+		{
+			m_commands.emplace_back(D3D11Renderer2DCommandType::SetPS, static_cast<uint32>(m_buffer.pixelShaders.size()));
+			m_buffer.pixelShaders.push_back(m_current.pixelShader);
+		}
 
 		//if (m_changes.has(D3D11Renderer2DCommandType::Transform))
 		//{
@@ -307,5 +307,70 @@ namespace s3d
 	const D3D11DrawCommand& D3D11Renderer2DCommandManager::getDraw(const uint32 index) const noexcept
 	{
 		return m_buffer.draws[index];
+	}
+
+
+
+	void D3D11Renderer2DCommandManager::pushEngineVS(const VertexShader::IDType id)
+	{
+		constexpr auto Command = D3D11Renderer2DCommandType::SetVS;
+		auto& current = m_current.vertexShader;
+		auto& buffer = m_buffer.vertexShaders;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (id != current)
+			{
+				current = id;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (id == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+		
+			current = id;
+		}
+	}
+
+	VertexShader::IDType D3D11Renderer2DCommandManager::getVS(const uint32 index) const
+	{
+		return m_buffer.vertexShaders[index];
+	}
+
+	void D3D11Renderer2DCommandManager::pushEnginePS(const PixelShader::IDType id)
+	{
+		constexpr auto Command = D3D11Renderer2DCommandType::SetPS;
+		auto& current = m_current.pixelShader;
+		auto& buffer = m_buffer.pixelShaders;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (id != current)
+			{
+				current = id;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (id == buffer.back())
+			{
+				current = id;
+				m_stateTracker.clear(Command);
+			}
+			else
+			{
+				current = id;
+			}
+		}
+	}
+
+	PixelShader::IDType D3D11Renderer2DCommandManager::getPS(const uint32 index) const
+	{
+		return m_buffer.pixelShaders[index];
 	}
 }

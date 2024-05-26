@@ -45,7 +45,11 @@ namespace s3d
 
 		virtual void setVS(VertexShader::IDType handleID) = 0;
 
+		virtual void setVSNull() = 0;
+
 		virtual void setPS(PixelShader::IDType handleID) = 0;
+
+		virtual void setPSNull() = 0;
 
 		virtual const Blob& getBytecodeVS(VertexShader::IDType handleID) = 0;
 

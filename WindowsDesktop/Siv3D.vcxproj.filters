@@ -3321,6 +3321,12 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\BatchStateTracker.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\IConstantBuffer.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ConstantBuffer.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">

@@ -83,6 +83,9 @@ namespace s3d
 				throw InternalEngineError{ "D3D11VertexBufferManager2D::init() failed" };
 			}
 		}
+
+		m_engineShader.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle).id();
+		m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle).id();
 	}
 
 	void CRenderer2D_D3D11::beginFrame()
@@ -94,15 +97,15 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, color))
 		{
-			//if (not m_currentCustomVS)
-			//{
-			//	m_commandManager.pushStandardVS(m_standardVS->spriteID);
-			//}
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
 
-			//if (not m_currentCustomPS)
-			//{
-			//	m_commandManager.pushStandardPS(m_standardPS->shapeID);
-			//}
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -134,11 +137,6 @@ namespace s3d
 
 		m_pRenderer->getBackBuffer().bindSceneTextureAsRenderTarget();
 		m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
-
-		////
-		m_pShader->setVS(SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle).id());
-		m_pShader->setPS(SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle).id());
-		////
 
 		LOG_COMMAND("----");
 
@@ -182,6 +180,40 @@ namespace s3d
 					//++m_stat.drawCalls;
 					//m_stat.triangleCount += (indexCount / 3);
 					LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
+					break;
+				}
+			case D3D11Renderer2DCommandType::SetVS:
+				{
+					const auto vsID = m_commandManager.getVS(command.index);
+
+					if (vsID == VertexShader::IDType::Invalid())
+					{
+						m_pShader->setVSNull();
+						LOG_COMMAND(fmt::format("SetVS[{}]: null", command.index));
+					}
+					else
+					{
+						m_pShader->setVS(vsID);
+						LOG_COMMAND(fmt::format("SetVS[{}]: {}", command.index, vsID.value()));
+					}
+
+					break;
+				}
+			case D3D11Renderer2DCommandType::SetPS:
+				{
+					const auto psID = m_commandManager.getPS(command.index);
+
+					if (psID == PixelShader::IDType::Invalid())
+					{
+						m_pShader->setPSNull();
+						LOG_COMMAND(fmt::format("SetPS[{}]: null", command.index));
+					}
+					else
+					{
+						m_pShader->setPS(psID);
+						LOG_COMMAND(fmt::format("SetPS[{}]: {}", command.index, psID.value()));
+					}
+
 					break;
 				}
 			}

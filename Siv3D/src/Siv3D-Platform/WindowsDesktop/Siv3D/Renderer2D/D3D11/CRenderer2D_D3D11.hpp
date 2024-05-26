@@ -50,6 +50,22 @@ namespace s3d
 
 		D3D11Renderer2DCommandManager m_commandManager;
 
+		struct EngineShader
+		{
+			VertexShader::IDType vs;
+
+			PixelShader::IDType psShape;
+
+		} m_engineShader;
+
+		struct CurrentCustomShader
+		{
+			Optional<VertexShader> vs;
+
+			Optional<PixelShader> ps;
+		
+		} m_currentCustomShader;
+
 		Vertex2DBufferPointer createBuffer(Vertex2D::IndexType vertexSize, Vertex2D::IndexType indexSize);
 	};
 }

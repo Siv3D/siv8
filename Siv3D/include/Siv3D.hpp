@@ -1357,10 +1357,12 @@
 
 //// シェーダユーティリティ | Shader utilities
 //# include <Siv3D/ShaderCommon.hpp>
-//
-//// 定数バッファ | Constant buffer
-//# include <Siv3D/ConstantBuffer.hpp>
-//
+
+# include <Siv3D/IConstantBuffer.hpp>
+
+// 定数バッファ | Constant buffer
+# include <Siv3D/ConstantBuffer.hpp>
+
 //// 2D シェーダスコープ | 2D shader scope
 //# include <Siv3D/ScopedCustomShader2D.hpp>
 //

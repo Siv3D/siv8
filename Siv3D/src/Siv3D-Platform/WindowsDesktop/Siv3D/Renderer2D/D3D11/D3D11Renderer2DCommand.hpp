@@ -77,9 +77,9 @@ namespace s3d
 
 		//SetRT,
 
-		//SetVS,
+		SetVS,
 
-		//SetPS,
+		SetPS,
 
 		//Transform,
 

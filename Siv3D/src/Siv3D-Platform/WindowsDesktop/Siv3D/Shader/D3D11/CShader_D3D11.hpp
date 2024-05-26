@@ -47,7 +47,11 @@ namespace s3d
 
 		void setVS(VertexShader::IDType handleID) override;
 
+		void setVSNull() override;
+
 		void setPS(PixelShader::IDType handleID) override;
+
+		void setPSNull() override;
 
 		const Blob& getBytecodeVS(VertexShader::IDType handleID) override;
 
