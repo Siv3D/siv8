@@ -9,20 +9,13 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include <memory>
-# include "Common.hpp"
+# include <Siv3D/IConstantBuffer.hpp>
+# include "D3D11/ConstantBuffer_D3D11.hpp"
 
 namespace s3d
 {
-	class IConstantBuffer
+	std::unique_ptr<IConstantBuffer> IConstantBuffer::Create(const size_t size)
 	{
-	public:
-
-		static std::unique_ptr<IConstantBuffer> Create(size_t size);
-
-		virtual ~IConstantBuffer() = default;
-
-		virtual bool update(const void* data, size_t size) = 0;
-	};
+		return std::make_unique<ConstantBuffer_D3D11>(size);
+	}
 }

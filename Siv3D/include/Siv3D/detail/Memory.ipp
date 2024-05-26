@@ -93,12 +93,12 @@ namespace s3d
 		
 	////////////////////////////////////////////////////////////////
 	//
-	//	AlignedAlloc
+	//	AlignedMalloc
 	//
 	////////////////////////////////////////////////////////////////
 
 	SIV3D_RESTRICT
-	inline void* AlignedAlloc(const size_t size, size_t alignment) noexcept
+	inline void* AlignedMalloc(const size_t size, size_t alignment) noexcept
 	{
 	# if(SIV3D_USE_MIMALLOC)
 
@@ -138,7 +138,7 @@ namespace s3d
 	{
 	# if(SIV3D_USE_MIMALLOC)
 
-		return ::mi_free_aligned(p, alignment);
+		::mi_free_aligned(p, alignment);
 
 	# else
 
@@ -154,7 +154,48 @@ namespace s3d
 
 	# endif
 	}
-		
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	AlignedNew
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class ...Args>
+		requires std::is_constructible_v<Type, Args...>
+	Type* AlignedNew(Args&&... args)
+	{
+		Type* p = static_cast<Type*>(AlignedMalloc(sizeof(Type), alignof(Type)));
+
+		if (p == nullptr)
+		{
+			throw std::bad_alloc{};
+		}
+
+		::new (p) Type(std::forward<Args>(args)...);
+
+		return p;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	AlignedDelete
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	void AlignedDelete(Type* p, [[maybe_unused]] const size_t alignment)
+	{
+		if (p == nullptr)
+		{
+			return;
+		}
+
+		p->~Type();
+
+		AlignedFree(p, alignment);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	IsAligned

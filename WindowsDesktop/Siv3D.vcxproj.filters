@@ -841,6 +841,12 @@
     <Filter Include="src\Siv3D\Triangle">
       <UniqueIdentifier>{6d14098b-3164-4781-be58-480801d06244}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer">
+      <UniqueIdentifier>{7a4e5691-bd79-4414-81cd-e1f1692f1c0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11">
+      <UniqueIdentifier>{fc620c84-4f9a-4d2a-b4f4-9089fef654ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3327,6 +3333,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ConstantBuffer.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConstantBuffer.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11\ConstantBuffer_D3D11.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5569,6 +5581,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11Renderer2DCommandManager.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\ConstantBufferFactory.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11\ConstantBuffer_D3D11.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

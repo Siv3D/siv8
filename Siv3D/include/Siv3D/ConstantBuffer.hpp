@@ -94,7 +94,7 @@ namespace s3d
 		{
 			void operator()(WrapperType* p) const
 			{
-				AlignedDelete<WrapperType>(p);
+				AlignedDelete<WrapperType>(p, Alignment);
 			}
 		};
 
@@ -102,6 +102,8 @@ namespace s3d
 
 		std::unique_ptr<IConstantBuffer> m_base;
 
-		bool m_hasDirty = true;
+		bool m_isDirty = true;
 	};
 }
+
+# include "detail/ConstantBuffer.ipp"

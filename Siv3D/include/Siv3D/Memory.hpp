@@ -78,7 +78,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	AlignedAlloc
+	//	AlignedMalloc
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -88,7 +88,7 @@ namespace s3d
 	/// @return 確保したメモリ。確保に失敗した場合 nullptr | Allocated memory, or `nullptr` if failed
 	[[nodiscard]]
 	SIV3D_RESTRICT
-	void* AlignedAlloc(size_t size, size_t alignment) noexcept;
+	void* AlignedMalloc(size_t size, size_t alignment) noexcept;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -96,9 +96,40 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief `AlignedAlloc()` で確保したメモリを解放します。 | Frees the memory allocated by `AlignedAlloc()`.
+	/// @brief `AlignedMalloc()` で確保したメモリを解放します。 | Frees the memory allocated by `AlignedMalloc()`.
 	/// @param p 解放するメモリのポインタ | Pointer to the memory to be freed
 	void AlignedFree(void* p, size_t alignment) noexcept;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	AlignedNew
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief アライメントを考慮して、指定した型のためのメモリ領域を確保し、オブジェクトを構築します。
+	/// @tparam Type 構築するオブジェクト
+	/// @tparam ...Args コンストラクタ引数の型
+	/// @param ...args コンストラクタ引数
+	/// @remark 確保したポインタは `AlignedDelete()` で解放する必要があります。
+	/// @return 確保したメモリ領域の先頭ポインタ
+	template <class Type, class ...Args>
+		requires std::is_constructible_v<Type, Args...>
+	[[nodiscard]]
+	Type* AlignedNew(Args&&... args);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	AlignedDelete
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief `AlignedNew()` で確保したオブジェクトを破棄し、メモリ領域を解放します。
+	/// @tparam Type オブジェクトの型
+	/// @param p 解放するメモリ領域の先頭ポインタ
+	/// @param alignment アライメントのサイズ（バイト）
+	/// @remark p が nullptr の場合は何も起こりません。
+	template <class Type>
+	void AlignedDelete(Type* p, size_t alignment);
 
 	////////////////////////////////////////////////////////////////
 	//
