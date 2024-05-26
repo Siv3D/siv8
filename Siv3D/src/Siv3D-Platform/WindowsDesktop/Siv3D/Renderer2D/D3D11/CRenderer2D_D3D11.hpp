@@ -10,9 +10,11 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/ConstantBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Shader/D3D11/CShader_D3D11.hpp>
+# include <Siv3D/Renderer2D/Renderer2DCommon.hpp>
 # include "D3D11VertexBufferManager2D.hpp"
 # include "D3D11Renderer2DCommandManager.hpp"
 
@@ -65,6 +67,8 @@ namespace s3d
 			Optional<PixelShader> ps;
 		
 		} m_currentCustomShader;
+
+		ConstantBuffer<VSConstants2D> m_vsConstants;
 
 		Vertex2DBufferPointer createBuffer(Vertex2D::IndexType vertexSize, Vertex2D::IndexType indexSize);
 	};

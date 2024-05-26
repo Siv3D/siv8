@@ -23,6 +23,8 @@ namespace s3d
 
 		virtual ~IConstantBuffer() = default;
 
-		virtual bool update(const void* data, size_t size) = 0;
+		virtual bool _internal_init() = 0;
+
+		virtual bool _internal_update(const void* data, size_t size) = 0;
 	};
 }

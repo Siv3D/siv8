@@ -57,6 +57,10 @@ namespace s3d
 
 		const Blob& getBytecodePS(PixelShader::IDType handleID) override;
 
+		void setConstantBufferVS(uint32 slot, IConstantBuffer* cb) override;
+
+		void setConstantBufferPS(uint32 slot, IConstantBuffer* cb) override;
+
 		Blob compileHLSL(std::string_view source, const std::string& sourceName, const std::string& entryPoint, ShaderStage shaderStage, HLSL::CompileOption option, std::string& message);
 
 	private:

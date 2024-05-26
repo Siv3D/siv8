@@ -21,7 +21,15 @@ namespace s3d
 
 		explicit ConstantBuffer_D3D11(size_t size);
 
-		bool update(const void* data, size_t size) override;
+		bool _internal_init() override;
+
+		bool _internal_update(const void* data, size_t size) override;
+
+		[[nodiscard]]
+		ID3D11Buffer* getBuffer() const noexcept
+		{
+			return m_buffer.Get();
+		}
 
 	private:
 
@@ -30,7 +38,5 @@ namespace s3d
 		ComPtr<ID3D11Buffer> m_buffer;
 
 		uint32 m_bufferSize = 0;
-
-		bool init();
 	};
 }

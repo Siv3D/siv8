@@ -72,16 +72,59 @@ namespace s3d
 		return m_isDirty;
 	}
 
-	//template <class Type>
-	//bool ConstantBuffer<Type>::_update_if_dirty()
-	//{
-	//	if (not m_isDirty)
-	//	{
-	//		return false;
-	//	}
+	template <class Type>
+	IConstantBuffer* ConstantBuffer<Type>::base() const noexcept
+	{
+		if (not m_base->_internal_init())
+		{
+			return nullptr;
+		}
 
-	//	m_isDirty = false;
+		return m_base.get();
+	}
 
-	//	return m_base._internal_update(data(), Size);
-	//}
+	template <class Type>
+	inline Type& ConstantBuffer<Type>::operator *() noexcept
+	{
+		m_isDirty = true;
+		return m_wrapper->data;
+	}
+
+	template <class Type>
+	inline const Type& ConstantBuffer<Type>::operator *() const noexcept
+	{
+		return m_wrapper->data;
+	}
+
+	template <class Type>
+	inline Type* ConstantBuffer<Type>::operator ->() noexcept
+	{
+		m_isDirty = true;
+		return std::addressof(m_wrapper->data);
+	}
+
+	template <class Type>
+	inline const Type* ConstantBuffer<Type>::operator ->() const noexcept
+	{
+		return std::addressof(m_wrapper->data);
+	}
+
+	template <class Type>
+	bool ConstantBuffer<Type>::_update_if_dirty()
+	{
+		if (not m_isDirty)
+		{
+			return false;
+		}
+
+		if (const bool result = m_base->_internal_update(std::addressof(m_wrapper->data), Size))
+		{
+			m_isDirty = false;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }

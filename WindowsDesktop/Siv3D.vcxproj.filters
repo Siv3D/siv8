@@ -3339,6 +3339,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11\ConstantBuffer_D3D11.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DCommon.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">

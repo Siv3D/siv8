@@ -71,10 +71,8 @@ namespace s3d
 		[[nodiscard]]
 		bool isDirty() const noexcept;
 
-		bool _update_if_dirty();
-
-		//[[nodiscard]]
-		//const ConstantBufferBase& base() const noexcept;
+		[[nodiscard]]
+		IConstantBuffer* base() const noexcept;
 
 		[[nodiscard]]
 		Type& operator *() noexcept;
@@ -87,6 +85,8 @@ namespace s3d
 
 		[[nodiscard]]
 		const Type* operator ->() const noexcept;
+
+		bool _update_if_dirty();
 
 	private:
 

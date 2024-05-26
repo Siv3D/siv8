@@ -16,6 +16,8 @@
 
 namespace s3d
 {
+	class IConstantBuffer;
+
 	class SIV3D_NOVTABLE ISiv3DShader
 	{
 	public:
@@ -54,5 +56,9 @@ namespace s3d
 		virtual const Blob& getBytecodeVS(VertexShader::IDType handleID) = 0;
 
 		virtual const Blob& getBytecodePS(PixelShader::IDType handleID) = 0;
+
+		virtual void setConstantBufferVS(uint32 slot, IConstantBuffer* cb) = 0;
+
+		virtual void setConstantBufferPS(uint32 slot, IConstantBuffer* cb) = 0;
 	};
 }

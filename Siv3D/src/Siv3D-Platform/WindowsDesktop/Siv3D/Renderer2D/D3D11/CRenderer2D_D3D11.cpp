@@ -123,7 +123,7 @@ namespace s3d
 
 		m_commandManager.flush();
 		m_context->IASetInputLayout(m_inputLayout.Get());
-		//pShader->setConstantBufferVS(0, m_vsConstants2D.base());
+		m_pShader->setConstantBufferVS(0, m_vsConstants.base());
 		//pShader->setConstantBufferPS(0, m_psConstants2D.base());
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
@@ -139,6 +139,12 @@ namespace s3d
 		m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
 
 		LOG_COMMAND("----");
+
+		// (仮)
+		{
+			m_vsConstants->transform[0].set(screenMat._11, screenMat._12, screenMat._31, screenMat._32);
+			m_vsConstants->transform[1].set(screenMat._21, screenMat._22, 0.0f, 1.0f);
+		}
 
 		BatchInfo2D batchInfo;
 
@@ -166,7 +172,7 @@ namespace s3d
 				}
 			case D3D11Renderer2DCommandType::Draw:
 				{
-					//m_vsConstants2D._update_if_dirty();
+					m_vsConstants._update_if_dirty();
 					//m_psConstants2D._update_if_dirty();
 
 					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);

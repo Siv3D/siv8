@@ -13,6 +13,7 @@
 # include <Siv3D/ShaderStage.hpp>
 # include <Siv3D/TextReader.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
+# include <Siv3D/ConstantBuffer/D3D11/ConstantBuffer_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -317,6 +318,40 @@ namespace s3d
 	const Blob& CShader_D3D11::getBytecodePS(const PixelShader::IDType handleID)
 	{
 		return m_pixelShaders[handleID]->getBytecode();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setConstantBufferVS
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CShader_D3D11::setConstantBufferVS(const uint32 slot, IConstantBuffer* cb)
+	{
+		assert(slot < D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+
+		if (auto pCB = static_cast<ConstantBuffer_D3D11*>(cb))
+		{
+			ID3D11Buffer* buffer = pCB->getBuffer();
+			m_context->VSSetConstantBuffers(slot, 1, &buffer);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setConstantBufferPS
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CShader_D3D11::setConstantBufferPS(const uint32 slot, IConstantBuffer* cb)
+	{
+		assert(slot < D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+
+		if (auto pCB = static_cast<ConstantBuffer_D3D11*>(cb))
+		{
+			ID3D11Buffer* buffer = pCB->getBuffer();
+			m_context->PSSetConstantBuffers(slot, 1, &buffer);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

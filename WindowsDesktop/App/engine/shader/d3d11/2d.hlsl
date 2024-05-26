@@ -26,17 +26,12 @@ struct PSInput
 	float2 uv		: TEXCOORD0;
 };
 
-//float4 s3d_transform2D(float2 pos, float2x4 t)
-//{
-//	return float4((t._13_14 + (pos.x * t._11_12) + (pos.y * t._21_22)), t._23_24);
-//}
+cbuffer VSConstants2D : register(b0)
+{
+	row_major float2x4 g_transform;
+	//float4 g_colorMul;
+}
 
-//cbuffer VSConstants2D : register(b0)
-//{
-//	row_major float2x4 g_transform;
-//	float4 g_colorMul;
-//}
-//
 //cbuffer PSConstants2D : register(b0)
 //{
 //	float4 g_colorAdd;
@@ -46,10 +41,15 @@ struct PSInput
 //	float4 g_internal;
 //}
 
+float4 s3d_transform2D(float2 pos, float2x4 t)
+{
+	return float4((t._13_14 + (pos.x * t._11_12) + (pos.y * t._21_22)), t._23_24);
+}
+
 PSInput VS(VSInput input)
 {
 	PSInput result;
-	result.position = float4(input.position, 0.0f, 1.0f);// s3d_transform2D(input.position, g_transform);
+	result.position = s3d_transform2D(input.position, g_transform);
 	result.color	= input.color;// (input.color * g_colorMul);
 	result.uv		= input.uv;
 	return result;
