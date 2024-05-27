@@ -197,10 +197,38 @@ namespace s3d
 			SIV3D_ENGINE(Cursor)->clipToWindow(clip);
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetBaseWindowTransform
+		//
+		////////////////////////////////////////////////////////////////
 
+		const Mat3x2& GetBaseWindowTransform() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getBaseWindowTransform();
+		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetCameraTransform
+		//
+		////////////////////////////////////////////////////////////////
 
+		const Mat3x2& GetCameraTransform() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getCameraTransform();
+		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetLocalTransform
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Mat3x2& GetLocalTransform() noexcept
+		{
+			return SIV3D_ENGINE(Cursor)->getLocalTransform();
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -222,6 +250,25 @@ namespace s3d
 		bool IsCaptured() noexcept
 		{
 			return SIV3D_ENGINE(Cursor)->isCaptured();
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(Internal)
+		//
+		////////////////////////////////////////////////////////////////
+
+		namespace Internal
+		{
+			void SetLocalTransform(const Mat3x2& matrix)
+			{
+				SIV3D_ENGINE(Cursor)->setLocalTransform(matrix);
+			}
+
+			void SetCameraTransform(const Mat3x2& matrix)
+			{
+				SIV3D_ENGINE(Cursor)->setCameraTransform(matrix);
+			}
 		}
 	}
 }
