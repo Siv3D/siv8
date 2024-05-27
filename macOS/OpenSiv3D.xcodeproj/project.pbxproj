@@ -788,6 +788,8 @@
 		F980C49D2C04B6DB00A86B68 /* CRenderer2D_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C4982C04B6DB00A86B68 /* CRenderer2D_Metal.mm */; };
 		F980C49E2C04B6DB00A86B68 /* CRenderer2D_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4992C04B6DB00A86B68 /* CRenderer2D_Metal.hpp */; };
 		F980C49F2C04B6DB00A86B68 /* Renderer2DFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C49B2C04B6DB00A86B68 /* Renderer2DFactory.mm */; };
+		F980C4A22C04C91A00A86B68 /* CursorTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4A02C04C91A00A86B68 /* CursorTransform.cpp */; };
+		F980C4A32C04C91A00A86B68 /* CursorTransform.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4A12C04C91A00A86B68 /* CursorTransform.hpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -3044,6 +3046,8 @@
 		F980C4982C04B6DB00A86B68 /* CRenderer2D_Metal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CRenderer2D_Metal.mm; sourceTree = "<group>"; };
 		F980C4992C04B6DB00A86B68 /* CRenderer2D_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CRenderer2D_Metal.hpp; sourceTree = "<group>"; };
 		F980C49B2C04B6DB00A86B68 /* Renderer2DFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Renderer2DFactory.mm; sourceTree = "<group>"; };
+		F980C4A02C04C91A00A86B68 /* CursorTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CursorTransform.cpp; sourceTree = "<group>"; };
+		F980C4A12C04C91A00A86B68 /* CursorTransform.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CursorTransform.hpp; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -7261,9 +7265,11 @@
 			isa = PBXGroup;
 			children = (
 				F98605762BDA7DFC006A4C0F /* CursorFactory.cpp */,
+				F980C4A02C04C91A00A86B68 /* CursorTransform.cpp */,
 				F98605842BDA869C006A4C0F /* HighTemporalResolutionCursor.cpp */,
 				F98605792BDA7DFC006A4C0F /* SivCursor.cpp */,
 				F98605772BDA7DFC006A4C0F /* CursorState.hpp */,
+				F980C4A12C04C91A00A86B68 /* CursorTransform.hpp */,
 				F98605852BDA869C006A4C0F /* HighTemporalResolutionCursor.hpp */,
 				F98605782BDA7DFC006A4C0F /* ICursor.hpp */,
 			);
@@ -10237,6 +10243,7 @@
 				F986000C2BCFBB53006A4C0F /* SkContourMeasure.h in Headers */,
 				F98601E02BCFBB53006A4C0F /* SkLRUCache.h in Headers */,
 				F98603172BCFBB54006A4C0F /* SkOpSpan.h in Headers */,
+				F980C4A32C04C91A00A86B68 /* CursorTransform.hpp in Headers */,
 				F9070CA42B9F175000383E4D /* CommonFloat.hpp in Headers */,
 				F986014C2BCFBB53006A4C0F /* SkAnnotationKeys.h in Headers */,
 				F9528B1C2BADCC9900222F45 /* Grid.ipp in Headers */,
@@ -10937,6 +10944,7 @@
 				F9070DE02B9F175E00383E4D /* SivParseErrorReason.cpp in Sources */,
 				F9528C182BBF026F00222F45 /* zstd_common.c in Sources */,
 				F986042B2BCFBB54006A4C0F /* SkSLPostfixExpression.cpp in Sources */,
+				F980C4A22C04C91A00A86B68 /* CursorTransform.cpp in Sources */,
 				F9070DF72B9F175E00383E4D /* UnicodeUtility.cpp in Sources */,
 				F98604842BCFBB54006A4C0F /* SkSLParser.cpp in Sources */,
 				F9528B362BB0567000222F45 /* MemoryMappedFileViewDetail.cpp in Sources */,
