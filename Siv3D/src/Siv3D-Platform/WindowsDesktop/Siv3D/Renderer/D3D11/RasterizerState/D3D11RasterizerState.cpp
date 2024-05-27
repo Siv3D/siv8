@@ -14,12 +14,24 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	init
+	//
+	////////////////////////////////////////////////////////////////
+
 	void D3D11RasterizerState::init(const D3D11Device& device)
 	{
 		LOG_SCOPED_DEBUG("D3D11RasterizerState::init()");
 		m_device	= device.getDevice();
 		m_context	= device.getContext();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	set
+	//
+	////////////////////////////////////////////////////////////////
 
 	void D3D11RasterizerState::set(const RasterizerState& state)
 	{
@@ -45,12 +57,24 @@ namespace s3d
 		m_currentState = state;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setScissorRect
+	//
+	////////////////////////////////////////////////////////////////
+
 	void D3D11RasterizerState::setScissorRect(const Rect& scissorRect)
 	{
 		const D3D11_RECT r{ scissorRect.x, scissorRect.y, scissorRect.x + scissorRect.w, scissorRect.y + scissorRect.h };
 
 		m_context->RSSetScissorRects(1, &r);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
 
 	D3D11RasterizerState::StateTable::iterator D3D11RasterizerState::create(const RasterizerState& state)
 	{

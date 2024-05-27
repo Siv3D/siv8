@@ -39,6 +39,12 @@ namespace s3d
 		};
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	init
+	//
+	////////////////////////////////////////////////////////////////
+
 	void D3D11SamplerState::init(const D3D11Device& device)
 	{
 		LOG_SCOPED_DEBUG("D3D11SamplerState::init()");
@@ -47,6 +53,12 @@ namespace s3d
 		m_currentVSStates.fill(SamplerState::Invalid());
 		m_currentPSStates.fill(SamplerState::Invalid());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setVS
+	//
+	////////////////////////////////////////////////////////////////
 
 	void D3D11SamplerState::setVS(const uint32 slot, const SamplerState& state)
 	{
@@ -74,6 +86,12 @@ namespace s3d
 		m_currentVSStates[slot] = state;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setPS
+	//
+	////////////////////////////////////////////////////////////////
+
 	void D3D11SamplerState::setPS(const uint32 slot, const SamplerState& state)
 	{
 		assert(slot < Graphics::TextureSlotCount);
@@ -99,6 +117,12 @@ namespace s3d
 
 		m_currentPSStates[slot] = state;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
 
 	D3D11SamplerState::StateTable::iterator D3D11SamplerState::create(const SamplerState& state)
 	{

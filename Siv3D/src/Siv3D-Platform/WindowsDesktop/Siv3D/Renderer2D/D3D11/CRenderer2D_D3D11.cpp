@@ -43,10 +43,22 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	CRenderer2D_D3D11::~CRenderer2D_D3D11()
 	{
 		LOG_SCOPED_DEBUG("CRenderer2D_D3D11::~CRenderer2D_D3D11()");
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	init
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CRenderer2D_D3D11::init()
 	{
@@ -88,10 +100,22 @@ namespace s3d
 		m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle).id();
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	beginFrame
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CRenderer2D_D3D11::beginFrame()
 	{
 
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addTriangle
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CRenderer2D_D3D11::addTriangle(const Float2(&points)[3], const Float4& color)
 	{
@@ -111,6 +135,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	addRect
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CRenderer2D_D3D11::addRect(const FloatRect& rect, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, color))
@@ -129,14 +159,20 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	flush
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CRenderer2D_D3D11::flush()
 	{
 		ScopeExit cleanUp = [this]()
 		{
 			m_vertexBufferManager2D.reset();
 			m_commandManager.reset();
-			//m_currentCustomVS.reset();
-			//m_currentCustomPS.reset();
+			m_currentCustomShader.vs.reset();
+			m_currentCustomShader.ps.reset();
 		};
 
 		m_commandManager.flush();
@@ -243,6 +279,12 @@ namespace s3d
 			}
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
 
 	Vertex2DBufferPointer CRenderer2D_D3D11::createBuffer(const Vertex2D::IndexType vertexSize, const Vertex2D::IndexType indexSize)
 	{
