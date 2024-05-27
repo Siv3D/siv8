@@ -19,7 +19,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr auto Min(const Concept::Scalar auto a, const Concept::Scalar auto b) noexcept
+	template <Concept::Scalar Scalar>
+	constexpr auto Min(const Scalar a, const Scalar b) noexcept
 	{
 		return ((b < a) ? b : a);
 	}
@@ -42,7 +43,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr auto Max(const Concept::Scalar auto a, const Concept::Scalar auto b) noexcept
+	template <Concept::Scalar Scalar>
+	constexpr auto Max(const Scalar a, const Scalar b) noexcept
 	{
 		return ((a < b) ? b : a);
 	}
