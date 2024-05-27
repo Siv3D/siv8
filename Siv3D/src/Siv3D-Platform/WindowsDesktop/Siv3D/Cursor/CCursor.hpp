@@ -38,15 +38,15 @@ namespace s3d
 
 		void setPos(Point pos) override;
 
-		const Mat3x2& getBaseWindowTransform() const noexcept;
+		const Mat3x2& getBaseWindowTransform() const noexcept override;
 
-		const Mat3x2& getCameraTransform() const noexcept;
+		const Mat3x2& getCameraTransform() const noexcept override;
 
-		const Mat3x2& getLocalTransform() const noexcept;
+		const Mat3x2& getLocalTransform() const noexcept override;
 
-		void setCameraTransform(const Mat3x2& matrix);
+		void setCameraTransform(const Mat3x2& matrix) override;
 
-		void setLocalTransform(const Mat3x2& matrix);
+		void setLocalTransform(const Mat3x2& matrix) override;
 
 		bool isClippedToWindow() const noexcept override;
 
