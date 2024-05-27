@@ -128,7 +128,7 @@ namespace s3d
 			m_pipeLineStateFullScreenTriangle = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
 		}
 		
-		clear();
+		beginFrame();
 	}
 
 	////////////////////////////////////////////////////////////////
