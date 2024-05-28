@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/HLSL.hpp>
-# include <Siv3D/VertexSHader.hpp>
+# include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
 
 namespace s3d
