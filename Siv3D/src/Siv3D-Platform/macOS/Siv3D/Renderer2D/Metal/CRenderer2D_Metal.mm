@@ -52,10 +52,24 @@ namespace s3d
 		{
 			m_pRenderer	= static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 			m_pShader	= static_cast<CShader_Metal*>(SIV3D_ENGINE(Shader));
+			m_device	= m_pRenderer->getDevice();
 		}
 
 		//m_engineShader.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle).id();
 		//m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle).id();
+
+		for (int32 i = 0; i < 3; ++i)
+		{
+			simd::float3 triangleVertices[] = {
+				{-0.5f, -0.5f, 0.0f},
+				{ 0.5f, -0.5f, 0.0f},
+				{ (-0.01f + i * 0.01f),  0.5f, 0.0f}
+			};
+			
+			m_vertexBufferManager.vertexBuffers[i] = NS::TransferPtr(m_device->newBuffer(&triangleVertices,
+															  sizeof(triangleVertices),
+															  MTL::ResourceStorageModeShared));
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -129,6 +143,103 @@ namespace s3d
 
 	void CRenderer2D_Metal::flush()
 	{
+
+	}
+
+	void CRenderer2D_Metal::flush(MTL::CommandBuffer* commandBuffer)
+	{
+		m_vertexBufferManager.updateContent();
+
+		if (m_pRenderer->getSceneSampleCount() == 1)
+		{
+			if (not m_pipeLineTestNoAA)
+			{
+				const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle);
+				const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle);
+				
+				NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
+				renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
+				renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
+				renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
+				renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
+		
+				NS::Error* error;
+				m_pipeLineTestNoAA = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+			}
+		}
+		else
+		{
+			if (not m_pipeLineTestMSAAx4)
+			{
+				const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle);
+				const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle);
+				
+				NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
+				renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
+				renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
+				renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
+				renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
+				renderPipelineDescriptor->setSampleCount(4);
+				
+				NS::Error* error;
+				m_pipeLineTestMSAAx4 = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+			}
+		}
+
+		// Draw2D
+		@autoreleasepool
+		{
+			{
+				NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+				MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
+				
+				if (m_pRenderer->getSceneSampleCount() == 1)
+				{
+					cd->setTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
+					//cd->setTexture(m_sceneBuffers.nonMSAA.getTexture());
+				}
+				else
+				{
+					cd->setTexture(m_pRenderer->getSceneTextureMSAA().getTexture());
+					cd->setResolveTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
+					
+					//cd->setTexture(m_sceneBuffers.msaa.getTexture());
+					//cd->setResolveTexture(m_sceneBuffers.nonMSAA.getTexture());
+				}
+
+				cd->setLoadAction(MTL::LoadActionClear);
+				const ColorF& backgroundColor = m_pRenderer->getSceneStyle().backgroundColor;
+				cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
+				
+				if (m_pRenderer->getSceneSampleCount() == 1)
+				{
+					cd->setStoreAction(MTL::StoreActionStore);
+				}
+				else
+				{
+					cd->setStoreAction(MTL::StoreActionMultisampleResolve);
+				}
+				
+				MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
+				
+				if (m_pRenderer->getSceneSampleCount() == 1)
+				{
+					renderCommandEncoder->setRenderPipelineState(m_pipeLineTestNoAA.get());
+				}
+				else
+				{
+					renderCommandEncoder->setRenderPipelineState(m_pipeLineTestMSAAx4.get());
+				}
+					
+				renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getCurrentVertexBuffer().get(), 0, 0);
+				MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
+				NS::UInteger vertexStart = 0;
+				NS::UInteger vertexCount = 3;
+				renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
+				renderCommandEncoder->endEncoding();
+			}
+		}
+
 		/*
 		ScopeExit cleanUp = [this]()
 		{
@@ -242,5 +353,10 @@ namespace s3d
 			}
 		}
 		*/
+	}
+
+	dispatch_semaphore_t CRenderer2D_Metal::getSemaphore() const
+	{
+		return m_vertexBufferManager.getSemaphore();
 	}
 }

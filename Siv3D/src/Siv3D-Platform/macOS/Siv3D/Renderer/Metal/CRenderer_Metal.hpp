@@ -16,10 +16,12 @@
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "Metal.hpp"
 # include "BackBuffer/MetalInternalTexture2D.hpp"
-# include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 
 namespace s3d
 {
+	class CShader_Metal;
+	class CRenderer2D_Metal;
+
 	class CRenderer_Metal final : public ISiv3DRenderer
 	{
 	public:
@@ -62,9 +64,17 @@ namespace s3d
 
 		MTL::Device* getDevice() const;
 		
+		uint32 getSceneSampleCount() const;
+
+		const MetalInternalTexture2D& getSceneTextureMSAA() const;
+
+		const MetalInternalTexture2D& getSceneTextureNonMSAA() const;
+		
 	private:
 
 		CShader_Metal* m_pShader = nullptr;
+		
+		CRenderer2D_Metal* m_pRenderer2D = nullptr;
 		
 		NSWindow* m_metalWindow = nullptr;
 		
@@ -105,41 +115,6 @@ namespace s3d
 		} m_sceneBuffers;
 			
 		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineStateFullScreenTriangle;
-		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestNoAA;
-		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestMSAAx4;
-
-		class VertexBufferManager
-		{
-		public:
-			
-			static constexpr size_t MaxInflightBuffers = 3;
-			
-			dispatch_semaphore_t frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
-		
-			std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> vertexBuffers;
-
-			void updateContent()
-			{
-				dispatch_semaphore_wait(frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
-				
-				++m_bufferIndex %= MaxInflightBuffers;
-			}
-			
-			dispatch_semaphore_t getSemaphore() const
-			{
-				return frameBoundarySemaphore;
-			}
-			
-			const NS::SharedPtr<MTL::Buffer>& getCurrentVertexBuffer() const
-			{
-				return vertexBuffers[m_bufferIndex];
-			}
-			
-		private:
-			
-			size_t m_bufferIndex = 0;
-			
-		} m_vertexBufferManager;
 
 		void resizeBackBuffer(Size backBufferSize);
 

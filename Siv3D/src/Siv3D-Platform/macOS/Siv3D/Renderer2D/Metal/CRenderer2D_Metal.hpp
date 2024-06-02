@@ -34,11 +34,52 @@ namespace s3d
 
 		void flush() override;
 
+		void flush(MTL::CommandBuffer* commandBuffer);
+
+		dispatch_semaphore_t getSemaphore() const;
+
 	private:
 
 		CRenderer_Metal* m_pRenderer	= nullptr;
 		
 		CShader_Metal* m_pShader		= nullptr;
 
+		MTL::Device* m_device			= nullptr;
+
+		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestNoAA;
+		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestMSAAx4;
+
+		class VertexBufferManager
+		{
+		public:
+			
+			static constexpr size_t MaxInflightBuffers = 3;
+			
+			dispatch_semaphore_t frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
+		
+			std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> vertexBuffers;
+
+			void updateContent()
+			{
+				dispatch_semaphore_wait(frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
+				
+				++m_bufferIndex %= MaxInflightBuffers;
+			}
+			
+			dispatch_semaphore_t getSemaphore() const
+			{
+				return frameBoundarySemaphore;
+			}
+			
+			const NS::SharedPtr<MTL::Buffer>& getCurrentVertexBuffer() const
+			{
+				return vertexBuffers[m_bufferIndex];
+			}
+			
+		private:
+			
+			size_t m_bufferIndex = 0;
+			
+		} m_vertexBufferManager;
 	};
 }
