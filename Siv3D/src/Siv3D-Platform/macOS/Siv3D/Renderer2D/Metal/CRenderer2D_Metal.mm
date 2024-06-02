@@ -215,59 +215,52 @@ namespace s3d
 		}
 
 		// Draw2D
+		NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+		MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
+		
+		if (m_pRenderer->getSceneSampleCount() == 1)
+		{
+			cd->setTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
+		}
+		else
+		{
+			cd->setTexture(m_pRenderer->getSceneTextureMSAA().getTexture());
+			cd->setResolveTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
+		}
+
+		cd->setLoadAction(MTL::LoadActionClear);
+		const ColorF& backgroundColor = m_pRenderer->getSceneStyle().backgroundColor;
+		cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
+		
+		if (m_pRenderer->getSceneSampleCount() == 1)
+		{
+			cd->setStoreAction(MTL::StoreActionStore);
+		}
+		else
+		{
+			cd->setStoreAction(MTL::StoreActionMultisampleResolve);
+		}
+		
 		@autoreleasepool
 		{
+			MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
+			
+			if (m_pRenderer->getSceneSampleCount() == 1)
 			{
-				NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
-				MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
-				
-				if (m_pRenderer->getSceneSampleCount() == 1)
-				{
-					cd->setTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
-					//cd->setTexture(m_sceneBuffers.nonMSAA.getTexture());
-				}
-				else
-				{
-					cd->setTexture(m_pRenderer->getSceneTextureMSAA().getTexture());
-					cd->setResolveTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
-					
-					//cd->setTexture(m_sceneBuffers.msaa.getTexture());
-					//cd->setResolveTexture(m_sceneBuffers.nonMSAA.getTexture());
-				}
-
-				cd->setLoadAction(MTL::LoadActionClear);
-				const ColorF& backgroundColor = m_pRenderer->getSceneStyle().backgroundColor;
-				cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
-				
-				if (m_pRenderer->getSceneSampleCount() == 1)
-				{
-					cd->setStoreAction(MTL::StoreActionStore);
-				}
-				else
-				{
-					cd->setStoreAction(MTL::StoreActionMultisampleResolve);
-				}
-				
-				MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
-				
-				if (m_pRenderer->getSceneSampleCount() == 1)
-				{
-					renderCommandEncoder->setRenderPipelineState(m_pipeLineTestNoAA.get());
-				}
-				else
-				{
-					renderCommandEncoder->setRenderPipelineState(m_pipeLineTestMSAAx4.get());
-				}
-					
-				renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getCurrentVertexBuffer().get(), 0, 0);
-				renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
-				
-				MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
-				NS::UInteger vertexStart = 0;
-				NS::UInteger vertexCount = 3;
-				renderCommandEncoder->drawPrimitives(typeTriangle, vertexStart, vertexCount);
-				renderCommandEncoder->endEncoding();
+				renderCommandEncoder->setRenderPipelineState(m_pipeLineTestNoAA.get());
 			}
+			else
+			{
+				renderCommandEncoder->setRenderPipelineState(m_pipeLineTestMSAAx4.get());
+			}
+				
+			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getCurrentVertexBuffer().get(), 0, 0);
+			renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
+
+			NS::UInteger vertexStart = 0;
+			NS::UInteger vertexCount = 3;
+			renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, vertexStart, vertexCount);
+			renderCommandEncoder->endEncoding();
 		}
 
 		/*
