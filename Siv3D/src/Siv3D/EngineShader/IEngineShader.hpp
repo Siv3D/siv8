@@ -19,13 +19,13 @@ namespace s3d
 	enum class EngineVS
 	{
 		FullScreenTriangle,
-		TestTriangle,
+		Shape2D,
 	};
 
 	enum class EnginePS
 	{
 		FullScreenTriangle,
-		TestTriangle,
+		Shape2D,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

@@ -8,7 +8,7 @@ struct VertexOut
 };
 
 vertex
-VertexOut fullscreen_triangle_vs(uint vertexID [[vertex_id]])
+VertexOut VS_FullscreenTriangle(uint vertexID [[vertex_id]])
 {
 	VertexOut result;
 	result.position = float4((vertexID == 2 ? 3.0 : -1.0),
@@ -22,7 +22,7 @@ VertexOut fullscreen_triangle_vs(uint vertexID [[vertex_id]])
 }
 
 fragment
-float4 fullscreen_triangle_ps(VertexOut in [[stage_in]], texture2d<float> colorTexture [[texture(0)]])
+float4 PS_FullscreenTriangle(VertexOut in [[stage_in]], texture2d<float> colorTexture [[texture(0)]])
 {
 	constexpr sampler textureSampler(mag_filter::linear, min_filter::linear);
 

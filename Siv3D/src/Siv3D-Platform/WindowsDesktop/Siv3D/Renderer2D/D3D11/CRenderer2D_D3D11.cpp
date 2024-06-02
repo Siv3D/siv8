@@ -82,7 +82,7 @@ namespace s3d
 			};
 
 			{
-				const Blob& bytecode = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle).getBytecode();
+				const Blob& bytecode = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).getBytecode();
 
 				if (FAILED(m_device->CreateInputLayout(layout, 3, bytecode.data(), bytecode.size(), &m_inputLayout)))
 				{
@@ -96,8 +96,8 @@ namespace s3d
 			}
 		}
 
-		m_engineShader.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle).id();
-		m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle).id();
+		m_engineShader.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 	}
 
 	////////////////////////////////////////////////////////////////

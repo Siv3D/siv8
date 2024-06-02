@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -71,7 +71,7 @@ namespace s3d
 				return frameBoundarySemaphore;
 			}
 			
-			const NS::SharedPtr<MTL::Buffer>& getCurrentVertexBuffer() const
+			NS::SharedPtr<MTL::Buffer>& getCurrentVertexBuffer()
 			{
 				return vertexBuffers[m_bufferIndex];
 			}

@@ -13,6 +13,7 @@
 # include <Siv3D/System/ISystem.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 void Main();
@@ -38,6 +39,7 @@ int main(int argc, char* argv[])
 	}
 	catch (const Error& error)
 	{
+		FreestandingMessageBox::ShowError(error.messageUTF8());
 		std::cerr << error << '\n';
 		return -1;
 	}

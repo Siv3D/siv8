@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "CEngineShader_Metal.hpp"
+# include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -34,12 +35,26 @@ namespace s3d
 	void CEngineShader_Metal::init()
 	{
 		LOG_SCOPED_DEBUG("CEngineShader_Metal::init()");
-
-		m_vertexShaders << VertexShader::MSL(U"fullscreen_triangle_vs");
-		m_vertexShaders << VertexShader::MSL(U"vertexShader");
-
-		m_pixelShaders << PixelShader::MSL(U"fullscreen_triangle_ps");
-		m_pixelShaders << PixelShader::MSL(U"fragmentShader");
+		
+		{
+			m_vertexShaders << VertexShader::MSL(U"VS_FullscreenTriangle");
+			m_vertexShaders << VertexShader::MSL(U"VS_Shape");
+			
+			if (not m_vertexShaders.all([](const auto& vs) { return static_cast<bool>(vs); })) // もしロードに失敗したシェーダがあれば
+			{
+				throw InternalEngineError{ U"Failed to load a engine shader" };
+			}
+		}
+		
+		{
+			m_pixelShaders << PixelShader::MSL(U"PS_FullscreenTriangle");
+			m_pixelShaders << PixelShader::MSL(U"PS_Shape");
+			
+			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
+			{
+				throw InternalEngineError{ U"Failed to load a engine shader" };
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

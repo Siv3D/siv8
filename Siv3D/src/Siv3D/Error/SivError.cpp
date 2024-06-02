@@ -113,6 +113,6 @@ namespace s3d
 
 	const char* Error::what() const noexcept
 	{
-		return std::exception::what();
+		return std::runtime_error::what();
 	}
 }

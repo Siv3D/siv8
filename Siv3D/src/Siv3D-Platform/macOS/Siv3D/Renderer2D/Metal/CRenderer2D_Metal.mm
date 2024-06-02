@@ -13,11 +13,16 @@
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/Mat3x2.hpp>
+# include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
+
+
+# include <Siv3D/Cursor.hpp>
+
 
 ///*
 #	define LOG_COMMAND(...) LOG_TRACE(__VA_ARGS__)
@@ -55,15 +60,16 @@ namespace s3d
 			m_device	= m_pRenderer->getDevice();
 		}
 
-		//m_engineShader.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle).id();
-		//m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle).id();
+		//m_engineShader.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		//m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 
 		for (int32 i = 0; i < 3; ++i)
 		{
-			simd::float3 triangleVertices[] = {
-				{-0.5f, -0.5f, 0.0f},
-				{ 0.5f, -0.5f, 0.0f},
-				{ (-0.01f + i * 0.01f),  0.5f, 0.0f}
+			const Vertex2D triangleVertices[3] =
+			{
+				{ Float2{ -0.5f, -0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+				{ Float2{  0.5f, -0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+				{ Float2{ 0.0f, 0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
 			};
 			
 			m_vertexBufferManager.vertexBuffers[i] = NS::TransferPtr(m_device->newBuffer(&triangleVertices,
@@ -149,13 +155,28 @@ namespace s3d
 	void CRenderer2D_Metal::flush(MTL::CommandBuffer* commandBuffer)
 	{
 		m_vertexBufferManager.updateContent();
-
+		
+		void* vertexBuffer = m_vertexBufferManager.getCurrentVertexBuffer().get()->contents();
+		
+		const float x = ((Cursor::Pos().x/800.0f-0.5f)*2.0f);
+		const float y = ((Cursor::Pos().y/600.0f-0.5f)*-2.0f);
+		
+		const Vertex2D triangleVertices[3] =
+		{
+			{ Float2{ -0.5f, -0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+			{ Float2{  0.5f, -0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+			{ Float2{ x, y }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+		};
+		
+		std::memcpy(vertexBuffer, &triangleVertices, sizeof(triangleVertices));
+		
+		
 		if (m_pRenderer->getSceneSampleCount() == 1)
 		{
 			if (not m_pipeLineTestNoAA)
 			{
-				const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle);
-				const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle);
+				const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D);
+				const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D);
 				
 				NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
 				renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
@@ -171,8 +192,8 @@ namespace s3d
 		{
 			if (not m_pipeLineTestMSAAx4)
 			{
-				const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::TestTriangle);
-				const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::TestTriangle);
+				const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D);
+				const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D);
 				
 				NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
 				renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
