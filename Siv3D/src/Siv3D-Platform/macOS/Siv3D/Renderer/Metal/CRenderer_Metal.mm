@@ -83,14 +83,15 @@ namespace s3d
 		m_metalWindow.contentView.layer = m_metalLayer;
 		m_metalWindow.contentView.wantsLayer = YES;
 		
+		for (int32 i = 0; i < 3; ++i)
 		{
 			simd::float3 triangleVertices[] = {
 				{-0.5f, -0.5f, 0.0f},
 				{ 0.5f, -0.5f, 0.0f},
-				{ 0.0f,  0.5f, 0.0f}
+				{ (-0.01f + i * 0.01f),  0.5f, 0.0f}
 			};
 			
-			m_triangleVertexBuffer = NS::TransferPtr(m_device->newBuffer(&triangleVertices,
+			m_vertexBufferManager.vertexBuffers[i] = NS::TransferPtr(m_device->newBuffer(&triangleVertices,
 															  sizeof(triangleVertices),
 															  MTL::ResourceStorageModeShared));
 		}
@@ -161,6 +162,8 @@ namespace s3d
 
 	void CRenderer_Metal::flush()
 	{
+		m_vertexBufferManager.updateContent();
+		
 		if (m_sceneBuffers.sampleCount == 1)
 		{
 			if (not m_pipeLineTestNoAA)
@@ -237,7 +240,7 @@ namespace s3d
 					renderCommandEncoder->setRenderPipelineState(m_pipeLineTestMSAAx4.get());
 				}
 					
-				renderCommandEncoder->setVertexBuffer(m_triangleVertexBuffer.get(), 0, 0);
+				renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getCurrentVertexBuffer().get(), 0, 0);
 				MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
 				NS::UInteger vertexStart = 0;
 				NS::UInteger vertexCount = 3;
@@ -287,8 +290,13 @@ namespace s3d
 			}
 			
 			m_commandBuffer->presentDrawable(m_metalDrawable);
+			
+			__weak dispatch_semaphore_t semaphore = m_vertexBufferManager.getSemaphore();
+			m_commandBuffer->addCompletedHandler(^(MTL::CommandBuffer*) {
+				dispatch_semaphore_signal(semaphore);
+			});
 			m_commandBuffer->commit();
-			m_commandBuffer->waitUntilCompleted();
+			//m_commandBuffer->waitUntilCompleted();
 		}
 
 		return true;
