@@ -67,9 +67,9 @@ namespace s3d
 		{
 			const Vertex2D triangleVertices[3] =
 			{
-				{ Float2{ -0.5f, -0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-				{ Float2{  0.5f, -0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-				{ Float2{ 0.0f, 0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+				{ Float2{ 0.0f, 0.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+				{ Float2{ 400.0f, 300.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+				{ Float2{ 0.0f, 600.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
 			};
 			
 			m_vertexBufferManager.vertexBuffers[i] = NS::TransferPtr(m_device->newBuffer(&triangleVertices,
@@ -158,18 +158,25 @@ namespace s3d
 		
 		void* vertexBuffer = m_vertexBufferManager.getCurrentVertexBuffer().get()->contents();
 		
-		const float x = ((Cursor::Pos().x/800.0f-0.5f)*2.0f);
-		const float y = ((Cursor::Pos().y/600.0f-0.5f)*-2.0f);
+		const float x = Cursor::Pos().x;
+		const float y = Cursor::Pos().y;
 		
 		const Vertex2D triangleVertices[3] =
 		{
-			{ Float2{ -0.5f, -0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-			{ Float2{  0.5f, -0.5f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+			{ Float2{ 0.0f, 0.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
 			{ Float2{ x, y }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
+			{ Float2{ 0.0f, 600.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
 		};
 		
 		std::memcpy(vertexBuffer, &triangleVertices, sizeof(triangleVertices));
-		
+
+		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
+		const Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
+		const Float4 transform[2] =
+		{
+			{ screenMat._11, screenMat._12, screenMat._31, screenMat._32 },
+			{ screenMat._21, screenMat._22, 0.0f, 1.0f }
+		};
 		
 		if (m_pRenderer->getSceneSampleCount() == 1)
 		{
@@ -253,6 +260,8 @@ namespace s3d
 				}
 					
 				renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getCurrentVertexBuffer().get(), 0, 0);
+				renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
+				
 				MTL::PrimitiveType typeTriangle = MTL::PrimitiveTypeTriangle;
 				NS::UInteger vertexStart = 0;
 				NS::UInteger vertexCount = 3;
