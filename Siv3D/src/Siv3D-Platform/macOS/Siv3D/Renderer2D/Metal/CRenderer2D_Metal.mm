@@ -60,8 +60,8 @@ namespace s3d
 			m_device	= m_pRenderer->getDevice();
 		}
 
-		//m_engineShader.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
-		//m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		m_engineShader.vs		= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		m_engineShader.psShape	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 
 		for (int32 i = 0; i < 3; ++i)
 		{
@@ -177,41 +177,29 @@ namespace s3d
 			{ screenMat._11, screenMat._12, screenMat._31, screenMat._32 },
 			{ screenMat._21, screenMat._22, 0.0f, 1.0f }
 		};
-		
-		if (m_pRenderer->getSceneSampleCount() == 1)
+
+		const PipelineStates2D pipelineStates2D
 		{
-			if (not m_pipeLineTestNoAA)
-			{
-				const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D);
-				const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D);
-				
-				NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
-				renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
-				renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
-				renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
-				renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
-		
-				NS::Error* error;
-				m_pipeLineTestNoAA = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
-			}
-		}
-		else
+			.vs = m_engineShader.vs,
+			.ps = m_engineShader.psShape,
+			.pixelFormat = static_cast<uint16>(MTL::PixelFormatRGBA8Unorm),
+			.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
+		};
+
+		auto it = m_pipelineStates.find(pipelineStates2D);
+
+		if (it == m_pipelineStates.end())
 		{
-			if (not m_pipeLineTestMSAAx4)
-			{
-				const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D);
-				const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D);
-				
-				NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
-				renderPipelineDescriptor->setLabel(NS::String::string("Off-screen Rendering Pipeline", NS::ASCIIStringEncoding));
-				renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
-				renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
-				renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
-				renderPipelineDescriptor->setSampleCount(4);
-				
-				NS::Error* error;
-				m_pipeLineTestMSAAx4 = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
-			}
+			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
+			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(pipelineStates2D.vs));
+			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(pipelineStates2D.ps));
+			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(ToEnum<MTL::PixelFormat>(pipelineStates2D.pixelFormat));
+			renderPipelineDescriptor->setSampleCount(pipelineStates2D.sampleCount);
+			
+			NS::Error* error;
+			NS::SharedPtr<MTL::RenderPipelineState> pipelineState = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+			it = m_pipelineStates.emplace(pipelineStates2D, std::move(pipelineState)).first;
+			LOG_DEBUG(fmt::format("Created RenderPipelineState2D({}, {}, {}, {})", pipelineStates2D.vs.value(), pipelineStates2D.ps.value(), pipelineStates2D.pixelFormat, pipelineStates2D.sampleCount));
 		}
 
 		// Draw2D
@@ -244,16 +232,7 @@ namespace s3d
 		@autoreleasepool
 		{
 			MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
-			
-			if (m_pRenderer->getSceneSampleCount() == 1)
-			{
-				renderCommandEncoder->setRenderPipelineState(m_pipeLineTestNoAA.get());
-			}
-			else
-			{
-				renderCommandEncoder->setRenderPipelineState(m_pipeLineTestMSAAx4.get());
-			}
-				
+			renderCommandEncoder->setRenderPipelineState(it->second.get());
 			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getCurrentVertexBuffer().get(), 0, 0);
 			renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
 

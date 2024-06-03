@@ -10,11 +10,46 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/HashTable.hpp>
 # include <Siv3D/ConstantBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Renderer2D/Renderer2DCommon.hpp>
+# include "MetalVertexBufferManager2D.hpp"
+
+namespace s3d
+{
+	struct PipelineStates2D
+	{
+		VertexShader::IDType vs;
+
+		PixelShader::IDType ps;
+
+		uint16 pixelFormat;
+
+		uint16 sampleCount;
+
+		[[nodiscard]]
+		friend constexpr bool operator ==(const PipelineStates2D& lhs, const PipelineStates2D& rhs) noexcept
+		{
+			return ((lhs.vs == rhs.vs)
+				 && (lhs.ps == rhs.ps)
+				 && (lhs.pixelFormat == rhs.pixelFormat)
+				 && (lhs.sampleCount == rhs.sampleCount));
+		}
+	};
+}
+
+template <>
+struct std::hash<s3d::PipelineStates2D>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::PipelineStates2D& value) const noexcept
+	{
+		return s3d::Hash(value);
+	}
+};
 
 namespace s3d
 {
@@ -46,40 +81,19 @@ namespace s3d
 
 		MTL::Device* m_device			= nullptr;
 
-		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestNoAA;
-		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestMSAAx4;
-
-		class VertexBufferManager
-		{
-		public:
-			
-			static constexpr size_t MaxInflightBuffers = 3;
-			
-			dispatch_semaphore_t frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
+		HashTable<PipelineStates2D, NS::SharedPtr<MTL::RenderPipelineState>> m_pipelineStates;
 		
-			std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> vertexBuffers;
+		//NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestNoAA;
+		//NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestMSAAx4;
 
-			void updateContent()
-			{
-				dispatch_semaphore_wait(frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
-				
-				++m_bufferIndex %= MaxInflightBuffers;
-			}
-			
-			dispatch_semaphore_t getSemaphore() const
-			{
-				return frameBoundarySemaphore;
-			}
-			
-			NS::SharedPtr<MTL::Buffer>& getCurrentVertexBuffer()
-			{
-				return vertexBuffers[m_bufferIndex];
-			}
-			
-		private:
-			
-			size_t m_bufferIndex = 0;
-			
-		} m_vertexBufferManager;
+		MetalVertexBufferManager2D m_vertexBufferManager;
+
+		struct EngineShader
+		{
+			VertexShader::IDType vs;
+
+			PixelShader::IDType psShape;
+
+		} m_engineShader;
 	};
 }

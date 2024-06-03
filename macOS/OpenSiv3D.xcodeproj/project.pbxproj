@@ -790,6 +790,7 @@
 		F980C49F2C04B6DB00A86B68 /* Renderer2DFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C49B2C04B6DB00A86B68 /* Renderer2DFactory.mm */; };
 		F980C4A22C04C91A00A86B68 /* CursorTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4A02C04C91A00A86B68 /* CursorTransform.cpp */; };
 		F980C4A32C04C91A00A86B68 /* CursorTransform.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4A12C04C91A00A86B68 /* CursorTransform.hpp */; };
+		F980C4A52C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4A42C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -3048,6 +3049,7 @@
 		F980C49B2C04B6DB00A86B68 /* Renderer2DFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Renderer2DFactory.mm; sourceTree = "<group>"; };
 		F980C4A02C04C91A00A86B68 /* CursorTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CursorTransform.cpp; sourceTree = "<group>"; };
 		F980C4A12C04C91A00A86B68 /* CursorTransform.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CursorTransform.hpp; sourceTree = "<group>"; };
+		F980C4A42C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalVertexBufferManager2D.hpp; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -7174,6 +7176,7 @@
 		F980C49A2C04B6DB00A86B68 /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				F980C4A42C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp */,
 				F980C4982C04B6DB00A86B68 /* CRenderer2D_Metal.mm */,
 				F980C4992C04B6DB00A86B68 /* CRenderer2D_Metal.hpp */,
 			);
@@ -9556,6 +9559,7 @@
 				F9070C4E2B9F175000383E4D /* Date.ipp in Headers */,
 				F9807D852BF6676100D9B590 /* AssetIDWrapper.hpp in Headers */,
 				F9070D132B9F175100383E4D /* Window.hpp in Headers */,
+				F980C4A52C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp in Headers */,
 				F9528C092BBF026F00222F45 /* debug.h in Headers */,
 				F98601F92BCFBB53006A4C0F /* SkMemset.h in Headers */,
 				F98600A62BCFBB53006A4C0F /* SkCamera.h in Headers */,
