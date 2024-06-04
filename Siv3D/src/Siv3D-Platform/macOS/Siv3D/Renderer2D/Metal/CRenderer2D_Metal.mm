@@ -178,30 +178,6 @@ namespace s3d
 			{ screenMat._21, screenMat._22, 0.0f, 1.0f }
 		};
 
-		const PipelineState2D pipelineState2D
-		{
-			.vs = m_engineShader.vs,
-			.ps = m_engineShader.psShape,
-			.pixelFormat = static_cast<uint16>(MTL::PixelFormatRGBA8Unorm),
-			.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
-		};
-
-		auto it = m_pipelineStates.find(pipelineState2D);
-
-		if (it == m_pipelineStates.end())
-		{
-			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
-			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(pipelineState2D.vs));
-			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(pipelineState2D.ps));
-			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(ToEnum<MTL::PixelFormat>(pipelineState2D.pixelFormat));
-			renderPipelineDescriptor->setSampleCount(pipelineState2D.sampleCount);
-			
-			NS::Error* error;
-			NS::SharedPtr<MTL::RenderPipelineState> pipelineState = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
-			it = m_pipelineStates.emplace(pipelineState2D, std::move(pipelineState)).first;
-			LOG_DEBUG(fmt::format("Created RenderPipelineState2D({}, {}, {}, {})", pipelineState2D.vs.value(), pipelineState2D.ps.value(), pipelineState2D.pixelFormat, pipelineState2D.sampleCount));
-		}
-
 		// Draw2D
 		NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 		MTL::RenderPassColorAttachmentDescriptor* cd = offscreenRenderPassDescriptor->colorAttachments()->object(0);
@@ -229,10 +205,20 @@ namespace s3d
 			cd->setStoreAction(MTL::StoreActionMultisampleResolve);
 		}
 		
+		const PipelineStateDesc pipelineStateDesc
+		{
+			.vs = m_engineShader.vs,
+			.ps = m_engineShader.psShape,
+			.pixelFormat = static_cast<uint16>(MTL::PixelFormatRGBA8Unorm),
+			.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
+		};
+
+		const auto pipeline = m_pRenderer->getRenderPipelineState().get(pipelineStateDesc);
+		
 		@autoreleasepool
 		{
 			MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
-			renderCommandEncoder->setRenderPipelineState(it->second.get());
+			renderCommandEncoder->setRenderPipelineState(pipeline);
 			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getCurrentVertexBuffer().get(), 0, 0);
 			renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
 

@@ -11,17 +11,28 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <Siv3D/HashTable.hpp>
 # include <Siv3D/Renderer/Metal/Metal.hpp>
-# include "PipelineState2D.hpp"
+# include "PipelineStateDesc.hpp"
 
 namespace s3d
 {
+	class CShader_Metal;
+
 	class MetalRenderPipelineState
 	{
 	public:
 
+		void init(MTL::Device* device, CShader_Metal* pShader);
+		
+		const MTL::RenderPipelineState* get(const PipelineStateDesc& desc);
 
 	private:
+	
+		MTL::Device* m_device			= nullptr;
 
+		CShader_Metal* m_pShader		= nullptr;
+
+		HashTable<PipelineStateDesc, NS::SharedPtr<MTL::RenderPipelineState>> m_pipelineStates;
 	};
 }

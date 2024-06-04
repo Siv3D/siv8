@@ -71,6 +71,8 @@ namespace s3d
 
 		const MetalInternalTexture2D& getSceneTextureNonMSAA() const;
 		
+		MetalRenderPipelineState& getRenderPipelineState();
+		
 	private:
 
 		CShader_Metal* m_pShader = nullptr;
@@ -114,9 +116,11 @@ namespace s3d
 			}
 			
 		} m_sceneBuffers;
-			
-		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineStateFullScreenTriangle;
+		
+		MetalRenderPipelineState m_renderPipelineState;
 
+		const MTL::RenderPipelineState* m_fullscreenTriangleRenderPipelineState = nullptr;
+		
 		void resizeBackBuffer(Size backBufferSize);
 
 		Size getBackBufferSize() const;

@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/HashTable.hpp>
 # include <Siv3D/ConstantBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
@@ -42,14 +41,12 @@ namespace s3d
 
 	private:
 
+		MTL::Device* m_device			= nullptr;
+
 		CRenderer_Metal* m_pRenderer	= nullptr;
 		
 		CShader_Metal* m_pShader		= nullptr;
 
-		MTL::Device* m_device			= nullptr;
-
-		HashTable<PipelineState2D, NS::SharedPtr<MTL::RenderPipelineState>> m_pipelineStates;
-		
 		MetalVertexBufferManager2D m_vertexBufferManager;
 
 		struct EngineShader

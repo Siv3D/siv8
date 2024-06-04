@@ -102,23 +102,23 @@ namespace s3d
 			}
 		}
 		
+		m_renderPipelineState.init(m_device, m_pShader);
+		
 		SIV3D_ENGINE(Shader)->init();
 		SIV3D_ENGINE(EngineShader)->init();
 
 		{
-			const VertexShader& vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::FullScreenTriangle);
-			const PixelShader& ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FullScreenTriangle);
-
-			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
-			renderPipelineDescriptor->setLabel(NS::String::string("FullScreenTriangle Rendering Pipeline", NS::ASCIIStringEncoding));
-			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(vs.id()));
-			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(ps.id()));
-			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat((MTL::PixelFormat)m_metalLayer.pixelFormat);
+			const PipelineStateDesc pipelineStateDesc
+			{
+				.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::FullScreenTriangle).id(),
+				.ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FullScreenTriangle).id(),
+				.pixelFormat = static_cast<uint16>((MTL::PixelFormat)m_metalLayer.pixelFormat),
+				.sampleCount = 1,
+			};
 			
-			NS::Error* error;
-			m_pipeLineStateFullScreenTriangle = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+			m_fullscreenTriangleRenderPipelineState = getRenderPipelineState().get(pipelineStateDesc);
 		}
-		
+
 		beginFrame();
 	}
 
@@ -178,7 +178,7 @@ namespace s3d
 				cd->setStoreAction(MTL::StoreActionStore);
 				
 				MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
-				renderCommandEncoder->setRenderPipelineState(m_pipeLineStateFullScreenTriangle.get());
+				renderCommandEncoder->setRenderPipelineState(m_fullscreenTriangleRenderPipelineState);
 				const auto [s, viewRect] = getLetterboxComposition();
 				const MTL::Viewport viewport = {
 					.originX = viewRect.x,
@@ -419,7 +419,12 @@ namespace s3d
 	const MetalInternalTexture2D& CRenderer_Metal::getSceneTextureNonMSAA() const
 	{
 		return m_sceneBuffers.nonMSAA;
-	}		
+	}
+
+	MetalRenderPipelineState& CRenderer_Metal::getRenderPipelineState()
+	{
+		return m_renderPipelineState;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -17,7 +17,7 @@
 
 namespace s3d
 {
-	struct PipelineState2D
+	struct PipelineStateDesc
 	{
 		VertexShader::IDType vs;
 
@@ -28,7 +28,7 @@ namespace s3d
 		uint16 sampleCount;
 
 		[[nodiscard]]
-		friend constexpr bool operator ==(const PipelineState2D& lhs, const PipelineState2D& rhs) noexcept
+		friend constexpr bool operator ==(const PipelineStateDesc& lhs, const PipelineStateDesc& rhs) noexcept
 		{
 			return ((lhs.vs == rhs.vs)
 				 && (lhs.ps == rhs.ps)
@@ -39,10 +39,10 @@ namespace s3d
 }
 
 template <>
-struct std::hash<s3d::PipelineState2D>
+struct std::hash<s3d::PipelineStateDesc>
 {
 	[[nodiscard]]
-	size_t operator ()(const s3d::PipelineState2D& value) const noexcept
+	size_t operator ()(const s3d::PipelineStateDesc& value) const noexcept
 	{
 		return s3d::Hash(value);
 	}
