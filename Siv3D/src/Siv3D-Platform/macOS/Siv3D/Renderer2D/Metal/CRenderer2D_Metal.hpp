@@ -20,39 +20,6 @@
 
 namespace s3d
 {
-	struct PipelineStates2D
-	{
-		VertexShader::IDType vs;
-
-		PixelShader::IDType ps;
-
-		uint16 pixelFormat;
-
-		uint16 sampleCount;
-
-		[[nodiscard]]
-		friend constexpr bool operator ==(const PipelineStates2D& lhs, const PipelineStates2D& rhs) noexcept
-		{
-			return ((lhs.vs == rhs.vs)
-				 && (lhs.ps == rhs.ps)
-				 && (lhs.pixelFormat == rhs.pixelFormat)
-				 && (lhs.sampleCount == rhs.sampleCount));
-		}
-	};
-}
-
-template <>
-struct std::hash<s3d::PipelineStates2D>
-{
-	[[nodiscard]]
-	size_t operator ()(const s3d::PipelineStates2D& value) const noexcept
-	{
-		return s3d::Hash(value);
-	}
-};
-
-namespace s3d
-{
 	class CRenderer2D_Metal final : public ISiv3DRenderer2D
 	{
 	public:
@@ -81,11 +48,8 @@ namespace s3d
 
 		MTL::Device* m_device			= nullptr;
 
-		HashTable<PipelineStates2D, NS::SharedPtr<MTL::RenderPipelineState>> m_pipelineStates;
+		HashTable<PipelineState2D, NS::SharedPtr<MTL::RenderPipelineState>> m_pipelineStates;
 		
-		//NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestNoAA;
-		//NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestMSAAx4;
-
 		MetalVertexBufferManager2D m_vertexBufferManager;
 
 		struct EngineShader

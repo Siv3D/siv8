@@ -16,6 +16,7 @@
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "Metal.hpp"
 # include "BackBuffer/MetalInternalTexture2D.hpp"
+# include "RenderPipelineState/MetalRenderPipelineState.hpp"
 
 namespace s3d
 {

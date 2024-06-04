@@ -178,7 +178,7 @@ namespace s3d
 			{ screenMat._21, screenMat._22, 0.0f, 1.0f }
 		};
 
-		const PipelineStates2D pipelineStates2D
+		const PipelineState2D pipelineState2D
 		{
 			.vs = m_engineShader.vs,
 			.ps = m_engineShader.psShape,
@@ -186,20 +186,20 @@ namespace s3d
 			.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
 		};
 
-		auto it = m_pipelineStates.find(pipelineStates2D);
+		auto it = m_pipelineStates.find(pipelineState2D);
 
 		if (it == m_pipelineStates.end())
 		{
 			NS::SharedPtr<MTL::RenderPipelineDescriptor> renderPipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
-			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(pipelineStates2D.vs));
-			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(pipelineStates2D.ps));
-			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(ToEnum<MTL::PixelFormat>(pipelineStates2D.pixelFormat));
-			renderPipelineDescriptor->setSampleCount(pipelineStates2D.sampleCount);
+			renderPipelineDescriptor->setVertexFunction(m_pShader->getShaderVS(pipelineState2D.vs));
+			renderPipelineDescriptor->setFragmentFunction(m_pShader->getShaderPS(pipelineState2D.ps));
+			renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(ToEnum<MTL::PixelFormat>(pipelineState2D.pixelFormat));
+			renderPipelineDescriptor->setSampleCount(pipelineState2D.sampleCount);
 			
 			NS::Error* error;
 			NS::SharedPtr<MTL::RenderPipelineState> pipelineState = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
-			it = m_pipelineStates.emplace(pipelineStates2D, std::move(pipelineState)).first;
-			LOG_DEBUG(fmt::format("Created RenderPipelineState2D({}, {}, {}, {})", pipelineStates2D.vs.value(), pipelineStates2D.ps.value(), pipelineStates2D.pixelFormat, pipelineStates2D.sampleCount));
+			it = m_pipelineStates.emplace(pipelineState2D, std::move(pipelineState)).first;
+			LOG_DEBUG(fmt::format("Created RenderPipelineState2D({}, {}, {}, {})", pipelineState2D.vs.value(), pipelineState2D.ps.value(), pipelineState2D.pixelFormat, pipelineState2D.sampleCount));
 		}
 
 		// Draw2D

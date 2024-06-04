@@ -791,6 +791,9 @@
 		F980C4A22C04C91A00A86B68 /* CursorTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C4A02C04C91A00A86B68 /* CursorTransform.cpp */; };
 		F980C4A32C04C91A00A86B68 /* CursorTransform.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4A12C04C91A00A86B68 /* CursorTransform.hpp */; };
 		F980C4A52C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4A42C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp */; };
+		F980C4A92C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4A62C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp */; };
+		F980C4AA2C0F6D2C00A86B68 /* MetalRenderPipelineState.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C4A72C0F6D2C00A86B68 /* MetalRenderPipelineState.mm */; };
+		F980C4AC2C0F6DFB00A86B68 /* PipelineState2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4AB2C0F6DFB00A86B68 /* PipelineState2D.hpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -3050,6 +3053,9 @@
 		F980C4A02C04C91A00A86B68 /* CursorTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CursorTransform.cpp; sourceTree = "<group>"; };
 		F980C4A12C04C91A00A86B68 /* CursorTransform.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CursorTransform.hpp; sourceTree = "<group>"; };
 		F980C4A42C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalVertexBufferManager2D.hpp; sourceTree = "<group>"; };
+		F980C4A62C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalRenderPipelineState.hpp; sourceTree = "<group>"; };
+		F980C4A72C0F6D2C00A86B68 /* MetalRenderPipelineState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalRenderPipelineState.mm; sourceTree = "<group>"; };
+		F980C4AB2C0F6DFB00A86B68 /* PipelineState2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PipelineState2D.hpp; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -6827,6 +6833,7 @@
 		F972031E2BF09E80000E21DD /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				F980C4A82C0F6D2C00A86B68 /* RenderPipelineState */,
 				F9807D7E2BF1229700D9B590 /* BackBuffer */,
 				F97204342BF0A39F000E21DD /* Metal.cpp */,
 				F972031B2BF09E80000E21DD /* CRenderer_Metal.mm */,
@@ -7190,6 +7197,16 @@
 				F980C49B2C04B6DB00A86B68 /* Renderer2DFactory.mm */,
 			);
 			path = Renderer2D;
+			sourceTree = "<group>";
+		};
+		F980C4A82C0F6D2C00A86B68 /* RenderPipelineState */ = {
+			isa = PBXGroup;
+			children = (
+				F980C4AB2C0F6DFB00A86B68 /* PipelineState2D.hpp */,
+				F980C4A62C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp */,
+				F980C4A72C0F6D2C00A86B68 /* MetalRenderPipelineState.mm */,
+			);
+			path = RenderPipelineState;
 			sourceTree = "<group>";
 		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
@@ -9675,6 +9692,7 @@
 				F98602992BCFBB54006A4C0F /* SkVertState.h in Headers */,
 				F934BD932BF8824B0003EAD5 /* CEngineShader_Metal.hpp in Headers */,
 				F98603152BCFBB54006A4C0F /* SkOpSegment.h in Headers */,
+				F980C4AC2C0F6DFB00A86B68 /* PipelineState2D.hpp in Headers */,
 				F98600442BCFBB53006A4C0F /* SkStrokeRec.h in Headers */,
 				F9070B002B9DEB5900383E4D /* fast_float.h in Headers */,
 				F986FA982BCFB53B006A4C0F /* fttrigon.h in Headers */,
@@ -9889,6 +9907,7 @@
 				F97203182BF09E2E000E21DD /* SceneStyle.hpp in Headers */,
 				F986F8B82BC843E0006A4C0F /* MatchResults.ipp in Headers */,
 				F9E5FCD32BC3AD410081A4F7 /* JSONValueType.hpp in Headers */,
+				F980C4A92C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp in Headers */,
 				F980C48E2C04B41300A86B68 /* ConstantBuffer.hpp in Headers */,
 				F907068F2B9DAEC900383E4D /* macros.h in Headers */,
 				F9070C792B9F175000383E4D /* SequenceFormatter.ipp in Headers */,
@@ -11292,6 +11311,7 @@
 				F98605052BCFBC12006A4C0F /* SkSampler.cpp in Sources */,
 				F9070E912B9F183100383E4D /* CSystem.cpp in Sources */,
 				F98605A62BE4887C006A4C0F /* RegExpDetail.cpp in Sources */,
+				F980C4AA2C0F6D2C00A86B68 /* MetalRenderPipelineState.mm in Sources */,
 				F98602462BCFBB54006A4C0F /* SkRecordOpts.cpp in Sources */,
 				F98603C52BCFBB54006A4C0F /* SkSLIsConstantExpression.cpp in Sources */,
 				F98601EB2BCFBB53006A4C0F /* SkMaskGamma.cpp in Sources */,
