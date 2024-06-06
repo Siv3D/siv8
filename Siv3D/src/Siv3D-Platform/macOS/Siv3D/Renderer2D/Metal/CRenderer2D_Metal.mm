@@ -142,11 +142,8 @@ namespace s3d
 
 	void CRenderer2D_Metal::flush(MTL::CommandBuffer* commandBuffer)
 	{
-			
-
-		Vertex2D* vertexBuffer = m_vertexBufferManager.requestVertexBuffer(3);
-		Vertex2D::IndexType* indexBuffer = m_vertexBufferManager.requestIndexBuffer(3);
-
+		auto [pVertex, pIndex, indexOffset] = m_vertexBufferManager.requestBuffer(3, 3);
+		
 		const float x = Cursor::Pos().x;
 		const float y = Cursor::Pos().y;
 		
@@ -157,10 +154,10 @@ namespace s3d
 			{ Float2{ 0.0f, 600.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
 		};
 
-		std::memcpy(vertexBuffer, &triangleVertices, sizeof(triangleVertices));
-		indexBuffer[0] = 0;
-		indexBuffer[1] = 1;
-		indexBuffer[2] = 2;
+		std::memcpy(pVertex, &triangleVertices, sizeof(triangleVertices));
+		pIndex[0] = 0;
+		pIndex[1] = 1;
+		pIndex[2] = 2;
 		
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		const Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);

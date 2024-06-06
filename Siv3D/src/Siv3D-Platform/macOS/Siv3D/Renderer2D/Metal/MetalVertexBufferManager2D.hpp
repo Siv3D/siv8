@@ -13,6 +13,7 @@
 # include <Siv3D/Array.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/Renderer/Metal/Metal.hpp>
+# include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 
 namespace s3d
 {
@@ -35,31 +36,29 @@ namespace s3d
 
 		const MTL::Buffer* getVertexBuffer() const
 		{
-			return m_vertexBuffers[m_bufferIndex].buffer.get();
+			return m_buffers[m_bufferIndex].vertexBuffer.buffer.get();
 		}
 
 		const MTL::Buffer* getIndexBuffer() const
 		{
-			return m_indexBuffers[m_bufferIndex].buffer.get();
+			return m_buffers[m_bufferIndex].indexBuffer.buffer.get();
 		}
 
-		Vertex2D* requestVertexBuffer(size_t count)
-		{
-			return m_vertexBuffers[m_bufferIndex].requestVertexBuffer(count);
-		}
-
-		uint16* requestIndexBuffer(size_t count)
-		{
-			return m_indexBuffers[m_bufferIndex].requestIndexBuffer(count);
-		}
+		Vertex2DBufferPointer requestBuffer(uint16 vertexCount, uint32 indexCount);
 
 	private:
 
+		static constexpr uint32 InitialVertexBufferSize	= (1 << 16);	// 65,536
+
+		static constexpr uint32 InitialIndexBufferSize	= (1 << 16);	// 65,536
+		
+		static constexpr uint32 MaxVertexCountPerDraw	= 65535;
+		
 		struct VertexBuffer
 		{
-			size_t size = 4096;
+			uint32 size = 0;
 			
-			size_t writePos = 0;
+			uint32 writePos = 0;
 			
 			Vertex2D* pointer = 0;
 			
@@ -82,9 +81,9 @@ namespace s3d
 	
 		struct IndexBuffer
 		{
-			size_t size = 4096;
+			uint32 size = 0;
 			
-			size_t writePos = 0;
+			uint32 writePos = 0;
 			
 			Vertex2D::IndexType* pointer = 0;
 			
@@ -104,11 +103,18 @@ namespace s3d
 				return result;
 			}
 		};
-	
-		std::array<VertexBuffer, MaxInflightBuffers> m_vertexBuffers;
 		
-		std::array<IndexBuffer, MaxInflightBuffers> m_indexBuffers;
-				
+		struct Buffer
+		{
+			VertexBuffer vertexBuffer;
+			
+			IndexBuffer indexBuffer;
+			
+			Vertex2DBufferPointer requestBuffer(uint16 vertexCount, uint32 indexCount);
+		};
+	
+		std::array<Buffer, MaxInflightBuffers> m_buffers;
+		
 		dispatch_semaphore_t m_frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
 		
 		size_t m_bufferIndex = 0;	
