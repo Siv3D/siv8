@@ -1,18 +1,20 @@
 ﻿
 # include <Siv3D.hpp> // Siv3D v0.8.0
 # include "../Test/Siv3DTest.hpp"
-
 //SIV3D_SET(EngineOption::D3D11Driver::WARP);
 
 void Main()
 {
 	//RunTest();
-
+	Scene::SetBackground(ColorF{ 0.6, 0.8, 0.7 });
 	//Window::SetStyle(WindowStyle::Sizable);
+	//Graphics::SetLowLatencyMode(true);
 	//Scene::SetResizeMode(ResizeMode::Keep);
 
 	while (System::Update())
 	{
-		Scene::SetBackground(HSV{ (Scene::Time() * 60), 0.8, 1.0 });
+		RectF{ 100, 100, 100 }.draw();
+		RectF{ 200, 200, 100 }.draw(ColorF{ 0.8, 0.9, 1.0 });
+		Circle{ Cursor::Pos(), 100 }.draw(ColorF{ 1.0, 0.0, 0.0, 0.5 });
 	}
 }
