@@ -21,31 +21,33 @@ namespace s3d
 	public:
 		
 		static constexpr size_t MaxInflightBuffers = 3;
-		
-		dispatch_semaphore_t frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
-	
+
 		std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> vertexBuffers;
 		
 		std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> indexBuffers;
 
-		void updateContent()
-		{
-			dispatch_semaphore_wait(frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
-			
-			++m_bufferIndex %= MaxInflightBuffers;
-		}
+		void init();
+
+		void updateContent();
 		
 		dispatch_semaphore_t getSemaphore() const
 		{
-			return frameBoundarySemaphore;
+			return m_frameBoundarySemaphore;
 		}
 		
 		NS::SharedPtr<MTL::Buffer>& getCurrentVertexBuffer()
 		{
 			return vertexBuffers[m_bufferIndex];
 		}
+
+		NS::SharedPtr<MTL::Buffer>& getCurrentIndexBuffer()
+		{
+			return indexBuffers[m_bufferIndex];
+		}
 		
 	private:
+			
+		dispatch_semaphore_t m_frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
 		
 		size_t m_bufferIndex = 0;	
 	};
