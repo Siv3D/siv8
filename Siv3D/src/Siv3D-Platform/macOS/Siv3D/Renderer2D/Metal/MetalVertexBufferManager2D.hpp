@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -25,6 +25,8 @@ namespace s3d
 		dispatch_semaphore_t frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
 	
 		std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> vertexBuffers;
+		
+		std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> indexBuffers;
 
 		void updateContent()
 		{

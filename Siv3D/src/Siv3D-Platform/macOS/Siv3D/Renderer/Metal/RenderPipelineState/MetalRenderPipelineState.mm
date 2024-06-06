@@ -17,6 +17,7 @@ namespace s3d
 {
 	void MetalRenderPipelineState::init(MTL::Device* device, CShader_Metal* pShader)
 	{
+		LOG_SCOPED_DEBUG("MetalRenderPipelineState::init()");
 		m_device	= device;
 		m_pShader	= pShader;
 	}
