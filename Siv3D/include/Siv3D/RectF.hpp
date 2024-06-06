@@ -193,6 +193,293 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RectF(position_type _pos, size_type _size) noexcept;
 
+		/// @brief 長方形を作成します。
+		/// @param _center 中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::center_<position_type> _center, value_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param _center 中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::center_<position_type> _center, Concept::Arithmetic auto _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param _center 中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::center_<position_type> _center, value_type _w, value_type _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param _center 中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::center_<position_type> _center, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param _center 中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::center_<position_type> _center, size_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topLeft 長方形の左上の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topLeft_<position_type> topLeft, value_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topLeft 長方形の左上の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topLeft_<position_type> topLeft, Concept::Arithmetic auto _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topLeft 長方形の左上の点の座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topLeft_<position_type> topLeft, value_type _w, value_type _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topLeft 長方形の左上の点の座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topLeft_<position_type> topLeft, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topLeft 長方形の左上の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topLeft_<position_type> topLeft, size_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topCenter 長方形の上辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topCenter_<position_type> topCenter, value_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topCenter 長方形の上辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topCenter_<position_type> topCenter, Concept::Arithmetic auto _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topCenter 長方形の上辺の中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topCenter_<position_type> topCenter, value_type _w, value_type _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topCenter 長方形の上辺の中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topCenter_<position_type> topCenter, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topCenter 長方形の上辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topCenter_<position_type> topCenter, size_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topRight 長方形の右上の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topRight_<position_type> topRight, value_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topRight 長方形の右上の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topRight_<position_type> topRight, Concept::Arithmetic auto _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topRight 長方形の右上の点の座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topRight_<position_type> topRight, value_type _w, value_type _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topRight 長方形の右上の点の座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topRight_<position_type> topRight, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param topRight 長方形の右上の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::topRight_<position_type> topRight, size_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::rightCenter_<position_type> rightCenter, value_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::rightCenter_<position_type> rightCenter, Concept::Arithmetic auto _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::rightCenter_<position_type> rightCenter, value_type _w, value_type _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::rightCenter_<position_type> rightCenter, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::rightCenter_<position_type> rightCenter, size_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomRight 長方形の右下の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomRight_<position_type> bottomRight, value_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomRight 長方形の右下の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomRight_<position_type> bottomRight, Concept::Arithmetic auto _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomRight 長方形の右下の点の座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomRight_<position_type> bottomRight, value_type _w, value_type _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomRight 長方形の右下の点の座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomRight_<position_type> bottomRight, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomRight 長方形の右下の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomRight_<position_type> bottomRight, size_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomCenter 長方形の下辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomCenter_<position_type> bottomCenter, value_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomCenter 長方形の下辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomCenter_<position_type> bottomCenter, Concept::Arithmetic auto _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomCenter 長方形の下辺の中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomCenter_<position_type> bottomCenter, value_type _w, value_type _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomCenter 長方形の下辺の中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomCenter_<position_type> bottomCenter, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomCenter 長方形の下辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomCenter_<position_type> bottomCenter, size_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomLeft 長方形の左下の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomLeft_<position_type> bottomLeft, value_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomLeft 長方形の左下の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomLeft_<position_type> bottomLeft, Concept::Arithmetic auto _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomLeft 長方形の左下の点の座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomLeft_<position_type> bottomLeft, value_type _w, value_type _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomLeft 長方形の左下の点の座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomLeft_<position_type> bottomLeft, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param bottomLeft 長方形の左下の点の座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::bottomLeft_<position_type> bottomLeft, size_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::leftCenter_<position_type> leftCenter, value_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::leftCenter_<position_type> leftCenter, Concept::Arithmetic auto _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::leftCenter_<position_type> leftCenter, value_type _w, value_type _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::leftCenter_<position_type> leftCenter, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param _size 長方形の幅と高さ
+		[[nodiscard]]
+		constexpr RectF(Arg::leftCenter_<position_type> leftCenter, size_type _size) noexcept;
 
 
 
@@ -204,6 +491,12 @@ namespace s3d
 
 	
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
+
 		friend void Formatter(FormatData& formatData, const RectF& value);
 	};
 }
@@ -213,6 +506,19 @@ namespace s3d
 //	fmt
 //
 ////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::RectF>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::RectF& value, format_context& ctx);
+};
 
 template <>
 struct fmt::formatter<s3d::RectF, s3d::char32>

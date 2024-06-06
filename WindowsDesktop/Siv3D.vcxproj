@@ -923,6 +923,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\BoolToString\SivBoolToString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Byte\SivByte.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Circle\SivCircle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ColorF\SivColorF.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Colormap\SivColormap.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Color\SivColor.cpp" />

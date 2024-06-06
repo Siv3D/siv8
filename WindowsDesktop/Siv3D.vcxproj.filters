@@ -847,6 +847,9 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11">
       <UniqueIdentifier>{fc620c84-4f9a-4d2a-b4f4-9089fef654ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Circle">
+      <UniqueIdentifier>{c767e340-66c6-4e14-99e5-47f314d7e52a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5602,6 +5605,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Cursor\CursorTransform.cpp">
       <Filter>src\Siv3D\Cursor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Circle\SivCircle.cpp">
+      <Filter>src\Siv3D\Circle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -27,5 +27,8 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const Float4& color);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildCircle(const BufferCreatorFunc& bufferCreator, const Float2& center, float r, const Float4& innerColor, const Float4& outerColor, float scale);
 	}
 }

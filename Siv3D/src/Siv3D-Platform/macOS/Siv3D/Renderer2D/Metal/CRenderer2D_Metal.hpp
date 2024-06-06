@@ -31,7 +31,11 @@ namespace s3d
 
 		void addRect(const FloatRect& rect, const Float4& color) override;
 
+		void addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor) override;
+
 		void flush() override;
+
+		float getMaxScaling() const noexcept override;
 
 		void beginFrame(MTL::CommandBuffer* commandBuffer);
 

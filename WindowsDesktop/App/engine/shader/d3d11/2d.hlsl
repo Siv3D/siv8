@@ -49,8 +49,9 @@ float4 s3d_transform2D(float2 pos, float2x4 t)
 PSInput VS(VSInput input)
 {
 	PSInput result;
-	result.position = s3d_transform2D(input.position, g_transform);
+	result.position	= s3d_transform2D(input.position, g_transform);
 	result.color	= input.color;// (input.color * g_colorMul);
+	result.color.rgb *= result.color.a;
 	result.uv		= input.uv;
 	return result;
 }

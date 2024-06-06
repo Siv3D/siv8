@@ -32,6 +32,10 @@ namespace s3d
 
 		virtual void addRect(const FloatRect& rect, const Float4& color) = 0;
 
+		virtual void addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor) = 0;
+
 		virtual void flush() = 0;
+
+		virtual float getMaxScaling() const noexcept = 0;
 	};
 }

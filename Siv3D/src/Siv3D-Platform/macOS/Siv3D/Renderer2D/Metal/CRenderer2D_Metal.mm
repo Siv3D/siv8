@@ -112,6 +112,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, innerColor, outerColor, getMaxScaling()))
+		{
+			//if (not m_currentCustomShader.vs)
+			//{
+			//	m_commandManager.pushEngineVS(m_engineShader.vs);
+			//}
+
+			//if (not m_currentCustomShader.ps)
+			//{
+			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
+			//}
+
+			//m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	flush
 	//
 	////////////////////////////////////////////////////////////////
@@ -284,6 +308,17 @@ namespace s3d
 			}
 		}
 		*/
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getMaxScaling
+	//
+	////////////////////////////////////////////////////////////////
+
+	float CRenderer2D_D3D11::getMaxScaling() const noexcept
+	{
+		return(1.0f); // [Siv3D ToDo]
 	}
 
 	////////////////////////////////////////////////////////////////

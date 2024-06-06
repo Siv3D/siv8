@@ -150,6 +150,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, innerColor, outerColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	flush
 	//
 	////////////////////////////////////////////////////////////////
@@ -187,6 +211,8 @@ namespace s3d
 		{
 			m_vsConstants->transform[0].set(screenMat._11, screenMat._12, screenMat._31, screenMat._32);
 			m_vsConstants->transform[1].set(screenMat._21, screenMat._22, 0.0f, 1.0f);
+
+			m_pRenderer->getBlendState().set(BlendState::Default2D);
 		}
 
 		BatchInfo2D batchInfo;
@@ -267,6 +293,17 @@ namespace s3d
 				}
 			}
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getMaxScaling
+	//
+	////////////////////////////////////////////////////////////////
+
+	float CRenderer2D_D3D11::getMaxScaling() const noexcept
+	{
+		return(1.0f); // [Siv3D ToDo]
 	}
 
 	////////////////////////////////////////////////////////////////
