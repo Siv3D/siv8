@@ -48,6 +48,16 @@ namespace s3d
 		return m_buffers[m_bufferIndex].requestBuffer(vertexCount, indexCount);
 	}
 
+	bool MetalVertexBufferManager2D::hasBatch() const noexcept
+	{
+		return (m_buffers[m_bufferIndex].indexBuffer.writePos != 0);
+	}
+
+	uint32 MetalVertexBufferManager2D::indexCount() const noexcept
+	{
+		return m_buffers[m_bufferIndex].indexBuffer.writePos;
+	}
+
 	Vertex2DBufferPointer MetalVertexBufferManager2D::Buffer::requestBuffer(const uint16 vertexCount, const uint32 indexCount)
 	{
 		// VB

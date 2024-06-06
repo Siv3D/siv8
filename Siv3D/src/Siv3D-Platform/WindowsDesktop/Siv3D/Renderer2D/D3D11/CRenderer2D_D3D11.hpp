@@ -72,6 +72,6 @@ namespace s3d
 
 		ConstantBuffer<VSConstants2D> m_vsConstants;
 
-		Vertex2DBufferPointer createBuffer(Vertex2D::IndexType vertexSize, Vertex2D::IndexType indexSize);
+		Vertex2DBufferPointer createBuffer(uint16 vertexSize, uint32 indexSize);
 	};
 }

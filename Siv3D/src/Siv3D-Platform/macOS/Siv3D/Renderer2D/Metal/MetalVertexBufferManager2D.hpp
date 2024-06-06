@@ -45,6 +45,10 @@ namespace s3d
 		}
 
 		Vertex2DBufferPointer requestBuffer(uint16 vertexCount, uint32 indexCount);
+		
+		bool hasBatch() const noexcept;
+		
+		uint32 indexCount() const noexcept;
 
 	private:
 

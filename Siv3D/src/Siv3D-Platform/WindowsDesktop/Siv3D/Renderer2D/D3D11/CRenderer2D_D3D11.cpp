@@ -286,7 +286,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vertex2DBufferPointer CRenderer2D_D3D11::createBuffer(const Vertex2D::IndexType vertexSize, const Vertex2D::IndexType indexSize)
+	Vertex2DBufferPointer CRenderer2D_D3D11::createBuffer(const uint16 vertexSize, const uint32 indexSize)
 	{
 		return m_vertexBufferManager2D.requestBuffer(vertexSize, indexSize, m_commandManager);
 	}

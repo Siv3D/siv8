@@ -85,22 +85,20 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTriangle(const Float2(&points)[3], const Float4& color)
 	{
-		/*
-		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, color))
+		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), points, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
-			}
+			//if (not m_currentCustomShader.vs)
+			//{
+			//	m_commandManager.pushEngineVS(m_engineShader.vs);
+			//}
 
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
+			//if (not m_currentCustomShader.ps)
+			//{
+			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
+			//}
 
-			m_commandManager.pushDraw(indexCount);
+			//m_commandManager.pushDraw(indexCount);
 		}
-		*/
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -111,22 +109,20 @@ namespace s3d
 
 	void CRenderer2D_Metal::addRect(const FloatRect& rect, const Float4& color)
 	{
-		/*
-		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, color))
+		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
-			}
+			//if (not m_currentCustomShader.vs)
+			//{
+			//	m_commandManager.pushEngineVS(m_engineShader.vs);
+			//}
 
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
-			}
+			//if (not m_currentCustomShader.ps)
+			//{
+			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
+			//}
 
-			m_commandManager.pushDraw(indexCount);
+			//m_commandManager.pushDraw(indexCount);
 		}
-		*/
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -142,23 +138,6 @@ namespace s3d
 
 	void CRenderer2D_Metal::flush(MTL::CommandBuffer* commandBuffer)
 	{
-		auto [pVertex, pIndex, indexOffset] = m_vertexBufferManager.requestBuffer(3, 3);
-		
-		const float x = Cursor::Pos().x;
-		const float y = Cursor::Pos().y;
-		
-		const Vertex2D triangleVertices[3] =
-		{
-			{ Float2{ 0.0f, 0.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-			{ Float2{ x, y }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-			{ Float2{ 0.0f, 600.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-		};
-
-		std::memcpy(pVertex, &triangleVertices, sizeof(triangleVertices));
-		pIndex[0] = 0;
-		pIndex[1] = 1;
-		pIndex[2] = 2;
-		
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		const Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
 		const Float4 transform[2] =
@@ -200,9 +179,14 @@ namespace s3d
 		{
 			MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
 			renderCommandEncoder->setRenderPipelineState(pipeline);
-			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
-			renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
-			renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, 3, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), 0);
+			
+			if (const uint32 indexCount = m_vertexBufferManager.indexCount())
+			{
+				renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
+				renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
+				renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), 0);
+			}
+			
 			renderCommandEncoder->endEncoding();
 		}
 
@@ -324,5 +308,10 @@ namespace s3d
 	dispatch_semaphore_t CRenderer2D_Metal::getSemaphore() const
 	{
 		return m_vertexBufferManager.getSemaphore();
+	}
+
+	Vertex2DBufferPointer CRenderer2D_Metal::createBuffer(const uint16 vertexSize, const uint32 indexSize)
+	{
+		return m_vertexBufferManager.requestBuffer(vertexSize, indexSize);
 	}
 }

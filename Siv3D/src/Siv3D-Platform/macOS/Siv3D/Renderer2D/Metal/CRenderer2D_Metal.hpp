@@ -56,5 +56,7 @@ namespace s3d
 			PixelShader::IDType psShape;
 
 		} m_engineShader;
+		
+		Vertex2DBufferPointer createBuffer(uint16 vertexSize, uint32 indexSize);
 	};
 }
