@@ -13,6 +13,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
+# include <Siv3D/BlendState.hpp>
 # include <Siv3D/Renderer/Metal/Metal.hpp>
 
 namespace s3d
@@ -26,14 +27,13 @@ namespace s3d
 		uint16 pixelFormat;
 
 		uint16 sampleCount;
+		
+		BlendState blendState;
 
 		[[nodiscard]]
-		friend constexpr bool operator ==(const PipelineStateDesc& lhs, const PipelineStateDesc& rhs) noexcept
+		friend bool operator ==(const PipelineStateDesc& lhs, const PipelineStateDesc& rhs) noexcept
 		{
-			return ((lhs.vs == rhs.vs)
-				 && (lhs.ps == rhs.ps)
-				 && (lhs.pixelFormat == rhs.pixelFormat)
-				 && (lhs.sampleCount == rhs.sampleCount));
+			return (std::memcmp(&lhs, &rhs, sizeof(PipelineStateDesc)) == 0);
 		}
 	};
 }

@@ -114,6 +114,7 @@ namespace s3d
 				.ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FullScreenTriangle).id(),
 				.pixelFormat = static_cast<uint16>((MTL::PixelFormat)m_metalLayer.pixelFormat),
 				.sampleCount = 1,
+				.blendState = BlendState::Opaque,
 			};
 			
 			m_fullscreenTriangleRenderPipelineState = getRenderPipelineState().get(pipelineStateDesc);

@@ -63,14 +63,14 @@ namespace s3d
 
 		[[nodiscard]]
 		explicit constexpr BlendState(
-			bool _enable = true,
+			bool _enabled = true,
 			BlendFactor _sourceRGB = BlendFactor::One,
 			BlendFactor _destinationRGB = BlendFactor::OneMinusSourceAlpha,
 			BlendOperation _rgbOperation = BlendOperation::Add,
 			BlendFactor _sourceAlpha = BlendFactor::Zero,
 			BlendFactor _destinationAlpha = BlendFactor::One,
 			BlendOperation _alphaOperation = BlendOperation::Add,
-			bool _alphaToCoverageEnable = false,
+			bool _alphaToCoverageEnabled = false,
 			bool _writeR = true,
 			bool _writeG = true,
 			bool _writeB = true,

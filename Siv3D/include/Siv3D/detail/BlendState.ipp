@@ -20,26 +20,26 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	constexpr BlendState::BlendState(
-		const bool _enable,
+		const bool _enabled,
 		const BlendFactor _sourceRGB,
 		const BlendFactor _destinationRGB,
 		const BlendOperation _rgbOperation,
 		const BlendFactor _sourceAlpha,
 		const BlendFactor _destinationAlpha,
 		const BlendOperation _alphaOperation,
-		const bool _alphaToCoverageEnable,
+		const bool _alphaToCoverageEnabled,
 		const bool _writeR,
 		const bool _writeG,
 		const bool _writeB,
 		const bool _writeA
 	) noexcept
-		: enabled{ _enable }
+		: enabled{ _enabled }
 		, writeR{ _writeR }
 		, writeG{ _writeG }
 		, sourceRGB{ _sourceRGB }
 		, destinationRGB{ _destinationRGB }
 		, rgbOperation{ _rgbOperation }
-		, alphaToCoverageEnabled{ _alphaToCoverageEnable }
+		, alphaToCoverageEnabled{ _alphaToCoverageEnabled }
 		, writeB{ _writeB }
 		, writeA{ _writeA }
 		, sourceAlpha{ _sourceAlpha }

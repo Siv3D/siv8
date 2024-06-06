@@ -151,6 +151,7 @@ namespace s3d
 			.ps = m_engineShader.psShape,
 			.pixelFormat = static_cast<uint16>(MTL::PixelFormatRGBA8Unorm),
 			.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
+			.blendState = BlendState::Default2D,
 		};
 
 		const auto pipeline = m_pRenderer->getRenderPipelineState().get(pipelineStateDesc);
