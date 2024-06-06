@@ -142,6 +142,8 @@ namespace s3d
 		}
 		
 		m_commandBuffer = m_commandQueue->commandBuffer();
+
+		m_pRenderer2D->beginFrame(m_commandBuffer);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -27,15 +27,13 @@ namespace s3d
 
 		void init() override;
 
-		void beginFrame() override;
-
 		void addTriangle(const Float2(&points)[3], const Float4& color) override;
 
 		void addRect(const FloatRect& rect, const Float4& color) override;
 
 		void flush() override;
 
-		void flush(MTL::CommandBuffer* commandBuffer);
+		void beginFrame(MTL::CommandBuffer* commandBuffer) override;
 
 		dispatch_semaphore_t getSemaphore() const;
 
@@ -48,6 +46,8 @@ namespace s3d
 		CShader_Metal* m_pShader		= nullptr;
 
 		MetalVertexBufferManager2D m_vertexBufferManager;
+
+		MTL::CommandBuffer* m_commandBuffer = nullptr;
 
 		struct EngineShader
 		{

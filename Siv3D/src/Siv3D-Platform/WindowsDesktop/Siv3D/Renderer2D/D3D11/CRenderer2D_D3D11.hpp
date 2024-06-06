@@ -28,13 +28,13 @@ namespace s3d
 
 		void init() override;
 
-		void beginFrame() override;
-
 		void addTriangle(const Float2(&points)[3], const Float4& color) override;
 
 		void addRect(const FloatRect& rect, const Float4& color) override;
 
 		void flush() override;
+
+		void beginFrame();
 
 	private:
 

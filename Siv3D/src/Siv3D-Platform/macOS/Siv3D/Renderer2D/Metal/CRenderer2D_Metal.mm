@@ -20,10 +20,6 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
-
-# include <Siv3D/Cursor.hpp>
-
-
 ///*
 #	define LOG_COMMAND(...) LOG_TRACE(__VA_ARGS__)
 /*/
@@ -64,17 +60,6 @@ namespace s3d
 		m_engineShader.psShape	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 		
 		m_vertexBufferManager.init(m_device);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	beginFrame
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_Metal::beginFrame()
-	{
-		m_vertexBufferManager.updateContent();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -133,11 +118,6 @@ namespace s3d
 
 	void CRenderer2D_Metal::flush()
 	{
-
-	}
-
-	void CRenderer2D_Metal::flush(MTL::CommandBuffer* commandBuffer)
-	{
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		const Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
 		const Float4 transform[2] =
@@ -177,7 +157,7 @@ namespace s3d
 		
 		@autoreleasepool
 		{
-			MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
+			MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
 			renderCommandEncoder->setRenderPipelineState(pipeline);
 			
 			if (const uint32 indexCount = m_vertexBufferManager.indexCount())
@@ -305,10 +285,35 @@ namespace s3d
 		*/
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	beginFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::beginFrame(MTL::CommandBuffer* commandBuffer)
+	{
+		m_commandBuffer = commandBuffer;
+
+		m_vertexBufferManager.updateContent();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSemaphore
+	//
+	////////////////////////////////////////////////////////////////
+
 	dispatch_semaphore_t CRenderer2D_Metal::getSemaphore() const
 	{
 		return m_vertexBufferManager.getSemaphore();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
 
 	Vertex2DBufferPointer CRenderer2D_Metal::createBuffer(const uint16 vertexSize, const uint32 indexSize)
 	{

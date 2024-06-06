@@ -28,8 +28,6 @@ namespace s3d
 
 		virtual void init() = 0;
 
-		virtual void beginFrame() = 0;
-
 		virtual void addTriangle(const Float2(&points)[3], const Float4& color) = 0;
 
 		virtual void addRect(const FloatRect& rect, const Float4& color) = 0;

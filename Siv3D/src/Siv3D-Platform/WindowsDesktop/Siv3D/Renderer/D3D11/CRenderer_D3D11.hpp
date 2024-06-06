@@ -21,6 +21,8 @@
 
 namespace s3d
 {
+	class CRenderer2D_D3D11;
+
 	class CRenderer_D3D11 final : public ISiv3DRenderer
 	{
 	public:
@@ -85,6 +87,8 @@ namespace s3d
 		D3D11DepthStencilState& getDepthStencilState() noexcept;
 
 	private:
+
+		CRenderer2D_D3D11* m_pRenderer2D = nullptr;
 
 		D3D11Device m_device;
 
