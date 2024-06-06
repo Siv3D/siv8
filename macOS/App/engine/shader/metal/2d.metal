@@ -34,6 +34,7 @@ PSInput VS_Shape(uint vertexID [[vertex_id]], constant VSInput* vertices, consta
 	PSInput out;
 	out.position	= s3d_transform2D(vertices[vertexID].position, c->g_transform);
 	out.color		= vertices[vertexID].color;
+	out.color.rgb	*= out.color.a;
 	out.uv			= vertices[vertexID].uv;
 	return out;
 }

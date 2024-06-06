@@ -316,7 +316,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	float CRenderer2D_D3D11::getMaxScaling() const noexcept
+	float CRenderer2D_Metal::getMaxScaling() const noexcept
 	{
 		return(1.0f); // [Siv3D ToDo]
 	}

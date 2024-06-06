@@ -2175,6 +2175,7 @@
 		F9E5FCE82BC59EA00081A4F7 /* JSONPointer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FCE62BC59EA00081A4F7 /* JSONPointer.hpp */; };
 		F9E5FCEB2BC59EB50081A4F7 /* SivJSONIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FCE92BC59EB50081A4F7 /* SivJSONIterator.cpp */; };
 		F9E794232C118681002615BA /* MetalVertexBufferManager2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9E794222C118681002615BA /* MetalVertexBufferManager2D.mm */; };
+		F9E794262C1203A3002615BA /* SivCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794242C1203A3002615BA /* SivCircle.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4456,6 +4457,7 @@
 		F9E5FCE62BC59EA00081A4F7 /* JSONPointer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JSONPointer.hpp; sourceTree = "<group>"; };
 		F9E5FCE92BC59EB50081A4F7 /* SivJSONIterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivJSONIterator.cpp; sourceTree = "<group>"; };
 		F9E794222C118681002615BA /* MetalVertexBufferManager2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalVertexBufferManager2D.mm; sourceTree = "<group>"; };
+		F9E794242C1203A3002615BA /* SivCircle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCircle.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -5968,6 +5970,7 @@
 				F9070D232B9F175E00383E4D /* BoolToString */,
 				F9070D252B9F175E00383E4D /* Byte */,
 				F9528B6D2BB7089A00222F45 /* CacheDirectory */,
+				F9E794252C1203A3002615BA /* Circle */,
 				F9070D272B9F175E00383E4D /* Color */,
 				F9070D292B9F175E00383E4D /* ColorF */,
 				F986F89A2BC7FB4D006A4C0F /* Colormap */,
@@ -9296,6 +9299,14 @@
 			path = JSONIterator;
 			sourceTree = "<group>";
 		};
+		F9E794252C1203A3002615BA /* Circle */ = {
+			isa = PBXGroup;
+			children = (
+				F9E794242C1203A3002615BA /* SivCircle.cpp */,
+			);
+			path = Circle;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -11315,6 +11326,7 @@
 				F9070E912B9F183100383E4D /* CSystem.cpp in Sources */,
 				F98605A62BE4887C006A4C0F /* RegExpDetail.cpp in Sources */,
 				F980C4AA2C0F6D2C00A86B68 /* MetalRenderPipelineState.mm in Sources */,
+				F9E794262C1203A3002615BA /* SivCircle.cpp in Sources */,
 				F98602462BCFBB54006A4C0F /* SkRecordOpts.cpp in Sources */,
 				F98603C52BCFBB54006A4C0F /* SkSLIsConstantExpression.cpp in Sources */,
 				F98601EB2BCFBB53006A4C0F /* SkMaskGamma.cpp in Sources */,
