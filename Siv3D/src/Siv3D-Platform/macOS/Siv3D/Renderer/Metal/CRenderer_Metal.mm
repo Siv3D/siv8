@@ -154,7 +154,7 @@ namespace s3d
 
 	void CRenderer_Metal::flush()
 	{
-		m_pRenderer2D->flush(m_commandBuffer);
+		m_pRenderer2D->flush();
 	}
 
 	////////////////////////////////////////////////////////////////

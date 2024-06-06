@@ -33,7 +33,7 @@ namespace s3d
 
 		void flush() override;
 
-		void beginFrame(MTL::CommandBuffer* commandBuffer) override;
+		void beginFrame(MTL::CommandBuffer* commandBuffer);
 
 		dispatch_semaphore_t getSemaphore() const;
 
