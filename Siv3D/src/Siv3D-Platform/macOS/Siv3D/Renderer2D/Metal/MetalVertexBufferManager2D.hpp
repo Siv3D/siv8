@@ -22,10 +22,8 @@ namespace s3d
 		
 		static constexpr size_t MaxInflightBuffers = 3;
 
-		std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> vertexBuffers;
-		
 		std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> indexBuffers;
-
+	
 		void init(MTL::Device* device);
 
 		void updateContent();
@@ -34,19 +32,83 @@ namespace s3d
 		{
 			return m_frameBoundarySemaphore;
 		}
-		
-		NS::SharedPtr<MTL::Buffer>& getCurrentVertexBuffer()
+
+		const MTL::Buffer* getVertexBuffer() const
 		{
-			return vertexBuffers[m_bufferIndex];
+			return m_vertexBuffers[m_bufferIndex].buffer.get();
 		}
 
-		NS::SharedPtr<MTL::Buffer>& getCurrentIndexBuffer()
+		const MTL::Buffer* getIndexBuffer() const
 		{
-			return indexBuffers[m_bufferIndex];
+			return m_indexBuffers[m_bufferIndex].buffer.get();
 		}
-		
+
+		Vertex2D* requestVertexBuffer(size_t count)
+		{
+			return m_vertexBuffers[m_bufferIndex].requestVertexBuffer(count);
+		}
+
+		uint16* requestIndexBuffer(size_t count)
+		{
+			return m_indexBuffers[m_bufferIndex].requestIndexBuffer(count);
+		}
+
 	private:
+
+		struct VertexBuffer
+		{
+			size_t size = 4096;
 			
+			size_t writePos = 0;
+			
+			Vertex2D* pointer = 0;
+			
+			NS::SharedPtr<MTL::Buffer> buffer;
+			
+			Vertex2D* requestVertexBuffer(size_t count)
+			{
+				if (size < (writePos + count))
+				{
+					return nullptr;
+				}
+				
+				Vertex2D* result = (pointer + writePos);
+				
+				writePos += count;
+				
+				return result;
+			}
+		};
+	
+		struct IndexBuffer
+		{
+			size_t size = 4096;
+			
+			size_t writePos = 0;
+			
+			Vertex2D::IndexType* pointer = 0;
+			
+			NS::SharedPtr<MTL::Buffer> buffer;
+			
+			Vertex2D::IndexType* requestIndexBuffer(size_t count)
+			{
+				if (size < (writePos + count))
+				{
+					return nullptr;
+				}
+				
+				Vertex2D::IndexType* result = (pointer + writePos);
+				
+				writePos += count;
+				
+				return result;
+			}
+		};
+	
+		std::array<VertexBuffer, MaxInflightBuffers> m_vertexBuffers;
+		
+		std::array<IndexBuffer, MaxInflightBuffers> m_indexBuffers;
+				
 		dispatch_semaphore_t m_frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
 		
 		size_t m_bufferIndex = 0;	

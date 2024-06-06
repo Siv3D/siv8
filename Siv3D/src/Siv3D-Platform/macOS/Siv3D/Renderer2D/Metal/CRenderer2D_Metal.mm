@@ -64,20 +64,6 @@ namespace s3d
 		m_engineShader.psShape	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 		
 		m_vertexBufferManager.init(m_device);
-
-		for (int32 i = 0; i < 3; ++i)
-		{
-			const Vertex2D triangleVertices[3] =
-			{
-				{ Float2{ 0.0f, 0.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-				{ Float2{ 400.0f, 300.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-				{ Float2{ 0.0f, 600.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
-			};
-			
-			m_vertexBufferManager.vertexBuffers[i] = NS::TransferPtr(m_device->newBuffer(&triangleVertices,
-															  sizeof(triangleVertices),
-															  MTL::ResourceStorageModeShared));
-		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -88,7 +74,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::beginFrame()
 	{
-
+		m_vertexBufferManager.updateContent();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -156,11 +142,11 @@ namespace s3d
 
 	void CRenderer2D_Metal::flush(MTL::CommandBuffer* commandBuffer)
 	{
-		m_vertexBufferManager.updateContent();
-		
-		void* vertexBuffer = m_vertexBufferManager.getCurrentVertexBuffer().get()->contents();
-		const MTL::Buffer* indexBuffer = m_vertexBufferManager.getCurrentIndexBuffer().get();
-		
+			
+
+		Vertex2D* vertexBuffer = m_vertexBufferManager.requestVertexBuffer(3);
+		Vertex2D::IndexType* indexBuffer = m_vertexBufferManager.requestIndexBuffer(3);
+
 		const float x = Cursor::Pos().x;
 		const float y = Cursor::Pos().y;
 		
@@ -170,9 +156,12 @@ namespace s3d
 			{ Float2{ x, y }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
 			{ Float2{ 0.0f, 600.0f }, Float2{ 0.0f, 0.0f }, Float4{ 1.0f, 1.0f, 1.0f, 1.0f } },
 		};
-		
-		std::memcpy(vertexBuffer, &triangleVertices, sizeof(triangleVertices));
 
+		std::memcpy(vertexBuffer, &triangleVertices, sizeof(triangleVertices));
+		indexBuffer[0] = 0;
+		indexBuffer[1] = 1;
+		indexBuffer[2] = 2;
+		
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		const Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
 		const Float4 transform[2] =
@@ -214,10 +203,9 @@ namespace s3d
 		{
 			MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
 			renderCommandEncoder->setRenderPipelineState(pipeline);
-			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getCurrentVertexBuffer().get(), 0, 0);
+			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
 			renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
-
-			renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, 3, MTL::IndexTypeUInt16, indexBuffer, 0);
+			renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, 3, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), 0);
 			renderCommandEncoder->endEncoding();
 		}
 

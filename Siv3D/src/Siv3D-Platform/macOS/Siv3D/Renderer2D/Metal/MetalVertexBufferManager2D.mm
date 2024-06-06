@@ -15,11 +15,16 @@ namespace s3d
 {
 	void MetalVertexBufferManager2D::init(MTL::Device* device)
 	{
-		for (size_t i = 0; i < MaxInflightBuffers; ++i)
+		for (auto& vertexBuffer: m_vertexBuffers)
 		{
-			const uint16 testIndices[3] = { 0, 1, 2 };
-			
-			indexBuffers[i] = NS::TransferPtr(device->newBuffer(&testIndices, sizeof(testIndices), MTL::ResourceStorageModeShared));
+			vertexBuffer.buffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D) * vertexBuffer.size), MTL::ResourceStorageModeShared));
+			vertexBuffer.pointer = static_cast<Vertex2D*>(vertexBuffer.buffer->contents());
+		}
+		
+		for (auto& indexBuffer: m_indexBuffers)
+		{
+			indexBuffer.buffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D::IndexType) * indexBuffer.size), MTL::ResourceStorageModeShared));
+			indexBuffer.pointer = static_cast<Vertex2D::IndexType*>(indexBuffer.buffer->contents());
 		}
 	}
 
@@ -28,5 +33,8 @@ namespace s3d
 		dispatch_semaphore_wait(m_frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
 			
 		++m_bufferIndex %= MaxInflightBuffers;
+		
+		m_vertexBuffers[m_bufferIndex].writePos = 0;
+		m_indexBuffers[m_bufferIndex].writePos = 0;
 	}
 }
