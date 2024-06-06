@@ -2174,6 +2174,7 @@
 		F9E5FCE72BC59EA00081A4F7 /* JSONIterator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FCE52BC59EA00081A4F7 /* JSONIterator.hpp */; };
 		F9E5FCE82BC59EA00081A4F7 /* JSONPointer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FCE62BC59EA00081A4F7 /* JSONPointer.hpp */; };
 		F9E5FCEB2BC59EB50081A4F7 /* SivJSONIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E5FCE92BC59EB50081A4F7 /* SivJSONIterator.cpp */; };
+		F9E794232C118681002615BA /* MetalVertexBufferManager2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9E794222C118681002615BA /* MetalVertexBufferManager2D.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4454,6 +4455,7 @@
 		F9E5FCE52BC59EA00081A4F7 /* JSONIterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JSONIterator.hpp; sourceTree = "<group>"; };
 		F9E5FCE62BC59EA00081A4F7 /* JSONPointer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JSONPointer.hpp; sourceTree = "<group>"; };
 		F9E5FCE92BC59EB50081A4F7 /* SivJSONIterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivJSONIterator.cpp; sourceTree = "<group>"; };
+		F9E794222C118681002615BA /* MetalVertexBufferManager2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalVertexBufferManager2D.mm; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -7183,6 +7185,7 @@
 		F980C49A2C04B6DB00A86B68 /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				F9E794222C118681002615BA /* MetalVertexBufferManager2D.mm */,
 				F980C4A42C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp */,
 				F980C4982C04B6DB00A86B68 /* CRenderer2D_Metal.mm */,
 				F980C4992C04B6DB00A86B68 /* CRenderer2D_Metal.hpp */,
@@ -11543,6 +11546,7 @@
 				F98602B32BCFBB54006A4C0F /* SkRuntimeColorFilter.cpp in Sources */,
 				F98600DF2BCFBB53006A4C0F /* SkSafeMath.cpp in Sources */,
 				F9070DD82B9F175E00383E4D /* LoggerFactory.cpp in Sources */,
+				F9E794232C118681002615BA /* MetalVertexBufferManager2D.mm in Sources */,
 				F986024B2BCFBB54006A4C0F /* SkRect.cpp in Sources */,
 				F98605382BD1049D006A4C0F /* TGAEncoder.cpp in Sources */,
 				F986046D2BCFBB54006A4C0F /* SkSLContext.cpp in Sources */,

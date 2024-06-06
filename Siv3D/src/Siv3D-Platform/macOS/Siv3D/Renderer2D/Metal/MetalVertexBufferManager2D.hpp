@@ -26,7 +26,7 @@ namespace s3d
 		
 		std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> indexBuffers;
 
-		void init();
+		void init(MTL::Device* device);
 
 		void updateContent();
 		

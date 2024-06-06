@@ -13,14 +13,19 @@
 
 namespace s3d
 {
-	void MetalVertexBufferManager2D::init()
+	void MetalVertexBufferManager2D::init(MTL::Device* device)
 	{
-		
+		for (size_t i = 0; i < MaxInflightBuffers; ++i)
+		{
+			const uint16 testIndices[3] = { 0, 1, 2 };
+			
+			indexBuffers[i] = NS::TransferPtr(device->newBuffer(&testIndices, sizeof(testIndices), MTL::ResourceStorageModeShared));
+		}
 	}
 
 	void MetalVertexBufferManager2D::updateContent()
 	{
-		dispatch_semaphore_wait(frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
+		dispatch_semaphore_wait(m_frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
 			
 		++m_bufferIndex %= MaxInflightBuffers;
 	}

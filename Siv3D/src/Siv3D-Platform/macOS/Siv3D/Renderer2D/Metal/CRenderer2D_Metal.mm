@@ -62,6 +62,8 @@ namespace s3d
 
 		m_engineShader.vs		= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
 		m_engineShader.psShape	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		
+		m_vertexBufferManager.init(m_device);
 
 		for (int32 i = 0; i < 3; ++i)
 		{
@@ -157,6 +159,7 @@ namespace s3d
 		m_vertexBufferManager.updateContent();
 		
 		void* vertexBuffer = m_vertexBufferManager.getCurrentVertexBuffer().get()->contents();
+		const MTL::Buffer* indexBuffer = m_vertexBufferManager.getCurrentIndexBuffer().get();
 		
 		const float x = Cursor::Pos().x;
 		const float y = Cursor::Pos().y;
@@ -195,15 +198,7 @@ namespace s3d
 		cd->setLoadAction(MTL::LoadActionClear);
 		const ColorF& backgroundColor = m_pRenderer->getSceneStyle().backgroundColor;
 		cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
-		
-		if (m_pRenderer->getSceneSampleCount() == 1)
-		{
-			cd->setStoreAction(MTL::StoreActionStore);
-		}
-		else
-		{
-			cd->setStoreAction(MTL::StoreActionMultisampleResolve);
-		}
+		cd->setStoreAction((m_pRenderer->getSceneSampleCount() == 1) ? MTL::StoreActionStore : MTL::StoreActionMultisampleResolve);
 		
 		const PipelineStateDesc pipelineStateDesc
 		{
@@ -222,9 +217,7 @@ namespace s3d
 			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getCurrentVertexBuffer().get(), 0, 0);
 			renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
 
-			NS::UInteger vertexStart = 0;
-			NS::UInteger vertexCount = 3;
-			renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, vertexStart, vertexCount);
+			renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, 3, MTL::IndexTypeUInt16, indexBuffer, 0);
 			renderCommandEncoder->endEncoding();
 		}
 
