@@ -9,7 +9,6 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/Array.hpp>
 # include "Vertex2DBuilder.hpp"
 
 namespace s3d
@@ -18,9 +17,9 @@ namespace s3d
 	{
 		static constexpr Vertex2D::IndexType RectIndexTable[6] = { 0, 1, 2, 2, 1, 3 };
 
-		static const Array<Float2> SinCosTable = []()
+		static const std::array<Float2, 2016> SinCosTable = []()
 		{
-			Array<Float2> table(2016);
+			std::array<Float2, 2016> table;
 
 			Float2* pDst = table.data();
 
