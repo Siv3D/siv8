@@ -38,7 +38,7 @@ namespace s3d
 		}
 		else
 		{
-			return VertexShader::MSL(path);
+			return VertexShader::MSL(entryPoint);
 		}
 	}
 
@@ -56,7 +56,7 @@ namespace s3d
 		}
 		else
 		{
-			return PixelShader::MSL(path);
+			return PixelShader::MSL(entryPoint);
 		}
 	}
 }

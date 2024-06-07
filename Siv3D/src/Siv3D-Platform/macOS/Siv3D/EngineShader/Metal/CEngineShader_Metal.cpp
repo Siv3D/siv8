@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "CEngineShader_Metal.hpp"
+# include <Siv3D/MSL.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -37,8 +38,8 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CEngineShader_Metal::init()");
 		
 		{
-			m_vertexShaders << VertexShader::MSL(U"VS_FullscreenTriangle");
-			m_vertexShaders << VertexShader::MSL(U"VS_Shape");
+			m_vertexShaders << MSL{ U"VS_FullscreenTriangle" };
+			m_vertexShaders << MSL{ U"VS_Shape" };
 			
 			if (not m_vertexShaders.all([](const auto& vs) { return static_cast<bool>(vs); })) // もしロードに失敗したシェーダがあれば
 			{
@@ -47,8 +48,8 @@ namespace s3d
 		}
 		
 		{
-			m_pixelShaders << PixelShader::MSL(U"PS_FullscreenTriangle");
-			m_pixelShaders << PixelShader::MSL(U"PS_Shape");
+			m_pixelShaders << MSL{ U"PS_FullscreenTriangle" };
+			m_pixelShaders << MSL{ U"PS_Shape" };
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

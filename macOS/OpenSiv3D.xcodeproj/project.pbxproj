@@ -2179,6 +2179,7 @@
 		F9E7942F2C12B87A002615BA /* Easing.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7942D2C12B87A002615BA /* Easing.ipp */; };
 		F9E794302C12B87A002615BA /* Interpolation.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7942E2C12B87A002615BA /* Interpolation.ipp */; };
 		F9E794332C12B899002615BA /* SivInterpolation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794312C12B898002615BA /* SivInterpolation.cpp */; };
+		F9E794362C12BAC5002615BA /* SivMSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794342C12BAC5002615BA /* SivMSL.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4464,6 +4465,7 @@
 		F9E7942D2C12B87A002615BA /* Easing.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Easing.ipp; sourceTree = "<group>"; };
 		F9E7942E2C12B87A002615BA /* Interpolation.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Interpolation.ipp; sourceTree = "<group>"; };
 		F9E794312C12B898002615BA /* SivInterpolation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInterpolation.cpp; sourceTree = "<group>"; };
+		F9E794342C12BAC5002615BA /* SivMSL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMSL.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -6054,6 +6056,7 @@
 				F9070D6C2B9F175E00383E4D /* MonitorInfo */,
 				F98605AD2BE49BE0006A4C0F /* Mouse */,
 				F980C4202C004B5000A86B68 /* MSAASampleCount */,
+				F9E794352C12BAC5002615BA /* MSL */,
 				F9070D6E2B9F175E00383E4D /* Optional */,
 				F9E5FCE32BC59E7E0081A4F7 /* Parse */,
 				F9070D702B9F175E00383E4D /* ParseBool */,
@@ -9316,6 +9319,14 @@
 			path = Interpolation;
 			sourceTree = "<group>";
 		};
+		F9E794352C12BAC5002615BA /* MSL */ = {
+			isa = PBXGroup;
+			children = (
+				F9E794342C12BAC5002615BA /* SivMSL.cpp */,
+			);
+			path = MSL;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -11383,6 +11394,7 @@
 				F9070AF12B9DEB5900383E4D /* bignum-dtoa.cc in Sources */,
 				F986F98E2BCA9D0A006A4C0F /* plutovg-dash.c in Sources */,
 				F986F9AC2BCA9D0A006A4C0F /* lunasvg.cpp in Sources */,
+				F9E794362C12BAC5002615BA /* SivMSL.cpp in Sources */,
 				F9070DAF2B9F175E00383E4D /* SivBigInt.cpp in Sources */,
 				F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */,
 				F980C41B2C0023BB00A86B68 /* MetalPixelShader.mm in Sources */,
