@@ -15,6 +15,10 @@ void Main()
 	{
 		RectF{ 100, 100, 100 }.draw();
 		RectF{ 200, 200, 100 }.draw(ColorF{ 0.8, 0.9, 1.0 });
+		Line{ 300, 200, 400, 100 }.draw(10);
+		Line{ 300, 300, 400, 400 }.drawUncapped(10);
+		Rect{ 400, 400, 200, 100 }.draw(Arg::left(0.3, 0.6, 0.9), Arg::right(0.5, 0.8, 1.0));
+		Triangle{ 600, 100, 700, 200, 500, 200 }.draw(ColorF{ 0.8, 0.6, 0.2 });
 		Circle{ Cursor::Pos(), 100 }.draw(ColorF{ 1.0, 0.0, 0.0, 0.5 });
 	}
 }
