@@ -2181,6 +2181,8 @@
 		F9E794332C12B899002615BA /* SivInterpolation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794312C12B898002615BA /* SivInterpolation.cpp */; };
 		F9E794362C12BAC5002615BA /* SivMSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794342C12BAC5002615BA /* SivMSL.cpp */; };
 		F9E794392C12DA78002615BA /* SivLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794372C12DA78002615BA /* SivLine.cpp */; };
+		F9E7943B2C12F34D002615BA /* LineStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7943A2C12F34D002615BA /* LineStyle.hpp */; };
+		F9E7943D2C12F35F002615BA /* LineStyle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7943C2C12F35F002615BA /* LineStyle.ipp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4468,6 +4470,8 @@
 		F9E794312C12B898002615BA /* SivInterpolation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInterpolation.cpp; sourceTree = "<group>"; };
 		F9E794342C12BAC5002615BA /* SivMSL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMSL.cpp; sourceTree = "<group>"; };
 		F9E794372C12DA78002615BA /* SivLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLine.cpp; sourceTree = "<group>"; };
+		F9E7943A2C12F34D002615BA /* LineStyle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineStyle.hpp; sourceTree = "<group>"; };
+		F9E7943C2C12F35F002615BA /* LineStyle.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineStyle.ipp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -5098,6 +5102,7 @@
 				F9E5FCD42BC3AD580081A4F7 /* JSON.ipp */,
 				F9070B8A2B9F175000383E4D /* KahanSummation.ipp */,
 				F98605F42BE61586006A4C0F /* Line.ipp */,
+				F9E7943C2C12F35F002615BA /* LineStyle.ipp */,
 				F9070B8B2B9F175000383E4D /* Logger.ipp */,
 				F9070B8C2B9F175000383E4D /* LoggerBuffer.ipp */,
 				F9070B8D2B9F175000383E4D /* MapFormatter.ipp */,
@@ -5311,6 +5316,7 @@
 				F9528B502BB6DC2C00222F45 /* LicenseInfo.hpp */,
 				F9528B692BB7087700222F45 /* LicenseManager.hpp */,
 				F98605282BD10459006A4C0F /* Line.hpp */,
+				F9E7943A2C12F34D002615BA /* LineStyle.hpp */,
 				F9070BFC2B9F175000383E4D /* Logger.hpp */,
 				F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */,
 				F9070BFE2B9F175000383E4D /* LogType.hpp */,
@@ -10240,6 +10246,7 @@
 				F9528B842BBC5D3100222F45 /* Step2D.hpp in Headers */,
 				F986003A2BCFBB53006A4C0F /* SkRRect.h in Headers */,
 				F98600322BCFBB53006A4C0F /* SkPixelRef.h in Headers */,
+				F9E7943B2C12F34D002615BA /* LineStyle.hpp in Headers */,
 				F9E5FCE82BC59EA00081A4F7 /* JSONPointer.hpp in Headers */,
 				F986015F2BCFBB53006A4C0F /* SkBlenderBase.h in Headers */,
 				F98600102BCFBB53006A4C0F /* SkDataTable.h in Headers */,
@@ -10285,6 +10292,7 @@
 				F9070CDB2B9F175100383E4D /* Memory.hpp in Headers */,
 				F9070CC92B9F175000383E4D /* HashTable.hpp in Headers */,
 				F98602072BCFBB53006A4C0F /* SkOpts.h in Headers */,
+				F9E7943D2C12F35F002615BA /* LineStyle.ipp in Headers */,
 				F98600672BCFBB53006A4C0F /* SkTableMaskFilter.h in Headers */,
 				F986006A2BCFBB53006A4C0F /* SingleOwner.h in Headers */,
 				F98602722BCFBB54006A4C0F /* SkStrike.h in Headers */,
