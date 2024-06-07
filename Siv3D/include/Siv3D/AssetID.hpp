@@ -23,7 +23,7 @@ namespace s3d
 	public:
 
 		/// @brief アセット ID に使う整数型
-		using value_type = size_t;
+		using value_type = uint32;
 
 		/// @brief Null アセットに使うアセット ID
 		static constexpr value_type NullID = 0;

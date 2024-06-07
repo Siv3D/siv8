@@ -676,6 +676,19 @@ namespace s3d
 ////////////////////////////////////////////////////////////////
 
 template <>
+struct fmt::formatter<s3d::Color>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::Color& value, format_context& ctx);
+};
+
+template <>
 struct fmt::formatter<s3d::Color, s3d::char32>
 {
 	std::u32string tag;

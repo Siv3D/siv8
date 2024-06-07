@@ -14,6 +14,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	reset
+	//
+	////////////////////////////////////////////////////////////////
+
 	void MetalInternalTexture2D::reset()
 	{
 		if (not m_texture)
@@ -24,6 +30,12 @@ namespace s3d
 		m_texture.reset();
 		m_size = Size{ 0, 0 };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateRenderTexture
+	//
+	////////////////////////////////////////////////////////////////
 
 	MetalInternalTexture2D MetalInternalTexture2D::CreateRenderTexture(MTL::Device* device, const Size& size)
 	{
@@ -45,6 +57,12 @@ namespace s3d
 		return texture;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateMSRenderTexture
+	//
+	////////////////////////////////////////////////////////////////
+
 	MetalInternalTexture2D MetalInternalTexture2D::CreateMSRenderTexture(MTL::Device* device, const Size& size, const uint32 sampleCount)
 	{
 		LOG_SCOPED_DEBUG("MetalInternalTexture2D::CreateMSRenderTexture()");
@@ -55,7 +73,7 @@ namespace s3d
 		textureDescriptor->setWidth(size.x);
 		textureDescriptor->setHeight(size.y);
 		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-		textureDescriptor->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
+		textureDescriptor->setUsage(MTL::TextureUsageRenderTarget);
 		textureDescriptor->setSampleCount(sampleCount); // Set the sample count for multisampling
 
 		MetalInternalTexture2D texture;

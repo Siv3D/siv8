@@ -632,11 +632,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief この座標を中心とした円を作成して返します。
-		///// @param r 円の半径
-		///// @return この座標を中心とした円
-		//[[nodiscard]]
-		//Circle asCircle(double r) const noexcept;
+		/// @brief この座標を中心とした円を作成して返します。
+		/// @param r 円の半径
+		/// @return この座標を中心とした円
+		[[nodiscard]]
+		Circle asCircle(double r) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

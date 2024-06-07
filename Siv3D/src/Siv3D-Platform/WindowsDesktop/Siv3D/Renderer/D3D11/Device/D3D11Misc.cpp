@@ -271,12 +271,12 @@ namespace s3d
 
 					if (pDXGIFactory6)
 					{
-						LOG_TRACE("pDXGIFactory6->EnumAdapterByGpuPreference()");
+						LOG_TRACE("IDXGIFactory6::EnumAdapterByGpuPreference()");
 						hr = pDXGIFactory6->EnumAdapterByGpuPreference(adapterIndex, GPU_Preference, IID_PPV_ARGS(&pAdapter));
 					}
 					else
 					{
-						LOG_TRACE("pDXGIFactory2->EnumAdapters1()");
+						LOG_TRACE("IDXGIFactory2::EnumAdapters1()");
 						hr = pDXGIFactory2->EnumAdapters1(adapterIndex, &pAdapter);
 					}
 
@@ -582,7 +582,7 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
-		//	EneumHardwareAdapters
+		//	EnumHardwareAdapters
 		//
 		////////////////////////////////////////////////////////////////
 

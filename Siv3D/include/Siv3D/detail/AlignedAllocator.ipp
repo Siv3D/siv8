@@ -31,7 +31,7 @@ namespace s3d
 			padding = (alignment - (size % alignment));
 		}
 
-		const auto p = AlignedAlloc((size + padding), alignment);
+		const auto p = AlignedMalloc((size + padding), alignment);
 
 		if (p == nullptr)
 		{

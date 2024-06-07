@@ -54,8 +54,9 @@ namespace s3d
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち小さい方の値。等しい場合は a | The lesser of a and b. If they are equivalent, returns a
+	template <Concept::Scalar Scalar>
 	[[nodiscard]]
-	constexpr auto Min(Concept::Scalar auto a, Concept::Scalar auto b) noexcept;
+	constexpr auto Min(Scalar a, Scalar b) noexcept;
 
 	/// @brief 2 つの値のうち小さい方の値を返します。 | Returns the lesser of the two.
 	/// @param a 比較する値 | A value to compare
@@ -83,7 +84,9 @@ namespace s3d
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち大きい方の値。等しい場合は a | The greater of a and b. If they are equivalent, returns a
-	constexpr auto Max(Concept::Scalar auto a, Concept::Scalar auto b) noexcept;
+	template <Concept::Scalar Scalar>
+	[[nodiscard]]
+	constexpr auto Max(Scalar a, Scalar b) noexcept;
 
 	/// @brief 2 つの値のうち大きい方の値を返します。 | Returns the greater of the two.
 	/// @param a 比較する値 | A value to compare

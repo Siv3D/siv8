@@ -154,9 +154,19 @@ namespace s3d
 		//m_context->VSSetShader(m_vertexShaders[handleID]->getShader(), nullptr, 0);
 	}
 
+	void CShader_Metal::setVSNull()
+	{
+		//m_context->VSSetShader(m_vertexShaders[handleID]->getShader(), nullptr, 0);
+	}
+
 	void CShader_Metal::setPS(const PixelShader::IDType handleID)
 	{
 		//m_context->PSSetShader(m_pixelShaders[handleID]->getShader(), nullptr, 0);
+	}
+
+	void CShader_Metal::setPSNull()
+	{
+		//m_context->VSSetShader(m_vertexShaders[handleID]->getShader(), nullptr, 0);
 	}
 
 	const Blob& CShader_Metal::getBytecodeVS(const VertexShader::IDType handleID)
@@ -169,6 +179,16 @@ namespace s3d
 	{
 		static const Blob blob;
 		return blob;
+	}
+
+	void CShader_Metal::setConstantBufferVS(const uint32 slot, IConstantBuffer* cb)
+	{
+
+	}
+
+	void CShader_Metal::setConstantBufferPS(const uint32 slot, IConstantBuffer* cb)
+	{
+
 	}
 
 	MTL::Function* CShader_Metal::getShaderVS(const VertexShader::IDType handleID)

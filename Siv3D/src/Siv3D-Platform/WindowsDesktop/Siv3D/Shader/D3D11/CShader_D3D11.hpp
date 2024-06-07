@@ -47,11 +47,19 @@ namespace s3d
 
 		void setVS(VertexShader::IDType handleID) override;
 
+		void setVSNull() override;
+
 		void setPS(PixelShader::IDType handleID) override;
+
+		void setPSNull() override;
 
 		const Blob& getBytecodeVS(VertexShader::IDType handleID) override;
 
 		const Blob& getBytecodePS(PixelShader::IDType handleID) override;
+
+		void setConstantBufferVS(uint32 slot, IConstantBuffer* cb) override;
+
+		void setConstantBufferPS(uint32 slot, IConstantBuffer* cb) override;
 
 		Blob compileHLSL(std::string_view source, const std::string& sourceName, const std::string& entryPoint, ShaderStage shaderStage, HLSL::CompileOption option, std::string& message);
 

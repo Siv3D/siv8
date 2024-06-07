@@ -616,12 +616,12 @@
 // 精度を落とした高速な数学関数 | Fast math functions
 # include <Siv3D/FastMath.hpp>
 
-//// 線形補間 | Interpolation
-//# include <Siv3D/Interpolation.hpp>
-//
-//// イージング関数 | Easing
-//# include <Siv3D/Easing.hpp>
-//
+// 線形補間 | Interpolation
+# include <Siv3D/Interpolation.hpp>
+
+// イージング関数 | Easing
+# include <Siv3D/Easing.hpp>
+
 //// イージングによる往復 | Bidirectional easing
 //# include <Siv3D/EasingAB.hpp>
 //
@@ -756,10 +756,10 @@
 
 //// ベクトルクラステンプレートの計算補助 | Vector class templates support
 //# include <Siv3D/CommonVector.hpp>
-//
-//// 2D 描画の頂点 | Vertex elements for 2D rendering
-//# include <Siv3D/Vertex2D.hpp>
-//
+
+// 2D 描画の頂点 | Vertex elements for 2D rendering
+# include <Siv3D/Vertex2D.hpp>
+
 //// 円座標 | Polar coordinates system (2D)
 //# include <Siv3D/Circular.hpp>
 //
@@ -781,8 +781,8 @@
 // 2D 図形コレクション | 2D shape collection
 # include <Siv3D/2DShapes.hpp> // ToDo
 
-//// 線のスタイル | Line style
-//# include <Siv3D/LineStyle.hpp>
+// 線のスタイル | Line style
+# include <Siv3D/LineStyle.hpp>
 
 // 線分 | Line segment
 # include <Siv3D/Line.hpp> // ToDo
@@ -825,10 +825,10 @@
 //
 //// Catmull-Rom スプライン曲線 | Catmull-Rom spline curves
 //# include <Siv3D/Spline2D.hpp>
-//
-//// float 型の長方形 | Rectangle (float)
-//# include <Siv3D/FloatRect.hpp>
-//
+
+// float 型の長方形 | Rectangle (float)
+# include <Siv3D/FloatRect.hpp>
+
 //// float 型の四角形 | Quad (float)
 //# include <Siv3D/FloatQuad.hpp>
 //
@@ -1006,10 +1006,10 @@
 ////////////////////////////////////////////////////////////////
 
 // ウィンドウスタイル | Window Style
-# include <Siv3D/WindowStyle.hpp> // ToDo
+# include <Siv3D/WindowStyle.hpp>
 
 // ウィンドウステート | Window State
-# include <Siv3D/WindowState.hpp> // ToDo
+# include <Siv3D/WindowState.hpp>
 
 // ウィンドウ | Window
 # include <Siv3D/Window.hpp> // ToDo
@@ -1343,6 +1343,8 @@
 
 # include <Siv3D/HLSL.hpp>
 
+# include <Siv3D/MSL.hpp> // ToDo
+
 // シェーダステージ | Shader stage
 # include <Siv3D/ShaderStage.hpp>
 
@@ -1357,10 +1359,12 @@
 
 //// シェーダユーティリティ | Shader utilities
 //# include <Siv3D/ShaderCommon.hpp>
-//
-//// 定数バッファ | Constant buffer
-//# include <Siv3D/ConstantBuffer.hpp>
-//
+
+# include <Siv3D/IConstantBuffer.hpp>
+
+// 定数バッファ | Constant buffer
+# include <Siv3D/ConstantBuffer.hpp>
+
 //// 2D シェーダスコープ | 2D shader scope
 //# include <Siv3D/ScopedCustomShader2D.hpp>
 //
@@ -1378,17 +1382,53 @@
 
 # include <Siv3D/ResizeMode.hpp>
 
-# include <Siv3D/TextureFilter.hpp>
-
 # include <Siv3D/MSAASampleCount.hpp>
 
 # include <Siv3D/Scene.hpp>
 
 
 
+# include <Siv3D/Vertex2D.hpp>
+
 
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/EngineOption.hpp>
+
+
+
+# include <Siv3D/BlendFactor.hpp>
+
+# include <Siv3D/BlendOperation.hpp>
+
+# include <Siv3D/BlendStateBuilder.hpp>
+
+// ブレンドステート | Blend state
+# include <Siv3D/BlendState.hpp> // ToDo
+
+# include <Siv3D/TriangleFillMode.hpp>
+
+# include <Siv3D/CullMode.hpp>
+
+# include <Siv3D/RasterizerStateBuilder.hpp>
+
+// ラスタライザーステート | Rasterizer state
+# include <Siv3D/RasterizerState.hpp> // ToDo
+
+# include <Siv3D/TextureAddressMode.hpp>
+
+# include <Siv3D/TextureFilter.hpp>
+
+# include <Siv3D/CompareFunction.hpp>
+
+# include <Siv3D/SamplerStateBuilder.hpp>
+
+// サンプラーステート | Sampler state
+# include <Siv3D/SamplerState.hpp> // ToDo
+
+# include <Siv3D/DepthStencilStateBuilder.hpp>
+
+// 深度ステンシルステート | Depth stencil state
+# include <Siv3D/DepthStencilState.hpp> // ToDo
 
 
 # if SIV3D_PLATFORM(WINDOWS)

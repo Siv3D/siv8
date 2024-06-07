@@ -695,11 +695,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 点を中心とした円を作成します。
-		///// @param r 円の半径
-		///// @return 円
-		//[[nodiscard]]
-		//Circle asCircle(double r) const noexcept;
+		/// @brief 点を中心とした円を作成します。
+		/// @param r 円の半径
+		/// @return 円
+		[[nodiscard]]
+		Circle asCircle(double r) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1009,6 +1009,32 @@ namespace s3d
 //	fmt
 //
 ////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::Float2>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::Float2& value, format_context& ctx);
+};
+
+template <>
+struct fmt::formatter<s3d::Vec2>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::Vec2& value, format_context& ctx);
+};
 
 template <>
 struct fmt::formatter<s3d::Float2, s3d::char32>

@@ -16,10 +16,13 @@
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "Metal.hpp"
 # include "BackBuffer/MetalInternalTexture2D.hpp"
-# include <Siv3D/Shader/Metal/CShader_Metal.hpp>
+# include "RenderPipelineState/MetalRenderPipelineState.hpp"
 
 namespace s3d
 {
+	class CShader_Metal;
+	class CRenderer2D_Metal;
+
 	class CRenderer_Metal final : public ISiv3DRenderer
 	{
 	public:
@@ -30,7 +33,7 @@ namespace s3d
 
 		void init() override;
 
-		void clear() override;
+		void beginFrame() override;
 
 		void flush() override;
 
@@ -62,9 +65,19 @@ namespace s3d
 
 		MTL::Device* getDevice() const;
 		
+		uint32 getSceneSampleCount() const;
+
+		const MetalInternalTexture2D& getSceneTextureMSAA() const;
+
+		const MetalInternalTexture2D& getSceneTextureNonMSAA() const;
+		
+		MetalRenderPipelineState& getRenderPipelineState();
+		
 	private:
 
 		CShader_Metal* m_pShader = nullptr;
+		
+		CRenderer2D_Metal* m_pRenderer2D = nullptr;
 		
 		NSWindow* m_metalWindow = nullptr;
 		
@@ -103,13 +116,11 @@ namespace s3d
 			}
 			
 		} m_sceneBuffers;
-			
-		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineStateFullScreenTriangle;
-		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestNoAA;
-		NS::SharedPtr<MTL::RenderPipelineState> m_pipeLineTestMSAAx4;
+		
+		MetalRenderPipelineState m_renderPipelineState;
 
-		NS::SharedPtr<MTL::Buffer> m_triangleVertexBuffer;
-
+		const MTL::RenderPipelineState* m_fullscreenTriangleRenderPipelineState = nullptr;
+		
 		void resizeBackBuffer(Size backBufferSize);
 
 		Size getBackBufferSize() const;

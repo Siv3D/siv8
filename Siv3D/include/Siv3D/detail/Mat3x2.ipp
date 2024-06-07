@@ -332,4 +332,11 @@ namespace s3d
 				0.0f, (-2.0f / static_cast<value_type>(height)),
 				-1.0f, 1.0f };
 	}
+
+	constexpr Mat3x2 Mat3x2::Screen(const Float2 size) noexcept
+	{
+		return{ (2.0f / size.x), 0.0f,
+				0.0f, (-2.0f / size.y),
+				-1.0f, 1.0f };
+	}
 }

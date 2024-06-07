@@ -100,7 +100,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static PixelShader MSL(StringView entryPoint, FilePathView path = {});
+		static PixelShader MSL(StringView entryPoint);
+
+		[[nodiscard]]
+		static PixelShader MSL(FilePathView path, StringView entryPoint);
 
 	private:
 

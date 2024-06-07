@@ -152,7 +152,6 @@ namespace s3d
 		/// @param entryPoint エントリーポイント
 		/// @param option コンパイルオプション
 		/// @return 保存に成功した場合 true, それ以外の場合は false
-		[[nodiscard]]
 		bool CompileHLSLFromSource(std::string_view source, FilePathView outputPath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
 
 		/// @brief HLSL ファイルからシェーダをコンパイルした結果をファイルに保存します。
@@ -162,7 +161,6 @@ namespace s3d
 		/// @param entryPoint エントリーポイント
 		/// @param option コンパイルオプション
 		/// @return 保存に成功した場合 true, それ以外の場合は false
-		[[nodiscard]]
 		bool CompileHLSLFromSource(FilePathView source, FilePathView outputPath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
 
 		////////////////////////////////////////////////////////////////
@@ -187,7 +185,6 @@ namespace s3d
 		/// @param entryPoint エントリーポイント
 		/// @param option コンパイルオプション
 		/// @return 保存に成功した場合 true, それ以外の場合は false
-		[[nodiscard]]
 		bool CompileHLSLFromFile(FilePathView hlslFilePath, FilePathView outputPath, ShaderStage shaderStage, StringView entryPoint, HLSL::CompileOption option = HLSL::CompileOption::Default);
 	}
 }

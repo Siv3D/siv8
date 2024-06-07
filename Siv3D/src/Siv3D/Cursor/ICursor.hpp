@@ -39,17 +39,15 @@ namespace s3d
 
 		virtual void setPos(Point pos) = 0;
 
-		//virtual const Mat3x2& getBaseWindowTransform() const noexcept = 0;
+		virtual const Mat3x2& getBaseWindowTransform() const noexcept = 0;
 
-		//virtual const Mat3x2& getCameraTransform() const noexcept = 0;
+		virtual const Mat3x2& getCameraTransform() const noexcept = 0;
 
-		//virtual const Mat3x2& getLocalTransform() const noexcept = 0;
+		virtual const Mat3x2& getLocalTransform() const noexcept = 0;
 
-		//virtual void setBaseWindowTransform(const Mat3x2& matrix) = 0;
+		virtual void setCameraTransform(const Mat3x2& matrix) = 0;
 
-		//virtual void setCameraTransform(const Mat3x2& matrix) = 0;
-
-		//virtual void setLocalTransform(const Mat3x2& matrix) = 0;
+		virtual void setLocalTransform(const Mat3x2& matrix) = 0;
 
 		virtual bool isClippedToWindow() const noexcept = 0;
 

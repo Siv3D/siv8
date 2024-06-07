@@ -12,6 +12,7 @@
 # include "CRenderer_D3D11.hpp"
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Renderer2D/D3D11/CRenderer2D_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -50,24 +51,30 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CRenderer_D3D11::init()");
 
+		m_pRenderer2D = static_cast<CRenderer2D_D3D11*>(SIV3D_ENGINE(Renderer2D));
+
 		m_device.init();
 
 		const HWND hWnd = static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle());
 		const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
 
 		m_swapChain.init(hWnd, m_device, windowFrameBufferSize);
-		m_backBuffer.init(m_device, m_swapChain.getSwapChain1());
+		m_backBuffer.init(m_device, m_swapChain.getSwapChain1(), this);
+		m_blendState.init(m_device);
+		m_rasterizerState.init(m_device);
+		m_samplerState.init(m_device);
+		m_depthStencilState.init(m_device);
 
 		m_device.getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	clear
+	//	beginFrame
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer_D3D11::clear()
+	void CRenderer_D3D11::beginFrame()
 	{
 		m_backBuffer.clear(D3D11ClearTarget::Scene | D3D11ClearTarget::BackBuffer);
 
@@ -77,7 +84,7 @@ namespace s3d
 			m_backBuffer.resizeBackBuffer(windowFrameBufferSize);
 		}
 
-		//pRenderer2D->update();
+		m_pRenderer2D->beginFrame();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -90,7 +97,7 @@ namespace s3d
 	{
 		//pRenderer3D->flush();
 
-		//pRenderer2D->flush();
+		m_pRenderer2D->flush();
 
 		m_backBuffer.renderSceneToBackBuffer();
 	}
@@ -236,6 +243,55 @@ namespace s3d
 	const D3D11Device& CRenderer_D3D11::getDevice() const noexcept
 	{
 		return m_device;
+	}
+
+	D3D11BackBuffer& CRenderer_D3D11::getBackBuffer() noexcept
+	{
+		return m_backBuffer;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBlendState
+	//
+	////////////////////////////////////////////////////////////////
+
+	D3D11BlendState& CRenderer_D3D11::getBlendState() noexcept
+	{
+		return m_blendState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getRasterizerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	D3D11RasterizerState& CRenderer_D3D11::getRasterizerState() noexcept
+	{
+		return m_rasterizerState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	D3D11SamplerState& CRenderer_D3D11::getSamplerState() noexcept
+	{
+		return m_samplerState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getDepthStencilState
+	//
+	////////////////////////////////////////////////////////////////
+
+	D3D11DepthStencilState& CRenderer_D3D11::getDepthStencilState() noexcept
+	{
+		return m_depthStencilState;
 	}
 }
  

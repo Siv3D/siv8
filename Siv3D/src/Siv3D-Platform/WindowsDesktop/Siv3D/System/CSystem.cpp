@@ -27,6 +27,7 @@
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -80,6 +81,7 @@ namespace s3d
 		SIV3D_ENGINE(Renderer)->init();
 		SIV3D_ENGINE(Shader)->init();
 		SIV3D_ENGINE(EngineShader)->init();
+		SIV3D_ENGINE(Renderer2D)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}
@@ -116,7 +118,11 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer)->flush();
 		SIV3D_ENGINE(Profiler)->endFrame();
-		SIV3D_ENGINE(Renderer)->present();
+		
+		if (not SIV3D_ENGINE(Renderer)->present())
+		{
+			return false;
+		}
 
 		//
 		//	previous frame
@@ -129,7 +135,7 @@ namespace s3d
 		SIV3D_ENGINE(Profiler)->beginFrame();
 		SIV3D_ENGINE(Window)->update();
 		SIV3D_ENGINE(Scene)->update();
-		SIV3D_ENGINE(Renderer)->clear();
+		SIV3D_ENGINE(Renderer)->beginFrame();
 		SIV3D_ENGINE(Cursor)->update();
 		SIV3D_ENGINE(CursorStyle)->update();
 		SIV3D_ENGINE(Keyboard)->update();

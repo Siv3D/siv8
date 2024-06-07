@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/Cursor/HighTemporalResolutionCursor.hpp>
+# include <Siv3D/Cursor/CursorTransform.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 
 namespace s3d
@@ -35,8 +36,17 @@ namespace s3d
 		Array<std::pair<int64, Point>> getHighTemporalResolutionCursorPos() const override;
 
 		void setPos(Point pos) override;
-		
-		
+
+		const Mat3x2& getBaseWindowTransform() const noexcept override;
+
+		const Mat3x2& getCameraTransform() const noexcept override;
+
+		const Mat3x2& getLocalTransform() const noexcept override;
+
+		void setCameraTransform(const Mat3x2& matrix) override;
+
+		void setLocalTransform(const Mat3x2& matrix) override;
+
 		bool isClippedToWindow() const noexcept override;
 
 		void clipToWindow(bool clip) override;
@@ -50,7 +60,9 @@ namespace s3d
 		GLFWwindow* m_window = nullptr;
 
 		CursorState m_state;
-		
+	
+		CursorTransform m_transform;
+	
 		HighTemporalResolutionCursor m_highTemporalResolutionCursor;
 		
 		bool m_clippedToWindow = false;

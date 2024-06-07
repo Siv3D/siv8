@@ -20,20 +20,20 @@ namespace s3d
 	namespace
 	{
 		constexpr std::array<std::array<StringView, 2>, 1> Warnings =
-		{
+		{ {
 			{
 				U"Assets are newly created and discarded in consecutive frames. This may cause performance issues.",
 				U"アセットが毎フレーム連続して新規作成・破棄されています。これはパフォーマンスの低下を引き起こします。",
 			}
-		};
+		} };
 
 		constexpr std::array<std::array<StringView, 2>, 1> Errors =
-		{
+		{ {
 			{
 				U"Variables of type {} must be initialized after the engine has started. If declared as a global variable or a static member variable, initialization occurs before the engine starts, causing an error.",
 				U"{} 型の変数はエンジンの起動完了後に初期化される必要があります。グローバル変数や静的メンバ変数として宣言すると、エンジン起動前に初期化が実行され、エラーを発生させます。",
 			}
-		};
+		} };
 
 		constexpr std::array<StringView, 2> AdditionalMessages =
 		{

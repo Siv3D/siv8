@@ -45,11 +45,19 @@ namespace s3d
 
 		void setVS(VertexShader::IDType handleID) override;
 
+		void setVSNull() override;
+
 		void setPS(PixelShader::IDType handleID) override;
+
+		void setPSNull() override;
 
 		const Blob& getBytecodeVS(VertexShader::IDType handleID) override;
 
 		const Blob& getBytecodePS(PixelShader::IDType handleID) override;
+
+		void setConstantBufferVS(uint32 slot, IConstantBuffer* cb) override;
+
+		void setConstantBufferPS(uint32 slot, IConstantBuffer* cb) override;
 
 		MTL::Function* getShaderVS(VertexShader::IDType handleID);
 
