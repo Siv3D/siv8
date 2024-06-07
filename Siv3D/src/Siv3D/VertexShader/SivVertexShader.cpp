@@ -127,7 +127,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	VertexShader VertexShader::MSL(const StringView entryPoint, const FilePathView path)
+	VertexShader VertexShader::MSL(const StringView entryPoint)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
+		//{
+		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//}
+
+		return VertexShader{ FilePathView{}, entryPoint };
+	}
+
+	VertexShader VertexShader::MSL(const FilePathView path, const StringView entryPoint)
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{

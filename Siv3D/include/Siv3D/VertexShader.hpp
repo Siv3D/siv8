@@ -100,7 +100,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static VertexShader MSL(StringView entryPoint, FilePathView path = {});
+		static VertexShader MSL(StringView entryPoint);
+
+		[[nodiscard]]
+		static VertexShader MSL(FilePathView path, StringView entryPoint);
 
 	private:
 

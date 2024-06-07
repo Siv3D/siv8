@@ -127,7 +127,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	PixelShader PixelShader::MSL(const StringView entryPoint, const FilePathView path)
+	PixelShader PixelShader::MSL(const StringView entryPoint)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
+		//{
+		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//}
+
+		return PixelShader{ FilePathView{}, entryPoint};
+	}
+
+	PixelShader PixelShader::MSL(const FilePathView path, const StringView entryPoint)
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
