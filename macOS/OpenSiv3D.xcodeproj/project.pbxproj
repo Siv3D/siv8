@@ -2180,6 +2180,7 @@
 		F9E794302C12B87A002615BA /* Interpolation.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7942E2C12B87A002615BA /* Interpolation.ipp */; };
 		F9E794332C12B899002615BA /* SivInterpolation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794312C12B898002615BA /* SivInterpolation.cpp */; };
 		F9E794362C12BAC5002615BA /* SivMSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794342C12BAC5002615BA /* SivMSL.cpp */; };
+		F9E794392C12DA78002615BA /* SivLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794372C12DA78002615BA /* SivLine.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4466,6 +4467,7 @@
 		F9E7942E2C12B87A002615BA /* Interpolation.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Interpolation.ipp; sourceTree = "<group>"; };
 		F9E794312C12B898002615BA /* SivInterpolation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivInterpolation.cpp; sourceTree = "<group>"; };
 		F9E794342C12BAC5002615BA /* SivMSL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivMSL.cpp; sourceTree = "<group>"; };
+		F9E794372C12DA78002615BA /* SivLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLine.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -6041,6 +6043,7 @@
 				F9E5FCD72BC3AD820081A4F7 /* JSONValueType */,
 				F98605D62BE4BE80006A4C0F /* Keyboard */,
 				F9528B762BB708A700222F45 /* LicenseManager */,
+				F9E794382C12DA78002615BA /* Line */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
 				F98605702BDA32D4006A4C0F /* Mat3x2 */,
@@ -9327,6 +9330,14 @@
 			path = MSL;
 			sourceTree = "<group>";
 		};
+		F9E794382C12DA78002615BA /* Line */ = {
+			isa = PBXGroup;
+			children = (
+				F9E794372C12DA78002615BA /* SivLine.cpp */,
+			);
+			path = Line;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -11043,6 +11054,7 @@
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
 				F98604552BCFBB54006A4C0F /* SkSLEliminateDeadFunctions.cpp in Sources */,
 				F98604132BCFBB54006A4C0F /* SkSLFunctionDefinition.cpp in Sources */,
+				F9E794392C12DA78002615BA /* SivLine.cpp in Sources */,
 				F9528C2E2BBF026F00222F45 /* zstd_lazy.c in Sources */,
 				F986021B2BCFBB54006A4C0F /* SkPicture.cpp in Sources */,
 				F9070EF02B9F1C8900383E4D /* posix_module.c in Sources */,
