@@ -12,12 +12,94 @@
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FormatLiteral.hpp>
+# include <Siv3D/LineStyle.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
-	void Line::ThrowPointAtIndexOutOfRange()
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::draw(const ColorF& color) const
 	{
-		throw std::out_of_range{ "Line::pointAtIndex() index out of range" };
+		const Float4 colorF = color.toFloat4();
+		SIV3D_ENGINE(Renderer2D)->addLine(LineStyle::Default, start, end, 1.0f, { colorF, colorF });
+		return *this;
+	}
+
+	const Line& Line::draw(const ColorF& colorBegin, const ColorF& colorEnd) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addLine(LineStyle::Default, start, end, 1.0f, { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		return *this;
+	}
+
+	const Line& Line::draw(const double thickness, const ColorF& color) const
+	{
+		if (thickness <= 0.0)
+		{
+			return *this;
+		}
+
+		const Float4 colorF = color.toFloat4();
+		SIV3D_ENGINE(Renderer2D)->addLine(LineStyle::Default, start, end, static_cast<float>(thickness), { colorF, colorF });
+		return *this;
+	}
+
+	const Line& Line::draw(const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	{
+		if (thickness <= 0.0)
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addLine(LineStyle::Default, start, end, static_cast<float>(thickness), { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawUncapped
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::drawUncapped(const ColorF& color) const
+	{
+		const Float4 colorF = color.toFloat4();
+		SIV3D_ENGINE(Renderer2D)->addLine(LineStyle::Uncapped, start, end, 1.0f, { colorF, colorF });
+		return *this;
+	}
+
+	const Line& Line::drawUncapped(const ColorF& colorBegin, const ColorF& colorEnd) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addLine(LineStyle::Uncapped, start, end, 1.0f, { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		return *this;
+	}
+
+	const Line& Line::drawUncapped(double thickness, const ColorF& color) const
+	{
+		if (thickness <= 0.0)
+		{
+			return *this;
+		}
+
+		const Float4 colorF = color.toFloat4();
+		SIV3D_ENGINE(Renderer2D)->addLine(LineStyle::Uncapped, start, end, static_cast<float>(thickness), { colorF, colorF });
+		return *this;
+	}
+
+	const Line& Line::drawUncapped(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	{
+		if (thickness <= 0.0)
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addLine(LineStyle::Uncapped, start, end, static_cast<float>(thickness), { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -37,6 +119,17 @@ namespace s3d
 		formatData.string.append(U", "_sv);
 		detail::AppendFloat(formatData.string, value.end.y);
 		formatData.string.append(U"))"_sv);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Line::ThrowPointAtIndexOutOfRange()
+	{
+		throw std::out_of_range{ "Line::pointAtIndex() index out of range" };
 	}
 }
 

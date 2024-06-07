@@ -16,6 +16,7 @@
 namespace s3d
 {
 	struct FloatRect;
+	struct LineStyle;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -28,9 +29,15 @@ namespace s3d
 
 		virtual void init() = 0;
 
+		virtual void addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
+
 		virtual void addTriangle(const Float2(&points)[3], const Float4& color) = 0;
 
+		virtual void addTriangle(const Float2(&points)[3], const Float4(&colors)[3]) = 0;
+
 		virtual void addRect(const FloatRect& rect, const Float4& color) = 0;
+
+		virtual void addRect(const FloatRect& rect, const Float4(&colors)[4]) = 0;
 
 		virtual void addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor) = 0;
 

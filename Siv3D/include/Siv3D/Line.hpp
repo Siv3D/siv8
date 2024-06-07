@@ -416,9 +416,21 @@ namespace s3d
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersects
+		//
+		////////////////////////////////////////////////////////////////
+
 		//template <class Shape2DType>
 		//[[nodiscard]]
 		//constexpr bool intersects(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
 
 		//template <class Shape2DType>
 		//[[nodiscard]]
@@ -430,51 +442,99 @@ namespace s3d
 		//[[nodiscard]]
 		//Optional<position_type> intersectsAt(const Line& other) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAtPrecise
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 別の線分 other との交点を返します。`intersectsAt()` と異なり、両者の順序が異なっても一致する結果を返します。
 		///// @param other 別の線分
 		///// @return 交差しない場合は none, 交差する場合はその座標、2 つの線分が重なっている場合 (QNaN, QNaN)
 		//[[nodiscard]]
 		//Optional<position_type> intersectsAtPrecise(const Line& other) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
+
 		//const Line& paint(Image& dst, const Color& color) const;
 
 		//const Line& paint(Image& dst, int32 thickness, const Color& color) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
 
 		//const Line& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
 
 		//const Line& overwrite(Image& dst, int32 thickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArrow
+		//
+		////////////////////////////////////////////////////////////////
+
 		//const Line& paintArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArrow
+		//
+		////////////////////////////////////////////////////////////////
 
 		//const Line& overwriteArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
 		//const Line& paintDoubleHeadedArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
 
 		//const Line& overwriteDoubleHeadedArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
 
-		///// @brief 線分を描きます。
-		///// @param color 色
-		///// @return *this
-		//const Line& draw(const ColorF& color = Palette::White) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
 
-		///// @brief 線分を描きます。
-		///// @param colorBegin 始点側の色
-		///// @param colorEnd 終点側の色
-		///// @return *this
-		//const Line& draw(const ColorF& colorBegin, const ColorF& colorEnd) const;
+		/// @brief 線分を描きます。
+		/// @param color 色
+		/// @return *this
+		const Line& draw(const ColorF& color = Palette::White) const;
 
-		///// @brief 線分を描きます。
-		///// @param thickness 線分の太さ
-		///// @param color 色
-		///// @return *this
-		//const Line& draw(double thickness, const ColorF& color = Palette::White) const;
+		/// @brief 線分を描きます。
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
+		const Line& draw(const ColorF& colorBegin, const ColorF& colorEnd) const;
 
-		///// @brief 線分を描きます。
-		///// @param thickness 線分の太さ
-		///// @param colorBegin 始点側の色
-		///// @param colorEnd 終点側の色
-		///// @return *this
-		//const Line& draw(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		/// @brief 線分を描きます。
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @return *this
+		const Line& draw(double thickness, const ColorF& color = Palette::White) const;
+
+		/// @brief 線分を描きます。
+		/// @param thickness 線分の太さ
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
+		const Line& draw(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
 
 		///// @brief 線分を描きます。
 		///// @param style 線のスタイル
@@ -491,12 +551,54 @@ namespace s3d
 		///// @return *this
 		//const Line& draw(const LineStyle& style, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawUncapped
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 始点や終点をキャップせずに線分を描きます。
+		/// @param color 色
+		/// @return *this
+		const Line& drawUncapped(const ColorF& color = Palette::White) const;
+
+		/// @brief 始点や終点をキャップせずに線分を描きます。
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
+		const Line& drawUncapped(const ColorF& colorBegin, const ColorF& colorEnd) const;
+
+		/// @brief 始点や終点をキャップせずに線分を描きます。
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @return *this
+		const Line& drawUncapped(double thickness, const ColorF& color = Palette::White) const;
+
+		/// @brief 始点や終点をキャップせずに線分を描きます。
+		/// @param thickness 線分の太さ
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
+		const Line& drawUncapped(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawArrow
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 線分をもとに矢印を描きます。
 		///// @param width 矢印の線の幅
 		///// @param headSize 矢印の三角形のサイズ
 		///// @param color 色
 		///// @return *this
 		//const Line& drawArrow(double width = 1.0, const SizeF& headSize = SizeF{ 5.0, 5.0 }, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawDoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 線分をもとに両方向矢印を描きます。
 		///// @param width 矢印の線の幅
@@ -505,6 +607,11 @@ namespace s3d
 		///// @return *this
 		//const Line& drawDoubleHeadedArrow(double width = 1.0, const SizeF& headSize = SizeF{ 5.0, 5.0 }, const ColorF& color = Palette::White) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator <<
+		//
+		////////////////////////////////////////////////////////////////
 
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Line& value)
@@ -513,6 +620,12 @@ namespace s3d
 				<< value.start << CharType(',') << CharType(' ')
 				<< value.end << CharType(')');
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
 
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Line& value)

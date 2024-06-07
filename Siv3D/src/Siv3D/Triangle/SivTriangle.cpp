@@ -15,10 +15,21 @@
 
 namespace s3d
 {
+	//Triangle::Triangle(const value_type sides, const value_type angle) noexcept
+	//	: p0{ Circular(Math::InvSqrt3 * sides, angle) }
+	//	, p1{ Circular(Math::InvSqrt3 * sides, 2.0 * Math::OneThirdPi + angle) }
+	//	, p2{ Circular(Math::InvSqrt3 * sides, 4.0 * Math::OneThirdPi + angle) } {}
+
+
 	const Triangle& Triangle::draw(const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addTriangle({ p0, p1, p2 }, color.toFloat4());
+		return *this;
+	}
 
+	const Triangle& Triangle::draw(const ColorF& color0, const ColorF& color1, const ColorF& color2) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addTriangle({ p0, p1, p2 }, { color0.toFloat4(), color1.toFloat4(), color2.toFloat4() });
 		return *this;
 	}
 }

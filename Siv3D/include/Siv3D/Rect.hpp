@@ -499,12 +499,50 @@ namespace s3d
 
 
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 長方形を描画します。
 		/// @param color 色
 		/// @return *this
 		const Rect& draw(const ColorF& color = Palette::White) const;
 
+		/// @brief 長方形を描画します。
+		/// @param colors 左上、右上、右下、左下の各頂点の色
+		/// @remark 描画時には 2 つの三角形に分割されるため、斜め方向のグラデーションは方向によってグラデーションのかかり方が変わります。上下、左右方向のグラデーションには影響しません。
+		/// @return *this
+		const Rect& draw(const ColorF(&colors)[4]) const;
+
+		/// @brief 長方形を描画します。
+		/// @param topColor 長方形の上側の色
+		/// @param bottomColor 長方形の下側の色
+		/// @remark `rect.draw(Arg::top = ColorF{ 0.0 }, Arg::bottom = ColorF{ 1.0 })` のように呼びます。
+		/// @return *this
+		const Rect& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 長方形を描画します。
+		/// @param leftColor 長方形の左側の色
+		/// @param rightColor 長方形の右側の色
+		/// @remark `rect.draw(Arg::left = ColorF{ 0.0 }, Arg::right = ColorF{ 1.0 })` のように呼びます。
+		/// @return *this
+		const Rect& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 長方形を描画します。
+		/// @param topLeftColor 長方形の左上の色
+		/// @param bottomRightColor 長方形の右下の色
+		/// @remark `rect.draw(Arg::topLeft = ColorF{ 0.0 }, Arg::bottomRight = ColorF{ 1.0 })` のように呼びます。
+		/// @return *this
+		const Rect& draw(Arg::topLeft_<ColorF> topLeftColor, Arg::bottomRight_<ColorF> bottomRightColor) const;
+
+		/// @brief 長方形を描画します。
+		/// @param topRightColor 長方形の右上の色
+		/// @param bottomLeftColor 長方形の左下の色
+		/// @remark `rect.draw(Arg::topRight = ColorF{ 0.0 }, Arg::bottomLeft = ColorF{ 1.0 })` のように呼びます。
+		/// @return 
+		const Rect& draw(Arg::topRight_<ColorF> topRightColor, Arg::bottomLeft_<ColorF> bottomLeftColor) const;
 
 
 

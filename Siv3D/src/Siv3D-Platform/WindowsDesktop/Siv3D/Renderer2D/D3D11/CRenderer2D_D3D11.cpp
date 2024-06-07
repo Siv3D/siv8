@@ -13,6 +13,7 @@
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/Mat3x2.hpp>
+# include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
@@ -102,6 +103,41 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addLine
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2])
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), style, start, end, thickness, colors, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				//if (style.hasSquareDot())
+				//{
+				//	m_commandManager.pushEnginePS(m_engineShader.);
+				//}
+				//else if (style.hasRoundDot())
+				//{
+				//	m_commandManager.pushEnginePS(m_engineShader.);
+				//}
+				//else
+				{
+					m_commandManager.pushEnginePS(m_engineShader.psShape);
+				}
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addTriangle
 	//
 	////////////////////////////////////////////////////////////////
@@ -109,6 +145,24 @@ namespace s3d
 	void CRenderer2D_D3D11::addTriangle(const Float2(&points)[3], const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, color))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addTriangle(const Float2(&points)[3], const Float4(&colors)[3])
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), points, colors))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -133,6 +187,24 @@ namespace s3d
 	void CRenderer2D_D3D11::addRect(const FloatRect& rect, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, color))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addRect(const FloatRect& rect, const Float4(&colors)[4])
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, colors))
 		{
 			if (not m_currentCustomShader.vs)
 			{

@@ -781,8 +781,8 @@
 // 2D 図形コレクション | 2D shape collection
 # include <Siv3D/2DShapes.hpp> // ToDo
 
-//// 線のスタイル | Line style
-//# include <Siv3D/LineStyle.hpp>
+// 線のスタイル | Line style
+# include <Siv3D/LineStyle.hpp>
 
 // 線分 | Line segment
 # include <Siv3D/Line.hpp> // ToDo

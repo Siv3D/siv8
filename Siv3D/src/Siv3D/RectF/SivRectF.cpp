@@ -18,14 +18,58 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	RectF
+	//
+	////////////////////////////////////////////////////////////////
+
 	const RectF& RectF::draw(const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, color.toFloat4());
-
 		return *this;
 	}
 
+	const RectF& RectF::draw(const ColorF(&colors)[4]) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) },
+			{ colors[0].toFloat4(), colors[1].toFloat4(), colors[2].toFloat4(), colors[3].toFloat4() });
+		return *this;
+	}
 
+	const RectF& RectF::draw(const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		const Float4 color0 = topColor->toFloat4();
+		const Float4 color1 = bottomColor->toFloat4();
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, { color0, color0, color1, color1 });
+		return *this;
+	}
+
+	const RectF& RectF::draw(const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		const Float4 color0 = leftColor->toFloat4();
+		const Float4 color1 = rightColor->toFloat4();
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, { color0, color1, color1, color0 });
+		return *this;
+	}
+
+	const RectF& RectF::draw(const Arg::topLeft_<ColorF> topLeftColor, const Arg::bottomRight_<ColorF> bottomRightColor) const
+	{
+		const Float4 color0 = topLeftColor->toFloat4();
+		const Float4 color2 = bottomRightColor->toFloat4();
+		const Float4 color1 = ((color0 + color2) * 0.5f);
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, { color0, color1, color2, color1 });
+		return *this;
+	}
+
+	const RectF& RectF::draw(const Arg::topRight_<ColorF> topRightColor, const Arg::bottomLeft_<ColorF> bottomLeftColor) const
+	{
+		const Float4 color0 = topRightColor->toFloat4();
+		const Float4 color2 = bottomLeftColor->toFloat4();
+		const Float4 color1 = ((color0 + color2) * 0.5f);
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, { color1, color0, color1, color2 });
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
