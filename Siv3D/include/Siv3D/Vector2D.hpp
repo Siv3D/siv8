@@ -1011,6 +1011,32 @@ namespace s3d
 ////////////////////////////////////////////////////////////////
 
 template <>
+struct fmt::formatter<s3d::Float2>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::Float2& value, format_context& ctx);
+};
+
+template <>
+struct fmt::formatter<s3d::Vec2>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::Vec2& value, format_context& ctx);
+};
+
+template <>
 struct fmt::formatter<s3d::Float2, s3d::char32>
 {
 	std::u32string tag;

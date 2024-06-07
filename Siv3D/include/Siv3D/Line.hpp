@@ -28,9 +28,11 @@ namespace s3d
 	/// @brief 線分
 	struct Line
 	{
-		using position_type = Vec2;
+		using position_type	= Vec2;
 
-		using value_type = position_type::value_type;
+		using vector_type	= position_type;
+
+		using value_type	= position_type::value_type;
 
 		/// @brief 線分の開始位置
 		position_type start;
@@ -70,13 +72,13 @@ namespace s3d
 		constexpr Line(position_type _start, position_type _end) noexcept;
 
 		[[nodiscard]]
-		constexpr Line(value_type originX, value_type originY, Arg::direction_<position_type> vector) noexcept;
+		constexpr Line(value_type originX, value_type originY, Arg::direction_<vector_type> vector) noexcept;
 
 		[[nodiscard]]
-		constexpr Line(Concept::Arithmetic auto originX, Concept::Arithmetic auto originY, Arg::direction_<position_type> vector) noexcept;
+		constexpr Line(Concept::Arithmetic auto originX, Concept::Arithmetic auto originY, Arg::direction_<vector_type> vector) noexcept;
 
 		[[nodiscard]]
-		constexpr Line(position_type origin, Arg::direction_<position_type> direction) noexcept;
+		constexpr Line(position_type origin, Arg::direction_<vector_type> direction) noexcept;
 
 		[[nodiscard]]
 		Line(value_type originX, value_type originY, Arg::angle_<value_type> angle, value_type length) noexcept;
@@ -114,10 +116,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr Line withStart(value_type x, value_type y) const noexcept;
+		constexpr Line withStart(value_type startX, value_type startY) const noexcept;
 
 		[[nodiscard]]
-		constexpr Line withStart(position_type pos) const noexcept;
+		constexpr Line withStart(position_type _start) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -126,10 +128,30 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr Line withEnd(value_type x, value_type y) const noexcept;
+		constexpr Line withEnd(value_type endX, value_type endY) const noexcept;
 
 		[[nodiscard]]
-		constexpr Line withEnd(position_type pos) const noexcept;
+		constexpr Line withEnd(position_type _end) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setStart
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr Line& setStart(value_type startX, value_type startY) noexcept;
+
+		constexpr Line& setStart(position_type _start) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setEnd
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr Line& setEnd(value_type endX, value_type endY) noexcept;
+
+		constexpr Line& setEnd(position_type _end) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -157,7 +179,7 @@ namespace s3d
 		constexpr Line movedBy(value_type x, value_type y) const noexcept;
 
 		[[nodiscard]]
-		constexpr Line movedBy(position_type v) const noexcept;
+		constexpr Line movedBy(vector_type v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -167,7 +189,7 @@ namespace s3d
 
 		constexpr Line& moveBy(value_type x, value_type y) noexcept;
 
-		constexpr Line& moveBy(position_type v) noexcept;
+		constexpr Line& moveBy(vector_type v) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -179,7 +201,7 @@ namespace s3d
 		Line stretched(value_type extentionBothSides) const noexcept;
 
 		[[nodiscard]]
-		Line stretched(value_type extextionStart, value_type extentionEnd) const noexcept;
+		Line stretched(value_type extentionStart, value_type extentionEnd) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -242,7 +264,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr position_type vector() const noexcept;
+		constexpr vector_type vector() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -251,7 +273,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		position_type normalizedVector() const noexcept;
+		vector_type normalizedVector() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -260,7 +282,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		position_type perpendicularUnitVector() const noexcept;
+		vector_type perpendicularUnitVector() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -338,6 +360,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withCenter
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr Line withCenter(value_type x, value_type y) const noexcept;
+
+		[[nodiscard]]
+		constexpr Line withCenter(position_type pos) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	setCenter
 		//
 		////////////////////////////////////////////////////////////////
@@ -375,7 +409,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	lerp
+		//	hash
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -496,6 +530,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		friend void Formatter(FormatData& formatData, const Line& value);
+
+	private:
+
+		[[noreturn]]
+		static void ThrowPointAtIndexOutOfRange();
 	};
 }
 

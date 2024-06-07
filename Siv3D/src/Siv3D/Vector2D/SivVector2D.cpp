@@ -108,6 +108,34 @@ namespace s3d
 //
 ////////////////////////////////////////////////////////////////
 
+fmt::format_context::iterator fmt::formatter<s3d::Float2>::format(const s3d::Float2& value, fmt::format_context& ctx)
+{
+	if (tag.empty())
+	{
+		return fmt::format_to(ctx.out(), "({}, {})", value.x, value.y);
+	}
+	else
+	{
+		const std::string format
+			= ("({:" + tag + "}, {:" + tag + "})");
+		return fmt::vformat_to(ctx.out(), format, fmt::make_format_args(value.x, value.y));
+	}
+}
+
+fmt::format_context::iterator fmt::formatter<s3d::Vec2>::format(const s3d::Vec2& value, fmt::format_context& ctx)
+{
+	if (tag.empty())
+	{
+		return fmt::format_to(ctx.out(), "({}, {})", value.x, value.y);
+	}
+	else
+	{
+		const std::string format
+			= ("({:" + tag + "}, {:" + tag + "})");
+		return fmt::vformat_to(ctx.out(), format, fmt::make_format_args(value.x, value.y));
+	}
+}
+
 s3d::ParseContext::iterator fmt::formatter<s3d::Float2, s3d::char32>::parse(s3d::ParseContext& ctx)
 {
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);

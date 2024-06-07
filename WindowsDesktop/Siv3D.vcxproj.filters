@@ -856,6 +856,9 @@
     <Filter Include="src\Siv3D\MSL">
       <UniqueIdentifier>{c655e836-61d5-43ab-be4b-2467c0e89e1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Line">
+      <UniqueIdentifier>{86210010-ee18-42dd-ad0f-bf80a3fde6d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5635,6 +5638,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\MSL\SivMSL.cpp">
       <Filter>src\Siv3D\MSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Line\SivLine.cpp">
+      <Filter>src\Siv3D\Line</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
