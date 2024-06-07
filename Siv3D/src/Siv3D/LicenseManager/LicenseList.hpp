@@ -186,6 +186,12 @@ BSD_3_LICENSE
 },
 
 {
+R"-(Easing Equations)-",
+R"-(Copyright (c) 2001 Robert Penner. All rights reserved.)-",
+MIT_LICENSE
+},
+
+{
 R"-(easyexif)-",
 R"-(Copyright (c) 2010-2015 Mayank Lahiri
 mlahiri@gmail.com
