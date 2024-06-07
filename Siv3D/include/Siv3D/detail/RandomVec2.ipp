@@ -90,7 +90,7 @@ namespace s3d
 
 	Vec2 RandomVec2(const Line& line, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return line.position(RandomClosed(0.0, 1.0, std::forward<decltype(urbg)>(urbg)));
+		return line.interpolatedPointAt(RandomClosed(0.0, 1.0, std::forward<decltype(urbg)>(urbg)));
 	}
 
 	inline Vec2 RandomVec2(const Circle& circle)

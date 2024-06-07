@@ -14,9 +14,9 @@
 namespace s3d
 {
 
-	constexpr Line::position_type Line::position(const double t) const noexcept
+	constexpr Line::position_type Line::interpolatedPointAt(const double t) const noexcept
 	{
-		return begin.lerp(end, t);
+		return start.lerp(end, t);
 	}
 
 }
