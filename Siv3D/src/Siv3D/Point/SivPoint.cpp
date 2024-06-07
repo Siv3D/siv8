@@ -12,9 +12,27 @@
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/IntFormatter.hpp>
+# include <Siv3D/2DShapes.hpp>
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	asCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle Point::asCircle(const double r) const noexcept
+	{
+		return{ *this, r };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
 	void Formatter(FormatData& formatData, const Point& value)
 	{
 		constexpr size_t BufferSize = ((detail::Int32Width * 2) + 4 + 1);

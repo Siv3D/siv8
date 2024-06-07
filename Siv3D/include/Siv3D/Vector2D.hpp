@@ -695,11 +695,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 点を中心とした円を作成します。
-		///// @param r 円の半径
-		///// @return 円
-		//[[nodiscard]]
-		//Circle asCircle(double r) const noexcept;
+		/// @brief 点を中心とした円を作成します。
+		/// @param r 円の半径
+		/// @return 円
+		[[nodiscard]]
+		Circle asCircle(double r) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

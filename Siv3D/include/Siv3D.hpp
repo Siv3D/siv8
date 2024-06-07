@@ -616,12 +616,12 @@
 // 精度を落とした高速な数学関数 | Fast math functions
 # include <Siv3D/FastMath.hpp>
 
-//// 線形補間 | Interpolation
-//# include <Siv3D/Interpolation.hpp>
-//
-//// イージング関数 | Easing
-//# include <Siv3D/Easing.hpp>
-//
+// 線形補間 | Interpolation
+# include <Siv3D/Interpolation.hpp>
+
+// イージング関数 | Easing
+# include <Siv3D/Easing.hpp>
+
 //// イージングによる往復 | Bidirectional easing
 //# include <Siv3D/EasingAB.hpp>
 //
@@ -756,10 +756,10 @@
 
 //// ベクトルクラステンプレートの計算補助 | Vector class templates support
 //# include <Siv3D/CommonVector.hpp>
-//
-//// 2D 描画の頂点 | Vertex elements for 2D rendering
-//# include <Siv3D/Vertex2D.hpp>
-//
+
+// 2D 描画の頂点 | Vertex elements for 2D rendering
+# include <Siv3D/Vertex2D.hpp>
+
 //// 円座標 | Polar coordinates system (2D)
 //# include <Siv3D/Circular.hpp>
 //
@@ -1006,10 +1006,10 @@
 ////////////////////////////////////////////////////////////////
 
 // ウィンドウスタイル | Window Style
-# include <Siv3D/WindowStyle.hpp> // ToDo
+# include <Siv3D/WindowStyle.hpp>
 
 // ウィンドウステート | Window State
-# include <Siv3D/WindowState.hpp> // ToDo
+# include <Siv3D/WindowState.hpp>
 
 // ウィンドウ | Window
 # include <Siv3D/Window.hpp> // ToDo
@@ -1343,6 +1343,8 @@
 
 # include <Siv3D/HLSL.hpp>
 
+# include <Siv3D/MSL.hpp> // ToDo
+
 // シェーダステージ | Shader stage
 # include <Siv3D/ShaderStage.hpp>
 
@@ -1398,7 +1400,7 @@
 
 # include <Siv3D/BlendOperation.hpp>
 
-# include <Siv3D/BlendStateBuilder.hpp> // ToDo
+# include <Siv3D/BlendStateBuilder.hpp>
 
 // ブレンドステート | Blend state
 # include <Siv3D/BlendState.hpp> // ToDo
@@ -1407,7 +1409,7 @@
 
 # include <Siv3D/CullMode.hpp>
 
-# include <Siv3D/RasterizerStateBuilder.hpp> // ToDo
+# include <Siv3D/RasterizerStateBuilder.hpp>
 
 // ラスタライザーステート | Rasterizer state
 # include <Siv3D/RasterizerState.hpp> // ToDo
@@ -1418,12 +1420,12 @@
 
 # include <Siv3D/CompareFunction.hpp>
 
-# include <Siv3D/SamplerStateBuilder.hpp> // ToDo
+# include <Siv3D/SamplerStateBuilder.hpp>
 
 // サンプラーステート | Sampler state
 # include <Siv3D/SamplerState.hpp> // ToDo
 
-# include <Siv3D/DepthStencilStateBuilder.hpp> // ToDo
+# include <Siv3D/DepthStencilStateBuilder.hpp>
 
 // 深度ステンシルステート | Depth stencil state
 # include <Siv3D/DepthStencilState.hpp> // ToDo

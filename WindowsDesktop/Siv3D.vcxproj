@@ -49,7 +49,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConstantBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConstantBuffer.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Easing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatRect.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IConstantBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CopyOption.hpp" />
@@ -259,6 +262,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\InputGroup.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\InputGroups.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\InputState.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Interpolation.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSON.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONIterator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONPointer.hpp" />
@@ -290,6 +294,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MonitorInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Mouse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSAASampleCount.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MSL.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OrderedSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OrderedTable.hpp" />
@@ -1003,6 +1008,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\InputState\SivInputState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Input\SivInput.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Int128\SivInt128.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Interpolation\SivInterpolation.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JSONIterator\SivJSONIterator.cpp" />
