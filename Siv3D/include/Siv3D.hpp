@@ -760,9 +760,9 @@
 // 2D 描画の頂点 | Vertex elements for 2D rendering
 # include <Siv3D/Vertex2D.hpp>
 
-//// 円座標 | Polar coordinates system (2D)
-//# include <Siv3D/Circular.hpp>
-//
+// 円座標 | Polar coordinates system (2D)
+# include <Siv3D/Circular.hpp>
+
 //// オフセット付き円座標 | Polar coordinates system with offset (2D)
 //# include <Siv3D/OffsetCircular.hpp>
 //
