@@ -2183,6 +2183,9 @@
 		F9E794392C12DA78002615BA /* SivLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794372C12DA78002615BA /* SivLine.cpp */; };
 		F9E7943B2C12F34D002615BA /* LineStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7943A2C12F34D002615BA /* LineStyle.hpp */; };
 		F9E7943D2C12F35F002615BA /* LineStyle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7943C2C12F35F002615BA /* LineStyle.ipp */; };
+		F9E7943F2C158B8F002615BA /* Circular.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7943E2C158B8F002615BA /* Circular.hpp */; };
+		F9E794412C158BA1002615BA /* Circular.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794402C158BA1002615BA /* Circular.ipp */; };
+		F9E794442C158BBA002615BA /* SivCircular.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794422C158BBA002615BA /* SivCircular.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4472,6 +4475,9 @@
 		F9E794372C12DA78002615BA /* SivLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLine.cpp; sourceTree = "<group>"; };
 		F9E7943A2C12F34D002615BA /* LineStyle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineStyle.hpp; sourceTree = "<group>"; };
 		F9E7943C2C12F35F002615BA /* LineStyle.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineStyle.ipp; sourceTree = "<group>"; };
+		F9E7943E2C158B8F002615BA /* Circular.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Circular.hpp; sourceTree = "<group>"; };
+		F9E794402C158BA1002615BA /* Circular.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Circular.ipp; sourceTree = "<group>"; };
+		F9E794422C158BBA002615BA /* SivCircular.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCircular.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -5050,6 +5056,7 @@
 				F9070B6C2B9F175000383E4D /* Byte.ipp */,
 				F9070B6D2B9F175000383E4D /* Char.ipp */,
 				F98606102BEB760C006A4C0F /* Circle.ipp */,
+				F9E794402C158BA1002615BA /* Circular.ipp */,
 				F9070B6E2B9F175000383E4D /* Color.ipp */,
 				F9070B6F2B9F175000383E4D /* ColorF.ipp */,
 				F9070B702B9F175000383E4D /* Console.ipp */,
@@ -5210,6 +5217,7 @@
 				F9070BC52B9F175000383E4D /* Byte.hpp */,
 				F9070BC62B9F175000383E4D /* Char.hpp */,
 				F98605272BD10459006A4C0F /* Circle.hpp */,
+				F9E7943E2C158B8F002615BA /* Circular.hpp */,
 				F9070BC72B9F175000383E4D /* Color.hpp */,
 				F9070BC82B9F175000383E4D /* ColorF.hpp */,
 				F9070BC92B9F175000383E4D /* ColorHSV.hpp */,
@@ -5981,6 +5989,7 @@
 				F9070D252B9F175E00383E4D /* Byte */,
 				F9528B6D2BB7089A00222F45 /* CacheDirectory */,
 				F9E794252C1203A3002615BA /* Circle */,
+				F9E794432C158BBA002615BA /* Circular */,
 				F9070D272B9F175E00383E4D /* Color */,
 				F9070D292B9F175E00383E4D /* ColorF */,
 				F986F89A2BC7FB4D006A4C0F /* Colormap */,
@@ -9344,6 +9353,14 @@
 			path = Line;
 			sourceTree = "<group>";
 		};
+		F9E794432C158BBA002615BA /* Circular */ = {
+			isa = PBXGroup;
+			children = (
+				F9E794422C158BBA002615BA /* SivCircular.cpp */,
+			);
+			path = Circular;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -9647,6 +9664,7 @@
 				F9070D142B9F175100383E4D /* WindowState.hpp in Headers */,
 				F986052B2BD10459006A4C0F /* Circle.hpp in Headers */,
 				F9070DC22B9F175E00383E4D /* CEmpty.hpp in Headers */,
+				F9E794412C158BA1002615BA /* Circular.ipp in Headers */,
 				F986F9902BCA9D0A006A4C0F /* plutovg-ft-math.h in Headers */,
 				F98603772BCFBB54006A4C0F /* SkOTTable_EBSC.h in Headers */,
 				F9070CC02B9F175000383E4D /* Format.hpp in Headers */,
@@ -10283,6 +10301,7 @@
 				F90706972B9DAEC900383E4D /* function_ref.h in Headers */,
 				F90706BB2B9DAEC900383E4D /* phmap_base.h in Headers */,
 				F98606002BE615B4006A4C0F /* FormatLiteralObject.ipp in Headers */,
+				F9E7943F2C158B8F002615BA /* Circular.hpp in Headers */,
 				F980C4882C04B3EB00A86B68 /* Vertex2DBuilder.hpp in Headers */,
 				F9070E592B9F176B00383E4D /* BinaryReaderDetail.hpp in Headers */,
 				F98601542BCFBB53006A4C0F /* SkBigPicture.h in Headers */,
@@ -11247,6 +11266,7 @@
 				F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */,
 				F98600D62BCFBB53006A4C0F /* SkMalloc.cpp in Sources */,
 				F98604AC2BCFBB54006A4C0F /* GlyphRun.cpp in Sources */,
+				F9E794442C158BBA002615BA /* SivCircular.cpp in Sources */,
 				F98600E22BCFBB53006A4C0F /* SkSemaphore.cpp in Sources */,
 				F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */,
 				F986F92E2BC8441F006A4C0F /* unicode_fold2_key.c in Sources */,
