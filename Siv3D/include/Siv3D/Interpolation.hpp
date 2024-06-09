@@ -12,6 +12,7 @@
 # pragma once
 # include <cmath>
 # include "Common.hpp"
+# include "Optional.hpp"
 # include "CommonFloat.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"

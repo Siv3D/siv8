@@ -59,21 +59,21 @@ namespace s3d
 		: start{ origin }
 		, end{ start + *direction } {}
 
-	//inline Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const value_type length) noexcept
-	//	: start{ originX, originY }
-	//	, end{ start + Circular{ length, *angle } } {}
+	inline Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const value_type length) noexcept
+		: start{ originX, originY }
+		, end{ start + Circular{ length, *angle } } {}
 
-	//Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
-	//	: start{ originX, originY }
-	//	, end{ start + Circular{ static_cast<value_type>(length), *angle } } {}
+	Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
+		: start{ originX, originY }
+		, end{ start + Circular{ static_cast<value_type>(length), *angle } } {}
 
-	//inline Line::Line(const position_type origin, const Arg::angle_<value_type> angle, const value_type length) noexcept
-	//	: start{ origin }
-	//	, end{ start + Circular{ length, *angle } } {}
+	inline Line::Line(const position_type origin, const Arg::angle_<value_type> angle, const value_type length) noexcept
+		: start{ origin }
+		, end{ start + Circular{ length, *angle } } {}
 
-	//Line::Line(const position_type origin, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
-	//	: start{ origin }
-	//	, end{ start + Circular{ static_cast<value_type>(length), *angle } } {}
+	Line::Line(const position_type origin, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
+		: start{ origin }
+		, end{ start + Circular{ static_cast<value_type>(length), *angle } } {}
 
 	////////////////////////////////////////////////////////////////
 	//

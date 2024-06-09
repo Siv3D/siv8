@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "PointVector.hpp"
+# include "Circular.hpp"
 # include "ColorHSV.hpp"
 # include "Optional.hpp"
 # include "PredefinedNamedParameter.hpp"

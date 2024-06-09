@@ -15,11 +15,10 @@
 
 namespace s3d
 {
-	//Triangle::Triangle(const value_type sides, const value_type angle) noexcept
-	//	: p0{ Circular(Math::InvSqrt3 * sides, angle) }
-	//	, p1{ Circular(Math::InvSqrt3 * sides, 2.0 * Math::OneThirdPi + angle) }
-	//	, p2{ Circular(Math::InvSqrt3 * sides, 4.0 * Math::OneThirdPi + angle) } {}
-
+	Triangle::Triangle(const value_type sides, const value_type angle) noexcept
+		: p0{ Circular{ (Math::InvSqrt3 * sides), angle } }
+		, p1{ Circular{ (Math::InvSqrt3 * sides), (2 * Math::OneThirdPi + angle) } }
+		, p2{ Circular{ (Math::InvSqrt3 * sides), (4 * Math::OneThirdPi + angle) } } {}
 
 	const Triangle& Triangle::draw(const ColorF& color) const
 	{
