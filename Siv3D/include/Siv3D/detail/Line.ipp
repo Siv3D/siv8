@@ -287,6 +287,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	rotateAtStart
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Line& Line::rotateAtStart(const double angle) noexcept
+	{
+		end = start.movedBy(vector().rotated(angle));
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	rotatedAtEnd
 	//
 	////////////////////////////////////////////////////////////////
@@ -295,6 +307,18 @@ namespace s3d
 	inline Line Line::rotatedAtEnd(const double angle) const noexcept
 	{
 		return{ end.movedBy((-vector()).rotated(angle)), end };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotateAtEnd
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Line& Line::rotateAtEnd(const double angle) noexcept
+	{
+		start = end.movedBy((-vector()).rotated(angle));
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -309,6 +333,21 @@ namespace s3d
 		const position_type c = center();
 		const Vec2 hv = (vector().rotated(angle) * 0.5);
 		return{ (c - hv), (c + hv) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotateAtCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Line& Line::rotateAtCenter(const double angle) noexcept
+	{
+		const position_type c = center();
+		const Vec2 hv = (vector().rotated(angle) * 0.5);
+		start = (c - hv);
+		end = (c + hv);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

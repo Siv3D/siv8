@@ -630,10 +630,10 @@
 //
 //// トランジション | Transition
 //# include <Siv3D/Transition.hpp>
-//
-//// 周期関数 | Periodic functions
-//# include <Siv3D/Periodic.hpp>
-//
+
+// 周期関数 | Periodic functions
+# include <Siv3D/Periodic.hpp>
+
 //// Poisson Disk 2D | Poisson disk 2D
 //# include <Siv3D/PoissonDisk2D.hpp>
 //
