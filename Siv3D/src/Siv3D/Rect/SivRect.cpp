@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/Rect.hpp>
+# include <Siv3D/2DShapes.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
@@ -18,6 +18,78 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	pointAtLength
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 Rect::pointAtLength(double length) const
+	{
+		if (length < 0.0)
+		{
+			length = (perimeter() + std::fmod(length, perimeter()));
+		}
+		else
+		{
+			length = std::fmod(length, perimeter());
+		}
+
+		if (length <= size.x)
+		{
+			return{ pos.x + length, pos.y };
+		}
+		else if (length <= (size.x + size.y))
+		{
+			return{ pos.x + size.x, pos.y + (length - size.x) };
+		}
+		else if (length <= (size.x * 2 + size.y))
+		{
+			return{ pos.x + size.x - (length - size.x - size.y), pos.y + size.y };
+		}
+		else
+		{
+			return{ pos.x, pos.y + size.y - (length - size.x * 2 - size.y) };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	interpolatedPointAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 Rect::interpolatedPointAt(double t) const noexcept
+	{
+		if (t < 0.0)
+		{
+			t = (1.0 + std::fmod(t, 1.0));
+		}
+		else if (1.0 < t)
+		{
+			t = std::fmod(t, 1.0);
+		}
+
+		const double length = (perimeter() * t);
+
+		if (length <= size.x)
+		{
+			return{ pos.x + length, pos.y };
+		}
+		else if (length <= (size.x + size.y))
+		{
+			return{ pos.x + size.x, pos.y + (length - size.x) };
+		}
+		else if (length <= (size.x * 2 + size.y))
+		{
+			return{ pos.x + size.x - (length - size.x - size.y), pos.y + size.y };
+		}
+		else
+		{
+			return{ pos.x, pos.y + size.y - (length - size.x * 2 - size.y) };
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	draw
@@ -32,8 +104,8 @@ namespace s3d
 
 	const Rect& Rect::draw(const ColorF(&colors)[4]) const
 	{
-		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) },
-			{ colors[0].toFloat4(), colors[1].toFloat4(), colors[2].toFloat4(), colors[3].toFloat4() });
+		const Float4 colorsF[4] = { colors[0].toFloat4(), colors[1].toFloat4(), colors[2].toFloat4(), colors[3].toFloat4() };
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, colorsF);
 		return *this;
 	}
 
@@ -97,6 +169,27 @@ namespace s3d
 		*(p++) = U')';
 
 		formatData.string.append(buffer, (p - buffer));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Rect::ThrowPointAtIndexOutOfRange()
+	{
+		throw std::out_of_range{ "Rect::pointAtIndex() index out of range" };
+	}
+
+	void Rect::ThrowSideAtIndexOutOfRange()
+	{
+		throw std::out_of_range{ "Rect::sideAtIndex() index out of range" };
+	}
+
+	void Rect::ThrowTriangleAtIndexOutOfRange()
+	{
+		throw std::out_of_range{ "Rect::triangleAtIndex() index out of range" };
 	}
 }
 
