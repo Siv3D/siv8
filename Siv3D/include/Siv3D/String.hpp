@@ -14,6 +14,7 @@
 # include <algorithm>
 # include <functional>
 # include "Concepts.hpp"
+# include "RangeConcepts.hpp"
 # include "StringView.hpp"
 
 namespace s3d
@@ -2649,7 +2650,7 @@ namespace s3d
 			////////////////////////////////////////////////////////////////
 
 			[[nodiscard]]
-			inline String operator ""_s(const char32_t* s, size_t length);
+			constexpr String operator ""_s(const char32_t* s, size_t length);
 		}
 	}
 

@@ -11,7 +11,6 @@
 
 # pragma once
 # include <concepts>
-# include <ranges>
 # include <type_traits>
 
 namespace s3d
@@ -205,15 +204,5 @@ namespace s3d
 		{
 			{ a += b } -> std::convertible_to<Type>;
 		};
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	ContainerCompatibleRange
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief コンテナに対応した Range のコンセプト | Container compatible range concept
-		template <class Range, class Elem>
-		concept ContainerCompatibleRange = (std::ranges::input_range<Range> && std::convertible_to<std::ranges::range_reference_t<Range>, Elem>);
 	}
 }

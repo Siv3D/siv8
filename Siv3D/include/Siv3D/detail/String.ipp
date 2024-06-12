@@ -1770,13 +1770,17 @@ namespace s3d
 		return std::move(*this);
 	}
 
-
-
 	inline namespace Literals
 	{
 		inline namespace StringLiterals
 		{
-			inline String operator ""_s(const char32_t* s, const size_t length)
+			////////////////////////////////////////////////////////////////
+			//
+			//	_s
+			//
+			////////////////////////////////////////////////////////////////
+
+			constexpr String operator ""_s(const char32_t* s, const size_t length)
 			{
 				return String(s, length);
 			}

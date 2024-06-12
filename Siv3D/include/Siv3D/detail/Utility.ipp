@@ -31,12 +31,6 @@ namespace s3d
 		return ((b < a) ? b : a);
 	}
 
-	template <class Type>
-	constexpr Type Min(std::initializer_list<Type> values)
-	{
-		return *std::min_element(values.begin(), values.end());
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	Max
@@ -53,12 +47,6 @@ namespace s3d
 	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b))
 	{
 		return ((a < b) ? b : a);
-	}
-
-	template <class Type>
-	constexpr Type Max(std::initializer_list<Type> values)
-	{
-		return *std::max_element(values.begin(), values.end());
 	}
 
 	////////////////////////////////////////////////////////////////

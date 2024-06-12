@@ -368,12 +368,12 @@ namespace s3d
 
 	constexpr uint8 Color::minRGBComponent() const noexcept
 	{
-		return Min({ static_cast<uint8>(r), static_cast<uint8>(g), static_cast<uint8>(b) });
+		return Min(Min(r, g), b);
 	}
 
 	constexpr uint8 Color::maxRGBComponent() const noexcept
 	{
-		return Max({ static_cast<uint8>(r), static_cast<uint8>(g), static_cast<uint8>(b) });
+		return Max(Max(r, g), b);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -384,12 +384,12 @@ namespace s3d
 
 	constexpr uint8 Color::minComponent() const noexcept
 	{
-		return Min({ static_cast<uint8>(r), static_cast<uint8>(g), static_cast<uint8>(b), static_cast<uint8>(a) });
+		return Min(Min(r, g), Min(b, a));
 	}
 
 	constexpr uint8 Color::maxComponent() const noexcept
 	{
-		return Max({ static_cast<uint8>(r), static_cast<uint8>(g), static_cast<uint8>(b), static_cast<uint8>(a) });
+		return Max(Max(r, g), Max(b, a));
 	}
 
 	////////////////////////////////////////////////////////////////

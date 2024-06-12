@@ -377,12 +377,12 @@ namespace s3d
 
 	constexpr double ColorF::minRGBComponent() const noexcept
 	{
-		return Min({ r, g, b });
+		return Min(Min(r, g), b);
 	}
 
 	constexpr double ColorF::maxRGBComponent() const noexcept
 	{
-		return Max({ r, g, b });
+		return Max(Max(r, g), b);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -393,12 +393,12 @@ namespace s3d
 
 	constexpr double ColorF::minComponent() const noexcept
 	{
-		return Min({ r, g, b ,a });
+		return Min(Min(r, g), Min(b, a));
 	}
 
 	constexpr double ColorF::maxComponent() const noexcept
 	{
-		return Max({ r, g, b ,a });
+		return Max(Max(r, g), Max(b, a));
 	}
 
 	////////////////////////////////////////////////////////////////

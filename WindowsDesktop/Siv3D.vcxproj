@@ -59,6 +59,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatRect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LineStyle.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ListUtility.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
@@ -281,6 +282,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseManager.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Line.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LineStyle.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ListUtility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Logger.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LoggerBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp" />
@@ -328,6 +330,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomPoint.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec2.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec4.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RangeConcepts.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RasterizerState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RasterizerStateBuilder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Rect.hpp" />

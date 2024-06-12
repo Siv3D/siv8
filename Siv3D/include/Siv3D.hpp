@@ -51,6 +51,8 @@
 // コンセプト | Concepts
 # include <Siv3D/Concepts.hpp>
 
+# include <Siv3D/RangeConcepts.hpp>
+
 // Yes/No タグ | Yes/No tag
 # include <Siv3D/YesNo.hpp>
 
@@ -65,6 +67,8 @@
 
 // ユーティリティー | Utilities
 # include <Siv3D/Utility.hpp>
+
+# include <Siv3D/ListUtility.hpp>
 
 // 1 バイトのデータを表現する型 | Type representing 1-byte data
 # include <Siv3D/Byte.hpp>
