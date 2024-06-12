@@ -16,6 +16,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\2DShapesFwd.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AlignedAllocator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ArrayAlgorithm.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ArrayParallel.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ArrayRandom.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AssetHandle.hpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Console.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConstantBuffer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayParallel.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Circular.ipp" />
@@ -60,7 +62,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LineStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ListUtility.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatRect.hpp" />
@@ -303,6 +307,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MessageBoxStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MicrosecClock.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MillisecClock.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MinMax.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MonitorInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Mouse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSAASampleCount.hpp" />
@@ -390,6 +395,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Step3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Stopwatch.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\String.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\StringAlgorithm.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringRandom.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SVG.hpp" />
@@ -929,6 +935,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowTitle.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Array\SivArray.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Base64Value\SivBase64Value.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigFloat\SivBigFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigInt\SivBigInt.cpp" />

@@ -871,6 +871,9 @@
     <Filter Include="src\Siv3D\VariableSpeedStopwatch">
       <UniqueIdentifier>{457aaba1-f612-45da-881b-eeaff1ae8523}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Array">
+      <UniqueIdentifier>{658e3e2d-656f-4e21-bd1b-57b11a704e98}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3435,6 +3438,24 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\RangeConcepts.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\StringAlgorithm.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringAlgorithm.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MinMax.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ArrayAlgorithm.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayAlgorithm.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5710,6 +5731,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\VariableSpeedStopwatch\SivVariableSpeedStopwatch.cpp">
       <Filter>src\Siv3D\VariableSpeedStopwatch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Array\SivArray.cpp">
+      <Filter>src\Siv3D\Array</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

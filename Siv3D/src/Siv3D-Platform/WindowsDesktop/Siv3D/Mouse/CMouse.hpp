@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
+# include <mutex>
 # include <Siv3D/Array.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/InputState.hpp>

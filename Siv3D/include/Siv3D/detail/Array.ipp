@@ -15,21 +15,14 @@ namespace s3d
 {
 	namespace detail
 	{
-		template <class Type>
-		class ArrayStableUniqueHelper
-		{
-		public:
+		[[noreturn]]
+		void ThrowArrayRemoveAtIndexOutOfRange();
 
-			[[nodiscard]]
-			bool operator()(const Type& value)
-			{
-				return m_set.insert(value).second;
-			}
-	
-		private:
+		[[noreturn]]
+		void ThrowArrayRemovedAtIndexOutOfRange();
 
-			HashSet<Type> m_set;
-		};
+		[[noreturn]]
+		void ThrowArrayValuesAtIndexOutOfRange();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1237,19 +1230,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	reduce
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	template <class Fty, class R>
-	constexpr auto Array<Type, Allocator>::reduce(Fty f, R init) const
-	{
-		return std::reduce(m_container.begin(), m_container.end(), init, f);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	remove, removed
 	//
 	////////////////////////////////////////////////////////////////
@@ -1300,7 +1280,7 @@ namespace s3d
 	{
 		if (m_container.size() <= index)
 		{
-			throw std::out_of_range{ "Array::remove_at(): index out of range" };
+			detail::ThrowArrayRemoveAtIndexOutOfRange();
 		}
 
 		erase(m_container.begin() + index);
@@ -1319,7 +1299,7 @@ namespace s3d
 	{
 		if (m_container.size() <= index)
 		{
-			throw std::out_of_range{ "Array::removed_at(): index out of range" };
+			detail::ThrowArrayRemovedAtIndexOutOfRange();
 		}
 
 		Array result(Arg::reserve = m_container.size() - 1);
@@ -1788,36 +1768,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	stable_unique, stable_uniqued
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_unique() & noexcept
-	{
-		return (*this = stable_uniqued());
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_unique() && noexcept
-	{
-		return stable_uniqued();
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() const
-	{
-		Array result;
-
-		detail::ArrayStableUniqueHelper<value_type> pred;
-
-		std::copy_if(m_container.begin(), m_container.end(), std::back_inserter(result), std::ref(pred));
-
-		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	sum
 	//
 	////////////////////////////////////////////////////////////////
@@ -1904,39 +1854,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	unique_consecutive, uniqued_consecutive
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::unique_consecutive() & noexcept
-	{
-		m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
-		return *this;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::unique_consecutive() && noexcept
-	{
-		return std::move(unique_consecutive());
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() const&
-	{
-		Array result;
-		std::unique_copy(m_container.begin(), m_container.end(), std::back_inserter(result));
-		return result;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() && noexcept
-	{
-		return std::move(unique_consecutive());
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	values_at
 	//
 	////////////////////////////////////////////////////////////////
@@ -1955,7 +1872,7 @@ namespace s3d
 			}
 			else
 			{
-				ThrowValuesAtOutOfRange();
+				detail::ThrowArrayValuesAtIndexOutOfRange();
 			}
 		}
 
@@ -2020,18 +1937,6 @@ namespace s3d
 		}
 
 		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	(private function)
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	void Array<Type, Allocator>::ThrowValuesAtOutOfRange()
-	{
-		throw std::out_of_range{ "Array::values_at(): index out of range" };
 	}
 
 	////////////////////////////////////////////////////////////////

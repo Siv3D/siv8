@@ -565,10 +565,10 @@ namespace s3d
 	template <class Type>
 	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::manhattanDistanceFrom(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
 	{
-		const auto xMinMax = std::minmax(x, _x);
-		const auto yMinMax = std::minmax(y, _y);
-		const auto zMinMax = std::minmax(z, _z);
-		const auto wMinMax = std::minmax(w, _w);
+		const auto xMinMax = MinMax(x, _x);
+		const auto yMinMax = MinMax(y, _y);
+		const auto zMinMax = MinMax(z, _z);
+		const auto wMinMax = MinMax(w, _w);
 		return ((xMinMax.second - xMinMax.first)
 			  + (yMinMax.second - yMinMax.first)
 			  + (zMinMax.second - zMinMax.first)

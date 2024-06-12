@@ -1726,10 +1726,7 @@ namespace s3d
 		/// @param init 初期値
 		/// @return まとめられた値
 		template <class Fty, class R>
-		constexpr auto reduce(Fty f, R init) const
-		{
-			return std::reduce(m_container.begin(), m_container.end(), init, f);
-		}
+		constexpr auto reduce(Fty f, R init) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1788,7 +1785,7 @@ namespace s3d
 		{
 			if (m_container.size() <= index)
 			{
-				throw std::out_of_range{ "Array::remove_at(): index out of range" };
+				detail::ThrowArrayRemoveAtIndexOutOfRange();
 			}
 
 			erase(m_container.begin() + index);
@@ -1813,7 +1810,7 @@ namespace s3d
 		{
 			if (m_container.size() <= index)
 			{
-				throw std::out_of_range{ "Array::removed_at(): index out of range" };
+				detail::ThrowArrayRemovedAtIndexOutOfRange();
 			}
 
 			Array result(Arg::reserve = m_container.size() - 1);
@@ -2565,37 +2562,22 @@ namespace s3d
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去します。
 		/// @return *this
-		constexpr Array& unique_consecutive() & noexcept
-		{
-			m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
-			return *this;
-		}
+		constexpr Array& unique_consecutive() & noexcept;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array unique_consecutive() && noexcept
-		{
-			return std::move(unique_consecutive());
-		}
+		constexpr Array unique_consecutive() && noexcept;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array uniqued_consecutive() const&
-		{
-			Array result;
-			std::unique_copy(m_container.begin(), m_container.end(), std::back_inserter(result));
-			return result;
-		}
+		constexpr Array uniqued_consecutive() const&;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array uniqued_consecutive() && noexcept
-		{
-			return std::move(unique_consecutive());
-		}
+		constexpr Array uniqued_consecutive() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2620,7 +2602,7 @@ namespace s3d
 				}
 				else
 				{
-					ThrowValuesAtOutOfRange();
+					detail::ThrowArrayValuesAtIndexOutOfRange();
 				}
 			}
 
@@ -2763,11 +2745,5 @@ namespace s3d
 	private:
 
 		container_type m_container;
-
-		[[noreturn]]
-		static void ThrowValuesAtOutOfRange()
-		{
-			throw std::out_of_range{ "Array::values_at(): index out of range" };
-		}
 	};
 }

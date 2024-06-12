@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # pragma once
-# include <array> // std::array
 # include <memory> // std::addressof
 # include "Types.hpp"
 # include "Concepts.hpp"
@@ -20,7 +19,7 @@ namespace s3d
 	namespace wyhash
 	{
 		/// @brief wyhash のシークレット値 | Secret value for wyhash
-		using Secret = std::array<uint64, 4>;
+		using Secret = uint64[4];
 		
 		/// @brief wyhash のデフォルトのシークレット値 | Default secret value for wyhash
 		inline constexpr Secret DefaultHashSecret{ 0xa0761d6478bd642full, 0xe7037ed1a0b428dbull, 0x8ebc6af09c88c6e3ull, 0x589965cc75374cc3ull };
@@ -65,7 +64,7 @@ namespace s3d
 	inline namespace xxHash3
 	{
 		/// @brief xxHash3 のシークレット値 | Secret value for xxHash3
-		using Secret = std::array<uint8, 192>;
+		using Secret = uint8[192];
 
 		////////////////////////////////////////////////////////////////
 		//

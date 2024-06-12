@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <ranges>
 # include "Common.hpp"
 # include "Array.hpp"
 # include "PointVector.hpp"

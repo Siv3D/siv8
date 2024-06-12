@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <array>
 # include "WindowMisc.hpp"
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineLog.hpp>

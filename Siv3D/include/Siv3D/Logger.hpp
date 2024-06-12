@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # pragma once
-# include <iostream>
 # include "Common.hpp"
 # include "String.hpp"
 # include "LoggerBuffer.hpp"

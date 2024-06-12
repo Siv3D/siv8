@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <bit>
 # include "Common.hpp"
 # include "TriangleFillMode.hpp"
 # include "CullMode.hpp"

@@ -11,6 +11,7 @@
 
 # pragma once
 # include <atomic>
+# include <mutex>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/ResizeMode.hpp>
 # include <Siv3D/Window/IWindow.hpp>

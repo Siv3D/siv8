@@ -10,11 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
-# include "Platform.hpp"
-# if SIV3D_PLATFORM(WINDOWS)
-#	include <execution>
-# endif
-# include <future>
-# include "Threading.hpp"
+# include <numeric>
+# include "HashSet.hpp"
 
-# include "detail/ArrayParallel.ipp"
+# include "detail/ArrayAlgorithm.ipp"

@@ -14,7 +14,6 @@
 # include "Common.hpp"
 # include "ISteadyClock.hpp"
 # include "Duration.hpp"
-# include "String.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
@@ -331,16 +330,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @tparam CharType 
-		/// @param output 
-		/// @param value 
-		/// @return 
-		template <class CharType>
-		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Stopwatch& value)
-		{
-			return output << value.format();
-		}
+		friend std::ostream& operator <<(std::ostream& os, const Stopwatch& value);
+
+		friend std::wostream& operator <<(std::wostream& os, const Stopwatch& value);
+
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Stopwatch& value);
 
 		////////////////////////////////////////////////////////////////
 		//

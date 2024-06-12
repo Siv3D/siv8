@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
 # include <Siv3D/InputState.hpp>
 # include <Siv3D/Keyboard.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>

@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <array>
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
 

@@ -11,7 +11,7 @@
 
 # pragma once
 # include <string>
-# include <algorithm>
+# include <span>
 # include <functional>
 # include "Concepts.hpp"
 # include "RangeConcepts.hpp"

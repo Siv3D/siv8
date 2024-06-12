@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <array>
 # include <Siv3D/Windows/MinWindows.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Time.hpp>

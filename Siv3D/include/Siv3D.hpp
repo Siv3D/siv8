@@ -70,6 +70,8 @@
 
 # include <Siv3D/ListUtility.hpp>
 
+# include <Siv3D/MinMax.hpp>
+
 // 1 バイトのデータを表現する型 | Type representing 1-byte data
 # include <Siv3D/Byte.hpp>
 
@@ -149,6 +151,8 @@
 
 # include <Siv3D/StringRandom.hpp>
 
+# include <Siv3D/StringAlgorithm.hpp>
+
 // Unicode | Unicode
 # include <Siv3D/Unicode.hpp>
 
@@ -188,6 +192,8 @@
 # include <Siv3D/Array.hpp>
 
 # include <Siv3D/ArrayRandom.hpp>
+
+# include <Siv3D/ArrayAlgorithm.hpp>
 
 # include <Siv3D/ArrayParallel.hpp>
 

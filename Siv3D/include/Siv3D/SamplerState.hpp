@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
+# include <bit>
 # include "Common.hpp"
 # include "TextureAddressMode.hpp"
 # include "TextureFilter.hpp"

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
 # include <filesystem>
 # include <Siv3D/Common.hpp>
 # include <Siv3D/String.hpp>

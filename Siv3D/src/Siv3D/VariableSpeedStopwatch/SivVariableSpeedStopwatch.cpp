@@ -27,6 +27,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	operator <<
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::ostream& operator <<(std::ostream& os, const VariableSpeedStopwatch& value)
+	{
+		return (os << value.format());
+	}
+
+	std::wostream& operator <<(std::wostream& os, const VariableSpeedStopwatch& value)
+	{
+		return (os << value.format());
+	}
+
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const VariableSpeedStopwatch& value)
+	{
+		return (os << value.format());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Formatter
 	//
 	////////////////////////////////////////////////////////////////

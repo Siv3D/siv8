@@ -11,7 +11,7 @@
 
 # pragma once
 # include <concepts>
-# include <ranges>
+# include <iterator>
 
 namespace s3d
 {
