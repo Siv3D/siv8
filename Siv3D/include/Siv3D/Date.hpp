@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # pragma once
-# include <algorithm>
 # include "Common.hpp"
 # include "DayOfWeek.hpp"
 # include "StringView.hpp"

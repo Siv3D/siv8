@@ -54,17 +54,6 @@ namespace s3d
 				+ (days100YearsPeriod / DaysIn4Years * 4)
 				+ (days4YearsPeriod / DaysIn1Year));
 		}
-
-		inline Date EpochDaysToDate(const int32 epochDays)
-		{
-			const int32 years = (DaysToYears(epochDays) + 1);
-			const bool isLeapYear = Date::IsLeapYear(years);
-			const int32 daysAYearPeriod = (epochDays - YearsToDays(years - 1));
-			const auto january = std::begin(DaysAtEndOfMonth[isLeapYear]);
-			const int32 months = static_cast<int32>(std::distance(january, std::upper_bound(january, january + 12, daysAYearPeriod)));
-			const int32 days = daysAYearPeriod - (DaysAtEndOfMonth[isLeapYear][(months - 1)]) + 1;
-			return{ years, months, days };
-		}
 	}
 
 	////////////////////////////////////////////////////////////////

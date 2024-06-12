@@ -14,6 +14,20 @@
 
 namespace s3d
 {		
+	namespace
+	{
+		static Date EpochDaysToDate(const int32 epochDays)
+		{
+			const int32 years = (detail::DaysToYears(epochDays) + 1);
+			const bool isLeapYear = Date::IsLeapYear(years);
+			const int32 daysAYearPeriod = (epochDays - detail::YearsToDays(years - 1));
+			const auto january = std::begin(detail::DaysAtEndOfMonth[isLeapYear]);
+			const int32 months = static_cast<int32>(std::distance(january, std::upper_bound(january, january + 12, daysAYearPeriod)));
+			const int32 days = daysAYearPeriod - (detail::DaysAtEndOfMonth[isLeapYear][(months - 1)]) + 1;
+			return{ years, months, days };
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	format
@@ -33,7 +47,7 @@ namespace s3d
 
 	Date Date::operator +(const Days& days) const noexcept
 	{
-		return detail::EpochDaysToDate(detail::DateToEpochDays(*this) + days.count());
+		return EpochDaysToDate(detail::DateToEpochDays(*this) + days.count());
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -91,7 +105,7 @@ namespace s3d
 
 	Date& Date::operator +=(const Days& days) noexcept
 	{
-		return (*this = detail::EpochDaysToDate(detail::DateToEpochDays(*this) + days.count()));
+		return (*this = EpochDaysToDate(detail::DateToEpochDays(*this) + days.count()));
 	}
 		
 	////////////////////////////////////////////////////////////////
