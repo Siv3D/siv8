@@ -12,16 +12,15 @@
 # pragma once
 # include <array>
 # include "Common.hpp"
-# include "String.hpp"
 # include "Utility.hpp"
 # include "Optional.hpp"
 # include "Error.hpp"
 # include "Char.hpp"
-# include "FormatData.hpp"
 
 namespace s3d
 {
 	class Blob;
+	struct FormatData;
 
 	////////////////////////////////////////////////////////////////
 	//

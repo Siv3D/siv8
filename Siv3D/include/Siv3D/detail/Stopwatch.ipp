@@ -312,15 +312,4 @@ namespace s3d
 	{
 		return SecondsF{ sF() };
 	}
-		
-	////////////////////////////////////////////////////////////////
-	//
-	//	format
-	//
-	////////////////////////////////////////////////////////////////
-
-	inline String Stopwatch::format(const StringView format) const
-	{
-		return FormatTime(elapsed(), format);
-	}
 }

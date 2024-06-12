@@ -12,11 +12,6 @@
 # pragma once
 # include <vector>
 # include <numeric>
-# include <future>
-# include "Platform.hpp"
-# if SIV3D_PLATFORM(WINDOWS)
-#	include <execution>
-# endif
 # include "String.hpp"
 # include "Unicode.hpp"
 # include "Format.hpp"

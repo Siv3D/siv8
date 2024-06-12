@@ -376,15 +376,4 @@ namespace s3d
 	{
 		return (1.0 - progress1_0());
 	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	format
-	//
-	////////////////////////////////////////////////////////////////
-
-	inline String Timer::format(const StringView format) const
-	{
-		return FormatTime(remaining(), format);
-	}
 }

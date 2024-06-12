@@ -12,7 +12,6 @@
 # pragma once
 # include <memory>
 # include "Common.hpp"
-# include "String.hpp"
 # include "Array.hpp"
 # include "HashTable.hpp"
 # include "Optional.hpp"

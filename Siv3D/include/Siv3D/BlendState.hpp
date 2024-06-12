@@ -10,14 +10,17 @@
 //-----------------------------------------------
 
 # pragma once
+# include <utility>
+# include <bit>
 # include "Common.hpp"
 # include "BlendFactor.hpp"
 # include "BlendOperation.hpp"
 # include "BlendStateBuilder.hpp"
-# include "String.hpp"
 
 namespace s3d
 {
+	class String;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	BlendState

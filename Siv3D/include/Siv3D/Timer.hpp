@@ -14,11 +14,12 @@
 # include "Common.hpp"
 # include "ISteadyClock.hpp"
 # include "Duration.hpp"
-# include "FormatData.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
+	struct FormatData;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Timer
@@ -400,10 +401,7 @@ namespace s3d
 		/// @brief 
 		/// @param formatData 
 		/// @param value 
-		friend void Formatter(FormatData& formatData, const Timer& value)
-		{
-			formatData.string.append(value.format());
-		}
+		friend void Formatter(FormatData& formatData, const Timer& value);
 
 	private:
 

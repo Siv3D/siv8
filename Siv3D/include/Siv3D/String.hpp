@@ -15,8 +15,6 @@
 # include <functional>
 # include "Concepts.hpp"
 # include "StringView.hpp"
-# include "Random.hpp"
-# include "Shuffle.hpp"
 
 namespace s3d
 {

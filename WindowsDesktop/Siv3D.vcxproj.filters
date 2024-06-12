@@ -862,6 +862,15 @@
     <Filter Include="src\Siv3D\Circular">
       <UniqueIdentifier>{dbad5a1d-7366-4fc4-b979-3f3e84b55651}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Stopwatch">
+      <UniqueIdentifier>{0b72420f-1a93-46e9-85fc-9ac0d3efee08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Timer">
+      <UniqueIdentifier>{7143b26f-7730-4314-a643-43d291548bcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\VariableSpeedStopwatch">
+      <UniqueIdentifier>{457aaba1-f612-45da-881b-eeaff1ae8523}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3399,6 +3408,24 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\StringRandom.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ArrayRandom.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ArrayParallel.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayRandom.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayParallel.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5665,6 +5692,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Circular\SivCircular.cpp">
       <Filter>src\Siv3D\Circular</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp">
+      <Filter>src\Siv3D\Stopwatch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Timer\SivTimer.cpp">
+      <Filter>src\Siv3D\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\VariableSpeedStopwatch\SivVariableSpeedStopwatch.cpp">
+      <Filter>src\Siv3D\VariableSpeedStopwatch</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

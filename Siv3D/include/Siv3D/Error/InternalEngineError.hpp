@@ -11,6 +11,7 @@
 
 # pragma once
 # include "../Error.hpp"
+# include "../String.hpp"
 
 namespace s3d
 {	

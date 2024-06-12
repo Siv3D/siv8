@@ -11,7 +11,7 @@
 
 # pragma once
 # include <stdexcept>
-# include "String.hpp"
+# include "StringView.hpp"
 
 namespace s3d
 {

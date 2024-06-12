@@ -12,7 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "DayOfWeek.hpp"
-# include "String.hpp"
+# include "StringView.hpp"
 # include "Duration.hpp"
 
 namespace s3d

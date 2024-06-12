@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "SIMDMath.hpp"
+# include "Hash.hpp"
 
 namespace s3d
 {

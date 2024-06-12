@@ -1285,73 +1285,37 @@ namespace s3d
 		/// @brief 配列の要素を 1 つランダムに返します。
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice()
-		{
-			return choice(GetDefaultRNG());
-		}
+		value_type& choice();
 
 		/// @brief 配列の要素を 1 つランダムに返します。
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice() const
-		{
-			return choice(GetDefaultRNG());
-		}
+		const value_type& choice() const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg)
-		{
-			const size_t size = m_container.size();
-
-			if (size == 0)
-			{
-				throw std::out_of_range{ "Array::choice(): Array is empty" };
-			}
-
-			return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
-		}
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg);
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const
-		{
-			const size_t size = m_container.size();
-
-			if (size == 0)
-			{
-				throw std::out_of_range{ "Array::choice(): Array is empty" };
-			}
-
-			return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
-		}
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
 
 		/// @brief 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n) const
-		{
-			return choice(n, GetDefaultRNG());
-		}
+		Array choice(Concept::Integral auto n) const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @param rbg 使用する乱数エンジン
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const
-		{
-			Array result(Arg::reserve = Min<size_t>(n, m_container.size()));
-
-			std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
-
-			return result;
-		}
+		Array choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2216,75 +2180,45 @@ namespace s3d
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルします。
 		/// @return *this
-		constexpr Array& shuffle()&
-		{
-			Shuffle(m_container.begin(), m_container.end(), GetDefaultRNG());
-			return *this;
-		}
+		constexpr Array& shuffle()&;
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffle()&&
-		{
-			return std::move(shuffle());
-		}
+		constexpr Array shuffle()&&;
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled() const&
-		{
-			Array result(*this);
-			result.shuffle();
-			return result;
-		}
+		constexpr Array shuffled() const&;
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled()&&
-		{
-			return std::move(shuffle());
-		}
+		constexpr Array shuffled()&&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルします。
 		/// @param rbg 使用する乱数エンジン
 		/// @return *this
-		constexpr Array& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
-		{
-			Shuffle(m_container.begin(), m_container.end(), std::forward<decltype(rbg)>(rbg));
-			return *this;
-		}
+		constexpr Array& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&
-		{
-			return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
-		}
+		constexpr Array shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
-		{
-			Array result(*this);
-			result.shuffle(std::forward<decltype(rbg)>(rbg));
-			return result;
-		}
+		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&
-		{
-			return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
-		}
+		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&;
 
 		////////////////////////////////////////////////////////////////
 		//

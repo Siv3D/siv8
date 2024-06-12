@@ -11,12 +11,13 @@
 
 # pragma once
 # include "Common.hpp"
-# include "FormatData.hpp"
 # include "PointVector.hpp"
 # include "FormatLiteral.hpp"
 
 namespace s3d
 {
+	struct FormatData;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	ColorF

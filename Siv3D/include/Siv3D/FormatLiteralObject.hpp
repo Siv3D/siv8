@@ -14,7 +14,6 @@
 # include <ThirdParty/fmt/xchar.h>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Format.hpp>
-# include <Siv3D/Unicode.hpp>
 
 namespace s3d
 {
@@ -52,7 +51,7 @@ namespace s3d
 			////////////////////////////////////////////////////////////////
 
 			[[nodiscard]]
-			constexpr detail::FormatLiteralObject operator ""_fmt(const char32 * s, size_t length) noexcept;
+			constexpr detail::FormatLiteralObject operator ""_fmt(const char32* s, size_t length) noexcept;
 		}
 	}
 

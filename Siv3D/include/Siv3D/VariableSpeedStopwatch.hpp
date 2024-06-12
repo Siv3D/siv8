@@ -14,7 +14,6 @@
 # include "Common.hpp"
 # include "ISteadyClock.hpp"
 # include "Duration.hpp"
-# include "FormatData.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
@@ -374,10 +373,7 @@ namespace s3d
 		/// @brief 
 		/// @param formatData 
 		/// @param value 
-		friend void Formatter(FormatData& formatData, const VariableSpeedStopwatch& value)
-		{
-			formatData.string.append(value.format());
-		}
+		friend void Formatter(FormatData& formatData, const VariableSpeedStopwatch& value);
 
 	private:
 

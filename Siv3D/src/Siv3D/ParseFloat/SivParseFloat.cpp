@@ -11,6 +11,7 @@
 
 # include <ThirdParty/fast_float/fast_float.h>
 # include <Siv3D/ParseFloat.hpp>
+# include <Siv3D/Unicode.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/Error/ParseError.hpp>
 
