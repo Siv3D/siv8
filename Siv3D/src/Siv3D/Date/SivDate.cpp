@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <algorithm>
 # include <Siv3D/Date.hpp>
 # include <Siv3D/FormatData.hpp>
 
