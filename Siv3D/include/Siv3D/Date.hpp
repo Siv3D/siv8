@@ -14,6 +14,7 @@
 # include "DayOfWeek.hpp"
 # include "StringView.hpp"
 # include "Duration.hpp"
+# include "String.hpp"
 
 namespace s3d
 {

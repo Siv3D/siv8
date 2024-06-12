@@ -174,7 +174,7 @@ namespace s3d
 			return (std::fmod(t, periodSec) < (periodSec * dutyCycle)) ? 1.0 : -1.0;
 		}
 
-		double Pulse1_1(const Duration& period, const double dutyCycle, const double t) noexcept
+		inline double Pulse1_1(const Duration& period, const double dutyCycle, const double t) noexcept
 		{
 			return Pulse1_1(period.count(), dutyCycle, t);
 		}

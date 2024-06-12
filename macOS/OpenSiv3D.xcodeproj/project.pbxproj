@@ -2186,6 +2186,17 @@
 		F9E7943F2C158B8F002615BA /* Circular.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7943E2C158B8F002615BA /* Circular.hpp */; };
 		F9E794412C158BA1002615BA /* Circular.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794402C158BA1002615BA /* Circular.ipp */; };
 		F9E794442C158BBA002615BA /* SivCircular.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794422C158BBA002615BA /* SivCircular.cpp */; };
+		F9E794492C1973FD002615BA /* ArrayRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794452C1973FC002615BA /* ArrayRandom.hpp */; };
+		F9E7944A2C1973FD002615BA /* ArrayParallel.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794462C1973FC002615BA /* ArrayParallel.hpp */; };
+		F9E7944B2C1973FD002615BA /* Periodic.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794472C1973FC002615BA /* Periodic.hpp */; };
+		F9E7944C2C1973FD002615BA /* StringRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794482C1973FC002615BA /* StringRandom.hpp */; };
+		F9E794512C197418002615BA /* ArrayParallel.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7944D2C197417002615BA /* ArrayParallel.ipp */; };
+		F9E794522C197418002615BA /* Periodic.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7944E2C197417002615BA /* Periodic.ipp */; };
+		F9E794532C197418002615BA /* StringRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7944F2C197417002615BA /* StringRandom.ipp */; };
+		F9E794542C197418002615BA /* ArrayRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794502C197417002615BA /* ArrayRandom.ipp */; };
+		F9E7945B2C19743A002615BA /* SivTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794552C19743A002615BA /* SivTimer.cpp */; };
+		F9E7945C2C19743A002615BA /* SivVariableSpeedStopwatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794572C19743A002615BA /* SivVariableSpeedStopwatch.cpp */; };
+		F9E7945D2C19743A002615BA /* SivStopwatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794592C19743A002615BA /* SivStopwatch.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4478,6 +4489,17 @@
 		F9E7943E2C158B8F002615BA /* Circular.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Circular.hpp; sourceTree = "<group>"; };
 		F9E794402C158BA1002615BA /* Circular.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Circular.ipp; sourceTree = "<group>"; };
 		F9E794422C158BBA002615BA /* SivCircular.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCircular.cpp; sourceTree = "<group>"; };
+		F9E794452C1973FC002615BA /* ArrayRandom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ArrayRandom.hpp; sourceTree = "<group>"; };
+		F9E794462C1973FC002615BA /* ArrayParallel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ArrayParallel.hpp; sourceTree = "<group>"; };
+		F9E794472C1973FC002615BA /* Periodic.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Periodic.hpp; sourceTree = "<group>"; };
+		F9E794482C1973FC002615BA /* StringRandom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StringRandom.hpp; sourceTree = "<group>"; };
+		F9E7944D2C197417002615BA /* ArrayParallel.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ArrayParallel.ipp; sourceTree = "<group>"; };
+		F9E7944E2C197417002615BA /* Periodic.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Periodic.ipp; sourceTree = "<group>"; };
+		F9E7944F2C197417002615BA /* StringRandom.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StringRandom.ipp; sourceTree = "<group>"; };
+		F9E794502C197417002615BA /* ArrayRandom.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ArrayRandom.ipp; sourceTree = "<group>"; };
+		F9E794552C19743A002615BA /* SivTimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTimer.cpp; sourceTree = "<group>"; };
+		F9E794572C19743A002615BA /* SivVariableSpeedStopwatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVariableSpeedStopwatch.cpp; sourceTree = "<group>"; };
+		F9E794592C19743A002615BA /* SivStopwatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivStopwatch.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -5040,6 +5062,8 @@
 			children = (
 				F9070B642B9F175000383E4D /* AlignedAllocator.ipp */,
 				F9070B652B9F175000383E4D /* Array.ipp */,
+				F9E7944D2C197417002615BA /* ArrayParallel.ipp */,
+				F9E794502C197417002615BA /* ArrayRandom.ipp */,
 				F9807D8F2BF6679000D9B590 /* AssetHandle.ipp */,
 				F9807D8D2BF6678F00D9B590 /* AssetID.ipp */,
 				F9807D8E2BF6679000D9B590 /* AssetIDWrapper.ipp */,
@@ -5132,6 +5156,7 @@
 				F9070B942B9F175000383E4D /* Parse.ipp */,
 				F9070B952B9F175000383E4D /* ParseInt.ipp */,
 				F9070B962B9F175000383E4D /* PCG64.ipp */,
+				F9E7944E2C197417002615BA /* Periodic.ipp */,
 				F9070B972B9F175000383E4D /* Point.ipp */,
 				F9528B982BBC76EA00222F45 /* Point3D.ipp */,
 				F98605F62BE61586006A4C0F /* Quad.ipp */,
@@ -5158,6 +5183,7 @@
 				F9528B972BBC76EA00222F45 /* Step3D.ipp */,
 				F9070BA02B9F175000383E4D /* Stopwatch.ipp */,
 				F9070BA12B9F175000383E4D /* String.ipp */,
+				F9E7944F2C197417002615BA /* StringRandom.ipp */,
 				F9070BA22B9F175000383E4D /* StringView.ipp */,
 				F986F9C72BCA9D3E006A4C0F /* SVG.ipp */,
 				F9070BA32B9F175000383E4D /* TextEncoding.ipp */,
@@ -5199,6 +5225,8 @@
 				F9070BBC2B9F175000383E4D /* 2DShapesFwd.hpp */,
 				F9070BBD2B9F175000383E4D /* AlignedAllocator.hpp */,
 				F9070BBE2B9F175000383E4D /* Array.hpp */,
+				F9E794462C1973FC002615BA /* ArrayParallel.hpp */,
+				F9E794452C1973FC002615BA /* ArrayRandom.hpp */,
 				F9807D812BF6676100D9B590 /* AssetHandle.hpp */,
 				F9807D832BF6676100D9B590 /* AssetID.hpp */,
 				F9807D822BF6676100D9B590 /* AssetIDWrapper.hpp */,
@@ -5367,6 +5395,7 @@
 				F9070C112B9F175000383E4D /* ParseFloat.hpp */,
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
+				F9E794472C1973FC002615BA /* Periodic.hpp */,
 				F934BD6E2BF880330003EAD5 /* PixelShader.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
 				F9528C942BC1205300222F45 /* PNGFilter.hpp */,
@@ -5409,6 +5438,7 @@
 				F9528B932BBC76D300222F45 /* Step3D.hpp */,
 				F9070C242B9F175000383E4D /* Stopwatch.hpp */,
 				F9070C252B9F175000383E4D /* String.hpp */,
+				F9E794482C1973FC002615BA /* StringRandom.hpp */,
 				F9070C262B9F175000383E4D /* StringView.hpp */,
 				F986F9C52BCA9D25006A4C0F /* SVG.hpp */,
 				F9070C272B9F175000383E4D /* System.hpp */,
@@ -6100,6 +6130,7 @@
 				F97203022BEDF2FF000E21DD /* Scene */,
 				F934BD802BF880A10003EAD5 /* Shader */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
+				F9E7945A2C19743A002615BA /* Stopwatch */,
 				F9070D812B9F175E00383E4D /* String */,
 				F9070D832B9F175E00383E4D /* StringView */,
 				F986F94B2BCA9CD7006A4C0F /* SVG */,
@@ -6111,6 +6142,7 @@
 				F9070D912B9F175E00383E4D /* TextWriter */,
 				F9070D932B9F175E00383E4D /* ThousandSeparate */,
 				F9070D952B9F175E00383E4D /* Threading */,
+				F9E794562C19743A002615BA /* Timer */,
 				F980C4812C04B3EB00A86B68 /* Triangle */,
 				F980C4392C00D31000A86B68 /* TriangleFillMode */,
 				F9807D952BF667C200D9B590 /* Troubleshooting */,
@@ -6119,6 +6151,7 @@
 				F9070DA02B9F175E00383E4D /* UserAction */,
 				F98606062BE71763006A4C0F /* UserInfo */,
 				F9070DA22B9F175E00383E4D /* UUIDValue */,
+				F9E794582C19743A002615BA /* VariableSpeedStopwatch */,
 				F9070DA42B9F175E00383E4D /* Vector2D */,
 				F9070DA62B9F175E00383E4D /* Vector3D */,
 				F9070DA82B9F175E00383E4D /* Vector4D */,
@@ -9361,6 +9394,30 @@
 			path = Circular;
 			sourceTree = "<group>";
 		};
+		F9E794562C19743A002615BA /* Timer */ = {
+			isa = PBXGroup;
+			children = (
+				F9E794552C19743A002615BA /* SivTimer.cpp */,
+			);
+			path = Timer;
+			sourceTree = "<group>";
+		};
+		F9E794582C19743A002615BA /* VariableSpeedStopwatch */ = {
+			isa = PBXGroup;
+			children = (
+				F9E794572C19743A002615BA /* SivVariableSpeedStopwatch.cpp */,
+			);
+			path = VariableSpeedStopwatch;
+			sourceTree = "<group>";
+		};
+		F9E7945A2C19743A002615BA /* Stopwatch */ = {
+			isa = PBXGroup;
+			children = (
+				F9E794592C19743A002615BA /* SivStopwatch.cpp */,
+			);
+			path = Stopwatch;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -9515,6 +9572,7 @@
 				F9070C662B9F175000383E4D /* KahanSummation.ipp in Headers */,
 				F9528C232BBF026F00222F45 /* zstd_compress_literals.h in Headers */,
 				F98600262BCFBB53006A4C0F /* SkMilestone.h in Headers */,
+				F9E7944A2C1973FD002615BA /* ArrayParallel.hpp in Headers */,
 				F9070CEC2B9F175100383E4D /* PCG64.hpp in Headers */,
 				F986FFED2BCFBB53006A4C0F /* SkCodecAnimation.h in Headers */,
 				F9070D0E2B9F175100383E4D /* UUIDValue.hpp in Headers */,
@@ -9801,6 +9859,7 @@
 				F986FA772BCFB53B006A4C0F /* ftbzip2.h in Headers */,
 				F986043F2BCFBB54006A4C0F /* SkSLSymbol.h in Headers */,
 				F98604202BCFBB54006A4C0F /* SkSLLayout.h in Headers */,
+				F9E7944C2C1973FD002615BA /* StringRandom.hpp in Headers */,
 				F9070CBE2B9F175000383E4D /* FmtExtension.hpp in Headers */,
 				F980C49E2C04B6DB00A86B68 /* CRenderer2D_Metal.hpp in Headers */,
 				F9070CA02B9F175000383E4D /* Color.hpp in Headers */,
@@ -9859,10 +9918,12 @@
 				F986FA702BCFB53B006A4C0F /* tttypes.h in Headers */,
 				F9528B572BB6DC3700222F45 /* CycleClock.hpp in Headers */,
 				F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */,
+				F9E794532C197418002615BA /* StringRandom.ipp in Headers */,
 				F98601DF2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.h in Headers */,
 				F980C4772C01BA5600A86B68 /* DepthStencilState.ipp in Headers */,
 				F980C45C2C01B20F00A86B68 /* RasterizerStateBuilder.hpp in Headers */,
 				F986F9A92BCA9D0A006A4C0F /* graphicselement.h in Headers */,
+				F9E7944B2C1973FD002615BA /* Periodic.hpp in Headers */,
 				F98605C72BE4B680006A4C0F /* Input.ipp in Headers */,
 				F9070AFF2B9DEB5900383E4D /* utils.h in Headers */,
 				F9070EF62B9F1C8900383E4D /* posix_time.h in Headers */,
@@ -10093,6 +10154,7 @@
 				F907068E2B9DAEC900383E4D /* config.h in Headers */,
 				F980C4952C04B43300A86B68 /* FloatRect.ipp in Headers */,
 				F986042C2BCFBB54006A4C0F /* SkSLPostfixExpression.h in Headers */,
+				F9E794492C1973FD002615BA /* ArrayRandom.hpp in Headers */,
 				F986031D2BCFBB54006A4C0F /* SkPathOpsConic.h in Headers */,
 				F986000E2BCFBB53006A4C0F /* SkCubicMap.h in Headers */,
 				F98600752BCFBB53006A4C0F /* SkFeatures.h in Headers */,
@@ -10554,6 +10616,7 @@
 				F98601512BCFBB53006A4C0F /* SkAutoPixmapStorage.h in Headers */,
 				F986FFF82BCFBB53006A4C0F /* SkWbmpDecoder.h in Headers */,
 				F9528C032BBF026F00222F45 /* allocations.h in Headers */,
+				F9E794512C197418002615BA /* ArrayParallel.ipp in Headers */,
 				F9070C8C2B9F175000383E4D /* InternalEngineError.hpp in Headers */,
 				F98600422BCFBB53006A4C0F /* SkStream.h in Headers */,
 				F98600702BCFBB53006A4C0F /* SkAttributes.h in Headers */,
@@ -10629,6 +10692,7 @@
 				F986F8A12BC8003B006A4C0F /* CommandLine.hpp in Headers */,
 				F986F8A22BC8003B006A4C0F /* EnvironmentVariable.hpp in Headers */,
 				F986001D2BCFBB53006A4C0F /* SkImage.h in Headers */,
+				F9E794522C197418002615BA /* Periodic.ipp in Headers */,
 				F9070C862B9F175000383E4D /* UniqueResource.ipp in Headers */,
 				F9070CB82B9F175000383E4D /* EscapedFormatter.hpp in Headers */,
 				F9528C872BC05B5B00222F45 /* CImageEncoder.hpp in Headers */,
@@ -10675,6 +10739,7 @@
 				F9070CE62B9F175100383E4D /* Parse.hpp in Headers */,
 				F98600152BCFBB53006A4C0F /* SkFont.h in Headers */,
 				F9070ED62B9F1C8900383E4D /* cocoa_platform.h in Headers */,
+				F9E794542C197418002615BA /* ArrayRandom.ipp in Headers */,
 				F986FA932BCFB53B006A4C0F /* ftsizes.h in Headers */,
 				F986025A2BCFBB54006A4C0F /* SkRuntimeEffectPriv.h in Headers */,
 				F986025F2BCFBB54006A4C0F /* SkScalerContext.h in Headers */,
@@ -11005,6 +11070,7 @@
 				F9E794332C12B899002615BA /* SivInterpolation.cpp in Sources */,
 				F98603D72BCFBB54006A4C0F /* SkSLPipelineStageCodeGenerator.cpp in Sources */,
 				F9807DA02BF6690B00D9B590 /* SivMessageBox_macOS.mm in Sources */,
+				F9E7945B2C19743A002615BA /* SivTimer.cpp in Sources */,
 				F98601962BCFBB53006A4C0F /* SkCubicMap.cpp in Sources */,
 				F9070DD62B9F175E00383E4D /* SivIntToString.cpp in Sources */,
 				F98601AC2BCFBB53006A4C0F /* SkEdge.cpp in Sources */,
@@ -11331,6 +11397,7 @@
 				F98602312BCFBB54006A4C0F /* SkRasterClip.cpp in Sources */,
 				F986045E2BCFBB54006A4C0F /* SkSLHoistSwitchVarDeclarationsAtTopLevel.cpp in Sources */,
 				F9E5FC242BC13CD00081A4F7 /* JPEGEncoder.cpp in Sources */,
+				F9E7945C2C19743A002615BA /* SivVariableSpeedStopwatch.cpp in Sources */,
 				F934BD9D2BFA59000003EAD5 /* SivHLSL.cpp in Sources */,
 				F986F83A2BC7B043006A4C0F /* SivINIItem.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
@@ -11505,6 +11572,7 @@
 				F98603C62BCFBB54006A4C0F /* SkSLIsDynamicallyUniformExpression.cpp in Sources */,
 				F98604652BCFBB54006A4C0F /* SkSLAnalysis.cpp in Sources */,
 				F98604FC2BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp in Sources */,
+				F9E7945D2C19743A002615BA /* SivStopwatch.cpp in Sources */,
 				F986060D2BE71918006A4C0F /* SivUserInfo_macOS.mm in Sources */,
 				F986021C2BCFBB54006A4C0F /* SkPictureData.cpp in Sources */,
 				F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */,

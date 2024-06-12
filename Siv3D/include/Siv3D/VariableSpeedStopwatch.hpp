@@ -14,6 +14,7 @@
 # include "Common.hpp"
 # include "ISteadyClock.hpp"
 # include "Duration.hpp"
+# include "String.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
