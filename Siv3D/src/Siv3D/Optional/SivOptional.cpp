@@ -32,7 +32,8 @@ namespace s3d
 
 	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const None_t&)
 	{
-		return (os << U"none");
+		static const std::u32string_view s = U"none";
+		return os.write(s.data(), s.size());
 	}
 
 	////////////////////////////////////////////////////////////////
