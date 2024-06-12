@@ -2197,6 +2197,9 @@
 		F9E7945B2C19743A002615BA /* SivTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794552C19743A002615BA /* SivTimer.cpp */; };
 		F9E7945C2C19743A002615BA /* SivVariableSpeedStopwatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794572C19743A002615BA /* SivVariableSpeedStopwatch.cpp */; };
 		F9E7945D2C19743A002615BA /* SivStopwatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794592C19743A002615BA /* SivStopwatch.cpp */; };
+		F9E794602C198133002615BA /* RangeConcepts.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7945E2C198133002615BA /* RangeConcepts.hpp */; };
+		F9E794612C198133002615BA /* ListUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7945F2C198133002615BA /* ListUtility.hpp */; };
+		F9E794632C198147002615BA /* ListUtility.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794622C198147002615BA /* ListUtility.ipp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4500,6 +4503,9 @@
 		F9E794552C19743A002615BA /* SivTimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTimer.cpp; sourceTree = "<group>"; };
 		F9E794572C19743A002615BA /* SivVariableSpeedStopwatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivVariableSpeedStopwatch.cpp; sourceTree = "<group>"; };
 		F9E794592C19743A002615BA /* SivStopwatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivStopwatch.cpp; sourceTree = "<group>"; };
+		F9E7945E2C198133002615BA /* RangeConcepts.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RangeConcepts.hpp; sourceTree = "<group>"; };
+		F9E7945F2C198133002615BA /* ListUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ListUtility.hpp; sourceTree = "<group>"; };
+		F9E794622C198147002615BA /* ListUtility.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ListUtility.ipp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -5134,6 +5140,7 @@
 				F9070B8A2B9F175000383E4D /* KahanSummation.ipp */,
 				F98605F42BE61586006A4C0F /* Line.ipp */,
 				F9E7943C2C12F35F002615BA /* LineStyle.ipp */,
+				F9E794622C198147002615BA /* ListUtility.ipp */,
 				F9070B8B2B9F175000383E4D /* Logger.ipp */,
 				F9070B8C2B9F175000383E4D /* LoggerBuffer.ipp */,
 				F9070B8D2B9F175000383E4D /* MapFormatter.ipp */,
@@ -5353,6 +5360,7 @@
 				F9528B692BB7087700222F45 /* LicenseManager.hpp */,
 				F98605282BD10459006A4C0F /* Line.hpp */,
 				F9E7943A2C12F34D002615BA /* LineStyle.hpp */,
+				F9E7945F2C198133002615BA /* ListUtility.hpp */,
 				F9070BFC2B9F175000383E4D /* Logger.hpp */,
 				F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */,
 				F9070BFE2B9F175000383E4D /* LogType.hpp */,
@@ -5414,6 +5422,7 @@
 				F98605EB2BE61564006A4C0F /* RandomPoint.hpp */,
 				F98605EC2BE61564006A4C0F /* RandomVec2.hpp */,
 				F98605E92BE61563006A4C0F /* RandomVec4.hpp */,
+				F9E7945E2C198133002615BA /* RangeConcepts.hpp */,
 				F980C4282C00D2B500A86B68 /* RasterizerState.hpp */,
 				F980C4582C01B20F00A86B68 /* RasterizerStateBuilder.hpp */,
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
@@ -9486,6 +9495,7 @@
 				F9070CBD2B9F175000383E4D /* FloatToString.hpp in Headers */,
 				F986061B2BEB7651006A4C0F /* RoundRect.hpp in Headers */,
 				F9070CE22B9F175100383E4D /* Optional.hpp in Headers */,
+				F9E794612C198133002615BA /* ListUtility.hpp in Headers */,
 				F90706932B9DAEC900383E4D /* port.h in Headers */,
 				F9807D862BF6676100D9B590 /* AssetID.hpp in Headers */,
 				F98602FB2BCFBB54006A4C0F /* SkOpts_SetTarget.h in Headers */,
@@ -9533,6 +9543,7 @@
 				F98603352BCFBB54006A4C0F /* SkPathWriter.h in Headers */,
 				F90706B72B9DAEC900383E4D /* mimalloc.h in Headers */,
 				F98603892BCFBB54006A4C0F /* SkOTTable_OS_2_VA.h in Headers */,
+				F9E794632C198147002615BA /* ListUtility.ipp in Headers */,
 				F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */,
 				F986019D2BCFBB53006A4C0F /* SkDevice.h in Headers */,
 				F98600722BCFBB53006A4C0F /* SkCPUTypes.h in Headers */,
@@ -9887,6 +9898,7 @@
 				F986F9982BCA9D0A006A4C0F /* plutovg-private.h in Headers */,
 				F9528C0E2BBF026F00222F45 /* fse.h in Headers */,
 				F9070D122B9F175100383E4D /* Version.hpp in Headers */,
+				F9E794602C198133002615BA /* RangeConcepts.hpp in Headers */,
 				F9070D062B9F175100383E4D /* Time.hpp in Headers */,
 				F986FA6D2BCFB53B006A4C0F /* sfnt.h in Headers */,
 				F98600842BCFBB53006A4C0F /* SkTArray.h in Headers */,
