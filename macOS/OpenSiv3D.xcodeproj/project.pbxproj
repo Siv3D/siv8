@@ -2213,6 +2213,9 @@
 		F9E7947A2C248AEE002615BA /* Graphics2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794792C248AEE002615BA /* Graphics2D.hpp */; };
 		F9E7947C2C248B03002615BA /* Graphics2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7947B2C248B03002615BA /* Graphics2D.ipp */; };
 		F9E7947F2C248B29002615BA /* SivGraphics2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E7947D2C248B29002615BA /* SivGraphics2D.cpp */; };
+		F9E794852C2493FF002615BA /* ConstantBuffer_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9E794802C2493FF002615BA /* ConstantBuffer_Metal.mm */; };
+		F9E794862C2493FF002615BA /* ConstantBuffer_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794812C2493FF002615BA /* ConstantBuffer_Metal.hpp */; };
+		F9E794872C2493FF002615BA /* ConstantBufferFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9E794832C2493FF002615BA /* ConstantBufferFactory.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4532,6 +4535,9 @@
 		F9E794792C248AEE002615BA /* Graphics2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Graphics2D.hpp; sourceTree = "<group>"; };
 		F9E7947B2C248B03002615BA /* Graphics2D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Graphics2D.ipp; sourceTree = "<group>"; };
 		F9E7947D2C248B29002615BA /* SivGraphics2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivGraphics2D.cpp; sourceTree = "<group>"; };
+		F9E794802C2493FF002615BA /* ConstantBuffer_Metal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ConstantBuffer_Metal.mm; sourceTree = "<group>"; };
+		F9E794812C2493FF002615BA /* ConstantBuffer_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ConstantBuffer_Metal.hpp; sourceTree = "<group>"; };
+		F9E794832C2493FF002615BA /* ConstantBufferFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ConstantBufferFactory.mm; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -6227,6 +6233,7 @@
 			isa = PBXGroup;
 			children = (
 				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
+				F9E794842C2493FF002615BA /* ConstantBuffer */,
 				F98605812BDA7E32006A4C0F /* Cursor */,
 				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
 				F934BD912BF8824B0003EAD5 /* EngineShader */,
@@ -9482,6 +9489,24 @@
 			path = Graphics2D;
 			sourceTree = "<group>";
 		};
+		F9E794822C2493FF002615BA /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				F9E794802C2493FF002615BA /* ConstantBuffer_Metal.mm */,
+				F9E794812C2493FF002615BA /* ConstantBuffer_Metal.hpp */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		F9E794842C2493FF002615BA /* ConstantBuffer */ = {
+			isa = PBXGroup;
+			children = (
+				F9E794822C2493FF002615BA /* Metal */,
+				F9E794832C2493FF002615BA /* ConstantBufferFactory.mm */,
+			);
+			path = ConstantBuffer;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -9749,6 +9774,7 @@
 				F986027F2BCFBB54006A4C0F /* SkSurfacePriv.h in Headers */,
 				F98601CD2BCFBB53006A4C0F /* SkImageFilter_Base.h in Headers */,
 				F9070C5E2B9F175000383E4D /* HSV.ipp in Headers */,
+				F9E794862C2493FF002615BA /* ConstantBuffer_Metal.hpp in Headers */,
 				F9070CBF2B9F175000383E4D /* FmtHelper.hpp in Headers */,
 				F98600082BCFBB53006A4C0F /* SkColorPriv.h in Headers */,
 				F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */,
@@ -11114,6 +11140,7 @@
 				F986047E2BCFBB54006A4C0F /* SkSLModuleLoader.cpp in Sources */,
 				F98603C82BCFBB54006A4C0F /* SkSLIsTrivialExpression.cpp in Sources */,
 				F98602B72BCFBB54006A4C0F /* SkWorkingFormatColorFilter.cpp in Sources */,
+				F9E794852C2493FF002615BA /* ConstantBuffer_Metal.mm in Sources */,
 				F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */,
 				F98604242BCFBB54006A4C0F /* SkSLModifierFlags.cpp in Sources */,
 				F9070DEA2B9F175E00383E4D /* SivSystem.cpp in Sources */,
@@ -11169,6 +11196,7 @@
 				F9070EF12B9F1C8900383E4D /* posix_poll.c in Sources */,
 				F98605132BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp in Sources */,
 				F98603E52BCFBB54006A4C0F /* SkSLBlock.cpp in Sources */,
+				F9E794872C2493FF002615BA /* ConstantBufferFactory.mm in Sources */,
 				F986032C2BCFBB54006A4C0F /* SkPathOpsSimplify.cpp in Sources */,
 				F986F8442BC7E84D006A4C0F /* SivResource_macOS.cpp in Sources */,
 				F934BD9C2BFA59000003EAD5 /* SivEngineOption.cpp in Sources */,
