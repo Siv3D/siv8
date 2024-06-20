@@ -18,6 +18,12 @@ struct PSInput
 struct VSConstants2D
 {
 	float2x4 g_transform;
+	float4 g_colorMul;
+};
+
+struct PSConstants2D
+{
+	float4 g_colorAdd;
 };
 
 float4 s3d_transform2D(float2 pos, float2x4 t)
@@ -33,14 +39,18 @@ PSInput VS_Shape(uint vertexID [[vertex_id]], constant VSInput* vertices, consta
 {
 	PSInput out;
 	out.position	= s3d_transform2D(vertices[vertexID].position, c->g_transform);
-	out.color		= vertices[vertexID].color;
+	out.color		= (vertices[vertexID].color * c->g_colorMul);
 	out.color.rgb	*= out.color.a;
 	out.uv			= vertices[vertexID].uv;
 	return out;
 }
 
 fragment
-float4 PS_Shape(PSInput in [[stage_in]])
+float4 PS_Shape(PSInput in [[stage_in]], constant PSConstants2D* c)
 {
+	float4 result = in.color;
+
+	result.rgb += (c->g_colorAdd.rgb * result.a);
+	
 	return in.color;
 }

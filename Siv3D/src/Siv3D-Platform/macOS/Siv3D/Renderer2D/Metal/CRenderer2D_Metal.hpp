@@ -93,6 +93,10 @@ namespace s3d
 		
 		} m_currentCustomShader;
 		
+		VSConstants2D m_vsConstants;
+
+		PSConstants2D m_psConstants;
+		
 		Vertex2DBufferPointer createBuffer(uint16 vertexSize, uint32 indexSize);
 	};
 }

@@ -225,11 +225,8 @@ namespace s3d
 		
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		const Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
-		const Float4 transform[2] =
-		{
-			{ screenMat._11, screenMat._12, screenMat._31, screenMat._32 },
-			{ screenMat._21, screenMat._22, 0.0f, 1.0f }
-		};
+		m_vsConstants.transform[0] = { screenMat._11, screenMat._12, screenMat._31, screenMat._32 };
+		m_vsConstants.transform[1] = { screenMat._21, screenMat._22, 0.0f, 1.0f };
 
 		// Draw2D
 		NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
@@ -268,7 +265,8 @@ namespace s3d
 			uint32 startIndexLocation = 0;
 			
 			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
-			renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
+			renderCommandEncoder->setVertexBytes(&m_vsConstants, sizeof(m_vsConstants), 1);
+			renderCommandEncoder->setFragmentBytes(&m_psConstants, sizeof(m_psConstants), 0);
 			
 			for (const auto& command : m_commandManager.getCommands())
 			{
@@ -301,14 +299,16 @@ namespace s3d
 					}
 				case MetalRenderer2DCommandType::ColorMul:
 					{
-						//m_vsConstants->colorMul = m_commandManager.getColorMul(command.index);
-						//LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, m_vsConstants->colorMul));
+						const Float4 colorMul = m_commandManager.getColorMul(command.index);
+						m_vsConstants.colorMul = colorMul;
+						LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, colorMul));
 						break;
 					}
 				case MetalRenderer2DCommandType::ColorAdd:
 					{
-						//m_psConstants->colorAdd.set(m_commandManager.getColorAdd(command.index), 0.0f);
-						//LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, m_vsConstants->colorAdd));
+						const Float3 colorAdd = m_commandManager.getColorAdd(command.index);
+						m_psConstants.colorAdd.set(colorAdd, 0.0f);
+						LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, colorAdd));
 						break;
 					}
 				case MetalRenderer2DCommandType::BlendState:
