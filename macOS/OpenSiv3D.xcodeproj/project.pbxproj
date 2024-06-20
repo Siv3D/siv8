@@ -2207,6 +2207,9 @@
 		F9E7946E2C19B6F2002615BA /* ArrayAlgorithm.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7946B2C19B6F2002615BA /* ArrayAlgorithm.ipp */; };
 		F9E7946F2C19B6F2002615BA /* StringAlgorithm.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7946C2C19B6F2002615BA /* StringAlgorithm.ipp */; };
 		F9E794722C19B720002615BA /* SivArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E794702C19B720002615BA /* SivArray.cpp */; };
+		F9E794762C247C18002615BA /* MetalRenderer2DCommandManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794732C247C17002615BA /* MetalRenderer2DCommandManager.hpp */; };
+		F9E794772C247C18002615BA /* MetalRenderer2DCommand.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794742C247C17002615BA /* MetalRenderer2DCommand.hpp */; };
+		F9E794782C247C18002615BA /* MetalRenderer2DCommandManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9E794752C247C18002615BA /* MetalRenderer2DCommandManager.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4520,6 +4523,9 @@
 		F9E7946B2C19B6F2002615BA /* ArrayAlgorithm.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ArrayAlgorithm.ipp; sourceTree = "<group>"; };
 		F9E7946C2C19B6F2002615BA /* StringAlgorithm.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StringAlgorithm.ipp; sourceTree = "<group>"; };
 		F9E794702C19B720002615BA /* SivArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivArray.cpp; sourceTree = "<group>"; };
+		F9E794732C247C17002615BA /* MetalRenderer2DCommandManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalRenderer2DCommandManager.hpp; sourceTree = "<group>"; };
+		F9E794742C247C17002615BA /* MetalRenderer2DCommand.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalRenderer2DCommand.hpp; sourceTree = "<group>"; };
+		F9E794752C247C18002615BA /* MetalRenderer2DCommandManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalRenderer2DCommandManager.mm; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -7273,6 +7279,9 @@
 		F980C49A2C04B6DB00A86B68 /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				F9E794742C247C17002615BA /* MetalRenderer2DCommand.hpp */,
+				F9E794752C247C18002615BA /* MetalRenderer2DCommandManager.mm */,
+				F9E794732C247C17002615BA /* MetalRenderer2DCommandManager.hpp */,
 				F9E794222C118681002615BA /* MetalVertexBufferManager2D.mm */,
 				F980C4A42C0E38B000A86B68 /* MetalVertexBufferManager2D.hpp */,
 				F980C4982C04B6DB00A86B68 /* CRenderer2D_Metal.mm */,
@@ -9740,6 +9749,7 @@
 				F9528BA12BBD6F8800222F45 /* Timer.ipp in Headers */,
 				F986FA632BCFB53B006A4C0F /* ftmmtypes.h in Headers */,
 				F9E5FC2C2BC15AEE0081A4F7 /* HalfFloat.hpp in Headers */,
+				F9E794772C247C18002615BA /* MetalRenderer2DCommand.hpp in Headers */,
 				F98605F92BE61586006A4C0F /* RandomColor.ipp in Headers */,
 				F986032D2BCFBB54006A4C0F /* SkPathOpsTCurve.h in Headers */,
 				F9070C4E2B9F175000383E4D /* Date.ipp in Headers */,
@@ -10454,6 +10464,7 @@
 				F9528B1C2BADCC9900222F45 /* Grid.ipp in Headers */,
 				F9528C122BBF026F00222F45 /* pool.h in Headers */,
 				F9070CB42B9F175000383E4D /* Duration.hpp in Headers */,
+				F9E794762C247C18002615BA /* MetalRenderer2DCommandManager.hpp in Headers */,
 				F98604452BCFBB54006A4C0F /* SkSLType.h in Headers */,
 				F98604792BCFBB54006A4C0F /* SkSLLexer.h in Headers */,
 				F98600792BCFBB53006A4C0F /* SkLoadUserConfig.h in Headers */,
@@ -11725,6 +11736,7 @@
 				F9528C0A2BBF026F00222F45 /* entropy_common.c in Sources */,
 				F986F98D2BCA9D0A006A4C0F /* plutovg-blend.c in Sources */,
 				F9528B772BB708A700222F45 /* CLicenseManager.cpp in Sources */,
+				F9E794782C247C18002615BA /* MetalRenderer2DCommandManager.mm in Sources */,
 				F9528C3B2BBF026F00222F45 /* zstd_decompress_block.c in Sources */,
 				F986058A2BDBDB37006A4C0F /* WindowMisc.mm in Sources */,
 				F9528B4F2BB69EC500222F45 /* SivBigNumMath.cpp in Sources */,

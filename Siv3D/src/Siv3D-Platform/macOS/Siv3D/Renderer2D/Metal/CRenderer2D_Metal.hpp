@@ -16,6 +16,7 @@
 # include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Renderer2D/Renderer2DCommon.hpp>
 # include "MetalVertexBufferManager2D.hpp"
+# include "MetalRenderer2DCommandManager.hpp"
 
 namespace s3d
 {
@@ -70,6 +71,8 @@ namespace s3d
 		CShader_Metal* m_pShader		= nullptr;
 
 		MetalVertexBufferManager2D m_vertexBufferManager;
+
+		MetalRenderer2DCommandManager m_commandManager;
 
 		MTL::CommandBuffer* m_commandBuffer = nullptr;
 

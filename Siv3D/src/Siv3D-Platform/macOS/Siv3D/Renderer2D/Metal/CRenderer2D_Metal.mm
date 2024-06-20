@@ -94,7 +94,7 @@ namespace s3d
 				}
 			//}
 
-			//m_commandManager.pushDraw(indexCount);
+			m_commandManager.pushDraw(indexCount);
 		}
 	}
 
@@ -118,7 +118,7 @@ namespace s3d
 			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
 			//}
 
-			//m_commandManager.pushDraw(indexCount);
+			m_commandManager.pushDraw(indexCount);
 		}
 	}
 
@@ -136,7 +136,7 @@ namespace s3d
 			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
 			//}
 
-			//m_commandManager.pushDraw(indexCount);
+			m_commandManager.pushDraw(indexCount);
 		}
 	}
 
@@ -160,7 +160,7 @@ namespace s3d
 			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
 			//}
 
-			//m_commandManager.pushDraw(indexCount);
+			m_commandManager.pushDraw(indexCount);
 		}
 	}
 
@@ -178,7 +178,7 @@ namespace s3d
 			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
 			//}
 
-			//m_commandManager.pushDraw(indexCount);
+			m_commandManager.pushDraw(indexCount);
 		}
 	}
 
@@ -202,7 +202,7 @@ namespace s3d
 			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
 			//}
 
-			//m_commandManager.pushDraw(indexCount);
+			m_commandManager.pushDraw(indexCount);
 		}
 	}
 
@@ -214,6 +214,15 @@ namespace s3d
 
 	void CRenderer2D_Metal::flush()
 	{
+		ScopeExit cleanUp = [this]()
+		{
+			m_commandManager.reset();
+			//m_currentCustomShader.vs.reset();
+			//m_currentCustomShader.ps.reset();
+		};
+		
+		m_commandManager.flush();
+		
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		const Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
 		const Float4 transform[2] =
@@ -266,120 +275,72 @@ namespace s3d
 			
 			renderCommandEncoder->endEncoding();
 		}
+	}
 
-		/*
-		ScopeExit cleanUp = [this]()
-		{
-			m_vertexBufferManager2D.reset();
-			m_commandManager.reset();
-			m_currentCustomShader.vs.reset();
-			m_currentCustomShader.ps.reset();
-		};
+	////////////////////////////////////////////////////////////////
+	//
+	//	getColorMul
+	//
+	////////////////////////////////////////////////////////////////
 
-		m_commandManager.flush();
-		m_context->IASetInputLayout(m_inputLayout.Get());
-		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
-		//pShader->setConstantBufferPS(0, m_psConstants2D.base());
+	Float4 CRenderer2D_Metal::getColorMul() const
+	{
+		return m_commandManager.getCurrentColorMul();
+	}
 
-		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
-		{
-			const D3D11_VIEWPORT viewport = MakeViewport(currentRenderTargetSize);
-			m_context->RSSetViewports(1, &viewport);
-		}
+	////////////////////////////////////////////////////////////////
+	//
+	//	getColorAdd
+	//
+	////////////////////////////////////////////////////////////////
 
-		Mat3x2 transform = Mat3x2::Identity();
-		Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
+	Float3 CRenderer2D_Metal::getColorAdd() const
+	{
+		return m_commandManager.getCurrentColorAdd();
+	}
 
-		m_pRenderer->getBackBuffer().bindSceneTextureAsRenderTarget();
-		m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
+	////////////////////////////////////////////////////////////////
+	//
+	//	setColorMul
+	//
+	////////////////////////////////////////////////////////////////
 
-		LOG_COMMAND("----");
+	void CRenderer2D_Metal::setColorMul(const Float4& color)
+	{
+		m_commandManager.pushColorMul(color);
+	}
 
-		// (仮)
-		{
-			m_vsConstants->transform[0].set(screenMat._11, screenMat._12, screenMat._31, screenMat._32);
-			m_vsConstants->transform[1].set(screenMat._21, screenMat._22, 0.0f, 1.0f);
-		}
+	////////////////////////////////////////////////////////////////
+	//
+	//	setColorAdd
+	//
+	////////////////////////////////////////////////////////////////
 
-		BatchInfo2D batchInfo;
+	void CRenderer2D_Metal::setColorAdd(const Float3& color)
+	{
+		m_commandManager.pushColorAdd(color);
+	}
 
-		for (const auto& command : m_commandManager.getCommands())
-		{
-			switch (command.type)
-			{
-			case D3D11Renderer2DCommandType::Null:
-				{
-					LOG_COMMAND("Null");
-					break;
-				}
-			case D3D11Renderer2DCommandType::SetBuffers:
-				{
-					m_vertexBufferManager2D.setBuffers();
-					LOG_COMMAND(fmt::format("SetBuffers[{}]", command.index));
-					break;
-				}
-			case D3D11Renderer2DCommandType::UpdateBuffers:
-				{
-					batchInfo = m_vertexBufferManager2D.commitBuffers(command.index);				
-					LOG_COMMAND(fmt::format("UpdateBuffers[{}] BatchInfo(indexCount = {}, startIndexLocation = {}, baseVertexLocation = {})",
-						command.index, batchInfo.indexCount, batchInfo.startIndexLocation, batchInfo.baseVertexLocation));
-					break;
-				}
-			case D3D11Renderer2DCommandType::Draw:
-				{
-					m_vsConstants._update_if_dirty();
-					//m_psConstants2D._update_if_dirty();
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBlendState
+	//
+	////////////////////////////////////////////////////////////////
 
-					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);
-					const uint32 indexCount = draw.indexCount;
-					const uint32 startIndexLocation = batchInfo.startIndexLocation;
-					const uint32 baseVertexLocation = batchInfo.baseVertexLocation;
+	BlendState CRenderer2D_Metal::getBlendState() const
+	{
+		return m_commandManager.getCurrentBlendState();
+	}
 
-					m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
-					batchInfo.startIndexLocation += indexCount;
-					
-					//++m_stat.drawCalls;
-					//m_stat.triangleCount += (indexCount / 3);
-					LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
-					break;
-				}
-			case D3D11Renderer2DCommandType::SetVS:
-				{
-					const auto vsID = m_commandManager.getVS(command.index);
+	////////////////////////////////////////////////////////////////
+	//
+	//	setBlendState
+	//
+	////////////////////////////////////////////////////////////////
 
-					if (vsID == VertexShader::IDType::Invalid())
-					{
-						m_pShader->setVSNull();
-						LOG_COMMAND(fmt::format("SetVS[{}]: null", command.index));
-					}
-					else
-					{
-						m_pShader->setVS(vsID);
-						LOG_COMMAND(fmt::format("SetVS[{}]: {}", command.index, vsID.value()));
-					}
-
-					break;
-				}
-			case D3D11Renderer2DCommandType::SetPS:
-				{
-					const auto psID = m_commandManager.getPS(command.index);
-
-					if (psID == PixelShader::IDType::Invalid())
-					{
-						m_pShader->setPSNull();
-						LOG_COMMAND(fmt::format("SetPS[{}]: null", command.index));
-					}
-					else
-					{
-						m_pShader->setPS(psID);
-						LOG_COMMAND(fmt::format("SetPS[{}]: {}", command.index, psID.value()));
-					}
-
-					break;
-				}
-			}
-		}
-		*/
+	void CRenderer2D_Metal::setBlendState(const BlendState& state)
+	{
+		m_commandManager.pushBlendState(state);
 	}
 
 	////////////////////////////////////////////////////////////////
