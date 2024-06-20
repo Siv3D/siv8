@@ -1406,11 +1406,18 @@
 
 # include <Siv3D/Vertex2D.hpp>
 
-
-# include <Siv3D/Graphics.hpp>
 # include <Siv3D/EngineOption.hpp>
 
 
+////////////////////////////////////////////////////////////////
+//
+//	レンダーステート | Render States
+//
+////////////////////////////////////////////////////////////////
+
+# include <Siv3D/Graphics.hpp>
+
+# include <Siv3D/Graphics2D.hpp>
 
 # include <Siv3D/BlendFactor.hpp>
 

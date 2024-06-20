@@ -20,7 +20,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
-/*
+///*
 #	define LOG_COMMAND(...) LOG_TRACE(__VA_ARGS__)
 /*/
 #	define LOG_COMMAND(...) ((void)0)
@@ -283,8 +283,6 @@ namespace s3d
 		{
 			m_vsConstants->transform[0].set(screenMat._11, screenMat._12, screenMat._31, screenMat._32);
 			m_vsConstants->transform[1].set(screenMat._21, screenMat._22, 0.0f, 1.0f);
-
-			m_pRenderer->getBlendState().set(BlendState::Default2D);
 		}
 
 		BatchInfo2D batchInfo;
@@ -331,14 +329,23 @@ namespace s3d
 				}
 			case D3D11Renderer2DCommandType::ColorMul:
 				{
-					m_vsConstants->colorMul = m_commandManager.getColorMul(command.index);
-					LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, m_vsConstants->colorMul));
+					const Float4 colorMul = m_commandManager.getColorMul(command.index);
+					m_vsConstants->colorMul = colorMul;
+					LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, colorMul));
 					break;
 				}
 			case D3D11Renderer2DCommandType::ColorAdd:
 				{
-					m_psConstants->colorAdd.set(m_commandManager.getColorAdd(command.index), 0.0f);
-					LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, m_vsConstants->colorAdd));
+					const Float3 colorAdd = m_commandManager.getColorAdd(command.index);
+					m_psConstants->colorAdd.set(colorAdd, 0.0f);
+					LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, colorAdd));
+					break;
+				}
+			case D3D11Renderer2DCommandType::BlendState:
+				{
+					const auto& blendState = m_commandManager.getBlendState(command.index);
+					m_pRenderer->getBlendState().set(blendState);
+					LOG_COMMAND(fmt::format("BlendState[{}]", command.index));
 					break;
 				}
 			case D3D11Renderer2DCommandType::SetVS:

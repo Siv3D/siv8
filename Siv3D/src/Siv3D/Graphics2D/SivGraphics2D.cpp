@@ -1,0 +1,53 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# include <Siv3D/Graphics2D.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
+
+namespace s3d
+{
+	namespace Graphics2D
+	{
+		Float4 GetColorMul()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getColorMul();
+		}
+
+		Float3 GetColorAdd()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getColorAdd();
+		}
+
+		BlendState GetBlendState()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getBlendState();
+		}
+
+		namespace Internal
+		{
+			void SetColorMul(const Float4& color)
+			{
+				SIV3D_ENGINE(Renderer2D)->setColorMul(color);
+			}
+
+			void SetColorAdd(const Float3& color)
+			{
+				SIV3D_ENGINE(Renderer2D)->setColorAdd(color);
+			}
+
+			void SetBlendState(const BlendState& blendState)
+			{
+				SIV3D_ENGINE(Renderer2D)->setBlendState(blendState);
+			}
+		}
+	}
+}

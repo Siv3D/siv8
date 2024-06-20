@@ -315,7 +315,7 @@ namespace s3d
 				case MetalRenderer2DCommandType::BlendState:
 					{
 						pipelineStateDesc.blendState = m_commandManager.getBlendState(command.index);
-						LOG_COMMAND(U"BlendState[{}]"_fmt(command.index));
+						LOG_COMMAND(fmt::format("BlendState[{}]", command.index));
 						break;
 					}
 				case MetalRenderer2DCommandType::SetVS:
