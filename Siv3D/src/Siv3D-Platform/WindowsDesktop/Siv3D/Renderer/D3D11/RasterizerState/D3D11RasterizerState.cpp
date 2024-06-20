@@ -65,7 +65,7 @@ namespace s3d
 
 	void D3D11RasterizerState::setScissorRect(const Rect& scissorRect)
 	{
-		const D3D11_RECT r{ scissorRect.x, scissorRect.y, scissorRect.x + scissorRect.w, scissorRect.y + scissorRect.h };
+		const D3D11_RECT r{ scissorRect.x, scissorRect.y, (scissorRect.x + scissorRect.w), (scissorRect.y + scissorRect.h) };
 
 		m_context->RSSetScissorRects(1, &r);
 	}

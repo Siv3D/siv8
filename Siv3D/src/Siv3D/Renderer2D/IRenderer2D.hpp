@@ -18,6 +18,7 @@ namespace s3d
 	struct FloatRect;
 	struct LineStyle;
 	struct BlendState;
+	struct RasterizerState;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -47,9 +48,9 @@ namespace s3d
 
 		virtual Float4 getColorMul() const = 0;
 
-		virtual Float3 getColorAdd() const = 0;
-
 		virtual void setColorMul(const Float4& color) = 0;
+
+		virtual Float3 getColorAdd() const = 0;
 
 		virtual void setColorAdd(const Float3& color) = 0;
 
@@ -57,9 +58,15 @@ namespace s3d
 
 		virtual void setBlendState(const BlendState& state) = 0;
 
+		virtual RasterizerState getRasterizerState() const = 0;
+
+		virtual void setRasterizerState(const RasterizerState& state) = 0;
+
+		virtual Rect getScissorRect() const = 0;
+
+		virtual void setScissorRect(const Rect& rect) = 0;
+
 
 		virtual float getMaxScaling() const noexcept = 0;
-
-
 	};
 }

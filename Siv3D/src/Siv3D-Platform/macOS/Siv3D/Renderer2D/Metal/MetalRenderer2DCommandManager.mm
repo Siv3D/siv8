@@ -45,7 +45,7 @@ namespace s3d
 			m_buffer.colorMuls = { m_buffer.colorMuls.back() };
 			m_buffer.colorAdds = { m_buffer.colorAdds.back() };
 			m_buffer.blendStates = { m_buffer.blendStates.back() };
-			//m_rasterizerStates = { m_rasterizerStates.back() };
+			m_buffer.rasterizerStates = { m_buffer.rasterizerStates.back() };
 
 			//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
 			//{
@@ -57,7 +57,7 @@ namespace s3d
 			//	m_psSamplerStates[i] = { m_psSamplerStates[i].back() };
 			//}
 
-			//m_scissorRects = { m_scissorRects.back() };
+			m_buffer.scissorRects = { m_buffer.scissorRects.back() };
 			//m_viewports = { m_viewports.back() };
 			//m_sdfParams = { m_sdfParams.back() };
 			//m_internalPSConstants = { m_internalPSConstants.back() };
@@ -88,8 +88,8 @@ namespace s3d
 			m_commands.emplace_back(MetalRenderer2DCommandType::BlendState, 0);
 			m_current.blendState = m_buffer.blendStates.front();
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::RasterizerState, 0);
-			//m_currentRasterizerState = m_rasterizerStates.front();
+			m_commands.emplace_back(D3D11Renderer2DCommandType::RasterizerState, 0);
+			m_current.rasterizerState = m_buffer.rasterizerStates.front();
 
 			//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
 			//{
@@ -105,8 +105,8 @@ namespace s3d
 			//	m_currentPSSamplerStates[i] = m_currentPSSamplerStates.front();
 			//}
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::ScissorRect, 0);
-			//m_currentScissorRect = m_scissorRects.front();
+			m_commands.emplace_back(D3D11Renderer2DCommandType::ScissorRect, 0);
+			m_current.scissorRect = m_buffer.scissorRects.front();
 
 			//m_commands.emplace_back(D3D11Renderer2DCommandType::Viewport, 0);
 			//m_currentViewport = m_viewports.front();
@@ -184,11 +184,11 @@ namespace s3d
 			m_buffer.blendStates.push_back(m_current.blendState);
 		}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::RasterizerState))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::RasterizerState, static_cast<uint32>(m_rasterizerStates.size()));
-		//	m_rasterizerStates.push_back(m_currentRasterizerState);
-		//}
+		if (m_stateTracker.has(D3D11Renderer2DCommandType::RasterizerState))
+		{
+			m_commands.emplace_back(D3D11Renderer2DCommandType::RasterizerState, static_cast<uint32>(m_buffer.rasterizerStates.size()));
+			m_buffer.rasterizerStates.push_back(m_current.rasterizerState);
+		}
 
 		//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
 		//{
@@ -212,11 +212,11 @@ namespace s3d
 		//	}
 		//}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::ScissorRect))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::ScissorRect, static_cast<uint32>(m_scissorRects.size()));
-		//	m_scissorRects.push_back(m_currentScissorRect);
-		//}
+		if (m_stateTracker.has(D3D11Renderer2DCommandType::ScissorRect))
+		{
+			m_commands.emplace_back(D3D11Renderer2DCommandType::ScissorRect, static_cast<uint32>(m_buffer.scissorRects.size()));
+			m_buffer.scissorRects.push_back(m_current.scissorRect);
+		}
 
 		//if (m_changes.has(D3D11Renderer2DCommandType::Viewport))
 		//{
@@ -304,7 +304,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pushDraw
+	//	pushDraw, getDraw
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -318,12 +318,6 @@ namespace s3d
 		m_current.draw.indexCount += indexCount;
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	getDraw
-	//
-	////////////////////////////////////////////////////////////////
-
 	const MetalDrawCommand& MetalRenderer2DCommandManager::getDraw(const uint32 index) const noexcept
 	{
 		return m_buffer.draws[index];
@@ -331,7 +325,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pushColorMul
+	//	pushColorMul, getColorMul, getCurrentColorMul
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -360,22 +354,10 @@ namespace s3d
 		}
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	getColorMul
-	//
-	////////////////////////////////////////////////////////////////
-
 	const Float4& MetalRenderer2DCommandManager::getColorMul(const uint32 index) const
 	{
 		return m_buffer.colorMuls[index];
 	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getCurrentColorMul
-	//
-	////////////////////////////////////////////////////////////////
 
 	const Float4& MetalRenderer2DCommandManager::getCurrentColorMul() const
 	{
@@ -384,7 +366,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pushColorAdd
+	//	pushColorAdd, getColorAdd, getCurrentColorAdd
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -413,22 +395,10 @@ namespace s3d
 		}
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	getColorAdd
-	//
-	////////////////////////////////////////////////////////////////
-
 	const Float3& MetalRenderer2DCommandManager::getColorAdd(const uint32 index) const
 	{
 		return m_buffer.colorAdds[index];
 	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getCurrentColorAdd
-	//
-	////////////////////////////////////////////////////////////////
 
 	const Float3& MetalRenderer2DCommandManager::getCurrentColorAdd() const
 	{
@@ -437,7 +407,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pushBlendState
+	//	pushBlendState, getBlendState, getCurrentBlendState
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -466,35 +436,104 @@ namespace s3d
 		}
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	getBlendState
-	//
-	////////////////////////////////////////////////////////////////
-
 	const BlendState& MetalRenderer2DCommandManager::getBlendState(const uint32 index) const
 	{
 		return m_buffer.blendStates[index];
 	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getCurrentBlendState
-	//
-	////////////////////////////////////////////////////////////////
 
 	const BlendState& MetalRenderer2DCommandManager::getCurrentBlendState() const
 	{
 		return m_current.blendState;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushRasterizerState, getRasterizerState, getCurrentRasterizerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalRenderer2DCommandManager::pushRasterizerState(const RasterizerState& state)
+	{
+		constexpr auto Command = MetalRenderer2DCommandType::RasterizerState;
+		auto& current = m_current.rasterizerState;
+		auto& buffer = m_buffer.rasterizerStates;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (state != current)
+			{
+				current = state;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (state == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = state;
+		}
+	}
+
+	const RasterizerState& MetalRenderer2DCommandManager::getRasterizerState(const uint32 index) const
+	{
+		return m_buffer.rasterizerStates[index];
+	}
+
+	const RasterizerState& MetalRenderer2DCommandManager::getCurrentRasterizerState() const
+	{
+		return m_current.rasterizerState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushScissorRect, getScissorRect, getCurrentScissorRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalRenderer2DCommandManager::pushScissorRect(const Rect& state)
+	{
+		constexpr auto Command = MetalRenderer2DCommandType::ScissorRect;
+		auto& current = m_current.scissorRect;
+		auto& buffer = m_buffer.scissorRects;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (state != current)
+			{
+				current = state;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (state == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = state;
+		}
+	}
+
+	const Rect& MetalRenderer2DCommandManager::getScissorRect(const uint32 index) const
+	{
+		return m_buffer.scissorRects[index];
+	}
+
+	const Rect& MetalRenderer2DCommandManager::getCurrentScissorRect() const
+	{
+		return m_current.scissorRect;
+	}
 
 
 
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pushEngineVS
+	//	pushEngineVS, getVS
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -523,12 +562,6 @@ namespace s3d
 		}
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	getVS
-	//
-	////////////////////////////////////////////////////////////////
-
 	VertexShader::IDType MetalRenderer2DCommandManager::getVS(const uint32 index) const
 	{
 		return m_buffer.vertexShaders[index];
@@ -536,7 +569,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pushEnginePS
+	//	pushEnginePS, getPS
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -567,12 +600,6 @@ namespace s3d
 			}
 		}
 	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getPS
-	//
-	////////////////////////////////////////////////////////////////
 
 	PixelShader::IDType MetalRenderer2DCommandManager::getPS(const uint32 index) const
 	{

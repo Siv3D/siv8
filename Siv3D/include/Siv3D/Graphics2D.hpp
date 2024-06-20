@@ -12,7 +12,9 @@
 # pragma once
 # include "Common.hpp"
 # include "PointVector.hpp"
+# include "2DShapes.hpp"
 # include "BlendState.hpp"
+# include "RasterizerState.hpp"
 
 namespace s3d
 {
@@ -34,6 +36,28 @@ namespace s3d
 		/// @return 現在適用されているブレンドステート
 		[[nodiscard]]
 		BlendState GetBlendState();
+
+		/// @brief 現在適用されているラスタライザーステートを返します。
+		/// @return 現在適用されているラスタライザーステート
+		[[nodiscard]]
+		RasterizerState GetRasterizerState();
+
+		///// @brief 現在適用されているサンプラーステートを返します。
+		///// @param shaderStage シェーダステージ
+		///// @param slot テクスチャスロット
+		///// @return 現在適用されているサンプラーステート
+		//[[nodiscard]]
+		//SamplerState GetSamplerState(ShaderStage shaderStage = ShaderStage::Pixel, uint32 slot = 0);
+
+		/// @brief シザー矩形を設定します。
+		/// @param rect シザー矩形
+		/// @remark シザー矩形は RasterizerState で scissorEnable を true にすることで有効になります。
+		void SetScissorRect(const Rect& rect);
+
+		/// @brief 現在設定されているシザー矩形を返します。
+		/// @return 現在設定されているシザー矩形
+		[[nodiscard]]
+		Rect GetScissorRect();
 	}
 }
 

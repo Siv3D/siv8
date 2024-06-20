@@ -29,7 +29,7 @@ namespace s3d
 
 		BlendState,
 
-		//RasterizerState,
+		RasterizerState,
 
 		//VSSamplerState0,
 
@@ -63,7 +63,7 @@ namespace s3d
 
 		//PSSamplerState7,
 
-		//ScissorRect,
+		ScissorRect,
 
 		//Viewport,
 

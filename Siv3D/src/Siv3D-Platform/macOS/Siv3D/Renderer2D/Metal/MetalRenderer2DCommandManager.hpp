@@ -48,6 +48,14 @@ namespace s3d
 		const BlendState& getBlendState(uint32 index) const;
 		const BlendState& getCurrentBlendState() const;
 	
+		void pushRasterizerState(const RasterizerState& state);
+		const RasterizerState& getRasterizerState(uint32 index) const;
+		const RasterizerState& getCurrentRasterizerState() const;
+
+		void pushScissorRect(const Rect& state);
+		const Rect& getScissorRect(uint32 index) const;
+		const Rect& getCurrentScissorRect() const;
+
 		void pushEngineVS(VertexShader::IDType id);
 		VertexShader::IDType getVS(uint32 index) const;
 
@@ -64,11 +72,15 @@ namespace s3d
 		{
 			Array<MetalDrawCommand> draws;
 
-			Array<Float4> colorMuls			= { Float4{ 1.0f, 1.0f, 1.0f, 1.0f } };
+			Array<Float4> colorMuls					= { Float4{ 1.0f, 1.0f, 1.0f, 1.0f } };
 			
-			Array<Float3> colorAdds			= { Float3{ 0.0f, 0.0f, 0.0f } };
+			Array<Float3> colorAdds					= { Float3{ 0.0f, 0.0f, 0.0f } };
 			
-			Array<BlendState> blendStates	= { BlendState::Default2D };
+			Array<BlendState> blendStates			= { BlendState::Default2D };
+
+			Array<RasterizerState> rasterizerStates	= { RasterizerState::Default2D };
+
+			Array<Rect> scissorRects				= { Rect::Empty() };
 
 			Array<VertexShader::IDType> vertexShaders;
 
@@ -85,6 +97,10 @@ namespace s3d
 			Float3 colorAdd						= Float3{ 0.0f, 0.0f, 0.0f };
 		
 			BlendState blendState				= BlendState::Default2D;
+
+			RasterizerState rasterizerState		= RasterizerState::Default2D;
+
+			Rect scissorRect					= Rect::Empty();
 
 			VertexShader::IDType vertexShader	= VertexShader::IDType::Invalid();
 			

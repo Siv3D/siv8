@@ -32,6 +32,21 @@ namespace s3d
 			return SIV3D_ENGINE(Renderer2D)->getBlendState();
 		}
 
+		RasterizerState GetRasterizerState()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getRasterizerState();
+		}
+
+		Rect GetScissorRect()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getScissorRect();
+		}
+
+		void SetScissorRect(const Rect& rect)
+		{
+			SIV3D_ENGINE(Renderer2D)->setScissorRect(rect);
+		}
+
 		namespace Internal
 		{
 			void SetColorMul(const Float4& color)
@@ -47,6 +62,11 @@ namespace s3d
 			void SetBlendState(const BlendState& blendState)
 			{
 				SIV3D_ENGINE(Renderer2D)->setBlendState(blendState);
+			}
+
+			void SetRasterizerState(const RasterizerState& rasterizerState)
+			{
+				SIV3D_ENGINE(Renderer2D)->setRasterizerState(rasterizerState);
 			}
 		}
 	}

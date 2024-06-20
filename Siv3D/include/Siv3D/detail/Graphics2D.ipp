@@ -22,6 +22,8 @@ namespace s3d
 			void SetColorAdd(const Float3& color);
 
 			void SetBlendState(const BlendState& blendState);
+
+			void SetRasterizerState(const RasterizerState& rasterizerState);
 		}
 	}
 }

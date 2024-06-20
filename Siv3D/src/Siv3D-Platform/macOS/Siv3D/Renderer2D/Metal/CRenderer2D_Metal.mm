@@ -324,6 +324,20 @@ namespace s3d
 						LOG_COMMAND(fmt::format("BlendState[{}]", command.index));
 						break;
 					}
+				case MetalRenderer2DCommandType::RasterizerState:
+					{
+						const auto& rasterizerState = m_commandManager.getRasterizerState(command.index);
+						
+						LOG_COMMAND(fmt::format("RasterizerState[{}]", command.index));
+						break;
+					}
+				case MetalRenderer2DCommandType::ScissorRect:
+					{
+						const auto& scissorRect = m_commandManager.getScissorRect(command.index);
+						
+						LOG_COMMAND(U"ScissorRect[{}] {}"_fmt(command.index, scissorRect));
+						break;
+					}
 				case MetalRenderer2DCommandType::SetVS:
 					{
 						const auto vsID = m_commandManager.getVS(command.index);
@@ -367,7 +381,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getColorMul
+	//	getColorMul, setColorMul
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -376,9 +390,14 @@ namespace s3d
 		return m_commandManager.getCurrentColorMul();
 	}
 
+	void CRenderer2D_Metal::setColorMul(const Float4& color)
+	{
+		m_commandManager.pushColorMul(color);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
-	//	getColorAdd
+	//	getColorAdd, setColorAdd
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -387,23 +406,6 @@ namespace s3d
 		return m_commandManager.getCurrentColorAdd();
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	setColorMul
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_Metal::setColorMul(const Float4& color)
-	{
-		m_commandManager.pushColorMul(color);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	setColorAdd
-	//
-	////////////////////////////////////////////////////////////////
-
 	void CRenderer2D_Metal::setColorAdd(const Float3& color)
 	{
 		m_commandManager.pushColorAdd(color);
@@ -411,7 +413,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getBlendState
+	//	getBlendState, setBlendState
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -420,15 +422,41 @@ namespace s3d
 		return m_commandManager.getCurrentBlendState();
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	setBlendState
-	//
-	////////////////////////////////////////////////////////////////
-
 	void CRenderer2D_Metal::setBlendState(const BlendState& state)
 	{
 		m_commandManager.pushBlendState(state);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getRasterizerState, setRasterizerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	RasterizerState CRenderer2D_Metal::getRasterizerState() const
+	{
+		return m_commandManager.getCurrentRasterizerState();
+	}
+
+	void CRenderer2D_Metal::setRasterizerState(const RasterizerState& state)
+	{
+		m_commandManager.pushRasterizerState(state);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getScissorRect, setScissorRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	Rect CRenderer2D_Metal::getScissorRect() const
+	{
+		return m_commandManager.getCurrentScissorRect();
+	}
+
+	void CRenderer2D_Metal::setScissorRect(const Rect& rect)
+	{
+		m_commandManager.pushScissorRect(rect);
 	}
 
 	////////////////////////////////////////////////////////////////

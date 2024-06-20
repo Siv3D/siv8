@@ -46,15 +46,25 @@ namespace s3d
 
 		Float4 getColorMul() const override;
 
-		Float3 getColorAdd() const override;
-
 		void setColorMul(const Float4& color) override;
+
+		Float3 getColorAdd() const override;
 
 		void setColorAdd(const Float3& color) override;
 
 		BlendState getBlendState() const override;
 
 		void setBlendState(const BlendState& state) override;
+
+		RasterizerState getRasterizerState() const override;
+
+		void setRasterizerState(const RasterizerState& state) override;
+
+		Rect getScissorRect() const override;
+
+		void setScissorRect(const Rect& rect) override;
+
+		float getMaxScaling() const noexcept override;
 
 	
 		float getMaxScaling() const noexcept override;
