@@ -2210,6 +2210,9 @@
 		F9E794762C247C18002615BA /* MetalRenderer2DCommandManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794732C247C17002615BA /* MetalRenderer2DCommandManager.hpp */; };
 		F9E794772C247C18002615BA /* MetalRenderer2DCommand.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794742C247C17002615BA /* MetalRenderer2DCommand.hpp */; };
 		F9E794782C247C18002615BA /* MetalRenderer2DCommandManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9E794752C247C18002615BA /* MetalRenderer2DCommandManager.mm */; };
+		F9E7947A2C248AEE002615BA /* Graphics2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794792C248AEE002615BA /* Graphics2D.hpp */; };
+		F9E7947C2C248B03002615BA /* Graphics2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9E7947B2C248B03002615BA /* Graphics2D.ipp */; };
+		F9E7947F2C248B29002615BA /* SivGraphics2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9E7947D2C248B29002615BA /* SivGraphics2D.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4526,6 +4529,9 @@
 		F9E794732C247C17002615BA /* MetalRenderer2DCommandManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalRenderer2DCommandManager.hpp; sourceTree = "<group>"; };
 		F9E794742C247C17002615BA /* MetalRenderer2DCommand.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalRenderer2DCommand.hpp; sourceTree = "<group>"; };
 		F9E794752C247C18002615BA /* MetalRenderer2DCommandManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalRenderer2DCommandManager.mm; sourceTree = "<group>"; };
+		F9E794792C248AEE002615BA /* Graphics2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Graphics2D.hpp; sourceTree = "<group>"; };
+		F9E7947B2C248B03002615BA /* Graphics2D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Graphics2D.ipp; sourceTree = "<group>"; };
+		F9E7947D2C248B29002615BA /* SivGraphics2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivGraphics2D.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -5134,6 +5140,7 @@
 				F9070B7D2B9F175000383E4D /* FormatData.ipp */,
 				F98605FF2BE615B4006A4C0F /* FormatLiteralObject.ipp */,
 				F9070B7F2B9F175000383E4D /* FormatUtility.ipp */,
+				F9E7947B2C248B03002615BA /* Graphics2D.ipp */,
 				F9528B1B2BADCC9900222F45 /* Grid.ipp */,
 				F9E5FC2E2BC15B060081A4F7 /* HalfFloat.ipp */,
 				F9070B802B9F175000383E4D /* HardwareRNG.ipp */,
@@ -5338,6 +5345,7 @@
 				F9070BEC2B9F175000383E4D /* FunctionRef.hpp */,
 				F986051A2BD0AC0E006A4C0F /* GlyphIndex.hpp */,
 				F97203132BF09DD9000E21DD /* Graphics.hpp */,
+				F9E794792C248AEE002615BA /* Graphics2D.hpp */,
 				F9528B192BADCC7C00222F45 /* Grid.hpp */,
 				F9E5FC2A2BC15AEE0081A4F7 /* HalfFloat.hpp */,
 				F9070BED2B9F175000383E4D /* HardwareRNG.hpp */,
@@ -6097,6 +6105,7 @@
 				F9070D582B9F175E00383E4D /* FormatUtility */,
 				F98606082BE71763006A4C0F /* FreestandingMessageBox */,
 				F934BD962BFA59000003EAD5 /* Graphics */,
+				F9E7947E2C248B29002615BA /* Graphics2D */,
 				F9E5FC422BC19B110081A4F7 /* HalfFloat */,
 				F9070D5A2B9F175E00383E4D /* Hash */,
 				F934BD9A2BFA59000003EAD5 /* HLSL */,
@@ -9465,6 +9474,14 @@
 			path = Array;
 			sourceTree = "<group>";
 		};
+		F9E7947E2C248B29002615BA /* Graphics2D */ = {
+			isa = PBXGroup;
+			children = (
+				F9E7947D2C248B29002615BA /* SivGraphics2D.cpp */,
+			);
+			path = Graphics2D;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -10021,6 +10038,7 @@
 				F98600592BCFBB53006A4C0F /* SkBlurMaskFilter.h in Headers */,
 				F9528C1A2BBF026F00222F45 /* zstd_internal.h in Headers */,
 				F9528C292BBF026F00222F45 /* zstd_cwksp.h in Headers */,
+				F9E7947A2C248AEE002615BA /* Graphics2D.hpp in Headers */,
 				F90706BE2B9DAEC900383E4D /* phmap_dump.h in Headers */,
 				F98600742BCFBB53006A4C0F /* SkDeque.h in Headers */,
 				F9070C4C2B9F175000383E4D /* Console.ipp in Headers */,
@@ -10330,6 +10348,7 @@
 				F98600372BCFBB53006A4C0F /* SkRect.h in Headers */,
 				F9070C562B9F175000383E4D /* FloatFormatter.ipp in Headers */,
 				F98600072BCFBB53006A4C0F /* SkColorFilter.h in Headers */,
+				F9E7947C2C248B03002615BA /* Graphics2D.ipp in Headers */,
 				F9807D8B2BF6677600D9B590 /* MessageBox.hpp in Headers */,
 				F986040E2BCFBB54006A4C0F /* SkSLForStatement.h in Headers */,
 				F98600622BCFBB53006A4C0F /* SkLumaColorFilter.h in Headers */,
@@ -11461,6 +11480,7 @@
 				F986F83A2BC7B043006A4C0F /* SivINIItem.cpp in Sources */,
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F98605452BD203BC006A4C0F /* SivMathParser.cpp in Sources */,
+				F9E7947F2C248B29002615BA /* SivGraphics2D.cpp in Sources */,
 				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
 				F986061E2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp in Sources */,
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,

@@ -264,7 +264,12 @@ namespace s3d
 				.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
 				.blendState = BlendState::Default2D,
 			};
-		
+			
+			uint32 startIndexLocation = 0;
+			
+			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
+			renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
+			
 			for (const auto& command : m_commandManager.getCommands())
 			{
 				switch (command.type)
@@ -284,16 +289,10 @@ namespace s3d
 
 						const MetalDrawCommand& draw = m_commandManager.getDraw(command.index);
 						const uint32 indexCount = draw.indexCount;
-						const uint32 startIndexLocation = 12345;//batchInfo.startIndexLocation;
-						const uint32 baseVertexLocation = 12345;//batchInfo.baseVertexLocation;
-						
-						renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
-						renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
-						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), 0);
-						
-						
-						//m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
-						//batchInfo.startIndexLocation += indexCount;
+
+						// indexBufferOffset, 4 の倍数でなくても大丈夫？
+						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), (sizeof(Vertex2D::IndexType) * startIndexLocation));
+						startIndexLocation += indexCount;
 						
 						//++m_stat.drawCalls;
 						//m_stat.triangleCount += (indexCount / 3);
