@@ -263,7 +263,7 @@ namespace s3d
 		m_commandManager.flush();
 		m_context->IASetInputLayout(m_inputLayout.Get());
 		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
-		//pShader->setConstantBufferPS(0, m_psConstants2D.base());
+		m_pShader->setConstantBufferPS(0, m_psConstants._base());
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		{
@@ -314,7 +314,7 @@ namespace s3d
 			case D3D11Renderer2DCommandType::Draw:
 				{
 					m_vsConstants._update_if_dirty();
-					//m_psConstants2D._update_if_dirty();
+					m_psConstants._update_if_dirty();
 
 					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);
 					const uint32 indexCount = draw.indexCount;
@@ -327,6 +327,18 @@ namespace s3d
 					//++m_stat.drawCalls;
 					//m_stat.triangleCount += (indexCount / 3);
 					LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
+					break;
+				}
+			case D3D11Renderer2DCommandType::ColorMul:
+				{
+					m_vsConstants->colorMul = m_commandManager.getColorMul(command.index);
+					LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, m_vsConstants->colorMul));
+					break;
+				}
+			case D3D11Renderer2DCommandType::ColorAdd:
+				{
+					m_psConstants->colorAdd.set(m_commandManager.getColorAdd(command.index), 0.0f);
+					LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, m_vsConstants->colorAdd));
 					break;
 				}
 			case D3D11Renderer2DCommandType::SetVS:
@@ -365,6 +377,72 @@ namespace s3d
 				}
 			}
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getColorMul
+	//
+	////////////////////////////////////////////////////////////////
+
+	Float4 CRenderer2D_D3D11::getColorMul() const
+	{
+		return m_commandManager.getCurrentColorMul();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getColorAdd
+	//
+	////////////////////////////////////////////////////////////////
+
+	Float3 CRenderer2D_D3D11::getColorAdd() const
+	{
+		return m_commandManager.getCurrentColorAdd();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setColorMul
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::setColorMul(const Float4& color)
+	{
+		m_commandManager.pushColorMul(color);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setColorAdd
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::setColorAdd(const Float3& color)
+	{
+		m_commandManager.pushColorAdd(color);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBlendState
+	//
+	////////////////////////////////////////////////////////////////
+
+	BlendState CRenderer2D_D3D11::getBlendState() const
+	{
+		return m_commandManager.getCurrentBlendState();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setBlendState
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::setBlendState(const BlendState& state)
+	{
+		m_commandManager.pushBlendState(state);
 	}
 
 	////////////////////////////////////////////////////////////////

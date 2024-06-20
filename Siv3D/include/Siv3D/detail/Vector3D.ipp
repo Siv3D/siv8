@@ -383,6 +383,24 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
+	constexpr Vector3D<Type>& Vector3D<Type>::set(const Vector2D<value_type>& xy, const value_type _z) noexcept
+	{
+		x = xy.x;
+		y = xy.y;
+		z = _z;
+		return *this;
+	}
+
+	template <class Type>
+	constexpr Vector3D<Type>& Vector3D<Type>::set(const value_type _x, const Vector2D<value_type>& yz) noexcept
+	{
+		x = _x;
+		y = yz.x;
+		z = yz.y;
+		return *this;
+	}
+
+	template <class Type>
 	constexpr Vector3D<Type>& Vector3D<Type>::set(const value_type _x, const value_type _y, const value_type _z) noexcept
 	{
 		x = _x;

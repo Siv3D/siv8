@@ -313,6 +313,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		constexpr Vector3D& set(const Vector2D<value_type>& xy, value_type _z) noexcept;
+
+		constexpr Vector3D& set(value_type _x, const Vector2D<value_type>& yz) noexcept;
+
 		/// @brief 各成分を変更します。
 		/// @param _x 新しい X 成分
 		/// @param _y 新しい Y 成分

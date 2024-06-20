@@ -27,11 +27,11 @@ namespace s3d
 
 		//DrawNull,
 
-		//ColorMul,
+		ColorMul,
 
-		//ColorAdd,
+		ColorAdd,
 
-		//BlendState,
+		BlendState,
 
 		//RasterizerState,
 

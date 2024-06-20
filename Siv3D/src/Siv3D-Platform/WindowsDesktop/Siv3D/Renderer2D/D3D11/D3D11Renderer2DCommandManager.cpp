@@ -42,9 +42,9 @@ namespace s3d
 		{
 			m_buffer.draws.clear();
 			//m_nullDraws.clear();
-			//m_colorMuls = { m_colorMuls.back() };
-			//m_colorAdds = { m_colorAdds.back() };
-			//m_blendStates = { m_blendStates.back() };
+			m_buffer.colorMuls = { m_buffer.colorMuls.back() };
+			m_buffer.colorAdds = { m_buffer.colorAdds.back() };
+			m_buffer.blendStates = { m_buffer.blendStates.back() };
 			//m_rasterizerStates = { m_rasterizerStates.back() };
 
 			//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
@@ -82,14 +82,14 @@ namespace s3d
 			m_commands.emplace_back(D3D11Renderer2DCommandType::SetBuffers, 0);
 			m_commands.emplace_back(D3D11Renderer2DCommandType::UpdateBuffers, 0);
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::ColorMul, 0);
-			//m_currentColorMul = m_colorMuls.front();
+			m_commands.emplace_back(D3D11Renderer2DCommandType::ColorMul, 0);
+			m_current.colorMul = m_buffer.colorMuls.front();
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::ColorAdd, 0);
-			//m_currentColorAdd = m_colorAdds.front();
+			m_commands.emplace_back(D3D11Renderer2DCommandType::ColorAdd, 0);
+			m_current.colorAdd = m_buffer.colorAdds.front();
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::BlendState, 0);
-			//m_currentBlendState = m_blendStates.front();
+			m_commands.emplace_back(D3D11Renderer2DCommandType::BlendState, 0);
+			m_current.blendState = m_buffer.blendStates.front();
 
 			//m_commands.emplace_back(D3D11Renderer2DCommandType::RasterizerState, 0);
 			//m_currentRasterizerState = m_rasterizerStates.front();
@@ -174,23 +174,23 @@ namespace s3d
 			m_commands.emplace_back(D3D11Renderer2DCommandType::SetBuffers, 0);
 		}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::ColorMul))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::ColorMul, static_cast<uint32>(m_colorMuls.size()));
-		//	m_colorMuls.push_back(m_currentColorMul);
-		//}
+		if (m_stateTracker.has(D3D11Renderer2DCommandType::ColorMul))
+		{
+			m_commands.emplace_back(D3D11Renderer2DCommandType::ColorMul, static_cast<uint32>(m_buffer.colorMuls.size()));
+			m_buffer.colorMuls.push_back(m_current.colorMul);
+		}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::ColorAdd))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::ColorAdd, static_cast<uint32>(m_colorAdds.size()));
-		//	m_colorAdds.push_back(m_currentColorAdd);
-		//}
+		if (m_stateTracker.has(D3D11Renderer2DCommandType::ColorAdd))
+		{
+			m_commands.emplace_back(D3D11Renderer2DCommandType::ColorAdd, static_cast<uint32>(m_buffer.colorAdds.size()));
+			m_buffer.colorAdds.push_back(m_current.colorAdd);
+		}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::BlendState))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::BlendState, static_cast<uint32>(m_blendStates.size()));
-		//	m_blendStates.push_back(m_currentBlendState);
-		//}
+		if (m_stateTracker.has(D3D11Renderer2DCommandType::BlendState))
+		{
+			m_commands.emplace_back(D3D11Renderer2DCommandType::BlendState, static_cast<uint32>(m_buffer.blendStates.size()));
+			m_buffer.blendStates.push_back(m_current.blendState);
+		}
 
 		//if (m_changes.has(D3D11Renderer2DCommandType::RasterizerState))
 		//{
@@ -349,6 +349,167 @@ namespace s3d
 	{
 		return m_buffer.draws[index];
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushColorMul
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushColorMul(const Float4& color)
+	{
+		constexpr auto Command = D3D11Renderer2DCommandType::ColorMul;
+		auto& current = m_current.colorMul;
+		auto& buffer = m_buffer.colorMuls;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (color != current)
+			{
+				current = color;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (color == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = color;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getColorMul
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Float4& D3D11Renderer2DCommandManager::getColorMul(const uint32 index) const
+	{
+		return m_buffer.colorMuls[index];
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCurrentColorMul
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Float4& D3D11Renderer2DCommandManager::getCurrentColorMul() const
+	{
+		return m_current.colorMul;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushColorAdd
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushColorAdd(const Float3& color)
+	{
+		constexpr auto Command = D3D11Renderer2DCommandType::ColorAdd;
+		auto& current = m_current.colorAdd;
+		auto& buffer = m_buffer.colorAdds;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (color != current)
+			{
+				current = color;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (color == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = color;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getColorAdd
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Float3& D3D11Renderer2DCommandManager::getColorAdd(const uint32 index) const
+	{
+		return m_buffer.colorAdds[index];
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCurrentColorAdd
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Float3& D3D11Renderer2DCommandManager::getCurrentColorAdd() const
+	{
+		return m_current.colorAdd;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushBlendState
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushBlendState(const BlendState& state)
+	{
+		constexpr auto Command = D3D11Renderer2DCommandType::BlendState;
+		auto& current = m_current.blendState;
+		auto& buffer = m_buffer.blendStates;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (state != current)
+			{
+				current = state;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (state == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = state;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBlendState
+	//
+	////////////////////////////////////////////////////////////////
+
+	const BlendState& D3D11Renderer2DCommandManager::getBlendState(const uint32 index) const
+	{
+		return m_buffer.blendStates[index];
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCurrentBlendState
+	//
+	////////////////////////////////////////////////////////////////
+
+	const BlendState& D3D11Renderer2DCommandManager::getCurrentBlendState() const
+	{
+		return m_current.blendState;
+	}
+
+
 
 
 

@@ -42,6 +42,20 @@ namespace s3d
 
 		void flush() override;
 
+
+		Float4 getColorMul() const override;
+
+		Float3 getColorAdd() const override;
+
+		void setColorMul(const Float4& color) override;
+
+		void setColorAdd(const Float3& color) override;
+
+		BlendState getBlendState() const override;
+
+		void setBlendState(const BlendState& state) override;
+
+
 		float getMaxScaling() const noexcept override;
 
 		void beginFrame();
@@ -81,6 +95,8 @@ namespace s3d
 		} m_currentCustomShader;
 
 		ConstantBuffer<VSConstants2D> m_vsConstants;
+
+		ConstantBuffer<PSConstants2D> m_psConstants;
 
 		Vertex2DBufferPointer createBuffer(uint16 vertexSize, uint32 indexSize);
 	};

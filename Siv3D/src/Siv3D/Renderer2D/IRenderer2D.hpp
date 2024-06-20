@@ -17,6 +17,7 @@ namespace s3d
 {
 	struct FloatRect;
 	struct LineStyle;
+	struct BlendState;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -43,6 +44,22 @@ namespace s3d
 
 		virtual void flush() = 0;
 
+
+		virtual Float4 getColorMul() const = 0;
+
+		virtual Float3 getColorAdd() const = 0;
+
+		virtual void setColorMul(const Float4& color) = 0;
+
+		virtual void setColorAdd(const Float3& color) = 0;
+
+		virtual BlendState getBlendState() const = 0;
+
+		virtual void setBlendState(const BlendState& state) = 0;
+
+
 		virtual float getMaxScaling() const noexcept = 0;
+
+
 	};
 }
