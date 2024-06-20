@@ -79,8 +79,6 @@ namespace s3d
 
 		// Begin a new frame
 		{
-			m_commands.emplace_back(MetalRenderer2DCommandType::SetBuffers, 0);
-
 			m_commands.emplace_back(MetalRenderer2DCommandType::ColorMul, 0);
 			m_current.colorMul = m_buffer.colorMuls.front();
 

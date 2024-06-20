@@ -73,13 +73,13 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_Metal::createBuffer, this), style, start, end, thickness, colors, getMaxScaling()))
 		{
-			//if (not m_currentCustomShader.vs)
-			//{
-			//	m_commandManager.pushEngineVS(m_engineShader.vs);
-			//}
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
 
-			//if (not m_currentCustomShader.ps)
-			//{
+			if (not m_currentCustomShader.ps)
+			{
 				//if (style.hasSquareDot())
 				//{
 				//	m_commandManager.pushEnginePS(m_engineShader.);
@@ -90,9 +90,9 @@ namespace s3d
 				//}
 				//else
 				{
-					//m_commandManager.pushEnginePS(m_engineShader.psShape);
+					m_commandManager.pushEnginePS(m_engineShader.psShape);
 				}
-			//}
+			}
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -108,15 +108,15 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), points, color))
 		{
-			//if (not m_currentCustomShader.vs)
-			//{
-			//	m_commandManager.pushEngineVS(m_engineShader.vs);
-			//}
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
 
-			//if (not m_currentCustomShader.ps)
-			//{
-			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
-			//}
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -126,15 +126,15 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), points, colors))
 		{
-			//if (not m_currentCustomShader.vs)
-			//{
-			//	m_commandManager.pushEngineVS(m_engineShader.vs);
-			//}
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
 
-			//if (not m_currentCustomShader.ps)
-			//{
-			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
-			//}
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -150,15 +150,15 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, color))
 		{
-			//if (not m_currentCustomShader.vs)
-			//{
-			//	m_commandManager.pushEngineVS(m_engineShader.vs);
-			//}
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
 
-			//if (not m_currentCustomShader.ps)
-			//{
-			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
-			//}
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -168,15 +168,15 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, colors))
 		{
-			//if (not m_currentCustomShader.vs)
-			//{
-			//	m_commandManager.pushEngineVS(m_engineShader.vs);
-			//}
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
 
-			//if (not m_currentCustomShader.ps)
-			//{
-			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
-			//}
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -192,15 +192,15 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, innerColor, outerColor, getMaxScaling()))
 		{
-			//if (not m_currentCustomShader.vs)
-			//{
-			//	m_commandManager.pushEngineVS(m_engineShader.vs);
-			//}
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
 
-			//if (not m_currentCustomShader.ps)
-			//{
-			//	m_commandManager.pushEnginePS(m_engineShader.psShape);
-			//}
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -217,8 +217,8 @@ namespace s3d
 		ScopeExit cleanUp = [this]()
 		{
 			m_commandManager.reset();
-			//m_currentCustomShader.vs.reset();
-			//m_currentCustomShader.ps.reset();
+			m_currentCustomShader.vs.reset();
+			m_currentCustomShader.ps.reset();
 		};
 		
 		m_commandManager.flush();
@@ -250,29 +250,111 @@ namespace s3d
 		cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
 		cd->setStoreAction((m_pRenderer->getSceneSampleCount() == 1) ? MTL::StoreActionStore : MTL::StoreActionMultisampleResolve);
 		
-		const PipelineStateDesc pipelineStateDesc
-		{
-			.vs = m_engineShader.vs,
-			.ps = m_engineShader.psShape,
-			.pixelFormat = static_cast<uint16>(MTL::PixelFormatRGBA8Unorm),
-			.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
-			.blendState = BlendState::Default2D,
-		};
+		LOG_COMMAND("----");
 
-		const auto pipeline = m_pRenderer->getRenderPipelineState().get(pipelineStateDesc);
-		
 		@autoreleasepool
 		{
 			MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
-			renderCommandEncoder->setRenderPipelineState(pipeline);
 			
-			if (const uint32 indexCount = m_vertexBufferManager.indexCount())
+			PipelineStateDesc pipelineStateDesc
 			{
-				renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
-				renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
-				renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), 0);
+				.vs = m_engineShader.vs,
+				.ps = m_engineShader.psShape,
+				.pixelFormat = static_cast<uint16>(MTL::PixelFormatRGBA8Unorm),
+				.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
+				.blendState = BlendState::Default2D,
+			};
+		
+			for (const auto& command : m_commandManager.getCommands())
+			{
+				switch (command.type)
+				{
+				case MetalRenderer2DCommandType::Null:
+					{
+						LOG_COMMAND("Null");
+						break;
+					}
+				case MetalRenderer2DCommandType::Draw:
+					{
+						const auto pipeline = m_pRenderer->getRenderPipelineState().get(pipelineStateDesc);
+						renderCommandEncoder->setRenderPipelineState(pipeline);
+						
+						//m_vsConstants._update_if_dirty();
+						//m_psConstants._update_if_dirty();
+
+						const MetalDrawCommand& draw = m_commandManager.getDraw(command.index);
+						const uint32 indexCount = draw.indexCount;
+						const uint32 startIndexLocation = 12345;//batchInfo.startIndexLocation;
+						const uint32 baseVertexLocation = 12345;//batchInfo.baseVertexLocation;
+						
+						renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
+						renderCommandEncoder->setVertexBytes(transform, sizeof(transform), 1);
+						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), 0);
+						
+						
+						//m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
+						//batchInfo.startIndexLocation += indexCount;
+						
+						//++m_stat.drawCalls;
+						//m_stat.triangleCount += (indexCount / 3);
+						LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
+						break;
+					}
+				case MetalRenderer2DCommandType::ColorMul:
+					{
+						//m_vsConstants->colorMul = m_commandManager.getColorMul(command.index);
+						//LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, m_vsConstants->colorMul));
+						break;
+					}
+				case MetalRenderer2DCommandType::ColorAdd:
+					{
+						//m_psConstants->colorAdd.set(m_commandManager.getColorAdd(command.index), 0.0f);
+						//LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, m_vsConstants->colorAdd));
+						break;
+					}
+				case MetalRenderer2DCommandType::BlendState:
+					{
+						pipelineStateDesc.blendState = m_commandManager.getBlendState(command.index);
+						LOG_COMMAND(U"BlendState[{}]"_fmt(command.index));
+						break;
+					}
+				case MetalRenderer2DCommandType::SetVS:
+					{
+						const auto vsID = m_commandManager.getVS(command.index);
+
+						if (vsID == VertexShader::IDType::Invalid())
+						{
+							//m_pShader->setVSNull();
+							LOG_COMMAND(fmt::format("SetVS[{}]: null", command.index));
+						}
+						else
+						{
+							pipelineStateDesc.vs = vsID;
+							LOG_COMMAND(fmt::format("SetVS[{}]: {}", command.index, vsID.value()));
+						}
+
+						break;
+					}
+				case MetalRenderer2DCommandType::SetPS:
+					{
+						const auto psID = m_commandManager.getPS(command.index);
+
+						if (psID == PixelShader::IDType::Invalid())
+						{
+							//m_pShader->setPSNull();
+							LOG_COMMAND(fmt::format("SetPS[{}]: null", command.index));
+						}
+						else
+						{
+							pipelineStateDesc.ps = psID;
+							LOG_COMMAND(fmt::format("SetPS[{}]: {}", command.index, psID.value()));
+						}
+
+						break;
+					}
+				}
 			}
-			
+						
 			renderCommandEncoder->endEncoding();
 		}
 	}

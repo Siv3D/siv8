@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -17,8 +17,6 @@ namespace s3d
 	enum class MetalRenderer2DCommandType : uint32
 	{
 		Null,
-
-		SetBuffers,
 
 		Draw,
 

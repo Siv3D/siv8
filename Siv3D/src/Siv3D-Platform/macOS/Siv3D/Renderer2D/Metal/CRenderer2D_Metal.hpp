@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/Optional.hpp>
 # include <Siv3D/ConstantBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
@@ -83,6 +84,14 @@ namespace s3d
 			PixelShader::IDType psShape;
 
 		} m_engineShader;
+		
+		struct CurrentCustomShader
+		{
+			Optional<VertexShader> vs;
+
+			Optional<PixelShader> ps;
+		
+		} m_currentCustomShader;
 		
 		Vertex2DBufferPointer createBuffer(uint16 vertexSize, uint32 indexSize);
 	};
