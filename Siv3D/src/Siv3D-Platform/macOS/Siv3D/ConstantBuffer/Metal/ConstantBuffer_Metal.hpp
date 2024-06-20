@@ -24,8 +24,5 @@ namespace s3d
 		bool _internal_init() override;
 
 		bool _internal_update(const void* data, size_t size) override;
-
-	private:
-
 	};
 }
