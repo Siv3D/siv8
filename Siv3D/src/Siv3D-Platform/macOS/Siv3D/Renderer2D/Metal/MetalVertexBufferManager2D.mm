@@ -10,15 +10,19 @@
 //-----------------------------------------------
 
 # include "MetalVertexBufferManager2D.hpp"
+# include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
 	void MetalVertexBufferManager2D::init(MTL::Device* device)
 	{
-		for (auto& buffer: m_buffers)
+		m_device = device;
+		
+		for (uint32 bufferIndex = 0; auto& buffer: m_buffers)
 		{
 			{
 				auto& vertexBuffer = buffer.vertexBuffer;
+				vertexBuffer.bufferIndex = bufferIndex;
 				vertexBuffer.buffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D) * InitialVertexBufferSize), MTL::ResourceStorageModeShared));
 				vertexBuffer.pointer = static_cast<Vertex2D*>(vertexBuffer.buffer->contents());
 				vertexBuffer.size = InitialVertexBufferSize;
@@ -26,10 +30,13 @@ namespace s3d
 			
 			{
 				auto& indexBuffer = buffer.indexBuffer;
+				indexBuffer.bufferIndex = bufferIndex;
 				indexBuffer.buffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D::IndexType) * InitialIndexBufferSize), MTL::ResourceStorageModeShared));
 				indexBuffer.pointer = static_cast<Vertex2D::IndexType*>(indexBuffer.buffer->contents());
 				indexBuffer.size = InitialIndexBufferSize;
 			}
+			
+			++bufferIndex;
 		}
 	}
 
@@ -45,7 +52,7 @@ namespace s3d
 
 	Vertex2DBufferPointer MetalVertexBufferManager2D::requestBuffer(const uint16 vertexCount, const uint32 indexCount)
 	{
-		return m_buffers[m_bufferIndex].requestBuffer(vertexCount, indexCount);
+		return m_buffers[m_bufferIndex].requestBuffer(m_device, vertexCount, indexCount);
 	}
 
 	bool MetalVertexBufferManager2D::hasBatch() const noexcept
@@ -58,7 +65,7 @@ namespace s3d
 		return m_buffers[m_bufferIndex].indexBuffer.writePos;
 	}
 
-	Vertex2DBufferPointer MetalVertexBufferManager2D::Buffer::requestBuffer(const uint16 vertexCount, const uint32 indexCount)
+	Vertex2DBufferPointer MetalVertexBufferManager2D::Buffer::requestBuffer(MTL::Device* device, const uint16 vertexCount, const uint32 indexCount)
 	{
 		// VB
 		{
@@ -66,7 +73,12 @@ namespace s3d
 
 			if (vertexBuffer.size < vertexArrayWritePosTarget)
 			{
-				return{ nullptr, 0, 0 };
+				if (MaxVertexBufferSize < vertexArrayWritePosTarget)
+				{
+					return{ nullptr, 0, 0 };
+				}
+				
+				vertexBuffer.resize(device, vertexArrayWritePosTarget);
 			}
 		}
 		
@@ -76,7 +88,12 @@ namespace s3d
 
 			if (indexBuffer.size < indexArrayWritePosTarget)
 			{
-				return{ nullptr, 0, 0 };
+				if (MaxIndexBufferSize < indexArrayWritePosTarget)
+				{
+					return{ nullptr, 0, 0 };
+				}
+				
+				indexBuffer.resize(device, indexArrayWritePosTarget);
 			}
 		}
 		
@@ -91,5 +108,41 @@ namespace s3d
 		indexBuffer.writePos	+= indexCount;
 		
 		return result;
+	}
+
+	void MetalVertexBufferManager2D::VertexBuffer::resize(MTL::Device* device, const uint32 vertexArrayWritePosTarget)
+	{
+		const Vertex2D* oldPointer = pointer;
+		const uint32 oldSize = size;
+			
+		const uint32 newVertexArraySize = std::bit_ceil(vertexArrayWritePosTarget);
+		NS::SharedPtr<MTL::Buffer> newBuffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D) * newVertexArraySize), MTL::ResourceStorageModeShared));
+		Vertex2D* newPointer = static_cast<Vertex2D*>(newBuffer->contents());
+
+		std::memcpy(newPointer, oldPointer, (sizeof(Vertex2D) * oldSize));
+		
+		buffer = newBuffer;
+		pointer = newPointer;
+		size = newVertexArraySize;
+
+		LOG_TRACE(fmt::format("ℹ️ Resized MetalVertexBufferManager2D::VertexBuffer[{}] (size: {} -> {})", bufferIndex, size, newVertexArraySize));
+	}
+
+	void MetalVertexBufferManager2D::IndexBuffer::resize(MTL::Device* device, const uint32 indexArrayWritePosTarget)
+	{
+		const Vertex2D::IndexType* oldPointer = pointer;
+		const uint32 oldSize = size;
+			
+		const uint32 newIndexArraySize = std::bit_ceil(indexArrayWritePosTarget);
+		NS::SharedPtr<MTL::Buffer> newBuffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D::IndexType) * newIndexArraySize), MTL::ResourceStorageModeShared));
+		Vertex2D::IndexType* newPointer = static_cast<Vertex2D::IndexType*>(newBuffer->contents());
+	
+		std::memcpy(newPointer, oldPointer, (sizeof(Vertex2D::IndexType) * oldSize));
+		
+		buffer = newBuffer;
+		pointer = newPointer;
+		size = newIndexArraySize;
+
+		LOG_TRACE(fmt::format("ℹ️ Resized MetalVertexBufferManager2D::IndexBuffer[{}] (size: {} -> {})", bufferIndex, size, newIndexArraySize));
 	}
 }
