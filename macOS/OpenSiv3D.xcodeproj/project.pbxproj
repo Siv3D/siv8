@@ -694,6 +694,8 @@
 		F9712A402C2572DF0049CC26 /* SivScopedColorMul2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A3D2C2572DF0049CC26 /* SivScopedColorMul2D.cpp */; };
 		F9712A422C2599090049CC26 /* ScopedRenderStates2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A412C2599090049CC26 /* ScopedRenderStates2D.hpp */; };
 		F9712A452C25991C0049CC26 /* SivScopedRenderStates2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A432C25991C0049CC26 /* SivScopedRenderStates2D.cpp */; };
+		F9712A472C25B8360049CC26 /* Transformer2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A462C25B8360049CC26 /* Transformer2D.hpp */; };
+		F9712A4A2C25B8500049CC26 /* SivTransformer2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A482C25B8500049CC26 /* SivTransformer2D.cpp */; };
 		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
 		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
 		F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */; };
@@ -2921,6 +2923,8 @@
 		F9712A3D2C2572DF0049CC26 /* SivScopedColorMul2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedColorMul2D.cpp; sourceTree = "<group>"; };
 		F9712A412C2599090049CC26 /* ScopedRenderStates2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedRenderStates2D.hpp; sourceTree = "<group>"; };
 		F9712A432C25991C0049CC26 /* SivScopedRenderStates2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedRenderStates2D.cpp; sourceTree = "<group>"; };
+		F9712A462C25B8360049CC26 /* Transformer2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Transformer2D.hpp; sourceTree = "<group>"; };
+		F9712A482C25B8500049CC26 /* SivTransformer2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivTransformer2D.cpp; sourceTree = "<group>"; };
 		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
 		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
 		F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ResizeMode.hpp; sourceTree = "<group>"; };
@@ -5525,6 +5529,7 @@
 				F9070C2B2B9F175000383E4D /* ThousandSeparate.hpp */,
 				F9070C2C2B9F175000383E4D /* Threading.hpp */,
 				F9070C2D2B9F175000383E4D /* Time.hpp */,
+				F9712A462C25B8360049CC26 /* Transformer2D.hpp */,
 				F98605252BD10459006A4C0F /* Triangle.hpp */,
 				F980C4252C00D2B500A86B68 /* TriangleFillMode.hpp */,
 				F9070C2E2B9F175000383E4D /* TupleFormatter.hpp */,
@@ -6225,6 +6230,7 @@
 				F9070D932B9F175E00383E4D /* ThousandSeparate */,
 				F9070D952B9F175E00383E4D /* Threading */,
 				F9E794562C19743A002615BA /* Timer */,
+				F9712A492C25B8500049CC26 /* Transformer2D */,
 				F980C4812C04B3EB00A86B68 /* Triangle */,
 				F980C4392C00D31000A86B68 /* TriangleFillMode */,
 				F9807D952BF667C200D9B590 /* Troubleshooting */,
@@ -6970,6 +6976,14 @@
 				F9712A432C25991C0049CC26 /* SivScopedRenderStates2D.cpp */,
 			);
 			path = ScopedRenderStates2D;
+			sourceTree = "<group>";
+		};
+		F9712A492C25B8500049CC26 /* Transformer2D */ = {
+			isa = PBXGroup;
+			children = (
+				F9712A482C25B8500049CC26 /* SivTransformer2D.cpp */,
+			);
+			path = Transformer2D;
 			sourceTree = "<group>";
 		};
 		F97203022BEDF2FF000E21DD /* Scene */ = {
@@ -10560,6 +10574,7 @@
 				F98600A72BCFBB53006A4C0F /* SkCanvasStateUtils.h in Headers */,
 				F98606142BEB760D006A4C0F /* RoundRect.ipp in Headers */,
 				F98603232BCFBB54006A4C0F /* SkPathOpsDebug.h in Headers */,
+				F9712A472C25B8360049CC26 /* Transformer2D.hpp in Headers */,
 				F98603C92BCFBB54006A4C0F /* SkSLNoOpErrorReporter.h in Headers */,
 				F98603292BCFBB54006A4C0F /* SkPathOpsQuad.h in Headers */,
 				F9528C852BC05B5B00222F45 /* BMPHeader.hpp in Headers */,
@@ -11543,6 +11558,7 @@
 				F9528C082BBF026F00222F45 /* debug.c in Sources */,
 				F98605D12BE4BE67006A4C0F /* CKeyboard.cpp in Sources */,
 				F98603282BCFBB54006A4C0F /* SkPathOpsQuad.cpp in Sources */,
+				F9712A4A2C25B8500049CC26 /* SivTransformer2D.cpp in Sources */,
 				F9E794722C19B720002615BA /* SivArray.cpp in Sources */,
 				F98601B92BCFBB53006A4C0F /* SkFontDescriptor.cpp in Sources */,
 				F98602EE2BCFBB54006A4C0F /* SkSurface_Base.cpp in Sources */,
