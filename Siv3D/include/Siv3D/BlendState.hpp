@@ -32,28 +32,40 @@ namespace s3d
 	{
 	public:
 
+		/// @brief ブレンドを有効にするか
 		bool enabled					: 1 = true;
 
+		/// @brief R チャンネルへの書き込みを有効にするか
 		bool writeR						: 1 = true;
 
+		/// @brief G チャンネルへの書き込みを有効にするか
 		bool writeG						: 1 = true;
 
+		/// @brief ソース RGB に適用するブレンド係数
 		BlendFactor sourceRGB			: 5 = BlendFactor::One;
 
+		/// @brief 書き込み先 RGB に適用するブレンド係数
 		BlendFactor destinationRGB		: 5 = BlendFactor::OneMinusSourceAlpha;
 
+		/// @brief RGB に適用するブレンド操作
 		BlendOperation rgbOperation		: 3 = BlendOperation::Add;
 
+		/// @brief アルファカバレッジを有効にするか
 		bool alphaToCoverageEnabled		: 1 = false;
 
+		/// @brief B チャンネルへの書き込みを有効にするか
 		bool writeB						: 1 = true;
 
+		/// @brief A チャンネルへの書き込みを有効にするか
 		bool writeA						: 1 = true;
 
+		/// @brief ソースアルファに適用するブレンド係数
 		BlendFactor sourceAlpha			: 5 = BlendFactor::Zero;
 
+		/// @brief 書き込み先アルファに適用するブレンド係数
 		BlendFactor destinationAlpha	: 5 = BlendFactor::One;
 
+		/// @brief アルファに適用するブレンド操作
 		BlendOperation alphaOperation	: 3 = BlendOperation::Add;
 
 		using storage_type = uint32;
@@ -82,6 +94,16 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr BlendState(const BlendStateBuilder& builder) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constant)
+		//
+		////////////////////////////////////////////////////////////////
+
+		static constexpr BlendStateBuilder Default2D{};
+
+		static constexpr BlendStateBuilder Opaque{ false };
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -120,10 +142,6 @@ namespace s3d
 		{
 			return (lhs.asValue() == rhs.asValue());
 		}
-
-		static constexpr BlendStateBuilder Default2D{};
-
-		static constexpr BlendStateBuilder Opaque{ false };
 
 		////////////////////////////////////////////////////////////////
 		//

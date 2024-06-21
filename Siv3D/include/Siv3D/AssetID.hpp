@@ -15,6 +15,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	AseetID
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief アセット ID を表現する型
 	/// @tparam AssetTag アセットタグ
 	template <class AssetTag>
@@ -31,6 +37,12 @@ namespace s3d
 		/// @brief Invalid アセットに使うアセット ID
 		static constexpr value_type InvalidID = Largest<value_type>;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief デフォルトコンストラクタ 
 		[[nodiscard]]
 		AssetID() = default;
@@ -40,35 +52,75 @@ namespace s3d
 		[[nodiscard]]
 		explicit constexpr AssetID(value_type id) noexcept;
 
-		/// @brief 別のアセット ID と等しいかを返します。
-		/// @return 別のアセット ID と等しい場合 true, それ以外の場合は false
-		[[nodiscard]]
-		constexpr bool operator ==(const AssetID&) const = default;
-
-		/// @brief 別のアセット ID の数値との大小関係を返します。
-		/// @return 別のアセット ID の数値との大小関係
-		[[nodiscard]]
-		constexpr auto operator <=>(const AssetID&) const = default;
+		////////////////////////////////////////////////////////////////
+		//
+		//	value
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief アセット ID の数値を返します。
 		/// @return アセット ID の数値
 		[[nodiscard]]
 		constexpr value_type value() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	isNull
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief アセット ID が Null であるかを返します。
 		/// @return アセット ID が Null である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isNull() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isInvalid
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief アセット ID が Invalid であるかを返します。
 		/// @return アセット ID が Invalid である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isInvalid() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ==, operator <=>
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2 つのアセット ID が等しいかを返します。
+		/// @param lhs 一方のアセット ID
+		/// @param rhs もう一方のアセット ID
+		/// @return 2 つのアセット ID が等しい場合 true, それ以外の場合は false
+		[[nodiscard]]
+		friend constexpr bool operator ==(const AssetID& lhs, const AssetID& rhs) = default;
+
+		/// @brief 2 つのアセット ID の大小関係を返します。
+		/// @param lhs 一方のアセット ID
+		/// @param rhs もう一方のアセット ID
+		/// @return 2 つのアセット ID の大小関係
+		[[nodiscard]]
+		friend constexpr auto operator <=>(const AssetID& lhs, const AssetID& rhs) = default;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Null
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief Null アセット ID を作成します。
 		/// @return Null アセット ID
 		[[nodiscard]]
 		static constexpr AssetID Null() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Invalid
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief Invalid アセット ID を作成します。
 		/// @return Invalid アセット ID
@@ -80,6 +132,12 @@ namespace s3d
 		value_type m_value = NullID;
 	};
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	std::hash
+//
+////////////////////////////////////////////////////////////////
 
 template <class AssetTag>
 struct std::hash<s3d::AssetID<AssetTag>>
