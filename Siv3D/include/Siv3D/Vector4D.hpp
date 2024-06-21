@@ -79,11 +79,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Vector4D(const Vector2D<value_type>& xy, const Vector2D<value_type>& zw) noexcept;
 
-		template <class Z>
 		[[nodiscard]]
 		constexpr Vector4D(const Vector3D<value_type>& xyz, Concept::Arithmetic auto _z) noexcept;
 
-		template <class X>
 		[[nodiscard]]
 		constexpr Vector4D(Concept::Arithmetic auto _x, const Vector3D<value_type>& yzw) noexcept;
 

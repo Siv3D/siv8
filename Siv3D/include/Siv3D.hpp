@@ -1455,6 +1455,9 @@
 // 深度ステンシルステート | Depth stencil state
 # include <Siv3D/DepthStencilState.hpp> // ToDo
 
+# include <Siv3D/ScopedColorMul2D.hpp>
+
+# include <Siv3D/ScopedColorAdd2D.hpp>
 
 # include <Siv3D/ScopedScissorRect2D.hpp>
 

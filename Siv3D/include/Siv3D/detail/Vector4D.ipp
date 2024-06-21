@@ -70,7 +70,6 @@ namespace s3d
 		, w{ zw.y } {}
 
 	template <class Type>
-	template <class Z>
 	constexpr Vector4D<Type>::Vector4D(const Vector3D<value_type>& xyz, const Concept::Arithmetic auto _z) noexcept
 		: x{ xyz.x }
 		, y{ xyz.y }
@@ -78,7 +77,6 @@ namespace s3d
 		, w{ static_cast<value_type>(_z) } {}
 
 	template <class Type>
-	template <class X>
 	constexpr Vector4D<Type>::Vector4D(const Concept::Arithmetic auto _x, const Vector3D<value_type>& yzw) noexcept
 		: x{ static_cast<value_type>(_x) }
 		, y{ yzw.x }

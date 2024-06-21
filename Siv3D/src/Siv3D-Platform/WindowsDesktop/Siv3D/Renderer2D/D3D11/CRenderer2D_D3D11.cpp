@@ -401,7 +401,7 @@ namespace s3d
 					m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
 					m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
 
-					LOG_COMMAND(fmt::format("Viewport[{}] {}", command.index, viewport));
+					LOG_COMMAND(fmt::format("Viewport[{}] ({}, {}, {}, {})", command.index, vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height));
 					break;
 				}
 			case D3D11Renderer2DCommandType::SetVS:

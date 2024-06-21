@@ -883,6 +883,12 @@
     <Filter Include="src\Siv3D\ScopedViewport2D">
       <UniqueIdentifier>{b950ca6a-9cd6-4c7f-be49-5c5f94f8ff4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ScopedColorAdd2D">
+      <UniqueIdentifier>{523bd8ea-d4c9-4fd9-b062-4ec9f517b91e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ScopedColorMul2D">
+      <UniqueIdentifier>{91d2bdb2-f64f-4155-b5e0-9e1d45069fc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3480,6 +3486,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedViewport2D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScopedColorAdd2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScopedColorMul2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5767,6 +5779,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ScopedViewport2D\SivScopedViewport2D.cpp">
       <Filter>src\Siv3D\ScopedViewport2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScopedColorAdd2D\SivScopedColorAdd2D.cpp">
+      <Filter>src\Siv3D\ScopedColorAdd2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScopedColorMul2D\SivScopedColorMul2D.cpp">
+      <Filter>src\Siv3D\ScopedColorMul2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
