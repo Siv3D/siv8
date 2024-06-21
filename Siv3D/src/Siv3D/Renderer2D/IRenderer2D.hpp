@@ -68,6 +68,10 @@ namespace s3d
 
 		virtual void setScissorRect(const Optional<Rect>& rect) = 0;
 
+		virtual Optional<Rect> getViewport() const = 0;
+
+		virtual void setViewport(const Optional<Rect>& viewport) = 0;
+
 
 		virtual float getMaxScaling() const noexcept = 0;
 	};

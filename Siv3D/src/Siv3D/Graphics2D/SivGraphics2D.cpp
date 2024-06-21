@@ -42,6 +42,11 @@ namespace s3d
 			return SIV3D_ENGINE(Renderer2D)->getScissorRect();
 		}
 
+		Optional<Rect> GetViewport()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getViewport();
+		}
+
 		namespace Internal
 		{
 			void SetColorMul(const Float4& color)
@@ -67,6 +72,11 @@ namespace s3d
 			void SetScissorRect(const Optional<Rect>& rect)
 			{
 				SIV3D_ENGINE(Renderer2D)->setScissorRect(rect);
+			}
+
+			void SetViewport(const Optional<Rect>& viewport)
+			{
+				SIV3D_ENGINE(Renderer2D)->setViewport(viewport);
 			}
 		}
 	}

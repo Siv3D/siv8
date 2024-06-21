@@ -63,6 +63,11 @@ namespace s3d
 
 		void setScissorRect(const Optional<Rect>& rect) override;
 
+		Optional<Rect> getViewport() const override;
+
+		void setViewport(const Optional<Rect>& viewport) override;
+
+
 		float getMaxScaling() const noexcept override;
 
 

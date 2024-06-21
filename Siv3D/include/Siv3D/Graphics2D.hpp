@@ -53,6 +53,11 @@ namespace s3d
 		/// @return 現在設定されているシザー矩形
 		[[nodiscard]]
 		Optional<Rect> GetScissorRect();
+
+		/// @brief 現在適用されているビューポートを返します。
+		/// @return 現在適用されているビューポート。シーンと一致する場合は none
+		[[nodiscard]]
+		Optional<Rect> GetViewport();
 	}
 }
 

@@ -26,6 +26,8 @@ namespace s3d
 			void SetRasterizerState(const RasterizerState& rasterizerState);
 
 			void SetScissorRect(const Optional<Rect>& rect);
+
+			void SetViewport(const Optional<Rect>& viewport);
 		}
 	}
 }

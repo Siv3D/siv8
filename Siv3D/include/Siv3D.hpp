@@ -1458,6 +1458,8 @@
 
 # include <Siv3D/ScopedScissorRect2D.hpp>
 
+# include <Siv3D/ScopedViewport2D.hpp>
+
 
 # if SIV3D_PLATFORM(WINDOWS)
 
