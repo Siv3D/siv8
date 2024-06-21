@@ -438,6 +438,16 @@ namespace s3d
 
 					break;
 				}
+			case D3D11Renderer2DCommandType::Transform:
+				{
+					commandState.transform = m_commandManager.getCombinedTransform(command.index);
+					const Mat3x2 matrix = (commandState.transform * commandState.screenMat);
+					m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
+					m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
+
+					LOG_COMMAND(U"Transform[{}] {}"_fmt(command.index, matrix));
+					break;
+				}
 			}
 		}
 	}
@@ -574,13 +584,45 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getLocalTransform, setLocalTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Mat3x2& CRenderer2D_D3D11::getLocalTransform() const
+	{
+		return m_commandManager.getCurrentLocalTransform();
+	}
+
+	void CRenderer2D_D3D11::setLocalTransform(const Mat3x2& matrix)
+	{
+		m_commandManager.pushLocalTransform(matrix);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCameraTransform, setCameraTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Mat3x2& CRenderer2D_D3D11::getCameraTransform() const
+	{
+		return m_commandManager.getCurrentCameraTransform();
+	}
+
+	void CRenderer2D_D3D11::setCameraTransform(const Mat3x2& matrix)
+	{
+		m_commandManager.pushCameraTransform(matrix);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getMaxScaling
 	//
 	////////////////////////////////////////////////////////////////
 
 	float CRenderer2D_D3D11::getMaxScaling() const noexcept
 	{
-		return(1.0f); // [Siv3D ToDo]
+		return m_commandManager.getCurrentMaxScaling();
 	}
 
 	////////////////////////////////////////////////////////////////

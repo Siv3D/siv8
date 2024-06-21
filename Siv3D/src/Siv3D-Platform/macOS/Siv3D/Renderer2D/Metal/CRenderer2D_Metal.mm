@@ -585,13 +585,45 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getLocalTransform, setLocalTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Mat3x2& CRenderer2D_Metal::getLocalTransform() const
+	{
+		return m_commandManager.getCurrentLocalTransform();
+	}
+
+	void CRenderer2D_Metal::setLocalTransform(const Mat3x2& matrix)
+	{
+		m_commandManager.pushLocalTransform(matrix);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCameraTransform, setCameraTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Mat3x2& CRenderer2D_Metal::getCameraTransform() const
+	{
+		return m_commandManager.getCurrentCameraTransform();
+	}
+
+	void CRenderer2D_Metal::setCameraTransform(const Mat3x2& matrix)
+	{
+		m_commandManager.pushCameraTransform(matrix);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getMaxScaling
 	//
 	////////////////////////////////////////////////////////////////
 
 	float CRenderer2D_Metal::getMaxScaling() const noexcept
 	{
-		return(1.0f); // [Siv3D ToDo]
+		return m_commandManager.getCurrentMaxScaling();
 	}
 
 	////////////////////////////////////////////////////////////////

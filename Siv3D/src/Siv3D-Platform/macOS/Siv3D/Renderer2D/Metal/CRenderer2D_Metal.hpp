@@ -76,6 +76,13 @@ namespace s3d
 
 		void setViewport(const Optional<Rect>& viewport) override;
 
+		const Mat3x2& getLocalTransform() const override;
+
+		void setLocalTransform(const Mat3x2& matrix) override;
+
+		const Mat3x2& getCameraTransform() const override;
+
+		void setCameraTransform(const Mat3x2& matrix) override;
 
 		float getMaxScaling() const noexcept override;
 

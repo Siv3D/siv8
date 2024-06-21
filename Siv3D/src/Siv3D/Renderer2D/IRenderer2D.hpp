@@ -22,6 +22,7 @@ namespace s3d
 	struct BlendState;
 	struct RasterizerState;
 	struct SamplerState;
+	struct Mat3x2;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -81,6 +82,13 @@ namespace s3d
 
 		virtual void setViewport(const Optional<Rect>& viewport) = 0;
 
+		virtual const Mat3x2& getLocalTransform() const = 0;
+
+		virtual void setLocalTransform(const Mat3x2& matrix) = 0;
+
+		virtual const Mat3x2& getCameraTransform() const = 0;
+
+		virtual void setCameraTransform(const Mat3x2& matrix) = 0;
 
 		virtual float getMaxScaling() const noexcept = 0;
 	};
