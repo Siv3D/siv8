@@ -33,6 +33,17 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
+		static constexpr MTL::ScissorRect MakeScissorRect(const Rect& rect) noexcept
+		{
+			return{
+				.x		= static_cast<uint32>(rect.x),
+				.y		= static_cast<uint32>(rect.y),
+				.width	= static_cast<uint32>(rect.w),
+				.height	= static_cast<uint32>(rect.h)
+			};
+		}
+	
+		[[nodiscard]]
 		static constexpr MTL::Viewport MakeViewport(const Point pos, const Size size) noexcept
 		{
 			return{
@@ -380,31 +391,10 @@ namespace s3d
 				case MetalRenderer2DCommandType::ScissorRect:
 					{
 						const auto& scissorRect = m_commandManager.getScissorRect(command.index);
+						const Rect rect = (scissorRect ? scissorRect->clamped(Rect{ 0, 0, currentRenderTargetSize }) : Rect{ currentRenderTargetSize });
+						renderCommandEncoder->setScissorRect(MakeScissorRect(rect));
 						
-						if (scissorRect)
-						{
-							const Point topLeft{ Max(0, scissorRect->x), Max(0, scissorRect->y) };
-							const Rect clampedRect = Rect::FromPoints(topLeft, scissorRect->br());
-							const MTL::ScissorRect rect{
-								.x = static_cast<uint32>(clampedRect.x),
-								.y = static_cast<uint32>(clampedRect.y),
-								.width = static_cast<uint32>(clampedRect.w),
-								.height = static_cast<uint32>(clampedRect.h)
-							};
-							renderCommandEncoder->setScissorRect(rect);
-						}
-						else
-						{
-							const MTL::ScissorRect rect{
-								.x = 0,
-								.y = 0,
-								.width = static_cast<uint32>(currentRenderTargetSize.x),
-								.height = static_cast<uint32>(currentRenderTargetSize.y)
-							};
-							renderCommandEncoder->setScissorRect(rect);
-						}
-						
-						LOG_COMMAND(fmt::format("ScissorRect[{}] {}", command.index, scissorRect));
+						LOG_COMMAND(fmt::format("ScissorRect[{}] {}", command.index, rect));
 						break;
 					}
 				case MetalRenderer2DCommandType::Viewport:
@@ -419,7 +409,7 @@ namespace s3d
 						m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
 						m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
 						
-						LOG_COMMAND(fmt::format("Viewport[{}] {}", command.index, viewport));
+						LOG_COMMAND(fmt::format("Viewport[{}] ({}, {}, {}, {})", command.index, vp.originX, vp.originY, vp.width, vp.height));
 						break;
 					}
 				case MetalRenderer2DCommandType::SetVS:
