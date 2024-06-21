@@ -1,4 +1,4 @@
-//-----------------------------------------------
+﻿//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -77,7 +77,7 @@ namespace s3d
 
 		SetPS,
 
-		//Transform,
+		Transform,
 
 		//SetConstantBuffer,
 

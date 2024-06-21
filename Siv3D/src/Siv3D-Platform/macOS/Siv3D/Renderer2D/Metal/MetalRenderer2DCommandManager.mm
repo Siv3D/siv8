@@ -13,6 +13,15 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static float CalculateMaxScaling(const Mat3x2& mat)
+		{
+			return (Float2{ (mat._11 + mat._21), (mat._12 + mat._22) }.length() / Math::Sqrt2_v<float>);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -126,7 +135,7 @@ namespace s3d
 			m_commands.emplace_back(MetalRenderer2DCommandType::SetPS, 0);
 			m_current.pixelShader = PixelShader::IDType::Invalid();
 
-			m_commands.emplace_back(D3D11Renderer2DCommandType::Transform, 0);
+			m_commands.emplace_back(MetalRenderer2DCommandType::Transform, 0);
 			m_current.combinedTransform = m_buffer.combinedTransforms.front();
 
 			//{
@@ -254,9 +263,9 @@ namespace s3d
 			m_buffer.pixelShaders.push_back(m_current.pixelShader);
 		}
 
-		if (m_stateTracker.has(D3D11Renderer2DCommandType::Transform))
+		if (m_stateTracker.has(MetalRenderer2DCommandType::Transform))
 		{
-			m_commands.emplace_back(D3D11Renderer2DCommandType::Transform, static_cast<uint32>(m_buffer.combinedTransforms.size()));
+			m_commands.emplace_back(MetalRenderer2DCommandType::Transform, static_cast<uint32>(m_buffer.combinedTransforms.size()));
 			m_buffer.combinedTransforms.push_back(m_current.combinedTransform);
 		}
 
