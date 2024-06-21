@@ -385,6 +385,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerStateBuilder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Scene.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScopedScissorRect2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SequenceFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopeExit.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ShaderStage.hpp" />
@@ -1096,6 +1097,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneTime.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SceneUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\SivScene.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScopedScissorRect2D\SivScopedScissorRect2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />

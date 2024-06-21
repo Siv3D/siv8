@@ -1454,6 +1454,9 @@
 # include <Siv3D/DepthStencilState.hpp> // ToDo
 
 
+# include <Siv3D/ScopedScissorRect2D.hpp>
+
+
 # if SIV3D_PLATFORM(WINDOWS)
 
 	// Windows 用の静的リンクライブラリ | Static link libraries for Windows

@@ -877,6 +877,9 @@
     <Filter Include="src\Siv3D\Graphics2D">
       <UniqueIdentifier>{e677cec5-e363-4ad0-b663-6d01e860c84a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ScopedScissorRect2D">
+      <UniqueIdentifier>{6eca0fdb-26a4-4d92-9ce8-877c2d6a62f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3465,6 +3468,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Graphics2D.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScopedScissorRect2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5746,6 +5752,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics2D\SivGraphics2D.cpp">
       <Filter>src\Siv3D\Graphics2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScopedScissorRect2D\SivScopedScissorRect2D.cpp">
+      <Filter>src\Siv3D\ScopedScissorRect2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
