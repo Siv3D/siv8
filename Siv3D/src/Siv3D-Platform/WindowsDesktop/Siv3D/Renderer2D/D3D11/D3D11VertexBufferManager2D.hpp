@@ -14,7 +14,7 @@
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/Renderer/D3D11/D3D11.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBufferPointer.hpp>
-# include <Siv3D/Renderer2D/BatchInfo2D.hpp>
+# include "BatchInfo2D.hpp"
 
 namespace s3d
 {

@@ -31,11 +31,11 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static constexpr D3D11_VIEWPORT MakeViewport(const Size size) noexcept
+		static constexpr D3D11_VIEWPORT MakeViewport(const Point pos, const Size size) noexcept
 		{
 			return{
-				.TopLeftX	= 0.0f,
-				.TopLeftY	= 0.0f,
+				.TopLeftX	= static_cast<float>(pos.x),
+				.TopLeftY	= static_cast<float>(pos.y),
 				.Width		= static_cast<float>(size.x),
 				.Height		= static_cast<float>(size.y),
 				.MinDepth	= D3D11_MIN_DEPTH,
@@ -43,6 +43,19 @@ namespace s3d
 			};
 		}
 	}
+
+	struct CommandState
+	{
+		BatchInfo2D batchInfo;
+		
+		RasterizerState rasterizerState = RasterizerState::Default2D;
+		
+		Optional<Rect> scissorRect;
+
+		Mat3x2 transform = Mat3x2::Identity();
+
+		Mat3x2 screenMat = Mat3x2::Identity();
+	};
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -267,27 +280,17 @@ namespace s3d
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		{
-			const D3D11_VIEWPORT viewport = MakeViewport(currentRenderTargetSize);
+			const D3D11_VIEWPORT viewport = MakeViewport(Point{ 0, 0 }, currentRenderTargetSize);
 			m_context->RSSetViewports(1, &viewport);
 		}
-
-		Mat3x2 transform = Mat3x2::Identity();
-		Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
 
 		m_pRenderer->getBackBuffer().bindSceneTextureAsRenderTarget();
 		m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
 
 		LOG_COMMAND("----");
 
-		// (仮)
-		{
-			m_vsConstants->transform[0].set(screenMat._11, screenMat._12, screenMat._31, screenMat._32);
-			m_vsConstants->transform[1].set(screenMat._21, screenMat._22, 0.0f, 1.0f);
-		}
-
-		BatchInfo2D batchInfo;
-		RasterizerState currentRasterizerState = RasterizerState::Default2D;
-		Optional<Rect> currentScissorRect;
+		CommandState commandState;
+		commandState.screenMat = Mat3x2::Screen(currentRenderTargetSize);
 
 		for (const auto& command : m_commandManager.getCommands())
 		{
@@ -306,9 +309,9 @@ namespace s3d
 				}
 			case D3D11Renderer2DCommandType::UpdateBuffers:
 				{
-					batchInfo = m_vertexBufferManager2D.commitBuffers(command.index);				
+					commandState.batchInfo = m_vertexBufferManager2D.commitBuffers(command.index);
 					LOG_COMMAND(fmt::format("UpdateBuffers[{}] BatchInfo(indexCount = {}, startIndexLocation = {}, baseVertexLocation = {})",
-						command.index, batchInfo.indexCount, batchInfo.startIndexLocation, batchInfo.baseVertexLocation));
+						command.index, commandState.batchInfo.indexCount, commandState.batchInfo.startIndexLocation, commandState.batchInfo.baseVertexLocation));
 					break;
 				}
 			case D3D11Renderer2DCommandType::Draw:
@@ -318,11 +321,11 @@ namespace s3d
 
 					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);
 					const uint32 indexCount = draw.indexCount;
-					const uint32 startIndexLocation = batchInfo.startIndexLocation;
-					const uint32 baseVertexLocation = batchInfo.baseVertexLocation;
+					const uint32 startIndexLocation = commandState.batchInfo.startIndexLocation;
+					const uint32 baseVertexLocation = commandState.batchInfo.baseVertexLocation;
 
 					m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
-					batchInfo.startIndexLocation += indexCount;
+					commandState.batchInfo.startIndexLocation += indexCount;
 					
 					//++m_stat.drawCalls;
 					//m_stat.triangleCount += (indexCount / 3);
@@ -353,9 +356,9 @@ namespace s3d
 			case D3D11Renderer2DCommandType::RasterizerState:
 				{
 					const auto& rasterizerState = m_commandManager.getRasterizerState(command.index);
-					currentRasterizerState = rasterizerState;
+					commandState.rasterizerState = rasterizerState;
 
-					if (currentScissorRect)
+					if (commandState.scissorRect)
 					{
 						m_pRenderer->getRasterizerState().set(rasterizerState, true);
 					}
@@ -370,19 +373,34 @@ namespace s3d
 			case D3D11Renderer2DCommandType::ScissorRect:
 				{
 					const auto& scissorRect = m_commandManager.getScissorRect(command.index);
-					currentScissorRect = scissorRect;
+					commandState.scissorRect = scissorRect;
 
 					if (scissorRect)
 					{
-						m_pRenderer->getRasterizerState().set(currentRasterizerState, true);
+						m_pRenderer->getRasterizerState().set(commandState.rasterizerState, true);
 						m_pRenderer->getRasterizerState().setScissorRect(*scissorRect);
 					}
 					else
 					{
-						m_pRenderer->getRasterizerState().set(currentRasterizerState, false);
+						m_pRenderer->getRasterizerState().set(commandState.rasterizerState, false);
 					}
 
 					LOG_COMMAND(U"ScissorRect[{}] {}"_fmt(command.index, scissorRect));
+					break;
+				}
+			case D3D11Renderer2DCommandType::Viewport:
+				{
+					const auto& viewport = m_commandManager.getViewport(command.index);
+					
+					const D3D11_VIEWPORT vp = (viewport ? MakeViewport(viewport->pos, viewport->size) : MakeViewport(Point{ 0, 0 }, currentRenderTargetSize));
+					m_context->RSSetViewports(1, &vp);
+
+					commandState.screenMat = Mat3x2::Screen(vp.Width, vp.Height);
+					const Mat3x2 matrix = (commandState.transform * commandState.screenMat);
+					m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
+					m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
+
+					LOG_COMMAND(U"Viewport[{}] {}"_fmt(command.index, viewport));
 					break;
 				}
 			case D3D11Renderer2DCommandType::SetVS:

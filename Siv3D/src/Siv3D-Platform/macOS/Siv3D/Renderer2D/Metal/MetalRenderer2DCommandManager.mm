@@ -57,8 +57,8 @@ namespace s3d
 			//	m_psSamplerStates[i] = { m_psSamplerStates[i].back() };
 			//}
 
-			m_buffer.scissorRects = { m_buffer.scissorRects.back() };
-			//m_viewports = { m_viewports.back() };
+			m_buffer.scissorRects	= { m_buffer.scissorRects.back() };
+			m_buffer.viewports		= { m_buffer.viewports.back() };
 			//m_sdfParams = { m_sdfParams.back() };
 			//m_internalPSConstants = { m_internalPSConstants.back() };
 			//m_RTs = { m_RTs.back() };
@@ -108,8 +108,8 @@ namespace s3d
 			m_commands.emplace_back(MetalRenderer2DCommandType::ScissorRect, 0);
 			m_current.scissorRect = m_buffer.scissorRects.front();
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::Viewport, 0);
-			//m_currentViewport = m_viewports.front();
+			m_commands.emplace_back(MetalRenderer2DCommandType::Viewport, 0);
+			m_current.viewport = m_buffer.viewports.front();
 
 			//m_commands.emplace_back(D3D11Renderer2DCommandType::SDFParams, 0);
 			//m_currentSDFParams = m_sdfParams.front();
@@ -218,11 +218,11 @@ namespace s3d
 			m_buffer.scissorRects.push_back(m_current.scissorRect);
 		}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::Viewport))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::Viewport, static_cast<uint32>(m_viewports.size()));
-		//	m_viewports.push_back(m_currentViewport);
-		//}
+		if (m_stateTracker.has(MetalRenderer2DCommandType::Viewport))
+		{
+			m_commands.emplace_back(MetalRenderer2DCommandType::Viewport, static_cast<uint32>(m_buffer.viewports.size()));
+			m_buffer.viewports.push_back(m_current.viewport);
+		}
 
 		//if (m_changes.has(D3D11Renderer2DCommandType::SDFParams))
 		//{
@@ -526,6 +526,47 @@ namespace s3d
 	const Optional<Rect>& MetalRenderer2DCommandManager::getCurrentScissorRect() const
 	{
 		return m_current.scissorRect;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushViewport, getViewport, getCurrentViewport
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalRenderer2DCommandManager::pushViewport(const Optional<Rect>& state)
+	{
+		constexpr auto Command = MetalRenderer2DCommandType::Viewport;
+		auto& current = m_current.viewport;
+		auto& buffer = m_buffer.viewports;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (state != current)
+			{
+				current = state;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (state == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = state;
+		}
+	}
+	
+	const Optional<Rect>& MetalRenderer2DCommandManager::getViewport(const uint32 index) const
+	{
+		return m_buffer.viewports[index];
+	}
+	
+	const Optional<Rect>& Metalenderer2DCommandManager::getCurrentViewport() const
+	{
+		return m_current.viewport;
 	}
 
 

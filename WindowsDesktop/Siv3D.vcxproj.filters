@@ -3345,9 +3345,6 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBufferPointer.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\BatchInfo2D.hpp">
-      <Filter>src\Siv3D\Renderer2D</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>
@@ -3470,6 +3467,9 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedScissorRect2D.hpp">
       <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\BatchInfo2D.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

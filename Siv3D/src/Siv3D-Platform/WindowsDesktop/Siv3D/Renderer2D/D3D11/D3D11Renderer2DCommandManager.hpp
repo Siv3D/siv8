@@ -60,6 +60,10 @@ namespace s3d
 		const Optional<Rect>& getScissorRect(uint32 index) const;
 		const Optional<Rect>& getCurrentScissorRect() const;
 
+		void pushViewport(const Optional<Rect>& state);
+		const Optional<Rect>& getViewport(uint32 index) const;
+		const Optional<Rect>& getCurrentViewport() const;
+
 		void pushEngineVS(VertexShader::IDType id);
 		VertexShader::IDType getVS(uint32 index) const;
 
@@ -86,6 +90,8 @@ namespace s3d
 
 			Array<Optional<Rect>> scissorRects		= { none };
 
+			Array<Optional<Rect>> viewports			= { none };
+
 			Array<VertexShader::IDType> vertexShaders;
 
 			Array<PixelShader::IDType> pixelShaders;
@@ -105,6 +111,8 @@ namespace s3d
 			RasterizerState rasterizerState		= RasterizerState::Default2D;
 
 			Optional<Rect> scissorRect			= none;
+
+			Optional<Rect> viewport				= none;
 
 			VertexShader::IDType vertexShader	= VertexShader::IDType::Invalid();
 			

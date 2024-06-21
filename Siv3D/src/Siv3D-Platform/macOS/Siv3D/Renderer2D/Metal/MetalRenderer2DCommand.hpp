@@ -65,7 +65,7 @@ namespace s3d
 
 		ScissorRect,
 
-		//Viewport,
+		Viewport,
 
 		//SDFParams,
 
