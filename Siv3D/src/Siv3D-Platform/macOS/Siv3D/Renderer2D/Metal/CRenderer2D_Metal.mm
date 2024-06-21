@@ -446,6 +446,16 @@ namespace s3d
 
 						break;
 					}
+				case MetalRenderer2DCommandType::Transform:
+					{
+						commandState.transform = m_commandManager.getCombinedTransform(command.index);
+						const Mat3x2 matrix = (commandState.transform * commandState.screenMat);
+						m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
+						m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
+
+						LOG_COMMAND(U"Transform[{}] {}"_fmt(command.index, matrix));
+						break;
+					}
 				}
 			}
 						

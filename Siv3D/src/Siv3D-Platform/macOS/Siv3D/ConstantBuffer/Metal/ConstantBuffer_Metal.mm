@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -23,7 +23,7 @@ namespace s3d
 		return true;
 	}
 
-	bool ConstantBuffer_Metal::_internal_update(const void* data, const size_t size)
+	bool ConstantBuffer_Metal::_internal_update(const void*, const size_t)
 	{
 		return true;
 	}
