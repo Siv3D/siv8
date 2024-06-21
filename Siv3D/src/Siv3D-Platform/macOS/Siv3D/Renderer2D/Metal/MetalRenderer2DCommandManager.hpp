@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -12,7 +12,9 @@
 # pragma once
 # include <Siv3D/Array.hpp>
 # include <Siv3D/Vertex2D.hpp>
+# include <Siv3D/2DShapes.hpp>
 # include <Siv3D/BlendState.hpp>
+# include <Siv3D/RasterizerState.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
 # include <Siv3D/Renderer/Metal/Metal.hpp>

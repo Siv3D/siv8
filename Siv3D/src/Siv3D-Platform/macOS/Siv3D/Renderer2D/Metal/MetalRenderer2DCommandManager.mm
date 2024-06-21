@@ -88,7 +88,7 @@ namespace s3d
 			m_commands.emplace_back(MetalRenderer2DCommandType::BlendState, 0);
 			m_current.blendState = m_buffer.blendStates.front();
 
-			m_commands.emplace_back(D3D11Renderer2DCommandType::RasterizerState, 0);
+			m_commands.emplace_back(MetalRenderer2DCommandType::RasterizerState, 0);
 			m_current.rasterizerState = m_buffer.rasterizerStates.front();
 
 			//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
@@ -105,7 +105,7 @@ namespace s3d
 			//	m_currentPSSamplerStates[i] = m_currentPSSamplerStates.front();
 			//}
 
-			m_commands.emplace_back(D3D11Renderer2DCommandType::ScissorRect, 0);
+			m_commands.emplace_back(MetalRenderer2DCommandType::ScissorRect, 0);
 			m_current.scissorRect = m_buffer.scissorRects.front();
 
 			//m_commands.emplace_back(D3D11Renderer2DCommandType::Viewport, 0);
@@ -184,9 +184,9 @@ namespace s3d
 			m_buffer.blendStates.push_back(m_current.blendState);
 		}
 
-		if (m_stateTracker.has(D3D11Renderer2DCommandType::RasterizerState))
+		if (m_stateTracker.has(MetalRenderer2DCommandType::RasterizerState))
 		{
-			m_commands.emplace_back(D3D11Renderer2DCommandType::RasterizerState, static_cast<uint32>(m_buffer.rasterizerStates.size()));
+			m_commands.emplace_back(MetalRenderer2DCommandType::RasterizerState, static_cast<uint32>(m_buffer.rasterizerStates.size()));
 			m_buffer.rasterizerStates.push_back(m_current.rasterizerState);
 		}
 
@@ -212,9 +212,9 @@ namespace s3d
 		//	}
 		//}
 
-		if (m_stateTracker.has(D3D11Renderer2DCommandType::ScissorRect))
+		if (m_stateTracker.has(MetalRenderer2DCommandType::ScissorRect))
 		{
-			m_commands.emplace_back(D3D11Renderer2DCommandType::ScissorRect, static_cast<uint32>(m_buffer.scissorRects.size()));
+			m_commands.emplace_back(MetalRenderer2DCommandType::ScissorRect, static_cast<uint32>(m_buffer.scissorRects.size()));
 			m_buffer.scissorRects.push_back(m_current.scissorRect);
 		}
 

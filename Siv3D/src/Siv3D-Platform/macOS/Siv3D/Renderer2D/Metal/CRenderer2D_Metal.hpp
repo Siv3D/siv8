@@ -66,8 +66,6 @@ namespace s3d
 
 		float getMaxScaling() const noexcept override;
 
-	
-		float getMaxScaling() const noexcept override;
 
 		void beginFrame(MTL::CommandBuffer* commandBuffer);
 

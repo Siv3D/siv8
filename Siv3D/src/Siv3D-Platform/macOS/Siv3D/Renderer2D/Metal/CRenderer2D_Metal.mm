@@ -328,6 +328,28 @@ namespace s3d
 					{
 						const auto& rasterizerState = m_commandManager.getRasterizerState(command.index);
 						
+						if (rasterizerState.triangleFillMode == TriangleFillMode::Solid)
+						{
+							renderCommandEncoder->setTriangleFillMode(MTL::TriangleFillModeFill);
+						}
+						else
+						{
+							renderCommandEncoder->setTriangleFillMode(MTL::TriangleFillModeLines);
+						}
+						
+						if (rasterizerState.cullMode == CullMode::None)
+						{
+							renderCommandEncoder->setCullMode(MTL::CullModeNone);
+						}
+						else if (rasterizerState.cullMode == CullMode::Front)
+						{
+							renderCommandEncoder->setCullMode(MTL::CullModeFront);
+						}
+						else
+						{
+							renderCommandEncoder->setCullMode(MTL::CullModeBack);
+						}
+
 						LOG_COMMAND(fmt::format("RasterizerState[{}]", command.index));
 						break;
 					}
