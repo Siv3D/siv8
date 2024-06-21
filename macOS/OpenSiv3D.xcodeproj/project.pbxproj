@@ -686,6 +686,8 @@
 		F9712A2C2C252EEA0049CC26 /* ScopedScissorRect2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */; };
 		F9712A2F2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */; };
 		F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A302C254DBB0049CC26 /* FmtOptional.hpp */; };
+		F9712A332C2550010049CC26 /* ScopedViewport2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */; };
+		F9712A362C25501C0049CC26 /* SivScopedViewport2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A342C25501C0049CC26 /* SivScopedViewport2D.cpp */; };
 		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
 		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
 		F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */; };
@@ -2905,6 +2907,8 @@
 		F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedScissorRect2D.hpp; sourceTree = "<group>"; };
 		F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedScissorRect2D.cpp; sourceTree = "<group>"; };
 		F9712A302C254DBB0049CC26 /* FmtOptional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FmtOptional.hpp; sourceTree = "<group>"; };
+		F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedViewport2D.hpp; sourceTree = "<group>"; };
+		F9712A342C25501C0049CC26 /* SivScopedViewport2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedViewport2D.cpp; sourceTree = "<group>"; };
 		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
 		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
 		F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ResizeMode.hpp; sourceTree = "<group>"; };
@@ -5480,6 +5484,7 @@
 				F980C4572C01B20F00A86B68 /* SamplerStateBuilder.hpp */,
 				F97202F52BEDF2D8000E21DD /* Scene.hpp */,
 				F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */,
+				F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9070C1F2B9F175000383E4D /* SequenceFormatter.hpp */,
 				F934BD702BF880330003EAD5 /* ShaderStage.hpp */,
@@ -6186,6 +6191,7 @@
 				F980C46A2C01B4B600A86B68 /* SamplerStateBuilder */,
 				F97203022BEDF2FF000E21DD /* Scene */,
 				F9712A2E2C252EFE0049CC26 /* ScopedScissorRect2D */,
+				F9712A352C25501C0049CC26 /* ScopedViewport2D */,
 				F934BD802BF880A10003EAD5 /* Shader */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9E7945A2C19743A002615BA /* Stopwatch */,
@@ -6914,6 +6920,14 @@
 				F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */,
 			);
 			path = ScopedScissorRect2D;
+			sourceTree = "<group>";
+		};
+		F9712A352C25501C0049CC26 /* ScopedViewport2D */ = {
+			isa = PBXGroup;
+			children = (
+				F9712A342C25501C0049CC26 /* SivScopedViewport2D.cpp */,
+			);
+			path = ScopedViewport2D;
 			sourceTree = "<group>";
 		};
 		F97203022BEDF2FF000E21DD /* Scene */ = {
@@ -9928,6 +9942,7 @@
 				F986046E2BCFBB54006A4C0F /* SkSLContext.h in Headers */,
 				F98602992BCFBB54006A4C0F /* SkVertState.h in Headers */,
 				F934BD932BF8824B0003EAD5 /* CEngineShader_Metal.hpp in Headers */,
+				F9712A332C2550010049CC26 /* ScopedViewport2D.hpp in Headers */,
 				F98603152BCFBB54006A4C0F /* SkOpSegment.h in Headers */,
 				F980C4AC2C0F6DFB00A86B68 /* PipelineStateDesc.hpp in Headers */,
 				F98600442BCFBB53006A4C0F /* SkStrokeRec.h in Headers */,
@@ -11111,6 +11126,7 @@
 				F9070DB22B9F175E00383E4D /* SivBlob.cpp in Sources */,
 				F98603202BCFBB54006A4C0F /* SkPathOpsCurve.cpp in Sources */,
 				F98603F02BCFBB54006A4C0F /* SkSLConstructorCompound.cpp in Sources */,
+				F9712A362C25501C0049CC26 /* SivScopedViewport2D.cpp in Sources */,
 				F97203242BF09E80000E21DD /* RendererFactory.mm in Sources */,
 				F98604082BCFBB54006A4C0F /* SkSLExtension.cpp in Sources */,
 				F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */,
