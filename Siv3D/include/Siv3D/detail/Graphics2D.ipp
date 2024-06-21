@@ -25,6 +25,12 @@ namespace s3d
 
 			void SetRasterizerState(const RasterizerState& rasterizerState);
 
+			void SetVSSamplerState(uint32 slot, const SamplerState& samplerState);
+
+			void SetPSSamplerState(uint32 slot, const SamplerState& samplerState);
+
+			void SetSamplerState(ShaderStage shaderStage, uint32 slot, const SamplerState& samplerState);
+
 			void SetScissorRect(const Optional<Rect>& rect);
 
 			void SetViewport(const Optional<Rect>& viewport);

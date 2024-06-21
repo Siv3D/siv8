@@ -21,6 +21,7 @@ namespace s3d
 	struct LineStyle;
 	struct BlendState;
 	struct RasterizerState;
+	struct SamplerState;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -63,6 +64,14 @@ namespace s3d
 		virtual RasterizerState getRasterizerState() const = 0;
 
 		virtual void setRasterizerState(const RasterizerState& state) = 0;
+
+		virtual SamplerState getVSSamplerState(uint32 slot) const = 0;
+
+		virtual void setVSSamplerState(uint32 slot, const SamplerState& state) = 0;
+
+		virtual SamplerState getPSSamplerState(uint32 slot) const = 0;
+
+		virtual void setPSSamplerState(uint32 slot, const SamplerState& state) = 0;
 
 		virtual Optional<Rect> getScissorRect() const = 0;
 

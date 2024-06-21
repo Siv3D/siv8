@@ -1459,6 +1459,8 @@
 
 # include <Siv3D/ScopedColorAdd2D.hpp>
 
+# include <Siv3D/ScopedRenderStates2D.hpp>
+
 # include <Siv3D/ScopedScissorRect2D.hpp>
 
 # include <Siv3D/ScopedViewport2D.hpp>

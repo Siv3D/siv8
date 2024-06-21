@@ -60,6 +60,14 @@ namespace s3d
 
 		void setRasterizerState(const RasterizerState& state) override;
 
+		SamplerState getVSSamplerState(uint32 slot) const override;
+
+		void setVSSamplerState(uint32 slot, const SamplerState& state) override;
+
+		SamplerState getPSSamplerState(uint32 slot) const override;
+
+		void setPSSamplerState(uint32 slot, const SamplerState& state) override;
+
 		Optional<Rect> getScissorRect() const override;
 
 		void setScissorRect(const Optional<Rect>& rect) override;

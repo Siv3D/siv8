@@ -10,11 +10,28 @@
 //-----------------------------------------------
 
 # include <Siv3D/Graphics2D.hpp>
+# include <Siv3D/Graphics.hpp>
+# include <Siv3D/Error.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
+	namespace
+	{
+		[[noreturn]]
+		static void ThrowVSSamplerIndexOutOfRange()
+		{
+			throw Error{ U"VSSampler index out of range" };
+		}
+
+		[[noreturn]]
+		static void ThrowPSSamplerIndexOutOfRange()
+		{
+			throw Error{ U"PSSampler index out of range" };
+		}
+	}
+
 	namespace Graphics2D
 	{
 		Float4 GetColorMul()
@@ -35,6 +52,38 @@ namespace s3d
 		RasterizerState GetRasterizerState()
 		{
 			return SIV3D_ENGINE(Renderer2D)->getRasterizerState();
+		}
+
+		SamplerState GetVSSamplerState(const uint32 slot)
+		{
+			if (Graphics::TextureSlotCount <= slot)
+			{
+				ThrowVSSamplerIndexOutOfRange();
+			}
+
+			return SIV3D_ENGINE(Renderer2D)->getVSSamplerState(slot);
+		}
+
+		SamplerState GetPSSamplerState(const uint32 slot)
+		{
+			if (Graphics::TextureSlotCount <= slot)
+			{
+				ThrowPSSamplerIndexOutOfRange();
+			}
+
+			return SIV3D_ENGINE(Renderer2D)->getPSSamplerState(slot);
+		}
+
+		SamplerState GetSamplerState(const ShaderStage shaderStage, const uint32 slot)
+		{
+			if (shaderStage == ShaderStage::Vertex)
+			{
+				return GetVSSamplerState(slot);
+			}
+			else
+			{
+				return GetPSSamplerState(slot);
+			}
 		}
 
 		Optional<Rect> GetScissorRect()
@@ -67,6 +116,38 @@ namespace s3d
 			void SetRasterizerState(const RasterizerState& rasterizerState)
 			{
 				SIV3D_ENGINE(Renderer2D)->setRasterizerState(rasterizerState);
+			}
+
+			void SetVSSamplerState(const uint32 slot, const SamplerState& samplerState)
+			{
+				if (Graphics::TextureSlotCount <= slot)
+				{
+					ThrowVSSamplerIndexOutOfRange();
+				}
+
+				SIV3D_ENGINE(Renderer2D)->setVSSamplerState(slot, samplerState);
+			}
+
+			void SetPSSamplerState(const uint32 slot, const SamplerState& samplerState)
+			{
+				if (Graphics::TextureSlotCount <= slot)
+				{
+					ThrowPSSamplerIndexOutOfRange();
+				}
+
+				SIV3D_ENGINE(Renderer2D)->setPSSamplerState(slot, samplerState);
+			}
+
+			void SetSamplerState(const ShaderStage shaderStage, const uint32 slot, const SamplerState& samplerState)
+			{
+				if (shaderStage == ShaderStage::Vertex)
+				{
+					SetVSSamplerState(slot, samplerState);
+				}
+				else
+				{
+					SetPSSamplerState(slot, samplerState);
+				}
 			}
 
 			void SetScissorRect(const Optional<Rect>& rect)

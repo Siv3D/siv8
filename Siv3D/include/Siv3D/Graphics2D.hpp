@@ -15,6 +15,8 @@
 # include "2DShapes.hpp"
 # include "BlendState.hpp"
 # include "RasterizerState.hpp"
+# include "SamplerState.hpp"
+# include "ShaderStage.hpp"
 
 namespace s3d
 {
@@ -42,12 +44,24 @@ namespace s3d
 		[[nodiscard]]
 		RasterizerState GetRasterizerState();
 
-		///// @brief 現在適用されているサンプラーステートを返します。
-		///// @param shaderStage シェーダステージ
-		///// @param slot テクスチャスロット
-		///// @return 現在適用されているサンプラーステート
-		//[[nodiscard]]
-		//SamplerState GetSamplerState(ShaderStage shaderStage = ShaderStage::Pixel, uint32 slot = 0);
+		/// @brief 頂点シェーダに現在適用されているサンプラーステートを返します。
+		/// @param slot テクスチャスロット
+		/// @return 頂点シェーダに現在適用されているサンプラーステート
+		[[nodiscard]]
+		SamplerState GetVSSamplerState(uint32 slot = 0);
+
+		/// @brief ピクセルシェーダに現在適用されているサンプラーステートを返します。
+		/// @param slot テクスチャスロット
+		/// @return ピクセルシェーダに現在適用されているサンプラーステート
+		[[nodiscard]]
+		SamplerState GetPSSamplerState(uint32 slot = 0);
+
+		/// @brief 現在適用されているサンプラーステートを返します。
+		/// @param shaderStage シェーダステージ
+		/// @param slot テクスチャスロット
+		/// @return 現在適用されているサンプラーステート
+		[[nodiscard]]
+		SamplerState GetSamplerState(ShaderStage shaderStage = ShaderStage::Pixel, uint32 slot = 0);
 
 		/// @brief 現在設定されているシザー矩形を返します。
 		/// @return 現在設定されているシザー矩形

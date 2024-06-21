@@ -508,6 +508,40 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getVSSamplerState, setVSSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	SamplerState CRenderer2D_D3D11::getVSSamplerState(const uint32 slot) const
+	{
+		// [Siv3D ToDo]
+		return SamplerState{};
+	}
+
+	void CRenderer2D_D3D11::setVSSamplerState(const uint32 slot, const SamplerState& state)
+	{
+		// [Siv3D ToDo]
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getPSSamplerState, setPSSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	SamplerState CRenderer2D_D3D11::getPSSamplerState(const uint32 slot) const
+	{
+		// [Siv3D ToDo]
+		return SamplerState{};
+	}
+
+	void CRenderer2D_D3D11::setPSSamplerState(const uint32 slot, const SamplerState& state)
+	{
+		// [Siv3D ToDo]
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getScissorRect, setScissorRect
 	//
 	////////////////////////////////////////////////////////////////
