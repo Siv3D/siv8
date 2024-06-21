@@ -1465,6 +1465,9 @@
 
 # include <Siv3D/ScopedViewport2D.hpp>
 
+// 2D 座標変換スコープ | 2D Transformation scope
+# include <Siv3D/Transformer2D.hpp>
+
 
 # if SIV3D_PLATFORM(WINDOWS)
 

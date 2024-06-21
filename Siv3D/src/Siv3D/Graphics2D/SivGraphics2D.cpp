@@ -96,6 +96,21 @@ namespace s3d
 			return SIV3D_ENGINE(Renderer2D)->getViewport();
 		}
 
+		const Mat3x2& GetLocalTransform()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getLocalTransform();
+		}
+
+		const Mat3x2& GetCameraTransform()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getCameraTransform();
+		}
+
+		float GetMaxScaling() noexcept
+		{
+			return SIV3D_ENGINE(Renderer2D)->getMaxScaling();
+		}
+
 		namespace Internal
 		{
 			void SetColorMul(const Float4& color)
@@ -158,6 +173,16 @@ namespace s3d
 			void SetViewport(const Optional<Rect>& viewport)
 			{
 				SIV3D_ENGINE(Renderer2D)->setViewport(viewport);
+			}
+
+			void SetLocalTransform(const Mat3x2& transform)
+			{
+				SIV3D_ENGINE(Renderer2D)->setLocalTransform(transform);
+			}
+
+			void SetCameraTransform(const Mat3x2& transform)
+			{
+				SIV3D_ENGINE(Renderer2D)->setCameraTransform(transform);
 			}
 		}
 	}

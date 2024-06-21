@@ -41,4 +41,7 @@ namespace s3d
 	/// @brief 中心にそろえる
 	using Centering				= YesNo<struct Centering_tag>;
 
+	/// @brief カーソルの座標を変換する
+	using TransformCursor		= YesNo<struct TransformCursor_tag>;
+
 }

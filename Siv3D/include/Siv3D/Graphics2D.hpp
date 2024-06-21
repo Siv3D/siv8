@@ -21,6 +21,7 @@
 namespace s3d
 {
 	struct TextStyle;
+	struct Mat3x2;
 
 	namespace Graphics2D
 	{
@@ -72,6 +73,22 @@ namespace s3d
 		/// @return 現在適用されているビューポート。シーンと一致する場合は none
 		[[nodiscard]]
 		Optional<Rect> GetViewport();
+
+		/// @brief 現在適用されているローカル座標変換を返します。
+		/// @return 現在適用されているローカル座標変換
+		[[nodiscard]]
+		const Mat3x2& GetLocalTransform();
+
+		/// @brief 現在適用されている 2D カメラ座標変換を返します。
+		/// @return 現在適用されている 2D カメラ座標変換
+		[[nodiscard]]
+		const Mat3x2& GetCameraTransform();
+
+		/// @brief 現在適用されている座標変換による縦横の拡大縮小倍率のうち大きいほうを返します。 
+		/// @return 現在適用されている座標変換による縦横の拡大縮小倍率のうち大きいほう
+		/// @remark 線の太さをこの値で除算すれば、どのような拡大縮小倍率でも一定の太さになる線を描けます。
+		[[nodiscard]]
+		float GetMaxScaling() noexcept;
 	}
 }
 

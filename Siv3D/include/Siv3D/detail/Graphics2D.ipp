@@ -34,6 +34,10 @@ namespace s3d
 			void SetScissorRect(const Optional<Rect>& rect);
 
 			void SetViewport(const Optional<Rect>& viewport);
+
+			void SetLocalTransform(const Mat3x2& transform);
+
+			void SetCameraTransform(const Mat3x2& transform);
 		}
 	}
 }

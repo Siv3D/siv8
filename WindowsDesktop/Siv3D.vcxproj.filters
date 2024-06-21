@@ -892,6 +892,9 @@
     <Filter Include="src\Siv3D\ScopedRenderStates2D">
       <UniqueIdentifier>{67c0e484-5527-4c20-a050-6c756a601e9b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Transformer2D">
+      <UniqueIdentifier>{a9dd66ad-2c2a-49b7-9cd1-810b7fb363c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3498,6 +3501,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedRenderStates2D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Transformer2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5794,6 +5800,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ScopedRenderStates2D\SivScopedRenderStates2D.cpp">
       <Filter>src\Siv3D\ScopedRenderStates2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Transformer2D\SivTransformer2D.cpp">
+      <Filter>src\Siv3D\Transformer2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
