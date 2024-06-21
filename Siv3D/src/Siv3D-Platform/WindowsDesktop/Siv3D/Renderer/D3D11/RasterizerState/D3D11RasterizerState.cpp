@@ -33,18 +33,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11RasterizerState::set(const RasterizerState& state)
+	void D3D11RasterizerState::set(const RasterizerState& state, const bool scissorEnabled)
 	{
-		if (state == m_currentState)
+		const auto newState = std::make_pair(state, scissorEnabled);
+
+		if (newState == m_currentState)
 		{
 			return;
 		}
 
-		auto it = m_states.find(state);
+		auto it = m_states.find(newState);
 
 		if (it == m_states.end())
 		{
-			it = create(state);
+			it = create(newState);
 
 			if (it == m_states.end())
 			{
@@ -54,7 +56,7 @@ namespace s3d
 
 		m_context->RSSetState(it->second.Get());
 
-		m_currentState = state;
+		m_currentState = newState;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -76,20 +78,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	D3D11RasterizerState::StateTable::iterator D3D11RasterizerState::create(const RasterizerState& state)
+	D3D11RasterizerState::StateTable::iterator D3D11RasterizerState::create(const std::pair<RasterizerState, bool>& state)
 	{
 		const D3D11_RASTERIZER_DESC desc
 		{
-			.FillMode				= static_cast<D3D11_FILL_MODE>(FromEnum(state.triangleFillMode) + 2),
-			.CullMode				= static_cast<D3D11_CULL_MODE>(state.cullMode),
+			.FillMode				= static_cast<D3D11_FILL_MODE>(FromEnum(state.first.triangleFillMode) + 2),
+			.CullMode				= static_cast<D3D11_CULL_MODE>(state.first.cullMode),
 			.FrontCounterClockwise	= false,
-			.DepthBias				= state.depthBias,
+			.DepthBias				= state.first.depthBias,
 			.DepthBiasClamp			= 0.0f,
 			.SlopeScaledDepthBias	= 0.0f,
 			.DepthClipEnable		= true,
-			.ScissorEnable			= state.scissorEnabled,
-			.MultisampleEnable		= (state.antialiasedLine3D ? false : true),
-			.AntialiasedLineEnable	= (state.antialiasedLine3D ? true : false),
+			.ScissorEnable			= state.second,
+			.MultisampleEnable		= (state.first.antialiasedLine3D ? false : true),
+			.AntialiasedLineEnable	= (state.first.antialiasedLine3D ? true : false),
 		};
 
 		ComPtr<ID3D11RasterizerState> rasterizerState;

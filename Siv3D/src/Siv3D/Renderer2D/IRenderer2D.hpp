@@ -11,7 +11,9 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <Siv3D/Optional.hpp>
 # include <Siv3D/PointVector.hpp>
+# include <Siv3D/2DShapes.hpp>
 
 namespace s3d
 {
@@ -62,9 +64,9 @@ namespace s3d
 
 		virtual void setRasterizerState(const RasterizerState& state) = 0;
 
-		virtual Rect getScissorRect() const = 0;
+		virtual Optional<Rect> getScissorRect() const = 0;
 
-		virtual void setScissorRect(const Rect& rect) = 0;
+		virtual void setScissorRect(const Optional<Rect>& rect) = 0;
 
 
 		virtual float getMaxScaling() const noexcept = 0;

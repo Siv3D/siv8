@@ -19,7 +19,6 @@ namespace s3d
 		String result = U"RasterizerState\n{\n";
 		result += U"\ttriangleFillMode: {}\n"_fmt(triangleFillMode);
 		result += U"\tcullMode: {}\n"_fmt(cullMode);
-		result += U"\tscissorEnabled: {}\n"_fmt(scissorEnabled);
 		result += U"\tantialiasedLine3D: {}\n"_fmt(antialiasedLine3D);
 		result += U"\tdepthBias: {}\n"_fmt(depthBias);
 		result += U"}";

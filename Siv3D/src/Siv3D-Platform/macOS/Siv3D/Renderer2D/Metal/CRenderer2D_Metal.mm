@@ -471,12 +471,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Rect CRenderer2D_Metal::getScissorRect() const
+	Optional<Rect> CRenderer2D_Metal::getScissorRect() const
 	{
 		return m_commandManager.getCurrentScissorRect();
 	}
 
-	void CRenderer2D_Metal::setScissorRect(const Rect& rect)
+	void CRenderer2D_Metal::setScissorRect(const Optional<Rect>& rect)
 	{
 		m_commandManager.pushScissorRect(rect);
 	}

@@ -30,7 +30,6 @@ namespace s3d
 		explicit constexpr RasterizerStateBuilder(
 			TriangleFillMode _triangleFillMode = TriangleFillMode::Solid,
 			CullMode _cullMode = CullMode::Back,
-			bool _scissorEnabled = false,
 			bool _antialiasedLine3D = false,
 			int32 _depthBias = 0
 		) noexcept;
@@ -46,12 +45,6 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr CullMode cullMode() const noexcept;
-
-		[[nodiscard]]
-		constexpr RasterizerStateBuilder scissorEnabled(bool _scissorEnabled) const noexcept;
-
-		[[nodiscard]]
-		constexpr bool scissorEnabled() const noexcept;
 
 		[[nodiscard]]
 		constexpr RasterizerStateBuilder antialiasedLine3D(bool _antialiasedLine3D) const noexcept;
@@ -79,9 +72,7 @@ namespace s3d
 
 		CullMode m_cullMode : 2 = CullMode::Back;
 
-		bool m_scissorEnabled : 2 = false;
-
-		bool m_antialiasedLine3D : 2 = false;
+		bool m_antialiasedLine3D : 4 = false;
 
 		int32 m_depthBias = 0;
 	};

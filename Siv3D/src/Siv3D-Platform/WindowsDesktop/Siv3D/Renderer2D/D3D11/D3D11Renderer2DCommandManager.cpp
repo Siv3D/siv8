@@ -514,7 +514,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11Renderer2DCommandManager::pushScissorRect(const Rect& state)
+	void D3D11Renderer2DCommandManager::pushScissorRect(const Optional<Rect>& state)
 	{
 		constexpr auto Command = D3D11Renderer2DCommandType::ScissorRect;
 		auto& current = m_current.scissorRect;
@@ -539,12 +539,12 @@ namespace s3d
 		}
 	}
 
-	const Rect& D3D11Renderer2DCommandManager::getScissorRect(const uint32 index) const
+	const Optional<Rect>& D3D11Renderer2DCommandManager::getScissorRect(const uint32 index) const
 	{
 		return m_buffer.scissorRects[index];
 	}
 
-	const Rect& D3D11Renderer2DCommandManager::getCurrentScissorRect() const
+	const Optional<Rect>& D3D11Renderer2DCommandManager::getCurrentScissorRect() const
 	{
 		return m_current.scissorRect;
 	}

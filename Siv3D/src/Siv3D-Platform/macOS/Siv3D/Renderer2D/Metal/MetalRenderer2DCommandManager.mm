@@ -493,7 +493,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void MetalRenderer2DCommandManager::pushScissorRect(const Rect& state)
+	void MetalRenderer2DCommandManager::pushScissorRect(const Optional<Rect>& state)
 	{
 		constexpr auto Command = MetalRenderer2DCommandType::ScissorRect;
 		auto& current = m_current.scissorRect;
@@ -518,12 +518,12 @@ namespace s3d
 		}
 	}
 
-	const Rect& MetalRenderer2DCommandManager::getScissorRect(const uint32 index) const
+	const Optional<Rect>& MetalRenderer2DCommandManager::getScissorRect(const uint32 index) const
 	{
 		return m_buffer.scissorRects[index];
 	}
 
-	const Rect& MetalRenderer2DCommandManager::getCurrentScissorRect() const
+	const Optional<Rect>& MetalRenderer2DCommandManager::getCurrentScissorRect() const
 	{
 		return m_current.scissorRect;
 	}

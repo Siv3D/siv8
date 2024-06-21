@@ -286,6 +286,8 @@ namespace s3d
 		}
 
 		BatchInfo2D batchInfo;
+		RasterizerState currentRasterizerState = RasterizerState::Default2D;
+		Optional<Rect> currentScissorRect;
 
 		for (const auto& command : m_commandManager.getCommands())
 		{
@@ -351,14 +353,35 @@ namespace s3d
 			case D3D11Renderer2DCommandType::RasterizerState:
 				{
 					const auto& rasterizerState = m_commandManager.getRasterizerState(command.index);
-					m_pRenderer->getRasterizerState().set(rasterizerState);
+					currentRasterizerState = rasterizerState;
+
+					if (currentScissorRect)
+					{
+						m_pRenderer->getRasterizerState().set(rasterizerState, true);
+					}
+					else
+					{
+						m_pRenderer->getRasterizerState().set(rasterizerState, false);
+					}
+
 					LOG_COMMAND(fmt::format("RasterizerState[{}]", command.index));
 					break;
 				}
 			case D3D11Renderer2DCommandType::ScissorRect:
 				{
 					const auto& scissorRect = m_commandManager.getScissorRect(command.index);
-					m_pRenderer->getRasterizerState().setScissorRect(scissorRect);
+					currentScissorRect = scissorRect;
+
+					if (scissorRect)
+					{
+						m_pRenderer->getRasterizerState().set(currentRasterizerState, true);
+						m_pRenderer->getRasterizerState().setScissorRect(*scissorRect);
+					}
+					else
+					{
+						m_pRenderer->getRasterizerState().set(currentRasterizerState, false);
+					}
+
 					LOG_COMMAND(U"ScissorRect[{}] {}"_fmt(command.index, scissorRect));
 					break;
 				}
@@ -470,12 +493,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Rect CRenderer2D_D3D11::getScissorRect() const
+	Optional<Rect> CRenderer2D_D3D11::getScissorRect() const
 	{
 		return m_commandManager.getCurrentScissorRect();
 	}
 
-	void CRenderer2D_D3D11::setScissorRect(const Rect& rect)
+	void CRenderer2D_D3D11::setScissorRect(const Optional<Rect>& rect)
 	{
 		m_commandManager.pushScissorRect(rect);
 	}

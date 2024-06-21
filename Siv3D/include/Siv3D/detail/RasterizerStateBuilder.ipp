@@ -16,13 +16,11 @@ namespace s3d
 	constexpr RasterizerStateBuilder::RasterizerStateBuilder(
 		const TriangleFillMode _triangleFillMode,
 		const CullMode _cullMode,
-		const bool _scissorEnabled,
 		const bool _antialiasedLine3D,
 		const int32 _depthBias
 	) noexcept
 		: m_triangleFillMode{ _triangleFillMode }
 		, m_cullMode{ _cullMode }
-		, m_scissorEnabled{ _scissorEnabled }
 		, m_antialiasedLine3D{ _antialiasedLine3D }
 		, m_depthBias{ _depthBias } {}
 
@@ -48,18 +46,6 @@ namespace s3d
 	constexpr CullMode RasterizerStateBuilder::cullMode() const noexcept
 	{
 		return m_cullMode;
-	}
-
-	constexpr RasterizerStateBuilder RasterizerStateBuilder::scissorEnabled(const bool _scissorEnabled) const noexcept
-	{
-		RasterizerStateBuilder result{ *this };
-		result.m_scissorEnabled = _scissorEnabled;
-		return result;
-	}
-
-	constexpr bool RasterizerStateBuilder::scissorEnabled() const noexcept
-	{
-		return m_scissorEnabled;
 	}
 
 	constexpr RasterizerStateBuilder RasterizerStateBuilder::antialiasedLine3D(const bool _antialiasedLine3D) const noexcept

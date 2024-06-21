@@ -49,15 +49,10 @@ namespace s3d
 		//[[nodiscard]]
 		//SamplerState GetSamplerState(ShaderStage shaderStage = ShaderStage::Pixel, uint32 slot = 0);
 
-		/// @brief シザー矩形を設定します。
-		/// @param rect シザー矩形
-		/// @remark シザー矩形は RasterizerState で scissorEnable を true にすることで有効になります。
-		void SetScissorRect(const Rect& rect);
-
 		/// @brief 現在設定されているシザー矩形を返します。
 		/// @return 現在設定されているシザー矩形
 		[[nodiscard]]
-		Rect GetScissorRect();
+		Optional<Rect> GetScissorRect();
 	}
 }
 

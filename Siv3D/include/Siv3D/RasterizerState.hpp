@@ -32,9 +32,7 @@ namespace s3d
 
 		CullMode cullMode					: 2 = CullMode::Back;
 
-		bool scissorEnabled					: 2 = false;
-
-		bool antialiasedLine3D				: 2 = false;
+		bool antialiasedLine3D				: 4 = false;
 
 		int32 depthBias							= 0;
 
@@ -50,7 +48,6 @@ namespace s3d
 		explicit constexpr RasterizerState(
 			TriangleFillMode _triangleFillMode = TriangleFillMode::Solid,
 			CullMode _cullMode = CullMode::Back,
-			bool _scissorEnabled = false,
 			bool _antialiasedLine3D = false,
 			int32 _depthBias = 0
 		) noexcept;

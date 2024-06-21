@@ -37,14 +37,9 @@ namespace s3d
 			return SIV3D_ENGINE(Renderer2D)->getRasterizerState();
 		}
 
-		Rect GetScissorRect()
+		Optional<Rect> GetScissorRect()
 		{
 			return SIV3D_ENGINE(Renderer2D)->getScissorRect();
-		}
-
-		void SetScissorRect(const Rect& rect)
-		{
-			SIV3D_ENGINE(Renderer2D)->setScissorRect(rect);
 		}
 
 		namespace Internal
@@ -67,6 +62,11 @@ namespace s3d
 			void SetRasterizerState(const RasterizerState& rasterizerState)
 			{
 				SIV3D_ENGINE(Renderer2D)->setRasterizerState(rasterizerState);
+			}
+
+			void SetScissorRect(const Optional<Rect>& rect)
+			{
+				SIV3D_ENGINE(Renderer2D)->setScissorRect(rect);
 			}
 		}
 	}

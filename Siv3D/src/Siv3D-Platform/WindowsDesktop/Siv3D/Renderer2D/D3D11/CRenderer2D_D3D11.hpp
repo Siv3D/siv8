@@ -59,9 +59,9 @@ namespace s3d
 
 		void setRasterizerState(const RasterizerState& state) override;
 
-		Rect getScissorRect() const override;
+		Optional<Rect> getScissorRect() const override;
 
-		void setScissorRect(const Rect& rect) override;
+		void setScissorRect(const Optional<Rect>& rect) override;
 
 		float getMaxScaling() const noexcept override;
 

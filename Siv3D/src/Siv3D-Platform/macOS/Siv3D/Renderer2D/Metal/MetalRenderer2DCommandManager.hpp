@@ -54,9 +54,9 @@ namespace s3d
 		const RasterizerState& getRasterizerState(uint32 index) const;
 		const RasterizerState& getCurrentRasterizerState() const;
 
-		void pushScissorRect(const Rect& state);
-		const Rect& getScissorRect(uint32 index) const;
-		const Rect& getCurrentScissorRect() const;
+		Optional<Rect> pushScissorRect(const Optional<Rect>& state);
+		const Optional<Rect>& getScissorRect(uint32 index) const;
+		const Optional<Rect>& getCurrentScissorRect() const;
 
 		void pushEngineVS(VertexShader::IDType id);
 		VertexShader::IDType getVS(uint32 index) const;
@@ -82,7 +82,7 @@ namespace s3d
 
 			Array<RasterizerState> rasterizerStates	= { RasterizerState::Default2D };
 
-			Array<Rect> scissorRects				= { Rect::Empty() };
+			Array<Optional<Rect>> scissorRects		= { none };
 
 			Array<VertexShader::IDType> vertexShaders;
 
@@ -102,7 +102,7 @@ namespace s3d
 
 			RasterizerState rasterizerState		= RasterizerState::Default2D;
 
-			Rect scissorRect					= Rect::Empty();
+			Optional<Rect> scissorRect			= none;
 
 			VertexShader::IDType vertexShader	= VertexShader::IDType::Invalid();
 			
