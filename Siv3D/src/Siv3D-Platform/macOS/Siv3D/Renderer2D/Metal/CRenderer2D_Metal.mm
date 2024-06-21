@@ -357,6 +357,29 @@ namespace s3d
 					{
 						const auto& scissorRect = m_commandManager.getScissorRect(command.index);
 						
+						if (scissorRect)
+						{
+							const Point topLeft{ Max(0, scissorRect->x), Max(0, scissorRect->y) };
+							const Rect clampedRect = Rect::FromPoints(topLeft, scissorRect->br());
+							const MTL::ScissorRect rect{
+								.x = static_cast<uint32>(clampedRect.x),
+								.y = static_cast<uint32>(clampedRect.y),
+								.width = static_cast<uint32>(clampedRect.w),
+								.height = static_cast<uint32>(clampedRect.h)
+							};
+							renderCommandEncoder->setScissorRect(rect);
+						}
+						else
+						{
+							const MTL::ScissorRect rect{
+								.x = 0,
+								.y = 0,
+								.width = static_cast<uint32>(currentRenderTargetSize.x),
+								.height = static_cast<uint32>(currentRenderTargetSize.y)
+							};
+							renderCommandEncoder->setScissorRect(rect);
+						}
+						
 						LOG_COMMAND(U"ScissorRect[{}] {}"_fmt(command.index, scissorRect));
 						break;
 					}

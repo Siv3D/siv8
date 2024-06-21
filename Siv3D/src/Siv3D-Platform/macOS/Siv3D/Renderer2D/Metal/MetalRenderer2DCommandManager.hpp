@@ -54,7 +54,7 @@ namespace s3d
 		const RasterizerState& getRasterizerState(uint32 index) const;
 		const RasterizerState& getCurrentRasterizerState() const;
 
-		Optional<Rect> pushScissorRect(const Optional<Rect>& state);
+		void pushScissorRect(const Optional<Rect>& state);
 		const Optional<Rect>& getScissorRect(uint32 index) const;
 		const Optional<Rect>& getCurrentScissorRect() const;
 

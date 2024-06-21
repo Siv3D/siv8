@@ -888,5 +888,11 @@ namespace s3d
 	{
 		return{ 0, 0, 0, 0 };
 	}
-
+	
+	constexpr Rect Rect::FromPoints(const position_type a, const position_type b) noexcept
+	{
+		const auto [x0, x1] = MinMax(a.x, b.x);
+		const auto [y0, y1] = MinMax(a.y, b.y);
+		return{ x0, y0, (x1 - x0), (y1- y0) };
+	}
 }
