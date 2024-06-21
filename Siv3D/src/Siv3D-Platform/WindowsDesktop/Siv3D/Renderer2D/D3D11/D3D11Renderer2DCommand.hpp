@@ -81,7 +81,7 @@ namespace s3d
 
 		SetPS,
 
-		//Transform,
+		Transform,
 
 		//SetConstantBuffer,
 

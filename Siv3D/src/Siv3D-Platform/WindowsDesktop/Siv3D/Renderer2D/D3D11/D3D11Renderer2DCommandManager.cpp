@@ -13,6 +13,15 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static float CalculateMaxScaling(const Mat3x2& mat)
+		{
+			return (Float2{ (mat._11 + mat._21), (mat._12 + mat._22) }.length() / Math::Sqrt2_v<float>);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -63,9 +72,9 @@ namespace s3d
 			//m_internalPSConstants = { m_internalPSConstants.back() };
 			//m_RTs = { m_RTs.back() };
 
-			m_buffer.vertexShaders	= { VertexShader::IDType::Invalid() };
-			m_buffer.pixelShaders	= { PixelShader::IDType::Invalid() };
-			//m_combinedTransforms = { m_combinedTransforms.back() };
+			m_buffer.vertexShaders		= { VertexShader::IDType::Invalid() };
+			m_buffer.pixelShaders		= { PixelShader::IDType::Invalid() };
+			m_buffer.combinedTransforms = { m_buffer.combinedTransforms.back() };
 			//m_constants.clear();
 			//m_constantBufferCommands.clear();
 		}
@@ -129,8 +138,8 @@ namespace s3d
 			m_commands.emplace_back(D3D11Renderer2DCommandType::SetPS, 0);
 			m_current.pixelShader = PixelShader::IDType::Invalid();
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::Transform, 0);
-			//m_currentCombinedTransform = m_combinedTransforms.front();
+			m_commands.emplace_back(D3D11Renderer2DCommandType::Transform, 0);
+			m_current.combinedTransform = m_buffer.combinedTransforms.front();
 
 			//{
 			//	for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
@@ -262,11 +271,11 @@ namespace s3d
 			m_buffer.pixelShaders.push_back(m_current.pixelShader);
 		}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::Transform))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::Transform, static_cast<uint32>(m_combinedTransforms.size()));
-		//	m_combinedTransforms.push_back(m_currentCombinedTransform);
-		//}
+		if (m_stateTracker.has(D3D11Renderer2DCommandType::Transform))
+		{
+			m_commands.emplace_back(D3D11Renderer2DCommandType::Transform, static_cast<uint32>(m_buffer.combinedTransforms.size()));
+			m_buffer.combinedTransforms.push_back(m_current.combinedTransform);
+		}
 
 		//if (m_changes.has(D3D11Renderer2DCommandType::SetConstantBuffer))
 		//{
@@ -650,18 +659,126 @@ namespace s3d
 		{
 			if (id == buffer.back())
 			{
-				current = id;
 				m_stateTracker.clear(Command);
 			}
-			else
-			{
-				current = id;
-			}
+
+			current = id;
 		}
 	}
 
 	PixelShader::IDType D3D11Renderer2DCommandManager::getPS(const uint32 index) const
 	{
 		return m_buffer.pixelShaders[index];
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushLocalTransform, getCurrentLocalTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushLocalTransform(const Mat3x2& local)
+	{
+		constexpr auto Command = D3D11Renderer2DCommandType::Transform;
+		auto& currentLocal = m_current.localTransform;
+		auto& currentCombined = m_current.combinedTransform;
+		auto& buffer = m_buffer.combinedTransforms;
+		const Mat3x2 combinedTransform = (local * m_current.cameraTransform);
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (local != currentLocal)
+			{
+				currentLocal = local;
+				currentCombined = combinedTransform;
+				m_current.maxScaling = CalculateMaxScaling(combinedTransform);
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (combinedTransform == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			currentLocal = local;
+			currentCombined = combinedTransform;
+			m_current.maxScaling = CalculateMaxScaling(combinedTransform);
+		}
+	}
+
+	const Mat3x2& D3D11Renderer2DCommandManager::getCurrentLocalTransform() const
+	{
+		return m_current.localTransform;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushCameraTransform, getCurrentCameraTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushCameraTransform(const Mat3x2& camera)
+	{
+		constexpr auto Command = D3D11Renderer2DCommandType::Transform;
+		auto& currentCamera = m_current.cameraTransform;
+		auto& currentCombined = m_current.combinedTransform;
+		auto& buffer = m_buffer.combinedTransforms;
+		const Mat3x2 combinedTransform = (m_current.localTransform * camera);
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (camera != currentCamera)
+			{
+				currentCamera = camera;
+				currentCombined = combinedTransform;
+				m_current.maxScaling = CalculateMaxScaling(combinedTransform);
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (combinedTransform == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			currentCamera = camera;
+			currentCombined = combinedTransform;
+			m_current.maxScaling = CalculateMaxScaling(combinedTransform);
+		}
+	}
+
+	const Mat3x2& D3D11Renderer2DCommandManager::getCurrentCameraTransform() const
+	{
+		return m_current.cameraTransform;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCombinedTransform, getCurrentCombinedTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Mat3x2& D3D11Renderer2DCommandManager::getCombinedTransform(const uint32 index) const
+	{
+		return m_buffer.combinedTransforms[index];
+	}
+
+	const Mat3x2& D3D11Renderer2DCommandManager::getCurrentCombinedTransform() const
+	{
+		return m_current.combinedTransform;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCurrentMaxScaling
+	//
+	////////////////////////////////////////////////////////////////
+
+	float D3D11Renderer2DCommandManager::getCurrentMaxScaling() const noexcept
+	{
+		return m_current.maxScaling;
 	}
 }

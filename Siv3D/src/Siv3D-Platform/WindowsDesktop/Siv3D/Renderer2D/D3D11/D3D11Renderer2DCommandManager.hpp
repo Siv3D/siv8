@@ -18,6 +18,7 @@
 # include <Siv3D/SamplerState.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
+# include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Renderer/D3D11/D3D11.hpp>
 # include "D3D11Renderer2DCommand.hpp"
 # include <Siv3D/Renderer2D/BatchStateTracker.hpp>
@@ -71,6 +72,16 @@ namespace s3d
 		void pushEnginePS(PixelShader::IDType id);
 		PixelShader::IDType getPS(uint32 index) const;
 
+		void pushLocalTransform(const Mat3x2& local);
+		const Mat3x2& getCurrentLocalTransform() const;
+
+		void pushCameraTransform(const Mat3x2& camera);
+		const Mat3x2& getCurrentCameraTransform() const;
+
+		const Mat3x2& getCombinedTransform(uint32 index) const;
+		const Mat3x2& getCurrentCombinedTransform() const;
+		float getCurrentMaxScaling() const noexcept;
+
 	private:
 
 		Array<D3D11Renderer2DCommand> m_commands;
@@ -97,6 +108,8 @@ namespace s3d
 
 			Array<PixelShader::IDType> pixelShaders;
 
+			Array<Mat3x2> combinedTransforms		= { Mat3x2::Identity() };
+
 		} m_buffer;
 
 		struct Current
@@ -118,6 +131,14 @@ namespace s3d
 			VertexShader::IDType vertexShader	= VertexShader::IDType::Invalid();
 			
 			PixelShader::IDType pixelShader		= PixelShader::IDType::Invalid();
+
+			Mat3x2 localTransform				= Mat3x2::Identity();
+			
+			Mat3x2 cameraTransform				= Mat3x2::Identity();
+			
+			Mat3x2 combinedTransform			= Mat3x2::Identity();
+
+			float maxScaling					= 1.0f;
 
 		} m_current;
 	};
