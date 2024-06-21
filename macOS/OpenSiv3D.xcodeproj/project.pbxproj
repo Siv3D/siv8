@@ -692,6 +692,8 @@
 		F9712A3A2C2572C60049CC26 /* ScopedColorMul2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A382C2572C60049CC26 /* ScopedColorMul2D.hpp */; };
 		F9712A3F2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A3B2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp */; };
 		F9712A402C2572DF0049CC26 /* SivScopedColorMul2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A3D2C2572DF0049CC26 /* SivScopedColorMul2D.cpp */; };
+		F9712A422C2599090049CC26 /* ScopedRenderStates2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A412C2599090049CC26 /* ScopedRenderStates2D.hpp */; };
+		F9712A452C25991C0049CC26 /* SivScopedRenderStates2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A432C25991C0049CC26 /* SivScopedRenderStates2D.cpp */; };
 		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
 		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
 		F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */; };
@@ -2917,6 +2919,8 @@
 		F9712A382C2572C60049CC26 /* ScopedColorMul2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedColorMul2D.hpp; sourceTree = "<group>"; };
 		F9712A3B2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedColorAdd2D.cpp; sourceTree = "<group>"; };
 		F9712A3D2C2572DF0049CC26 /* SivScopedColorMul2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedColorMul2D.cpp; sourceTree = "<group>"; };
+		F9712A412C2599090049CC26 /* ScopedRenderStates2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedRenderStates2D.hpp; sourceTree = "<group>"; };
+		F9712A432C25991C0049CC26 /* SivScopedRenderStates2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedRenderStates2D.cpp; sourceTree = "<group>"; };
 		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
 		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
 		F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ResizeMode.hpp; sourceTree = "<group>"; };
@@ -5493,6 +5497,7 @@
 				F97202F52BEDF2D8000E21DD /* Scene.hpp */,
 				F9712A372C2572C60049CC26 /* ScopedColorAdd2D.hpp */,
 				F9712A382C2572C60049CC26 /* ScopedColorMul2D.hpp */,
+				F9712A412C2599090049CC26 /* ScopedRenderStates2D.hpp */,
 				F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */,
 				F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
@@ -6202,6 +6207,7 @@
 				F97203022BEDF2FF000E21DD /* Scene */,
 				F9712A3C2C2572DF0049CC26 /* ScopedColorAdd2D */,
 				F9712A3E2C2572DF0049CC26 /* ScopedColorMul2D */,
+				F9712A442C25991C0049CC26 /* ScopedRenderStates2D */,
 				F9712A2E2C252EFE0049CC26 /* ScopedScissorRect2D */,
 				F9712A352C25501C0049CC26 /* ScopedViewport2D */,
 				F934BD802BF880A10003EAD5 /* Shader */,
@@ -6956,6 +6962,14 @@
 				F9712A3D2C2572DF0049CC26 /* SivScopedColorMul2D.cpp */,
 			);
 			path = ScopedColorMul2D;
+			sourceTree = "<group>";
+		};
+		F9712A442C25991C0049CC26 /* ScopedRenderStates2D */ = {
+			isa = PBXGroup;
+			children = (
+				F9712A432C25991C0049CC26 /* SivScopedRenderStates2D.cpp */,
+			);
+			path = ScopedRenderStates2D;
 			sourceTree = "<group>";
 		};
 		F97203022BEDF2FF000E21DD /* Scene */ = {
@@ -10025,6 +10039,7 @@
 				F986FA642BCFB53B006A4C0F /* ftobjs.h in Headers */,
 				F9070CFA2B9F175100383E4D /* SIMD.hpp in Headers */,
 				F986023F2BCFBB54006A4C0F /* SkRecord.h in Headers */,
+				F9712A422C2599090049CC26 /* ScopedRenderStates2D.hpp in Headers */,
 				F98600A42BCFBB53006A4C0F /* SkSLVersion.h in Headers */,
 				F986FFEE2BCFBB53006A4C0F /* SkEncodedImageFormat.h in Headers */,
 				F9070DF82B9F175E00383E4D /* UnicodeUtility.hpp in Headers */,
@@ -11139,6 +11154,7 @@
 				F9070EE02B9F1C8900383E4D /* input.c in Sources */,
 				F98601C72BCFBB53006A4C0F /* SkGlyph.cpp in Sources */,
 				F98605B02BE49BE0006A4C0F /* SivMouse.cpp in Sources */,
+				F9712A452C25991C0049CC26 /* SivScopedRenderStates2D.cpp in Sources */,
 				F986050B2BCFBE2D006A4C0F /* SkDebug_stdio.cpp in Sources */,
 				F986F9D02BCFB514006A4C0F /* CEmoji.cpp in Sources */,
 				F986032F2BCFBB54006A4C0F /* SkPathOpsTSect.cpp in Sources */,

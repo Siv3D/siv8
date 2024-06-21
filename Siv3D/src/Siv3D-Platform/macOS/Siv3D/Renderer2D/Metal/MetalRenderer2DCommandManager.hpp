@@ -1,4 +1,4 @@
-//-----------------------------------------------
+﻿//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -15,6 +15,7 @@
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/BlendState.hpp>
 # include <Siv3D/RasterizerState.hpp>
+# include <Siv3D/SamplerState.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
 # include <Siv3D/Renderer/Metal/Metal.hpp>
