@@ -874,6 +874,31 @@ namespace s3d
 
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	clamped
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::clamped(const Rect& area) const noexcept
+	{
+		const value_type x0 = Clamp(pos.x, area.pos.x, area.rightX());
+		const value_type y0 = Clamp(pos.y, area.pos.y, area.bottomY());
+		const value_type x1 = Clamp(rightX(), area.pos.x, area.rightX());
+		const value_type y1 = Clamp(bottomY(), area.pos.y, area.bottomY());
+		return{ x0, y0, (x1 - x0), (y1 - y0) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hash
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline uint64 Rect::hash() const noexcept
+	{
+		return Hash(*this);
+	}
 
 
 
@@ -883,12 +908,23 @@ namespace s3d
 
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	Empty
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr Rect Rect::Empty() noexcept
 	{
 		return{ 0, 0, 0, 0 };
 	}
-	
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromPoints
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr Rect Rect::FromPoints(const position_type a, const position_type b) noexcept
 	{
 		const auto [x0, x1] = MinMax(a.x, b.x);

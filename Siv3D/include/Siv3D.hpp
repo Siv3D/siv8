@@ -285,6 +285,8 @@
 // Fmt の拡張 | Fmt extension
 # include <Siv3D/FmtExtension.hpp>
 
+# include <Siv3D/FmtOptional.hpp>
+
 // フォーマットユーティリティ | Format utility
 # include <Siv3D/FormatUtility.hpp>
 

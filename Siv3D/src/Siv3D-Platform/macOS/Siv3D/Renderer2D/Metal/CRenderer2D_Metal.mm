@@ -19,6 +19,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/FmtOptional.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 ///*
@@ -403,7 +404,7 @@ namespace s3d
 							renderCommandEncoder->setScissorRect(rect);
 						}
 						
-						LOG_COMMAND(U"ScissorRect[{}] {}"_fmt(command.index, scissorRect));
+						LOG_COMMAND(fmt::format("ScissorRect[{}] {}", command.index, scissorRect));
 						break;
 					}
 				case MetalRenderer2DCommandType::Viewport:
@@ -418,7 +419,7 @@ namespace s3d
 						m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
 						m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
 						
-						LOG_COMMAND(U"Viewport[{}] {}"_fmt(command.index, viewport));
+						LOG_COMMAND(fmt::format("Viewport[{}] {}", command.index, viewport));
 						break;
 					}
 				case MetalRenderer2DCommandType::SetVS:
