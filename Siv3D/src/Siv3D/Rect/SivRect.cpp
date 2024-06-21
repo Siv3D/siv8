@@ -18,6 +18,24 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static double WrapLength(double length, double perimeter)
+		{
+			if (length < 0.0)
+			{
+				length = (perimeter + std::fmod(length, perimeter));
+			}
+			else if (perimeter <= length)
+			{
+				length = std::fmod(length, perimeter);
+			}
+
+			return length;
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	pointAtLength
@@ -26,14 +44,7 @@ namespace s3d
 
 	Vec2 Rect::pointAtLength(double length) const
 	{
-		if (length < 0.0)
-		{
-			length = (perimeter() + std::fmod(length, perimeter()));
-		}
-		else
-		{
-			length = std::fmod(length, perimeter());
-		}
+		length = WrapLength(length, perimeter());
 
 		if (length <= size.x)
 		{
@@ -61,32 +72,53 @@ namespace s3d
 
 	Vec2 Rect::interpolatedPointAt(double t) const noexcept
 	{
-		if (t < 0.0)
-		{
-			t = (1.0 + std::fmod(t, 1.0));
-		}
-		else if (1.0 < t)
-		{
-			t = std::fmod(t, 1.0);
-		}
+		t = WrapLength(t, 1.0);
 
 		const double length = (perimeter() * t);
 
 		if (length <= size.x)
 		{
-			return{ pos.x + length, pos.y };
+			return{ (pos.x + length), pos.y };
 		}
 		else if (length <= (size.x + size.y))
 		{
-			return{ pos.x + size.x, pos.y + (length - size.x) };
+			return{ (pos.x + size.x), (pos.y + (length - size.x)) };
 		}
 		else if (length <= (size.x * 2 + size.y))
 		{
-			return{ pos.x + size.x - (length - size.x - size.y), pos.y + size.y };
+			return{ (pos.x + size.x - (length - size.x - size.y)), (pos.y + size.y) };
 		}
 		else
 		{
-			return{ pos.x, pos.y + size.y - (length - size.x * 2 - size.y) };
+			return{ pos.x, (pos.y + size.y - (length - size.x * 2 - size.y)) };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sideIndexAtLength
+	//
+	////////////////////////////////////////////////////////////////
+
+	size_t Rect::sideIndexAtLength(double length) const
+	{
+		length = WrapLength(length, perimeter());
+
+		if (length <= size.x)
+		{
+			return 0;
+		}
+		else if (length <= (size.x + size.y))
+		{
+			return 1;
+		}
+		else if (length <= (size.x * 2 + size.y))
+		{
+			return 2;
+		}
+		else
+		{
+			return 3;
 		}
 	}
 
