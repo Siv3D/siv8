@@ -564,7 +564,7 @@ namespace s3d
 		return m_buffer.viewports[index];
 	}
 	
-	const Optional<Rect>& Metalenderer2DCommandManager::getCurrentViewport() const
+	const Optional<Rect>& MetalRenderer2DCommandManager::getCurrentViewport() const
 	{
 		return m_current.viewport;
 	}

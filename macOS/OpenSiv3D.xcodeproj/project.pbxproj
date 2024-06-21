@@ -769,7 +769,6 @@
 		F980C4742C01B4B600A86B68 /* SivBlendStateBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C46D2C01B4B600A86B68 /* SivBlendStateBuilder.cpp */; };
 		F980C4752C01B4B600A86B68 /* SivRasterizerStateBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F980C46F2C01B4B600A86B68 /* SivRasterizerStateBuilder.cpp */; };
 		F980C4772C01BA5600A86B68 /* DepthStencilState.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4762C01BA5600A86B68 /* DepthStencilState.ipp */; };
-		F980C4822C04B3EB00A86B68 /* BatchInfo2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4782C04B3EA00A86B68 /* BatchInfo2D.hpp */; };
 		F980C4832C04B3EB00A86B68 /* BatchStateTracker.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4792C04B3EA00A86B68 /* BatchStateTracker.hpp */; };
 		F980C4842C04B3EB00A86B68 /* IRenderer2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C47A2C04B3EA00A86B68 /* IRenderer2D.hpp */; };
 		F980C4852C04B3EB00A86B68 /* Renderer2DCommon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C47B2C04B3EA00A86B68 /* Renderer2DCommon.hpp */; };
@@ -3075,7 +3074,6 @@
 		F980C46D2C01B4B600A86B68 /* SivBlendStateBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBlendStateBuilder.cpp; sourceTree = "<group>"; };
 		F980C46F2C01B4B600A86B68 /* SivRasterizerStateBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRasterizerStateBuilder.cpp; sourceTree = "<group>"; };
 		F980C4762C01BA5600A86B68 /* DepthStencilState.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DepthStencilState.ipp; sourceTree = "<group>"; };
-		F980C4782C04B3EA00A86B68 /* BatchInfo2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BatchInfo2D.hpp; sourceTree = "<group>"; };
 		F980C4792C04B3EA00A86B68 /* BatchStateTracker.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BatchStateTracker.hpp; sourceTree = "<group>"; };
 		F980C47A2C04B3EA00A86B68 /* IRenderer2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IRenderer2D.hpp; sourceTree = "<group>"; };
 		F980C47B2C04B3EA00A86B68 /* Renderer2DCommon.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Renderer2DCommon.hpp; sourceTree = "<group>"; };
@@ -7287,7 +7285,6 @@
 		F980C47F2C04B3EA00A86B68 /* Renderer2D */ = {
 			isa = PBXGroup;
 			children = (
-				F980C4782C04B3EA00A86B68 /* BatchInfo2D.hpp */,
 				F980C4792C04B3EA00A86B68 /* BatchStateTracker.hpp */,
 				F980C47A2C04B3EA00A86B68 /* IRenderer2D.hpp */,
 				F980C47B2C04B3EA00A86B68 /* Renderer2DCommon.hpp */,
@@ -9625,7 +9622,6 @@
 				F986009C2BCFBB53006A4C0F /* SkIDChangeListener.h in Headers */,
 				F98600972BCFBB53006A4C0F /* SkColorData.h in Headers */,
 				F986028B2BCFBB54006A4C0F /* SkTHash.h in Headers */,
-				F980C4822C04B3EB00A86B68 /* BatchInfo2D.hpp in Headers */,
 				F986FA552BCFB53B006A4C0F /* svttcmap.h in Headers */,
 				F98606302BEBBBC7006A4C0F /* CProfiler.hpp in Headers */,
 				F9070C652B9F175000383E4D /* IWriter.ipp in Headers */,

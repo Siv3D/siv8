@@ -29,6 +29,31 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static constexpr MTL::Viewport MakeViewport(const Point pos, const Size size) noexcept
+		{
+			return{
+				.originX	= static_cast<double>(pos.x),
+				.originY	= static_cast<double>(pos.y),
+				.width		= static_cast<double>(size.x),
+				.height		= static_cast<double>(size.y),
+				.znear		= 0.0,
+				.zfar		= 1.0
+			};
+		}
+	}
+
+	struct CommandState
+	{
+		Mat3x2 transform = Mat3x2::Identity();
+
+		Mat3x2 screenMat = Mat3x2::Identity();
+		
+		uint32 startIndexLocation = 0;
+	};
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -224,9 +249,6 @@ namespace s3d
 		m_commandManager.flush();
 		
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
-		const Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
-		m_vsConstants->transform[0] = { screenMat._11, screenMat._12, screenMat._31, screenMat._32 };
-		m_vsConstants->transform[1] = { screenMat._21, screenMat._22, 0.0f, 1.0f };
 
 		// Draw2D
 		NS::SharedPtr<MTL::RenderPassDescriptor> offscreenRenderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
@@ -262,7 +284,8 @@ namespace s3d
 				.blendState = BlendState::Default2D,
 			};
 			
-			uint32 startIndexLocation = 0;
+			CommandState commandState;
+			commandState.screenMat = Mat3x2::Screen(currentRenderTargetSize);
 			
 			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
 			
@@ -296,12 +319,12 @@ namespace s3d
 						const uint32 indexCount = draw.indexCount;
 
 						// indexBufferOffset, 4 の倍数でなくても大丈夫？
-						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), (sizeof(Vertex2D::IndexType) * startIndexLocation));
-						startIndexLocation += indexCount;
+						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), (sizeof(Vertex2D::IndexType) * commandState.startIndexLocation));
+						commandState.startIndexLocation += indexCount;
 						
 						//++m_stat.drawCalls;
 						//m_stat.triangleCount += (indexCount / 3);
-						LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
+						LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, commandState.startIndexLocation));
 						break;
 					}
 				case MetalRenderer2DCommandType::ColorMul:
@@ -381,6 +404,21 @@ namespace s3d
 						}
 						
 						LOG_COMMAND(U"ScissorRect[{}] {}"_fmt(command.index, scissorRect));
+						break;
+					}
+				case MetalRenderer2DCommandType::Viewport:
+					{
+						const auto& viewport = m_commandManager.getViewport(command.index);
+						
+						const MTL::Viewport vp = (viewport ? MakeViewport(viewport->pos, viewport->size) : MakeViewport(Point{ 0, 0 }, currentRenderTargetSize));
+						renderCommandEncoder->setViewport(vp);
+	
+						commandState.screenMat = Mat3x2::Screen(vp.width, vp.height);
+						const Mat3x2 matrix = (commandState.transform * commandState.screenMat);
+						m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
+						m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
+						
+						LOG_COMMAND(U"Viewport[{}] {}"_fmt(command.index, viewport));
 						break;
 					}
 				case MetalRenderer2DCommandType::SetVS:
