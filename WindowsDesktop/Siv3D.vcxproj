@@ -966,6 +966,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Circular\SivCircular.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ColorF\SivColorF.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Colormap\SivColormap.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ColorWriteMask\SivColorWriteMask.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Color\SivColor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\CommandLine\SivCommandLine.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\CompareFunction\SivCompareFunction.cpp" />

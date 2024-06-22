@@ -895,6 +895,9 @@
     <Filter Include="src\Siv3D\Transformer2D">
       <UniqueIdentifier>{a9dd66ad-2c2a-49b7-9cd1-810b7fb363c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ColorWriteMask">
+      <UniqueIdentifier>{47ccf813-b252-4dc9-a039-5b47a4f4b324}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5812,6 +5815,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Transformer2D\SivTransformer2D.cpp">
       <Filter>src\Siv3D\Transformer2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ColorWriteMask\SivColorWriteMask.cpp">
+      <Filter>src\Siv3D\ColorWriteMask</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

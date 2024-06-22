@@ -25,11 +25,9 @@ namespace s3d
 		result += U"\tdestinationAlpha: {}\n"_fmt(destinationAlpha);
 		result += U"\talphaOperation: {}\n"_fmt(alphaOperation);
 		result += U"\talphaToCoverageEnabled: {}\n"_fmt(alphaToCoverageEnabled);
-		result += U"\twriteR: {}\n"_fmt(writeR);
-		result += U"\twriteG: {}\n"_fmt(writeG);
-		result += U"\twriteB: {}\n"_fmt(writeB);
-		result += U"\twriteA: {}\n"_fmt(writeA);
-		result += U"}";
+		result += U"\tcolorWriteMask: ";
+		result += Format(getColorWriteMask());
+		result += U"\n}";
 		return result;
 	}
 

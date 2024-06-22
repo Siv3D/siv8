@@ -24,6 +24,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 定数バッファ | Constant buffer
+	/// @tparam Type データの型 | Data type
 	template <class Type>
 	class ConstantBuffer
 	{
@@ -44,11 +46,20 @@ namespace s3d
 
 	SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
+		/// @brief 定数バッファのサイズ（バイト） | Size of the constant buffer in bytes
 		static constexpr size_t Size		= sizeof(WrapperType);
 
+		/// @brief 定数バッファのベクトル数 | Number of vectors in the constant buffer
 		static constexpr size_t NumVectors	= (Size / 16);
 
+		/// @brief 定数バッファのアライメント | Alignment of the constant buffer
 		static constexpr size_t Alignment	= alignof(WrapperType);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		ConstantBuffer();
@@ -61,16 +72,52 @@ namespace s3d
 		[[nodiscard]]
 		explicit ConstantBuffer(Args&&... args);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator =
+		//
+		////////////////////////////////////////////////////////////////
+
 		ConstantBuffer& operator =(const Type& data);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	size
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 定数バッファのサイズ（バイト）を返します。
+		/// @return 定数バッファのサイズ（バイト）
 		[[nodiscard]]
 		constexpr size_t size() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	data
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief データの先頭ポインタを返します。
+		/// @return データの先頭ポインタ
 		[[nodiscard]]
 		const float* data() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	isDirty
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 変更されたデータがあるかを返します。
+		/// @return 変更されたデータがある場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isDirty() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator *
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		Type& operator *() noexcept;
@@ -78,15 +125,37 @@ namespace s3d
 		[[nodiscard]]
 		const Type& operator *() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ->
+		//
+		////////////////////////////////////////////////////////////////
+
 		[[nodiscard]]
 		Type* operator ->() noexcept;
 
 		[[nodiscard]]
 		const Type* operator ->() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	_base
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 内部用 | For internal use
+		/// @return 内部用の情報 | Internal information
 		[[nodiscard]]
 		IConstantBuffer* _base() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	_update_if_dirty
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 内部用 | For internal use
+		/// @return 内部用の情報 | Internal information
 		bool _update_if_dirty();
 
 	private:

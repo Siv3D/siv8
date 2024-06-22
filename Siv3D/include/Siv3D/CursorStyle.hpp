@@ -24,43 +24,43 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief マウスカーソルの形状
+	/// @brief マウスカーソルの形状 | Cursor style
 	enum class CursorStyle : uint8
 	{
-		/// @brief 矢印
+		/// @brief 矢印 (デフォルト) | Arrow (default)
 		Arrow,
 
-		/// @brief I 形
+		/// @brief I 形 | I-beam
 		IBeam,
 
-		/// @brief 十字型
+		/// @brief 十字型 | Cross
 		Cross,
 
-		/// @brief 手のアイコン
+		/// @brief 手のアイコン | Hand
 		Hand,
 
-		/// @brief 禁止のアイコン
+		/// @brief 禁止のアイコン | Not allowed
 		NotAllowed,
 
-		/// @brief 上下のリサイズ
+		/// @brief 上下のリサイズ | Resize up-down
 		ResizeUpDown,
 
-		/// @brief 左右のリサイズ
+		/// @brief 左右のリサイズ | Resize left-right
 		ResizeLeftRight,
 
-		/// @brief 左上-右下のリサイズ
+		/// @brief 左上-右下のリサイズ | Resize top-left to bottom-right
 		ResizeNWSE,
 
-		/// @brief 右上-左下のリサイズ
+		/// @brief 右上-左下のリサイズ | Resize top-right to bottom-left
 		ResizeNESW,
 
-		/// @brief 上下左右方向のリサイズ
+		/// @brief 上下左右方向のリサイズ | Resize all directions
 		ResizeAll,
 
-		/// @brief 非表示
+		/// @brief 非表示 | Hidden
 		Hidden,
 
-		/// @brief デフォルト（矢印）
+		/// @brief デフォルト（矢印） | Default (Arrow)
 		Default = Arrow,
 	};
 

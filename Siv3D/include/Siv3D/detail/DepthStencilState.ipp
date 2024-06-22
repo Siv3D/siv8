@@ -20,16 +20,16 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	constexpr DepthStencilState::DepthStencilState(
-		const bool _depthEnabled,
+		const bool _depthTestEnabled,
 		const bool _depthWriteEnabled,
 		const CompareFunction _depthCompareFunction
 	) noexcept
-		: depthEnabled{ _depthEnabled }
+		: depthTestEnabled{ _depthTestEnabled }
 		, depthWriteEnabled{ _depthWriteEnabled }
 		, depthCompareFunction{ _depthCompareFunction } {}
 
 	constexpr DepthStencilState::DepthStencilState(const DepthStencilStateBuilder& builder) noexcept
-		: depthEnabled{ builder.depthEnabled() }
+		: depthTestEnabled{ builder.depthTestEnabled() }
 		, depthWriteEnabled{ builder.depthWriteEnabled() }
 		, depthCompareFunction{ builder.depthCompareFunction() } {}
 

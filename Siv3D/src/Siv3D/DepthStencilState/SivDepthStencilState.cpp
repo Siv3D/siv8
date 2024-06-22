@@ -14,15 +14,27 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	format
+	//
+	////////////////////////////////////////////////////////////////
+
 	String DepthStencilState::format() const
 	{
 		String result = U"DepthStencilState\n{\n";
-		result += U"\tdepthEnabled: {}\n"_fmt(depthEnabled);
+		result += U"\tdepthTestEnabled: {}\n"_fmt(depthTestEnabled);
 		result += U"\tdepthWriteEnabled: {}\n"_fmt(depthWriteEnabled);
 		result += U"\tdepthCompareFunction: {}\n"_fmt(depthCompareFunction);
 		result += U"}";
 		return result;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
 
 	void Formatter(FormatData& formatData, const DepthStencilState& value)
 	{

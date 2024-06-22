@@ -67,7 +67,7 @@ namespace s3d
 	{
 		const D3D11_DEPTH_STENCIL_DESC desc
 		{
-			.DepthEnable					= state.depthEnabled,
+			.DepthEnable					= state.depthTestEnabled,
 			.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK(state.depthWriteEnabled),
 			.DepthFunc						= D3D11_COMPARISON_FUNC(state.depthCompareFunction),
 			.StencilEnable					= false,
