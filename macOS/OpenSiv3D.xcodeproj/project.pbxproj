@@ -699,6 +699,7 @@
 		F9712A4D2C269B850049CC26 /* ColorWriteMask.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A4B2C269B850049CC26 /* ColorWriteMask.hpp */; };
 		F9712A4E2C269B850049CC26 /* Zip.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A4C2C269B850049CC26 /* Zip.hpp */; };
 		F9712A502C269B9E0049CC26 /* Zip.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A4F2C269B9E0049CC26 /* Zip.ipp */; };
+		F9712A532C26A4C80049CC26 /* SivColorWriteMask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A512C26A4C70049CC26 /* SivColorWriteMask.cpp */; };
 		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
 		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
 		F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */; };
@@ -2931,6 +2932,7 @@
 		F9712A4B2C269B850049CC26 /* ColorWriteMask.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ColorWriteMask.hpp; sourceTree = "<group>"; };
 		F9712A4C2C269B850049CC26 /* Zip.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Zip.hpp; sourceTree = "<group>"; };
 		F9712A4F2C269B9E0049CC26 /* Zip.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Zip.ipp; sourceTree = "<group>"; };
+		F9712A512C26A4C70049CC26 /* SivColorWriteMask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivColorWriteMask.cpp; sourceTree = "<group>"; };
 		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
 		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
 		F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ResizeMode.hpp; sourceTree = "<group>"; };
@@ -6113,6 +6115,7 @@
 				F9070D272B9F175E00383E4D /* Color */,
 				F9070D292B9F175E00383E4D /* ColorF */,
 				F986F89A2BC7FB4D006A4C0F /* Colormap */,
+				F9712A522C26A4C70049CC26 /* ColorWriteMask */,
 				F986F8A42BC80100006A4C0F /* CommandLine */,
 				F980C44F2C00E2AE00A86B68 /* CompareFunction */,
 				F9528BB72BBF024D00222F45 /* Compression */,
@@ -6993,6 +6996,14 @@
 				F9712A482C25B8500049CC26 /* SivTransformer2D.cpp */,
 			);
 			path = Transformer2D;
+			sourceTree = "<group>";
+		};
+		F9712A522C26A4C70049CC26 /* ColorWriteMask */ = {
+			isa = PBXGroup;
+			children = (
+				F9712A512C26A4C70049CC26 /* SivColorWriteMask.cpp */,
+			);
+			path = ColorWriteMask;
 			sourceTree = "<group>";
 		};
 		F97203022BEDF2FF000E21DD /* Scene */ = {
@@ -11499,6 +11510,7 @@
 				F9070DC12B9F175E00383E4D /* CEmpty.cpp in Sources */,
 				F98603962BCFBB54006A4C0F /* SkLinearGradient.cpp in Sources */,
 				F98602922BCFBB54006A4C0F /* SkTypefaceCache.cpp in Sources */,
+				F9712A532C26A4C80049CC26 /* SivColorWriteMask.cpp in Sources */,
 				F986F91A2BC8441F006A4C0F /* regcomp.c in Sources */,
 				F986021E2BCFBB54006A4C0F /* SkPictureFlat.cpp in Sources */,
 				F98604482BCFBB54006A4C0F /* SkSLVarDeclarations.cpp in Sources */,
