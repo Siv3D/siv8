@@ -999,6 +999,78 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	copyToTop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ大きさで、上に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 上に配置された長方形
+		[[nodiscard]]
+		constexpr Rect copyToTop(value_type distance = 0) const noexcept;
+
+		/// @brief 同じ大きさで、上に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 上に配置された長方形
+		[[nodiscard]]
+		constexpr RectF copyToTop(Concept::FloatingPoint auto distance) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	copyToRight
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ大きさで、右に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 右に配置された長方形
+		[[nodiscard]]
+		constexpr Rect copyToRight(value_type distance = 0) const noexcept;
+
+		/// @brief 同じ大きさで、右に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 右に配置された長方形
+		[[nodiscard]]
+		constexpr RectF copyToRight(Concept::FloatingPoint auto distance) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	copyToBottom
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ大きさで、下に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 下に配置された長方形
+		[[nodiscard]]
+		constexpr Rect copyToBottom(value_type distance = 0) const noexcept;
+
+		/// @brief 同じ大きさで、下に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 下に配置された長方形
+		[[nodiscard]]
+		constexpr RectF copyToBottom(Concept::FloatingPoint auto distance) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	copyToLeft
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ大きさで、左に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 左に配置された長方形
+		[[nodiscard]]
+		constexpr Rect copyToLeft(value_type distance = 0) const noexcept;
+
+		/// @brief 同じ大きさで、左に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 左に配置された長方形
+		[[nodiscard]]
+		constexpr RectF copyToLeft(Concept::FloatingPoint auto distance) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	rotated
 		//
 		////////////////////////////////////////////////////////////////

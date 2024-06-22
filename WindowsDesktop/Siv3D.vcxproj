@@ -42,6 +42,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorHSV.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Colormap.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorScale.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColorWriteMask.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CommandLine.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Common.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CommonFloat.hpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Zip.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtOptional.hpp" />
@@ -446,6 +448,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Windows\Windows.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MappedMemory.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\YesNo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Zip.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXCollision.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXColors.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXMath.h" />

@@ -134,6 +134,8 @@
 
 # include <Siv3D/Step3D.hpp>
 
+# include <Siv3D/Zip.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	文字と文字列 | Characters and String
@@ -1424,6 +1426,8 @@
 # include <Siv3D/BlendFactor.hpp>
 
 # include <Siv3D/BlendOperation.hpp>
+
+# include <Siv3D/ColorWriteMask.hpp>
 
 # include <Siv3D/BlendStateBuilder.hpp>
 

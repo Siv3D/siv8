@@ -44,21 +44,36 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		CircularBase() = default;
 
+		/// @brief 円座標を作成します。
+		/// @param _r 中心からの距離
+		/// @param _theta 角度（ラジアン）
 		[[nodiscard]]
 		constexpr CircularBase(value_type _r, value_type _theta) noexcept;
 
+		/// @brief 円座標を作成します。
+		/// @param _r 中心からの距離
+		/// @param _theta 角度（ラジアン）
 		[[nodiscard]]
 		constexpr CircularBase(Concept::Arithmetic auto _r, value_type _theta) noexcept;
 
+		/// @brief 円座標を作成します。
+		/// @param _r 中心からの距離
+		/// @param _theta 角度（ラジアン）
 		[[nodiscard]]
 		constexpr CircularBase(Arg::r_<value_type> _r, Arg::theta_<value_type> _theta) noexcept;
 
+		/// @brief 円座標を作成します。
+		/// @param _theta 角度（ラジアン）
+		/// @param _r 中心からの距離
 		[[nodiscard]]
 		constexpr CircularBase(Arg::theta_<value_type> _theta, Arg::r_<value_type> _r) noexcept;
 
+		/// @brief 直交座標から変換して円座標を作成します。
+		/// @param v 円座標に変換する直交座標
 		[[nodiscard]]
 		CircularBase(position_type v) noexcept;
 
@@ -68,9 +83,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief そのままの円座標を返します。
+		/// @return 自身のコピー
 		[[nodiscard]]
 		constexpr CircularBase operator +() const noexcept;
 
+		/// @brief 円座標を通常の直交座標に変換し、指定したベクトルを加算した結果を返します。
+		/// @param v 加算するベクトル
+		/// @return 加算結果
 		[[nodiscard]]
 		position_type operator +(position_type v) const noexcept;
 
@@ -80,9 +100,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 180° 反対の位置にある円座標を返します。
+		/// @return 180° 反対の位置にある円座標
 		[[nodiscard]]
 		constexpr CircularBase operator -() const noexcept;
 
+		/// @brief 円座標を通常の直交座標に変換し、指定したベクトルを減算した結果を返します。
+		/// @param v 減算するベクトル
+		/// @return 減算結果
 		[[nodiscard]]
 		position_type operator -(position_type v) const noexcept;
 
@@ -116,6 +141,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 角度を時計回りに回転させた円座標を返します。
+		/// @param angle 回転する角度（ラジアン）
+		/// @return 回転後の円座標
 		[[nodiscard]]
 		constexpr CircularBase rotated(value_type angle) const noexcept;
 
@@ -125,6 +153,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 自身を指定した角度だけ時計回りに回転させます。
+		/// @param angle 回転する角度（ラジアン）
+		/// @return *this
 		constexpr CircularBase& rotate(value_type angle) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -133,6 +164,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの円座標間を線形補間した円座標を返します。
+		/// @param other もう一方の円座標
+		/// @param f 補間係数
+		/// @return 補間結果
 		[[nodiscard]]
 		CircularBase lerp(const CircularBase& other, double f) const noexcept;
 
@@ -142,9 +177,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 円座標を通常の直交座標に変換します。
+		/// @return 直交座標
 		[[nodiscard]]
 		Float2 toFloat2() const noexcept;
 
+		/// @brief 円座標を通常の直交座標に変換します。
+		/// @return 直交座標
 		[[nodiscard]]
 		Vec2 toVec2() const noexcept;
 
@@ -154,9 +193,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 円座標を通常の直交座標に近似で変換します。
+		/// @return 直交座標
+		/// @remark 小さな誤差が生じる場合があります。
 		[[nodiscard]]
 		Float2 fastToFloat2() const noexcept;
 
+		/// @brief 円座標を通常の直交座標に近似で変換します。
+		/// @return 直交座標
+		/// @remark 小さな誤差が生じる場合があります。
 		[[nodiscard]]
 		Vec2 fastToVec2() const noexcept;
 
@@ -166,6 +211,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 円座標を通常の直交座標に変換します。
+		/// @return 直交座標
 		[[nodiscard]]
 		position_type toPosition() const noexcept;
 
@@ -175,6 +222,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 円座標を通常の直交座標に変換します。
+		/// @return 直交座標
 		[[nodiscard]]
 		operator position_type() const noexcept;
 
@@ -184,6 +233,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 

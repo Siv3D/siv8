@@ -15,6 +15,7 @@
 # include "Common.hpp"
 # include "BlendFactor.hpp"
 # include "BlendOperation.hpp"
+# include "ColorWriteMask.hpp"
 # include "BlendStateBuilder.hpp"
 
 namespace s3d
@@ -50,7 +51,7 @@ namespace s3d
 		/// @brief RGB に適用するブレンド操作
 		BlendOperation rgbOperation		: 3 = BlendOperation::Add;
 
-		/// @brief アルファカバレッジを有効にするか
+		/// @brief Alpha-to-coverage を有効にするか
 		bool alphaToCoverageEnabled		: 1 = false;
 
 		/// @brief B チャンネルへの書き込みを有効にするか
@@ -76,6 +77,45 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ブレンドステートを作成します。
+		/// @param _enabled ブレンドを有効にするか
+		/// @param _sourceRGB ソース RGB に適用するブレンド係数
+		/// @param _destinationRGB 書き込み先 RGB に適用するブレンド係数
+		/// @param _rgbOperation RGB に適用するブレンド操作
+		/// @param _sourceAlpha ソースアルファに適用するブレンド係数
+		/// @param _destinationAlpha 書き込み先アルファに適用するブレンド係数
+		/// @param _alphaOperation アルファに適用するブレンド操作
+		/// @param _alphaToCoverageEnabled Alpha-to-coverage を有効にするか
+		/// @param _writeR R チャンネルへの書き込みを有効にするか
+		/// @param _writeG G チャンネルへの書き込みを有効にするか
+		/// @param _writeB B チャンネルへの書き込みを有効にするか
+		/// @param _writeA A チャンネルへの書き込みを有効にするか
+		[[nodiscard]]
+		constexpr BlendState(
+			bool _enabled,
+			BlendFactor _sourceRGB,
+			BlendFactor _destinationRGB,
+			BlendOperation _rgbOperation,
+			BlendFactor _sourceAlpha,
+			BlendFactor _destinationAlpha,
+			BlendOperation _alphaOperation,
+			bool _alphaToCoverageEnabled,
+			bool _writeR,
+			bool _writeG,
+			bool _writeB,
+			bool _writeA
+		) noexcept;
+
+		/// @brief ブレンドステートを作成します。
+		/// @param _enabled ブレンドを有効にするか
+		/// @param _sourceRGB ソース RGB に適用するブレンド係数
+		/// @param _destinationRGB 書き込み先 RGB に適用するブレンド係数
+		/// @param _rgbOperation RGB に適用するブレンド操作
+		/// @param _sourceAlpha ソースアルファに適用するブレンド係数
+		/// @param _destinationAlpha 書き込み先アルファに適用するブレンド係数
+		/// @param _alphaOperation アルファに適用するブレンド操作
+		/// @param _alphaToCoverageEnabled Alpha-to-coverage を有効にするか
+		/// @param colorWriteMask チャンネルへの書き込みマスク
 		[[nodiscard]]
 		explicit constexpr BlendState(
 			bool _enabled = true,
@@ -86,12 +126,11 @@ namespace s3d
 			BlendFactor _destinationAlpha = BlendFactor::One,
 			BlendOperation _alphaOperation = BlendOperation::Add,
 			bool _alphaToCoverageEnabled = false,
-			bool _writeR = true,
-			bool _writeG = true,
-			bool _writeB = true,
-			bool _writeA = true
+			ColorWriteMask colorWriteMask = ColorWriteMask::All
 		) noexcept;
 
+		/// @brief ブレンドステートを作成します。
+		/// @param builder ブレンドステートの設定
 		[[nodiscard]]
 		constexpr BlendState(const BlendStateBuilder& builder) noexcept;
 
@@ -111,7 +150,29 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief チャンネルへの書き込みを設定します。
+		/// @param r R チャンネルへの書き込みを有効にするか
+		/// @param g G チャンネルへの書き込みを有効にするか
+		/// @param b B チャンネルへの書き込みを有効にするか
+		/// @param a A チャンネルへの書き込みを有効にするか
+		/// @return *this
 		constexpr BlendState& setColorWriteMask(bool r, bool g, bool b, bool a) noexcept;
+
+		/// @brief チャンネルへの書き込みを設定します。
+		/// @param mask チャンネルへの書き込みを設定するマスク
+		/// @return *this
+		constexpr BlendState& setColorWriteMask(ColorWriteMask mask) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getColorWriteMask
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief チャンネルへの書き込みマスクを返します。
+		/// @return チャンネルへの書き込みマスク
+		[[nodiscard]]
+		constexpr ColorWriteMask getColorWriteMask() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -119,6 +180,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ブレンドステートの設定を 32 ビット整数に変換します。
+		/// @return ブレンドステートの設定を表す 32 ビット整数
 		[[nodiscard]]
 		constexpr storage_type asValue() const noexcept;
 
@@ -128,6 +191,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ブレンドステートの設定を文字列に変換します。
+		/// @return ブレンドステートの設定を表す文字列
 		[[nodiscard]]
 		String format() const;
 
@@ -137,6 +202,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つのブレンドステートが等しいかを返します。
+		/// @param lhs 一方のブレンドステート
+		/// @param rhs もう一方のブレンドステート
+		/// @return 2 つのブレンドステートが等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const BlendState& lhs, const BlendState& rhs) noexcept
 		{
@@ -149,6 +218,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 無効なブレンドステートを返します。
+		/// @return 無効なブレンドステート
 		[[nodiscard]]
 		static constexpr BlendState Invalid();
 

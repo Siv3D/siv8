@@ -871,8 +871,69 @@ namespace s3d
 		return (static_cast<Type>(size.x) / size.y);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	copyToTop
+	//
+	////////////////////////////////////////////////////////////////
 
+	constexpr Rect Rect::copyToTop(const value_type distance) const noexcept
+	{
+		return{ pos.x, (pos.y - size.y - distance), size };
+	}
 
+	constexpr RectF Rect::copyToTop(const Concept::FloatingPoint auto distance) const noexcept
+	{
+		return{ pos.x, (pos.y - size.y - distance), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	copyToRight
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::copyToRight(const value_type distance) const noexcept
+	{
+		return{ (pos.x + size.x + distance), pos.y, size };
+	}
+
+	constexpr RectF Rect::copyToRight(const Concept::FloatingPoint auto distance) const noexcept
+	{
+		return{ (pos.x + size.x + distance), pos.y, size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	copyToBottom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::copyToBottom(const value_type distance) const noexcept
+	{
+		return{ pos.x, (pos.y + size.y + distance), size };
+	}
+
+	constexpr RectF Rect::copyToBottom(const Concept::FloatingPoint auto distance) const noexcept
+	{
+		return{ pos.x, (pos.y + size.y + distance), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	copyToLeft
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::copyToLeft(const value_type distance) const noexcept
+	{
+		return{ (pos.x - size.x - distance), pos.y, size };
+	}
+
+	constexpr RectF Rect::copyToLeft(const Concept::FloatingPoint auto distance) const noexcept
+	{
+		return{ (pos.x - size.x - distance), pos.y, size };
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
