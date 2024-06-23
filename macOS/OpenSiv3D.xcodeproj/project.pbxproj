@@ -700,6 +700,8 @@
 		F9712A4E2C269B850049CC26 /* Zip.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A4C2C269B850049CC26 /* Zip.hpp */; };
 		F9712A502C269B9E0049CC26 /* Zip.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A4F2C269B9E0049CC26 /* Zip.ipp */; };
 		F9712A532C26A4C80049CC26 /* SivColorWriteMask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A512C26A4C70049CC26 /* SivColorWriteMask.cpp */; };
+		F9712A552C289A5C0049CC26 /* Smooth.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A542C289A5C0049CC26 /* Smooth.hpp */; };
+		F9712A572C289A6D0049CC26 /* Smooth.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A562C289A6D0049CC26 /* Smooth.ipp */; };
 		F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F52BEDF2D8000E21DD /* Scene.hpp */; };
 		F97202F92BEDF2D9000E21DD /* TextureFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */; };
 		F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */; };
@@ -2933,6 +2935,8 @@
 		F9712A4C2C269B850049CC26 /* Zip.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Zip.hpp; sourceTree = "<group>"; };
 		F9712A4F2C269B9E0049CC26 /* Zip.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Zip.ipp; sourceTree = "<group>"; };
 		F9712A512C26A4C70049CC26 /* SivColorWriteMask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivColorWriteMask.cpp; sourceTree = "<group>"; };
+		F9712A542C289A5C0049CC26 /* Smooth.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Smooth.hpp; sourceTree = "<group>"; };
+		F9712A562C289A6D0049CC26 /* Smooth.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Smooth.ipp; sourceTree = "<group>"; };
 		F97202F52BEDF2D8000E21DD /* Scene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
 		F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextureFilter.hpp; sourceTree = "<group>"; };
 		F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ResizeMode.hpp; sourceTree = "<group>"; };
@@ -5252,6 +5256,7 @@
 				F9070B9C2B9F175000383E4D /* ScopeExit.ipp */,
 				F9070B9D2B9F175000383E4D /* SequenceFormatter.ipp */,
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
+				F9712A562C289A6D0049CC26 /* Smooth.ipp */,
 				F9070B9F2B9F175000383E4D /* Step.ipp */,
 				F9528B852BBC5D4B00222F45 /* Step2D.ipp */,
 				F9528B972BBC76EA00222F45 /* Step3D.ipp */,
@@ -5520,6 +5525,7 @@
 				F9070C202B9F175000383E4D /* Shuffle.hpp */,
 				F9070C212B9F175000383E4D /* SIMD.hpp */,
 				F9E5FC2B2BC15AEE0081A4F7 /* SIMDMath.hpp */,
+				F9712A542C289A5C0049CC26 /* Smooth.hpp */,
 				F9070C222B9F175000383E4D /* SpecialFolder.hpp */,
 				F9070C232B9F175000383E4D /* Step.hpp */,
 				F9528B832BBC5D3100222F45 /* Step2D.hpp */,
@@ -10064,6 +10070,7 @@
 				F9070CBE2B9F175000383E4D /* FmtExtension.hpp in Headers */,
 				F980C49E2C04B6DB00A86B68 /* CRenderer2D_Metal.hpp in Headers */,
 				F9070CA02B9F175000383E4D /* Color.hpp in Headers */,
+				F9712A552C289A5C0049CC26 /* Smooth.hpp in Headers */,
 				F98601A52BCFBB53006A4C0F /* SkDraw.h in Headers */,
 				F986018A2BCFBB53006A4C0F /* SkColorSpaceXformSteps.h in Headers */,
 				F98601632BCFBB53006A4C0F /* SkBlendModePriv.h in Headers */,
@@ -10478,6 +10485,7 @@
 				F986F9C62BCA9D25006A4C0F /* SVG.hpp in Headers */,
 				F90706AE2B9DAEC900383E4D /* uniform_int_distribution.h in Headers */,
 				F9070C6F2B9F175000383E4D /* Optional.ipp in Headers */,
+				F9712A572C289A6D0049CC26 /* Smooth.ipp in Headers */,
 				F98600352BCFBB53006A4C0F /* SkPoint3.h in Headers */,
 				F98605822BDA7E32006A4C0F /* CCursor.hpp in Headers */,
 				F98600372BCFBB53006A4C0F /* SkRect.h in Headers */,
