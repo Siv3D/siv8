@@ -34,9 +34,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの値を線形補間します。
+		/// @param v1 一方の値
+		/// @param v2 もう一方の値
+		/// @param f 補間係数
+		/// @return 補間結果
 		[[nodiscard]]
 		constexpr auto Lerp(Concept::Arithmetic auto v1, Concept::Arithmetic auto v2, Concept::FloatingPoint auto f) noexcept;
 
+		/// @brief 2 つの値を線形補間します。
+		/// @tparam Type 補間する値の型
+		/// @param v1 一方の値
+		/// @param v2 もう一方の値
+		/// @param f 補間係数
+		/// @return 補間結果
 		template <HasLerp Type>
 		[[nodiscard]]
 		constexpr auto Lerp(const Type& v1, const Type& v2, Concept::FloatingPoint auto f) noexcept;
@@ -56,6 +67,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの角度を線形補間します。
+		/// @param from 一方の角度
+		/// @param to もう一方の角度
+		/// @param t 補間係数
+		/// @return 補間結果
 		[[nodiscard]]
 		auto LerpAngle(Concept::Arithmetic auto from, Concept::Arithmetic auto to, Concept::FloatingPoint auto t) noexcept;
 
@@ -87,9 +103,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 目標地点に向かって移動させます。
+		/// @param current 現在地
+		/// @param target 目標地点
+		/// @param maxSpeed 最大の速さ
+		/// @return 新しい現在地
 		[[nodiscard]]
 		constexpr float MoveTowards(float current, float target, float maxSpeed) noexcept;
 
+		/// @brief 目標地点に向かって移動させます。
+		/// @param current 現在地
+		/// @param target 目標地点
+		/// @param maxSpeed 最大の速さ
+		/// @return 新しい現在地
 		[[nodiscard]]
 		constexpr double MoveTowards(double current, double target, double maxSpeed) noexcept;
 

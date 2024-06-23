@@ -64,6 +64,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 数式が有効かを返します。
+		/// @return 数式が有効な場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isValid() const;
 
@@ -73,6 +75,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 数式が有効かを返します。
+		/// @return 数式が有効な場合 true, それ以外の場合は false
 		[[nodiscard]]
 		explicit operator bool() const;
 

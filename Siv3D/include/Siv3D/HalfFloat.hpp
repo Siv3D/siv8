@@ -34,12 +34,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		HalfFloat() = default;
 
+		/// @brief float 型の値から半精度浮動小数点数を作成します。
+		/// @param value float 型の値
 		[[nodiscard]]
 		HalfFloat(float value) noexcept;
 
+		/// @brief 与えられた数値から半精度浮動小数点数を作成します。
+		/// @param value 数値
 		[[nodiscard]]
 		HalfFloat(Concept::Arithmetic auto value) noexcept;
 
@@ -49,8 +54,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 値を代入します。
+		/// @param value 代入する値
+		/// @return *this
 		HalfFloat& operator =(float value) noexcept;
 
+		/// @brief 値を代入します。
+		/// @param value 代入する値
+		/// @return *this
 		HalfFloat& operator =(Concept::Arithmetic auto value);
 
 		////////////////////////////////////////////////////////////////
@@ -75,6 +86,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief float 型に変換した値を返します。
+		/// @return float 型に変換した値
 		[[nodiscard]]
 		float asFloat() const noexcept;
 
@@ -84,6 +97,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief float 型に変換した値を返します。
+		/// @return float 型に変換した値
 		[[nodiscard]]
 		operator float() const noexcept;
 
@@ -93,6 +108,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ビットパターンを返します。
+		/// @return ビットパターン
 		[[nodiscard]]
 		constexpr uint16 getBits() const noexcept;
 
@@ -102,6 +119,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ビットパターンを設定します。
+		/// @param bits ビットパターン
 		constexpr void setBits(const uint16 bits) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -110,6 +129,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 値が 0 であるかを返します。
+		/// @return 0 である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isZero() const noexcept;
 
@@ -119,6 +140,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 値が NaN であるかを返します。
+		/// @return NaN である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isNaN() const noexcept;
 
@@ -128,6 +151,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 値が無限大であるかを返します。
+		/// @return 無限大である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isInfinity() const noexcept;
 
@@ -137,6 +162,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 符号ビットを返します。
+		/// @return 符号ビット。正の値の場合は false, 負の値の場合は true
 		[[nodiscard]]
 		constexpr bool signBit() const noexcept;
 
@@ -146,6 +173,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 絶対値を返します。
+		/// @return 絶対値
 		[[nodiscard]]
 		constexpr HalfFloat abs() const noexcept;
 
@@ -166,6 +195,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの値が等しいかを返します。
+		/// @param lhs 一方の値
+		/// @param rhs もう一方の値
+		/// @return 2 つの値が等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const HalfFloat lhs, const HalfFloat rhs) noexcept
 		{

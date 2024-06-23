@@ -61,12 +61,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ | Default constructor
 		[[nodiscard]]
 		ConstantBuffer();
 
+		/// @brief データを指定して定数バッファを作成します。 | Creates a constant buffer with the specified data.
+		/// @param data データ | Data
 		[[nodiscard]]
 		ConstantBuffer(const Type& data);
 
+		/// @brief データを指定して定数バッファを作成します。 | Creates a constant buffer with the specified data.
+		/// @tparam ...Args データのコンストラクタ引数の型 | Types of the constructor arguments of the data
+		/// @param ...args データのコンストラクタ引数 | Constructor arguments of the data
 		template <class... Args>
 			requires std::is_constructible_v<Type, Args...>
 		[[nodiscard]]
@@ -78,6 +84,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief データを代入します。
+		/// @param data 代入するデータ
+		/// @return *this
 		ConstantBuffer& operator =(const Type& data);
 
 		////////////////////////////////////////////////////////////////
@@ -119,9 +128,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief データへの参照を返します。
+		/// @return データへの参照
 		[[nodiscard]]
 		Type& operator *() noexcept;
 
+		/// @brief データへの参照を返します。
+		/// @return データへの参照
 		[[nodiscard]]
 		const Type& operator *() const noexcept;
 
@@ -131,9 +144,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief データへのポインタを返します。
+		/// @return データへのポインタ
 		[[nodiscard]]
 		Type* operator ->() noexcept;
 
+		/// @brief データへのポインタを返します。
+		/// @return データへのポインタ
 		[[nodiscard]]
 		const Type* operator ->() const noexcept;
 

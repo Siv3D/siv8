@@ -13,6 +13,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr SamplerStateBuilder::SamplerStateBuilder(
 		const TextureAddressMode _uAddressMode,
 		const TextureAddressMode _vAddressMode,
@@ -36,6 +42,12 @@ namespace s3d
 		, m_borderColor{ _borderColor }
 		, m_minLOD{ _minLOD } {}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	uAddressMode
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr SamplerStateBuilder SamplerStateBuilder::uAddressMode(const TextureAddressMode _uAddressMode) const noexcept
 	{
 		SamplerStateBuilder result{ *this };
@@ -47,6 +59,12 @@ namespace s3d
 	{
 		return m_uAddressMode;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	vAddressMode
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr SamplerStateBuilder SamplerStateBuilder::vAddressMode(const TextureAddressMode _vAddressMode) const noexcept
 	{
@@ -60,6 +78,12 @@ namespace s3d
 		return m_vAddressMode;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	wAddressMode
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr SamplerStateBuilder SamplerStateBuilder::wAddressMode(const TextureAddressMode _wAddressMode) const noexcept
 	{
 		SamplerStateBuilder result{ *this };
@@ -71,6 +95,12 @@ namespace s3d
 	{
 		return m_wAddressMode;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	minFilter
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr SamplerStateBuilder SamplerStateBuilder::minFilter(const TextureFilter _minFilter) const noexcept
 	{
@@ -84,6 +114,12 @@ namespace s3d
 		return m_minFilter;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	magFilter
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr SamplerStateBuilder SamplerStateBuilder::magFilter(const TextureFilter _magFilter) const noexcept
 	{
 		SamplerStateBuilder result{ *this };
@@ -95,6 +131,12 @@ namespace s3d
 	{
 		return m_magFilter;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mipFilter
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr SamplerStateBuilder SamplerStateBuilder::mipFilter(const TextureFilter _mipFilter) const noexcept
 	{
@@ -108,6 +150,12 @@ namespace s3d
 		return m_mipFilter;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	maxAnisotropy
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr SamplerStateBuilder SamplerStateBuilder::maxAnisotropy(const uint8 _maxAnisotropy) const noexcept
 	{
 		SamplerStateBuilder result{ *this };
@@ -119,6 +167,12 @@ namespace s3d
 	{
 		return m_maxAnisotropy;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	compareFunction
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr SamplerStateBuilder SamplerStateBuilder::compareFunction(const CompareFunction _compareFunction) const noexcept
 	{
@@ -132,6 +186,12 @@ namespace s3d
 		return m_compareFunction;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	borderColor
+	//
+	////////////////////////////////////////////////////////////////
+
 	constexpr SamplerStateBuilder SamplerStateBuilder::borderColor(const Float4 _borderColor) const noexcept
 	{
 		SamplerStateBuilder result{ *this };
@@ -143,6 +203,12 @@ namespace s3d
 	{
 		return m_borderColor;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	minLOD
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr SamplerStateBuilder SamplerStateBuilder::minLOD(const float _minLOD) const noexcept
 	{

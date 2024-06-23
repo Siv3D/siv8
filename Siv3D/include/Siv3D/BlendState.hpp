@@ -140,9 +140,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		static constexpr BlendStateBuilder Default2D{};
+		static constexpr BlendStateBuilder NonPremultipliedAlpha{ true, BlendFactor::SourceAlpha };
+
+		static constexpr BlendStateBuilder PremultipliedAlpha{};
 
 		static constexpr BlendStateBuilder Opaque{ false };
+
+		static constexpr BlendStateBuilder Additive{ true, BlendFactor::One, BlendFactor::One };
+
+		static constexpr BlendStateBuilder Subtractive{ true, BlendFactor::One, BlendFactor::One, BlendOperation::ReverseSubtract };
+
+		static constexpr BlendStateBuilder Multiplicative{ true, BlendFactor::Zero, BlendFactor::SourceColor };
+
+		static constexpr BlendStateBuilder Multiplicative2X{ true, BlendFactor::DestinationColor, BlendFactor::SourceColor };
+
+		static constexpr BlendStateBuilder OpaqueAlphaToCoverage = PremultipliedAlpha.alphaToCoverageEnabled(true);
+
+		static constexpr BlendStateBuilder Default2D = PremultipliedAlpha;
+
+		static constexpr BlendStateBuilder Default3D = OpaqueAlphaToCoverage;
 
 		////////////////////////////////////////////////////////////////
 		//
