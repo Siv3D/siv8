@@ -11,12 +11,18 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <Siv3D/Optional.hpp>
 # include <Siv3D/PointVector.hpp>
+# include <Siv3D/2DShapes.hpp>
 
 namespace s3d
 {
 	struct FloatRect;
 	struct LineStyle;
+	struct BlendState;
+	struct RasterizerState;
+	struct SamplerState;
+	struct Mat3x2;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -42,6 +48,47 @@ namespace s3d
 		virtual void addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor) = 0;
 
 		virtual void flush() = 0;
+
+
+		virtual Float4 getColorMul() const = 0;
+
+		virtual void setColorMul(const Float4& color) = 0;
+
+		virtual Float3 getColorAdd() const = 0;
+
+		virtual void setColorAdd(const Float3& color) = 0;
+
+		virtual BlendState getBlendState() const = 0;
+
+		virtual void setBlendState(const BlendState& state) = 0;
+
+		virtual RasterizerState getRasterizerState() const = 0;
+
+		virtual void setRasterizerState(const RasterizerState& state) = 0;
+
+		virtual SamplerState getVSSamplerState(uint32 slot) const = 0;
+
+		virtual void setVSSamplerState(uint32 slot, const SamplerState& state) = 0;
+
+		virtual SamplerState getPSSamplerState(uint32 slot) const = 0;
+
+		virtual void setPSSamplerState(uint32 slot, const SamplerState& state) = 0;
+
+		virtual Optional<Rect> getScissorRect() const = 0;
+
+		virtual void setScissorRect(const Optional<Rect>& rect) = 0;
+
+		virtual Optional<Rect> getViewport() const = 0;
+
+		virtual void setViewport(const Optional<Rect>& viewport) = 0;
+
+		virtual const Mat3x2& getLocalTransform() const = 0;
+
+		virtual void setLocalTransform(const Mat3x2& matrix) = 0;
+
+		virtual const Mat3x2& getCameraTransform() const = 0;
+
+		virtual void setCameraTransform(const Mat3x2& matrix) = 0;
 
 		virtual float getMaxScaling() const noexcept = 0;
 	};

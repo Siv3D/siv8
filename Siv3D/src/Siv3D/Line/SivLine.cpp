@@ -20,6 +20,51 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
+	//	closestPointTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	Line::position_type Line::closestPointTo(const position_type pos) const noexcept
+	{
+		Vec2 v = (end - start);
+		const double d = v.length();
+
+		if (d == 0.0)
+		{
+			return start;
+		}
+
+		v /= d;
+		const double t = v.dot(pos - start);
+
+		if (t < 0.0)
+		{
+			return start;
+		}
+
+		if (d < t)
+		{
+			return end;
+		}
+
+		return (start + v * t);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	boundingRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF Line::boundingRect() const noexcept
+	{
+		const auto [x1, x2] = MinMax(start.x, end.x);
+		const auto [y1, y2] = MinMax(start.y, end.y);
+		return{ x1, y1, (x2 - x1), (y2 - y1) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////

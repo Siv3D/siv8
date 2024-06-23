@@ -70,7 +70,6 @@ namespace s3d
 		, w{ zw.y } {}
 
 	template <class Type>
-	template <class Z>
 	constexpr Vector4D<Type>::Vector4D(const Vector3D<value_type>& xyz, const Concept::Arithmetic auto _z) noexcept
 		: x{ xyz.x }
 		, y{ xyz.y }
@@ -78,7 +77,6 @@ namespace s3d
 		, w{ static_cast<value_type>(_z) } {}
 
 	template <class Type>
-	template <class X>
 	constexpr Vector4D<Type>::Vector4D(const Concept::Arithmetic auto _x, const Vector3D<value_type>& yzw) noexcept
 		: x{ static_cast<value_type>(_x) }
 		, y{ yzw.x }
@@ -432,6 +430,66 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
+	constexpr Vector4D<Type>& Vector4D<Type>::set(const Vector2D<value_type>& xy, const Vector2D<value_type>& zw) noexcept
+	{
+		x = xy.x;
+		y = xy.y;
+		z = zw.x;
+		w = zw.y;
+		return *this;
+	}
+
+	template <class Type>
+	constexpr Vector4D<Type>& Vector4D<Type>::set(const Vector2D<value_type>& xy, const value_type _z, const value_type _w) noexcept
+	{
+		x = xy.x;
+		y = xy.y;
+		z = _z;
+		w = _w;
+		return *this;
+	}
+
+	template <class Type>
+	constexpr Vector4D<Type>& Vector4D<Type>::set(const value_type _x, const Vector2D<value_type>& yz, const value_type _w) noexcept
+	{
+		x = _x;
+		y = yz.x;
+		z = yz.y;
+		w = _w;
+		return *this;
+	}
+
+	template <class Type>
+	constexpr Vector4D<Type>& Vector4D<Type>::set(const value_type _x, const value_type _y, const Vector2D<value_type>& zw) noexcept
+	{
+		x = _x;
+		y = _y;
+		z = zw.x;
+		w = zw.y;
+		return *this;
+	}
+
+	template <class Type>
+	constexpr Vector4D<Type>& Vector4D<Type>::set(const Vector3D<value_type>& xyz, const value_type _w) noexcept
+	{
+		x = xyz.x;
+		y = xyz.y;
+		z = xyz.z;
+		w = _w;
+		return *this;
+	}
+
+	template <class Type>
+	constexpr Vector4D<Type>& Vector4D<Type>::set(const value_type _x, const Vector3D<value_type>& yzw) noexcept
+	{
+		x = _x;
+		y = yzw.x;
+		z = yzw.y;
+		w = yzw.z;
+		return *this;
+	}
+
+	template <class Type>
 	constexpr Vector4D<Type>& Vector4D<Type>::set(const value_type _x, const value_type _y, const value_type _z, const value_type _w) noexcept
 	{
 		x = _x;
@@ -565,10 +623,10 @@ namespace s3d
 	template <class Type>
 	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::manhattanDistanceFrom(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
 	{
-		const auto xMinMax = std::minmax(x, _x);
-		const auto yMinMax = std::minmax(y, _y);
-		const auto zMinMax = std::minmax(z, _z);
-		const auto wMinMax = std::minmax(w, _w);
+		const auto xMinMax = MinMax(x, _x);
+		const auto yMinMax = MinMax(y, _y);
+		const auto zMinMax = MinMax(z, _z);
+		const auto wMinMax = MinMax(w, _w);
 		return ((xMinMax.second - xMinMax.first)
 			  + (yMinMax.second - yMinMax.first)
 			  + (zMinMax.second - zMinMax.first)

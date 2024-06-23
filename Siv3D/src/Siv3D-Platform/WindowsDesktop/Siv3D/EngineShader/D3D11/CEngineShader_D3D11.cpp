@@ -37,12 +37,23 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CEngineShader_D3D11::init()");
 
+		// エンジンシェーダを再コンパイルする場合、0 を 1 に変更する
+	# if 0
+	
 		//Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/fullscreen_triangle.hlsl", U"engine/shader/d3d11/fullscreen_triangle.vs", ShaderStage::Vertex, U"VS");
 		//Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/fullscreen_triangle.hlsl", U"engine/shader/d3d11/fullscreen_triangle.ps", ShaderStage::Pixel, U"PS");
 
-		//if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d.vs", ShaderStage::Vertex, U"VS")) throw InternalEngineError{ U"Failed to compile a engine shader" };
-		
-		//Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_shape.ps", ShaderStage::Pixel, U"PS_Shape");
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d.vs", ShaderStage::Vertex, U"VS"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_shape.ps", ShaderStage::Pixel, U"PS_Shape"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
+	# endif
 
 		{
 			m_vertexShaders << HLSL{ U"engine/shader/d3d11/fullscreen_triangle.vs" };

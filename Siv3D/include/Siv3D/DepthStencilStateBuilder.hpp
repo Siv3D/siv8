@@ -21,32 +21,72 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 深度ステンシルステートの設定を構築するクラス
 	class DepthStencilStateBuilder
 	{
 	public:
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
 		[[nodiscard]]
 		explicit constexpr DepthStencilStateBuilder(
-			bool _depthEnabled = false,
+			bool _depthTestEnabled = false,
 			bool _depthWriteEnabled = false,
 			CompareFunction _depthCompareFunction = CompareFunction::Always
 		) noexcept;
-		
-		[[nodiscard]]
-		constexpr DepthStencilStateBuilder depthEnabled(bool enabled) const noexcept;
 
-		[[nodiscard]]
-		constexpr bool depthEnabled() const noexcept;
+		////////////////////////////////////////////////////////////////
+		//
+		//	depthTestEnabled
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 深度テストを有効にするかを設定します。
+		/// @param enabled 深度テストを有効にする場合は true, それ以外の場合は false
+		/// @return 新しい深度ステンシルステート設定
+		[[nodiscard]]
+		constexpr DepthStencilStateBuilder depthTestEnabled(bool enabled) const noexcept;
+
+		/// @brief 深度テストが有効かを返します。
+		/// @return 深度テストが有効な場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool depthTestEnabled() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	depthWriteEnabled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 深度の書き込みを有効にするかを設定します。
+		/// @param enabled 深度の書き込みを有効にする場合は true, それ以外の場合は false
+		/// @return 新しい深度ステンシルステート設定
 		[[nodiscard]]
 		constexpr DepthStencilStateBuilder depthWriteEnabled(bool enabled) const noexcept;
 
+		/// @brief 深度の書き込みが有効かを返します。
+		/// @return 深度の書き込みが有効な場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool depthWriteEnabled() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	depthCompareFunction
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 深度の比較関数を設定します。
+		/// @param function 深度の比較関数
+		/// @return 新しい深度ステンシルステート設定
 		[[nodiscard]]
 		constexpr DepthStencilStateBuilder depthCompareFunction(CompareFunction function) const noexcept;
 
+		/// @brief 深度の比較関数を返します。
+		/// @return 深度の比較関数
 		[[nodiscard]]
 		constexpr CompareFunction depthCompareFunction() const noexcept;
 
@@ -60,7 +100,7 @@ namespace s3d
 
 	private:
 
-		bool m_depthEnabled : 1 = false;
+		bool m_depthTestEnabled : 1 = false;
 
 		bool m_depthWriteEnabled : 1 = false;
 

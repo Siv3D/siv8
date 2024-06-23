@@ -29,17 +29,17 @@ namespace s3d
 
 		uint64 Hash(const void* data, const size_t size) noexcept
 		{
-			return ::wyhash(data, size, 0, DefaultHashSecret.data());
+			return ::wyhash(data, size, 0, DefaultHashSecret);
 		}
 
 		uint64 Hash(const void* data, const size_t size, const uint64 seed) noexcept
 		{
-			return ::wyhash(data, size, seed, DefaultHashSecret.data());
+			return ::wyhash(data, size, seed, DefaultHashSecret);
 		}
 
 		uint64 Hash(const void* data, const size_t size, const uint64 seed, const Secret& secret) noexcept
 		{
-			return ::wyhash(data, size, seed, secret.data());
+			return ::wyhash(data, size, seed, secret);
 		}
 	}
 
@@ -63,7 +63,7 @@ namespace s3d
 
 		uint64 Hash(const void* data, const size_t size, const uint64 seed, const Secret& secret) noexcept
 		{
-			return SIV3D_XXH3_64bits_withSecretandSeed(data, size, secret.data(), sizeof(secret), seed);
+			return SIV3D_XXH3_64bits_withSecretandSeed(data, size, secret, sizeof(secret), seed);
 		}
 	}
 

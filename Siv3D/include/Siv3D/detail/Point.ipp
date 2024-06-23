@@ -437,8 +437,8 @@ namespace s3d
 
 	constexpr int32 Point::manhattanDistanceFrom(const int32 _x, const int32 _y) const noexcept
 	{
-		const auto xMinMax = std::minmax(x, _x);
-		const auto yMinMax = std::minmax(y, _y);
+		const auto xMinMax = MinMax(x, _x);
+		const auto yMinMax = MinMax(y, _y);
 		return ((xMinMax.second - xMinMax.first) + (yMinMax.second - yMinMax.first));
 	}
 
@@ -452,8 +452,8 @@ namespace s3d
 	{
 		const Type x_ = static_cast<Type>(x);
 		const Type y_ = static_cast<Type>(y);
-		const auto xMinMax = std::minmax(x_, p.x);
-		const auto yMinMax = std::minmax(y_, p.y);
+		const auto xMinMax = MinMax(x_, p.x);
+		const auto yMinMax = MinMax(y_, p.y);
 		return ((xMinMax.second - xMinMax.first) + (yMinMax.second - yMinMax.first));
 	}
 

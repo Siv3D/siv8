@@ -11,6 +11,8 @@
 
 # include "D3D11BackBuffer.hpp"
 # include <Siv3D/Graphics.hpp>
+# include <Siv3D/Window.hpp>
+# include <Siv3D/WindowState.hpp>
 # include <Siv3D/SamplerState.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Shader/IShader.hpp>
@@ -345,7 +347,7 @@ namespace s3d
 			m_pRenderer->getSamplerState().setPS(0, samplerState);
 			m_pRenderer->getBlendState().set(BlendState::Opaque);
 		//	pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
-			m_pRenderer->getRasterizerState().set(RasterizerState::Default2D);
+			m_pRenderer->getRasterizerState().set(RasterizerState::Default2D, false);
 		}
 
 		// shaders

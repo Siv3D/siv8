@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
+# include <bit>
 # include "Common.hpp"
 # include "TextureAddressMode.hpp"
 # include "TextureFilter.hpp"
@@ -76,6 +78,76 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	(constant)
+		//
+		////////////////////////////////////////////////////////////////
+
+		static constexpr SamplerStateBuilder RepeatNearest{
+			TextureAddressMode::Repeat, TextureAddressMode::Repeat, TextureAddressMode::Repeat,
+			TextureFilter::Nearest, TextureFilter::Nearest, TextureFilter::Nearest };
+
+		static constexpr SamplerStateBuilder RepeatLinear{
+			TextureAddressMode::Repeat, TextureAddressMode::Repeat, TextureAddressMode::Repeat,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear };
+
+		static constexpr SamplerStateBuilder RepeatAnisotropic{
+			TextureAddressMode::Repeat, TextureAddressMode::Repeat, TextureAddressMode::Repeat,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear, 4 };
+
+		static constexpr SamplerStateBuilder MirrorNearest{
+			TextureAddressMode::Mirror, TextureAddressMode::Mirror, TextureAddressMode::Mirror,
+			TextureFilter::Nearest, TextureFilter::Nearest, TextureFilter::Nearest };
+
+		static constexpr SamplerStateBuilder MirrorLinear{
+			TextureAddressMode::Mirror, TextureAddressMode::Mirror, TextureAddressMode::Mirror,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear };
+
+		static constexpr SamplerStateBuilder MirrorAnisotropic{
+			TextureAddressMode::Mirror, TextureAddressMode::Mirror, TextureAddressMode::Mirror,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear, 4 };
+
+		static constexpr SamplerStateBuilder ClampNearest{
+			TextureAddressMode::Clamp, TextureAddressMode::Clamp, TextureAddressMode::Clamp,
+			TextureFilter::Nearest, TextureFilter::Nearest, TextureFilter::Nearest };
+
+		static constexpr SamplerStateBuilder ClampLinear{
+			TextureAddressMode::Clamp, TextureAddressMode::Clamp, TextureAddressMode::Clamp,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear };
+
+		static constexpr SamplerStateBuilder ClampAnisotropic{
+			TextureAddressMode::Clamp, TextureAddressMode::Clamp, TextureAddressMode::Clamp,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear, 4 };
+
+		static constexpr SamplerStateBuilder BorderNearest{
+			TextureAddressMode::BorderColor, TextureAddressMode::BorderColor, TextureAddressMode::BorderColor,
+			TextureFilter::Nearest, TextureFilter::Nearest, TextureFilter::Nearest };
+
+		static constexpr SamplerStateBuilder BorderLinear{
+			TextureAddressMode::BorderColor, TextureAddressMode::BorderColor, TextureAddressMode::BorderColor,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear };
+
+		static constexpr SamplerStateBuilder BorderAnisotropic{
+			TextureAddressMode::BorderColor, TextureAddressMode::BorderColor, TextureAddressMode::BorderColor,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear, 4 };
+
+		static constexpr SamplerStateBuilder MirrorClampNearest{
+			TextureAddressMode::MirrorClamp, TextureAddressMode::MirrorClamp, TextureAddressMode::MirrorClamp,
+			TextureFilter::Nearest, TextureFilter::Nearest, TextureFilter::Nearest };
+
+		static constexpr SamplerStateBuilder MirrorClampLinear{
+			TextureAddressMode::MirrorClamp, TextureAddressMode::MirrorClamp, TextureAddressMode::MirrorClamp,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear };
+
+		static constexpr SamplerStateBuilder MirrorClampAnisotropic{
+			TextureAddressMode::MirrorClamp, TextureAddressMode::MirrorClamp, TextureAddressMode::MirrorClamp,
+			TextureFilter::Linear, TextureFilter::Linear, TextureFilter::Linear, 4 };
+
+		static constexpr SamplerStateBuilder Default2D = ClampLinear;
+
+		static constexpr SamplerStateBuilder Default3D = RepeatAnisotropic;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	asValue
 		//
 		////////////////////////////////////////////////////////////////
@@ -103,12 +175,6 @@ namespace s3d
 		{
 			return (lhs.asValue() == rhs.asValue());
 		}
-
-		static constexpr SamplerStateBuilder ClampNearest{
-			TextureAddressMode::Clamp, TextureAddressMode::Clamp, TextureAddressMode::Clamp,
-			TextureFilter::Nearest, TextureFilter::Nearest, TextureFilter::Nearest };
-
-		static constexpr SamplerStateBuilder ClampLinear{};
 
 		////////////////////////////////////////////////////////////////
 		//

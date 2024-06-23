@@ -51,6 +51,8 @@
 // コンセプト | Concepts
 # include <Siv3D/Concepts.hpp>
 
+# include <Siv3D/RangeConcepts.hpp>
+
 // Yes/No タグ | Yes/No tag
 # include <Siv3D/YesNo.hpp>
 
@@ -65,6 +67,10 @@
 
 // ユーティリティー | Utilities
 # include <Siv3D/Utility.hpp>
+
+# include <Siv3D/ListUtility.hpp>
+
+# include <Siv3D/MinMax.hpp>
 
 // 1 バイトのデータを表現する型 | Type representing 1-byte data
 # include <Siv3D/Byte.hpp>
@@ -128,6 +134,8 @@
 
 # include <Siv3D/Step3D.hpp>
 
+# include <Siv3D/Zip.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	文字と文字列 | Characters and String
@@ -142,6 +150,10 @@
 
 // 文字列 | String
 # include <Siv3D/String.hpp>
+
+# include <Siv3D/StringRandom.hpp>
+
+# include <Siv3D/StringAlgorithm.hpp>
 
 // Unicode | Unicode
 # include <Siv3D/Unicode.hpp>
@@ -180,6 +192,12 @@
 
 // 動的配列（一次元）| Array
 # include <Siv3D/Array.hpp>
+
+# include <Siv3D/ArrayRandom.hpp>
+
+# include <Siv3D/ArrayAlgorithm.hpp>
+
+# include <Siv3D/ArrayParallel.hpp>
 
 // 動的配列（二次元）| 2D array
 # include <Siv3D/Grid.hpp> // ToDo
@@ -268,6 +286,8 @@
 
 // Fmt の拡張 | Fmt extension
 # include <Siv3D/FmtExtension.hpp>
+
+# include <Siv3D/FmtOptional.hpp>
 
 // フォーマットユーティリティ | Format utility
 # include <Siv3D/FormatUtility.hpp>
@@ -630,10 +650,10 @@
 //
 //// トランジション | Transition
 //# include <Siv3D/Transition.hpp>
-//
-//// 周期関数 | Periodic functions
-//# include <Siv3D/Periodic.hpp>
-//
+
+// 周期関数 | Periodic functions
+# include <Siv3D/Periodic.hpp>
+
 //// Poisson Disk 2D | Poisson disk 2D
 //# include <Siv3D/PoissonDisk2D.hpp>
 //
@@ -760,9 +780,9 @@
 // 2D 描画の頂点 | Vertex elements for 2D rendering
 # include <Siv3D/Vertex2D.hpp>
 
-//// 円座標 | Polar coordinates system (2D)
-//# include <Siv3D/Circular.hpp>
-//
+// 円座標 | Polar coordinates system (2D)
+# include <Siv3D/Circular.hpp>
+
 //// オフセット付き円座標 | Polar coordinates system with offset (2D)
 //# include <Siv3D/OffsetCircular.hpp>
 //
@@ -1390,15 +1410,24 @@
 
 # include <Siv3D/Vertex2D.hpp>
 
-
-# include <Siv3D/Graphics.hpp>
 # include <Siv3D/EngineOption.hpp>
 
 
+////////////////////////////////////////////////////////////////
+//
+//	レンダーステート | Render States
+//
+////////////////////////////////////////////////////////////////
+
+# include <Siv3D/Graphics.hpp>
+
+# include <Siv3D/Graphics2D.hpp>
 
 # include <Siv3D/BlendFactor.hpp>
 
 # include <Siv3D/BlendOperation.hpp>
+
+# include <Siv3D/ColorWriteMask.hpp>
 
 # include <Siv3D/BlendStateBuilder.hpp>
 
@@ -1429,6 +1458,19 @@
 
 // 深度ステンシルステート | Depth stencil state
 # include <Siv3D/DepthStencilState.hpp> // ToDo
+
+# include <Siv3D/ScopedColorMul2D.hpp>
+
+# include <Siv3D/ScopedColorAdd2D.hpp>
+
+# include <Siv3D/ScopedRenderStates2D.hpp>
+
+# include <Siv3D/ScopedScissorRect2D.hpp>
+
+# include <Siv3D/ScopedViewport2D.hpp>
+
+// 2D 座標変換スコープ | 2D Transformation scope
+# include <Siv3D/Transformer2D.hpp>
 
 
 # if SIV3D_PLATFORM(WINDOWS)

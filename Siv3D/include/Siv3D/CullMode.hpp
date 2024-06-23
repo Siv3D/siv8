@@ -22,12 +22,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief カリングモード | Culling mode
 	enum class CullMode : uint8
 	{
+		/// @brief カリングを無効にする | Disable culling
 		None	= 1,
 
+		/// @brief 前面をカリングする | Cull front faces
 		Front	= 2,
 
+		/// @brief 裏面をカリングする | Cull back faces
 		Back	= 3,
 	};
 

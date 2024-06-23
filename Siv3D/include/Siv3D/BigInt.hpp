@@ -15,11 +15,11 @@
 # include "Concepts.hpp"
 # include "String.hpp"
 # include "Optional.hpp"
-# include "FormatData.hpp"
 
 namespace s3d
 {
 	class BigFloat;
+	struct FormatData;
 
 	////////////////////////////////////////////////////////////////
 	//

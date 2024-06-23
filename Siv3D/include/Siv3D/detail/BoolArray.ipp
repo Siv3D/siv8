@@ -1285,73 +1285,37 @@ namespace s3d
 		/// @brief 配列の要素を 1 つランダムに返します。
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice()
-		{
-			return choice(GetDefaultRNG());
-		}
+		value_type& choice();
 
 		/// @brief 配列の要素を 1 つランダムに返します。
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice() const
-		{
-			return choice(GetDefaultRNG());
-		}
+		const value_type& choice() const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg)
-		{
-			const size_t size = m_container.size();
-
-			if (size == 0)
-			{
-				throw std::out_of_range{ "Array::choice(): Array is empty" };
-			}
-
-			return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
-		}
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg);
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const
-		{
-			const size_t size = m_container.size();
-
-			if (size == 0)
-			{
-				throw std::out_of_range{ "Array::choice(): Array is empty" };
-			}
-
-			return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
-		}
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
 
 		/// @brief 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n) const
-		{
-			return choice(n, GetDefaultRNG());
-		}
+		Array choice(Concept::Integral auto n) const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @param rbg 使用する乱数エンジン
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const
-		{
-			Array result(Arg::reserve = Min<size_t>(n, m_container.size()));
-
-			std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
-
-			return result;
-		}
+		Array choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1762,10 +1726,7 @@ namespace s3d
 		/// @param init 初期値
 		/// @return まとめられた値
 		template <class Fty, class R>
-		constexpr auto reduce(Fty f, R init) const
-		{
-			return std::reduce(m_container.begin(), m_container.end(), init, f);
-		}
+		constexpr auto reduce(Fty f, R init) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1824,7 +1785,7 @@ namespace s3d
 		{
 			if (m_container.size() <= index)
 			{
-				throw std::out_of_range{ "Array::remove_at(): index out of range" };
+				detail::ThrowArrayRemoveAtIndexOutOfRange();
 			}
 
 			erase(m_container.begin() + index);
@@ -1849,7 +1810,7 @@ namespace s3d
 		{
 			if (m_container.size() <= index)
 			{
-				throw std::out_of_range{ "Array::removed_at(): index out of range" };
+				detail::ThrowArrayRemovedAtIndexOutOfRange();
 			}
 
 			Array result(Arg::reserve = m_container.size() - 1);
@@ -2216,75 +2177,45 @@ namespace s3d
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルします。
 		/// @return *this
-		constexpr Array& shuffle()&
-		{
-			Shuffle(m_container.begin(), m_container.end(), GetDefaultRNG());
-			return *this;
-		}
+		constexpr Array& shuffle()&;
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffle()&&
-		{
-			return std::move(shuffle());
-		}
+		constexpr Array shuffle()&&;
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled() const&
-		{
-			Array result(*this);
-			result.shuffle();
-			return result;
-		}
+		constexpr Array shuffled() const&;
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled()&&
-		{
-			return std::move(shuffle());
-		}
+		constexpr Array shuffled()&&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルします。
 		/// @param rbg 使用する乱数エンジン
 		/// @return *this
-		constexpr Array& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
-		{
-			Shuffle(m_container.begin(), m_container.end(), std::forward<decltype(rbg)>(rbg));
-			return *this;
-		}
+		constexpr Array& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&
-		{
-			return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
-		}
+		constexpr Array shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
-		{
-			Array result(*this);
-			result.shuffle(std::forward<decltype(rbg)>(rbg));
-			return result;
-		}
+		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&
-		{
-			return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
-		}
+		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2631,37 +2562,22 @@ namespace s3d
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去します。
 		/// @return *this
-		constexpr Array& unique_consecutive() & noexcept
-		{
-			m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
-			return *this;
-		}
+		constexpr Array& unique_consecutive() & noexcept;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array unique_consecutive() && noexcept
-		{
-			return std::move(unique_consecutive());
-		}
+		constexpr Array unique_consecutive() && noexcept;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array uniqued_consecutive() const&
-		{
-			Array result;
-			std::unique_copy(m_container.begin(), m_container.end(), std::back_inserter(result));
-			return result;
-		}
+		constexpr Array uniqued_consecutive() const&;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array uniqued_consecutive() && noexcept
-		{
-			return std::move(unique_consecutive());
-		}
+		constexpr Array uniqued_consecutive() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2686,7 +2602,7 @@ namespace s3d
 				}
 				else
 				{
-					ThrowValuesAtOutOfRange();
+					detail::ThrowArrayValuesAtIndexOutOfRange();
 				}
 			}
 
@@ -2829,11 +2745,5 @@ namespace s3d
 	private:
 
 		container_type m_container;
-
-		[[noreturn]]
-		static void ThrowValuesAtOutOfRange()
-		{
-			throw std::out_of_range{ "Array::values_at(): index out of range" };
-		}
 	};
 }

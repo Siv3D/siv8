@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <array>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/UserInfo.hpp>
 # include <Siv3D/System.hpp>

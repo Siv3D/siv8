@@ -16,6 +16,7 @@
 # include "Concepts.hpp"
 # include "2DShapesFwd.hpp"
 # include "Utility.hpp"
+# include "MinMax.hpp"
 # include "CommonFloat.hpp"
 # include "MathConstants.hpp"
 # include "FormatLiteral.hpp"

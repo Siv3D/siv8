@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Scene.hpp>
+# include <Siv3D/2DShapes.hpp>
 # include "IScene.hpp"
 # include "SceneTime.hpp"
 # include "SceneStyle.hpp"

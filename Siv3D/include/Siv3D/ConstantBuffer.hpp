@@ -24,6 +24,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 定数バッファ | Constant buffer
+	/// @tparam Type データの型 | Data type
 	template <class Type>
 	class ConstantBuffer
 	{
@@ -44,49 +46,133 @@ namespace s3d
 
 	SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
+		/// @brief 定数バッファのサイズ（バイト） | Size of the constant buffer in bytes
 		static constexpr size_t Size		= sizeof(WrapperType);
 
+		/// @brief 定数バッファのベクトル数 | Number of vectors in the constant buffer
 		static constexpr size_t NumVectors	= (Size / 16);
 
+		/// @brief 定数バッファのアライメント | Alignment of the constant buffer
 		static constexpr size_t Alignment	= alignof(WrapperType);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief デフォルトコンストラクタ | Default constructor
 		[[nodiscard]]
 		ConstantBuffer();
 
+		/// @brief データを指定して定数バッファを作成します。 | Creates a constant buffer with the specified data.
+		/// @param data データ | Data
 		[[nodiscard]]
 		ConstantBuffer(const Type& data);
 
+		/// @brief データを指定して定数バッファを作成します。 | Creates a constant buffer with the specified data.
+		/// @tparam ...Args データのコンストラクタ引数の型 | Types of the constructor arguments of the data
+		/// @param ...args データのコンストラクタ引数 | Constructor arguments of the data
 		template <class... Args>
 			requires std::is_constructible_v<Type, Args...>
 		[[nodiscard]]
 		explicit ConstantBuffer(Args&&... args);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator =
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief データを代入します。
+		/// @param data 代入するデータ
+		/// @return *this
 		ConstantBuffer& operator =(const Type& data);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	size
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 定数バッファのサイズ（バイト）を返します。
+		/// @return 定数バッファのサイズ（バイト）
 		[[nodiscard]]
 		constexpr size_t size() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	data
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief データの先頭ポインタを返します。
+		/// @return データの先頭ポインタ
 		[[nodiscard]]
 		const float* data() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	isDirty
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 変更されたデータがあるかを返します。
+		/// @return 変更されたデータがある場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isDirty() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator *
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief データへの参照を返します。
+		/// @return データへの参照
 		[[nodiscard]]
 		Type& operator *() noexcept;
 
+		/// @brief データへの参照を返します。
+		/// @return データへの参照
 		[[nodiscard]]
 		const Type& operator *() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ->
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief データへのポインタを返します。
+		/// @return データへのポインタ
 		[[nodiscard]]
 		Type* operator ->() noexcept;
 
+		/// @brief データへのポインタを返します。
+		/// @return データへのポインタ
 		[[nodiscard]]
 		const Type* operator ->() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	_base
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 内部用 | For internal use
+		/// @return 内部用の情報 | Internal information
 		[[nodiscard]]
 		IConstantBuffer* _base() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	_update_if_dirty
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 内部用 | For internal use
+		/// @return 内部用の情報 | Internal information
 		bool _update_if_dirty();
 
 	private:

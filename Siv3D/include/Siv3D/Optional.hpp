@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
-# include <iostream>
+# include <iosfwd>
 # include <optional>
 # include "FormatData.hpp"
 
@@ -67,8 +67,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class CharType>
-	inline std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const None_t&);
+	std::ostream& operator <<(std::ostream& os, const None_t&);
+
+	std::wostream& operator <<(std::wostream& os, const None_t&);
+
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const None_t&);
 
 	////////////////////////////////////////////////////////////////
 	//

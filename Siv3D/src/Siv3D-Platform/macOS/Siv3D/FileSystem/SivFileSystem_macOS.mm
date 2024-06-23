@@ -14,6 +14,8 @@
 # include <mach-o/dyld.h>
 # include <filesystem>
 # include <Foundation/Foundation.h>
+# include <Siv3D/String.hpp>
+# include <Siv3D/StringAlgorithm.hpp>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/SpecialFolder.hpp>

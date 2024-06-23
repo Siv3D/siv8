@@ -29,17 +29,17 @@ struct PSInput
 cbuffer VSConstants2D : register(b0)
 {
 	row_major float2x4 g_transform;
-	//float4 g_colorMul;
+	float4 g_colorMul;
 }
 
-//cbuffer PSConstants2D : register(b0)
-//{
-//	float4 g_colorAdd;
-//	float4 g_sdfParam;
-//	float4 g_sdfOutlineColor;
-//	float4 g_sdfShadowColor;
-//	float4 g_internal;
-//}
+cbuffer PSConstants2D : register(b0)
+{
+	float4 g_colorAdd;
+	//float4 g_sdfParam;
+	//float4 g_sdfOutlineColor;
+	//float4 g_sdfShadowColor;
+	//float4 g_internal;
+}
 
 float4 s3d_transform2D(float2 pos, float2x4 t)
 {
@@ -50,7 +50,7 @@ PSInput VS(VSInput input)
 {
 	PSInput result;
 	result.position	= s3d_transform2D(input.position, g_transform);
-	result.color	= input.color;// (input.color * g_colorMul);
+	result.color	= (input.color * g_colorMul);
 	result.color.rgb *= result.color.a;
 	result.uv		= input.uv;
 	return result;
@@ -58,5 +58,9 @@ PSInput VS(VSInput input)
 
 float4 PS_Shape(PSInput input) : SV_TARGET
 {
-	return input.color;// (input.color + g_colorAdd);
+	float4 result = input.color;
+
+	result.rgb += (g_colorAdd.rgb * result.a);
+
+	return result;
 }

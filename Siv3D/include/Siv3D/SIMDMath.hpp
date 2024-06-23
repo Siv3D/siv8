@@ -11,7 +11,6 @@
 
 # pragma once
 # include "Common.hpp"
-# include "FormatData.hpp"
 
 # if SIV3D_INTRINSIC(SSE)
 #	define _XM_SSE4_INTRINSICS_
@@ -37,6 +36,8 @@
 
 namespace s3d
 {
+    struct FormatData;
+
     ////////////////////////////////////////////////////////////////
     //
     //	aligned_float4

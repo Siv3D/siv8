@@ -76,7 +76,7 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
-			constexpr detail::FormatLiteralObject operator ""_fmt(const char32 * s, const size_t length) noexcept
+			constexpr detail::FormatLiteralObject operator ""_fmt(const char32* s, const size_t length) noexcept
 			{
 				return{ s, length };
 			}

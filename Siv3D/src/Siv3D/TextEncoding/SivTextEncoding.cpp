@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <array>
 # include <Siv3D/TextEncoding.hpp>
 # include <Siv3D/BinaryReader.hpp>
 # include <Siv3D/FormatData.hpp>

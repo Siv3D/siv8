@@ -22,20 +22,17 @@ namespace s3d
 	constexpr RasterizerState::RasterizerState(
 		const TriangleFillMode _triangleFillMode,
 		const CullMode _cullMode,
-		const bool _scissorEnabled,
 		const bool _antialiasedLine3D,
 		const int32 _depthBias
 	) noexcept
 		: triangleFillMode{ _triangleFillMode }
 		, cullMode{ _cullMode }
-		, scissorEnabled{ _scissorEnabled }
 		, antialiasedLine3D{ _antialiasedLine3D }
 		, depthBias{ _depthBias } {}
 
 	constexpr RasterizerState::RasterizerState(const RasterizerStateBuilder& builder) noexcept
 		: triangleFillMode{ builder.triangleFillMode() }
 		, cullMode{ builder.cullMode() }
-		, scissorEnabled{ builder.scissorEnabled() }
 		, antialiasedLine3D{ builder.antialiasedLine3D() }
 		, depthBias{ builder.depthBias() } {}
 
@@ -61,7 +58,6 @@ namespace s3d
 		return RasterizerState{
 			TriangleFillMode{ 0 },
 			CullMode{ 0 },
-			false,
 			false,
 			0
 		};

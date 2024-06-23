@@ -59,21 +59,21 @@ namespace s3d
 		: start{ origin }
 		, end{ start + *direction } {}
 
-	//inline Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const value_type length) noexcept
-	//	: start{ originX, originY }
-	//	, end{ start + Circular{ length, *angle } } {}
+	inline Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const value_type length) noexcept
+		: start{ originX, originY }
+		, end{ start + Circular{ length, *angle } } {}
 
-	//Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
-	//	: start{ originX, originY }
-	//	, end{ start + Circular{ static_cast<value_type>(length), *angle } } {}
+	Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
+		: start{ originX, originY }
+		, end{ start + Circular{ static_cast<value_type>(length), *angle } } {}
 
-	//inline Line::Line(const position_type origin, const Arg::angle_<value_type> angle, const value_type length) noexcept
-	//	: start{ origin }
-	//	, end{ start + Circular{ length, *angle } } {}
+	inline Line::Line(const position_type origin, const Arg::angle_<value_type> angle, const value_type length) noexcept
+		: start{ origin }
+		, end{ start + Circular{ length, *angle } } {}
 
-	//Line::Line(const position_type origin, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
-	//	: start{ origin }
-	//	, end{ start + Circular{ static_cast<value_type>(length), *angle } } {}
+	Line::Line(const position_type origin, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
+		: start{ origin }
+		, end{ start + Circular{ static_cast<value_type>(length), *angle } } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -273,32 +273,82 @@ namespace s3d
 		return{ (c - v), (c + v) };
 	}
 
-	//////////////////////////////////////////////////////////////////
-	////
-	////	rotatedAtStart
-	////
-	//////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotatedAtStart
+	//
+	////////////////////////////////////////////////////////////////
 
-	//[[nodiscard]]
-	//inline Line rotatedAtStart(double angle) const noexcept;
+	[[nodiscard]]
+	inline Line Line::rotatedAtStart(const double angle) const noexcept
+	{
+		return{ start, start.movedBy(vector().rotated(angle)) };
+	}
 
-	//////////////////////////////////////////////////////////////////
-	////
-	////	rotatedAtEnd
-	////
-	//////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotateAtStart
+	//
+	////////////////////////////////////////////////////////////////
 
-	//[[nodiscard]]
-	//inline Line rotatedAtEnd(double angle) const noexcept;
+	inline Line& Line::rotateAtStart(const double angle) noexcept
+	{
+		end = start.movedBy(vector().rotated(angle));
+		return *this;
+	}
 
-	//////////////////////////////////////////////////////////////////
-	////
-	////	rotatedAtCenter
-	////
-	//////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotatedAtEnd
+	//
+	////////////////////////////////////////////////////////////////
 
-	//[[nodiscard]]
-	//inline Line rotatedAtCenter(double angle) const noexcept;
+	[[nodiscard]]
+	inline Line Line::rotatedAtEnd(const double angle) const noexcept
+	{
+		return{ end.movedBy((-vector()).rotated(angle)), end };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotateAtEnd
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Line& Line::rotateAtEnd(const double angle) noexcept
+	{
+		start = end.movedBy((-vector()).rotated(angle));
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotatedAtCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	[[nodiscard]]
+	inline Line Line::rotatedAtCenter(const double angle) const noexcept
+	{
+		const position_type c = center();
+		const Vec2 hv = (vector().rotated(angle) * 0.5);
+		return{ (c - hv), (c + hv) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotateAtCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Line& Line::rotateAtCenter(const double angle) noexcept
+	{
+		const position_type c = center();
+		const Vec2 hv = (vector().rotated(angle) * 0.5);
+		start = (c - hv);
+		end = (c + hv);
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -431,6 +481,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	pointAtLength
+	//
+	////////////////////////////////////////////////////////////////
+
+	[[nodiscard]]
+	inline Line::position_type Line::pointAtLength(const double length) const
+	{
+		return (start + vector().setLength(length));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	interpolatedPointAt
 	//
 	////////////////////////////////////////////////////////////////
@@ -488,24 +550,6 @@ namespace s3d
 		end.moveBy(v);
 		return *this;
 	}
-
-	//////////////////////////////////////////////////////////////////
-	////
-	////	closestPointTo
-	////
-	//////////////////////////////////////////////////////////////////
-
-	//[[nodiscard]]
-	//inline position_type closestPointTo(position_type pos) const noexcept;
-
-	//////////////////////////////////////////////////////////////////
-	////
-	////	boundingRect
-	////
-	//////////////////////////////////////////////////////////////////
-
-	//[[nodiscard]]
-	//inline RectF boundingRect() const noexcept;
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <iostream>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Time.hpp>
 # include "CLogger.hpp"

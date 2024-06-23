@@ -14,7 +14,6 @@
 # include "Common.hpp"
 # include "ISteadyClock.hpp"
 # include "Duration.hpp"
-# include "FormatData.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
@@ -354,16 +353,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @tparam CharType 
-		/// @param output 
-		/// @param value 
-		/// @return 
-		template <class CharType>
-		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const VariableSpeedStopwatch& value)
-		{
-			return output << value.format();
-		}
+		friend std::ostream& operator <<(std::ostream& os, const VariableSpeedStopwatch& value);
+
+		friend std::wostream& operator <<(std::wostream& os, const VariableSpeedStopwatch& value);
+
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const VariableSpeedStopwatch& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -374,10 +368,7 @@ namespace s3d
 		/// @brief 
 		/// @param formatData 
 		/// @param value 
-		friend void Formatter(FormatData& formatData, const VariableSpeedStopwatch& value)
-		{
-			formatData.string.append(value.format());
-		}
+		friend void Formatter(FormatData& formatData, const VariableSpeedStopwatch& value);
 
 	private:
 

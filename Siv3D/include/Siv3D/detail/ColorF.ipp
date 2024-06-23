@@ -377,12 +377,12 @@ namespace s3d
 
 	constexpr double ColorF::minRGBComponent() const noexcept
 	{
-		return Min({ r, g, b });
+		return Min(Min(r, g), b);
 	}
 
 	constexpr double ColorF::maxRGBComponent() const noexcept
 	{
-		return Max({ r, g, b });
+		return Max(Max(r, g), b);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -393,12 +393,12 @@ namespace s3d
 
 	constexpr double ColorF::minComponent() const noexcept
 	{
-		return Min({ r, g, b ,a });
+		return Min(Min(r, g), Min(b, a));
 	}
 
 	constexpr double ColorF::maxComponent() const noexcept
 	{
-		return Max({ r, g, b ,a });
+		return Max(Max(r, g), Max(b, a));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -489,6 +489,28 @@ namespace s3d
 				Color::ToUint8(g),
 				Color::ToUint8(b),
 				Color::ToUint8(a) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toFloat3
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Float3 ColorF::toFloat3() const noexcept
+	{
+		return{ static_cast<float>(r), static_cast<float>(g), static_cast<float>(b) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toVec3
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Vec3 ColorF::toVec3() const noexcept
+	{
+		return{ r, g, b };
 	}
 
 	////////////////////////////////////////////////////////////////

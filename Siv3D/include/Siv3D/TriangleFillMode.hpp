@@ -22,10 +22,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 三角形の塗りつぶしモード | Triangle fill mode
 	enum class TriangleFillMode : uint8
 	{
+		/// @brief ワイヤーフレーム | Wireframe
 		Wireframe	= 0,
 
+		/// @brief ソリッド | Solid
 		Solid		= 1,
 	};
 

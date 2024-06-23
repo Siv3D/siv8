@@ -11,19 +11,12 @@
 
 # pragma once
 # include <vector>
-# include <numeric>
-# include <future>
-# include "Platform.hpp"
-# if SIV3D_PLATFORM(WINDOWS)
-#	include <execution>
-# endif
+# include <algorithm>
 # include "String.hpp"
 # include "Unicode.hpp"
 # include "Format.hpp"
 # include "Utility.hpp"
 # include "KahanSummation.hpp"
-# include "HashSet.hpp"
-# include "Threading.hpp"
 # include "FunctionRef.hpp"
 # include "PredefinedNamedParameter.hpp"
 
@@ -2017,9 +2010,6 @@ namespace s3d
 	private:
 
 		container_type m_container;
-
-		[[noreturn]]
-		static void ThrowValuesAtOutOfRange();
 	};
 
 	////////////////////////////////////////////////////////////////

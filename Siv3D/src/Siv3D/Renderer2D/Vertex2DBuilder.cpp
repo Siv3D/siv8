@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <array>
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
 
@@ -346,13 +347,13 @@ namespace s3d
 			{
 				for (Vertex2D::IndexType i = 0; i < (FullQuality - 1); ++i)
 				{
-					*pIndex++ = indexOffset + (i + 1);
 					*pIndex++ = indexOffset;
+					*pIndex++ = indexOffset + (i + 1);
 					*pIndex++ = indexOffset + (i + 2);
 				}
 
-				*pIndex++ = (indexOffset + FullQuality);
 				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + FullQuality);
 				*pIndex++ = (indexOffset + 1);
 			}
 

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <bit>
 # include "Common.hpp"
 # include "CompareFunction.hpp"
 # include "DepthStencilStateBuilder.hpp"
@@ -23,13 +24,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief デプス・ステンシルステート
+	/// @brief 深度ステンシルステート
 	struct DepthStencilState
 	{
-		bool depthEnabled						: 1	= false;
+		/// @brief 深度テストを有効にするか
+		bool depthTestEnabled					: 1	= false;
 
+		/// @brief 深度の書き込みを有効にするか
 		bool depthWriteEnabled					: 1	= false;
 
+		/// @brief 深度の比較関数
 		CompareFunction depthCompareFunction	: 4 = CompareFunction::Always;
 
 		uint8 _unused							: 2 = 0;
@@ -42,15 +46,29 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 深度ステンシルステートを作成します。
+		/// @param _depthTestEnabled 深度テストを有効にするか
+		/// @param _depthWriteEnabled 深度書き込みを有効にするか
+		/// @param _depthCompareFunction 深度の比較関数
 		[[nodiscard]]
 		explicit constexpr DepthStencilState(
-			bool _depthEnabled = false,
+			bool _depthTestEnabled = false,
 			bool _depthWriteEnabled = false,
 			CompareFunction _depthCompareFunction = CompareFunction::Always
 		) noexcept;
 
+		/// @brief 深度ステンシルステートを作成します。
+		/// @param builder 深度ステンシルステートの設定
 		[[nodiscard]]
 		constexpr DepthStencilState(const DepthStencilStateBuilder& builder) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constant)
+		//
+		////////////////////////////////////////////////////////////////
+
+		static constexpr DepthStencilStateBuilder Default2D{};
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -58,6 +76,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 深度ステンシルステートの設定を整数値に変換します。
+		/// @return 深度ステンシルステートの設定を表す整数値
 		[[nodiscard]]
 		constexpr storage_type asValue() const noexcept;
 
@@ -67,6 +87,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 深度ステンシルステートの設定を文字列に変換します。
+		/// @return 深度ステンシルステートの設定を表す文字列
 		[[nodiscard]]
 		String format() const;
 
@@ -76,13 +98,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの深度ステンシルステートが等しいかを返します。
+		/// @param lhs 一方の深度ステンシルステート
+		/// @param rhs もう一方の深度ステンシルステート
+		/// @return 2 つの深度ステンシルステートが等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const DepthStencilState& lhs, const DepthStencilState& rhs) noexcept
 		{
 			return (lhs.asValue() == rhs.asValue());
 		}
-
-		static constexpr DepthStencilStateBuilder Default2D{};
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -90,6 +114,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 無効な深度ステンシルステートを返します。
+		/// @return 無効な深度ステンシルステート
 		[[nodiscard]]
 		static constexpr DepthStencilState Invalid();
 

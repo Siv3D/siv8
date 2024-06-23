@@ -11,12 +11,13 @@
 
 # pragma once
 # include "Common.hpp"
-# include "FormatData.hpp"
 # include "PointVector.hpp"
 # include "FormatLiteral.hpp"
 
 namespace s3d
 {
+	struct FormatData;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	ColorF
@@ -523,6 +524,28 @@ namespace s3d
 		/// @remark 0.0 未満の成分は 0 に、1.0 より大きい成分は 255 になります。
 		[[nodiscard]]
 		constexpr Color toColor() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	toFloat3
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Float3{ r, g, b } を返します。
+		/// @return Float3{ r, g, b }
+		[[nodiscard]]
+		constexpr Float3 toFloat3() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	toVec3
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vec3{ r, g, b } を返します。
+		/// @return Vec3{ r, g, b }
+		[[nodiscard]]
+		constexpr Vec3 toVec3() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

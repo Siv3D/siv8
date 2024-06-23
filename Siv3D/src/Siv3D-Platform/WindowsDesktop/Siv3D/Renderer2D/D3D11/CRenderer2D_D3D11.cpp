@@ -18,6 +18,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/FmtOptional.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 /*
@@ -31,11 +32,11 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static constexpr D3D11_VIEWPORT MakeViewport(const Size size) noexcept
+		static constexpr D3D11_VIEWPORT MakeViewport(const Point pos, const Size size) noexcept
 		{
 			return{
-				.TopLeftX	= 0.0f,
-				.TopLeftY	= 0.0f,
+				.TopLeftX	= static_cast<float>(pos.x),
+				.TopLeftY	= static_cast<float>(pos.y),
 				.Width		= static_cast<float>(size.x),
 				.Height		= static_cast<float>(size.y),
 				.MinDepth	= D3D11_MIN_DEPTH,
@@ -43,6 +44,19 @@ namespace s3d
 			};
 		}
 	}
+
+	struct CommandState
+	{
+		BatchInfo2D batchInfo;
+		
+		RasterizerState rasterizerState = RasterizerState::Default2D;
+		
+		Optional<Rect> scissorRect;
+
+		Mat3x2 transform = Mat3x2::Identity();
+
+		Mat3x2 screenMat = Mat3x2::Identity();
+	};
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -263,31 +277,21 @@ namespace s3d
 		m_commandManager.flush();
 		m_context->IASetInputLayout(m_inputLayout.Get());
 		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
-		//pShader->setConstantBufferPS(0, m_psConstants2D.base());
+		m_pShader->setConstantBufferPS(0, m_psConstants._base());
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		{
-			const D3D11_VIEWPORT viewport = MakeViewport(currentRenderTargetSize);
+			const D3D11_VIEWPORT viewport = MakeViewport(Point{ 0, 0 }, currentRenderTargetSize);
 			m_context->RSSetViewports(1, &viewport);
 		}
-
-		Mat3x2 transform = Mat3x2::Identity();
-		Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
 
 		m_pRenderer->getBackBuffer().bindSceneTextureAsRenderTarget();
 		m_pRenderer->getDepthStencilState().set(DepthStencilState::Default2D);
 
 		LOG_COMMAND("----");
 
-		// (仮)
-		{
-			m_vsConstants->transform[0].set(screenMat._11, screenMat._12, screenMat._31, screenMat._32);
-			m_vsConstants->transform[1].set(screenMat._21, screenMat._22, 0.0f, 1.0f);
-
-			m_pRenderer->getBlendState().set(BlendState::Default2D);
-		}
-
-		BatchInfo2D batchInfo;
+		CommandState commandState;
+		commandState.screenMat = Mat3x2::Screen(currentRenderTargetSize);
 
 		for (const auto& command : m_commandManager.getCommands())
 		{
@@ -306,27 +310,98 @@ namespace s3d
 				}
 			case D3D11Renderer2DCommandType::UpdateBuffers:
 				{
-					batchInfo = m_vertexBufferManager2D.commitBuffers(command.index);				
+					commandState.batchInfo = m_vertexBufferManager2D.commitBuffers(command.index);
 					LOG_COMMAND(fmt::format("UpdateBuffers[{}] BatchInfo(indexCount = {}, startIndexLocation = {}, baseVertexLocation = {})",
-						command.index, batchInfo.indexCount, batchInfo.startIndexLocation, batchInfo.baseVertexLocation));
+						command.index, commandState.batchInfo.indexCount, commandState.batchInfo.startIndexLocation, commandState.batchInfo.baseVertexLocation));
 					break;
 				}
 			case D3D11Renderer2DCommandType::Draw:
 				{
 					m_vsConstants._update_if_dirty();
-					//m_psConstants2D._update_if_dirty();
+					m_psConstants._update_if_dirty();
 
 					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);
 					const uint32 indexCount = draw.indexCount;
-					const uint32 startIndexLocation = batchInfo.startIndexLocation;
-					const uint32 baseVertexLocation = batchInfo.baseVertexLocation;
+					const uint32 startIndexLocation = commandState.batchInfo.startIndexLocation;
+					const uint32 baseVertexLocation = commandState.batchInfo.baseVertexLocation;
 
 					m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
-					batchInfo.startIndexLocation += indexCount;
+					commandState.batchInfo.startIndexLocation += indexCount;
 					
 					//++m_stat.drawCalls;
 					//m_stat.triangleCount += (indexCount / 3);
 					LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
+					break;
+				}
+			case D3D11Renderer2DCommandType::ColorMul:
+				{
+					const Float4 colorMul = m_commandManager.getColorMul(command.index);
+					m_vsConstants->colorMul = colorMul;
+					LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, colorMul));
+					break;
+				}
+			case D3D11Renderer2DCommandType::ColorAdd:
+				{
+					const Float3 colorAdd = m_commandManager.getColorAdd(command.index);
+					m_psConstants->colorAdd.set(colorAdd, 0.0f);
+					LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, colorAdd));
+					break;
+				}
+			case D3D11Renderer2DCommandType::BlendState:
+				{
+					const auto& blendState = m_commandManager.getBlendState(command.index);
+					m_pRenderer->getBlendState().set(blendState);
+					LOG_COMMAND(fmt::format("BlendState[{}]", command.index));
+					break;
+				}
+			case D3D11Renderer2DCommandType::RasterizerState:
+				{
+					const auto& rasterizerState = m_commandManager.getRasterizerState(command.index);
+					commandState.rasterizerState = rasterizerState;
+
+					if (commandState.scissorRect)
+					{
+						m_pRenderer->getRasterizerState().set(rasterizerState, true);
+					}
+					else
+					{
+						m_pRenderer->getRasterizerState().set(rasterizerState, false);
+					}
+
+					LOG_COMMAND(fmt::format("RasterizerState[{}]", command.index));
+					break;
+				}
+			case D3D11Renderer2DCommandType::ScissorRect:
+				{
+					const auto& scissorRect = m_commandManager.getScissorRect(command.index);
+					commandState.scissorRect = scissorRect;
+
+					if (scissorRect)
+					{
+						m_pRenderer->getRasterizerState().set(commandState.rasterizerState, true);
+						m_pRenderer->getRasterizerState().setScissorRect(*scissorRect);
+					}
+					else
+					{
+						m_pRenderer->getRasterizerState().set(commandState.rasterizerState, false);
+					}
+
+					LOG_COMMAND(fmt::format("ScissorRect[{}] {}", command.index, scissorRect));
+					break;
+				}
+			case D3D11Renderer2DCommandType::Viewport:
+				{
+					const auto& viewport = m_commandManager.getViewport(command.index);
+					
+					const D3D11_VIEWPORT vp = (viewport ? MakeViewport(viewport->pos, viewport->size) : MakeViewport(Point{ 0, 0 }, currentRenderTargetSize));
+					m_context->RSSetViewports(1, &vp);
+
+					commandState.screenMat = Mat3x2::Screen(vp.Width, vp.Height);
+					const Mat3x2 matrix = (commandState.transform * commandState.screenMat);
+					m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
+					m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
+
+					LOG_COMMAND(fmt::format("Viewport[{}] ({}, {}, {}, {})", command.index, vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height));
 					break;
 				}
 			case D3D11Renderer2DCommandType::SetVS:
@@ -363,8 +438,180 @@ namespace s3d
 
 					break;
 				}
+			case D3D11Renderer2DCommandType::Transform:
+				{
+					commandState.transform = m_commandManager.getCombinedTransform(command.index);
+					const Mat3x2 matrix = (commandState.transform * commandState.screenMat);
+					m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
+					m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
+
+					LOG_COMMAND(U"Transform[{}] {}"_fmt(command.index, matrix));
+					break;
+				}
 			}
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getColorMul, setColorMul
+	//
+	////////////////////////////////////////////////////////////////
+
+	Float4 CRenderer2D_D3D11::getColorMul() const
+	{
+		return m_commandManager.getCurrentColorMul();
+	}
+
+	void CRenderer2D_D3D11::setColorMul(const Float4& color)
+	{
+		m_commandManager.pushColorMul(color);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getColorAdd, setColorAdd
+	//
+	////////////////////////////////////////////////////////////////
+
+	Float3 CRenderer2D_D3D11::getColorAdd() const
+	{
+		return m_commandManager.getCurrentColorAdd();
+	}
+
+	void CRenderer2D_D3D11::setColorAdd(const Float3& color)
+	{
+		m_commandManager.pushColorAdd(color);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBlendState, setBlendState
+	//
+	////////////////////////////////////////////////////////////////
+
+	BlendState CRenderer2D_D3D11::getBlendState() const
+	{
+		return m_commandManager.getCurrentBlendState();
+	}
+
+	void CRenderer2D_D3D11::setBlendState(const BlendState& state)
+	{
+		m_commandManager.pushBlendState(state);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getRasterizerState, setRasterizerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	RasterizerState CRenderer2D_D3D11::getRasterizerState() const
+	{
+		return m_commandManager.getCurrentRasterizerState();
+	}
+
+	void CRenderer2D_D3D11::setRasterizerState(const RasterizerState& state)
+	{
+		m_commandManager.pushRasterizerState(state);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getVSSamplerState, setVSSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	SamplerState CRenderer2D_D3D11::getVSSamplerState(const uint32 slot) const
+	{
+		// [Siv3D ToDo]
+		return SamplerState{};
+	}
+
+	void CRenderer2D_D3D11::setVSSamplerState(const uint32 slot, const SamplerState& state)
+	{
+		// [Siv3D ToDo]
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getPSSamplerState, setPSSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	SamplerState CRenderer2D_D3D11::getPSSamplerState(const uint32 slot) const
+	{
+		// [Siv3D ToDo]
+		return SamplerState{};
+	}
+
+	void CRenderer2D_D3D11::setPSSamplerState(const uint32 slot, const SamplerState& state)
+	{
+		// [Siv3D ToDo]
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getScissorRect, setScissorRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<Rect> CRenderer2D_D3D11::getScissorRect() const
+	{
+		return m_commandManager.getCurrentScissorRect();
+	}
+
+	void CRenderer2D_D3D11::setScissorRect(const Optional<Rect>& rect)
+	{
+		m_commandManager.pushScissorRect(rect);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getViewport, setViewport
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<Rect> CRenderer2D_D3D11::getViewport() const
+	{
+		return m_commandManager.getCurrentViewport();
+	}
+
+	void CRenderer2D_D3D11::setViewport(const Optional<Rect>& viewport)
+	{
+		m_commandManager.pushViewport(viewport);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getLocalTransform, setLocalTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Mat3x2& CRenderer2D_D3D11::getLocalTransform() const
+	{
+		return m_commandManager.getCurrentLocalTransform();
+	}
+
+	void CRenderer2D_D3D11::setLocalTransform(const Mat3x2& matrix)
+	{
+		m_commandManager.pushLocalTransform(matrix);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCameraTransform, setCameraTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Mat3x2& CRenderer2D_D3D11::getCameraTransform() const
+	{
+		return m_commandManager.getCurrentCameraTransform();
+	}
+
+	void CRenderer2D_D3D11::setCameraTransform(const Mat3x2& matrix)
+	{
+		m_commandManager.pushCameraTransform(matrix);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -375,7 +622,7 @@ namespace s3d
 
 	float CRenderer2D_D3D11::getMaxScaling() const noexcept
 	{
-		return(1.0f); // [Siv3D ToDo]
+		return m_commandManager.getCurrentMaxScaling();
 	}
 
 	////////////////////////////////////////////////////////////////

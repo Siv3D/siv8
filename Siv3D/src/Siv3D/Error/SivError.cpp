@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------
 
-# include <iostream>
+# include <ostream>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/FormatData.hpp>

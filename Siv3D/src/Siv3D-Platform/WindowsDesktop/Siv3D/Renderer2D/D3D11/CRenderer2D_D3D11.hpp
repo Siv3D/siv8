@@ -42,7 +42,49 @@ namespace s3d
 
 		void flush() override;
 
+
+		Float4 getColorMul() const override;
+
+		void setColorMul(const Float4& color) override;
+
+		Float3 getColorAdd() const override;
+
+		void setColorAdd(const Float3& color) override;
+
+		BlendState getBlendState() const override;
+
+		void setBlendState(const BlendState& state) override;
+
+		RasterizerState getRasterizerState() const override;
+
+		void setRasterizerState(const RasterizerState& state) override;
+
+		SamplerState getVSSamplerState(uint32 slot) const override;
+
+		void setVSSamplerState(uint32 slot, const SamplerState& state) override;
+
+		SamplerState getPSSamplerState(uint32 slot) const override;
+
+		void setPSSamplerState(uint32 slot, const SamplerState& state) override;
+
+		Optional<Rect> getScissorRect() const override;
+
+		void setScissorRect(const Optional<Rect>& rect) override;
+
+		Optional<Rect> getViewport() const override;
+
+		void setViewport(const Optional<Rect>& viewport) override;
+
+		const Mat3x2& getLocalTransform() const override;
+
+		void setLocalTransform(const Mat3x2& matrix) override;
+
+		const Mat3x2& getCameraTransform() const override;
+
+		void setCameraTransform(const Mat3x2& matrix) override;
+
 		float getMaxScaling() const noexcept override;
+
 
 		void beginFrame();
 
@@ -81,6 +123,8 @@ namespace s3d
 		} m_currentCustomShader;
 
 		ConstantBuffer<VSConstants2D> m_vsConstants;
+
+		ConstantBuffer<PSConstants2D> m_psConstants;
 
 		Vertex2DBufferPointer createBuffer(uint16 vertexSize, uint32 indexSize);
 	};

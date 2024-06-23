@@ -11,6 +11,7 @@
 
 # include "CRenderer_Metal.hpp"
 # include <Siv3D/Error/InternalEngineError.hpp>
+# include <Siv3D/Window.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Shader/IShader.hpp>

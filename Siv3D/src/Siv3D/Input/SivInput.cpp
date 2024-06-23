@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <array>
 # include <Siv3D/IntToString.hpp>
 # include <Siv3D/InputGroups.hpp>
 # include <Siv3D/InputState.hpp>

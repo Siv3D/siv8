@@ -13,8 +13,6 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
-# include "Window.hpp"
-# include "WindowState.hpp"
 # include "ResizeMode.hpp"
 # include "TextureFilter.hpp"
 # include "MSAASampleCount.hpp"
@@ -24,7 +22,7 @@ namespace s3d
 	namespace Scene
 	{
 		/// @brief シーンの幅と高さ（ピクセル）のデフォルト値です。
-		inline constexpr s3d::Size DefaultSceneSize = Window::DefaultClientSize;
+		inline constexpr s3d::Size DefaultSceneSize{ 800, 600 };
 
 		/// @brief シーンの背景色のデフォルト色です。
 		inline constexpr ColorF DefaultBackgroundColor = Palette::DefaultBackground;

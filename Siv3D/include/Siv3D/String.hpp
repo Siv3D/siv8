@@ -11,12 +11,11 @@
 
 # pragma once
 # include <string>
-# include <algorithm>
+# include <span>
 # include <functional>
 # include "Concepts.hpp"
+# include "RangeConcepts.hpp"
 # include "StringView.hpp"
-# include "Random.hpp"
-# include "Shuffle.hpp"
 
 namespace s3d
 {
@@ -2651,7 +2650,7 @@ namespace s3d
 			////////////////////////////////////////////////////////////////
 
 			[[nodiscard]]
-			inline String operator ""_s(const char32_t* s, size_t length);
+			constexpr String operator ""_s(const char32_t* s, size_t length);
 		}
 	}
 

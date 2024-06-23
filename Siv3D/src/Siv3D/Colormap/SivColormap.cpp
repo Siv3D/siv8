@@ -20,14 +20,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	ColorF Colormap(const double t, const ColorScale scale)
+	ColorF Colormap(const double t, const ColorScale colorScale)
 	{
-		const auto c = tinycolormap::GetColor(t, ToEnum<tinycolormap::ColormapType>(FromEnum(scale)));
+		const auto c = tinycolormap::GetColor(t, ToEnum<tinycolormap::ColormapType>(FromEnum(colorScale)));
 		return{ c.r(), c.g(), c.b() };
 	}
 
-	ColorF Colormap(const double t, const double min, const double max, const ColorScale scale)
+	ColorF Colormap(const double t, const double min, const double max, const ColorScale colorScale)
 	{
-		return Colormap(((t - min) / (max - min)), scale);
+		return Colormap(((t - min) / (max - min)), colorScale);
 	}
 }

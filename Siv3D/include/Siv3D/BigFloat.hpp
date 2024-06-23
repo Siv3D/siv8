@@ -11,14 +11,15 @@
 
 # pragma once
 # include <memory>
+# include <ios>
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "String.hpp"
-# include "FormatData.hpp"
 
 namespace s3d
 {
 	class BigInt;
+	struct FormatData;
 
 	////////////////////////////////////////////////////////////////
 	//

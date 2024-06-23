@@ -79,11 +79,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Vector4D(const Vector2D<value_type>& xy, const Vector2D<value_type>& zw) noexcept;
 
-		template <class Z>
 		[[nodiscard]]
 		constexpr Vector4D(const Vector3D<value_type>& xyz, Concept::Arithmetic auto _z) noexcept;
 
-		template <class X>
 		[[nodiscard]]
 		constexpr Vector4D(Concept::Arithmetic auto _x, const Vector3D<value_type>& yzw) noexcept;
 
@@ -333,6 +331,18 @@ namespace s3d
 		//	set
 		//
 		////////////////////////////////////////////////////////////////
+
+		constexpr Vector4D& set(const Vector2D<value_type>& xy, const Vector2D<value_type>& zw) noexcept;
+
+		constexpr Vector4D& set(const Vector2D<value_type>& xy, value_type _z, value_type _w) noexcept;
+
+		constexpr Vector4D& set(value_type _x, const Vector2D<value_type>& yz, value_type _w) noexcept;
+
+		constexpr Vector4D& set(value_type _x, value_type _y, const Vector2D<value_type>& zw) noexcept;
+
+		constexpr Vector4D& set(const Vector3D<value_type>& xyz, value_type _w) noexcept;
+
+		constexpr Vector4D& set(value_type _x, const Vector3D<value_type>& yzw) noexcept;
 
 		/// @brief 各成分を変更します。
 		/// @param _x 新しい X 成分

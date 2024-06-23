@@ -15,21 +15,14 @@ namespace s3d
 {
 	namespace detail
 	{
-		template <class Type>
-		class ArrayStableUniqueHelper
-		{
-		public:
+		[[noreturn]]
+		void ThrowArrayRemoveAtIndexOutOfRange();
 
-			[[nodiscard]]
-			bool operator()(const Type& value)
-			{
-				return m_set.insert(value).second;
-			}
-	
-		private:
+		[[noreturn]]
+		void ThrowArrayRemovedAtIndexOutOfRange();
 
-			HashSet<Type> m_set;
-		};
+		[[noreturn]]
+		void ThrowArrayValuesAtIndexOutOfRange();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -909,66 +902,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	choice
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice()
-	{
-		return choice(GetDefaultRNG());
-	}
-
-	template <class Type, class Allocator>
-	const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice() const
-	{
-		return choice(GetDefaultRNG());
-	}
-
-	template <class Type, class Allocator>
-	typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg)
-	{
-		const size_t size = m_container.size();
-
-		if (size == 0)
-		{
-			throw std::out_of_range{ "Array::choice(): Array is empty" };
-		}
-
-		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
-	}
-
-	template <class Type, class Allocator>
-	const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
-	{
-		const size_t size = m_container.size();
-
-		if (size == 0)
-		{
-			throw std::out_of_range{ "Array::choice(): Array is empty" };
-		}
-
-		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
-	}
-
-	template <class Type, class Allocator>
-	Array<Type, Allocator> Array<Type, Allocator>::choice(const Concept::Integral auto n) const
-	{
-		return choice(n, GetDefaultRNG());
-	}
-
-	template <class Type, class Allocator>
-	Array<Type, Allocator> Array<Type, Allocator>::choice(const Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const
-	{
-		Array result(Arg::reserve = Min<size_t>(n, m_container.size()));
-
-		std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
-
-		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	chunk
 	//
 	////////////////////////////////////////////////////////////////
@@ -1297,19 +1230,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	reduce
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	template <class Fty, class R>
-	constexpr auto Array<Type, Allocator>::reduce(Fty f, R init) const
-	{
-		return std::reduce(m_container.begin(), m_container.end(), init, f);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	remove, removed
 	//
 	////////////////////////////////////////////////////////////////
@@ -1360,7 +1280,7 @@ namespace s3d
 	{
 		if (m_container.size() <= index)
 		{
-			throw std::out_of_range{ "Array::remove_at(): index out of range" };
+			detail::ThrowArrayRemoveAtIndexOutOfRange();
 		}
 
 		erase(m_container.begin() + index);
@@ -1379,7 +1299,7 @@ namespace s3d
 	{
 		if (m_container.size() <= index)
 		{
-			throw std::out_of_range{ "Array::removed_at(): index out of range" };
+			detail::ThrowArrayRemovedAtIndexOutOfRange();
 		}
 
 		Array result(Arg::reserve = m_container.size() - 1);
@@ -1643,66 +1563,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	shuffle, shuffled
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::shuffle()&
-	{
-		Shuffle(m_container.begin(), m_container.end(), GetDefaultRNG());
-		return *this;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffle()&&
-	{
-		return std::move(shuffle());
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled() const&
-	{
-		Array result(*this);
-		result.shuffle();
-		return result;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled()&&
-	{
-		return std::move(shuffle());
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
-	{
-		Shuffle(m_container.begin(), m_container.end(), std::forward<decltype(rbg)>(rbg));
-		return *this;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&
-	{
-		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
-	{
-		Array result(*this);
-		result.shuffle(std::forward<decltype(rbg)>(rbg));
-		return result;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&
-	{
-		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	slice
 	//
 	////////////////////////////////////////////////////////////////
@@ -1908,36 +1768,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	stable_unique, stable_uniqued
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_unique() & noexcept
-	{
-		return (*this = stable_uniqued());
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_unique() && noexcept
-	{
-		return stable_uniqued();
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() const
-	{
-		Array result;
-
-		detail::ArrayStableUniqueHelper<value_type> pred;
-
-		std::copy_if(m_container.begin(), m_container.end(), std::back_inserter(result), std::ref(pred));
-
-		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	sum
 	//
 	////////////////////////////////////////////////////////////////
@@ -2024,39 +1854,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	unique_consecutive, uniqued_consecutive
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::unique_consecutive() & noexcept
-	{
-		m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
-		return *this;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::unique_consecutive() && noexcept
-	{
-		return std::move(unique_consecutive());
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() const&
-	{
-		Array result;
-		std::unique_copy(m_container.begin(), m_container.end(), std::back_inserter(result));
-		return result;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() && noexcept
-	{
-		return std::move(unique_consecutive());
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	values_at
 	//
 	////////////////////////////////////////////////////////////////
@@ -2075,280 +1872,8 @@ namespace s3d
 			}
 			else
 			{
-				ThrowValuesAtOutOfRange();
+				detail::ThrowArrayValuesAtIndexOutOfRange();
 			}
-		}
-
-		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	parallel_count_if
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	template <class Fty>
-	isize Array<Type, Allocator>::parallel_count_if(Fty f) const requires std::predicate<Fty&, const value_type&>
-	{
-	# if SIV3D_PLATFORM(WINDOWS)
-
-		return std::count_if(std::execution::par, m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
-
-	# else
-
-		if (m_container.empty())
-		{
-			return 0;
-		}
-
-		const size_t numThreads = Threading::GetConcurrency();
-
-		if (numThreads <= 1)
-		{
-			return std::count_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
-		}
-
-		const size_t countPerthread = Max<size_t>(1, ((m_container.size() + (numThreads - 1)) / numThreads));
-
-		Array<std::future<isize>> tasks;
-
-		auto it = m_container.begin();
-		size_t countLeft = m_container.size();
-
-		for (size_t i = 0; i < (numThreads - 1); ++i)
-		{
-			const size_t n = Min(countPerthread, countLeft);
-
-			if (n == 0)
-			{
-				break;
-			}
-
-			tasks.emplace_back(std::async(std::launch::async, [=, &f]()
-			{
-				return std::count_if(it, (it + n), f);
-			}));
-
-			it += n;
-			countLeft -= n;
-		}
-
-		isize result = 0;
-		
-		if (countLeft)
-		{
-			result = std::count_if(it, (it + countLeft), f);
-		}
-
-		for (auto& task : tasks)
-		{
-			result += task.get();
-		}
-
-		return result;
-
-	# endif
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	parallel_each
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	template <class Fty>
-	void Array<Type, Allocator>::parallel_each(Fty f) requires std::invocable<Fty&, value_type&>
-	{
-	# if SIV3D_PLATFORM(WINDOWS)
-
-		std::for_each(std::execution::par, m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
-
-	# else
-
-		if (m_container.empty())
-		{
-			return;
-		}
-
-		const size_t numThreads = Threading::GetConcurrency();
-
-		if (numThreads <= 1)
-		{
-			return each(std::forward<Fty>(f));
-		}
-
-		const size_t countPerthread = Max<size_t>(1, ((size() + (numThreads - 1)) / numThreads));
-
-		Array<std::future<void>> tasks;
-
-		auto it = m_container.begin();
-		size_t countLeft = size();
-
-		for (size_t i = 0; i < (numThreads - 1); ++i)
-		{
-			const size_t n = Min(countPerthread, countLeft);
-
-			if (n == 0)
-			{
-				break;
-			}
-
-			tasks.emplace_back(std::async(std::launch::async, [=, &f]()
-			{
-				std::for_each(it, (it + n), f);
-			}));
-
-			it += n;
-			countLeft -= n;
-		}
-
-		if (countLeft)
-		{
-			std::for_each(it, (it + countLeft), f);
-		}
-
-		for (auto& task : tasks)
-		{
-			task.get();
-		}
-
-	# endif
-	}
-
-	template <class Type, class Allocator>
-	template <class Fty>
-	void Array<Type, Allocator>::parallel_each(Fty f) const requires std::invocable<Fty&, const value_type&>
-	{
-	# if SIV3D_PLATFORM(WINDOWS)
-
-		std::for_each(std::execution::par, m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
-
-	# else
-
-		if (m_container.empty())
-		{
-			return;
-		}
-
-		const size_t numThreads = Threading::GetConcurrency();
-
-		if (numThreads <= 1)
-		{
-			return each(std::forward<Fty>(f));
-		}
-
-		const size_t countPerthread = Max<size_t>(1, ((size() + (numThreads - 1)) / numThreads));
-
-		Array<std::future<void>> tasks;
-
-		auto it = m_container.begin();
-		size_t countLeft = size();
-
-		for (size_t i = 0; i < (numThreads - 1); ++i)
-		{
-			const size_t n = Min(countPerthread, countLeft);
-
-			if (n == 0)
-			{
-				break;
-			}
-
-			tasks.emplace_back(std::async(std::launch::async, [=, &f]()
-			{
-				std::for_each(it, (it + n), f);
-			}));
-
-			it += n;
-			countLeft -= n;
-		}
-
-		if (countLeft)
-		{
-			std::for_each(it, (it + countLeft), f);
-		}
-
-		for (auto& task : tasks)
-		{
-			task.get();
-		}
-
-	# endif
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	parallel_map
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	template <class Fty>
-	auto Array<Type, Allocator>::parallel_map(Fty f) const requires std::invocable<Fty&, const value_type&>
-	{
-		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
-
-		if (m_container.empty())
-		{
-			return Array<result_value_type>{};
-		}
-
-		const size_t numThreads = Threading::GetConcurrency();
-
-		if (numThreads <= 1)
-		{
-			return map(std::forward<Fty>(f));
-		}
-
-		Array<result_value_type> result(m_container.size());
-
-		const size_t countPerthread = Max<size_t>(1, ((m_container.size() + (numThreads - 1)) / numThreads));
-
-		Array<std::future<void>> tasks;
-
-		auto itDst = result.begin();
-		auto itSrc = m_container.begin();
-		size_t countLeft = m_container.size();
-
-		for (size_t i = 0; i < (numThreads - 1); ++i)
-		{
-			const size_t n = Min(countPerthread, countLeft);
-
-			if (n == 0)
-			{
-				break;
-			}
-
-			tasks.emplace_back(std::async(std::launch::async, [=, &f]() mutable
-			{
-				const auto itSrcEnd = (itSrc + n);
-
-				while (itSrc != itSrcEnd)
-				{
-					*itDst++ = f(*itSrc++);
-				}
-			}));
-
-			itDst += n;
-			itSrc += n;
-			countLeft -= n;
-		}
-
-		if (countLeft)
-		{
-			const auto itSrcEnd = m_container.end();
-
-			while (itSrc != itSrcEnd)
-			{
-				*itDst++ = f(*itSrc++);
-			}
-		}
-
-		for (auto& task : tasks)
-		{
-			task.get();
 		}
 
 		return result;
@@ -2412,18 +1937,6 @@ namespace s3d
 		}
 
 		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	(private function)
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	void Array<Type, Allocator>::ThrowValuesAtOutOfRange()
-	{
-		throw std::out_of_range{ "Array::values_at(): index out of range" };
 	}
 
 	////////////////////////////////////////////////////////////////

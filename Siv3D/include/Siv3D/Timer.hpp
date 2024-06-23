@@ -14,11 +14,12 @@
 # include "Common.hpp"
 # include "ISteadyClock.hpp"
 # include "Duration.hpp"
-# include "FormatData.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
+	struct FormatData;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Timer
@@ -242,6 +243,24 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	s_ceil, s64_ceil
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 残り時間を [秒] で返します。小数点以下は切り上げられます。
+		/// @remark 例: 残り 2.1 秒の場合、3 を返します。
+		/// @return 残り時間 [秒]
+		[[nodiscard]]
+		int32 s_ceil() const noexcept;
+
+		/// @brief 残り時間を [秒] で返します。小数点以下は切り上げられます。
+		/// @remark 例: 残り 2.1 秒の場合、3 を返します。
+		/// @return 残り時間 [秒]
+		[[nodiscard]]
+		int64 s64_ceil() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	ms, ms64, msF
 		//
 		////////////////////////////////////////////////////////////////
@@ -380,16 +399,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @tparam CharType 
-		/// @param output 
-		/// @param value 
-		/// @return 
-		template <class CharType>
-		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Timer& value)
-		{
-			return output << value.format();
-		}
+		friend std::ostream& operator <<(std::ostream& os, const Timer& value);
+
+		friend std::wostream& operator <<(std::wostream& os, const Timer& value);
+
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Timer& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -400,10 +414,7 @@ namespace s3d
 		/// @brief 
 		/// @param formatData 
 		/// @param value 
-		friend void Formatter(FormatData& formatData, const Timer& value)
-		{
-			formatData.string.append(value.format());
-		}
+		friend void Formatter(FormatData& formatData, const Timer& value);
 
 	private:
 

@@ -27,13 +27,13 @@ namespace s3d
 
 		//DrawNull,
 
-		//ColorMul,
+		ColorMul,
 
-		//ColorAdd,
+		ColorAdd,
 
-		//BlendState,
+		BlendState,
 
-		//RasterizerState,
+		RasterizerState,
 
 		//VSSamplerState0,
 
@@ -67,9 +67,9 @@ namespace s3d
 
 		//PSSamplerState7,
 
-		//ScissorRect,
+		ScissorRect,
 
-		//Viewport,
+		Viewport,
 
 		//SDFParams,
 
@@ -81,7 +81,7 @@ namespace s3d
 
 		SetPS,
 
-		//Transform,
+		Transform,
 
 		//SetConstantBuffer,
 

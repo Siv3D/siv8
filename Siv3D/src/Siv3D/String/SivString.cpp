@@ -13,11 +13,13 @@
 # include <stdexcept>
 # include <Siv3D/HashSet.hpp>
 # include <Siv3D/String.hpp>
+# include <Siv3D/Random.hpp>
 # include <Siv3D/Char.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/Array.hpp>
 # include <Siv3D/RegExp.hpp>
+# include <Siv3D/StringRandom.hpp>
 
 namespace s3d
 {

@@ -29,5 +29,5 @@ namespace s3d
 		: string{ s } {}
 
 	constexpr FormatData::FormatData(String&& s) noexcept
-		: string{ std::move(s) } {}
+		: string{ std::move(s).str() } {}
 }

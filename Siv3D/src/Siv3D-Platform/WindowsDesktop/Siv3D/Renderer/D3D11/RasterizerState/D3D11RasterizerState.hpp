@@ -24,13 +24,13 @@ namespace s3d
 
 		void init(const D3D11Device& device);
 
-		void set(const RasterizerState& state);
+		void set(const RasterizerState& state, bool scissorEnabled);
 
 		void setScissorRect(const Rect& scissorRect);
 	
 	private:
 
-		using StateTable = HashTable<RasterizerState, ComPtr<ID3D11RasterizerState>>;
+		using StateTable = HashTable<std::pair<RasterizerState, bool>, ComPtr<ID3D11RasterizerState>>;
 
 		ID3D11Device* m_device = nullptr;
 
@@ -38,8 +38,8 @@ namespace s3d
 
 		StateTable m_states;
 
-		RasterizerState m_currentState = RasterizerState::Invalid();
+		std::pair<RasterizerState, bool> m_currentState = { RasterizerState::Invalid(), false };
 
-		StateTable::iterator create(const RasterizerState& state);
+		StateTable::iterator create(const std::pair<RasterizerState, bool>& state);
 	};
 }

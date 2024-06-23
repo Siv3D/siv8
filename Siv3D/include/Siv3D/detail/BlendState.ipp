@@ -46,6 +46,30 @@ namespace s3d
 		, destinationAlpha{ _destinationAlpha }
 		, alphaOperation{ _alphaOperation } {}
 
+	constexpr BlendState::BlendState(
+		const bool _enabled,
+		const BlendFactor _sourceRGB,
+		const BlendFactor _destinationRGB,
+		const BlendOperation _rgbOperation,
+		const BlendFactor _sourceAlpha,
+		const BlendFactor _destinationAlpha,
+		const BlendOperation _alphaOperation,
+		const bool _alphaToCoverageEnabled,
+		const ColorWriteMask colorWriteMask
+	) noexcept
+		: enabled{ _enabled }
+		, writeR{ static_cast<bool>(colorWriteMask & ColorWriteMask::Red) }
+		, writeG{ static_cast<bool>(colorWriteMask & ColorWriteMask::Green) }
+		, sourceRGB{ _sourceRGB }
+		, destinationRGB{ _destinationRGB }
+		, rgbOperation{ _rgbOperation }
+		, alphaToCoverageEnabled{ _alphaToCoverageEnabled }
+		, writeB{ static_cast<bool>(colorWriteMask & ColorWriteMask::Blue) }
+		, writeA{ static_cast<bool>(colorWriteMask & ColorWriteMask::Alpha) }
+		, sourceAlpha{ _sourceAlpha }
+		, destinationAlpha{ _destinationAlpha }
+		, alphaOperation{ _alphaOperation } {}
+
 	constexpr BlendState::BlendState(const BlendStateBuilder& builder) noexcept
 		: enabled{ builder.enabled() }
 		, writeR{ builder.writeR() }
@@ -73,6 +97,48 @@ namespace s3d
 		writeB = b;
 		writeA = a;
 		return *this;
+	}
+
+	constexpr BlendState& BlendState::setColorWriteMask(const ColorWriteMask mask) noexcept
+	{
+		writeR = static_cast<bool>(mask & ColorWriteMask::Red);
+		writeG = static_cast<bool>(mask & ColorWriteMask::Green);
+		writeB = static_cast<bool>(mask & ColorWriteMask::Blue);
+		writeA = static_cast<bool>(mask & ColorWriteMask::Alpha);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getColorWriteMask
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr ColorWriteMask BlendState::getColorWriteMask() const noexcept
+	{
+		ColorWriteMask mask{};
+
+		if (writeR)
+		{
+			mask |= ColorWriteMask::Red;
+		}
+
+		if (writeG)
+		{
+			mask |= ColorWriteMask::Green;
+		}
+
+		if (writeB)
+		{
+			mask |= ColorWriteMask::Blue;
+		}
+
+		if (writeA)
+		{
+			mask |= ColorWriteMask::Alpha;
+		}
+
+		return mask;
 	}
 
 	////////////////////////////////////////////////////////////////

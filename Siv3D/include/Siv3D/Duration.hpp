@@ -12,7 +12,7 @@
 # pragma once
 # include <chrono>
 # include "Common.hpp"
-# include "String.hpp"
+# include "StringView.hpp"
 
 namespace s3d
 {

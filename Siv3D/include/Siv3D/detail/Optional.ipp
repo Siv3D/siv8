@@ -12,20 +12,7 @@
 # pragma once
 
 namespace s3d
-{		
-	////////////////////////////////////////////////////////////////
-	//
-	//	operator <<
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class CharType>
-	std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const None_t&)
-	{
-		constexpr CharType no[] = { 'n','o','n','e','\0' };
-		return output << no;
-	}
-		
+{
 	////////////////////////////////////////////////////////////////
 	//
 	//	Formatter

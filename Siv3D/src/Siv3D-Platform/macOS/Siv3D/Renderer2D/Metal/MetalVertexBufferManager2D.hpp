@@ -55,11 +55,18 @@ namespace s3d
 		static constexpr uint32 InitialVertexBufferSize	= (1 << 16);	// 65,536
 
 		static constexpr uint32 InitialIndexBufferSize	= (1 << 16);	// 65,536
+
+		static constexpr uint32 MaxVertexBufferSize		= (1 << 22);	// 4,194,304
+		
+		static constexpr uint32 MaxIndexBufferSize		= (1 << 22);	// 4,194,304
 		
 		static constexpr uint32 MaxVertexCountPerDraw	= 65535;
 		
 		struct VertexBuffer
 		{
+			// triple-buffer のインデックス
+			uint32 bufferIndex = 0;
+			
 			uint32 size = 0;
 			
 			uint32 writePos = 0;
@@ -68,7 +75,9 @@ namespace s3d
 			
 			NS::SharedPtr<MTL::Buffer> buffer;
 			
-			Vertex2D* requestVertexBuffer(size_t count)
+			void resize(MTL::Device* device, uint32 vertexArrayWritePosTarget);
+			
+			Vertex2D* requestVertexBuffer(uint32 count)
 			{
 				if (size < (writePos + count))
 				{
@@ -85,6 +94,9 @@ namespace s3d
 	
 		struct IndexBuffer
 		{
+			// triple-buffer のインデックス
+			uint32 bufferIndex = 0;
+			
 			uint32 size = 0;
 			
 			uint32 writePos = 0;
@@ -93,7 +105,9 @@ namespace s3d
 			
 			NS::SharedPtr<MTL::Buffer> buffer;
 			
-			Vertex2D::IndexType* requestIndexBuffer(size_t count)
+			void resize(MTL::Device* device, uint32 indexArrayWritePosTarget);
+			
+			Vertex2D::IndexType* requestIndexBuffer(uint32 count)
 			{
 				if (size < (writePos + count))
 				{
@@ -114,8 +128,10 @@ namespace s3d
 			
 			IndexBuffer indexBuffer;
 			
-			Vertex2DBufferPointer requestBuffer(uint16 vertexCount, uint32 indexCount);
+			Vertex2DBufferPointer requestBuffer(MTL::Device* device, uint16 vertexCount, uint32 indexCount);
 		};
+		
+		MTL::Device* m_device = nullptr;
 	
 		std::array<Buffer, MaxInflightBuffers> m_buffers;
 		
