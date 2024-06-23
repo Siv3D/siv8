@@ -639,6 +639,9 @@
 // 線形補間 | Interpolation
 # include <Siv3D/Interpolation.hpp>
 
+
+# include <Siv3D/Smooth.hpp>
+
 // イージング関数 | Easing
 # include <Siv3D/Easing.hpp>
 

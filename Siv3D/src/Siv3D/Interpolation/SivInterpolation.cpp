@@ -115,6 +115,11 @@ namespace s3d
 			return ColorF{ MoveTowards(current.toVec4(), target.toVec4(), maxSpeed) };
 		}
 
+		HSV MoveTowards(const HSV& current, const HSV& target, const double maxSpeed) noexcept
+		{
+			return HSV{ MoveTowards(current.hsva(), target.hsva(), maxSpeed) };
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Damp
@@ -161,7 +166,12 @@ namespace s3d
 			return Damp_impl(current, target, r, dt);
 		}
 
-		ColorF Damp(const ColorF& current, const ColorF& target, double r, double dt)
+		ColorF Damp(const ColorF& current, const ColorF& target, const double r, const double dt)
+		{
+			return Damp_impl(current, target, r, dt);
+		}
+
+		HSV Damp(const HSV& current, const HSV& target, const double r, const double dt)
 		{
 			return Damp_impl(current, target, r, dt);
 		}
@@ -221,6 +231,19 @@ namespace s3d
 			velocity = ColorF{ vel };
 
 			return ColorF{ result };
+		}
+
+		HSV SmoothDamp(const HSV& current, const HSV& target, HSV& velocity, const double smoothTime, const Optional<double>& maxSpeed, const double deltaTime)
+		{
+			const double resultH = SmoothDamp_impl(current.h, target.h, velocity.h, smoothTime, deltaTime, maxSpeed.and_then([](double t)-> Optional<double> { return (t * 360); }));
+
+			Vec3 velocitySVA = velocity.sva();
+			const Vec3 resultSVA = SmoothDamp_impl(current.sva(), target.sva(), velocitySVA, smoothTime, deltaTime, maxSpeed);
+			velocity.s = velocitySVA.x;
+			velocity.v = velocitySVA.y;
+			velocity.a = velocitySVA.z;
+
+			return HSV{ resultH, resultSVA.x, resultSVA.y, resultSVA.z };
 		}
 	}
 }

@@ -873,64 +873,64 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	copyToTop
+	//	copiedToTop
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::copyToTop(const value_type distance) const noexcept
+	constexpr Rect Rect::copiedToTop(const value_type distance) const noexcept
 	{
 		return{ pos.x, (pos.y - size.y - distance), size };
 	}
 
-	constexpr RectF Rect::copyToTop(const Concept::FloatingPoint auto distance) const noexcept
+	constexpr RectF Rect::copiedToTop(const Concept::FloatingPoint auto distance) const noexcept
 	{
 		return{ pos.x, (pos.y - size.y - distance), size };
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	copyToRight
+	//	copiedToRight
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::copyToRight(const value_type distance) const noexcept
+	constexpr Rect Rect::copiedToRight(const value_type distance) const noexcept
 	{
 		return{ (pos.x + size.x + distance), pos.y, size };
 	}
 
-	constexpr RectF Rect::copyToRight(const Concept::FloatingPoint auto distance) const noexcept
+	constexpr RectF Rect::copiedToRight(const Concept::FloatingPoint auto distance) const noexcept
 	{
 		return{ (pos.x + size.x + distance), pos.y, size };
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	copyToBottom
+	//	copiedToBottom
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::copyToBottom(const value_type distance) const noexcept
+	constexpr Rect Rect::copiedToBottom(const value_type distance) const noexcept
 	{
 		return{ pos.x, (pos.y + size.y + distance), size };
 	}
 
-	constexpr RectF Rect::copyToBottom(const Concept::FloatingPoint auto distance) const noexcept
+	constexpr RectF Rect::copiedToBottom(const Concept::FloatingPoint auto distance) const noexcept
 	{
 		return{ pos.x, (pos.y + size.y + distance), size };
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	copyToLeft
+	//	copiedToLeft
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::copyToLeft(const value_type distance) const noexcept
+	constexpr Rect Rect::copiedToLeft(const value_type distance) const noexcept
 	{
 		return{ (pos.x - size.x - distance), pos.y, size };
 	}
 
-	constexpr RectF Rect::copyToLeft(const Concept::FloatingPoint auto distance) const noexcept
+	constexpr RectF Rect::copiedToLeft(const Concept::FloatingPoint auto distance) const noexcept
 	{
 		return{ (pos.x - size.x - distance), pos.y, size };
 	}

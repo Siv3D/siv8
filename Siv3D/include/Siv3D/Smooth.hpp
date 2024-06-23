@@ -1,0 +1,165 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+# include "Common.hpp"
+# include "PointVector.hpp"
+# include "Interpolation.hpp"
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	Smooth
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	struct Smooth
+	{
+	public:
+
+		using value_type = Type;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Smooth() = default;
+
+		[[nodiscard]]
+		constexpr Smooth(const value_type& value) noexcept;
+
+		template <class... Args>
+			requires std::is_constructible_v<Type, Args...>
+		[[nodiscard]]
+		constexpr Smooth(Args&&... args) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setState
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr Smooth& setState(const value_type& value, const value_type& velocity = value_type{}) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setTarget
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr Smooth& setTarget(const value_type& target) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	clearTarget
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr Smooth& clearTarget() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	jumpTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr Smooth& jumpTo(const value_type& target) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	jumpToTarget
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr Smooth& jumpToTarget() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	update
+		//
+		////////////////////////////////////////////////////////////////
+
+		const value_type& update(const Duration& smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime()) noexcept;
+
+		const value_type& update(double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime()) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator *
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr const value_type& operator *() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	value
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr const value_type& value() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	target
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr const value_type& target() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	velocity
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr const value_type& velocity() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ->
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr const value_type* operator ->() const noexcept;
+
+	private:
+
+		value_type m_value{};
+
+		value_type m_target{};
+
+		value_type m_velocity{};
+	};
+
+	using SmoothFloat	= Smooth<float>;
+	using SmoothDouble	= Smooth<double>;
+	using SmoothFloat2	= Smooth<Float2>;
+	using SmoothFloat3	= Smooth<Float3>;
+	using SmoothFloat4	= Smooth<Float4>;
+	using SmoothVec2	= Smooth<Vec2>;
+	using SmoothVec3	= Smooth<Vec3>;
+	using SmoothVec4	= Smooth<Vec4>;
+	using SmoothColorF	= Smooth<ColorF>;
+	using SmoothHSV		= Smooth<HSV>;
+}
+
+# include "detail/Smooth.ipp"

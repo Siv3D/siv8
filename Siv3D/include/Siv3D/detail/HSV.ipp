@@ -49,6 +49,18 @@ namespace s3d
 		, v{ hsv.v }
 		, a{ _a } {}
 
+	constexpr HSV::HSV(const Vec3& hsv, const double _a) noexcept
+		: h{ hsv.x }
+		, s{ hsv.y }
+		, v{ hsv.z }
+		, a{ _a } {}
+
+	constexpr HSV::HSV(const Vec4& hsva) noexcept
+		: h{ hsva.x }
+		, s{ hsva.y }
+		, v{ hsva.z }
+		, a{ hsva.w } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	elem
@@ -252,6 +264,17 @@ namespace s3d
 	constexpr Vec3 HSV::hsv() const noexcept
 	{
 		return{ h, s, v };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sva
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Vec3 HSV::sva() const noexcept
+	{
+		return{ s, v, a };
 	}
 
 	////////////////////////////////////////////////////////////////

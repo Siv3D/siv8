@@ -999,7 +999,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	copyToTop
+		//	copiedToTop
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1007,17 +1007,17 @@ namespace s3d
 		/// @param distance 配置のすき間の大きさ
 		/// @return 上に配置された長方形
 		[[nodiscard]]
-		constexpr Rect copyToTop(value_type distance = 0) const noexcept;
+		constexpr Rect copiedToTop(value_type distance = 0) const noexcept;
 
 		/// @brief 同じ大きさで、上に配置された長方形を返します。
 		/// @param distance 配置のすき間の大きさ
 		/// @return 上に配置された長方形
 		[[nodiscard]]
-		constexpr RectF copyToTop(Concept::FloatingPoint auto distance) const noexcept;
+		constexpr RectF copiedToTop(Concept::FloatingPoint auto distance) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	copyToRight
+		//	copiedToRight
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1025,17 +1025,17 @@ namespace s3d
 		/// @param distance 配置のすき間の大きさ
 		/// @return 右に配置された長方形
 		[[nodiscard]]
-		constexpr Rect copyToRight(value_type distance = 0) const noexcept;
+		constexpr Rect copiedToRight(value_type distance = 0) const noexcept;
 
 		/// @brief 同じ大きさで、右に配置された長方形を返します。
 		/// @param distance 配置のすき間の大きさ
 		/// @return 右に配置された長方形
 		[[nodiscard]]
-		constexpr RectF copyToRight(Concept::FloatingPoint auto distance) const noexcept;
+		constexpr RectF copiedToRight(Concept::FloatingPoint auto distance) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	copyToBottom
+		//	copiedToBottom
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1043,17 +1043,17 @@ namespace s3d
 		/// @param distance 配置のすき間の大きさ
 		/// @return 下に配置された長方形
 		[[nodiscard]]
-		constexpr Rect copyToBottom(value_type distance = 0) const noexcept;
+		constexpr Rect copiedToBottom(value_type distance = 0) const noexcept;
 
 		/// @brief 同じ大きさで、下に配置された長方形を返します。
 		/// @param distance 配置のすき間の大きさ
 		/// @return 下に配置された長方形
 		[[nodiscard]]
-		constexpr RectF copyToBottom(Concept::FloatingPoint auto distance) const noexcept;
+		constexpr RectF copiedToBottom(Concept::FloatingPoint auto distance) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	copyToLeft
+		//	copiedToLeft
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1061,13 +1061,13 @@ namespace s3d
 		/// @param distance 配置のすき間の大きさ
 		/// @return 左に配置された長方形
 		[[nodiscard]]
-		constexpr Rect copyToLeft(value_type distance = 0) const noexcept;
+		constexpr Rect copiedToLeft(value_type distance = 0) const noexcept;
 
 		/// @brief 同じ大きさで、左に配置された長方形を返します。
 		/// @param distance 配置のすき間の大きさ
 		/// @return 左に配置された長方形
 		[[nodiscard]]
-		constexpr RectF copyToLeft(Concept::FloatingPoint auto distance) const noexcept;
+		constexpr RectF copiedToLeft(Concept::FloatingPoint auto distance) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
