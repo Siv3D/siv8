@@ -898,6 +898,15 @@
     <Filter Include="src\Siv3D\ColorWriteMask">
       <UniqueIdentifier>{47ccf813-b252-4dc9-a039-5b47a4f4b324}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Camera2DControl">
+      <UniqueIdentifier>{2e25b673-134f-4b57-a088-234cd5a4f8a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Camera2DControlBuilder">
+      <UniqueIdentifier>{13d86528-d228-498c-a1c0-468cabe8688b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Camera2D">
+      <UniqueIdentifier>{1fe8a1fc-b83f-48d8-9e50-f9def029ec7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3519,6 +3528,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BasicCamera2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Camera2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BasicCamera2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Camera2DControl.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Camera2DControlBuilder.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5821,6 +5845,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ColorWriteMask\SivColorWriteMask.cpp">
       <Filter>src\Siv3D\ColorWriteMask</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Camera2DControl\SivCamera2DControl.cpp">
+      <Filter>src\Siv3D\Camera2DControl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Camera2DControlBuilder\SivCamera2DControlBuilder.cpp">
+      <Filter>src\Siv3D\Camera2DControlBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Camera2D\SivCamera2D.cpp">
+      <Filter>src\Siv3D\Camera2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

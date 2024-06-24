@@ -26,6 +26,12 @@ namespace s3d
 	{
 	public:
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
 		[[nodiscard]]
 		explicit constexpr RasterizerStateBuilder(
 			TriangleFillMode _triangleFillMode = TriangleFillMode::Solid,
@@ -34,11 +40,23 @@ namespace s3d
 			int32 _depthBias = 0
 		) noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	triangleFillMode
+		//
+		////////////////////////////////////////////////////////////////
+
 		[[nodiscard]]
 		constexpr RasterizerStateBuilder triangleFillMode(TriangleFillMode _triangleFillMode) const noexcept;
 
 		[[nodiscard]]
 		constexpr TriangleFillMode triangleFillMode() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	cullMode
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		constexpr RasterizerStateBuilder cullMode(CullMode _cullMode) const noexcept;
@@ -46,11 +64,23 @@ namespace s3d
 		[[nodiscard]]
 		constexpr CullMode cullMode() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	antialiasedLine3D
+		//
+		////////////////////////////////////////////////////////////////
+
 		[[nodiscard]]
 		constexpr RasterizerStateBuilder antialiasedLine3D(bool _antialiasedLine3D) const noexcept;
 
 		[[nodiscard]]
 		constexpr bool antialiasedLine3D() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	depthBias
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		constexpr RasterizerStateBuilder depthBias(int32 _depthBias) const noexcept;

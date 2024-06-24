@@ -161,6 +161,17 @@ namespace s3d
 		/// @remark 線の太さをこの値で除算すれば、どのような拡大縮小倍率でも一定の太さになる線を描けます。
 		[[nodiscard]]
 		float GetMaxScaling() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetRenderTargetSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 現在のレンダーターゲットのサイズ（ピクセル）を返します
+		/// @return 現在のレンダーターゲットのサイズ（ピクセル）
+		[[nodiscard]]
+		Size GetRenderTargetSize() noexcept;
 	}
 }
 

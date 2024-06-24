@@ -183,6 +183,25 @@ namespace s3d
 			return SIV3D_ENGINE(Renderer2D)->getMaxScaling();
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetRenderTargetSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		Size GetRenderTargetSize() noexcept
+		{
+			// [Siv3D ToDo]
+			//if (const auto rt = SIV3D_ENGINE(Renderer2D)->getRenderTarget())
+			//{
+			//	return rt->size();
+			//}
+			//else
+			{
+				return Scene::Size();
+			}
+		}
+
 		namespace Internal
 		{
 			void SetColorMul(const Float4& color)

@@ -1476,6 +1476,24 @@
 # include <Siv3D/Transformer2D.hpp>
 
 
+
+////////////////////////////////////////////////////////////////
+//
+//	2D カメラコントロール | 2D Camera
+//
+////////////////////////////////////////////////////////////////
+
+# include <Siv3D/BasicCamera2D.hpp>
+
+# include <Siv3D/Camera2DControlBuilder.hpp>
+
+# include <Siv3D/Camera2DControl.hpp>
+
+// 2D カメラ | 2D camera
+# include <Siv3D/Camera2D.hpp>
+
+
+
 # if SIV3D_PLATFORM(WINDOWS)
 
 	// Windows 用の静的リンクライブラリ | Static link libraries for Windows

@@ -57,6 +57,30 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	(constant)
+		//
+		////////////////////////////////////////////////////////////////
+
+		static constexpr RasterizerStateBuilder SolidCullBack{ TriangleFillMode::Solid, CullMode::Back };
+
+		static constexpr RasterizerStateBuilder SolidCullFront{ TriangleFillMode::Solid, CullMode::Front };
+
+		static constexpr RasterizerStateBuilder SolidCullNone{ TriangleFillMode::Solid, CullMode::None };
+
+		static constexpr RasterizerStateBuilder WireframeCullBack{ TriangleFillMode::Wireframe, CullMode::Back };
+
+		static constexpr RasterizerStateBuilder WireframeCullFront{ TriangleFillMode::Wireframe, CullMode::Front };
+
+		static constexpr RasterizerStateBuilder WireframeCullNone{ TriangleFillMode::Wireframe, CullMode::None };
+
+		static constexpr RasterizerStateBuilder AntialiasedLine3D{ TriangleFillMode::Solid, CullMode::None, false, true };
+
+		static constexpr RasterizerStateBuilder Default2D = SolidCullNone;
+
+		static constexpr RasterizerStateBuilder Default3D = SolidCullBack;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	asValue
 		//
 		////////////////////////////////////////////////////////////////
@@ -84,24 +108,6 @@ namespace s3d
 		{
 			return (lhs.asValue() == rhs.asValue());
 		}
-
-		static constexpr RasterizerStateBuilder SolidCullBack{ TriangleFillMode::Solid, CullMode::Back };
-
-		static constexpr RasterizerStateBuilder SolidCullFront{ TriangleFillMode::Solid, CullMode::Front };
-
-		static constexpr RasterizerStateBuilder SolidCullNone{ TriangleFillMode::Solid, CullMode::None };
-
-		static constexpr RasterizerStateBuilder WireframeCullBack{ TriangleFillMode::Wireframe, CullMode::Back };
-
-		static constexpr RasterizerStateBuilder WireframeCullFront{ TriangleFillMode::Wireframe, CullMode::Front };
-
-		static constexpr RasterizerStateBuilder WireframeCullNone{ TriangleFillMode::Wireframe, CullMode::None };
-
-		static constexpr RasterizerStateBuilder AntialiasedLine3D{ TriangleFillMode::Solid, CullMode::None, false, true };
-
-		static constexpr RasterizerStateBuilder Default2D = SolidCullNone;
-
-		static constexpr RasterizerStateBuilder Default3D = SolidCullBack;
 
 		////////////////////////////////////////////////////////////////
 		//
