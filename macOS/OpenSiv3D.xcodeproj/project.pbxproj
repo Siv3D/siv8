@@ -726,6 +726,14 @@
 		F97204312BF0A314000E21DD /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97204302BF0A314000E21DD /* Metal.framework */; };
 		F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97204322BF0A31C000E21DD /* QuartzCore.framework */; };
 		F97204352BF0A39F000E21DD /* Metal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97204342BF0A39F000E21DD /* Metal.cpp */; };
+		F9766B752C29C75F00DE4107 /* Camera2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9766B712C29C75E00DE4107 /* Camera2D.hpp */; };
+		F9766B762C29C75F00DE4107 /* Camera2DControlBuilder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9766B722C29C75E00DE4107 /* Camera2DControlBuilder.hpp */; };
+		F9766B772C29C75F00DE4107 /* Camera2DControl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9766B732C29C75E00DE4107 /* Camera2DControl.hpp */; };
+		F9766B782C29C75F00DE4107 /* BasicCamera2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */; };
+		F9766B7A2C29C78800DE4107 /* BasicCamera2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9766B792C29C78800DE4107 /* BasicCamera2D.ipp */; };
+		F9766B812C29C7A700DE4107 /* SivCamera2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7B2C29C7A600DE4107 /* SivCamera2D.cpp */; };
+		F9766B822C29C7A700DE4107 /* SivCamera2DControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7D2C29C7A600DE4107 /* SivCamera2DControl.cpp */; };
+		F9766B832C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */; };
 		F9807D792BF1092600D9B590 /* 2d.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D762BF1092600D9B590 /* 2d.metal */; };
 		F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */; };
 		F9807D7F2BF1229700D9B590 /* MetalInternalTexture2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */; };
@@ -3048,6 +3056,14 @@
 		F97204302BF0A314000E21DD /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		F97204322BF0A31C000E21DD /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F97204342BF0A39F000E21DD /* Metal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Metal.cpp; sourceTree = "<group>"; };
+		F9766B712C29C75E00DE4107 /* Camera2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Camera2D.hpp; sourceTree = "<group>"; };
+		F9766B722C29C75E00DE4107 /* Camera2DControlBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Camera2DControlBuilder.hpp; sourceTree = "<group>"; };
+		F9766B732C29C75E00DE4107 /* Camera2DControl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Camera2DControl.hpp; sourceTree = "<group>"; };
+		F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BasicCamera2D.hpp; sourceTree = "<group>"; };
+		F9766B792C29C78800DE4107 /* BasicCamera2D.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BasicCamera2D.ipp; sourceTree = "<group>"; };
+		F9766B7B2C29C7A600DE4107 /* SivCamera2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2D.cpp; sourceTree = "<group>"; };
+		F9766B7D2C29C7A600DE4107 /* SivCamera2DControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2DControl.cpp; sourceTree = "<group>"; };
+		F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2DControlBuilder.cpp; sourceTree = "<group>"; };
 		F9807D762BF1092600D9B590 /* 2d.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = 2d.metal; sourceTree = "<group>"; };
 		F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = fullscreen_triangle.metal; sourceTree = "<group>"; };
 		F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalInternalTexture2D.hpp; sourceTree = "<group>"; };
@@ -5144,6 +5160,7 @@
 				F9807D8E2BF6679000D9B590 /* AssetIDWrapper.ipp */,
 				F9070B662B9F175000383E4D /* AsyncTask.ipp */,
 				F9528B1D2BAFB65000222F45 /* Base64Value.ipp */,
+				F9766B792C29C78800DE4107 /* BasicCamera2D.ipp */,
 				F9528B442BB69D8500222F45 /* BigFloat.ipp */,
 				F9070B672B9F175000383E4D /* BigInt.ipp */,
 				F9070B682B9F175000383E4D /* BinaryReader.ipp */,
@@ -5302,6 +5319,10 @@
 		F9070C3E2B9F175000383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
+				F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */,
+				F9766B712C29C75E00DE4107 /* Camera2D.hpp */,
+				F9766B732C29C75E00DE4107 /* Camera2DControl.hpp */,
+				F9766B722C29C75E00DE4107 /* Camera2DControlBuilder.hpp */,
 				F9070BBB2B9F175000383E4D /* 2DShapes.hpp */,
 				F9070BBC2B9F175000383E4D /* 2DShapesFwd.hpp */,
 				F9070BBD2B9F175000383E4D /* AlignedAllocator.hpp */,
@@ -6116,6 +6137,9 @@
 				F9070D232B9F175E00383E4D /* BoolToString */,
 				F9070D252B9F175E00383E4D /* Byte */,
 				F9528B6D2BB7089A00222F45 /* CacheDirectory */,
+				F9766B7C2C29C7A600DE4107 /* Camera2D */,
+				F9766B7E2C29C7A600DE4107 /* Camera2DControl */,
+				F9766B802C29C7A700DE4107 /* Camera2DControlBuilder */,
 				F9E794252C1203A3002615BA /* Circle */,
 				F9E794432C158BBA002615BA /* Circular */,
 				F9070D272B9F175E00383E4D /* Color */,
@@ -7181,6 +7205,30 @@
 				F972042E2BF0A25B000E21DD /* NSURL.hpp */,
 			);
 			path = Foundation;
+			sourceTree = "<group>";
+		};
+		F9766B7C2C29C7A600DE4107 /* Camera2D */ = {
+			isa = PBXGroup;
+			children = (
+				F9766B7B2C29C7A600DE4107 /* SivCamera2D.cpp */,
+			);
+			path = Camera2D;
+			sourceTree = "<group>";
+		};
+		F9766B7E2C29C7A600DE4107 /* Camera2DControl */ = {
+			isa = PBXGroup;
+			children = (
+				F9766B7D2C29C7A600DE4107 /* SivCamera2DControl.cpp */,
+			);
+			path = Camera2DControl;
+			sourceTree = "<group>";
+		};
+		F9766B802C29C7A700DE4107 /* Camera2DControlBuilder */ = {
+			isa = PBXGroup;
+			children = (
+				F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */,
+			);
+			path = Camera2DControlBuilder;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -9745,6 +9793,7 @@
 				F98600A32BCFBB53006A4C0F /* SkSLDebugTrace.h in Headers */,
 				F98603062BCFBB54006A4C0F /* SkIntersectionHelper.h in Headers */,
 				F9528C2B2BBF026F00222F45 /* zstd_double_fast.h in Headers */,
+				F9766B752C29C75F00DE4107 /* Camera2D.hpp in Headers */,
 				F986028A2BCFBB54006A4C0F /* SkTextFormatParams.h in Headers */,
 				F98605FC2BE61586006A4C0F /* RandomPoint.ipp in Headers */,
 				F98601462BCFBB53006A4C0F /* SkAdvancedTypefaceMetrics.h in Headers */,
@@ -10052,6 +10101,8 @@
 				F986019F2BCFBB53006A4C0F /* SkDistanceFieldGen.h in Headers */,
 				F9070C432B9F175000383E4D /* BigInt.ipp in Headers */,
 				F9E794682C19B6D7002615BA /* MinMax.hpp in Headers */,
+				F9766B772C29C75F00DE4107 /* Camera2DControl.hpp in Headers */,
+				F9766B782C29C75F00DE4107 /* BasicCamera2D.hpp in Headers */,
 				F9E5FC3C2BC15B260081A4F7 /* DirectXCollision.h in Headers */,
 				F9070CC72B9F175000383E4D /* Hash.hpp in Headers */,
 				F98600832BCFBB53006A4C0F /* SkSpan_impl.h in Headers */,
@@ -10110,6 +10161,7 @@
 				F9807D992BF667C300D9B590 /* Troubleshooting.hpp in Headers */,
 				F9070C442B9F175000383E4D /* BinaryReader.ipp in Headers */,
 				F986060F2BEB75DB006A4C0F /* DirectoryWatcher.hpp in Headers */,
+				F9766B7A2C29C78800DE4107 /* BasicCamera2D.ipp in Headers */,
 				F9528C212BBF026F00222F45 /* zstd_compress_internal.h in Headers */,
 				F98604092BCFBB54006A4C0F /* SkSLExtension.h in Headers */,
 				F9528B952BBC76D300222F45 /* Step3D.hpp in Headers */,
@@ -10859,6 +10911,7 @@
 				F98604642BCFBB54006A4C0F /* GLSL.std.450.h in Headers */,
 				F986FFF72BCFBB53006A4C0F /* SkRawDecoder.h in Headers */,
 				F98603F72BCFBB54006A4C0F /* SkSLConstructorMatrixResize.h in Headers */,
+				F9766B762C29C75F00DE4107 /* Camera2DControlBuilder.hpp in Headers */,
 				F980C4302C00D2B500A86B68 /* RasterizerState.hpp in Headers */,
 				F98603802BCFBB54006A4C0F /* SkOTTable_maxp_TT.h in Headers */,
 				F986FA662BCFB53B006A4C0F /* ftrfork.h in Headers */,
@@ -11291,6 +11344,7 @@
 				F9070DC62B9F175E00383E4D /* Siv3DEngine.cpp in Sources */,
 				F98602FE2BCFBB54006A4C0F /* SkSwizzler_opts.inc in Sources */,
 				F98603052BCFBB54006A4C0F /* SkDQuadLineIntersection.cpp in Sources */,
+				F9766B832C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp in Sources */,
 				F98603FC2BCFBB54006A4C0F /* SkSLConstructorStruct.cpp in Sources */,
 				F98601F02BCFBB53006A4C0F /* SkMatrixInvert.cpp in Sources */,
 				F986023E2BCFBB54006A4C0F /* SkRecord.cpp in Sources */,
@@ -11567,6 +11621,7 @@
 				F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */,
 				F986F92E2BC8441F006A4C0F /* unicode_fold2_key.c in Sources */,
 				F98600F02BCFBB53006A4C0F /* SkTSearch.cpp in Sources */,
+				F9766B822C29C7A700DE4107 /* SivCamera2DControl.cpp in Sources */,
 				F986048D2BCFBB54006A4C0F /* SkSLString.cpp in Sources */,
 				F98601B72BCFBB53006A4C0F /* SkFont_serial.cpp in Sources */,
 				F98603C22BCFBB54006A4C0F /* SkSLGetLoopUnrollInfo.cpp in Sources */,
@@ -11593,6 +11648,7 @@
 				F9712A4A2C25B8500049CC26 /* SivTransformer2D.cpp in Sources */,
 				F9E794722C19B720002615BA /* SivArray.cpp in Sources */,
 				F98601B92BCFBB53006A4C0F /* SkFontDescriptor.cpp in Sources */,
+				F9766B812C29C7A700DE4107 /* SivCamera2D.cpp in Sources */,
 				F98602EE2BCFBB54006A4C0F /* SkSurface_Base.cpp in Sources */,
 				F98602B92BCFBB54006A4C0F /* SkBlendImageFilter.cpp in Sources */,
 				F9528C442BBF026F00222F45 /* zdict.c in Sources */,
