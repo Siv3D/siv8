@@ -852,9 +852,9 @@
 // float 型の長方形 | Rectangle (float)
 # include <Siv3D/FloatRect.hpp>
 
-//// float 型の四角形 | Quad (float)
-//# include <Siv3D/FloatQuad.hpp>
-//
+// float 型の四角形 | Quad (float)
+# include <Siv3D/FloatQuad.hpp>
+
 //// 2D 形状コレクション | 2D shapes collection
 //# include <Siv3D/Shape2D.hpp>
 //

@@ -13,6 +13,29 @@
 
 namespace s3d
 {
+	constexpr Quad Quad::movedBy(const value_type x, const value_type y) const noexcept
+	{
+		return{ p0.movedBy(x, y), p1.movedBy(x, y), p2.movedBy(x, y), p3.movedBy(x, y) };
+	}
+
+	constexpr Quad Quad::movedBy(const position_type v) const noexcept
+	{
+		return movedBy(v.x, v.y);
+	}
+
+	constexpr Quad& Quad::moveBy(const value_type x, const value_type y) noexcept
+	{
+		p0.moveBy(x, y);
+		p1.moveBy(x, y);
+		p2.moveBy(x, y);
+		p3.moveBy(x, y);
+		return *this;
+	}
+
+	constexpr Quad& Quad::moveBy(const position_type v) noexcept
+	{
+		return moveBy(v.x, v.y);
+	}
 
 	constexpr Triangle Quad::triangle(const size_t index) const
 	{

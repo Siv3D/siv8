@@ -907,6 +907,9 @@
     <Filter Include="src\Siv3D\Camera2D">
       <UniqueIdentifier>{1fe8a1fc-b83f-48d8-9e50-f9def029ec7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Quad">
+      <UniqueIdentifier>{446e5246-7761-4ce8-8d7a-fc2b22dd42fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3543,6 +3546,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Camera2DControlBuilder.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FloatQuad.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatQuad.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5854,6 +5863,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Camera2D\SivCamera2D.cpp">
       <Filter>src\Siv3D\Camera2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Quad\SivQuad.cpp">
+      <Filter>src\Siv3D\Quad</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

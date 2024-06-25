@@ -39,9 +39,25 @@ namespace s3d
 		position_type p3;
 
 
+		[[nodiscard]]
+		constexpr Quad movedBy(value_type x, value_type y) const noexcept;
+
+		[[nodiscard]]
+		constexpr Quad movedBy(position_type v) const noexcept;
+
+		constexpr Quad& moveBy(value_type x, value_type y) noexcept;
+
+		constexpr Quad& moveBy(position_type v) noexcept;
+
 
 		[[nodiscard]]
 		constexpr Triangle triangle(size_t index) const;
+
+
+
+		const Quad& draw(const ColorF& color = Palette::White) const;
+
+		const Quad& draw(const ColorF& color0, const ColorF& color1, const ColorF& color2, const ColorF& color3) const;
 
 	};
 }

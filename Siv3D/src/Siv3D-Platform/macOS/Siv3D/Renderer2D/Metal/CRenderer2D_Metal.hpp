@@ -41,6 +41,8 @@ namespace s3d
 
 		void addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor) override;
 
+		void addCircleFrame(const Float2& center, float rInner, float thickness, const Float4& innerColor, const Float4& outerColor) override;
+
 		void flush() override;
 
 

@@ -20,6 +20,7 @@ namespace s3d
 {
 	using BufferCreatorFunc = FunctionRef<Vertex2DBufferPointer(Vertex2D::IndexType, Vertex2D::IndexType)>;
 	struct LineStyle;
+	struct FloatQuad;
 
 	namespace Vertex2DBuilder
 	{
@@ -46,5 +47,14 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildCircle(const BufferCreatorFunc& bufferCreator, const Float2& center, float r, const Float4& innerColor, const Float4& outerColor, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildCircleFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float rInner, float thickness, const Float4& innerColor, const Float4& outerColor, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4 color);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4(&colors)[4]);
 	}
 }

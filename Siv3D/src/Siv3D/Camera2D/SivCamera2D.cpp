@@ -98,37 +98,37 @@ namespace s3d
 		}
 	}
 
-	//void Camera2D::draw(const ColorF& color) const
-	//{
-	//	if ((not m_grabPos)
-	//		|| m_pointedScale)
-	//	{
-	//		return;
-	//	}
+	void Camera2D::draw(const ColorF& color) const
+	{
+		if ((not m_grabPos)
+			|| m_pointedScale)
+		{
+			return;
+		}
 
-	//	const auto t1 = Transformer2D{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetLocal };
-	//	const auto t2 = Transformer2D{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetCamera };
+		const auto t1 = Transformer2D{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetLocal };
+		const auto t2 = Transformer2D{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetCamera };
 
-	//	const double radius = 12.0;
-	//	const Point delta = (Cursor::Pos() - m_grabPos.value());
-	//	const double length = delta.length();
+		const double radius = 12.0;
+		const Vec2 delta = (Cursor::PosF() - m_grabPos.value());
+		const double length = delta.length();
 
-	//	Circle{ m_grabPos.value(), radius }.drawFrame(4.0, 2.0, color);
+		Circle{ m_grabPos.value(), radius }.drawFrame(4.0, 2.0, color);
 
-	//	if ((radius * 2) <= length)
-	//	{
-	//		const Vec2 direction = (delta / length);
-	//		const Vec2 normalDirection{ direction.y, -direction.x };
-	//		const Vec2 leftOffset = (normalDirection * 10);
+		if ((radius * 2) <= length)
+		{
+			const Vec2 direction = (delta / length);
+			const Vec2 normalDirection{ direction.y, -direction.x };
+			const Vec2 leftOffset = (normalDirection * 10);
 
-	//		const Vec2 p0 = delta;
-	//		const Vec2 p1 = direction.withLength(radius * 1.2) - leftOffset;
-	//		const Vec2 p2 = direction.withLength(radius * 1.8);
-	//		const Vec2 p3 = direction.withLength(radius * 1.2) + leftOffset;
+			const Vec2 p0 = delta;
+			const Vec2 p1 = (direction.withLength(radius * 1.2) - leftOffset);
+			const Vec2 p2 = direction.withLength(radius * 1.8);
+			const Vec2 p3 = (direction.withLength(radius * 1.2) + leftOffset);
 
-	//		Quad{ p1, p2, p3, p0 }.moveBy(m_grabPos.value()).draw(color);
-	//	}
-	//}
+			Quad{ p1, p2, p3, p0 }.moveBy(m_grabPos.value()).draw(color);
+		}
+	}
 
 	void Camera2D::updateWheel(const SizeF& sceneSize)
 	{
