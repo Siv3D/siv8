@@ -305,6 +305,102 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	wasd
+	//
+	////////////////////////////////////////////////////////////////
+
+	Camera2DControlBuilder Camera2DControlBuilder::wasd(const bool enabled) const
+	{
+		Camera2DControlBuilder result{ *this };
+
+		if (enabled)
+		{
+			result.m_moveToRight	= DefaultMoveToRight;
+			result.m_moveToDown		= DefaultMoveToDown;
+			result.m_moveToLeft		= DefaultMoveToLeft;
+			result.m_moveToUp		= DefaultMoveToUp;
+		}
+		else
+		{
+			result.m_moveToRight	= nullptr;
+			result.m_moveToDown		= nullptr;
+			result.m_moveToLeft		= nullptr;
+			result.m_moveToUp		= nullptr;
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	upDown
+	//
+	////////////////////////////////////////////////////////////////
+
+	Camera2DControlBuilder Camera2DControlBuilder::upDown(const bool enabled) const
+	{
+		Camera2DControlBuilder result{ *this };
+
+		if (enabled)
+		{
+			result.m_zoomIn		= DefaultZoomIn;
+			result.m_zoomOut	= DefaultZoomOut;
+		}
+		else
+		{
+			result.m_zoomIn		= nullptr;
+			result.m_zoomOut	= nullptr;
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	wheel
+	//
+	////////////////////////////////////////////////////////////////
+
+	Camera2DControlBuilder Camera2DControlBuilder::wheel(const bool enabled) const
+	{
+		Camera2DControlBuilder result{ *this };
+
+		if (enabled)
+		{
+			result.m_wheelScaleFactor = 0.15;
+		}
+		else
+		{
+			result.m_wheelScaleFactor = 0.0;
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rightClick
+	//
+	////////////////////////////////////////////////////////////////
+
+	Camera2DControlBuilder Camera2DControlBuilder::rightClick(const bool enabled) const
+	{
+		Camera2DControlBuilder result{ *this };
+
+		if (enabled)
+		{
+			result.m_grabSpeedFactor = 4.0;
+		}
+		else
+		{
+			result.m_grabSpeedFactor = 0.0;
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	(static function)
 	//
 	////////////////////////////////////////////////////////////////

@@ -14,6 +14,7 @@
 # include "BasicCamera2D.hpp"
 # include "Camera2DControl.hpp"
 # include "Scene.hpp"
+# include "Math.hpp"
 
 namespace s3d
 {
@@ -26,14 +27,14 @@ namespace s3d
 		explicit Camera2D(const Camera2DControl& cameraControl = Camera2DControl::Default);
 
 		[[nodiscard]]
-		explicit Camera2D(double scale, const Camera2DControl& cameraControl = Camera2DControl::Default);
+		explicit Camera2D(const Vec2& center, const Camera2DControl& cameraControl = Camera2DControl::Default);
 
 		/// @brief 2D カメラを作成します。
 		/// @param center カメラが見ている中心座標の初期設定
 		/// @param scale カメラのズーム倍率の初期設定
 		/// @param cameraControl カメラの操作設定
 		[[nodiscard]]
-		Camera2D(Vec2 center, double scale, const Camera2DControl& cameraControl = Camera2DControl::Default);
+		Camera2D(const Vec2& center, double scale, const Camera2DControl& cameraControl = Camera2DControl::Default);
 
 		void setControl(const Camera2DControl& cameraControl);
 
@@ -71,7 +72,7 @@ namespace s3d
 
 	protected:
 
-		double m_targetScale = BasicCamera2D::m_scale;
+		double m_targetScaleLog = Math::Log2(BasicCamera2D::m_scale);
 
 		double m_scaleChangeVelocity = 0.0;
 

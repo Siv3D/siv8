@@ -31,7 +31,7 @@ namespace s3d
 		double positionSmoothTime = 0.2;
 
 		/// @brief マウスホイールによる拡大率変更のスケールファクタ
-		double wheelScaleFactor = 1.125;
+		double wheelScaleFactor = 0.15;
 
 		/// @brief マウスによる位置変更の速さ
 		double grabSpeedFactor = 4.0;
@@ -72,7 +72,7 @@ namespace s3d
 			double _maxScale = 128.0,
 			double _scaleSmoothTime = 0.2,
 			double _positionSmoothTime = 0.2,
-			double _wheelScaleFactor = 1.125,
+			double _wheelScaleFactor = 0.15,
 			double _grabSpeedFactor = 4.0,
 			double _controlScaleFactor = 2.0,
 			double _controlSpeedFactor = 400.0,
@@ -109,15 +109,19 @@ namespace s3d
 			Camera2DControlBuilder::DefaultMoveToUp, Camera2DControlBuilder::DefaultMoveToRight, Camera2DControlBuilder::DefaultMoveToDown, Camera2DControlBuilder::DefaultMoveToLeft,
 			Camera2DControlBuilder::DefaultZoomIn, Camera2DControlBuilder::DefaultZoomOut };
 
-		inline static const Camera2DControlBuilder Wheel{ (1.0 / 128.0), 128.0, 0.2, 0.2, 1.125, 0.0, 2.0, 400.0,
+		inline static const Camera2DControlBuilder Wheel{ (1.0 / 128.0), 128.0, 0.2, 0.2, 0.15, 0.0, 2.0, 400.0,
 			{}, {}, {}, {},
 			{}, {} };
 
-		inline static const Camera2DControlBuilder Mouse{ (1.0 / 128.0), 128.0, 0.2, 0.2, 1.125, 4.0, 2.0, 400.0,
+		inline static const Camera2DControlBuilder RightClick{ (1.0 / 128.0), 128.0, 0.2, 0.2, 1.0, 4.0, 2.0, 400.0,
 			{}, {}, {}, {},
 			{}, {} };
 
-		inline static const Camera2DControlBuilder WASDMouse{ (1.0 / 128.0), 128.0, 0.2, 0.2, 1.125, 4.0, 2.0, 400.0,
+		inline static const Camera2DControlBuilder Mouse{ (1.0 / 128.0), 128.0, 0.2, 0.2, 0.15, 4.0, 2.0, 400.0,
+			{}, {}, {}, {},
+			{}, {} };
+
+		inline static const Camera2DControlBuilder WASDMouse{ (1.0 / 128.0), 128.0, 0.2, 0.2, 0.15, 4.0, 2.0, 400.0,
 			Camera2DControlBuilder::DefaultMoveToUp, Camera2DControlBuilder::DefaultMoveToRight, Camera2DControlBuilder::DefaultMoveToDown, Camera2DControlBuilder::DefaultMoveToLeft,
 			{}, {} };
 

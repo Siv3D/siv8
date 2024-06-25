@@ -18,10 +18,10 @@ namespace s3d
 	Camera2D::Camera2D(const Camera2DControl& cameraControl)
 		: Camera2D{ (Graphics2D::GetRenderTargetSize() * 0.5), 1.0, cameraControl } {}
 
-	Camera2D::Camera2D(const double scale, const Camera2DControl& cameraControl)
-		: Camera2D{ (Graphics2D::GetRenderTargetSize() * 0.5), scale, cameraControl } {}
+	Camera2D::Camera2D(const Vec2& center, const Camera2DControl& cameraControl)
+		: Camera2D{ center, 1.0, cameraControl } {}
 
-	Camera2D::Camera2D(const Vec2 center, const double scale, const Camera2DControl& cameraControl)
+	Camera2D::Camera2D(const Vec2& center, const double scale, const Camera2DControl& cameraControl)
 		: BasicCamera2D{ center, scale }
 		, m_cameraControl{ cameraControl } {}
 
@@ -46,12 +46,12 @@ namespace s3d
 	{
 		m_grabPos.reset();
 		m_pointedScale.reset();
-		m_targetScale = targetScale;
+		m_targetScaleLog = Math::Log2(targetScale);
 	}
 
 	double Camera2D::getTargetScale() const noexcept
 	{
-		return m_targetScale;
+		return Math::Exp2(m_targetScaleLog);
 	}
 
 	void Camera2D::jumpTo(const Vec2 center, const double scale) noexcept
@@ -59,7 +59,8 @@ namespace s3d
 		m_grabPos.reset();
 		m_pointedScale.reset();
 		m_targetCenter = m_center = center;
-		m_targetScale = m_scale = scale;
+		m_scale = scale;
+		m_targetScaleLog = Math::Log2(scale);
 		m_positionChangeVelocity = Vec2::Zero();
 		m_scaleChangeVelocity = 0.0;
 	}
@@ -72,11 +73,11 @@ namespace s3d
 
 		{
 			const double oldScale = m_scale;
-			m_scale = Math::SmoothDamp(m_scale, m_targetScale, m_scaleChangeVelocity, m_cameraControl.scaleSmoothTime, unspecified, deltaTime);
+			m_scale = Math::Exp2(Math::SmoothDamp(Math::Log2(m_scale), m_targetScaleLog, m_scaleChangeVelocity, m_cameraControl.scaleSmoothTime, unspecified, deltaTime));
 
-			if (deltaTime && (m_scale != m_targetScale) && (m_scale == oldScale))
+			if (deltaTime && (m_scale != Math::Exp2(m_targetScaleLog)) && (m_scale == oldScale))
 			{
-				m_scale = m_targetScale;
+				m_scale = Math::Exp2(m_targetScaleLog);
 			}
 		}
 
@@ -142,14 +143,14 @@ namespace s3d
 
 		if (wheel < 0.0)
 		{
-			m_targetScale *= m_cameraControl.wheelScaleFactor;
+			m_targetScaleLog += m_cameraControl.wheelScaleFactor;
 		}
 		else
 		{
-			m_targetScale /= m_cameraControl.wheelScaleFactor;
+			m_targetScaleLog -= m_cameraControl.wheelScaleFactor;
 		}
 
-		m_targetScale = Clamp(m_targetScale, m_cameraControl.minScale, m_cameraControl.maxScale);
+		m_targetScaleLog = Clamp(m_targetScaleLog, Math::Log2(m_cameraControl.minScale), Math::Log2(m_cameraControl.maxScale));
 
 		const auto t1 = Transformer2D{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetLocal };
 		const auto t2 = Transformer2D{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetCamera };
@@ -192,7 +193,7 @@ namespace s3d
 			{
 				m_pointedScale.reset();
 				delta.normalize();
-				m_targetCenter += (m_cameraControl.controlSpeedFactor * (deltaTime / 1.0) * (delta / m_targetScale));
+				m_targetCenter += (m_cameraControl.controlSpeedFactor * deltaTime * (delta / Math::Exp2(m_targetScaleLog)));
 			}
 		}
 
@@ -200,15 +201,15 @@ namespace s3d
 			if (m_cameraControl.zoomIn
 				&& m_cameraControl.zoomIn())
 			{
-				m_targetScale *= (1.0 + (m_cameraControl.controlScaleFactor - 1.0) * (deltaTime / 1.0));
-				m_targetScale = Min(m_targetScale, m_cameraControl.maxScale);
+				m_targetScaleLog += (m_cameraControl.controlScaleFactor * deltaTime);
+				m_targetScaleLog = Min(m_targetScaleLog, Math::Log2(m_cameraControl.maxScale));
 			}
 
 			if (m_cameraControl.zoomOut
 				&& m_cameraControl.zoomOut())
 			{
-				m_targetScale /= (1.0 + (m_cameraControl.controlScaleFactor - 1.0) * (deltaTime / 1.0));
-				m_targetScale = Max(m_targetScale, m_cameraControl.minScale);
+				m_targetScaleLog -= (m_cameraControl.controlScaleFactor * deltaTime);
+				m_targetScaleLog = Max(m_targetScaleLog, Math::Log2(m_cameraControl.minScale));
 			}
 		}
 	}
@@ -226,7 +227,7 @@ namespace s3d
 		else if (m_grabPos)
 		{
 			const Vec2 delta = (Cursor::PosF() - m_grabPos.value());
-			m_targetCenter += (m_cameraControl.grabSpeedFactor * (deltaTime / 1.0) * (delta / m_targetScale));
+			m_targetCenter += (m_cameraControl.grabSpeedFactor * deltaTime * (delta / Math::Exp2(m_targetScaleLog)));
 
 			if (MouseR.up())
 			{
