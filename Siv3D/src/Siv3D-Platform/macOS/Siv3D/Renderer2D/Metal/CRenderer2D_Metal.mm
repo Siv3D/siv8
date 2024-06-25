@@ -275,7 +275,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addQuad(const FloatQuad& quad, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, color))
+		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, color))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -293,7 +293,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addQuad(const FloatQuad& quad, const Float4(&colors)[4])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, colors))
+		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, colors))
 		{
 			if (not m_currentCustomShader.vs)
 			{

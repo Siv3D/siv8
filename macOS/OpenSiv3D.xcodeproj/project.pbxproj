@@ -683,6 +683,9 @@
 		F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528C9D2BC1208B00222F45 /* pnglibconf.h */; };
 		F9528CA52BC1209900222F45 /* zconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA22BC1209900222F45 /* zconf.h */; };
 		F9528CA62BC1209900222F45 /* zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528CA32BC1209900222F45 /* zlib.h */; };
+		F96F95E12C2B0F270033353E /* FloatQuad.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F96F95E02C2B0F270033353E /* FloatQuad.hpp */; };
+		F96F95E32C2B0F430033353E /* FloatQuad.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F96F95E22C2B0F420033353E /* FloatQuad.ipp */; };
+		F96F95E62C2B0F640033353E /* SivQuad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F96F95E42C2B0F640033353E /* SivQuad.cpp */; };
 		F9712A2C2C252EEA0049CC26 /* ScopedScissorRect2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */; };
 		F9712A2F2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */; };
 		F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A302C254DBB0049CC26 /* FmtOptional.hpp */; };
@@ -2926,6 +2929,9 @@
 		F9528C9D2BC1208B00222F45 /* pnglibconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglibconf.h; sourceTree = "<group>"; };
 		F9528CA22BC1209900222F45 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
 		F9528CA32BC1209900222F45 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
+		F96F95E02C2B0F270033353E /* FloatQuad.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FloatQuad.hpp; sourceTree = "<group>"; };
+		F96F95E22C2B0F420033353E /* FloatQuad.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FloatQuad.ipp; sourceTree = "<group>"; };
+		F96F95E42C2B0F640033353E /* SivQuad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivQuad.cpp; sourceTree = "<group>"; };
 		F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedScissorRect2D.hpp; sourceTree = "<group>"; };
 		F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedScissorRect2D.cpp; sourceTree = "<group>"; };
 		F9712A302C254DBB0049CC26 /* FmtOptional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FmtOptional.hpp; sourceTree = "<group>"; };
@@ -5193,6 +5199,7 @@
 				F9070B782B9F175000383E4D /* EscapedFormatter.ipp */,
 				F9070B792B9F175000383E4D /* FastMath.ipp */,
 				F9070B7A2B9F175000383E4D /* FloatFormatter.ipp */,
+				F96F95E22C2B0F420033353E /* FloatQuad.ipp */,
 				F980C4922C04B43300A86B68 /* FloatRect.ipp */,
 				F9070B7B2B9F175000383E4D /* FmtHelper.ipp */,
 				F9070B7C2B9F175000383E4D /* Format.ipp */,
@@ -5319,10 +5326,6 @@
 		F9070C3E2B9F175000383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
-				F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */,
-				F9766B712C29C75E00DE4107 /* Camera2D.hpp */,
-				F9766B732C29C75E00DE4107 /* Camera2DControl.hpp */,
-				F9766B722C29C75E00DE4107 /* Camera2DControlBuilder.hpp */,
 				F9070BBB2B9F175000383E4D /* 2DShapes.hpp */,
 				F9070BBC2B9F175000383E4D /* 2DShapesFwd.hpp */,
 				F9070BBD2B9F175000383E4D /* AlignedAllocator.hpp */,
@@ -5335,6 +5338,7 @@
 				F9807D822BF6676100D9B590 /* AssetIDWrapper.hpp */,
 				F9070BBF2B9F175000383E4D /* AsyncTask.hpp */,
 				F9528B1F2BAFB66200222F45 /* Base64Value.hpp */,
+				F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */,
 				F9528B422BB69CA900222F45 /* BigFloat.hpp */,
 				F9070BC02B9F175000383E4D /* BigInt.hpp */,
 				F9070BC12B9F175000383E4D /* BinaryReader.hpp */,
@@ -5346,6 +5350,9 @@
 				F9070BC32B9F175000383E4D /* Blob.hpp */,
 				F9070BC42B9F175000383E4D /* BoolToString.hpp */,
 				F9070BC52B9F175000383E4D /* Byte.hpp */,
+				F9766B712C29C75E00DE4107 /* Camera2D.hpp */,
+				F9766B732C29C75E00DE4107 /* Camera2DControl.hpp */,
+				F9766B722C29C75E00DE4107 /* Camera2DControlBuilder.hpp */,
 				F9070BC62B9F175000383E4D /* Char.hpp */,
 				F98605272BD10459006A4C0F /* Circle.hpp */,
 				F9E7943E2C158B8F002615BA /* Circular.hpp */,
@@ -5398,6 +5405,7 @@
 				F98606162BEB7651006A4C0F /* FileChange.hpp */,
 				F9070BE22B9F175000383E4D /* FileSystem.hpp */,
 				F9070BE32B9F175000383E4D /* FloatFormatter.hpp */,
+				F96F95E02C2B0F270033353E /* FloatQuad.hpp */,
 				F980C48B2C04B41300A86B68 /* FloatRect.hpp */,
 				F9070BE42B9F175000383E4D /* FloatToString.hpp */,
 				F9070BE52B9F175000383E4D /* FmtExtension.hpp */,
@@ -6240,6 +6248,7 @@
 				F9070D7A2B9F175E00383E4D /* Point */,
 				F9528B9C2BBC771000222F45 /* Point3D */,
 				F986062E2BEBBBC7006A4C0F /* Profiler */,
+				F96F95E52C2B0F640033353E /* Quad */,
 				F9070D7C2B9F175E00383E4D /* Random */,
 				F980C43D2C00D31000A86B68 /* RasterizerState */,
 				F980C4702C01B4B600A86B68 /* RasterizerStateBuilder */,
@@ -6978,6 +6987,14 @@
 				F9528CA32BC1209900222F45 /* zlib.h */,
 			);
 			path = zlib;
+			sourceTree = "<group>";
+		};
+		F96F95E52C2B0F640033353E /* Quad */ = {
+			isa = PBXGroup;
+			children = (
+				F96F95E42C2B0F640033353E /* SivQuad.cpp */,
+			);
+			path = Quad;
 			sourceTree = "<group>";
 		};
 		F9712A2E2C252EFE0049CC26 /* ScopedScissorRect2D */ = {
@@ -10617,6 +10634,7 @@
 				F986FA7C2BCFB53B006A4C0F /* ftdriver.h in Headers */,
 				F986FFF52BCFBB53006A4C0F /* SkPngChunkReader.h in Headers */,
 				F98602582BCFBB54006A4C0F /* SkRuntimeBlender.h in Headers */,
+				F96F95E32C2B0F430033353E /* FloatQuad.ipp in Headers */,
 				F986FA652BCFB53B006A4C0F /* ftpsprop.h in Headers */,
 				F98602512BCFBB54006A4C0F /* SkResourceCache.h in Headers */,
 				F980C4912C04B41300A86B68 /* Vertex2D.hpp in Headers */,
@@ -10852,6 +10870,7 @@
 				F98605392BD1049D006A4C0F /* TGAHeader.hpp in Headers */,
 				F986F93D2BCA7996006A4C0F /* RectF.ipp in Headers */,
 				F986002A2BCFBB53006A4C0F /* SkPath.h in Headers */,
+				F96F95E12C2B0F270033353E /* FloatQuad.hpp in Headers */,
 				F98601932BCFBB53006A4C0F /* SkCpu.h in Headers */,
 				F907069A2B9DAEC900383E4D /* bits.h in Headers */,
 				F986003B2BCFBB53006A4C0F /* SkRSXform.h in Headers */,
@@ -11696,6 +11715,7 @@
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
 				F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */,
+				F96F95E62C2B0F640033353E /* SivQuad.cpp in Sources */,
 				F98601582BCFBB53006A4C0F /* SkBitmapDevice.cpp in Sources */,
 				F9528C2C2BBF026F00222F45 /* zstd_fast.c in Sources */,
 				F9528C432BBF026F00222F45 /* fastcover.c in Sources */,
