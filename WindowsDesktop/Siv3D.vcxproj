@@ -68,6 +68,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatRect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Graphics2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\KDTree.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LineStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ListUtility.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp" />
@@ -294,6 +295,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONIterator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONPointer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONValueType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\KDTree.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Keyboard.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseManager.hpp" />
@@ -469,6 +471,7 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\nanoflann\nanoflann.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nlohmann\json.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\Obfuscate\obfuscate.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\parallel_hashmap\btree.h" />

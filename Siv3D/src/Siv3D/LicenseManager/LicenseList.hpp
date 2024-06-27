@@ -621,6 +621,14 @@ MIT_LICENSE
 },
 
 {
+R"-(nanoflann)-",
+R"-(Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
+Copyright 2008-2009  David G. Lowe (lowe@cs.ubc.ca). All rights reserved.
+Copyright 2011 Jose L. Blanco (joseluisblancoc@gmail.com). All rights reserved.)-",
+BSD_2_LICENSE
+},
+
+{
 R"-(Oniguruma)-",
 R"-(Copyright (c) 2002-2021  K.Kosako  <kkosako0@gmail.com>
 All rights reserved.)-",

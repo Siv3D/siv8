@@ -910,6 +910,9 @@
     <Filter Include="src\Siv3D\Quad">
       <UniqueIdentifier>{446e5246-7761-4ce8-8d7a-fc2b22dd42fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\nanoflann">
+      <UniqueIdentifier>{fdb12c05-9b85-4a16-82f4-f08d4e071f93}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3550,6 +3553,15 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatQuad.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\nanoflann\nanoflann.hpp">
+      <Filter>include\ThirdParty\nanoflann</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\KDTree.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\KDTree.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
   </ItemGroup>

@@ -43,5 +43,8 @@ namespace s3d
 
 	/// @brief カーソルの座標を変換する
 	using TransformCursor		= YesNo<struct TransformCursor_tag>;
-
+	
+	/// @brief 距離が近い順にソートする
+	using SortByDistance		= YesNo<struct SortByDistance_tag>;
+	
 }

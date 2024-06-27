@@ -217,8 +217,8 @@
 // ハッシュテーブル | Hash table
 # include <Siv3D/HashTable.hpp>
 
-//// kd 木 | kd-tree
-//# include <Siv3D/KDTree.hpp>
+// kd 木 | kd-tree
+# include <Siv3D/KDTree.hpp>
 
 // Disjoint-set (Union-find) | Disjoint-set (Union–find)
 # include <Siv3D/DisjointSet.hpp>
