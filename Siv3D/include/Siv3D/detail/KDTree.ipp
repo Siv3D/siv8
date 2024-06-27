@@ -27,7 +27,7 @@ namespace s3d
 		}
 
 		template <class DatasetAdapter>
-		typename KDAdapter<DatasetAdapter>::distance_type KDAdapter<DatasetAdapter>::kdtree_get_pt(const index_type index, const size_t dim) const
+		typename KDAdapter<DatasetAdapter>::element_type KDAdapter<DatasetAdapter>::kdtree_get_pt(const index_type index, const size_t dim) const
 		{
 			return DatasetAdapter::GetElement(m_dataset, index, dim);
 		}

@@ -26,6 +26,8 @@ namespace s3d
 
 			using point_type	= typename DatasetAdapter::point_type;
 
+			using element_type	= typename DatasetAdapter::element_type;
+
 			using distance_type = typename DatasetAdapter::distance_type;
 
 			using dataset_type	= typename DatasetAdapter::dataset_type;
@@ -40,7 +42,7 @@ namespace s3d
 			size_t kdtree_get_point_count() const;
 
 			[[nodiscard]]
-			distance_type kdtree_get_pt(index_type index, size_t dim) const;
+			element_type kdtree_get_pt(index_type index, size_t dim) const;
 
 			template <class BBOX>
 			bool kdtree_get_bbox(BBOX&) const;
@@ -66,6 +68,8 @@ namespace s3d
 		using adapter_type	= detail::KDAdapter<DatasetAdapter>;
 
 		using point_type	= typename adapter_type::point_type;
+
+		using element_type	= typename adapter_type::element_type;
 
 		using distance_type	= typename adapter_type::distance_type;
 
@@ -134,7 +138,7 @@ namespace s3d
 
 		adapter_type m_adapter;
 
-		nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<distance_type, adapter_type, distance_type, index_type>, adapter_type, Dimensions, index_type> m_index;
+		nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<element_type, adapter_type, distance_type, index_type>, adapter_type, Dimensions, index_type> m_index;
 	};
 
 	/// @brief KD-Tree 用のアダプタ
