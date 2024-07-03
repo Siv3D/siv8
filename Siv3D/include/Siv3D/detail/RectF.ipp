@@ -245,4 +245,32 @@ namespace s3d
 		: pos{ leftCenter->x, (leftCenter->y - _size.y / 2) }
 		, size{ _size.x, _size.y } {}
 
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tl, tr, br, bl
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF::position_type RectF::tl() const noexcept
+	{
+		return pos;
+	}
+
+	constexpr RectF::position_type RectF::tr() const noexcept
+	{
+		return{ (pos.x + size.x), pos.y };
+	}
+
+	constexpr RectF::position_type RectF::br() const noexcept
+	{
+		return{ (pos.x + size.x), (pos.y + size.y) };
+	}
+
+	constexpr RectF::position_type RectF::bl() const noexcept
+	{
+		return{ pos.x, (pos.y + size.y) };
+	}
 }

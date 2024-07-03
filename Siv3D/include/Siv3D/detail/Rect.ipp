@@ -656,22 +656,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect::size_type Rect::tl() const noexcept
+	constexpr Rect::position_type Rect::tl() const noexcept
 	{
 		return pos;
 	}
 
-	constexpr Rect::size_type Rect::tr() const noexcept
+	constexpr Rect::position_type Rect::tr() const noexcept
 	{
 		return{ (pos.x + size.x), pos.y };
 	}
 
-	constexpr Rect::size_type Rect::br() const noexcept
+	constexpr Rect::position_type Rect::br() const noexcept
 	{
 		return{ (pos.x + size.x), (pos.y + size.y) };
 	}
 
-	constexpr Rect::size_type Rect::bl() const noexcept
+	constexpr Rect::position_type Rect::bl() const noexcept
 	{
 		return{ pos.x, (pos.y + size.y) };
 	}

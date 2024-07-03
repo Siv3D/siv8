@@ -922,6 +922,9 @@
     <Filter Include="include\Siv3D\Geometry2D">
       <UniqueIdentifier>{f0593e98-615a-46d8-9d37-1ffe10ad5f57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Geometry2D">
+      <UniqueIdentifier>{f12a3c50-9f08-461c-bde9-cbec893a74f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5923,6 +5926,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\InputDeviceType\SivInputDeviceType.cpp">
       <Filter>src\Siv3D\InputDeviceType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersect.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

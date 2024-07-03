@@ -183,5 +183,21 @@ namespace s3d
 			return ((Intersect(a, b.triangleAtIndex(0))
 				 || Intersect(a, b.triangleAtIndex(1))));
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersect(Line, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr bool Intersect(const Line& a, const Point& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		constexpr bool Intersect(const Line& a, const Vec2& b) noexcept
+		{
+			return Intersect(b, a);
+		}
 	}
 }

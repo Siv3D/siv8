@@ -818,22 +818,22 @@ namespace s3d
 		/// @brief 長方形の左上の座標を返します。
 		/// @return 長方形の左上の座標
 		[[nodiscard]]
-		constexpr size_type tl() const noexcept;
+		constexpr position_type tl() const noexcept;
 
 		/// @brief 長方形の右上の座標を返します。
 		/// @return 長方形の右上の座標
 		[[nodiscard]]
-		constexpr size_type tr() const noexcept;
+		constexpr position_type tr() const noexcept;
 
 		/// @brief 長方形の右下の座標を返します。
 		/// @return 長方形の右下の座標
 		[[nodiscard]]
-		constexpr size_type br() const noexcept;
+		constexpr position_type br() const noexcept;
 
 		/// @brief 長方形の左下の座標を返します。
 		/// @return 長方形の左下の座標
 		[[nodiscard]]
-		constexpr size_type bl() const noexcept;
+		constexpr position_type bl() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

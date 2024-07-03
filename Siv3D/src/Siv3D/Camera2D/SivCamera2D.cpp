@@ -232,7 +232,7 @@ namespace s3d
 		}
 		else if (m_grabbedPos)
 		{
-			const Vec2 delta = (Cursor::PosF() - m_grabbedPos.value());
+			const Vec2 delta = (Cursor::PosF() - *m_grabbedPos);
 			m_targetCenter += (m_cameraControl.grabSpeedFactor * deltaTime * (delta / Math::Exp2(m_targetScaleLog)));
 
 			if (MouseR.up())
