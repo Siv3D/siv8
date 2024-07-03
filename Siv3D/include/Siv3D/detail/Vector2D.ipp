@@ -13,6 +13,54 @@
 
 namespace s3d
 {
+	namespace Geometry2D
+	{
+		[[nodiscard]]
+		constexpr bool Intersect(const Vec2& a, const Point& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Vec2& a, const Vec2& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Vec2& a, const Line& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Vec2& a, const Bezier2& b);
+
+		//[[nodiscard]]
+		//bool Intersect(const Vec2& a, const Bezier3& b);
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Vec2& a, const Rect& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Vec2& a, const RectF& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Vec2& a, const Circle& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Vec2& a, const Ellipse& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Vec2& a, const Triangle& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Vec2& a, const Quad& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Vec2& a, const RoundRect& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Vec2& a, const Polygon& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Vec2& a, const MultiPolygon& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Vec2& a, const LineString& b) noexcept;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -887,6 +935,26 @@ namespace s3d
 	constexpr Point Vector2D<Type>::asPoint() const noexcept
 	{
 		return{ static_cast<Point::value_type>(x), static_cast<Point::value_type>(y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	template <class Shape2DType>
+	constexpr bool Vector2D<Type>::intersects(const Shape2DType& other) const
+	{
+		if constexpr (std::is_same_v<value_type, double>)
+		{
+			return Geometry2D::Intersect(*this, other);
+		}
+		else
+		{
+			return Geometry2D::Intersect(Vector2D<double>{ *this }, other);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

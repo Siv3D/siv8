@@ -37,7 +37,7 @@ namespace s3d
 		return moveBy(v.x, v.y);
 	}
 
-	constexpr Triangle Quad::triangle(const size_t index) const
+	constexpr Triangle Quad::triangleAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{
@@ -49,7 +49,7 @@ namespace s3d
 		}
 		else
 		{
-			throw std::out_of_range{ "Quad::triangle() index out of range" };
+			ThrowTriangleAtIndexOutOfRange();
 		}
 	}
 }

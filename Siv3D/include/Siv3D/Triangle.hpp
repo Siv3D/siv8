@@ -125,6 +125,5 @@ namespace s3d
 		const Triangle& draw(const ColorF& color = Palette::White) const;
 
 		const Triangle& draw(const ColorF& color0, const ColorF& color1, const ColorF& color2) const;
-
 	};
 }

@@ -761,7 +761,7 @@
 # include <Siv3D/Point3D.hpp> // ToDo
 
 // 2 次元ベクトル | 2D vector
-# include <Siv3D/Vector2D.hpp> // ToDo
+# include <Siv3D/Vector2D.hpp>
 
 // 3 次元ベクトル | 3D vector
 # include <Siv3D/Vector3D.hpp> // ToDo
@@ -852,10 +852,10 @@
 //
 //// 2D 描画バッファ | Native 2D drawing buffer
 //# include <Siv3D/Buffer2D.hpp>
-//
-//// 2D 幾何 | 2D geometry processing
-//# include <Siv3D/Geometry2D.hpp>
-//
+
+// 2D 幾何 | 2D geometry processing
+# include <Siv3D/Geometry2D/Intersect.hpp>
+
 //// 長方形詰込み | Rectangle packing
 //# include <Siv3D/RectanglePacking.hpp>
 //
@@ -1526,8 +1526,6 @@
 
 
 
-
-# include <Siv3D/Vertex2D.hpp>
 
 # include <Siv3D/EngineOption.hpp>
 

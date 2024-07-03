@@ -32,4 +32,14 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Quad::ThrowTriangleAtIndexOutOfRange()
+	{
+		throw std::out_of_range{ "Quad::triangleAtIndex() index out of range" };
+	}
 }

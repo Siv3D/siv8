@@ -51,7 +51,7 @@ namespace s3d
 
 
 		[[nodiscard]]
-		constexpr Triangle triangle(size_t index) const;
+		constexpr Triangle triangleAtIndex(size_t index) const;
 
 
 
@@ -59,5 +59,9 @@ namespace s3d
 
 		const Quad& draw(const ColorF& color0, const ColorF& color1, const ColorF& color2, const ColorF& color3) const;
 
+	private:
+
+		[[noreturn]]
+		static void ThrowTriangleAtIndexOutOfRange();
 	};
 }

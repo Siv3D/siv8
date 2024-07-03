@@ -147,8 +147,8 @@ namespace s3d
 
 	Vec2 RandomVec2(const Quad& quad, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		const Triangle t1 = quad.triangle(0);
-		const Triangle t2 = quad.triangle(1);
+		const Triangle t1 = quad.triangleAtIndex(0);
+		const Triangle t2 = quad.triangleAtIndex(1);
 
 		const double t1Area = t1.area();
 		const double t2Area = t2.area();

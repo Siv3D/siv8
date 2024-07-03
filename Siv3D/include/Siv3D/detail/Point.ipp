@@ -13,6 +13,54 @@
 
 namespace s3d
 {
+	namespace Geometry2D
+	{
+		[[nodiscard]]
+		constexpr bool Intersect(const Point& a, const Point& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Point& a, const Vec2& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Point& a, const Line& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Point& a, const Bezier2& b);
+
+		////[[nodiscard]]
+		////bool Intersect(const Point& a, const Bezier3& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Point& a, const Rect& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Point& a, const RectF& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Point& a, const Circle& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Point& a, const Ellipse& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Point& a, const Triangle& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersect(const Point& a, const Quad& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Point& a, const RoundRect& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Point& a, const Polygon& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Point& a, const MultiPolygon& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Point& a, const LineString& b) noexcept;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -660,6 +708,18 @@ namespace s3d
 	constexpr Vector2D<Type> Point::lerp(const Vector2D<Type> other, const double f) const noexcept
 	{
 		return{ (x + (other.x - x) * static_cast<Type>(f)), (y + (other.y - y) * static_cast<Type>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Point::intersects(const Shape2DType& other) const
+	{
+		return Geometry2D::Intersect(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -919,6 +919,9 @@
     <Filter Include="src\Siv3D\InputDeviceType">
       <UniqueIdentifier>{3024c161-ed6b-45bb-b451-15d7108aeae8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Siv3D\Geometry2D">
+      <UniqueIdentifier>{f0593e98-615a-46d8-9d37-1ffe10ad5f57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3596,6 +3599,12 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton_BMI.h">
       <Filter>src\ThirdParty\libmorton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.ipp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
