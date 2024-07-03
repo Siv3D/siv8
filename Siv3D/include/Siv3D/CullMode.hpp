@@ -22,7 +22,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief カリングモード | Culling mode
+	/// @brief カリングモード | Cull mode
 	enum class CullMode : uint8
 	{
 		/// @brief カリングを無効にする | Disable culling

@@ -22,7 +22,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief テクスチャフィルタの手法
+	/// @brief テクスチャフィルタの手法 | Texture filter method
 	enum class TextureFilter : uint8
 	{
 		/// @brief 最近傍補間

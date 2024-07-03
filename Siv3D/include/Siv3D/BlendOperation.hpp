@@ -22,7 +22,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief ブレンド操作
+	/// @brief ブレンド操作 | Blend operation
 	enum class BlendOperation : uint8
 	{
 		/// @brief 加算

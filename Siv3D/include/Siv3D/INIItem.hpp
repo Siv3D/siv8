@@ -23,6 +23,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief INI のプロパティの値 | INI property value
 	struct INIItem
 	{
 		/// @brief プロパティの値

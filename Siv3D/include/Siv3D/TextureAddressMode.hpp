@@ -22,7 +22,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief テクスチャアドレスモード
+	/// @brief テクスチャアドレスモード | Texture address mode
 	enum class TextureAddressMode : uint8
 	{
 		/// @brief 繰り返し

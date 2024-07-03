@@ -22,6 +22,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief ブレンド係数 | Blend factor
 	enum class BlendFactor : uint8
 	{
 		/// @brief ブレンド係数 (0, 0, 0, 0) 
