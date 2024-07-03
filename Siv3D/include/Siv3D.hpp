@@ -1283,7 +1283,7 @@
 # include <Siv3D/InputState.hpp>
 
 // 入力デバイスの種類 | Input device type
-# include <Siv3D/InputDevice.hpp>
+# include <Siv3D/InputDeviceType.hpp>
 
 // 入力ボタンの表現 | Input button representation
 # include <Siv3D/InputGroups.hpp>

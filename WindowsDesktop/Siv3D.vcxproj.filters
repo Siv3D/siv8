@@ -649,9 +649,6 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse">
       <UniqueIdentifier>{785c3016-019a-42fe-924a-5e525f1dcc54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\InputDevice">
-      <UniqueIdentifier>{58d18840-00bf-45f3-9bc7-75e55189a3fa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D\Input">
       <UniqueIdentifier>{b6f3b005-c892-4b2d-8266-3eea65257820}</UniqueIdentifier>
     </Filter>
@@ -918,6 +915,9 @@
     </Filter>
     <Filter Include="src\ThirdParty\libmorton">
       <UniqueIdentifier>{a0ce2379-bd43-4456-b23d-e945030e712c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\InputDeviceType">
+      <UniqueIdentifier>{3024c161-ed6b-45bb-b451-15d7108aeae8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -3030,7 +3030,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Input.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\InputDevice.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputDeviceType.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Input.ipp">
@@ -5627,9 +5627,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\InputDevice\SivInputDevice.cpp">
-      <Filter>src\Siv3D\InputDevice</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Input\SivInput.cpp">
       <Filter>src\Siv3D\Input</Filter>
     </ClCompile>
@@ -5914,6 +5911,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Morton\SivMorton.cpp">
       <Filter>src\Siv3D\Morton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\InputDeviceType\SivInputDeviceType.cpp">
+      <Filter>src\Siv3D\InputDeviceType</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -265,7 +265,7 @@ namespace s3d
 
 				if (state.pressed() || state.up())
 				{
-					m_allInputs.emplace_back(InputDevice::Keyboard, static_cast<uint8>(i));
+					m_allInputs.emplace_back(InputDeviceType::Keyboard, static_cast<uint8>(i));
 				}
 			}
 		}

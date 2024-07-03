@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/InputDevice.hpp>
+# include <Siv3D/InputDeviceType.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FormatData.hpp>
 
@@ -18,7 +18,7 @@ namespace s3d
 {
 	namespace
 	{
-		static constexpr std::array InputDeviceStrings =
+		static constexpr std::array InputDeviceTypeStrings =
 		{
 			U"Unknown"_sv,
 			U"Keyboard"_sv,
@@ -34,8 +34,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const InputDevice value)
+	void Formatter(FormatData& formatData, const InputDeviceType value)
 	{
-		formatData.string.append(InputDeviceStrings[FromEnum(value)]);
+		formatData.string.append(InputDeviceTypeStrings[FromEnum(value)]);
 	}
 }

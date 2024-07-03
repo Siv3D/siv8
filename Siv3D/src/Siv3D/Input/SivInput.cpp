@@ -64,13 +64,13 @@ namespace s3d
 		};
 
 		[[nodiscard]]
-		static InputState* GetInputState(const InputDevice device, const uint8 playerIndex, const uint8 code)
+		static InputState* GetInputState(const InputDeviceType device, const uint8 playerIndex, const uint8 code)
 		{
 			switch (device)
 			{
-			case InputDevice::Keyboard:
+			case InputDeviceType::Keyboard:
 				return &SIV3D_ENGINE(Keyboard)->getInputState(code);
-			case InputDevice::Mouse:
+			case InputDeviceType::Mouse:
 				return &SIV3D_ENGINE(Mouse)->getInputState(code);
 			default:
 				return nullptr;
@@ -88,12 +88,12 @@ namespace s3d
 	{
 		switch (m_device)
 		{
-		case InputDevice::Keyboard:
+		case InputDeviceType::Keyboard:
 			return SIV3D_ENGINE(Keyboard)->getName(m_code);
-		case InputDevice::Mouse:
+		case InputDeviceType::Mouse:
 			assert(m_code < MouseButtonNames.size());
 			return String{ MouseButtonNames[m_code] };
-		case InputDevice::Gamepad:
+		case InputDeviceType::Gamepad:
 			{
 				if (InRange<uint8>(m_code, 0x80, 0x83))
 				{
@@ -104,7 +104,7 @@ namespace s3d
 					return (U"Gamepad-Button" + ToString(m_code));
 				}
 			}
-		case InputDevice::XInput:
+		case InputDeviceType::XInput:
 			assert(m_code < XInputButtonNames.size());
 			return (U"XInput-" + XInputButtonNames[m_code]);
 		default:
@@ -246,11 +246,11 @@ namespace s3d
 	{
 		if (input.playerIndex())
 		{
-			return U"({}, {}, {})"_fmt(FromEnum(input.device()), input.code(), input.playerIndex());
+			return U"({}, {}, {})"_fmt(FromEnum(input.deviceType()), input.code(), input.playerIndex());
 		}
 		else
 		{
-			return U"({}, {})"_fmt(FromEnum(input.device()), input.code());
+			return U"({}, {})"_fmt(FromEnum(input.deviceType()), input.code());
 		}
 	}
 
@@ -281,7 +281,7 @@ namespace s3d
 			values[2] = 0;
 		}
 
-		return Input{ ToEnum<InputDevice>(static_cast<uint8>(values[0])),
+		return Input{ ToEnum<InputDeviceType>(static_cast<uint8>(values[0])),
 			static_cast<uint8>(values[1]),
 			static_cast<uint8>(values[2]) };
 	}
