@@ -17,6 +17,9 @@ namespace s3d
 	/// @brief 即座に開始する | Start immediately
 	using StartImmediately		= YesNo<struct StartImmediately_tag>;
 
+	/// @brief 大文字小文字を保持する | Preserve case
+	using PreserveCase			= YesNo<struct PreserveCase_tag>;
+
 	/// @brief 再帰的に処理する
 	using Recursive				= YesNo<struct Recursive_tag>;
 

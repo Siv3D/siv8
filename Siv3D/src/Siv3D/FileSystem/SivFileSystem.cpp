@@ -51,6 +51,11 @@ namespace s3d
 
 		String Extension(FilePathView path)
 		{
+			return Extension(path, PreserveCase::Yes);
+		}
+
+		String Extension(FilePathView path, const PreserveCase preserveCase)
+		{
 			if (path.isEmpty())
 			{
 				return{};
@@ -72,12 +77,21 @@ namespace s3d
 
 			// aaa.bbb/ccc のようなケースを弾く
 			if ((lastSeparatorPos != String::npos)
-				&&  (lastDotPos < lastSeparatorPos))
+				&& (lastDotPos < lastSeparatorPos))
 			{
 				return{};
 			}
 
-			return path.substr(lastDotPos + 1).toString().lowercase();
+			String result = path.substr(lastDotPos + 1).toString();
+
+			if (preserveCase == PreserveCase::Yes)
+			{
+				return result;
+			}
+			else
+			{
+				return result.lowercase();
+			}
 		}
 			
 		////////////////////////////////////////////////////////////////

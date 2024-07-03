@@ -135,12 +135,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ファイルの拡張子(.を含まない) を小文字にして返します。
+		/// @brief ファイルの拡張子（.を含まない）を小文字にして返します。
 		/// @param path ファイルパス
 		/// @remark 例: "png"
 		/// @return 小文字の拡張子。失敗した場合は空の文字列
 		[[nodiscard]]
 		String Extension(FilePathView path);
+
+		/// @brief ファイルの拡張子（.を含まない）を返します。
+		/// @param path ファイルパス
+		/// @param preserveCase 大文字小文字を保持するか
+		/// @return 拡張子。失敗した場合は空の文字列
+		[[nodiscard]]
+		String Extension(FilePathView path, PreserveCase preserveCase);
 
 		////////////////////////////////////////////////////////////////
 		//
