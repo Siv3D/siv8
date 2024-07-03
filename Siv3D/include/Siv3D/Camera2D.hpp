@@ -56,6 +56,11 @@ namespace s3d
 		/// @return 現在の目標ズームアップ倍率
 		double getTargetScale() const noexcept;
 
+		/// @brief 右クリックによる移動の開始座標を返します。
+		/// @return 右クリックによる移動の開始座標。右クリックによる移動が開始されていない場合は none
+		[[nodiscard]]
+		const Optional<Vec2>& getGrabbedPos() const noexcept;
+
 		/// @brief 指定した中心座標とズーム倍率を即座に適用します。
 		/// @param center カメラが見る中心座標
 		/// @param scale カメラのズーム倍率
@@ -69,11 +74,6 @@ namespace s3d
 		/// @brief 2D カメラの右クリック・ドラッグによる移動の UI を表示します。
 		/// @param color UI の色
 		void draw(const ColorF& color = Palette::White) const;
-
-		/// @brief 右クリックによる移動の開始座標を返します。
-		/// @return 右クリックによる移動の開始座標。右クリックによる移動が開始されていない場合は none
-		[[nodiscard]]
-		const Optional<Vec2>& getGrabbedPos() const noexcept;
 
 	protected:
 

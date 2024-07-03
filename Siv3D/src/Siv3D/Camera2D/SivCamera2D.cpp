@@ -54,6 +54,11 @@ namespace s3d
 		return Math::Exp2(m_targetScaleLog);
 	}
 
+	const Optional<Vec2>& Camera2D::getGrabbedPos() const noexcept
+	{
+		return m_grabbedPos;
+	}
+
 	void Camera2D::jumpTo(const Vec2 center, const double scale) noexcept
 	{
 		m_grabbedPos.reset();
@@ -129,11 +134,6 @@ namespace s3d
 
 			Quad{ p1, p2, p3, p0 }.moveBy(grabbedPos).draw(color);
 		}
-	}
-
-	const Optional<Vec2>& Camera2D::getGrabbedPos() const noexcept
-	{
-		return m_grabbedPos;
 	}
 
 	void Camera2D::updateWheel(const SizeF& sceneSize)
