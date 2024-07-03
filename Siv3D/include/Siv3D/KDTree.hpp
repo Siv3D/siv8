@@ -102,37 +102,65 @@ namespace s3d
 		/// @brief 指定した座標から最も近い k 個の要素を検索して返します。
 		/// @param k 検索する個数
 		/// @param point 座標
-		/// @return 見つかった要素一覧
+		/// @return 見つかった要素のインデックス一覧
 		[[nodiscard]]
 		Array<index_type> knnSearch(size_t k, const point_type& point) const;
 
 		/// @brief 指定した座標から最も近い k 個の要素を検索して取得します。
-		/// @param results 結果を格納する配列
 		/// @param k 検索する個数
 		/// @param point 中心座標
-		void knnSearch(Array<index_type>& results, size_t k, const point_type& point) const;
+		/// @param results 結果を格納する配列
+		void knnSearch(size_t k, const point_type& point, Array<index_type>& results) const;
 
 		/// @brief 指定した座標から最も近い k 個の要素を検索して取得します。
-		/// @param results 結果を格納する配列
-		/// @param distanceSqResults それぞれの要素について、中心からの距離を格納する配列
 		/// @param k 検索する個数
 		/// @param point 中心座標
-		void knnSearch(Array<index_type>& results, Array<distance_type>& distanceSqResults, size_t k, const point_type& point) const;
+		/// @param results 要素のインデックスと中心からの距離の二乗のペアを格納する配列
+		void knnSearch(size_t k, const point_type& point, Array<std::pair<index_type, distance_type>>& results) const;
 
-		/// @brief 指定した座標から指定した半径以内にある要素一覧を検索して返します。
+		/// @brief 指定した座標から指定した半径以内にある、最も近い k 個の要素を検索して返します。
+		/// @param radius 半径
+		/// @param k 検索する個数
+		/// @param point 座標
+		/// @return 見つかった要素のインデックス一覧
+		[[nodiscard]]
+		Array<index_type> rknnSearch(distance_type radius, size_t k, const point_type& point) const;
+
+		/// @brief 指定した座標から指定した半径以内にある、最も近い k 個の要素を検索して取得します。
+		/// @param radius 半径
+		/// @param k 検索する個数
+		/// @param point 中心座標
+		/// @param results 結果を格納する配列
+		void rknnSearch(distance_type radius, size_t k, const point_type& point, Array<index_type>& results) const;
+
+		/// @brief 指定した座標から指定した半径以内にある、最も近い k 個の要素を検索して取得します。
+		/// @param radius 半径
+		/// @param k 検索する個数
+		/// @param point 中心座標
+		/// @param results 要素のインデックスと中心からの距離の二乗のペアを格納する配列
+		void rknnSearch(distance_type radius, size_t k, const point_type& point, Array<std::pair<index_type, distance_type>>& results) const;
+
+		/// @brief 指定した座標から指定した半径以内にある要素を検索して返します。
 		/// @param point 中心座標
 		/// @param radius 半径
 		/// @param sortByDistance 結果を中心座標から近い順にソートする場合 `SortByDistance::Yes`, それ以外の場合は `SortByDistance::No`
-		/// @return 指定した位置から指定した半径以内にある要素一覧
+		/// @return 指定した位置から指定した半径以内にある要素のインデックス一覧
 		[[nodiscard]]
 		Array<index_type> radiusSearch(const point_type& point, distance_type radius, SortByDistance sortByDistance = SortByDistance::No) const;
 
-		/// @brief 指定した座標から指定した半径以内にある要素一覧を検索して取得します。
-		/// @param results 結果を格納する配列
+		/// @brief 指定した座標から指定した半径以内にある要素を検索して取得します。
 		/// @param point 中心座標
 		/// @param radius 半径
+		/// @param results 要素のインデックスを格納する配列
 		/// @param sortByDistance 結果を中心座標から近い順にソートする場合 `SortByDistance::Yes`, それ以外の場合は `SortByDistance::No`
-		void radiusSearch(Array<index_type>& results, const point_type& point, distance_type radius, const SortByDistance sortByDistance = SortByDistance::No) const;
+		void radiusSearch(const point_type& point, distance_type radius, Array<index_type>& results, const SortByDistance sortByDistance = SortByDistance::No) const;
+
+		/// @brief 指定した座標から指定した半径以内にある要素を検索して取得します。
+		/// @param point 中心座標
+		/// @param radius 半径
+		/// @param results 要素のインデックスと中心からの距離の二乗のペアを格納する配列
+		/// @param sortByDistance 結果を中心座標から近い順にソートする場合 `SortByDistance::Yes`, それ以外の場合は `SortByDistance::No`
+		void radiusSearch(const point_type& point, distance_type radius, Array<std::pair<index_type, distance_type>>& results, const SortByDistance sortByDistance = SortByDistance::No) const;
 
 	private:
 

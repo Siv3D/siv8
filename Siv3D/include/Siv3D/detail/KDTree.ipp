@@ -13,7 +13,6 @@
 
 namespace s3d
 {
-
 	namespace detail
 	{
 		template <class DatasetAdapter>
@@ -45,20 +44,20 @@ namespace s3d
 			return DatasetAdapter::GetPointer(point);
 		}
 
-		template <class _DistanceType, class IndexType>
+		template <class DistanceType, class IndexType>
 		class RadiusResultsAdapter
 		{
 		public:
 
-			using DistanceType	= _DistanceType;
+			using distance_type	= DistanceType;
 
 			using index_type	= IndexType;
 
-			const DistanceType m_radius;
+			const distance_type m_radius;
 
 			Array<index_type>& m_results;
 
-			RadiusResultsAdapter(DistanceType radius, Array<index_type>& results)
+			RadiusResultsAdapter(distance_type radius, Array<index_type>& results)
 				: m_radius{ radius }
 				, m_results{ results }
 			{
@@ -85,14 +84,67 @@ namespace s3d
 				return true;
 			}
 
-			bool addPoint(const DistanceType, const index_type index)
+			bool addPoint(const distance_type, const index_type index)
 			{
 				m_results.push_back(index);
 
 				return true;
 			}
 
-			DistanceType worstDist() const
+			distance_type worstDist() const
+			{
+				return m_radius;
+			}
+		};
+
+		template <class DistanceType, class IndexType>
+		class RadiusResultsPairAdapter
+		{
+		public:
+
+			using distance_type = DistanceType;
+
+			using index_type = IndexType;
+
+			const distance_type m_radius;
+
+			Array<std::pair<index_type, distance_type>>& m_results;
+
+			RadiusResultsPairAdapter(distance_type radius, Array<std::pair<index_type, distance_type>>& results)
+				: m_radius{ radius }
+				, m_results{ results }
+			{
+				init();
+			}
+
+			void init()
+			{
+				clear();
+			}
+
+			void clear()
+			{
+				m_results.clear();
+			}
+
+			size_t size() const
+			{
+				return m_results.size();
+			}
+
+			constexpr bool full() const
+			{
+				return true;
+			}
+
+			bool addPoint(const distance_type distanceSq, const index_type index)
+			{
+				m_results.emplace_back(index, distanceSq);
+
+				return true;
+			}
+
+			distance_type worstDist() const
 			{
 				return m_radius;
 			}
@@ -130,13 +182,13 @@ namespace s3d
 	{
 		Array<index_type> results;
 
-		knnSearch(results, k, point);
+		knnSearch(k, point, results);
 
 		return results;
 	}
 
 	template <class DatasetAdapter>
-	void KDTree<DatasetAdapter>::knnSearch(Array<index_type>& results, size_t k, const point_type& point) const
+	void KDTree<DatasetAdapter>::knnSearch(size_t k, const point_type& point, Array<index_type>& results) const
 	{
 		results.resize(k);
 
@@ -148,15 +200,57 @@ namespace s3d
 	}
 
 	template <class DatasetAdapter>
-	void KDTree<DatasetAdapter>::knnSearch(Array<index_type>& results, Array<distance_type>& distanceSqResults, size_t k, const point_type& point) const
+	void KDTree<DatasetAdapter>::knnSearch(size_t k, const point_type& point, Array<std::pair<index_type, distance_type>>& results) const
+	{
+		Array<index_type> indices(k);
+		Array<distance_type> distanceSqs(k);
+
+		k = m_index.knnSearch(adapter_type::GetPointer(point), k, indices.data(), distanceSqs.data());
+
+		results.resize(k);
+
+		for (size_t i = 0; i < k; ++i)
+		{
+			results[i] = { indices[i], distanceSqs[i] };
+		}
+	}
+
+	template <class DatasetAdapter>
+	Array<typename KDTree<DatasetAdapter>::index_type> KDTree<DatasetAdapter>::rknnSearch(const distance_type radius, size_t k, const point_type& point) const
+	{
+		Array<index_type> results;
+
+		rknnSearch(radius, k, point, results);
+
+		return results;
+	}
+
+	template <class DatasetAdapter>
+	void KDTree<DatasetAdapter>::rknnSearch(const distance_type radius, size_t k, const point_type& point, Array<index_type>& results) const
 	{
 		results.resize(k);
-		distanceSqResults.resize(k);
 
-		k = m_index.knnSearch(adapter_type::GetPointer(point), k, &results[0], &distanceSqResults[0]);
+		Array<distance_type> distanceSqs(k);
+
+		k = m_index.rknnSearch(adapter_type::GetPointer(point), k, results.data(), distanceSqs.data(), (radius * radius));
 
 		results.resize(k);
-		distanceSqResults.resize(k);
+	}
+
+	template <class DatasetAdapter>
+	void KDTree<DatasetAdapter>::rknnSearch(const distance_type radius, size_t k, const point_type& point, Array<std::pair<index_type, distance_type>>& results) const
+	{
+		Array<index_type> indices(k);
+		Array<distance_type> distanceSqs(k);
+
+		k = m_index.rknnSearch(adapter_type::GetPointer(point), k, indices.data(), distanceSqs.data(), (radius * radius));
+
+		results.resize(k);
+
+		for (size_t i = 0; i < k; ++i)
+		{
+			results[i] = { indices[i], distanceSqs[i] };
+		}
 	}
 
 	template <class DatasetAdapter>
@@ -164,13 +258,13 @@ namespace s3d
 	{
 		Array<index_type> results;
 
-		radiusSearch(results, point, radius, sortByDistance);
+		radiusSearch(point, radius, results, sortByDistance);
 
 		return results;
 	}
 
 	template <class DatasetAdapter>
-	void KDTree<DatasetAdapter>::radiusSearch(Array<index_type>& results, const point_type& point, const distance_type radius, const SortByDistance sortByDistance) const
+	void KDTree<DatasetAdapter>::radiusSearch(const point_type& point, const distance_type radius, Array<index_type>& results, const SortByDistance sortByDistance) const
 	{
 		const nanoflann::SearchParameters searchParams{ 0.0f, sortByDistance.getBool() };
 
@@ -201,6 +295,46 @@ namespace s3d
 		else
 		{
 			detail::RadiusResultsAdapter<distance_type, index_type> resultSet{ (radius * radius), results };
+
+			m_index.radiusSearchCustomCallback(adapter_type::GetPointer(point), resultSet, searchParams);
+		}
+	}
+
+	template <class DatasetAdapter>
+	void KDTree<DatasetAdapter>::radiusSearch(const point_type& point, const distance_type radius, Array<std::pair<index_type, distance_type>>& results, const SortByDistance sortByDistance) const
+	{
+		const nanoflann::SearchParameters searchParams{ 0.0f, sortByDistance.getBool() };
+
+		if (sortByDistance)
+		{
+			std::vector<nanoflann::ResultItem<index_type, distance_type>> matches;
+
+			nanoflann::RadiusResultSet<distance_type, index_type> resultSet{ (radius * radius), matches };
+
+			const size_t num_matches = m_index.radiusSearchCustomCallback(adapter_type::GetPointer(point), resultSet, searchParams);
+
+			if (searchParams.sorted)
+			{
+				std::sort(matches.begin(), matches.end(), nanoflann::IndexDist_Sorter());
+			}
+
+			results.resize(num_matches);
+
+			std::pair<index_type, distance_type>* pDst = results.data();
+			const std::pair<index_type, distance_type>* const pDstEnd = (pDst + num_matches);
+			const nanoflann::ResultItem<index_type, distance_type>* pSrc = matches.data();
+
+			while (pDst != pDstEnd)
+			{
+				pDst->first = pSrc->first;
+				pDst->second = pSrc->second;
+				++pDst;
+				++pSrc;
+			}
+		}
+		else
+		{
+			detail::RadiusResultsPairAdapter<distance_type, index_type> resultSet{ (radius * radius), results };
 
 			m_index.radiusSearchCustomCallback(adapter_type::GetPointer(point), resultSet, searchParams);
 		}
