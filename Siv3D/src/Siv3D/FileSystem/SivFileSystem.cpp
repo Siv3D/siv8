@@ -51,7 +51,7 @@ namespace s3d
 
 		String Extension(FilePathView path)
 		{
-			return Extension(path, PreserveCase::Yes);
+			return Extension(path, PreserveCase::No);
 		}
 
 		String Extension(FilePathView path, const PreserveCase preserveCase)
