@@ -226,8 +226,8 @@
 // Disjoint-set (Union-find) | Disjoint-set (Union–find)
 # include <Siv3D/DisjointSet.hpp>
 
-//// モートン順序 | Morton order
-//# include <Siv3D/Morton.hpp>
+// モートン順序 | Morton order
+# include <Siv3D/Morton.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

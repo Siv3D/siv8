@@ -448,6 +448,12 @@ BSD_3_LICENSE
 },
 
 {
+R"-(libmorton)-",
+R"-(Copyright (c) 2016 Jeroen Baert)-",
+MIT_LICENSE
+},
+
+{
 R"-(libpng)-",
 
 R"-(Copyright (c) 1995-2024 The PNG Reference Library Authors.

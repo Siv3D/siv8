@@ -20,6 +20,7 @@ Name | Version
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 8.3.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
+[libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
 [lunasvg](https://github.com/sammycage/lunasvg) | v2.3.9
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2

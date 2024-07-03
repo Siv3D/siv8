@@ -38,6 +38,23 @@ namespace s3d
 		/// @brief ベクトルの Z 成分
 		value_type z;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Point3D() = default;
+
+		[[nodiscard]]
+		constexpr Point3D(value_type _x, value_type _y, value_type _z) noexcept;
+
+		[[nodiscard]]
+		constexpr Point3D(Concept::Integral auto _x, Concept::Integral auto _y, Concept::Integral auto _z) noexcept;
+
+		template <class X, class Y, class Z>
+		constexpr Point3D(X _x, Y _y, Z _z) noexcept requires((not Concept::Integral<X>) || (not Concept::Integral<Y>) || (not Concept::Integral<Z>)) = delete;
 
 
 
