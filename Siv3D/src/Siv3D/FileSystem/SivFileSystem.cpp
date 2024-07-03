@@ -100,37 +100,30 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		String FileName(const FilePathView path)
+		String FileName(const FilePathView path_)
 		{
-			if (path.isEmpty())
+			if (path_.isEmpty())
 			{
 				return{};
 			}
 
-			if (path.ends_with(U'/') || path.ends_with(U'\\'))
-			{
-				const size_t parentSeparatorPos = path.find_last_of(U"/\\", (path.size() - 2));
+			FilePath path = FilePath{ path_ }.replace(U'\\', U'/');
 
-				if (parentSeparatorPos == String::npos)
-				{
-					return String(path.begin(), (path.end() - 1));
-				}
-				else
-				{
-					return String((path.begin() + parentSeparatorPos + 1), (path.end() - 1));
-				}
+			if (path.ends_with(U'/'))
+			{
+				return{};
 			}
 			else
 			{
-				const size_t lastSeparatorPos = path.find_last_of(U"/\\");
+				const size_t sepPos = path.rfind(U'/');
 
-				if (lastSeparatorPos == String::npos)
+				if (sepPos == String::npos)
 				{
-					return path.toString();
+					return String{ path };
 				}
 				else
 				{
-					return String((path.begin() + lastSeparatorPos + 1), path.end());
+					return String((path.begin() + sepPos + 1), path.end());
 				}
 			}
 		}
@@ -150,14 +143,19 @@ namespace s3d
 				return{};
 			}
 
-			const size_t lastDotPos = fileName.rfind(U'.');
+			const size_t dotPos = fileName.rfind(U'.');
 
-			if (lastDotPos == String::npos)
+			if (dotPos == String::npos)
 			{
 				return fileName;
 			}
 
-			return String(fileName.begin(), (fileName.begin() + lastDotPos));
+			if ((dotPos == 0) || (dotPos == (fileName.size() - 1)))
+			{
+				return fileName;
+			}
+
+			return String(fileName.begin(), (fileName.begin() + dotPos));
 		}
 
 		////////////////////////////////////////////////////////////////
