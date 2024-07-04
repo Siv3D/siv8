@@ -664,14 +664,14 @@ namespace s3d
 		/// @param xy 左方向・右方向・上方向・下方向のそれぞれの拡大縮小量
 		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
-		constexpr Rect stretched(value_type xy) const noexcept;
+		constexpr Rect stretched(Concept::Integral auto xy) const noexcept;
 
 		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
 		/// @param _x 左方向と右方向のそれぞれの拡大縮小量
 		/// @param _y 上方向と下方向のそれぞれの拡大縮小量
 		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
-		constexpr Rect stretched(value_type _x, value_type _y) const noexcept;
+		constexpr Rect stretched(Concept::Integral auto _x, Concept::Integral auto _y) const noexcept;
 
 		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
 		/// @param xy 左方向と右方向・上方向と下方向のそれぞれの拡大縮小量
@@ -686,7 +686,35 @@ namespace s3d
 		/// @param left 左方向の拡大縮小量
 		/// @return 上下左右方向に拡大縮小した長方形
 		[[nodiscard]]
-		constexpr Rect stretched(value_type top, value_type right, value_type bottom, value_type left) const noexcept;
+		constexpr Rect stretched(Concept::Integral auto top, Concept::Integral auto right, Concept::Integral auto bottom, Concept::Integral auto left) const noexcept;
+
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param xy 左方向・右方向・上方向・下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr RectF stretched(Concept::FloatingPoint auto xy) const noexcept;
+
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param _x 左方向と右方向のそれぞれの拡大縮小量
+		/// @param _y 上方向と下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr RectF stretched(Concept::FloatingPoint auto _x, Concept::FloatingPoint auto _y) const noexcept;
+
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param xy 左方向と右方向・上方向と下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr RectF stretched(SizeF xy) const noexcept;
+
+		/// @brief 上下左右方向に拡大縮小した長方形を返します。
+		/// @param top 上方向の拡大縮小量
+		/// @param right 右方向の拡大縮小量
+		/// @param bottom 下方向の拡大縮小量
+		/// @param left 左方向の拡大縮小量
+		/// @return 上下左右方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr RectF stretched(Concept::FloatingPoint auto top, Concept::FloatingPoint auto right, Concept::FloatingPoint auto bottom, Concept::FloatingPoint auto left) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

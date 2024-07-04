@@ -492,14 +492,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::stretched(const value_type xy) const noexcept
+	constexpr Rect Rect::stretched(const Concept::Integral auto xy) const noexcept
 	{
-		return stretched({ xy, xy });
+		return stretched(size_type{ xy, xy });
 	}
 
-	constexpr Rect Rect::stretched(const value_type _x, const value_type _y) const noexcept
+	constexpr Rect Rect::stretched(const Concept::Integral auto _x, const Concept::Integral auto _y) const noexcept
 	{
-		return stretched({ _x, _y });
+		return stretched(size_type{ _x, _y });
 	}
 
 	constexpr Rect Rect::stretched(const size_type xy) const noexcept
@@ -507,7 +507,27 @@ namespace s3d
 		return{ (pos - xy), (size + xy * 2) };
 	}
 
-	constexpr Rect Rect::stretched(const value_type top, const value_type right, const value_type bottom, const value_type left) const noexcept
+	constexpr Rect Rect::stretched(const Concept::Integral auto top, const Concept::Integral auto right, const Concept::Integral auto bottom, const Concept::Integral auto left) const noexcept
+	{
+		return{ (pos.x - left), (pos.y - top), (size.x + left + right), (size.y + top + bottom) };
+	}
+
+	constexpr RectF Rect::stretched(const Concept::FloatingPoint auto xy) const noexcept
+	{
+		return stretched(SizeF{ xy, xy });
+	}
+
+	constexpr RectF Rect::stretched(const Concept::FloatingPoint auto _x, const Concept::FloatingPoint auto _y) const noexcept
+	{
+		return stretched(SizeF{ _x, _y });
+	}
+
+	constexpr RectF Rect::stretched(const SizeF xy) const noexcept
+	{
+		return{ (pos - xy), (size + xy * 2) };
+	}
+
+	constexpr RectF Rect::stretched(const Concept::FloatingPoint auto top, const Concept::FloatingPoint auto right, const Concept::FloatingPoint auto bottom, const Concept::FloatingPoint auto left) const noexcept
 	{
 		return{ (pos.x - left), (pos.y - top), (size.x + left + right), (size.y + top + bottom) };
 	}
