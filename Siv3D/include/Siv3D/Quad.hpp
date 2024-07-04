@@ -50,6 +50,13 @@ namespace s3d
 		constexpr Quad& moveBy(position_type v) noexcept;
 
 
+
+		[[nodiscard]]
+		position_type& p(size_t index) noexcept;
+
+		[[nodiscard]]
+		const position_type& p(size_t index) const noexcept;
+
 		[[nodiscard]]
 		constexpr Triangle triangleAtIndex(size_t index) const;
 

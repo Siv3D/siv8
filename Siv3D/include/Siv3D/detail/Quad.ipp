@@ -37,6 +37,16 @@ namespace s3d
 		return moveBy(v.x, v.y);
 	}
 
+	inline Quad::position_type& Quad::p(const size_t index) noexcept
+	{
+		return (&p0)[index];
+	}
+
+	inline const Quad::position_type& Quad::p(const size_t index) const noexcept
+	{
+		return (&p0)[index];
+	}
+
 	constexpr Triangle Quad::triangleAtIndex(const size_t index) const
 	{
 		if (index == 0)

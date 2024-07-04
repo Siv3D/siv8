@@ -13,6 +13,8 @@
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/Mouse.hpp>
+# include <Siv3D/Cursor.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -120,6 +122,124 @@ namespace s3d
 		{
 			return 3;
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	Quad Rect::rotated(const double angle) const noexcept
+	{
+		const double cx = (x + w * 0.5);
+		const double cy = (y + h * 0.5);
+		const double x0 = -size.x * 0.5;
+		const double x1 = size.x * 0.5;
+		const double y0 = -size.y * 0.5;
+		const double y1 = size.y * 0.5;
+		const double s = std::sin(angle);
+		const double c = std::cos(angle);
+		const double x0c = (x0 * c);
+		const double x0s = (x0 * s);
+		const double x1c = (x1 * c);
+		const double x1s = (x1 * s);
+		const double y0c = (y0 * c);
+		const double y0s = (y0 * s);
+		const double y1c = (y1 * c);
+		const double y1s = (y1 * s);
+		return{ { (x0c - y0s + cx), (x0s + y0c + cy) },
+				{ (x1c - y0s + cx), (x1s + y0c + cy) },
+				{ (x1c - y1s + cx), (x1s + y1c + cy) },
+				{ (x0c - y1s + cx), (x0s + y1c + cy) } };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotatedAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	Quad Rect::rotatedAt(const double _x, const double _y, const double angle) const noexcept
+	{
+		return rotatedAt({ _x, _y }, angle);
+	}
+
+	Quad Rect::rotatedAt(const Vec2 _pos, const double angle) const noexcept
+	{
+		Vec2 pts[4] = { { x, y },{ (x + w), y },{ (x + w), (y + h) },{ x, (y + h) } };
+
+		for (int32 i = 0; i < 4; ++i)
+		{
+			pts[i] -= _pos;
+		}
+
+		const double s = std::sin(angle);
+		const double c = std::cos(angle);
+
+		Quad quad;
+
+		for (int32 i = 0; i < 4; ++i)
+		{
+			auto& p = quad.p(i);
+			p.x = (pts[i].x * c - pts[i].y * s + _pos.x);
+			p.y = (pts[i].x * s + pts[i].y * c + _pos.y);
+		}
+
+		return quad;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	leftClicked, leftPressed, leftReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Rect::leftClicked() const noexcept
+	{
+		return (MouseL.down() && mouseOver());
+	}
+
+	bool Rect::leftPressed() const noexcept
+	{
+		return (MouseL.pressed() && mouseOver());
+	}
+
+	bool Rect::leftReleased() const noexcept
+	{
+		return (MouseL.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rightClicked, rightPressed, rightReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Rect::rightClicked() const noexcept
+	{
+		return (MouseR.down() && mouseOver());
+	}
+
+	bool Rect::rightPressed() const noexcept
+	{
+		return (MouseR.pressed() && mouseOver());
+	}
+
+	bool Rect::rightReleased() const noexcept
+	{
+		return (MouseR.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mouseOver
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Rect::mouseOver() const noexcept
+	{
+		return Geometry2D::Intersect(Cursor::PosF(), *this);
 	}
 
 	////////////////////////////////////////////////////////////////

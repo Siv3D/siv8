@@ -143,7 +143,7 @@ namespace s3d
 		/// @param _x 長方形の左上の点の X 座標
 		/// @param _y 長方形の左上の点の Y 座標
 		/// @param _w 長方形の幅
-		/// @param _h 	長方形の高さ
+		/// @param _h 長方形の高さ
 		[[nodiscard]]
 		constexpr RectF(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
 
@@ -192,6 +192,11 @@ namespace s3d
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(position_type _pos, size_type _size) noexcept;
+
+		/// @brief 長方形を作成します。
+		/// @param rect 長方形
+		[[nodiscard]]
+		constexpr RectF(const Rect& rect) noexcept;
 
 		/// @brief 長方形を作成します。
 		/// @param _center 中心座標
@@ -513,6 +518,19 @@ namespace s3d
 
 
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	getOverlap
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
+		/// @param other 別の長方形
+		/// @return 別の長方形と重なる領域。重ならない場合は空の長方形
+		[[nodiscard]]
+		constexpr RectF getOverlap(const RectF& other) const noexcept;
+
+
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -558,6 +576,35 @@ namespace s3d
 		/// @remark `rect.draw(Arg::topRight = ColorF{ 0.0 }, Arg::bottomLeft = ColorF{ 1.0 })` のように呼びます。
 		/// @return 
 		const RectF& draw(Arg::topRight_<ColorF> topRightColor, Arg::bottomLeft_<ColorF> bottomLeftColor) const;
+
+
+
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Empty
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 空の長方形を返します。
+		/// @return 空の長方形 (`RectF{ 0, 0, 0, 0 }`)
+		[[nodiscard]]
+		static constexpr RectF Empty() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromPoints
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 対角線上の 2 点の座標をもとに長方形を作成します。
+		/// @param a 対角線をなす座標の 1 つ
+		/// @param b 対角線をなす座標の 1 つ
+		/// @return 作成した長方形
+		[[nodiscard]]
+		static constexpr RectF FromPoints(position_type a, position_type b) noexcept;
+
 
 
 		////////////////////////////////////////////////////////////////

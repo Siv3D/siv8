@@ -158,8 +158,8 @@
 
 // 文字列 | String
 # include <Siv3D/String.hpp>
-# include <Siv3D/StringRandom.hpp> // 実装詳細
-# include <Siv3D/StringAlgorithm.hpp> // 実装詳細
+# include <Siv3D/StringRandom.hpp>
+# include <Siv3D/StringAlgorithm.hpp>
 
 // Unicode | Unicode
 # include <Siv3D/Unicode.hpp>
@@ -198,9 +198,9 @@
 
 // 動的配列（一次元）| Array
 # include <Siv3D/Array.hpp>
-# include <Siv3D/ArrayRandom.hpp> // 実装詳細
-# include <Siv3D/ArrayAlgorithm.hpp> // 実装詳細
-# include <Siv3D/ArrayParallel.hpp> // 実装詳細
+# include <Siv3D/ArrayRandom.hpp>
+# include <Siv3D/ArrayAlgorithm.hpp>
+# include <Siv3D/ArrayParallel.hpp>
 
 // 動的配列（二次元）| 2D array
 # include <Siv3D/Grid.hpp> // ToDo

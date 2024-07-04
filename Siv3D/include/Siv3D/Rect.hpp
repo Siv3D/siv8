@@ -1075,8 +1075,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Quad rotated(double angle) const noexcept;
+		[[nodiscard]]
+		Quad rotated(double angle) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1084,11 +1084,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Quad rotatedAt(double _x, double _y, double angle) const noexcept;
+		[[nodiscard]]
+		Quad rotatedAt(double _x, double _y, double angle) const noexcept;
 
-		//[[nodiscard]]
-		//Quad rotatedAt(Vec2 _pos, double angle) const noexcept;
+		[[nodiscard]]
+		Quad rotatedAt(Vec2 _pos, double angle) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1096,18 +1096,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief _posを中心とし、時計回りに 90°* n 回転した長方形を返します。
-		///// @param _pos 回転の中心座標
-		///// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
-		///// @return _posを中心とし、時計回りに 90°* n 回転した長方形
-		//[[nodiscard]]
-		//constexpr Rect rotated90At(const position_type& _pos, int32 n = 1) const noexcept;
+		/// @brief _posを中心とし、時計回りに 90° * n 回転した長方形を返します。
+		/// @param _pos 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return _posを中心とし、時計回りに 90° * n 回転した長方形
+		[[nodiscard]]
+		constexpr Rect rotated90At(const position_type& _pos, int32 n = 1) const noexcept;
 
-		///// @brief _posを中心とし、自身を時計回りに 90°* n 回転します。
-		///// @param _pos 回転の中心座標
-		///// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
-		///// @return *this
-		//constexpr Rect& rotate90At(const position_type& _pos, int32 n = 1) noexcept;
+		/// @brief _posを中心とし、自身を時計回りに 90° * n 回転します。
+		/// @param _pos 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr Rect& rotate90At(const position_type& _pos, int32 n = 1) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1115,11 +1115,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//constexpr Quad shearedX(double vx) const noexcept;
+		[[nodiscard]]
+		constexpr Quad shearedX(double vx) const noexcept;
 
-		//[[nodiscard]]
-		//constexpr Quad shearedY(double vy) const noexcept;
+		[[nodiscard]]
+		constexpr Quad shearedY(double vy) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1127,11 +1127,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Quad skewedX(double angle) const noexcept;
+		[[nodiscard]]
+		Quad skewedX(double angle) const noexcept;
 
-		//[[nodiscard]]
-		//Quad skewedY(double angle) const noexcept;
+		[[nodiscard]]
+		Quad skewedY(double angle) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1139,11 +1139,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 角を丸めた RoundRect を作成して返します。
-		///// @param r 角の半径
-		///// @return 作成した RoundRect
-		//[[nodiscard]]
-		//constexpr RoundRect rounded(double r) const noexcept;
+		/// @brief 角を丸めた RoundRect を作成して返します。
+		/// @param r 角の半径
+		/// @return 作成した RoundRect
+		[[nodiscard]]
+		constexpr RoundRect rounded(double r) const noexcept;
 
 		//[[nodiscard]]
 		//Polygon rounded(double tl, double tr, double br, double bl) const noexcept;
@@ -1154,10 +1154,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形を Quad として返します。
-		///// @return 長方形の Quad
-		//[[nodiscard]]
-		//constexpr Quad asQuad() const noexcept;
+		/// @brief 長方形を Quad として返します。
+		/// @return 長方形の Quad
+		[[nodiscard]]
+		constexpr Quad asQuad() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1195,11 +1195,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//constexpr RectF lerp(const Rect& other, double f) const noexcept;
+		[[nodiscard]]
+		constexpr RectF lerp(const Rect& other, double f) const noexcept;
 
-		//[[nodiscard]]
-		//constexpr RectF lerp(const RectF& other, double f) const noexcept;
+		[[nodiscard]]
+		constexpr RectF lerp(const RectF& other, double f) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1207,17 +1207,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
-		///// @param other 別の長方形
-		///// @return 別の長方形と重なる領域。重ならない場合は空の長方形
-		//[[nodiscard]]
-		//constexpr Rect getOverlap(const Rect& other) const noexcept;
+		/// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
+		/// @param other 別の長方形
+		/// @return 別の長方形と重なる領域。重ならない場合は空の長方形
+		[[nodiscard]]
+		constexpr Rect getOverlap(const Rect& other) const noexcept;
 
-		///// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
-		///// @param other 別の長方形
-		///// @return 別の長方形と重なる領域。重ならない場合は空の長方形
-		//[[nodiscard]]
-		//constexpr RectF getOverlap(const RectF& other) const noexcept;
+		/// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
+		/// @param other 別の長方形
+		/// @return 別の長方形と重なる領域。重ならない場合は空の長方形
+		[[nodiscard]]
+		constexpr RectF getOverlap(const RectF& other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1243,9 +1243,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//constexpr bool intersects(const Shape2DType& other) const;
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool intersects(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1273,20 +1273,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形が現在のフレームで左クリックされ始めたかを返します。
-		///// @return 長方形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool leftClicked() const noexcept;
+		/// @brief 長方形が現在のフレームで左クリックされ始めたかを返します。
+		/// @return 長方形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
 
-		///// @brief 長方形が左クリックされているかを返します。
-		///// @return 長方形が左クリックされている場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool leftPressed() const noexcept;
+		/// @brief 長方形が左クリックされているかを返します。
+		/// @return 長方形が左クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
 
-		///// @brief 現在のフレームで長方形への左クリックが離されたかを返します。
-		///// @return 現在のフレームで長方形への左クリックが離された場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool leftReleased() const noexcept;
+		/// @brief 現在のフレームで長方形への左クリックが離されたかを返します。
+		/// @return 現在のフレームで長方形への左クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1294,20 +1294,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形が現在のフレームで右クリックされ始めたかを返します。
-		///// @return 長方形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool rightClicked() const noexcept;
+		/// @brief 長方形が現在のフレームで右クリックされ始めたかを返します。
+		/// @return 長方形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
 
-		///// @brief 長方形が右クリックされているかを返します。
-		///// @return 長方形が右クリックされている場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool rightPressed() const noexcept;
+		/// @brief 長方形が右クリックされているかを返します。
+		/// @return 長方形が右クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
 
-		///// @brief 現在のフレームで長方形への右クリックが離されたかを返します。
-		///// @return 現在のフレームで長方形への右クリックが離された場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool rightReleased() const noexcept;
+		/// @brief 現在のフレームで長方形への右クリックが離されたかを返します。
+		/// @return 現在のフレームで長方形への右クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1315,10 +1315,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形上にマウスカーソルがあるかを返します。
-		///// @return 長方形上にマウスカーソルがある場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool mouseOver() const noexcept;
+		/// @brief 長方形上にマウスカーソルがあるかを返します。
+		/// @return 長方形上にマウスカーソルがある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

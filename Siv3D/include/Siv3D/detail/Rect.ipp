@@ -937,6 +937,141 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	rotated90At
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::rotated90At(const position_type& _pos, const int32 n) const noexcept
+	{
+		switch (n % 4) // 時計回りに何回 90° 回転するか
+		{
+		case 1:
+		case -3:
+			return{ bl().rotate90At(_pos, 1),size.yx() }; // 1 回または -3 回
+		case 2:
+		case -2:
+			return{ br().rotate90At(_pos, 2),size }; // 2 回または -2 回
+		case 3:
+		case -1:
+			return{ tr().rotate90At(_pos, 3),size.yx() }; // 3 回または -1 回
+		default:
+			return *this; // 0 回
+		}
+	}
+
+	constexpr Rect& Rect::rotate90At(const position_type& _pos, const int32 n) noexcept
+	{
+		return (*this = rotated90At(_pos, n));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shearedX, shearedY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad Rect::shearedX(const double vx) const noexcept
+	{
+		return{ { (pos.x + vx), pos.y },
+				{ (pos.x + size.x + vx), pos.y },
+				{ (pos.x + size.x - vx), (pos.y + size.y) },
+				{ (pos.x - vx), (pos.y + size.y) } };
+	}
+
+	constexpr Quad Rect::shearedY(const double vy) const noexcept
+	{
+		return{ { pos.x, (pos.y - vy) },
+				{ (pos.x + size.x), (pos.y + vy) },
+				{ (pos.x + size.x), (pos.y + size.y + vy) },
+				{ pos.x, (pos.y + size.y - vy) } };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	skewedX, skewedY
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Quad Rect::skewedX(const double angle) const noexcept
+	{
+		return shearedX(std::tan(angle) * size.y / 2);
+	}
+
+	inline Quad Rect::skewedY(const double angle) const noexcept
+	{
+		return shearedY(std::tan(angle) * size.x / 2);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RoundRect Rect::rounded(const double r) const noexcept
+	{
+		return{ *this, r };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asQuad
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad Rect::asQuad() const noexcept
+	{
+		return{ tl(), tr(), br(), bl() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	lerp
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF Rect::lerp(const Rect& other, const double f) const noexcept
+	{
+		return{ pos.lerp(other.pos, f), size.lerp(other.size, f) };
+	}
+
+	constexpr RectF Rect::lerp(const RectF& other, const double f) const noexcept
+	{
+		return{ pos.lerp(other.pos, f), size.lerp(other.size, f) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getOverlap
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::getOverlap(const Rect& other) const noexcept
+	{
+		const auto ox = Max(pos.x, other.pos.x);
+		const auto oy = Max(pos.y, other.pos.y);
+		const auto ow = (Min((pos.x + size.x), (other.pos.x + other.size.x)) - ox);
+
+		if (0 <= ow)
+		{
+			const auto oh = (Min((pos.y + size.y), (other.pos.y + other.size.y)) - oy);
+
+			if (0 <= oh)
+			{
+				return{ ox, oy, ow, oh };
+			}
+		}
+
+		return Empty();
+	}
+
+	constexpr RectF Rect::getOverlap(const RectF& other) const noexcept
+	{
+		return other.getOverlap(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	clamped
 	//
 	////////////////////////////////////////////////////////////////
@@ -959,6 +1094,18 @@ namespace s3d
 	inline uint64 Rect::hash() const noexcept
 	{
 		return Hash(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Rect::intersects(const Shape2DType& other) const
+	{
+		return Geometry2D::Intersect(*this, other);
 	}
 
 
