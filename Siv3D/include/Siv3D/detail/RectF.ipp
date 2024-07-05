@@ -252,6 +252,27 @@ namespace s3d
 
 
 
+	constexpr RectF RectF::stretched(const value_type xy) const noexcept
+	{
+		return stretched({ xy, xy });
+	}
+
+	constexpr RectF RectF::stretched(const value_type _x, const value_type _y) const noexcept
+	{
+		return stretched({ _x, _y });
+	}
+
+	constexpr RectF RectF::stretched(const size_type xy) const noexcept
+	{
+		return{ (pos - xy), (size + xy * 2) };
+	}
+
+	constexpr RectF RectF::stretched(const value_type top, const value_type right, const value_type bottom, const value_type left) const noexcept
+	{
+		return{ (pos.x - left), (pos.y - top), (size.x + left + right), (size.y + top + bottom) };
+	}
+
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	tl, tr, br, bl

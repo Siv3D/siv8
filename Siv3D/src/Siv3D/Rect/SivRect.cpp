@@ -36,6 +36,25 @@ namespace s3d
 
 			return length;
 		}
+
+		[[nodiscard]]
+		static bool IsInvalidRectFrame(const Rect& rect, const double innerThickness, const double outerThickness) noexcept
+		{
+			if ((rect.w < 0) || (rect.h < 0)
+				|| (innerThickness < 0.0) || (outerThickness < 0.0)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0)))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		static bool IsFilledRect(const Rect& rect, const double innerThickness, const double outerThickness) noexcept
+		{
+			return ((rect.w < (innerThickness * 2)) || (rect.h < (innerThickness * 2)));
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -292,6 +311,117 @@ namespace s3d
 		const Float4 color2 = bottomLeftColor->toFloat4();
 		const Float4 color1 = ((color0 + color2) * 0.5f);
 		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, { color1, color0, color1, color2 });
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::drawFrame(const double thickness, const ColorF& color) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const Rect& Rect::drawFrame(const double thickness, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), innerColor, outerColor);
+	}
+
+	const Rect& Rect::drawFrame(const double thickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), topColor, bottomColor);
+	}
+
+	const Rect& Rect::drawFrame(const double thickness, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), leftColor, rightColor);
+	}
+
+	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		if (IsInvalidRectFrame(*this, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		if (IsFilledRect(*this, innerThickness, outerThickness))
+		{
+			stretched(outerThickness).draw(color);
+			return *this;
+		}
+
+		const Float4 color0 = color.toFloat4();
+
+		SIV3D_ENGINE(Renderer2D)->addRectFrame(
+			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
+			static_cast<float>(innerThickness + outerThickness),
+			color0, color0, RectFrameColorType::InOut);
+
+		return *this;
+	}
+
+	const Rect& Rect::drawFrame(double innerThickness, const double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		if (IsInvalidRectFrame(*this, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		if (IsFilledRect(*this, innerThickness, outerThickness))
+		{
+			innerThickness = Min((w * 0.5), (h * 0.5));
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addRectFrame(
+			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
+			static_cast<float>(innerThickness + outerThickness),
+			innerColor.toFloat4(), outerColor.toFloat4(), RectFrameColorType::InOut);
+
+		return *this;
+	}
+
+	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		if (IsInvalidRectFrame(*this, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		if (IsFilledRect(*this, innerThickness, outerThickness))
+		{
+			stretched(outerThickness).draw(topColor, bottomColor);
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addRectFrame(
+			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
+			static_cast<float>(innerThickness + outerThickness),
+			topColor->toFloat4(), bottomColor->toFloat4(), RectFrameColorType::TopBottom);
+
+		return *this;
+	}
+
+	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		if (IsInvalidRectFrame(*this, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		if (IsFilledRect(*this, innerThickness, outerThickness))
+		{
+			stretched(outerThickness).draw(leftColor, rightColor);
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addRectFrame(
+			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
+			static_cast<float>(innerThickness + outerThickness),
+			leftColor->toFloat4(), rightColor->toFloat4(), RectFrameColorType::LeftRight);
+
 		return *this;
 	}
 

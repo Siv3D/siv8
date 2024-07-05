@@ -20,6 +20,8 @@ namespace s3d
 	{
 		static constexpr Vertex2D::IndexType RectIndexTable[6] = { 0, 1, 2, 2, 1, 3 };
 
+		static constexpr Vertex2D::IndexType RectFrameIndexTable[24] = { 0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5, 4, 6, 5, 5, 6, 7, 6, 0, 7, 7, 0, 1 };
+
 		static constexpr Vertex2D::IndexType CircleFrameIndexTable[6] = { 0, 2, 1, 1, 2, 3 };
 
 		static const std::array<Float2, 2016> SinCosTable = []()
@@ -286,6 +288,86 @@ namespace s3d
 			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
 			{
 				*pIndex++ = (indexOffset + RectIndexTable[i]);
+			}
+
+			return IndexSize;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildRectFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const float thickness, const RectFrameColorType colorType, const Float4& color0, const Float4& color1)
+		{
+			constexpr Vertex2D::IndexType VertexSize	= 8;
+			constexpr Vertex2D::IndexType IndexSize		= 24;
+			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			pVertex[0].pos.set((innerRect.left - thickness), (innerRect.top - thickness));
+			pVertex[1].pos.set(innerRect.left, innerRect.top);
+			pVertex[2].pos.set((innerRect.right + thickness), (innerRect.top - thickness));
+			pVertex[3].pos.set(innerRect.right, innerRect.top);
+			pVertex[4].pos.set((innerRect.right + thickness), (innerRect.bottom + thickness));
+			pVertex[5].pos.set(innerRect.right, innerRect.bottom);
+			pVertex[6].pos.set((innerRect.left - thickness), (innerRect.bottom + thickness));
+			pVertex[7].pos.set(innerRect.left, innerRect.bottom);
+
+			switch (colorType)
+			{
+			case RectFrameColorType::InOut:
+				{
+					for (size_t i = 0; i < 4; ++i)
+					{
+						(pVertex++)->color = color1;
+						(pVertex++)->color = color0;
+					}
+
+					break;
+				}
+			case RectFrameColorType::TopBottom:
+				{
+					const float v1 = (thickness / (innerRect.bottom - innerRect.top + thickness * 2));
+					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
+
+					pVertex[0].color = colors[0];
+					pVertex[1].color = colors[1];
+					pVertex[2].color = colors[0];
+					pVertex[3].color = colors[1];
+					pVertex[4].color = colors[3];
+					pVertex[5].color = colors[2];
+					pVertex[6].color = colors[3];
+					pVertex[7].color = colors[2];
+
+					break;
+				}
+			case RectFrameColorType::LeftRight:
+				{
+					const float v1 = (thickness / (innerRect.right - innerRect.left + thickness * 2));
+					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
+
+					pVertex[0].color = colors[0];
+					pVertex[1].color = colors[1];
+					pVertex[2].color = colors[3];
+					pVertex[3].color = colors[2];
+					pVertex[4].color = colors[3];
+					pVertex[5].color = colors[2];
+					pVertex[6].color = colors[0];
+					pVertex[7].color = colors[1];
+
+					break;
+				}
+			}
+
+			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			{
+				*pIndex++ = (indexOffset + RectFrameIndexTable[i]);
 			}
 
 			return IndexSize;

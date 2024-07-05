@@ -1452,6 +1452,13 @@ namespace s3d
 		const Rect& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		/// @brief 長方形の枠を描画します。
+		/// @param thickness 枠の太さ
+		/// @param leftColor 左側の色
+		/// @param rightColor 右側の色
+		/// @return *this
+		const Rect& drawFrame(double thickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 長方形の枠を描画します。
 		/// @param innerThickness 内側寄りの枠の太さ
 		/// @param outerThickness 外側寄りの枠の太さ
 		/// @param color 色
@@ -1473,6 +1480,14 @@ namespace s3d
 		/// @param bottomColor 下側の色
 		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 長方形の枠を描画します。
+		/// @param innerThickness 内側寄りの枠の太さ
+		/// @param outerThickness 外側寄りの枠の太さ
+		/// @param leftColor 左側の色
+		/// @param rightColor 右側の色
+		/// @return *this
+		const Rect& drawFrame(double innerThickness, double outerThickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		////////////////////////////////////////////////////////////////
 		//

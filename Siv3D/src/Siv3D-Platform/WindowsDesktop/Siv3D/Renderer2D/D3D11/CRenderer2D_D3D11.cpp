@@ -237,11 +237,35 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addRectFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addRectFrame(const FloatRect& innerRect, const float thickness, const Float4& color0, const Float4& color1, const RectFrameColorType colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), innerRect, thickness, colorType, color0, color1))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addCircle
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_D3D11::addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor)
+	void CRenderer2D_D3D11::addCircle(const Float2& center, const float r, const Float4& innerColor, const Float4& outerColor)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, innerColor, outerColor, getMaxScaling()))
 		{
