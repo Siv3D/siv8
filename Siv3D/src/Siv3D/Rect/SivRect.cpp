@@ -51,7 +51,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static bool IsFilledRect(const Rect& rect, const double innerThickness, const double outerThickness) noexcept
+		static bool IsFilledRect(const Rect& rect, const double innerThickness) noexcept
 		{
 			return ((rect.w < (innerThickness * 2)) || (rect.h < (innerThickness * 2)));
 		}
@@ -347,7 +347,7 @@ namespace s3d
 			return *this;
 		}
 
-		if (IsFilledRect(*this, innerThickness, outerThickness))
+		if (IsFilledRect(*this, innerThickness))
 		{
 			stretched(outerThickness).draw(color);
 			return *this;
@@ -370,7 +370,7 @@ namespace s3d
 			return *this;
 		}
 
-		if (IsFilledRect(*this, innerThickness, outerThickness))
+		if (IsFilledRect(*this, innerThickness))
 		{
 			innerThickness = Min((w * 0.5), (h * 0.5));
 		}
@@ -390,7 +390,7 @@ namespace s3d
 			return *this;
 		}
 
-		if (IsFilledRect(*this, innerThickness, outerThickness))
+		if (IsFilledRect(*this, innerThickness))
 		{
 			stretched(outerThickness).draw(topColor, bottomColor);
 			return *this;
@@ -411,7 +411,7 @@ namespace s3d
 			return *this;
 		}
 
-		if (IsFilledRect(*this, innerThickness, outerThickness))
+		if (IsFilledRect(*this, innerThickness))
 		{
 			stretched(outerThickness).draw(leftColor, rightColor);
 			return *this;
