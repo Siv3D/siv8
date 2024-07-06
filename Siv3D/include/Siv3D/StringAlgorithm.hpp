@@ -11,5 +11,6 @@
 
 # pragma once
 # include <algorithm>
+# include <cstring>
 
 # include "detail/StringAlgorithm.ipp"
