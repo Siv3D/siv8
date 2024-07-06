@@ -703,6 +703,8 @@
 		F96F96082C359ED90033353E /* morton3D.h in Headers */ = {isa = PBXBuildFile; fileRef = F96F95FF2C359ED90033353E /* morton3D.h */; };
 		F96F960C2C359F070033353E /* Intersect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F96F96092C359F070033353E /* Intersect.hpp */; };
 		F96F960D2C359F070033353E /* Intersect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F96F960A2C359F070033353E /* Intersect.ipp */; };
+		F96F96102C3712DC0033353E /* SivGeometry2D_Intersect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F96F960E2C3712DC0033353E /* SivGeometry2D_Intersect.cpp */; };
+		F96F96122C39836F0033353E /* RectFrameColorType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F96F96112C39836E0033353E /* RectFrameColorType.hpp */; };
 		F9712A2C2C252EEA0049CC26 /* ScopedScissorRect2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */; };
 		F9712A2F2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */; };
 		F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A302C254DBB0049CC26 /* FmtOptional.hpp */; };
@@ -2964,6 +2966,8 @@
 		F96F95FF2C359ED90033353E /* morton3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = morton3D.h; sourceTree = "<group>"; };
 		F96F96092C359F070033353E /* Intersect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Intersect.hpp; sourceTree = "<group>"; };
 		F96F960A2C359F070033353E /* Intersect.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Intersect.ipp; sourceTree = "<group>"; };
+		F96F960E2C3712DC0033353E /* SivGeometry2D_Intersect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_Intersect.cpp; sourceTree = "<group>"; };
+		F96F96112C39836E0033353E /* RectFrameColorType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RectFrameColorType.hpp; sourceTree = "<group>"; };
 		F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedScissorRect2D.hpp; sourceTree = "<group>"; };
 		F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedScissorRect2D.cpp; sourceTree = "<group>"; };
 		F9712A302C254DBB0049CC26 /* FmtOptional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FmtOptional.hpp; sourceTree = "<group>"; };
@@ -6227,6 +6231,7 @@
 				F9070D562B9F175E00383E4D /* Formatter */,
 				F9070D582B9F175E00383E4D /* FormatUtility */,
 				F98606082BE71763006A4C0F /* FreestandingMessageBox */,
+				F96F960F2C3712DC0033353E /* Geometry2D */,
 				F934BD962BFA59000003EAD5 /* Graphics */,
 				F9E7947E2C248B29002615BA /* Graphics2D */,
 				F9E5FC422BC19B110081A4F7 /* HalfFloat */,
@@ -7082,6 +7087,14 @@
 			path = Geometry2D;
 			sourceTree = "<group>";
 		};
+		F96F960F2C3712DC0033353E /* Geometry2D */ = {
+			isa = PBXGroup;
+			children = (
+				F96F960E2C3712DC0033353E /* SivGeometry2D_Intersect.cpp */,
+			);
+			path = Geometry2D;
+			sourceTree = "<group>";
+		};
 		F9712A2E2C252EFE0049CC26 /* ScopedScissorRect2D */ = {
 			isa = PBXGroup;
 			children = (
@@ -7534,11 +7547,12 @@
 		F980C47F2C04B3EA00A86B68 /* Renderer2D */ = {
 			isa = PBXGroup;
 			children = (
+				F980C47D2C04B3EA00A86B68 /* Vertex2DBuilder.cpp */,
 				F980C4792C04B3EA00A86B68 /* BatchStateTracker.hpp */,
 				F980C47A2C04B3EA00A86B68 /* IRenderer2D.hpp */,
+				F96F96112C39836E0033353E /* RectFrameColorType.hpp */,
 				F980C47B2C04B3EA00A86B68 /* Renderer2DCommon.hpp */,
 				F980C47C2C04B3EA00A86B68 /* Vertex2DBufferPointer.hpp */,
-				F980C47D2C04B3EA00A86B68 /* Vertex2DBuilder.cpp */,
 				F980C47E2C04B3EA00A86B68 /* Vertex2DBuilder.hpp */,
 			);
 			path = Renderer2D;
@@ -10227,6 +10241,7 @@
 				F986032B2BCFBB54006A4C0F /* SkPathOpsRect.h in Headers */,
 				F9070B032B9DEB5900383E4D /* levenshtein-sse.hpp in Headers */,
 				F986FA642BCFB53B006A4C0F /* ftobjs.h in Headers */,
+				F96F96122C39836F0033353E /* RectFrameColorType.hpp in Headers */,
 				F9070CFA2B9F175100383E4D /* SIMD.hpp in Headers */,
 				F986023F2BCFBB54006A4C0F /* SkRecord.h in Headers */,
 				F9712A422C2599090049CC26 /* ScopedRenderStates2D.hpp in Headers */,
@@ -11437,6 +11452,7 @@
 				F98603982BCFBB54006A4C0F /* SkRadialGradient.cpp in Sources */,
 				F9070EEE2B9F1C8900383E4D /* platform.c in Sources */,
 				F980C4752C01B4B600A86B68 /* SivRasterizerStateBuilder.cpp in Sources */,
+				F96F96102C3712DC0033353E /* SivGeometry2D_Intersect.cpp in Sources */,
 				F9528A8C2BA0253700222F45 /* SivWindow.cpp in Sources */,
 				F9070DD22B9F175E00383E4D /* SivHash.cpp in Sources */,
 				F98603012BCFBB54006A4C0F /* SkDConicLineIntersection.cpp in Sources */,
