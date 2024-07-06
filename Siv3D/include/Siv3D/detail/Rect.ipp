@@ -458,12 +458,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::movedBy(const value_type _x, const value_type _y) const noexcept
+	constexpr Rect Rect::movedBy(const Concept::Integral auto _x, const Concept::Integral auto _y) const noexcept
 	{
-		return{ pos.movedBy(_x, _y), size };
+		return{ pos.movedBy(Point{ _x, _y }), size };
+	}
+
+	constexpr RectF Rect::movedBy(const Concept::FloatingPoint auto _x, const Concept::FloatingPoint auto _y) const noexcept
+	{
+		return{ pos.movedBy(Vec2{ _x, _y }), size };
 	}
 
 	constexpr Rect Rect::movedBy(const size_type v) const noexcept
+	{
+		return{ pos.movedBy(v), size };
+	}
+
+	constexpr RectF Rect::movedBy(const Vec2 v) const noexcept
 	{
 		return{ pos.movedBy(v), size };
 	}
@@ -1030,7 +1040,7 @@ namespace s3d
 
 	constexpr RoundRect Rect::rounded(const double r) const noexcept
 	{
-		return{ *this, r };
+		return{ *this, Min(r, (size.x * 0.5), (size.y * 0.5)) };
 	}
 
 	////////////////////////////////////////////////////////////////

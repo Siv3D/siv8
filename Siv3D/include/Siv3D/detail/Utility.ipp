@@ -31,6 +31,18 @@ namespace s3d
 		return ((b < a) ? b : a);
 	}
 
+	template <Concept::Scalar Scalar>
+	constexpr auto Min(const Scalar a, const Scalar b, const Scalar c) noexcept
+	{
+		return Min(Min(a, b), c);
+	}
+
+	template <class Type> requires (not Concept::Scalar<Type>)
+		constexpr const Type& Min(const Type& a, const Type& b, const Type& c) noexcept(noexcept(b < a))
+	{
+		return Min(Min(a, b), c);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Max
@@ -47,6 +59,18 @@ namespace s3d
 	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b))
 	{
 		return ((a < b) ? b : a);
+	}
+
+	template <Concept::Scalar Scalar>
+	constexpr auto Max(const Scalar a, const Scalar b, const Scalar c) noexcept
+	{
+		return Max(Max(a, b), c);
+	}
+
+	template <class Type> requires (not Concept::Scalar<Type>)
+	constexpr const Type& Max(const Type& a, const Type& b, const Type& c) noexcept(noexcept(a < b))
+	{
+		return Max(Max(a, b), c);
 	}
 
 	////////////////////////////////////////////////////////////////

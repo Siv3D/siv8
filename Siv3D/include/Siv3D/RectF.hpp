@@ -486,7 +486,184 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RectF(Arg::leftCenter_<position_type> leftCenter, size_type _size) noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ==
+		//
+		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		friend constexpr bool operator ==(const RectF& lhs, const RectF& rhs) noexcept
+		{
+			return ((lhs.pos == rhs.pos)
+				 && (lhs.size == rhs.size));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withX
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF withX(value_type _x) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withY
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF withY(value_type _y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withPos
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF withPos(value_type _x, value_type _y) const noexcept;
+
+		[[nodiscard]]
+		constexpr RectF withPos(position_type _pos) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withW
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF withW(value_type _w) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withH
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF withH(value_type _h) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF withSize(value_type _w, value_type _h) const noexcept;
+
+		[[nodiscard]]
+		constexpr RectF withSize(size_type _size) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withCenter
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF withCenter(value_type _cx, value_type _cy) const noexcept;
+
+		[[nodiscard]]
+		constexpr RectF withCenter(position_type _center) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setPos
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr RectF& setPos(value_type _x, value_type _y) noexcept;
+
+		constexpr RectF& setPos(position_type _pos) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setCenter
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr RectF& setCenter(value_type _x, value_type _y) noexcept;
+
+		constexpr RectF& setCenter(position_type _pos) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr RectF& setSize(value_type _size) noexcept;
+
+		constexpr RectF& setSize(value_type _w, value_type _h) noexcept;
+
+		constexpr RectF& setSize(size_type _size) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	set
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr RectF& set(value_type _x, value_type _y, value_type _w, value_type _h) noexcept;
+
+		constexpr RectF& set(value_type _x, value_type _y, value_type _size) noexcept;
+
+		constexpr RectF& set(value_type _x, value_type _y, size_type _size) noexcept;
+
+		constexpr RectF& set(position_type _pos, value_type _size) noexcept;
+
+		constexpr RectF& set(position_type _pos, value_type _w, value_type _h) noexcept;
+
+		constexpr RectF& set(position_type _pos, size_type _size) noexcept;
+
+		constexpr RectF& set(const RectF& r) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	movedBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 座標を移動した新しい長方形を返します。
+		/// @param _x X 軸方向の移動量
+		/// @param _y Y 軸方向の移動量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF movedBy(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 座標を移動した新しい長方形を返します。
+		/// @param v 移動量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF movedBy(size_type v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	moveBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形を移動させます。
+		/// @param _x X 軸方向の移動量
+		/// @param _y Y 軸方向の移動量
+		/// @return *this
+		constexpr RectF& moveBy(value_type _x, value_type _y) noexcept;
+
+		/// @brief 長方形を移動させます。
+		/// @param v 移動量
+		/// @return *this
+		constexpr RectF& moveBy(size_type v) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stretched
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
 		/// @param xy 左方向・右方向・上方向・下方向のそれぞれの拡大縮小量
@@ -516,7 +693,126 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RectF stretched(value_type top, value_type right, value_type bottom, value_type left) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaledFromCenter
+		//
+		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		constexpr RectF scaledFromCenter(double s) const noexcept;
+
+		[[nodiscard]]
+		constexpr RectF scaledFromCenter(double sx, double sy) const noexcept;
+
+		[[nodiscard]]
+		constexpr RectF scaledFromCenter(Vec2 s) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaledFromTopLeft
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF scaledFromTopLeft(double s) const noexcept;
+
+		[[nodiscard]]
+		constexpr RectF scaledFromTopLeft(double sx, double sy) const noexcept;
+
+		[[nodiscard]]
+		constexpr RectF scaledFromTopLeft(Vec2 s) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaledFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF scaledFrom(Vec2 _pos, double s) const noexcept;
+
+		[[nodiscard]]
+		constexpr RectF scaledFrom(Vec2 _pos, double sx, double sy) const noexcept;
+
+		[[nodiscard]]
+		constexpr RectF scaledFrom(Vec2 _pos, Vec2 s) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator bool
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形が空でないかを返します。
+		/// @remark `hasArea()` と同じです。
+		/// @return 長方形が空でない場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr explicit operator bool() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isEmpty
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形が空であるかを返します。
+		/// @return 空の長方形である場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isEmpty() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	hasArea
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形が大きさを持っているかを返します。
+		/// @return 長方形が大きさを持っている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool hasArea() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	leftX, rightX, topY, bottomY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の左辺の X 座標を返します。
+		/// @return 長方形の左辺の X 座標
+		[[nodiscard]]
+		constexpr value_type leftX() const noexcept;
+
+		/// @brief 長方形の右辺の X 座標を返します。
+		/// @return 長方形の右辺の X 座標
+		[[nodiscard]]
+		constexpr value_type rightX() const noexcept;
+
+		/// @brief 長方形の上辺の Y 座標を返します。
+		/// @return 長方形の上辺の Y 座標
+		[[nodiscard]]
+		constexpr value_type topY() const noexcept;
+
+		/// @brief 長方形の下辺の Y 座標を返します。
+		/// @return 長方形の下辺の Y 座標
+		[[nodiscard]]
+		constexpr value_type bottomY() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	centerX, centerY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の中心の X 座標を返します。
+		/// @return 長方形の中心の X 座標
+		[[nodiscard]]
+		constexpr double centerX() const noexcept;
+
+		/// @brief 長方形の中心の Y 座標を返します。
+		/// @return 長方形の中心の Y 座標
+		[[nodiscard]]
+		constexpr double centerY() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -544,7 +840,343 @@ namespace s3d
 		[[nodiscard]]
 		constexpr position_type bl() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	topCenter, rightCenter, bottomCenter, leftCenter
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の上辺の中心座標を返します。
+		/// @return 長方形の上辺の中心座標
+		[[nodiscard]]
+		constexpr Vec2 topCenter() const noexcept;
+
+		/// @brief 長方形の右辺の中心座標を返します。
+		/// @return 長方形の右辺の中心座標
+		[[nodiscard]]
+		constexpr Vec2 rightCenter() const noexcept;
+
+		/// @brief 長方形の下辺の中心座標を返します。
+		/// @return 長方形の下辺の中心座標
+		[[nodiscard]]
+		constexpr Vec2 bottomCenter() const noexcept;
+
+		/// @brief 長方形の左辺の中心座標を返します。
+		/// @return 長方形の左辺の中心座標
+		[[nodiscard]]
+		constexpr Vec2 leftCenter() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	center
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の中心座標を返します。
+		/// @return 長方形の中心座標
+		[[nodiscard]]
+		constexpr Vec2 center() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getRelativePoint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の左上を (0 ,0), 右下を (1, 1) としたときの (relativeX, relativeY) の座標を返します。
+		/// @param relativeX X 座標の相対的な位置
+		/// @param relativeY Y 座標の相対的な位置
+		/// @return 長方形の左上を (0 ,0), 右下を (1, 1) としたときの (relativeX, relativeY) の座標
+		[[nodiscard]]
+		constexpr Vec2 getRelativePoint(double relativeX, double relativeY) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	top, right, bottom, left
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の上辺を Line として返します。
+		/// @return 長方形の上辺
+		[[nodiscard]]
+		constexpr Line top() const noexcept;
+
+		/// @brief 長方形の右辺を Line として返します。
+		/// @return 長方形の右辺
+		[[nodiscard]]
+		constexpr Line right() const noexcept;
+
+		/// @brief 長方形の下辺を Line として返します。
+		/// @return 長方形の下辺
+		[[nodiscard]]
+		constexpr Line bottom() const noexcept;
+
+		/// @brief 長方形の左辺を Line として返します。
+		/// @return 長方形の左辺
+		[[nodiscard]]
+		constexpr Line left() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	pointAtIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr position_type pointAtIndex(size_t index) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	pointAtLength
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Vec2 pointAtLength(double length) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	interpolatedPointAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Vec2 interpolatedPointAt(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sideAtIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr Line sideAtIndex(size_t index) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sideIndexAtLength
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		size_t sideIndexAtLength(double length) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	triangleAtIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr Triangle triangleAtIndex(size_t index) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	area
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の面積を返します。
+		/// @return 長方形の面積
+		[[nodiscard]]
+		constexpr value_type area() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	perimeter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の周の長さを返します。
+		/// @return 長方形の周の長さ
+		[[nodiscard]]
+		constexpr value_type perimeter() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	horizontalAspectRatio
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr double horizontalAspectRatio() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	copiedToTop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ大きさで、上に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 上に配置された長方形
+		[[nodiscard]]
+		constexpr RectF copiedToTop(double distance) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	copiedToRight
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ大きさで、右に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 右に配置された長方形
+		[[nodiscard]]
+		constexpr RectF copiedToRight(double distance) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	copiedToBottom
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ大きさで、下に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 下に配置された長方形
+		[[nodiscard]]
+		constexpr RectF copiedToBottom(double distance) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	copiedToLeft
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ大きさで、左に配置された長方形を返します。
+		/// @param distance 配置のすき間の大きさ
+		/// @return 左に配置された長方形
+		[[nodiscard]]
+		constexpr RectF copiedToLeft(double distance) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Quad rotated(double angle) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotatedAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Quad rotatedAt(double _x, double _y, double angle) const noexcept;
+
+		[[nodiscard]]
+		Quad rotatedAt(Vec2 _pos, double angle) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated90At
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief _posを中心とし、時計回りに 90° * n 回転した長方形を返します。
+		/// @param _pos 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return _posを中心とし、時計回りに 90° * n 回転した長方形
+		[[nodiscard]]
+		constexpr RectF rotated90At(const position_type& _pos, int32 n = 1) const noexcept;
+
+		/// @brief _posを中心とし、自身を時計回りに 90° * n 回転します。
+		/// @param _pos 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr RectF& rotate90At(const position_type& _pos, int32 n = 1) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	shearedX, shearedY
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr Quad shearedX(double vx) const noexcept;
+
+		[[nodiscard]]
+		constexpr Quad shearedY(double vy) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	skewedX, skewedY
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Quad skewedX(double angle) const noexcept;
+
+		[[nodiscard]]
+		Quad skewedY(double angle) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rounded
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角を丸めた RoundRect を作成して返します。
+		/// @param r 角の半径
+		/// @return 作成した RoundRect
+		[[nodiscard]]
+		constexpr RoundRect rounded(double r) const noexcept;
+
+		//[[nodiscard]]
+		//Polygon rounded(double tl, double tr, double br, double bl) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	asQuad
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形を Quad として返します。
+		/// @return 長方形の Quad
+		[[nodiscard]]
+		constexpr Quad asQuad() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	outline
+		//
+		////////////////////////////////////////////////////////////////
+
+		///// @brief 長方形の輪郭を LineString として返します。
+		///// @param closeRing 頂点配列の終点を始点と重ねるかどうか
+		///// @return 長方形の輪郭の LineString
+		//[[nodiscard]]
+		//LineString outline(CloseRing closeRing = CloseRing::No) const;
+
+		///// @brief 長方形の輪郭の一部を LineString として返します。
+		///// @param distanceFromOrigin 開始地点の距離（長方形の左上の頂点から時計回りでの距離）
+		///// @param length 長さ
+		///// @return 長方形の輪郭の一部の LineString
+		//[[nodiscard]]
+		//LineString outline(double distanceFromOrigin, double length) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	asPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		///// @brief 長方形を Polygon として返します。
+		///// @return 長方形の Polygon
+		//[[nodiscard]]
+		//Polygon asPolygon() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	lerp
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr RectF lerp(const RectF& other, double f) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -558,7 +1190,138 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RectF getOverlap(const RectF& other) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	clamped
+		//
+		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		constexpr RectF clamped(const RectF& area) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	hash
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		uint64 hash() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersects
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool intersects(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		//template <class Shape2DType>
+		//[[nodiscard]]
+		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains
+		//
+		////////////////////////////////////////////////////////////////
+
+		//template <class Shape2DType>
+		//[[nodiscard]]
+		//bool contains(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	leftClicked, leftPressed, leftReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形が現在のフレームで左クリックされ始めたかを返します。
+		/// @return 長方形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
+
+		/// @brief 長方形が左クリックされているかを返します。
+		/// @return 長方形が左クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
+
+		/// @brief 現在のフレームで長方形への左クリックが離されたかを返します。
+		/// @return 現在のフレームで長方形への左クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rightClicked, rightPressed, rightReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形が現在のフレームで右クリックされ始めたかを返します。
+		/// @return 長方形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
+
+		/// @brief 長方形が右クリックされているかを返します。
+		/// @return 長方形が右クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
+
+		/// @brief 現在のフレームで長方形への右クリックが離されたかを返します。
+		/// @return 現在のフレームで長方形への右クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mouseOver
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形上にマウスカーソルがあるかを返します。
+		/// @return 長方形上にマウスカーソルがある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
+
+		//const RectF& paint(Image& dst, const Color& color) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
+
+		//const RectF& overwrite(Image& dst, const Color& color) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		//const RectF& paintFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		//const RectF& overwriteFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -605,9 +1368,96 @@ namespace s3d
 		/// @return 
 		const RectF& draw(Arg::topRight_<ColorF> topRightColor, Arg::bottomLeft_<ColorF> bottomLeftColor) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawFrame
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の枠を描画します。
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @return *this
+		const RectF& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 長方形の枠を描画します。
+		/// @param thickness 枠の太さ
+		/// @param innerColor 内側寄りの枠の色
+		/// @param outerColor 外側寄りの枠の色
+		/// @return *this
+		const RectF& drawFrame(double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		/// @brief 長方形の枠を描画します。
+		/// @param thickness 枠の太さ
+		/// @param topColor 上側の色
+		/// @param bottomColor 下側の色
+		/// @return *this
+		const RectF& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 長方形の枠を描画します。
+		/// @param thickness 枠の太さ
+		/// @param leftColor 左側の色
+		/// @param rightColor 右側の色
+		/// @return *this
+		const RectF& drawFrame(double thickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 長方形の枠を描画します。
+		/// @param innerThickness 内側寄りの枠の太さ
+		/// @param outerThickness 外側寄りの枠の太さ
+		/// @param color 色
+		/// @return *this
+		const RectF& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+
+		/// @brief 長方形の枠を描画します。
+		/// @param innerThickness 内側寄りの枠の太さ
+		/// @param outerThickness 外側寄りの枠の太さ
+		/// @param innerColor 内側寄りの枠の色
+		/// @param outerColor 外側寄りの枠の色
+		/// @return *this
+		const RectF& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 長方形の枠を描画します。
+		/// @param innerThickness 内側寄りの枠の太さ
+		/// @param outerThickness 外側寄りの枠の太さ
+		/// @param topColor 上側の色
+		/// @param bottomColor 下側の色
+		/// @return *this
+		const RectF& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 長方形の枠を描画します。
+		/// @param innerThickness 内側寄りの枠の太さ
+		/// @param outerThickness 外側寄りの枠の太さ
+		/// @param leftColor 左側の色
+		/// @param rightColor 右側の色
+		/// @return *this
+		const RectF& drawFrame(double innerThickness, double outerThickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawShadow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の影を描画します。
+		/// @param offset 影の位置のオフセット（ピクセル）
+		/// @param blur ぼかしの大きさ（ピクセル）
+		/// @param spread 影の膨張（ピクセル）
+		/// @param color 影の色
+		/// @param fill 影の内部を塗りつぶすか
+		/// @return *this
+		const RectF& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ()
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//TexturedQuad operator ()(const Texture& texture) const;
+
+		//[[nodiscard]]
+		//TexturedQuad operator ()(const TextureRegion& textureRegion) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -633,7 +1483,38 @@ namespace s3d
 		[[nodiscard]]
 		static constexpr RectF FromPoints(position_type a, position_type b) noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator <<
+		//
+		////////////////////////////////////////////////////////////////
 
+		template <class CharType>
+		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const RectF& value)
+		{
+			return output << CharType('(')
+				<< value.x << CharType(',') << CharType(' ')
+				<< value.y << CharType(',') << CharType(' ')
+				<< value.w << CharType(',') << CharType(' ')
+				<< value.h << CharType(')');
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class CharType>
+		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, RectF& value)
+		{
+			CharType unused;
+			return input >> unused
+				>> value.x >> unused
+				>> value.y >> unused
+				>> value.w >> unused
+				>> value.h >> unused;
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -642,6 +1523,17 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		friend void Formatter(FormatData& formatData, const RectF& value);
+
+	private:
+
+		[[noreturn]]
+		static void ThrowPointAtIndexOutOfRange();
+
+		[[noreturn]]
+		static void ThrowSideAtIndexOutOfRange();
+
+		[[noreturn]]
+		static void ThrowTriangleAtIndexOutOfRange();
 	};
 }
 
@@ -672,4 +1564,20 @@ struct fmt::formatter<s3d::RectF, s3d::char32>
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
 	s3d::BufferContext::iterator format(const s3d::RectF& value, s3d::BufferContext& ctx);
+};
+
+////////////////////////////////////////////////////////////////
+//
+//	std::hash
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct std::hash<s3d::RectF>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::RectF& value) const noexcept
+	{
+		return value.hash();
+	}
 };

@@ -48,6 +48,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 2 つの値のうち小さい方の値を返します。 | Returns the lesser of the two.
+	/// @tparam Scalar 比較する値の型 | The type of the values to compare
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち小さい方の値。等しい場合は a | The lesser of a and b. If they are equivalent, returns a
@@ -56,12 +57,33 @@ namespace s3d
 	constexpr auto Min(Scalar a, Scalar b) noexcept;
 
 	/// @brief 2 つの値のうち小さい方の値を返します。 | Returns the lesser of the two.
+	/// @tparam Type 比較する値の型 | The type of the values to compare
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち小さい方の値。等しい場合は a | The lesser of a and b. If they are equivalent, returns a
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
 	constexpr const Type& Min(const Type& a, const Type& b) noexcept(noexcept(b < a));
+
+	/// @brief 3 つの値のうち最小の値を返します。 | Returns the smallest of the three.
+	/// @tparam Scalar 比較する値の型 | The type of the values to compare
+	/// @param a 比較する値 | A value to compare
+	/// @param b 比較する値 | Another value to compare
+	/// @param c 比較する値 | Another value to compare
+	/// @return 3 つの値のうち最小の値 | The smallest of the three
+	template <Concept::Scalar Scalar>
+	[[nodiscard]]
+	constexpr auto Min(Scalar a, Scalar b, Scalar c) noexcept;
+
+	/// @brief 3 つの値のうち最小の値を返します。 | Returns the smallest of the three.
+	/// @tparam Type 比較する値の型 | The type of the values to compare
+	/// @param a 比較する値 | A value to compare
+	/// @param b 比較する値 | Another value to compare
+	/// @param c 比較する値 | Another value to compare
+	/// @return 3 つの値のうち最小の値 | The smallest of the three
+	template <class Type> requires (not Concept::Scalar<Type>)
+	[[nodiscard]]
+	constexpr const Type& Min(const Type& a, const Type& b, const Type& c) noexcept(noexcept(b < a));
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -70,6 +92,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 2 つの値のうち大きい方の値を返します。 | Returns the greater of the two.
+	/// @tparam Scalar 比較する値の型 | The type of the values to compare
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち大きい方の値。等しい場合は a | The greater of a and b. If they are equivalent, returns a
@@ -78,12 +101,33 @@ namespace s3d
 	constexpr auto Max(Scalar a, Scalar b) noexcept;
 
 	/// @brief 2 つの値のうち大きい方の値を返します。 | Returns the greater of the two.
+	/// @tparam Type 比較する値の型 | The type of the values to compare
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち大きい方の値。等しい場合は a | The greater of a and b. If they are equivalent, returns a
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
 	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b));
+
+	/// @brief 3 つの値のうち最大の値を返します。 | Returns the greatest of the three.
+	/// @tparam Scalar 比較する値の型 | The type of the values to compare
+	/// @param a 比較する値 | A value to compare
+	/// @param b 比較する値 | Another value to compare
+	/// @param c 比較する値 | Another value to compare
+	/// @return 3 つの値のうち最大の値 | The greatest of the three
+	template <Concept::Scalar Scalar>
+	[[nodiscard]]
+	constexpr auto Max(Scalar a, Scalar b, Scalar c) noexcept;
+
+	/// @brief 3 つの値のうち最大の値を返します。 | Returns the greatest of the three.
+	/// @tparam Type 比較する値の型 | The type of the values to compare
+	/// @param a 比較する値 | A value to compare
+	/// @param b 比較する値 | Another value to compare
+	/// @param c 比較する値 | Another value to compare
+	/// @return 3 つの値のうち最大の値 | The greatest of the three
+	template <class Type> requires (not Concept::Scalar<Type>)
+	[[nodiscard]]
+	constexpr const Type& Max(const Type& a, const Type& b, const Type& c) noexcept(noexcept(a < b));
 
 	////////////////////////////////////////////////////////////////
 	//

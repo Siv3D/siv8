@@ -249,8 +249,252 @@ namespace s3d
 		: pos{ leftCenter->x, (leftCenter->y - _size.y / 2) }
 		, size{ _size.x, _size.y } {}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	withX
+	//
+	////////////////////////////////////////////////////////////////
 
+	constexpr RectF RectF::withX(const value_type _x) const noexcept
+	{
+		return{ _x, pos.y, size };
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	withY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::withY(const value_type _y) const noexcept
+	{
+		return{ pos.x, _y, size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withPos
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::withPos(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ _x, _y, size };
+	}
+
+	constexpr RectF RectF::withPos(const position_type _pos) const noexcept
+	{
+		return{ _pos, size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withW
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::withW(const value_type _w) const noexcept
+	{
+		return{ pos, _w, size.y };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withH
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::withH(const value_type _h) const noexcept
+	{
+		return{ pos, size.x, _h };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::withSize(const value_type _w, const value_type _h) const noexcept
+	{
+		return{ pos, _w, _h };
+	}
+
+	constexpr RectF RectF::withSize(const size_type _size) const noexcept
+	{
+		return{ pos, _size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::withCenter(const value_type _cx, const value_type _cy) const noexcept
+	{
+		return{ (_cx - size.x / 2), (_cy - size.y / 2), size };
+	}
+
+	constexpr RectF RectF::withCenter(const position_type _center) const noexcept
+	{
+		return{ (_center.x - size.x / 2), (_center.y - size.y / 2), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setPos
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF& RectF::setPos(const value_type _x, const value_type _y) noexcept
+	{
+		pos.set(_x, _y);
+		return *this;
+	}
+
+	constexpr RectF& RectF::setPos(const position_type _pos) noexcept
+	{
+		pos = _pos;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF& RectF::setCenter(const value_type _x, const value_type _y) noexcept
+	{
+		pos.set((_x - size.x / 2), (_y - size.y / 2));
+		return *this;
+	}
+
+	constexpr RectF& RectF::setCenter(const position_type _pos) noexcept
+	{
+		pos.set((_pos.x - size.x / 2), (_pos.y - size.y / 2));
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF& RectF::setSize(const value_type _size) noexcept
+	{
+		size.set(_size, _size);
+		return *this;
+	}
+
+	constexpr RectF& RectF::setSize(const value_type _w, const value_type _h) noexcept
+	{
+		size.set(_w, _h);
+		return *this;
+	}
+
+	constexpr RectF& RectF::setSize(const size_type _size) noexcept
+	{
+		size = _size;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	set
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF& RectF::set(const value_type _x, const value_type _y, const value_type _w, const value_type _h) noexcept
+	{
+		pos.set(_x, _y);
+		size.set(_w, _h);
+		return *this;
+	}
+
+	constexpr RectF& RectF::set(const value_type _x, const value_type _y, const value_type _size) noexcept
+	{
+		pos.set(_x, _y);
+		size.set(_size, _size);
+		return *this;
+	}
+
+	constexpr RectF& RectF::set(const value_type _x, const value_type _y, const size_type _size) noexcept
+	{
+		pos.set(_x, _y);
+		size = _size;
+		return *this;
+	}
+
+	constexpr RectF& RectF::set(const position_type _pos, const value_type _size) noexcept
+	{
+		pos = _pos;
+		size.set(_size, _size);
+		return *this;
+	}
+
+	constexpr RectF& RectF::set(const position_type _pos, const value_type _w, const value_type _h) noexcept
+	{
+		pos = _pos;
+		size.set(_w, _h);
+		return *this;
+	}
+
+	constexpr RectF& RectF::set(const position_type _pos, const size_type _size) noexcept
+	{
+		pos = _pos;
+		size = _size;
+		return *this;
+	}
+
+	constexpr RectF& RectF::set(const RectF& r) noexcept
+	{
+		pos = r.pos;
+		size = r.size;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	movedBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::movedBy(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ pos.movedBy(_x, _y), size };
+	}
+
+	constexpr RectF RectF::movedBy(const size_type v) const noexcept
+	{
+		return{ pos.movedBy(v), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	moveBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF& RectF::moveBy(const value_type _x, const value_type _y) noexcept
+	{
+		pos.moveBy(_x, _y);
+		return *this;
+	}
+
+	constexpr RectF& RectF::moveBy(const size_type v) noexcept
+	{
+		pos.moveBy(v);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stretched
+	//
+	////////////////////////////////////////////////////////////////
 
 	constexpr RectF RectF::stretched(const value_type xy) const noexcept
 	{
@@ -272,6 +516,143 @@ namespace s3d
 		return{ (pos.x - left), (pos.y - top), (size.x + left + right), (size.y + top + bottom) };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFromCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::scaledFromCenter(const double s) const noexcept
+	{
+		return{ Arg::center = center(), (size * s) };
+	}
+
+	constexpr RectF RectF::scaledFromCenter(const double sx, const double sy) const noexcept
+	{
+		return{ Arg::center = center(), (size.x * sx), (size.y * sy) };
+	}
+
+	constexpr RectF RectF::scaledFromCenter(const Vec2 s) const noexcept
+	{
+		return{ Arg::center = center(), (size * s) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFromTopLeft
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::scaledFromTopLeft(const double s) const noexcept
+	{
+		return{ pos, (size * s) };
+	}
+
+	constexpr RectF RectF::scaledFromTopLeft(const double sx, const double sy) const noexcept
+	{
+		return{ pos, (size.x * sx), (size.y * sy) };
+	}
+
+	constexpr RectF RectF::scaledFromTopLeft(const Vec2 s) const noexcept
+	{
+		return{ pos, (size * s) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::scaledFrom(const Vec2 _pos, const double s) const noexcept
+	{
+		return{ (_pos.x + (pos.x - _pos.x) * s), (_pos.y + (pos.y - _pos.y) * s), (size * s) };
+	}
+
+	constexpr RectF RectF::scaledFrom(const Vec2 _pos, const double sx, const double sy) const noexcept
+	{
+		return{ (_pos.x + (pos.x - _pos.x) * sx), (_pos.y + (pos.y - _pos.y) * sy), (size.x * sx), (size.y * sy) };
+	}
+
+	constexpr RectF RectF::scaledFrom(const Vec2 _pos, const Vec2 s) const noexcept
+	{
+		return{ (_pos.x + (pos.x - _pos.x) * s.x), (_pos.y + (pos.y - _pos.y) * s.y), (size * s) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator bool
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF::operator bool() const noexcept
+	{
+		return hasArea();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isEmpty
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool RectF::isEmpty() const noexcept
+	{
+		return ((size.x == 0) || (size.y == 0));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasArea
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool RectF::hasArea() const noexcept
+	{
+		return ((size.x != 0) && (size.y != 0));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	leftX, rightX, topY, bottomY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF::value_type RectF::leftX() const noexcept
+	{
+		return pos.x;
+	}
+
+	constexpr RectF::value_type RectF::rightX() const noexcept
+	{
+		return (pos.x + size.x);
+	}
+
+	constexpr RectF::value_type RectF::topY() const noexcept
+	{
+		return pos.y;
+	}
+
+	constexpr RectF::value_type RectF::bottomY() const noexcept
+	{
+		return (pos.y + size.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	centerX, centerY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr double RectF::centerX() const noexcept
+	{
+		return (pos.x + size.x * 0.5);
+	}
+
+	constexpr double RectF::centerY() const noexcept
+	{
+		return (pos.y + size.y * 0.5);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -299,7 +680,343 @@ namespace s3d
 		return{ pos.x, (pos.y + size.y) };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	topCenter, rightCenter, bottomCenter, leftCenter
+	//
+	////////////////////////////////////////////////////////////////
 
+	constexpr Vec2 RectF::topCenter() const noexcept
+	{
+		return{ (pos.x + size.x * 0.5), pos.y };
+	}
+
+	constexpr Vec2 RectF::rightCenter() const noexcept
+	{
+		return{ (pos.x + size.x), (pos.y + size.y * 0.5) };
+	}
+
+	constexpr Vec2 RectF::bottomCenter() const noexcept
+	{
+		return{ (pos.x + size.x * 0.5), (pos.y + size.y) };
+	}
+
+	constexpr Vec2 RectF::leftCenter() const noexcept
+	{
+		return{ pos.x, (pos.y + size.y * 0.5) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	center
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Vec2 RectF::center() const noexcept
+	{
+		return{ (pos.x + size.x * 0.5), (pos.y + size.y * 0.5) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getRelativePoint
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Vec2 RectF::getRelativePoint(const double relativeX, const double relativeY) const noexcept
+	{
+		return{ (pos.x + size.x * relativeX), (pos.y + size.y * relativeY) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	top, right, bottom, left
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line RectF::top() const noexcept
+	{
+		return{ tl(), tr() };
+	}
+
+	constexpr Line RectF::right() const noexcept
+	{
+		return{ tr(), br() };
+	}
+
+	constexpr Line RectF::bottom() const noexcept
+	{
+		return{ br(), bl() };
+	}
+
+	constexpr Line RectF::left() const noexcept
+	{
+		return{ bl(), tl() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pointAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF::position_type RectF::pointAtIndex(const size_t index) const
+	{
+		if (index == 0)
+		{
+			return tl();
+		}
+		else if (index == 1)
+		{
+			return tr();
+		}
+		else if (index == 2)
+		{
+			return br();
+		}
+		else if (index == 3)
+		{
+			return bl();
+		}
+		else
+		{
+			ThrowPointAtIndexOutOfRange();
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sideAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line RectF::sideAtIndex(const size_t index) const
+	{
+		if (index == 0)
+		{
+			return top();
+		}
+		else if (index == 1)
+		{
+			return right();
+		}
+		else if (index == 2)
+		{
+			return bottom();
+		}
+		else if (index == 3)
+		{
+			return left();
+		}
+		else
+		{
+			ThrowSideAtIndexOutOfRange();
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	triangleAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle RectF::triangleAtIndex(const size_t index) const
+	{
+		if (index == 0)
+		{
+			return{ pos, tr(), bl() };
+		}
+		else if (index == 1)
+		{
+			return{ bl(), tr(), br() };
+		}
+		else
+		{
+			ThrowTriangleAtIndexOutOfRange();
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	area
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF::value_type RectF::area() const noexcept
+	{
+		return (size.x * size.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	perimeter
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF::value_type RectF::perimeter() const noexcept
+	{
+		return ((size.x + size.y) * 2);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	horizontalAspectRatio
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr double RectF::horizontalAspectRatio() const noexcept
+	{
+		if (size.y == 0)
+		{
+			return 0.0;
+		}
+
+		return (size.x / size.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	copiedToTop
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::copiedToTop(const double distance) const noexcept
+	{
+		return{ pos.x, (pos.y - size.y - distance), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	copiedToRight
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::copiedToRight(const double distance) const noexcept
+	{
+		return{ (pos.x + size.x + distance), pos.y, size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	copiedToBottom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::copiedToBottom(const double distance) const noexcept
+	{
+		return{ pos.x, (pos.y + size.y + distance), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	copiedToLeft
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::copiedToLeft(const double distance) const noexcept
+	{
+		return{ (pos.x - size.x - distance), pos.y, size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotated90At
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::rotated90At(const position_type& _pos, const int32 n) const noexcept
+	{
+		switch (n % 4) // 時計回りに何回 90° 回転するか
+		{
+		case 1:
+		case -3:
+			return{ bl().rotate90At(_pos, 1),size.yx() }; // 1 回または -3 回
+		case 2:
+		case -2:
+			return{ br().rotate90At(_pos, 2),size }; // 2 回または -2 回
+		case 3:
+		case -1:
+			return{ tr().rotate90At(_pos, 3),size.yx() }; // 3 回または -1 回
+		default:
+			return *this; // 0 回
+		}
+	}
+
+	constexpr RectF& RectF::rotate90At(const position_type& _pos, const int32 n) noexcept
+	{
+		return (*this = rotated90At(_pos, n));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shearedX, shearedY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad RectF::shearedX(const double vx) const noexcept
+	{
+		return{ { (pos.x + vx), pos.y },
+				{ (pos.x + size.x + vx), pos.y },
+				{ (pos.x + size.x - vx), (pos.y + size.y) },
+				{ (pos.x - vx), (pos.y + size.y) } };
+	}
+
+	constexpr Quad RectF::shearedY(const double vy) const noexcept
+	{
+		return{ { pos.x, (pos.y - vy) },
+				{ (pos.x + size.x), (pos.y + vy) },
+				{ (pos.x + size.x), (pos.y + size.y + vy) },
+				{ pos.x, (pos.y + size.y - vy) } };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	skewedX, skewedY
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Quad RectF::skewedX(const double angle) const noexcept
+	{
+		return shearedX(std::tan(angle) * size.y / 2);
+	}
+
+	inline Quad RectF::skewedY(const double angle) const noexcept
+	{
+		return shearedY(std::tan(angle) * size.x / 2);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RoundRect RectF::rounded(const double r) const noexcept
+	{
+		return{ *this, Min(r, (size.x * 0.5), (size.y * 0.5)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asQuad
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad RectF::asQuad() const noexcept
+	{
+		return{ tl(), tr(), br(), bl() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	lerp
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::lerp(const RectF& other, const double f) const noexcept
+	{
+		return{ pos.lerp(other.pos, f), size.lerp(other.size, f) };
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -324,6 +1041,44 @@ namespace s3d
 		}
 
 		return Empty();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	clamped
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::clamped(const RectF& area) const noexcept
+	{
+		const value_type x0 = Clamp(pos.x, area.pos.x, area.rightX());
+		const value_type y0 = Clamp(pos.y, area.pos.y, area.bottomY());
+		const value_type x1 = Clamp(rightX(), area.pos.x, area.rightX());
+		const value_type y1 = Clamp(bottomY(), area.pos.y, area.bottomY());
+		return{ x0, y0, (x1 - x0), (y1 - y0) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hash
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline uint64 RectF::hash() const noexcept
+	{
+		return Hash(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool RectF::intersects(const Shape2DType& other) const
+	{
+		return Geometry2D::Intersect(*this, other);
 	}
 
 

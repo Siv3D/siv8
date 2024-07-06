@@ -17,6 +17,7 @@
 
 namespace s3d
 {
+	struct RectF;
 	struct FormatData;
 
 	////////////////////////////////////////////////////////////////
@@ -629,13 +630,26 @@ namespace s3d
 		/// @param _y Y 軸方向の移動量
 		/// @return 新しい長方形
 		[[nodiscard]]
-		constexpr Rect movedBy(value_type _x, value_type _y) const noexcept;
+		constexpr Rect movedBy(Concept::Integral auto _x, Concept::Integral auto _y) const noexcept;
+
+		/// @brief 座標を移動した新しい長方形を返します。
+		/// @param _x X 軸方向の移動量
+		/// @param _y Y 軸方向の移動量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF movedBy(Concept::FloatingPoint auto _x, Concept::FloatingPoint auto _y) const noexcept;
 
 		/// @brief 座標を移動した新しい長方形を返します。
 		/// @param v 移動量
 		/// @return 新しい長方形
 		[[nodiscard]]
 		constexpr Rect movedBy(size_type v) const noexcept;
+
+		/// @brief 座標を移動した新しい長方形を返します。
+		/// @param v 移動量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF movedBy(Vec2 v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

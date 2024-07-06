@@ -23,7 +23,7 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static double WrapLength(double length, double perimeter)
+		static double WrapLength(double length, const double perimeter) noexcept
 		{
 			if (length < 0.0)
 			{
@@ -69,19 +69,19 @@ namespace s3d
 
 		if (length <= size.x)
 		{
-			return{ pos.x + length, pos.y };
+			return{ (pos.x + length), pos.y };
 		}
 		else if (length <= (size.x + size.y))
 		{
-			return{ pos.x + size.x, pos.y + (length - size.x) };
+			return{ (pos.x + size.x), (pos.y + (length - size.x)) };
 		}
 		else if (length <= (size.x * 2 + size.y))
 		{
-			return{ pos.x + size.x - (length - size.x - size.y), pos.y + size.y };
+			return{ (pos.x + size.x - (length - size.x - size.y)), (pos.y + size.y) };
 		}
 		else
 		{
-			return{ pos.x, pos.y + size.y - (length - size.x * 2 - size.y) };
+			return{ pos.x, (pos.y + size.y - (length - size.x * 2 - size.y)) };
 		}
 	}
 
