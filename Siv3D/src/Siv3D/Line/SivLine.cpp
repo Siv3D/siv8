@@ -18,6 +18,15 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static constexpr bool IsZero(const double x) noexcept
+		{
+			return (Abs(x) < 1e-10);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	closestPointTo
@@ -61,6 +70,97 @@ namespace s3d
 		const auto [x1, x2] = MinMax(start.x, end.x);
 		const auto [y1, y2] = MinMax(start.y, end.y);
 		return{ x1, y1, (x2 - x1), (y2 - y1) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<Line::position_type> Line::intersectsAt(const Line& other) const
+	{
+		//
+		// `Line::intersectsAt()` is based on
+		// https://www.codeproject.com/Tips/862988/Find-the-Intersection-Point-of-Two-Line-Segments
+		//
+		// Licenced with the Code Project Open Licence (CPOL)
+		// http://www.codeproject.com/info/cpol10.aspx
+		//
+
+		const Vec2 r = (end - start);
+		const Vec2 s = (other.end - other.start);
+		const Vec2 qp = (other.start - start);
+		const double rxs = (r.x * s.y - r.y * s.x);
+		const double qpxr = (qp.x * r.y - qp.y * r.x);
+		const double qpxs = (qp.x * s.y - qp.y * s.x);
+
+		if (IsZero(rxs))
+		{
+			if (IsZero(qpxr) && IsZero(qpxs))
+			{
+				const double qpr = qp.dot(r);
+				const double q2pr = (other.end - start).dot(r);
+				const double pqs = (start - other.start).dot(s);
+				const double p2qs = (end - other.start).dot(s);
+
+				const double rr = r.dot(r);
+				const bool rrIsZero = IsZero(rr);
+				const double ss = s.dot(s);
+				const bool ssIsZero = IsZero(ss);
+
+				if (rrIsZero && ssIsZero && IsZero(qp.dot(qp)))
+				{
+					// The two lines are both zero length and in the same position
+					return start;
+				}
+
+				if ((not rrIsZero) && ((0 <= qpr && qpr <= rr) || (0 <= q2pr && q2pr <= rr)))
+				{
+					// Two lines are overlapping
+					if (ssIsZero)
+					{
+						return other.start;
+					}
+					else
+					{
+						return Line::position_type{ Math::QNaN, Math::QNaN };
+					}
+				}
+
+				if ((not ssIsZero) && ((0 <= pqs && pqs <= ss) || (0 <= p2qs && p2qs <= ss)))
+				{
+					// Two lines are overlapping
+					if (rrIsZero)
+					{
+						return start;
+					}
+					else
+					{
+						return Line::position_type{ Math::QNaN, Math::QNaN };
+					}
+				}
+
+				// Two lines are collinear but disjoint.
+				return none;
+			}
+
+			// Two lines are parallel and non-intersecting.
+			return none;
+		}
+		else
+		{
+			const double t = (qpxs / rxs);
+			const double u = (qpxr / rxs);
+			if ((0.0 <= t && t <= 1.0) && (0.0 <= u && u <= 1.0))
+			{
+				// An intersection was found
+				return (start + t * r);
+			}
+
+			// Two line segments are not parallel but do not intersect
+			return none;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -13,6 +13,9 @@
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/Cursor.hpp>
+# include <Siv3D/Mouse.hpp>
+# include <Siv3D/Image.hpp>
 
 namespace s3d
 {
@@ -25,6 +28,75 @@ namespace s3d
 	Circle Point::asCircle(const double r) const noexcept
 	{
 		return{ *this, r };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	leftClicked, leftPressed, leftReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Point::leftClicked() const noexcept
+	{
+		return (MouseL.down() && mouseOver());
+	}
+
+	bool Point::leftPressed() const noexcept
+	{
+		return (MouseL.pressed() && mouseOver());
+	}
+
+	bool Point::leftReleased() const noexcept
+	{
+		return (MouseL.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rightClicked, rightPressed, rightReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Point::rightClicked() const noexcept
+	{
+		return (MouseR.down() && mouseOver());
+	}
+
+	bool Point::rightPressed() const noexcept
+	{
+		return (MouseR.pressed() && mouseOver());
+	}
+
+	bool Point::rightReleased() const noexcept
+	{
+		return (MouseR.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mouseOver
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Point::mouseOver() const noexcept
+	{
+		return Geometry2D::Intersect(*this, Cursor::PosF());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Point& Point::overwrite(Image& dst, const Color& color) const noexcept
+	{
+		if (dst.inBounds(*this))
+		{
+			dst[*this] = color;
+		}
+
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

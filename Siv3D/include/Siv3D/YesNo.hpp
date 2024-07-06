@@ -25,6 +25,18 @@ namespace s3d
 		struct Helper
 		{
 			bool yesNo;
+
+			[[nodiscard]]
+			friend constexpr bool operator ==(const Helper lhs, const Helper rhs) noexcept
+			{
+				return (lhs.yesNo == rhs.yesNo);
+			}
+
+			[[nodiscard]]
+			friend constexpr bool operator ==(const YesNo lhs, const Helper rhs) noexcept
+			{
+				return (lhs.getBool() == rhs.yesNo);
+			}
 		};
 
 	public:

@@ -548,6 +548,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	normalized_or
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 正規化した（大きさを 1 にした）ベクトルを返します。ゼロベクトルの場合は valueIfZero を返します。
+		/// @param valueIfZero ゼロベクトルの場合に返すベクトル
+		/// @return 正規化した（大きさを 1 にした）ベクトル、または valueIfZero
+		[[nodiscard]]
+		Vector2D normalized_or(Vector2D valueIfZero) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	normalize
 		//
 		////////////////////////////////////////////////////////////////
@@ -707,9 +719,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//constexpr bool intersects(const Shape2DType& other) const;
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool intersects(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//

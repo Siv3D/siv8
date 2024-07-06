@@ -24,6 +24,8 @@
 namespace s3d
 {
 	struct FormatData;
+	class Image;
+	struct Color;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -645,9 +647,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//constexpr bool intersects(const Shape2DType& other) const;
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool intersects(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -655,14 +657,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//bool leftClicked() const noexcept;
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
 
-		//[[nodiscard]]
-		//bool leftPressed() const noexcept;
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
 
-		//[[nodiscard]]
-		//bool leftReleased() const noexcept;
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -670,14 +672,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//bool rightClicked() const noexcept;
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
 
-		//[[nodiscard]]
-		//bool rightPressed() const noexcept;
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
 
-		//[[nodiscard]]
-		//bool rightReleased() const noexcept;
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -685,12 +687,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//bool mouseOver() const noexcept;
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
+
+		// [Siv3D ToDo]
 		//const Point& paint(Image& dst, const Color& color) const;
 
-		//const Point& overwrite(Image& dst, const Color& color) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Point& overwrite(Image& dst, const Color& color) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

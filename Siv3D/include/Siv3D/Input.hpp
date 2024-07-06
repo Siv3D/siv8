@@ -11,7 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
-# include "InputDevice.hpp"
+# include "InputDeviceType.hpp"
 # include "Duration.hpp"
 # include "String.hpp"
 
@@ -42,18 +42,18 @@ namespace s3d
 		Input() = default;
 
 		[[nodiscard]]
-		constexpr Input(InputDevice device, uint8 code, uint8 playerIndex = 0) noexcept;
+		constexpr Input(InputDeviceType device, uint8 code, uint8 playerIndex = 0) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	device
+		//	deviceType
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief デバイスの種類を返します。
 		/// @return デバイスの種類
 		[[nodiscard]]
-		constexpr InputDevice device() const noexcept;
+		constexpr InputDeviceType deviceType() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -234,7 +234,7 @@ namespace s3d
 
 	private:
 
-		InputDevice m_device = InputDevice::Unknown;
+		InputDeviceType m_device = InputDeviceType::Unknown;
 
 		uint8 m_code = 0;
 

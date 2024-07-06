@@ -92,6 +92,17 @@ namespace s3d
 		[[nodiscard]]
 		HSV(const ColorF& color) noexcept;
 
+		/// @brief HSV 表色系の色を作成します。
+		/// @param hsv 色相・彩度・明度
+		/// @param _a アルファ値
+		[[nodiscard]]
+		constexpr HSV(const Vec3& hsv, double _a) noexcept;
+
+		/// @brief HSV 表色系の色を作成します。
+		/// @param hsva 色相・彩度・明度・アルファ値
+		[[nodiscard]]
+		constexpr HSV(const Vec4& hsva) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	elem
@@ -349,6 +360,17 @@ namespace s3d
 		/// @return Vec3{ h, s, v }
 		[[nodiscard]]
 		constexpr Vec3 hsv() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sva
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Vec3{ s, v, a } を返します。
+		/// @return Vec3{ s, v, a }
+		[[nodiscard]]
+		constexpr Vec3 sva() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

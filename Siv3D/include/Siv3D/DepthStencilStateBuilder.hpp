@@ -36,7 +36,7 @@ namespace s3d
 		explicit constexpr DepthStencilStateBuilder(
 			bool _depthTestEnabled = false,
 			bool _depthWriteEnabled = false,
-			CompareFunction _depthCompareFunction = CompareFunction::Always
+			CompareFunction _depthCompareFunction = CompareFunction::GreaterEqual
 		) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ namespace s3d
 
 		bool m_depthWriteEnabled : 1 = false;
 
-		CompareFunction m_depthCompareFunction : 4 = CompareFunction::Always;
+		CompareFunction m_depthCompareFunction : 4 = CompareFunction::GreaterEqual;
 	};
 }
 

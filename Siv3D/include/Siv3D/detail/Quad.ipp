@@ -13,8 +13,41 @@
 
 namespace s3d
 {
+	constexpr Quad Quad::movedBy(const value_type x, const value_type y) const noexcept
+	{
+		return{ p0.movedBy(x, y), p1.movedBy(x, y), p2.movedBy(x, y), p3.movedBy(x, y) };
+	}
 
-	constexpr Triangle Quad::triangle(const size_t index) const
+	constexpr Quad Quad::movedBy(const position_type v) const noexcept
+	{
+		return movedBy(v.x, v.y);
+	}
+
+	constexpr Quad& Quad::moveBy(const value_type x, const value_type y) noexcept
+	{
+		p0.moveBy(x, y);
+		p1.moveBy(x, y);
+		p2.moveBy(x, y);
+		p3.moveBy(x, y);
+		return *this;
+	}
+
+	constexpr Quad& Quad::moveBy(const position_type v) noexcept
+	{
+		return moveBy(v.x, v.y);
+	}
+
+	inline Quad::position_type& Quad::p(const size_t index) noexcept
+	{
+		return (&p0)[index];
+	}
+
+	inline const Quad::position_type& Quad::p(const size_t index) const noexcept
+	{
+		return (&p0)[index];
+	}
+
+	constexpr Triangle Quad::triangleAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{
@@ -26,7 +59,7 @@ namespace s3d
 		}
 		else
 		{
-			throw std::out_of_range{ "Quad::triangle() index out of range" };
+			ThrowTriangleAtIndexOutOfRange();
 		}
 	}
 }

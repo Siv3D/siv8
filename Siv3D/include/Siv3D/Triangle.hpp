@@ -91,7 +91,11 @@ namespace s3d
 		constexpr Triangle(const position_type& _p0, const position_type& _p1, const position_type& _p2) noexcept;
 
 
+		//[[nodiscard]]
+		//position_type& p(size_t index) noexcept;
 
+		//[[nodiscard]]
+		//const position_type& p(size_t index) const noexcept;
 
 
 		////////////////////////////////////////////////////////////////
@@ -125,6 +129,5 @@ namespace s3d
 		const Triangle& draw(const ColorF& color = Palette::White) const;
 
 		const Triangle& draw(const ColorF& color0, const ColorF& color1, const ColorF& color2) const;
-
 	};
 }

@@ -175,6 +175,14 @@ namespace s3d
 		[[nodiscard]]
 		ColorF MoveTowards(const ColorF& current, const ColorF& target, double maxSpeed) noexcept;
 
+		/// @brief 目標の色に向かって移動させます。
+		/// @param current 現在の色
+		/// @param target 目標の色
+		/// @param maxSpeed 最大の速さ
+		/// @return 新しい現在の色
+		[[nodiscard]]
+		HSV MoveTowards(const HSV& current, const HSV& target, double maxSpeed) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Damp
@@ -207,6 +215,9 @@ namespace s3d
 
 		[[nodiscard]]
 		ColorF Damp(const ColorF& current, const ColorF& target, double r, double dt);
+
+		[[nodiscard]]
+		HSV Damp(const HSV& current, const HSV& target, double r, double dt);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -312,6 +323,17 @@ namespace s3d
 		/// @return 新しい色
 		[[nodiscard]]
 		ColorF SmoothDamp(const ColorF& current, const ColorF& target, ColorF& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());
+
+		/// @brief 目標の色に向かってスムーズに移動させます。
+		/// @param current 現在の色
+		/// @param target 目標の色
+		/// @param velocity 現在の変化速度
+		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
+		/// @param maxSpeed 最大速度。無制限の場合は unspecified
+		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @return 新しい色
+		[[nodiscard]]
+		HSV SmoothDamp(const HSV& current, const HSV& target, HSV& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());
 	}
 }
 

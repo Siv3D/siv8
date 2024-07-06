@@ -649,9 +649,6 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse">
       <UniqueIdentifier>{785c3016-019a-42fe-924a-5e525f1dcc54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\InputDevice">
-      <UniqueIdentifier>{58d18840-00bf-45f3-9bc7-75e55189a3fa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D\Input">
       <UniqueIdentifier>{b6f3b005-c892-4b2d-8266-3eea65257820}</UniqueIdentifier>
     </Filter>
@@ -897,6 +894,36 @@
     </Filter>
     <Filter Include="src\Siv3D\ColorWriteMask">
       <UniqueIdentifier>{47ccf813-b252-4dc9-a039-5b47a4f4b324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Camera2DControl">
+      <UniqueIdentifier>{2e25b673-134f-4b57-a088-234cd5a4f8a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Camera2DControlBuilder">
+      <UniqueIdentifier>{13d86528-d228-498c-a1c0-468cabe8688b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Camera2D">
+      <UniqueIdentifier>{1fe8a1fc-b83f-48d8-9e50-f9def029ec7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Quad">
+      <UniqueIdentifier>{446e5246-7761-4ce8-8d7a-fc2b22dd42fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\nanoflann">
+      <UniqueIdentifier>{fdb12c05-9b85-4a16-82f4-f08d4e071f93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Morton">
+      <UniqueIdentifier>{f323d685-a840-4142-93eb-ebe213fb2f59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\libmorton">
+      <UniqueIdentifier>{a0ce2379-bd43-4456-b23d-e945030e712c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\InputDeviceType">
+      <UniqueIdentifier>{3024c161-ed6b-45bb-b451-15d7108aeae8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Siv3D\Geometry2D">
+      <UniqueIdentifier>{f0593e98-615a-46d8-9d37-1ffe10ad5f57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Geometry2D">
+      <UniqueIdentifier>{f12a3c50-9f08-461c-bde9-cbec893a74f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -3009,7 +3036,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Input.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\InputDevice.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\InputDeviceType.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Input.ipp">
@@ -3515,6 +3542,75 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Zip.ipp">
       <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BasicCamera2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Camera2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BasicCamera2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Camera2DControl.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Camera2DControlBuilder.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FloatQuad.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatQuad.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\nanoflann\nanoflann.hpp">
+      <Filter>include\ThirdParty\nanoflann</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\KDTree.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\KDTree.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Morton.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton_common.h">
+      <Filter>src\ThirdParty\libmorton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton2D.h">
+      <Filter>src\ThirdParty\libmorton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton2D_LUTs.h">
+      <Filter>src\ThirdParty\libmorton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton3D.h">
+      <Filter>src\ThirdParty\libmorton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton3D_LUTs.h">
+      <Filter>src\ThirdParty\libmorton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton.h">
+      <Filter>src\ThirdParty\libmorton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton_AVX512BITALG.h">
+      <Filter>src\ThirdParty\libmorton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton_BMI.h">
+      <Filter>src\ThirdParty\libmorton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.ipp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\RectFrameColorType.hpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -5546,9 +5642,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\InputDevice\SivInputDevice.cpp">
-      <Filter>src\Siv3D\InputDevice</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Input\SivInput.cpp">
       <Filter>src\Siv3D\Input</Filter>
     </ClCompile>
@@ -5818,6 +5911,27 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ColorWriteMask\SivColorWriteMask.cpp">
       <Filter>src\Siv3D\ColorWriteMask</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Camera2DControl\SivCamera2DControl.cpp">
+      <Filter>src\Siv3D\Camera2DControl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Camera2DControlBuilder\SivCamera2DControlBuilder.cpp">
+      <Filter>src\Siv3D\Camera2DControlBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Camera2D\SivCamera2D.cpp">
+      <Filter>src\Siv3D\Camera2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Quad\SivQuad.cpp">
+      <Filter>src\Siv3D\Quad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Morton\SivMorton.cpp">
+      <Filter>src\Siv3D\Morton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\InputDeviceType\SivInputDeviceType.cpp">
+      <Filter>src\Siv3D\InputDeviceType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersect.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

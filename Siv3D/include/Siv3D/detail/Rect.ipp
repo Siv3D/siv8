@@ -458,12 +458,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::movedBy(const value_type _x, const value_type _y) const noexcept
+	constexpr Rect Rect::movedBy(const Concept::Integral auto _x, const Concept::Integral auto _y) const noexcept
 	{
-		return{ pos.movedBy(_x, _y), size };
+		return{ pos.movedBy(Point{ _x, _y }), size };
+	}
+
+	constexpr RectF Rect::movedBy(const Concept::FloatingPoint auto _x, const Concept::FloatingPoint auto _y) const noexcept
+	{
+		return{ pos.movedBy(Vec2{ _x, _y }), size };
 	}
 
 	constexpr Rect Rect::movedBy(const size_type v) const noexcept
+	{
+		return{ pos.movedBy(v), size };
+	}
+
+	constexpr RectF Rect::movedBy(const Vec2 v) const noexcept
 	{
 		return{ pos.movedBy(v), size };
 	}
@@ -492,14 +502,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::stretched(const value_type xy) const noexcept
+	constexpr Rect Rect::stretched(const Concept::Integral auto xy) const noexcept
 	{
-		return stretched({ xy, xy });
+		return stretched(size_type{ xy, xy });
 	}
 
-	constexpr Rect Rect::stretched(const value_type _x, const value_type _y) const noexcept
+	constexpr Rect Rect::stretched(const Concept::Integral auto _x, const Concept::Integral auto _y) const noexcept
 	{
-		return stretched({ _x, _y });
+		return stretched(size_type{ _x, _y });
 	}
 
 	constexpr Rect Rect::stretched(const size_type xy) const noexcept
@@ -507,7 +517,27 @@ namespace s3d
 		return{ (pos - xy), (size + xy * 2) };
 	}
 
-	constexpr Rect Rect::stretched(const value_type top, const value_type right, const value_type bottom, const value_type left) const noexcept
+	constexpr Rect Rect::stretched(const Concept::Integral auto top, const Concept::Integral auto right, const Concept::Integral auto bottom, const Concept::Integral auto left) const noexcept
+	{
+		return{ (pos.x - left), (pos.y - top), (size.x + left + right), (size.y + top + bottom) };
+	}
+
+	constexpr RectF Rect::stretched(const Concept::FloatingPoint auto xy) const noexcept
+	{
+		return stretched(SizeF{ xy, xy });
+	}
+
+	constexpr RectF Rect::stretched(const Concept::FloatingPoint auto _x, const Concept::FloatingPoint auto _y) const noexcept
+	{
+		return stretched(SizeF{ _x, _y });
+	}
+
+	constexpr RectF Rect::stretched(const SizeF xy) const noexcept
+	{
+		return{ (pos - xy), (size + xy * 2) };
+	}
+
+	constexpr RectF Rect::stretched(const Concept::FloatingPoint auto top, const Concept::FloatingPoint auto right, const Concept::FloatingPoint auto bottom, const Concept::FloatingPoint auto left) const noexcept
 	{
 		return{ (pos.x - left), (pos.y - top), (size.x + left + right), (size.y + top + bottom) };
 	}
@@ -656,22 +686,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect::size_type Rect::tl() const noexcept
+	constexpr Rect::position_type Rect::tl() const noexcept
 	{
 		return pos;
 	}
 
-	constexpr Rect::size_type Rect::tr() const noexcept
+	constexpr Rect::position_type Rect::tr() const noexcept
 	{
 		return{ (pos.x + size.x), pos.y };
 	}
 
-	constexpr Rect::size_type Rect::br() const noexcept
+	constexpr Rect::position_type Rect::br() const noexcept
 	{
 		return{ (pos.x + size.x), (pos.y + size.y) };
 	}
 
-	constexpr Rect::size_type Rect::bl() const noexcept
+	constexpr Rect::position_type Rect::bl() const noexcept
 	{
 		return{ pos.x, (pos.y + size.y) };
 	}
@@ -873,66 +903,201 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	copyToTop
+	//	copiedToTop
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::copyToTop(const value_type distance) const noexcept
+	constexpr Rect Rect::copiedToTop(const value_type distance) const noexcept
 	{
 		return{ pos.x, (pos.y - size.y - distance), size };
 	}
 
-	constexpr RectF Rect::copyToTop(const Concept::FloatingPoint auto distance) const noexcept
+	constexpr RectF Rect::copiedToTop(const Concept::FloatingPoint auto distance) const noexcept
 	{
 		return{ pos.x, (pos.y - size.y - distance), size };
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	copyToRight
+	//	copiedToRight
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::copyToRight(const value_type distance) const noexcept
+	constexpr Rect Rect::copiedToRight(const value_type distance) const noexcept
 	{
 		return{ (pos.x + size.x + distance), pos.y, size };
 	}
 
-	constexpr RectF Rect::copyToRight(const Concept::FloatingPoint auto distance) const noexcept
+	constexpr RectF Rect::copiedToRight(const Concept::FloatingPoint auto distance) const noexcept
 	{
 		return{ (pos.x + size.x + distance), pos.y, size };
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	copyToBottom
+	//	copiedToBottom
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::copyToBottom(const value_type distance) const noexcept
+	constexpr Rect Rect::copiedToBottom(const value_type distance) const noexcept
 	{
 		return{ pos.x, (pos.y + size.y + distance), size };
 	}
 
-	constexpr RectF Rect::copyToBottom(const Concept::FloatingPoint auto distance) const noexcept
+	constexpr RectF Rect::copiedToBottom(const Concept::FloatingPoint auto distance) const noexcept
 	{
 		return{ pos.x, (pos.y + size.y + distance), size };
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	copyToLeft
+	//	copiedToLeft
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect Rect::copyToLeft(const value_type distance) const noexcept
+	constexpr Rect Rect::copiedToLeft(const value_type distance) const noexcept
 	{
 		return{ (pos.x - size.x - distance), pos.y, size };
 	}
 
-	constexpr RectF Rect::copyToLeft(const Concept::FloatingPoint auto distance) const noexcept
+	constexpr RectF Rect::copiedToLeft(const Concept::FloatingPoint auto distance) const noexcept
 	{
 		return{ (pos.x - size.x - distance), pos.y, size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotated90At
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::rotated90At(const position_type& _pos, const int32 n) const noexcept
+	{
+		switch (n % 4) // 時計回りに何回 90° 回転するか
+		{
+		case 1:
+		case -3:
+			return{ bl().rotate90At(_pos, 1),size.yx() }; // 1 回または -3 回
+		case 2:
+		case -2:
+			return{ br().rotate90At(_pos, 2),size }; // 2 回または -2 回
+		case 3:
+		case -1:
+			return{ tr().rotate90At(_pos, 3),size.yx() }; // 3 回または -1 回
+		default:
+			return *this; // 0 回
+		}
+	}
+
+	constexpr Rect& Rect::rotate90At(const position_type& _pos, const int32 n) noexcept
+	{
+		return (*this = rotated90At(_pos, n));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shearedX, shearedY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad Rect::shearedX(const double vx) const noexcept
+	{
+		return{ { (pos.x + vx), pos.y },
+				{ (pos.x + size.x + vx), pos.y },
+				{ (pos.x + size.x - vx), (pos.y + size.y) },
+				{ (pos.x - vx), (pos.y + size.y) } };
+	}
+
+	constexpr Quad Rect::shearedY(const double vy) const noexcept
+	{
+		return{ { pos.x, (pos.y - vy) },
+				{ (pos.x + size.x), (pos.y + vy) },
+				{ (pos.x + size.x), (pos.y + size.y + vy) },
+				{ pos.x, (pos.y + size.y - vy) } };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	skewedX, skewedY
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Quad Rect::skewedX(const double angle) const noexcept
+	{
+		return shearedX(std::tan(angle) * size.y / 2);
+	}
+
+	inline Quad Rect::skewedY(const double angle) const noexcept
+	{
+		return shearedY(std::tan(angle) * size.x / 2);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RoundRect Rect::rounded(const double r) const noexcept
+	{
+		return{ *this, Min(r, (size.x * 0.5), (size.y * 0.5)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asQuad
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad Rect::asQuad() const noexcept
+	{
+		return{ tl(), tr(), br(), bl() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	lerp
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF Rect::lerp(const Rect& other, const double f) const noexcept
+	{
+		return{ pos.lerp(other.pos, f), size.lerp(other.size, f) };
+	}
+
+	constexpr RectF Rect::lerp(const RectF& other, const double f) const noexcept
+	{
+		return{ pos.lerp(other.pos, f), size.lerp(other.size, f) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getOverlap
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::getOverlap(const Rect& other) const noexcept
+	{
+		const auto ox = Max(pos.x, other.pos.x);
+		const auto oy = Max(pos.y, other.pos.y);
+		const auto ow = (Min((pos.x + size.x), (other.pos.x + other.size.x)) - ox);
+
+		if (0 <= ow)
+		{
+			const auto oh = (Min((pos.y + size.y), (other.pos.y + other.size.y)) - oy);
+
+			if (0 <= oh)
+			{
+				return{ ox, oy, ow, oh };
+			}
+		}
+
+		return Empty();
+	}
+
+	constexpr RectF Rect::getOverlap(const RectF& other) const noexcept
+	{
+		return other.getOverlap(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -959,6 +1124,18 @@ namespace s3d
 	inline uint64 Rect::hash() const noexcept
 	{
 		return Hash(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Rect::intersects(const Shape2DType& other) const
+	{
+		return Geometry2D::Intersect(*this, other);
 	}
 
 

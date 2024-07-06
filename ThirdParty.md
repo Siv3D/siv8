@@ -20,12 +20,14 @@ Name | Version
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 8.3.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
+[libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
 [lunasvg](https://github.com/sammycage/lunasvg) | v2.3.9
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
+[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.5.5
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 

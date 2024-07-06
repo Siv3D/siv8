@@ -14,6 +14,7 @@
 # include "PointVector.hpp"
 # include "Circular.hpp"
 # include "ColorHSV.hpp"
+# include "Array.hpp"
 # include "Optional.hpp"
 # include "PredefinedNamedParameter.hpp"
 # include "PredefinedYesNo.hpp"
@@ -456,9 +457,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//constexpr bool intersects(const Shape2DType& other) const;
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool intersects(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -466,15 +467,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の線分 other との交点を返します。
+		/// @param other 別の線分
+		/// @return 交差しない場合は none, 交差する場合はその座標、2 つの線分が重なっている場合 (QNaN, QNaN)
+		[[nodiscard]]
+		Optional<position_type> intersectsAt(const Line& other) const;
+
 		//template <class Shape2DType>
 		//[[nodiscard]]
 		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
-
-		///// @brief 別の線分 other との交点を返します。
-		///// @param other 別の線分
-		///// @return 交差しない場合は none, 交差する場合はその座標、2 つの線分が重なっている場合 (QNaN, QNaN)
-		//[[nodiscard]]
-		//Optional<position_type> intersectsAt(const Line& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -42,7 +42,7 @@ namespace s3d
 
 		if (scaling)
 		{
-			output += U"scaling: {} %\n"_fmt(scaling.value() * 100);
+			output += U"scaling: {} %\n"_fmt(*scaling * 100);
 		}
 		else
 		{
@@ -51,7 +51,7 @@ namespace s3d
 
 		if (refreshRate)
 		{
-			output += U"refreshRate: {} Hz\n"_fmt(refreshRate.value());
+			output += U"refreshRate: {} Hz\n"_fmt(*refreshRate);
 		}
 		else
 		{

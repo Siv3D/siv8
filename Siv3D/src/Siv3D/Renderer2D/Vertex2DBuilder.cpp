@@ -12,12 +12,17 @@
 # include <array>
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/FloatQuad.hpp>
 
 namespace s3d
 {
 	namespace
 	{
 		static constexpr Vertex2D::IndexType RectIndexTable[6] = { 0, 1, 2, 2, 1, 3 };
+
+		static constexpr Vertex2D::IndexType RectFrameIndexTable[24] = { 0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5, 4, 6, 5, 5, 6, 7, 6, 0, 7, 7, 0, 1 };
+
+		static constexpr Vertex2D::IndexType CircleFrameIndexTable[6] = { 0, 2, 1, 1, 2, 3 };
 
 		static const std::array<Float2, 2016> SinCosTable = []()
 		{
@@ -290,6 +295,86 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildRectFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const float thickness, const RectFrameColorType colorType, const Float4& color0, const Float4& color1)
+		{
+			constexpr Vertex2D::IndexType VertexSize	= 8;
+			constexpr Vertex2D::IndexType IndexSize		= 24;
+			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			pVertex[0].pos.set((innerRect.left - thickness), (innerRect.top - thickness));
+			pVertex[1].pos.set(innerRect.left, innerRect.top);
+			pVertex[2].pos.set((innerRect.right + thickness), (innerRect.top - thickness));
+			pVertex[3].pos.set(innerRect.right, innerRect.top);
+			pVertex[4].pos.set((innerRect.right + thickness), (innerRect.bottom + thickness));
+			pVertex[5].pos.set(innerRect.right, innerRect.bottom);
+			pVertex[6].pos.set((innerRect.left - thickness), (innerRect.bottom + thickness));
+			pVertex[7].pos.set(innerRect.left, innerRect.bottom);
+
+			switch (colorType)
+			{
+			case RectFrameColorType::InOut:
+				{
+					for (size_t i = 0; i < 4; ++i)
+					{
+						(pVertex++)->color = color1;
+						(pVertex++)->color = color0;
+					}
+
+					break;
+				}
+			case RectFrameColorType::TopBottom:
+				{
+					const float v1 = (thickness / (innerRect.bottom - innerRect.top + thickness * 2));
+					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
+
+					pVertex[0].color = colors[0];
+					pVertex[1].color = colors[1];
+					pVertex[2].color = colors[0];
+					pVertex[3].color = colors[1];
+					pVertex[4].color = colors[3];
+					pVertex[5].color = colors[2];
+					pVertex[6].color = colors[3];
+					pVertex[7].color = colors[2];
+
+					break;
+				}
+			case RectFrameColorType::LeftRight:
+				{
+					const float v1 = (thickness / (innerRect.right - innerRect.left + thickness * 2));
+					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
+
+					pVertex[0].color = colors[0];
+					pVertex[1].color = colors[1];
+					pVertex[2].color = colors[3];
+					pVertex[3].color = colors[2];
+					pVertex[4].color = colors[3];
+					pVertex[5].color = colors[2];
+					pVertex[6].color = colors[0];
+					pVertex[7].color = colors[1];
+
+					break;
+				}
+			}
+
+			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			{
+				*pIndex++ = (indexOffset + RectFrameIndexTable[i]);
+			}
+
+			return IndexSize;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildCircle
 		//
 		////////////////////////////////////////////////////////////////
@@ -355,6 +440,128 @@ namespace s3d
 				*pIndex++ = indexOffset;
 				*pIndex++ = (indexOffset + FullQuality);
 				*pIndex++ = (indexOffset + 1);
+			}
+
+			return IndexSize;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildCircleFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCircleFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float thickness, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			const float rOuter = (rInner + thickness);
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(rOuter * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType FullQuality = (Quality * 4);
+			const Vertex2D::IndexType VertexSize = (FullQuality * 2);
+			const Vertex2D::IndexType IndexSize = (FullQuality * 6);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			Vertex2D* pDst0 = &pVertex[0];
+			Vertex2D* pDst1 = (pDst0 + Quality * 2);
+			Vertex2D* pDst2 = (pDst0 + Quality * 4);
+			Vertex2D* pDst3 = (pDst0 + Quality * 6);
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float ox = (cs->x * rOuter);
+				const float ix = (cs->x * rInner);
+				const float oy = (cs->y * rOuter);
+				const float iy = (cs->y * rInner);
+
+				(pDst0++)->pos.set((centerX + ox), (centerY + oy));
+				(pDst0++)->pos.set((centerX + ix), (centerY + iy));
+
+				(pDst1++)->pos.set((centerX - oy), (centerY + ox));
+				(pDst1++)->pos.set((centerX - iy), (centerY + ix));
+
+				(pDst2++)->pos.set((centerX - ox), (centerY - oy));
+				(pDst2++)->pos.set((centerX - ix), (centerY - iy));
+
+				(pDst3++)->pos.set((centerX + oy), (centerY - ox));
+				(pDst3++)->pos.set((centerX + iy), (centerY - ix));
+			}
+
+			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+			{
+				(pVertex++)->color = outerColor;
+				(pVertex++)->color = innerColor;
+			}
+
+			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+			{
+				for (Vertex2D::IndexType k = 0; k < 6; ++k)
+				{
+					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
+				}
+			}
+
+			return IndexSize;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildQuad
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4 color)
+		{
+			constexpr Vertex2D::IndexType VertexSize = 4;
+			constexpr Vertex2D::IndexType IndexSize = 6;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			pVertex[0].set(quad.p[0], color);
+			pVertex[1].set(quad.p[1], color);
+			pVertex[2].set(quad.p[3], color);
+			pVertex[3].set(quad.p[2], color);
+
+			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			{
+				*pIndex++ = (indexOffset + RectIndexTable[i]);
+			}
+
+			return IndexSize;
+		}
+
+		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4(&colors)[4])
+		{
+			constexpr Vertex2D::IndexType VertexSize = 4;
+			constexpr Vertex2D::IndexType IndexSize = 6;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			pVertex[0].set(quad.p[0], colors[0]);
+			pVertex[1].set(quad.p[1], colors[1]);
+			pVertex[2].set(quad.p[3], colors[3]);
+			pVertex[3].set(quad.p[2], colors[2]);
+
+			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			{
+				*pIndex++ = (indexOffset + RectIndexTable[i]);
 			}
 
 			return IndexSize;

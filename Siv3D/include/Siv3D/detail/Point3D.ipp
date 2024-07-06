@@ -13,6 +13,21 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point3D::Point3D(const value_type _x, const value_type _y, const value_type _z) noexcept
+		: x{ _x }
+		, y{ _y }
+		, z{ _z } {}
+
+	constexpr Point3D::Point3D(const Concept::Integral auto _x, const Concept::Integral auto _y, const Concept::Integral auto _z) noexcept
+		: x{ static_cast<value_type>(_x) }
+		, y{ static_cast<value_type>(_y) }
+		, z{ static_cast<value_type>(_z) } {}
 
 	////////////////////////////////////////////////////////////////
 	//

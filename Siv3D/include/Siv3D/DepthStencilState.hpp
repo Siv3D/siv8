@@ -34,7 +34,7 @@ namespace s3d
 		bool depthWriteEnabled					: 1	= false;
 
 		/// @brief 深度の比較関数
-		CompareFunction depthCompareFunction	: 4 = CompareFunction::Always;
+		CompareFunction depthCompareFunction	: 4 = CompareFunction::GreaterEqual;
 
 		uint8 _unused							: 2 = 0;
 
@@ -54,7 +54,7 @@ namespace s3d
 		explicit constexpr DepthStencilState(
 			bool _depthTestEnabled = false,
 			bool _depthWriteEnabled = false,
-			CompareFunction _depthCompareFunction = CompareFunction::Always
+			CompareFunction _depthCompareFunction = CompareFunction::GreaterEqual
 		) noexcept;
 
 		/// @brief 深度ステンシルステートを作成します。
@@ -68,7 +68,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		static constexpr DepthStencilStateBuilder Default2D{};
+		static constexpr DepthStencilStateBuilder Disabled{ false, false };
+
+		static constexpr DepthStencilStateBuilder DepthTestOnly{ true, false };
+
+		static constexpr DepthStencilStateBuilder DepthWriteOnly{ false, true };
+
+		static constexpr DepthStencilStateBuilder DepthTestWrite{ true, true };
+
+		static constexpr DepthStencilStateBuilder Default2D = Disabled;
+
+		static constexpr DepthStencilStateBuilder Default3D = DepthTestWrite;
 
 		////////////////////////////////////////////////////////////////
 		//

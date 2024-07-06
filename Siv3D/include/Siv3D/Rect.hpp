@@ -17,6 +17,7 @@
 
 namespace s3d
 {
+	struct RectF;
 	struct FormatData;
 
 	////////////////////////////////////////////////////////////////
@@ -629,13 +630,26 @@ namespace s3d
 		/// @param _y Y 軸方向の移動量
 		/// @return 新しい長方形
 		[[nodiscard]]
-		constexpr Rect movedBy(value_type _x, value_type _y) const noexcept;
+		constexpr Rect movedBy(Concept::Integral auto _x, Concept::Integral auto _y) const noexcept;
+
+		/// @brief 座標を移動した新しい長方形を返します。
+		/// @param _x X 軸方向の移動量
+		/// @param _y Y 軸方向の移動量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF movedBy(Concept::FloatingPoint auto _x, Concept::FloatingPoint auto _y) const noexcept;
 
 		/// @brief 座標を移動した新しい長方形を返します。
 		/// @param v 移動量
 		/// @return 新しい長方形
 		[[nodiscard]]
 		constexpr Rect movedBy(size_type v) const noexcept;
+
+		/// @brief 座標を移動した新しい長方形を返します。
+		/// @param v 移動量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF movedBy(Vec2 v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -664,14 +678,14 @@ namespace s3d
 		/// @param xy 左方向・右方向・上方向・下方向のそれぞれの拡大縮小量
 		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
-		constexpr Rect stretched(value_type xy) const noexcept;
+		constexpr Rect stretched(Concept::Integral auto xy) const noexcept;
 
 		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
 		/// @param _x 左方向と右方向のそれぞれの拡大縮小量
 		/// @param _y 上方向と下方向のそれぞれの拡大縮小量
 		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
-		constexpr Rect stretched(value_type _x, value_type _y) const noexcept;
+		constexpr Rect stretched(Concept::Integral auto _x, Concept::Integral auto _y) const noexcept;
 
 		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
 		/// @param xy 左方向と右方向・上方向と下方向のそれぞれの拡大縮小量
@@ -686,7 +700,35 @@ namespace s3d
 		/// @param left 左方向の拡大縮小量
 		/// @return 上下左右方向に拡大縮小した長方形
 		[[nodiscard]]
-		constexpr Rect stretched(value_type top, value_type right, value_type bottom, value_type left) const noexcept;
+		constexpr Rect stretched(Concept::Integral auto top, Concept::Integral auto right, Concept::Integral auto bottom, Concept::Integral auto left) const noexcept;
+
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param xy 左方向・右方向・上方向・下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr RectF stretched(Concept::FloatingPoint auto xy) const noexcept;
+
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param _x 左方向と右方向のそれぞれの拡大縮小量
+		/// @param _y 上方向と下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr RectF stretched(Concept::FloatingPoint auto _x, Concept::FloatingPoint auto _y) const noexcept;
+
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param xy 左方向と右方向・上方向と下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr RectF stretched(SizeF xy) const noexcept;
+
+		/// @brief 上下左右方向に拡大縮小した長方形を返します。
+		/// @param top 上方向の拡大縮小量
+		/// @param right 右方向の拡大縮小量
+		/// @param bottom 下方向の拡大縮小量
+		/// @param left 左方向の拡大縮小量
+		/// @return 上下左右方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr RectF stretched(Concept::FloatingPoint auto top, Concept::FloatingPoint auto right, Concept::FloatingPoint auto bottom, Concept::FloatingPoint auto left) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -818,22 +860,22 @@ namespace s3d
 		/// @brief 長方形の左上の座標を返します。
 		/// @return 長方形の左上の座標
 		[[nodiscard]]
-		constexpr size_type tl() const noexcept;
+		constexpr position_type tl() const noexcept;
 
 		/// @brief 長方形の右上の座標を返します。
 		/// @return 長方形の右上の座標
 		[[nodiscard]]
-		constexpr size_type tr() const noexcept;
+		constexpr position_type tr() const noexcept;
 
 		/// @brief 長方形の右下の座標を返します。
 		/// @return 長方形の右下の座標
 		[[nodiscard]]
-		constexpr size_type br() const noexcept;
+		constexpr position_type br() const noexcept;
 
 		/// @brief 長方形の左下の座標を返します。
 		/// @return 長方形の左下の座標
 		[[nodiscard]]
-		constexpr size_type bl() const noexcept;
+		constexpr position_type bl() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -999,7 +1041,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	copyToTop
+		//	copiedToTop
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1007,17 +1049,17 @@ namespace s3d
 		/// @param distance 配置のすき間の大きさ
 		/// @return 上に配置された長方形
 		[[nodiscard]]
-		constexpr Rect copyToTop(value_type distance = 0) const noexcept;
+		constexpr Rect copiedToTop(value_type distance = 0) const noexcept;
 
 		/// @brief 同じ大きさで、上に配置された長方形を返します。
 		/// @param distance 配置のすき間の大きさ
 		/// @return 上に配置された長方形
 		[[nodiscard]]
-		constexpr RectF copyToTop(Concept::FloatingPoint auto distance) const noexcept;
+		constexpr RectF copiedToTop(Concept::FloatingPoint auto distance) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	copyToRight
+		//	copiedToRight
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1025,17 +1067,17 @@ namespace s3d
 		/// @param distance 配置のすき間の大きさ
 		/// @return 右に配置された長方形
 		[[nodiscard]]
-		constexpr Rect copyToRight(value_type distance = 0) const noexcept;
+		constexpr Rect copiedToRight(value_type distance = 0) const noexcept;
 
 		/// @brief 同じ大きさで、右に配置された長方形を返します。
 		/// @param distance 配置のすき間の大きさ
 		/// @return 右に配置された長方形
 		[[nodiscard]]
-		constexpr RectF copyToRight(Concept::FloatingPoint auto distance) const noexcept;
+		constexpr RectF copiedToRight(Concept::FloatingPoint auto distance) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	copyToBottom
+		//	copiedToBottom
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1043,17 +1085,17 @@ namespace s3d
 		/// @param distance 配置のすき間の大きさ
 		/// @return 下に配置された長方形
 		[[nodiscard]]
-		constexpr Rect copyToBottom(value_type distance = 0) const noexcept;
+		constexpr Rect copiedToBottom(value_type distance = 0) const noexcept;
 
 		/// @brief 同じ大きさで、下に配置された長方形を返します。
 		/// @param distance 配置のすき間の大きさ
 		/// @return 下に配置された長方形
 		[[nodiscard]]
-		constexpr RectF copyToBottom(Concept::FloatingPoint auto distance) const noexcept;
+		constexpr RectF copiedToBottom(Concept::FloatingPoint auto distance) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	copyToLeft
+		//	copiedToLeft
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1061,13 +1103,13 @@ namespace s3d
 		/// @param distance 配置のすき間の大きさ
 		/// @return 左に配置された長方形
 		[[nodiscard]]
-		constexpr Rect copyToLeft(value_type distance = 0) const noexcept;
+		constexpr Rect copiedToLeft(value_type distance = 0) const noexcept;
 
 		/// @brief 同じ大きさで、左に配置された長方形を返します。
 		/// @param distance 配置のすき間の大きさ
 		/// @return 左に配置された長方形
 		[[nodiscard]]
-		constexpr RectF copyToLeft(Concept::FloatingPoint auto distance) const noexcept;
+		constexpr RectF copiedToLeft(Concept::FloatingPoint auto distance) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1075,8 +1117,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Quad rotated(double angle) const noexcept;
+		[[nodiscard]]
+		Quad rotated(double angle) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1084,11 +1126,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Quad rotatedAt(double _x, double _y, double angle) const noexcept;
+		[[nodiscard]]
+		Quad rotatedAt(double _x, double _y, double angle) const noexcept;
 
-		//[[nodiscard]]
-		//Quad rotatedAt(Vec2 _pos, double angle) const noexcept;
+		[[nodiscard]]
+		Quad rotatedAt(Vec2 _pos, double angle) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1096,18 +1138,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief _posを中心とし、時計回りに 90°* n 回転した長方形を返します。
-		///// @param _pos 回転の中心座標
-		///// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
-		///// @return _posを中心とし、時計回りに 90°* n 回転した長方形
-		//[[nodiscard]]
-		//constexpr Rect rotated90At(const position_type& _pos, int32 n = 1) const noexcept;
+		/// @brief _posを中心とし、時計回りに 90° * n 回転した長方形を返します。
+		/// @param _pos 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return _posを中心とし、時計回りに 90° * n 回転した長方形
+		[[nodiscard]]
+		constexpr Rect rotated90At(const position_type& _pos, int32 n = 1) const noexcept;
 
-		///// @brief _posを中心とし、自身を時計回りに 90°* n 回転します。
-		///// @param _pos 回転の中心座標
-		///// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
-		///// @return *this
-		//constexpr Rect& rotate90At(const position_type& _pos, int32 n = 1) noexcept;
+		/// @brief _posを中心とし、自身を時計回りに 90° * n 回転します。
+		/// @param _pos 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr Rect& rotate90At(const position_type& _pos, int32 n = 1) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1115,11 +1157,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//constexpr Quad shearedX(double vx) const noexcept;
+		[[nodiscard]]
+		constexpr Quad shearedX(double vx) const noexcept;
 
-		//[[nodiscard]]
-		//constexpr Quad shearedY(double vy) const noexcept;
+		[[nodiscard]]
+		constexpr Quad shearedY(double vy) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1127,11 +1169,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Quad skewedX(double angle) const noexcept;
+		[[nodiscard]]
+		Quad skewedX(double angle) const noexcept;
 
-		//[[nodiscard]]
-		//Quad skewedY(double angle) const noexcept;
+		[[nodiscard]]
+		Quad skewedY(double angle) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1139,11 +1181,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 角を丸めた RoundRect を作成して返します。
-		///// @param r 角の半径
-		///// @return 作成した RoundRect
-		//[[nodiscard]]
-		//constexpr RoundRect rounded(double r) const noexcept;
+		/// @brief 角を丸めた RoundRect を作成して返します。
+		/// @param r 角の半径
+		/// @return 作成した RoundRect
+		[[nodiscard]]
+		constexpr RoundRect rounded(double r) const noexcept;
 
 		//[[nodiscard]]
 		//Polygon rounded(double tl, double tr, double br, double bl) const noexcept;
@@ -1154,10 +1196,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形を Quad として返します。
-		///// @return 長方形の Quad
-		//[[nodiscard]]
-		//constexpr Quad asQuad() const noexcept;
+		/// @brief 長方形を Quad として返します。
+		/// @return 長方形の Quad
+		[[nodiscard]]
+		constexpr Quad asQuad() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1195,11 +1237,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//constexpr RectF lerp(const Rect& other, double f) const noexcept;
+		[[nodiscard]]
+		constexpr RectF lerp(const Rect& other, double f) const noexcept;
 
-		//[[nodiscard]]
-		//constexpr RectF lerp(const RectF& other, double f) const noexcept;
+		[[nodiscard]]
+		constexpr RectF lerp(const RectF& other, double f) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1207,17 +1249,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
-		///// @param other 別の長方形
-		///// @return 別の長方形と重なる領域。重ならない場合は空の長方形
-		//[[nodiscard]]
-		//constexpr Rect getOverlap(const Rect& other) const noexcept;
+		/// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
+		/// @param other 別の長方形
+		/// @return 別の長方形と重なる領域。重ならない場合は空の長方形
+		[[nodiscard]]
+		constexpr Rect getOverlap(const Rect& other) const noexcept;
 
-		///// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
-		///// @param other 別の長方形
-		///// @return 別の長方形と重なる領域。重ならない場合は空の長方形
-		//[[nodiscard]]
-		//constexpr RectF getOverlap(const RectF& other) const noexcept;
+		/// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
+		/// @param other 別の長方形
+		/// @return 別の長方形と重なる領域。重ならない場合は空の長方形
+		[[nodiscard]]
+		constexpr RectF getOverlap(const RectF& other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1243,9 +1285,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//constexpr bool intersects(const Shape2DType& other) const;
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool intersects(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1273,20 +1315,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形が現在のフレームで左クリックされ始めたかを返します。
-		///// @return 長方形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool leftClicked() const noexcept;
+		/// @brief 長方形が現在のフレームで左クリックされ始めたかを返します。
+		/// @return 長方形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
 
-		///// @brief 長方形が左クリックされているかを返します。
-		///// @return 長方形が左クリックされている場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool leftPressed() const noexcept;
+		/// @brief 長方形が左クリックされているかを返します。
+		/// @return 長方形が左クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
 
-		///// @brief 現在のフレームで長方形への左クリックが離されたかを返します。
-		///// @return 現在のフレームで長方形への左クリックが離された場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool leftReleased() const noexcept;
+		/// @brief 現在のフレームで長方形への左クリックが離されたかを返します。
+		/// @return 現在のフレームで長方形への左クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1294,20 +1336,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形が現在のフレームで右クリックされ始めたかを返します。
-		///// @return 長方形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool rightClicked() const noexcept;
+		/// @brief 長方形が現在のフレームで右クリックされ始めたかを返します。
+		/// @return 長方形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
 
-		///// @brief 長方形が右クリックされているかを返します。
-		///// @return 長方形が右クリックされている場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool rightPressed() const noexcept;
+		/// @brief 長方形が右クリックされているかを返します。
+		/// @return 長方形が右クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
 
-		///// @brief 現在のフレームで長方形への右クリックが離されたかを返します。
-		///// @return 現在のフレームで長方形への右クリックが離された場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool rightReleased() const noexcept;
+		/// @brief 現在のフレームで長方形への右クリックが離されたかを返します。
+		/// @return 現在のフレームで長方形への右クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1315,10 +1357,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形上にマウスカーソルがあるかを返します。
-		///// @return 長方形上にマウスカーソルがある場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool mouseOver() const noexcept;
+		/// @brief 長方形上にマウスカーソルがあるかを返します。
+		/// @return 長方形上にマウスカーソルがある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1424,6 +1466,13 @@ namespace s3d
 		const Rect& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		/// @brief 長方形の枠を描画します。
+		/// @param thickness 枠の太さ
+		/// @param leftColor 左側の色
+		/// @param rightColor 右側の色
+		/// @return *this
+		const Rect& drawFrame(double thickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 長方形の枠を描画します。
 		/// @param innerThickness 内側寄りの枠の太さ
 		/// @param outerThickness 外側寄りの枠の太さ
 		/// @param color 色
@@ -1445,6 +1494,14 @@ namespace s3d
 		/// @param bottomColor 下側の色
 		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 長方形の枠を描画します。
+		/// @param innerThickness 内側寄りの枠の太さ
+		/// @param outerThickness 外側寄りの枠の太さ
+		/// @param leftColor 左側の色
+		/// @param rightColor 右側の色
+		/// @return *this
+		const Rect& drawFrame(double innerThickness, double outerThickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		////////////////////////////////////////////////////////////////
 		//

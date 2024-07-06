@@ -18,12 +18,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	InputDevice
+	//	InputDeviceType
 	//
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 入力デバイスの種類
-	enum class InputDevice : uint8
+	enum class InputDeviceType : uint8
 	{
 		/// @brief 未定義
 		Unknown,
@@ -47,5 +47,5 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, InputDevice value);
+	void Formatter(FormatData& formatData, InputDeviceType value);
 }

@@ -14,10 +14,12 @@
 # include <Siv3D/Optional.hpp>
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
+# include "RectFrameColorType.hpp"
 
 namespace s3d
 {
 	struct FloatRect;
+	struct FloatQuad;
 	struct LineStyle;
 	struct BlendState;
 	struct RasterizerState;
@@ -45,7 +47,15 @@ namespace s3d
 
 		virtual void addRect(const FloatRect& rect, const Float4(&colors)[4]) = 0;
 
+		virtual void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& innerColor, const Float4& outerColor, RectFrameColorType colorType) = 0;
+
 		virtual void addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor) = 0;
+
+		virtual void addCircleFrame(const Float2& center, float rInner, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
+
+		virtual void addQuad(const FloatQuad& quad, const Float4& color) = 0;
+
+		virtual void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) = 0;
 
 		virtual void flush() = 0;
 

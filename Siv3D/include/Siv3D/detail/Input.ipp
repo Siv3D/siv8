@@ -19,18 +19,18 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Input::Input(const InputDevice device, const uint8 code, const uint8 playerIndex) noexcept
+	constexpr Input::Input(const InputDeviceType device, const uint8 code, const uint8 playerIndex) noexcept
 		: m_device{ device }
 		, m_code{ code }
 		, m_playerIndex{ playerIndex } {}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	device
+	//	deviceType
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr InputDevice Input::device() const noexcept
+	constexpr InputDeviceType Input::deviceType() const noexcept
 	{
 		return m_device;
 	}

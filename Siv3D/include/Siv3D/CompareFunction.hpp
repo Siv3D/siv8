@@ -22,7 +22,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief 比較関数
+	/// @brief 比較関数 | Compare function
 	enum class CompareFunction : uint8
 	{
 		/// @brief 常にテストをパスしない

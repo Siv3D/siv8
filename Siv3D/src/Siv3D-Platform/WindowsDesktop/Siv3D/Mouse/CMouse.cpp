@@ -86,7 +86,7 @@ namespace s3d
 
 				if (state.pressed() || state.up())
 				{
-					m_mouseButton.allInputs.emplace_back(InputDevice::Mouse, static_cast<uint8>(i));
+					m_mouseButton.allInputs.emplace_back(InputDeviceType::Mouse, static_cast<uint8>(i));
 				}
 			}
 		}

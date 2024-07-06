@@ -448,6 +448,12 @@ BSD_3_LICENSE
 },
 
 {
+R"-(libmorton)-",
+R"-(Copyright (c) 2016 Jeroen Baert)-",
+MIT_LICENSE
+},
+
+{
 R"-(libpng)-",
 
 R"-(Copyright (c) 1995-2024 The PNG Reference Library Authors.
@@ -618,6 +624,14 @@ BSD_2_LICENSE
 R"-(nanobench)-",
 R"-(Copyright (c) 2019-2023 Martin Leitner-Ankerl)-",
 MIT_LICENSE
+},
+
+{
+R"-(nanoflann)-",
+R"-(Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
+Copyright 2008-2009  David G. Lowe (lowe@cs.ubc.ca). All rights reserved.
+Copyright 2011 Jose L. Blanco (joseluisblancoc@gmail.com). All rights reserved.)-",
+BSD_2_LICENSE
 },
 
 {
