@@ -104,7 +104,7 @@ namespace s3d
 		[[nodiscard]]
 		friend bool operator ==(const AssetHandle& lhs, const AssetHandle& rhs) noexcept
 		{
-			(lhs.m_handle->id() == rhs.m_handle->id());
+			return (lhs.m_handle->id() == rhs.m_handle->id());
 		}
 
 	protected:
