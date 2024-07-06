@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <limits>
 # include <Siv3D/IntToString.hpp>
 # include <Siv3D/IntFormatter.hpp>
 
