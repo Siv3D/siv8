@@ -151,6 +151,32 @@ namespace s3d
 		return *this;
 	}
 
+	const Circle& Circle::draw(const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addCircle(
+			center,
+			Abs(static_cast<float>(r)),
+			topColor->toFloat4(),
+			bottomColor->toFloat4(),
+			ColorFillDirection::TopBottom
+		);
+
+		return *this;
+	}
+
+	const Circle& Circle::draw(const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addCircle(
+			center,
+			Abs(static_cast<float>(r)),
+			leftColor->toFloat4(),
+			rightColor->toFloat4(),
+			ColorFillDirection::LeftRight
+		);
+
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	drawFrame

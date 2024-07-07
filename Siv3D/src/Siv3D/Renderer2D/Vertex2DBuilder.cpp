@@ -379,7 +379,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildCircle(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const Float4& innerColor, const Float4& outerColor, const float scale)
+		Vertex2D::IndexType BuildCircle(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			const Vertex2D::IndexType Quality = CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
 			const Vertex2D::IndexType FullQuality = (Quality * 4);
@@ -396,6 +396,8 @@ namespace s3d
 			const float centerY = center.y;
 			pVertex[0].pos.set(centerX, centerY);
 
+			const Float4 colorDiff = (color1 - color0);
+
 			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
 			
 			Vertex2D* pDst0 = &pVertex[1];
@@ -409,10 +411,37 @@ namespace s3d
 				const float x = (cs->x * r);
 				const float y = (cs->y * r);
 
-				pDst0->pos.set((centerX + x), (centerY + y));
-				pDst1->pos.set((centerX - y), (centerY + x));
-				pDst2->pos.set((centerX - x), (centerY - y));
-				pDst3->pos.set((centerX + y), (centerY - x));
+				if (colorType == ColorFillDirection::InOut)
+				{
+					pDst0->set((centerX + x), (centerY + y), color1);
+					pDst1->set((centerX - y), (centerY + x), color1);
+					pDst2->set((centerX - x), (centerY - y), color1);
+					pDst3->set((centerX + y), (centerY - x), color1);
+				}
+				else if(colorType == ColorFillDirection::TopBottom)
+				{
+					const auto c0 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
+					const auto c1 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
+					const auto c2 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
+					const auto c3 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
+
+					pDst0->set((centerX + x), (centerY + y), c0);
+					pDst1->set((centerX - y), (centerY + x), c1);
+					pDst2->set((centerX - x), (centerY - y), c2);
+					pDst3->set((centerX + y), (centerY - x), c3);
+				}
+				else
+				{
+					const auto c0 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
+					const auto c1 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
+					const auto c2 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
+					const auto c3 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
+
+					pDst0->set((centerX + x), (centerY + y), c0);
+					pDst1->set((centerX - y), (centerY + x), c1);
+					pDst2->set((centerX - x), (centerY - y), c2);
+					pDst3->set((centerX + y), (centerY - x), c3);
+				}
 
 				++pDst0;
 				++pDst1;
@@ -420,13 +449,14 @@ namespace s3d
 				++pDst3;
 			}
 
+			// 中心の色
+			if (colorType == ColorFillDirection::InOut)
 			{
-				(pVertex++)->color = innerColor;
-
-				for (size_t i = 1; i < VertexSize; ++i)
-				{
-					(pVertex++)->color = outerColor;
-				}
+				pVertex->color = color0;
+			}
+			else
+			{
+				pVertex->color = color0.getMidpoint(color1);
 			}
 
 			{

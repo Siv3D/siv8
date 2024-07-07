@@ -643,16 +643,16 @@ namespace s3d
 		const Circle& draw(const ColorF& innerColor, const ColorF& outerColor) const;
 
 		/// @brief 円を描きます。
-		/// @param topColor 円の上部の色
-		/// @param bottomColor 円の下部の色
+		/// @param topColor 円の上側の色
+		/// @param bottomColor 円の下側の色
 		/// @return *this
-		//const Circle& draw(const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const;
+		const Circle& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		/// @brief 円を描きます。
-		/// @param leftColor 円の左部の色
-		/// @param rightColor 円の右部の色
+		/// @param leftColor 円の左側の色
+		/// @param rightColor 円の右側の色
 		/// @return *this
-		//const Circle& draw(const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const;
+		const Circle& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		////////////////////////////////////////////////////////////////
 		//

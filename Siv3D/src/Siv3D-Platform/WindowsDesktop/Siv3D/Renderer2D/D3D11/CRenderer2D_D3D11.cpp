@@ -267,7 +267,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addCircle(const Float2& center, const float r, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, color0, color1, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, colorType, color0, color1, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
