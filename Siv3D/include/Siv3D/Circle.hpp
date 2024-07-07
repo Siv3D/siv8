@@ -847,3 +847,48 @@ namespace s3d
 		friend void Formatter(FormatData& formatData, const Circle& value);
 	};
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::Circle>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::Circle& value, format_context& ctx);
+};
+
+template <>
+struct fmt::formatter<s3d::Circle, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::Circle& value, s3d::BufferContext& ctx);
+};
+
+////////////////////////////////////////////////////////////////
+//
+//	std::hash
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct std::hash<s3d::Circle>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::Circle& value) const noexcept
+	{
+		return value.hash();
+	}
+};

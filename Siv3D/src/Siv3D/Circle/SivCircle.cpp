@@ -210,3 +210,42 @@ namespace s3d
 		formatData.string.push_back(U')');
 	}
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+fmt::format_context::iterator fmt::formatter<s3d::Circle>::format(const s3d::Circle& value, fmt::format_context& ctx)
+{
+	if (tag.empty())
+	{
+		return fmt::format_to(ctx.out(), "({}, {}, {})", value.x, value.y, value.r);
+	}
+	else
+	{
+		const std::string format
+			= ("({:" + tag + "}, {:" + tag + "}, {:" + tag + "})");
+		return fmt::vformat_to(ctx.out(), format, fmt::make_format_args(value.x, value.y, value.r));
+	}
+}
+
+s3d::ParseContext::iterator fmt::formatter<s3d::Circle, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::Circle, s3d::char32>::format(const s3d::Circle& value, s3d::BufferContext& ctx)
+{
+	if (tag.empty())
+	{
+		return format_to(ctx.out(), U"({}, {}, {})", value.x, value.y, value.r);
+	}
+	else
+	{
+		const std::u32string format
+			= (U"({:" + tag + U"}, {:" + tag + U"}), {:" + tag + U"})");
+		return format_to(ctx.out(), format, value.x, value.y, value.r);
+	}
+}
