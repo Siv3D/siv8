@@ -704,7 +704,7 @@
 		F96F960C2C359F070033353E /* Intersect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F96F96092C359F070033353E /* Intersect.hpp */; };
 		F96F960D2C359F070033353E /* Intersect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F96F960A2C359F070033353E /* Intersect.ipp */; };
 		F96F96102C3712DC0033353E /* SivGeometry2D_Intersect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F96F960E2C3712DC0033353E /* SivGeometry2D_Intersect.cpp */; };
-		F96F96122C39836F0033353E /* RectFrameColorType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F96F96112C39836E0033353E /* RectFrameColorType.hpp */; };
+		F96F96142C3AE6BB0033353E /* ColorFillDirection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F96F96132C3AE6BB0033353E /* ColorFillDirection.hpp */; };
 		F9712A2C2C252EEA0049CC26 /* ScopedScissorRect2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */; };
 		F9712A2F2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */; };
 		F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A302C254DBB0049CC26 /* FmtOptional.hpp */; };
@@ -2967,7 +2967,7 @@
 		F96F96092C359F070033353E /* Intersect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Intersect.hpp; sourceTree = "<group>"; };
 		F96F960A2C359F070033353E /* Intersect.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Intersect.ipp; sourceTree = "<group>"; };
 		F96F960E2C3712DC0033353E /* SivGeometry2D_Intersect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_Intersect.cpp; sourceTree = "<group>"; };
-		F96F96112C39836E0033353E /* RectFrameColorType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RectFrameColorType.hpp; sourceTree = "<group>"; };
+		F96F96132C3AE6BB0033353E /* ColorFillDirection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ColorFillDirection.hpp; sourceTree = "<group>"; };
 		F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedScissorRect2D.hpp; sourceTree = "<group>"; };
 		F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedScissorRect2D.cpp; sourceTree = "<group>"; };
 		F9712A302C254DBB0049CC26 /* FmtOptional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FmtOptional.hpp; sourceTree = "<group>"; };
@@ -7549,8 +7549,8 @@
 			children = (
 				F980C47D2C04B3EA00A86B68 /* Vertex2DBuilder.cpp */,
 				F980C4792C04B3EA00A86B68 /* BatchStateTracker.hpp */,
+				F96F96132C3AE6BB0033353E /* ColorFillDirection.hpp */,
 				F980C47A2C04B3EA00A86B68 /* IRenderer2D.hpp */,
-				F96F96112C39836E0033353E /* RectFrameColorType.hpp */,
 				F980C47B2C04B3EA00A86B68 /* Renderer2DCommon.hpp */,
 				F980C47C2C04B3EA00A86B68 /* Vertex2DBufferPointer.hpp */,
 				F980C47E2C04B3EA00A86B68 /* Vertex2DBuilder.hpp */,
@@ -10241,7 +10241,6 @@
 				F986032B2BCFBB54006A4C0F /* SkPathOpsRect.h in Headers */,
 				F9070B032B9DEB5900383E4D /* levenshtein-sse.hpp in Headers */,
 				F986FA642BCFB53B006A4C0F /* ftobjs.h in Headers */,
-				F96F96122C39836F0033353E /* RectFrameColorType.hpp in Headers */,
 				F9070CFA2B9F175100383E4D /* SIMD.hpp in Headers */,
 				F986023F2BCFBB54006A4C0F /* SkRecord.h in Headers */,
 				F9712A422C2599090049CC26 /* ScopedRenderStates2D.hpp in Headers */,
@@ -10790,6 +10789,7 @@
 				F9070CC42B9F175000383E4D /* FormatUtility.hpp in Headers */,
 				F98602A62BCFBB54006A4C0F /* SkYUVPlanesCache.h in Headers */,
 				F98601F22BCFBB53006A4C0F /* SkMatrixPriv.h in Headers */,
+				F96F96142C3AE6BB0033353E /* ColorFillDirection.hpp in Headers */,
 				F986015E2BCFBB53006A4C0F /* SkBitmapProcState.h in Headers */,
 				F98604372BCFBB54006A4C0F /* SkSLStructDefinition.h in Headers */,
 				F986000C2BCFBB53006A4C0F /* SkContourMeasure.h in Headers */,
