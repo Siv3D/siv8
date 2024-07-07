@@ -14,11 +14,109 @@
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/Cursor.hpp>
+# include <Siv3D/Mouse.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle::Circle(const position_type& p0, const position_type& p1, const position_type& p2) noexcept
+	{
+		if (p0 == p1)
+		{
+			*this = Circle{ p0, p2 };
+			return;
+		}
+		else if ((p0 == p2) || (p1 == p2))
+		{
+			*this = Circle{ p0, p1 };
+			return;
+		}
+
+		const double a02 = (2 * (p0.x - p2.x));
+		const double b02 = (2 * (p0.y - p2.y));
+		const double c02 = (p0.y * p0.y - p2.y * p2.y) + (p0.x * p0.x - p2.x * p2.x);
+		const double a12 = (2 * (p1.x - p2.x));
+		const double b12 = (2 * (p1.y - p2.y));
+		const double c12 = (p1.y * p1.y - p2.y * p2.y) + (p1.x * p1.x - p2.x * p2.x);
+		const double cy = (a02 * c12 - a12 * c02) / (a02 * b12 - a12 * b02);
+		const double cx = ((Abs(a02) < Abs(a12)) ? ((c12 - b12 * cy) / a12) : ((c02 - b02 * cy) / a02));
+		*this = Circle{ cx, cy, p0.distanceFrom(cx, cy) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getPointByAngle
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle::position_type Circle::getPointByAngle(const double angle) const noexcept
+	{
+		const double s = std::sin(angle);
+		const double c = std::cos(angle);
+		return{ ((s * r) + x), ((-c * r) + y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	leftClicked, leftPressed, leftReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Circle::leftClicked() const noexcept
+	{
+		return (MouseL.down() && mouseOver());
+	}
+
+	bool Circle::leftPressed() const noexcept
+	{
+		return (MouseL.pressed() && mouseOver());
+	}
+
+	bool Circle::leftReleased() const noexcept
+	{
+		return (MouseL.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rightClicked, rightPressed, rightReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Circle::rightClicked() const noexcept
+	{
+		return (MouseR.down() && mouseOver());
+	}
+
+	bool Circle::rightPressed() const noexcept
+	{
+		return (MouseR.pressed() && mouseOver());
+	}
+
+	bool Circle::rightReleased() const noexcept
+	{
+		return (MouseR.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mouseOver
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Circle::mouseOver() const noexcept
+	{
+		return Geometry2D::Intersect(Cursor::PosF(), *this);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	draw

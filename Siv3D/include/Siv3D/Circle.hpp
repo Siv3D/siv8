@@ -369,8 +369,11 @@ namespace s3d
 		[[nodiscard]]
 		constexpr position_type left() const noexcept;
 
-
-
+		////////////////////////////////////////////////////////////////
+		//
+		//	horizontalDiameter, verticalDiameter
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief X 軸に平行な直径（線分）を返します。
 		/// @return X 軸に平行な直径（線分）
@@ -382,20 +385,44 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Line verticalDiameter() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	area
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 円の面積を返します。
 		/// @return 円の面積
 		[[nodiscard]]
 		constexpr value_type area() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	perimeter
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 円の周の長さを返します。
 		/// @return 円の周の長さ
 		[[nodiscard]]
 		constexpr value_type perimeter() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	boundingRect
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 円に外接する正方形を返します。
 		/// @return 円に外接する正方形
 		[[nodiscard]]
 		constexpr RectF boundingRect() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getPointByAngle
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 円周上の点をラジアン (12 時方向が 0, 3 時方向が π/2, 6 時方向が π) で取得します。
 		/// @param angle 方向（ラジアン）
@@ -403,35 +430,89 @@ namespace s3d
 		[[nodiscard]]
 		position_type getPointByAngle(double angle) const noexcept;
 
-		/// @brief 円から Polygon を作成します。
-		/// @param quality 品質
-		/// @return Polygon
-		[[nodiscard]]
-		Polygon asPolygon(uint32 quality = 24) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	asPolygon
+		//
+		////////////////////////////////////////////////////////////////
 
-		[[nodiscard]]
-		Polygon pieAsPolygon(double startAngle, double angle, uint32 quality = 24) const;
+		///// @brief 円から Polygon を作成します。
+		///// @param quality 品質
+		///// @return Polygon
+		//[[nodiscard]]
+		//Polygon asPolygon(uint32 quality = 24) const;
 
-		[[nodiscard]]
-		Polygon arcAsPolygon(double startAngle, double angle, double innerThickness, double outerThickness, uint32 quality = 24) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	pieAsPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//Polygon pieAsPolygon(double startAngle, double angle, uint32 quality = 24) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	arcAsPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//Polygon arcAsPolygon(double startAngle, double angle, double innerThickness, double outerThickness, uint32 quality = 24) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	lerp
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		constexpr Circle lerp(const Circle& other, double f) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	hash
+		//
+		////////////////////////////////////////////////////////////////
+
 		[[nodiscard]]
 		uint64 hash() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersects
+		//
+		////////////////////////////////////////////////////////////////
 
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersetsAt
+		//
+		////////////////////////////////////////////////////////////////
+
 		//template <class Shape2DType>
 		//[[nodiscard]]
 		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains
+		//
+		////////////////////////////////////////////////////////////////
+
 		//template <class Shape2DType>
 		//[[nodiscard]]
 		//bool contains(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	leftClicked, leftPressed, leftReleased
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 円が現在のフレームで左クリックされ始めたかを返します。
 		/// @return 円が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
@@ -448,6 +529,12 @@ namespace s3d
 		[[nodiscard]]
 		bool leftReleased() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	rightClicked, rightPressed, rightReleased
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 円が現在のフレームで右クリックされ始めたかを返します。
 		/// @return 円が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
 		[[nodiscard]]
@@ -463,29 +550,78 @@ namespace s3d
 		[[nodiscard]]
 		bool rightReleased() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	mouseOver
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 円上にマウスカーソルがあるかを返します。
 		/// @return 円上にマウスカーソルがある場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool mouseOver() const noexcept;
 
-
-
-
-
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
 
 		//const Circle& paint(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
+
 		//const Circle& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintFrame
+		//
+		////////////////////////////////////////////////////////////////
 
 		//const Circle& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteFrame
+		//
+		////////////////////////////////////////////////////////////////
+
 		//const Circle& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintPie
+		//
+		////////////////////////////////////////////////////////////////
 
 		//const Circle& paintPie(Image& dst, double startAngle, double angle, const Color& color) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwritePie
+		//
+		////////////////////////////////////////////////////////////////
+
 		//const Circle& overwritePie(Image& dst, double startAngle, double angle, const Color& color) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintArc
+		//
+		////////////////////////////////////////////////////////////////
+
 		//const Circle& paintArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteArc
+		//
+		////////////////////////////////////////////////////////////////
 
 		//const Circle& overwriteArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color) const;
 
@@ -505,6 +641,18 @@ namespace s3d
 		/// @param outerColor 円の外側の色
 		/// @return *this
 		const Circle& draw(const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 円を描きます。
+		/// @param topColor 円の上部の色
+		/// @param bottomColor 円の下部の色
+		/// @return *this
+		//const Circle& draw(const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 円を描きます。
+		/// @param leftColor 円の左部の色
+		/// @param rightColor 円の右部の色
+		/// @return *this
+		//const Circle& draw(const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -540,9 +688,155 @@ namespace s3d
 		/// @return *this
 		const Circle& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawPie
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 扇形を描きます。
+		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 扇形の角度（ラジアン）
+		/// @param color 扇形の色
+		/// @return *this
+		//const Circle& drawPie(double startAngle, double angle, const ColorF& color = Palette::White) const;
 
+		/// @brief 扇形を描きます。
+		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 扇形の角度（ラジアン）
+		/// @param innerColor 扇の中心部分の色
+		/// @param outerColor 扇の外側部分の色
+		/// @return *this
+		//const Circle& drawPie(double startAngle, double angle, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の弧を描きます。
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param color 弧の色
+		/// @return *this
+		//const Circle& drawArc(double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 円の弧を描きます。
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param innerColor 内側部分の弧の色
+		/// @param outerColor 外側部分の弧の色
+		/// @return *this
+		//const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 円の弧を描きます。
+		/// @param style 線のスタイル
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param color 弧の色
+		/// @return *this
+		//const Circle& drawArc(const LineStyle& style, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
+
+		/// @brief 円の弧を描きます。
+		/// @param style 線のスタイル
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param innerColor 内側部分の弧の色
+		/// @param outerColor 外側部分の弧の色
+		/// @return *this
+		//const Circle& drawArc(const LineStyle& style, double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 弓形を描きます。
+		/// @param arcMidpointAngle 弓形の弧の中心を円の中心から見た角度（ラジアン, 0 時の方向から時計回り）
+		/// @param height 弓形の高さ
+		/// @param color 色
+		/// @return *this
+		//const Circle& drawSegment(double arcMidpointAngle, double height, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawSegmentFromAngles
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 弓形を描きます。
+		/// @param startAngle 弓形の弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弓形の弧の角度（ラジアン）
+		/// @param color 色
+		/// @return *this
+		//const Circle& drawSegmentFromAngles(double startAngle, double angle, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawShadow
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円の影を描きます。
+		/// @param offset 影の位置のオフセット
+		/// @param blur ぼかしの大きさ（ピクセル）
+		/// @param spread 影の膨張（ピクセル）
+		/// @param color 影の色
+		/// @return *this
+		//const Circle& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ()
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//TexturedCircle operator ()(const Texture& texture) const;
+
+		//[[nodiscard]]
+		//TexturedCircle operator ()(const TextureRegion& textureRegion) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator <<
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class CharType>
+		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Circle& value)
+		{
+			return output << CharType('(')
+				<< value.x << CharType(',') << CharType(' ')
+				<< value.y << CharType(',') << CharType(' ')
+				<< value.r << CharType(')');
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class CharType>
+		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Circle& value)
+		{
+			CharType unused;
+			return input >> unused
+				>> value.x >> unused
+				>> value.y >> unused
+				>> value.r >> unused;
+		}
 
 		////////////////////////////////////////////////////////////////
 		//

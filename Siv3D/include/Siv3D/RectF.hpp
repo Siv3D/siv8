@@ -1445,7 +1445,7 @@ namespace s3d
 		/// @param color 影の色
 		/// @param fill 影の内部を塗りつぶすか
 		/// @return *this
-		const RectF& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
+		//const RectF& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
 
 		////////////////////////////////////////////////////////////////
 		//
