@@ -3609,7 +3609,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.ipp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\RectFrameColorType.hpp">
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\ColorFillDirection.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>
   </ItemGroup>

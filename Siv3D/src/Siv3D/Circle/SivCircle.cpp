@@ -131,7 +131,8 @@ namespace s3d
 			center,
 			Abs(static_cast<float>(r)),
 			color0,
-			color0
+			color0,
+			ColorFillDirection::InOut
 		);
 
 		return *this;
@@ -143,7 +144,8 @@ namespace s3d
 			center,
 			Abs(static_cast<float>(r)),
 			innerColor.toFloat4(),
-			outerColor.toFloat4()
+			outerColor.toFloat4(),
+			ColorFillDirection::InOut
 		);
 
 		return *this;

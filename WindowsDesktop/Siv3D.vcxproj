@@ -576,7 +576,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\BatchStateTracker.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\IRenderer2D.hpp" />
-    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\RectFrameColorType.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\ColorFillDirection.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DCommon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBufferPointer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder.hpp" />

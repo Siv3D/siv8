@@ -13,7 +13,7 @@
 
 namespace s3d
 {
-	enum class RectFrameColorType
+	enum class ColorFillDirection
 	{
 		/// @brief color0 が内側、color1 が外側
 		InOut,

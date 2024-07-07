@@ -299,7 +299,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const float thickness, const RectFrameColorType colorType, const Float4& color0, const Float4& color1)
+		Vertex2D::IndexType BuildRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1)
 		{
 			constexpr Vertex2D::IndexType VertexSize	= 8;
 			constexpr Vertex2D::IndexType IndexSize		= 24;
@@ -321,7 +321,7 @@ namespace s3d
 
 			switch (colorType)
 			{
-			case RectFrameColorType::InOut:
+			case ColorFillDirection::InOut:
 				{
 					for (size_t i = 0; i < 4; ++i)
 					{
@@ -331,7 +331,7 @@ namespace s3d
 
 					break;
 				}
-			case RectFrameColorType::TopBottom:
+			case ColorFillDirection::TopBottom:
 				{
 					const float v1 = (thickness / (innerRect.bottom - innerRect.top + thickness * 2));
 					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
@@ -347,7 +347,7 @@ namespace s3d
 
 					break;
 				}
-			case RectFrameColorType::LeftRight:
+			case ColorFillDirection::LeftRight:
 				{
 					const float v1 = (thickness / (innerRect.right - innerRect.left + thickness * 2));
 					const Float4 colors[4] = { color0, color0.lerp(color1, v1), color0.lerp(color1, (1.0f - v1)), color1 };
