@@ -159,7 +159,8 @@ namespace s3d
 
 	void SetWorkingDirectory()
 	{
-		if (System::IsRunningInVisualStudio())
+		if (System::IsRunningInVisualStudio()
+			|| ::IsDebuggerPresent())
 		{
 			return;
 		}
