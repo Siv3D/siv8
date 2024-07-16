@@ -621,10 +621,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の座標との線形補間を返します。
+		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @param other 別の座標
+		/// @param f 補間係数
+		/// @return 線形補間された座標
 		template <class Type = double>
 		[[nodiscard]]
 		constexpr Vector2D<Type> lerp(Point other, double f) const noexcept;
 
+		/// @brief 別の座標との線形補間を返します。
+		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @param other 別の座標
+		/// @param f 補間係数
+		/// @return 線形補間された座標
 		template <class Type>
 		[[nodiscard]]
 		constexpr Vector2D<Type> lerp(Vector2D<Type> other, double f) const noexcept;
@@ -647,6 +657,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の図形と交差しているかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差している場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -657,12 +671,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 座標の点が現在のフレームで左クリックされ始めたかを返します。
+		/// @return 座標の点が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool leftClicked() const noexcept;
 
+		/// @brief 座標の点が現在のフレームで左クリックされているかを返します。
+		/// @return 座標の点が現在のフレームで左クリックされている場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool leftPressed() const noexcept;
 
+		/// @brief 現在のフレームで座標の点への左クリックが離されたかを返します。
+		/// @return 現在のフレームで座標の点への左クリックが離された場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool leftReleased() const noexcept;
 
@@ -672,12 +692,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 座標の点が現在のフレームで右クリックされ始めたかを返します。
+		/// @return 座標の点が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool rightClicked() const noexcept;
 
+		/// @brief 座標の点が現在のフレームで右クリックされているかを返します。
+		/// @return 座標の点が現在のフレームで右クリックされている場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool rightPressed() const noexcept;
 
+		/// @brief 現在のフレームで座標の点への右クリックが離されたかを返します。
+		/// @return 現在のフレームで座標の点への右クリックが離された場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool rightReleased() const noexcept;
 
@@ -687,6 +713,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 座標の点の上にマウスカーソルがあるかを返します。
+		/// @return 座標の点の上にマウスカーソルがある場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool mouseOver() const noexcept;
 
@@ -713,6 +741,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
@@ -838,6 +868,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 出力ストリームに Point の内容を出力します。
+		/// @tparam CharType 出力ストリームの文字型
+		/// @param output 出力ストリーム
+		/// @param value Point
+		/// @return 出力ストリーム
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Point& value)
 		{
@@ -852,6 +887,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 入力ストリームから Point の内容を読み込みます。
+		/// @tparam CharType 入力ストリームの文字型
+		/// @param input 入力ストリーム
+		/// @param value Point
+		/// @return 入力ストリーム
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Point& value)
 		{
@@ -867,6 +907,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Point を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value Point
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Point& value);
 	};
 

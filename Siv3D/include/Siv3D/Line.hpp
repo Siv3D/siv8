@@ -52,47 +52,125 @@ namespace s3d
 		[[nodiscard]]
 		Line() = default;
 
+		/// @brief 線分を作成します。
+		/// @param startX 始点の X 座標
+		/// @param startY 始点の Y 座標
+		/// @param endX 終点の X 座標
+		/// @param endY 終点の Y 座標
 		[[nodiscard]]
 		constexpr Line(value_type startX, value_type startY, value_type endX, value_type endY) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param startX 始点の X 座標
+		/// @param startY 始点の Y 座標
+		/// @param endX 終点の X 座標
+		/// @param endY 終点の Y 座標
 		[[nodiscard]]
 		constexpr Line(Concept::Arithmetic auto startX, Concept::Arithmetic auto startY, Concept::Arithmetic auto endX, Concept::Arithmetic auto endY) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param _start 始点の座標
+		/// @param endX 終点の X 座標
+		/// @param endY 終点の Y 座標
 		[[nodiscard]]
 		constexpr Line(position_type _start, value_type endX, value_type endY) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param _start 始点の座標
+		/// @param endX 終点の X 座標
+		/// @param endY 終点の Y 座標
 		[[nodiscard]]
 		constexpr Line(position_type _start, Concept::Arithmetic auto endX, Concept::Arithmetic auto endY) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param startX 始点の X 座標
+		/// @param startY 始点の Y 座標
+		/// @param _end 終点の座標
 		[[nodiscard]]
 		constexpr Line(value_type startX, value_type startY, position_type _end) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param startX 始点の X 座標
+		/// @param startY 始点の Y 座標
+		/// @param _end 終点の座標
 		[[nodiscard]]
 		constexpr Line(Concept::Arithmetic auto startX, Concept::Arithmetic auto startY, position_type _end) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param _start 始点の座標
+		/// @param _end 終点の座標
 		[[nodiscard]]
 		constexpr Line(position_type _start, position_type _end) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param originX 始点の X 座標
+		/// @param originY 始点の Y 座標
+		/// @param vector 始点から終点までの移動量
 		[[nodiscard]]
 		constexpr Line(value_type originX, value_type originY, Arg::direction_<vector_type> vector) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param originX 始点の X 座標
+		/// @param originY 始点の Y 座標
+		/// @param vector 始点から終点までの移動量
 		[[nodiscard]]
 		constexpr Line(Concept::Arithmetic auto originX, Concept::Arithmetic auto originY, Arg::direction_<vector_type> vector) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param origin 始点の座標
+		/// @param vector 始点から終点までの移動量
 		[[nodiscard]]
-		constexpr Line(position_type origin, Arg::direction_<vector_type> direction) noexcept;
+		constexpr Line(position_type origin, Arg::direction_<vector_type> vector) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param originX 始点の X 座標
+		/// @param originY 始点の Y 座標
+		/// @param angle 始点から見た終点の方向（ラジアン）
+		/// @param length 線分の長さ
 		[[nodiscard]]
 		Line(value_type originX, value_type originY, Arg::angle_<value_type> angle, value_type length) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param originX 始点の X 座標
+		/// @param originY 始点の Y 座標
+		/// @param angle 始点から見た終点の方向（ラジアン）
+		/// @param length 線分の長さ
 		[[nodiscard]]
 		Line(value_type originX, value_type originY, Arg::angle_<value_type> angle, Concept::Arithmetic auto length) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param origin 始点の座標
+		/// @param angle 始点から見た終点の方向（ラジアン）
+		/// @param length 線分の長さ
 		[[nodiscard]]
 		Line(position_type origin, Arg::angle_<value_type> angle, value_type length) noexcept;
 
+		/// @brief 線分を作成します。
+		/// @param origin 始点の座標
+		/// @param angle 始点から見た終点の方向（ラジアン）
+		/// @param length 線分の長さ
 		[[nodiscard]]
 		Line(position_type origin, Arg::angle_<value_type> angle, Concept::Arithmetic auto length) noexcept;
+
+		/// @brief 線分を作成します。
+		/// @param center 線分の中心座標
+		/// @param vector 始点から終点までの移動量
+		[[nodiscard]]
+		constexpr Line(Arg::center_<position_type> center, vector_type vector) noexcept;
+
+		/// @brief 線分を作成します。
+		/// @param center 線分の中心座標
+		/// @param angle 始点から見た終点の方向（ラジアン）
+		/// @param length 線分の長さ
+		[[nodiscard]]
+		Line(Arg::center_<position_type> center, Arg::angle_<value_type> angle, value_type length) noexcept;
+
+		/// @brief 線分を作成します。
+		/// @param center 線分の中心座標
+		/// @param angle 始点から見た終点の方向（ラジアン）
+		/// @param length 線分の長さ
+		[[nodiscard]]
+		Line(Arg::center_<position_type> center, Arg::angle_<value_type> angle, Concept::Arithmetic auto length) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

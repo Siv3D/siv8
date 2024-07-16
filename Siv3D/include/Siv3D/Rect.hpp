@@ -488,6 +488,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの Rect が等しいかを返します。
+		/// @param lhs 一方の Rect
+		/// @param rhs もう一方の Rect
+		/// @return 2 つの Rect が等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const Rect& lhs, const Rect& rhs) noexcept
 		{
@@ -501,8 +505,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief X 座標を変更した新しい長方形を返します。
+		/// @param _x 新しい X 座標
+		/// @return X 座標が変更された新しい長方形
 		[[nodiscard]]
-		constexpr Rect withX(value_type _x) const noexcept;
+		constexpr Rect withX(Concept::Integral auto _x) const noexcept;
+
+		/// @brief X 座標を変更した新しい長方形を返します。
+		/// @param _x 新しい X 座標
+		/// @return X 座標が変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withX(Concept::FloatingPoint auto _x) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -510,8 +523,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Y 座標を変更した新しい長方形を返します。
+		/// @param _y 新しい Y 座標
+		/// @return Y 座標が変更された新しい長方形
 		[[nodiscard]]
-		constexpr Rect withY(value_type _y) const noexcept;
+		constexpr Rect withY(Concept::Integral auto _y) const noexcept;
+
+		/// @brief Y 座標を変更した新しい長方形を返します。
+		/// @param _y 新しい Y 座標
+		/// @return Y 座標が変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withY(Concept::FloatingPoint auto _y) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -519,11 +541,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 座標を変更した新しい長方形を返します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @return 座標が変更された新しい長方形
 		[[nodiscard]]
-		constexpr Rect withPos(value_type _x, value_type _y) const noexcept;
+		constexpr Rect withPos(Concept::Integral auto _x, Concept::Integral auto _y) const noexcept;
 
+		/// @brief 座標を変更した新しい長方形を返します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @return 座標が変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withPos(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y) const noexcept;
+
+		/// @brief 座標を変更した新しい長方形を返します。
+		/// @param _pos 新しい座標
+		/// @return 座標が変更された新しい長方形
 		[[nodiscard]]
 		constexpr Rect withPos(position_type _pos) const noexcept;
+
+		/// @brief 座標を変更した新しい長方形を返します。
+		/// @param _pos 新しい座標
+		/// @return 座標が変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withPos(Vec2 _pos) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -531,8 +573,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 幅を変更した新しい長方形を返します。
+		/// @param _w 新しい幅
+		/// @return 幅が変更された新しい長方形
 		[[nodiscard]]
-		constexpr Rect withW(value_type _w) const noexcept;
+		constexpr Rect withW(Concept::Integral auto _w) const noexcept;
+
+		/// @brief 幅を変更した新しい長方形を返します。
+		/// @param _w 新しい幅
+		/// @return 幅が変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withW(Concept::FloatingPoint auto _w) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -540,8 +591,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 高さを変更した新しい長方形を返します。
+		/// @param _h 新しい高さ
+		/// @return 高さが変更された新しい長方形
 		[[nodiscard]]
-		constexpr Rect withH(value_type _h) const noexcept;
+		constexpr Rect withH(Concept::Integral auto _h) const noexcept;
+
+		/// @brief 高さを変更した新しい長方形を返します。
+		/// @param _h 新しい高さ
+		/// @return 高さが変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withH(Concept::FloatingPoint auto _h) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -549,11 +609,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief サイズを変更した新しい長方形を返します。
+		/// @param _w 新しい幅
+		/// @param _h 新しい高さ
+		/// @return サイズが変更された新しい長方形
 		[[nodiscard]]
-		constexpr Rect withSize(value_type _w, value_type _h) const noexcept;
+		constexpr Rect withSize(Concept::Integral auto _w, Concept::Integral auto _h) const noexcept;
 
+		/// @brief サイズを変更した新しい長方形を返します。
+		/// @param _w 新しい幅
+		/// @param _h 新しい高さ
+		/// @return サイズが変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withSize(Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) const noexcept;
+
+		/// @brief サイズを変更した新しい長方形を返します。
+		/// @param _size 新しいサイズ
+		/// @return サイズが変更された新しい長方形
 		[[nodiscard]]
 		constexpr Rect withSize(size_type _size) const noexcept;
+
+		/// @brief サイズを変更した新しい長方形を返します。
+		/// @param _size 新しいサイズ
+		/// @return サイズが変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withSize(SizeF _size) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -561,11 +641,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中心座標を変更した新しい長方形を返します。
+		/// @param _cx 新しい中心座標の X 座標
+		/// @param _cy 新しい中心座標の Y 座標
+		/// @return 中心座標が変更された新しい長方形
 		[[nodiscard]]
-		constexpr Rect withCenter(value_type _cx, value_type _cy) const noexcept;
+		constexpr Rect withCenter(Concept::Integral auto _cx, Concept::Integral auto _cy) const noexcept;
 
+		/// @brief 中心座標を変更した新しい長方形を返します。
+		/// @param _cx 新しい中心座標の X 座標
+		/// @param _cy 新しい中心座標の Y 座標
+		/// @return 中心座標が変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withCenter(Concept::Arithmetic auto _cx, Concept::Arithmetic auto _cy) const noexcept;
+
+		/// @brief 中心座標を変更した新しい長方形を返します。
+		/// @param _center 新しい中心座標
+		/// @return 中心座標が変更された新しい長方形
 		[[nodiscard]]
 		constexpr Rect withCenter(position_type _center) const noexcept;
+
+		/// @brief 中心座標を変更した新しい長方形を返します。
+		/// @param _center 新しい中心座標
+		/// @return 中心座標が変更された新しい長方形
+		[[nodiscard]]
+		constexpr RectF withCenter(Vec2 _center) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -573,8 +673,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の左上の点の座標を変更します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @return *this
 		constexpr Rect& setPos(value_type _x, value_type _y) noexcept;
 
+		/// @brief 長方形の左上の点の座標を変更します。
+		/// @param _pos 新しい座標
+		/// @return *this
 		constexpr Rect& setPos(position_type _pos) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -583,9 +690,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の中心座標を変更します。
+		/// @param _x 新しい中心座標の X 座標
+		/// @param _y 新しい中心座標の Y 座標
+		/// @return *this
 		constexpr Rect& setCenter(value_type _x, value_type _y) noexcept;
 
-		constexpr Rect& setCenter(position_type _pos) noexcept;
+		/// @brief 長方形の中心座標を変更します。
+		/// @param _center 新しい中心座標
+		/// @return *this
+		constexpr Rect& setCenter(position_type _center) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -593,10 +707,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形のサイズを変更します。
+		/// @param _size 新しい幅と高さ
+		/// @return *this
 		constexpr Rect& setSize(value_type _size) noexcept;
 
+		/// @brief 長方形のサイズを変更します。
+		/// @param _w 新しい幅
+		/// @param _h 新しい高さ
+		/// @return *this
 		constexpr Rect& setSize(value_type _w, value_type _h) noexcept;
 
+		/// @brief 長方形のサイズを変更します。
+		/// @param _size 新しいサイズ
+		/// @return *this
 		constexpr Rect& setSize(size_type _size) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -605,19 +729,51 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の左上の座標とサイズを変更します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @param _w 新しい幅
+		/// @param _h 新しい高さ
+		/// @return *this
 		constexpr Rect& set(value_type _x, value_type _y, value_type _w, value_type _h) noexcept;
 
+		/// @brief 長方形の左上の座標とサイズを変更します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @param _size 新しい幅と高さ
+		/// @return *this
 		constexpr Rect& set(value_type _x, value_type _y, value_type _size) noexcept;
 
+		/// @brief 長方形の左上の座標とサイズを変更します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @param _size 新しいサイズ
+		/// @return *this
 		constexpr Rect& set(value_type _x, value_type _y, size_type _size) noexcept;
-
+		
+		/// @brief 長方形の左上の座標とサイズを変更します。
+		/// @param _pos 新しい座標
+		/// @param _size 新しい幅と高さ
+		/// @return *this
 		constexpr Rect& set(position_type _pos, value_type _size) noexcept;
 
+		/// @brief 長方形の左上の座標とサイズを変更します。
+		/// @param _pos 新しい座標
+		/// @param _w 新しい幅
+		/// @param _h 新しい高さ
+		/// @return *this
 		constexpr Rect& set(position_type _pos, value_type _w, value_type _h) noexcept;
 
+		/// @brief 長方形の左上の座標とサイズを変更します。
+		/// @param _pos 新しい座標
+		/// @param _size 新しいサイズ
+		/// @return *this
 		constexpr Rect& set(position_type _pos, size_type _size) noexcept;
 
-		constexpr Rect& set(const Rect& r) noexcept;
+		/// @brief 長方形の左上の座標とサイズを変更します。
+		/// @param r 新しい長方形
+		/// @return *this
+		constexpr Rect& set(const Rect& rect) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -637,7 +793,7 @@ namespace s3d
 		/// @param _y Y 軸方向の移動量
 		/// @return 新しい長方形
 		[[nodiscard]]
-		constexpr RectF movedBy(Concept::FloatingPoint auto _x, Concept::FloatingPoint auto _y) const noexcept;
+		constexpr RectF movedBy(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y) const noexcept;
 
 		/// @brief 座標を移動した新しい長方形を返します。
 		/// @param v 移動量
@@ -713,7 +869,7 @@ namespace s3d
 		/// @param _y 上方向と下方向のそれぞれの拡大縮小量
 		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
-		constexpr RectF stretched(Concept::FloatingPoint auto _x, Concept::FloatingPoint auto _y) const noexcept;
+		constexpr RectF stretched(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y) const noexcept;
 
 		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
 		/// @param xy 左方向と右方向・上方向と下方向のそれぞれの拡大縮小量
@@ -728,7 +884,7 @@ namespace s3d
 		/// @param left 左方向の拡大縮小量
 		/// @return 上下左右方向に拡大縮小した長方形
 		[[nodiscard]]
-		constexpr RectF stretched(Concept::FloatingPoint auto top, Concept::FloatingPoint auto right, Concept::FloatingPoint auto bottom, Concept::FloatingPoint auto left) const noexcept;
+		constexpr RectF stretched(Concept::Arithmetic auto top, Concept::Arithmetic auto right, Concept::Arithmetic auto bottom, Concept::Arithmetic auto left) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -736,12 +892,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中心を固定して拡大縮小した長方形を返します。
+		/// @param s 拡大率
+		/// @return 中心を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromCenter(double s) const noexcept;
 
+		/// @brief 中心を固定して拡大縮小した長方形を返します。
+		/// @param sx X 軸方向の拡大率
+		/// @param sy Y 軸方向の拡大率
+		/// @return 中心を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromCenter(double sx, double sy) const noexcept;
 
+		/// @brief 中心を固定して拡大縮小した長方形を返します。
+		/// @param s X 軸方向と Y 軸方向のそれぞれの拡大率
+		/// @return 中心を基準に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromCenter(Vec2 s) const noexcept;
 
@@ -751,12 +917,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 左上を固定して拡大縮小した長方形を返します。
+		/// @param s 拡大率
+		/// @return 左上を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromTopLeft(double s) const noexcept;
 
+		/// @brief 左上を固定して拡大縮小した長方形を返します。
+		/// @param sx X 軸方向の拡大率
+		/// @param sy Y 軸方向の拡大率
+		/// @return 左上を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromTopLeft(double sx, double sy) const noexcept;
 
+		/// @brief 左上を固定して拡大縮小した長方形を返します。
+		/// @param s X 軸方向と Y 軸方向のそれぞれの拡大率
+		/// @return 左上を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromTopLeft(Vec2 s) const noexcept;
 
@@ -766,12 +942,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を起点に拡大縮小した長方形を返します。
+		/// @param _pos 拡大縮小の起点となる座標
+		/// @param s 拡大率
+		/// @return 指定した座標を起点に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFrom(Vec2 _pos, double s) const noexcept;
 
+		/// @brief 指定した座標を起点に拡大縮小した長方形を返します。
+		/// @param _pos 拡大縮小の起点となる座標
+		/// @param sx X 軸方向の拡大率
+		/// @param sy Y 軸方向の拡大率
+		/// @return 指定した座標を起点に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFrom(Vec2 _pos, double sx, double sy) const noexcept;
 
+		/// @brief 指定した座標を起点に拡大縮小した長方形を返します。
+		/// @param _pos 拡大縮小の起点となる座標
+		/// @param s X 軸方向と Y 軸方向のそれぞれの拡大率
+		/// @return 指定した座標を起点に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFrom(Vec2 _pos, Vec2 s) const noexcept;
 
@@ -959,6 +1148,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの頂点座標を返します。
+		/// @param index インデックス（0 が左上、1 が右上、2 が右下、3 が左下）
+		/// @return 指定したインデックスの頂点座標
+		/// @throw std::out_of_range index が範囲外の場合
 		[[nodiscard]]
 		constexpr position_type pointAtIndex(size_t index) const;
 
@@ -968,8 +1161,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の周上の指定した距離に対応する座標を返します。
+		/// @param length 距離（左上から時計回り）
+		/// @return 長方形の周上の指定した距離に対応する座標
 		[[nodiscard]]
-		Vec2 pointAtLength(double length) const;
+		Vec2 pointAtLength(double length) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -977,6 +1173,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の周の長さを 1 として、周上の指定した位置に対応する座標を返します。
+		/// @param t 位置（左上から時計回り、周の長さを 1 とした場合の位置）
+		/// @return 長方形の周上の指定した位置に対応する座標
 		[[nodiscard]]
 		Vec2 interpolatedPointAt(double t) const noexcept;
 
@@ -986,6 +1185,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの辺を Line として返します。
+		/// @param index インデックス（0 が上辺、1 が右辺、2 が下辺、3 が左辺）
+		/// @return 指定したインデックスの辺
+		/// @throw std::out_of_range index が範囲外の場合
 		[[nodiscard]]
 		constexpr Line sideAtIndex(size_t index) const;
 
@@ -995,6 +1198,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の周上の指定した距離に対応する辺のインデックスを返します。
+		/// @param length 距離（左上から時計回り）
+		/// @return 長方形の周上の指定した距離に対応する辺のインデックス（0 が上辺、1 が右辺、2 が下辺、3 が左辺）
 		[[nodiscard]]
 		size_t sideIndexAtLength(double length) const;
 
@@ -1004,6 +1210,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの三角形を返します。
+		/// @param index インデックス（0 が tl-tr-bl, 1 が bl-tr-br）
+		/// @return 指定したインデックスの三角形
+		/// @throw std::out_of_range index が範囲外の場合
 		[[nodiscard]]
 		constexpr Triangle triangleAtIndex(size_t index) const;
 
@@ -1035,6 +1245,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の横縦比（幅 / 高さ）を返します。
+		/// @tparam Type 横縦比の型
+		/// @return 長方形の横縦比（幅 / 高さ）。高さが 0 の場合は 0
 		template <class Type = double>
 		[[nodiscard]]
 		constexpr Type horizontalAspectRatio() const noexcept;
@@ -1117,6 +1330,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中心を軸に、時計回りに回転した長方形を返します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した長方形
 		[[nodiscard]]
 		Quad rotated(double angle) const noexcept;
 
@@ -1126,9 +1342,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を軸として、時計回りに回転した長方形を返します。
+		/// @param _x 回転軸の X 座標
+		/// @param _y 回転軸の Y 座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した長方形
 		[[nodiscard]]
 		Quad rotatedAt(double _x, double _y, double angle) const noexcept;
 
+		/// @brief 指定した座標を軸として、時計回りに回転した長方形を返します。
+		/// @param _pos 回転軸の座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した長方形
 		[[nodiscard]]
 		Quad rotatedAt(Vec2 _pos, double angle) const noexcept;
 
@@ -1157,9 +1382,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形を X 方向にせん断した平行四辺形を返します。
+		/// @param vx X 方向のせん断量
+		/// @return X 方向にせん断した平行四辺形
+		/// @remark 長方形の左上の頂点は (x + vx, y) に移動します。
 		[[nodiscard]]
 		constexpr Quad shearedX(double vx) const noexcept;
 
+		/// @brief 長方形を Y 方向にせん断した平行四辺形を返します。
+		/// @param vy Y 方向のせん断量
+		/// @return Y 方向にせん断した平行四辺形
+		/// @remark 長方形の左上の頂点は (x, y - vy) に移動します。
 		[[nodiscard]]
 		constexpr Quad shearedY(double vy) const noexcept;
 
@@ -1168,10 +1401,16 @@ namespace s3d
 		//	skewedX, skewedY
 		//
 		////////////////////////////////////////////////////////////////
-
+		
+		/// @brief 長方形を X 方向に傾斜した平行四辺形を返します。
+		/// @param angle X 方向の傾斜角度（ラジアン）
+		/// @return X 方向に傾斜した平行四辺形
 		[[nodiscard]]
 		Quad skewedX(double angle) const noexcept;
 
+		/// @brief 長方形を Y 方向に傾斜した平行四辺形を返します。
+		/// @param angle Y 方向の傾斜角度（ラジアン）
+		/// @return Y 方向に傾斜した平行四辺形
 		[[nodiscard]]
 		Quad skewedY(double angle) const noexcept;
 
@@ -1237,9 +1476,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の長方形との線形補間を返します。
+		/// @param other 別の長方形
+		/// @param f 補間係数
+		/// @return 線形補間された長方形
 		[[nodiscard]]
 		constexpr RectF lerp(const Rect& other, double f) const noexcept;
 
+		/// @brief 別の長方形との線形補間を返します。
+		/// @param other 別の長方形
+		/// @param f 補間係数
+		/// @return 線形補間された長方形
 		[[nodiscard]]
 		constexpr RectF lerp(const RectF& other, double f) const noexcept;
 
@@ -1267,6 +1514,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形を指定された範囲内にクランプした長方形を返します。
+		/// @param area クランプする範囲
+		/// @return クランプされた長方形
 		[[nodiscard]]
 		constexpr Rect clamped(const Rect& area) const noexcept;
 
@@ -1276,6 +1526,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
@@ -1285,6 +1537,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の図形と交差しているかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差している場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -1560,6 +1816,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 出力ストリームに Rect の内容を出力します。
+		/// @tparam CharType ストリームの文字型
+		/// @param output 出力ストリーム
+		/// @param value Rect
+		/// @return 出力ストリーム
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Rect& value)
 		{
@@ -1576,6 +1837,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 入力ストリームから Rect の内容を読み込みます。
+		/// @tparam CharType ストリームの文字型
+		/// @param input 入力ストリーム
+		/// @param value Rect
+		/// @return 入力ストリーム
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Rect& value)
 		{
@@ -1593,6 +1859,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Rect を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value Rect
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Rect& value);
 
 	private:

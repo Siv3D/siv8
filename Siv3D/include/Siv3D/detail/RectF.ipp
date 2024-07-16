@@ -371,9 +371,9 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr RectF& RectF::setCenter(const position_type _pos) noexcept
+	constexpr RectF& RectF::setCenter(const position_type _center) noexcept
 	{
-		pos.set((_pos.x - size.x / 2), (_pos.y - size.y / 2));
+		pos.set((_center.x - size.x / 2), (_center.y - size.y / 2));
 		return *this;
 	}
 
@@ -449,10 +449,10 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr RectF& RectF::set(const RectF& r) noexcept
+	constexpr RectF& RectF::set(const RectF& rect) noexcept
 	{
-		pos = r.pos;
-		size = r.size;
+		pos = rect.pos;
+		size = rect.size;
 		return *this;
 	}
 

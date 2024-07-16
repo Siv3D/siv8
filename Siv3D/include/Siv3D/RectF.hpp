@@ -589,7 +589,7 @@ namespace s3d
 
 		constexpr RectF& setCenter(value_type _x, value_type _y) noexcept;
 
-		constexpr RectF& setCenter(position_type _pos) noexcept;
+		constexpr RectF& setCenter(position_type _center) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -621,7 +621,7 @@ namespace s3d
 
 		constexpr RectF& set(position_type _pos, size_type _size) noexcept;
 
-		constexpr RectF& set(const RectF& r) noexcept;
+		constexpr RectF& set(const RectF& rect) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -932,7 +932,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Vec2 pointAtLength(double length) const;
+		Vec2 pointAtLength(double length) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

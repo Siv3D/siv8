@@ -63,7 +63,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vec2 Rect::pointAtLength(double length) const
+	Vec2 Rect::pointAtLength(double length) const noexcept
 	{
 		length = WrapLength(length, perimeter());
 
