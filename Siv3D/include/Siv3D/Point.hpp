@@ -890,7 +890,7 @@ namespace s3d
 		/// @brief 入力ストリームから Point の内容を読み込みます。
 		/// @tparam CharType 入力ストリームの文字型
 		/// @param input 入力ストリーム
-		/// @param value Point
+		/// @param value Point の格納先
 		/// @return 入力ストリーム
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Point& value)

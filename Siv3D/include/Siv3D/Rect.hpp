@@ -507,13 +507,13 @@ namespace s3d
 
 		/// @brief X 座標を変更した新しい長方形を返します。
 		/// @param _x 新しい X 座標
-		/// @return X 座標が変更された新しい長方形
+		/// @return X 座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withX(Concept::Integral auto _x) const noexcept;
 
 		/// @brief X 座標を変更した新しい長方形を返します。
 		/// @param _x 新しい X 座標
-		/// @return X 座標が変更された新しい長方形
+		/// @return X 座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withX(Concept::FloatingPoint auto _x) const noexcept;
 
@@ -525,13 +525,13 @@ namespace s3d
 
 		/// @brief Y 座標を変更した新しい長方形を返します。
 		/// @param _y 新しい Y 座標
-		/// @return Y 座標が変更された新しい長方形
+		/// @return Y 座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withY(Concept::Integral auto _y) const noexcept;
 
 		/// @brief Y 座標を変更した新しい長方形を返します。
 		/// @param _y 新しい Y 座標
-		/// @return Y 座標が変更された新しい長方形
+		/// @return Y 座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withY(Concept::FloatingPoint auto _y) const noexcept;
 
@@ -541,29 +541,29 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 座標を変更した新しい長方形を返します。
-		/// @param _x 新しい X 座標
-		/// @param _y 新しい Y 座標
-		/// @return 座標が変更された新しい長方形
+		/// @brief 左上の座標を変更した新しい長方形を返します。
+		/// @param _x 新しい左上の X 座標
+		/// @param _y 新しい左上の Y 座標
+		/// @return 左上の座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withPos(Concept::Integral auto _x, Concept::Integral auto _y) const noexcept;
 
-		/// @brief 座標を変更した新しい長方形を返します。
-		/// @param _x 新しい X 座標
-		/// @param _y 新しい Y 座標
-		/// @return 座標が変更された新しい長方形
+		/// @brief 左上の座標を変更した新しい長方形を返します。
+		/// @param _x 新しい左上の X 座標
+		/// @param _y 新しい左上の Y 座標
+		/// @return 左上の座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withPos(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y) const noexcept;
 
-		/// @brief 座標を変更した新しい長方形を返します。
-		/// @param _pos 新しい座標
-		/// @return 座標が変更された新しい長方形
+		/// @brief 左上の座標を変更した新しい長方形を返します。
+		/// @param _pos 新しい左上の座標
+		/// @return 左上の座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withPos(position_type _pos) const noexcept;
 
-		/// @brief 座標を変更した新しい長方形を返します。
-		/// @param _pos 新しい座標
-		/// @return 座標が変更された新しい長方形
+		/// @brief 左上の座標を変更した新しい長方形を返します。
+		/// @param _pos 新しい左上の座標
+		/// @return 左上の座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withPos(Vec2 _pos) const noexcept;
 
@@ -575,13 +575,13 @@ namespace s3d
 
 		/// @brief 幅を変更した新しい長方形を返します。
 		/// @param _w 新しい幅
-		/// @return 幅が変更された新しい長方形
+		/// @return 幅を変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withW(Concept::Integral auto _w) const noexcept;
 
 		/// @brief 幅を変更した新しい長方形を返します。
 		/// @param _w 新しい幅
-		/// @return 幅が変更された新しい長方形
+		/// @return 幅を変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withW(Concept::FloatingPoint auto _w) const noexcept;
 
@@ -593,13 +593,13 @@ namespace s3d
 
 		/// @brief 高さを変更した新しい長方形を返します。
 		/// @param _h 新しい高さ
-		/// @return 高さが変更された新しい長方形
+		/// @return 高さを変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withH(Concept::Integral auto _h) const noexcept;
 
 		/// @brief 高さを変更した新しい長方形を返します。
 		/// @param _h 新しい高さ
-		/// @return 高さが変更された新しい長方形
+		/// @return 高さを変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withH(Concept::FloatingPoint auto _h) const noexcept;
 
@@ -612,26 +612,26 @@ namespace s3d
 		/// @brief サイズを変更した新しい長方形を返します。
 		/// @param _w 新しい幅
 		/// @param _h 新しい高さ
-		/// @return サイズが変更された新しい長方形
+		/// @return サイズを変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withSize(Concept::Integral auto _w, Concept::Integral auto _h) const noexcept;
 
 		/// @brief サイズを変更した新しい長方形を返します。
 		/// @param _w 新しい幅
 		/// @param _h 新しい高さ
-		/// @return サイズが変更された新しい長方形
+		/// @return サイズを変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withSize(Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) const noexcept;
 
 		/// @brief サイズを変更した新しい長方形を返します。
 		/// @param _size 新しいサイズ
-		/// @return サイズが変更された新しい長方形
+		/// @return サイズを変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withSize(size_type _size) const noexcept;
 
 		/// @brief サイズを変更した新しい長方形を返します。
 		/// @param _size 新しいサイズ
-		/// @return サイズが変更された新しい長方形
+		/// @return サイズを変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withSize(SizeF _size) const noexcept;
 
@@ -642,28 +642,28 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 中心座標を変更した新しい長方形を返します。
-		/// @param _cx 新しい中心座標の X 座標
-		/// @param _cy 新しい中心座標の Y 座標
-		/// @return 中心座標が変更された新しい長方形
+		/// @param _cx 新しい中心の X 座標
+		/// @param _cy 新しい中心の Y 座標
+		/// @return 中心座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withCenter(Concept::Integral auto _cx, Concept::Integral auto _cy) const noexcept;
 
 		/// @brief 中心座標を変更した新しい長方形を返します。
-		/// @param _cx 新しい中心座標の X 座標
-		/// @param _cy 新しい中心座標の Y 座標
-		/// @return 中心座標が変更された新しい長方形
+		/// @param _cx 新しい中心の X 座標
+		/// @param _cy 新しい中心の Y 座標
+		/// @return 中心座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withCenter(Concept::Arithmetic auto _cx, Concept::Arithmetic auto _cy) const noexcept;
 
 		/// @brief 中心座標を変更した新しい長方形を返します。
 		/// @param _center 新しい中心座標
-		/// @return 中心座標が変更された新しい長方形
+		/// @return 中心座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr Rect withCenter(position_type _center) const noexcept;
 
 		/// @brief 中心座標を変更した新しい長方形を返します。
 		/// @param _center 新しい中心座標
-		/// @return 中心座標が変更された新しい長方形
+		/// @return 中心座標を変更した新しい長方形
 		[[nodiscard]]
 		constexpr RectF withCenter(Vec2 _center) const noexcept;
 
@@ -674,13 +674,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 長方形の左上の点の座標を変更します。
-		/// @param _x 新しい X 座標
-		/// @param _y 新しい Y 座標
+		/// @param _x 新しい左上の X 座標
+		/// @param _y 新しい左上の Y 座標
 		/// @return *this
 		constexpr Rect& setPos(value_type _x, value_type _y) noexcept;
 
 		/// @brief 長方形の左上の点の座標を変更します。
-		/// @param _pos 新しい座標
+		/// @param _pos 新しい左上の座標
 		/// @return *this
 		constexpr Rect& setPos(position_type _pos) noexcept;
 
@@ -1520,6 +1520,12 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Rect clamped(const Rect& area) const noexcept;
 
+		/// @brief 長方形を指定された範囲内にクランプした長方形を返します。
+		/// @param area クランプする範囲
+		/// @return クランプされた長方形
+		[[nodiscard]]
+		constexpr RectF clamped(const RectF& area) const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	hash
@@ -1861,7 +1867,7 @@ namespace s3d
 
 		/// @brief Rect を文字列に変換します。
 		/// @param formatData 文字列バッファ
-		/// @param value Rect
+		/// @param value Rect の格納先
 		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Rect& value);
 

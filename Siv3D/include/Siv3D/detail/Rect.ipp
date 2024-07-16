@@ -1165,6 +1165,15 @@ namespace s3d
 		return{ x0, y0, (x1 - x0), (y1 - y0) };
 	}
 
+	constexpr RectF Rect::clamped(const RectF& area) const noexcept
+	{
+		const auto x0 = Clamp<RectF::value_type>(pos.x, area.pos.x, area.rightX());
+		const auto y0 = Clamp<RectF::value_type>(pos.y, area.pos.y, area.bottomY());
+		const auto x1 = Clamp<RectF::value_type>(rightX(), area.pos.x, area.rightX());
+		const auto y1 = Clamp<RectF::value_type>(bottomY(), area.pos.y, area.bottomY());
+		return{ x0, y0, (x1 - x0), (y1 - y0) };
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	hash
