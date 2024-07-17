@@ -30,10 +30,13 @@ namespace s3d
 	/// @brief 線分
 	struct Line
 	{
+		/// @brief 線分の座標を表現する型
 		using position_type	= Vec2;
 
+		/// @brief 始点から終点までの移動量を表現する型
 		using vector_type	= position_type;
 
+		/// @brief 線分の座標の成分の型
 		using value_type	= position_type::value_type;
 
 		/// @brief 線分の開始位置
@@ -398,7 +401,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 始点を固定して線分を拡大縮小した新しい線分を返します。
-		/// @param scale 拡大率
+		/// @param scale 拡大倍率
 		/// @return 始点を固定して線分を拡大縮小した新しい線分
 		[[nodiscard]]
 		Line scaledFromStart(value_type scale) const noexcept;
@@ -410,7 +413,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 終点を固定して線分を拡大縮小した新しい線分を返します。
-		/// @param scale 拡大率
+		/// @param scale 拡大倍率
 		/// @return 終点を固定して線分を拡大縮小した新しい線分
 		[[nodiscard]]
 		Line scaledFromEnd(value_type scale) const noexcept;
@@ -422,7 +425,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 中心を固定して線分を拡大縮小した新しい線分を返します。
-		/// @param scale 拡大率
+		/// @param scale 拡大倍率
 		/// @return 中心を固定して線分を拡大縮小した新しい線分
 		[[nodiscard]]
 		Line scaledFromCenter(value_type scale) const noexcept;

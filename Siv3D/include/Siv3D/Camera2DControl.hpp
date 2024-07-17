@@ -24,19 +24,19 @@ namespace s3d
 		/// @brief 拡大倍率の最大値
 		double maxScale = 128.0;
 
-		/// @brief 拡大率変更の平滑化時間（秒）
+		/// @brief 拡大倍率変更の平滑化時間（秒）
 		double scaleSmoothTime = 0.2;
 
 		/// @brief 位置変更の平滑化時間（秒）
 		double positionSmoothTime = 0.2;
 
-		/// @brief マウスホイールによる拡大率変更のスケールファクタ
+		/// @brief マウスホイールによる拡大倍率変更のスケールファクタ
 		double wheelScaleFactor = 0.15;
 
 		/// @brief マウスによる位置変更の速さ
 		double grabSpeedFactor = 4.0;
 
-		/// @brief キー入力による拡大率変更のスケールファクタ
+		/// @brief キー入力による拡大倍率変更のスケールファクタ
 		double controlScaleFactor = 2.0;
 
 		/// @brief キー入力による位置変更の速さ
@@ -54,10 +54,10 @@ namespace s3d
 		/// @brief 左方向への移動を発生させる条件を指定する関数
 		std::function<bool()> moveToLeft = Camera2DControlBuilder::DefaultMoveToLeft;
 
-		/// @brief 拡大率を増加させる（ズームインする）条件を指定する関数
+		/// @brief 拡大倍率を増加させる（ズームインする）条件を指定する関数
 		std::function<bool()> zoomIn = Camera2DControlBuilder::DefaultZoomIn;
 
-		/// @brief 拡大率を減少させる（ズームアウトする）条件を指定する関数
+		/// @brief 拡大倍率を減少させる（ズームアウトする）条件を指定する関数
 		std::function<bool()> zoomOut = Camera2DControlBuilder::DefaultZoomOut;
 
 		////////////////////////////////////////////////////////////////

@@ -38,11 +38,14 @@ namespace s3d
 	/// 
 	struct RectF
 	{
+		/// @brief 長方形の座標を表現する型
 		using position_type = Vec2;
 
-		using size_type = Vec2;
+		/// @brief 長方形のサイズを表現する型
+		using size_type		= SizeF;
 
-		using value_type = size_type::value_type;
+		/// @brief 長方形の座標やサイズの成分の型
+		using value_type	= size_type::value_type;
 
 	SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4201)
 
@@ -793,20 +796,20 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 中心を固定して拡大縮小した長方形を返します。
-		/// @param s 拡大率
+		/// @param s 拡大倍率
 		/// @return 中心を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromCenter(double s) const noexcept;
 
 		/// @brief 中心を固定して拡大縮小した長方形を返します。
-		/// @param sx X 軸方向の拡大率
-		/// @param sy Y 軸方向の拡大率
+		/// @param sx X 軸方向の拡大倍率
+		/// @param sy Y 軸方向の拡大倍率
 		/// @return 中心を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromCenter(double sx, double sy) const noexcept;
 
 		/// @brief 中心を固定して拡大縮小した長方形を返します。
-		/// @param s X 軸方向と Y 軸方向のそれぞれの拡大率
+		/// @param s X 軸方向と Y 軸方向のそれぞれの拡大倍率
 		/// @return 中心を基準に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromCenter(Vec2 s) const noexcept;
@@ -818,20 +821,20 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 左上を固定して拡大縮小した長方形を返します。
-		/// @param s 拡大率
+		/// @param s 拡大倍率
 		/// @return 左上を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromTopLeft(double s) const noexcept;
 
 		/// @brief 左上を固定して拡大縮小した長方形を返します。
-		/// @param sx X 軸方向の拡大率
-		/// @param sy Y 軸方向の拡大率
+		/// @param sx X 軸方向の拡大倍率
+		/// @param sy Y 軸方向の拡大倍率
 		/// @return 左上を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromTopLeft(double sx, double sy) const noexcept;
 
 		/// @brief 左上を固定して拡大縮小した長方形を返します。
-		/// @param s X 軸方向と Y 軸方向のそれぞれの拡大率
+		/// @param s X 軸方向と Y 軸方向のそれぞれの拡大倍率
 		/// @return 左上を固定して拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFromTopLeft(Vec2 s) const noexcept;
@@ -844,22 +847,22 @@ namespace s3d
 
 		/// @brief 指定した座標を起点に拡大縮小した長方形を返します。
 		/// @param _pos 拡大縮小の起点となる座標
-		/// @param s 拡大率
+		/// @param s 拡大倍率
 		/// @return 指定した座標を起点に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFrom(Vec2 _pos, double s) const noexcept;
 
 		/// @brief 指定した座標を起点に拡大縮小した長方形を返します。
 		/// @param _pos 拡大縮小の起点となる座標
-		/// @param sx X 軸方向の拡大率
-		/// @param sy Y 軸方向の拡大率
+		/// @param sx X 軸方向の拡大倍率
+		/// @param sy Y 軸方向の拡大倍率
 		/// @return 指定した座標を起点に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFrom(Vec2 _pos, double sx, double sy) const noexcept;
 
 		/// @brief 指定した座標を起点に拡大縮小した長方形を返します。
 		/// @param _pos 拡大縮小の起点となる座標
-		/// @param s X 軸方向と Y 軸方向のそれぞれの拡大率
+		/// @param s X 軸方向と Y 軸方向のそれぞれの拡大倍率
 		/// @return 指定した座標を起点に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF scaledFrom(Vec2 _pos, Vec2 s) const noexcept;

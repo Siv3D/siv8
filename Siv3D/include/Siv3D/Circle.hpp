@@ -26,10 +26,13 @@ namespace s3d
 	/// @brief 円
 	struct Circle
 	{
+		/// @brief 円の中心座標を表現する型
 		using position_type	= Vec2;
 
+		/// @brief 円の半径を表現する型
 		using size_type		= position_type::value_type;
 
+		/// @brief 円の座標や半径の値の成分の型
 		using value_type	= position_type::value_type;
 
 	SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4201)
@@ -65,75 +68,147 @@ namespace s3d
 		[[nodiscard]]
 		Circle() = default;
 
+		/// @brief 中心が (0, 0) の円を作成します。
+		/// @param _r 半径
 		[[nodiscard]]
 		explicit constexpr Circle(size_type _r) noexcept;
 
+		/// @brief 中心が (0, 0) の円を作成します。
+		/// @param _r 半径
 		[[nodiscard]]
 		explicit constexpr Circle(Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _x 中心の X 座標
+		/// @param _y 中心の Y 座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(value_type _x, value_type _y, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _x 中心の X 座標
+		/// @param _y 中心の Y 座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _center 中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(position_type _center, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _center 中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(position_type _center, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _center 中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::center_<position_type> _center, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _center 中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::center_<position_type> _center, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _topLeft 円に外接する正方形の左上座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::topLeft_<position_type> _topLeft, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _topLeft 円に外接する正方形の左上座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::topLeft_<position_type> _topLeft, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _topCenter 円に外接する正方形の上辺の中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::topCenter_<position_type> _topCenter, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _topCenter 円に外接する正方形の上辺の中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::topCenter_<position_type> _topCenter, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _topRight 円に外接する正方形の右上座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::topRight_<position_type> _topRight, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _topRight 円に外接する正方形の右上座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::topRight_<position_type> _topRight, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _rightCenter 円に外接する正方形の右辺の中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::rightCenter_<position_type> _rightCenter, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _rightCenter 円に外接する正方形の右辺の中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::rightCenter_<position_type> _rightCenter, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _bottomRight 円に外接する正方形の右下座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::bottomRight_<position_type> _bottomRight, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _bottomRight 円に外接する正方形の右下座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::bottomRight_<position_type> _bottomRight, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _bottomCenter 円に外接する正方形の下辺の中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::bottomCenter_<position_type> _bottomCenter, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _bottomCenter 円に外接する正方形の下辺の中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::bottomCenter_<position_type> _bottomCenter, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _bottomLeft 円に外接する正方形の左下座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::bottomLeft_<position_type> _bottomLeft, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _bottomLeft 円に外接する正方形の左下座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::bottomLeft_<position_type> _bottomLeft, Concept::Arithmetic auto _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _leftCenter 円に外接する正方形の左辺の中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::leftCenter_<position_type> _leftCenter, size_type _r) noexcept;
 
+		/// @brief 円を作成します。
+		/// @param _leftCenter 円に外接する正方形の左辺の中心座標
+		/// @param _r 半径
 		[[nodiscard]]
 		constexpr Circle(Arg::leftCenter_<position_type> _leftCenter, Concept::Arithmetic auto _r) noexcept;
 
@@ -167,6 +242,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの Circle が等しいかを返します。
+		/// @param lhs 一方の Circle
+		/// @param rhs もう一方の Circle
+		/// @return 2 つの Circle が等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const Circle& lhs, const Circle& rhs) noexcept
 		{
@@ -180,6 +259,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中心の X 座標を変更した新しい円を返します。
+		/// @param _x 新しい X 座標
+		/// @return 中心の X 座標を変更した新しい円
 		[[nodiscard]]
 		constexpr Circle withX(value_type _x) const noexcept;
 
@@ -189,6 +271,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中心の Y 座標を変更した新しい円を返します。
+		/// @param _y 新しい Y 座標
+		/// @return 中心の Y 座標を変更した新しい円
 		[[nodiscard]]
 		constexpr Circle withY(value_type _y) const noexcept;
 
@@ -198,9 +283,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中心座標を変更した新しい円を返します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @return 中心座標を変更した新しい円
 		[[nodiscard]]
 		constexpr Circle withCenter(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 中心座標を変更した新しい円を返します。
+		/// @param _center 新しい中心座標
+		/// @return 中心座標を変更した新しい円
 		[[nodiscard]]
 		constexpr Circle withCenter(position_type _center) const noexcept;
 
@@ -210,6 +302,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 半径を変更した新しい円を返します。
+		/// @param _r 新しい半径
+		/// @return 半径を変更した新しい円
 		[[nodiscard]]
 		constexpr Circle withR(value_type _r) const noexcept;
 
@@ -219,8 +314,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 円の中心座標を変更します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @return *this
+		/// @remark `.setCenter(_x, _y)` と同じです。
 		constexpr Circle& setPos(value_type _x, value_type _y) noexcept;
 
+		/// @brief 円の中心座標を変更します。
+		/// @param _center 新しい中心座標
+		/// @return *this
+		/// @remark `.setCenter(_center)` と同じです。
 		constexpr Circle& setPos(position_type _center) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -229,8 +333,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 円の中心座標を変更します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @return *this
+		/// @remark `.setPos(_x, _y)` と同じです。
 		constexpr Circle& setCenter(value_type _x, value_type _y) noexcept;
 
+		/// @brief 円の中心座標を変更します。
+		/// @param _center 新しい中心座標
+		/// @return *this
+		/// @remark `.setPos(_center)` と同じです。
 		constexpr Circle& setCenter(position_type _center) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -239,6 +352,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 円の半径を変更します。
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& setR(value_type _r) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -247,26 +363,71 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param _x 新しい X 座標
+		/// @param _y 新しい Y 座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(value_type _x, value_type _y, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param _center 新しい中心座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(position_type _center, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param _center 新しい中心座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(Arg::center_<position_type> _center, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param topLeft 円に外接する正方形の左上座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(Arg::topLeft_<position_type> topLeft, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param topCenter 円に外接する正方形の上辺の中心座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(Arg::topCenter_<position_type> topCenter, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param topRight 円に外接する正方形の右上座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(Arg::topRight_<position_type> topRight, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param rightCenter 円に外接する正方形の右辺の中心座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(Arg::rightCenter_<position_type> rightCenter, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param bottomRight 円に外接する正方形の右下座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(Arg::bottomRight_<position_type> bottomRight, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param bottomCenter 円に外接する正方形の下辺の中心座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(Arg::bottomCenter_<position_type> bottomCenter, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param bottomLeft 円に外接する正方形の左下座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(Arg::bottomLeft_<position_type> bottomLeft, size_type _r) noexcept;
 
+		/// @brief 円の中心座標と半径を変更します。
+		/// @param leftCenter 円に外接する正方形の左辺の中心座標
+		/// @param _r 新しい半径
+		/// @return *this
 		constexpr Circle& set(Arg::leftCenter_<position_type> leftCenter, size_type _r) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -466,6 +627,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の円との線形補間を返します。
+		/// @param other 別の円
+		/// @param f 補間係数
+		/// @return 線形補間された円
 		[[nodiscard]]
 		constexpr Circle lerp(const Circle& other, double f) const noexcept;
 
@@ -475,6 +640,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
@@ -484,6 +651,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の図形と交差しているかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差している場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -813,6 +984,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 出力ストリームに Circle の内容を出力します。
+		/// @tparam CharType ストリームの文字型
+		/// @param output 出力ストリーム
+		/// @param value Circle
+		/// @return 出力ストリーム
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Circle& value)
 		{
@@ -828,6 +1004,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 入力ストリームから Circle の内容を読み込みます。
+		/// @tparam CharType ストリームの文字型
+		/// @param input 入力ストリーム
+		/// @param value Circle の格納先
+		/// @return 入力ストリーム
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Circle& value)
 		{
@@ -844,6 +1025,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Circle を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value Circle
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Circle& value);
 	};
 }
