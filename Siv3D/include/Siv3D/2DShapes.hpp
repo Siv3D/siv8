@@ -19,6 +19,7 @@
 # include "Quad.hpp"
 # include "RoundRect.hpp"
 # include "Geometry2D/Intersect.hpp"
+# include "Geometry2D/IsClockwise.hpp"
 # include "detail/Line.ipp"
 # include "detail/Rect.ipp"
 # include "detail/RectF.ipp"

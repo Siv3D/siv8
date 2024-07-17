@@ -196,7 +196,7 @@ namespace s3d
 		constexpr Triangle withP1(value_type _x, value_type _y) const noexcept;
 
 		[[nodiscard]]
-		constexpr Triangle withP1(position_type _p0) const noexcept;
+		constexpr Triangle withP1(position_type _p1) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -208,7 +208,7 @@ namespace s3d
 		constexpr Triangle withP2(value_type _x, value_type _y) const noexcept;
 
 		[[nodiscard]]
-		constexpr Triangle withP2(position_type _p0) const noexcept;
+		constexpr Triangle withP2(position_type _p2) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -220,7 +220,7 @@ namespace s3d
 		constexpr Triangle withCentroid(value_type _x, value_type _y) const noexcept;
 
 		[[nodiscard]]
-		constexpr Triangle withCentroid(position_type _p0) const noexcept;
+		constexpr Triangle withCentroid(position_type _centroid) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -298,57 +298,57 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	scaled
+		//	scaledFromOrigin
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr Triangle scaled(value_type s) const noexcept;
+		constexpr Triangle scaledFromOrigin(value_type s) const noexcept;
 
 		[[nodiscard]]
-		constexpr Triangle scaled(value_type sx, value_type sy) const noexcept;
+		constexpr Triangle scaledFromOrigin(value_type sx, value_type sy) const noexcept;
 
 		[[nodiscard]]
-		constexpr Triangle scaled(Vec2 s) const noexcept;
+		constexpr Triangle scaledFromOrigin(Vec2 s) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	scale
+		//	scaleFromOrigin
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr Triangle& scale(value_type s) noexcept;
+		constexpr Triangle& scaleFromOrigin(value_type s) noexcept;
 
-		constexpr Triangle& scale(value_type sx, value_type sy) noexcept;
+		constexpr Triangle& scaleFromOrigin(value_type sx, value_type sy) noexcept;
 
-		constexpr Triangle& scale(Vec2 s) noexcept;
+		constexpr Triangle& scaleFromOrigin(Vec2 s) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	scaledAt
+		//	scaledFrom
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr Triangle scaledAt(Vec2 pos, value_type s) const noexcept;
+		constexpr Triangle scaledFrom(position_type pos, value_type s) const noexcept;
 
 		[[nodiscard]]
-		constexpr Triangle scaledAt(Vec2 pos, value_type sx, value_type sy) const noexcept;
+		constexpr Triangle scaledFrom(position_type pos, value_type sx, value_type sy) const noexcept;
 
 		[[nodiscard]]
-		constexpr Triangle scaledAt(Vec2 pos, Vec2 s) const noexcept;
+		constexpr Triangle scaledFrom(position_type pos, Vec2 s) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	scaleAt
+		//	scaleFrom
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr Triangle& scaleAt(Vec2 pos, value_type s) noexcept;
+		constexpr Triangle& scaleFrom(position_type pos, value_type s) noexcept;
 
-		constexpr Triangle& scaleAt(Vec2 pos, value_type sx, value_type sy) noexcept;
+		constexpr Triangle& scaleFrom(position_type pos, value_type sx, value_type sy) noexcept;
 
-		constexpr Triangle& scaleAt(Vec2 pos, Vec2 s) noexcept;
+		constexpr Triangle& scaleFrom(position_type pos, Vec2 s) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -497,19 +497,41 @@ namespace s3d
 		[[nodiscard]]
 		Circle getInscribedCircle() const noexcept;
 
-
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateBuffer
+		//
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//Polygon calculateBuffer(double distance) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateRoundBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
 		//[[nodiscard]]
 		//Polygon calculateRoundBuffer(double distance) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	outline
+		//
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//LineString outline(CloseRing closeRing = CloseRing::No) const;
 
 		//[[nodiscard]]
 		//LineString outline(double distanceFromOrigin, double length) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	asPolygon
+		//
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//Polygon asPolygon() const;
