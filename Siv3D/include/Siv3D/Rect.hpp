@@ -1846,7 +1846,7 @@ namespace s3d
 		/// @brief 入力ストリームから Rect の内容を読み込みます。
 		/// @tparam CharType ストリームの文字型
 		/// @param input 入力ストリーム
-		/// @param value Rect
+		/// @param value Rect の格納先
 		/// @return 入力ストリーム
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Rect& value)
@@ -1867,7 +1867,7 @@ namespace s3d
 
 		/// @brief Rect を文字列に変換します。
 		/// @param formatData 文字列バッファ
-		/// @param value Rect の格納先
+		/// @param value Rect
 		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Rect& value);
 
