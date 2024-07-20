@@ -10,6 +10,9 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/FloatFormatter.hpp>
+# include <Siv3D/Cursor.hpp>
+# include <Siv3D/Mouse.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -214,7 +217,119 @@ namespace s3d
 		return (l0 + l1 + l2);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	boundingRect
+	//
+	////////////////////////////////////////////////////////////////
 
+	RectF Triangle::boundingRect() const noexcept
+	{
+		auto [xMin, xMax] = std::minmax({ p0.x, p1.x, p2.x });
+		auto [yMin, yMax] = std::minmax({ p0.y, p1.y, p2.y });
+		return{ xMin, yMin, (xMax - xMin), (yMax - yMin) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCircumscribedCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle Triangle::getCircumscribedCircle() const noexcept
+	{
+		const double x0 = p0.x;
+		const double y0 = p0.y;
+		const double x1 = p1.x;
+		const double y1 = p1.y;
+		const double x2 = p2.x;
+		const double y2 = p2.y;
+		const double x0_2 = (x0 * x0);
+		const double y0_2 = (y0 * y0);
+		const double x1_2 = (x1 * x1);
+		const double y1_2 = (y1 * y1);
+		const double x2_2 = (x2 * x2);
+		const double y2_2 = (y2 * y2);
+		const double c = 2 * ((x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0));
+		const Vec2 center
+		{
+			((y2 - y0) * (x1_2 - x0_2 + y1_2 - y0_2) + (y0 - y1) * (x2_2 - x0_2 + y2_2 - y0_2)) / c,
+			((x0 - x2) * (x1_2 - x0_2 + y1_2 - y0_2) + (x1 - x0) * (x2_2 - x0_2 + y2_2 - y0_2)) / c
+		};
+
+		return{ center, center.distanceFrom(p0) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getInscribedCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle Triangle::getInscribedCircle() const noexcept
+	{
+		const double d0 = p2.distanceFrom(p1);
+		const double d1 = p0.distanceFrom(p2);
+		const double d2 = p1.distanceFrom(p0);
+		const double perimeter = (d0 + d1 + d2);
+		const Vec2 center{ (d0 * p0 + d1 * p1 + d2 * p2) / perimeter };
+		const double area2 = Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y));
+
+		return{ center, (area2 / perimeter) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	leftClicked, leftPressed, leftReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Triangle::leftClicked() const noexcept
+	{
+		return (MouseL.down() && mouseOver());
+	}
+
+	bool Triangle::leftPressed() const noexcept
+	{
+		return (MouseL.pressed() && mouseOver());
+	}
+
+	bool Triangle::leftReleased() const noexcept
+	{
+		return (MouseL.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rightClicked, rightPressed, rightReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Triangle::rightClicked() const noexcept
+	{
+		return (MouseR.down() && mouseOver());
+	}
+
+	bool Triangle::rightPressed() const noexcept
+	{
+		return (MouseR.pressed() && mouseOver());
+	}
+
+	bool Triangle::rightReleased() const noexcept
+	{
+		return (MouseR.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mouseOver
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Triangle::mouseOver() const noexcept
+	{
+		return Geometry2D::Intersect(Cursor::PosF(), *this);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -232,5 +347,59 @@ namespace s3d
 	{
 		SIV3D_ENGINE(Renderer2D)->addTriangle({ p0, p1, p2 }, { color0.toFloat4(), color1.toFloat4(), color2.toFloat4() });
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromBaseCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	Triangle Triangle::FromBaseCenter(const position_type& baseCenter, const position_type& top, const double baseLength) noexcept
+	{
+		Vec2 right = (top - baseCenter);
+
+		right.set(-right.y, right.x).setLength(baseLength * 0.5);
+
+		return{ top, (baseCenter + right), (baseCenter - right) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const Triangle& value)
+	{
+		formatData.string.append(U"(("_sv);
+		detail::AppendFloat(formatData.string, value.p0.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.p0.y);
+		formatData.string.append(U"), ("_sv);
+		detail::AppendFloat(formatData.string, value.p1.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.p1.y);
+		formatData.string.append(U"), ("_sv);
+		detail::AppendFloat(formatData.string, value.p2.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.p2.y);
+		formatData.string.append(U"))"_sv);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Triangle::ThrowPointAtIndexOutOfRange()
+	{
+		throw std::out_of_range{ "Triangle::pointAtIndex() index out of range" };
+	}
+
+	void Triangle::ThrowSideAtIndexOutOfRange()
+	{
+		throw std::out_of_range{ "Triangle::sideAtIndex() index out of range" };
 	}
 }
