@@ -22,6 +22,7 @@ namespace s3d
 	using BufferCreatorFunc = FunctionRef<Vertex2DBufferPointer(Vertex2D::IndexType, Vertex2D::IndexType)>;
 	struct LineStyle;
 	struct FloatQuad;
+	enum class LineCap : uint8;
 
 	namespace Vertex2DBuilder
 	{
@@ -57,6 +58,9 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildCirclePie(const BufferCreatorFunc& bufferCreator, const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildCircleArc(const BufferCreatorFunc& bufferCreator, const LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& innerColor, const Float4& outerColor, float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4 color);

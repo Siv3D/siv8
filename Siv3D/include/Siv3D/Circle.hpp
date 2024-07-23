@@ -17,6 +17,8 @@
 
 namespace s3d
 {
+	enum class LineCap : uint8;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Circle
@@ -893,7 +895,7 @@ namespace s3d
 		/// @param outerThickness 基準の円から外側方向への弧の太さ
 		/// @param color 弧の色
 		/// @return *this
-		//const Circle& drawArc(double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
+		const Circle& drawArc(double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 円の弧を描きます。
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
@@ -903,20 +905,20 @@ namespace s3d
 		/// @param innerColor 内側部分の弧の色
 		/// @param outerColor 外側部分の弧の色
 		/// @return *this
-		//const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		/// @brief 円の弧を描きます。
-		/// @param style 線のスタイル
+		/// @param lineCap 線端のスタイル
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
 		/// @param outerThickness 基準の円から外側方向への弧の太さ
 		/// @param color 弧の色
 		/// @return *this
-		//const Circle& drawArc(const LineStyle& style, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
+		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness = 1.0, double outerThickness = 0.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 円の弧を描きます。
-		/// @param style 線のスタイル
+		/// @param lineCap 線端のスタイル
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
 		/// @param angle 弧の角度（ラジアン）
 		/// @param innerThickness 基準の円から内側方向への弧の太さ
@@ -924,7 +926,7 @@ namespace s3d
 		/// @param innerColor 内側部分の弧の色
 		/// @param outerColor 外側部分の弧の色
 		/// @return *this
-		//const Circle& drawArc(const LineStyle& style, double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		////////////////////////////////////////////////////////////////
 		//

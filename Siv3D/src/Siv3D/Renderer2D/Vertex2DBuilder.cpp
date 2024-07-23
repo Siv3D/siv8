@@ -81,6 +81,160 @@ namespace s3d
 			const float angleDelta = (Math::TwoPiF / baseQuality);
 			return static_cast<Vertex2D::IndexType>(Max(std::ceil(angle / angleDelta), 5.0f));
 		}
+
+		[[nodiscard]]
+		static Vertex2D::IndexType BuildCircleArcRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& startColor, const Float4& endColor, const float scale)
+		{
+			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
+			const Vertex2D::IndexType VertexSize = (Quality + 1);
+			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+
+			// 中心
+			pVertex[0].set(centerX, centerY, startColor.getMidpoint(endColor));
+
+			// 周
+			{
+				const float radDelta = (Math::PiF / (Quality - 1));
+				Vertex2D* pDst = &pVertex[1];
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const float rad = (startAngle + (radDelta * i));
+					const float f = (std::cos(radDelta * i) * -0.5f + 0.5f);
+					const auto [s, c] = FastMath::SinCos(rad);
+					(pDst++)->set((centerX + r * s), (centerY - r * c), startColor.lerp(endColor, f));
+				}
+			}
+
+			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+			{
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + i + 1);
+				*pIndex++ = (indexOffset + i + 2);
+			}
+
+			return IndexSize;
+		}
+
+		[[nodiscard]]
+		static Vertex2D::IndexType BuildRoundCircleArc(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			const float rOuter = (rInner + thickness);
+			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), Abs(angle));
+			const Vertex2D::IndexType VertexSize = (Quality * 2);
+			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 6);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			const Vertex2D* pVertexBase = pVertex;
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			{
+				const float centerX = center.x;
+				const float centerY = center.y;
+				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
+				const float radDelta = (Abs(angle) / (Quality - 1));
+				Vertex2D* pDst = pVertex;
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const float rad = (start + (radDelta * i));
+					const auto [s, c] = FastMath::SinCos(rad);
+					(pDst++)->pos.set((centerX + rInner * s), (centerY - rInner * c));
+					(pDst++)->pos.set((centerX + rOuter * s), (centerY - rOuter * c));
+				}
+			}
+
+			for (size_t i = 0; i < VertexSize / 2; ++i)
+			{
+				(pVertex++)->color = innerColor;
+				(pVertex++)->color = outerColor;
+			}
+
+			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+			{
+				for (Vertex2D::IndexType k = 0; k < 6; ++k)
+				{
+					*pIndex++ = indexOffset + (i * 2 + RectIndexTable[k]);
+				}
+			}
+
+			const float halfThickness = (thickness * 0.5f);
+			const Float2 startCenter = pVertexBase[0].pos.getMidpoint(pVertexBase[1].pos);
+			const Float2 endCenter = pVertexBase[VertexSize - 2].pos.getMidpoint(pVertexBase[VertexSize - 1].pos);
+			Vertex2D::IndexType roundIndexCount = 0;
+
+			if (angle < 0.0)
+			{
+				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), innerColor, outerColor, scale);
+				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, outerColor, innerColor, scale);
+			}
+			else
+			{
+				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), innerColor, outerColor, scale);
+				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), outerColor, innerColor, scale);
+			}
+
+			return (IndexSize + roundIndexCount);
+		}
+
+		[[nodiscard]]
+		static Vertex2D::IndexType BuildFlatCircleArc(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			const float rOuter = (rInner + thickness);
+			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), Abs(angle));
+			const Vertex2D::IndexType VertexSize = (Quality * 2);
+			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 6);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			{
+				const float centerX = center.x;
+				const float centerY = center.y;
+				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
+				const float radDelta = (Abs(angle) / (Quality - 1));
+				Vertex2D* pDst = pVertex;
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const float rad = (start + (radDelta * i));
+					const auto [s, c] = FastMath::SinCos(rad);
+					(pDst++)->pos.set((centerX + rInner * s), (centerY - rInner * c));
+					(pDst++)->pos.set((centerX + rOuter * s), (centerY - rOuter * c));
+				}
+			}
+
+			for (size_t i = 0; i < VertexSize / 2; ++i)
+			{
+				(pVertex++)->color = innerColor;
+				(pVertex++)->color = outerColor;
+			}
+
+			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+			{
+				for (Vertex2D::IndexType k = 0; k < 6; ++k)
+				{
+					*pIndex++ = indexOffset + (i * 2 + RectIndexTable[k]);
+				}
+			}
+
+			return IndexSize;
+		}
 	}
 
 	namespace Vertex2DBuilder
@@ -611,6 +765,29 @@ namespace s3d
 			}
 
 			return IndexSize;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildCircleArc
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCircleArc(const BufferCreatorFunc& bufferCreator, const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			if (angle == 0.0f)
+			{
+				return 0;
+			}
+
+			if (lineCap == LineCap::Round)
+			{
+				return BuildRoundCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, innerColor, outerColor, scale);
+			}
+			else
+			{
+				return BuildFlatCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, innerColor, outerColor, scale);
+			}
 		}
 
 		////////////////////////////////////////////////////////////////

@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
+# include "LineCap.hpp"
 
 namespace s3d
 {
@@ -21,9 +22,7 @@ namespace s3d
 		{
 			double dotOffset;
 
-			bool hasCap;
-
-			bool isRound;
+			LineCap cap;
 
 			bool isDotted;
 
@@ -38,9 +37,7 @@ namespace s3d
 
 		double dotOffset = 0.0;
 
-		bool hasCap = true;
-
-		bool isRound = false;
+		LineCap cap = LineCap::Square;
 
 		bool isDotted = false;
 
@@ -68,19 +65,19 @@ namespace s3d
 		constexpr bool hasRoundDot() const noexcept;
 
 		/// @brief 始点と終点に四角いキャップを持つ線
-		static constexpr Parameters SquareCap{ 0.0, true, false, false, false };
+		static constexpr Parameters SquareCap{ 0.0, LineCap::Square, false, false };
 
 		/// @brief 始点と終点に丸いキャップを持つ線
-		static constexpr Parameters RoundCap{ 0.0, true, true, false, false };
+		static constexpr Parameters RoundCap{ 0.0, LineCap::Round, false, false };
 
 		/// @brief 始点と終点にキャップを持たない線
-		static constexpr Parameters Uncapped{ 0.0, false, false, false, false };
+		static constexpr Parameters Uncapped{ 0.0, LineCap::Flat, false, false };
 
 		/// @brief 四角いドットの線
-		static constexpr Parameters SquareDot{ 0.0, true, false, true, false };
+		static constexpr Parameters SquareDot{ 0.0, LineCap::Square, true, false };
 
 		/// @brief 丸いドットの線
-		static constexpr Parameters RoundDot{ 0.0, true, true, true, true };
+		static constexpr Parameters RoundDot{ 0.0, LineCap::Round, true, true };
 
 		/// @brief デフォルトの線 (SquareCap)
 		static constexpr Parameters Default = SquareCap;

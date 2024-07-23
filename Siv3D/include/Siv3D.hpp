@@ -796,6 +796,9 @@
 // 2D 図形コレクション | 2D shape collection
 # include <Siv3D/2DShapes.hpp> // ToDo
 
+// 線端のスタイル | Line cap
+# include <Siv3D/LineCap.hpp>
+
 // 線のスタイル | Line style
 # include <Siv3D/LineStyle.hpp>
 

@@ -47,6 +47,8 @@ namespace s3d
 
 		void addCirclePie(const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) override;
 
+		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& innerColor, const Float4& outerColor) override;
+
 		void addQuad(const FloatQuad& quad, const Float4& color) override;
 
 		void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) override;

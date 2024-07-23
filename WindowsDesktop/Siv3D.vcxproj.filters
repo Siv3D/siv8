@@ -925,6 +925,9 @@
     <Filter Include="src\Siv3D\Geometry2D">
       <UniqueIdentifier>{f12a3c50-9f08-461c-bde9-cbec893a74f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\LineCap">
+      <UniqueIdentifier>{f10c1d9c-ccba-48f8-b372-e605e94894c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3618,6 +3621,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.ipp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\LineCap.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -5938,6 +5944,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersect.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LineCap\SivLineCap.cpp">
+      <Filter>src\Siv3D\LineCap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

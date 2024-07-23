@@ -299,7 +299,31 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCirclePie(const Float2& center, const float r, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, innerColor, outerColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, innerColor, outerColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addCircleArc(const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, innerColor, outerColor, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{

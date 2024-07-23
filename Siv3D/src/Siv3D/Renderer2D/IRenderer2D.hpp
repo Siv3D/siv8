@@ -25,6 +25,7 @@ namespace s3d
 	struct RasterizerState;
 	struct SamplerState;
 	struct Mat3x2;
+	enum class LineCap : uint8;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -55,7 +56,7 @@ namespace s3d
 
 		virtual void addCirclePie(const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) = 0;
 
-		//virtual void addCircleArc(const LineStyle& style, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
+		virtual void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
 
 		//virtual void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const Float4& color) = 0;
 
