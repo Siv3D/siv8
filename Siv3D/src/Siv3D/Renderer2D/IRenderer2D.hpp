@@ -47,15 +47,34 @@ namespace s3d
 
 		virtual void addRect(const FloatRect& rect, const Float4(&colors)[4]) = 0;
 
-		virtual void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& innerColor, const Float4& outerColor, ColorFillDirection colorType) = 0;
+		virtual void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 
 		virtual void addCircle(const Float2& center, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 
 		virtual void addCircleFrame(const Float2& center, float rInner, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
 
+		virtual void addCirclePie(const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) = 0;
+
+		//virtual void addCircleArc(const LineStyle& style, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
+
+		//virtual void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const Float4& color) = 0;
+
+		//virtual void addEllipse(const Float2& center, float a, float b, const Float4& innerColor, const Float4& outerColor) = 0;
+
+		//virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+
 		virtual void addQuad(const FloatQuad& quad, const Float4& color) = 0;
 
 		virtual void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) = 0;
+
+		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const Float4& color) = 0;
+
+		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+	
+		//virtual void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+
+
+
 
 		virtual void flush() = 0;
 

@@ -199,7 +199,7 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer2D)->addCircleFrame(
 			center,
-			static_cast<float>(r - innerThickness),
+			static_cast<float>(Abs(r) - innerThickness),
 			static_cast<float>(innerThickness + outerThickness),
 			color0,
 			color0
@@ -212,8 +212,44 @@ namespace s3d
 	{
 		SIV3D_ENGINE(Renderer2D)->addCircleFrame(
 			center,
-			static_cast<float>(r - innerThickness),
+			static_cast<float>(Abs(r) - innerThickness),
 			static_cast<float>(innerThickness + outerThickness),
+			innerColor.toFloat4(),
+			outerColor.toFloat4()
+		);
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawPie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::drawPie(const double startAngle, const double angle, const ColorF& color) const
+	{
+		const Float4 color0 = color.toFloat4();
+
+		SIV3D_ENGINE(Renderer2D)->addCirclePie(
+			center,
+			Abs(static_cast<float>(r)),
+			static_cast<float>(startAngle),
+			Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF),
+			color0,
+			color0
+		);
+
+		return *this;
+	}
+
+	const Circle& Circle::drawPie(const double startAngle, const double angle, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addCirclePie(
+			center,
+			Abs(static_cast<float>(r)),
+			static_cast<float>(startAngle),
+			Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF),
 			innerColor.toFloat4(),
 			outerColor.toFloat4()
 		);

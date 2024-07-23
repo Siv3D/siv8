@@ -73,6 +73,14 @@ namespace s3d
 				return static_cast<Vertex2D::IndexType>(Min((5 + static_cast<int32>((r - 8.0f) / 8.0f)), 63));
 			}
 		}
+
+		[[nodiscard]]
+		constexpr Vertex2D::IndexType CalculateCirclePieQuality(const float r, const float angle)
+		{
+			const Vertex2D::IndexType baseQuality = (CalculateCircleQuality(r) * 4);
+			const float angleDelta = (Math::TwoPiF / baseQuality);
+			return static_cast<Vertex2D::IndexType>(Max(std::ceil(angle / angleDelta), 5.0f));
+		}
 	}
 
 	namespace Vertex2DBuilder
@@ -538,6 +546,68 @@ namespace s3d
 				{
 					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
 				}
+			}
+
+			return IndexSize;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildCirclePie
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCirclePie(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			if (angle == 0.0f)
+			{
+				return 0;
+			}
+
+			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Abs(angle));
+			const Vertex2D::IndexType VertexSize = (Quality + 1);
+			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+
+			// 中心
+			pVertex[0].pos.set(centerX, centerY);
+
+			// 周
+			{
+				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
+				const float radDelta = (Abs(angle) / (Quality - 1));
+				Vertex2D* pDst = &pVertex[1];
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const float rad = (start + (radDelta * i));
+					const auto [s, c] = FastMath::SinCos(rad);
+					(pDst++)->pos.set((centerX + r * s), (centerY - r * c));
+				}
+			}
+
+			{
+				(pVertex++)->color = innerColor;
+
+				for (size_t i = 1; i < VertexSize; ++i)
+				{
+					(pVertex++)->color = outerColor;
+				}
+			}
+
+			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+			{
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + i + 1);
+				*pIndex++ = (indexOffset + i + 2);
 			}
 
 			return IndexSize;

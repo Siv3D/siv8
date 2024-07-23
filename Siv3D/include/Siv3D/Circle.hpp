@@ -870,7 +870,7 @@ namespace s3d
 		/// @param angle 扇形の角度（ラジアン）
 		/// @param color 扇形の色
 		/// @return *this
-		//const Circle& drawPie(double startAngle, double angle, const ColorF& color = Palette::White) const;
+		const Circle& drawPie(double startAngle, double angle, const ColorF& color = Palette::White) const;
 
 		/// @brief 扇形を描きます。
 		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
@@ -878,7 +878,7 @@ namespace s3d
 		/// @param innerColor 扇の中心部分の色
 		/// @param outerColor 扇の外側部分の色
 		/// @return *this
-		//const Circle& drawPie(double startAngle, double angle, const ColorF& innerColor, const ColorF& outerColor) const;
+		const Circle& drawPie(double startAngle, double angle, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		////////////////////////////////////////////////////////////////
 		//
