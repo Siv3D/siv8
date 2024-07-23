@@ -2191,6 +2191,8 @@
 		F986FFFF2BCFBB53006A4C0F /* SkBlender.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABD2BCFBB53006A4C0F /* SkBlender.h */; };
 		F9D41B5C2C4BCCDD00290998 /* IsClockwise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */; };
 		F9D41B5D2C4BCCDD00290998 /* IsClockwise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */; };
+		F9D41B5F2C4FCE4600290998 /* LineCap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5E2C4FCE4600290998 /* LineCap.hpp */; };
+		F9D41B622C4FCE6400290998 /* SivLineCap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41B602C4FCE6300290998 /* SivLineCap.cpp */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -4554,6 +4556,8 @@
 		F986FFE52BCFBB53006A4C0F /* SkTextUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkTextUtils.cpp; sourceTree = "<group>"; };
 		F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IsClockwise.hpp; sourceTree = "<group>"; };
 		F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IsClockwise.ipp; sourceTree = "<group>"; };
+		F9D41B5E2C4FCE4600290998 /* LineCap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineCap.hpp; sourceTree = "<group>"; };
+		F9D41B602C4FCE6300290998 /* SivLineCap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLineCap.cpp; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -5508,6 +5512,7 @@
 				F9528B502BB6DC2C00222F45 /* LicenseInfo.hpp */,
 				F9528B692BB7087700222F45 /* LicenseManager.hpp */,
 				F98605282BD10459006A4C0F /* Line.hpp */,
+				F9D41B5E2C4FCE4600290998 /* LineCap.hpp */,
 				F9E7943A2C12F34D002615BA /* LineStyle.hpp */,
 				F9E7945F2C198133002615BA /* ListUtility.hpp */,
 				F9070BFC2B9F175000383E4D /* Logger.hpp */,
@@ -6266,6 +6271,7 @@
 				F98605D62BE4BE80006A4C0F /* Keyboard */,
 				F9528B762BB708A700222F45 /* LicenseManager */,
 				F9E794382C12DA78002615BA /* Line */,
+				F9D41B612C4FCE6300290998 /* LineCap */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
 				F98605702BDA32D4006A4C0F /* Mat3x2 */,
@@ -9572,6 +9578,14 @@
 			path = skia;
 			sourceTree = "<group>";
 		};
+		F9D41B612C4FCE6300290998 /* LineCap */ = {
+			isa = PBXGroup;
+			children = (
+				F9D41B602C4FCE6300290998 /* SivLineCap.cpp */,
+			);
+			path = LineCap;
+			sourceTree = "<group>";
+		};
 		F9E5FC172BC12C340081A4F7 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -10159,6 +10173,7 @@
 				F986F99B2BCA9D0A006A4C0F /* plutovg.h in Headers */,
 				F98605E82BE50394006A4C0F /* FallbackNameList.hpp in Headers */,
 				F9070CC22B9F175000383E4D /* FormatLiteral.hpp in Headers */,
+				F9D41B5F2C4FCE4600290998 /* LineCap.hpp in Headers */,
 				F98600042BCFBB53006A4C0F /* SkCapabilities.h in Headers */,
 				F9070AF62B9DEB5900383E4D /* cached-powers.h in Headers */,
 				F986FA572BCFB53B006A4C0F /* svttglyf.h in Headers */,
@@ -11734,6 +11749,7 @@
 				F98603D92BCFBB54006A4C0F /* SkSLRasterPipelineBuilder.cpp in Sources */,
 				F98604562BCFBB54006A4C0F /* SkSLEliminateDeadGlobalVariables.cpp in Sources */,
 				F98601562BCFBB53006A4C0F /* SkBitmapCache.cpp in Sources */,
+				F9D41B622C4FCE6400290998 /* SivLineCap.cpp in Sources */,
 				F98604442BCFBB54006A4C0F /* SkSLType.cpp in Sources */,
 				F98601752BCFBB53006A4C0F /* SkBlurMaskFilterImpl.cpp in Sources */,
 				F96F95F62C359EB80033353E /* SivInputDeviceType.cpp in Sources */,
