@@ -29,7 +29,7 @@ namespace s3d
 		bool init(ID3D11Device* device, ID3D11DeviceContext* context);
 
 		[[nodiscard]]
-		Vertex2DBufferPointer requestBuffer(uint16 vertexSize, uint32 indexSize, D3D11Renderer2DCommandManager& commandManager);
+		Vertex2DBufferPointer requestBuffer(uint16 vertexCount, uint32 indexCount, D3D11Renderer2DCommandManager& commandManager);
 
 		[[nodiscard]]
 		size_t num_batches() const noexcept;

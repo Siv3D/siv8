@@ -103,11 +103,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vertex2DBufferPointer D3D11VertexBufferManager2D::requestBuffer(const uint16 vertexSize, const uint32 indexSize, D3D11Renderer2DCommandManager& commandManager)
+	Vertex2DBufferPointer D3D11VertexBufferManager2D::requestBuffer(const uint16 vertexCount, const uint32 indexCount, D3D11Renderer2DCommandManager& commandManager)
 	{
 		// VB
 		{
-			const uint32 vertexArrayWritePosTarget = (m_vertexArrayWritePos + vertexSize);
+			const uint32 vertexArrayWritePosTarget = (m_vertexArrayWritePos + vertexCount);
 
 			if (m_vertexArray.size() < vertexArrayWritePosTarget)
 			{
@@ -122,7 +122,7 @@ namespace s3d
 
 		// IB
 		{
-			const uint32 indexArrayWritePosTarget = (m_indexArrayWritePos + indexSize);
+			const uint32 indexArrayWritePosTarget = (m_indexArrayWritePos + indexCount);
 
 			if (m_indexArray.size() < indexArrayWritePosTarget)
 			{
@@ -137,8 +137,8 @@ namespace s3d
 		
 		BatchBufferPos* pLastBatch = &m_batches.back();
 		{
-			if ((VertexBufferSize < (pLastBatch->vertexPos + vertexSize)
-				|| (IndexBufferSize < (pLastBatch->indexPos + indexSize))))
+			if ((VertexBufferSize < (pLastBatch->vertexPos + vertexCount)
+				|| (IndexBufferSize < (pLastBatch->indexPos + indexCount))))
 			{
 				commandManager.pushUpdateBuffers(static_cast<uint32>(m_batches.size()));
 				m_batches.emplace_back();
@@ -153,11 +153,11 @@ namespace s3d
 			.indexOffset	= static_cast<Vertex2D::IndexType>(pLastBatch->vertexPos),
 		};
 
-		m_vertexArrayWritePos	+= vertexSize;
-		m_indexArrayWritePos	+= indexSize;
+		m_vertexArrayWritePos	+= vertexCount;
+		m_indexArrayWritePos	+= indexCount;
 
-		pLastBatch->vertexPos	+= vertexSize;
-		pLastBatch->indexPos	+= indexSize;
+		pLastBatch->vertexPos	+= vertexCount;
+		pLastBatch->indexPos	+= indexCount;
 
 		return result;
 	}
@@ -227,13 +227,13 @@ namespace s3d
 		const auto& currentBatch = m_batches[batchIndex];
 
 		// VB
-		if (const uint32 vertexSize = currentBatch.vertexPos)
+		if (const uint32 vertexCount = currentBatch.vertexPos)
 		{
 			const Vertex2D* pSrc = (m_vertexArray.data() + vertexArrayReadPos);
 
 			D3D11_MAP mapType = D3D11_MAP_WRITE_NO_OVERWRITE;
 
-			if (VertexBufferSize < (m_vertexBufferWritePos + vertexSize))
+			if (VertexBufferSize < (m_vertexBufferWritePos + vertexCount))
 			{
 				mapType = D3D11_MAP_WRITE_DISCARD;
 				m_vertexBufferWritePos = 0;
@@ -246,24 +246,24 @@ namespace s3d
 				if (Vertex2D* const p = static_cast<Vertex2D*>(res.pData))
 				{
 					Vertex2D* const pDst = (p + m_vertexBufferWritePos);		
-					std::memcpy(pDst, pSrc, sizeof(Vertex2D) * vertexSize);
+					std::memcpy(pDst, pSrc, (sizeof(Vertex2D) * vertexCount));
 				}
 
 				m_context->Unmap(m_vertexBuffer.Get(), 0);
 			}
 
 			batchInfo.baseVertexLocation = m_vertexBufferWritePos;
-			m_vertexBufferWritePos += vertexSize;
+			m_vertexBufferWritePos += vertexCount;
 		}
 
 		// IB
-		if (const uint32 indexSize = currentBatch.indexPos)
+		if (const uint32 indexCount = currentBatch.indexPos)
 		{
 			const Vertex2D::IndexType* pSrc = (m_indexArray.data() + indexArrayReadPos);
 
 			D3D11_MAP mapType = D3D11_MAP_WRITE_NO_OVERWRITE;
 
-			if (IndexBufferSize < (m_indexBufferWritePos + indexSize))
+			if (IndexBufferSize < (m_indexBufferWritePos + indexCount))
 			{
 				mapType = D3D11_MAP_WRITE_DISCARD;
 				m_indexBufferWritePos = 0;
@@ -276,15 +276,15 @@ namespace s3d
 				if (Vertex2D::IndexType* const p = static_cast<Vertex2D::IndexType*>(res.pData))
 				{
 					Vertex2D::IndexType* const pDst = p + m_indexBufferWritePos;
-					std::memcpy(pDst, pSrc, (sizeof(Vertex2D::IndexType) * indexSize));
+					std::memcpy(pDst, pSrc, (sizeof(Vertex2D::IndexType) * indexCount));
 				}
 
 				m_context->Unmap(m_indexBuffer.Get(), 0);
 			}
 
-			batchInfo.indexCount = indexSize;
+			batchInfo.indexCount = indexCount;
 			batchInfo.startIndexLocation = m_indexBufferWritePos;
-			m_indexBufferWritePos += indexSize;
+			m_indexBufferWritePos += indexCount;
 		}
 
 		return batchInfo;

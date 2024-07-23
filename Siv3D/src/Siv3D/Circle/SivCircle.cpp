@@ -285,7 +285,8 @@ namespace s3d
 			ClampAngle(angle),
 			static_cast<float>(innerThickness + outerThickness),
 			color0,
-			color0
+			color0,
+			ColorFillDirection::InOut
 		);
 
 		return *this;
@@ -301,7 +302,8 @@ namespace s3d
 			ClampAngle(angle),
 			static_cast<float>(innerThickness + outerThickness),
 			innerColor.toFloat4(),
-			outerColor.toFloat4()
+			outerColor.toFloat4(),
+			ColorFillDirection::InOut
 		);
 
 		return *this;
@@ -319,7 +321,8 @@ namespace s3d
 			ClampAngle(angle),
 			static_cast<float>(innerThickness + outerThickness),
 			color0,
-			color0
+			color0,
+			ColorFillDirection::InOut
 		);
 
 		return *this;
@@ -335,12 +338,29 @@ namespace s3d
 			ClampAngle(angle),
 			static_cast<float>(innerThickness + outerThickness),
 			innerColor.toFloat4(),
-			outerColor.toFloat4()
+			outerColor.toFloat4(),
+			ColorFillDirection::InOut
 		);
 
 		return *this;
 	}
 
+	const Circle& Circle::drawArc(const LineCap lineCap, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Arg::start_<ColorF> startColor, const Arg::end_<ColorF> endColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addCircleArc(
+			lineCap,
+			center,
+			static_cast<float>(Abs(r) - innerThickness),
+			static_cast<float>(startAngle),
+			ClampAngle(angle),
+			static_cast<float>(innerThickness + outerThickness),
+			startColor->toFloat4(),
+			endColor->toFloat4(),
+			ColorFillDirection::LeftRight
+		);
+
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -86,9 +86,9 @@ namespace s3d
 		static Vertex2D::IndexType BuildCircleArcRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& color, const float scale)
 		{
 			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
-			const Vertex2D::IndexType VertexSize = (Quality + 1);
-			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 3);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			const Vertex2D::IndexType VertexCount = (Quality + 1);
+			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -114,7 +114,7 @@ namespace s3d
 				}
 			}
 
-			for (size_t i = 0; i < VertexSize; ++i)
+			for (size_t i = 0; i < VertexCount; ++i)
 			{
 				(pVertex++)->color = color;
 			}
@@ -126,16 +126,16 @@ namespace s3d
 				*pIndex++ = (indexOffset + i + 2);
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		[[nodiscard]]
 		static Vertex2D::IndexType BuildCircleArcRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& startColor, const Float4& endColor, const float scale)
 		{
 			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
-			const Vertex2D::IndexType VertexSize = (Quality + 1);
-			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 3);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			const Vertex2D::IndexType VertexCount = (Quality + 1);
+			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -169,81 +169,152 @@ namespace s3d
 				*pIndex++ = (indexOffset + i + 2);
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildRoundCircleArc(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& innerColor, const Float4& outerColor, const float scale)
+		static Vertex2D::IndexType BuildRoundCircleArc(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
-			const float rOuter = (rInner + thickness);
-			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), Abs(angle));
-			const Vertex2D::IndexType VertexSize = (Quality * 2);
-			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 6);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
-			const Vertex2D* pVertexBase = pVertex;
+			Vertex2D::IndexType indexCount = 0;
 
-			if (not pVertex)
-			{
-				return 0;
-			}
-
+			const float halfThickness = (thickness * 0.5f);
+			Float2 startCenter;
+			Float2 endCenter;
 			{
 				const float centerX = center.x;
 				const float centerY = center.y;
 				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
-				const float radDelta = (Abs(angle) / (Quality - 1));
-				Vertex2D* pDst = pVertex;
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				
 				{
-					const float rad = (start + (radDelta * i));
-					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->pos.set((centerX + rInner * s), (centerY - rInner * c));
-					(pDst++)->pos.set((centerX + rOuter * s), (centerY - rOuter * c));
+					const auto [s, c] = FastMath::SinCos(start);
+					startCenter = { (centerX + (rInner + halfThickness) * s), (centerY - (rInner + halfThickness) * c) };
+				}
+
+				{
+					const auto [s, c] = FastMath::SinCos(start + Abs(angle));
+					endCenter = { (centerX + (rInner + halfThickness) * s), (centerY - (rInner + halfThickness) * c) };
 				}
 			}
 
-			for (size_t i = 0; i < VertexSize / 2; ++i)
+			if (colorType == ColorFillDirection::LeftRight)
 			{
-				(pVertex++)->color = innerColor;
-				(pVertex++)->color = outerColor;
-			}
-
-			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
-			{
-				for (Vertex2D::IndexType k = 0; k < 6; ++k)
+				if (angle < 0.0)
 				{
-					*pIndex++ = indexOffset + (i * 2 + RectIndexTable[k]);
+					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), color1, scale);
 				}
-			}
-
-			const float halfThickness = (thickness * 0.5f);
-			const Float2 startCenter = pVertexBase[0].pos.getMidpoint(pVertexBase[1].pos);
-			const Float2 endCenter = pVertexBase[VertexSize - 2].pos.getMidpoint(pVertexBase[VertexSize - 1].pos);
-			Vertex2D::IndexType roundIndexCount = 0;
-
-			if (angle < 0.0)
-			{
-				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), innerColor, outerColor, scale);
-				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, outerColor, innerColor, scale);
+				else
+				{
+					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), color0, scale);
+				}
 			}
 			else
 			{
-				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), innerColor, outerColor, scale);
-				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), outerColor, innerColor, scale);
+				if (angle < 0.0)
+				{
+					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), color0, color1, scale);
+				}
+				else
+				{
+					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), color0, color1, scale);
+				}
 			}
 
-			return (IndexSize + roundIndexCount);
+			if (angle != 0.0)
+			{
+				const float rOuter = (rInner + thickness);
+				const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), Abs(angle));
+				const Vertex2D::IndexType VertexCount = (Quality * 2);
+				const Vertex2D::IndexType IndexCount = ((Quality - 1) * 6);
+				auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+				if (not pVertex)
+				{
+					return 0;
+				}
+
+				{
+					const float centerX = center.x;
+					const float centerY = center.y;
+					const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
+					const float radDelta = (Abs(angle) / (Quality - 1));
+					Vertex2D* pDst = pVertex;
+
+					for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+					{
+						const float rad = (start + (radDelta * i));
+						const auto [s, c] = FastMath::SinCos(rad);
+						(pDst++)->pos.set((centerX + rInner * s), (centerY - rInner * c));
+						(pDst++)->pos.set((centerX + rOuter * s), (centerY - rOuter * c));
+					}
+				}
+
+				if (colorType == ColorFillDirection::LeftRight)
+				{
+					const Float4 startColor = ((angle < 0.0f) ? color1 : color0);
+					const Float4 endColor = ((angle < 0.0f) ? color0 : color1);
+					const Float4 colorDelta = ((endColor - startColor) / static_cast<float>((VertexCount / 2) - 1));
+
+					for (Vertex2D::IndexType i = 0; i < (VertexCount / 2); ++i)
+					{
+						const Float4 color = (startColor + (colorDelta * i));
+						(pVertex++)->color = color;
+						(pVertex++)->color = color;
+					}
+				}
+				else
+				{
+					for (size_t i = 0; i < VertexCount / 2; ++i)
+					{
+						(pVertex++)->color = color0;
+						(pVertex++)->color = color1;
+					}
+				}
+
+				for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+				{
+					for (Vertex2D::IndexType k = 0; k < 6; ++k)
+					{
+						*pIndex++ = indexOffset + (i * 2 + RectIndexTable[k]);
+					}
+				}
+
+				indexCount += IndexCount;
+			}
+
+			if (colorType == ColorFillDirection::LeftRight)
+			{
+				if (angle < 0.0)
+				{
+					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, color0, scale);
+				}
+				else
+				{
+					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), color1, scale);
+				}
+			}
+			else
+			{
+				if (angle < 0.0)
+				{
+					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, color1, color0, scale);
+				}
+				else
+				{
+					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), color1, color0, scale);
+				}
+			}
+
+			return indexCount;
 		}
 
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildFlatCircleArc(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& innerColor, const Float4& outerColor, const float scale)
+		static Vertex2D::IndexType BuildFlatCircleArc(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			const float rOuter = (rInner + thickness);
 			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), Abs(angle));
-			const Vertex2D::IndexType VertexSize = (Quality * 2);
-			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 6);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			const Vertex2D::IndexType VertexCount = (Quality * 2);
+			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 6);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -266,10 +337,26 @@ namespace s3d
 				}
 			}
 
-			for (size_t i = 0; i < VertexSize / 2; ++i)
+			if (colorType == ColorFillDirection::LeftRight)
 			{
-				(pVertex++)->color = innerColor;
-				(pVertex++)->color = outerColor;
+				const Float4 startColor = color0;
+				const Float4 endColor = color1;
+				const Float4 colorDelta = ((endColor - startColor) / static_cast<float>((VertexCount / 2) - 1));
+
+				for (Vertex2D::IndexType i = 0; i < (VertexCount / 2); ++i)
+				{
+					const Float4 color = (startColor + (colorDelta * i));
+					(pVertex++)->color = color;
+					(pVertex++)->color = color;
+				}
+			}
+			else
+			{
+				for (size_t i = 0; i < VertexCount / 2; ++i)
+				{
+					(pVertex++)->color = color0;
+					(pVertex++)->color = color1;
+				}
 			}
 
 			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
@@ -280,7 +367,7 @@ namespace s3d
 				}
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 	}
 
@@ -294,9 +381,9 @@ namespace s3d
 
 		Vertex2D::IndexType BuildLine(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const Float2& start, const Float2& end, const float thickness, const Float4(&colors)[2], const float scale)
 		{
-			constexpr Vertex2D::IndexType VertexSize = 4;
-			constexpr Vertex2D::IndexType IndexSize = 6;
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			constexpr Vertex2D::IndexType VertexCount = 4;
+			constexpr Vertex2D::IndexType IndexCount = 6;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -332,7 +419,7 @@ namespace s3d
 				pVertex[3].set((end - vNormal), colors[1]);
 			}
 
-			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			for (Vertex2D::IndexType i = 0; i < IndexCount; ++i)
 			{
 				*pIndex++ = (indexOffset + RectIndexTable[i]);
 			}
@@ -350,113 +437,53 @@ namespace s3d
 				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, end, halfThickness, (startAngle + Math::PiF), colors[1], scale);
 			}
 
-			return (IndexSize + roundIndexCount);
+			return (IndexCount + roundIndexCount);
 		}
 
 		Vertex2D::IndexType BuildLine(const BufferCreatorFunc& bufferCreator, const LineStyle& style, const Float2& start, const Float2& end, const float thickness, const Float4(&colors)[2], const float scale)
 		{
-			if (style.hasSquareCap())
+			if (not style.isDotted)
 			{
-				return BuildCappedLine(bufferCreator, start, end, thickness, colors);
+				return BuildLine(bufferCreator, style.cap, style.cap, start, end, thickness, colors, scale);
 			}
-			else if (style.hasNoCap())
+			
+			constexpr Vertex2D::IndexType VertexCount = 4;
+			constexpr Vertex2D::IndexType IndexCount = 6;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
 			{
-				return BuildUncappedLine(bufferCreator, start, end, thickness, colors);
+				return 0;
 			}
-			//else if (style.hasRoundCap())
-			//{
-			//	float startAngle = 0.0f;
-			//	Vertex2D::IndexType indexCount = BuildUncappedLine(bufferCreator, start, end, thickness, colors, startAngle);
 
-			//	const float thicknessHalf = (thickness * 0.5f);
-			//	indexCount += BuildCirclePie(bufferCreator, begin, thicknessHalf, startAngle, Math::PiF, colors[0], colors[0], scale);
-			//	indexCount += BuildCirclePie(bufferCreator, end, thicknessHalf, startAngle + Math::PiF, Math::PiF, colors[1], colors[1], scale);
+			const float halfThickness = (thickness * 0.5f);
+			const Float2 line = (end - start).normalized();
+			const Float2 vNormal{ (-line.y * halfThickness), (line.x * halfThickness) };
 
-			//	return indexCount;
-			//}
-			//else if (style.hasSquareDot())
-			//{
-			//	return BuildSquareDotLine(bufferCreator, start, end, thickness, colors, static_cast<float>(style.dotOffset), scale);
-			//}
-			//else if (style.hasRoundDot())
-			//{
-			//	return BuildRoundDotLine(bufferCreator, start, end, thickness, colors, static_cast<float>(style.dotOffset), style.hasAlignedDot);
-			//}
+			if (style.cap == LineCap::Flat)
+			{
+				pVertex[0].set((start + vNormal), colors[0]);
+				pVertex[1].set((start - vNormal), colors[0]);
+				pVertex[2].set((end + vNormal), colors[1]);
+				pVertex[3].set((end - vNormal), colors[1]);
+			}
 			else
 			{
-				return 0;
-			}
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	BuildCappedLine
-		//
-		////////////////////////////////////////////////////////////////
-
-		Vertex2D::IndexType BuildCappedLine(const BufferCreatorFunc& bufferCreator, const Float2& start, const Float2& end, const float thickness, const Float4(&colors)[2])
-		{
-			constexpr Vertex2D::IndexType VertexSize	= 4;
-			constexpr Vertex2D::IndexType IndexSize		= 6;
-			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexSize, IndexSize);
-
-			if (not pVertex)
-			{
-				return 0;
+				const Float2 lineHalf{ line * halfThickness };
+				const Float2 start2 = (start - lineHalf);
+				const Float2 end2 = (end + lineHalf);
+				pVertex[0].set((start2 + vNormal), colors[0]);
+				pVertex[1].set((start2 - vNormal), colors[0]);
+				pVertex[2].set((end2 + vNormal), colors[1]);
+				pVertex[3].set((end2 - vNormal), colors[1]);
 			}
 
-			const float halfThickness = (thickness * 0.5f);
-			const Float2 line = (end - start).normalized();
-			const Float2 vNormal{ (-line.y * halfThickness), (line.x * halfThickness) };
-			const Float2 lineHalf{ line * halfThickness };
-			const Float2 start2	= (start - lineHalf);
-			const Float2 end2	= (end + lineHalf);
-
-			pVertex[0].set((start2 + vNormal), colors[0]);
-			pVertex[1].set((start2 - vNormal), colors[0]);
-			pVertex[2].set((end2 + vNormal), colors[1]);
-			pVertex[3].set((end2 - vNormal), colors[1]);
-
-			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			for (Vertex2D::IndexType i = 0; i < IndexCount; ++i)
 			{
 				*pIndex++ = (indexOffset + RectIndexTable[i]);
 			}
 
-			return IndexSize;
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	BuildUncappedLine
-		//
-		////////////////////////////////////////////////////////////////
-
-		Vertex2D::IndexType BuildUncappedLine(const BufferCreatorFunc& bufferCreator, const Float2& start, const Float2& end, const float thickness, const Float4(&colors)[2])
-		{
-			constexpr Vertex2D::IndexType VertexSize	= 4;
-			constexpr Vertex2D::IndexType IndexSize		= 6;
-			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexSize, IndexSize);
-
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			const float halfThickness = (thickness * 0.5f);
-			const Float2 line = (end - start).normalized();
-			const Float2 vNormal{ (-line.y * halfThickness), (line.x * halfThickness) };
-
-			pVertex[0].set((start + vNormal), colors[0]);
-			pVertex[1].set((start - vNormal), colors[0]);
-			pVertex[2].set((end + vNormal), colors[1]);
-			pVertex[3].set((end - vNormal), colors[1]);
-
-			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
-			{
-				*pIndex++ = (indexOffset + RectIndexTable[i]);
-			}
-
-			return IndexSize;
+			return IndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -467,9 +494,9 @@ namespace s3d
 
 		Vertex2D::IndexType BuildTriangle(const BufferCreatorFunc& bufferCreator, const Float2(&points)[3], const Float4& color)
 		{
-			constexpr Vertex2D::IndexType VertexSize	= 3;
-			constexpr Vertex2D::IndexType IndexSize		= 3;
-			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexSize, IndexSize);
+			constexpr Vertex2D::IndexType VertexCount	= 3;
+			constexpr Vertex2D::IndexType IndexCount		= 3;
+			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexCount, IndexCount);
 			
 			if (not pVertex)
 			{
@@ -484,14 +511,14 @@ namespace s3d
 			pIndex[1] = (indexOffset + 1);
 			pIndex[2] = (indexOffset + 2);
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		Vertex2D::IndexType BuildTriangle(const BufferCreatorFunc& bufferCreator, const Float2(&points)[3], const Float4(&colors)[3])
 		{
-			constexpr Vertex2D::IndexType VertexSize	= 3;
-			constexpr Vertex2D::IndexType IndexSize		= 3;
-			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexSize, IndexSize);
+			constexpr Vertex2D::IndexType VertexCount	= 3;
+			constexpr Vertex2D::IndexType IndexCount		= 3;
+			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexCount, IndexCount);
 			
 			if (not pVertex)
 			{
@@ -506,7 +533,7 @@ namespace s3d
 			pIndex[1] = (indexOffset + 1);
 			pIndex[2] = (indexOffset + 2);
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -517,9 +544,9 @@ namespace s3d
 
 		Vertex2D::IndexType BuildRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const Float4& color)
 		{
-			constexpr Vertex2D::IndexType VertexSize	= 4;
-			constexpr Vertex2D::IndexType IndexSize		= 6;
-			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexSize, IndexSize);
+			constexpr Vertex2D::IndexType VertexCount	= 4;
+			constexpr Vertex2D::IndexType IndexCount		= 6;
+			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -531,19 +558,19 @@ namespace s3d
 			pVertex[2].set(rect.left, rect.bottom, color);
 			pVertex[3].set(rect.right, rect.bottom, color);
 
-			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			for (Vertex2D::IndexType i = 0; i < IndexCount; ++i)
 			{
 				*pIndex++ = (indexOffset + RectIndexTable[i]);
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		Vertex2D::IndexType BuildRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const Float4(&colors)[4])
 		{
-			constexpr Vertex2D::IndexType VertexSize	= 4;
-			constexpr Vertex2D::IndexType IndexSize		= 6;
-			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexSize, IndexSize);
+			constexpr Vertex2D::IndexType VertexCount	= 4;
+			constexpr Vertex2D::IndexType IndexCount		= 6;
+			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -555,12 +582,12 @@ namespace s3d
 			pVertex[2].set(rect.left, rect.bottom, colors[3]);
 			pVertex[3].set(rect.right, rect.bottom, colors[2]);
 
-			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			for (Vertex2D::IndexType i = 0; i < IndexCount; ++i)
 			{
 				*pIndex++ = (indexOffset + RectIndexTable[i]);
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -571,9 +598,9 @@ namespace s3d
 
 		Vertex2D::IndexType BuildRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1)
 		{
-			constexpr Vertex2D::IndexType VertexSize	= 8;
-			constexpr Vertex2D::IndexType IndexSize		= 24;
-			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexSize, IndexSize);
+			constexpr Vertex2D::IndexType VertexCount	= 8;
+			constexpr Vertex2D::IndexType IndexCount		= 24;
+			auto [pVertex, pIndex, indexOffset]			= bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -635,12 +662,12 @@ namespace s3d
 				}
 			}
 
-			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			for (Vertex2D::IndexType i = 0; i < IndexCount; ++i)
 			{
 				*pIndex++ = (indexOffset + RectFrameIndexTable[i]);
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -653,9 +680,9 @@ namespace s3d
 		{
 			const Vertex2D::IndexType Quality = CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
 			const Vertex2D::IndexType FullQuality = (Quality * 4);
-			const Vertex2D::IndexType VertexSize = (FullQuality + 1);
-			const Vertex2D::IndexType IndexSize = (FullQuality * 3);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			const Vertex2D::IndexType VertexCount = (FullQuality + 1);
+			const Vertex2D::IndexType IndexCount = (FullQuality * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -742,7 +769,7 @@ namespace s3d
 				*pIndex++ = (indexOffset + 1);
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -756,9 +783,9 @@ namespace s3d
 			const float rOuter = (rInner + thickness);
 			const Vertex2D::IndexType Quality = CalculateCircleQuality(rOuter * scale); // 円周の 1/4 に相当する品質
 			const Vertex2D::IndexType FullQuality = (Quality * 4);
-			const Vertex2D::IndexType VertexSize = (FullQuality * 2);
-			const Vertex2D::IndexType IndexSize = (FullQuality * 6);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			const Vertex2D::IndexType VertexCount = (FullQuality * 2);
+			const Vertex2D::IndexType IndexCount = (FullQuality * 6);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -810,7 +837,7 @@ namespace s3d
 				}
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -827,9 +854,9 @@ namespace s3d
 			}
 
 			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Abs(angle));
-			const Vertex2D::IndexType VertexSize = (Quality + 1);
-			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 3);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			const Vertex2D::IndexType VertexCount = (Quality + 1);
+			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -859,7 +886,7 @@ namespace s3d
 			{
 				(pVertex++)->color = innerColor;
 
-				for (size_t i = 1; i < VertexSize; ++i)
+				for (size_t i = 1; i < VertexCount; ++i)
 				{
 					(pVertex++)->color = outerColor;
 				}
@@ -872,7 +899,7 @@ namespace s3d
 				*pIndex++ = (indexOffset + i + 2);
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -881,20 +908,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildCircleArc(const BufferCreatorFunc& bufferCreator, const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& innerColor, const Float4& outerColor, const float scale)
+		Vertex2D::IndexType BuildCircleArc(const BufferCreatorFunc& bufferCreator, const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
-			if (angle == 0.0f)
-			{
-				return 0;
-			}
-
 			if (lineCap == LineCap::Round)
 			{
-				return BuildRoundCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, innerColor, outerColor, scale);
+				return BuildRoundCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
 			}
 			else
 			{
-				return BuildFlatCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, innerColor, outerColor, scale);
+				if (angle == 0.0f)
+				{
+					return 0;
+				}
+
+				return BuildFlatCircleArc(bufferCreator, center, rInner, startAngle, angle, thickness, colorType, color0, color1, scale);
 			}
 		}
 
@@ -906,9 +933,9 @@ namespace s3d
 
 		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4 color)
 		{
-			constexpr Vertex2D::IndexType VertexSize = 4;
-			constexpr Vertex2D::IndexType IndexSize = 6;
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			constexpr Vertex2D::IndexType VertexCount = 4;
+			constexpr Vertex2D::IndexType IndexCount = 6;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -920,19 +947,19 @@ namespace s3d
 			pVertex[2].set(quad.p[3], color);
 			pVertex[3].set(quad.p[2], color);
 
-			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			for (Vertex2D::IndexType i = 0; i < IndexCount; ++i)
 			{
 				*pIndex++ = (indexOffset + RectIndexTable[i]);
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 
 		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4(&colors)[4])
 		{
-			constexpr Vertex2D::IndexType VertexSize = 4;
-			constexpr Vertex2D::IndexType IndexSize = 6;
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+			constexpr Vertex2D::IndexType VertexCount = 4;
+			constexpr Vertex2D::IndexType IndexCount = 6;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
 			{
@@ -944,12 +971,12 @@ namespace s3d
 			pVertex[2].set(quad.p[3], colors[3]);
 			pVertex[3].set(quad.p[2], colors[2]);
 
-			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			for (Vertex2D::IndexType i = 0; i < IndexCount; ++i)
 			{
 				*pIndex++ = (indexOffset + RectIndexTable[i]);
 			}
 
-			return IndexSize;
+			return IndexCount;
 		}
 	}
 }

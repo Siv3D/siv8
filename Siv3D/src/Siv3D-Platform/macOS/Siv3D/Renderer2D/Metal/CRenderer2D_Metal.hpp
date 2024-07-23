@@ -49,7 +49,7 @@ namespace s3d
 
 		void addCirclePie(const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) override;
 
-		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& innerColor, const Float4& outerColor) override;
+		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
 
 		void addQuad(const FloatQuad& quad, const Float4& color) override;
 
@@ -139,6 +139,6 @@ namespace s3d
 
 		ConstantBuffer<PSConstants2D> m_psConstants;
 		
-		Vertex2DBufferPointer createBuffer(uint16 vertexSize, uint32 indexSize);
+		Vertex2DBufferPointer createBuffer(uint16 vertexCount, uint32 indexCount);
 	};
 }
