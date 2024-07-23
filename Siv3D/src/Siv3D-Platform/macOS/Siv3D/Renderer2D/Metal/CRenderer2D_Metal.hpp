@@ -29,6 +29,8 @@ namespace s3d
 
 		void init() override;
 
+		void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) override;
+
 		void addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) override;
 
 		void addTriangle(const Float2(&points)[3], const Float4& color) override;

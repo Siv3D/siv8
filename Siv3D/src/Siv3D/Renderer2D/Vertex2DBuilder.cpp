@@ -83,6 +83,53 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		static Vertex2D::IndexType BuildCircleArcRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& color, const float scale)
+		{
+			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
+			const Vertex2D::IndexType VertexSize = (Quality + 1);
+			const Vertex2D::IndexType IndexSize = ((Quality - 1) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+
+			// 中心
+			pVertex[0].pos.set(centerX, centerY);
+
+			// 周
+			{
+				const float radDelta = (Math::PiF / (Quality - 1));
+				Vertex2D* pDst = &pVertex[1];
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const float rad = (startAngle + (radDelta * i));
+					const auto [s, c] = FastMath::SinCos(rad);
+					(pDst++)->pos.set((centerX + r * s), (centerY - r * c));
+				}
+			}
+
+			for (size_t i = 0; i < VertexSize; ++i)
+			{
+				(pVertex++)->color = color;
+			}
+
+			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+			{
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + i + 1);
+				*pIndex++ = (indexOffset + i + 2);
+			}
+
+			return IndexSize;
+		}
+
+		[[nodiscard]]
 		static Vertex2D::IndexType BuildCircleArcRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& startColor, const Float4& endColor, const float scale)
 		{
 			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
@@ -244,6 +291,67 @@ namespace s3d
 		//	BuildLine
 		//
 		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildLine(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const Float2& start, const Float2& end, const float thickness, const Float4(&colors)[2], const float scale)
+		{
+			constexpr Vertex2D::IndexType VertexSize = 4;
+			constexpr Vertex2D::IndexType IndexSize = 6;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexSize, IndexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float halfThickness = (thickness * 0.5f);
+			const Float2 line = (end - start).normalized();
+			const Float2 vNormal{ (-line.y * halfThickness), (line.x * halfThickness) };
+			const Float2 lineHalf{ line * halfThickness };
+			
+			if (startCap == LineCap::Square)
+			{
+				const Float2 start2 = (start - lineHalf);
+				pVertex[0].set((start2 + vNormal), colors[0]);
+				pVertex[1].set((start2 - vNormal), colors[0]);
+			}
+			else
+			{
+				pVertex[0].set((start + vNormal), colors[0]);
+				pVertex[1].set((start - vNormal), colors[0]);
+			}
+			
+			if (endCap == LineCap::Square)
+			{
+				const Float2 end2 = (end + lineHalf);
+				pVertex[2].set((end2 + vNormal), colors[1]);
+				pVertex[3].set((end2 - vNormal), colors[1]);
+			}
+			else
+			{
+				pVertex[2].set((end + vNormal), colors[1]);
+				pVertex[3].set((end - vNormal), colors[1]);
+			}
+
+			for (Vertex2D::IndexType i = 0; i < IndexSize; ++i)
+			{
+				*pIndex++ = (indexOffset + RectIndexTable[i]);
+			}
+
+			Vertex2D::IndexType roundIndexCount = 0;
+			const float startAngle = std::atan2(vNormal.x, -vNormal.y);
+
+			if (startCap == LineCap::Round)
+			{
+				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, start, halfThickness, startAngle, colors[0], scale);
+			}
+
+			if (endCap == LineCap::Round)
+			{
+				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, end, halfThickness, (startAngle + Math::PiF), colors[1], scale);
+			}
+
+			return (IndexSize + roundIndexCount);
+		}
 
 		Vertex2D::IndexType BuildLine(const BufferCreatorFunc& bufferCreator, const LineStyle& style, const Float2& start, const Float2& end, const float thickness, const Float4(&colors)[2], const float scale)
 		{

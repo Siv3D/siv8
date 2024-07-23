@@ -38,6 +38,8 @@ namespace s3d
 
 		virtual void init() = 0;
 
+		virtual void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
+
 		virtual void addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
 
 		virtual void addTriangle(const Float2(&points)[3], const Float4& color) = 0;

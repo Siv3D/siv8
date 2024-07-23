@@ -21,6 +21,8 @@
 
 namespace s3d
 {
+	enum class LineCap : uint8;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Line
@@ -812,6 +814,23 @@ namespace s3d
 		/// @return *this
 		const Line& draw(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
 
+		/// @brief 線分を描きます。
+		/// @param startCap 始点側の形状
+		/// @param endCap 終点側の形状
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @return *this
+		const Line& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White) const;
+
+		/// @brief 線分を描きます。
+		/// @param startCap 始点側の形状
+		/// @param endCap 終点側の形状
+		/// @param thickness 線分の太さ
+		/// @param colorBegin 
+		/// @param colorEnd 
+		/// @return 
+		const Line& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+
 		///// @brief 線分を描きます。
 		///// @param style 線のスタイル
 		///// @param thickness 線分の太さ
@@ -856,6 +875,36 @@ namespace s3d
 		/// @param colorEnd 終点側の色
 		/// @return *this
 		const Line& drawUncapped(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawRounded
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 始点と終点が丸い線分を描きます。
+		/// @param color 色
+		/// @return *this
+		const Line& drawRounded(const ColorF& color = Palette::White) const;
+
+		/// @brief 始点と終点が丸い線分を描きます。
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
+		const Line& drawRounded(const ColorF& colorBegin, const ColorF& colorEnd) const;
+
+		/// @brief 始点と終点が丸い線分を描きます。
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @return *this
+		const Line& drawRounded(double thickness, const ColorF& color = Palette::White) const;
+
+		/// @brief 始点と終点が丸い線分を描きます。
+		/// @param thickness 線分の太さ
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
+		const Line& drawRounded(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
 
 		////////////////////////////////////////////////////////////////
 		//

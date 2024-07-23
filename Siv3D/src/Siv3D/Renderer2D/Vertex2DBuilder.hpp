@@ -27,6 +27,9 @@ namespace s3d
 	namespace Vertex2DBuilder
 	{
 		[[nodiscard]]
+		Vertex2D::IndexType BuildLine(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2], float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildLine(const BufferCreatorFunc& bufferCreator, const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2], float scale);
 
 		[[nodiscard]]
