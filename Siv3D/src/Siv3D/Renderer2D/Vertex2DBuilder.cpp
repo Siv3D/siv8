@@ -130,7 +130,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildCircleArcRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& startColor, const Float4& endColor, const float scale)
+		static Vertex2D::IndexType BuildCircleArcRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
 			const Vertex2D::IndexType VertexCount = (Quality + 1);
@@ -144,21 +144,46 @@ namespace s3d
 
 			const float centerX = center.x;
 			const float centerY = center.y;
+			const Float4 c0 = color0;
+			const Float4 c1 = color1;
+			const Float4 colorDiff = (c1 - c0);
 
-			// 中心
-			pVertex[0].set(centerX, centerY, startColor.getMidpoint(endColor));
-
-			// 周
+			if (colorType == ColorFillDirection::LeftRight)
 			{
-				const float radDelta = (Math::PiF / (Quality - 1));
-				Vertex2D* pDst = &pVertex[1];
+				// 中心
+				pVertex[0].set(centerX, centerY, c0);
 
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				// 周
 				{
-					const float rad = (startAngle + (radDelta * i));
-					const float f = (std::cos(radDelta * i) * -0.5f + 0.5f);
-					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->set((centerX + r * s), (centerY - r * c), startColor.lerp(endColor, f));
+					const float radDelta = (Math::PiF / (Quality - 1));
+					Vertex2D* pDst = &pVertex[1];
+
+					for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+					{
+						const float rad = (startAngle + (radDelta * i));
+						const float f = std::sin(radDelta * i);
+						const auto [s, c] = FastMath::SinCos(rad);
+						(pDst++)->set((centerX + r * s), (centerY - r * c), (c0 + colorDiff * f));
+					}
+				}
+			}
+			else
+			{
+				// 中心
+				pVertex[0].set(centerX, centerY, (c0 + colorDiff * 0.5f));
+
+				// 周
+				{
+					const float radDelta = (Math::PiF / (Quality - 1));
+					Vertex2D* pDst = &pVertex[1];
+
+					for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+					{
+						const float rad = (startAngle + (radDelta * i));
+						const float f = (std::cos(radDelta * i) * -0.5f + 0.5f);
+						const auto [s, c] = FastMath::SinCos(rad);
+						(pDst++)->set((centerX + r * s), (centerY - r * c), (c0 + colorDiff * f));
+					}
 				}
 			}
 
@@ -178,6 +203,12 @@ namespace s3d
 			Vertex2D::IndexType indexCount = 0;
 
 			const float halfThickness = (thickness * 0.5f);
+			const float r = (rInner + halfThickness);
+			const float length = (r * Abs(angle) + halfThickness * 2);
+			const float fOffset = (halfThickness / length);
+			const Float4 c0 = color0.lerp(color1, fOffset);
+			const Float4 c1 = color0.lerp(color1, (1.0f - fOffset));
+
 			Float2 startCenter;
 			Float2 endCenter;
 			{
@@ -187,12 +218,12 @@ namespace s3d
 				
 				{
 					const auto [s, c] = FastMath::SinCos(start);
-					startCenter = { (centerX + (rInner + halfThickness) * s), (centerY - (rInner + halfThickness) * c) };
+					startCenter = { (centerX + r * s), (centerY - r * c) };
 				}
 
 				{
 					const auto [s, c] = FastMath::SinCos(start + Abs(angle));
-					endCenter = { (centerX + (rInner + halfThickness) * s), (centerY - (rInner + halfThickness) * c) };
+					endCenter = { (centerX + r * s), (centerY - r * c) };
 				}
 			}
 
@@ -200,22 +231,22 @@ namespace s3d
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), color1, scale);
+					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, c1, color1, scale);
 				}
 				else
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), color0, scale);
+					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), colorType, c0, color0, scale);
 				}
 			}
 			else
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), color0, color1, scale);
+					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, color0, color1, scale);
 				}
 				else
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), color0, color1, scale);
+					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), colorType, color0, color1, scale);
 				}
 			}
 
@@ -250,8 +281,8 @@ namespace s3d
 
 				if (colorType == ColorFillDirection::LeftRight)
 				{
-					const Float4 startColor = ((angle < 0.0f) ? color1 : color0);
-					const Float4 endColor = ((angle < 0.0f) ? color0 : color1);
+					const Float4 startColor = ((angle < 0.0f) ? c1 : c0);
+					const Float4 endColor = ((angle < 0.0f) ? c0 : c1);
 					const Float4 colorDelta = ((endColor - startColor) / static_cast<float>((VertexCount / 2) - 1));
 
 					for (Vertex2D::IndexType i = 0; i < (VertexCount / 2); ++i)
@@ -285,22 +316,22 @@ namespace s3d
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, color0, scale);
+					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, colorType, c0, color0, scale);
 				}
 				else
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), color1, scale);
+					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), colorType, c1, color1, scale);
 				}
 			}
 			else
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, color1, color0, scale);
+					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, colorType, color1, color0, scale);
 				}
 				else
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), color1, color0, scale);
+					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), colorType, color1, color0, scale);
 				}
 			}
 
