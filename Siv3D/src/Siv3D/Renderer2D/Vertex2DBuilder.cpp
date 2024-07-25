@@ -422,7 +422,8 @@ namespace s3d
 			}
 
 			const float halfThickness = (thickness * 0.5f);
-			const Float2 line = (end - start).normalized();
+			const float length = (end - start).length();
+			const Float2 line = (length ? ((end - start) / length) : Float2{ 1, 0 });
 			const Float2 vNormal{ (-line.y * halfThickness), (line.x * halfThickness) };
 			const Float2 lineHalf{ line * halfThickness };
 			
@@ -489,9 +490,9 @@ namespace s3d
 
 			const float halfThickness = (thickness * 0.5f);
 			const float length = (end - start).length();
-			const float uMax = (length / thickness);
+			float uMax = (length / thickness);
 			const float uOffset = -static_cast<float>(style.dotOffset);
-			const Float2 line = (length ? ((end - start) / length) : Float2{ 0, 0 });
+			const Float2 line = (length ? ((end - start) / length) : Float2{ 1, 0 });
 			const Float2 vNormal{ (-line.y * halfThickness), (line.x * halfThickness) };
 
 			if (style.cap == LineCap::Flat)
@@ -506,6 +507,12 @@ namespace s3d
 				const Float2 lineHalf{ line * halfThickness };
 				const Float2 start2 = (start - lineHalf);
 				const Float2 end2 = (end + lineHalf);
+
+				if (style.type == LineType::RoundDot)
+				{
+					uMax = std::ceil(uMax / 2.0f) * 2.0f;
+				}
+
 				pVertex[0].set((start2 + vNormal), Float2{ uOffset, 1 }, colors[0]);
 				pVertex[1].set((start2 - vNormal), Float2{ uOffset, 0 }, colors[0]);
 				pVertex[2].set((end2 + vNormal), Float2{ ((uOffset + uMax) + 1.0f), 1}, colors[1]);

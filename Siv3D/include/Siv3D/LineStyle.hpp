@@ -21,21 +21,21 @@ namespace s3d
 	{
 		struct Parameters
 		{
-			double dotOffset;
+			LineType type;
 
 			LineCap cap;
 
-			LineType type;
+			double dotOffset = 0.0;
 
 			[[nodiscard]]
 			constexpr Parameters operator ()(double _dotOffset) const noexcept;
 		};
 
-		double dotOffset = 0.0;
+		LineType type = LineType::Solid;
 
 		LineCap cap = LineCap::Square;
 
-		LineType type = LineType::Solid;
+		double dotOffset = 0.0;
 
 		[[nodiscard]]
 		constexpr LineStyle() = default;
@@ -43,17 +43,32 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineStyle(const Parameters& params) noexcept;
 
-		static constexpr Parameters Square{ 0.0, LineCap::Square, LineType::Solid };
+		static constexpr Parameters Square{ LineType::Solid, LineCap::Square};
 
-		static constexpr Parameters Round{ 0.0, LineCap::Round, LineType::Solid };
+		static constexpr Parameters Round{ LineType::Solid, LineCap::Round };
 
-		static constexpr Parameters Flat{ 0.0, LineCap::Flat, LineType::Solid };
+		static constexpr Parameters Flat{ LineType::Solid, LineCap::Flat };
 
-		static constexpr Parameters Dotted{ 0.0, LineCap::Square, LineType::Dotted };
+		static constexpr Parameters Dotted{ LineType::Dotted, LineCap::Square };
 
-		static constexpr Parameters Dashed{ 0.0, LineCap::Square, LineType::Dashed };
+		static constexpr Parameters Dashed{ LineType::Dashed, LineCap::Square };
 
-		static constexpr Parameters RoundDot{ 0.0, LineCap::Square, LineType::RoundDot };
+		static constexpr Parameters LongDash{ LineType::LongDash, LineCap::Square };
+
+		static constexpr Parameters DashDot{ LineType::DashDot, LineCap::Square };
+
+		static constexpr Parameters RoundDot{ LineType::RoundDot, LineCap::Square };
+
+		static constexpr Parameters DottedFlat{ LineType::Dotted, LineCap::Flat };
+
+		static constexpr Parameters DashedFlat{ LineType::Dashed, LineCap::Flat };
+
+		static constexpr Parameters LongDashFlat{ LineType::LongDash, LineCap::Flat };
+
+		static constexpr Parameters DashDotFlat{ LineType::DashDot, LineCap::Flat };
+
+		static constexpr Parameters RoundDotFlat{ LineType::RoundDot, LineCap::Flat };
+
 	};
 }
 

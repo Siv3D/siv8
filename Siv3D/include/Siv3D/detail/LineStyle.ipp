@@ -15,11 +15,11 @@ namespace s3d
 {
 	constexpr LineStyle::Parameters LineStyle::Parameters::operator ()(const double _dotOffset) const noexcept
 	{
-		return Parameters{ _dotOffset, cap, type };
+		return Parameters{ type, cap, _dotOffset };
 	}
 
 	constexpr LineStyle::LineStyle(const Parameters& params) noexcept
-		: dotOffset{ params.dotOffset }
+		: type{ params.type }
 		, cap{ params.cap }
-		, type{ params.type } {}
+		, dotOffset{ params.dotOffset } {}
 }

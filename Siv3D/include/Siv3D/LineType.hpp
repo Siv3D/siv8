@@ -30,6 +30,10 @@ namespace s3d
 
 		Dashed,
 
+		LongDash,
+
+		DashDot,
+
 		RoundDot,
 	};
 

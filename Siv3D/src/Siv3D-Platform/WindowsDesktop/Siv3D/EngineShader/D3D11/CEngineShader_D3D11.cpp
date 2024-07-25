@@ -63,6 +63,16 @@ namespace s3d
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
 		}
 
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_line_long_dash.ps", ShaderStage::Pixel, U"PS_LineLongDash"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_line_dash_dot.ps", ShaderStage::Pixel, U"PS_LineDashDot"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
 		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_line_round_dot.ps", ShaderStage::Pixel, U"PS_LineRoundDot"))
 		{
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
@@ -85,6 +95,8 @@ namespace s3d
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_shape.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_dot.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_dash.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_long_dash.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_dash_dot.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_round_dot.ps" };
 
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば

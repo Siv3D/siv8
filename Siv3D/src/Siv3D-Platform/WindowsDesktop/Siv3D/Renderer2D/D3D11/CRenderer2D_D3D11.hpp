@@ -130,6 +130,10 @@ namespace s3d
 
 			PixelShader::IDType psLineDash;
 
+			PixelShader::IDType psLineLongDash;
+
+			PixelShader::IDType psLineDashDot;
+
 			PixelShader::IDType psLineRoundDot;
 
 		} m_engineShader;

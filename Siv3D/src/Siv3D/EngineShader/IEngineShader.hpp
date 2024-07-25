@@ -28,6 +28,8 @@ namespace s3d
 		Shape2D,
 		LineDot,
 		LineDash,
+		LineLongDash,
+		LineDashDot,
 		LineRoundDot,
 	};
 

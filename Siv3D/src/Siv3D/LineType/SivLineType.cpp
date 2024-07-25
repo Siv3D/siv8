@@ -23,6 +23,8 @@ namespace s3d
 			U"Solid"_sv,
 			U"Dotted"_sv,
 			U"Dashed"_sv,
+			U"LongDash"_sv,
+			U"DashDot"_sv,
 			U"RoundDot"_sv,
 		};
 	}

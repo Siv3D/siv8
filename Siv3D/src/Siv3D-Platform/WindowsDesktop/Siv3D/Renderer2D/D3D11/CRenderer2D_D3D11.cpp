@@ -116,6 +116,8 @@ namespace s3d
 		m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 		m_engineShader.psLineDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
 		m_engineShader.psLineDash = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
+		m_engineShader.psLineLongDash = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
+		m_engineShader.psLineDashDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
 		m_engineShader.psLineRoundDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
 	}
 
@@ -154,21 +156,26 @@ namespace s3d
 
 			if (not m_currentCustomShader.ps)
 			{
-				if (style.type == LineType::Dotted)
+				switch (style.type)
 				{
-					m_commandManager.pushEnginePS(m_engineShader.psLineDot);
-				}
-				else if (style.type == LineType::Dashed)
-				{
-					m_commandManager.pushEnginePS(m_engineShader.psLineDash);
-				}
-				else if (style.type == LineType::RoundDot)
-				{
-					m_commandManager.pushEnginePS(m_engineShader.psLineRoundDot);
-				}
-				else
-				{
+				case LineType::Solid:
 					m_commandManager.pushEnginePS(m_engineShader.psShape);
+					break;
+				case LineType::Dotted:
+					m_commandManager.pushEnginePS(m_engineShader.psLineDot);
+					break;
+				case LineType::Dashed:
+					m_commandManager.pushEnginePS(m_engineShader.psLineDash);
+					break;
+				case LineType::LongDash:
+					m_commandManager.pushEnginePS(m_engineShader.psLineLongDash);
+					break;
+				case LineType::DashDot:
+					m_commandManager.pushEnginePS(m_engineShader.psLineDashDot);
+					break;
+				case LineType::RoundDot:
+					m_commandManager.pushEnginePS(m_engineShader.psLineRoundDot);
+					break;
 				}
 			}
 

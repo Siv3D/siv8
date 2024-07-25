@@ -84,11 +84,44 @@ float4 PS_LineDash(PSInput input) : SV_TARGET
 {
 	float4 result = input.color;
 
-	const float u = (0.33333 * (input.uv.x - 1.0));
+	const float u = (0.25 * (input.uv.x - 1.0));
 	const float w = fwidth(u);
 	const float distance = abs(2.0 * frac(u) - 1.0);
-	const float alpha = smoothstep((0.33333 - w), (0.33333 + w), distance);
+	const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
 	result *= alpha;
+
+	result.rgb += (g_colorAdd.rgb * result.a);
+
+	return result;
+}
+
+float4 PS_LineLongDash(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float u = (0.1 * (input.uv.x - 1.0));
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * frac(u) - 1.0);
+	const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
+	result *= alpha;
+
+	result.rgb += (g_colorAdd.rgb * result.a);
+
+	return result;
+}
+
+float4 PS_LineDashDot(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float u = (0.1 * (input.uv.x - 1.0));
+	const float u2 = u + 0.5;
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * frac(u) - 1.0);
+	const float distance2 = abs(2.0 * frac(u2) - 1.0);
+	const float alpha1 = smoothstep((0.4 - w), (0.4 + w), distance);
+	const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
+	result *= max(alpha1, alpha2);
 
 	result.rgb += (g_colorAdd.rgb * result.a);
 
