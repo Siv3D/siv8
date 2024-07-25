@@ -126,6 +126,12 @@ namespace s3d
 
 			PixelShader::IDType psShape;
 
+			PixelShader::IDType psLineDot;
+
+			PixelShader::IDType psLineDash;
+
+			PixelShader::IDType psLineRoundDot;
+
 		} m_engineShader;
 
 		struct CurrentCustomShader

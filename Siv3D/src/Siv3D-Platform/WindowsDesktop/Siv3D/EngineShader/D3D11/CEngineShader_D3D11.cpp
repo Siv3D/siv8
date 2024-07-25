@@ -43,12 +43,27 @@ namespace s3d
 		//Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/fullscreen_triangle.hlsl", U"engine/shader/d3d11/fullscreen_triangle.vs", ShaderStage::Vertex, U"VS");
 		//Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/fullscreen_triangle.hlsl", U"engine/shader/d3d11/fullscreen_triangle.ps", ShaderStage::Pixel, U"PS");
 
-		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d.vs", ShaderStage::Vertex, U"VS"))
+		//if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d.vs", ShaderStage::Vertex, U"VS"))
+		//{
+		//	throw InternalEngineError{ U"Failed to compile a engine shader" };
+		//}
+
+		//if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_shape.ps", ShaderStage::Pixel, U"PS_Shape"))
+		//{
+		//	throw InternalEngineError{ U"Failed to compile a engine shader" };
+		//}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_line_dot.ps", ShaderStage::Pixel, U"PS_LineDot"))
 		{
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
 		}
 
-		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_shape.ps", ShaderStage::Pixel, U"PS_Shape"))
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_line_dash.ps", ShaderStage::Pixel, U"PS_LineDash"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_line_round_dot.ps", ShaderStage::Pixel, U"PS_LineRoundDot"))
 		{
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
 		}
@@ -68,6 +83,9 @@ namespace s3d
 		{
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/fullscreen_triangle.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_shape.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_dot.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_dash.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_round_dot.ps" };
 
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

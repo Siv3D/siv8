@@ -26,6 +26,9 @@ namespace s3d
 	{
 		FullScreenTriangle,
 		Shape2D,
+		LineDot,
+		LineDash,
+		LineRoundDot,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

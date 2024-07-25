@@ -64,3 +64,48 @@ float4 PS_Shape(PSInput input) : SV_TARGET
 
 	return result;
 }
+
+float4 PS_LineDot(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float u = (0.5 * (input.uv.x - 0.5));
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * frac(u) - 1.0);
+	const float alpha = smoothstep((0.5 - w), (0.5 + w), distance);
+	result *= alpha;
+
+	result.rgb += (g_colorAdd.rgb * result.a);
+
+	return result;
+}
+
+float4 PS_LineDash(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float u = (0.33333 * (input.uv.x - 1.0));
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * frac(u) - 1.0);
+	const float alpha = smoothstep((0.33333 - w), (0.33333 + w), distance);
+	result *= alpha;
+
+	result.rgb += (g_colorAdd.rgb * result.a);
+
+	return result;
+}
+
+float4 PS_LineRoundDot(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float2 uv = (input.uv * float2(0.5, 1));
+	const float w = fwidth(uv.y);
+	const float distance = length(float2(4.0, 2.0) * frac(uv) - float2(2.0, 1.0));
+	const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
+	result *= alpha;
+
+	result.rgb += (g_colorAdd.rgb * result.a);
+
+	return result;
+}
