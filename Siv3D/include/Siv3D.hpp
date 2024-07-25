@@ -799,6 +799,8 @@
 // 線端のスタイル | Line cap
 # include <Siv3D/LineCap.hpp>
 
+# include <Siv3D/LineType.hpp>
+
 // 線のスタイル | Line style
 # include <Siv3D/LineStyle.hpp>
 

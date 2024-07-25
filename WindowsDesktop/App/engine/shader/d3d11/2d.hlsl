@@ -99,7 +99,7 @@ float4 PS_LineRoundDot(PSInput input) : SV_TARGET
 {
 	float4 result = input.color;
 
-	const float2 uv = (input.uv * float2(0.5, 1));
+	const float2 uv = ((input.uv + float2(0.5, 0.0)) * float2(0.5, 1));
 	const float w = fwidth(uv.y);
 	const float distance = length(float2(4.0, 2.0) * frac(uv) - float2(2.0, 1.0));
 	const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));

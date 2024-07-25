@@ -154,14 +154,18 @@ namespace s3d
 
 			if (not m_currentCustomShader.ps)
 			{
-				if (style.hasSquareDot())
+				if (style.type == LineType::Dotted)
+				{
+					m_commandManager.pushEnginePS(m_engineShader.psLineDot);
+				}
+				else if (style.type == LineType::Dashed)
+				{
+					m_commandManager.pushEnginePS(m_engineShader.psLineDash);
+				}
+				else if (style.type == LineType::RoundDot)
 				{
 					m_commandManager.pushEnginePS(m_engineShader.psLineRoundDot);
 				}
-				//else if (style.hasRoundDot())
-				//{
-				//	m_commandManager.pushEnginePS(m_engineShader.);
-				//}
 				else
 				{
 					m_commandManager.pushEnginePS(m_engineShader.psShape);

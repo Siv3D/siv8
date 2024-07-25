@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "LineCap.hpp"
+# include "LineType.hpp"
 
 namespace s3d
 {
@@ -24,24 +25,17 @@ namespace s3d
 
 			LineCap cap;
 
-			bool isDotted;
-
-			bool hasAlignedDot;
+			LineType type;
 
 			[[nodiscard]]
 			constexpr Parameters operator ()(double _dotOffset) const noexcept;
-
-			[[nodiscard]]
-			constexpr Parameters offset(double _dotOffset) const noexcept;
 		};
 
 		double dotOffset = 0.0;
 
 		LineCap cap = LineCap::Square;
 
-		bool isDotted = false;
-
-		bool hasAlignedDot = true;
+		LineType type = LineType::Solid;
 
 		[[nodiscard]]
 		constexpr LineStyle() = default;
@@ -49,38 +43,17 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineStyle(const Parameters& params) noexcept;
 
-		[[nodiscard]]
-		constexpr bool hasSquareCap() const noexcept;
+		static constexpr Parameters Square{ 0.0, LineCap::Square, LineType::Solid };
 
-		[[nodiscard]]
-		constexpr bool hasRoundCap() const noexcept;
+		static constexpr Parameters Round{ 0.0, LineCap::Round, LineType::Solid };
 
-		[[nodiscard]]
-		constexpr bool hasNoCap() const noexcept;
+		static constexpr Parameters Flat{ 0.0, LineCap::Flat, LineType::Solid };
 
-		[[nodiscard]]
-		constexpr bool hasSquareDot() const noexcept;
+		static constexpr Parameters Dotted{ 0.0, LineCap::Square, LineType::Dotted };
 
-		[[nodiscard]]
-		constexpr bool hasRoundDot() const noexcept;
+		static constexpr Parameters Dashed{ 0.0, LineCap::Square, LineType::Dashed };
 
-		/// @brief 始点と終点に四角いキャップを持つ線
-		static constexpr Parameters SquareCap{ 0.0, LineCap::Square, false, false };
-
-		/// @brief 始点と終点に丸いキャップを持つ線
-		static constexpr Parameters RoundCap{ 0.0, LineCap::Round, false, false };
-
-		/// @brief 始点と終点にキャップを持たない線
-		static constexpr Parameters Uncapped{ 0.0, LineCap::Flat, false, false };
-
-		/// @brief 四角いドットの線
-		static constexpr Parameters SquareDot{ 0.0, LineCap::Square, true, false };
-
-		/// @brief 丸いドットの線
-		static constexpr Parameters RoundDot{ 0.0, LineCap::Round, true, true };
-
-		/// @brief デフォルトの線 (SquareCap)
-		static constexpr Parameters Default = SquareCap;
+		static constexpr Parameters RoundDot{ 0.0, LineCap::Square, LineType::RoundDot };
 	};
 }
 

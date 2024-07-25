@@ -473,7 +473,7 @@ namespace s3d
 
 		Vertex2D::IndexType BuildLine(const BufferCreatorFunc& bufferCreator, const LineStyle& style, const Float2& start, const Float2& end, const float thickness, const Float4(&colors)[2], const float scale)
 		{
-			if (not style.isDotted)
+			if (style.type == LineType::Solid)
 			{
 				return BuildLine(bufferCreator, style.cap, style.cap, start, end, thickness, colors, scale);
 			}
@@ -490,7 +490,7 @@ namespace s3d
 			const float halfThickness = (thickness * 0.5f);
 			const float length = (end - start).length();
 			const float uMax = (length / thickness);
-			const float uOffset = static_cast<float>(style.dotOffset);
+			const float uOffset = -static_cast<float>(style.dotOffset);
 			const Float2 line = (length ? ((end - start) / length) : Float2{ 0, 0 });
 			const Float2 vNormal{ (-line.y * halfThickness), (line.x * halfThickness) };
 
