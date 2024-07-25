@@ -22,6 +22,7 @@
 namespace s3d
 {
 	enum class LineCap : uint8;
+	struct LineStyle;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -831,20 +832,20 @@ namespace s3d
 		/// @return 
 		const Line& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
 
-		///// @brief 線分を描きます。
-		///// @param style 線のスタイル
-		///// @param thickness 線分の太さ
-		///// @param color 色
-		///// @return *this
-		//const Line& draw(const LineStyle& style, double thickness, const ColorF& color = Palette::White) const;
+		/// @brief 線分を描きます。
+		/// @param style 線のスタイル
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @return *this
+		const Line& draw(const LineStyle& style, double thickness, const ColorF& color = Palette::White) const;
 
-		///// @brief 線分を描きます。
-		///// @param style 線のスタイル
-		///// @param thickness 線分の太さ
-		///// @param colorBegin 始点側の色
-		///// @param colorEnd 終点側の色
-		///// @return *this
-		//const Line& draw(const LineStyle& style, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		/// @brief 線分を描きます。
+		/// @param style 線のスタイル
+		/// @param thickness 線分の太さ
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
+		const Line& draw(const LineStyle& style, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
 
 		////////////////////////////////////////////////////////////////
 		//

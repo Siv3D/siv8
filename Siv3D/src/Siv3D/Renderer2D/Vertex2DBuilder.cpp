@@ -370,8 +370,8 @@ namespace s3d
 
 			if (colorType == ColorFillDirection::LeftRight)
 			{
-				const Float4 startColor = color0;
-				const Float4 endColor = color1;
+				const Float4 startColor = ((angle < 0.0f) ? color1 : color0);
+				const Float4 endColor = ((angle < 0.0f) ? color0 : color1);
 				const Float4 colorDelta = ((endColor - startColor) / static_cast<float>((VertexCount / 2) - 1));
 
 				for (Vertex2D::IndexType i = 0; i < (VertexCount / 2); ++i)
@@ -488,25 +488,28 @@ namespace s3d
 			}
 
 			const float halfThickness = (thickness * 0.5f);
-			const Float2 line = (end - start).normalized();
+			const float length = (end - start).length();
+			const float uMax = (length / thickness);
+			const float uOffset = static_cast<float>(style.dotOffset);
+			const Float2 line = (length ? ((end - start) / length) : Float2{ 0, 0 });
 			const Float2 vNormal{ (-line.y * halfThickness), (line.x * halfThickness) };
 
 			if (style.cap == LineCap::Flat)
 			{
-				pVertex[0].set((start + vNormal), colors[0]);
-				pVertex[1].set((start - vNormal), colors[0]);
-				pVertex[2].set((end + vNormal), colors[1]);
-				pVertex[3].set((end - vNormal), colors[1]);
+				pVertex[0].set((start + vNormal), Float2{ uOffset, 1 }, colors[0]);
+				pVertex[1].set((start - vNormal), Float2{ uOffset, 0 }, colors[0]);
+				pVertex[2].set((end + vNormal), Float2{ (uOffset + uMax), 1 }, colors[1]);
+				pVertex[3].set((end - vNormal), Float2{ (uOffset + uMax), 0 }, colors[1]);
 			}
 			else
 			{
 				const Float2 lineHalf{ line * halfThickness };
 				const Float2 start2 = (start - lineHalf);
 				const Float2 end2 = (end + lineHalf);
-				pVertex[0].set((start2 + vNormal), colors[0]);
-				pVertex[1].set((start2 - vNormal), colors[0]);
-				pVertex[2].set((end2 + vNormal), colors[1]);
-				pVertex[3].set((end2 - vNormal), colors[1]);
+				pVertex[0].set((start2 + vNormal), Float2{ uOffset, 1 }, colors[0]);
+				pVertex[1].set((start2 - vNormal), Float2{ uOffset, 0 }, colors[0]);
+				pVertex[2].set((end2 + vNormal), Float2{ ((uOffset + uMax) + 1.0f), 1}, colors[1]);
+				pVertex[3].set((end2 - vNormal), Float2{ ((uOffset + uMax) + 1.0f), 0 }, colors[1]);
 			}
 
 			for (Vertex2D::IndexType i = 0; i < IndexCount; ++i)

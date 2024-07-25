@@ -228,6 +228,29 @@ namespace s3d
 		return *this;
 	}
 
+	const Line& Line::draw(const LineStyle& style, const double thickness, const ColorF& color) const
+	{
+		if (thickness <= 0.0)
+		{
+			return *this;
+		}
+
+		const Float4 colorF = color.toFloat4();
+		SIV3D_ENGINE(Renderer2D)->addLine(style, start, end, static_cast<float>(thickness), { colorF, colorF });
+		return *this;
+	}
+
+	const Line& Line::draw(const LineStyle& style, const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	{
+		if (thickness <= 0.0)
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addLine(style, start, end, static_cast<float>(thickness), { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	drawUncapped
@@ -247,7 +270,7 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::drawUncapped(double thickness, const ColorF& color) const
+	const Line& Line::drawUncapped(const double thickness, const ColorF& color) const
 	{
 		if (thickness <= 0.0)
 		{
@@ -259,7 +282,7 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::drawUncapped(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::drawUncapped(const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
 	{
 		if (thickness <= 0.0)
 		{
@@ -289,7 +312,7 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::drawRounded(double thickness, const ColorF& color) const
+	const Line& Line::drawRounded(const double thickness, const ColorF& color) const
 	{
 		if (thickness <= 0.0)
 		{
@@ -301,7 +324,7 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::drawRounded(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::drawRounded(const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
 	{
 		if (thickness <= 0.0)
 		{
