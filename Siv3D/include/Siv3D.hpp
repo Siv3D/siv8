@@ -709,6 +709,8 @@
 
 # include <Siv3D/Pattern/PolkaDot.hpp>
 
+# include <Siv3D/Pattern/Stripe.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	乱数と分布 | Random and Distribution

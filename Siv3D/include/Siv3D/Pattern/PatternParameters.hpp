@@ -13,6 +13,7 @@
 # include <array>
 # include "../Common.hpp"
 # include "../PointVector.hpp"
+# include "../ColorHSV.hpp"
 # include "../Mat3x2.hpp"
 # include "PatternType.hpp"
 

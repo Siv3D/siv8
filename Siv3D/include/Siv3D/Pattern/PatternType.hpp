@@ -18,6 +18,12 @@ namespace s3d
 	{
 		PolkaDot,
 
+		Stripe,
+
 		Checker,
+
+		Triangle,
+
+		Hexagon,
 	};
 }

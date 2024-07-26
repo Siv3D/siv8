@@ -164,3 +164,19 @@ float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 
 	return lerp(primary, background, c);
 }
+
+float4 PS_PatternStripe(PSInput input) : SV_TARGET
+{
+	const float u = s3d_patternTransform(input.position.xy).x;
+	const float fw = fwidth(u);
+	const float repeat = (2.0 * frac(u) - 1.0);
+	const float value = (abs(repeat) * (1 - fw));
+
+	const float thicknessScale = g_patternUVTransform_params[1].z;
+	const float c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
+
+	const float4 primary = s3d_colorTransform(input.color);
+	const float4 background = s3d_colorTransform(g_patternBackgroundColor);
+
+	return lerp(primary, background, c);
+}

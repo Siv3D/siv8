@@ -113,14 +113,15 @@ namespace s3d
 			}
 		}
 
-		m_engineShader.vs = SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
-		m_engineShader.psShape = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
-		m_engineShader.psLineDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
-		m_engineShader.psLineDash = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
-		m_engineShader.psLineLongDash = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
-		m_engineShader.psLineDashDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
-		m_engineShader.psLineRoundDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
-		m_engineShader.psPatternPolkaDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDot).id();
+		m_engineShader.vs					= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
+		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
+		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
+		m_engineShader.psLineDashDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
+		m_engineShader.psLineRoundDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
+		m_engineShader.psPatternPolkaDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDot).id();
+		m_engineShader.psPatternStripe		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternStripe).id();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -280,7 +281,16 @@ namespace s3d
 
 			if (not m_currentCustomShader.ps)
 			{
-				m_commandManager.pushEnginePS(m_engineShader.psPatternPolkaDot);
+				switch (pattern.type)
+				{
+				case PatternType::PolkaDot:
+					m_commandManager.pushEnginePS(m_engineShader.psPatternPolkaDot);
+					break;
+				default:
+				case PatternType::Stripe:
+					m_commandManager.pushEnginePS(m_engineShader.psPatternStripe);
+					break;
+				}
 			}
 
 			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));

@@ -140,6 +140,8 @@ namespace s3d
 
 			PixelShader::IDType psPatternPolkaDot;
 
+			PixelShader::IDType psPatternStripe;
+
 		} m_engineShader;
 
 		struct CurrentCustomShader
