@@ -931,6 +931,9 @@
     <Filter Include="src\Siv3D\LineType">
       <UniqueIdentifier>{b3fd028d-6c26-4638-af04-ffcef97ca40e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Siv3D\Pattern">
+      <UniqueIdentifier>{ea91b721-aa43-4106-a08b-60419fca5021}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3629,6 +3632,15 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\LineType.hpp">
       <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PolkaDot.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternType.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

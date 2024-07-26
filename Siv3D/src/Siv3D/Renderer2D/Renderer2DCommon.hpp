@@ -18,12 +18,12 @@ namespace s3d
 	struct VSConstants2D
 	{
 		Float4 transform[2] = { { 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 0.0f } };
-
-		Float4 colorMul{ 1.0f, 1.0f, 1.0f, 1.0f };
 	};
 
 	struct PSConstants2D
 	{
+		Float4 colorMul{ 1.0f, 1.0f, 1.0f, 1.0f };
+
 		Float4 colorAdd{ 0.0f, 0.0f, 0.0f, 0.0f };
 
 		//Float4 sdfParam{ 0.5f, 0.5f, 0.0f, 0.0f };

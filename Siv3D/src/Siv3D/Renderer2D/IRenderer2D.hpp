@@ -26,6 +26,7 @@ namespace s3d
 	struct SamplerState;
 	struct Mat3x2;
 	enum class LineCap : uint8;
+	struct PatternParameters;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -49,6 +50,8 @@ namespace s3d
 		virtual void addRect(const FloatRect& rect, const Float4& color) = 0;
 
 		virtual void addRect(const FloatRect& rect, const Float4(&colors)[4]) = 0;
+
+		virtual void addRect(const FloatRect& rect, const PatternParameters& pattern) = 0;
 
 		virtual void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 

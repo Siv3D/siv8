@@ -40,6 +40,8 @@ namespace s3d
 
 		void addRect(const FloatRect& rect, const Float4(&colors)[4]) override;
 
+		void addRect(const FloatRect& rect, const PatternParameters& pattern) override;
+
 		void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& innerColor, const Float4& outerColor, ColorFillDirection colorType);
 
 		void addCircle(const Float2& center, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
@@ -135,6 +137,8 @@ namespace s3d
 			PixelShader::IDType psLineDashDot;
 
 			PixelShader::IDType psLineRoundDot;
+
+			PixelShader::IDType psPatternPolkaDot;
 
 		} m_engineShader;
 

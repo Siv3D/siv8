@@ -31,6 +31,7 @@ namespace s3d
 		LineLongDash,
 		LineDashDot,
 		LineRoundDot,
+		PatternPolkaDot,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

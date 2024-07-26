@@ -251,6 +251,24 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_Metal::addRect(const FloatRect& rect, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, pattern.primaryColor))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addRectFrame
@@ -514,7 +532,7 @@ namespace s3d
 				case MetalRenderer2DCommandType::ColorMul:
 					{
 						const Float4 colorMul = m_commandManager.getColorMul(command.index);
-						m_vsConstants->colorMul = colorMul;
+						m_psConstants->colorMul = colorMul;
 						LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, colorMul));
 						break;
 					}

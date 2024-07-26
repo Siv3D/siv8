@@ -15,6 +15,7 @@
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
+# include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -311,6 +312,12 @@ namespace s3d
 		const Float4 color2 = bottomLeftColor->toFloat4();
 		const Float4 color1 = ((color0 + color2) * 0.5f);
 		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, { color1, color0, color1, color2 });
+		return *this;
+	}
+
+	const Rect& Rect::draw(const PatternParameters& pattern) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, pattern);
 		return *this;
 	}
 

@@ -19,6 +19,7 @@ namespace s3d
 {
 	struct RectF;
 	struct FormatData;
+	struct PatternParameters;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1703,6 +1704,8 @@ namespace s3d
 		/// @remark `rect.draw(Arg::topRight = ColorF{ 0.0 }, Arg::bottomLeft = ColorF{ 1.0 })` のように呼びます。
 		/// @return 
 		const Rect& draw(Arg::topRight_<ColorF> topRightColor, Arg::bottomLeft_<ColorF> bottomLeftColor) const;
+
+		const Rect& draw(const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

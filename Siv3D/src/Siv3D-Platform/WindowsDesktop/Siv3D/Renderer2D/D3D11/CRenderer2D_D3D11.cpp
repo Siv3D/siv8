@@ -15,6 +15,7 @@
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
+# include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
@@ -119,6 +120,7 @@ namespace s3d
 		m_engineShader.psLineLongDash = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
 		m_engineShader.psLineDashDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
 		m_engineShader.psLineRoundDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
+		m_engineShader.psPatternPolkaDot = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDot).id();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -261,6 +263,24 @@ namespace s3d
 			if (not m_currentCustomShader.ps)
 			{
 				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addRect(const FloatRect& rect, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, pattern.primaryColor))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psPatternPolkaDot);
 			}
 
 			m_commandManager.pushDraw(indexCount);
@@ -507,7 +527,7 @@ namespace s3d
 			case D3D11Renderer2DCommandType::ColorMul:
 				{
 					const Float4 colorMul = m_commandManager.getColorMul(command.index);
-					m_vsConstants->colorMul = colorMul;
+					m_psConstants->colorMul = colorMul;
 					LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, colorMul));
 					break;
 				}
