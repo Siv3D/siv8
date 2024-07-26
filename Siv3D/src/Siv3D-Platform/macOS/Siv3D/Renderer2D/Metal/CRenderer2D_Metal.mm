@@ -95,13 +95,14 @@ namespace s3d
 			m_device	= m_pRenderer->getDevice();
 		}
 
-		m_engineShader.vs				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
-		m_engineShader.psShape			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
-		m_engineShader.psLineDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
-		m_engineShader.psLineDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
-		m_engineShader.psLineLongDash	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
-		m_engineShader.psLineDashDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
-		m_engineShader.psLineRoundDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
+		m_engineShader.vs					= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
+		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
+		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
+		m_engineShader.psLineDashDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
+		m_engineShader.psLineRoundDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
+		m_engineShader.psPatternPolkaDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDot).id();
 		
 		m_vertexBufferManager.init(m_device);
 	}
@@ -263,8 +264,10 @@ namespace s3d
 
 			if (not m_currentCustomShader.ps)
 			{
-				m_commandManager.pushEnginePS(m_engineShader.psShape);
+				m_commandManager.pushEnginePS(m_engineShader.psPatternPolkaDot);
 			}
+			
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}

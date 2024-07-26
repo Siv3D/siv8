@@ -26,6 +26,12 @@ struct PSConstants2D
 	float4 g_colorAdd;
 };
 
+struct PSPatternConstants2D
+{
+	float2x4 g_patternUVTransform_params;
+	float4 g_patternBackgroundColor;
+};
+
 float4 s3d_positionTransform2D(float2 pos, float2x4 t)
 {
 	const float2 t_13_14 = float2(t[0][2], t[0][3]);
@@ -40,6 +46,14 @@ float4 s3d_colorTransform(float4 color, constant PSConstants2D* c)
 	color += c->g_colorAdd;
 	color.rgb *= color.a;
 	return color;
+}
+
+float2 s3d_patternTransform(float2 uv, float2x4 t)
+{
+	const float2 t_13_14 = float2(t[0][2], t[0][3]);
+	const float2 t_11_12 = float2(t[0][0], t[0][1]);
+	const float2 t_21_22 = float2(t[1][0], t[1][1]);
+	return (t_13_14 + (uv.x * t_11_12) + (uv.y * t_21_22));
 }
 
 vertex
@@ -131,4 +145,22 @@ float4 PS_LineRoundDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buff
     result.a *= alpha;
 
 	return s3d_colorTransform(result, c);
+}
+
+fragment
+float4 PS_PatternPolkaDot(PSInput in [[stage_in]],
+	constant PSConstants2D* c [[buffer(0)]],
+	constant PSPatternConstants2D* p [[buffer(1)]])
+{
+	const float2 uv = s3d_patternTransform(in.position.xy, p->g_patternUVTransform_params);
+	const float2 repeat = (2.0 * fract(uv) - 1.0);
+	const float value = length(repeat);
+	const float fw = (length(float2(dfdx(value), dfdy(value))) * 0.70710678118);
+	
+	const float radiusScale = p->g_patternUVTransform_params[1].z;
+	const float c_val = smoothstep((radiusScale - fw), (radiusScale + fw), value);
+
+	const float4 primary = s3d_colorTransform(in.color, c);
+	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	return mix(primary, background, c_val);
 }

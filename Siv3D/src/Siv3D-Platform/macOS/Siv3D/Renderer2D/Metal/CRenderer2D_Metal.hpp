@@ -136,6 +136,8 @@ namespace s3d
 			PixelShader::IDType psLineDashDot;
 			
 			PixelShader::IDType psLineRoundDot;
+			
+			PixelShader::IDType psPatternPolkaDot;
 
 		} m_engineShader;
 		

@@ -95,7 +95,7 @@ namespace s3d
 			m_commands.emplace_back(MetalRenderer2DCommandType::ColorAdd, 0);
 			m_current.colorAdd = m_buffer.colorAdds.front();
 
-			m_commands.emplace_back(D3D11Renderer2DCommandType::PatternParameters, 0);
+			m_commands.emplace_back(MetalRenderer2DCommandType::PatternParameters, 0);
 			m_current.patternParameter = m_buffer.patternParameters.front();
 
 			m_commands.emplace_back(MetalRenderer2DCommandType::BlendState, 0);

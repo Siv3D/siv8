@@ -55,7 +55,7 @@ namespace s3d
 			m_pixelShaders << MSL{ U"PS_LineLongDash" };
 			m_pixelShaders << MSL{ U"PS_LineDashDot" };
 			m_pixelShaders << MSL{ U"PS_LineRoundDot" };
-			
+			m_pixelShaders << MSL{ U"PS_PatternPolkaDot" };
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{
