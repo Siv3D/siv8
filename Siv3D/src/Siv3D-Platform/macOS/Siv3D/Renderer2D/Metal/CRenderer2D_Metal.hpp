@@ -124,6 +124,16 @@ namespace s3d
 			VertexShader::IDType vs;
 
 			PixelShader::IDType psShape;
+			
+			PixelShader::IDType psLineDot;
+			
+			PixelShader::IDType psLineDash;
+			
+			PixelShader::IDType psLineLongDash;
+			
+			PixelShader::IDType psLineDashDot;
+			
+			PixelShader::IDType psLineRoundDot;
 
 		} m_engineShader;
 		

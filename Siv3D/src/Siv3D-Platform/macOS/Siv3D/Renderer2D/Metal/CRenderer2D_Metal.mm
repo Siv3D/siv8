@@ -94,8 +94,13 @@ namespace s3d
 			m_device	= m_pRenderer->getDevice();
 		}
 
-		m_engineShader.vs		= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
-		m_engineShader.psShape	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		m_engineShader.vs				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		m_engineShader.psShape			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		m_engineShader.psLineDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
+		m_engineShader.psLineDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
+		m_engineShader.psLineLongDash	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
+		m_engineShader.psLineDashDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
+		m_engineShader.psLineRoundDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
 		
 		m_vertexBufferManager.init(m_device);
 	}
@@ -135,17 +140,26 @@ namespace s3d
 
 			if (not m_currentCustomShader.ps)
 			{
-				//if (style.hasSquareDot())
-				//{
-				//	m_commandManager.pushEnginePS(m_engineShader.);
-				//}
-				//else if (style.hasRoundDot())
-				//{
-				//	m_commandManager.pushEnginePS(m_engineShader.);
-				//}
-				//else
+				switch (style.type)
 				{
+				case LineType::Solid:
 					m_commandManager.pushEnginePS(m_engineShader.psShape);
+					break;
+				case LineType::Dotted:
+					m_commandManager.pushEnginePS(m_engineShader.psLineDot);
+					break;
+				case LineType::Dashed:
+					m_commandManager.pushEnginePS(m_engineShader.psLineDash);
+					break;
+				case LineType::LongDash:
+					m_commandManager.pushEnginePS(m_engineShader.psLineLongDash);
+					break;
+				case LineType::DashDot:
+					m_commandManager.pushEnginePS(m_engineShader.psLineDashDot);
+					break;
+				case LineType::RoundDot:
+					m_commandManager.pushEnginePS(m_engineShader.psLineRoundDot);
+					break;
 				}
 			}
 
@@ -480,19 +494,21 @@ namespace s3d
 						if (m_psConstants.isDirty())
 						{
 							m_psConstants._update_if_dirty();
-							renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.size(), 1);
+							renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.size(), 0);
 						}
 
 						const MetalDrawCommand& draw = m_commandManager.getDraw(command.index);
 						const uint32 indexCount = draw.indexCount;
-
+						
+						LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, commandState.startIndexLocation));
+						
 						// indexBufferOffset, 4 の倍数でなくても大丈夫？
 						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), (sizeof(Vertex2D::IndexType) * commandState.startIndexLocation));
 						commandState.startIndexLocation += indexCount;
 						
 						//++m_stat.drawCalls;
 						//m_stat.triangleCount += (indexCount / 3);
-						LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, commandState.startIndexLocation));
+
 						break;
 					}
 				case MetalRenderer2DCommandType::ColorMul:

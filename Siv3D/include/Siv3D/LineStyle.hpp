@@ -43,31 +43,31 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineStyle(const Parameters& params) noexcept;
 
-		static constexpr Parameters Square{ LineType::Solid, LineCap::Square};
+		static constexpr Parameters Square{ LineType::Solid, LineCap::Square, 0.0 };
 
-		static constexpr Parameters Round{ LineType::Solid, LineCap::Round };
+		static constexpr Parameters Round{ LineType::Solid, LineCap::Round, 0.0 };
 
-		static constexpr Parameters Flat{ LineType::Solid, LineCap::Flat };
+		static constexpr Parameters Flat{ LineType::Solid, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters Dotted{ LineType::Dotted, LineCap::Square };
+		static constexpr Parameters Dotted{ LineType::Dotted, LineCap::Square, 0.0 };
 
-		static constexpr Parameters Dashed{ LineType::Dashed, LineCap::Square };
+		static constexpr Parameters Dashed{ LineType::Dashed, LineCap::Square, 0.0 };
 
-		static constexpr Parameters LongDash{ LineType::LongDash, LineCap::Square };
+		static constexpr Parameters LongDash{ LineType::LongDash, LineCap::Square, 0.0 };
 
-		static constexpr Parameters DashDot{ LineType::DashDot, LineCap::Square };
+		static constexpr Parameters DashDot{ LineType::DashDot, LineCap::Square, 0.0 };
 
-		static constexpr Parameters RoundDot{ LineType::RoundDot, LineCap::Square };
+		static constexpr Parameters RoundDot{ LineType::RoundDot, LineCap::Square, 0.0 };
 
-		static constexpr Parameters DottedFlat{ LineType::Dotted, LineCap::Flat };
+		static constexpr Parameters DottedFlat{ LineType::Dotted, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters DashedFlat{ LineType::Dashed, LineCap::Flat };
+		static constexpr Parameters DashedFlat{ LineType::Dashed, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters LongDashFlat{ LineType::LongDash, LineCap::Flat };
+		static constexpr Parameters LongDashFlat{ LineType::LongDash, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters DashDotFlat{ LineType::DashDot, LineCap::Flat };
+		static constexpr Parameters DashDotFlat{ LineType::DashDot, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters RoundDotFlat{ LineType::RoundDot, LineCap::Flat };
+		static constexpr Parameters RoundDotFlat{ LineType::RoundDot, LineCap::Flat, 0.0 };
 
 	};
 }

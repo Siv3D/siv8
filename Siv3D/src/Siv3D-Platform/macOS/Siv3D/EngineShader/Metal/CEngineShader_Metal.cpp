@@ -50,6 +50,12 @@ namespace s3d
 		{
 			m_pixelShaders << MSL{ U"PS_FullscreenTriangle" };
 			m_pixelShaders << MSL{ U"PS_Shape" };
+			m_pixelShaders << MSL{ U"PS_LineDot" };
+			m_pixelShaders << MSL{ U"PS_LineDash" };
+			m_pixelShaders << MSL{ U"PS_LineLongDash" };
+			m_pixelShaders << MSL{ U"PS_LineDashDot" };
+			m_pixelShaders << MSL{ U"PS_LineRoundDot" };
+			
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

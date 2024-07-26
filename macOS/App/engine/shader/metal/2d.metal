@@ -46,11 +46,94 @@ PSInput VS_Shape(uint vertexID [[vertex_id]], constant VSInput* vertices, consta
 }
 
 fragment
-float4 PS_Shape(PSInput in [[stage_in]], constant PSConstants2D* c)
+float4 PS_Shape(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
 {
 	float4 result = in.color;
 
 	result.rgb += (c->g_colorAdd.rgb * result.a);
 	
-	return in.color;
+	return result;
+}
+
+fragment
+float4 PS_LineDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
+{
+	float4 result = in.color;
+
+	const float u = (0.5 * (in.uv.x - 0.5));
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * fract(u) - 1.0);
+	const float alpha = smoothstep((0.5 - w), (0.5 + w), distance);
+	result *= alpha;
+
+	result.rgb += (c->g_colorAdd.rgb * result.a);
+
+	return result;
+}
+
+fragment
+float4 PS_LineDash(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
+{
+    float4 result = in.color;
+
+    const float u = (0.25 * (in.uv.x - 1.0));
+    const float w = fwidth(u);
+    const float distance = abs(2.0 * fract(u) - 1.0);
+    const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
+    result *= alpha;
+
+    result.rgb += (c->g_colorAdd.rgb * result.a);
+
+    return result;
+}
+
+fragment
+float4 PS_LineLongDash(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
+{
+    float4 result = in.color;
+
+    const float u = (0.1 * (in.uv.x - 1.0));
+    const float w = fwidth(u);
+    const float distance = abs(2.0 * fract(u) - 1.0);
+    const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
+    result *= alpha;
+
+    result.rgb += (c->g_colorAdd.rgb * result.a);
+
+    return result;
+}
+
+fragment
+float4 PS_LineDashDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
+{
+    float4 result = in.color;
+
+    const float u = (0.1 * (in.uv.x - 1.0));
+    const float u2 = u + 0.5;
+    const float w = fwidth(u);
+    const float distance = abs(2.0 * fract(u) - 1.0);
+    const float distance2 = abs(2.0 * fract(u2) - 1.0);
+    const float alpha1 = smoothstep((0.4 - w), (0.4 + w), distance);
+    const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
+    result *= max(alpha1, alpha2);
+
+    result.rgb += (c->g_colorAdd.rgb * result.a);
+
+    return result;
+}
+
+fragment
+float4 PS_LineRoundDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
+{
+    float4 result = in.color;
+
+    const float2 uv = ((in.uv + float2(0.5, 0.0)) * float2(0.5, 1));
+    const float w = fwidth(uv.y);
+    const float distance = length(float2(4.0, 2.0) * fract(uv) - float2(2.0, 1.0));
+    const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
+    result *= alpha;
+
+    result.rgb += (c->g_colorAdd.rgb * result.a);
+
+    return result;
 }
