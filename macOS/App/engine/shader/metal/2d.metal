@@ -18,15 +18,15 @@ struct PSInput
 struct VSConstants2D
 {
 	float2x4 g_transform;
-	float4 g_colorMul;
 };
 
 struct PSConstants2D
 {
+	float4 g_colorMul;
 	float4 g_colorAdd;
 };
 
-float4 s3d_transform2D(float2 pos, float2x4 t)
+float4 s3d_positionTransform2D(float2 pos, float2x4 t)
 {
 	const float2 t_13_14 = float2(t[0][2], t[0][3]);
 	const float2 t_11_12 = float2(t[0][0], t[0][1]);
@@ -34,13 +34,20 @@ float4 s3d_transform2D(float2 pos, float2x4 t)
 	return float4((t_13_14 + (pos.x * t_11_12) + (pos.y * t_21_22)), 0.0f, 1.0f);
 }
 
+float4 s3d_colorTransform(float4 color, constant PSConstants2D* c)
+{
+	color *= c->g_colorMul;
+	color += c->g_colorAdd;
+	color.rgb *= color.a;
+	return color;
+}
+
 vertex
 PSInput VS_Shape(uint vertexID [[vertex_id]], constant VSInput* vertices, constant VSConstants2D* c)
 {
 	PSInput out;
-	out.position	= s3d_transform2D(vertices[vertexID].position, c->g_transform);
-	out.color		= (vertices[vertexID].color * c->g_colorMul);
-	out.color.rgb	*= out.color.a;
+	out.position	= s3d_positionTransform2D(vertices[vertexID].position, c->g_transform);
+	out.color		= vertices[vertexID].color;
 	out.uv			= vertices[vertexID].uv;
 	return out;
 }
@@ -50,9 +57,7 @@ float4 PS_Shape(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]]
 {
 	float4 result = in.color;
 
-	result.rgb += (c->g_colorAdd.rgb * result.a);
-	
-	return result;
+	return s3d_colorTransform(result, c);
 }
 
 fragment
@@ -66,9 +71,7 @@ float4 PS_LineDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)
 	const float alpha = smoothstep((0.5 - w), (0.5 + w), distance);
 	result *= alpha;
 
-	result.rgb += (c->g_colorAdd.rgb * result.a);
-
-	return result;
+	return s3d_colorTransform(result, c);
 }
 
 fragment
@@ -82,9 +85,7 @@ float4 PS_LineDash(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0
     const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
     result *= alpha;
 
-    result.rgb += (c->g_colorAdd.rgb * result.a);
-
-    return result;
+	return s3d_colorTransform(result, c);
 }
 
 fragment
@@ -98,9 +99,7 @@ float4 PS_LineLongDash(PSInput in [[stage_in]], constant PSConstants2D* c [[buff
     const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
     result *= alpha;
 
-    result.rgb += (c->g_colorAdd.rgb * result.a);
-
-    return result;
+	return s3d_colorTransform(result, c);
 }
 
 fragment
@@ -117,9 +116,7 @@ float4 PS_LineDashDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffe
     const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
     result *= max(alpha1, alpha2);
 
-    result.rgb += (c->g_colorAdd.rgb * result.a);
-
-    return result;
+	return s3d_colorTransform(result, c);
 }
 
 fragment
@@ -133,7 +130,5 @@ float4 PS_LineRoundDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buff
     const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
     result *= alpha;
 
-    result.rgb += (c->g_colorAdd.rgb * result.a);
-
-    return result;
+	return s3d_colorTransform(result, c);
 }

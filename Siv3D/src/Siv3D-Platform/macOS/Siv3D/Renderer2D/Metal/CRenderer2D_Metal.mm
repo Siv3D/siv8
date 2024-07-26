@@ -15,6 +15,7 @@
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
