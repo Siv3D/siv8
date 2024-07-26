@@ -19,9 +19,9 @@ namespace s3d
 	{
 		struct PolkaDot
 		{
-			ColorF primary{ 1.0 };
+			ColorF primary{ 1.0, 1.0 };
 
-			ColorF background{ 0.0 };
+			ColorF background{ 0.0, 0.0 };
 
 			double scale = 16.0;
 

@@ -243,15 +243,15 @@ namespace s3d
 				return false;
 			}
 
-			//if (const auto resizeMode = Scene::GetResizeMode();
-			//	resizeMode == ResizeMode::Actual)
-			//{
-			//	Scene::Resize(SIV3D_ENGINE(Window)->getState().frameBufferSize);
-			//}
-			//else if (resizeMode == ResizeMode::Virtual)
-			//{
-			//	Scene::Resize(size);
-			//}
+			if (const auto resizeMode = Scene::GetResizeMode();
+				resizeMode == ResizeMode::Actual)
+			{
+				Scene::Resize(SIV3D_ENGINE(Window)->getState().frameBufferSize);
+			}
+			else if (resizeMode == ResizeMode::Virtual)
+			{
+				Scene::Resize(size);
+			}
 
 			if (centering)
 			{
@@ -285,15 +285,15 @@ namespace s3d
 				return false;
 			}
 
-			//if (const auto resizeMode = Scene::GetResizeMode();
-			//	resizeMode == ResizeMode::Actual)
-			//{
-			//	Scene::Resize(SIV3D_ENGINE(Window)->getState().frameBufferSize);
-			//}
-			//else if (resizeMode == ResizeMode::Virtual)
-			//{
-			//	Scene::Resize(size);
-			//}
+			if (const auto resizeMode = Scene::GetResizeMode();
+				resizeMode == ResizeMode::Actual)
+			{
+				Scene::Resize(SIV3D_ENGINE(Window)->getState().frameBufferSize);
+			}
+			else if (resizeMode == ResizeMode::Virtual)
+			{
+				Scene::Resize(size);
+			}
 
 			if (centering)
 			{
