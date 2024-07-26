@@ -53,6 +53,7 @@ namespace s3d
 			//m_nullDraws.clear();
 			m_buffer.colorMuls = { m_buffer.colorMuls.back() };
 			m_buffer.colorAdds = { m_buffer.colorAdds.back() };
+			m_buffer.patternParameters = { m_buffer.patternParameters.back() };
 			m_buffer.blendStates = { m_buffer.blendStates.back() };
 			m_buffer.rasterizerStates = { m_buffer.rasterizerStates.back() };
 
@@ -93,6 +94,9 @@ namespace s3d
 
 			m_commands.emplace_back(MetalRenderer2DCommandType::ColorAdd, 0);
 			m_current.colorAdd = m_buffer.colorAdds.front();
+
+			m_commands.emplace_back(D3D11Renderer2DCommandType::PatternParameters, 0);
+			m_current.patternParameter = m_buffer.patternParameters.front();
 
 			m_commands.emplace_back(MetalRenderer2DCommandType::BlendState, 0);
 			m_current.blendState = m_buffer.blendStates.front();
@@ -185,6 +189,12 @@ namespace s3d
 		{
 			m_commands.emplace_back(MetalRenderer2DCommandType::ColorAdd, static_cast<uint32>(m_buffer.colorAdds.size()));
 			m_buffer.colorAdds.push_back(m_current.colorAdd);
+		}
+		
+		if (m_stateTracker.has(MetalRenderer2DCommandType::PatternParameters))
+		{
+			m_commands.emplace_back(MetalRenderer2DCommandType::PatternParameters, static_cast<uint32>(m_buffer.patternParameters.size()));
+			m_buffer.patternParameters.push_back(m_current.patternParameter);
 		}
 
 		if (m_stateTracker.has(MetalRenderer2DCommandType::BlendState))
@@ -412,6 +422,47 @@ namespace s3d
 	const Float3& MetalRenderer2DCommandManager::getCurrentColorAdd() const
 	{
 		return m_current.colorAdd;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushPatternParameter, getPatternParameter, getPatternParameter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalRenderer2DCommandManager::pushPatternParameter(const std::array<Float4, 3>& patternParameter)
+	{
+		constexpr auto Command = MetalRenderer2DCommandType::PatternParameters;
+		auto& current = m_current.patternParameter;
+		auto& buffer = m_buffer.patternParameters;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (patternParameter != current)
+			{
+				current = patternParameter;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (patternParameter == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = patternParameter;
+		}
+	}
+	
+	const std::array<Float4, 3>& MetalRenderer2DCommandManager::getPatternParameter(const uint32 index) const
+	{
+		return m_buffer.patternParameters[index];
+	}
+	
+	const std::array<Float4, 3>& MetalRenderer2DCommandManager::getPatternParameter() const
+	{
+		return m_current.patternParameter;
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -283,6 +283,8 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.psPatternPolkaDot);
 			}
 
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
 			m_commandManager.pushDraw(indexCount);
 		}
 	}
@@ -469,6 +471,7 @@ namespace s3d
 		m_context->IASetInputLayout(m_inputLayout.Get());
 		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
 		m_pShader->setConstantBufferPS(0, m_psConstants._base());
+		m_pShader->setConstantBufferPS(1, m_psPatternConstants._base());
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		{
@@ -510,6 +513,7 @@ namespace s3d
 				{
 					m_vsConstants._update_if_dirty();
 					m_psConstants._update_if_dirty();
+					m_psPatternConstants._update_if_dirty();
 
 					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);
 					const uint32 indexCount = draw.indexCount;
@@ -536,6 +540,13 @@ namespace s3d
 					const Float3 colorAdd = m_commandManager.getColorAdd(command.index);
 					m_psConstants->colorAdd.set(colorAdd, 0.0f);
 					LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, colorAdd));
+					break;
+				}
+			case D3D11Renderer2DCommandType::PatternParameters:
+				{
+					const auto& patternParameter = m_commandManager.getPatternParameter(command.index);
+					*m_psPatternConstants = { { patternParameter[0], patternParameter[1] }, patternParameter[2] };
+					LOG_COMMAND(fmt::format("PatternParameters[{}]", command.index));
 					break;
 				}
 			case D3D11Renderer2DCommandType::BlendState:

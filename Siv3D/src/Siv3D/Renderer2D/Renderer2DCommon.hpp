@@ -34,4 +34,11 @@ namespace s3d
 
 		//Float4 internal{ 0.0f, 0.0f, 0.0f, 0.0f };
 	};
+
+	struct PSPatternConstants2D
+	{
+		Float4 transform_params[2] = { { 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 0.0f } };
+		
+		Float4 backgroundColor{ 0.0f, 0.0f, 0.0f, 0.0f };
+	};
 }

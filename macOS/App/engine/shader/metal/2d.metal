@@ -69,7 +69,7 @@ float4 PS_LineDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)
 	const float w = fwidth(u);
 	const float distance = abs(2.0 * fract(u) - 1.0);
 	const float alpha = smoothstep((0.5 - w), (0.5 + w), distance);
-	result *= alpha;
+	result.a *= alpha;
 
 	return s3d_colorTransform(result, c);
 }
@@ -83,7 +83,7 @@ float4 PS_LineDash(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0
     const float w = fwidth(u);
     const float distance = abs(2.0 * fract(u) - 1.0);
     const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
-    result *= alpha;
+    result.a *= alpha;
 
 	return s3d_colorTransform(result, c);
 }
@@ -97,7 +97,7 @@ float4 PS_LineLongDash(PSInput in [[stage_in]], constant PSConstants2D* c [[buff
     const float w = fwidth(u);
     const float distance = abs(2.0 * fract(u) - 1.0);
     const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
-    result *= alpha;
+    result.a *= alpha;
 
 	return s3d_colorTransform(result, c);
 }
@@ -114,7 +114,7 @@ float4 PS_LineDashDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffe
     const float distance2 = abs(2.0 * fract(u2) - 1.0);
     const float alpha1 = smoothstep((0.4 - w), (0.4 + w), distance);
     const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
-    result *= max(alpha1, alpha2);
+    result.a *= max(alpha1, alpha2);
 
 	return s3d_colorTransform(result, c);
 }
@@ -128,7 +128,7 @@ float4 PS_LineRoundDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buff
     const float w = fwidth(uv.y);
     const float distance = length(float2(4.0, 2.0) * fract(uv) - float2(2.0, 1.0));
     const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
-    result *= alpha;
+    result.a *= alpha;
 
 	return s3d_colorTransform(result, c);
 }

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
 # include "../Common.hpp"
 # include "../PointVector.hpp"
 # include "../Mat3x2.hpp"
@@ -30,5 +31,10 @@ namespace s3d
 		float param1 = 0.0f;
 
 		PatternType type = PatternType::PolkaDot;
+
+		[[nodiscard]]
+		constexpr std::array<Float4, 3> toFloat4Array(float maxScalingInv) const noexcept;
 	};
 }
+
+# include "PatternParameters.ipp"

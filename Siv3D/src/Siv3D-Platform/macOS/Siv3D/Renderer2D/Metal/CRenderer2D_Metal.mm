@@ -516,6 +516,12 @@ namespace s3d
 							renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.size(), 0);
 						}
 
+						if (m_psPatternConstants.isDirty())
+						{
+							m_psPatternConstants._update_if_dirty();
+							renderCommandEncoder->setFragmentBytes(m_psPatternConstants.data(), m_psPatternConstants.size(), 1);
+						}
+
 						const MetalDrawCommand& draw = m_commandManager.getDraw(command.index);
 						const uint32 indexCount = draw.indexCount;
 						
@@ -542,6 +548,13 @@ namespace s3d
 						const Float3 colorAdd = m_commandManager.getColorAdd(command.index);
 						m_psConstants->colorAdd.set(colorAdd, 0.0f);
 						LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, colorAdd));
+						break;
+					}
+				case MetalRenderer2DCommandType::PatternParameters:
+					{
+						const auto& patternParameter = m_commandManager.getPatternParameter(command.index);
+						*m_psPatternConstants = { { patternParameter[0], patternParameter[1] }, patternParameter[2] };
+						LOG_COMMAND(fmt::format("PatternParameters[{}]", command.index));
 						break;
 					}
 				case MetalRenderer2DCommandType::BlendState:

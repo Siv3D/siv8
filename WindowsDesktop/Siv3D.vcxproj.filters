@@ -3642,6 +3642,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternType.hpp">
       <Filter>include\Siv3D\Pattern</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">

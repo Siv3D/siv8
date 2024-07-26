@@ -341,6 +341,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Parse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ParseFloat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PolkaDot.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PCG64.hpp" />

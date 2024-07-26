@@ -43,8 +43,8 @@ cbuffer PSConstants2D : register(b0)
 
 cbuffer PSPatternConstants2D : register(b1)
 {
-	row_major float2x4 g_uvTransform_params;
-	float4 g_backgroundColor;
+	row_major float2x4 g_patternUVTransform_params;
+	float4 g_patternBackgroundColor;
 }
 
 float4 s3d_positionTransform(float2 pos, float2x4 t)
@@ -58,6 +58,11 @@ float4 s3d_colorTransform(float4 color)
 	color += g_colorAdd;
 	color.rgb *= color.a;
 	return color;
+}
+
+float2 s3d_patternTransform(float2 uv)
+{
+	return (g_patternUVTransform_params._13_14 + (uv.x * g_patternUVTransform_params._11_12) + (uv.y * g_patternUVTransform_params._21_22));
 }
 
 PSInput VS(VSInput input)
@@ -76,19 +81,6 @@ float4 PS_Shape(PSInput input) : SV_TARGET
 	return s3d_colorTransform(result);
 }
 
-float4 PS_LineDotOld(PSInput input) : SV_TARGET
-{
-	float4 result = input.color;
-
-	const float u = (0.5 * (input.uv.x - 0.5));
-	const float w = fwidth(u);
-	const float distance = abs(2.0 * frac(u) - 1.0);
-	const float alpha = smoothstep((0.5 - w), (0.5 + w), distance);
-	result *= alpha;
-
-	return s3d_colorTransform(result);
-}
-
 float4 PS_LineDot(PSInput input) : SV_TARGET
 {
 	float4 result = input.color;
@@ -97,11 +89,10 @@ float4 PS_LineDot(PSInput input) : SV_TARGET
 	const float w = fwidth(u);
 	const float value = abs(2.0 * frac(u) - 1.0);
 	const float alpha = smoothstep((0.5 - w), (0.5 + w), value);
-	result *= alpha;
+	result.a *= alpha;
 
 	return s3d_colorTransform(result);
 }
-
 
 float4 PS_LineDash(PSInput input) : SV_TARGET
 {
@@ -111,7 +102,7 @@ float4 PS_LineDash(PSInput input) : SV_TARGET
 	const float w = fwidth(u);
 	const float distance = abs(2.0 * frac(u) - 1.0);
 	const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
-	result *= alpha;
+	result.a *= alpha;
 
 	return s3d_colorTransform(result);
 }
@@ -124,7 +115,7 @@ float4 PS_LineLongDash(PSInput input) : SV_TARGET
 	const float w = fwidth(u);
 	const float distance = abs(2.0 * frac(u) - 1.0);
 	const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
-	result *= alpha;
+	result.a *= alpha;
 
 	return s3d_colorTransform(result);
 }
@@ -140,7 +131,7 @@ float4 PS_LineDashDot(PSInput input) : SV_TARGET
 	const float distance2 = abs(2.0 * frac(u2) - 1.0);
 	const float alpha1 = smoothstep((0.4 - w), (0.4 + w), distance);
 	const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
-	result *= max(alpha1, alpha2);
+	result.a *= max(alpha1, alpha2);
 
 	return s3d_colorTransform(result);
 }
@@ -153,22 +144,23 @@ float4 PS_LineRoundDot(PSInput input) : SV_TARGET
 	const float w = fwidth(uv.y);
 	const float distance = length(float2(4.0, 2.0) * frac(uv) - float2(2.0, 1.0));
 	const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
-	result *= alpha;
+	result.a *= alpha;
 
 	return s3d_colorTransform(result);
 }
 
 float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 {
-	const float2 uv = input.position.xy / 64;
+	const float2 uv = s3d_patternTransform(input.position.xy);
 	const float2 repeat = (2.0 * frac(uv) - 1.0);
 	const float value = length(repeat);
 	const float fw = (length(float2(ddx(value), ddy(value))) * 0.70710678118);
-	const float c = smoothstep((0.5 - fw), (0.5 + fw), value);
 
-	const float4 primary = input.color;
-	const float4 background = float4(1, 1, 1, 0);
-	const float4 result = lerp(primary, background, c);
+	const float radiusScale = g_patternUVTransform_params[1].z;
+	const float c = smoothstep((radiusScale - fw), (radiusScale + fw), value);
 
-	return s3d_colorTransform(result);
+	const float4 primary = s3d_colorTransform(input.color);
+	const float4 background = s3d_colorTransform(g_patternBackgroundColor);
+
+	return lerp(primary, background, c);
 }
