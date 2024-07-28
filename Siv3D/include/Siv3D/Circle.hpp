@@ -916,6 +916,8 @@ namespace s3d
 		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
+
 		/// @brief 円の弧を描きます。
 		/// @param lineCap 線端のスタイル
 		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
