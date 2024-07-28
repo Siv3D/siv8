@@ -2195,10 +2195,15 @@
 		F9D41B622C4FCE6400290998 /* SivLineCap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41B602C4FCE6300290998 /* SivLineCap.cpp */; };
 		F9D41B642C534D8900290998 /* LineType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B632C534D8900290998 /* LineType.hpp */; };
 		F9D41B672C534DA900290998 /* SivLineType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41B652C534DA900290998 /* SivLineType.cpp */; };
-		F9D41B742C53C11300290998 /* PatternParameters.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B6F2C53C11300290998 /* PatternParameters.hpp */; };
-		F9D41B752C53C11300290998 /* PatternParameters.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B702C53C11300290998 /* PatternParameters.ipp */; };
-		F9D41B762C53C11300290998 /* PatternType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B712C53C11300290998 /* PatternType.hpp */; };
-		F9D41B772C53C11300290998 /* PolkaDot.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B722C53C11300290998 /* PolkaDot.hpp */; };
+		F9D41B822C56057700290998 /* Checker.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B782C56057700290998 /* Checker.hpp */; };
+		F9D41B832C56057700290998 /* Grid.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B792C56057700290998 /* Grid.hpp */; };
+		F9D41B842C56057700290998 /* HexGrid.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7A2C56057700290998 /* HexGrid.hpp */; };
+		F9D41B852C56057700290998 /* PatternParameters.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7B2C56057700290998 /* PatternParameters.hpp */; };
+		F9D41B862C56057700290998 /* PatternParameters.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7C2C56057700290998 /* PatternParameters.ipp */; };
+		F9D41B872C56057700290998 /* PatternType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7D2C56057700290998 /* PatternType.hpp */; };
+		F9D41B882C56057700290998 /* PolkaDot.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7E2C56057700290998 /* PolkaDot.hpp */; };
+		F9D41B892C56057700290998 /* Stripe.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7F2C56057700290998 /* Stripe.hpp */; };
+		F9D41B8A2C56057700290998 /* Triangle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B802C56057700290998 /* Triangle.hpp */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -4566,10 +4571,15 @@
 		F9D41B602C4FCE6300290998 /* SivLineCap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLineCap.cpp; sourceTree = "<group>"; };
 		F9D41B632C534D8900290998 /* LineType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineType.hpp; sourceTree = "<group>"; };
 		F9D41B652C534DA900290998 /* SivLineType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLineType.cpp; sourceTree = "<group>"; };
-		F9D41B6F2C53C11300290998 /* PatternParameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternParameters.hpp; sourceTree = "<group>"; };
-		F9D41B702C53C11300290998 /* PatternParameters.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternParameters.ipp; sourceTree = "<group>"; };
-		F9D41B712C53C11300290998 /* PatternType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternType.hpp; sourceTree = "<group>"; };
-		F9D41B722C53C11300290998 /* PolkaDot.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolkaDot.hpp; sourceTree = "<group>"; };
+		F9D41B782C56057700290998 /* Checker.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Checker.hpp; sourceTree = "<group>"; };
+		F9D41B792C56057700290998 /* Grid.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.hpp; sourceTree = "<group>"; };
+		F9D41B7A2C56057700290998 /* HexGrid.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HexGrid.hpp; sourceTree = "<group>"; };
+		F9D41B7B2C56057700290998 /* PatternParameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternParameters.hpp; sourceTree = "<group>"; };
+		F9D41B7C2C56057700290998 /* PatternParameters.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternParameters.ipp; sourceTree = "<group>"; };
+		F9D41B7D2C56057700290998 /* PatternType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternType.hpp; sourceTree = "<group>"; };
+		F9D41B7E2C56057700290998 /* PolkaDot.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolkaDot.hpp; sourceTree = "<group>"; };
+		F9D41B7F2C56057700290998 /* Stripe.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Stripe.hpp; sourceTree = "<group>"; };
+		F9D41B802C56057700290998 /* Triangle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Triangle.hpp; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -5663,7 +5673,7 @@
 				F9070BB32B9F175000383E4D /* Error */,
 				F96F960B2C359F070033353E /* Geometry2D */,
 				F9528C5E2BC05B0200222F45 /* ImageFormat */,
-				F9D41B732C53C11300290998 /* Pattern */,
+				F9D41B812C56057700290998 /* Pattern */,
 			);
 			path = Siv3D;
 			sourceTree = "<group>";
@@ -9609,13 +9619,18 @@
 			path = LineType;
 			sourceTree = "<group>";
 		};
-		F9D41B732C53C11300290998 /* Pattern */ = {
+		F9D41B812C56057700290998 /* Pattern */ = {
 			isa = PBXGroup;
 			children = (
-				F9D41B6F2C53C11300290998 /* PatternParameters.hpp */,
-				F9D41B702C53C11300290998 /* PatternParameters.ipp */,
-				F9D41B712C53C11300290998 /* PatternType.hpp */,
-				F9D41B722C53C11300290998 /* PolkaDot.hpp */,
+				F9D41B782C56057700290998 /* Checker.hpp */,
+				F9D41B792C56057700290998 /* Grid.hpp */,
+				F9D41B7A2C56057700290998 /* HexGrid.hpp */,
+				F9D41B7B2C56057700290998 /* PatternParameters.hpp */,
+				F9D41B7C2C56057700290998 /* PatternParameters.ipp */,
+				F9D41B7D2C56057700290998 /* PatternType.hpp */,
+				F9D41B7E2C56057700290998 /* PolkaDot.hpp */,
+				F9D41B7F2C56057700290998 /* Stripe.hpp */,
+				F9D41B802C56057700290998 /* Triangle.hpp */,
 			);
 			path = Pattern;
 			sourceTree = "<group>";
@@ -10006,6 +10021,7 @@
 				F980C4832C04B3EB00A86B68 /* BatchStateTracker.hpp in Headers */,
 				F986045F2BCFBB54006A4C0F /* SkSLProgramWriter.h in Headers */,
 				F98600B02BCFBB53006A4C0F /* SkParsePath.h in Headers */,
+				F9D41B862C56057700290998 /* PatternParameters.ipp in Headers */,
 				F98600062BCFBB53006A4C0F /* SkColor.h in Headers */,
 				F98602412BCFBB54006A4C0F /* SkRecordDraw.h in Headers */,
 				F96F95EA2C359E390033353E /* InputDeviceType.hpp in Headers */,
@@ -10071,6 +10087,7 @@
 				F98600032BCFBB53006A4C0F /* SkCanvasVirtualEnforcer.h in Headers */,
 				F9E5FC3F2BC15B260081A4F7 /* DirectXPackedVector.h in Headers */,
 				F98602972BCFBB54006A4C0F /* SkVerticesPriv.h in Headers */,
+				F9D41B872C56057700290998 /* PatternType.hpp in Headers */,
 				F9070EE42B9F1C8900383E4D /* mappings.h in Headers */,
 				F98600482BCFBB53006A4C0F /* SkTextBlob.h in Headers */,
 				F98605A72BE4887C006A4C0F /* RegExpDetail.hpp in Headers */,
@@ -10078,6 +10095,7 @@
 				F98602932BCFBB54006A4C0F /* SkTypefaceCache.h in Headers */,
 				F986FA9D2BCFB53B006A4C0F /* ttnameid.h in Headers */,
 				F98601F12BCFBB53006A4C0F /* SkMatrixInvert.h in Headers */,
+				F9D41B822C56057700290998 /* Checker.hpp in Headers */,
 				F9070AF92B9DEB5900383E4D /* double-to-string.h in Headers */,
 				F986F9952BCA9D0A006A4C0F /* plutovg-ft-types.h in Headers */,
 				F98603902BCFBB54006A4C0F /* SkSFNTHeader.h in Headers */,
@@ -10260,6 +10278,7 @@
 				F98601C32BCFBB53006A4C0F /* SkGaussFilter.h in Headers */,
 				F986060A2BE71763006A4C0F /* FreestandingMessageBox.hpp in Headers */,
 				F9070D022B9F175100383E4D /* TextReader.hpp in Headers */,
+				F9D41B832C56057700290998 /* Grid.hpp in Headers */,
 				F9807D922BF6679000D9B590 /* AssetHandle.ipp in Headers */,
 				F986FA852BCFB53B006A4C0F /* ftincrem.h in Headers */,
 				F98605152BCFC3E3006A4C0F /* SkTypeface_mac_ct.h in Headers */,
@@ -10279,7 +10298,6 @@
 				F98600092BCFBB53006A4C0F /* SkColorSpace.h in Headers */,
 				F986023B2BCFBB54006A4C0F /* SkReadBuffer.h in Headers */,
 				F9070AF42B9DEB5900383E4D /* bignum.h in Headers */,
-				F9D41B762C53C11300290998 /* PatternType.hpp in Headers */,
 				F986FA792BCFB53B006A4C0F /* ftchapters.h in Headers */,
 				F986FA772BCFB53B006A4C0F /* ftbzip2.h in Headers */,
 				F986043F2BCFBB54006A4C0F /* SkSLSymbol.h in Headers */,
@@ -10314,7 +10332,6 @@
 				F986F9982BCA9D0A006A4C0F /* plutovg-private.h in Headers */,
 				F9528C0E2BBF026F00222F45 /* fse.h in Headers */,
 				F9070D122B9F175100383E4D /* Version.hpp in Headers */,
-				F9D41B742C53C11300290998 /* PatternParameters.hpp in Headers */,
 				F9E7946D2C19B6F2002615BA /* MinMax.ipp in Headers */,
 				F9E794602C198133002615BA /* RangeConcepts.hpp in Headers */,
 				F9070D062B9F175100383E4D /* Time.hpp in Headers */,
@@ -10580,6 +10597,7 @@
 				F986FA942BCFB53B006A4C0F /* ftsnames.h in Headers */,
 				F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */,
 				F9070D032B9F175100383E4D /* TextWriter.hpp in Headers */,
+				F9D41B882C56057700290998 /* PolkaDot.hpp in Headers */,
 				F98603F52BCFBB54006A4C0F /* SkSLConstructorDiagonalMatrix.h in Headers */,
 				F986003E2BCFBB53006A4C0F /* SkSerialProcs.h in Headers */,
 				F9070EEF2B9F1C8900383E4D /* platform.h in Headers */,
@@ -10644,10 +10662,12 @@
 				F9070CB12B9F175000383E4D /* DisplayResolution.hpp in Headers */,
 				F9070CBB2B9F175000383E4D /* FileSystem.hpp in Headers */,
 				F986F9BC2BCA9D0A006A4C0F /* styledelement.h in Headers */,
+				F9D41B852C56057700290998 /* PatternParameters.hpp in Headers */,
 				F986008D2BCFBB53006A4C0F /* SkTypeTraits.h in Headers */,
 				F986001C2BCFBB53006A4C0F /* SkGraphics.h in Headers */,
 				F9070CDF2B9F175100383E4D /* Number.hpp in Headers */,
 				F98604492BCFBB54006A4C0F /* SkSLVarDeclarations.h in Headers */,
+				F9D41B8A2C56057700290998 /* Triangle.hpp in Headers */,
 				F986006F2BCFBB53006A4C0F /* SkAssert.h in Headers */,
 				F98604322BCFBB54006A4C0F /* SkSLReturnStatement.h in Headers */,
 				F980C4312C00D2B500A86B68 /* BlendState.hpp in Headers */,
@@ -10734,6 +10754,7 @@
 				F9070CAF2B9F175000383E4D /* DiscreteDistribution.hpp in Headers */,
 				F986FA862BCFB53B006A4C0F /* ftlcdfil.h in Headers */,
 				F98605942BE33124006A4C0F /* ICursorStyle.hpp in Headers */,
+				F9D41B842C56057700290998 /* HexGrid.hpp in Headers */,
 				F9070C402B9F175000383E4D /* AlignedAllocator.ipp in Headers */,
 				F9070CF42B9F175100383E4D /* RandomDuration.hpp in Headers */,
 				F9528C322BBF026F00222F45 /* zstd_ldm.h in Headers */,
@@ -10864,6 +10885,7 @@
 				F98604792BCFBB54006A4C0F /* SkSLLexer.h in Headers */,
 				F98600792BCFBB53006A4C0F /* SkLoadUserConfig.h in Headers */,
 				F986FA482BCFB53B006A4C0F /* svfntfmt.h in Headers */,
+				F9D41B892C56057700290998 /* Stripe.hpp in Headers */,
 				F986F99D2BCA9D0A006A4C0F /* canvas.h in Headers */,
 				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,
@@ -10991,7 +11013,6 @@
 				F9528C572BC02A3100222F45 /* MemoryMappedFileDetail.hpp in Headers */,
 				F9070C602B9F175000383E4D /* Int128.ipp in Headers */,
 				F9528B792BB708A700222F45 /* ILicenseManager.hpp in Headers */,
-				F9D41B772C53C11300290998 /* PolkaDot.hpp in Headers */,
 				F986FA8B2BCFB53B006A4C0F /* ftmm.h in Headers */,
 				F907068A2B9DAEC900383E4D /* identity.h in Headers */,
 				F9070CD72B9F175100383E4D /* LogType.hpp in Headers */,
@@ -11097,7 +11118,6 @@
 				F98603F72BCFBB54006A4C0F /* SkSLConstructorMatrixResize.h in Headers */,
 				F9766B762C29C75F00DE4107 /* Camera2DControlBuilder.hpp in Headers */,
 				F980C4302C00D2B500A86B68 /* RasterizerState.hpp in Headers */,
-				F9D41B752C53C11300290998 /* PatternParameters.ipp in Headers */,
 				F98603802BCFBB54006A4C0F /* SkOTTable_maxp_TT.h in Headers */,
 				F96F96072C359ED90033353E /* morton3D_LUTs.h in Headers */,
 				F986FA662BCFB53B006A4C0F /* ftrfork.h in Headers */,

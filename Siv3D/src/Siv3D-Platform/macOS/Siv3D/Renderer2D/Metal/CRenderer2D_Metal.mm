@@ -58,6 +58,27 @@ namespace s3d
 		}
 	}
 
+	PixelShader::IDType CRenderer2D_Metal::EngineShader::getPatternShader(const PatternType pattern) const noexcept
+	{
+		switch (pattern)
+		{
+		case PatternType::PolkaDot:
+			return psPatternPolkaDot;
+		case PatternType::Stripe:
+			return psPatternStripe;
+		case PatternType::Checker:
+			return psPatternChecker;
+		case PatternType::Grid:
+			return psPatternGrid;
+		case PatternType::Triangle:
+			return psPatternTriangle;
+		case PatternType::HexGrid:
+			return psPatternHexGrid;
+		default:
+			return psShape;
+		}
+	}
+
 	struct CommandState
 	{
 		Mat3x2 transform = Mat3x2::Identity();
@@ -103,6 +124,11 @@ namespace s3d
 		m_engineShader.psLineDashDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
 		m_engineShader.psLineRoundDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
 		m_engineShader.psPatternPolkaDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDot).id();
+		m_engineShader.psPatternStripe		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternStripe).id();
+		m_engineShader.psPatternGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternGrid).id();
+		m_engineShader.psPatternChecker		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternChecker).id();
+		m_engineShader.psPatternTriangle	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTriangle).id();
+		m_engineShader.psPatternHexGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHexGrid).id();
 		
 		m_vertexBufferManager.init(m_device);
 	}
@@ -264,7 +290,7 @@ namespace s3d
 
 			if (not m_currentCustomShader.ps)
 			{
-				m_commandManager.pushEnginePS(m_engineShader.psPatternPolkaDot);
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 			
 			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));

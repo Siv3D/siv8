@@ -21,6 +21,8 @@
 
 namespace s3d
 {
+	enum class PatternType : uint8;
+
 	class CRenderer2D_Metal final : public ISiv3DRenderer2D
 	{
 	public:
@@ -138,6 +140,19 @@ namespace s3d
 			PixelShader::IDType psLineRoundDot;
 			
 			PixelShader::IDType psPatternPolkaDot;
+			
+			PixelShader::IDType psPatternStripe;
+
+			PixelShader::IDType psPatternGrid;
+
+			PixelShader::IDType psPatternChecker;
+
+			PixelShader::IDType psPatternTriangle;
+
+			PixelShader::IDType psPatternHexGrid;
+			
+			[[nodiscard]]
+			PixelShader::IDType getPatternShader(PatternType pattern) const noexcept;
 
 		} m_engineShader;
 		

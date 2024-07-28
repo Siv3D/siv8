@@ -162,5 +162,133 @@ float4 PS_PatternPolkaDot(PSInput in [[stage_in]],
 
 	const float4 primary = s3d_colorTransform(in.color, c);
 	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	
 	return mix(primary, background, c_val);
+}
+
+fragment
+float4 PS_PatternStripe(PSInput in [[stage_in]],
+	constant PSConstants2D* c [[buffer(0)]],
+	constant PSPatternConstants2D* p [[buffer(1)]])
+{
+	const float u = s3d_patternTransform(in.position.xy, p->g_patternUVTransform_params).x;
+	const float fw = fwidth(u);
+	const float repeat = (2.0 * fract(u) - 1.0);
+	const float value = abs(repeat);
+	
+	const float thicknessScale = (p->g_patternUVTransform_params[1].z * (1 + 2 * fw) - fw);
+	const float c1 = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
+
+	const float4 primary = s3d_colorTransform(in.color, c);
+	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+
+	return mix(primary, background, c1);
+}
+
+fragment
+float4 PS_PatternGrid(PSInput in [[stage_in]],
+	constant PSConstants2D* c [[buffer(0)]],
+	constant PSPatternConstants2D* p [[buffer(1)]])
+{
+	const float2 uv = s3d_patternTransform(in.position.xy, p->g_patternUVTransform_params);
+	const float2 fw = fwidth(uv);
+	const float2 repeat = (2.0 * fract(uv) - 1.0);
+	const float2 value = abs(repeat);
+	
+	const float2 thicknessScale = (p->g_patternUVTransform_params[1].zz * float2(1 + fw) - fw);
+	const float2 c1 = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
+	const float c2 = min(c1.x, c1.y);
+
+	const float4 primary = s3d_colorTransform(in.color, c);
+	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+
+	return mix(primary, background, c2);
+}
+
+float2 Integral(float2 v)
+{
+	v /= 2.0;
+	return (floor(v) + max((2.0 * fract(v) - 1.0), 0.0));
+}
+
+float CheckersFiltered(float2 p, float2 hv)
+{
+	const float2 fw = fwidth(p);
+	const float w = max(fw.x, fw.y);
+	float2 i = (Integral(p + 0.5 * w) - Integral(p - 0.5 * w));
+	i *= hv;
+	i /= w;
+	return (i.x + i.y - 2.0 * i.x * i.y);
+}
+
+fragment
+float4 PS_PatternChecker(PSInput in [[stage_in]],
+	constant PSConstants2D* c [[buffer(0)]],
+	constant PSPatternConstants2D* p [[buffer(1)]])
+{
+	const float2 uv = s3d_patternTransform(in.position.xy, p->g_patternUVTransform_params);
+	const float c1 = CheckersFiltered(uv, p->g_patternUVTransform_params[1].zw);
+
+	const float4 primary = s3d_colorTransform(in.color, c);
+	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	
+	return mix(primary, background, c1);
+}
+
+float2 Skew(float2 v)
+{
+	const float2x2 transform = float2x2(1.0, (1.0 / tan(3.1415926535 / 3.0)), 0.0, (1.0 / sin(3.1415926535 / 3.0)));
+	return (v * transform);
+}
+
+fragment
+float4 PS_PatternTriangle(PSInput in [[stage_in]],
+	constant PSConstants2D* c [[buffer(0)]],
+	constant PSPatternConstants2D* p [[buffer(1)]])
+{
+	const float2 uv = s3d_patternTransform(in.position.xy, p->g_patternUVTransform_params);
+	const float2 fw = (fwidth(uv) * 0.25);
+
+	const float2 s1 = Skew(uv + float2(-fw.x, -fw.y));
+	const float2 s2 = Skew(uv + float2(fw.x, fw.y));
+	const float2 s3 = Skew(uv + float2(-fw.x, fw.y));
+	const float2 s4 = Skew(uv + float2(fw.x, -fw.y));
+
+	const float4 f1 = fract(float4(s1, s2));
+	const float4 f2 = fract(float4(s3, s4));
+	const float4 ss = float4(step(f1.x, f1.y), step(f1.z, f1.w), step(f2.x, f2.y), step(f2.z, f2.w));
+	const float c1 = dot(ss, 0.25);
+
+	const float4 primary = s3d_colorTransform(in.color, c);
+	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	
+	return mix(primary, background, c1);
+}
+
+float Hex(float2 p)
+{
+	const float2 HEX = float2(1, 1.73205081);
+	const float4 t = (floor(float4(p, p - float2(0.5, 1)) / HEX.xyxy) + float4(0.5, 0.5, 0.5, 0.5));
+	const float4 h = float4((p - t.xy * HEX), (p - (t.zw + float2(0.5, 0.5)) * HEX));
+	const float2 hex = abs((dot(h.xy, h.xy) < dot(h.zw, h.zw)) ? h.xy : h.zw);
+	return max(dot(hex, (HEX * 0.5)), hex.x);
+}
+
+fragment
+float4 PS_PatternHexGrid(PSInput in [[stage_in]],
+	constant PSConstants2D* c [[buffer(0)]],
+	constant PSPatternConstants2D* p [[buffer(1)]])
+{
+	const float2 uv = s3d_patternTransform(in.position.xy, p->g_patternUVTransform_params);
+	const float2 fw = fwidth(uv);
+	const float w = (max(fw.x, fw.y) * 0.5);
+
+	const float thicknessScale = (p->g_patternUVTransform_params[1].z * (1 + 2 * w));
+	const float h = Hex(uv);
+	const float c1 = smoothstep((thicknessScale - w), (thicknessScale + w), h);
+
+	const float4 primary = s3d_colorTransform(in.color, c);
+	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	
+	return mix(background, primary, c1);
 }
