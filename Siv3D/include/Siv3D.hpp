@@ -699,6 +699,28 @@
 
 ////////////////////////////////////////////////////////////////
 //
+//	模様 | Pattern
+//
+////////////////////////////////////////////////////////////////
+
+# include <Siv3D/Pattern/PatternType.hpp>
+
+# include <Siv3D/Pattern/PatternParameters.hpp>
+
+# include <Siv3D/Pattern/PolkaDot.hpp>
+
+# include <Siv3D/Pattern/Stripe.hpp>
+
+# include <Siv3D/Pattern/Grid.hpp>
+
+# include <Siv3D/Pattern/Checker.hpp>
+
+# include <Siv3D/Pattern/Triangle.hpp>
+
+# include <Siv3D/Pattern/HexGrid.hpp>
+
+////////////////////////////////////////////////////////////////
+//
 //	乱数と分布 | Random and Distribution
 //
 ////////////////////////////////////////////////////////////////
@@ -795,6 +817,11 @@
 
 // 2D 図形コレクション | 2D shape collection
 # include <Siv3D/2DShapes.hpp> // ToDo
+
+// 線端のスタイル | Line cap
+# include <Siv3D/LineCap.hpp>
+
+# include <Siv3D/LineType.hpp>
 
 // 線のスタイル | Line style
 # include <Siv3D/LineStyle.hpp>

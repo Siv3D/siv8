@@ -66,6 +66,8 @@ namespace s3d
 
 		const Quad& draw(const ColorF& color0, const ColorF& color1, const ColorF& color2, const ColorF& color3) const;
 
+		const Quad& draw(const PatternParameters& pattern) const;
+
 	private:
 
 		[[noreturn]]

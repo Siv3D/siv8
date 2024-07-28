@@ -70,7 +70,131 @@ namespace s3d
 		, p2{ _p2 } {}
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	withP0
+	//
+	////////////////////////////////////////////////////////////////
 
+	constexpr Triangle Triangle::withP0(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ position_type{ _x, _y }, p1, p2 };
+	}
+
+	constexpr Triangle Triangle::withP0(const position_type _p0) const noexcept
+	{
+		return{ _p0, p1, p2 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withP1
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::withP1(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ p0, position_type{ _x, _y }, p2 };
+	}
+
+	constexpr Triangle Triangle::withP1(const position_type _p1) const noexcept
+	{
+		return{ p0, _p1, p2 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withP2
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::withP2(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ p0, p1, position_type{ _x, _y } };
+	}
+
+	constexpr Triangle Triangle::withP2(const position_type _p2) const noexcept
+	{
+		return{ p0, p1, _p2 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withCentroid
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::withCentroid(const value_type _x, const value_type _y) const noexcept
+	{
+		return movedBy(position_type{ _x, _y } - centroid());
+	}
+
+	constexpr Triangle Triangle::withCentroid(const position_type _centroid) const noexcept
+	{
+		return movedBy(_centroid - centroid());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	set
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle& Triangle::set(const value_type x0, const value_type y0, const value_type x1, const value_type y1, const value_type x2, const value_type y2) noexcept
+	{
+		p0.set(x0, y0);
+		p1.set(x1, y1);
+		p2.set(x2, y2);
+		return *this;
+	}
+
+	constexpr Triangle& Triangle::set(const position_type& _p0, const position_type& _p1, const position_type& _p2) noexcept
+	{
+		p0.set(_p0);
+		p1.set(_p1);
+		p2.set(_p2);
+		return *this;
+	}
+
+	constexpr Triangle& Triangle::set(const Triangle& triangle) noexcept
+	{
+		p0.set(triangle.p0);
+		p1.set(triangle.p1);
+		p2.set(triangle.p2);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setCentroid
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle& Triangle::setCentroid(const value_type x, const value_type y) noexcept
+	{
+		return moveBy(position_type{ x, y } - centroid());
+	}
+
+	constexpr Triangle& Triangle::setCentroid(const position_type pos) noexcept
+	{
+		return moveBy(pos - centroid());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	movedBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::movedBy(const value_type x, const value_type y) const noexcept
+	{
+		return{ p0.movedBy(x, y), p1.movedBy(x, y), p2.movedBy(x, y) };
+	}
+
+	constexpr Triangle Triangle::movedBy(const position_type v) const noexcept
+	{
+		return{ p0.movedBy(v), p1.movedBy(v), p2.movedBy(v) };
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -94,7 +218,222 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFromOrigin
+	//
+	////////////////////////////////////////////////////////////////
 
+	constexpr Triangle Triangle::scaledFromOrigin(const value_type s) const noexcept
+	{
+		return{ (p0 * s), (p1 * s), (p2 * s) };
+	}
+
+	constexpr Triangle Triangle::scaledFromOrigin(const value_type sx, const value_type sy) const noexcept
+	{
+		return scaledFromOrigin(Vec2{ sx, sy });
+	}
+
+	constexpr Triangle Triangle::scaledFromOrigin(const Vec2 s) const noexcept
+	{
+		return{ (p0 * s), (p1 * s), (p2 * s) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFromOrigin
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle& Triangle::scaleFromOrigin(const value_type s) noexcept
+	{
+		p0 *= s;
+		p1 *= s;
+		p2 *= s;
+		return *this;
+	}
+
+	constexpr Triangle& Triangle::scaleFromOrigin(const value_type sx, const value_type sy) noexcept
+	{
+		return scaleFromOrigin(Vec2{ sx, sy });
+	}
+
+	constexpr Triangle& Triangle::scaleFromOrigin(const Vec2 s) noexcept
+	{
+		p0 *= s;
+		p1 *= s;
+		p2 *= s;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::scaledFrom(const position_type pos, const value_type s) const noexcept
+	{
+		return{ (pos + (p0 - pos) * s), (pos + (p1 - pos) * s), (pos + (p2 - pos) * s) };
+	}
+
+	constexpr Triangle Triangle::scaledFrom(const position_type pos, const value_type sx, const value_type sy) const noexcept
+	{
+		return scaledFrom(pos, position_type{ sx, sy });
+	}
+
+	constexpr Triangle Triangle::scaledFrom(const position_type pos, const Vec2 s) const noexcept
+	{
+		return{ (pos + (p0 - pos) * s), (pos + (p1 - pos) * s), (pos + (p2 - pos) * s) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle& Triangle::scaleFrom(const position_type pos, const value_type s) noexcept
+	{
+		p0 = (pos + (p0 - pos) * s);
+		p1 = (pos + (p1 - pos) * s);
+		p2 = (pos + (p2 - pos) * s);
+		return *this;
+	}
+
+	constexpr Triangle& Triangle::scaleFrom(const position_type pos, const value_type sx, const value_type sy) noexcept
+	{
+		return scaleFrom(pos, position_type{ sx, sy });
+	}
+
+	constexpr Triangle& Triangle::scaleFrom(const position_type pos, const Vec2 s) noexcept
+	{
+		p0 = (pos + (p0 - pos) * s);
+		p1 = (pos + (p1 - pos) * s);
+		p2 = (pos + (p2 - pos) * s);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isClockwise
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool Triangle::isClockwise() const noexcept
+	{
+		return Geometry2D::IsClockwise(p0, p1, p2);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasArea
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool Triangle::hasArea() const noexcept
+	{
+		return ((p0 != p1) && (p1 != p2) && (p2 != p0));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	centroidX, centroidY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle::value_type Triangle::centroidX() const noexcept
+	{
+		return ((p0.x + p1.x + p2.x) / 3.0);
+	}
+
+	constexpr Triangle::value_type Triangle::centroidY() const noexcept
+	{
+		return ((p0.y + p1.y + p2.y) / 3.0);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	centroid
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle::position_type Triangle::centroid() const noexcept
+	{
+		return{ ((p0.x + p1.x + p2.x) / 3.0), ((p0.y + p1.y + p2.y) / 3.0) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pointAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Triangle::position_type& Triangle::pointAtIndex(const size_t index) noexcept
+	{
+		if (index == 0)
+		{
+			return p0;
+		}
+		else if (index == 1)
+		{
+			return p1;
+		}
+		else if (index == 2)
+		{
+			return p2;
+		}
+		else
+		{
+			ThrowPointAtIndexOutOfRange();
+		}
+	}
+
+	inline const Triangle::position_type& Triangle::pointAtIndex(const size_t index) const noexcept
+	{
+		if (index == 0)
+		{
+			return p0;
+		}
+		else if (index == 1)
+		{
+			return p1;
+		}
+		else if (index == 2)
+		{
+			return p2;
+		}
+		else
+		{
+			ThrowPointAtIndexOutOfRange();
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sideAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Triangle::sideAtIndex(const size_t index) const
+	{
+		if (index == 0)
+		{
+			return{ p0, p1 };
+		}
+		else if (index == 1)
+		{
+			return{ p1, p2 };
+		}
+		else if (index == 2)
+		{
+			return{ p2, p0 };
+		}
+		else
+		{
+			ThrowSideAtIndexOutOfRange();
+		}
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -107,4 +446,37 @@ namespace s3d
 		return (Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y)) * 0.5);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	lerp
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::lerp(const Triangle& other, const double f) const noexcept
+	{
+		return{ p0.lerp(other.p0, f), p1.lerp(other.p1, f), p2.lerp(other.p2, f) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hash
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline uint64 Triangle::hash() const noexcept
+	{
+		return Hash(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Triangle::intersects(const Shape2DType& other) const
+	{
+		return Geometry2D::Intersect(*this, other);
+	}
 }

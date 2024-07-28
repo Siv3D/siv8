@@ -20,6 +20,8 @@
 
 namespace s3d
 {
+	enum class PatternType : uint8;
+
 	class CRenderer2D_D3D11 final : public ISiv3DRenderer2D
 	{
 	public:
@@ -28,25 +30,47 @@ namespace s3d
 
 		void init() override;
 
+		void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) override;
+
 		void addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) override;
 
 		void addTriangle(const Float2(&points)[3], const Float4& color) override;
 
 		void addTriangle(const Float2(&points)[3], const Float4(&colors)[3]) override;
 
+		void addTriangle(const Float2(&points)[3], const PatternParameters& pattern) override;
+
 		void addRect(const FloatRect& rect, const Float4& color) override;
 
 		void addRect(const FloatRect& rect, const Float4(&colors)[4]) override;
 
-		void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& innerColor, const Float4& outerColor, RectFrameColorType colorType);
+		void addRect(const FloatRect& rect, const PatternParameters& pattern) override;
 
-		void addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor) override;
+		void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& innerColor, const Float4& outerColor, ColorFillDirection colorType);
+
+		void addRectFrame(const FloatRect& innerRect, float thickness, const PatternParameters& pattern) override;
+
+		void addCircle(const Float2& center, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addCircle(const Float2& center, float r, const PatternParameters& pattern) override;
 
 		void addCircleFrame(const Float2& center, float rInner, float thickness, const Float4& innerColor, const Float4& outerColor) override;
+
+		void addCircleFrame(const Float2& center, float rInner, float thickness, const PatternParameters& pattern) override;
+
+		void addCirclePie(const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) override;
+
+		void addCirclePie(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) override;
+
+		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+		
+		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) override;
 
 		void addQuad(const FloatQuad& quad, const Float4& color) override;
 
 		void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) override;
+
+		void addQuad(const FloatQuad& quad, const PatternParameters& pattern) override;
 
 		void flush() override;
 
@@ -120,6 +144,31 @@ namespace s3d
 
 			PixelShader::IDType psShape;
 
+			PixelShader::IDType psLineDot;
+
+			PixelShader::IDType psLineDash;
+
+			PixelShader::IDType psLineLongDash;
+
+			PixelShader::IDType psLineDashDot;
+
+			PixelShader::IDType psLineRoundDot;
+
+			PixelShader::IDType psPatternPolkaDot;
+
+			PixelShader::IDType psPatternStripe;
+
+			PixelShader::IDType psPatternGrid;
+
+			PixelShader::IDType psPatternChecker;
+
+			PixelShader::IDType psPatternTriangle;
+
+			PixelShader::IDType psPatternHexGrid;
+
+			[[nodiscard]]
+			PixelShader::IDType getPatternShader(PatternType pattern) const noexcept;
+
 		} m_engineShader;
 
 		struct CurrentCustomShader
@@ -134,6 +183,8 @@ namespace s3d
 
 		ConstantBuffer<PSConstants2D> m_psConstants;
 
-		Vertex2DBufferPointer createBuffer(uint16 vertexSize, uint32 indexSize);
+		ConstantBuffer<PSPatternConstants2D> m_psPatternConstants;
+
+		Vertex2DBufferPointer createBuffer(uint16 vertexCount, uint32 indexCount);
 	};
 }

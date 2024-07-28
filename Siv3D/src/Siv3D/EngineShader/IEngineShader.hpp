@@ -26,6 +26,17 @@ namespace s3d
 	{
 		FullScreenTriangle,
 		Shape2D,
+		LineDot,
+		LineDash,
+		LineLongDash,
+		LineDashDot,
+		LineRoundDot,
+		PatternPolkaDot,
+		PatternStripe,
+		PatternGrid,
+		PatternChecker,
+		PatternTriangle,
+		PatternHexGrid,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

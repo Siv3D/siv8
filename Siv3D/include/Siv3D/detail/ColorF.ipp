@@ -25,6 +25,12 @@ namespace s3d
 		, b{ _b }
 		, a{ _a } {}
 
+	constexpr ColorF::ColorF(const double rgb) noexcept
+		: r{ rgb }
+		, g{ rgb }
+		, b{ rgb }
+		, a{ 1.0 } {}
+
 	constexpr ColorF::ColorF(const double rgb, const double _a) noexcept
 		: r{ rgb }
 		, g{ rgb }

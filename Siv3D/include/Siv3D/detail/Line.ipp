@@ -55,9 +55,9 @@ namespace s3d
 		: start{ static_cast<value_type>(originX), static_cast<value_type>(originY) }
 		, end{ start + *vector } {}
 
-	constexpr Line::Line(const position_type origin, const Arg::direction_<vector_type> direction) noexcept
+	constexpr Line::Line(const position_type origin, const Arg::direction_<vector_type> vector) noexcept
 		: start{ origin }
-		, end{ start + *direction } {}
+		, end{ start + *vector } {}
 
 	inline Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const value_type length) noexcept
 		: start{ originX, originY }
@@ -74,6 +74,18 @@ namespace s3d
 	Line::Line(const position_type origin, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
 		: start{ origin }
 		, end{ start + Circular{ static_cast<value_type>(length), *angle } } {}
+
+	constexpr Line::Line(const Arg::center_<position_type> center, const vector_type vector) noexcept
+		: start{ *center - vector * 0.5 }
+		, end{ *center + vector * 0.5 } {}
+
+	inline Line::Line(const Arg::center_<position_type> center, const Arg::angle_<value_type> angle, const value_type length) noexcept
+		: start{ *center - Circular{ (length * 0.5), *angle } }
+		, end{ *center + Circular{ (length * 0.5), *angle } } {}
+
+	inline Line::Line(const Arg::center_<position_type> center, const Arg::angle_<value_type> angle, const Concept::Arithmetic auto length) noexcept
+		: start{ *center - Circular{ (static_cast<value_type>(length) * 0.5), *angle } }
+		, end{ *center + Circular{ (static_cast<value_type>(length) * 0.5), *angle } } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -105,6 +117,24 @@ namespace s3d
 	constexpr Line Line::withEnd(const position_type _end) const noexcept
 	{
 		return{ start, _end };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Line::withCenter(const value_type x, const value_type y) const noexcept
+	{
+		return withCenter({ x, y });
+	}
+
+	constexpr Line Line::withCenter(const position_type _center) const noexcept
+	{
+		const position_type c = center();
+		const vector_type v = (_center - c);
+		return{ (start + v), (end + v) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -145,35 +175,55 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	setCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line& Line::setCenter(const value_type x, const value_type y) noexcept
+	{
+		return setCenter({ x, y });
+	}
+
+	constexpr Line& Line::setCenter(const position_type _center) noexcept
+	{
+		const position_type c = center();
+		const vector_type v = (_center - c);
+		start.moveBy(v);
+		end.moveBy(v);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	set
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Line& Line::set(const value_type x0, const value_type y0, const value_type x1, const value_type y1) noexcept
+	constexpr Line& Line::set(const value_type startX, const value_type startY, const value_type endX, const value_type endY) noexcept
 	{
-		start.set(x0, y0);
-		end.set(x1, y1);
+		start.set(startX, startY);
+		end.set(endX, endY);
 		return *this;
 	}
 
-	constexpr Line& Line::set(const position_type p0, const value_type x1, const value_type y1) noexcept
+	constexpr Line& Line::set(const position_type _start, const value_type endX, const value_type endY) noexcept
 	{
-		start.set(p0);
-		end.set(x1, y1);
+		start.set(_start);
+		end.set(endX, endY);
 		return *this;
 	}
 
-	constexpr Line& Line::set(const value_type x0, const value_type y0, const position_type p1) noexcept
+	constexpr Line& Line::set(const value_type startX, const value_type startY, const position_type _end) noexcept
 	{
-		start.set(x0, y0);
-		end.set(p1);
+		start.set(startX, startY);
+		end.set(_end);
 		return *this;
 	}
 
-	constexpr Line& Line::set(const position_type p0, const position_type p1) noexcept
+	constexpr Line& Line::set(const position_type _start, const position_type _end) noexcept
 	{
-		start.set(p0);
-		end.set(p1);
+		start.set(_start);
+		end.set(_end);
 		return *this;
 	}
 
@@ -511,44 +561,6 @@ namespace s3d
 	constexpr Line::position_type Line::center() const noexcept
 	{
 		return{ ((start.x + end.x) * 0.5), ((start.y + end.y) * 0.5) };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	withCenter
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr Line Line::withCenter(const value_type x, const value_type y) const noexcept
-	{
-		return withCenter({ x, y });
-	}
-
-	constexpr Line Line::withCenter(const position_type pos) const noexcept
-	{
-		const position_type c = center();
-		const vector_type v = (pos - c);
-		return{ (start + v), (end + v) };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	setCenter
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr Line& Line::setCenter(const value_type x, const value_type y) noexcept
-	{
-		return setCenter({ x, y });
-	}
-
-	constexpr Line& Line::setCenter(const position_type pos) noexcept
-	{
-		const position_type c = center();
-		const vector_type v = (pos - c);
-		start.moveBy(v);
-		end.moveBy(v);
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

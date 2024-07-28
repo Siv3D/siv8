@@ -15,6 +15,7 @@
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
+# include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -63,7 +64,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vec2 Rect::pointAtLength(double length) const
+	Vec2 Rect::pointAtLength(double length) const noexcept
 	{
 		length = WrapLength(length, perimeter());
 
@@ -314,6 +315,12 @@ namespace s3d
 		return *this;
 	}
 
+	const Rect& Rect::draw(const PatternParameters& pattern) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, pattern);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	drawFrame
@@ -358,7 +365,7 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->addRectFrame(
 			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
 			static_cast<float>(innerThickness + outerThickness),
-			color0, color0, RectFrameColorType::InOut);
+			color0, color0, ColorFillDirection::InOut);
 
 		return *this;
 	}
@@ -378,7 +385,7 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->addRectFrame(
 			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
 			static_cast<float>(innerThickness + outerThickness),
-			innerColor.toFloat4(), outerColor.toFloat4(), RectFrameColorType::InOut);
+			innerColor.toFloat4(), outerColor.toFloat4(), ColorFillDirection::InOut);
 
 		return *this;
 	}
@@ -399,7 +406,7 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->addRectFrame(
 			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
 			static_cast<float>(innerThickness + outerThickness),
-			topColor->toFloat4(), bottomColor->toFloat4(), RectFrameColorType::TopBottom);
+			topColor->toFloat4(), bottomColor->toFloat4(), ColorFillDirection::TopBottom);
 
 		return *this;
 	}
@@ -420,7 +427,33 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->addRectFrame(
 			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
 			static_cast<float>(innerThickness + outerThickness),
-			leftColor->toFloat4(), rightColor->toFloat4(), RectFrameColorType::LeftRight);
+			leftColor->toFloat4(), rightColor->toFloat4(), ColorFillDirection::LeftRight);
+
+		return *this;
+	}
+
+	const Rect& Rect::drawFrame(const double thickness, const PatternParameters& pattern) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), pattern);
+	}
+
+	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	{
+		if (IsInvalidRectFrame(*this, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		if (IsFilledRect(*this, innerThickness))
+		{
+			stretched(outerThickness).draw(pattern);
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addRectFrame(
+			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
+			static_cast<float>(innerThickness + outerThickness),
+			pattern);
 
 		return *this;
 	}

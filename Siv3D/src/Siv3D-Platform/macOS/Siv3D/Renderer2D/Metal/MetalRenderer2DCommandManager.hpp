@@ -48,6 +48,10 @@ namespace s3d
 		const Float3& getColorAdd(uint32 index) const;
 		const Float3& getCurrentColorAdd() const;
 
+		void pushPatternParameter(const std::array<Float4, 3>& color);
+		const std::array<Float4, 3>& getPatternParameter(uint32 index) const;
+		const std::array<Float4, 3>& getPatternParameter() const;
+
 		void pushBlendState(const BlendState& state);
 		const BlendState& getBlendState(uint32 index) const;
 		const BlendState& getCurrentBlendState() const;
@@ -93,6 +97,8 @@ namespace s3d
 			Array<Float4> colorMuls					= { Float4{ 1.0f, 1.0f, 1.0f, 1.0f } };
 			
 			Array<Float3> colorAdds					= { Float3{ 0.0f, 0.0f, 0.0f } };
+
+			Array<std::array<Float4, 3>> patternParameters = { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
 			
 			Array<BlendState> blendStates			= { BlendState::Default2D };
 
@@ -117,6 +123,8 @@ namespace s3d
 			Float4 colorMul						= Float4{ 1.0f, 1.0f, 1.0f, 1.0f };
 			
 			Float3 colorAdd						= Float3{ 0.0f, 0.0f, 0.0f };
+
+			std::array<Float4, 3> patternParameter = { Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } };
 		
 			BlendState blendState				= BlendState::Default2D;
 

@@ -15,6 +15,7 @@
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
@@ -57,6 +58,27 @@ namespace s3d
 		}
 	}
 
+	PixelShader::IDType CRenderer2D_Metal::EngineShader::getPatternShader(const PatternType pattern) const noexcept
+	{
+		switch (pattern)
+		{
+		case PatternType::PolkaDot:
+			return psPatternPolkaDot;
+		case PatternType::Stripe:
+			return psPatternStripe;
+		case PatternType::Checker:
+			return psPatternChecker;
+		case PatternType::Grid:
+			return psPatternGrid;
+		case PatternType::Triangle:
+			return psPatternTriangle;
+		case PatternType::HexGrid:
+			return psPatternHexGrid;
+		default:
+			return psShape;
+		}
+	}
+
 	struct CommandState
 	{
 		Mat3x2 transform = Mat3x2::Identity();
@@ -94,8 +116,19 @@ namespace s3d
 			m_device	= m_pRenderer->getDevice();
 		}
 
-		m_engineShader.vs		= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
-		m_engineShader.psShape	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		m_engineShader.vs					= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
+		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
+		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
+		m_engineShader.psLineDashDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDashDot).id();
+		m_engineShader.psLineRoundDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
+		m_engineShader.psPatternPolkaDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDot).id();
+		m_engineShader.psPatternStripe		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternStripe).id();
+		m_engineShader.psPatternGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternGrid).id();
+		m_engineShader.psPatternChecker		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternChecker).id();
+		m_engineShader.psPatternTriangle	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTriangle).id();
+		m_engineShader.psPatternHexGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHexGrid).id();
 		
 		m_vertexBufferManager.init(m_device);
 	}
@@ -105,6 +138,24 @@ namespace s3d
 	//	addLine
 	//
 	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addLine(const LineCap startCap, const LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2])
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, start, end, thickness, colors, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
 
 	void CRenderer2D_Metal::addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2])
 	{
@@ -117,17 +168,26 @@ namespace s3d
 
 			if (not m_currentCustomShader.ps)
 			{
-				//if (style.hasSquareDot())
-				//{
-				//	m_commandManager.pushEnginePS(m_engineShader.);
-				//}
-				//else if (style.hasRoundDot())
-				//{
-				//	m_commandManager.pushEnginePS(m_engineShader.);
-				//}
-				//else
+				switch (style.type)
 				{
+				case LineType::Solid:
 					m_commandManager.pushEnginePS(m_engineShader.psShape);
+					break;
+				case LineType::Dotted:
+					m_commandManager.pushEnginePS(m_engineShader.psLineDot);
+					break;
+				case LineType::Dashed:
+					m_commandManager.pushEnginePS(m_engineShader.psLineDash);
+					break;
+				case LineType::LongDash:
+					m_commandManager.pushEnginePS(m_engineShader.psLineLongDash);
+					break;
+				case LineType::DashDot:
+					m_commandManager.pushEnginePS(m_engineShader.psLineDashDot);
+					break;
+				case LineType::RoundDot:
+					m_commandManager.pushEnginePS(m_engineShader.psLineRoundDot);
+					break;
 				}
 			}
 
@@ -177,6 +237,26 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_Metal::addTriangle(const Float2(&points)[3], const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTriangle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), points, pattern.primaryColor))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addRect
@@ -219,13 +299,33 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_Metal::addRect(const FloatRect& rect, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, pattern.primaryColor))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+			
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addRectFrame
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_Metal::addRectFrame(const FloatRect& innerRect, const float thickness, const Float4& color0, const Float4& color1, const RectFrameColorType colorType)
+	void CRenderer2D_Metal::addRectFrame(const FloatRect& innerRect, const float thickness, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRectFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), innerRect, thickness, colorType, color0, color1))
 		{
@@ -243,15 +343,35 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_Metal::addRectFrame(const FloatRect& innerRect, const float thickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRectFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), innerRect, thickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addCircle
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_Metal::addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor)
+	void CRenderer2D_Metal::addCircle(const Float2& center, const float r, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, innerColor, outerColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, colorType, color0, color1, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -262,6 +382,26 @@ namespace s3d
 			{
 				m_commandManager.pushEnginePS(m_engineShader.psShape);
 			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addCircle(const Float2& center, const float r, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -286,6 +426,114 @@ namespace s3d
 			{
 				m_commandManager.pushEnginePS(m_engineShader.psShape);
 			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addCircleFrame(const Float2& center, const float rInner, const float thickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, rInner, thickness, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCirclePie
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addCirclePie(const Float2& center, const float r, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, innerColor, outerColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addCirclePie(const Float2& center, const float r, const float startAngle, const float angle, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addCircleArc(const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, colorType, color0, color1, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addCircleArc(const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -328,6 +576,26 @@ namespace s3d
 			{
 				m_commandManager.pushEnginePS(m_engineShader.psShape);
 			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addQuad(const FloatQuad& quad, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, pattern.primaryColor))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -414,25 +682,33 @@ namespace s3d
 						if (m_psConstants.isDirty())
 						{
 							m_psConstants._update_if_dirty();
-							renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.size(), 1);
+							renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.size(), 0);
+						}
+
+						if (m_psPatternConstants.isDirty())
+						{
+							m_psPatternConstants._update_if_dirty();
+							renderCommandEncoder->setFragmentBytes(m_psPatternConstants.data(), m_psPatternConstants.size(), 1);
 						}
 
 						const MetalDrawCommand& draw = m_commandManager.getDraw(command.index);
 						const uint32 indexCount = draw.indexCount;
-
+						
+						LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, commandState.startIndexLocation));
+						
 						// indexBufferOffset, 4 の倍数でなくても大丈夫？
 						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), (sizeof(Vertex2D::IndexType) * commandState.startIndexLocation));
 						commandState.startIndexLocation += indexCount;
 						
 						//++m_stat.drawCalls;
 						//m_stat.triangleCount += (indexCount / 3);
-						LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, commandState.startIndexLocation));
+
 						break;
 					}
 				case MetalRenderer2DCommandType::ColorMul:
 					{
 						const Float4 colorMul = m_commandManager.getColorMul(command.index);
-						m_vsConstants->colorMul = colorMul;
+						m_psConstants->colorMul = colorMul;
 						LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, colorMul));
 						break;
 					}
@@ -441,6 +717,13 @@ namespace s3d
 						const Float3 colorAdd = m_commandManager.getColorAdd(command.index);
 						m_psConstants->colorAdd.set(colorAdd, 0.0f);
 						LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, colorAdd));
+						break;
+					}
+				case MetalRenderer2DCommandType::PatternParameters:
+					{
+						const auto& patternParameter = m_commandManager.getPatternParameter(command.index);
+						*m_psPatternConstants = { { patternParameter[0], patternParameter[1] }, patternParameter[2] };
+						LOG_COMMAND(fmt::format("PatternParameters[{}]", command.index));
 						break;
 					}
 				case MetalRenderer2DCommandType::BlendState:
@@ -756,8 +1039,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vertex2DBufferPointer CRenderer2D_Metal::createBuffer(const uint16 vertexSize, const uint32 indexSize)
+	Vertex2DBufferPointer CRenderer2D_Metal::createBuffer(const uint16 vertexCount, const uint32 indexCount)
 	{
-		return m_vertexBufferManager.requestBuffer(vertexSize, indexSize);
+		return m_vertexBufferManager.requestBuffer(vertexCount, indexCount);
 	}
 }

@@ -58,5 +58,71 @@ namespace s3d
 		};
 
 	SIV3D_DISABLE_MSVC_WARNINGS_POP()
+
+		/// @brief 
+		[[nodiscard]]
+		Ellipse() = default;
+
+		/// @brief 
+		/// @param r 
+		[[nodiscard]]
+		explicit constexpr Ellipse(size_type r) noexcept;
+
+		/// @brief 
+		/// @param _a 
+		/// @param _b 
+		[[nodiscard]]
+		constexpr Ellipse(size_type _a, size_type _b) noexcept;
+
+		/// @brief 
+		/// @param _x 
+		/// @param _y 
+		/// @param r 
+		[[nodiscard]]
+		constexpr Ellipse(value_type _x, value_type _y, size_type r) noexcept;
+
+		/// @brief 
+		/// @param _x 
+		/// @param _y 
+		/// @param _a 
+		/// @param _b 
+		[[nodiscard]]
+		constexpr Ellipse(value_type _x, value_type _y, size_type _a, size_type _b) noexcept;
+
+		/// @brief 
+		/// @param _center 
+		[[nodiscard]]
+		explicit constexpr Ellipse(position_type _center) noexcept;
+
+		/// @brief 
+		/// @param _center 
+		/// @param _r 
+		[[nodiscard]]
+		constexpr Ellipse(const position_type& _center, size_type r) noexcept;
+
+		/// @brief 
+		/// @param _center 
+		/// @param _a 
+		/// @param _b 
+		[[nodiscard]]
+		constexpr Ellipse(const position_type& _center, size_type _a, size_type _b) noexcept;
+
+		/// @brief 
+		/// @param _x 
+		/// @param _y 
+		/// @param _axes 
+		[[nodiscard]]
+		constexpr Ellipse(value_type _x, value_type _y, const Vec2& _axes) noexcept;
+
+		/// @brief 
+		/// @param _center 
+		/// @param _axes 
+		[[nodiscard]]
+		constexpr Ellipse(const position_type& _center, const Vec2& _axes) noexcept;
+
+		/// @brief 
+		/// @param circle 
+		[[nodiscard]]
+		explicit constexpr Ellipse(const Circle& circle) noexcept;
 	};
 }

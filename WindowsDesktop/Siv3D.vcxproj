@@ -83,6 +83,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtOptional.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Graphics2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IConstantBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CopyOption.hpp" />
@@ -302,7 +304,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseManager.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Line.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\LineCap.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LineStyle.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\LineType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ListUtility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Logger.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LoggerBuffer.hpp" />
@@ -336,6 +340,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Palette.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Parse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ParseFloat.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Checker.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Grid.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\HexGrid.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PolkaDot.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Stripe.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Triangle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PCG64.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Periodic.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PixelShader.hpp" />
@@ -576,7 +589,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\BatchStateTracker.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\IRenderer2D.hpp" />
-    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\RectFrameColorType.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\ColorFillDirection.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DCommon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBufferPointer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder.hpp" />
@@ -1083,6 +1096,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\CLicenseManager.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseManagerFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\SivLicenseManager.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\LineCap\SivLineCap.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\LineType\SivLineType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Line\SivLine.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LoggerBuffer\SivLoggerBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\LoggerFactory.cpp" />

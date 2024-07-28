@@ -925,6 +925,15 @@
     <Filter Include="src\Siv3D\Geometry2D">
       <UniqueIdentifier>{f12a3c50-9f08-461c-bde9-cbec893a74f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\LineCap">
+      <UniqueIdentifier>{f10c1d9c-ccba-48f8-b372-e605e94894c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\LineType">
+      <UniqueIdentifier>{b3fd028d-6c26-4638-af04-ffcef97ca40e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Siv3D\Pattern">
+      <UniqueIdentifier>{ea91b721-aa43-4106-a08b-60419fca5021}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3609,8 +3618,47 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.ipp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\RectFrameColorType.hpp">
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\ColorFillDirection.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.ipp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\LineCap.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\LineType.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PolkaDot.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternType.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.ipp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Stripe.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Grid.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Checker.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Triangle.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\HexGrid.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -5932,6 +5980,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersect.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LineCap\SivLineCap.cpp">
+      <Filter>src\Siv3D\LineCap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LineType\SivLineType.cpp">
+      <Filter>src\Siv3D\LineType</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

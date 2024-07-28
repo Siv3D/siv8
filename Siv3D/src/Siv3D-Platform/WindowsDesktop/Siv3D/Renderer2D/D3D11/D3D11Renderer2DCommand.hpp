@@ -31,6 +31,8 @@ namespace s3d
 
 		ColorAdd,
 
+		PatternParameters,
+
 		BlendState,
 
 		RasterizerState,

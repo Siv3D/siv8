@@ -64,9 +64,14 @@ namespace s3d
 
 		/// @brief ColorF を作成します。
 		/// @param rgb RGB 成分
+		[[nodiscard]]
+		explicit constexpr ColorF(double rgb) noexcept;
+
+		/// @brief ColorF を作成します。
+		/// @param rgb RGB 成分
 		/// @param _a アルファ値
 		[[nodiscard]]
-		explicit constexpr ColorF(double rgb, double _a = 1.0) noexcept;
+		constexpr ColorF(double rgb, double _a) noexcept;
 
 		/// @brief 別の ColorF から ColorF を作成します。
 		/// @param rgb 別の ColorF

@@ -109,7 +109,7 @@ namespace s3d
 		{
 			wchar_t* pValue;
 			size_t len;
-			errno_t err = ::_wdupenv_s(&pValue, &len, L"VisualStudioVersion");
+			errno_t err = ::_wdupenv_s(&pValue, &len, L"SIV3D_APP_LAUNCHED_FROM_IDE");
 
 			if (err || (not pValue))
 			{

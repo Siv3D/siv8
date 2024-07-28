@@ -14,7 +14,7 @@
 # include <Siv3D/Optional.hpp>
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
-# include "RectFrameColorType.hpp"
+# include "ColorFillDirection.hpp"
 
 namespace s3d
 {
@@ -25,6 +25,8 @@ namespace s3d
 	struct RasterizerState;
 	struct SamplerState;
 	struct Mat3x2;
+	enum class LineCap : uint8;
+	struct PatternParameters;
 
 	class SIV3D_NOVTABLE ISiv3DRenderer2D
 	{
@@ -37,25 +39,62 @@ namespace s3d
 
 		virtual void init() = 0;
 
+		virtual void addLine(LineCap startCap, LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
+
 		virtual void addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
 
 		virtual void addTriangle(const Float2(&points)[3], const Float4& color) = 0;
 
 		virtual void addTriangle(const Float2(&points)[3], const Float4(&colors)[3]) = 0;
 
+		virtual void addTriangle(const Float2(&points)[3], const PatternParameters& pattern) = 0;
+
 		virtual void addRect(const FloatRect& rect, const Float4& color) = 0;
 
 		virtual void addRect(const FloatRect& rect, const Float4(&colors)[4]) = 0;
 
-		virtual void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& innerColor, const Float4& outerColor, RectFrameColorType colorType) = 0;
+		virtual void addRect(const FloatRect& rect, const PatternParameters& pattern) = 0;
 
-		virtual void addCircle(const Float2& center, float r, const Float4& innerColor, const Float4& outerColor) = 0;
+		virtual void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+
+		virtual void addRectFrame(const FloatRect& innerRect, float thickness, const PatternParameters& pattern) = 0;
+
+		virtual void addCircle(const Float2& center, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+
+		virtual void addCircle(const Float2& center, float r, const PatternParameters& pattern) = 0;
 
 		virtual void addCircleFrame(const Float2& center, float rInner, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
+
+		virtual void addCircleFrame(const Float2& center, float rInner, float thickness, const PatternParameters& pattern) = 0;
+
+		virtual void addCirclePie(const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) = 0;
+
+		virtual void addCirclePie(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) = 0;
+
+		virtual void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+
+		virtual void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) = 0;
+
+		//virtual void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const Float4& color) = 0;
+
+		//virtual void addEllipse(const Float2& center, float a, float b, const Float4& innerColor, const Float4& outerColor) = 0;
+
+		//virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 
 		virtual void addQuad(const FloatQuad& quad, const Float4& color) = 0;
 
 		virtual void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) = 0;
+
+		virtual void addQuad(const FloatQuad& quad, const PatternParameters& pattern) = 0;
+
+		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const Float4& color) = 0;
+
+		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+	
+		//virtual void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+
+
+
 
 		virtual void flush() = 0;
 

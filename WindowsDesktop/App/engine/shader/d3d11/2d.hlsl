@@ -29,11 +29,11 @@ struct PSInput
 cbuffer VSConstants2D : register(b0)
 {
 	row_major float2x4 g_transform;
-	float4 g_colorMul;
 }
 
 cbuffer PSConstants2D : register(b0)
 {
+	float4 g_colorMul;
 	float4 g_colorAdd;
 	//float4 g_sdfParam;
 	//float4 g_sdfOutlineColor;
@@ -41,17 +41,35 @@ cbuffer PSConstants2D : register(b0)
 	//float4 g_internal;
 }
 
-float4 s3d_transform2D(float2 pos, float2x4 t)
+cbuffer PSPatternConstants2D : register(b1)
+{
+	row_major float2x4 g_patternUVTransform_params;
+	float4 g_patternBackgroundColor;
+}
+
+float4 s3d_positionTransform(float2 pos, float2x4 t)
 {
 	return float4((t._13_14 + (pos.x * t._11_12) + (pos.y * t._21_22)), t._23_24);
+}
+
+float4 s3d_colorTransform(float4 color)
+{
+	color *= g_colorMul;
+	color += g_colorAdd;
+	color.rgb *= color.a;
+	return color;
+}
+
+float2 s3d_patternTransform(float2 uv)
+{
+	return (g_patternUVTransform_params._13_14 + (uv.x * g_patternUVTransform_params._11_12) + (uv.y * g_patternUVTransform_params._21_22));
 }
 
 PSInput VS(VSInput input)
 {
 	PSInput result;
-	result.position	= s3d_transform2D(input.position, g_transform);
-	result.color	= (input.color * g_colorMul);
-	result.color.rgb *= result.color.a;
+	result.position	= s3d_positionTransform(input.position, g_transform);
+	result.color	= input.color;
 	result.uv		= input.uv;
 	return result;
 }
@@ -60,7 +78,201 @@ float4 PS_Shape(PSInput input) : SV_TARGET
 {
 	float4 result = input.color;
 
-	result.rgb += (g_colorAdd.rgb * result.a);
+	return s3d_colorTransform(result);
+}
 
-	return result;
+float4 PS_LineDot(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float u = (0.5 * (input.uv.x - 0.5));
+	const float w = fwidth(u);
+	const float value = abs(2.0 * frac(u) - 1.0);
+	const float alpha = smoothstep((0.5 - w), (0.5 + w), value);
+	result.a *= alpha;
+
+	return s3d_colorTransform(result);
+}
+
+float4 PS_LineDash(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float u = (0.25 * (input.uv.x - 1.0));
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * frac(u) - 1.0);
+	const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
+	result.a *= alpha;
+
+	return s3d_colorTransform(result);
+}
+
+float4 PS_LineLongDash(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float u = (0.1 * (input.uv.x - 1.0));
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * frac(u) - 1.0);
+	const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
+	result.a *= alpha;
+
+	return s3d_colorTransform(result);
+}
+
+float4 PS_LineDashDot(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float u = (0.1 * (input.uv.x - 1.0));
+	const float u2 = (u + 0.5);
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * frac(u) - 1.0);
+	const float distance2 = abs(2.0 * frac(u2) - 1.0);
+	const float alpha1 = smoothstep((0.4 - w), (0.4 + w), distance);
+	const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
+	result.a *= max(alpha1, alpha2);
+
+	return s3d_colorTransform(result);
+}
+
+float4 PS_LineRoundDot(PSInput input) : SV_TARGET
+{
+	float4 result = input.color;
+
+	const float2 uv = ((input.uv + float2(0.5, 0.0)) * float2(0.5, 1));
+	const float w = fwidth(uv.y);
+	const float distance = length(float2(4.0, 2.0) * frac(uv) - float2(2.0, 1.0));
+	const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
+	result.a *= alpha;
+
+	return s3d_colorTransform(result);
+}
+
+float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
+{
+	const float2 uv = s3d_patternTransform(input.position.xy);
+	const float2 repeat = (2.0 * frac(uv) - 1.0);
+	const float value = length(repeat);
+	const float fw = (length(float2(ddx(value), ddy(value))) * 0.70710678118);
+
+	const float radiusScale = g_patternUVTransform_params[1].z;
+	const float c = smoothstep((radiusScale - fw), (radiusScale + fw), value);
+
+	const float4 primary = s3d_colorTransform(input.color);
+	const float4 background = s3d_colorTransform(g_patternBackgroundColor);
+
+	return lerp(primary, background, c);
+}
+
+float4 PS_PatternStripe(PSInput input) : SV_TARGET
+{
+	const float u = s3d_patternTransform(input.position.xy).x;
+	const float fw = fwidth(u);
+	const float repeat = (2.0 * frac(u) - 1.0);
+	const float value = abs(repeat);
+
+	const float thicknessScale = (g_patternUVTransform_params[1].z * (1 + 2 * fw) - fw);
+	const float c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
+
+	const float4 primary = s3d_colorTransform(input.color);
+	const float4 background = s3d_colorTransform(g_patternBackgroundColor);
+
+	return lerp(primary, background, c);
+}
+
+float4 PS_PatternGrid(PSInput input) : SV_TARGET
+{
+	const float2 uv = s3d_patternTransform(input.position.xy);
+	const float2 fw = fwidth(uv);
+	const float2 repeat = (2.0 * frac(uv) - 1.0);
+	const float2 value = abs(repeat);
+
+	const float2 thicknessScale = (g_patternUVTransform_params[1].zz * float2(1 + fw) - fw);
+	const float2 c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
+	const float c2 = min(c.x, c.y);
+
+	const float4 primary = s3d_colorTransform(input.color);
+	const float4 background = s3d_colorTransform(g_patternBackgroundColor);
+
+	return lerp(primary, background, c2);
+}
+
+float2 Integral(float2 v)
+{
+	v /= 2.0;
+	return (floor(v) + max((2.0 * frac(v) - 1.0), 0.0));
+}
+
+float CheckersFiltered(float2 p, float2 hv)
+{
+	const float2 fw = fwidth(p);
+	const float w = max(fw.x, fw.y);
+	float2 i = (Integral(p + 0.5 * w) - Integral(p - 0.5 * w));
+	i *= hv;
+	i /= w;
+	return (i.x + i.y - 2.0 * i.x * i.y);
+}
+
+float4 PS_PatternChecker(PSInput input) : SV_TARGET
+{
+	const float2 uv = s3d_patternTransform(input.position.xy);
+	const float c = CheckersFiltered(uv, g_patternUVTransform_params[1].zw);
+
+	const float4 primary = s3d_colorTransform(input.color);
+	const float4 background = s3d_colorTransform(g_patternBackgroundColor);
+
+	return lerp(primary, background, c);
+}
+
+float2 Skew(float2 v)
+{
+	const float2x2 transform = float2x2(1.0, (1.0 / tan(3.1415926535 / 3.0)), 0.0, (1.0 / sin(3.1415926535 / 3.0)));
+	return mul(transform, v);
+}
+
+float4 PS_PatternTriangle(PSInput input) : SV_TARGET
+{
+	const float2 uv = s3d_patternTransform(input.position.xy);
+	const float2 fw = (fwidth(uv) * 0.25);
+
+	const float2 s1 = Skew(uv + float2(-fw.x, -fw.y));
+	const float2 s2 = Skew(uv + float2(fw.x, fw.y));
+	const float2 s3 = Skew(uv + float2(-fw.x, fw.y));
+	const float2 s4 = Skew(uv + float2(fw.x, -fw.y));
+
+	const float4 f1 = frac(float4(s1, s2));
+	const float4 f2 = frac(float4(s3, s4));
+	const float4 ss = float4(step(f1.x, f1.y), step(f1.z, f1.w), step(f2.x, f2.y), step(f2.z, f2.w));
+	const float c = dot(ss, 0.25);
+
+	const float4 primary = s3d_colorTransform(input.color);
+	const float4 background = s3d_colorTransform(g_patternBackgroundColor);
+
+	return lerp(primary, background, c);
+}
+
+float Hex(float2 p)
+{
+	const float2 HEX = float2(1, 1.73205081);
+	const float4 t = (floor(float4(p, p - float2(0.5, 1)) / HEX.xyxy) + float4(0.5, 0.5, 0.5, 0.5));
+	const float4 h = float4((p - t.xy * HEX), (p - (t.zw + float2(0.5, 0.5)) * HEX));
+	const float2 hex = abs((dot(h.xy, h.xy) < dot(h.zw, h.zw)) ? h.xy : h.zw);
+	return max(dot(hex, (HEX * 0.5)), hex.x);
+}
+
+float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
+{
+	const float2 uv = s3d_patternTransform(input.position.xy);
+	const float2 fw = fwidth(uv);
+	const float w = (max(fw.x, fw.y) * 0.5);
+
+	const float thicknessScale = (g_patternUVTransform_params[1].z * (1 + 2 * w));
+	const float h = Hex(uv);
+	const float c = smoothstep((thicknessScale - w), (thicknessScale + w), h);
+
+	const float4 primary = s3d_colorTransform(input.color);
+	const float4 background = s3d_colorTransform(g_patternBackgroundColor);
+
+	return lerp(background, primary, c);
 }
