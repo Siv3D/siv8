@@ -20,10 +20,12 @@ namespace s3d
 
 		Stripe,
 
+		Grid,
+
 		Checker,
 
 		Triangle,
 
-		Hexagon,
+		HexGrid,
 	};
 }

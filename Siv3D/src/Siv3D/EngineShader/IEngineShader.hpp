@@ -33,6 +33,10 @@ namespace s3d
 		LineRoundDot,
 		PatternPolkaDot,
 		PatternStripe,
+		PatternGrid,
+		PatternChecker,
+		PatternTriangle,
+		PatternHexGrid,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

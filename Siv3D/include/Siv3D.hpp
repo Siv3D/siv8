@@ -711,6 +711,14 @@
 
 # include <Siv3D/Pattern/Stripe.hpp>
 
+# include <Siv3D/Pattern/Grid.hpp>
+
+# include <Siv3D/Pattern/Checker.hpp>
+
+# include <Siv3D/Pattern/Triangle.hpp>
+
+# include <Siv3D/Pattern/HexGrid.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	乱数と分布 | Random and Distribution

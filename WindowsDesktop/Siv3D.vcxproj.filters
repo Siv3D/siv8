@@ -3648,6 +3648,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Stripe.hpp">
       <Filter>include\Siv3D\Pattern</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Grid.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Checker.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Triangle.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\HexGrid.hpp">
+      <Filter>include\Siv3D\Pattern</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">

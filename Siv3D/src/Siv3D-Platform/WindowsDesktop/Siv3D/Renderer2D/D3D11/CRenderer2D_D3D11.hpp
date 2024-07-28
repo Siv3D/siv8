@@ -142,6 +142,14 @@ namespace s3d
 
 			PixelShader::IDType psPatternStripe;
 
+			PixelShader::IDType psPatternGrid;
+
+			PixelShader::IDType psPatternChecker;
+
+			PixelShader::IDType psPatternTriangle;
+
+			PixelShader::IDType psPatternHexGrid;
+
 		} m_engineShader;
 
 		struct CurrentCustomShader

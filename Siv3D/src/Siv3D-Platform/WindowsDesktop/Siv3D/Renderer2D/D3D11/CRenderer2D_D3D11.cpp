@@ -122,6 +122,10 @@ namespace s3d
 		m_engineShader.psLineRoundDot		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineRoundDot).id();
 		m_engineShader.psPatternPolkaDot	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDot).id();
 		m_engineShader.psPatternStripe		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternStripe).id();
+		m_engineShader.psPatternGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternGrid).id();
+		m_engineShader.psPatternChecker		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternChecker).id();
+		m_engineShader.psPatternTriangle	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTriangle).id();
+		m_engineShader.psPatternHexGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHexGrid).id();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -286,9 +290,20 @@ namespace s3d
 				case PatternType::PolkaDot:
 					m_commandManager.pushEnginePS(m_engineShader.psPatternPolkaDot);
 					break;
-				default:
 				case PatternType::Stripe:
 					m_commandManager.pushEnginePS(m_engineShader.psPatternStripe);
+					break;
+				case PatternType::Checker:
+					m_commandManager.pushEnginePS(m_engineShader.psPatternChecker);
+					break;
+				case PatternType::Grid:
+					m_commandManager.pushEnginePS(m_engineShader.psPatternGrid);
+					break;
+				case PatternType::Triangle:
+					m_commandManager.pushEnginePS(m_engineShader.psPatternTriangle);
+					break;
+				case PatternType::HexGrid:
+					m_commandManager.pushEnginePS(m_engineShader.psPatternHexGrid);
 					break;
 				}
 			}
