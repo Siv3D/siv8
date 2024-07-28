@@ -20,6 +20,8 @@
 
 namespace s3d
 {
+	enum class PatternType : uint8;
+
 	class CRenderer2D_D3D11 final : public ISiv3DRenderer2D
 	{
 	public:
@@ -149,6 +151,9 @@ namespace s3d
 			PixelShader::IDType psPatternTriangle;
 
 			PixelShader::IDType psPatternHexGrid;
+
+			[[nodiscard]]
+			PixelShader::IDType getPatternShader(PatternType pattern) const noexcept;
 
 		} m_engineShader;
 

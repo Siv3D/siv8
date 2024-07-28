@@ -47,6 +47,27 @@ namespace s3d
 		}
 	}
 
+	PixelShader::IDType CRenderer2D_D3D11::EngineShader::getPatternShader(const PatternType pattern) const noexcept
+	{
+		switch (pattern)
+		{
+		case PatternType::PolkaDot:
+			return psPatternPolkaDot;
+		case PatternType::Stripe:
+			return psPatternStripe;
+		case PatternType::Checker:
+			return psPatternChecker;
+		case PatternType::Grid:
+			return psPatternGrid;
+		case PatternType::Triangle:
+			return psPatternTriangle;
+		case PatternType::HexGrid:
+			return psPatternHexGrid;
+		default:
+			return psShape;
+		}
+	}
+
 	struct CommandState
 	{
 		BatchInfo2D batchInfo;
@@ -285,27 +306,7 @@ namespace s3d
 
 			if (not m_currentCustomShader.ps)
 			{
-				switch (pattern.type)
-				{
-				case PatternType::PolkaDot:
-					m_commandManager.pushEnginePS(m_engineShader.psPatternPolkaDot);
-					break;
-				case PatternType::Stripe:
-					m_commandManager.pushEnginePS(m_engineShader.psPatternStripe);
-					break;
-				case PatternType::Checker:
-					m_commandManager.pushEnginePS(m_engineShader.psPatternChecker);
-					break;
-				case PatternType::Grid:
-					m_commandManager.pushEnginePS(m_engineShader.psPatternGrid);
-					break;
-				case PatternType::Triangle:
-					m_commandManager.pushEnginePS(m_engineShader.psPatternTriangle);
-					break;
-				case PatternType::HexGrid:
-					m_commandManager.pushEnginePS(m_engineShader.psPatternHexGrid);
-					break;
-				}
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
 			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
