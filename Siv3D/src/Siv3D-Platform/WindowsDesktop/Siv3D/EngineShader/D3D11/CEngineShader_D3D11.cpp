@@ -38,7 +38,7 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CEngineShader_D3D11::init()");
 
 		// エンジンシェーダを再コンパイルする場合、0 を 1 に変更する
-	# if 1
+	# if 0
 	
 		//Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/fullscreen_triangle.hlsl", U"engine/shader/d3d11/fullscreen_triangle.vs", ShaderStage::Vertex, U"VS");
 		//Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/fullscreen_triangle.hlsl", U"engine/shader/d3d11/fullscreen_triangle.ps", ShaderStage::Pixel, U"PS");

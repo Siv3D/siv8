@@ -23,9 +23,9 @@ namespace s3d
 
 			ColorF background{ 0.0, 0.0 };
 
-			double scale = 16.0;
+			double scale = 20.0;
 
-			double thicknessScale = 1.0;
+			double thicknessScale = 0.2;
 
 			double angle = 0.0_deg;
 
