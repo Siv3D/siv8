@@ -1771,6 +1771,10 @@ namespace s3d
 		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		const Rect& drawFrame(double thickness, const PatternParameters& pattern) const;
+
+		const Rect& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawShadow

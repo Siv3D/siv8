@@ -18,6 +18,7 @@
 namespace s3d
 {
 	enum class LineCap : uint8;
+	struct PatternParameters;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -826,6 +827,8 @@ namespace s3d
 		/// @param rightColor 円の右側の色
 		/// @return *this
 		const Circle& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+		
+		const Circle& draw(const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -861,6 +864,10 @@ namespace s3d
 		/// @return *this
 		const Circle& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		const Circle& drawFrame(double thickness, const PatternParameters& pattern) const;
+
+		const Circle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawPie
@@ -881,6 +888,8 @@ namespace s3d
 		/// @param outerColor 扇の外側部分の色
 		/// @return *this
 		const Circle& drawPie(double startAngle, double angle, const ColorF& innerColor, const ColorF& outerColor) const;
+		
+		const Circle& drawPie(double startAngle, double angle, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -938,6 +947,10 @@ namespace s3d
 		/// @param endColor 弧の終了部分の色
 		/// @return *this
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
+
+		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

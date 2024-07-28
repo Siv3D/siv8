@@ -432,6 +432,32 @@ namespace s3d
 		return *this;
 	}
 
+	const Rect& Rect::drawFrame(const double thickness, const PatternParameters& pattern) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), pattern);
+	}
+
+	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	{
+		if (IsInvalidRectFrame(*this, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		if (IsFilledRect(*this, innerThickness))
+		{
+			stretched(outerThickness).draw(pattern);
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addRectFrame(
+			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
+			static_cast<float>(innerThickness + outerThickness),
+			pattern);
+
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Formatter

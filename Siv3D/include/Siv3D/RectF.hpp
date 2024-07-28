@@ -18,6 +18,7 @@
 namespace s3d
 {
 	struct FormatData;
+	struct PatternParameters;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1559,6 +1560,8 @@ namespace s3d
 		/// @return 
 		const RectF& draw(Arg::topRight_<ColorF> topRightColor, Arg::bottomLeft_<ColorF> bottomLeftColor) const;
 
+		const RectF& draw(const PatternParameters& pattern) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawFrame
@@ -1622,6 +1625,10 @@ namespace s3d
 		/// @param rightColor 右側の色
 		/// @return *this
 		const RectF& drawFrame(double innerThickness, double outerThickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		const RectF& drawFrame(double thickness, const PatternParameters& pattern) const;
+
+		const RectF& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

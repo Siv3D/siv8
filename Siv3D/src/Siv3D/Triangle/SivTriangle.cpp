@@ -13,6 +13,7 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -345,7 +346,14 @@ namespace s3d
 
 	const Triangle& Triangle::draw(const ColorF& color0, const ColorF& color1, const ColorF& color2) const
 	{
-		SIV3D_ENGINE(Renderer2D)->addTriangle({ p0, p1, p2 }, { color0.toFloat4(), color1.toFloat4(), color2.toFloat4() });
+		const Float4 colors[3] = { color0.toFloat4(), color1.toFloat4(), color2.toFloat4() };
+		SIV3D_ENGINE(Renderer2D)->addTriangle({ p0, p1, p2 }, colors);
+		return *this;
+	}
+
+	const Triangle& Triangle::draw(const PatternParameters& pattern) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addTriangle({ p0, p1, p2 }, pattern);
 		return *this;
 	}
 

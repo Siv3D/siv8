@@ -38,6 +38,8 @@ namespace s3d
 
 		void addTriangle(const Float2(&points)[3], const Float4(&colors)[3]) override;
 
+		void addTriangle(const Float2(&points)[3], const PatternParameters& pattern) override;
+
 		void addRect(const FloatRect& rect, const Float4& color) override;
 
 		void addRect(const FloatRect& rect, const Float4(&colors)[4]) override;
@@ -46,17 +48,29 @@ namespace s3d
 
 		void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& innerColor, const Float4& outerColor, ColorFillDirection colorType);
 
+		void addRectFrame(const FloatRect& innerRect, float thickness, const PatternParameters& pattern) override;
+
 		void addCircle(const Float2& center, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addCircle(const Float2& center, float r, const PatternParameters& pattern) override;
 
 		void addCircleFrame(const Float2& center, float rInner, float thickness, const Float4& innerColor, const Float4& outerColor) override;
 
+		void addCircleFrame(const Float2& center, float rInner, float thickness, const PatternParameters& pattern) override;
+
 		void addCirclePie(const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) override;
 
+		void addCirclePie(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) override;
+
 		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+		
+		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) override;
 
 		void addQuad(const FloatQuad& quad, const Float4& color) override;
 
 		void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) override;
+
+		void addQuad(const FloatQuad& quad, const PatternParameters& pattern) override;
 
 		void flush() override;
 
