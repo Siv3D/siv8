@@ -965,7 +965,9 @@ namespace s3d
 		/// @param height 弓形の高さ
 		/// @param color 色
 		/// @return *this
-		//const Circle& drawSegment(double arcMidpointAngle, double height, const ColorF& color = Palette::White) const;
+		const Circle& drawSegment(double arcMidpointAngle, double height, const ColorF& color = Palette::White) const;
+
+		const Circle& drawSegment(double arcMidpointAngle, double height, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -978,7 +980,9 @@ namespace s3d
 		/// @param angle 弓形の弧の角度（ラジアン）
 		/// @param color 色
 		/// @return *this
-		//const Circle& drawSegmentFromAngles(double startAngle, double angle, const ColorF& color = Palette::White) const;
+		const Circle& drawSegmentFromAngles(double startAngle, double angle, const ColorF& color = Palette::White) const;
+
+		const Circle& drawSegmentFromAngles(double startAngle, double angle, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
