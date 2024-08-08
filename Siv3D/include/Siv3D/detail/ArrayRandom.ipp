@@ -38,7 +38,7 @@ namespace s3d
 
 		if (size == 0)
 		{
-			throw std::out_of_range{ "Array::choice(): Array is empty" };
+			detail::ThrowArrayChoiceOutOfRange();
 		}
 
 		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
@@ -51,7 +51,7 @@ namespace s3d
 
 		if (size == 0)
 		{
-			throw std::out_of_range{ "Array::choice(): Array is empty" };
+			detail::ThrowArrayChoiceOutOfRange();
 		}
 
 		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
@@ -158,7 +158,7 @@ namespace s3d
 
 		if (size == 0)
 		{
-			throw std::out_of_range{ "Array::choice(): Array is empty" };
+			detail::ThrowArrayChoiceOutOfRange();
 		}
 
 		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
@@ -171,7 +171,7 @@ namespace s3d
 
 		if (size == 0)
 		{
-			throw std::out_of_range{ "Array::choice(): Array is empty" };
+			detail::ThrowArrayChoiceOutOfRange();
 		}
 
 		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
@@ -192,7 +192,6 @@ namespace s3d
 
 		return result;
 	}
-
 
 	////////////////////////////////////////////////////////////////
 	//

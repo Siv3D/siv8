@@ -1245,6 +1245,11 @@ namespace s3d
 		throw std::out_of_range{ "String::at(): index out of range" };
 	}
 
+	void String::ThrowChoiceOutOfRange()
+	{
+		throw std::out_of_range{ "String::choice(): String is empty" };
+	}
+
 	void String::ThrowValuesAtOutOfRange()
 	{
 		throw std::out_of_range{ "String::values_at(): index out of range" };

@@ -22,6 +22,9 @@ namespace s3d
 		void ThrowArrayRemovedAtIndexOutOfRange();
 
 		[[noreturn]]
+		void ThrowArrayChoiceOutOfRange();
+
+		[[noreturn]]
 		void ThrowArrayValuesAtIndexOutOfRange();
 	}
 
