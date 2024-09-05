@@ -263,7 +263,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief すべての成分が 0 であるかを返します。
-		/// @return　すべての成分が 0 である場合 true, それ以外の場合は false
+		/// @return すべての成分が 0 である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isZero() const noexcept;
 

@@ -78,7 +78,7 @@
 // 1 バイトのデータを表現する型 | Type representing 1-byte data
 # include <Siv3D/Byte.hpp>
 
-// エンディアン変換　| Endian conversion
+// エンディアン変換 | Endian conversion
 # include <Siv3D/Endian.hpp>
 
 // ハッシュ関数 | Hash function
@@ -1266,7 +1266,7 @@
 # include <Siv3D/ImageFormat/TGADecoder.hpp>
 # include <Siv3D/ImageFormat/TGAEncoder.hpp>
 
-//// アニメーション　GIF の読み込み | Animated GIF reader
+//// アニメーション GIF の読み込み | Animated GIF reader
 //# include <Siv3D/AnimatedGIFReader.hpp>
 //
 //// アニメーション GIF の書き出し | Animated GIF writer
