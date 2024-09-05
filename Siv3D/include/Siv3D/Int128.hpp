@@ -34,7 +34,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief　符号無し 128-bit 整数型 | Unsigned integer type with width of 128 bits
+	/// @brief 符号無し 128-bit 整数型 | Unsigned integer type with width of 128 bits
 	using uint128 = absl::uint128;
 
 	////////////////////////////////////////////////////////////////

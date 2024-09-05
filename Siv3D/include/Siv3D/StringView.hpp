@@ -247,7 +247,7 @@ namespace s3d
 
 		/// @brief 文字列のバイト数を返します。 | Returns the number of bytes in the string.
 		/// @remark `size() * sizeof(value_type)` と同じです。 | Same as `size() * sizeof(value_type)`.
-		/// @return　文字列のバイト数 | Number of bytes in the string
+		/// @return 文字列のバイト数 | Number of bytes in the string
 		[[nodiscard]]
 		constexpr size_type size_bytes() const noexcept;
 

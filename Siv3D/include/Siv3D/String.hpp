@@ -1729,7 +1729,7 @@ namespace s3d
 		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return　新しい文字列
+		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
 		constexpr String remove_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>;
@@ -1737,7 +1737,7 @@ namespace s3d
 		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return　新しい文字列
+		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
 		constexpr String removed_if(Fty f) const& requires std::predicate<Fty&, const value_type&>;
@@ -1745,7 +1745,7 @@ namespace s3d
 		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return　新しい文字列
+		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
 		constexpr String removed_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>;
