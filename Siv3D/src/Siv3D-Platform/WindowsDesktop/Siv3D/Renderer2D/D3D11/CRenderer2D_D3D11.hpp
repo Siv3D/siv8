@@ -70,6 +70,10 @@ namespace s3d
 
 		void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) override;
 
+		void addEllipse(const Float2& center, float a, float b, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addEllipse(const Float2& center, float a, float b, const PatternParameters& pattern) override;
+
 		void addQuad(const FloatQuad& quad, const Float4& color) override;
 
 		void addQuad(const FloatQuad& quad, const Float4(&colors)[4]) override;

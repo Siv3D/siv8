@@ -864,8 +864,17 @@ namespace s3d
 		/// @return *this
 		const Circle& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		/// @brief 円の枠を描きます。
+		/// @param thickness 枠の太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawFrame(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 円の枠を描きます。
+		/// @param innerThickness 基準の円から内側方向への枠の太さ
+		/// @param outerThickness 基準の円から外側方向への枠の太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -889,6 +898,11 @@ namespace s3d
 		/// @return *this
 		const Circle& drawPie(double startAngle, double angle, const ColorF& innerColor, const ColorF& outerColor) const;
 		
+		/// @brief 扇形を描きます。
+		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 扇形の角度（ラジアン）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawPie(double startAngle, double angle, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -916,6 +930,14 @@ namespace s3d
 		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		/// @brief 円の弧を描きます。
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param startColor 弧の開始部分の色
+		/// @param endColor 弧の終了部分の色
+		/// @return 
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
 		/// @brief 円の弧を描きます。
@@ -950,8 +972,23 @@ namespace s3d
 		/// @return *this
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
+		/// @brief 円の弧を描きます。
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
+		/// @brief 円の弧を描きます。
+		/// @param lineCap 線端のスタイル
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -967,6 +1004,11 @@ namespace s3d
 		/// @return *this
 		const Circle& drawSegment(double arcMidpointAngle, double height, const ColorF& color = Palette::White) const;
 
+		/// @brief 弓形を描きます。
+		/// @param arcMidpointAngle 弓形の弧の中心を円の中心から見た角度（ラジアン, 0 時の方向から時計回り）
+		/// @param height 弓形の高さ
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawSegment(double arcMidpointAngle, double height, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -982,6 +1024,11 @@ namespace s3d
 		/// @return *this
 		const Circle& drawSegmentFromAngles(double startAngle, double angle, const ColorF& color = Palette::White) const;
 
+		/// @brief 弓形を描きます。
+		/// @param startAngle 弓形の弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弓形の弧の角度（ラジアン）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawSegmentFromAngles(double startAngle, double angle, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////

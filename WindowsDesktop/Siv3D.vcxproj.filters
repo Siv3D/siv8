@@ -940,6 +940,9 @@
     <Filter Include="src\ThirdParty\rapidhash">
       <UniqueIdentifier>{0666a998-269a-4249-ae0e-30fc05181a39}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Ellipse">
+      <UniqueIdentifier>{3d9a2c47-2649-4506-a977-e7a9eb32a12c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -6007,6 +6010,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Grid\SivGrid.cpp">
       <Filter>src\Siv3D\Grid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Ellipse\SivEllipse.cpp">
+      <Filter>src\Siv3D\Ellipse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

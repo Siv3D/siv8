@@ -1034,6 +1034,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilState\SivDepthStencilState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DirectoryWatcher\SivDirectoryWatcher.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Ellipse\SivEllipse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\CEmoji.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\EmojiFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\SivEmoji.cpp" />
