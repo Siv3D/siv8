@@ -16,53 +16,11 @@
 
 namespace s3d
 {
-	namespace wyhash
-	{
-		/// @brief wyhash のシークレット値 | Secret value for wyhash
-		using Secret = uint64[4];
-		
-		/// @brief wyhash のデフォルトのシークレット値 | Default secret value for wyhash
-		inline constexpr Secret DefaultHashSecret{ 0xa0761d6478bd642full, 0xe7037ed1a0b428dbull, 0x8ebc6af09c88c6e3ull, 0x589965cc75374cc3ull };
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Hash
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
-		/// @param data 計算対象のデータ | Data to be calculated
-		/// @param size 計算対象のデータのサイズ（バイト） | Size of data to be calculated (bytes)
-		/// @return ハッシュ値 | Hash value
-		[[nodiscard]]
-		uint64 Hash(const void* data, size_t size) noexcept;
-
-		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
-		/// @param data 計算対象のデータ | Data to be calculated
-		/// @param size 計算対象のデータのサイズ（バイト） | Size of data to be calculated (bytes)
-		/// @param seed シード値 | Seed value
-		/// @return ハッシュ値 | Hash value
-		[[nodiscard]]
-		uint64 Hash(const void* data, size_t size, uint64 seed) noexcept;
-
-		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
-		/// @param data 計算対象のデータ | Data to be calculated
-		/// @param size 計算対象のデータのサイズ（バイト） | Size of data to be calculated (bytes)
-		/// @param seed シード値 | Seed value
-		/// @param secret シークレット値 | Secret value
-		/// @return ハッシュ値 | Hash value
-		[[nodiscard]]
-		uint64 Hash(const void* data, size_t size, uint64 seed, const Secret& secret) noexcept;
-
-		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
-		/// @param data 計算対象のデータ | Data to be calculated
-		/// @return ハッシュ値 | Hash value
-		[[nodiscard]]
-		uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept;
-	}
-
 	namespace rapidhash
 	{
+		/// @brief rapidhash のデフォルトのシード値 | Default seed value for rapidhash
+		inline constexpr uint64 DefaultSeed = 0xbdd89aa982704029ull;
+
 		/// @brief rapidhash のシークレット値 | Secret value for rapidhash
 		using Secret = uint64[3];
 
@@ -108,6 +66,9 @@ namespace s3d
 
 	inline namespace xxHash3
 	{
+		/// @brief xxHash3 のデフォルトのシード値 | Default seed value for xxHash3
+		inline constexpr uint64 DefaultSeed = 0;
+
 		/// @brief xxHash3 のシークレット値 | Secret value for xxHash3
 		using Secret = uint8[192];
 

@@ -20,30 +20,6 @@
 
 namespace s3d
 {
-	namespace wyhash
-	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	Hash
-		//
-		////////////////////////////////////////////////////////////////
-
-		uint64 Hash(const void* data, const size_t size) noexcept
-		{
-			return ::wyhash(data, size, 0, DefaultHashSecret);
-		}
-
-		uint64 Hash(const void* data, const size_t size, const uint64 seed) noexcept
-		{
-			return ::wyhash(data, size, seed, DefaultHashSecret);
-		}
-
-		uint64 Hash(const void* data, const size_t size, const uint64 seed, const Secret& secret) noexcept
-		{
-			return ::wyhash(data, size, seed, secret);
-		}
-	}
-
 	namespace rapidhash
 	{
 		////////////////////////////////////////////////////////////////
@@ -54,7 +30,7 @@ namespace s3d
 
 		uint64 Hash(const void* data, const size_t size) noexcept
 		{
-			return ::rapidhash_internal(data, size, RAPID_SEED, rapid_secret);
+			return ::rapidhash_internal(data, size, DefaultSeed, rapid_secret);
 		}
 
 		uint64 Hash(const void* data, const size_t size, const uint64 seed) noexcept

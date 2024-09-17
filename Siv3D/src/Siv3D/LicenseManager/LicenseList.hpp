@@ -654,6 +654,13 @@ MIT_LICENSE
 },
 
 {
+R"-(rapidhash)-",
+R"-(Copyright (C) 2024 Nicolas De Carli
+Based on 'wyhash', by Wang Yi <godspeed_china@yeah.net>)-",
+BSD_2_LICENSE
+},
+
+{
 R"-(simdutf)-",
 R"-(Copyright 2021 The simdutf authors)-",
 MIT_LICENSE
