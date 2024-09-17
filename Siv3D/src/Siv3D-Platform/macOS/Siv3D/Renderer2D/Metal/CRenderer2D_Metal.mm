@@ -565,7 +565,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
