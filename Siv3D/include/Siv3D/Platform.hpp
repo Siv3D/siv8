@@ -121,7 +121,7 @@
 
 # else
 
-	# error Unknown processor
+	# error "Unknown processor"
 
 # endif
 
@@ -162,7 +162,7 @@
 
 # else
 
-	# error Unknown intrinsic
+	# error "Unknown intrinsic"
 
 # endif
 
@@ -210,7 +210,7 @@
 
 # else
 
-	# error Unknown compiler
+	# error "Unknown compiler"
 
 # endif
 

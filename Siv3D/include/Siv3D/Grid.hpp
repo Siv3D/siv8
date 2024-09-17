@@ -977,9 +977,6 @@ namespace s3d
 		Size m_size{ 0, 0 };
 
 		container_type m_container;
-
-		[[noreturn]]
-		static void ThrowAtOutOfRange();
 	};
 
 	////////////////////////////////////////////////////////////////

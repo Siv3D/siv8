@@ -468,11 +468,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	manhattanLength
+	//	manhattanDistance
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr int32 Point::manhattanLength() const noexcept
+	constexpr int32 Point::manhattanDistance() const noexcept
 	{
 		return (Abs(x) + Abs(y));
 	}

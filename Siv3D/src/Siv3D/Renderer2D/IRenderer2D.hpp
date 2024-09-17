@@ -75,11 +75,17 @@ namespace s3d
 
 		virtual void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) = 0;
 
-		//virtual void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const Float4& color) = 0;
+		virtual void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const Float4& color) = 0;
+
+		virtual void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) = 0;
 
 		//virtual void addEllipse(const Float2& center, float a, float b, const Float4& innerColor, const Float4& outerColor) = 0;
 
+		//virtual void addEllipse(const Float2& center, float a, float b, const Float4& innerColor, const PatternParameters& pattern) = 0;
+
 		//virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+
+		//virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) = 0;
 
 		virtual void addQuad(const FloatQuad& quad, const Float4& color) = 0;
 
@@ -90,8 +96,12 @@ namespace s3d
 		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const Float4& color) = 0;
 
 		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
-	
+
+		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const PatternParameters& pattern) = 0;
+
 		//virtual void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+
+		//virtual void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const PatternParameters& pattern) = 0;
 
 
 

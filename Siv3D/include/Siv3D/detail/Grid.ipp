@@ -27,6 +27,9 @@ namespace s3d
 				return size;
 			}
 		}
+
+		[[noreturn]]
+		void ThrowGridAtOutOfRange();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -243,7 +246,7 @@ namespace s3d
 	{
 		if (not inBounds(Point{ x, y }))
 		{
-			ThrowAtOutOfRange();
+			detail::ThrowGridAtOutOfRange();
 		}
 
 		return *(m_container.data() + (y * m_size.x + x));
@@ -254,7 +257,7 @@ namespace s3d
 	{
 		if (not inBounds(Point{ x, y }))
 		{
-			ThrowAtOutOfRange();
+			detail::ThrowGridAtOutOfRange();
 		}
 
 		return *(m_container.data() + (y * m_size.x + x));
@@ -265,7 +268,7 @@ namespace s3d
 	{
 		if (not inBounds(Point{ x, y }))
 		{
-			ThrowAtOutOfRange();
+			detail::ThrowGridAtOutOfRange();
 		}
 
 		return std::move(*(m_container.data() + (y * m_size.x + x)));
@@ -276,7 +279,7 @@ namespace s3d
 	{
 		if (not inBounds(pos))
 		{
-			ThrowAtOutOfRange();
+			detail::ThrowGridAtOutOfRange();
 		}
 
 		return *(m_container.data() + (pos.y * m_size.x + pos.x));
@@ -287,7 +290,7 @@ namespace s3d
 	{
 		if (not inBounds(pos))
 		{
-			ThrowAtOutOfRange();
+			detail::ThrowGridAtOutOfRange();
 		}
 
 		return *(m_container.data() + (pos.y * m_size.x + pos.x));
@@ -298,7 +301,7 @@ namespace s3d
 	{
 		if (not inBounds(pos))
 		{
-			ThrowAtOutOfRange();
+			detail::ThrowGridAtOutOfRange();
 		}
 
 		return std::move(*(m_container.data() + (pos.y * m_size.x + pos.x)));
@@ -764,23 +767,6 @@ namespace s3d
 
 
 
-
-
-
-
-
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	(private function)
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::ThrowAtOutOfRange()
-	{
-		throw std::out_of_range{ "Grid::at(): index out of range" };
-	}
 
 
 

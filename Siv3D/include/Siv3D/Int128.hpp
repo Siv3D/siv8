@@ -92,4 +92,31 @@ namespace s3d
 	void Formatter(FormatData& formatData, uint128 value);
 }
 
+////////////////////////////////////////////////////////////////
+//
+//	std::hash
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct std::hash<s3d::int128>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::int128& value) const noexcept
+	{
+		return s3d::Hash(value);
+	}
+};
+
+template <>
+struct std::hash<s3d::uint128>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::uint128& value) const noexcept
+	{
+		return s3d::Hash(value);
+	}
+};
+
+
 # include "detail/Int128.ipp"

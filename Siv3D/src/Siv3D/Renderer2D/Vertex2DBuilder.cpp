@@ -968,6 +968,76 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildCircleSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCircleSegment(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const float angle, const Float4& color, const float scale)
+		{
+			if (angle == 0.0f)
+			{
+				return 0;
+			}
+
+			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Abs(angle));
+			const Vertex2D::IndexType VertexCount = (Quality + 1);
+			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+
+			{
+				const auto [s1, c1] = FastMath::SinCos(startAngle);
+				const Float2 p1{ s1, -c1 };
+
+				const auto [s2, c2] = FastMath::SinCos(startAngle + angle);
+				const Float2 p2{ s2, -c2 };
+
+				const Float2 mid = ((p1 + p2) * 0.5f * r);
+
+				// 中心
+				pVertex[0].pos = (mid + Float2{ centerX, centerY });
+			}
+
+			// 周
+			{
+				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
+				const float radDelta = (Abs(angle) / (Quality - 1));
+				Vertex2D* pDst = &pVertex[1];
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const float rad = (start + (radDelta * i));
+					const auto [s, c] = FastMath::SinCos(rad);
+					(pDst++)->pos.set((centerX + r * s), (centerY - r * c));
+				}
+			}
+
+			{
+				for (size_t i = 0; i < VertexCount; ++i)
+				{
+					(pVertex++)->color = color;
+				}
+			}
+
+			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+			{
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + i + 1);
+				*pIndex++ = (indexOffset + i + 2);
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildQuad
 		//
 		////////////////////////////////////////////////////////////////

@@ -22,6 +22,9 @@ namespace s3d
 		void ThrowArrayRemovedAtIndexOutOfRange();
 
 		[[noreturn]]
+		void ThrowArrayChoiceOutOfRange();
+
+		[[noreturn]]
 		void ThrowArrayValuesAtIndexOutOfRange();
 	}
 
@@ -470,6 +473,18 @@ namespace s3d
 	constexpr bool Array<Type, Allocator>::isEmpty() const noexcept
 	{
 		return m_container.empty();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	indexInBounds
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr bool Array<Type, Allocator>::indexInBounds(const size_type index) const noexcept
+	{
+		return (index < m_container.size());
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -494,6 +494,19 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	indexInBounds
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスが配列の範囲内かを返します。
+		/// @param index インデックス
+		/// @return インデックスが範囲内の場合 true, それ以外の場合は false
+		/// @remark `index < size()` と同じです。
+		[[nodiscard]]
+		constexpr bool indexInBounds(size_type index) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	operator bool
 		//
 		////////////////////////////////////////////////////////////////
@@ -1306,6 +1319,45 @@ namespace s3d
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String capitalized()&& noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	choice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 文字列の要素を 1 つランダムに返します。
+		/// @return 文字列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice()&;
+
+		/// @brief 文字列の要素を 1 つランダムに返します。
+		/// @return 文字列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice() const&;
+
+		/// @brief 文字列の要素を 1 つランダムに返します。
+		/// @return 文字列からランダムに選ばれた要素
+		[[nodiscard]]
+		value_type choice()&&;
+
+		/// @brief 指定した乱数エンジンを用いて、文字列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 文字列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg)&;
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 文字列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+
+		/// @brief 指定した乱数エンジンを用いて、文字列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 文字列からランダムに選ばれた要素
+		[[nodiscard]]
+		value_type choice(Concept::UniformRandomBitGenerator auto&& rbg)&&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2634,6 +2686,9 @@ namespace s3d
 
 		[[noreturn]]
 		static void ThrowAtOutOfRange();
+
+		[[noreturn]]
+		static void ThrowChoiceOutOfRange();
 
 		[[noreturn]]
 		static void ThrowValuesAtOutOfRange();

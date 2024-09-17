@@ -557,6 +557,50 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addCircleSegment
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, color, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addQuad
 	//
 	////////////////////////////////////////////////////////////////

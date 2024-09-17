@@ -743,6 +743,9 @@
 // シャッフル | Random shuffle
 # include <Siv3D/Shuffle.hpp>
 
+// ランダムな選択 | Random choice
+# include <Siv3D/Choice.hpp>
+
 // ランダムな時間 | Random duration
 # include <Siv3D/RandomDuration.hpp>
 
