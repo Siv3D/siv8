@@ -511,6 +511,11 @@ namespace s3d
 
 			BigFloat Atan2_impl::operator ()(const BigFloat& y, const BigFloat& x) const
 			{
+				if (x.isZero() && y.isZero())
+				{
+					return 0.0;
+				}
+
 				BigFloat result;
 				result._detail().value = boost::multiprecision::atan2(y._detail().value, x._detail().value);
 				return result;

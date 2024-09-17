@@ -623,7 +623,7 @@ namespace s3d
 	{
 		if (isZero())
 		{
-			return Math::NaN_v<Type>;
+			return 0;
 		}
 
 		return std::atan2(x, -y);
