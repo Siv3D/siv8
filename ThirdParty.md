@@ -4,7 +4,7 @@ To view the license information, press the <kbd>F1</kbd> key while the Siv3D app
 
 Name | Version
 --- | ---
-[Abseil](https://github.com/abseil/abseil-cpp) | 20240116.2
+[Abseil](https://github.com/abseil/abseil-cpp) | 20240722.0
 [CoreRT](https://github.com/dotnet/corert) | 
 [cpu_features](https://github.com/google/cpu_features) | 
 [DirectXMath](https://github.com/microsoft/DirectXMath) | February 2024
@@ -13,7 +13,7 @@ Name | Version
 [Easing Equations](http://robertpenner.com/easing/) | 
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 6.1.0
+[fast_float](https://github.com/fastfloat/fast_float) | Version 6.1.6
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.2
 [GLFW](https://github.com/glfw/glfw) | 3.4
@@ -27,12 +27,12 @@ Name | Version
 [miniutf](https://github.com/dropbox/miniutf) | 
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
-[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.5.5
+[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.6.1
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
 [plutovg](https://github.com/sammycage/plutovg) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 5.2.2
+[simdutf](https://github.com/simdutf/simdutf) | Version 5.5.0
 [skia](https://github.com/google/skia) |
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
