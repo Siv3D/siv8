@@ -476,6 +476,8 @@ namespace s3d
 			static_cast<float>(arcAngleHalf * 2.0f),
 			color.toFloat4()
 		);
+
+		return *this;
 	}
 
 	const Circle& Circle::drawSegment(const double arcMidpointAngle, const double height, const PatternParameters& pattern) const
@@ -499,6 +501,8 @@ namespace s3d
 			static_cast<float>(arcAngleHalf * 2.0f),
 			pattern
 		);
+
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

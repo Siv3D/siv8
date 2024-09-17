@@ -27,7 +27,7 @@ namespace s3d
 
 	SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4201)
 
-			union
+		union
 		{
 			/// @brief 楕円の中心座標
 			position_type center;
