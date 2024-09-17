@@ -61,6 +61,51 @@ namespace s3d
 		uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept;
 	}
 
+	namespace rapidhash
+	{
+		/// @brief rapidhash のシークレット値 | Secret value for rapidhash
+		using Secret = uint64[3];
+
+		/// @brief rapidhash のデフォルトのシークレット値 | Default secret value for rapidhash
+		inline constexpr Secret DefaultHashSecret{ 0x2d358dccaa6c78a5ull, 0x8bb84b93962eacc9ull, 0x4b33a62ed433d4a3ull };
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Hash
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @param size 計算対象のデータのサイズ（バイト） | Size of data to be calculated (bytes)
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
+		uint64 Hash(const void* data, size_t size) noexcept;
+
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @param size 計算対象のデータのサイズ（バイト） | Size of data to be calculated (bytes)
+		/// @param seed シード値 | Seed value
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
+		uint64 Hash(const void* data, size_t size, uint64 seed) noexcept;
+
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @param size 計算対象のデータのサイズ（バイト） | Size of data to be calculated (bytes)
+		/// @param seed シード値 | Seed value
+		/// @param secret シークレット値 | Secret value
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
+		uint64 Hash(const void* data, size_t size, uint64 seed, const Secret& secret) noexcept;
+
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
+		uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept;
+	}
+
 	inline namespace xxHash3
 	{
 		/// @brief xxHash3 のシークレット値 | Secret value for xxHash3

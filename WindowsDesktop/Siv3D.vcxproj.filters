@@ -937,6 +937,9 @@
     <Filter Include="src\Siv3D\Grid">
       <UniqueIdentifier>{51ab9301-d8f6-4f85-85cd-82b0fb322169}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\rapidhash">
+      <UniqueIdentifier>{0666a998-269a-4249-ae0e-30fc05181a39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3671,6 +3674,9 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Choice.ipp">
       <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\rapidhash\rapidhash.h">
+      <Filter>src\ThirdParty\rapidhash</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -75,14 +75,17 @@ TEST_CASE("Hash.Benchmark")
 
 		Bench{}.title("Hash uint8").run("std::hash", [&]() { doNotOptimizeAway(std::hash<uint8>{}(u8)); });
 		Bench{}.title("Hash uint8").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(u8)); });
+		Bench{}.title("Hash uint8").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(u8)); });
 		Bench{}.title("Hash uint8").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(u8)); });
 
 		Bench{}.title("Hash uint32").run("std::hash", [&]() { doNotOptimizeAway(std::hash<uint32>{}(u32)); });
 		Bench{}.title("Hash uint32").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(u32)); });
+		Bench{}.title("Hash uint32").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(u32)); });
 		Bench{}.title("Hash uint32").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(u32)); });
 
 		Bench{}.title("Hash uint64").run("std::hash", [&]() { doNotOptimizeAway(std::hash<uint64>{}(u64)); });
 		Bench{}.title("Hash uint64").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(u64)); });
+		Bench{}.title("Hash uint64").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(u64)); });
 		Bench{}.title("Hash uint64").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(u64)); });
 	}
 
@@ -93,14 +96,17 @@ TEST_CASE("Hash.Benchmark")
 
 		Bench{}.title("Hash std::string(5)").run("std::hash", [&]() { doNotOptimizeAway(std::hash<std::string>{}(s5)); });
 		Bench{}.title("Hash std::string(5)").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(s5.data(), s5.size())); });
+		Bench{}.title("Hash std::string(5)").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(s5.data(), s5.size())); });
 		Bench{}.title("Hash std::string(5)").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(s5.data(), s5.size())); });
 
 		Bench{}.title("Hash std::string(20)").run("std::hash", [&]() { doNotOptimizeAway(std::hash<std::string>{}(s20)); });
 		Bench{}.title("Hash std::string(20)").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(s20.data(), s20.size())); });
+		Bench{}.title("Hash std::string(20)").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(s20.data(), s20.size())); });
 		Bench{}.title("Hash std::string(20)").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(s20.data(), s20.size())); });
 
 		Bench{}.title("Hash std::string(445)").run("std::hash", [&]() { doNotOptimizeAway(std::hash<std::string>{}(s445)); });
 		Bench{}.title("Hash std::string(445)").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(s445.data(), s445.size())); });
+		Bench{}.title("Hash std::string(445)").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(s445.data(), s445.size())); });
 		Bench{}.title("Hash std::string(445)").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(s445.data(), s445.size())); });
 	}
 
@@ -111,14 +117,17 @@ TEST_CASE("Hash.Benchmark")
 
 		Bench{}.title("Hash std::u32string(5)").run("std::hash", [&]() { doNotOptimizeAway(std::hash<std::u32string>{}(s5)); });
 		Bench{}.title("Hash std::u32string(5)").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(s5.data(), (sizeof(char32) * s5.size()))); });
+		Bench{}.title("Hash std::u32string(5)").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(s5.data(), (sizeof(char32) * s5.size()))); });
 		Bench{}.title("Hash std::u32string(5)").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(s5.data(), (sizeof(char32) * s5.size()))); });
 
 		Bench{}.title("Hash std::u32string(20)").run("std::hash", [&]() { doNotOptimizeAway(std::hash<std::u32string>{}(s20)); });
 		Bench{}.title("Hash std::u32string(20)").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(s20.data(), (sizeof(char32) * s20.size()))); });
+		Bench{}.title("Hash std::u32string(20)").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(s20.data(), (sizeof(char32) * s20.size()))); });
 		Bench{}.title("Hash std::u32string(20)").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(s20.data(), (sizeof(char32) * s20.size()))); });
 
 		Bench{}.title("Hash std::u32string(445)").run("std::hash", [&]() { doNotOptimizeAway(std::hash<std::u32string>{}(s445)); });
 		Bench{}.title("Hash std::u32string(445)").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(s445.data(), (sizeof(char32) * s445.size()))); });
+		Bench{}.title("Hash std::u32string(445)").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(s445.data(), (sizeof(char32) * s445.size()))); });
 		Bench{}.title("Hash std::u32string(445)").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(s445.data(), (sizeof(char32) * s445.size()))); });
 	}
 
@@ -128,12 +137,15 @@ TEST_CASE("Hash.Benchmark")
 		const std::vector<uint8> v16K(16384);
 
 		Bench{}.title("Hash std::vector<uint8>(1K)").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(v1K.data(), v1K.size())); });
+		Bench{}.title("Hash std::vector<uint8>(1K)").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(v1K.data(), v1K.size())); });
 		Bench{}.title("Hash std::vector<uint8>(1K)").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(v1K.data(), v1K.size())); });
 
 		Bench{}.title("Hash std::vector<uint8>(4K)").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(v4K.data(), v4K.size())); });
+		Bench{}.title("Hash std::vector<uint8>(4K)").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(v4K.data(), v4K.size())); });
 		Bench{}.title("Hash std::vector<uint8>(4K)").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(v4K.data(), v4K.size())); });
 
 		Bench{}.title("Hash std::vector<uint8>(16K)").run("wyhash::Hash", [&]() { doNotOptimizeAway(wyhash::Hash(v16K.data(), v16K.size())); });
+		Bench{}.title("Hash std::vector<uint8>(16K)").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(v16K.data(), v16K.size())); });
 		Bench{}.title("Hash std::vector<uint8>(16K)").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(v16K.data(), v16K.size())); });
 	}
 }
