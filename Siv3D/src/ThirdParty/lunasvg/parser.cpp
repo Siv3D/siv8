@@ -1,19 +1,7 @@
 #include "parser.h"
 #include "parserutils.h"
 #include "layoutcontext.h"
-
-#include "clippathelement.h"
-#include "defselement.h"
-#include "gelement.h"
-#include "geometryelement.h"
-#include "markerelement.h"
-#include "maskelement.h"
-#include "paintelement.h"
-#include "stopelement.h"
 #include "svgelement.h"
-#include "symbolelement.h"
-#include "useelement.h"
-#include "styleelement.h"
 
 namespace lunasvg {
 
@@ -520,7 +508,7 @@ Color Parser::parseColor(const std::string& string, const StyledElement* element
     }
 
     if(Utils::skipDesc(ptr, end, "rgb(")) {
-        int r, g, b;
+        uint8_t r, g, b;
         if(!Utils::skipWs(ptr, end)
             || !parseColorComponent(ptr, end, r)
             || !Utils::skipWsComma(ptr, end)
@@ -873,7 +861,7 @@ bool Parser::parseArcFlag(const char*& ptr, const char* end, bool& flag)
     return true;
 }
 
-bool Parser::parseColorComponent(const char*& ptr, const char* end, int& component)
+bool Parser::parseColorComponent(const char*& ptr, const char* end, uint8_t& component)
 {
     double value = 0;
     if(!Utils::parseNumber(ptr, end, value))
@@ -883,7 +871,7 @@ bool Parser::parseColorComponent(const char*& ptr, const char* end, int& compone
         value *= 2.55;
 
     value = clamp(value, 0.0, 255.0);
-    component = static_cast<int>(std::round(value));
+    component = static_cast<uint8_t>(std::round(value));
     return true;
 }
 
@@ -979,9 +967,10 @@ bool Parser::parseTransform(const char*& ptr, const char* end, TransformType& ty
     return true;
 }
 
-static inline ElementID elementid(const std::string& name)
+ElementID elementid(const std::string& name)
 {
     static const std::map<std::string, ElementID> elementmap = {
+        {"a", ElementID::G},
         {"circle", ElementID::Circle},
         {"clipPath", ElementID::ClipPath},
         {"defs", ElementID::Defs},
@@ -1011,7 +1000,7 @@ static inline ElementID elementid(const std::string& name)
     return it->second;
 }
 
-static inline PropertyID csspropertyid(const std::string& name)
+PropertyID csspropertyid(const std::string& name)
 {
     static const std::map<std::string, PropertyID> csspropertymap = {
         {"clip-path", PropertyID::Clip_Path},
@@ -1048,7 +1037,7 @@ static inline PropertyID csspropertyid(const std::string& name)
     return it->second;
 }
 
-static inline PropertyID propertyid(const std::string& name)
+PropertyID propertyid(const std::string& name)
 {
     static const std::map<std::string, PropertyID> propertymap = {
         {"class", PropertyID::Class},
@@ -1118,7 +1107,7 @@ bool RuleData::match(const Element* element) const
         switch(it->combinator) {
         case SimpleSelector::Combinator::Child:
         case SimpleSelector::Combinator::Descendant:
-            element = element->parent;
+            element = element->parent();
             break;
         case SimpleSelector::Combinator::DirectAdjacent:
         case SimpleSelector::Combinator::InDirectAdjacent:
@@ -1142,7 +1131,7 @@ bool RuleData::match(const Element* element) const
 
 bool RuleData::matchSimpleSelector(const SimpleSelector& selector, const Element* element)
 {
-    if(selector.id != ElementID::Star && selector.id != element->id)
+    if(selector.id != ElementID::Star && selector.id != element->id())
         return false;
 
     for(auto& sel : selector.attributeSelectors) {
@@ -1220,14 +1209,12 @@ bool RuleData::matchAttributeSelector(const AttributeSelector& selector, const E
 bool RuleData::matchPseudoClassSelector(const PseudoClassSelector& selector, const Element* element)
 {
     if(selector.type == PseudoClassSelector::Type::Empty)
-        return element->children.empty();
-
+        return element->children().empty();
     if(selector.type == PseudoClassSelector::Type::Root)
-        return element->parent == nullptr;
-
+        return element->parent() == nullptr;
     if(selector.type == PseudoClassSelector::Type::Is) {
-        for(auto& selector : selector.subSelectors) {
-            for(auto& sel : selector) {
+        for(auto& subselector : selector.subSelectors) {
+            for(auto& sel : subselector) {
                 if(!matchSimpleSelector(sel, element)) {
                     return false;
                 }
@@ -1238,8 +1225,8 @@ bool RuleData::matchPseudoClassSelector(const PseudoClassSelector& selector, con
     }
 
     if(selector.type == PseudoClassSelector::Type::Not) {
-        for(auto& selector : selector.subSelectors) {
-            for(auto& sel : selector) {
+        for(auto& subselector : selector.subSelectors) {
+            for(auto& sel : subselector) {
                 if(matchSimpleSelector(sel, element)) {
                     return false;
                 }
@@ -1261,7 +1248,7 @@ bool RuleData::matchPseudoClassSelector(const PseudoClassSelector& selector, con
     if(selector.type == PseudoClassSelector::Type::FirstOfType) {
         auto sibling = element->previousElement();
         while(sibling) {
-            if(sibling->id == element->id)
+            if(sibling->id() == element->id())
                 return false;
             sibling = element->previousElement();
         }
@@ -1272,7 +1259,7 @@ bool RuleData::matchPseudoClassSelector(const PseudoClassSelector& selector, con
     if(selector.type == PseudoClassSelector::Type::LastOfType) {
         auto sibling = element->nextElement();
         while(sibling) {
-            if(sibling->id == element->id)
+            if(sibling->id() == element->id())
                 return false;
             sibling = element->nextElement();
         }
@@ -1393,7 +1380,6 @@ bool StyleSheet::parseSelectors(const char*& ptr, const char* end, SelectorList&
 
     while(Utils::skipDesc(ptr, end, ',')) {
         Utils::skipWs(ptr, end);
-        Selector selector;
         if(!parseSelector(ptr, end, selector))
             return false;
         selectors.push_back(std::move(selector));
@@ -1574,58 +1560,6 @@ bool StyleSheet::parseSimpleSelector(const char*& ptr, const char* end, SimpleSe
     return true;
 }
 
-static inline std::unique_ptr<Element> createElement(ElementID id)
-{
-    switch(id) {
-    case ElementID::Svg:
-        return makeUnique<SVGElement>();
-    case ElementID::Path:
-        return makeUnique<PathElement>();
-    case ElementID::G:
-        return makeUnique<GElement>();
-    case ElementID::Rect:
-        return makeUnique<RectElement>();
-    case ElementID::Circle:
-        return makeUnique<CircleElement>();
-    case ElementID::Ellipse:
-        return makeUnique<EllipseElement>();
-    case ElementID::Line:
-        return makeUnique<LineElement>();
-    case ElementID::Defs:
-        return makeUnique<DefsElement>();
-    case ElementID::Polygon:
-        return makeUnique<PolygonElement>();
-    case ElementID::Polyline:
-        return makeUnique<PolylineElement>();
-    case ElementID::Stop:
-        return makeUnique<StopElement>();
-    case ElementID::LinearGradient:
-        return makeUnique<LinearGradientElement>();
-    case ElementID::RadialGradient:
-        return makeUnique<RadialGradientElement>();
-    case ElementID::Symbol:
-        return makeUnique<SymbolElement>();
-    case ElementID::Use:
-        return makeUnique<UseElement>();
-    case ElementID::Pattern:
-        return makeUnique<PatternElement>();
-    case ElementID::Mask:
-        return makeUnique<MaskElement>();
-    case ElementID::ClipPath:
-        return makeUnique<ClipPathElement>();
-    case ElementID::SolidColor:
-        return makeUnique<SolidColorElement>();
-    case ElementID::Marker:
-        return makeUnique<MarkerElement>();
-    case ElementID::Style:
-        return makeUnique<StyleElement>();
-    default:
-        break;
-    }
-
-    return nullptr;
-}
-
 static inline bool decodeText(const char* ptr, const char* end, std::string& value)
 {
     value.clear();
@@ -1649,28 +1583,28 @@ static inline bool decodeText(const char* ptr, const char* end, std::string& val
             char c[5] = {0, 0, 0, 0, 0};
             if(cp < 0x80) {
                 c[1] = 0;
-                c[0] = cp;
+                c[0] = static_cast<char>(cp);
             } else if(cp < 0x800) {
                 c[2] = 0;
-                c[1] = (cp & 0x3F) | 0x80;
+                c[1] = static_cast<char>((cp & 0x3F) | 0x80);
                 cp >>= 6;
-                c[0] = cp | 0xC0;
+                c[0] = static_cast<char>(cp | 0xC0);
             } else if(cp < 0x10000) {
                 c[3] = 0;
-                c[2] = (cp & 0x3F) | 0x80;
+                c[2] = static_cast<char>((cp & 0x3F) | 0x80);
                 cp >>= 6;
-                c[1] = (cp & 0x3F) | 0x80;
+                c[1] = static_cast<char>((cp & 0x3F) | 0x80);
                 cp >>= 6;
-                c[0] = cp | 0xE0;
+                c[0] = static_cast<char>(cp | 0xE0);
             } else if(cp < 0x200000) {
                 c[4] = 0;
-                c[3] = (cp & 0x3F) | 0x80;
+                c[3] = static_cast<char>((cp & 0x3F) | 0x80);
                 cp >>= 6;
-                c[2] = (cp & 0x3F) | 0x80;
+                c[2] = static_cast<char>((cp & 0x3F) | 0x80);
                 cp >>= 6;
-                c[1] = (cp & 0x3F) | 0x80;
+                c[1] = static_cast<char>((cp & 0x3F) | 0x80);
                 cp >>= 6;
-                c[0] = cp | 0xF0;
+                c[0] = static_cast<char>(cp | 0xF0);
             }
 
             value.append(c);
@@ -1732,11 +1666,7 @@ static inline void removeComments(std::string& value)
     }
 }
 
-TreeBuilder::TreeBuilder() = default;
-
-TreeBuilder::~TreeBuilder() = default;
-
-bool TreeBuilder::parse(const char* data, std::size_t size)
+bool Document::parse(const char* data, std::size_t size)
 {
     auto ptr = data;
     auto end = ptr + size;
@@ -1747,7 +1677,7 @@ bool TreeBuilder::parse(const char* data, std::size_t size)
     std::string value;
     int ignoring = 0;
     auto handleText = [&](const char* start, const char* end, bool in_cdata) {
-        if(ignoring > 0 || current == nullptr || current->id != ElementID::Style)
+        if(ignoring > 0 || current == nullptr || current->id() != ElementID::Style)
             return;
 
         if(in_cdata)
@@ -1782,8 +1712,7 @@ bool TreeBuilder::parse(const char* data, std::size_t size)
             if(ignoring > 0)
                 --ignoring;
             else
-                current = current->parent;
-
+                current = current->parent();
             ++ptr;
             continue;
         }
@@ -1867,7 +1796,7 @@ bool TreeBuilder::parse(const char* data, std::size_t size)
                 m_rootElement = makeUnique<SVGElement>();
                 element = m_rootElement.get();
             } else {
-                auto child = createElement(id);
+                auto child = Element::create(id);
                 element = child.get();
                 current->addChild(std::move(child));
             }
@@ -1894,18 +1823,18 @@ bool TreeBuilder::parse(const char* data, std::size_t size)
             if(ptr >= end || *ptr != quote)
                 return false;
 
-            auto id = PropertyID::Unknown;
+            auto attrId = PropertyID::Unknown;
             if(element != nullptr)
-                id = propertyid(name);
-            if(id != PropertyID::Unknown) {
+                attrId = propertyid(name);
+            if(attrId != PropertyID::Unknown) {
                 decodeText(start, Utils::rtrim(start, ptr), value);
-                if(id == PropertyID::Style) {
+                if(attrId == PropertyID::Style) {
                     removeComments(value);
                     parseStyle(value, element);
                 } else {
-                    if(id == PropertyID::Id)
+                    if(attrId == PropertyID::Id)
                         m_idCache.emplace(value, element);
-                    element->set(id, value, 0x1);
+                    element->set(attrId, value, 0x1);
                 }
             }
 
@@ -1938,7 +1867,6 @@ bool TreeBuilder::parse(const char* data, std::size_t size)
 
     if(!m_rootElement || ptr < end || ignoring > 0)
         return false;
-
     if(!styleSheet.empty()) {
         m_rootElement->transverse([&styleSheet](Node* node) {
             if(node->isText())
@@ -1957,20 +1885,8 @@ bool TreeBuilder::parse(const char* data, std::size_t size)
         });
     }
 
+    m_rootElement->build(this);
     return true;
-}
-
-Element* TreeBuilder::getElementById(const std::string& id) const
-{
-    auto it = m_idCache.find(id);
-    if(it == m_idCache.end())
-        return nullptr;
-    return it->second;
-}
-
-std::unique_ptr<LayoutSymbol> TreeBuilder::build() const
-{
-    return m_rootElement->build(this);
 }
 
 } // namespace lunasvg

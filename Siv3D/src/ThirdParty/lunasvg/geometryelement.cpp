@@ -2,8 +2,6 @@
 #include "parser.h"
 #include "layoutcontext.h"
 
-#include <cmath>
-
 namespace lunasvg {
 
 GeometryElement::GeometryElement(ElementID id)
@@ -11,7 +9,7 @@ GeometryElement::GeometryElement(ElementID id)
 {
 }
 
-void GeometryElement::layout(LayoutContext* context, LayoutContainer* current) const
+void GeometryElement::layout(LayoutContext* context, LayoutContainer* current)
 {
     if(isDisplayNone())
         return;
@@ -19,8 +17,7 @@ void GeometryElement::layout(LayoutContext* context, LayoutContainer* current) c
     auto path = this->path();
     if(path.empty())
         return;
-
-    auto shape = makeUnique<LayoutShape>();
+    auto shape = makeUnique<LayoutShape>(this);
     shape->path = std::move(path);
     shape->transform = transform();
     shape->fillData = context->fillData(this);
@@ -48,11 +45,6 @@ Path PathElement::d() const
 Path PathElement::path() const
 {
     return d();
-}
-
-std::unique_ptr<Node> PathElement::clone() const
-{
-    return cloneElement<PathElement>();
 }
 
 PolyElement::PolyElement(ElementID id)
@@ -86,11 +78,6 @@ Path PolygonElement::path() const
     return path;
 }
 
-std::unique_ptr<Node> PolygonElement::clone() const
-{
-    return cloneElement<PolygonElement>();
-}
-
 PolylineElement::PolylineElement()
     : PolyElement(ElementID::Polyline)
 {
@@ -108,11 +95,6 @@ Path PolylineElement::path() const
         path.lineTo(points[i].x, points[i].y);
 
     return path;
-}
-
-std::unique_ptr<Node> PolylineElement::clone() const
-{
-    return cloneElement<PolylineElement>();
 }
 
 CircleElement::CircleElement()
@@ -152,11 +134,6 @@ Path CircleElement::path() const
     Path path;
     path.ellipse(_cx, _cy, _r, _r);
     return path;
-}
-
-std::unique_ptr<Node> CircleElement::clone() const
-{
-    return cloneElement<CircleElement>();
 }
 
 EllipseElement::EllipseElement()
@@ -206,11 +183,6 @@ Path EllipseElement::path() const
     return path;
 }
 
-std::unique_ptr<Node> EllipseElement::clone() const
-{
-    return cloneElement<EllipseElement>();
-}
-
 LineElement::LineElement()
     : GeometryElement(ElementID::Line)
 {
@@ -252,11 +224,6 @@ Path LineElement::path() const
     path.moveTo(_x1, _y1);
     path.lineTo(_x2, _y2);
     return path;
-}
-
-std::unique_ptr<Node> LineElement::clone() const
-{
-    return cloneElement<LineElement>();
 }
 
 RectElement::RectElement()
@@ -325,11 +292,6 @@ Path RectElement::path() const
     Path path;
     path.rect(_x, _y, _w, _h, _rx, _ry);
     return path;
-}
-
-std::unique_ptr<Node> RectElement::clone() const
-{
-    return cloneElement<RectElement>();
 }
 
 } // namespace lunasvg

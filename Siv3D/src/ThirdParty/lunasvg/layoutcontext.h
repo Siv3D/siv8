@@ -24,49 +24,55 @@ enum class LayoutId {
 };
 
 class RenderState;
+class Node;
 
 class LayoutObject {
 public:
-    LayoutObject(LayoutId id);
-    virtual ~LayoutObject();
-    virtual void render(RenderState&) const;
-    virtual void apply(RenderState&) const;
-    virtual Rect map(const Rect&) const;
+    LayoutObject(Node* node, LayoutId id);
+    virtual ~LayoutObject() = default;
+    virtual void render(RenderState&) const {}
+    virtual void apply(RenderState&) const {}
 
-    virtual const Rect& fillBoundingBox() const { return Rect::Invalid;}
-    virtual const Rect& strokeBoundingBox() const { return Rect::Invalid;}
+    Rect map(const Rect& rect) const { return localTransform().map(rect); }
 
-    bool isPaint() const { return id == LayoutId::LinearGradient || id == LayoutId::RadialGradient || id == LayoutId::Pattern || id == LayoutId::SolidColor; }
-    bool isHidden() const { return isPaint() || id == LayoutId::ClipPath || id == LayoutId::Mask || id == LayoutId::Marker; }
+    virtual const Transform& localTransform() const { return Transform::Identity; }
+    virtual const Rect& fillBoundingBox() const { return Rect::Invalid; }
+    virtual const Rect& strokeBoundingBox() const { return Rect::Invalid; }
 
-public:
-    LayoutId id;
+    bool isPaint() const { return m_id == LayoutId::LinearGradient || m_id == LayoutId::RadialGradient || m_id == LayoutId::Pattern || m_id == LayoutId::SolidColor; }
+    bool isHidden() const { return isPaint() || m_id == LayoutId::ClipPath || m_id == LayoutId::Mask || m_id == LayoutId::Marker; }
+
+    Node* node() const { return m_node; }
+    LayoutId id() const { return m_id; }
+
+private:
+    Node* m_node;
+    LayoutId m_id;
 };
 
 using LayoutList = std::list<std::unique_ptr<LayoutObject>>;
 
 class LayoutContainer : public LayoutObject {
 public:
-    LayoutContainer(LayoutId id);
+    LayoutContainer(Node* node, LayoutId id);
 
     const Rect& fillBoundingBox() const;
     const Rect& strokeBoundingBox() const;
+    const LayoutList& children() const { return m_children; }
 
     LayoutObject* addChild(std::unique_ptr<LayoutObject> child);
     LayoutObject* addChildIfNotEmpty(std::unique_ptr<LayoutContainer> child);
     void renderChildren(RenderState& state) const;
 
-public:
-    LayoutList children;
-
 protected:
+    LayoutList m_children;
     mutable Rect m_fillBoundingBox{Rect::Invalid};
     mutable Rect m_strokeBoundingBox{Rect::Invalid};
 };
 
 class LayoutClipPath : public LayoutContainer {
 public:
-    LayoutClipPath();
+    LayoutClipPath(Node* node);
 
     void apply(RenderState& state) const;
 
@@ -78,7 +84,7 @@ public:
 
 class LayoutMask : public LayoutContainer {
 public:
-    LayoutMask();
+    LayoutMask(Node* node);
 
     void apply(RenderState& state) const;
 
@@ -94,12 +100,13 @@ public:
     const LayoutClipPath* clipper;
 };
 
-class LayoutSymbol : public LayoutContainer {
+class LayoutSymbol final : public LayoutContainer {
 public:
-    LayoutSymbol();
+    LayoutSymbol(Node* node);
 
-    void render(RenderState& state) const;
-    Rect map(const Rect& rect) const;
+    void render(RenderState& state) const final;
+
+    const Transform& localTransform() const final { return transform; }
 
 public:
     double width;
@@ -111,12 +118,12 @@ public:
     const LayoutClipPath* clipper;
 };
 
-class LayoutGroup : public LayoutContainer {
+class LayoutGroup final : public LayoutContainer {
 public:
-    LayoutGroup();
+    LayoutGroup(Node* node);
 
-    void render(RenderState& state) const;
-    Rect map(const Rect& rect) const;
+    void render(RenderState& state) const final;
+    const Transform& localTransform() const final { return transform; }
 
 public:
     Transform transform;
@@ -125,9 +132,9 @@ public:
     const LayoutClipPath* clipper;
 };
 
-class LayoutMarker : public LayoutContainer {
+class LayoutMarker final : public LayoutContainer {
 public:
-    LayoutMarker();
+    LayoutMarker(Node* node);
 
     Transform markerTransform(const Point& origin, double angle, double strokeWidth) const;
     Rect markerBoundingBox(const Point& origin, double angle, double strokeWidth) const;
@@ -145,11 +152,11 @@ public:
     const LayoutClipPath* clipper;
 };
 
-class LayoutPattern : public LayoutContainer {
+class LayoutPattern final : public LayoutContainer {
 public:
-    LayoutPattern();
+    LayoutPattern(Node* node);
 
-    void apply(RenderState& state) const;
+    void apply(RenderState& state) const final;
 
 public:
     double x;
@@ -165,7 +172,7 @@ public:
 
 class LayoutGradient : public LayoutObject {
 public:
-    LayoutGradient(LayoutId id);
+    LayoutGradient(Node* node, LayoutId id);
 
 public:
     Transform transform;
@@ -174,11 +181,11 @@ public:
     GradientStops stops;
 };
 
-class LayoutLinearGradient : public LayoutGradient {
+class LayoutLinearGradient final : public LayoutGradient {
 public:
-    LayoutLinearGradient();
+    LayoutLinearGradient(Node* node);
 
-    void apply(RenderState& state) const;
+    void apply(RenderState& state) const final;
 
 public:
     double x1;
@@ -187,11 +194,11 @@ public:
     double y2;
 };
 
-class LayoutRadialGradient : public LayoutGradient {
+class LayoutRadialGradient final : public LayoutGradient {
 public:
-    LayoutRadialGradient();
+    LayoutRadialGradient(Node* node);
 
-    void apply(RenderState& state) const;
+    void apply(RenderState& state) const final;
 
 public:
     double cx;
@@ -201,11 +208,11 @@ public:
     double fy;
 };
 
-class LayoutSolidColor : public LayoutObject {
+class LayoutSolidColor final : public LayoutObject {
 public:
-    LayoutSolidColor();
+    LayoutSolidColor(Node* node);
 
-    void apply(RenderState& state) const;
+    void apply(RenderState& state) const final;
 
 public:
     Color color;
@@ -267,12 +274,12 @@ public:
     double strokeWidth{1};
 };
 
-class LayoutShape : public LayoutObject {
+class LayoutShape final : public LayoutObject {
 public:
-    LayoutShape();
+    LayoutShape(Node* node);
 
     void render(RenderState& state) const;
-    Rect map(const Rect& rect) const;
+    const Transform& localTransform() const final { return transform; }
     const Rect& fillBoundingBox() const;
     const Rect& strokeBoundingBox() const;
 
@@ -325,13 +332,13 @@ private:
     RenderMode m_mode;
 };
 
-class TreeBuilder;
+class Document;
 class StyledElement;
 class GeometryElement;
 
 class LayoutContext {
 public:
-    LayoutContext(const TreeBuilder* builder, LayoutSymbol* root);
+    LayoutContext(const Document* document, LayoutSymbol* root);
 
     Element* getElementById(const std::string& id) const;
     LayoutObject* getResourcesById(const std::string& id) const;
@@ -351,7 +358,7 @@ public:
     bool hasReference(const Element* element) const;
 
 private:
-    const TreeBuilder* m_builder;
+    const Document* m_document;
     LayoutSymbol* m_root;
     std::map<std::string, LayoutObject*> m_resourcesCache;
     std::set<const Element*> m_references;

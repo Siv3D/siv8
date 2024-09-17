@@ -5,6 +5,7 @@
 #include <list>
 
 #include "property.h"
+#include "lunasvg.h"
 
 namespace lunasvg {
 
@@ -16,6 +17,7 @@ enum class ElementID {
     Defs,
     Ellipse,
     G,
+    Image,
     Line,
     LinearGradient,
     Marker,
@@ -31,6 +33,8 @@ enum class ElementID {
     Style,
     Svg,
     Symbol,
+    Text,
+    TSpan,
     Use
 };
 
@@ -104,6 +108,10 @@ enum class PropertyID {
     Y2
 };
 
+ElementID elementid(const std::string& name);
+PropertyID csspropertyid(const std::string& name);
+PropertyID propertyid(const std::string& name);
+
 struct Property {
     int specificity;
     PropertyID id;
@@ -118,8 +126,9 @@ inline std::unique_ptr<T> makeUnique(Args&&... args)
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
-class LayoutContext;
+class LayoutObject;
 class LayoutContainer;
+class LayoutContext;
 class Element;
 
 class Node {
@@ -130,47 +139,64 @@ public:
     virtual bool isText() const { return false; }
     virtual bool isPaint() const { return false; }
     virtual bool isGeometry() const { return false; }
-    virtual void layout(LayoutContext*, LayoutContainer*) const;
+    virtual void layout(LayoutContext*, LayoutContainer*) {}
     virtual std::unique_ptr<Node> clone() const = 0;
 
-public:
-    Element* parent = nullptr;
+    void setParent(Element* parent) { m_parent = parent; }
+    Element* parent() const { return m_parent; }
+
+    LayoutObject* box() const { return m_box; }
+    void setBox(LayoutObject* box) { m_box = box; }
+
+private:
+    Element* m_parent = nullptr;
+    LayoutObject* m_box = nullptr;
 };
 
-class TextNode : public Node {
+class TextNode final : public Node {
 public:
     TextNode() = default;
 
-    bool isText() const { return true; }
-    std::unique_ptr<Node> clone() const;
+    bool isText() const final { return true; }
+    std::unique_ptr<Node> clone() const final;
 
-public:
-    std::string text;
+    void setText(std::string text) { m_text = std::move(text); }
+    const std::string& text() const { return m_text; }
+
+private:
+    std::string m_text;
 };
 
 using NodeList = std::list<std::unique_ptr<Node>>;
 
 class Element : public Node {
 public:
-    Element(ElementID id);
+    static std::unique_ptr<Element> create(ElementID id);
 
     void set(PropertyID id, const std::string& value, int specificity);
     const std::string& get(PropertyID id) const;
     const std::string& find(PropertyID id) const;
     bool has(PropertyID id) const;
 
+    const PropertyList& properties() const { return m_properties; }
+    void setPropertyList(PropertyList properties) { m_properties = std::move(properties); }
+
     Element* previousElement() const;
     Element* nextElement() const;
     Node* addChild(std::unique_ptr<Node> child);
-    void layoutChildren(LayoutContext* context, LayoutContainer* current) const;
+    void layoutChildren(LayoutContext* context, LayoutContainer* current);
     Rect currentViewport() const;
+
+    ElementID id() const { return m_id; }
+    const NodeList& children() const { return m_children; }
+
+    virtual void build(const Document* document);
 
     template<typename T>
     void transverse(T callback) {
         if(!callback(this))
             return;
-
-        for(auto& child : children) {
+        for(auto& child : m_children) {
             if(child->isText()) {
                 if(!callback(child.get()))
                     return;
@@ -182,19 +208,13 @@ public:
         }
     }
 
-    template<typename T>
-    std::unique_ptr<T> cloneElement() const {
-        auto element = makeUnique<T>();
-        element->properties = properties;
-        for(auto& child : children)
-            element->addChild(child->clone());
-        return element;
-    }
+    std::unique_ptr<Node> clone() const final;
 
-public:
-    ElementID id;
-    NodeList children;
-    PropertyList properties;
+protected:
+    Element(ElementID id);
+    ElementID m_id;
+    NodeList m_children;
+    PropertyList m_properties;
 };
 
 } // namespace lunasvg

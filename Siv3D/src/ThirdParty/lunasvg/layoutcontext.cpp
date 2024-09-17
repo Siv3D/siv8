@@ -11,30 +11,14 @@
 
 namespace lunasvg {
 
-LayoutObject::LayoutObject(LayoutId id)
-    : id(id)
+LayoutObject::LayoutObject(Node* node, LayoutId id)
+    : m_node(node), m_id(id)
 {
+    node->setBox(this);
 }
 
-LayoutObject::~LayoutObject()
-{
-}
-
-void LayoutObject::render(RenderState&) const
-{
-}
-
-void LayoutObject::apply(RenderState&) const
-{
-}
-
-Rect LayoutObject::map(const Rect&) const
-{
-    return Rect::Invalid;
-}
-
-LayoutContainer::LayoutContainer(LayoutId id)
-    : LayoutObject(id)
+LayoutContainer::LayoutContainer(Node* node, LayoutId id)
+    : LayoutObject(node, id)
 {
 }
 
@@ -42,8 +26,7 @@ const Rect& LayoutContainer::fillBoundingBox() const
 {
     if(m_fillBoundingBox.valid())
         return m_fillBoundingBox;
-
-    for(const auto& child : children) {
+    for(const auto& child : m_children) {
         if(child->isHidden())
             continue;
         m_fillBoundingBox.unite(child->map(child->fillBoundingBox()));
@@ -56,8 +39,7 @@ const Rect& LayoutContainer::strokeBoundingBox() const
 {
     if(m_strokeBoundingBox.valid())
         return m_strokeBoundingBox;
-
-    for(const auto& child : children) {
+    for(const auto& child : m_children) {
         if(child->isHidden())
             continue;
         m_strokeBoundingBox.unite(child->map(child->strokeBoundingBox()));
@@ -68,33 +50,33 @@ const Rect& LayoutContainer::strokeBoundingBox() const
 
 LayoutObject* LayoutContainer::addChild(std::unique_ptr<LayoutObject> child)
 {
-    children.push_back(std::move(child));
-    return &*children.back();
+    m_children.push_back(std::move(child));
+    return &*m_children.back();
 }
 
 LayoutObject* LayoutContainer::addChildIfNotEmpty(std::unique_ptr<LayoutContainer> child)
 {
-    if(child->children.empty())
+    if(child->children().empty())
         return nullptr;
     return addChild(std::move(child));
 }
 
 void LayoutContainer::renderChildren(RenderState& state) const
 {
-    for(const auto& child : children) {
+    for(const auto& child : m_children) {
         child->render(state);
     }
 }
 
-LayoutClipPath::LayoutClipPath()
-    : LayoutContainer(LayoutId::ClipPath)
+LayoutClipPath::LayoutClipPath(Node* node)
+    : LayoutContainer(node, LayoutId::ClipPath)
 {
 }
 
 void LayoutClipPath::apply(RenderState& state) const
 {
     RenderState newState(this, RenderMode::Clipping);
-    newState.canvas = Canvas::create(state.canvas->box());
+    newState.canvas = Canvas::create(state.canvas->rect());
     newState.transform = transform * state.transform;
     if(units == Units::ObjectBoundingBox) {
         const auto& box = state.objectBoundingBox();
@@ -107,8 +89,8 @@ void LayoutClipPath::apply(RenderState& state) const
     state.canvas->blend(newState.canvas.get(), BlendMode::Dst_In, 1.0);
 }
 
-LayoutMask::LayoutMask()
-    : LayoutContainer(LayoutId::Mask)
+LayoutMask::LayoutMask(Node* node)
+    : LayoutContainer(node, LayoutId::Mask)
 {
 }
 
@@ -124,7 +106,7 @@ void LayoutMask::apply(RenderState& state) const
     }
 
     RenderState newState(this, state.mode());
-    newState.canvas = Canvas::create(state.canvas->box());
+    newState.canvas = Canvas::create(state.canvas->rect());
     newState.transform = state.transform;
     if(contentUnits == Units::ObjectBoundingBox) {
         const auto& box = state.objectBoundingBox();
@@ -140,8 +122,8 @@ void LayoutMask::apply(RenderState& state) const
     state.canvas->blend(newState.canvas.get(), BlendMode::Dst_In, opacity);
 }
 
-LayoutSymbol::LayoutSymbol()
-    : LayoutContainer(LayoutId::Symbol)
+LayoutSymbol::LayoutSymbol(Node* node)
+    : LayoutContainer(node, LayoutId::Symbol)
 {
 }
 
@@ -155,13 +137,8 @@ void LayoutSymbol::render(RenderState& state) const
     newState.endGroup(state, info);
 }
 
-Rect LayoutSymbol::map(const Rect& rect) const
-{
-    return transform.map(rect);
-}
-
-LayoutGroup::LayoutGroup()
-    : LayoutContainer(LayoutId::Group)
+LayoutGroup::LayoutGroup(Node* node)
+    : LayoutContainer(node, LayoutId::Group)
 {
 }
 
@@ -175,36 +152,29 @@ void LayoutGroup::render(RenderState& state) const
     newState.endGroup(state, info);
 }
 
-Rect LayoutGroup::map(const Rect& rect) const
-{
-    return transform.map(rect);
-}
-
-LayoutMarker::LayoutMarker()
-    : LayoutContainer(LayoutId::Marker)
+LayoutMarker::LayoutMarker(Node* node)
+    : LayoutContainer(node, LayoutId::Marker)
 {
 }
 
 Transform LayoutMarker::markerTransform(const Point& origin, double angle, double strokeWidth) const
 {
-    auto transform = Transform::translated(origin.x, origin.y);
+    auto markerTransformation = Transform::translated(origin.x, origin.y);
     if(orient.type() == MarkerOrient::Auto)
-        transform.rotate(angle);
+        markerTransformation.rotate(angle);
     else
-        transform.rotate(orient.value());
+        markerTransformation.rotate(orient.value());
 
     if(units == MarkerUnits::StrokeWidth)
-        transform.scale(strokeWidth, strokeWidth);
+        markerTransformation.scale(strokeWidth, strokeWidth);
 
-    transform.translate(-refX, -refY);
-    return transform;
+    markerTransformation.translate(-refX, -refY);
+    return markerTransformation;
 }
 
 Rect LayoutMarker::markerBoundingBox(const Point& origin, double angle, double strokeWidth) const
 {
-    auto box = transform.map(strokeBoundingBox());
-    auto transform = markerTransform(origin, angle, strokeWidth);
-    return transform.map(box);
+    return markerTransform(origin, angle, strokeWidth).map(transform.map(strokeBoundingBox()));
 }
 
 void LayoutMarker::renderMarker(RenderState& state, const Point& origin, double angle, double strokeWidth) const
@@ -217,8 +187,8 @@ void LayoutMarker::renderMarker(RenderState& state, const Point& origin, double 
     newState.endGroup(state, info);
 }
 
-LayoutPattern::LayoutPattern()
-    : LayoutContainer(LayoutId::Pattern)
+LayoutPattern::LayoutPattern(Node* node)
+    : LayoutContainer(node, LayoutId::Pattern)
 {
 }
 
@@ -237,11 +207,8 @@ void LayoutPattern::apply(RenderState& state) const
     auto scalex = std::sqrt(ctm.m00 * ctm.m00 + ctm.m01 * ctm.m01);
     auto scaley = std::sqrt(ctm.m10 * ctm.m10 + ctm.m11 * ctm.m11);
 
-    auto width = rect.w * scalex;
-    auto height = rect.h * scaley;
-
     RenderState newState(this, RenderMode::Display);
-    newState.canvas = Canvas::create(0, 0, width, height);
+    newState.canvas = Canvas::create(0, 0, rect.w * scalex, rect.h * scaley);
     newState.transform = Transform::scaled(scalex, scaley);
 
     if(viewBox.valid()) {
@@ -252,53 +219,53 @@ void LayoutPattern::apply(RenderState& state) const
         newState.transform.scale(box.w, box.h);
     }
 
-    auto transform = this->transform;
-    transform.translate(rect.x, rect.y);
-    transform.scale(1.0/scalex, 1.0/scaley);
+    auto patternTransform = this->transform;
+    patternTransform.translate(rect.x, rect.y);
+    patternTransform.scale(1.0/scalex, 1.0/scaley);
 
     renderChildren(newState);
-    state.canvas->setTexture(newState.canvas.get(), TextureType::Tiled, transform);
+    state.canvas->setTexture(newState.canvas.get(), TextureType::Tiled, patternTransform);
 }
 
-LayoutGradient::LayoutGradient(LayoutId id)
-    : LayoutObject(id)
+LayoutGradient::LayoutGradient(Node* node, LayoutId id)
+    : LayoutObject(node, id)
 {
 }
 
-LayoutLinearGradient::LayoutLinearGradient()
-    : LayoutGradient(LayoutId::LinearGradient)
+LayoutLinearGradient::LayoutLinearGradient(Node* node)
+    : LayoutGradient(node, LayoutId::LinearGradient)
 {
 }
 
 void LayoutLinearGradient::apply(RenderState& state) const
 {
-    auto transform = this->transform;
+    auto gradientTransform = this->transform;
     if(units == Units::ObjectBoundingBox) {
         const auto& box = state.objectBoundingBox();
-        transform *= Transform(box.w, 0, 0, box.h, box.x, box.y);
+        gradientTransform *= Transform(box.w, 0, 0, box.h, box.x, box.y);
     }
 
-    state.canvas->setLinearGradient(x1, y1, x2, y2, stops, spreadMethod, transform);
+    state.canvas->setLinearGradient(x1, y1, x2, y2, stops, spreadMethod, gradientTransform);
 }
 
-LayoutRadialGradient::LayoutRadialGradient()
-    : LayoutGradient(LayoutId::RadialGradient)
+LayoutRadialGradient::LayoutRadialGradient(Node* node)
+    : LayoutGradient(node, LayoutId::RadialGradient)
 {
 }
 
 void LayoutRadialGradient::apply(RenderState& state) const
 {
-    auto transform = this->transform;
+    auto gradientTransform = this->transform;
     if(units == Units::ObjectBoundingBox) {
         const auto& box = state.objectBoundingBox();
-        transform *= Transform(box.w, 0, 0, box.h, box.x, box.y);
+        gradientTransform *= Transform(box.w, 0, 0, box.h, box.x, box.y);
     }
 
-    state.canvas->setRadialGradient(cx, cy, r, fx, fy, stops, spreadMethod, transform);
+    state.canvas->setRadialGradient(cx, cy, r, fx, fy, stops, spreadMethod, gradientTransform);
 }
 
-LayoutSolidColor::LayoutSolidColor()
-    : LayoutObject(LayoutId::SolidColor)
+LayoutSolidColor::LayoutSolidColor(Node* node)
+    : LayoutObject(node, LayoutId::SolidColor)
 {
 }
 
@@ -379,8 +346,8 @@ void MarkerData::inflate(Rect& box) const
     }
 }
 
-LayoutShape::LayoutShape()
-    : LayoutObject(LayoutId::Shape)
+LayoutShape::LayoutShape(Node* node)
+    : LayoutObject(node, LayoutId::Shape)
 {
 }
 
@@ -404,11 +371,6 @@ void LayoutShape::render(RenderState& state) const
     }
 
     newState.endGroup(state, info);
-}
-
-Rect LayoutShape::map(const Rect& rect) const
-{
-    return transform.map(rect);
 }
 
 const Rect& LayoutShape::fillBoundingBox() const
@@ -446,7 +408,7 @@ void RenderState::beginGroup(RenderState& state, const BlendInfo& info)
 
     auto box = transform.map(m_object->strokeBoundingBox());
     box.intersect(transform.map(info.clip));
-    box.intersect(state.canvas->box());
+    box.intersect(state.canvas->rect());
     canvas = Canvas::create(box);
 }
 
@@ -467,14 +429,17 @@ void RenderState::endGroup(RenderState& state, const BlendInfo& info)
     state.canvas->blend(canvas.get(), BlendMode::Src_Over, m_mode == RenderMode::Display ? info.opacity : 1.0);
 }
 
-LayoutContext::LayoutContext(const TreeBuilder* builder, LayoutSymbol* root)
-    : m_builder(builder), m_root(root)
+LayoutContext::LayoutContext(const Document* document, LayoutSymbol* root)
+    : m_document(document), m_root(root)
 {
 }
 
 Element* LayoutContext::getElementById(const std::string& id) const
 {
-    return m_builder->getElementById(id);
+    auto element = m_document->getElementById(id);
+    if(element.isNull())
+        return nullptr;
+    return element.get();
 }
 
 LayoutObject* LayoutContext::getResourcesById(const std::string& id) const
@@ -500,11 +465,11 @@ LayoutMask* LayoutContext::getMasker(const std::string& id)
         return nullptr;
 
     auto ref = getResourcesById(id);
-    if(ref && ref->id == LayoutId::Mask)
+    if(ref && ref->id() == LayoutId::Mask)
         return static_cast<LayoutMask*>(ref);
 
     auto element = getElementById(id);
-    if(element == nullptr || element->id != ElementID::Mask)
+    if(element == nullptr || element->id() != ElementID::Mask)
         return nullptr;
 
     auto masker = static_cast<MaskElement*>(element)->getMasker(this);
@@ -517,11 +482,11 @@ LayoutClipPath* LayoutContext::getClipper(const std::string& id)
         return nullptr;
 
     auto ref = getResourcesById(id);
-    if(ref && ref->id == LayoutId::ClipPath)
+    if(ref && ref->id() == LayoutId::ClipPath)
         return static_cast<LayoutClipPath*>(ref);
 
     auto element = getElementById(id);
-    if(element == nullptr || element->id != ElementID::ClipPath)
+    if(element == nullptr || element->id() != ElementID::ClipPath)
         return nullptr;
 
     auto clipper = static_cast<ClipPathElement*>(element)->getClipper(this);
@@ -534,11 +499,11 @@ LayoutMarker* LayoutContext::getMarker(const std::string& id)
         return nullptr;
 
     auto ref = getResourcesById(id);
-    if(ref && ref->id == LayoutId::Marker)
+    if(ref && ref->id() == LayoutId::Marker)
         return static_cast<LayoutMarker*>(ref);
 
     auto element = getElementById(id);
-    if(element == nullptr || element->id != ElementID::Marker)
+    if(element == nullptr || element->id() != ElementID::Marker)
         return nullptr;
 
     auto marker = static_cast<MarkerElement*>(element)->getMarker(this);

@@ -45,7 +45,7 @@ Units MaskElement::maskContentUnits() const
     return Parser::parseUnits(value, Units::UserSpaceOnUse);
 }
 
-std::unique_ptr<LayoutMask> MaskElement::getMasker(LayoutContext* context) const
+std::unique_ptr<LayoutMask> MaskElement::getMasker(LayoutContext* context)
 {
     auto w = this->width();
     auto h = this->height();
@@ -53,7 +53,7 @@ std::unique_ptr<LayoutMask> MaskElement::getMasker(LayoutContext* context) const
         return nullptr;
 
     LayoutBreaker layoutBreaker(context, this);
-    auto masker = makeUnique<LayoutMask>();
+    auto masker = makeUnique<LayoutMask>(this);
     masker->units = maskUnits();
     masker->contentUnits = maskContentUnits();
     masker->opacity = opacity();
@@ -67,11 +67,6 @@ std::unique_ptr<LayoutMask> MaskElement::getMasker(LayoutContext* context) const
     masker->height = lengthContext.valueForLength(h, LengthMode::Height);
     layoutChildren(context, masker.get());
     return masker;
-}
-
-std::unique_ptr<Node> MaskElement::clone() const
-{
-    return cloneElement<MaskElement>();
 }
 
 } // namespace lunasvg

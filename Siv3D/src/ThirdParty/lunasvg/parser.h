@@ -56,7 +56,7 @@ private:
     static bool parseLength(const char*& ptr, const char* end, double& value, LengthUnits& units, LengthNegativeValuesMode mode);
     static bool parseNumberList(const char*& ptr, const char* end, double* values, int count);
     static bool parseArcFlag(const char*& ptr, const char* end, bool& flag);
-    static bool parseColorComponent(const char*& ptr, const char* end, int& component);
+    static bool parseColorComponent(const char*& ptr, const char* end, uint8_t& component);
     static bool parseUrlFragment(const char*& ptr, const char* end, std::string& ref);
     static bool parseTransform(const char*& ptr, const char* end, TransformType& type, double* values, int& count);
 };
@@ -146,7 +146,6 @@ private:
     static bool matchAttributeSelector(const AttributeSelector& selector, const Element* element);
     static bool matchPseudoClassSelector(const PseudoClassSelector& selector, const Element* element);
 
-private:
     Selector m_selector;
     DeclarationList m_declarations;
     uint32_t m_specificity;
@@ -174,27 +173,8 @@ private:
     static bool parseSelector(const char*& ptr, const char* end, Selector& selector);
     static bool parseSimpleSelector(const char*& ptr, const char* end, SimpleSelector& simpleSelector);
 
-private:
     std::multiset<RuleData> m_rules;
     uint32_t m_position{0};
-};
-
-class LayoutSymbol;
-
-class TreeBuilder {
-public:
-    TreeBuilder();
-    ~TreeBuilder();
-
-    bool parse(const char* data, std::size_t size);
-
-    SVGElement* rootElement() const { return m_rootElement.get(); }
-    Element* getElementById(const std::string& id) const;
-    std::unique_ptr<LayoutSymbol> build() const;
-
-private:
-    std::unique_ptr<SVGElement> m_rootElement;
-    std::map<std::string, Element*> m_idCache;
 };
 
 } // namespace lunasvg

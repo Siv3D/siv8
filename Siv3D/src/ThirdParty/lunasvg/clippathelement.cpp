@@ -15,23 +15,17 @@ Units ClipPathElement::clipPathUnits() const
     return Parser::parseUnits(value, Units::UserSpaceOnUse);
 }
 
-std::unique_ptr<LayoutClipPath> ClipPathElement::getClipper(LayoutContext* context) const
+std::unique_ptr<LayoutClipPath> ClipPathElement::getClipper(LayoutContext* context)
 {
     if(context->hasReference(this))
         return nullptr;
-
     LayoutBreaker layoutBreaker(context, this);
-    auto clipper = makeUnique<LayoutClipPath>();
+    auto clipper = makeUnique<LayoutClipPath>(this);
     clipper->units = clipPathUnits();
     clipper->transform = transform();
     clipper->clipper = context->getClipper(clip_path());
     layoutChildren(context, clipper.get());
     return clipper;
-}
-
-std::unique_ptr<Node> ClipPathElement::clone() const
-{
-    return cloneElement<ClipPathElement>();
 }
 
 } // namespace lunasvg
