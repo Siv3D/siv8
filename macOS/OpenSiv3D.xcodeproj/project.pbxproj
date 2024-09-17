@@ -2206,6 +2206,7 @@
 		F9D41CE32C9972D800290998 /* SivGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41CE12C9972D800290998 /* SivGrid.cpp */; };
 		F9D41CE52C9972EC00290998 /* Choice.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41CE42C9972EC00290998 /* Choice.ipp */; };
 		F9D41CE72C99730500290998 /* Choice.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41CE62C99730500290998 /* Choice.hpp */; };
+		F9D41CEA2C997E8D00290998 /* compare.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D41CE82C997E8D00290998 /* compare.h */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -4585,6 +4586,7 @@
 		F9D41CE12C9972D800290998 /* SivGrid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivGrid.cpp; sourceTree = "<group>"; };
 		F9D41CE42C9972EC00290998 /* Choice.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Choice.ipp; sourceTree = "<group>"; };
 		F9D41CE62C99730500290998 /* Choice.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Choice.hpp; sourceTree = "<group>"; };
+		F9D41CE82C997E8D00290998 /* compare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compare.h; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -4921,6 +4923,7 @@
 				F90703F62B9DAEC900383E4D /* meta */,
 				F90703FD2B9DAEC900383E4D /* numeric */,
 				F90704122B9DAEC900383E4D /* random */,
+				F9D41CE92C997E8D00290998 /* types */,
 				F90704142B9DAEC900383E4D /* utility */,
 			);
 			path = absl;
@@ -9651,6 +9654,14 @@
 			path = Grid;
 			sourceTree = "<group>";
 		};
+		F9D41CE92C997E8D00290998 /* types */ = {
+			isa = PBXGroup;
+			children = (
+				F9D41CE82C997E8D00290998 /* compare.h */,
+			);
+			path = types;
+			sourceTree = "<group>";
+		};
 		F9E5FC172BC12C340081A4F7 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -10063,6 +10074,7 @@
 				F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */,
 				F986FA6F2BCFB53B006A4C0F /* t1types.h in Headers */,
 				F98605DB2BE50001006A4C0F /* InputState.hpp in Headers */,
+				F9D41CEA2C997E8D00290998 /* compare.h in Headers */,
 				F986FA9C2BCFB53B006A4C0F /* t1tables.h in Headers */,
 				F9E7942B2C12B861002615BA /* Easing.hpp in Headers */,
 				F98601C82BCFBB53006A4C0F /* SkGlyph.h in Headers */,
