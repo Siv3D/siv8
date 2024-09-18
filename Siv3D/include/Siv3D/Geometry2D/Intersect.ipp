@@ -199,5 +199,53 @@ namespace s3d
 		{
 			return Intersect(b, a);
 		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(Rect, _)
+		//
+		//////////////////////////////////////////////////
+
+		constexpr bool Intersect(const Rect& a, const Point& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		constexpr bool Intersect(const Rect& a, const Vec2& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(RectF, _)
+		//
+		//////////////////////////////////////////////////
+
+		constexpr bool Intersect(const RectF& a, const Point& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		constexpr bool Intersect(const RectF& a, const Vec2& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(Circle, _)
+		//
+		//////////////////////////////////////////////////
+
+		constexpr bool Intersect(const Circle& a, const Point& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		constexpr bool Intersect(const Circle& a, const Vec2& b) noexcept
+		{
+			return Intersect(b, a);
+		}
 	}
 }

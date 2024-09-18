@@ -82,19 +82,87 @@ namespace s3d
 
 	const RoundRect& RoundRect::draw(const ColorF& color) const
 	{
-		SIV3D_ENGINE(Renderer2D)->addRoundRect(
-			FloatRect{ x, y, (x + w), (y + h) },
-			static_cast<float>(w),
-			static_cast<float>(h),
-			static_cast<float>(r),
-			color.toFloat4()
-		);
+		if (r == 0.0)
+		{
+			rect.draw(color);
+		}
+		else
+		{
+			const double radius = Min(Abs(rect.w * 0.5), Abs(rect.h * 0.5), Abs(r));
+
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(
+				FloatRect{ x, y, (x + w), (y + h) },
+				static_cast<float>(radius),
+				color.toFloat4()
+			);
+		}
 
 		return *this;
 	}
 
+	const RoundRect& RoundRect::draw(const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		if (r == 0.0)
+		{
+			rect.draw(topColor, bottomColor);
+		}
+		else
+		{
+			const double radius = Min(Abs(rect.w * 0.5), Abs(rect.h * 0.5), Abs(r));
+			
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(
+				FloatRect{ x, y, (x + w), (y + h) },
+				static_cast<float>(radius),
+				topColor->toFloat4(),
+				bottomColor->toFloat4(),
+				ColorFillDirection::TopBottom
+			);
+		}
 
+		return *this;
+	}
 
+	const RoundRect& RoundRect::draw(const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		if (r == 0.0)
+		{
+			rect.draw(leftColor, rightColor);
+		}
+		else
+		{
+			const double radius = Min(Abs(rect.w * 0.5), Abs(rect.h * 0.5), Abs(r));
+
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(
+				FloatRect{ x, y, (x + w), (y + h) },
+				static_cast<float>(radius),
+				leftColor->toFloat4(),
+				rightColor->toFloat4(),
+				ColorFillDirection::LeftRight
+			);
+		}
+
+		return *this;
+	}
+
+	const RoundRect& RoundRect::draw(const PatternParameters& pattern) const
+	{
+		if (r == 0.0)
+		{
+			rect.draw(pattern);
+		}
+		else
+		{
+			const double radius = Min(Abs(rect.w * 0.5), Abs(rect.h * 0.5), Abs(r));
+
+			SIV3D_ENGINE(Renderer2D)->addRoundRect(
+				FloatRect{ x, y, (x + w), (y + h) },
+				static_cast<float>(radius),
+				pattern
+			);
+		}
+
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

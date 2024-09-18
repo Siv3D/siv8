@@ -27,10 +27,78 @@ namespace s3d
 		{
 			return (Abs(x) < 1e-10);
 		}
+
+		struct RoundRectParts
+		{
+			RectF boundingRect;
+			RectF rectA;
+			RectF rectB;
+			Circle circleTL;
+			Circle circleTR;
+			Circle circleBR;
+			Circle circleBL;
+
+			RoundRectParts(const RoundRect& roundRect) noexcept
+			{
+				const RectF& rect = roundRect.rect;
+				const double rr = Min({ (rect.w * 0.5), (rect.h * 0.5), roundRect.r });
+				const double x0 = rect.x;
+				const double x1 = rect.x + rr;
+				const double x2 = rect.x + rect.w - rr;
+				const double y0 = rect.y;
+				const double y1 = rect.y + rr;
+				const double y2 = rect.y + rect.h - rr;
+				boundingRect = roundRect.rect;
+				rectA.set(x0, y1, rect.w, y2 - y1);
+				rectB.set(x1, y0, x2 - x1, rect.h);
+				circleTL.set(x1, y1, rr);
+				circleTR.set(x2, y1, rr);
+				circleBR.set(x2, y2, rr);
+				circleBL.set(x1, y2, rr);
+			}
+
+			template <class Shape>
+			bool intersects(const Shape& shape) const noexcept
+			{
+				if (not boundingRect.intersects(shape))
+				{
+					return false;
+				}
+
+				return (rectA.intersects(shape)
+						|| rectB.intersects(shape)
+						|| circleTL.intersects(shape)
+						|| circleTR.intersects(shape)
+						|| circleBR.intersects(shape)
+						|| circleBL.intersects(shape));
+			}
+		};
 	}
 
 	namespace Geometry2D
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersect(Point, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersect(const Point& a, const RoundRect& b) noexcept
+		{
+			return Intersect(Vec2{ a }, b);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersect(Vec2, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersect(const Vec2& a, const RoundRect& b) noexcept
+		{
+			return RoundRectParts{ b }.intersects(a);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Line, _)
@@ -230,6 +298,39 @@ namespace s3d
 				 || Intersect(a, Line{ b.p1, b.p2 })
 				 || Intersect(a, Line{ b.p2, b.p3 })
 				 || Intersect(a, Line{ b.p3, b.p0 }));
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(Rect, _)
+		//
+		//////////////////////////////////////////////////
+
+		bool Intersect(const Rect& a, const Line& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(RectF, _)
+		//
+		//////////////////////////////////////////////////
+
+		bool Intersect(const RectF& a, const Line& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(Circle, _)
+		//
+		//////////////////////////////////////////////////
+
+		bool Intersect(const Circle& a, const Line& b) noexcept
+		{
+			return Intersect(b, a);
 		}
 	}
 }

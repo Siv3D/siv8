@@ -755,9 +755,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const float w, const float h, const float r, const Float4& color)
+	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const float r, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, w, h, r, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, color, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -769,6 +769,44 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.psShape);
 			}
 			
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const float r, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, colorType, color0, color1, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addRoundRect(const FloatRect& rect, const float r, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, r, pattern.primaryColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
 			m_commandManager.pushDraw(indexCount);
 		}
 	}
