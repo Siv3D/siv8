@@ -943,6 +943,9 @@
     <Filter Include="src\Siv3D\Ellipse">
       <UniqueIdentifier>{3d9a2c47-2649-4506-a977-e7a9eb32a12c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\RoundRect">
+      <UniqueIdentifier>{ef08fcbc-4f34-419a-82df-139d397d0e72}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -6013,6 +6016,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Ellipse\SivEllipse.cpp">
       <Filter>src\Siv3D\Ellipse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RoundRect\SivRoundRect.cpp">
+      <Filter>src\Siv3D\RoundRect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

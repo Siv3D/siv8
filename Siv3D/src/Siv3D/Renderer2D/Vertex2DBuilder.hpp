@@ -73,5 +73,11 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4(&colors)[4]);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, float w, float h, float r, const Float4& color, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, float w, float h, float r, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 	}
 }

@@ -94,5 +94,98 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr RoundRect(const RectF& _rect, Concept::Arithmetic auto _r) noexcept;
+
+
+
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	leftClicked, leftPressed, leftReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸長方形が現在のフレームで左クリックされ始めたかを返します。
+		/// @return 角丸長方形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
+
+		/// @brief 角丸長方形が左クリックされているかを返します。
+		/// @return 角丸長方形が左クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
+
+		/// @brief 現在のフレームで角丸長方形への左クリックが離されたかを返します。
+		/// @return 現在のフレームで角丸長方形への左クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rightClicked, rightPressed, rightReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸長方形が現在のフレームで右クリックされ始めたかを返します。
+		/// @return 角丸長方形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
+
+		/// @brief 角丸長方形が右クリックされているかを返します。
+		/// @return 角丸長方形が右クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
+
+		/// @brief 現在のフレームで角丸長方形への右クリックが離されたかを返します。
+		/// @return 現在のフレームで角丸長方形への右クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mouseOver
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸長方形上にマウスカーソルがあるかを返します。
+		/// @return 角丸長方形上にマウスカーソルがある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
+
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
+
+		const RoundRect& draw(const ColorF& color = Palette::White) const;
+
+		const RoundRect& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		const RoundRect& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		const RoundRect& draw(const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		const RoundRect& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		const RoundRect& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		const RoundRect& drawFrame(double thickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		const RoundRect& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+
+		const RoundRect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		const RoundRect& drawFrame(double thickness, const PatternParameters& pattern) const;
+
+		const RoundRect& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 	};
 }

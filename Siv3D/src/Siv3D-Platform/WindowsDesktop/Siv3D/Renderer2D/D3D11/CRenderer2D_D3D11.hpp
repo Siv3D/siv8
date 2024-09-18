@@ -84,6 +84,8 @@ namespace s3d
 
 		void addQuad(const FloatQuad& quad, const PatternParameters& pattern) override;
 
+		void addRoundRect(const FloatRect& rect, float w, float h, float r, const Float4& color) override;
+
 		void flush() override;
 
 

@@ -1286,5 +1286,10 @@ namespace s3d
 
 			return IndexCount;
 		}
+
+		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float w, const float h, const float r, const Float4& color, const float scale)
+		{
+			return(0);
+		}
 	}
 }
