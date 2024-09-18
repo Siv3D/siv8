@@ -83,9 +83,9 @@ namespace s3d
 
 		virtual void addEllipse(const Float2& center, float a, float b, const PatternParameters& pattern) = 0;
 
-		//virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+		virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
 
-		//virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) = 0;
+		virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) = 0;
 
 		virtual void addQuad(const FloatQuad& quad, const Float4& color) = 0;
 

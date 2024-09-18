@@ -66,6 +66,9 @@ namespace s3d
 		Vertex2D::IndexType BuildEllipse(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor, float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4 color);
 
 		[[nodiscard]]

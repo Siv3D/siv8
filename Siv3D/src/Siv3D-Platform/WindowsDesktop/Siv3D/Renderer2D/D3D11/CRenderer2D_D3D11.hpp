@@ -63,7 +63,7 @@ namespace s3d
 		void addCirclePie(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) override;
 
 		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
-		
+
 		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) override;
 
 		void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const Float4& color) override;
@@ -73,6 +73,10 @@ namespace s3d
 		void addEllipse(const Float2& center, float a, float b, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
 
 		void addEllipse(const Float2& center, float a, float b, const PatternParameters& pattern) override;
+
+		void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor) override;
+
+		void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) override;
 
 		void addQuad(const FloatQuad& quad, const Float4& color) override;
 
@@ -130,15 +134,15 @@ namespace s3d
 
 	private:
 
-		CRenderer_D3D11* m_pRenderer	= nullptr;
-		
-		CShader_D3D11* m_pShader		= nullptr;
-		
+		CRenderer_D3D11* m_pRenderer = nullptr;
+
+		CShader_D3D11* m_pShader = nullptr;
+
 		//CTexture_D3D11* m_pTexture	= nullptr;
 
-		ID3D11Device* m_device			= nullptr;
+		ID3D11Device* m_device = nullptr;
 
-		ID3D11DeviceContext* m_context	= nullptr;
+		ID3D11DeviceContext* m_context = nullptr;
 
 		ComPtr<ID3D11InputLayout> m_inputLayout;
 
@@ -184,7 +188,7 @@ namespace s3d
 			Optional<VertexShader> vs;
 
 			Optional<PixelShader> ps;
-		
+
 		} m_currentCustomShader;
 
 		ConstantBuffer<VSConstants2D> m_vsConstants;

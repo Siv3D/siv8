@@ -1038,6 +1038,203 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildEllipse
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildEllipse(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			const float majorAxis = Max(a, b);
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(majorAxis * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType FullQuality = (Quality * 4);
+			const Vertex2D::IndexType VertexCount = (FullQuality + 1);
+			const Vertex2D::IndexType IndexCount = (FullQuality * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+			pVertex[0].pos.set(centerX, centerY);
+
+			const Float4 colorDiff = (color1 - color0);
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			Vertex2D* pDst0 = &pVertex[1];
+			Vertex2D* pDst1 = (pDst0 + Quality);
+			Vertex2D* pDst2 = (pDst1 + Quality);
+			Vertex2D* pDst3 = (pDst2 + Quality);
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float xa = (cs->x * a);
+				const float xb = (cs->x * b);
+				const float ya = (cs->y * a);
+				const float yb = (cs->y * b);
+
+				if (colorType == ColorFillDirection::InOut)
+				{
+					pDst0->set((centerX + xa), (centerY + yb), color1);
+					pDst1->set((centerX - ya), (centerY + xb), color1);
+					pDst2->set((centerX - xa), (centerY - yb), color1);
+					pDst3->set((centerX + ya), (centerY - xb), color1);
+				}
+				else if (colorType == ColorFillDirection::TopBottom)
+				{
+					const auto c0 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
+					const auto c1 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
+					const auto c2 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
+					const auto c3 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
+
+					pDst0->set((centerX + xa), (centerY + yb), c0);
+					pDst1->set((centerX - ya), (centerY + xb), c1);
+					pDst2->set((centerX - xa), (centerY - yb), c2);
+					pDst3->set((centerX + ya), (centerY - xb), c3);
+				}
+				else
+				{
+					const auto c0 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
+					const auto c1 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
+					const auto c2 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
+					const auto c3 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
+
+					pDst0->set((centerX + xa), (centerY + yb), c0);
+					pDst1->set((centerX - ya), (centerY + xb), c1);
+					pDst2->set((centerX - xa), (centerY - yb), c2);
+					pDst3->set((centerX + ya), (centerY - xb), c3);
+				}
+
+				++pDst0;
+				++pDst1;
+				++pDst2;
+				++pDst3;
+			}
+
+			// 中心の色
+			if (colorType == ColorFillDirection::InOut)
+			{
+				pVertex->color = color0;
+			}
+			else
+			{
+				pVertex->color = color0.getMidpoint(color1);
+			}
+
+			{
+				for (Vertex2D::IndexType i = 0; i < (FullQuality - 1); ++i)
+				{
+					*pIndex++ = indexOffset;
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = indexOffset + (i + 2);
+				}
+
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + FullQuality);
+				*pIndex++ = (indexOffset + 1);
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildEllipseFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float aInner, const float bInner, const float thickness, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			const float aOuter = (aInner + thickness);
+			const float bOuter = (bInner + thickness);
+			const float majorAxis = Max(aOuter, bOuter);
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(majorAxis * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType FullQuality = (Quality * 4);
+			const Vertex2D::IndexType VertexCount = (FullQuality * 2);
+			const Vertex2D::IndexType IndexCount = (FullQuality * 6);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			Vertex2D* pDst0 = &pVertex[0];
+			Vertex2D* pDst1 = (pDst0 + Quality * 2);
+			Vertex2D* pDst2 = (pDst0 + Quality * 4);
+			Vertex2D* pDst3 = (pDst0 + Quality * 6);
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float oxa = (cs->x * aOuter);
+				const float ixa = (cs->x * aInner);
+				const float oxb = (cs->x * bOuter);
+				const float ixb = (cs->x * bInner);
+				const float oya = (cs->y * aOuter);
+				const float iya = (cs->y * aInner);
+				const float oyb = (cs->y * bOuter);
+				const float iyb = (cs->y * bInner);
+
+				(pDst0++)->pos.set((centerX + oxa), (centerY + oyb));
+				(pDst0++)->pos.set((centerX + ixa), (centerY + iyb));
+
+				(pDst1++)->pos.set((centerX - oya), (centerY + oxb));
+				(pDst1++)->pos.set((centerX - iya), (centerY + ixb));
+
+				(pDst2++)->pos.set((centerX - oxa), (centerY - oyb));
+				(pDst2++)->pos.set((centerX - ixa), (centerY - iyb));
+
+				(pDst3++)->pos.set((centerX + oya), (centerY - oxb));
+				(pDst3++)->pos.set((centerX + iya), (centerY - ixb));
+
+
+				//const float ox = (cs->x * rOuter);
+				//const float ix = (cs->x * rInner);
+				//const float oy = (cs->y * rOuter);
+				//const float iy = (cs->y * rInner);
+
+				//(pDst0++)->pos.set((centerX + ox), (centerY + oy));
+				//(pDst0++)->pos.set((centerX + ix), (centerY + iy));
+
+				//(pDst1++)->pos.set((centerX - oy), (centerY + ox));
+				//(pDst1++)->pos.set((centerX - iy), (centerY + ix));
+
+				//(pDst2++)->pos.set((centerX - ox), (centerY - oy));
+				//(pDst2++)->pos.set((centerX - ix), (centerY - iy));
+
+				//(pDst3++)->pos.set((centerX + oy), (centerY - ox));
+				//(pDst3++)->pos.set((centerX + iy), (centerY - ix));
+			}
+
+			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+			{
+				(pVertex++)->color = outerColor;
+				(pVertex++)->color = innerColor;
+			}
+
+			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+			{
+				for (Vertex2D::IndexType k = 0; k < 6; ++k)
+				{
+					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
+				}
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildQuad
 		//
 		////////////////////////////////////////////////////////////////

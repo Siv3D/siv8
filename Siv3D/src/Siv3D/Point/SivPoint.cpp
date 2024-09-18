@@ -91,7 +91,7 @@ namespace s3d
 
 	const Point& Point::overwrite(Image& dst, const Color& color) const noexcept
 	{
-		if (dst.inBounds(*this))
+		if (dst.indexInBounds(*this))
 		{
 			dst[*this] = color;
 		}

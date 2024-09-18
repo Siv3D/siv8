@@ -585,6 +585,93 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addEllipse
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addEllipse(const Float2& center, const float a, const float b, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, colorType, color0, color1, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addEllipse(const Float2& center, const float a, const float b, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+			
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipseFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addEllipseFrame(const Float2& center, const float aInner, const float bInner, const float thickness, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, aInner, bInner, thickness, innerColor, outerColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addEllipseFrame(const Float2& center, const float aInner, const float bInner, const float thickness, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, aInner, bInner, thickness, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+			
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+			
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addQuad
 	//
 	////////////////////////////////////////////////////////////////

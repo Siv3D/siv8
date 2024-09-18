@@ -64,12 +64,20 @@ namespace s3d
 		void addCirclePie(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) override;
 
 		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
-		
+
 		void addCircleArc(LineCap lineCap, const Float2& center, float rInner, float startAngle, float angle, float thickness, const PatternParameters& pattern) override;
 
 		void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const Float4& color) override;
 
 		void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) override;
+
+		void addEllipse(const Float2& center, float a, float b, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addEllipse(const Float2& center, float a, float b, const PatternParameters& pattern) override;
+
+		void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor) override;
+
+		void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) override;
 
 		void addQuad(const FloatQuad& quad, const Float4& color) override;
 
