@@ -90,6 +90,12 @@ namespace s3d
 
 		void addRoundRect(const FloatRect& rect, float r, const PatternParameters& pattern) override;
 
+		void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color) override;
+
+		void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const PatternParameters& pattern) override;
+
 		void flush() override;
 
 

@@ -184,6 +184,8 @@ namespace s3d
 
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		const RoundRect& drawFrame(double innerThickness, double outerThickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
 		const RoundRect& drawFrame(double thickness, const PatternParameters& pattern) const;
 
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;

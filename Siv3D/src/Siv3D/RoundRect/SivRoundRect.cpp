@@ -21,6 +21,17 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static bool IsEmpty(const RectF& rect, const double innerThickness, const double outerThickness) noexcept
+		{
+			return ((rect.w <= 0.0) || (rect.h <= 0.0)
+				|| (innerThickness < 0.0) || (outerThickness < 0.0)
+				|| ((innerThickness == 0.0) && (outerThickness == 0.0)));
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	leftClicked, leftPressed, leftReleased
@@ -169,4 +180,144 @@ namespace s3d
 	//	drawFrame
 	//
 	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::drawFrame(const double thickness, const ColorF& color) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const RoundRect& RoundRect::drawFrame(const double thickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), topColor, bottomColor);
+	}
+
+	const RoundRect& RoundRect::drawFrame(const double thickness, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), leftColor, rightColor);
+	}
+
+	const RoundRect& RoundRect::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		if (IsEmpty(rect, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		const double radius = Abs(r);
+		const RectF outerRect = rect.stretched(outerThickness);
+		const RoundRect outerRoundRect{ outerRect, Min((radius + outerThickness), (Min(outerRect.w, outerRect.h) * 0.5)) };
+		const RectF innerRect = rect.stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			outerRoundRect.draw(color);
+			return *this;
+		}
+
+		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
+			outerRoundRect,
+			innerRoundRect,
+			color.toFloat4()
+		);
+
+		return *this;
+	}
+
+	const RoundRect& RoundRect::drawFrame(const double innerThickness, const double outerThickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		if (IsEmpty(rect, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		const double radius = Abs(r);
+		const RectF outerRect = rect.stretched(outerThickness);
+		const RoundRect outerRoundRect{ outerRect, Min((radius + outerThickness), (Min(outerRect.w, outerRect.h) * 0.5)) };
+		const RectF innerRect = rect.stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			outerRoundRect.draw(topColor, bottomColor);
+			return *this;
+		}
+
+		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
+			outerRoundRect,
+			innerRoundRect,
+			topColor->toFloat4(),
+			bottomColor->toFloat4(),
+			ColorFillDirection::TopBottom
+		);
+
+		return *this;
+	}
+
+	const RoundRect& RoundRect::drawFrame(const double innerThickness, const double outerThickness, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		if (IsEmpty(rect, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		const double radius = Abs(r);
+		const RectF outerRect = rect.stretched(outerThickness);
+		const RoundRect outerRoundRect{ outerRect, Min((radius + outerThickness), (Min(outerRect.w, outerRect.h) * 0.5)) };
+		const RectF innerRect = rect.stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			outerRoundRect.draw(leftColor, rightColor);
+			return *this;
+		}
+
+		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
+			outerRoundRect,
+			innerRoundRect,
+			leftColor->toFloat4(),
+			rightColor->toFloat4(),
+			ColorFillDirection::TopBottom
+		);
+
+		return *this;
+	}
+
+	const RoundRect& RoundRect::drawFrame(const double thickness, const PatternParameters& pattern) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), pattern);
+	}
+
+	const RoundRect& RoundRect::drawFrame(const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	{
+		if (IsEmpty(rect, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		const double radius = Abs(r);
+		const RectF outerRect = rect.stretched(outerThickness);
+		const RoundRect outerRoundRect{ outerRect, Min((radius + outerThickness), (Min(outerRect.w, outerRect.h) * 0.5)) };
+		const RectF innerRect = rect.stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			outerRoundRect.draw(pattern);
+			return *this;
+		}
+
+		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
+			outerRoundRect,
+			innerRoundRect,
+			pattern
+		);
+
+		return *this;
+	}
 }
