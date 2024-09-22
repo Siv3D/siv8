@@ -459,7 +459,6 @@
 		F9070EE12B9F1C8900383E4D /* internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EA32B9F1C8900383E4D /* internal.h */; };
 		F9070EE42B9F1C8900383E4D /* mappings.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EA62B9F1C8900383E4D /* mappings.h */; };
 		F9070EE52B9F1C8900383E4D /* monitor.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA72B9F1C8900383E4D /* monitor.c */; };
-		F9070EE62B9F1C8900383E4D /* nsgl_context.m in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA82B9F1C8900383E4D /* nsgl_context.m */; };
 		F9070EEE2B9F1C8900383E4D /* platform.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB02B9F1C8900383E4D /* platform.c */; };
 		F9070EEF2B9F1C8900383E4D /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB12B9F1C8900383E4D /* platform.h */; };
 		F9070EF02B9F1C8900383E4D /* posix_module.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB22B9F1C8900383E4D /* posix_module.c */; };
@@ -2745,7 +2744,6 @@
 		F9070EA32B9F1C8900383E4D /* internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = internal.h; sourceTree = "<group>"; };
 		F9070EA62B9F1C8900383E4D /* mappings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mappings.h; sourceTree = "<group>"; };
 		F9070EA72B9F1C8900383E4D /* monitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = monitor.c; sourceTree = "<group>"; };
-		F9070EA82B9F1C8900383E4D /* nsgl_context.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = nsgl_context.m; sourceTree = "<group>"; };
 		F9070EB02B9F1C8900383E4D /* platform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = platform.c; sourceTree = "<group>"; };
 		F9070EB12B9F1C8900383E4D /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		F9070EB22B9F1C8900383E4D /* posix_module.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = posix_module.c; sourceTree = "<group>"; };
@@ -6602,7 +6600,6 @@
 				F9070EA32B9F1C8900383E4D /* internal.h */,
 				F9070EA62B9F1C8900383E4D /* mappings.h */,
 				F9070EA72B9F1C8900383E4D /* monitor.c */,
-				F9070EA82B9F1C8900383E4D /* nsgl_context.m */,
 				F9070F292B9F252D00383E4D /* null_init.c */,
 				F9070F2F2B9F252E00383E4D /* null_joystick.c */,
 				F9070F2D2B9F252E00383E4D /* null_joystick.h */,
@@ -11499,7 +11496,6 @@
 				F98603EC2BCFBB54006A4C0F /* SkSLConstructorArray.cpp in Sources */,
 				F98603BF2BCFBB54006A4C0F /* SkSLCheckSymbolTableCorrectness.cpp in Sources */,
 				F9528BB82BBF024D00222F45 /* SivCompression.cpp in Sources */,
-				F9070EE62B9F1C8900383E4D /* nsgl_context.m in Sources */,
 				F986F9222BC8441F006A4C0F /* regparse.c in Sources */,
 				F98601442BCFBB53006A4C0F /* SkAAClip.cpp in Sources */,
 				F98603CD2BCFBB54006A4C0F /* SkSLReturnsInputAlpha.cpp in Sources */,

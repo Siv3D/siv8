@@ -948,6 +948,11 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
+		//-----------------------------------------------
+		//
+		//	[Siv3D]
+		//
+		/*
         if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
         {
             if (!_glfwInitNSGL())
@@ -977,6 +982,9 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
 
         if (!_glfwRefreshContextAttribs(window, ctxconfig))
             return GLFW_FALSE;
+		 */
+		//
+		//-----------------------------------------------
     }
 
     if (wndconfig->mousePassthrough)
