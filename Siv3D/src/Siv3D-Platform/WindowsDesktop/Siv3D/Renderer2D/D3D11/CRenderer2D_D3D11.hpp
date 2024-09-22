@@ -46,7 +46,7 @@ namespace s3d
 
 		void addRect(const FloatRect& rect, const PatternParameters& pattern) override;
 
-		void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& innerColor, const Float4& outerColor, ColorFillDirection colorType);
+		void addRectFrame(const FloatRect& innerRect, float thickness, const Float4& innerColor, const Float4& outerColor, ColorFillDirection colorType) override;
 
 		void addRectFrame(const FloatRect& innerRect, float thickness, const PatternParameters& pattern) override;
 
