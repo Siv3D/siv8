@@ -28,9 +28,14 @@ namespace s3d
 	template <Concept::FloatingPoint Float, int32 Oclock = 0>
 	struct CircularBase
 	{
-		using value_type = Float;
+		/// @brief 要素の型
+		using value_type	= Float;
 
-		using position_type = Vector2D<value_type>;
+		/// @brief 表現する二次元座標の型
+		using position_type	= Vector2D<value_type>;
+
+		/// @brief 要素をまとめたベクトル型
+		using vector_type	= Vector2D<value_type>;
 
 		/// @brief 半径
 		value_type r;
@@ -73,9 +78,9 @@ namespace s3d
 		constexpr CircularBase(Arg::theta_<value_type> _theta, Arg::r_<value_type> _r) noexcept;
 
 		/// @brief 直交座標から変換して円座標を作成します。
-		/// @param v 円座標に変換する直交座標
+		/// @param target 円座標に変換する直交座標
 		[[nodiscard]]
-		CircularBase(position_type v) noexcept;
+		CircularBase(position_type target) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -275,7 +280,7 @@ namespace s3d
 
 		friend void Formatter(FormatData& formatData, const CircularBase& value)
 		{
-			Formatter(formatData, position_type{ value.r, value.theta });
+			Formatter(formatData, vector_type{ value.r, value.theta });
 		}
 
 	private:

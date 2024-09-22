@@ -40,9 +40,9 @@ namespace s3d
 		, theta{ *_theta } {}
 
 	template <Concept::FloatingPoint Float, int32 Oclock>
-	CircularBase<Float, Oclock>::CircularBase(const position_type v) noexcept
-		: r{ v.length() }
-		, theta{ (r == 0) ? 0 : Offset(std::atan2(v.x, -v.y)) } {}
+	CircularBase<Float, Oclock>::CircularBase(const position_type target) noexcept
+		: r{ target.length() }
+		, theta{ (r == 0) ? 0 : Offset(std::atan2(target.x, -target.y)) } {}
 
 	////////////////////////////////////////////////////////////////
 	//

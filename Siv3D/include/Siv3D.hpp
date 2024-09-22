@@ -803,9 +803,9 @@
 // 円座標 | Polar coordinates system (2D)
 # include <Siv3D/Circular.hpp>
 
-//// オフセット付き円座標 | Polar coordinates system with offset (2D)
-//# include <Siv3D/OffsetCircular.hpp>
-//
+// オフセット付き円座標 | Polar coordinates system with offset (2D)
+# include <Siv3D/OffsetCircular.hpp>
+
 //// 円柱座標 | Cylindrical coordinate system
 //# include <Siv3D/Cylindrical.hpp>
 //
