@@ -111,6 +111,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の点 0 の座標を変更した新しい四角形を返します。
+		/// @param _x 新しい点 0 の X 座標
+		/// @param _y 新しい点 0 の Y 座標
+		/// @return 新しい点 0 の座標を持つ新しい四角形
+		[[nodiscard]]
+		constexpr Quad withP0(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 四角形の点 0 の座標を変更した新しい四角形を返します。
+		/// @param _p0 新しい点 0 の座標
+		/// @return 新しい点 0 の座標を持つ新しい四角形
+		[[nodiscard]]
+		constexpr Quad withP0(position_type _p0) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -118,6 +130,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の点 1 の座標を変更した新しい四角形を返します。
+		/// @param _x 新しい点 1 の X 座標
+		/// @param _y 新しい点 1 の Y 座標
+		/// @return 新しい点 1 の座標を持つ新しい四角形
+		[[nodiscard]]
+		constexpr Quad withP1(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 四角形の点 1 の座標を変更した新しい四角形を返します。
+		/// @param _p1 新しい点 1 の座標
+		/// @return 新しい点 1 の座標を持つ新しい四角形
+		[[nodiscard]]
+		constexpr Quad withP1(position_type _p1) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -125,6 +149,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の点 2 の座標を変更した新しい四角形を返します。
+		/// @param _x 新しい点 2 の X 座標
+		/// @param _y 新しい点 2 の Y 座標
+		/// @return 新しい点 2 の座標を持つ新しい四角形
+		[[nodiscard]]
+		constexpr Quad withP2(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 四角形の点 2 の座標を変更した新しい四角形を返します。
+		/// @param _p2 新しい点 2 の座標
+		/// @return 新しい点 2 の座標を持つ新しい四角形
+		[[nodiscard]]
+		constexpr Quad withP2(position_type _p2) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -132,6 +168,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の点 3 の座標を変更した新しい四角形を返します。
+		/// @param _x 新しい点 3 の X 座標
+		/// @param _y 新しい点 3 の Y 座標
+		/// @return 新しい点 3 の座標を持つ新しい四角形
+		[[nodiscard]]
+		constexpr Quad withP3(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 四角形の点 3 の座標を変更した新しい四角形を返します。
+		/// @param _p3 新しい点 3 の座標
+		/// @return 新しい点 3 の座標を持つ新しい四角形
+		[[nodiscard]]
+		constexpr Quad withP3(position_type _p3) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -139,6 +187,30 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の各頂点の座標を変更します。
+		/// @param x0 点 0 の X 座標
+		/// @param y0 点 0 の Y 座標
+		/// @param x1 点 1 の X 座標
+		/// @param y1 点 1 の Y 座標
+		/// @param x2 点 2 の X 座標
+		/// @param y2 点 2 の Y 座標
+		/// @param x3 点 3 の X 座標
+		/// @param y3 点 3 の Y 座標
+		/// @return *this
+		constexpr Quad& set(value_type x0, value_type y0, value_type x1, value_type y1, value_type x2, value_type y2, value_type x3, value_type y3) noexcept;
+
+		/// @brief 四角形の各頂点の座標を変更します。
+		/// @param _p0 点 0 の座標
+		/// @param _p1 点 1 の座標
+		/// @param _p2 点 2 の座標
+		/// @param _p3 点 3 の座標
+		/// @return *this
+		constexpr Quad& set(const position_type& _p0, const position_type& _p1, const position_type& _p2, const position_type& _p3) noexcept;
+
+		/// @brief 四角形を変更します。
+		/// @param triangle 新しい四角形
+		/// @return *this
+		constexpr Quad& set(const Quad& triangle) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -146,9 +218,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形を平行移動した新しい四角形を返します。
+		/// @param x X 方向の移動距離
+		/// @param y Y 方向の移動距離
+		/// @return 平行移動した新しい四角形
 		[[nodiscard]]
 		constexpr Quad movedBy(value_type x, value_type y) const noexcept;
 
+		/// @brief 四角形を平行移動した新しい四角形を返します。
+		/// @param v 移動距離
+		/// @return 平行移動した新しい四角形
 		[[nodiscard]]
 		constexpr Quad movedBy(position_type v) const noexcept;
 
@@ -158,8 +237,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形を平行移動します。
+		/// @param x X 方向の移動距離
+		/// @param y Y 方向の移動距離
+		/// @return *this
 		constexpr Quad& moveBy(value_type x, value_type y) noexcept;
 
+		/// @brief 四角形を平行移動します。
+		/// @param v 移動距離
+		/// @return *this
 		constexpr Quad& moveBy(position_type v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -168,11 +254,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		Quad stretched(value_type size) const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	rotated
 		//
 		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Quad rotated(value_type angle) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -180,11 +272,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		Quad rotatedAt(value_type x, value_type y, value_type angle) const noexcept;
+
+		[[nodiscard]]
+		Quad rotatedAt(position_type pos, value_type angle) const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	scaledFromOrigin
 		//
 		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr Quad scaledFromOrigin(value_type s) const noexcept;
+
+		[[nodiscard]]
+		constexpr Quad scaledFromOrigin(value_type sx, value_type sy) const noexcept;
+
+		[[nodiscard]]
+		constexpr Quad scaledFromOrigin(Vec2 s) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -192,11 +299,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		constexpr Quad& scaleFromOrigin(value_type s) noexcept;
+
+		constexpr Quad& scaleFromOrigin(value_type sx, value_type sy) noexcept;
+
+		constexpr Quad& scaleFromOrigin(Vec2 s) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	scaledFrom
 		//
 		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr Quad scaledFrom(position_type pos, value_type s) const noexcept;
+
+		[[nodiscard]]
+		constexpr Quad scaledFrom(position_type pos, value_type sx, value_type sy) const noexcept;
+
+		[[nodiscard]]
+		constexpr Quad scaledFrom(position_type pos, Vec2 s) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -204,11 +326,33 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		constexpr Quad& scaleFrom(position_type pos, value_type s) noexcept;
+
+		constexpr Quad& scaleFrom(position_type pos, value_type sx, value_type sy) noexcept;
+
+		constexpr Quad& scaleFrom(position_type pos, Vec2 s) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	isClockwise
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 四角形の頂点が時計回りであるかを返します。
+		/// @return 頂点が時計回りである場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isClockwise() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isConvex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 四角形が凸四角形であるかを返します。
+		/// @return 四角形が凸四角形である場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isConvex() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -216,11 +360,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形が面積を持つかを返します。
+		/// @return 四角形が面積を持つ場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool hasArea() const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	centroidX, centroidY
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 四角形の重心の X 座標を返します。
+		/// @return 四角形の重心の X 座標
+		[[nodiscard]]
+		constexpr value_type centroidX() const noexcept;
+
+		/// @brief 四角形の重心の Y 座標を返します。
+		/// @return 四角形の重心の Y 座標
+		[[nodiscard]]
+		constexpr value_type centroidY() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -228,6 +387,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の重心を返します。
+		/// @return 四角形の重心
+		[[nodiscard]]
+		constexpr position_type centroid() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -236,10 +399,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		position_type& pointAtIndex(size_t index) noexcept;
+		position_type& pointAtIndex(size_t index);
 
 		[[nodiscard]]
-		const position_type& pointAtIndex(size_t index) const noexcept;
+		const position_type& pointAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -247,11 +410,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の周上の指定した距離に対応する座標を返します。
+		/// @param length 距離（p0-p1-p2 の順）
+		/// @return 四角形の周上の指定した距離に対応する座標
+		[[nodiscard]]
+		Vec2 pointAtLength(double length) const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	interpolatedPointAt
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 四角形の周の長さを 1 として、周上の指定した位置に対応する座標を返します。
+		/// @param t 位置（p0-p1-p2-p3 の順、周の長さを 1 とした場合の位置）
+		/// @return 四角形の周上の指定した位置に対応する座標
+		[[nodiscard]]
+		Vec2 interpolatedPointAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -259,12 +434,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの辺を Line として返します。
+		/// @param index インデックス（0 が p0-p1, 1 が p1-p2, 2 が p2-p3, 3 が p3-p0）
+		/// @return 指定したインデックスの辺
+		/// @throw std::out_of_range index が範囲外の場合
+		[[nodiscard]]
+		constexpr Line sideAtIndex(size_t index) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	sideIndexAtLength
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の周上の指定した距離に対応する辺のインデックスを返します。
+		/// @param length 距離（p0-p1-p2 の順）
+		/// @return 四角形の周上の指定した距離に対応する辺のインデックス（0 が p0-p1, 1 が p1-p2, 2 が p2-p0）
+		[[nodiscard]]
+		size_t sideIndexAtLength(double length) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -281,11 +468,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の面積を返します。
+		/// @return 四角形の面積
+		[[nodiscard]]
+		constexpr value_type area() const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	perimeter
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 四角形の周の長さを返します。
+		/// @return 四角形の周の長さ
+		[[nodiscard]]
+		value_type perimeter() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -293,11 +490,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形を囲む最小の矩形を返します。
+		/// @return 四角形を囲む最小の矩形
+		[[nodiscard]]
+		RectF boundingRect() const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	boundingCircle
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 四角形を囲む最小の円を返します。
+		/// @return 四角形を囲む最小の円
+		[[nodiscard]]
+		Circle boundingCircle() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

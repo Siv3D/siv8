@@ -599,13 +599,13 @@ namespace s3d
 		/// @return 指定したインデックスの頂点座標の参照
 		/// @throw std::out_of_range index が 0 または 1 でない場合
 		[[nodiscard]]
-		position_type& pointAtIndex(size_t index) noexcept;
+		position_type& pointAtIndex(size_t index);
 
 		/// @brief 指定したインデックスの頂点座標の参照を返します
 		/// @param index インデックス（0: 始点, 1: 終点）
 		/// @return 指定したインデックスの頂点座標の参照
 		[[nodiscard]]
-		const position_type& pointAtIndex(size_t index) const noexcept;
+		const position_type& pointAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//

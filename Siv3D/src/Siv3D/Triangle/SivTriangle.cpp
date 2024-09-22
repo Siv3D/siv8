@@ -183,7 +183,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	size_t Triangle::sideIndexAtLength(double length) const
+	size_t Triangle::sideIndexAtLength(double length) const noexcept
 	{
 		const double l0 = p1.distanceFrom(p0);
 		const double l1 = p2.distanceFrom(p1);

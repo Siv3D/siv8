@@ -473,10 +473,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		position_type& pointAtIndex(size_t index) noexcept;
+		position_type& pointAtIndex(size_t index);
 	
 		[[nodiscard]]
-		const position_type& pointAtIndex(size_t index) const noexcept;
+		const position_type& pointAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -525,7 +525,7 @@ namespace s3d
 		/// @param length 距離（p0-p1-p2 の順）
 		/// @return 三角形の周上の指定した距離に対応する辺のインデックス（0 が p0-p1, 1 が p1-p2, 2 が p2-p0）
 		[[nodiscard]]
-		size_t sideIndexAtLength(double length) const;
+		size_t sideIndexAtLength(double length) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

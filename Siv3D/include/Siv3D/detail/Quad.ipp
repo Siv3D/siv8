@@ -79,7 +79,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Quad::position_type& Quad::pointAtIndex(const size_t index) noexcept
+	inline Quad::position_type& Quad::pointAtIndex(const size_t index)
 	{
 		if (index == 0)
 		{
@@ -103,7 +103,7 @@ namespace s3d
 		}
 	}
 
-	inline const Quad::position_type& Quad::pointAtIndex(const size_t index) const noexcept
+	inline const Quad::position_type& Quad::pointAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{

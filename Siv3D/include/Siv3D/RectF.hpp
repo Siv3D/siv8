@@ -1106,7 +1106,7 @@ namespace s3d
 		/// @param length 距離（左上から時計回り）
 		/// @return 長方形の周上の指定した距離に対応する辺のインデックス（0 が上辺、1 が右辺、2 が下辺、3 が左辺）
 		[[nodiscard]]
-		size_t sideIndexAtLength(double length) const;
+		size_t sideIndexAtLength(double length) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -496,7 +496,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	inline Line::position_type& Line::pointAtIndex(const size_t index) noexcept
+	inline Line::position_type& Line::pointAtIndex(const size_t index)
 	{
 		if (index == 0)
 		{
@@ -513,7 +513,7 @@ namespace s3d
 	}
 
 	[[nodiscard]]
-	inline const Line::position_type& Line::pointAtIndex(const size_t index) const noexcept
+	inline const Line::position_type& Line::pointAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{

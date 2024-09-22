@@ -122,7 +122,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	size_t RectF::sideIndexAtLength(double length) const
+	size_t RectF::sideIndexAtLength(double length) const noexcept
 	{
 		length = WrapLength(length, perimeter());
 
