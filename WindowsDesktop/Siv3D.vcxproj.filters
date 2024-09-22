@@ -5915,7 +5915,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11VertexBufferManager2D.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder.cpp">
+    <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder_StraightEdged.cpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Triangle\SivTriangle.cpp">
@@ -6019,6 +6019,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\RoundRect\SivRoundRect.cpp">
       <Filter>src\Siv3D\RoundRect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder_Rounded.cpp">
+      <Filter>src\Siv3D\Renderer2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
