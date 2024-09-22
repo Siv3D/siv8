@@ -85,6 +85,16 @@ namespace s3d
 
 		void addQuad(const FloatQuad& quad, const PatternParameters& pattern) override;
 
+		void addRoundRect(const FloatRect& rect, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addRoundRect(const FloatRect& rect, float r, const PatternParameters& pattern) override;
+
+		void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color) override;
+
+		void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color0, const Float4& color1, ColorFillDirection colorType) override;
+
+		void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const PatternParameters& pattern) override;
+		
 		void flush() override;
 
 
