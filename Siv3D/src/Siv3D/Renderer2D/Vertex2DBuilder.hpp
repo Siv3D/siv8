@@ -81,9 +81,9 @@ namespace s3d
 		Vertex2D::IndexType BuildRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, float r, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 	
 		[[nodiscard]]
-		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const RoundRect& inner, const RoundRect& outer, const Float4& color, float scale);
+		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, const Float4& color, float scale);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const RoundRect& inner, const RoundRect& outer, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
+		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 	}
 }

@@ -1657,14 +1657,379 @@ namespace s3d
 			return IndexCount;
 		}
 
-		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const RoundRect& inner, const RoundRect& outer, const Float4& color, const float scale)
+		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color, const float scale)
 		{
-			return(0);
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(outerR * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType ArcOuterVertexCount = (Quality + 1); // 1 つの弧の外側曲線部分の頂点数
+			const Vertex2D::IndexType ArcInnerVertexCount = (Quality + 1); // 1 つの弧の内側曲線部分の頂点数
+			const Vertex2D::IndexType ArcVertexCount = (ArcOuterVertexCount + ArcInnerVertexCount); // 1 つの弧の頂点数
+			const Vertex2D::IndexType ArcTriangleCount = (Quality * 2); // 1 つの弧の三角形の数
+			const Vertex2D::IndexType ArcIndexCount = (ArcTriangleCount * 3); // 1 つの弧のインデックス数
+			const Vertex2D::IndexType VertexCount = (ArcVertexCount * 4); // 頂点数
+			const Vertex2D::IndexType IndexCount = (ArcIndexCount * 4 + (6 * 4)); // インデックス数
+
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			{
+				const float innerLeftCenterX = (innerRect.left + innerR);
+				const float innerRightCenterX = (innerRect.right - innerR);
+				const float innerTopCenterY = (innerRect.top + innerR);
+				const float innerBottomCenterY = (innerRect.bottom - innerR);
+
+				const float outerLeftCenterX = (outerRect.left + outerR);
+				const float outerRightCenterX = (outerRect.right - outerR);
+				const float outerTopCenterY = (outerRect.top + outerR);
+				const float outerBottomCenterY = (outerRect.bottom - outerR);
+
+				const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+				Vertex2D* pDst0 = pVertex;
+				Vertex2D* pDst1 = (pVertex + ArcVertexCount * 1);
+				Vertex2D* pDst2 = (pVertex + ArcVertexCount * 2);
+				Vertex2D* pDst3 = (pVertex + ArcVertexCount * 3);
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const Float2* cs = (pCS + i);
+					const float ox = (cs->x * outerR);
+					const float oy = (cs->y * outerR);
+					const float ix = (cs->x * innerR);
+					const float iy = (cs->y * innerR);
+
+					pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), color);
+					pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), color);
+					pDst2->set((outerLeftCenterX - ox), (outerBottomCenterY - oy), color);
+					pDst3->set((outerLeftCenterX + oy), (outerTopCenterY - ox), color);
+
+					++pDst0;
+					++pDst1;
+					++pDst2;
+					++pDst3;
+
+					pDst0->set((innerRightCenterX + ix), (innerTopCenterY + iy), color);
+					pDst1->set((innerRightCenterX - iy), (innerBottomCenterY + ix), color);
+					pDst2->set((innerLeftCenterX - ix), (innerBottomCenterY - iy), color);
+					pDst3->set((innerLeftCenterX + iy), (innerTopCenterY - ix), color);
+
+					++pDst0;
+					++pDst1;
+					++pDst2;
+					++pDst3;
+				}
+
+				// 弧の最後の頂点
+				{
+					const float ox = (pCS->x * outerR);
+					const float oy = (pCS->y * outerR);
+					const float ix = (pCS->x * innerR);
+					const float iy = (pCS->y * innerR);
+
+					pDst0->set((outerRightCenterX - oy), (outerTopCenterY + ox), color);
+					pDst1->set((outerRightCenterX - ox), (outerBottomCenterY - oy), color);
+					pDst2->set((outerLeftCenterX + oy), (outerBottomCenterY - ox), color);
+					pDst3->set((outerLeftCenterX + ox), (outerTopCenterY + oy), color);
+
+					++pDst0;
+					++pDst1;
+					++pDst2;
+					++pDst3;
+
+					pDst0->set((innerRightCenterX - iy), (innerTopCenterY + ix), color);
+					pDst1->set((innerRightCenterX - ix), (innerBottomCenterY - iy), color);
+					pDst2->set((innerLeftCenterX + iy), (innerBottomCenterY - ix), color);
+					pDst3->set((innerLeftCenterX + ix), (innerTopCenterY + iy), color);
+				}
+			}
+
+			{
+				Vertex2D::IndexType* pDst0 = pIndex;
+				Vertex2D::IndexType* pDst1 = (pIndex + ArcIndexCount * 1 + 6);
+				Vertex2D::IndexType* pDst2 = (pIndex + ArcIndexCount * 2 + 12);
+				Vertex2D::IndexType* pDst3 = (pIndex + ArcIndexCount * 3 + 18);
+
+				const Vertex2D::IndexType trIndexBase = indexOffset;
+				const Vertex2D::IndexType brIndexBase = (indexOffset + ArcVertexCount * 1);
+				const Vertex2D::IndexType blIndexBase = (indexOffset + ArcVertexCount * 2);
+				const Vertex2D::IndexType tlIndexBase = (indexOffset + ArcVertexCount * 3);
+
+				for (Vertex2D::IndexType i = 0; i <= Quality; ++i)
+				{
+					const Vertex2D::IndexType i0 = (i * 2);
+					const Vertex2D::IndexType i1 = (i * 2 + 1);
+					const Vertex2D::IndexType i2 = (i * 2 + 2);
+					const Vertex2D::IndexType i3 = (i * 2 + 3);
+
+					*pDst0++ = (trIndexBase + i0);
+					*pDst0++ = (trIndexBase + i2);
+					*pDst0++ = (trIndexBase + i1);
+					*pDst0++ = (trIndexBase + i1);
+					*pDst0++ = (trIndexBase + i2);
+					*pDst0++ = (trIndexBase + i3);
+
+					*pDst1++ = (brIndexBase + i0);
+					*pDst1++ = (brIndexBase + i2);
+					*pDst1++ = (brIndexBase + i1);
+					*pDst1++ = (brIndexBase + i1);
+					*pDst1++ = (brIndexBase + i2);
+					*pDst1++ = (brIndexBase + i3);
+
+					*pDst2++ = (blIndexBase + i0);
+					*pDst2++ = (blIndexBase + i2);
+					*pDst2++ = (blIndexBase + i1);
+					*pDst2++ = (blIndexBase + i1);
+					*pDst2++ = (blIndexBase + i2);
+					*pDst2++ = (blIndexBase + i3);
+
+					if (i < Quality)
+					{
+						*pDst3++ = (tlIndexBase + i0);
+						*pDst3++ = (tlIndexBase + i2);
+						*pDst3++ = (tlIndexBase + i1);
+						*pDst3++ = (tlIndexBase + i1);
+						*pDst3++ = (tlIndexBase + i2);
+						*pDst3++ = (tlIndexBase + i3);
+					}
+					else
+					{
+						*pDst3++ = (tlIndexBase + i0);
+						*pDst3++ = trIndexBase;
+						*pDst3++ = (tlIndexBase + i1);
+						*pDst3++ = (tlIndexBase + i1);
+						*pDst3++ = trIndexBase;
+						*pDst3++ = (trIndexBase + 1);
+					}
+				}
+			}
+
+			return IndexCount;
 		}
 
-		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const RoundRect& inner, const RoundRect& outer, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
-			return(0);
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(outerR * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType ArcOuterVertexCount = (Quality + 1); // 1 つの弧の外側曲線部分の頂点数
+			const Vertex2D::IndexType ArcInnerVertexCount = (Quality + 1); // 1 つの弧の内側曲線部分の頂点数
+			const Vertex2D::IndexType ArcVertexCount = (ArcOuterVertexCount + ArcInnerVertexCount); // 1 つの弧の頂点数
+			const Vertex2D::IndexType ArcTriangleCount = (Quality * 2); // 1 つの弧の三角形の数
+			const Vertex2D::IndexType ArcIndexCount = (ArcTriangleCount * 3); // 1 つの弧のインデックス数
+			const Vertex2D::IndexType VertexCount = (ArcVertexCount * 4); // 頂点数
+			const Vertex2D::IndexType IndexCount = (ArcIndexCount * 4 + (6 * 4)); // インデックス数
+
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			{
+				const float innerLeftCenterX = (innerRect.left + innerR);
+				const float innerRightCenterX = (innerRect.right - innerR);
+				const float innerTopCenterY = (innerRect.top + innerR);
+				const float innerBottomCenterY = (innerRect.bottom - innerR);
+
+				const float outerLeftCenterX = (outerRect.left + outerR);
+				const float outerRightCenterX = (outerRect.right - outerR);
+				const float outerTopCenterY = (outerRect.top + outerR);
+				const float outerBottomCenterY = (outerRect.bottom - outerR);
+
+				const Float4 colorDiff = (color1 - color0);
+				const float rectSize = ((colorType == ColorFillDirection::TopBottom) ? (outerRect.bottom - outerRect.top) : (outerRect.right - outerRect.left));
+				const float thickness = (((outerRect.right - outerRect.left) - (innerRect.right - innerRect.left)) / 2.0f);
+				const float ot1 = (outerR / rectSize);
+				const float ot2 = (1.0f - ot1);
+				const float it1 = (thickness / rectSize);
+				const float it2 = ((thickness + innerR) / rectSize);
+				const float it3 = (1.0f - it2);
+				const float it4 = (1.0f - it1);
+				const float irt = (it2 - it1);
+
+				const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+				Vertex2D* pDst0 = pVertex;
+				Vertex2D* pDst1 = (pVertex + ArcVertexCount * 1);
+				Vertex2D* pDst2 = (pVertex + ArcVertexCount * 2);
+				Vertex2D* pDst3 = (pVertex + ArcVertexCount * 3);
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const Float2* cs = (pCS + i);
+					const float ox = (cs->x * outerR);
+					const float oy = (cs->y * outerR);
+					const float ix = (cs->x * innerR);
+					const float iy = (cs->y * innerR);
+
+					if (colorType == ColorFillDirection::TopBottom)
+					{
+						const Float4 c0 = (color0 + ((cs->y + 1.0f) * ot1) * colorDiff);
+						const Float4 c1 = (color0 + (ot2 + (cs->x * ot1)) * colorDiff);
+						const Float4 c2 = (color0 + (ot2 + (-cs->y * ot1)) * colorDiff);
+						const Float4 c3 = (color0 + ((-cs->x + 1.0f) * ot1) * colorDiff);
+
+						pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), c0);
+						pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), c1);
+						pDst2->set((outerLeftCenterX - ox), (outerBottomCenterY - oy), c2);
+						pDst3->set((outerLeftCenterX + oy), (outerTopCenterY - ox), c3);
+					}
+					else // ColorFillDirection::LeftRight
+					{
+						const Float4 c0 = (color0 + (ot2 + (cs->x * ot1)) * colorDiff);
+						const Float4 c1 = (color0 + (ot2 + (-cs->y * ot1)) * colorDiff);
+						const Float4 c2 = (color0 + ((-cs->x + 1.0f) * ot1) * colorDiff);
+						const Float4 c3 = (color0 + ((cs->y + 1.0f) * ot1) * colorDiff);
+
+						pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), c0);
+						pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), c1);
+						pDst2->set((outerLeftCenterX - ox), (outerBottomCenterY - oy), c2);
+						pDst3->set((outerLeftCenterX + oy), (outerTopCenterY - ox), c3);
+					}
+
+					++pDst0;
+					++pDst1;
+					++pDst2;
+					++pDst3;
+
+					if (colorType == ColorFillDirection::TopBottom)
+					{
+						const Float4 c0 = (color0 + (it1 + (cs->y + 1.0f) * irt) * colorDiff);
+						const Float4 c1 = (color0 + (it3 + (cs->x * irt)) * colorDiff);
+						const Float4 c2 = (color0 + (it3 + (-cs->y * irt)) * colorDiff);
+						const Float4 c3 = (color0 + (it1 + (-cs->x + 1.0f) * irt) * colorDiff);
+
+						pDst0->set((innerRightCenterX + ix), (innerTopCenterY + iy), c0);
+						pDst1->set((innerRightCenterX - iy), (innerBottomCenterY + ix), c1);
+						pDst2->set((innerLeftCenterX - ix), (innerBottomCenterY - iy), c2);
+						pDst3->set((innerLeftCenterX + iy), (innerTopCenterY - ix), c3);
+					}
+					else // ColorFillDirection::LeftRight
+					{
+						const Float4 c0 = (color0 + (it3 + (cs->x * irt)) * colorDiff);
+						const Float4 c1 = (color0 + (it3 + (-cs->y * irt)) * colorDiff);
+						const Float4 c2 = (color0 + (it1 + (-cs->x + 1.0f) * irt) * colorDiff);
+						const Float4 c3 = (color0 + (it1 + (cs->y + 1.0f) * irt) * colorDiff);
+
+						pDst0->set((innerRightCenterX + ix), (innerTopCenterY + iy), c0);
+						pDst1->set((innerRightCenterX - iy), (innerBottomCenterY + ix), c1);
+						pDst2->set((innerLeftCenterX - ix), (innerBottomCenterY - iy), c2);
+						pDst3->set((innerLeftCenterX + iy), (innerTopCenterY - ix), c3);
+					}
+
+					++pDst0;
+					++pDst1;
+					++pDst2;
+					++pDst3;
+				}
+
+				// 弧の最後の頂点
+				{
+					const float ox = (pCS->x * outerR);
+					const float oy = (pCS->y * outerR);
+					const float ix = (pCS->x * innerR);
+					const float iy = (pCS->y * innerR);
+					
+					if (colorType == ColorFillDirection::TopBottom)
+					{
+						pDst0->set((outerRightCenterX - oy), (outerTopCenterY + ox), (color0 + ot1 * colorDiff));
+						pDst1->set((outerRightCenterX - ox), (outerBottomCenterY - oy), color1);
+						pDst2->set((outerLeftCenterX + oy), (outerBottomCenterY - ox), (color0 + ot2 * colorDiff));
+						pDst3->set((outerLeftCenterX + ox), (outerTopCenterY + oy), color0);
+					}
+					else
+					{
+						pDst0->set((outerRightCenterX - oy), (outerTopCenterY + ox), color1);
+						pDst1->set((outerRightCenterX - ox), (outerBottomCenterY - oy), (color0 + ot2 * colorDiff));
+						pDst2->set((outerLeftCenterX + oy), (outerBottomCenterY - ox), color0);
+						pDst3->set((outerLeftCenterX + ox), (outerTopCenterY + oy), (color0 + ot1 * colorDiff));
+					}
+
+					++pDst0;
+					++pDst1;
+					++pDst2;
+					++pDst3;
+
+					if (colorType == ColorFillDirection::TopBottom)
+					{
+						pDst0->set((innerRightCenterX - iy), (innerTopCenterY + ix), (color0 + it2 * colorDiff));
+						pDst1->set((innerRightCenterX - ix), (innerBottomCenterY - iy), (color0 + it4 * colorDiff));
+						pDst2->set((innerLeftCenterX + iy), (innerBottomCenterY - ix), (color0 + it3 * colorDiff));
+						pDst3->set((innerLeftCenterX + ix), (innerTopCenterY + iy), (color0 + it1 * colorDiff));
+					}
+					else
+					{
+						pDst0->set((innerRightCenterX - iy), (innerTopCenterY + ix), (color0 + it4 * colorDiff));
+						pDst1->set((innerRightCenterX - ix), (innerBottomCenterY - iy), (color0 + it3 * colorDiff));
+						pDst2->set((innerLeftCenterX + iy), (innerBottomCenterY - ix), (color0 + it1 * colorDiff));
+						pDst3->set((innerLeftCenterX + ix), (innerTopCenterY + iy), (color0 + it2 * colorDiff));
+					}
+				}
+			}
+
+			{
+				Vertex2D::IndexType* pDst0 = pIndex;
+				Vertex2D::IndexType* pDst1 = (pIndex + ArcIndexCount * 1 + 6);
+				Vertex2D::IndexType* pDst2 = (pIndex + ArcIndexCount * 2 + 12);
+				Vertex2D::IndexType* pDst3 = (pIndex + ArcIndexCount * 3 + 18);
+
+				const Vertex2D::IndexType trIndexBase = indexOffset;
+				const Vertex2D::IndexType brIndexBase = (indexOffset + ArcVertexCount * 1);
+				const Vertex2D::IndexType blIndexBase = (indexOffset + ArcVertexCount * 2);
+				const Vertex2D::IndexType tlIndexBase = (indexOffset + ArcVertexCount * 3);
+
+				for (Vertex2D::IndexType i = 0; i <= Quality; ++i)
+				{
+					const Vertex2D::IndexType i0 = (i * 2);
+					const Vertex2D::IndexType i1 = (i * 2 + 1);
+					const Vertex2D::IndexType i2 = (i * 2 + 2);
+					const Vertex2D::IndexType i3 = (i * 2 + 3);
+
+					*pDst0++ = (trIndexBase + i0);
+					*pDst0++ = (trIndexBase + i2);
+					*pDst0++ = (trIndexBase + i1);
+					*pDst0++ = (trIndexBase + i1);
+					*pDst0++ = (trIndexBase + i2);
+					*pDst0++ = (trIndexBase + i3);
+
+					*pDst1++ = (brIndexBase + i0);
+					*pDst1++ = (brIndexBase + i2);
+					*pDst1++ = (brIndexBase + i1);
+					*pDst1++ = (brIndexBase + i1);
+					*pDst1++ = (brIndexBase + i2);
+					*pDst1++ = (brIndexBase + i3);
+
+					*pDst2++ = (blIndexBase + i0);
+					*pDst2++ = (blIndexBase + i2);
+					*pDst2++ = (blIndexBase + i1);
+					*pDst2++ = (blIndexBase + i1);
+					*pDst2++ = (blIndexBase + i2);
+					*pDst2++ = (blIndexBase + i3);
+
+					if (i < Quality)
+					{
+						*pDst3++ = (tlIndexBase + i0);
+						*pDst3++ = (tlIndexBase + i2);
+						*pDst3++ = (tlIndexBase + i1);
+						*pDst3++ = (tlIndexBase + i1);
+						*pDst3++ = (tlIndexBase + i2);
+						*pDst3++ = (tlIndexBase + i3);
+					}
+					else
+					{
+						*pDst3++ = (tlIndexBase + i0);
+						*pDst3++ = trIndexBase;
+						*pDst3++ = (tlIndexBase + i1);
+						*pDst3++ = (tlIndexBase + i1);
+						*pDst3++ = trIndexBase;
+						*pDst3++ = (trIndexBase + 1);
+					}
+				}
+			}
+
+			return IndexCount;
 		}
 	}
 }

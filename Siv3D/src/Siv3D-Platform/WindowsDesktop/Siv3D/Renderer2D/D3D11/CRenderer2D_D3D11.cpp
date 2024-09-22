@@ -817,9 +817,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_D3D11::addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color)
+	void CRenderer2D_D3D11::addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), outer, inner, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			innerRect, innerR, outerRect, outerR, color, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -835,16 +836,15 @@ namespace s3d
 		}
 	}
 
-	void CRenderer2D_D3D11::addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
+	void CRenderer2D_D3D11::addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), outer, inner,
-			colorType, color0, color1, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			innerRect, innerR, outerRect, outerR, colorType, color0, color1, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
 				m_commandManager.pushEngineVS(m_engineShader.vs);
 			}
-
 			if (not m_currentCustomShader.ps)
 			{
 				m_commandManager.pushEnginePS(m_engineShader.psShape);
@@ -854,9 +854,10 @@ namespace s3d
 		}
 	}
 
-	void CRenderer2D_D3D11::addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const PatternParameters& pattern)
+	void CRenderer2D_D3D11::addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), outer, inner, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			innerRect, innerR, outerRect, outerR, pattern.primaryColor, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{

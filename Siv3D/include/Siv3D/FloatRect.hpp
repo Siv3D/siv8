@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "Concepts.hpp"
+# include "2DShapes.hpp"
 
 namespace s3d
 {
@@ -45,6 +46,12 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr FloatRect(Concept::Arithmetic auto l, Concept::Arithmetic auto t, Concept::Arithmetic auto r, Concept::Arithmetic auto b) noexcept;
+
+		[[nodiscard]]
+		explicit constexpr FloatRect(const Rect& rect) noexcept;
+
+		[[nodiscard]]
+		explicit constexpr FloatRect(const RectF& rect) noexcept;
 	};
 }
 

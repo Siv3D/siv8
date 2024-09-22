@@ -99,11 +99,11 @@ namespace s3d
 
 		virtual void addRoundRect(const FloatRect& rect, float r, const PatternParameters& pattern) = 0;
 
-		virtual void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color) = 0;
+		virtual void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color) = 0;
 
-		virtual void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+		virtual void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 
-		virtual void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const PatternParameters& pattern) = 0;
+		virtual void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const PatternParameters& pattern) = 0;
 
 
 

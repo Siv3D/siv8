@@ -24,4 +24,16 @@ namespace s3d
 		, top{ static_cast<float>(t) }
 		, right{ static_cast<float>(r) }
 		, bottom{ static_cast<float>(b) } {}
+
+	constexpr FloatRect::FloatRect(const Rect& rect) noexcept
+		: left{ static_cast<float>(rect.x) }
+		, top{ static_cast<float>(rect.y) }
+		, right{ static_cast<float>(rect.x + rect.w) }
+		, bottom{ static_cast<float>(rect.y + rect.h) } {}
+
+	constexpr FloatRect::FloatRect(const RectF& rect) noexcept
+		: left{ static_cast<float>(rect.x) }
+		, top{ static_cast<float>(rect.y) }
+		, right{ static_cast<float>(rect.x + rect.w) }
+		, bottom{ static_cast<float>(rect.y + rect.h) } {}
 }

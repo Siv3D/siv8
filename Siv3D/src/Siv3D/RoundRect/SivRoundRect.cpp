@@ -217,8 +217,10 @@ namespace s3d
 		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
 
 		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
-			outerRoundRect,
-			innerRoundRect,
+			FloatRect{ innerRoundRect.rect },
+			static_cast<float>(innerRoundRect.r),
+			FloatRect{ outerRoundRect.rect },
+			static_cast<float>(outerRoundRect.r),
 			color.toFloat4()
 		);
 
@@ -246,8 +248,10 @@ namespace s3d
 		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
 
 		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
-			outerRoundRect,
-			innerRoundRect,
+			FloatRect{ innerRoundRect.rect },
+			static_cast<float>(innerRoundRect.r),
+			FloatRect{ outerRoundRect.rect },
+			static_cast<float>(outerRoundRect.r),
 			topColor->toFloat4(),
 			bottomColor->toFloat4(),
 			ColorFillDirection::TopBottom
@@ -277,11 +281,13 @@ namespace s3d
 		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
 
 		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
-			outerRoundRect,
-			innerRoundRect,
+			FloatRect{ innerRoundRect.rect },
+			static_cast<float>(innerRoundRect.r),
+			FloatRect{ outerRoundRect.rect },
+			static_cast<float>(outerRoundRect.r),
 			leftColor->toFloat4(),
 			rightColor->toFloat4(),
-			ColorFillDirection::TopBottom
+			ColorFillDirection::LeftRight
 		);
 
 		return *this;
@@ -313,8 +319,10 @@ namespace s3d
 		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
 
 		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
-			outerRoundRect,
-			innerRoundRect,
+			FloatRect{ innerRoundRect.rect },
+			static_cast<float>(innerRoundRect.r),
+			FloatRect{ outerRoundRect.rect },
+			static_cast<float>(outerRoundRect.r),
 			pattern
 		);
 
