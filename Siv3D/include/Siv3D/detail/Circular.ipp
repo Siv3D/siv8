@@ -25,9 +25,9 @@ namespace s3d
 		, theta{ _theta } {}
 
 	template <Concept::FloatingPoint Float, int32 Oclock>
-	constexpr CircularBase<Float, Oclock>::CircularBase(const Concept::Arithmetic auto _r, const value_type _theta) noexcept
+	constexpr CircularBase<Float, Oclock>::CircularBase(const Concept::Arithmetic auto _r, const Concept::Arithmetic auto _theta) noexcept
 		: r{ static_cast<value_type>(_r) }
-		, theta{ _theta } {}
+		, theta{ static_cast<value_type>(_theta) } {}
 
 	template <Concept::FloatingPoint Float, int32 Oclock>
 	constexpr CircularBase<Float, Oclock>::CircularBase(const Arg::r_<value_type> _r, const Arg::theta_<value_type> _theta) noexcept
@@ -209,6 +209,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	asCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::FloatingPoint Float, int32 Oclock>
+	Circle CircularBase<Float, Oclock>::asCircle(const double _r) const noexcept
+	{
+		return toPosition().asCircle(_r);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	hash
 	//
 	////////////////////////////////////////////////////////////////
@@ -228,7 +240,7 @@ namespace s3d
 	template <Concept::FloatingPoint Float, int32 Oclock>
 	constexpr Float CircularBase<Float, Oclock>::ClampAngle(const value_type theta) noexcept
 	{
-		if (theta <= -Math::Pi)
+		if (theta <= -Math::Pi_v<Float>)
 		{
 			return (theta + Math::TwoPi_v<Float>);
 		}

@@ -68,6 +68,13 @@ namespace s3d
 		/// @param _r 中心からの距離
 		/// @param _theta 角度（ラジアン）
 		[[nodiscard]]
+		constexpr OffsetCircularBase(const position_type& _center, Concept::Arithmetic auto _r, Concept::Arithmetic auto _theta) noexcept;
+
+		/// @brief オフセット付き円座標を作成します。
+		/// @param _center 中心座標
+		/// @param _r 中心からの距離
+		/// @param _theta 角度（ラジアン）
+		[[nodiscard]]
 		constexpr OffsetCircularBase(const position_type& _center, Arg::r_<value_type> _r, Arg::theta_<value_type> _theta) noexcept;
 
 		/// @brief オフセット付き円座標を作成します。
@@ -304,6 +311,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	asCircle
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点を中心とした円を作成します。
+		/// @param _r 円の半径
+		/// @return 円
+		[[nodiscard]]
+		Circle asCircle(double _r) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	hash
 		//
 		////////////////////////////////////////////////////////////////
@@ -428,5 +447,3 @@ struct std::hash<s3d::OffsetCircularBase<Float, Oclock>>
 		return value.hash();
 	}
 };
-
-# include "detail/OffsetCircular.ipp"

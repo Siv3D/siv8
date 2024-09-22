@@ -63,7 +63,7 @@ namespace s3d
 		/// @param _r 中心からの距離
 		/// @param _theta 角度（ラジアン）
 		[[nodiscard]]
-		constexpr CircularBase(Concept::Arithmetic auto _r, value_type _theta) noexcept;
+		constexpr CircularBase(Concept::Arithmetic auto _r, Concept::Arithmetic auto _theta) noexcept;
 
 		/// @brief 円座標を作成します。
 		/// @param _r 中心からの距離
@@ -234,6 +234,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	asCircle
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点を中心とした円を作成します。
+		/// @param _r 円の半径
+		/// @return 円
+		[[nodiscard]]
+		Circle asCircle(double _r) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	hash
 		//
 		////////////////////////////////////////////////////////////////
@@ -354,5 +366,3 @@ struct std::hash<s3d::CircularBase<Float, Oclock>>
 		return value.hash();
 	}
 };
-
-# include "detail/Circular.ipp"
