@@ -155,7 +155,7 @@ namespace s3d
 			if ((0.0 <= t && t <= 1.0) && (0.0 <= u && u <= 1.0))
 			{
 				// An intersection was found
-				return (start + t * r);
+				return (start + r * t);
 			}
 
 			// Two line segments are not parallel but do not intersect

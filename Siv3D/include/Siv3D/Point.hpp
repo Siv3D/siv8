@@ -72,6 +72,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの要素を返します。
+		/// @param index インデックス（0 または 1）
+		/// @return 指定したインデックスの要素。index が 2 以上の場合は 0 を返します。
 		[[nodiscard]]
 		constexpr value_type elem(size_t index) const noexcept;
 

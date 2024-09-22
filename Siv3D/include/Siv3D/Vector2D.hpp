@@ -70,6 +70,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの要素を返します。
+		/// @param index インデックス（0 または 1）
+		/// @return 指定したインデックスの要素。index が 2 以上の場合は 0 を返します。
 		[[nodiscard]]
 		constexpr value_type elem(size_t index) const noexcept;
 
@@ -79,9 +82,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief x 成分へのポインタを返します。
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
+		/// @return x 成分へのポインタ
 		[[nodiscard]]
 		constexpr value_type* getPointer() noexcept;
 
+		/// @brief x 成分へのポインタを返します。
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
+		/// @return x 成分へのポインタ
 		[[nodiscard]]
 		constexpr const value_type* getPointer() const noexcept;
 
@@ -121,7 +130,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Vector2D operator *(Vector2D v) const noexcept;
 		
-		template <Concept::Arithmetic U> // IntelliSense のエラー回避のため template を使う (17.10 Preview 1)
+		template <Concept::Arithmetic U> // IntelliSense のエラー回避のため template を使う (17.12 Preview 2)
 		[[nodiscard]]
 		friend constexpr Vector2D operator *(const U s, const Vector2D v) noexcept
 		{
@@ -182,6 +191,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つのベクトルが等しいかを返します。
+		/// @param lhs 一方のベクトル
+		/// @param rhs もう一方のベクトル
+		/// @return 2 つのベクトルが等しい場合 true, それ以外の場合は false
+		/// @remark 浮動小数点数誤差を考慮する場合は `.epsilonEquals()` を使用してください。
 		[[nodiscard]]
 		friend constexpr bool operator ==(const Vector2D lhs, const Vector2D rhs) noexcept
 		{
@@ -350,8 +364,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 座標を指定した長方形の範囲内にクランプします。
+		/// @param rect クランプする範囲
+		/// @return *this
 		Vector2D& clamp(const RectF& rect) noexcept;
 
+		/// @brief 指定した長方形の範囲内にクランプした座標を返します。
+		/// @param rect クランプする範囲
+		/// @return クランプされた座標
 		[[nodiscard]]
 		Vector2D clamped(const RectF& rect) const noexcept;
 
@@ -361,6 +381,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 内積を返します。
+		/// @tparam U もう一方のベクトルの型
+		/// @param v もう一方のベクトル
+		/// @return 内積
 		template <class U>
 		[[nodiscard]]
 		constexpr auto dot(Vector2D<U> v) const noexcept;
@@ -371,6 +395,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 外積を返します。
+		/// @tparam U もう一方のベクトルの型
+		/// @param v もう一方のベクトル
+		/// @return 外積
+		/// @remark `(x * v.y) - (y * v.x)` を返します。
 		template <class U>
 		[[nodiscard]]
 		constexpr auto cross(Vector2D<U> v) const noexcept;
@@ -381,6 +410,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 水平方向のアスペクト比を返します。
+		/// @return 水平方向のアスペクト比
+		/// @remark `x / y` を返します。y が 0 の場合は 0 を返します。
 		[[nodiscard]]
 		constexpr value_type horizontalAspectRatio() const noexcept;
 
@@ -660,6 +692,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の座標との中点を返します。
+		/// @param other 別の座標
+		/// @return 別の座標との中点
 		[[nodiscard]]
 		constexpr Vector2D getMidpoint(Vector2D other) const noexcept;
 
@@ -678,6 +713,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 現在の座標を中心とし、指定した角度と距離にある座標を返します。
+		/// @param angle 角度（ラジアン）
+		/// @param distance 距離
+		/// @return 指定した角度と距離にある座標
 		[[nodiscard]]
 		Vector2D getPointByAngleAndDistance(value_type angle, value_type distance) const noexcept;
 
@@ -687,6 +726,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別のベクトルとの線形補間を返します。
+		/// @param other 別のベクトル
+		/// @param f 補間係数
+		/// @return 線形補間されたベクトル
 		[[nodiscard]]
 		constexpr Vector2D lerp(Vector2D other, value_type f) const noexcept;
 
@@ -719,6 +762,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の図形と交差しているかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差している場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -729,6 +776,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 

@@ -433,6 +433,11 @@ namespace s3d
 		/// @return *this
 		constexpr Circle& set(Arg::leftCenter_<position_type> leftCenter, size_type _r) noexcept;
 
+		/// @brief 円を変更します。
+		/// @param circle 新しい円
+		/// @return *this
+		constexpr Circle& set(const Circle& circle) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	movedBy

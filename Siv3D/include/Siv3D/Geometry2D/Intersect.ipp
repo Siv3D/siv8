@@ -35,7 +35,7 @@ namespace s3d
 
 			const double t = Max(0.0, Min(1.0, (p - start).dot(end - start) / l2));
 
-			const Vec2 projection = (start + t * (end - start));
+			const Vec2 projection = (start + (end - start) * t);
 
 			return p.distanceFromSq(projection);
 		}

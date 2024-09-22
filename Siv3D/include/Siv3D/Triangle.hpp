@@ -182,9 +182,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の点 0 の座標を変更した新しい三角形を返します。
+		/// @param _x 新しい点 0 の X 座標
+		/// @param _y 新しい点 0 の Y 座標
+		/// @return 新しい点 0 の座標を持つ新しい三角形
 		[[nodiscard]]
 		constexpr Triangle withP0(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 三角形の点 0 の座標を変更した新しい三角形を返します。
+		/// @param _p0 新しい点 0 の座標
+		/// @return 新しい点 0 の座標を持つ新しい三角形
 		[[nodiscard]]
 		constexpr Triangle withP0(position_type _p0) const noexcept;
 
@@ -194,9 +201,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の点 1 の座標を変更した新しい三角形を返します。
+		/// @param _x 新しい点 1 の X 座標
+		/// @param _y 新しい点 1 の Y 座標
+		/// @return 新しい点 1 の座標を持つ新しい三角形
 		[[nodiscard]]
 		constexpr Triangle withP1(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 三角形の点 1 の座標を変更した新しい三角形を返します。
+		/// @param _p1 新しい点 1 の座標
+		/// @return 新しい点 1 の座標を持つ新しい三角形
 		[[nodiscard]]
 		constexpr Triangle withP1(position_type _p1) const noexcept;
 
@@ -206,9 +220,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の点 2 の座標を変更した新しい三角形を返します。
+		/// @param _x 新しい点 2 の X 座標
+		/// @param _y 新しい点 2 の Y 座標
+		/// @return 新しい点 2 の座標を持つ新しい三角形
 		[[nodiscard]]
 		constexpr Triangle withP2(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 三角形の点 2 の座標を変更した新しい三角形を返します。
+		/// @param _p2 新しい点 2 の座標
+		/// @return 新しい点 2 の座標を持つ新しい三角形
 		[[nodiscard]]
 		constexpr Triangle withP2(position_type _p2) const noexcept;
 
@@ -218,9 +239,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標が重心となるように三角形を平行移動した新しい三角形を返します。
+		/// @param _x 新しい重心の X 座標
+		/// @param _y 新しい重心の Y 座標
+		/// @return 新しい重心を持つ新しい三角形
 		[[nodiscard]]
 		constexpr Triangle withCentroid(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 指定した座標が重心となるように三角形を平行移動した新しい三角形を返します。
+		/// @param _centroid 新しい重心の座標
+		/// @return 新しい重心を持つ新しい三角形
 		[[nodiscard]]
 		constexpr Triangle withCentroid(position_type _centroid) const noexcept;
 
@@ -229,11 +257,27 @@ namespace s3d
 		//	set
 		//
 		////////////////////////////////////////////////////////////////
-
+		
+		/// @brief 三角形の各頂点の座標を変更します。
+		/// @param x0 点 0 の X 座標
+		/// @param y0 点 0 の Y 座標
+		/// @param x1 点 1 の X 座標
+		/// @param y1 点 1 の Y 座標
+		/// @param x2 点 2 の X 座標
+		/// @param y2 点 2 の Y 座標
+		/// @return *this
 		constexpr Triangle& set(value_type x0, value_type y0, value_type x1, value_type y1, value_type x2, value_type y2) noexcept;
 
+		/// @brief 三角形の各頂点の座標を変更します。
+		/// @param _p0 点 0 の座標
+		/// @param _p1 点 1 の座標
+		/// @param _p2 点 2 の座標
+		/// @return *this
 		constexpr Triangle& set(const position_type& _p0, const position_type& _p1, const position_type& _p2) noexcept;
 
+		/// @brief 三角形を変更します。
+		/// @param triangle 新しい三角形
+		/// @return *this
 		constexpr Triangle& set(const Triangle& triangle) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -242,8 +286,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標が重心となるように三角形を平行移動します。
+		/// @param x 新しい重心の X 座標
+		/// @param y 新しい重心の Y 座標
+		/// @return *this
 		constexpr Triangle& setCentroid(value_type x, value_type y) noexcept;
 
+		/// @brief 指定した座標が重心となるように三角形を平行移動します。
+		/// @param pos 新しい重心の座標
+		/// @return *this
 		constexpr Triangle& setCentroid(position_type pos) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -252,9 +303,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形を平行移動した新しい三角形を返します。
+		/// @param x X 方向の移動距離
+		/// @param y Y 方向の移動距離
+		/// @return 平行移動した新しい三角形
 		[[nodiscard]]
 		constexpr Triangle movedBy(value_type x, value_type y) const noexcept;
 
+		/// @brief 三角形を平行移動した新しい三角形を返します。
+		/// @param v 移動距離
+		/// @return 平行移動した新しい三角形
 		[[nodiscard]]
 		constexpr Triangle movedBy(position_type v) const noexcept;
 
@@ -264,8 +322,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形を平行移動します。
+		/// @param x X 方向の移動距離
+		/// @param y Y 方向の移動距離
+		/// @return *this
 		constexpr Triangle& moveBy(value_type x, value_type y) noexcept;
 
+		/// @brief 三角形を平行移動します。
+		/// @param v 移動距離
+		/// @return *this
 		constexpr Triangle& moveBy(position_type v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -369,6 +434,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形が面積を持つかを返します。
+		/// @return 三角形が面積を持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool hasArea() const noexcept;
 
@@ -378,9 +445,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の重心の X 座標を返します。
+		/// @return 三角形の重心の X 座標
 		[[nodiscard]]
 		constexpr value_type centroidX() const noexcept;
 
+		/// @brief 三角形の重心の Y 座標を返します。
+		/// @return 三角形の重心の Y 座標
 		[[nodiscard]]
 		constexpr value_type centroidY() const noexcept;
 
@@ -390,6 +461,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の重心を返します。
+		/// @return 三角形の重心
 		[[nodiscard]]
 		constexpr position_type centroid() const noexcept;
 
@@ -460,6 +533,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の面積を返します。
+		/// @return 三角形の面積
 		[[nodiscard]]
 		constexpr value_type area() const noexcept;
 
@@ -469,6 +544,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の周の長さを返します。
+		/// @return 三角形の周の長さ
 		[[nodiscard]]
 		value_type perimeter() const noexcept;
 
@@ -478,6 +555,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形を囲む最小の矩形を返します。
+		/// @return 三角形を囲む最小の矩形
 		[[nodiscard]]
 		RectF boundingRect() const noexcept;
 
@@ -487,6 +566,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の外接円を返します。
+		/// @return 三角形の外接円
 		[[nodiscard]]
 		Circle getCircumscribedCircle() const noexcept;
 
@@ -496,6 +577,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の内接円を返します。
+		/// @return 三角形の内接円
 		[[nodiscard]]
 		Circle getInscribedCircle() const noexcept;
 
@@ -544,6 +627,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の三角形との線形補間を計算します。
+		/// @param other 別の三角形
+		/// @param f 補間係数
+		/// @return 線形補間された三角形
 		[[nodiscard]]
 		constexpr Triangle lerp(const Triangle& other, double f) const noexcept;
 
@@ -756,6 +843,35 @@ namespace s3d
 		static void ThrowSideAtIndexOutOfRange();
 	};
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::Triangle>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::Triangle& value, format_context& ctx);
+};
+
+template <>
+struct fmt::formatter<s3d::Triangle, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::Triangle& value, s3d::BufferContext& ctx);
+};
 
 ////////////////////////////////////////////////////////////////
 //

@@ -273,7 +273,7 @@ namespace s3d
 		const double d1 = p0.distanceFrom(p2);
 		const double d2 = p1.distanceFrom(p0);
 		const double perimeter = (d0 + d1 + d2);
-		const Vec2 center{ (d0 * p0 + d1 * p1 + d2 * p2) / perimeter };
+		const Vec2 center{ (p0 * d0 + p1 * d1 + p2 * d2) / perimeter };
 		const double area2 = Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y));
 
 		return{ center, (area2 / perimeter) };
@@ -409,5 +409,44 @@ namespace s3d
 	void Triangle::ThrowSideAtIndexOutOfRange()
 	{
 		throw std::out_of_range{ "Triangle::sideAtIndex() index out of range" };
+	}
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+fmt::format_context::iterator fmt::formatter<s3d::Triangle>::format(const s3d::Triangle& value, fmt::format_context& ctx)
+{
+	if (tag.empty())
+	{
+		return fmt::format_to(ctx.out(), "(({}, {}), ({}, {}), ({}, {}))", value.p0.x, value.p0.y, value.p1.x, value.p1.y, value.p2.x, value.p2.y);
+	}
+	else
+	{
+		const std::string format
+			= ("(({:" + tag + "}, {:" + tag + "}), ({:" + tag + "}, {:" + tag + "}), ({:" + tag + "}, {:" + tag + "}))");
+		return fmt::vformat_to(ctx.out(), format, fmt::make_format_args(value.p0.x, value.p0.y, value.p1.x, value.p1.y, value.p2.x, value.p2.y));
+	}
+}
+
+s3d::ParseContext::iterator fmt::formatter<s3d::Triangle, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::Triangle, s3d::char32>::format(const s3d::Triangle& value, s3d::BufferContext& ctx)
+{
+	if (tag.empty())
+	{
+		return format_to(ctx.out(), U"(({}, {}), ({}, {}), ({}, {}))", value.p0.x, value.p0.y, value.p1.x, value.p1.y, value.p2.x, value.p2.y);
+	}
+	else
+	{
+		const std::u32string format
+			= (U"(({:" + tag + U"}, {:" + tag + U"}), ({:" + tag + U"}, {:" + tag + U"}), ({:" + tag + U"}, {:" + tag + U"}))");
+		return format_to(ctx.out(), format, value.p0.x, value.p0.y, value.p1.x, value.p1.y, value.p2.x, value.p2.y);
 	}
 }

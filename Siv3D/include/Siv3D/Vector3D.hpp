@@ -130,7 +130,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Vector3D operator *(Vector3D v) const noexcept;
 
-		template <Concept::Arithmetic U> // IntelliSense のエラー回避のため template を使う (17.10 Preview 1)
+		template <Concept::Arithmetic U> // IntelliSense のエラー回避のため template を使う (17.12 Preview 2)
 		[[nodiscard]]
 		friend constexpr Vector3D operator *(const U s, const Vector3D v) noexcept
 		{

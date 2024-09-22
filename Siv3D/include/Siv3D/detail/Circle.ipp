@@ -306,6 +306,13 @@ namespace s3d
 		return *this;
 	}
 
+	constexpr Circle& Circle::set(const Circle& circle) noexcept
+	{
+		center = circle.center;
+		r = circle.r;
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	movedBy

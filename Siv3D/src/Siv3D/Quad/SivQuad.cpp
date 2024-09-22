@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -38,9 +39,46 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const Quad& value)
+	{
+		formatData.string.append(U"(("_sv);
+		detail::AppendFloat(formatData.string, value.p0.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.p0.y);
+		formatData.string.append(U"), ("_sv);
+		detail::AppendFloat(formatData.string, value.p1.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.p1.y);
+		formatData.string.append(U"), ("_sv);
+		detail::AppendFloat(formatData.string, value.p2.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.p2.y);
+		formatData.string.append(U"), ("_sv);
+		detail::AppendFloat(formatData.string, value.p3.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.p3.y);
+		formatData.string.append(U"))"_sv);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
+
+	void Quad::ThrowPointAtIndexOutOfRange()
+	{
+		throw std::out_of_range{ "Quad::pointAtIndex() index out of range" };
+	}
+
+	void Quad::ThrowSideAtIndexOutOfRange()
+	{
+		throw std::out_of_range{ "Quad::sideAtIndex() index out of range" };
+	}
 
 	void Quad::ThrowTriangleAtIndexOutOfRange()
 	{
