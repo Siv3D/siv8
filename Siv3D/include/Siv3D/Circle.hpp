@@ -833,6 +833,9 @@ namespace s3d
 		/// @return *this
 		const Circle& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 		
+		/// @brief 円を描きます。
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& draw(const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1083,7 +1086,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 出力ストリームに Circle の内容を出力します。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 出力ストリームの文字型
 		/// @param output 出力ストリーム
 		/// @param value Circle
 		/// @return 出力ストリーム
@@ -1103,7 +1106,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 入力ストリームから Circle の内容を読み込みます。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 入力ストリームの文字型
 		/// @param input 入力ストリーム
 		/// @param value Circle の格納先
 		/// @return 入力ストリーム

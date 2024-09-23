@@ -254,6 +254,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 辺を外側に拡大または内側に縮小した新しい四角形を返します。
+		/// @param size 拡大縮小の量（正の値で外側に拡大、負の値で内側に縮小）
+		/// @return 拡大縮小した新しい四角形
 		[[nodiscard]]
 		Quad stretched(value_type size) const noexcept;
 
@@ -263,9 +266,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を中心に回転させた新しい四角形を返します。
+		/// @param x 回転の中心の X 座標
+		/// @param y 回転の中心の Y 座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転させた新しい四角形
 		[[nodiscard]]
 		Quad rotatedAt(value_type x, value_type y, value_type angle) const noexcept;
 
+		/// @brief 指定した座標を中心に回転させた新しい四角形を返します。
+		/// @param pos 回転の中心の座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転させた新しい四角形
 		[[nodiscard]]
 		Quad rotatedAt(position_type pos, value_type angle) const noexcept;
 
@@ -275,12 +287,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点を基準に拡大縮小した新しい四角形を返します。
+		/// @param s 拡大倍率
+		/// @return 拡大縮小した新しい四角形
 		[[nodiscard]]
 		constexpr Quad scaledFromOrigin(value_type s) const noexcept;
 
+		/// @brief 原点を基準に拡大縮小した新しい四角形を返します。
+		/// @param sx X 方向の拡大倍率
+		/// @param sy Y 方向の拡大倍率
+		/// @return 拡大縮小した新しい四角形
 		[[nodiscard]]
 		constexpr Quad scaledFromOrigin(value_type sx, value_type sy) const noexcept;
 
+		/// @brief 原点を基準に拡大縮小した新しい四角形を返します。
+		/// @param s X 方向および Y 方向の拡大倍率
+		/// @return 拡大縮小した新しい四角形
 		[[nodiscard]]
 		constexpr Quad scaledFromOrigin(Vec2 s) const noexcept;
 
@@ -290,10 +312,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点を基準に拡大縮小します。
+		/// @param s 拡大倍率
+		/// @return *this
 		constexpr Quad& scaleFromOrigin(value_type s) noexcept;
 
+		/// @brief 原点を基準に拡大縮小します。
+		/// @param sx X 方向の拡大倍率
+		/// @param sy Y 方向の拡大倍率
+		/// @return *this
 		constexpr Quad& scaleFromOrigin(value_type sx, value_type sy) noexcept;
 
+		/// @brief 原点を基準に拡大縮小します。
+		/// @param s X 方向および Y 方向の拡大倍率
+		/// @return *this
 		constexpr Quad& scaleFromOrigin(Vec2 s) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -302,12 +334,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置を基準に拡大縮小した新しい四角形を返します。
+		/// @param pos 基準位置
+		/// @param s 拡大倍率
+		/// @return 拡大縮小した新しい四角形
 		[[nodiscard]]
 		constexpr Quad scaledFrom(position_type pos, value_type s) const noexcept;
 
+		/// @brief 指定した位置を基準に拡大縮小した新しい四角形を返します。
+		/// @param pos 基準位置
+		/// @param sx X 方向の拡大倍率
+		/// @param sy Y 方向の拡大倍率
+		/// @return 拡大縮小した新しい四角形
 		[[nodiscard]]
 		constexpr Quad scaledFrom(position_type pos, value_type sx, value_type sy) const noexcept;
 
+		/// @brief 指定した位置を基準に拡大縮小した新しい四角形を返します。
+		/// @param pos 基準位置
+		/// @param s X 方向および Y 方向の拡大倍率
+		/// @return 拡大縮小した新しい四角形
 		[[nodiscard]]
 		constexpr Quad scaledFrom(position_type pos, Vec2 s) const noexcept;
 
@@ -317,10 +362,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置を基準に拡大縮小します。
+		/// @param pos 基準位置
+		/// @param s 拡大倍率
+		/// @return *this
 		constexpr Quad& scaleFrom(position_type pos, value_type s) noexcept;
 
+		/// @brief 指定した位置を基準に拡大縮小します。
+		/// @param pos 基準位置
+		/// @param sx X 方向の拡大倍率
+		/// @param sy Y 方向の拡大倍率
+		/// @return *this
 		constexpr Quad& scaleFrom(position_type pos, value_type sx, value_type sy) noexcept;
 
+		/// @brief 指定した位置を基準に拡大縮小します。
+		/// @param pos 基準位置
+		/// @param s X 方向および Y 方向の拡大倍率
+		/// @return *this
 		constexpr Quad& scaleFrom(position_type pos, Vec2 s) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -686,10 +744,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形を描きます。
+		/// @param color 四角形の色
+		/// @return *this
 		const Quad& draw(const ColorF& color = Palette::White) const;
 
+		/// @brief 四角形を描きます。
+		/// @param color0 頂点 0 の色
+		/// @param color1 頂点 1 の色
+		/// @param color2 頂点 2 の色
+		/// @param color3 頂点 3 の色
+		/// @return *this
 		const Quad& draw(const ColorF& color0, const ColorF& color1, const ColorF& color2, const ColorF& color3) const;
 
+		/// @brief 四角形を描きます。
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Quad& draw(const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -716,6 +786,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 出力ストリームに Quad の内容を出力します。
+		/// @tparam CharType 出力ストリームの文字型
+		/// @param output 出力ストリーム
+		/// @param value Quad
+		/// @return 出力ストリーム
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Quad& value)
 		{
@@ -732,6 +807,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 入力ストリームから Quad の内容を読み込みます。
+		/// @tparam CharType 入力ストリームの文字型
+		/// @param input 入力ストリーム
+		/// @param value Quad の格納先
+		/// @return 入力ストリーム
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Quad& value)
 		{
@@ -749,6 +829,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Quad を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value Quad
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Quad& value);
 
 	private:

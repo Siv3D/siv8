@@ -1688,7 +1688,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 出力ストリームに RectF の内容を出力します。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 出力ストリームの文字型
 		/// @param output 出力ストリーム
 		/// @param value RectF
 		/// @return 出力ストリーム
@@ -1709,7 +1709,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 入力ストリームから RectF の内容を読み込みます。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 入力ストリームの文字型
 		/// @param input 入力ストリーム
 		/// @param value RectF の格納先
 		/// @return 入力ストリーム
