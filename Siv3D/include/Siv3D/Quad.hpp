@@ -259,15 +259,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	rotated
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		Quad rotated(value_type angle) const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	rotatedAt
 		//
 		////////////////////////////////////////////////////////////////
@@ -411,7 +402,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 四角形の周上の指定した距離に対応する座標を返します。
-		/// @param length 距離（p0-p1-p2 の順）
+		/// @param length 距離（p0-p1-p2-p3 の順）
 		/// @return 四角形の周上の指定した距離に対応する座標
 		[[nodiscard]]
 		Vec2 pointAtLength(double length) const noexcept;
@@ -501,10 +492,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 四角形を囲む最小の円を返します。
-		/// @return 四角形を囲む最小の円
-		[[nodiscard]]
-		Circle boundingCircle() const noexcept;
+		///// @brief 四角形を囲む最小の円を返します。
+		///// @return 四角形を囲む最小の円
+		//[[nodiscard]]
+		//Circle boundingCircle() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -556,7 +547,7 @@ namespace s3d
 		/// @param f 補間係数
 		/// @return 線形補間された四角形
 		[[nodiscard]]
-		constexpr Triangle lerp(const Quad& other, double f) const noexcept;
+		constexpr Quad lerp(const Quad& other, double f) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

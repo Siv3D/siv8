@@ -144,7 +144,7 @@ namespace s3d
 		}
 		else
 		{
-			return Line{ p2, p0 }.pointAtLength(length - l0 - l1);
+			return Line{ p2, p0 }.pointAtLength(length - (l0 + l1));
 		}
 	}
 
@@ -173,7 +173,7 @@ namespace s3d
 		}
 		else
 		{
-			return Line{ p2, p0 }.pointAtLength(length - l0 - l1);
+			return Line{ p2, p0 }.pointAtLength(length - (l0 + l1));
 		}
 	}
 
@@ -226,9 +226,39 @@ namespace s3d
 
 	RectF Triangle::boundingRect() const noexcept
 	{
-		auto [xMin, xMax] = std::minmax({ p0.x, p1.x, p2.x });
-		auto [yMin, yMax] = std::minmax({ p0.y, p1.y, p2.y });
+		const auto [xMin, xMax] = std::minmax({ p0.x, p1.x, p2.x });
+		const auto [yMin, yMax] = std::minmax({ p0.y, p1.y, p2.y });
 		return{ xMin, yMin, (xMax - xMin), (yMax - yMin) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	boundingCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle Triangle::boundingCircle() const noexcept
+	{
+		const Circle c0{ p0, p1 };
+		const Circle c1{ p1, p2 };
+		const Circle c2{ p2, p0 };
+		
+		if (c0.intersects(p2))
+		{
+			return c0;
+		}
+		else if (c1.intersects(p0))
+		{
+			return c1;
+		}
+		else if (c2.intersects(p1))
+		{
+			return c2;
+		}
+		else
+		{
+			return getCircumscribedCircle();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

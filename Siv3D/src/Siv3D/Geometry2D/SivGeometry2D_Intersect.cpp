@@ -332,5 +332,21 @@ namespace s3d
 		{
 			return Intersect(b, a);
 		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(RoundRect, _)
+		//
+		//////////////////////////////////////////////////
+
+		bool Intersect(const RoundRect& a, const Point& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const RoundRect& a, const Vec2& b) noexcept
+		{
+			return Intersect(b, a);
+		}
 	}
 }

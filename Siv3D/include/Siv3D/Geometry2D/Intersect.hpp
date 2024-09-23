@@ -439,11 +439,11 @@ namespace s3d
 		//
 		//////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//inline constexpr bool Intersect(const Ellipse& a, const Point& b) noexcept;
+		[[nodiscard]]
+		constexpr bool Intersect(const Ellipse& a, const Point& b) noexcept;
 
-		//[[nodiscard]]
-		//inline constexpr bool Intersect(const Ellipse& a, const Vec2& b) noexcept;
+		[[nodiscard]]
+		constexpr bool Intersect(const Ellipse& a, const Vec2& b) noexcept;
 
 		//[[nodiscard]]
 		//inline bool Intersect(const Ellipse& a, const Line& b) noexcept;
@@ -490,11 +490,11 @@ namespace s3d
 		//
 		//////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//inline constexpr bool Intersect(const Triangle& a, const Point& b) noexcept;
+		[[nodiscard]]
+		constexpr bool Intersect(const Triangle& a, const Point& b) noexcept;
 
-		//[[nodiscard]]
-		//inline constexpr bool Intersect(const Triangle& a, const Vec2& b) noexcept;
+		[[nodiscard]]
+		constexpr bool Intersect(const Triangle& a, const Vec2& b) noexcept;
 
 		//[[nodiscard]]
 		//inline bool Intersect(const Triangle& a, const Line& b) noexcept;
@@ -541,11 +541,11 @@ namespace s3d
 		//
 		//////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//inline constexpr bool Intersect(const Quad& a, const Point& b) noexcept;
+		[[nodiscard]]
+		constexpr bool Intersect(const Quad& a, const Point& b) noexcept;
 
-		//[[nodiscard]]
-		//inline constexpr bool Intersect(const Quad& a, const Vec2& b) noexcept;
+		[[nodiscard]]
+		constexpr bool Intersect(const Quad& a, const Vec2& b) noexcept;
 
 		//[[nodiscard]]
 		//inline bool Intersect(const Quad& a, const Line& b) noexcept;
@@ -592,11 +592,11 @@ namespace s3d
 		//
 		//////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//inline bool Intersect(const RoundRect& a, const Point& b) noexcept;
+		[[nodiscard]]
+		bool Intersect(const RoundRect& a, const Point& b) noexcept;
 
-		//[[nodiscard]]
-		//inline bool Intersect(const RoundRect& a, const Vec2& b) noexcept;
+		[[nodiscard]]
+		bool Intersect(const RoundRect& a, const Vec2& b) noexcept;
 
 		//[[nodiscard]]
 		//inline bool Intersect(const RoundRect& a, const Line& b) noexcept;
