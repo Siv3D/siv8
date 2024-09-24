@@ -122,6 +122,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	mirroredAlongP0P1, mirroredAlongP1P2, mirroredAlongP2P0
+	//
+	////////////////////////////////////////////////////////////////
+
+	Triangle Triangle::mirroredAlongP0P1() const noexcept
+	{
+		return{ p1, p0, (2 * p0p1().projectPoint(p2) - p2) };
+	}
+
+	Triangle Triangle::mirroredAlongP1P2() const noexcept
+	{
+		return{ p2, p1, (2 * p1p2().projectPoint(p0) - p0) };
+	}
+
+	Triangle Triangle::mirroredAlongP2P0() const noexcept
+	{
+		return{ p0, p2, (2 * p2p0().projectPoint(p1) - p1) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	pointAtLength
 	//
 	////////////////////////////////////////////////////////////////

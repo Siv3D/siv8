@@ -315,6 +315,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	rotated180AlongP0P1, rotated180AlongP1P2, rotated180AlongP2P0
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::rotated180AlongP0P1() const noexcept
+	{
+		return{ p1, p0, (p0 + p1 - p2) };
+	}
+
+	constexpr Triangle Triangle::rotated180AlongP1P2() const noexcept
+	{
+		return{ p2, p1, (p1 + p2 - p0) };
+	}
+
+	constexpr Triangle Triangle::rotated180AlongP2P0() const noexcept
+	{
+		return{ p0, p2, (p2 + p0 - p1) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	isClockwise
 	//
 	////////////////////////////////////////////////////////////////
@@ -432,6 +453,48 @@ namespace s3d
 		{
 			ThrowSideAtIndexOutOfRange();
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	p0p1, p1p2, p2p0
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Triangle::p0p1() const noexcept
+	{
+		return{ p0, p1 };
+	}
+
+	constexpr Line Triangle::p1p2() const noexcept
+	{
+		return{ p1, p2 };
+	}
+
+	constexpr Line Triangle::p2p0() const noexcept
+	{
+		return{ p2, p0 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	p1p0, p2p1, p0p2
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Triangle::p1p0() const noexcept
+	{
+		return{ p1, p0 };
+	}
+
+	constexpr Line Triangle::p2p1() const noexcept
+	{
+		return{ p2, p1 };
+	}
+
+	constexpr Line Triangle::p0p2() const noexcept
+	{
+		return{ p0, p2 };
 	}
 
 	////////////////////////////////////////////////////////////////

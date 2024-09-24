@@ -480,6 +480,48 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	rotated180AlongP0P1, rotated180AlongP1P2, rotated180AlongP2P0
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三角形を辺 p0 p1 が重なるように 180° 回転させた新しい三角形を返します。
+		/// @return 作成した三角形
+		[[nodiscard]]
+		constexpr Triangle rotated180AlongP0P1() const noexcept;
+		
+		/// @brief 三角形を辺 p1 p2 が重なるように 180° 回転させた新しい三角形を返します。
+		/// @return 作成した三角形
+		[[nodiscard]]
+		constexpr Triangle rotated180AlongP1P2() const noexcept;
+
+		/// @brief 三角形を辺 p2 p0 が重なるように 180° 回転させた新しい三角形を返します。
+		/// @return 作成した三角形
+		[[nodiscard]]
+		constexpr Triangle rotated180AlongP2P0() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mirroredAlongP0P1, mirroredAlongP1P2, mirroredAlongP2P0
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三角形を辺 p0 p1 を軸に鏡映した新しい三角形を返します。
+		/// @return 作成した三角形
+		[[nodiscard]]
+		Triangle mirroredAlongP0P1() const noexcept;
+		
+		/// @brief 三角形を辺 p1 p2 を軸に鏡映した新しい三角形を返します。
+		/// @return 作成した三角形
+		[[nodiscard]]
+		Triangle mirroredAlongP1P2() const noexcept;
+		
+		/// @brief 三角形を辺 p2 p0 を軸に鏡映した新しい三角形を返します。
+		/// @return 作成した三角形
+		[[nodiscard]]
+		Triangle mirroredAlongP2P0() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	isClockwise
 		//
 		////////////////////////////////////////////////////////////////
@@ -588,6 +630,48 @@ namespace s3d
 		[[nodiscard]]
 		size_t sideIndexAtLength(double length) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	p0p1, p1p2, p2p0
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief p0 から p1 への線分を返します。
+		/// @return p0 から p1 への線分
+		[[nodiscard]]
+		constexpr Line p0p1() const noexcept;
+
+		/// @brief p1 から p2 への線分を返します。
+		/// @return p1 から p2 への線分
+		[[nodiscard]]
+		constexpr Line p1p2() const noexcept;
+		
+		/// @brief p2 から p0 への線分を返します。
+		/// @return p2 から p0 への線分
+		[[nodiscard]]
+		constexpr Line p2p0() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	p1p0, p2p1, p0p2
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief p1 から p0 への線分を返します。
+		/// @return p1 から p0 への線分
+		[[nodiscard]]
+		constexpr Line p1p0() const noexcept;
+
+		/// @brief p2 から p1 への線分を返します。
+		/// @return p2 から p1 への線分
+		[[nodiscard]]
+		constexpr Line p2p1() const noexcept;
+
+		/// @brief p0 から p2 への線分を返します。
+		/// @return p0 から p2 への線分
+		[[nodiscard]]
+		constexpr Line p0p2() const noexcept;
+	
 		////////////////////////////////////////////////////////////////
 		//
 		//	area

@@ -36,6 +36,7 @@ namespace s3d
 	Line::position_type Line::closestPointTo(const position_type pos) const noexcept
 	{
 		Vec2 v = (end - start);
+		
 		const double d = v.length();
 
 		if (d == 0.0)
@@ -44,6 +45,7 @@ namespace s3d
 		}
 
 		v /= d;
+		
 		const double t = v.dot(pos - start);
 
 		if (t < 0.0)
@@ -55,6 +57,30 @@ namespace s3d
 		{
 			return end;
 		}
+
+		return (start + v * t);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	projectPoint
+	//
+	////////////////////////////////////////////////////////////////
+
+	Line::position_type Line::projectPoint(const position_type pos) const noexcept
+	{
+		Vec2 v = (end - start);
+		
+		const double d = v.length();
+
+		if (d == 0.0)
+		{
+			return start;
+		}
+
+		v /= d;
+
+		const double t = v.dot(pos - start);
 
 		return (start + v * t);
 	}
@@ -84,7 +110,7 @@ namespace s3d
 		// `Line::intersectsAt()` is based on
 		// https://www.codeproject.com/Tips/862988/Find-the-Intersection-Point-of-Two-Line-Segments
 		//
-		// Licenced with the Code Project Open Licence (CPOL)
+		// Licensed with the Code Project Open License (CPOL)
 		// http://www.codeproject.com/info/cpol10.aspx
 		//
 
