@@ -484,17 +484,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 三角形を辺 p0 p1 が重なるように 180° 回転させた新しい三角形を返します。
+		/// @brief 三角形を辺 p0 p1 が重なるよう時計回りに 180° 回転させた新しい三角形を返します。
 		/// @return 作成した三角形
 		[[nodiscard]]
 		constexpr Triangle rotated180AlongP0P1() const noexcept;
 		
-		/// @brief 三角形を辺 p1 p2 が重なるように 180° 回転させた新しい三角形を返します。
+		/// @brief 三角形を辺 p1 p2 が重なるよう時計回りに 180° 回転させた新しい三角形を返します。
 		/// @return 作成した三角形
 		[[nodiscard]]
 		constexpr Triangle rotated180AlongP1P2() const noexcept;
 
-		/// @brief 三角形を辺 p2 p0 が重なるように 180° 回転させた新しい三角形を返します。
+		/// @brief 三角形を辺 p2 p0 が重なるよう時計回りに 180° 回転させた新しい三角形を返します。
 		/// @return 作成した三角形
 		[[nodiscard]]
 		constexpr Triangle rotated180AlongP2P0() const noexcept;
@@ -505,17 +505,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 三角形を辺 p0 p1 を軸に鏡映した新しい三角形を返します。
+		/// @brief 三角形を辺 p0 p1 を軸にミラー反転した新しい三角形を返します。
 		/// @return 作成した三角形
 		[[nodiscard]]
 		Triangle mirroredAlongP0P1() const noexcept;
 		
-		/// @brief 三角形を辺 p1 p2 を軸に鏡映した新しい三角形を返します。
+		/// @brief 三角形を辺 p1 p2 を軸にミラー反転した新しい三角形を返します。
 		/// @return 作成した三角形
 		[[nodiscard]]
 		Triangle mirroredAlongP1P2() const noexcept;
 		
-		/// @brief 三角形を辺 p2 p0 を軸に鏡映した新しい三角形を返します。
+		/// @brief 三角形を辺 p2 p0 を軸にミラー反転した新しい三角形を返します。
 		/// @return 作成した三角形
 		[[nodiscard]]
 		Triangle mirroredAlongP2P0() const noexcept;
