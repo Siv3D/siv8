@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/Circle.hpp>
+# include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Utility.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>

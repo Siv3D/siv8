@@ -26,7 +26,7 @@ namespace s3d
 		using position_type	= Vec2;
 
 		/// @brief 楕円の半径を表現する型
-		using size_type		= Vec2;
+		using size_type		= SizeF;
 
 		/// @brief 楕円の座標や半径の要素の型
 		using value_type	= position_type::value_type;
@@ -462,9 +462,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 半径を拡大縮小した新しい楕円を返します。
+		/// @param size X 軸、Y 軸 4 方向それぞれの拡大縮小量
+		/// @return 新しい楕円
 		[[nodiscard]]
 		constexpr Ellipse stretched(value_type size) const noexcept;
 
+		/// @brief 半径を拡大縮小した新しい楕円を返します。
+		/// @param _x X 軸の 2 方向にそれぞれの拡大縮小量
+		/// @param _y Y 軸の 2 方向にそれぞれの拡大縮小量
+		/// @return 新しい楕円
 		[[nodiscard]]
 		constexpr Ellipse stretched(double _x, double _y) const noexcept;
 
@@ -474,9 +481,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 半径を拡大縮小した新しい楕円を返します。
+		/// @param s 拡大倍率
+		/// @return 新しい楕円
 		[[nodiscard]]
 		constexpr Ellipse scaled(double s) const noexcept;
 
+		/// @brief 半径を拡大縮小した新しい楕円を返します。
+		/// @param sx X 軸方向の拡大倍率
+		/// @param sy Y 軸方向の拡大倍率
+		/// @return 新しい楕円
 		[[nodiscard]]
 		constexpr Ellipse scaled(double sx, double sy) const noexcept;
 
@@ -514,11 +528,13 @@ namespace s3d
 
 		/// @brief X 軸に平行な直径（線分）を返します。
 		/// @return X 軸に平行な直径（線分）
+		/// @remark `Line{ left(), right() }` と同じです。
 		[[nodiscard]]
 		constexpr Line horizontalDiameter() const noexcept;
 
 		/// @brief Y 軸に平行な直径（線分）を返します。
 		/// @return Y 軸に平行な直径（線分）
+		/// @remark `Line{ top(), bottom() }` と同じです。
 		[[nodiscard]]
 		constexpr Line verticalDiameter() const noexcept;
 
@@ -539,10 +555,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 楕円の周の長さを返します。
-		/// @return 楕円の周の長さ
+		/// @brief 楕円の周の長さの近似値を返します。
+		/// @return 楕円の周の長さの近似値
+		/// @remark ラマヌジャンの近似式を使用します。
 		[[nodiscard]]
-		constexpr value_type perimeter() const noexcept;
+		value_type perimeter() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -550,6 +567,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 楕円に外接する円を返します。
+		/// @return 楕円に外接する円
 		[[nodiscard]]
 		constexpr Circle boundingCircle() const noexcept;
 
@@ -559,6 +578,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 楕円に外接する長方形を返します。
+		/// @return 楕円に外接する長方形
 		[[nodiscard]]
 		constexpr RectF boundingRect() const noexcept;
 
