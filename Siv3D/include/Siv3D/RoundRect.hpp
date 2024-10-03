@@ -21,24 +21,39 @@ namespace s3d
 	/// @brief 角丸長方形
 	struct RoundRect
 	{
+		/// @brief 角丸長方形の座標を表現する型
 		using position_type	= RectF::position_type;
 
+		/// @brief 角丸長方形のサイズを表現する型
 		using size_type		= RectF::size_type;
 
+		/// @brief 角丸長方形の座標やサイズの成分の型
 		using value_type	= position_type::value_type;
 
 	SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4201)
 
 		union
 		{
+			/// @brief 基本の長方形
 			RectF rect;
 
 			struct
 			{
-				value_type x, y, w, h;
+				/// @brief 基本の長方形の左上の点の X 座標
+				value_type x;
+
+				/// @brief 基本の長方形の左上の点の Y 座標
+				value_type y;
+
+				/// @brief 基本の長方形の幅
+				value_type w;
+
+				/// @brief 基本の長方形の高さ
+				value_type h;
 			};
 		};
 
+		/// @brief 角丸の半径
 		value_type r;
 
 	SIV3D_DISABLE_MSVC_WARNINGS_POP()
@@ -287,11 +302,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 高さを変更した新しい角丸長方形を返します。
-		/// @param _h 新しい高さ
-		/// @return 高さを変更した新しい角丸長方形
+		/// @brief 角丸の半径を変更した新しい角丸長方形を返します。
+		/// @param _r 新しい角丸の半径
+		/// @return 角丸の半径を変更した新しい角丸長方形
 		[[nodiscard]]
-		constexpr RoundRect withR(value_type _h) const noexcept;
+		constexpr RoundRect withR(value_type _r) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -366,15 +381,48 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 角丸長方形の各要素を変更します。
+		/// @param _x 基本の長方形の左上の X 座標
+		/// @param _y 基本の長方形の左上の Y 座標
+		/// @param _w 基本の長方形の幅
+		/// @param _h 基本の長方形の高さ
+		/// @param _r 角丸の半径
+		/// @return *this
 		constexpr RoundRect& set(value_type _x, value_type _y, value_type _w, value_type _h, value_type _r) noexcept;
 
+		/// @brief 角丸長方形の各要素を変更します。
+		/// @param pos 基本の長方形の左上の座標
+		/// @param _w 基本の長方形の幅
+		/// @param _h 基本の長方形の高さ
+		/// @param _r 角丸の半径
+		/// @return *this
 		constexpr RoundRect& set(position_type pos, value_type _w, value_type _h, value_type _r) noexcept;
 
+		/// @brief 角丸長方形の各要素を変更します。
+		/// @param _x 基本の長方形の左上の X 座標
+		/// @param _y 基本の長方形の左上の Y 座標
+		/// @param size 基本の長方形のサイズ
+		/// @param _r 角丸の半径
+		/// @return *this
 		constexpr RoundRect& set(value_type _x, value_type _y, size_type size, value_type _r) noexcept;
 
+		/// @brief 角丸長方形の各要素を変更します。
+		/// @param pos 基本の長方形の左上の座標
+		/// @param size 基本の長方形のサイズ
+		/// @param _r 角丸の半径
+		/// @return *this
 		constexpr RoundRect& set(position_type pos, size_type size, value_type _r) noexcept;
 
+		/// @brief 角丸長方形の各要素を変更します。
+		/// @param _rect 基本の長方形
+		/// @param _r 角丸の半径
+		/// @return *this
 		constexpr RoundRect& set(const RectF& _rect, value_type _r) noexcept;
+
+		/// @brief 角丸長方形の各要素を変更します。
+		/// @param roundRect 新しい角丸長方形
+		/// @return *this
+		constexpr RoundRect& set(const RoundRect& roundRect) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -612,22 +660,22 @@ namespace s3d
 		/// @brief 左上の角丸曲線上の中心座標を返します。
 		/// @return 左上の角丸曲線上の中心座標
 		[[nodiscard]]
-		constexpr position_type cornerTl() const noexcept;
+		constexpr Vec2 cornerTl() const noexcept;
 
 		/// @brief 右上の角丸曲線上の中心座標を返します。
 		/// @return 右上の角丸曲線上の中心座標
 		[[nodiscard]]
-		constexpr position_type cornerTr() const noexcept;
+		constexpr Vec2 cornerTr() const noexcept;
 
 		/// @brief 右下の角丸曲線上の中心座標を返します。
 		/// @return 右下の角丸曲線上の中心座標
 		[[nodiscard]]
-		constexpr position_type cornerBr() const noexcept;
+		constexpr Vec2 cornerBr() const noexcept;
 
 		/// @brief 左下の角丸曲線上の中心座標を返します。
 		/// @return 左下の角丸曲線上の中心座標
 		[[nodiscard]]
-		constexpr position_type cornerBl() const noexcept;
+		constexpr Vec2 cornerBl() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -654,6 +702,32 @@ namespace s3d
 		/// @return 左下の角丸の中心座標
 		[[nodiscard]]
 		constexpr Vec2 blCenter() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tlCircle, trCircle, brCircle, blCircle
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 左上の角丸に対応する円を返します。
+		/// @return 左上の角丸に対応する円
+		[[nodiscard]]
+		constexpr Circle tlCircle() const noexcept;
+
+		/// @brief 右上の角丸に対応する円を返します。
+		/// @return 右上の角丸に対応する円
+		[[nodiscard]]
+		constexpr Circle trCircle() const noexcept;
+
+		/// @brief 右下の角丸に対応する円を返します。
+		/// @return 右下の角丸に対応する円
+		[[nodiscard]]
+		constexpr Circle brCircle() const noexcept;
+
+		/// @brief 左下の角丸に対応する円を返します。
+		/// @return 左下の角丸に対応する円
+		[[nodiscard]]
+		constexpr Circle blCircle() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -440,7 +440,7 @@ namespace s3d
 
 	constexpr Circle::value_type Circle::perimeter() const noexcept
 	{
-		return (2 * r * Math::Pi);
+		return (r * Math::TwoPi);
 	}
 
 	////////////////////////////////////////////////////////////////

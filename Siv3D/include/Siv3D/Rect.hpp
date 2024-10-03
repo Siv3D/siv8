@@ -776,7 +776,7 @@ namespace s3d
 		constexpr Rect& set(position_type _pos, size_type _size) noexcept;
 
 		/// @brief 長方形の左上の座標とサイズを変更します。
-		/// @param r 新しい長方形
+		/// @param rect 新しい長方形
 		/// @return *this
 		constexpr Rect& set(const Rect& rect) noexcept;
 

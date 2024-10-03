@@ -24,6 +24,21 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
+		static double WrapLength(double length, const double perimeter) noexcept
+		{
+			if (length < 0.0)
+			{
+				length = (perimeter + std::fmod(length, perimeter));
+			}
+			else if (perimeter <= length)
+			{
+				length = std::fmod(length, perimeter);
+			}
+
+			return length;
+		}
+
+		[[nodiscard]]
 		static bool IsEmpty(const RectF& rect, const double innerThickness, const double outerThickness) noexcept
 		{
 			return ((rect.w <= 0.0) || (rect.h <= 0.0)
@@ -31,6 +46,72 @@ namespace s3d
 				|| ((innerThickness == 0.0) && (outerThickness == 0.0)));
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pointAtLength
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 RoundRect::pointAtLength(double length) const noexcept
+	{
+		length = WrapLength(length, perimeter());
+
+		const double fanLength = (r * Math::HalfPi);
+		const double xLineLength = (rect.w - 2 * r);
+		const double yLineLength = (rect.h - 2 * r);
+
+		if (length <= xLineLength) // 上辺
+		{
+			return{ (x + r + length), y };
+		}
+		else if (length <= (xLineLength + fanLength)) // 右上の角
+		{
+			const double t = (length - xLineLength);
+			return trCircle().pointAtLength(t);
+		}
+		else if (length <= (xLineLength + yLineLength + fanLength)) // 右辺
+		{
+			const double t = (length - (xLineLength + fanLength));
+			return{ (x + w), (y + r + t) };
+		}
+		else if (length <= (xLineLength + yLineLength + 2 * fanLength)) // 右下の角
+		{
+			const double t = (length - (xLineLength + fanLength + yLineLength));
+			return brCircle().pointAtLength(fanLength + t);
+		}
+		else if (length <= (2 * xLineLength + yLineLength + 2 * fanLength)) // 下辺
+		{
+			const double t = (length - (xLineLength + 2 * fanLength + yLineLength));
+			return{ (x + w - r - t), (y + h) };
+		}
+		else if (length <= (2 * xLineLength + yLineLength + 3 * fanLength)) // 左下の角
+		{
+			const double t = (length - (2 * xLineLength + 2 * fanLength + yLineLength));
+			return blCircle().pointAtLength(fanLength * 2 + t);
+		}
+		else if (length <= (2 * xLineLength + 2 * yLineLength + 3 * fanLength)) // 左辺
+		{
+			const double t = (length - (2 * xLineLength + 3 * fanLength + yLineLength));
+			return{ x, (y + h - r - t) };
+		}
+		else // 左上の角
+		{
+			const double t = (length - (2 * xLineLength + 3 * fanLength + 2 * yLineLength));
+			return tlCircle().pointAtLength(fanLength * 3 + t);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	interpolatedPointAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	//Vec2 RoundRect::interpolatedPointAt(double t) const noexcept
+	//{
+
+	//}
 
 	////////////////////////////////////////////////////////////////
 	//
