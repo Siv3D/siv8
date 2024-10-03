@@ -16,6 +16,7 @@
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
+# include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -454,6 +455,57 @@ namespace s3d
 			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
 			static_cast<float>(innerThickness + outerThickness),
 			pattern);
+
+		return *this;
+	}
+
+	const RectF& RectF::drawFrame(const double thickness, const LineType lineType, const ColorF& color) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), lineType, color);
+	}
+
+	const RectF& RectF::drawFrame(const double innerThickness, const double outerThickness, const LineType lineType, const ColorF& color) const
+	{
+		const float x0 = static_cast<float>(x - outerThickness);
+		const float x1 = static_cast<float>(x + innerThickness);
+		const float x2 = static_cast<float>(x + w - innerThickness);
+		const float x3 = static_cast<float>(x + w + outerThickness);
+
+		const float y0 = static_cast<float>(y - outerThickness);
+		const float y1 = static_cast<float>(y + innerThickness);
+		const float y2 = static_cast<float>(y + h - innerThickness);
+		const float y3 = static_cast<float>(y + h + outerThickness);
+
+		const float px1 = ((x0 + x1) * 0.5f);
+		const float px2 = ((x2 + x3) * 0.5f);
+		const float py1 = ((y0 + y1) * 0.5f);
+		const float py2 = ((y2 + y3) * 0.5f);
+
+		const float thickness = static_cast<float>(innerThickness + outerThickness);
+
+		if (thickness <= 0.0f)
+		{
+			return *this;
+		}
+
+		const Float4 colors[2] = { color.toFloat4(), color.toFloat4() };
+
+		if (lineType == LineType::RoundDot)
+		{
+			const LineStyle style = LineStyle::RoundDot;
+			SIV3D_ENGINE(Renderer2D)->addLine(style, Float2{ px1, py1 }, Float2{ px2, py1 }, thickness, colors);
+			SIV3D_ENGINE(Renderer2D)->addLine(style, Float2{ px2, py1 }, Float2{ px2, py2 }, thickness, colors);
+			SIV3D_ENGINE(Renderer2D)->addLine(style, Float2{ px2, py2 }, Float2{ px1, py2 }, thickness, colors);
+			SIV3D_ENGINE(Renderer2D)->addLine(style, Float2{ px1, py2 }, Float2{ px1, py1 }, thickness, colors);
+		}
+		else
+		{
+			const LineStyle lineStyle = LineStyle::Parameters{ lineType, LineCap::Flat };
+			SIV3D_ENGINE(Renderer2D)->addLine(lineStyle, Float2{ x0, py1 }, Float2{ x3, py1 }, thickness, colors);
+			SIV3D_ENGINE(Renderer2D)->addLine(lineStyle, Float2{ px2, y0 }, Float2{ px2, y3 }, thickness, colors);
+			SIV3D_ENGINE(Renderer2D)->addLine(lineStyle, Float2{ x3, py2 }, Float2{ x0, py2 }, thickness, colors);
+			SIV3D_ENGINE(Renderer2D)->addLine(lineStyle, Float2{ px1, y3 }, Float2{ px1, y0 }, thickness, colors);
+		}
 
 		return *this;
 	}

@@ -458,6 +458,17 @@ namespace s3d
 		return *this;
 	}
 
+	const Rect& Rect::drawFrame(const double thickness, const LineType lineType, const ColorF& color) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), lineType, color);
+	}
+
+	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const LineType lineType, const ColorF& color) const
+	{
+		RectF{ *this }.drawFrame(innerThickness, outerThickness, lineType, color);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Formatter
