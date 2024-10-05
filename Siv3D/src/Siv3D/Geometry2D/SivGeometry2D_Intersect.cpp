@@ -335,6 +335,85 @@ namespace s3d
 
 		//////////////////////////////////////////////////
 		//
+		//	Intersect(Ellipse, _)
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(Triangle, _)
+		//
+		//////////////////////////////////////////////////
+
+		//
+		//	http://marupeke296.com/COL_2D_TriTri.html
+		//
+		bool Intersect(const Triangle& a, const Triangle& b) noexcept
+		{
+			constexpr size_t other[3] = { 1, 2, 0 };
+			constexpr size_t pindex[4] = { 1, 2, 0, 1 };
+			const Triangle* tri[3] = { &a, &b, &a };
+
+			for (int32 t = 0; t < 2; ++t)
+			{
+				const Triangle& ta = *tri[t];
+				const Triangle& tb = *tri[t + 1];
+
+				for (int32 i = 0; i < 3; ++i)
+				{
+					const Vec2 vec = (ta.pointAtIndex(pindex[i + 1]) - ta.pointAtIndex(pindex[i])).normalized();
+					const Vec2 sepVec(vec.y, -vec.x);
+
+					double s1min = sepVec.dot(ta.pointAtIndex(i));
+					double s1max = sepVec.dot(ta.pointAtIndex(other[i]));
+
+					if (s1max < s1min)
+					{
+						std::ranges::swap(s1min, s1max);
+					}
+
+					double s2min = sepVec.dot(tb.pointAtIndex(0));
+					double s2max = sepVec.dot(tb.pointAtIndex(1));
+
+					if (s2max < s2min)
+					{
+						std::ranges::swap(s2min, s2max);
+					}
+
+					const double d3 = sepVec.dot(tb.pointAtIndex(2));
+
+					if (d3 < s2min)
+					{
+						s2min = d3;
+					}
+					else if (s2max < d3)
+					{
+						s2max = d3;
+					}
+
+					if (((s2min <= s1min) && (s1min <= s2max))
+						|| ((s2min <= s1max) && (s1max <= s2max))
+						|| ((s1min <= s2min) && (s2min <= s1max))
+						|| ((s1min <= s2max) && (s2max <= s1max)))
+					{
+						continue;
+					}
+
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(Quad, _)
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
 		//	Intersect(RoundRect, _)
 		//
 		//////////////////////////////////////////////////
@@ -348,5 +427,24 @@ namespace s3d
 		{
 			return Intersect(b, a);
 		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(Polygon, _)
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(MultiPolygon, _)
+		//
+		//////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersect(LineString, _)
+		//
+		//////////////////////////////////////////////////
+
 	}
 }

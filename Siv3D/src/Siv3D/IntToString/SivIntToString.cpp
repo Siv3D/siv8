@@ -53,7 +53,7 @@ namespace s3d
 
 			do
 			{
-				std::swap(*p, *first_digit);
+				std::ranges::swap(*p, *first_digit);
 				--p;
 				++first_digit;
 			} while (first_digit < p);

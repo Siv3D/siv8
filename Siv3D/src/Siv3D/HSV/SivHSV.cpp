@@ -42,13 +42,13 @@ namespace s3d
 
 			if (g < b)
 			{
-				std::swap(g, b);
+				std::ranges::swap(g, b);
 				K = -360.0;
 			}
 
 			if (r < g)
 			{
-				std::swap(r, g);
+				std::ranges::swap(r, g);
 				K = -720.0 / 6.0 - K;
 			}
 
