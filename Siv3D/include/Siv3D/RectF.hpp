@@ -1594,86 +1594,86 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 長方形の枠を描きます。
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 色
 		/// @return *this
 		const RectF& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param innerColor 内側の色
 		/// @param outerColor 外側の色
 		/// @return *this
 		const RectF& drawFrame(double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param topColor 上側の色
 		/// @param bottomColor 下側の色
 		/// @return *this
 		const RectF& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param leftColor 左側の色
 		/// @param rightColor 右側の色
 		/// @return *this
 		const RectF& drawFrame(double thickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
-		/// @param outerThickness 基準の長方形から外側方向への枠の太さ
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
 		/// @param color 色
 		/// @return *this
 		const RectF& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
-		/// @param outerThickness 基準の長方形から外側方向への枠の太さ
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
 		/// @param innerColor 内側の色
 		/// @param outerColor 外側の色
 		/// @return *this
 		const RectF& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
-		/// @param outerThickness 基準の長方形から外側方向への枠の太さ
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
 		/// @param topColor 上側の色
 		/// @param bottomColor 下側の色
 		/// @return *this
 		const RectF& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
-		/// @param outerThickness 基準の長方形から外側方向への枠の太さ
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
 		/// @param leftColor 左側の色
 		/// @param rightColor 右側の色
 		/// @return *this
 		const RectF& drawFrame(double innerThickness, double outerThickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const RectF& drawFrame(double thickness, const PatternParameters& pattern) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
-		/// @param outerThickness 基準の長方形から外側方向への枠の太さ
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const RectF& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param lineType 線の種類
 		/// @param color 色
 		/// @return *this
 		const RectF& drawFrame(double thickness, LineType lineType, const ColorF& color = Palette::White) const;
 
 		/// @brief 長方形の枠を描きます。
-		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
-		/// @param outerThickness 基準の長方形から外側方向への枠の太さ
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
 		/// @param lineType 線の種類
 		/// @param color 色
 		/// @return *this

@@ -108,10 +108,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//Vec2 RoundRect::interpolatedPointAt(double t) const noexcept
-	//{
-
-	//}
+	Vec2 RoundRect::interpolatedPointAt(double t) const noexcept
+	{
+		return pointAtLength(t * perimeter());
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -408,5 +408,65 @@ namespace s3d
 		);
 
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const RoundRect& value)
+	{
+		formatData.string.push_back(U'(');
+		detail::AppendFloat(formatData.string, value.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.y);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.w);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.h);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.r);
+		formatData.string.push_back(U')');
+	}
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+fmt::format_context::iterator fmt::formatter<s3d::RoundRect>::format(const s3d::RoundRect& value, fmt::format_context& ctx)
+{
+	if (tag.empty())
+	{
+		return fmt::format_to(ctx.out(), "({}, {}, {}, {}, {})", value.x, value.y, value.w, value.h, value.r);
+	}
+	else
+	{
+		const std::string format
+			= ("({:" + tag + "}, {:" + tag + "}, {:" + tag + "}, {:" + tag + "}, {:" + tag + "})");
+		return fmt::vformat_to(ctx.out(), format, fmt::make_format_args(value.x, value.y, value.w, value.h, value.r));
+	}
+}
+
+s3d::ParseContext::iterator fmt::formatter<s3d::RoundRect, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::RoundRect, s3d::char32>::format(const s3d::RoundRect& value, s3d::BufferContext& ctx)
+{
+	if (tag.empty())
+	{
+		return format_to(ctx.out(), U"({}, {}, {}, {}, {})", value.x, value.y, value.w, value.h, value.r);
+	}
+	else
+	{
+		const std::u32string format
+			= (U"({:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"})");
+		return format_to(ctx.out(), format, value.x, value.y, value.w, value.h, value.r);
 	}
 }

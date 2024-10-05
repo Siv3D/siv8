@@ -950,14 +950,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 三角形の枠を描きます。
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 枠の色
 		/// @return *this
 		const Triangle& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 三角形の枠を描きます。
-		/// @param innerThickness 基準の三角形から内側方向への枠の太さ
-		/// @param outerThickness 基準の三角形から外側方向への枠の太さ
+		/// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
 		/// @param color 枠の色
 		/// @return *this
 		const Triangle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;

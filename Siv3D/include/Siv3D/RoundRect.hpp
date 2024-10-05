@@ -1032,12 +1032,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 角丸長方形を描きます。
+		/// @param color 色
+		/// @return *this
 		const RoundRect& draw(const ColorF& color = Palette::White) const;
 
+		/// @brief 角丸長方形を描きます。
+		/// @param topColor 上側の色
+		/// @param bottomColor 下側の色
+		/// @return *this
 		const RoundRect& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		/// @brief 角丸長方形を描きます。
+		/// @param leftColor 左側の色
+		/// @param rightColor 右側の色
+		/// @return *this
 		const RoundRect& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		/// @brief 角丸長方形を描きます。
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const RoundRect& draw(const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1046,20 +1060,60 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 角丸長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
 		const RoundRect& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 角丸長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param topColor 上側の色
+		/// @param bottomColor 下側の色
+		/// @return *this
 		const RoundRect& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		/// @brief 角丸長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param leftColor 左側の色
+		/// @param rightColor 右側の色
+		/// @return *this
 		const RoundRect& drawFrame(double thickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		/// @brief 角丸長方形の枠を描きます。
+		/// @param innerThickness 基準の角丸長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の角丸長方形から外側方向への枠の太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
+		/// @brief 角丸長方形の枠を描きます。
+		/// @param innerThickness 基準の角丸長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の角丸長方形から外側方向への枠の太さ（ピクセル）
+		/// @param topColor 上側の色
+		/// @param bottomColor 下側の色
+		/// @return *this
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		/// @brief 角丸長方形の枠を描きます。
+		/// @param innerThickness 基準の角丸長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の角丸長方形から外側方向への枠の太さ（ピクセル）
+		/// @param leftColor 左側の色
+		/// @param rightColor 右側の色
+		/// @return *this
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		/// @brief 角丸長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const RoundRect& drawFrame(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 角丸長方形の枠を描きます。
+		/// @param innerThickness 基準の角丸長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の角丸長方形から外側方向への枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1075,7 +1129,7 @@ namespace s3d
 		/// @param color 影の色
 		/// @param fill 影の内部を塗りつぶすか
 		/// @return *this
-		const RoundRect& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
+		//const RoundRect& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
 
 		////////////////////////////////////////////////////////////////
 		//

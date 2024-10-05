@@ -763,42 +763,42 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 楕円の枠を描きます
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 枠の色
 		/// @return *this
 		const Ellipse& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 楕円の枠を描きます
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param innerColor 内側部分の枠の色
 		/// @param outerColor 外側部分の枠の色
 		/// @return *this
 		const Ellipse& drawFrame(double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		/// @brief 楕円の枠を描きます。
-		/// @param innerThickness 基準の楕円から内側方向への枠の太さ
-		/// @param outerThickness 基準の楕円から外側方向への枠の太さ
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
 		/// @param color 枠の色
 		/// @return *this
 		const Ellipse& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		/// @brief 楕円の枠を描きます。
-		/// @param innerThickness 基準の楕円から内側方向への枠の太さ
-		/// @param outerThickness 基準の楕円から外側方向への枠の太さ
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
 		/// @param innerColor 内側部分の枠の色
 		/// @param outerColor 外側部分の枠の色
 		/// @return *this
 		const Ellipse& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		/// @brief 楕円の枠を描きます。
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Ellipse& drawFrame(double thickness, const PatternParameters& pattern) const;
 
 		/// @brief 楕円の枠を描きます。
-		/// @param innerThickness 基準の楕円から内側方向への枠の太さ
-		/// @param outerThickness 基準の楕円から外側方向への枠の太さ
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Ellipse& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
