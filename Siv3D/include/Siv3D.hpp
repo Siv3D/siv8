@@ -884,17 +884,17 @@
 //# include <Siv3D/Buffer2D.hpp>
 
 // 2D 幾何 | 2D geometry processing
-# include <Siv3D/Geometry2D/Intersect.hpp>
-# include <Siv3D/Geometry2D/IntersectAt.hpp>
-# include <Siv3D/Geometry2D/Contains.hpp>
-# include <Siv3D/Geometry2D/Distance.hpp>
-# include <Siv3D/Geometry2D/Center.hpp>
-# include <Siv3D/Geometry2D/IsClockwise.hpp>
-//# include <Siv3D/Geometry2D/Misc.hpp>
+# include <Siv3D/Geometry2D/Intersect.hpp> // ToDo
+# include <Siv3D/Geometry2D/IntersectAt.hpp> // ToDo
+# include <Siv3D/Geometry2D/Contains.hpp> // ToDo
+# include <Siv3D/Geometry2D/Distance.hpp> // ToDo
+# include <Siv3D/Geometry2D/Center.hpp> // ToDo
+# include <Siv3D/Geometry2D/IsClockwise.hpp> // ToDo
+# include <Siv3D/Geometry2D/Misc.hpp> // ToDo
 
-//// 長方形詰込み | Rectangle packing
-//# include <Siv3D/RectanglePacking.hpp>
-//
+// 長方形詰込み | Rectangle packing
+# include <Siv3D/RectanglePack.hpp>
+
 //// 平面分割 | Planar subdivisions
 //# include <Siv3D/Subdivision2D.hpp>
 

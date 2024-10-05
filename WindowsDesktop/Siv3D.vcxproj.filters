@@ -943,6 +943,12 @@
     <Filter Include="src\Siv3D\RoundRect">
       <UniqueIdentifier>{ef08fcbc-4f34-419a-82df-139d397d0e72}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\rectpack2D">
+      <UniqueIdentifier>{36f9ade3-9036-4c0c-80a6-4ce11eaf4780}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\RectanglePack">
+      <UniqueIdentifier>{0697b18c-61c2-49da-b4b3-5125438642d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3702,6 +3708,30 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Misc.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RectanglePack.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\empty_spaces.h">
+      <Filter>src\ThirdParty\rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\finders_interface.h">
+      <Filter>src\ThirdParty\rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\insert_and_split.h">
+      <Filter>src\ThirdParty\rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\rect_structs.h">
+      <Filter>src\ThirdParty\rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\best_bin_finder.h">
+      <Filter>src\ThirdParty\rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\empty_space_allocators.h">
+      <Filter>src\ThirdParty\rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectanglePack.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6037,6 +6067,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder_Rounded.cpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\RectanglePack\SivRectanglePack.cpp">
+      <Filter>src\Siv3D\RectanglePack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
