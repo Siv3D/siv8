@@ -885,6 +885,12 @@
 
 // 2D 幾何 | 2D geometry processing
 # include <Siv3D/Geometry2D/Intersect.hpp>
+# include <Siv3D/Geometry2D/IntersectAt.hpp>
+# include <Siv3D/Geometry2D/Contains.hpp>
+# include <Siv3D/Geometry2D/Distance.hpp>
+# include <Siv3D/Geometry2D/Center.hpp>
+# include <Siv3D/Geometry2D/IsClockwise.hpp>
+//# include <Siv3D/Geometry2D/Misc.hpp>
 
 //// 長方形詰込み | Rectangle packing
 //# include <Siv3D/RectanglePacking.hpp>
