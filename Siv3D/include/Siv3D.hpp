@@ -853,21 +853,21 @@
 // 角丸長方形 | Rounded rectangle
 # include <Siv3D/RoundRect.hpp> // ToDo
 
-//// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
-//# include <Siv3D/LineString.hpp>
-//
-//// 多角形 | Polygon
-//# include <Siv3D/Polygon.hpp>
-//
-//// 複数の多角形 | Multi-polygon
-//# include <Siv3D/MultiPolygon.hpp>
-//
-//// 2 次ベジェ曲線 | Quadratic Bézier curve
-//# include <Siv3D/Bezier2.hpp>
-//
-//// 3 次ベジェ曲線 | Cubic Bézier curve
-//# include <Siv3D/Bezier3.hpp>
-//
+// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
+# include <Siv3D/LineString.hpp> // ToDo
+
+// 多角形 | Polygon
+# include <Siv3D/Polygon.hpp> // ToDo
+
+// 複数の多角形 | Multi-polygon
+# include <Siv3D/MultiPolygon.hpp> // ToDo
+
+// 2 次ベジェ曲線 | Quadratic Bézier curve
+# include <Siv3D/Bezier2.hpp> // ToDo
+
+// 3 次ベジェ曲線 | Cubic Bézier curve
+# include <Siv3D/Bezier3.hpp> // ToDo
+
 //// Catmull-Rom スプライン曲線 | Catmull-Rom spline curves
 //# include <Siv3D/Spline2D.hpp>
 

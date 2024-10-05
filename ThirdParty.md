@@ -33,6 +33,7 @@ Name | Version
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
 [plutovg](https://github.com/sammycage/plutovg) | 
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
+[rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
 [simdutf](https://github.com/simdutf/simdutf) | Version 5.5.0
 [skia](https://github.com/google/skia) |
 [stduuid](https://github.com/mariusbancila/stduuid) | 

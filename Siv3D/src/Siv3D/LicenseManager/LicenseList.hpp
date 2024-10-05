@@ -661,6 +661,12 @@ BSD_2_LICENSE
 },
 
 {
+R"-(rectpack2D)-",
+R"-(Copyright (c) 2022 Patryk Czachurski)-",
+MIT_LICENSE
+},
+
+{
 R"-(simdutf)-",
 R"-(Copyright 2021 The simdutf authors)-",
 MIT_LICENSE

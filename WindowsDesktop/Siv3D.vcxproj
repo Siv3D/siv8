@@ -25,6 +25,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AsyncTask.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Base64Value.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BasicCamera2D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Bezier2.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Bezier3.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BigFloat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BigInt.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BinaryReader.hpp" />
@@ -314,6 +316,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\LicenseManager.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Line.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LineCap.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\LineString.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LineStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LineType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ListUtility.hpp" />
@@ -343,6 +346,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Mouse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSAASampleCount.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSL.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MultiPolygon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OffsetCircular.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OrderedSet.hpp" />
@@ -366,6 +370,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Point.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Point3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PointVector.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Polygon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Profiler.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ProfilerStat.hpp" />
