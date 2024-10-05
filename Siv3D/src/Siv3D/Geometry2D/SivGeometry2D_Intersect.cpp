@@ -73,6 +73,139 @@ namespace s3d
 						|| circleBL.intersects(shape));
 			}
 		};
+
+		//
+		//	http://www.phatcode.net/articles.php?id=459
+		//
+		[[nodiscard]]
+		static bool CircleTriangleIntersection(const Circle& circle, const Triangle& triangle) noexcept
+		{
+			const double centerX = circle.x;
+			const double centerY = circle.y;
+			const double radius = circle.r;
+			const double v1x = triangle.p0.x;
+			const double v1y = triangle.p0.y;
+			const double v2x = triangle.p1.x;
+			const double v2y = triangle.p1.y;
+			const double v3x = triangle.p2.x;
+			const double v3y = triangle.p2.y;
+
+			//
+			// TEST 1: Vertex within circle
+			//
+			const double c1x = centerX - v1x;
+			const double c1y = centerY - v1y;
+
+			const double radiusSqr = radius * radius;
+			const double c1sqr = c1x * c1x + c1y * c1y - radiusSqr;
+
+			if (c1sqr <= 0)
+			{
+				return true;
+			}
+
+			const double c2x = centerX - v2x;
+			const double c2y = centerY - v2y;
+			const double c2sqr = c2x * c2x + c2y * c2y - radiusSqr;
+
+			if (c2sqr <= 0)
+			{
+				return true;
+			}
+
+			const double c3x = centerX - v3x;
+			const double c3y = centerY - v3y;
+
+			//const double &c3sqr = radiusSqr;//; reference to radiusSqr
+			const double c3sqr = c3x * c3x + c3y * c3y - radiusSqr;
+
+			if (c3sqr <= 0)
+			{
+				return true;
+			}
+
+			//;
+			//; TEST 2: Circle centre within triangle
+			//;
+
+			//;
+			//; Calculate edges
+			//;
+			const double e1x = v2x - v1x;
+			const double e1y = v2y - v1y;
+
+			const double e2x = v3x - v2x;
+			const double e2y = v3y - v2y;
+
+			const double e3x = v1x - v3x;
+			const double e3y = v1y - v3y;
+
+			if (e1y * c1x >= e1x * c1y
+				&& e2y * c2x >= e2x * c2y
+				&& e3y * c3x >= e3x * c3y)
+			{
+				return true;
+			}
+
+			//;
+			//; TEST 3: Circle intersects edge
+			//;
+			double k = c1x * e1x + c1y * e1y;
+
+			if (k > 0)
+			{
+				const double len = e1x * e1x + e1y * e1y;//; squared len
+
+				if (k < len)
+				{
+					if (c1sqr * len <= k * k)
+					{
+						return true;
+					}
+				}
+			}
+
+			//; Second edge
+			k = c2x * e2x + c2y * e2y;
+
+			if (k > 0)
+			{
+				const double len = e2x * e2x + e2y * e2y;
+
+				if (k < len)
+				{
+					if (c2sqr * len <= k * k)
+					{
+						return true;
+					}
+				}
+			}
+
+			//; Third edge
+			k = c3x * e3x + c3y * e3y;
+
+			if (k > 0)
+			{
+				const double len = e3x * e3x + e3y * e3y;
+
+				if (k < len)
+				{
+					if (c3sqr * len <= k * k)
+					{
+						return true;
+					}
+				}
+			}
+
+			// Within
+			if (circle.center.intersects(triangle))
+			{
+				return true;
+			}
+
+			//; We're done, no intersection
+			return false;
+		}
 	}
 
 	namespace Geometry2D
@@ -300,6 +433,11 @@ namespace s3d
 				 || Intersect(a, Line{ b.p3, b.p0 }));
 		}
 
+		bool Intersect(const Line& a, const RoundRect& b) noexcept
+		{
+			return RoundRectParts{ b }.intersects(a);
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Rect, _)
@@ -309,6 +447,23 @@ namespace s3d
 		bool Intersect(const Rect& a, const Line& b) noexcept
 		{
 			return Intersect(b, a);
+		}
+
+		bool Intersect(const Rect& a, const Triangle& b) noexcept
+		{
+			return (Intersect(a.triangleAtIndex(0), b)
+				 || Intersect(a.triangleAtIndex(1), b));
+		}
+
+		bool Intersect(const Rect& a, const Quad& b) noexcept
+		{
+			return (Intersect(a, b.triangleAtIndex(0))
+				 || Intersect(a, b.triangleAtIndex(1)));
+		}
+
+		bool Intersect(const Rect& a, const RoundRect& b) noexcept
+		{
+			return RoundRectParts{ b }.intersects(a);
 		}
 
 		//////////////////////////////////////////////////
@@ -322,6 +477,23 @@ namespace s3d
 			return Intersect(b, a);
 		}
 
+		bool Intersect(const RectF& a, const Triangle& b) noexcept
+		{
+			return (Intersect(a.triangleAtIndex(0), b)
+				|| Intersect(a.triangleAtIndex(1), b));
+		}
+
+		bool Intersect(const RectF& a, const Quad& b) noexcept
+		{
+			return (Intersect(a, b.triangleAtIndex(0))
+				|| Intersect(a, b.triangleAtIndex(1)));
+		}
+
+		bool Intersect(const RectF& a, const RoundRect& b) noexcept
+		{
+			return RoundRectParts{ b }.intersects(a);
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Circle, _)
@@ -333,17 +505,91 @@ namespace s3d
 			return Intersect(b, a);
 		}
 
+		bool Intersect(const Circle& a, const Triangle& b) noexcept
+		{
+			return CircleTriangleIntersection(a, b);
+		}
+
+		bool Intersect(const Circle& a, const Quad& b) noexcept
+		{
+			return (CircleTriangleIntersection(a, b.triangleAtIndex(0))
+				 || CircleTriangleIntersection(a, b.triangleAtIndex(1)));
+		}
+
+		bool Intersect(const Circle& a, const RoundRect& b) noexcept
+		{
+			return RoundRectParts{ b }.intersects(a);
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Ellipse, _)
 		//
 		//////////////////////////////////////////////////
 
+		bool Intersect(const Ellipse& a, const Line& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Ellipse& a, const Triangle& b) noexcept
+		{
+			Triangle triangle = b.movedBy(-a.center);
+
+			const double v = (a.a / a.b);
+
+			for (size_t i = 0; i < 3; ++i)
+			{
+				triangle.pointAtIndex(i).y *= v;
+			}
+
+			return Intersect(Circle{ a.a }, triangle);
+		}
+
+		bool Intersect(const Ellipse& a, const Quad& b) noexcept
+		{
+			Quad quad = b.movedBy(-a.center);
+
+			const double v = (a.a / a.b);
+
+			for (size_t i = 0; i < 4; ++i)
+			{
+				quad.pointAtIndex(i).y *= v;
+			}
+
+			return Intersect(Circle{ a.a }, quad);
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Triangle, _)
 		//
 		//////////////////////////////////////////////////
+
+		bool Intersect(const Triangle& a, const Line& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Triangle& a, const Rect& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Triangle& a, const RectF& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Triangle& a, const Circle& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Triangle& a, const Ellipse& b) noexcept
+		{
+			return Intersect(b, a);
+		}
 
 		//
 		//	http://marupeke296.com/COL_2D_TriTri.html
@@ -406,11 +652,63 @@ namespace s3d
 			return true;
 		}
 
+		bool Intersect(const Triangle& a, const Quad& b) noexcept
+		{
+			return (Intersect(a, b.triangleAtIndex(0))
+				 || Intersect(a, b.triangleAtIndex(1)));
+		}
+
+		bool Intersect(const Triangle& a, const RoundRect& b) noexcept
+		{
+			return RoundRectParts{ b }.intersects(a);
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Quad, _)
 		//
 		//////////////////////////////////////////////////
+
+		bool Intersect(const Quad& a, const Line& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Quad& a, const Rect& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Quad& a, const RectF& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Quad& a, const Circle& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Quad& a, const Ellipse& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Quad& a, const Triangle& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Quad& a, const Quad& b) noexcept
+		{
+			return (Intersect(a.triangleAtIndex(0), b)
+				 || Intersect(a.triangleAtIndex(1), b));
+		}
+
+		bool Intersect(const Quad& a, const RoundRect& b) noexcept
+		{
+			return RoundRectParts{ b }.intersects(a);
+		}
 
 		//////////////////////////////////////////////////
 		//
@@ -426,6 +724,54 @@ namespace s3d
 		bool Intersect(const RoundRect& a, const Vec2& b) noexcept
 		{
 			return Intersect(b, a);
+		}
+
+		bool Intersect(const RoundRect& a, const Line& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const RoundRect& a, const Rect& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const RoundRect& a, const RectF& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const RoundRect& a, const Circle& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const RoundRect& a, const Triangle& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const RoundRect& a, const Quad& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const RoundRect& a, const RoundRect& b) noexcept
+		{
+			if (not Intersect(a.rect, b.rect))
+			{
+				return false;
+			}
+
+			const RoundRectParts partsA{ a };
+			const RoundRectParts partsB{ b };
+
+			return (partsA.intersects(partsB.rectA)
+				 || partsA.intersects(partsB.rectB)
+				 || partsA.intersects(partsB.circleTL)
+				 || partsA.intersects(partsB.circleTR)
+				 || partsA.intersects(partsB.circleBR)
+				 || partsA.intersects(partsB.circleBL));
 		}
 
 		//////////////////////////////////////////////////

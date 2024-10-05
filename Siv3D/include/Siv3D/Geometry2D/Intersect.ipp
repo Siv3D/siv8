@@ -354,6 +354,16 @@ namespace s3d
 			return Intersect(b, a);
 		}
 
+		constexpr bool Intersect(const Ellipse& a, const Rect& b) noexcept
+		{
+			return Intersect(RectF{ b }, a);
+		}
+
+		constexpr bool Intersect(const Ellipse& a, const RectF& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Triangle, _)
