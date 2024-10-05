@@ -500,6 +500,11 @@
 		F934BD9C2BFA59000003EAD5 /* SivEngineOption.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD972BFA59000003EAD5 /* SivEngineOption.cpp */; };
 		F934BD9D2BFA59000003EAD5 /* SivHLSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD992BFA59000003EAD5 /* SivHLSL.cpp */; };
 		F934BD9F2BFA59320003EAD5 /* HLSL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD9E2BFA59320003EAD5 /* HLSL.hpp */; };
+		F95121F52CB125F100151291 /* IntersectAt.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F02CB125F000151291 /* IntersectAt.hpp */; };
+		F95121F62CB125F100151291 /* Distance.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F12CB125F100151291 /* Distance.hpp */; };
+		F95121F72CB125F100151291 /* Misc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F22CB125F100151291 /* Misc.hpp */; };
+		F95121F82CB125F100151291 /* Center.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F32CB125F100151291 /* Center.hpp */; };
+		F95121F92CB125F100151291 /* Contains.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F42CB125F100151291 /* Contains.hpp */; };
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
 		F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A852BA018CE00222F45 /* WindowTitle.hpp */; };
 		F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A862BA018CF00222F45 /* WindowTitle.cpp */; };
@@ -2785,6 +2790,11 @@
 		F934BD972BFA59000003EAD5 /* SivEngineOption.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEngineOption.cpp; sourceTree = "<group>"; };
 		F934BD992BFA59000003EAD5 /* SivHLSL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivHLSL.cpp; sourceTree = "<group>"; };
 		F934BD9E2BFA59320003EAD5 /* HLSL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HLSL.hpp; sourceTree = "<group>"; };
+		F95121F02CB125F000151291 /* IntersectAt.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IntersectAt.hpp; sourceTree = "<group>"; };
+		F95121F12CB125F100151291 /* Distance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Distance.hpp; sourceTree = "<group>"; };
+		F95121F22CB125F100151291 /* Misc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Misc.hpp; sourceTree = "<group>"; };
+		F95121F32CB125F100151291 /* Center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Center.hpp; sourceTree = "<group>"; };
+		F95121F42CB125F100151291 /* Contains.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Contains.hpp; sourceTree = "<group>"; };
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
 		F9528A852BA018CE00222F45 /* WindowTitle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowTitle.hpp; sourceTree = "<group>"; };
 		F9528A862BA018CF00222F45 /* WindowTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowTitle.cpp; sourceTree = "<group>"; };
@@ -7138,10 +7148,15 @@
 		F96F960B2C359F070033353E /* Geometry2D */ = {
 			isa = PBXGroup;
 			children = (
-				F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */,
-				F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */,
+				F95121F32CB125F100151291 /* Center.hpp */,
+				F95121F42CB125F100151291 /* Contains.hpp */,
+				F95121F12CB125F100151291 /* Distance.hpp */,
 				F96F96092C359F070033353E /* Intersect.hpp */,
+				F95121F02CB125F000151291 /* IntersectAt.hpp */,
+				F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */,
+				F95121F22CB125F100151291 /* Misc.hpp */,
 				F96F960A2C359F070033353E /* Intersect.ipp */,
+				F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */,
 			);
 			path = Geometry2D;
 			sourceTree = "<group>";
@@ -10454,6 +10469,7 @@
 				F98603E22BCFBB54006A4C0F /* SkSLWGSLCodeGenerator.h in Headers */,
 				F986FA692BCFB53B006A4C0F /* fttrace.h in Headers */,
 				F98603372BCFBB54006A4C0F /* SkReduceOrder.h in Headers */,
+				F95121F72CB125F100151291 /* Misc.hpp in Headers */,
 				F98601A82BCFBB53006A4C0F /* SkDrawBase.h in Headers */,
 				F9807D902BF6679000D9B590 /* AssetID.ipp in Headers */,
 				F986FA592BCFB53B006A4C0F /* autohint.h in Headers */,
@@ -10479,6 +10495,7 @@
 				F98603EF2BCFBB54006A4C0F /* SkSLConstructorArrayCast.h in Headers */,
 				F9070C7C2B9F175000383E4D /* Stopwatch.ipp in Headers */,
 				F98603D02BCFBB54006A4C0F /* SkSLCodeGenerator.h in Headers */,
+				F95121F82CB125F100151291 /* Center.hpp in Headers */,
 				F98604052BCFBB54006A4C0F /* SkSLExpression.h in Headers */,
 				F9070CFE2B9F175100383E4D /* String.hpp in Headers */,
 				F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */,
@@ -10571,6 +10588,7 @@
 				F96F95F12C359E7D0033353E /* nanoflann.hpp in Headers */,
 				F9070CB32B9F175000383E4D /* DLL.hpp in Headers */,
 				F986FA8C2BCFB53B006A4C0F /* ftmodapi.h in Headers */,
+				F95121F52CB125F100151291 /* IntersectAt.hpp in Headers */,
 				F98604182BCFBB54006A4C0F /* SkSLIfStatement.h in Headers */,
 				F9070CAD2B9F175000383E4D /* DayOfWeek.hpp in Headers */,
 				F98604852BCFBB54006A4C0F /* SkSLParser.h in Headers */,
@@ -10741,6 +10759,7 @@
 				F9070B082B9DEB5900383E4D /* uuid.h in Headers */,
 				F9070C842B9F175000383E4D /* Unicode.ipp in Headers */,
 				F986022C2BCFBB54006A4C0F /* SkPointPriv.h in Headers */,
+				F95121F62CB125F100151291 /* Distance.hpp in Headers */,
 				F986F9212BC8441F006A4C0F /* regint.h in Headers */,
 				F98600812BCFBB53006A4C0F /* SkSafe32.h in Headers */,
 				F9070C542B9F175000383E4D /* EscapedFormatter.ipp in Headers */,
@@ -10781,6 +10800,7 @@
 				F934BD7D2BF880860003EAD5 /* AssetHandleManager.hpp in Headers */,
 				F9528C952BC1205300222F45 /* PNGFilter.hpp in Headers */,
 				F9070DAE2B9F175E00383E4D /* BigIntDetail.hpp in Headers */,
+				F95121F92CB125F100151291 /* Contains.hpp in Headers */,
 				F9070C6A2B9F175000383E4D /* MathConstants.ipp in Headers */,
 				F98603832BCFBB54006A4C0F /* SkOTTable_name.h in Headers */,
 				F986030E2BCFBB54006A4C0F /* SkOpCoincidence.h in Headers */,
