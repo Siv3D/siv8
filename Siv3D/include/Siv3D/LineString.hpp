@@ -87,28 +87,28 @@ namespace s3d
 		[[nodiscard]]
 		LineString(LineString&& other) = default;
 
-		/// @brief std::vector からのコピーで配列を作成します。
+		/// @brief std::vector からのコピーで点の配列を作成します。
 		/// @param other コピーする配列
 		[[nodiscard]]
 		constexpr LineString(const container_type& other);
 
-		/// @brief std::vector からのムーブで配列を作成します。
+		/// @brief std::vector からのムーブで点の配列を作成します。
 		/// @param other ムーブする配列
 		[[nodiscard]]
 		constexpr LineString(container_type&& other);
 
-		/// @brief count 個の value で配列を作成します。
+		/// @brief count 個の value からなる点の配列を作成します。
 		/// @param count 個数
 		/// @param value 要素
 		[[nodiscard]]
 		constexpr LineString(size_type count, const value_type& value);
 
-		/// @brief count 個の Type() で配列を作成します。
+		/// @brief count 個の Vec2{ 0, 0 } からなる点の配列を作成します。
 		/// @param count 個数
 		[[nodiscard]]
 		explicit constexpr LineString(size_type count);
 
-		/// @brief イテレータが指す範囲の要素から配列を作成します。
+		/// @brief イテレータが指す範囲の要素から点の配列を作成します。
 		/// @tparam Iterator イテレータ
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
@@ -116,22 +116,24 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString(Iterator first, Iterator last);
 
+		/// @brief 点の配列を作成します。
+		/// @param points 
 		[[nodiscard]]
 		explicit LineString(const Array<Point>& points);
 
-		/// @brief メンバ関数 `.asArray()` を持つ型から配列を作成します。
+		/// @brief メンバ関数 `.asArray()` を持つ型から点の配列を作成します。
 		/// @tparam ArrayIsh メンバ関数 `.asArray()` を持つ型
 		/// @param a `.asArray()` を持つ型のオブジェクト
 		[[nodiscard]]
 		explicit constexpr LineString(const HasAsArray auto& a);
 
-		/// @brief メンバ関数 `.asArray()` を持つ型から配列を作成します。
+		/// @brief メンバ関数 `.asArray()` を持つ型から点の配列を作成します。
 		/// @tparam ArrayIsh メンバ関数 `.asArray()` を持つ型
 		/// @param a `.asArray()` を持つ型のオブジェクト
 		[[nodiscard]]
 		explicit constexpr LineString(HasAsArray auto&& a);
 
-		/// @brief 初期化リストから配列を作成します。
+		/// @brief 初期化リストから点の配列を作成します。
 		/// @param list 初期化リスト
 		/// @param alloc アロケータ
 		[[nodiscard]]
@@ -139,7 +141,7 @@ namespace s3d
 
 	# ifdef __cpp_lib_containers_ranges
 		
-		/// @brief 範囲から配列を作成します。
+		/// @brief 範囲から点の配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		/// @param alloc アロケータ
@@ -147,7 +149,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString(std::from_range_t, Range&& range);
 
-		/// @brief 範囲から配列を作成します。
+		/// @brief 範囲から点の配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		/// @param alloc アロケータ
@@ -157,7 +159,7 @@ namespace s3d
 
 	# endif
 
-		/// @brief 配列を作成し、`reserve()` します。
+		/// @brief 空の点の配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
 		[[nodiscard]]
 		explicit constexpr LineString(Arg::reserve_<size_type> size);
@@ -901,3 +903,5 @@ namespace s3d
 		container_type m_points;
 	};
 }
+
+# include "detail/LineString.ipp"

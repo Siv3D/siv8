@@ -212,7 +212,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(size_type size, Arg::generator_<FunctionRef<value_type(size_t)>> generator);
 
-		/// @brief 配列を作成し、`reserve()` します。
+		/// @brief 空の配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
 		[[nodiscard]]
 		explicit constexpr Array(Arg::reserve_<size_type> size);
