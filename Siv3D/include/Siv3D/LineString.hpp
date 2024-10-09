@@ -858,6 +858,17 @@ namespace s3d
 		[[nodiscard]]
 		constexpr std::span<const value_type> subspan(size_type pos, size_type count) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	hash
+		//
+		////////////////////////////////////////////////////////////////
+	
+		/// @brief 配列のハッシュ値を返します。
+		/// @return 配列のハッシュ値
+		[[nodiscard]]
+		uint64 hash() const noexcept;
+
 
 
 
@@ -951,5 +962,21 @@ namespace s3d
 		container_type m_points;
 	};
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	std::hash
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct std::hash<s3d::LineString>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::LineString& value) const noexcept
+	{
+		return value.hash();
+	}
+};
 
 # include "detail/LineString.ipp"

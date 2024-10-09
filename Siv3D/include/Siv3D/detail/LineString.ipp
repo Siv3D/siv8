@@ -730,16 +730,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr std::span<LineString::value_type> LineString::subspan(size_type pos, size_type count) noexcept
+	constexpr std::span<LineString::value_type> LineString::subspan(const size_type pos, const size_type count) noexcept
 	{
 		return m_points.subspan(pos, count);
 	}
 
-	constexpr std::span<const LineString::value_type> LineString::subspan(size_type pos, size_type count) const noexcept
+	constexpr std::span<const LineString::value_type> LineString::subspan(const size_type pos, const size_type count) const noexcept
 	{
 		return m_points.subspan(pos, count);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	hash
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline uint64 LineString::hash() const noexcept
+	{
+		return Hash(m_points.data(), m_points.size_bytes());
+	}
 
 
 

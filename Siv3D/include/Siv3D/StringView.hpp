@@ -587,8 +587,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列のハッシュを返します。 | Returns the hash of the string.
-		/// @return 文字列のハッシュ | Hash of the string
+		/// @brief 文字列のハッシュ値を返します。 | Returns the hash value of the string.
+		/// @return 文字列のハッシュ値 | Hash value of the string
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
