@@ -210,6 +210,6 @@ namespace s3d
 
 		m_holes			= std::move(holes);
 
-		m_boundingRect	= Geometry2D::BoundingRect(outer);
+		m_boundingRect	= boundingRect;
 	}
 }
