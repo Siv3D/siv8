@@ -30,13 +30,13 @@ namespace s3d
 		PolygonDetail() = default;
 
 		[[nodiscard]]
-		PolygonDetail(std::span<const Vec2> outer, std::span<const std::span<const Vec2>> holes, SkipValidation skipValidation);
+		PolygonDetail(std::span<const Vec2> outer, Array<Array<Vec2>> holes, SkipValidation skipValidation);
 
 		[[nodiscard]]
-		PolygonDetail(std::span<const Vec2> outer, std::span<const TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation);
+		PolygonDetail(std::span<const Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation);
 
 		[[nodiscard]]
-		PolygonDetail(std::span<const Vec2> outer, std::span<const std::span<const Vec2>> holes, std::span<const Float2> vertices, std::span<const TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation);
+		PolygonDetail(std::span<const Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation);
 
 	private:
 

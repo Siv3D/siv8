@@ -114,6 +114,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.)-"
 
 ////////////////////////////////////////////////////////////////
 //
+//	ISC License
+//
+////////////////////////////////////////////////////////////////
+
+# define ISC_LICENSE R"-(Permission to use, copy, modify, and/or distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright notice
+and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+THIS SOFTWARE.)-"
+
+////////////////////////////////////////////////////////////////
+//
 //	The zlib/libpng License
 //
 ////////////////////////////////////////////////////////////////
@@ -183,6 +201,12 @@ MIT_LICENSE
 R"-(double-conversion)-",
 R"-(Copyright 2006-2011, the V8 project authors. All rights reserved.)-",
 BSD_3_LICENSE
+},
+
+{
+R"-(Earcut)-",
+R"-(Copyright (c) 2015, Mapbox)-",
+ISC_LICENSE
 },
 
 {

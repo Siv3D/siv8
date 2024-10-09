@@ -10,8 +10,13 @@
 //-----------------------------------------------
 
 # pragma once
+# include <span>
+# include <Siv3D/Array.hpp>
+# include <Siv3D/PointVector.hpp>
+# include <Siv3D/TriangleIndex.hpp>
 
 namespace s3d
 {
-
+	[[nodiscard]]
+	bool Triangulate(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes, Array<TriangleIndex>& dstIndices);
 }

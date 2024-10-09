@@ -12,6 +12,7 @@ Name | Version
 [double-conversion](https://github.com/google/double-conversion) | v3.3.0
 [Easing Equations](http://robertpenner.com/easing/) | 
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
+[Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
 [fast_float](https://github.com/fastfloat/fast_float) | Version 6.1.6
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
