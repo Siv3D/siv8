@@ -13,9 +13,11 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/Polygon.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include "../Polygon/ClosedLineString.hpp"
 
 namespace s3d
 {
@@ -405,6 +407,18 @@ namespace s3d
 	const Triangle& Triangle::draw(const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addTriangle({ p0, p1, p2 }, pattern);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Triangle& Triangle::drawFrame(const double thickness, const ColorF& color, const JoinStyle joinStyle) const
+	{
+		DrawClosedLineString({ p0, p1, p2, p0, p1 }, joinStyle, thickness, color);
 		return *this;
 	}
 

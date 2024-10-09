@@ -13,6 +13,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/TriangleIndex.hpp>
 # include <Siv3D/FunctionRef.hpp>
 # include "Vertex2DBufferPointer.hpp"
 # include "ColorFillDirection.hpp"
@@ -85,5 +86,8 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndex, const Optional<Float2>& offset, const Float4& color);
 	}
 }

@@ -96,6 +96,11 @@ namespace s3d
 
 		void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const PatternParameters& pattern) override;
 
+		void addPolygon(std::span<const Float2> vertices, std::span<const TriangleIndex> indices, const Optional<Float2>& offset, const Float4& color) override;
+
+		void addPolygon(std::span<const Float2> vertices, std::span<const TriangleIndex> indices, const Optional<Float2>& offset, const PatternParameters& pattern) override;
+
+
 		void flush() override;
 
 

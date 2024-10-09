@@ -958,6 +958,9 @@
     <Filter Include="src\ThirdParty\Earcut">
       <UniqueIdentifier>{bd6d18ca-cfd7-4b88-a2af-23198abf99f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\JoinStyle">
+      <UniqueIdentifier>{56249917-998b-4efe-a164-51ac7c264f8e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3795,6 +3798,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Polygon.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.hpp">
+      <Filter>src\Siv3D\Polygon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.hpp">
+      <Filter>src\Siv3D\Polygon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\JoinStyle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6148,6 +6160,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_BoundingRect.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.cpp">
+      <Filter>src\Siv3D\Polygon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\JoinStyle\SivJoinStyle.cpp">
+      <Filter>src\Siv3D\JoinStyle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

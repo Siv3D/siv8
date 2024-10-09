@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
+# include "JoinStyle.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
@@ -952,15 +953,16 @@ namespace s3d
 		/// @brief 三角形の枠を描きます。
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 枠の色
+		/// @param joinStyle 線分の結合スタイル
 		/// @return *this
-		const Triangle& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
+		const Triangle& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White, JoinStyle joinStyle = JoinStyle::Default) const;
 
-		/// @brief 三角形の枠を描きます。
-		/// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
-		/// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
-		/// @param color 枠の色
-		/// @return *this
-		const Triangle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+		///// @brief 三角形の枠を描きます。
+		///// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
+		///// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
+		///// @param color 枠の色
+		///// @return *this
+		//const Triangle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

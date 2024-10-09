@@ -12,6 +12,9 @@
 # include <Siv3D/HashSet.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/PolygonFailureType.hpp>
+# include <Siv3D/Pattern/PatternParameters.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "PolygonDetail.hpp"
 # include "Triangulate.hpp"
 
@@ -20,7 +23,7 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static bool HasDuplicatePoints(std::span<const Vec2> points)
+		static bool HasDuplicatePoints(const std::span<const Vec2> points)
 		{
 			return (HashSet<Vec2>{ points.begin(), points.end() }.size() != points.size());
 		}
@@ -65,7 +68,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static CwOpenPolygon MakeCWOpenPolygon(std::span<const Vec2> outerVertices, const Array<Array<Vec2>>& holes)
+		static CwOpenPolygon MakeCWOpenPolygon(const std::span<const Vec2> outerVertices, const Array<Array<Vec2>>& holes)
 		{
 			CwOpenPolygon polygon;
 
@@ -143,7 +146,7 @@ namespace s3d
 		}
 	}
 
-	Polygon::PolygonDetail::PolygonDetail(std::span<const Vec2> outer, Array<Array<Vec2>> holes, const SkipValidation skipValidation)
+	Polygon::PolygonDetail::PolygonDetail(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, const SkipValidation skipValidation)
 	{
 		CwOpenPolygon polygon = MakeCWOpenPolygon(outer, holes);
 
@@ -169,7 +172,7 @@ namespace s3d
 		m_boundingRect	= Geometry2D::BoundingRect(outer);
 	}
 
-	Polygon::PolygonDetail::PolygonDetail(std::span<const Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, const SkipValidation skipValidation)
+	Polygon::PolygonDetail::PolygonDetail(const std::span<const Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, const SkipValidation skipValidation)
 	{
 		CwOpenPolygon polygon = MakeCWOpenPolygon(outer, {});
 
@@ -211,5 +214,78 @@ namespace s3d
 		m_holes			= std::move(holes);
 
 		m_boundingRect	= boundingRect;
+	}
+
+	bool Polygon::PolygonDetail::isEmpty() const noexcept
+	{
+		return m_polygon.outer().empty();
+	}
+
+	const Array<Vec2>& Polygon::PolygonDetail::outer() const noexcept
+	{
+		return m_polygon.outer();
+	}
+
+	const Array<Array<Vec2>>& Polygon::PolygonDetail::inners() const noexcept
+	{
+		return m_holes;
+	}
+
+	const Array<Float2>& Polygon::PolygonDetail::vertices() const noexcept
+	{
+		return m_vertices;
+	}
+
+	const Array<TriangleIndex>& Polygon::PolygonDetail::indices() const noexcept
+	{
+		return m_indices;
+	}
+
+	const RectF& Polygon::PolygonDetail::boundingRect() const noexcept
+	{
+		return m_boundingRect;
+	}
+
+
+
+
+	void Polygon::PolygonDetail::draw(const ColorF& color) const
+	{
+		if (m_indices.isEmpty())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, none, color.toFloat4());
+	}
+
+	void Polygon::PolygonDetail::draw(const Vec2& offset, const ColorF& color) const
+	{
+		if (m_indices.isEmpty())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, offset, color.toFloat4());
+	}
+
+	void Polygon::PolygonDetail::draw(const PatternParameters& pattern) const
+	{
+		if (m_indices.isEmpty())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, none, pattern);
+	}
+
+	void Polygon::PolygonDetail::draw(const Vec2& offset, const PatternParameters& pattern) const
+	{
+		if (m_indices.isEmpty())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, offset, pattern);
 	}
 }

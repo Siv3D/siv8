@@ -877,6 +877,8 @@
 // float 型の四角形 | Quad (float)
 # include <Siv3D/FloatQuad.hpp>
 
+# include <Siv3D/JoinStyle.hpp>
+
 # include <Siv3D/TriangleIndex.hpp>
 
 # include <Siv3D/TriangleIndex32.hpp>

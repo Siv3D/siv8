@@ -312,6 +312,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\InputGroups.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\InputState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Interpolation.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\JoinStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSON.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONIterator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONPointer.hpp" />
@@ -609,6 +610,8 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.hpp" />
@@ -1127,6 +1130,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Interpolation\SivInterpolation.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\JoinStyle\SivJoinStyle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JSONIterator\SivJSONIterator.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JSONValueType\SivJSONValueType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JSON\SivJSON.cpp" />
@@ -1169,6 +1173,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Point3D\SivPoint3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point\SivPoint.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PolygonFailureType\SivPolygonFailureType.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\SivPolygon.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.cpp" />

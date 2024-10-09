@@ -36,7 +36,7 @@ namespace mapbox::util
 
 namespace s3d
 {
-	bool Triangulate(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes, Array<TriangleIndex>& dstIndices)
+	bool Triangulate(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes, Array<TriangleIndex>& dstIndices)
 	{
 		Array<Array<Vec2>> polygon;
 		{
