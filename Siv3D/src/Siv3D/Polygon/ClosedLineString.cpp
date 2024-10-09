@@ -43,10 +43,10 @@ namespace s3d
 		{
 		public:
 
-			template <typename Point, typename DistanceType, typename RangeOut>
-			inline bool apply(Point const& ip, Point const& vertex,
-				Point const& perp1, Point const& perp2,
-				DistanceType const& buffer_distance,
+			template <class Point, class DistanceType, class RangeOut>
+			bool apply(const Point& ip, const Point& vertex,
+				const Point& perp1, const Point& perp2,
+				const DistanceType& buffer_distance,
 				RangeOut& range_out) const
 			{
 				typedef typename boost::geometry::coordinate_type<Point>::type coordinate_type;
@@ -74,8 +74,8 @@ namespace s3d
 				return true;
 			}
 
-			template <typename NumericType>
-			static inline NumericType max_distance(NumericType const& distance)
+			template <class NumericType>
+			static NumericType max_distance(const NumericType& distance)
 			{
 				return distance;
 			}
@@ -127,13 +127,15 @@ namespace s3d
 			return;
 		}
 
+		const double halfThickness = (thickness * 0.5);
+		const boost::geometry::strategy::buffer::distance_symmetric<double> distanceStrategy{ halfThickness };
 		const GLineString ls{ points.begin(), points.end() };
 		boost::geometry::model::multi_polygon<CwOpenPolygon> polygon;
 
 		if (joinStyle == JoinStyle::Bevel)
 		{
 			boost::geometry::buffer(ls, polygon,
-				boost::geometry::strategy::buffer::distance_symmetric<double>{ (thickness * 0.5) },
+				distanceStrategy,
 				boost::geometry::strategy::buffer::side_straight{},
 				JoinDefaultSymmetric{},
 				boost::geometry::strategy::buffer::end_flat{},
@@ -142,7 +144,7 @@ namespace s3d
 		else if (joinStyle == JoinStyle::Round)
 		{
 			boost::geometry::buffer(ls, polygon,
-				boost::geometry::strategy::buffer::distance_symmetric<double>{ (thickness * 0.5) },
+				distanceStrategy,
 				boost::geometry::strategy::buffer::side_straight{},
 				boost::geometry::strategy::buffer::join_round{ CalculateCircleQuality(thickness) },
 				boost::geometry::strategy::buffer::end_flat{},
@@ -151,25 +153,28 @@ namespace s3d
 		else // JoinStyle::Miter
 		{
 			boost::geometry::buffer(ls, polygon,
-				boost::geometry::strategy::buffer::distance_symmetric<double>{ (thickness * 0.5) },
+				distanceStrategy,
 				boost::geometry::strategy::buffer::side_straight{},
 				boost::geometry::strategy::buffer::join_miter{ Largest<double> },
 				boost::geometry::strategy::buffer::end_flat{},
 				boost::geometry::strategy::buffer::point_square{});
 		}
 
-		Array<Vec2> outer(polygon[0].outer().begin(), polygon[0].outer().end());
+		if (polygon.empty())
+		{
+			return;
+		}
 
 		Array<Array<Vec2>> holes;
 
-		if (polygon[0].inners())
+		if (const auto& inners = polygon[0].inners())
 		{
-			for (const auto& inner : polygon[0].inners())
+			for (const auto& inner : inners)
 			{
 				holes.emplace_back(inner.begin(), inner.end());
 			}
 		}
 
-		Polygon{ outer, holes }.draw(color);
+		Polygon{ polygon[0].outer(), holes, SkipValidation::Yes }.draw(color);
 	}
 }
