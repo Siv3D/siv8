@@ -35,7 +35,7 @@ namespace s3d
 	constexpr LineString::LineString(Iterator first, Iterator last)
 		: m_points(first, last) {}
 
-	LineString::LineString(const Array<Point>& points)
+	constexpr LineString::LineString(const Array<Point>& points)
 		: m_points(points.begin(), points.end()) {}
 
 	constexpr LineString::LineString(const HasAsArray auto& a)

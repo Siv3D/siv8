@@ -119,7 +119,7 @@ namespace s3d
 		/// @brief 点の配列を作成します。
 		/// @param points 
 		[[nodiscard]]
-		explicit LineString(const Array<Point>& points);
+		explicit constexpr LineString(const Array<Point>& points);
 
 		/// @brief メンバ関数 `.asArray()` を持つ型から点の配列を作成します。
 		/// @tparam ArrayIsh メンバ関数 `.asArray()` を持つ型
