@@ -53,4 +53,6 @@ namespace s3d
 	/// @brief 回転を許可する | Allow rotation
 	using AllowFlip				= YesNo<struct AllowFlip_tag>;
 
+	/// @brief 妥当性をチェックする
+	using SkipValidation		= YesNo<struct SkipValidation_tag>;
 }

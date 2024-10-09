@@ -877,6 +877,10 @@
 // float 型の四角形 | Quad (float)
 # include <Siv3D/FloatQuad.hpp>
 
+# include <Siv3D/TriangleIndex.hpp>
+
+# include <Siv3D/TriangleIndex32.hpp>
+
 //// 2D 形状コレクション | 2D shapes collection
 //# include <Siv3D/Shape2D.hpp>
 //
