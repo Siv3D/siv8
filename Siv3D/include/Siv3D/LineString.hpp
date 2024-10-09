@@ -268,19 +268,19 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getContainer
+		//	asArray
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief std::vector への const 参照を返します。
-		/// @return std::vector への const 参照
+		/// @brief Array への const 参照を返します。
+		/// @return Array への const 参照
 		[[nodiscard]]
-		constexpr const container_type& getContainer() const& noexcept;
+		constexpr const container_type& asArray() const& noexcept;
 
-		/// @brief std::vector を返します。
-		/// @return std::vector
+		/// @brief Array を返します。
+		/// @return Array
 		[[nodiscard]]
-		constexpr container_type getContainer() && noexcept;
+		constexpr container_type asArray() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -288,11 +288,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief std::vector への暗黙の変換を行います。
+		/// @brief Array への暗黙の変換を行います。
 		[[nodiscard]]
 		constexpr operator container_type() const& noexcept;
 
-		/// @brief std::vector への暗黙の変換を行います。
+		/// @brief Array への暗黙の変換を行います。
 		[[nodiscard]]
 		constexpr operator container_type() && noexcept;
 
@@ -644,12 +644,6 @@ namespace s3d
 		/// @return 挿入された要素を指すイテレータ
 		constexpr iterator insert(const_iterator pos, const value_type& value);
 
-		/// @brief 指定した位置に要素を挿入します。
-		/// @param pos 挿入する位置
-		/// @param value 挿入する値
-		/// @return 挿入された要素を指すイテレータ
-		constexpr iterator insert(const_iterator pos, value_type&& value);
-
 		/// @brief 指定した位置に count 個の value を挿入します。
 		/// @param pos 挿入する位置
 		/// @param count 挿入する個数
@@ -731,10 +725,6 @@ namespace s3d
 		/// @param value 追加する値
 		constexpr void push_back(const value_type& value);
 
-		/// @brief 配列の末尾に要素を追加します。
-		/// @param value 追加する値
-		constexpr void push_back(value_type&& value);
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	emplace_back
@@ -793,10 +783,6 @@ namespace s3d
 		/// @param value 追加する値
 		constexpr void push_front(const value_type& value);
 
-		/// @brief 配列の先頭に要素を追加します。
-		/// @param value 追加する値
-		constexpr void push_front(value_type&& value);
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	emplace_front
@@ -852,11 +838,6 @@ namespace s3d
 		/// @return *this
 		constexpr LineString& operator <<(const value_type& value);
 
-		/// @brief 配列の末尾に要素を追加します。
-		/// @param value 追加する値
-		/// @return *this
-		constexpr LineString& operator <<(value_type&& value);
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	subspan
@@ -883,6 +864,73 @@ namespace s3d
 
 
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用します。
+		/// @tparam Fty 適用する関数の型
+		/// @param f 適用する関数
+		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
+		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
+		template <class Fty>
+		constexpr auto operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator <<
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class CharType>
+		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const LineString& value)
+		{
+			return output << Format(value.m_points);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Generate
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 関数を用いて配列を生成します。
+		/// @param size 生成する配列の要素数
+		/// @param generator 生成に使用する関数
+		/// @return 生成した配列
+		[[nodiscard]]
+		static LineString Generate(size_type size, FunctionRef<value_type()> generator);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IndexedGenerate
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief インデックスと関数を用いて配列を生成します。
+		/// @param size 生成する配列の要素数
+		/// @param generator 生成に使用する関数
+		/// @return 生成した配列
+		[[nodiscard]]
+		static LineString IndexedGenerate(size_type size, FunctionRef<value_type(size_t)> generator);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ==
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2 つの配列が等しいかを返します。
+		/// @param lhs 一方の配列
+		/// @param rhs もう一方の配列
+		/// @return 2 つの配列が等しい場合 true, それ以外の場合は false
+		[[nodiscard]]
+		friend constexpr bool operator ==(const LineString& lhs, const LineString& rhs)
+		{
+			return (lhs.m_points == rhs.m_points);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
