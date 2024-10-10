@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/PointVector.hpp>
+# include <Siv3D/Array.hpp>
 # include <boost/geometry.hpp>
 # include <boost/geometry/geometries/register/point.hpp>
 
@@ -22,4 +23,5 @@ namespace s3d
 {
 	using CwOpenPolygon	= boost::geometry::model::polygon<Vec2, false, false, Array, Array>;
 	using GLineString	= boost::geometry::model::linestring<Vec2, Array>;
+	using InnersType	= Array<boost::geometry::model::ring<Vec2, false, false, Array>>;
 }

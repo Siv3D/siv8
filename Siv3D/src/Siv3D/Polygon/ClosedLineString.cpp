@@ -13,6 +13,7 @@
 # include <Siv3D/Number.hpp>
 # include "ClosedLineString.hpp"
 # include "GeometryCommon.hpp"
+# include "Triangulate.hpp"
 
 namespace s3d
 {
@@ -173,17 +174,7 @@ namespace s3d
 			return;
 		}
 
-		Array<Array<Vec2>> holes;
-
-		if (const auto& inners = polygon[0].inners())
-		{
-			for (const auto& inner : inners)
-			{
-				holes.emplace_back(inner.begin(), inner.end());
-			}
-		}
-
-		Polygon{ polygon[0].outer(), holes, SkipValidation::Yes }.draw(color);
+		DrawTriangles(polygon[0].outer(), polygon[0].inners(), color);
 	}
 
 	void DrawClosedLineString(const Array<Vec2>& points, const JoinStyle joinStyle, const double thickness, const PatternParameters& pattern)
@@ -202,16 +193,6 @@ namespace s3d
 			return;
 		}
 
-		Array<Array<Vec2>> holes;
-
-		if (const auto& inners = polygon[0].inners())
-		{
-			for (const auto& inner : inners)
-			{
-				holes.emplace_back(inner.begin(), inner.end());
-			}
-		}
-
-		Polygon{ polygon[0].outer(), holes, SkipValidation::Yes }.draw(pattern);
+		DrawTriangles(polygon[0].outer(), polygon[0].inners(), pattern);
 	}
 }

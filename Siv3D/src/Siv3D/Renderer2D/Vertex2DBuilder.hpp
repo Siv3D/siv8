@@ -88,6 +88,9 @@ namespace s3d
 		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndex, const Optional<Float2>& offset, const Float4& color);
+		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const Float4& color);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const Float4& color);
 	}
 }

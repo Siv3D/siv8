@@ -106,9 +106,13 @@ namespace s3d
 
 		virtual void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const PatternParameters& pattern) = 0;
 
-		virtual void addPolygon(std::span<const Float2> vertices, std::span<const TriangleIndex> indices, const Optional<Float2>& offset, const Float4& color) = 0;
+		virtual void addPolygon(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const Float4& color) = 0;
 
-		virtual void addPolygon(std::span<const Float2> vertices, std::span<const TriangleIndex> indices, const Optional<Float2>& offset, const PatternParameters& pattern) = 0;
+		virtual void addPolygon(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const PatternParameters& pattern) = 0;
+
+		virtual void addPolygon(std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const Float4& color) = 0;
+
+		virtual void addPolygon(std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const PatternParameters& pattern) = 0;
 
 
 

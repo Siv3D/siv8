@@ -330,10 +330,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const TriangleIndex> triangleIndex, const Optional<Float2>& offset, const Float4& color)
+		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const Float4& color)
 		{
 			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertices.size());
-			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(triangleIndex.size() * 3);
+			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(triangleIndices.size() * 3);
 			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
 
 			if (not pVertex)
@@ -370,7 +370,44 @@ namespace s3d
 
 			// インデックスバッファへの書き込み
 			{
-				std::memcpy(pIndex, triangleIndex.data(), triangleIndex.size_bytes());
+				std::memcpy(pIndex, triangleIndices.data(), triangleIndices.size_bytes());
+
+				for (size_t i = 0; i < IndexCount; ++i)
+				{
+					*(pIndex++) += indexOffset;
+				}
+			}
+
+			return IndexCount;
+		}
+
+		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const Vertex2D::IndexType> indices, const Float4& color)
+		{
+			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertices.size());
+			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(indices.size());
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			// 頂点バッファへの書き込み
+			{
+				const Float2* pSrc = vertices.data();
+				const Float2* pSrcEnd = (pSrc + vertices.size());
+
+				while (pSrc != pSrcEnd)
+				{
+					pVertex->pos = *pSrc++;
+					pVertex->color = color;
+					++pVertex;
+				}
+			}
+
+			// インデックスバッファへの書き込み
+			{
+				std::memcpy(pIndex, indices.data(), indices.size_bytes());
 
 				for (size_t i = 0; i < IndexCount; ++i)
 				{
