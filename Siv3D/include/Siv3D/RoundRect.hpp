@@ -18,6 +18,8 @@
 
 namespace s3d
 {
+	struct PatternParameters;
+
 	/// @brief 角丸長方形
 	struct RoundRect
 	{

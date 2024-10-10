@@ -422,6 +422,12 @@ namespace s3d
 		return *this;
 	}
 
+	const Triangle& Triangle::drawFrame(const double thickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
+	{
+		DrawClosedLineString({ p0, p1, p2, p0, p1 }, joinStyle, thickness, pattern);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	FromBaseCenter

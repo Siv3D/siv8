@@ -17,6 +17,7 @@
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include "../Polygon/ClosedLineString.hpp"
 
 namespace s3d
 {
@@ -311,6 +312,24 @@ namespace s3d
 	const Quad& Quad::draw(const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addQuad(FloatQuad{ *this }, pattern);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Quad& Quad::drawFrame(const double thickness, const ColorF& color, const JoinStyle joinStyle) const
+	{
+		DrawClosedLineString({ p0, p1, p2, p3, p0, p1 }, joinStyle, thickness, color);
+		return *this;
+	}
+
+	const Quad& Quad::drawFrame(const double thickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
+	{
+		DrawClosedLineString({ p0, p1, p2, p3, p0, p1 }, joinStyle, thickness, pattern);
 		return *this;
 	}
 

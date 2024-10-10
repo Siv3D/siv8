@@ -964,6 +964,20 @@ namespace s3d
 		///// @return *this
 		//const Triangle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
+		/// @brief 三角形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @param joinStyle 線分の結合スタイル
+		/// @return *this
+		const Triangle& drawFrame(double thickness, const PatternParameters& pattern, JoinStyle joinStyle = JoinStyle::Default) const;
+
+		///// @brief 三角形の枠を描きます。
+		///// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
+		///// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		///// @return *this
+		//const Triangle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	FromBaseCenter

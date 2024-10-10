@@ -116,6 +116,45 @@ namespace s3d
 				range_out.push_back(p1);
 			}
 		};
+
+		[[nodiscard]]
+		static boost::geometry::model::multi_polygon<CwOpenPolygon> MakeBuffer(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness)
+		{
+			const double halfThickness = (thickness * 0.5);
+			const boost::geometry::strategy::buffer::distance_symmetric<double> distanceStrategy{ halfThickness };
+			const GLineString ls{ points.begin(), points.end() };
+			boost::geometry::model::multi_polygon<CwOpenPolygon> polygon;
+
+			if (joinStyle == JoinStyle::Bevel)
+			{
+				boost::geometry::buffer(ls, polygon,
+					distanceStrategy,
+					boost::geometry::strategy::buffer::side_straight{},
+					JoinDefaultSymmetric{},
+					boost::geometry::strategy::buffer::end_flat{},
+					boost::geometry::strategy::buffer::point_square{});
+			}
+			else if (joinStyle == JoinStyle::Round)
+			{
+				boost::geometry::buffer(ls, polygon,
+					distanceStrategy,
+					boost::geometry::strategy::buffer::side_straight{},
+					boost::geometry::strategy::buffer::join_round{ CalculateCircleQuality(thickness) },
+					boost::geometry::strategy::buffer::end_flat{},
+					boost::geometry::strategy::buffer::point_square{});
+			}
+			else // JoinStyle::Miter
+			{
+				boost::geometry::buffer(ls, polygon,
+					distanceStrategy,
+					boost::geometry::strategy::buffer::side_straight{},
+					boost::geometry::strategy::buffer::join_miter{ Largest<double> },
+					boost::geometry::strategy::buffer::end_flat{},
+					boost::geometry::strategy::buffer::point_square{});
+			}
+
+			return polygon;
+		}
 	}
 
 	void DrawClosedLineString(const Array<Vec2>& points, const JoinStyle joinStyle, const double thickness, const ColorF& color)
@@ -127,38 +166,7 @@ namespace s3d
 			return;
 		}
 
-		const double halfThickness = (thickness * 0.5);
-		const boost::geometry::strategy::buffer::distance_symmetric<double> distanceStrategy{ halfThickness };
-		const GLineString ls{ points.begin(), points.end() };
-		boost::geometry::model::multi_polygon<CwOpenPolygon> polygon;
-
-		if (joinStyle == JoinStyle::Bevel)
-		{
-			boost::geometry::buffer(ls, polygon,
-				distanceStrategy,
-				boost::geometry::strategy::buffer::side_straight{},
-				JoinDefaultSymmetric{},
-				boost::geometry::strategy::buffer::end_flat{},
-				boost::geometry::strategy::buffer::point_square{});
-		}
-		else if (joinStyle == JoinStyle::Round)
-		{
-			boost::geometry::buffer(ls, polygon,
-				distanceStrategy,
-				boost::geometry::strategy::buffer::side_straight{},
-				boost::geometry::strategy::buffer::join_round{ CalculateCircleQuality(thickness) },
-				boost::geometry::strategy::buffer::end_flat{},
-				boost::geometry::strategy::buffer::point_square{});
-		}
-		else // JoinStyle::Miter
-		{
-			boost::geometry::buffer(ls, polygon,
-				distanceStrategy,
-				boost::geometry::strategy::buffer::side_straight{},
-				boost::geometry::strategy::buffer::join_miter{ Largest<double> },
-				boost::geometry::strategy::buffer::end_flat{},
-				boost::geometry::strategy::buffer::point_square{});
-		}
+		const auto polygon = MakeBuffer(points, joinStyle, thickness);
 
 		if (polygon.empty())
 		{
@@ -176,5 +184,34 @@ namespace s3d
 		}
 
 		Polygon{ polygon[0].outer(), holes, SkipValidation::Yes }.draw(color);
+	}
+
+	void DrawClosedLineString(const Array<Vec2>& points, const JoinStyle joinStyle, const double thickness, const PatternParameters& pattern)
+	{
+		if (joinStyle == JoinStyle::Default)
+		{
+			// [Siv3D ToDo]
+
+			return;
+		}
+
+		const auto polygon = MakeBuffer(points, joinStyle, thickness);
+
+		if (polygon.empty())
+		{
+			return;
+		}
+
+		Array<Array<Vec2>> holes;
+
+		if (const auto& inners = polygon[0].inners())
+		{
+			for (const auto& inner : inners)
+			{
+				holes.emplace_back(inner.begin(), inner.end());
+			}
+		}
+
+		Polygon{ polygon[0].outer(), holes, SkipValidation::Yes }.draw(pattern);
 	}
 }

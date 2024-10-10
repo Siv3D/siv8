@@ -18,4 +18,6 @@
 namespace s3d
 {
 	void DrawClosedLineString(const Array<Vec2>& points, JoinStyle joinStyle, double thickness, const ColorF& color);
+
+	void DrawClosedLineString(const Array<Vec2>& points, JoinStyle joinStyle, double thickness, const PatternParameters& pattern);
 }
