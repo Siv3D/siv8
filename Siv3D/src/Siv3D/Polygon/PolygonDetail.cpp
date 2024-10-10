@@ -11,7 +11,6 @@
 
 # include <Siv3D/HashSet.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
-# include <Siv3D/PolygonFailureType.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -116,7 +115,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static PolygonFailureType Validate(const CwOpenPolygon& polygon)
+		static PolygonFailureType ValidatePolygon(const CwOpenPolygon& polygon)
 		{
 			boost::geometry::validity_failure_type failure = boost::geometry::no_failure;
 
@@ -146,13 +145,19 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	Polygon::PolygonDetail::PolygonDetail(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, const SkipValidation skipValidation)
 	{
 		CwOpenPolygon polygon = MakeCWOpenPolygon(outer, holes);
 
 		if (not skipValidation)
 		{
-			if (Validate(polygon) != PolygonFailureType::OK)
+			if (ValidatePolygon(polygon) != PolygonFailureType::OK)
 			{
 				return;
 			}
@@ -178,7 +183,7 @@ namespace s3d
 
 		if (not skipValidation)
 		{
-			if (Validate(polygon) != PolygonFailureType::OK)
+			if (ValidatePolygon(polygon) != PolygonFailureType::OK)
 			{
 				return;
 			}
@@ -199,7 +204,7 @@ namespace s3d
 
 		if (not skipValidation)
 		{
-			if (Validate(polygon) != PolygonFailureType::OK)
+			if (ValidatePolygon(polygon) != PolygonFailureType::OK)
 			{
 				return;
 			}
@@ -216,30 +221,66 @@ namespace s3d
 		m_boundingRect	= boundingRect;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	isEmpty
+	//
+	////////////////////////////////////////////////////////////////
+
 	bool Polygon::PolygonDetail::isEmpty() const noexcept
 	{
 		return m_polygon.outer().empty();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outer
+	//
+	////////////////////////////////////////////////////////////////
 
 	const Array<Vec2>& Polygon::PolygonDetail::outer() const noexcept
 	{
 		return m_polygon.outer();
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	inners
+	//
+	////////////////////////////////////////////////////////////////
+
 	const Array<Array<Vec2>>& Polygon::PolygonDetail::inners() const noexcept
 	{
 		return m_holes;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	vertices
+	//
+	////////////////////////////////////////////////////////////////
 
 	const Array<Float2>& Polygon::PolygonDetail::vertices() const noexcept
 	{
 		return m_vertices;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	indices
+	//
+	////////////////////////////////////////////////////////////////
+
 	const Array<TriangleIndex>& Polygon::PolygonDetail::indices() const noexcept
 	{
 		return m_indices;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	boundingRect
+	//
+	////////////////////////////////////////////////////////////////
 
 	const RectF& Polygon::PolygonDetail::boundingRect() const noexcept
 	{
@@ -248,6 +289,12 @@ namespace s3d
 
 
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
 
 	void Polygon::PolygonDetail::draw(const ColorF& color) const
 	{
@@ -287,5 +334,16 @@ namespace s3d
 		}
 
 		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, offset, pattern);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Validate
+	//
+	////////////////////////////////////////////////////////////////
+
+	PolygonFailureType Polygon::PolygonDetail::Validate(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
+	{
+		return ValidatePolygon(MakeCWOpenPolygon(outer, holes));
 	}
 }

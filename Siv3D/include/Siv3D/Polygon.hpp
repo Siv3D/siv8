@@ -16,6 +16,7 @@
 # include "PointVector.hpp"
 # include "2DShapes.hpp"
 # include "TriangleIndex.hpp"
+# include "PolygonFailureType.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
@@ -207,7 +208,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	triangle
+		//	triangleAtIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -217,7 +218,11 @@ namespace s3d
 		[[nodiscard]]
 		Triangle triangleAtIndex(size_t index) const;
 
-
+		////////////////////////////////////////////////////////////////
+		//
+		//	addHole
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 多角形に穴を追加します。
 		///// @param rect 穴の形状
@@ -257,10 +262,22 @@ namespace s3d
 		///// @return 穴の追加に成功したら true, それ以外の場合は false
 		//bool addHole(Array<Vec2> hole);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	addHoles
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形に穴を追加します。
 		///// @param holes 穴を構成する頂点配列の配列（複数の穴）
 		///// @return 穴の追加に成功したら true, それ以外の場合は false
 		//bool addHoles(Array<Array<Vec2>> holes);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	movedBy
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 平行移動した多角形を返します。
 		///// @param x X 方向の移動量
@@ -268,6 +285,12 @@ namespace s3d
 		///// @return 平行移動した多角形
 		//[[nodiscard]]
 		//Polygon movedBy(double x, double y) const&;
+
+		///// @brief 平行移動した多角形を返します。
+		///// @param v 移動量
+		///// @return 平行移動した多角形
+		//[[nodiscard]]
+		//Polygon movedBy(Vec2 v) const&;
 
 		///// @brief 平行移動した多角形を返します。
 		///// @param x X 方向の移動量
@@ -280,13 +303,13 @@ namespace s3d
 		///// @param v 移動量
 		///// @return 平行移動した多角形
 		//[[nodiscard]]
-		//Polygon movedBy(Vec2 v) const&;
-
-		///// @brief 平行移動した多角形を返します。
-		///// @param v 移動量
-		///// @return 平行移動した多角形
-		//[[nodiscard]]
 		//Polygon movedBy(Vec2 v) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	movedBy
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 多角形を平行移動します。
 		///// @param x X 方向の移動量
@@ -299,11 +322,23 @@ namespace s3d
 		///// @return *this
 		//Polygon& moveBy(Vec2 v) noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated
+		//
+		////////////////////////////////////////////////////////////////
+
 		//[[nodiscard]]
 		//Polygon rotated(double angle) const&;
 
 		//[[nodiscard]]
 		//Polygon rotated(double angle) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotatedAt
+		//
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//Polygon rotatedAt(double x, double y, double angle) const&;
@@ -317,11 +352,29 @@ namespace s3d
 		//[[nodiscard]]
 		//Polygon rotatedAt(Vec2 pos, double angle) &&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotate
+		//
+		////////////////////////////////////////////////////////////////
+
 		//Polygon& rotate(double angle);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotateAt
+		//
+		////////////////////////////////////////////////////////////////
 
 		//Polygon& rotateAt(double x, double y, double angle);
 
 		//Polygon& rotateAt(Vec2 pos, double angle);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	transformed
+		//
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//Polygon transformed(double s, double c, const Vec2& pos) const&;
@@ -329,7 +382,19 @@ namespace s3d
 		//[[nodiscard]]
 		//Polygon transformed(double s, double c, const Vec2& pos) &&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	transform
+		//
+		////////////////////////////////////////////////////////////////
+
 		//Polygon& transform(double s, double c, const Vec2& pos);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaled
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
 		///// @param s 拡大率
@@ -369,6 +434,12 @@ namespace s3d
 		//[[nodiscard]]
 		//Polygon scaled(Vec2 s) &&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	scale
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 原点 (0, 0) を中心に拡大・縮小します。
 		///// @param s 拡大率
 		///// @return *this
@@ -384,6 +455,12 @@ namespace s3d
 		///// @param s 拡大率
 		///// @return *this
 		//Polygon& scale(Vec2 s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaledAt
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
 		///// @param pos 拡大・縮小の中心位置
@@ -429,6 +506,12 @@ namespace s3d
 		//[[nodiscard]]
 		//Polygon scaledAt(Vec2 pos, Vec2 s) &&;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaleAt
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 指定した位置を中心に拡大・縮小します。
 		///// @param pos 拡大・縮小の中心位置
 		///// @param s 拡大率
@@ -448,25 +531,55 @@ namespace s3d
 		///// @return *this
 		//Polygon& scaleAt(Vec2 pos, Vec2 s);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	area
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形の面積を返します。
 		///// @return 多角形の面積
 		//[[nodiscard]]
 		//double area() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	perimeter
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 多角形の、穴を含めた輪郭の長さを返します。
 		///// @return 多角形の、穴を含めた輪郭の長さ
 		//[[nodiscard]]
 		//double perimeter() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	centroid
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形の重心の座標を返します。
 		///// @return 多角形の重心の座標
 		//[[nodiscard]]
 		//Vec2 centroid() const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeConvexHull
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形の凸包を計算して返します。
 		///// @return 多角形の凸包
 		//[[nodiscard]]
 		//Polygon computeConvexHull() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateBuffer
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 多角形を太らせた、新しい多角形を返します。
 		///// @param distance 太らせる距離。負の場合は細らせます。
@@ -474,17 +587,35 @@ namespace s3d
 		//[[nodiscard]]
 		//Polygon calculateBuffer(double distance) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateRoundBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形を丸く太らせた、新しい多角形を返します。
 		///// @param distance 太らせる距離。負の場合は細らせます。
 		///// @return 新しい多角形
 		//[[nodiscard]]
 		//Polygon calculateRoundBuffer(double distance) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	simplified
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形を単純化した、新しい多角形を返します。
 		///// @param maxDistance 単純化に使う距離。大きいほど単純化されます。
 		///// @return 新しい多角形
 		//[[nodiscard]]
 		//Polygon simplified(double maxDistance = 2.0) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	outline
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 多角形の外周を LineString で返します。
 		///// @param closeRing 始点と終点を一致させる場合は `CloseRing::Yes`, それ以外の場合は `CloseRing::No`
@@ -499,6 +630,12 @@ namespace s3d
 		//[[nodiscard]]
 		//LineString outline(double distanceFromOrigin, double length) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	append
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形に新しい領域を追加します。新しい領域は既存の多角形と接続していなければなりません。
 		///// @param other 新しい領域
 		///// @return 新しい領域の追加に成功した場合 true, それ以外の場合は false
@@ -508,6 +645,12 @@ namespace s3d
 		///// @param other 新しい領域
 		///// @return 新しい領域の追加に成功した場合 true, それ以外の場合は false
 		//bool append(const Polygon& other);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersects
+		//
+		////////////////////////////////////////////////////////////////
 
 		//template <class Shape2DType>
 		//[[nodiscard]]
@@ -525,13 +668,31 @@ namespace s3d
 		//[[nodiscard]]
 		//bool intersects(const Polygon& other) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
 		//template <class Shape2DType>
 		//[[nodiscard]]
 		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains
+		//
+		////////////////////////////////////////////////////////////////
+
 		//template <class Shape2DType>
 		//[[nodiscard]]
 		//bool contains(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	leftClicked, leftPressed, leftReleased
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 多角形が現在のフレームで左クリックされ始めたかを返します。
 		///// @return 多角形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
@@ -548,6 +709,12 @@ namespace s3d
 		//[[nodiscard]]
 		//bool leftReleased() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	rightClicked, rightPressed, rightReleased
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形が現在のフレームで右クリックされ始めたかを返します。
 		///// @return 多角形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
 		//[[nodiscard]]
@@ -563,10 +730,22 @@ namespace s3d
 		//[[nodiscard]]
 		//bool rightReleased() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	mouseOver
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形上にマウスカーソルがあるかを返します。
 		///// @return 多角形上にマウスカーソルがある場合 true, それ以外の場合は false
 		//[[nodiscard]]
 		//bool mouseOver() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
 
 		//const Polygon& paint(Image& dst, const Color& color) const;
 
@@ -574,12 +753,17 @@ namespace s3d
 
 		//const Polygon& paint(Image& dst, const Vec2& pos, const Color& color) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
+
 		//const Polygon& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
 
 		//const Polygon& overwrite(Image& dst, double x, double y, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
 
 		//const Polygon& overwrite(Image& dst, const Vec2& pos, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
-
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -609,6 +793,11 @@ namespace s3d
 
 		void draw(const Vec2& pos, const PatternParameters& pattern) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawTransformed
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 多角形を回転 + 移動して描画します。
 		///// @param angle 回転角度（ラジアン）
@@ -623,6 +812,12 @@ namespace s3d
 		///// @param color 色
 		//void drawTransformed(double s, double c, const Vec2& pos, const ColorF& color = Palette::White) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawFrame
+		//
+		////////////////////////////////////////////////////////////////
+
 		///// @brief 多角形の枠を描画します。
 		///// @param thickness 枠の太さ（ピクセル）
 		///// @param color 色
@@ -632,6 +827,12 @@ namespace s3d
 		//void drawFrame(double x, double y, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		//void drawFrame(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawWireframe
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 多角形をワイヤフレーム表示で描画します。
 		///// @param thickness ワイヤフレームの太さ（ピクセル）
@@ -652,6 +853,12 @@ namespace s3d
 		///// @param color 色
 		//void drawWireframe(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	toBuffer2D
+		//
+		////////////////////////////////////////////////////////////////
+
 		//[[nodiscard]]
 		//Buffer2D toBuffer2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
 
@@ -664,11 +871,20 @@ namespace s3d
 		//[[nodiscard]]
 		//Buffer2D toBuffer2D(const Mat3x2& uvMat) const;
 
-		//[[nodiscard]]
-		//static PolygonFailureType Validate(const Vec2* pVertex, size_t vertexSize, const Array<Array<Vec2>>& holes = {});
+		////////////////////////////////////////////////////////////////
+		//
+		//	Validate
+		//
+		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//static PolygonFailureType Validate(const Array<Vec2>& vertices, const Array<Array<Vec2>>& holes = {});
+		[[nodiscard]]
+		static PolygonFailureType Validate(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Correct
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 頂点配列から多角形を生成します。
 		///// @param pVertex 頂点配列の先頭ポインタ
@@ -685,15 +901,32 @@ namespace s3d
 		//[[nodiscard]]
 		//static Array<Polygon> Correct(const Array<Vec2>& vertices, const Array<Array<Vec2>>& holes = {});
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	CorrectOne
+		//
+		////////////////////////////////////////////////////////////////
+
 		//[[nodiscard]]
 		//static Polygon CorrectOne(const Vec2* pVertex, size_t vertexSize, const Array<Array<Vec2>>& holes = {});
 
 		//[[nodiscard]]
 		//static Polygon CorrectOne(const Array<Vec2>& vertices, const Array<Array<Vec2>>& holes = {});
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	_detail
+		//
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//const PolygonDetail* _detail() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator <<
+		//
+		////////////////////////////////////////////////////////////////
 
 		//template <class CharType>
 		//friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Polygon& value)
@@ -751,8 +984,6 @@ namespace s3d
 
 		//	return output << CharType(')');
 		//}
-
-
 
 		////////////////////////////////////////////////////////////////
 		//
