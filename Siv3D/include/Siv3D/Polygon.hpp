@@ -787,10 +787,20 @@ namespace s3d
 		/// @param color 色
 		void draw(const Vec2& pos, const ColorF& color = Palette::White) const;
 
+		/// @brief 多角形を描画します。
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Polygon& draw(const PatternParameters& pattern) const;
 
+		/// @brief 多角形を移動して描画します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @param pattern 塗りつぶしパターン
 		void draw(double x, double y, const PatternParameters& pattern) const;
 
+		/// @brief 多角形を移動して描画します。
+		/// @param pos 移動量
+		/// @param pattern 塗りつぶしパターン
 		void draw(const Vec2& pos, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
