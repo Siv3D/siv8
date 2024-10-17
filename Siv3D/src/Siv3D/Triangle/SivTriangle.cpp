@@ -332,6 +332,23 @@ namespace s3d
 		return{ center, (area2 / perimeter) };
 	}
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Triangle::asPolygon() const
+	{
+		return Polygon{ { p0, p1, p2 },
+			{{ 0, 1, 2 }},
+			boundingRect(),
+			SkipValidation::Yes };
+	}
+
+
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	leftClicked, leftPressed, leftReleased

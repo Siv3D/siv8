@@ -1491,10 +1491,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形を Polygon として返します。
-		///// @return 長方形の Polygon
-		//[[nodiscard]]
-		//Polygon asPolygon() const;
+		/// @brief 長方形を Polygon として返します。
+		/// @return 長方形の Polygon
+		[[nodiscard]]
+		Polygon asPolygon() const;
 
 		////////////////////////////////////////////////////////////////
 		//

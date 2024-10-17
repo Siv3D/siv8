@@ -12,6 +12,7 @@
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatQuad.hpp>
+# include <Siv3D/Polygon.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
@@ -236,6 +237,30 @@ namespace s3d
 	//	boundingCircle
 	//
 	////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Quad::asPolygon() const
+	{
+		return Polygon{ { p0, p1, p2, p3 },
+			{ { 0, 1, 3 }, { 3, 1, 2 } },
+			boundingRect(),
+			SkipValidation::Yes };
+	}
+
+
+
+
 
 	////////////////////////////////////////////////////////////////
 	//

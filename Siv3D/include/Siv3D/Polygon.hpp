@@ -53,10 +53,19 @@ namespace s3d
 		Polygon(Polygon&& other) noexcept;
 
 		[[nodiscard]]
+		explicit Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes = {}, SkipValidation skipValidation = SkipValidation::No);
+
+		[[nodiscard]]
 		explicit Polygon(std::span<const Vec2> outer, Array<Array<Vec2>> holes = {}, SkipValidation skipValidation = SkipValidation::No);
 
 		[[nodiscard]]
+		Polygon(std::initializer_list<Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
+
+		[[nodiscard]]
 		Polygon(std::span<const Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
+
+		[[nodiscard]]
+		Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
 
 		[[nodiscard]]
 		Polygon(std::span<const Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);

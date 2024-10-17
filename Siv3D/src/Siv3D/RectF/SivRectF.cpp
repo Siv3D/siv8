@@ -13,6 +13,7 @@
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/Polygon.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
@@ -208,6 +209,25 @@ namespace s3d
 		}
 
 		return quad;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon RectF::asPolygon() const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		return Polygon{ { tl(), tr(), br(), bl() },
+			{ { 0, 1, 3 }, { 3, 1, 2 }},
+			*this,
+			SkipValidation::Yes };
 	}
 
 	////////////////////////////////////////////////////////////////
