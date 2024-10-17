@@ -896,20 +896,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 頂点配列から多角形を生成します。
-		///// @param pVertex 頂点配列の先頭ポインタ
-		///// @param vertexSize 頂点配列の要素数
-		///// @param holes 多角形の穴
-		///// @return 頂点配列から生成した多角形の配列
-		//[[nodiscard]]
-		//static Array<Polygon> Correct(const Vec2* pVertex, size_t vertexSize, const Array<Array<Vec2>>& holes = {});
-
-		///// @brief 頂点配列から多角形を生成します。
-		///// @param vertices 頂点配列
-		///// @param holes 多角形の穴
-		///// @return 頂点配列から生成した多角形の配列
-		//[[nodiscard]]
-		//static Array<Polygon> Correct(const Array<Vec2>& vertices, const Array<Array<Vec2>>& holes = {});
+		/// @brief 頂点配列から多角形を生成します。
+		/// @param vertices 頂点配列
+		/// @param holes 多角形の穴
+		/// @return 頂点配列から生成した多角形の配列
+		[[nodiscard]]
+		static Array<Polygon> Correct(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 
 		////////////////////////////////////////////////////////////////
 		//

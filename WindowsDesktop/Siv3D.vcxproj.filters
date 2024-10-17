@@ -961,6 +961,24 @@
     <Filter Include="src\Siv3D\JoinStyle">
       <UniqueIdentifier>{56249917-998b-4efe-a164-51ac7c264f8e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\boost">
+      <UniqueIdentifier>{27813b51-d6ce-4896-a7d1-b1345c6a3d1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\boost\geometry">
+      <UniqueIdentifier>{4350402f-dede-465a-aaae-898060b75720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\boost\geometry\extensions">
+      <UniqueIdentifier>{5f2d43d2-3ea5-45f9-88ab-e1549299ce45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\boost\geometry\extensions\algorithms">
+      <UniqueIdentifier>{31546e0b-d3bc-4050-879f-6449311c96d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\boost\geometry\extensions\algorithms\detail">
+      <UniqueIdentifier>{9c2ead0f-6158-43b8-97da-1d7bcb7976cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay">
+      <UniqueIdentifier>{0f178d3f-a61d-40d4-83e2-36f6cd57338b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3806,6 +3824,51 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\JoinStyle.hpp">
       <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\connect.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\dissolve.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\distance_info.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\inverse.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\midpoints.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\offset.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\offset_appender.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\parse.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\point_on_line.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\remove_holes_if.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\remove_marked.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\selected.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay\dissolve_traverse.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay\dissolver.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay\split_rings.hpp">
+      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

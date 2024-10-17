@@ -16,6 +16,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "PolygonDetail.hpp"
 # include "Triangulate.hpp"
+# include <ThirdParty/boost/geometry/extensions/algorithms/dissolve.hpp>
 
 namespace s3d
 {
@@ -345,5 +346,46 @@ namespace s3d
 	PolygonFailureType Polygon::PolygonDetail::Validate(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
 	{
 		return ValidatePolygon(MakeCWOpenPolygon(outer, holes));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Correct
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Polygon> Polygon::PolygonDetail::Correct(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
+	{
+		CwOpenPolygon polygon = MakeCWOpenPolygon(outer, holes);
+
+		if (ValidatePolygon(polygon) == PolygonFailureType::OK)
+		{
+			return{ Polygon{ outer, holes, SkipValidation::Yes } };
+		}
+
+		using MultiCwOpenPolygon = boost::geometry::model::multi_polygon<CwOpenPolygon>;
+		boost::geometry::correct(polygon);
+		
+		MultiCwOpenPolygon solvedPolygons;
+		boost::geometry::dissolve(polygon, solvedPolygons);
+
+		Array<Polygon> results;
+
+		for (const auto& solvedPolygon : solvedPolygons)
+		{
+			Array<Array<Vec2>> retHoles;
+
+			for (const auto& hole : solvedPolygon.inners())
+			{
+				retHoles.emplace_back(hole.begin(), hole.end());
+			}
+
+			if (Validate(solvedPolygon.outer(), retHoles) == PolygonFailureType::OK)
+			{
+				results.emplace_back(solvedPolygon.outer(), retHoles);
+			}
+		}
+
+		return results;
 	}
 }
