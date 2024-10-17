@@ -414,12 +414,12 @@ struct dissolve
     template
     <
         typename Geometry, typename RescalePolicy, typename OutputIterator,
-        typename Strategy, typename Visitor
+        typename Strategy_, typename Visitor
     >
     static inline OutputIterator apply(Geometry const& geometry,
                                        RescalePolicy const& rescale_policy,
                                        OutputIterator out,
-                                       Strategy const& strategy,
+                                       Strategy_ const& strategy,
                                        Visitor& visitor)
     {
         return dispatch::dissolve
@@ -440,12 +440,12 @@ struct dissolve<GeometryOut, Strategy, false>
     template
     <
         typename Geometry, typename RescalePolicy, typename OutputIterator,
-        typename Strategy, typename Visitor
+        typename Strategy_, typename Visitor
     >
     static inline OutputIterator apply(Geometry const& geometry,
                                        RescalePolicy const& rescale_policy,
                                        OutputIterator out,
-                                       Strategy const& strategy,
+                                       Strategy_ const& strategy,
                                        Visitor& visitor)
     {
         using strategies::relate::services::strategy_converter;
