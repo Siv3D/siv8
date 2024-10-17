@@ -979,6 +979,9 @@
     <Filter Include="src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay">
       <UniqueIdentifier>{0f178d3f-a61d-40d4-83e2-36f6cd57338b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ScreenCapture">
+      <UniqueIdentifier>{1382dfb3-7f44-4800-8b20-478647512244}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3870,6 +3873,12 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay\split_rings.hpp">
       <Filter>src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ScreenCapture\CScreenCapture.hpp">
+      <Filter>src\Siv3D\ScreenCapture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ScreenCapture\IScreenCapture.hpp">
+      <Filter>src\Siv3D\ScreenCapture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6229,6 +6238,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\JoinStyle\SivJoinStyle.cpp">
       <Filter>src\Siv3D\JoinStyle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScreenCapture\CScreenCapture.cpp">
+      <Filter>src\Siv3D\ScreenCapture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScreenCapture\ScreenCaptureFactory.cpp">
+      <Filter>src\Siv3D\ScreenCapture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
