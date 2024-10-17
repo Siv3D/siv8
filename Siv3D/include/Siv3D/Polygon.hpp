@@ -537,10 +537,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形の面積を返します。
-		///// @return 多角形の面積
-		//[[nodiscard]]
-		//double area() const noexcept;
+		/// @brief 多角形の面積を返します。
+		/// @return 多角形の面積
+		[[nodiscard]]
+		double area() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -909,11 +909,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//static Polygon CorrectOne(const Vec2* pVertex, size_t vertexSize, const Array<Array<Vec2>>& holes = {});
-
-		//[[nodiscard]]
-		//static Polygon CorrectOne(const Array<Vec2>& vertices, const Array<Array<Vec2>>& holes = {});
+		/// @brief 頂点配列から多角形を生成し、最も面積の大きい多角形を返します。
+		/// @param vertices 頂点配列
+		/// @param holes 多角形の穴
+		/// @return 頂点配列から生成した多角形のうち、最も面積の大きい多角形
+		[[nodiscard]]
+		static Polygon CorrectOne(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 
 		////////////////////////////////////////////////////////////////
 		//

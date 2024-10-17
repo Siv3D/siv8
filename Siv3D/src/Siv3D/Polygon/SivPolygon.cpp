@@ -210,6 +210,32 @@ namespace s3d
 
 
 
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	area
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Polygon::area() const noexcept
+	{
+		return pImpl->area();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	draw
@@ -268,6 +294,38 @@ namespace s3d
 	Array<Polygon> Polygon::Correct(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
 	{
 		return PolygonDetail::Correct(outer, holes);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CorrectOne
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::CorrectOne(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
+	{
+		Array<Polygon> polygons = Correct(outer, holes);
+
+		if (polygons.isEmpty())
+		{
+			return Polygon{};
+		}
+
+		size_t largestIndex = 0;
+		double largestArea = polygons[0].area();
+
+		for (size_t i = 1; i < polygons.size(); ++i)
+		{
+			const double area = polygons[i].area();
+			
+			if (largestArea < area)
+			{
+				largestIndex = i;
+				largestArea = area;
+			}
+		}
+
+		return std::move(polygons[largestIndex]);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -144,6 +144,17 @@ namespace s3d
 
 			return ToPolygonFailureType(failure);
 		}
+
+		/// @brief 三角形の面積の 2 倍を計算します。
+		/// @param p0 頂点 0
+		/// @param p1 頂点 1
+		/// @param p2 頂点 2
+		/// @return 三角形の面積の 2 倍
+		[[nodiscard]]
+		static constexpr double TriangleArea2x(const Float2& p0, const Float2& p1, const Float2& p2) noexcept
+		{
+			return Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y));
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -286,6 +297,31 @@ namespace s3d
 	const RectF& Polygon::PolygonDetail::boundingRect() const noexcept
 	{
 		return m_boundingRect;
+	}
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	area
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Polygon::PolygonDetail::area() const noexcept
+	{
+		const TriangleIndex* pIndex = m_indices.data();
+		const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
+		const Float2* pVertex = m_vertices.data();
+
+		double result = 0.0;
+
+		while (pIndex != pIndexEnd)
+		{
+			result += TriangleArea2x(pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2]);
+			++pIndex;
+		}
+
+		return (result * 0.5);
 	}
 
 
