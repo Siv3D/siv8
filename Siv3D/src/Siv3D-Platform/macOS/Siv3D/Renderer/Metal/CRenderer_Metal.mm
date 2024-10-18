@@ -13,6 +13,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Window.hpp>
 # include <Siv3D/WindowState.hpp>
+# include <Siv3D/Image.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
@@ -361,6 +362,29 @@ namespace s3d
 	bool CRenderer_Metal::isLowLatencyMode() const
 	{
 		return false;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	captureScreenshot
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer_Metal::captureScreenshot()
+	{
+		
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getScreenCapture
+	//
+	////////////////////////////////////////////////////////////////
+	
+	const Image& CRenderer_Metal::getScreenCapture() const
+	{
+		static const Image image{};
+		return image;
 	}
 
 	////////////////////////////////////////////////////////////////

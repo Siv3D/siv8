@@ -60,6 +60,10 @@ namespace s3d
 		void setLowLatencyMode(bool enabled) override;
 
 		bool isLowLatencyMode() const override;
+	
+		void captureScreenshot() override;
+
+		const Image& getScreenCapture() const override;
 		
 		void updateSceneBufferSize();
 

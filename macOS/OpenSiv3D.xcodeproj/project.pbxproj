@@ -2341,6 +2341,12 @@
 		F9ED45BB2CC156EC006BA10F /* remove_holes_if.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ED45A82CC156EC006BA10F /* remove_holes_if.hpp */; };
 		F9ED45BC2CC156EC006BA10F /* remove_marked.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ED45A92CC156EC006BA10F /* remove_marked.hpp */; };
 		F9ED45BD2CC156EC006BA10F /* selected.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ED45AA2CC156EC006BA10F /* selected.hpp */; };
+		F9ED45C42CC2B06D006BA10F /* CScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ED45BE2CC2B06D006BA10F /* CScreenCapture.cpp */; };
+		F9ED45C52CC2B06D006BA10F /* CScreenCapture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ED45BF2CC2B06D006BA10F /* CScreenCapture.hpp */; };
+		F9ED45C62CC2B06D006BA10F /* IScreenCapture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ED45C02CC2B06D006BA10F /* IScreenCapture.hpp */; };
+		F9ED45C72CC2B06D006BA10F /* ScreenCaptureFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ED45C12CC2B06D006BA10F /* ScreenCaptureFactory.cpp */; };
+		F9ED45C82CC2B06D006BA10F /* SivScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ED45C22CC2B06D006BA10F /* SivScreenCapture.cpp */; };
+		F9ED45CA2CC2B08F006BA10F /* ScreenCapture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4790,6 +4796,12 @@
 		F9ED45A82CC156EC006BA10F /* remove_holes_if.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = remove_holes_if.hpp; sourceTree = "<group>"; };
 		F9ED45A92CC156EC006BA10F /* remove_marked.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = remove_marked.hpp; sourceTree = "<group>"; };
 		F9ED45AA2CC156EC006BA10F /* selected.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = selected.hpp; sourceTree = "<group>"; };
+		F9ED45BE2CC2B06D006BA10F /* CScreenCapture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CScreenCapture.cpp; sourceTree = "<group>"; };
+		F9ED45BF2CC2B06D006BA10F /* CScreenCapture.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CScreenCapture.hpp; sourceTree = "<group>"; };
+		F9ED45C02CC2B06D006BA10F /* IScreenCapture.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IScreenCapture.hpp; sourceTree = "<group>"; };
+		F9ED45C12CC2B06D006BA10F /* ScreenCaptureFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenCaptureFactory.cpp; sourceTree = "<group>"; };
+		F9ED45C22CC2B06D006BA10F /* SivScreenCapture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScreenCapture.cpp; sourceTree = "<group>"; };
+		F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScreenCapture.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -5345,8 +5357,8 @@
 		F9070A832B9DEB5900383E4D /* src */ = {
 			isa = PBXGroup;
 			children = (
-				F9070E542B9F176B00383E4D /* Siv3D-Platform */,
 				F9070DAC2B9F175E00383E4D /* Siv3D */,
+				F9070E542B9F176B00383E4D /* Siv3D-Platform */,
 				F9070A7F2B9DEB5900383E4D /* ThirdParty */,
 				F9070A822B9DEB5900383E4D /* ThirdParty-prebuilt */,
 			);
@@ -5772,6 +5784,7 @@
 				F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */,
 				F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
+				F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */,
 				F9070C1F2B9F175000383E4D /* SequenceFormatter.hpp */,
 				F934BD702BF880330003EAD5 /* ShaderStage.hpp */,
 				F951221B2CB8227E00151291 /* Shape2D.hpp */,
@@ -6504,6 +6517,7 @@
 				F9712A442C25991C0049CC26 /* ScopedRenderStates2D */,
 				F9712A2E2C252EFE0049CC26 /* ScopedScissorRect2D */,
 				F9712A352C25501C0049CC26 /* ScopedViewport2D */,
+				F9ED45C32CC2B06D006BA10F /* ScreenCapture */,
 				F934BD802BF880A10003EAD5 /* Shader */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9E7945A2C19743A002615BA /* Stopwatch */,
@@ -10164,6 +10178,18 @@
 			path = boost;
 			sourceTree = "<group>";
 		};
+		F9ED45C32CC2B06D006BA10F /* ScreenCapture */ = {
+			isa = PBXGroup;
+			children = (
+				F9ED45BE2CC2B06D006BA10F /* CScreenCapture.cpp */,
+				F9ED45BF2CC2B06D006BA10F /* CScreenCapture.hpp */,
+				F9ED45C02CC2B06D006BA10F /* IScreenCapture.hpp */,
+				F9ED45C12CC2B06D006BA10F /* ScreenCaptureFactory.cpp */,
+				F9ED45C22CC2B06D006BA10F /* SivScreenCapture.cpp */,
+			);
+			path = ScreenCapture;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -10437,6 +10463,7 @@
 				F986017F2BCFBB53006A4C0F /* SkChecksum.h in Headers */,
 				F98600582BCFBB53006A4C0F /* SkBlenders.h in Headers */,
 				F986009A2BCFBB53006A4C0F /* SkGainmapInfo.h in Headers */,
+				F9ED45CA2CC2B08F006BA10F /* ScreenCapture.hpp in Headers */,
 				F9070EF42B9F1C8900383E4D /* posix_thread.h in Headers */,
 				F9070C7F2B9F175000383E4D /* TextEncoding.ipp in Headers */,
 				F986FA7D2BCFB53B006A4C0F /* fterrdef.h in Headers */,
@@ -11066,6 +11093,7 @@
 				F986047B2BCFBB54006A4C0F /* SkSLMangler.h in Headers */,
 				F9070C702B9F175000383E4D /* Parse.ipp in Headers */,
 				F96F96062C359ED90033353E /* morton2D.h in Headers */,
+				F9ED45C52CC2B06D006BA10F /* CScreenCapture.hpp in Headers */,
 				F95122262CB8229400151291 /* TriangleIndex.ipp in Headers */,
 				F907069E2B9DAEC900383E4D /* distribution_caller.h in Headers */,
 				F986046A2BCFBB54006A4C0F /* SkSLCompiler.h in Headers */,
@@ -11347,6 +11375,7 @@
 				F986F8332BC7B024006A4C0F /* INISection.ipp in Headers */,
 				F9070EE12B9F1C8900383E4D /* internal.h in Headers */,
 				F986FA522BCFB53B006A4C0F /* svpscmap.h in Headers */,
+				F9ED45C62CC2B06D006BA10F /* IScreenCapture.hpp in Headers */,
 				F9528B962BBC76D300222F45 /* Point3D.hpp in Headers */,
 				F98603D22BCFBB54006A4C0F /* SkSLGLSLCodeGenerator.h in Headers */,
 				F980C44D2C00E29000A86B68 /* SamplerState.ipp in Headers */,
@@ -12307,6 +12336,7 @@
 				F98602192BCFBB54006A4C0F /* SkPathRef.cpp in Sources */,
 				F9070DC32B9F175E00383E4D /* EmptyFactory.cpp in Sources */,
 				F98602112BCFBB54006A4C0F /* SkPathBuilder.cpp in Sources */,
+				F9ED45C82CC2B06D006BA10F /* SivScreenCapture.cpp in Sources */,
 				F98601D12BCFBB53006A4C0F /* SkImageFilterTypes.cpp in Sources */,
 				F98603BD2BCFBB54006A4C0F /* SkSLCanExitWithoutReturningValue.cpp in Sources */,
 				F9070ED52B9F1C8900383E4D /* cocoa_monitor.m in Sources */,
@@ -12473,6 +12503,7 @@
 				F98603332BCFBB54006A4C0F /* SkPathOpsWinding.cpp in Sources */,
 				F98601F62BCFBB53006A4C0F /* SkMemset_opts_avx.cpp in Sources */,
 				F9070E572B9F176B00383E4D /* Siv3DMain.cpp in Sources */,
+				F9ED45C72CC2B06D006BA10F /* ScreenCaptureFactory.cpp in Sources */,
 				F980C49D2C04B6DB00A86B68 /* CRenderer2D_Metal.mm in Sources */,
 				F9528C1E2BBF026F00222F45 /* hist.c in Sources */,
 				F98603182BCFBB54006A4C0F /* SkPathOpsAsWinding.cpp in Sources */,
@@ -12598,6 +12629,7 @@
 				F98603262BCFBB54006A4C0F /* SkPathOpsOp.cpp in Sources */,
 				F98601702BCFBB53006A4C0F /* SkBlitter.cpp in Sources */,
 				F986F9B92BCA9D0A006A4C0F /* stopelement.cpp in Sources */,
+				F9ED45C42CC2B06D006BA10F /* CScreenCapture.cpp in Sources */,
 				F9712A3F2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp in Sources */,
 				F986F9B22BCA9D0A006A4C0F /* paintelement.cpp in Sources */,
 				F98603C12BCFBB54006A4C0F /* SkSLGetLoopControlFlowInfo.cpp in Sources */,

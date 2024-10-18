@@ -12,6 +12,7 @@
 # include "CScreenCapture.hpp"
 # include <Siv3D/ScreenCapture.hpp>
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/SpecialFolder.hpp>
 # include <Siv3D/Image.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
