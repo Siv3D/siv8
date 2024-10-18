@@ -443,6 +443,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedRenderStates2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedScissorRect2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedViewport2D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScreenCapture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SequenceFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopeExit.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ShaderStage.hpp" />
@@ -563,6 +564,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Misc.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\RasterizerState\D3D11RasterizerState.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SamplerState\D3D11SamplerState.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\ScreenCapture\D3D11ScreenCapture.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain\D3D11SwapChain.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\CShader_D3D11.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\HLSLCompiler.hpp" />
@@ -1019,6 +1021,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Misc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\RasterizerState\D3D11RasterizerState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SamplerState\D3D11SamplerState.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\ScreenCapture\D3D11ScreenCapture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\SwapChain\D3D11SwapChain.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\RendererFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Resource\SivResource_Windows.cpp" />
@@ -1226,6 +1229,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ScopedViewport2D\SivScopedViewport2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ScreenCapture\CScreenCapture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ScreenCapture\ScreenCaptureFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScreenCapture\SivScreenCapture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />

@@ -10,13 +10,50 @@
 //-----------------------------------------------
 
 # include "CScreenCapture.hpp"
+# include <Siv3D/ScreenCapture.hpp>
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/Image.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static bool CaptureKeyDown(const Array<InputGroup>& screenshotShortcutKeys)
+		{
+			for (const auto& inputGroup : screenshotShortcutKeys)
+			{
+				if (inputGroup.down())
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		static void SaveScreenCapture(const Image& image, const FilePath& m_screenshotSaveDirectory, const Array<FilePath>& paths)
+		{
+			for (const auto& path : paths)
+			{
+				// 空のパスは「画像ファイルに保存しない」スクリーンキャプチャのリクエスト
+				if (path.isEmpty())
+				{
+					continue;
+				}
+			
+				const FilePath filePath = (m_screenshotSaveDirectory + path);
+				
+				image.save(filePath);
+
+				LOG_INFO(fmt::format("📷 Screen capture saved (path: \"{0}\")", filePath));
+			}
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -59,7 +96,34 @@ namespace s3d
 
 	void CScreenCapture::update()
 	{
+		m_hasNewFrame = false;
 
+		// スクリーンショットのキー入力をチェック
+		if ((not m_requestedPaths) && CaptureKeyDown(m_screenshotShortcutKeys))
+		{
+			ScreenCapture::SaveCurrentFrame();
+		}
+
+		if (not m_requestedPaths)
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer)->captureScreenshot();
+
+		const Image& image = SIV3D_ENGINE(Renderer)->getScreenCapture();
+
+		if (not image)
+		{
+			LOG_FAIL("✖ failed to capture a screen shot");
+		}
+
+		// スクリーンショットの保存
+		SaveScreenCapture(image, m_screenshotSaveDirectory, m_requestedPaths);
+
+		m_requestedPaths.clear();
+
+		m_hasNewFrame = true;
 	}
 
 	////////////////////////////////////////////////////////////////

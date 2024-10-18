@@ -57,6 +57,8 @@ namespace s3d
 
 		void bindSceneTextureAsRenderTarget();
 
+		std::pair<ID3D11Texture2D*, Size> getCaptureTexture();
+
 	private:
 		
 		ID3D11Device* m_device			= nullptr;

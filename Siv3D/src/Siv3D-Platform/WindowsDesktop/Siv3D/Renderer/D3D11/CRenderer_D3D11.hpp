@@ -18,6 +18,7 @@
 # include "RasterizerState/D3D11RasterizerState.hpp"
 # include "SamplerState/D3D11SamplerState.hpp"
 # include "DepthStencilState/D3D11DepthStencilState.hpp"
+# include "ScreenCapture/D3D11ScreenCapture.hpp"
 
 namespace s3d
 {
@@ -68,6 +69,8 @@ namespace s3d
 		[[nodiscard]]
 		bool isLowLatencyMode() const override;
 
+		void captureScreenshot() override;
+
 		[[nodiscard]]
 		const Image& getScreenCapture() const override;
 
@@ -106,5 +109,7 @@ namespace s3d
 		D3D11SamplerState m_samplerState;
 
 		D3D11DepthStencilState m_depthStencilState;
+
+		D3D11ScreenCapture m_screenCapture;
 	};
 }
