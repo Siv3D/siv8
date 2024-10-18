@@ -69,6 +69,9 @@ namespace s3d
 		bool isLowLatencyMode() const override;
 
 		[[nodiscard]]
+		const Image& getScreenCapture() const override;
+
+		[[nodiscard]]
 		const D3D11Device& getDevice() const noexcept;
 
 		[[nodiscard]]
