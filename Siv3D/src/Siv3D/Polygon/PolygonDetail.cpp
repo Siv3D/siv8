@@ -88,6 +88,19 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		static CwOpenPolygon MakeCWOpenPolygon(const std::span<const Float2> outerVertices)
+		{
+			CwOpenPolygon polygon;
+
+			auto& outer = polygon.outer();
+			{
+				outer.assign_range(outerVertices);
+			}
+
+			return polygon;
+		}
+
+		[[nodiscard]]
 		static size_t GetVertexCount(const Array<Array<Vec2>>& holes) noexcept
 		{
 			size_t count = 0;
@@ -210,7 +223,7 @@ namespace s3d
 		m_boundingRect	= boundingRect;
 	}
 
-	Polygon::PolygonDetail::PolygonDetail(std::span<const Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, const SkipValidation skipValidation)
+	Polygon::PolygonDetail::PolygonDetail(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, const SkipValidation skipValidation)
 	{
 		CwOpenPolygon polygon = MakeCWOpenPolygon(outer, holes);
 
@@ -231,6 +244,19 @@ namespace s3d
 		m_holes			= std::move(holes);
 
 		m_boundingRect	= boundingRect;
+	}
+
+	Polygon::PolygonDetail::PolygonDetail(const std::span<const Float2> outer, Array<TriangleIndex> indices)
+	{
+		CwOpenPolygon polygon	= MakeCWOpenPolygon(outer);
+
+		m_indices				= std::move(indices);
+
+		m_polygon				= std::move(polygon);
+
+		m_vertices.assign_range(outer);
+
+		m_boundingRect			= Geometry2D::BoundingRect(outer);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -322,6 +348,70 @@ namespace s3d
 		}
 
 		return (result * 0.5);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	perimeter
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Polygon::PolygonDetail::perimeter() const noexcept
+	{
+		double result = 0.0;
+
+		{
+			const auto& outer = m_polygon.outer();
+			
+			if (const size_t num_outer = outer.size())
+			{
+				const Vec2* pOuter = outer.data();
+
+				for (size_t i = 0; i < (num_outer - 1); ++i)
+				{
+					result += pOuter[i].distanceFrom(pOuter[i + 1]);
+				}
+
+				result += pOuter[num_outer - 1].distanceFrom(pOuter[0]);
+			}
+		}
+
+		for (const auto& inner : m_polygon.inners())
+		{
+			if (const size_t num_inner = inner.size())
+			{
+				const Vec2* pInner = inner.data();
+				
+				for (size_t i = 0; i < (num_inner - 1); ++i)
+				{
+					result += pInner[i].distanceFrom(pInner[i + 1]);
+				}
+				
+				result += pInner[num_inner - 1].distanceFrom(pInner[0]);
+			}
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	centroid
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 Polygon::PolygonDetail::centroid() const
+	{
+		if (outer().isEmpty())
+		{
+			return{ 0, 0 };
+		}
+
+		Vec2 centroid;
+
+		boost::geometry::centroid(m_polygon, centroid);
+
+		return centroid;
 	}
 
 

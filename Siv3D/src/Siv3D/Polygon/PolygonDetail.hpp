@@ -37,6 +37,9 @@ namespace s3d
 		[[nodiscard]]
 		PolygonDetail(std::span<const Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation);
 
+		[[nodiscard]]
+		PolygonDetail(std::span<const Float2> outer, Array<TriangleIndex> indices);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	isEmpty
@@ -104,6 +107,23 @@ namespace s3d
 		[[nodiscard]]
 		double area() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	perimeter
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		double perimeter() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	centroid
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Vec2 centroid() const;
 
 
 

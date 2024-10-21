@@ -221,33 +221,33 @@ namespace s3d
 		[[nodiscard]] 
 		Polygon asPolygon() const;
 
-		/// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
-		/// @param uvOrigin UV 座標 (0, 0) をマッピングする位置
-		/// @param uvScale マッピングする UV のスケール
-		/// @return Buffer2D
-		[[nodiscard]]
-		Buffer2D toBuffer2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
+		///// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
+		///// @param uvOrigin UV 座標 (0, 0) をマッピングする位置
+		///// @param uvScale マッピングする UV のスケール
+		///// @return Buffer2D
+		//[[nodiscard]]
+		//Buffer2D toBuffer2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
 
-		/// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
-		/// @param uvCenter UV 座標 (0.5, 0.5) をマッピングする位置
-		/// @param uvScale マッピングする UV のスケール
-		/// @return Buffer2D
-		[[nodiscard]]
-		Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale) const;
+		///// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
+		///// @param uvCenter UV 座標 (0.5, 0.5) をマッピングする位置
+		///// @param uvScale マッピングする UV のスケール
+		///// @return Buffer2D
+		//[[nodiscard]]
+		//Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale) const;
 
-		/// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
-		/// @param uvCenter UV 座標 (0.5, 0.5) をマッピングする位置
-		/// @param uvScale マッピングする UV のスケール
-		/// @param uvRotation マッピングする UV の時計回りの回転
-		/// @return Buffer2D
-		[[nodiscard]]
-		Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale, double uvRotation) const;
+		///// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
+		///// @param uvCenter UV 座標 (0.5, 0.5) をマッピングする位置
+		///// @param uvScale マッピングする UV のスケール
+		///// @param uvRotation マッピングする UV の時計回りの回転
+		///// @return Buffer2D
+		//[[nodiscard]]
+		//Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale, double uvRotation) const;
 
-		/// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
-		/// @param uvMat 頂点の座標から UV 座標を計算する行列
-		/// @return Buffer2D
-		[[nodiscard]]
-		Buffer2D toBuffer2D(const Mat3x2& uvMat) const;
+		///// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
+		///// @param uvMat 頂点の座標から UV 座標を計算する行列
+		///// @return Buffer2D
+		//[[nodiscard]]
+		//Buffer2D toBuffer2D(const Mat3x2& uvMat) const;
 
 	private:
 

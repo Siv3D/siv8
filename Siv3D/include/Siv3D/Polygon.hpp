@@ -29,6 +29,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 多角形（穴をもつことも可能）
 	class Polygon
 	{
 	private:
@@ -43,36 +44,85 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		Polygon();
 
+		/// @brief 多角形をコピーして作成します。
+		/// @param other コピーする多角形
 		[[nodiscard]]
 		Polygon(const Polygon& other);
 
+		/// @brief 多角形をムーブして作成します。
+		/// @param other ムーブする多角形
 		[[nodiscard]]
 		Polygon(Polygon&& other) noexcept;
 
-		[[nodiscard]]
-		explicit Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes = {}, SkipValidation skipValidation = SkipValidation::No);
-
-		[[nodiscard]]
-		explicit Polygon(std::span<const Vec2> outer, Array<Array<Vec2>> holes = {}, SkipValidation skipValidation = SkipValidation::No);
-
-		[[nodiscard]]
-		Polygon(std::initializer_list<Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
-
-		[[nodiscard]]
-		Polygon(std::span<const Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
-
-		[[nodiscard]]
-		Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
-
-		[[nodiscard]]
-		Polygon(std::span<const Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
-
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
 		[[nodiscard]]
 		explicit Polygon(std::initializer_list<Vec2> outer, SkipValidation skipValidation = SkipValidation::No);
 
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param holes 穴を構成する頂点配列（反時計回り）の配列
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		explicit Polygon(std::span<const Vec2> outer, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param holes 穴を構成する頂点配列（反時計回り）の配列
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param holes 穴を構成する頂点配列（反時計回り）の配列
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::span<const Vec2> outer, Array<Array<Vec2>> holes, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param indices 三角形分割の頂点インデックス
+		/// @param boundingRect バウンディングボックス
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::initializer_list<Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param indices 三角形分割の頂点インデックス
+		/// @param boundingRect バウンディングボックス
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::span<const Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param holes 穴を構成する頂点配列（反時計回り）の配列
+		/// @param vertices すべての頂点
+		/// @param indices 三角形分割の頂点インデックス
+		/// @param boundingRect バウンディングボックス
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param holes 穴を構成する頂点配列（反時計回り）の配列
+		/// @param vertices すべての頂点
+		/// @param indices 三角形分割の頂点インデックス
+		/// @param boundingRect バウンディングボックス
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::span<const Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param shape 2D 形状
 		[[nodiscard]]
 		Polygon(const Shape2D& shape);
 
@@ -82,6 +132,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デストラクタ
 		~Polygon();
 
 		////////////////////////////////////////////////////////////////
@@ -90,8 +141,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形をコピー代入します。
+		/// @param other コピーする多角形
+		/// @return *this
 		Polygon& operator =(const Polygon& other);
 
+		/// @brief 多角形をムーブ代入します。
+		/// @param other ムーブする多角形
+		/// @return *this
 		Polygon& operator =(Polygon&& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -100,6 +157,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形を別の多角形と交換します。
+		/// @param other 交換する多角形
 		void swap(Polygon& other) noexcept;
 
 		////////////////////////////////////////////////////////////////

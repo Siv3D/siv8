@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/Shape2D.hpp>
 # include "PolygonDetail.hpp"
 
 namespace s3d
@@ -29,6 +30,12 @@ namespace s3d
 	Polygon::Polygon(Polygon&& polygon) noexcept
 		: pImpl{ std::exchange(polygon.pImpl, std::make_unique<PolygonDetail>()) } {}
 
+	Polygon::Polygon(std::initializer_list<Vec2> outer, const SkipValidation skipValidation)
+		: pImpl{ std::make_unique<PolygonDetail>(outer, Array<Array<Vec2>>{}, skipValidation) } {}
+
+	Polygon::Polygon(const std::span<const Vec2> outer, const SkipValidation skipValidation)
+		: pImpl{ std::make_unique<PolygonDetail>(outer, Array<Array<Vec2>>{}, skipValidation) } {}
+
 	Polygon::Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes, const SkipValidation skipValidation)
 		: pImpl{ std::make_unique<PolygonDetail>(outer, std::move(holes), skipValidation) } {}
 
@@ -47,8 +54,8 @@ namespace s3d
 	Polygon::Polygon(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, const SkipValidation skipValidation)
 		: pImpl{ std::make_unique<PolygonDetail>(outer, std::move(holes), std::move(vertices), std::move(indices), boundingRect, skipValidation) } {}
 
-	Polygon::Polygon(std::initializer_list<Vec2> outer, const SkipValidation skipValidation)
-		: pImpl{ std::make_unique<PolygonDetail>(outer, Array<Array<Vec2>>{}, skipValidation) } {}
+	Polygon::Polygon(const Shape2D& shape)
+		: pImpl{ std::make_unique<PolygonDetail>(shape.vertices(), shape.indices()) } {}
 
 	////////////////////////////////////////////////////////////////
 	//
