@@ -36,11 +36,23 @@ namespace s3d
 	Polygon::Polygon(const std::span<const Vec2> outer, const SkipValidation skipValidation)
 		: pImpl{ std::make_unique<PolygonDetail>(outer, Array<Array<Vec2>>{}, skipValidation) } {}
 
+	Polygon::Polygon(std::initializer_list<Vec2> outer, const RectF& boundingRect, const SkipValidation skipValidation)
+		: pImpl{ std::make_unique<PolygonDetail>(outer, Array<Array<Vec2>>{}, boundingRect, skipValidation) } {}
+
+	Polygon::Polygon(const std::span<const Vec2> outer, const RectF& boundingRect, const SkipValidation skipValidation)
+		: pImpl{ std::make_unique<PolygonDetail>(outer, Array<Array<Vec2>>{}, boundingRect, skipValidation) } {}
+
 	Polygon::Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes, const SkipValidation skipValidation)
 		: pImpl{ std::make_unique<PolygonDetail>(outer, std::move(holes), skipValidation) } {}
 
 	Polygon::Polygon(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, const SkipValidation skipValidation)
 		: pImpl{ std::make_unique<PolygonDetail>(outer, std::move(holes), skipValidation) } {}
+
+	Polygon::Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes, const RectF& boundingRect, const SkipValidation skipValidation)
+		: pImpl{ std::make_unique<PolygonDetail>(outer, std::move(holes), boundingRect, skipValidation) } {}
+
+	Polygon::Polygon(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, const RectF& boundingRect, const SkipValidation skipValidation)
+		: pImpl{ std::make_unique<PolygonDetail>(outer, std::move(holes), boundingRect, skipValidation) } {}
 
 	Polygon::Polygon(std::initializer_list<Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, const SkipValidation skipValidation)
 		: pImpl{ std::make_unique<PolygonDetail>(outer, std::move(indices), boundingRect, skipValidation) } {}
@@ -240,7 +252,71 @@ namespace s3d
 		return pImpl->area();
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	perimeter
+	//
+	////////////////////////////////////////////////////////////////
 
+	double Polygon::perimeter() const noexcept
+	{
+		return pImpl->perimeter();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	centroid
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 Polygon::centroid() const
+	{
+		return pImpl->centroid();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeConvexHull
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::computeConvexHull() const
+	{
+		return pImpl->computeConvexHull();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	calculateBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::calculateBuffer(const double distance) const
+	{
+		return pImpl->calculateBuffer(distance);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	calculateRoundBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	{
+		return pImpl->calculateRoundBuffer(distance, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	simplified
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::simplified(const double maxDistance) const
+	{
+		return pImpl->simplified(maxDistance);
+	}
 
 
 

@@ -32,6 +32,9 @@ namespace s3d
 		PolygonDetail(std::span<const Vec2> outer, Array<Array<Vec2>> holes, SkipValidation skipValidation);
 
 		[[nodiscard]]
+		PolygonDetail(std::span<const Vec2> outer, Array<Array<Vec2>> holes, const RectF& boundingRect, SkipValidation skipValidation);
+
+		[[nodiscard]]
 		PolygonDetail(std::span<const Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation);
 
 		[[nodiscard]]
@@ -125,6 +128,41 @@ namespace s3d
 		[[nodiscard]]
 		Vec2 centroid() const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeConvexHull
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Polygon computeConvexHull() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Polygon calculateBuffer(double distance) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateRoundBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Polygon calculateRoundBuffer(double distance, double qualityFactor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	simplified
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Polygon simplified(double maxDistance) const;
 
 
 

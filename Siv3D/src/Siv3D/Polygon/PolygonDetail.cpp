@@ -18,6 +18,9 @@
 # include "Triangulate.hpp"
 # include <ThirdParty/boost/geometry/extensions/algorithms/dissolve.hpp>
 
+# include <Siv3D/Console.hpp>
+# include <Siv3D/SequenceFormatter.hpp>
+
 namespace s3d
 {
 	namespace
@@ -98,6 +101,35 @@ namespace s3d
 			}
 
 			return polygon;
+		}
+
+		[[nodiscard]]
+		static Polygon ToPolygon(const CwOpenPolygon& polygon)
+		{
+			std::span<const Vec2> outer = polygon.outer();
+
+			if ((2 < outer.size()) && (outer.front() == outer.back()))
+			{
+				outer = outer.subspan(0, (outer.size() - 1));
+			}
+
+			const auto& inners = polygon.inners();
+
+			Array<Array<Vec2>> holes(inners.size());
+
+			for (size_t i = 0; i < holes.size(); ++i)
+			{
+				std::span<const Vec2> inner = inners[i];
+
+				if ((2 < inner.size()) && (inner.front() == inner.back()))
+				{
+					inner = inner.subspan(0, (inner.size() - 1));
+				}
+
+				holes[i].assign(inner.rbegin(), inner.rend());
+			}
+
+			return Polygon{ outer, std::move(holes), SkipValidation::Yes};
 		}
 
 		[[nodiscard]]
@@ -200,6 +232,32 @@ namespace s3d
 		m_holes			= std::move(holes);
 
 		m_boundingRect	= Geometry2D::BoundingRect(outer);
+	}
+
+	Polygon::PolygonDetail::PolygonDetail(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, const RectF& boundingRect, const SkipValidation skipValidation)
+	{
+		CwOpenPolygon polygon = MakeCWOpenPolygon(outer, holes);
+
+		if (not skipValidation)
+		{
+			if (ValidatePolygon(polygon) != PolygonFailureType::OK)
+			{
+				return;
+			}
+		}
+
+		if (not Triangulate(outer, holes, m_indices))
+		{
+			return;
+		}
+
+		m_polygon		= std::move(polygon);
+
+		m_vertices		= MakeVertices(outer, holes);
+
+		m_holes			= std::move(holes);
+
+		m_boundingRect	= boundingRect;
 	}
 
 	Polygon::PolygonDetail::PolygonDetail(const std::span<const Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, const SkipValidation skipValidation)
@@ -360,6 +418,7 @@ namespace s3d
 	{
 		double result = 0.0;
 
+		// 外周の長さ
 		{
 			const auto& outer = m_polygon.outer();
 			
@@ -376,6 +435,7 @@ namespace s3d
 			}
 		}
 
+		// 各穴の周の長さ
 		for (const auto& inner : m_polygon.inners())
 		{
 			if (const size_t num_inner = inner.size())
@@ -414,7 +474,81 @@ namespace s3d
 		return centroid;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeConvexHull
+	//
+	////////////////////////////////////////////////////////////////
 
+	Polygon Polygon::PolygonDetail::computeConvexHull() const
+	{
+		CWOpenRing result;
+
+		boost::geometry::convex_hull(m_polygon.outer(), result);
+
+		return Polygon{ result, m_boundingRect, SkipValidation::Yes };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	calculateBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::PolygonDetail::calculateBuffer(const double distance) const
+	{
+		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
+
+		boost::geometry::buffer(m_polygon, multiPolygon,
+			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
+			boost::geometry::strategy::buffer::side_straight{},
+			boost::geometry::strategy::buffer::join_miter{},
+			boost::geometry::strategy::buffer::end_round{},
+			boost::geometry::strategy::buffer::point_circle{ 0 });
+
+		if (multiPolygon.size() != 1)
+		{
+			return{};
+		}
+
+		return ToPolygon(multiPolygon.front());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	calculateRoundBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::PolygonDetail::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	{
+		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
+
+		boost::geometry::buffer(m_polygon, multiPolygon,
+			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
+			boost::geometry::strategy::buffer::side_straight{},
+			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor) },
+			boost::geometry::strategy::buffer::end_round{},
+			boost::geometry::strategy::buffer::point_circle{ 0 });
+
+		if (multiPolygon.size() != 1)
+		{
+			return{};
+		}
+
+		return ToPolygon(multiPolygon.front());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	simplified
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::PolygonDetail::simplified(const double maxDistance) const
+	{
+		return{};
+	}
 
 
 	////////////////////////////////////////////////////////////////

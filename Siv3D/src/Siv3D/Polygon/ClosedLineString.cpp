@@ -19,27 +19,6 @@ namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
-		static constexpr size_t CalculateCircleQuality(const double r) noexcept
-		{
-			if (r <= 2.0)
-			{
-				return 6;
-			}
-			else if (r <= 4.0)
-			{
-				return 10;
-			}
-			else if (r < 8.0)
-			{
-				return 12;
-			}
-			else
-			{
-				return Min((12 + static_cast<int32>((r - 8.0) / 2.0)), 256);
-			}
-		}
-
 		class JoinDefaultSymmetric
 		{
 		public:
@@ -140,7 +119,7 @@ namespace s3d
 				boost::geometry::buffer(ls, polygon,
 					distanceStrategy,
 					boost::geometry::strategy::buffer::side_straight{},
-					boost::geometry::strategy::buffer::join_round{ CalculateCircleQuality(thickness) },
+					boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(thickness) },
 					boost::geometry::strategy::buffer::end_flat{},
 					boost::geometry::strategy::buffer::point_square{});
 			}

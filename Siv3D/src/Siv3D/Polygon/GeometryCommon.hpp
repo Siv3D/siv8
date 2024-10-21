@@ -22,6 +22,13 @@ BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Vec2, double, boost::geometry::cs::cartesi
 namespace s3d
 {
 	using CwOpenPolygon	= boost::geometry::model::polygon<Vec2, false, false, Array, Array>;
+	using CWOpenRing	= boost::geometry::model::ring<Vec2, false, false, Array>;
 	using GLineString	= boost::geometry::model::linestring<Vec2, Array>;
 	using InnersType	= Array<boost::geometry::model::ring<Vec2, false, false, Array>>;
+	
+	namespace detail
+	{
+		[[nodiscard]]
+		size_t CalculateCircleQuality(double r) noexcept;
+	}
 }

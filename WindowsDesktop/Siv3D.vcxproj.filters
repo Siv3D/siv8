@@ -3888,6 +3888,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ScreenCapture.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.hpp">
+      <Filter>src\Siv3D\Polygon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6259,6 +6262,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ScreenCapture\SivScreenCapture.cpp">
       <Filter>src\Siv3D\ScreenCapture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.cpp">
+      <Filter>src\Siv3D\Polygon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.cpp">
+      <Filter>src\Siv3D\Polygon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

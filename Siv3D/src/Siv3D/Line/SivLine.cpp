@@ -13,6 +13,7 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -87,15 +88,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	boundingRect
+	//	calculateBuffer
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF Line::boundingRect() const noexcept
+	Polygon Line::calculateBuffer(const double distance) const
 	{
-		const auto [x1, x2] = MinMax(start.x, end.x);
-		const auto [y1, y2] = MinMax(start.y, end.y);
-		return{ x1, y1, (x2 - x1), (y2 - y1) };
+		return CalculateBuffer(*this, distance);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	calculateRoundBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Line::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	{
+		return CalculateRoundBuffer(*this, distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////

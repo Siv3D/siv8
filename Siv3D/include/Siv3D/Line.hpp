@@ -677,7 +677,32 @@ namespace s3d
 		/// @brief 線分を囲む最小の長方形を返します。
 		/// @return 線分を囲む最小の長方形
 		[[nodiscard]]
-		RectF boundingRect() const noexcept;
+		constexpr RectF boundingRect() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 線分を太らせて作成した、新しい多角形を返します。
+		/// @param distance 太らせる距離
+		/// @return 新しい多角形。distance が 0 以下の場合は空の多角形
+		[[nodiscard]]
+		Polygon calculateBuffer(double distance) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateRoundBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 線分を丸く太らせて作成した、新しい多角形を返します。
+		/// @param distance 太らせる距離
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 新しい多角形。distance が 0 以下の場合は空の多角形
+		[[nodiscard]]
+		Polygon calculateRoundBuffer(double distance, double qualityFactor = 1.0) const;
 
 		////////////////////////////////////////////////////////////////
 		//

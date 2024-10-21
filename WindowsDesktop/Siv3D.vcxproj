@@ -614,6 +614,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.hpp" />
@@ -1194,6 +1195,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Point\SivPoint.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PolygonFailureType\SivPolygonFailureType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\SivPolygon.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.cpp" />

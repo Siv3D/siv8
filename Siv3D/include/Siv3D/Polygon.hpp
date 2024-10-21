@@ -73,6 +73,20 @@ namespace s3d
 
 		/// @brief 多角形を作成します。
 		/// @param outer 外周の頂点配列（時計回り）
+		/// @param boundingRect バウンディングボックス
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::initializer_list<Vec2> outer, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param boundingRect バウンディングボックス
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::span<const Vec2> outer, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
 		/// @param holes 穴を構成する頂点配列（反時計回り）の配列
 		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
 		[[nodiscard]]
@@ -84,6 +98,22 @@ namespace s3d
 		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
 		[[nodiscard]]
 		Polygon(std::span<const Vec2> outer, Array<Array<Vec2>> holes, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param holes 穴を構成する頂点配列（反時計回り）の配列
+		/// @param boundingRect バウンディングボックス
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::initializer_list<Vec2> outer, Array<Array<Vec2>> holes, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
+
+		/// @brief 多角形を作成します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param holes 穴を構成する頂点配列（反時計回り）の配列
+		/// @param boundingRect バウンディングボックス
+		/// @param skipValidation 頂点の位置の妥当性を検証しない場合は `SkipValidation::Yes`
+		[[nodiscard]]
+		Polygon(std::span<const Vec2> outer, Array<Array<Vec2>> holes, const RectF& boundingRect, SkipValidation skipValidation = SkipValidation::No);
 
 		/// @brief 多角形を作成します。
 		/// @param outer 外周の頂点配列（時計回り）
@@ -616,10 +646,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形の、穴を含めた輪郭の長さを返します。
-		///// @return 多角形の、穴を含めた輪郭の長さ
-		//[[nodiscard]]
-		//double perimeter() const noexcept;
+		/// @brief 多角形の、穴を含めた輪郭の長さを返します。
+		/// @return 多角形の、穴を含めた輪郭の長さ
+		[[nodiscard]]
+		double perimeter() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -627,10 +657,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形の重心の座標を返します。
-		///// @return 多角形の重心の座標
-		//[[nodiscard]]
-		//Vec2 centroid() const;
+		/// @brief 多角形の重心の座標を返します。
+		/// @return 多角形の重心の座標、多角形が空の場合は `Vec2{ 0, 0 }`
+		[[nodiscard]]
+		Vec2 centroid() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -638,10 +668,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形の凸包を計算して返します。
-		///// @return 多角形の凸包
-		//[[nodiscard]]
-		//Polygon computeConvexHull() const;
+		/// @brief 多角形の凸包を計算して返します。
+		/// @return 多角形の凸包
+		[[nodiscard]]
+		Polygon computeConvexHull() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -649,11 +679,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形を太らせた、新しい多角形を返します。
-		///// @param distance 太らせる距離。負の場合は細らせます。
-		///// @return 新しい多角形
-		//[[nodiscard]]
-		//Polygon calculateBuffer(double distance) const;
+		/// @brief 多角形を太らせた、新しい多角形を返します。
+		/// @param distance 太らせる距離。負の場合は細らせます。
+		/// @return 新しい多角形
+		[[nodiscard]]
+		Polygon calculateBuffer(double distance) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -661,11 +691,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形を丸く太らせた、新しい多角形を返します。
-		///// @param distance 太らせる距離。負の場合は細らせます。
-		///// @return 新しい多角形
-		//[[nodiscard]]
-		//Polygon calculateRoundBuffer(double distance) const;
+		/// @brief 多角形を丸く太らせた、新しい多角形を返します。
+		/// @param distance 太らせる距離。負の場合は細らせます。
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 新しい多角形
+		[[nodiscard]]
+		Polygon calculateRoundBuffer(double distance, double qualityFactor = 1.0) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -673,11 +704,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形を単純化した、新しい多角形を返します。
-		///// @param maxDistance 単純化に使う距離。大きいほど単純化されます。
-		///// @return 新しい多角形
-		//[[nodiscard]]
-		//Polygon simplified(double maxDistance = 2.0) const;
+		/// @brief 多角形を単純化した、新しい多角形を返します。
+		/// @param maxDistance 単純化に使う距離。大きいほど単純化されます。
+		/// @return 新しい多角形
+		[[nodiscard]]
+		Polygon simplified(double maxDistance = 2.0) const;
 
 		////////////////////////////////////////////////////////////////
 		//
