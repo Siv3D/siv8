@@ -372,7 +372,19 @@ namespace s3d
 
 	void CRenderer_Metal::captureScreenshot()
 	{
+		const Size sceneSize = m_sceneBuffers.nonMSAA.size();
 		
+		if (m_screenCapture.size() != sceneSize)
+		{
+			m_screenCapture.resize(sceneSize);
+		}
+		
+		m_commandBuffer->waitUntilCompleted();
+		
+		m_sceneBuffers.nonMSAA.getTexture()->getBytes(m_screenCapture.data(),
+												   m_screenCapture.stride(),
+												   MTL::Region(0, 0, sceneSize.x, sceneSize.y),
+												   0);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -383,8 +395,7 @@ namespace s3d
 	
 	const Image& CRenderer_Metal::getScreenCapture() const
 	{
-		static const Image image{};
-		return image;
+		return m_screenCapture;
 	}
 
 	////////////////////////////////////////////////////////////////

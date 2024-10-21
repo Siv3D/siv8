@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/ResizeMode.hpp>
+# include <Siv3D/Image.hpp>
 # include <Siv3D/Scene/SceneStyle.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "Metal.hpp"
@@ -120,6 +121,8 @@ namespace s3d
 			}
 			
 		} m_sceneBuffers;
+		
+		Image m_screenCapture;
 		
 		MetalRenderPipelineState m_renderPipelineState;
 
