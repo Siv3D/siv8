@@ -583,8 +583,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 線分の長さの 2 乗を返します。
-		/// @return 線分の長さの 2 乗
+		/// @brief 線分の長さの二乗を返します。
+		/// @return 線分の長さの二乗
 		[[nodiscard]]
 		constexpr value_type lengthSq() const noexcept;
 
@@ -674,9 +674,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した座標との距離を返します。
+		/// @brief 指定した座標からの距離を返します。
 		/// @param pos 座標
-		/// @return 指定した座標との距離
+		/// @return 指定した座標からの距離
+		/// @remark `.distanceTo(pos)` と同じです。
 		[[nodiscard]]
 		double distanceFrom(position_type pos) const noexcept;
 
@@ -686,11 +687,38 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した座標との距離の 2 乗を返します。
+		/// @brief 指定した座標からの距離の二乗を返します。
 		/// @param pos 座標
-		/// @return 指定した座標との距離の 2 乗
+		/// @return 指定した座標からの距離の二乗
+		/// @remark `.distanceToSq(pos)` と同じです。
 		[[nodiscard]]
 		double distanceFromSq(position_type pos) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標への距離を返します。
+		/// @param pos 座標
+		/// @return 指定した座標への距離
+		/// @remark `.distanceFrom(pos)` と同じです。
+		[[nodiscard]]
+		double distanceTo(position_type pos) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceToSq
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標への距離の二乗を返します。
+		/// @param pos 座標
+		/// @return 指定した座標への距離の二乗
+		/// @remark `.distanceFromSq(pos)` と同じです。
+		[[nodiscard]]
+		double distanceToSq(position_type pos) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

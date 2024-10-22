@@ -471,14 +471,37 @@ namespace s3d
 		/// @param _x 別の位置ベクトルの X 成分
 		/// @param _y 別の位置ベクトルの Y 成分
 		/// @return 別の位置ベクトルからのマンハッタン距離
+		/// @remark `.manhattanDistanceTo(_x, _y)` と同じです。
 		[[nodiscard]]
 		constexpr value_type manhattanDistanceFrom(value_type _x, value_type _y) const noexcept;
 
 		/// @brief 別の位置ベクトルからのマンハッタン距離を返します。
 		/// @param v 別の位置ベクトル
 		/// @return 別の位置ベクトルからのマンハッタン距離
+		/// @remark `.manhattanDistanceTo(v)` と同じです。
 		[[nodiscard]]
 		constexpr value_type manhattanDistanceFrom(Vector2D v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	manhattanDistanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の位置ベクトルへのマンハッタン距離を返します。
+		/// @param _x 別の位置ベクトルの X 成分
+		/// @param _y 別の位置ベクトルの Y 成分
+		/// @return 別の位置ベクトルへのマンハッタン距離
+		/// @remark `.manhattanDistanceFrom(_x, _y)` と同じです。
+		[[nodiscard]]
+		constexpr value_type manhattanDistanceTo(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 別の位置ベクトルへのマンハッタン距離を返します。
+		/// @param v 別の位置ベクトル
+		/// @return 別の位置ベクトルへのマンハッタン距離
+		/// @remark `.manhattanDistanceFrom(v)` と同じです。
+		[[nodiscard]]
+		constexpr value_type manhattanDistanceTo(Vector2D v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -490,12 +513,14 @@ namespace s3d
 		/// @param _x 別の位置ベクトルの X 成分
 		/// @param _y 別の位置ベクトルの Y 成分
 		/// @return 別の位置ベクトルからの距離
+		/// @remark `.distanceTo(_x, _y)` と同じです。
 		[[nodiscard]]
 		value_type distanceFrom(value_type _x, value_type _y) const noexcept;
 
 		/// @brief 別の位置ベクトルからの距離を返します。
 		/// @param v 別の位置ベクトル
 		/// @return 別の位置ベクトルからの距離
+		/// @remark `.distanceTo(v)` と同じです。
 		[[nodiscard]]
 		value_type distanceFrom(Vector2D v) const noexcept;
 
@@ -508,17 +533,63 @@ namespace s3d
 		/// @brief 別の位置ベクトルからの距離の二乗を返します。
 		/// @param _x 別の位置ベクトルの X 成分
 		/// @param _y 別の位置ベクトルの Y 成分
-		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
 		/// @return 別の位置ベクトルからの距離の二乗
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @remark `.distanceToSq(_x, _y)` と同じです。
 		[[nodiscard]]
 		constexpr value_type distanceFromSq(value_type _x, value_type _y) const noexcept;
 
 		/// @brief 別の位置ベクトルからの距離の二乗を返します。
 		/// @param v 別の位置ベクトル
-		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
 		/// @return 別の位置ベクトルからの距離の二乗
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @remark `.distanceToSq(v)` と同じです。
 		[[nodiscard]]
 		constexpr value_type distanceFromSq(Vector2D v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の位置ベクトルへの距離を返します。
+		/// @param _x 別の位置ベクトルの X 成分
+		/// @param _y 別の位置ベクトルの Y 成分
+		/// @return 別の位置ベクトルへの距離
+		/// @remark `.distanceFrom(_x, _y)` と同じです。
+		[[nodiscard]]
+		value_type distanceTo(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 別の位置ベクトルへの距離を返します。
+		/// @param v 別の位置ベクトル
+		/// @return 別の位置ベクトルへの距離
+		/// @remark `.distanceFrom(v)` と同じです。
+		[[nodiscard]]
+		value_type distanceTo(Vector2D v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceToSq
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の位置ベクトルへの距離の二乗を返します。
+		/// @param _x 別の位置ベクトルの X 成分
+		/// @param _y 別の位置ベクトルの Y 成分
+		/// @return 別の位置ベクトルへの距離の二乗
+		/// @remark 平方根を計算しないため `distanceTo()` より高速です。
+		/// @remark `.distanceFromSq(_x, _y)` と同じです。
+		[[nodiscard]]
+		constexpr value_type distanceToSq(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 別の位置ベクトルへの距離の二乗を返します。
+		/// @param v 別の位置ベクトル
+		/// @return 別の位置ベクトルへの距離の二乗
+		/// @remark 平方根を計算しないため `distanceTo()` より高速です。
+		/// @remark `.distanceFromSq(v)` と同じです。
+		[[nodiscard]]
+		constexpr value_type distanceToSq(Vector2D v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

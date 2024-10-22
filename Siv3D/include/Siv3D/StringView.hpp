@@ -583,6 +583,32 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	levenshteinDistanceFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の文字列とのレーベンシュタイン距離を計算して返します。
+		/// @param other 別の文字列
+		/// @return 別の文字列とのレーベンシュタイン距離
+		/// @remark `.levenshteinDistanceTo(other)` と同じです。
+		[[nodiscard]]
+		size_type levenshteinDistanceFrom(StringView other) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	levenshteinDistanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の文字列とのレーベンシュタイン距離を計算して返します。
+		/// @param other 別の文字列
+		/// @return 別の文字列とのレーベンシュタイン距離
+		/// @remark `.levenshteinDistanceFrom(other)` と同じです。
+		[[nodiscard]]
+		size_type levenshteinDistanceTo(StringView other) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	hash
 		//
 		////////////////////////////////////////////////////////////////

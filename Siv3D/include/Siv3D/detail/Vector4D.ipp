@@ -641,6 +641,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	manhattanDistanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::manhattanDistanceTo(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	{
+		return manhattanDistanceFrom(_x, _y, _z, _w);
+	}
+
+	template <class Type>
+	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::manhattanDistanceTo(const Vector4D v) const noexcept
+	{
+		return manhattanDistanceFrom(v.x, v.y, v.z, v.w);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	distanceFrom
 	//
 	////////////////////////////////////////////////////////////////
@@ -675,6 +693,42 @@ namespace s3d
 
 	template <class Type>
 	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::distanceFromSq(const Vector4D v) const noexcept
+	{
+		return distanceFromSq(v.x, v.y, v.z, v.w);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	typename Vector4D<Type>::value_type Vector4D<Type>::distanceTo(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	{
+		return distanceFrom(_x, _y, _z, _w);
+	}
+
+	template <class Type>
+	typename Vector4D<Type>::value_type Vector4D<Type>::distanceTo(const Vector4D v) const noexcept
+	{
+		return distanceFrom(v.x, v.y, v.z, v.w);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceToSq
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::distanceToSq(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	{
+		return distanceFromSq(_x, _y, _z, _w);
+	}
+
+	template <class Type>
+	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::distanceToSq(const Vector4D v) const noexcept
 	{
 		return distanceFromSq(v.x, v.y, v.z, v.w);
 	}

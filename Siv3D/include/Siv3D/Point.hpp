@@ -431,21 +431,53 @@ namespace s3d
 		/// @param _x 別の座標の X 成分
 		/// @param _y 別の座標の Y 成分
 		/// @return 別の座標からのマンハッタン距離
+		/// @remark `.manhattanDistanceTo(_x, _y)` と同じです。
 		[[nodiscard]]
 		constexpr int32 manhattanDistanceFrom(int32 _x, int32 _y) const noexcept;
 
 		/// @brief 別の座標からのマンハッタン距離を返します。
 		/// @param p 別の座標
 		/// @return 別の座標からのマンハッタン距離
+		/// @remark `.manhattanDistanceTo(p)` と同じです。
 		[[nodiscard]]
 		constexpr int32 manhattanDistanceFrom(Point p) const noexcept;
 
 		/// @brief 別の座標からのマンハッタン距離を返します。
 		/// @param p 別の座標
 		/// @return 別の座標からのマンハッタン距離
+		/// @remark `.manhattanDistanceTo(p)` と同じです。
 		template <class Type>
 		[[nodiscard]]
 		constexpr Type manhattanDistanceFrom(Vector2D<Type> p) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	manhattanDistanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の位置ベクトルへのマンハッタン距離を返します。
+		/// @param _x 別の座標の X 成分
+		/// @param _y 別の座標の Y 成分
+		/// @return 別の座標へのマンハッタン距離
+		/// @remark `.manhattanDistanceFrom(_x, _y)` と同じです。
+		[[nodiscard]]
+		constexpr int32 manhattanDistanceTo(int32 _x, int32 _y) const noexcept;
+
+		/// @brief 別の座標へのマンハッタン距離を返します。
+		/// @param p 別の座標
+		/// @return 別の座標へのマンハッタン距離
+		/// @remark `.manhattanDistanceFrom(p)` と同じです。
+		[[nodiscard]]
+		constexpr int32 manhattanDistanceTo(Point p) const noexcept;
+
+		/// @brief 別の座標へのマンハッタン距離を返します。
+		/// @param p 別の座標
+		/// @return 別の座標へのマンハッタン距離
+		/// @remark `.manhattanDistanceFrom(p)` と同じです。
+		template <class Type>
+		[[nodiscard]]
+		constexpr Type manhattanDistanceTo(Vector2D<Type> p) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -457,12 +489,14 @@ namespace s3d
 		/// @param _x 別の座標の X 成分
 		/// @param _y 別の座標の Y 成分
 		/// @return 別の座標からの距離
+		/// @remark `.distanceTo(_x, _y)` と同じです。
 		[[nodiscard]]
 		double distanceFrom(double _x, double _y) const noexcept;
 
 		/// @brief 別の座標からの距離を返します。
 		/// @param p 別の座標
 		/// @return 別の座標からの距離
+		/// @remark `.distanceTo(p)` と同じです。
 		[[nodiscard]]
 		double distanceFrom(Point p) const noexcept;
 
@@ -470,6 +504,7 @@ namespace s3d
 		/// @tparam Type 別の座標の成分の型
 		/// @param p 別の座標
 		/// @return 別の座標からの距離
+		/// @remark `.distanceTo(p)` と同じです。
 		template <class Type>
 		[[nodiscard]]
 		Type distanceFrom(Vector2D<Type> p) const noexcept;
@@ -483,26 +518,92 @@ namespace s3d
 		/// @brief 別の座標からの距離の二乗を返します。
 		/// @param _x 別の座標の X 成分
 		/// @param _y 別の座標の Y 成分
-		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
 		/// @return 別の座標からの距離の二乗
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @remark `.distanceToSq(_x, _y)` と同じです。
 		[[nodiscard]]
 		constexpr double distanceFromSq(double _x, double _y) const noexcept;
 
 		/// @brief 別の座標からの距離の二乗を返します。
 		/// @param p 別の座標
-		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
 		/// @return 別の座標からの距離の二乗
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @remark `.distanceToSq(p)` と同じです。
 		[[nodiscard]]
 		constexpr double distanceFromSq(Point p) const noexcept;
 
 		/// @brief 別の座標からの距離の二乗を返します。
 		/// @tparam Type 別の座標の成分の型
 		/// @param p 別の座標
-		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
 		/// @return 別の座標からの距離の二乗
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @remark `.distanceToSq(p)` と同じです。
 		template <class Type>
 		[[nodiscard]]
 		constexpr Type distanceFromSq(Vector2D<Type> p) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の座標への距離を返します。
+		/// @param _x 別の座標の X 成分
+		/// @param _y 別の座標の Y 成分
+		/// @return 別の座標への距離
+		/// @remark `.distanceFrom(_x, _y)` と同じです。
+		[[nodiscard]]
+		double distanceTo(double _x, double _y) const noexcept;
+
+		/// @brief 別の座標への距離を返します。
+		/// @param p 別の座標
+		/// @return 別の座標への距離
+		/// @remark `.distanceFrom(p)` と同じです。
+		[[nodiscard]]
+		double distanceTo(Point p) const noexcept;
+
+		/// @brief 別の座標への距離を返します。
+		/// @tparam Type 別の座標の成分の型
+		/// @param p 別の座標
+		/// @return 別の座標への距離
+		/// @remark `.distanceFrom(p)` と同じです。
+		template <class Type>
+		[[nodiscard]]
+		Type distanceTo(Vector2D<Type> p) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceToSq
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の座標への距離の二乗を返します。
+		/// @param _x 別の座標の X 成分
+		/// @param _y 別の座標の Y 成分
+		/// @return 別の座標への距離の二乗
+		/// @remark 平方根を計算しないため `distanceTo()` より高速です。
+		/// @remark `.distanceFromSq(_x, _y)` と同じです。
+		[[nodiscard]]
+		constexpr double distanceToSq(double _x, double _y) const noexcept;
+
+		/// @brief 別の座標への距離の二乗を返します。
+		/// @param p 別の座標
+		/// @return 別の座標への距離の二乗
+		/// @remark 平方根を計算しないため `distanceTo()` より高速です。
+		/// @remark `.distanceFromSq(p)` と同じです。
+		[[nodiscard]]
+		constexpr double distanceToSq(Point p) const noexcept;
+
+		/// @brief 別の座標からの距離の二乗を返します。
+		/// @tparam Type 別の座標の成分の型
+		/// @param p 別の座標
+		/// @return 別の座標への距離の二乗
+		/// @remark 平方根を計算しないため `distanceTo()` より高速です。
+		/// @remark `.distanceFromSq(p)` と同じです。
+		template <class Type>
+		[[nodiscard]]
+		constexpr Type distanceToSq(Vector2D<Type> p) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -46,6 +46,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	CalculateLineRoundBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
 	Polygon CalculateLineRoundBuffer(const Line& line, const double distance, const double qualityFactor)
 	{
 		if (distance <= 0.0)
@@ -72,6 +78,12 @@ namespace s3d
 		return ToPolygon(multiPolygon.front());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	CalculatePolygonBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
 	Polygon CalculatePolygonBuffer(std::initializer_list<Vec2> outer, const double distance)
 	{
 		const CwOpenPolygon polygon{ outer };
@@ -93,6 +105,12 @@ namespace s3d
 		return ToPolygon(multiPolygon.front());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	CalculatePolygonRoundBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
 	Polygon CalculatePolygonRoundBuffer(std::initializer_list<Vec2> outer, const double distance, const double qualityFactor)
 	{
 		const CwOpenPolygon polygon{ outer };
@@ -113,6 +131,12 @@ namespace s3d
 
 		return ToPolygon(multiPolygon.front());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CircleToPolygon
+	//
+	////////////////////////////////////////////////////////////////
 
 	Polygon CircleToPolygon(const Circle& circle, const double qualityFactor)
 	{

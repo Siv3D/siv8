@@ -507,6 +507,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	manhattanDistanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr int32 Point::manhattanDistanceTo(const int32 _x, const int32 _y) const noexcept
+	{
+		return manhattanDistanceFrom(_x, _y);
+	}
+
+	constexpr int32 Point::manhattanDistanceTo(const Point p) const noexcept
+	{
+		return manhattanDistanceFrom(p.x, p.y);
+	}
+
+	template <class Type>
+	constexpr Type Point::manhattanDistanceTo(const Vector2D<Type> p) const noexcept
+	{
+		return manhattanDistanceFrom(p);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	distanceFrom
 	//
 	////////////////////////////////////////////////////////////////
@@ -553,6 +575,50 @@ namespace s3d
 		const Type xx = (x - p.x);
 		const Type yy = (y - p.y);
 		return ((xx * xx) + (yy * yy));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline double Point::distanceTo(const double _x, const double _y) const noexcept
+	{
+		return distanceFrom(_x, _y);
+	}
+
+	inline double Point::distanceTo(const Point p) const noexcept
+	{
+		return distanceFrom(p.x, p.y);
+	}
+
+	template <class Type>
+	Type Point::distanceTo(const Vector2D<Type> p) const noexcept
+	{
+		return distanceFrom(p);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceToSq
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr double Point::distanceToSq(const double _x, const double _y) const noexcept
+	{
+		return distanceFromSq(_x, _y);
+	}
+
+	constexpr double Point::distanceToSq(const Point p) const noexcept
+	{
+		return distanceFromSq(p.x, p.y);
+	}
+
+	template <class Type>
+	constexpr Type Point::distanceToSq(const Vector2D<Type> p) const noexcept
+	{
+		return distanceFromSq(p);
 	}
 
 	////////////////////////////////////////////////////////////////

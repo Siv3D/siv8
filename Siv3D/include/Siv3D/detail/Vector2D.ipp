@@ -559,6 +559,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	manhattanDistanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::manhattanDistanceTo(const value_type _x, const value_type _y) const noexcept
+	{
+		return manhattanDistanceFrom(_x, _y);
+	}
+
+	template <class Type>
+	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::manhattanDistanceTo(const Vector2D v) const noexcept
+	{
+		return manhattanDistanceFrom(v.x, v.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	distanceFrom
 	//
 	////////////////////////////////////////////////////////////////
@@ -591,6 +609,42 @@ namespace s3d
 
 	template <class Type>
 	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::distanceFromSq(const Vector2D v) const noexcept
+	{
+		return distanceFromSq(v.x, v.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	typename Vector2D<Type>::value_type Vector2D<Type>::distanceTo(const value_type _x, const value_type _y) const noexcept
+	{
+		return distanceFrom(_x, _y);
+	}
+
+	template <class Type>
+	typename Vector2D<Type>::value_type Vector2D<Type>::distanceTo(const Vector2D v) const noexcept
+	{
+		return distanceFrom(v.x, v.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceToSq
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::distanceToSq(const value_type _x, const value_type _y) const noexcept
+	{
+		return distanceFromSq(_x, _y);
+	}
+
+	template <class Type>
+	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::distanceToSq(const Vector2D v) const noexcept
 	{
 		return distanceFromSq(v.x, v.y);
 	}
