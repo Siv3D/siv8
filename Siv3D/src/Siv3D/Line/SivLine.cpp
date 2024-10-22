@@ -88,13 +88,42 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateBuffer
+	//	distanceFrom
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Line::calculateBuffer(const double distance) const
+	double Line::distanceFrom(const position_type pos) const noexcept
 	{
-		return CalculateBuffer(*this, distance);
+		return closestPointTo(pos).distanceFrom(pos);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceFromSq
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Line::distanceFromSq(const position_type pos) const noexcept
+	{
+		return closestPointTo(pos).distanceFromSq(pos);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withThickness
+	//
+	////////////////////////////////////////////////////////////////
+
+	Quad Line::withThickness(const double thickness) const
+	{
+		if (thickness <= 0.0)
+		{
+			return{ start, end, end, start };
+		}
+
+		const Vec2 nv = ((thickness * 0.5) * perpendicularUnitVector());
+
+		return{ (start + nv), (end + nv), (end - nv), (start - nv) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -105,7 +134,7 @@ namespace s3d
 
 	Polygon Line::calculateRoundBuffer(const double distance, const double qualityFactor) const
 	{
-		return CalculateRoundBuffer(*this, distance, qualityFactor);
+		return CalculateLineRoundBuffer(*this, distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -14,6 +14,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -68,8 +69,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Triangle Triangle::stretched(const value_type size) const noexcept
+	Triangle Triangle::stretched(value_type size) const noexcept
 	{
+		if (size < 0.0)
+		{
+			size = Max(size, -inradius());
+		}
+
 		Line lines[3] =
 		{
 			{ p0, p1 }, { p1, p2 }, { p2, p0 }
@@ -243,6 +249,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	inradius
+	//
+	////////////////////////////////////////////////////////////////
+
+	Triangle::value_type Triangle::inradius() const noexcept
+	{
+		const double area2 = Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y));
+		return (area2 / perimeter());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	boundingRect
 	//
 	////////////////////////////////////////////////////////////////
@@ -347,7 +365,39 @@ namespace s3d
 			SkipValidation::Yes };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
 
+	Polygon Triangle::rounded(const double round, const double qualityFactor) const
+	{
+		if (round <= 0.0)
+		{
+			return asPolygon();
+		}
+
+		if (inradius() <= round)
+		{
+			return CircleToPolygon(getInscribedCircle(), qualityFactor);
+		}
+
+		const Triangle inner = stretched(-round);
+
+		return inner.calculateRoundBuffer(round, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	calculateRoundBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Triangle::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	{
+		return CalculatePolygonRoundBuffer({ p0, p1, p2 }, distance, qualityFactor);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

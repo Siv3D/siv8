@@ -18,8 +18,14 @@
 namespace s3d
 {
 	[[nodiscard]]
-	Polygon CalculateBuffer(const Line& line, double distance);
+	Polygon CalculateLineRoundBuffer(const Line& line, double distance, double qualityFactor);
 
 	[[nodiscard]]
-	Polygon CalculateRoundBuffer(const Line& line, double distance, double qualityFactor);
+	Polygon CalculatePolygonBuffer(std::initializer_list<Vec2> outer, double distance);
+
+	[[nodiscard]]
+	Polygon CalculatePolygonRoundBuffer(std::initializer_list<Vec2> outer, double distance, double qualityFactor);
+	
+	[[nodiscard]]
+	Polygon CircleToPolygon(const Circle& circle, double qualityFactor);
 }
