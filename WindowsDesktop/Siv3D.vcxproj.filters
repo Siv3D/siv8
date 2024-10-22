@@ -985,6 +985,9 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\ScreenCapture">
       <UniqueIdentifier>{85c0e352-0a25-47b5-8ba0-e8f2a39f39d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Shape2D">
+      <UniqueIdentifier>{e8318064-78ee-44bf-bfa9-c9effe9bafd0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -6268,6 +6271,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.cpp">
       <Filter>src\Siv3D\Polygon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_IsClockwise.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Shape2D\Shape2D.cpp">
+      <Filter>src\Siv3D\Shape2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

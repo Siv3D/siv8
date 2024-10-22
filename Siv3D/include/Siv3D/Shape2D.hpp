@@ -31,6 +31,12 @@ namespace s3d
 	{
 	public:
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		Shape2D() = default;
@@ -41,6 +47,12 @@ namespace s3d
 		[[nodiscard]]
 		Shape2D(Array<Float2> vertices, Array<TriangleIndex> indices);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Cross
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief × の形状を作成します。
 		/// @param r 基準となる円の半径（ピクセル）
 		/// @param width パーツの幅（ピクセル）
@@ -49,6 +61,12 @@ namespace s3d
 		/// @return 作成した形状
 		[[nodiscard]]
 		static Shape2D Cross(double r, double width, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Plus
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 十字形を作成します。
 		/// @param r 基準となる円の半径（ピクセル）
@@ -59,6 +77,12 @@ namespace s3d
 		[[nodiscard]]
 		static Shape2D Plus(double r, double width, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Pentagon
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 正五角形を作成します。
 		/// @param r 外接する円の半径（ピクセル）
 		/// @param center 中心座標
@@ -67,6 +91,12 @@ namespace s3d
 		[[nodiscard]]
 		static Shape2D Pentagon(double r, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Hexagon
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 正六角形を作成します。
 		/// @param r 外接する円の半径（ピクセル）
 		/// @param center 中心座標
@@ -74,6 +104,12 @@ namespace s3d
 		/// @return 作成した形状
 		[[nodiscard]]
 		static Shape2D Hexagon(double r, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Ngon
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 正 N 角形を作成します。
 		/// @param n N 角形の N (3 以上)
@@ -84,6 +120,12 @@ namespace s3d
 		[[nodiscard]]
 		static Shape2D Ngon(uint32 n, double r, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Star
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 五芒星（★）を作成します。
 		/// @param r 外接する円の半径（ピクセル）
 		/// @param center 中心座標
@@ -91,6 +133,12 @@ namespace s3d
 		/// @return 作成した形状
 		[[nodiscard]]
 		static Shape2D Star(double r, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	NStar
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 星形を作成します。
 		/// @param n 星の先端の個数 (3 以上)
@@ -101,6 +149,12 @@ namespace s3d
 		/// @return 作成した形状
 		[[nodiscard]]
 		static Shape2D NStar(uint32 n, double rOuter, double rInner, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Arrow
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 矢印を作成します。
 		/// @param from 矢印の始点の座標
@@ -119,6 +173,12 @@ namespace s3d
 		[[nodiscard]]
 		static Shape2D Arrow(const Line& line, double width, const Vec2& headSize);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	DoubleHeadedArrow
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 両端にアローヘッドを持つ矢印を作成します。
 		/// @param from 矢印の始点の座標
 		/// @param to 矢印の終点の座標
@@ -136,6 +196,12 @@ namespace s3d
 		[[nodiscard]]
 		static Shape2D DoubleHeadedArrow(const Line& line, double width, const Vec2& headSize);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Rhombus
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief ひし形を作成します。
 		/// @param w ひし形の幅
 		/// @param h ひし形の高さ
@@ -145,6 +211,12 @@ namespace s3d
 		[[nodiscard]]
 		static Shape2D Rhombus(double w, double h, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	RectBalloon
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 長方形と三角形による吹き出し形状を作成します。
 		/// @param rect 長方形エリア
 		/// @param target 吹き出しの先端の位置
@@ -152,6 +224,12 @@ namespace s3d
 		/// @return 作成した形状
 		[[nodiscard]]
 		static Shape2D RectBalloon(const RectF& rect, const Vec2& target, double pointingRootRatio = 0.5);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Stairs
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 階段の形状を作成します。
 		/// @param base 階段の基準位置
@@ -163,6 +241,12 @@ namespace s3d
 		[[nodiscard]]
 		static Shape2D Stairs(const Vec2& base, double w, double h, uint32 steps, bool upStairs = true);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Heart
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief ハート形を作成します。
 		/// @param r 外接する円の半径（ピクセル）
 		/// @param center 中心座標
@@ -170,6 +254,12 @@ namespace s3d
 		/// @return 作成した形状
 		[[nodiscard]]
 		static Shape2D Heart(double r, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Squircle
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 正方形と円の中間の形状 (Squircle) を作成します。
 		/// @param r 円の半径
@@ -179,30 +269,71 @@ namespace s3d
 		[[nodiscard]]
 		static Shape2D Squircle(double r, const Vec2& center, uint32 quality);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Astroid
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 星芒形（アステロイド）を作成します。
 		/// @param center 中心座標
 		/// @param a 外接する楕円の X 軸半径
 		/// @param b 外接する楕円の Y 軸半径
 		/// @param angle 時計回りの回転角度
-		/// @param qualityScale 品質の調整パラメータ。通常は 1.0
+		/// @param qualityFactor 品質の調整パラメータ。通常は 1.0
 		/// @return 作成した形状
 		[[nodiscard]]
-		static Shape2D Astroid(const Vec2& center, double a, double b, double angle = 0.0, double qualityScale = Graphics2D::GetMaxScaling());
+		static Shape2D Astroid(const Vec2& center, double a, double b, double angle = 0.0, double qualityFactor = Graphics2D::GetMaxScaling());
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	vertices
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 頂点座標の配列を返します。
 		/// @return 頂点座標の配列
 		[[nodiscard]]
 		const Array<Float2>& vertices() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	indices
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 頂点インデックスの配列を返します。
 		/// @return 頂点インデックスの配列
 		[[nodiscard]]
 		const Array<TriangleIndex>& indices() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	asPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 図形を Polygon として返します。
+		/// @return 図形の Polygon
+		[[nodiscard]]
+		Polygon asPolygon() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 図形を描画します。
 		/// @param color 色
 		/// @return *this
 		const Shape2D& draw(const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawFrame
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 図形の枠を描画します。
 		/// @param thickness 枠の太さ
@@ -210,16 +341,23 @@ namespace s3d
 		/// @return *this
 		const Shape2D& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawWireframe
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 図形を構成する三角形をワイヤフレームで描画します。
 		/// @param thickness ワイヤフレームの太さ
 		/// @param color 色
 		/// @return *this
 		const Shape2D& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		/// @brief 図形を Polygon として返します。
-		/// @return 図形の Polygon
-		[[nodiscard]] 
-		Polygon asPolygon() const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	toBuffer2D
+		//
+		////////////////////////////////////////////////////////////////
 
 		///// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
 		///// @param uvOrigin UV 座標 (0, 0) をマッピングする位置
