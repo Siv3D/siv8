@@ -12,6 +12,7 @@
 # pragma once
 # include <array>
 # include <cstddef> // std::byte
+# include <iostream>
 # include "Platform.hpp"
 # include "Hash.hpp"
 

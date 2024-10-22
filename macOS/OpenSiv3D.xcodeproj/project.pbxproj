@@ -2347,6 +2347,9 @@
 		F9ED45C72CC2B06D006BA10F /* ScreenCaptureFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ED45C12CC2B06D006BA10F /* ScreenCaptureFactory.cpp */; };
 		F9ED45C82CC2B06D006BA10F /* SivScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ED45C22CC2B06D006BA10F /* SivScreenCapture.cpp */; };
 		F9ED45CA2CC2B08F006BA10F /* ScreenCapture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */; };
+		F9F00A3C2CC7F5990097C165 /* GeometryCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A3B2CC7F5990097C165 /* GeometryCommon.cpp */; };
+		F9F00A3F2CC7F5FB0097C165 /* PolygonBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A3E2CC7F5FB0097C165 /* PolygonBuffer.cpp */; };
+		F9F00A402CC7F5FB0097C165 /* PolygonBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A3D2CC7F5FB0097C165 /* PolygonBuffer.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4802,6 +4805,9 @@
 		F9ED45C12CC2B06D006BA10F /* ScreenCaptureFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenCaptureFactory.cpp; sourceTree = "<group>"; };
 		F9ED45C22CC2B06D006BA10F /* SivScreenCapture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScreenCapture.cpp; sourceTree = "<group>"; };
 		F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScreenCapture.hpp; sourceTree = "<group>"; };
+		F9F00A3B2CC7F5990097C165 /* GeometryCommon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeometryCommon.cpp; sourceTree = "<group>"; };
+		F9F00A3D2CC7F5FB0097C165 /* PolygonBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PolygonBuffer.hpp; sourceTree = "<group>"; };
+		F9F00A3E2CC7F5FB0097C165 /* PolygonBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonBuffer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -6929,12 +6935,15 @@
 			isa = PBXGroup;
 			children = (
 				F951224A2CB8239800151291 /* ClosedLineString.cpp */,
-				F951224B2CB8239800151291 /* ClosedLineString.hpp */,
-				F951224C2CB8239800151291 /* GeometryCommon.hpp */,
+				F9F00A3B2CC7F5990097C165 /* GeometryCommon.cpp */,
+				F9F00A3E2CC7F5FB0097C165 /* PolygonBuffer.cpp */,
 				F951224D2CB8239800151291 /* PolygonDetail.cpp */,
-				F951224E2CB8239800151291 /* PolygonDetail.hpp */,
 				F951224F2CB8239800151291 /* SivPolygon.cpp */,
 				F95122502CB8239800151291 /* Triangulate.cpp */,
+				F951224B2CB8239800151291 /* ClosedLineString.hpp */,
+				F951224C2CB8239800151291 /* GeometryCommon.hpp */,
+				F9F00A3D2CC7F5FB0097C165 /* PolygonBuffer.hpp */,
+				F951224E2CB8239800151291 /* PolygonDetail.hpp */,
 				F95122512CB8239800151291 /* Triangulate.hpp */,
 			);
 			path = Polygon;
@@ -10982,6 +10991,7 @@
 				F98602F52BCFBB54006A4C0F /* SkBitmapProcState_opts.h in Headers */,
 				F98603DE2BCFBB54006A4C0F /* SkSLSPIRVCodeGenerator.h in Headers */,
 				F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */,
+				F9F00A402CC7F5FB0097C165 /* PolygonBuffer.hpp in Headers */,
 				F98605F82BE61586006A4C0F /* RandomVec2.ipp in Headers */,
 				F934BD9F2BFA59320003EAD5 /* HLSL.hpp in Headers */,
 				F986024C2BCFBB54006A4C0F /* SkRectPriv.h in Headers */,
@@ -12523,6 +12533,7 @@
 				F98604042BCFBB54006A4C0F /* SkSLExpression.cpp in Sources */,
 				F98603A22BCFBB54006A4C0F /* SkColorShader.cpp in Sources */,
 				F98601C42BCFBB53006A4C0F /* SkGeometry.cpp in Sources */,
+				F9F00A3C2CC7F5990097C165 /* GeometryCommon.cpp in Sources */,
 				F98601D32BCFBB53006A4C0F /* SkImageGenerator.cpp in Sources */,
 				F9070DB02B9F175E00383E4D /* SivBinaryReader.cpp in Sources */,
 				F980C4452C00D31000A86B68 /* SivRasterizerState.cpp in Sources */,
@@ -12611,6 +12622,7 @@
 				F98600DF2BCFBB53006A4C0F /* SkSafeMath.cpp in Sources */,
 				F9070DD82B9F175E00383E4D /* LoggerFactory.cpp in Sources */,
 				F9E794232C118681002615BA /* MetalVertexBufferManager2D.mm in Sources */,
+				F9F00A3F2CC7F5FB0097C165 /* PolygonBuffer.cpp in Sources */,
 				F986024B2BCFBB54006A4C0F /* SkRect.cpp in Sources */,
 				F98605382BD1049D006A4C0F /* TGAEncoder.cpp in Sources */,
 				F986046D2BCFBB54006A4C0F /* SkSLContext.cpp in Sources */,

@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <cstdlib>
 # include <Siv3D/PixelShader.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>

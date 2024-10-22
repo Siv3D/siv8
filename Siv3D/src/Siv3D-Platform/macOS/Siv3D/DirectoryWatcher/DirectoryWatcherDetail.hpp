@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <mutex>
 # include <Siv3D/DirectoryWatcher.hpp>
 # include <Siv3D/ExtensionFilter/ExtensionFilter.hpp>
 # include <CoreServices/CoreServices.h>
