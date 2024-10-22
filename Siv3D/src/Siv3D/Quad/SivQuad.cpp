@@ -13,6 +13,7 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
@@ -76,6 +77,17 @@ namespace s3d
 		const Vec2 t2 = GetP(lines[1].start, lines[1].end, lines[2].start, lines[2].end);
 		const Vec2 t3 = GetP(lines[2].start, lines[2].end, lines[3].start, lines[3].end);
 		return{ t0, t1, t2, t3 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stretchedPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Quad::stretchedPolygon(const value_type size) const noexcept
+	{
+		return CalculatePolygonBuffer({ p0, p1, p2, p3 }, size);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -256,6 +268,33 @@ namespace s3d
 			{ { 0, 1, 3 }, { 3, 1, 2 } },
 			boundingRect(),
 			SkipValidation::Yes };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Quad::rounded(const double round, const double qualityFactor) const
+	{
+		if (round <= 0.0)
+		{
+			return asPolygon();
+		}
+
+		return CalculateRoundedQuad(*this, round, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	calculateRoundBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Quad::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	{
+		return CalculatePolygonRoundBuffer({ p0, p1, p2, p3 }, distance, qualityFactor);
 	}
 
 

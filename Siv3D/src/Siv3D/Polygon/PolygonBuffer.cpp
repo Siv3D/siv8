@@ -80,6 +80,53 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	CalculateRoundedQuad
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon CalculateRoundedQuad(const Quad& quad, const double distance, const double qualityFactor)
+	{
+		const CwOpenPolygon polygon{ { quad.p0, quad.p1, quad.p2, quad.p3 } };
+
+		boost::geometry::model::multi_polygon<CwOpenPolygon> stretchedPolygon;
+
+		boost::geometry::buffer(polygon, stretchedPolygon,
+			boost::geometry::strategy::buffer::distance_symmetric<double>{ -distance },
+			boost::geometry::strategy::buffer::side_straight{},
+			boost::geometry::strategy::buffer::join_miter{},
+			boost::geometry::strategy::buffer::end_flat{},
+			boost::geometry::strategy::buffer::point_circle{ 0 });
+
+		if (stretchedPolygon.size() != 1)
+		{
+			return{};
+		}
+
+		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
+
+		boost::geometry::buffer(stretchedPolygon.front(), multiPolygon,
+			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
+			boost::geometry::strategy::buffer::side_straight{},
+			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor) },
+			boost::geometry::strategy::buffer::end_round{},
+			boost::geometry::strategy::buffer::point_circle{ 0 });
+
+		if (multiPolygon.size() != 1)
+		{
+			return{};
+		}
+
+		// 異常なポリゴンを除外
+		if (multiPolygon.front().outer().size() <= 4)
+		{
+			return{};
+		}
+
+		return ToPolygon(multiPolygon.front());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	CalculatePolygonBuffer
 	//
 	////////////////////////////////////////////////////////////////
