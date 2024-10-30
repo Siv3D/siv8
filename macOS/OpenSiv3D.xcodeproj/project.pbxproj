@@ -2350,6 +2350,34 @@
 		F9F00A3C2CC7F5990097C165 /* GeometryCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A3B2CC7F5990097C165 /* GeometryCommon.cpp */; };
 		F9F00A3F2CC7F5FB0097C165 /* PolygonBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A3E2CC7F5FB0097C165 /* PolygonBuffer.cpp */; };
 		F9F00A402CC7F5FB0097C165 /* PolygonBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A3D2CC7F5FB0097C165 /* PolygonBuffer.hpp */; };
+		F9F00A422CD298CB0097C165 /* SivGeometry2D_IsClockwise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A412CD298CB0097C165 /* SivGeometry2D_IsClockwise.cpp */; };
+		F9F00A442CD298D50097C165 /* SivGeometry2D_PoleOfInaccessibility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A432CD298D50097C165 /* SivGeometry2D_PoleOfInaccessibility.cpp */; };
+		F9F00A472CD298E60097C165 /* Shape2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A452CD298E60097C165 /* Shape2D.cpp */; };
+		F9F00A4A2CD299120097C165 /* PointsPerCircle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A482CD299120097C165 /* PointsPerCircle.hpp */; };
+		F9F00A4B2CD299120097C165 /* QualityFactor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A492CD299120097C165 /* QualityFactor.hpp */; };
+		F9F00A4E2CD2993F0097C165 /* PointsPerCircle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A4C2CD2993F0097C165 /* PointsPerCircle.ipp */; };
+		F9F00A4F2CD2993F0097C165 /* QualityFactor.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A4D2CD2993F0097C165 /* QualityFactor.ipp */; };
+		F9F00A522CD2995D0097C165 /* SivQualityFactor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A502CD2995D0097C165 /* SivQualityFactor.cpp */; };
+		F9F00A542CD299910097C165 /* PoleOfInaccessibility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A532CD299910097C165 /* PoleOfInaccessibility.hpp */; };
+		F9F00A6A2CD299C10097C165 /* polygon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A602CD299C10097C165 /* polygon.hpp */; };
+		F9F00A6B2CD299C10097C165 /* polylabel.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A652CD299C10097C165 /* polylabel.hpp */; };
+		F9F00A6C2CD299C10097C165 /* variant_visitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A682CD299C10097C165 /* variant_visitor.hpp */; };
+		F9F00A6D2CD299C10097C165 /* geometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A592CD299C10097C165 /* geometry.hpp */; };
+		F9F00A6E2CD299C10097C165 /* geometry_io.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A642CD299C10097C165 /* geometry_io.hpp */; };
+		F9F00A6F2CD299C10097C165 /* feature.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A622CD299C10097C165 /* feature.hpp */; };
+		F9F00A702CD299C10097C165 /* multi_polygon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A5D2CD299C10097C165 /* multi_polygon.hpp */; };
+		F9F00A712CD299C10097C165 /* box.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A552CD299C10097C165 /* box.hpp */; };
+		F9F00A722CD299C10097C165 /* multi_point.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A5C2CD299C10097C165 /* multi_point.hpp */; };
+		F9F00A732CD299C10097C165 /* empty.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A562CD299C10097C165 /* empty.hpp */; };
+		F9F00A742CD299C10097C165 /* point_arithmetic.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A5F2CD299C10097C165 /* point_arithmetic.hpp */; };
+		F9F00A752CD299C10097C165 /* multi_line_string.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A5B2CD299C10097C165 /* multi_line_string.hpp */; };
+		F9F00A762CD299C10097C165 /* for_each_point.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A582CD299C10097C165 /* for_each_point.hpp */; };
+		F9F00A772CD299C10097C165 /* recursive_wrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A662CD299C10097C165 /* recursive_wrapper.hpp */; };
+		F9F00A782CD299C10097C165 /* line_string.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A5A2CD299C10097C165 /* line_string.hpp */; };
+		F9F00A792CD299C10097C165 /* point.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A5E2CD299C10097C165 /* point.hpp */; };
+		F9F00A7A2CD299C10097C165 /* envelope.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A572CD299C10097C165 /* envelope.hpp */; };
+		F9F00A7B2CD299C10097C165 /* variant.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A672CD299C10097C165 /* variant.hpp */; };
+		F9F00A7C2CD299C10097C165 /* geometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A632CD299C10097C165 /* geometry.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4808,6 +4836,34 @@
 		F9F00A3B2CC7F5990097C165 /* GeometryCommon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeometryCommon.cpp; sourceTree = "<group>"; };
 		F9F00A3D2CC7F5FB0097C165 /* PolygonBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PolygonBuffer.hpp; sourceTree = "<group>"; };
 		F9F00A3E2CC7F5FB0097C165 /* PolygonBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonBuffer.cpp; sourceTree = "<group>"; };
+		F9F00A412CD298CB0097C165 /* SivGeometry2D_IsClockwise.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_IsClockwise.cpp; sourceTree = "<group>"; };
+		F9F00A432CD298D50097C165 /* SivGeometry2D_PoleOfInaccessibility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_PoleOfInaccessibility.cpp; sourceTree = "<group>"; };
+		F9F00A452CD298E60097C165 /* Shape2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shape2D.cpp; sourceTree = "<group>"; };
+		F9F00A482CD299120097C165 /* PointsPerCircle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PointsPerCircle.hpp; sourceTree = "<group>"; };
+		F9F00A492CD299120097C165 /* QualityFactor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QualityFactor.hpp; sourceTree = "<group>"; };
+		F9F00A4C2CD2993F0097C165 /* PointsPerCircle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PointsPerCircle.ipp; sourceTree = "<group>"; };
+		F9F00A4D2CD2993F0097C165 /* QualityFactor.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QualityFactor.ipp; sourceTree = "<group>"; };
+		F9F00A502CD2995D0097C165 /* SivQualityFactor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivQualityFactor.cpp; sourceTree = "<group>"; };
+		F9F00A532CD299910097C165 /* PoleOfInaccessibility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PoleOfInaccessibility.hpp; sourceTree = "<group>"; };
+		F9F00A552CD299C10097C165 /* box.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = box.hpp; sourceTree = "<group>"; };
+		F9F00A562CD299C10097C165 /* empty.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = empty.hpp; sourceTree = "<group>"; };
+		F9F00A572CD299C10097C165 /* envelope.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = envelope.hpp; sourceTree = "<group>"; };
+		F9F00A582CD299C10097C165 /* for_each_point.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = for_each_point.hpp; sourceTree = "<group>"; };
+		F9F00A592CD299C10097C165 /* geometry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = geometry.hpp; sourceTree = "<group>"; };
+		F9F00A5A2CD299C10097C165 /* line_string.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = line_string.hpp; sourceTree = "<group>"; };
+		F9F00A5B2CD299C10097C165 /* multi_line_string.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = multi_line_string.hpp; sourceTree = "<group>"; };
+		F9F00A5C2CD299C10097C165 /* multi_point.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = multi_point.hpp; sourceTree = "<group>"; };
+		F9F00A5D2CD299C10097C165 /* multi_polygon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = multi_polygon.hpp; sourceTree = "<group>"; };
+		F9F00A5E2CD299C10097C165 /* point.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = point.hpp; sourceTree = "<group>"; };
+		F9F00A5F2CD299C10097C165 /* point_arithmetic.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = point_arithmetic.hpp; sourceTree = "<group>"; };
+		F9F00A602CD299C10097C165 /* polygon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = polygon.hpp; sourceTree = "<group>"; };
+		F9F00A622CD299C10097C165 /* feature.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = feature.hpp; sourceTree = "<group>"; };
+		F9F00A632CD299C10097C165 /* geometry.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = geometry.hpp; sourceTree = "<group>"; };
+		F9F00A642CD299C10097C165 /* geometry_io.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = geometry_io.hpp; sourceTree = "<group>"; };
+		F9F00A652CD299C10097C165 /* polylabel.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = polylabel.hpp; sourceTree = "<group>"; };
+		F9F00A662CD299C10097C165 /* recursive_wrapper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = recursive_wrapper.hpp; sourceTree = "<group>"; };
+		F9F00A672CD299C10097C165 /* variant.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = variant.hpp; sourceTree = "<group>"; };
+		F9F00A682CD299C10097C165 /* variant_visitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = variant_visitor.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -5320,6 +5376,7 @@
 				F9070A712B9DEB5900383E4D /* levenshtein-sse */,
 				F96F96002C359ED90033353E /* libmorton */,
 				F986F98C2BCA9D0A006A4C0F /* lunasvg */,
+				F9F00A692CD299C10097C165 /* mapbox */,
 				F97204112BF0A24A000E21DD /* Metal */,
 				F9070A732B9DEB5900383E4D /* miniutf */,
 				F98605582BD203D4006A4C0F /* muparser */,
@@ -5483,8 +5540,10 @@
 				F9E7944E2C197417002615BA /* Periodic.ipp */,
 				F9070B972B9F175000383E4D /* Point.ipp */,
 				F9528B982BBC76EA00222F45 /* Point3D.ipp */,
+				F9F00A4C2CD2993F0097C165 /* PointsPerCircle.ipp */,
 				F95122432CB8234200151291 /* Polygon.ipp */,
 				F98605F62BE61586006A4C0F /* Quad.ipp */,
+				F9F00A4D2CD2993F0097C165 /* QualityFactor.ipp */,
 				F9070B982B9F175000383E4D /* Random.ipp */,
 				F98605F22BE61586006A4C0F /* RandomColor.ipp */,
 				F9070B992B9F175000383E4D /* RandomDuration.ipp */,
@@ -5755,6 +5814,7 @@
 				F9528C942BC1205300222F45 /* PNGFilter.hpp */,
 				F9070C152B9F175000383E4D /* Point.hpp */,
 				F9528B942BBC76D300222F45 /* Point3D.hpp */,
+				F9F00A482CD299120097C165 /* PointsPerCircle.hpp */,
 				F9070C162B9F175000383E4D /* PointVector.hpp */,
 				F95122122CB62E6B00151291 /* Polygon.hpp */,
 				F951221C2CB8227E00151291 /* PolygonFailureType.hpp */,
@@ -5764,6 +5824,7 @@
 				F9528B7E2BB71F9900222F45 /* Profiler.hpp */,
 				F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */,
 				F98605262BD10459006A4C0F /* Quad.hpp */,
+				F9F00A492CD299120097C165 /* QualityFactor.hpp */,
 				F9070C1A2B9F175000383E4D /* Random.hpp */,
 				F98605EA2BE61563006A4C0F /* RandomColor.hpp */,
 				F9070C1B2B9F175000383E4D /* RandomDuration.hpp */,
@@ -6504,6 +6565,7 @@
 				F95122292CB822BE00151291 /* PolygonFailureType */,
 				F986062E2BEBBBC7006A4C0F /* Profiler */,
 				F96F95E52C2B0F640033353E /* Quad */,
+				F9F00A512CD2995D0097C165 /* QualityFactor */,
 				F9070D7C2B9F175E00383E4D /* Random */,
 				F980C43D2C00D31000A86B68 /* RasterizerState */,
 				F980C4702C01B4B600A86B68 /* RasterizerStateBuilder */,
@@ -6525,6 +6587,7 @@
 				F9712A352C25501C0049CC26 /* ScopedViewport2D */,
 				F9ED45C32CC2B06D006BA10F /* ScreenCapture */,
 				F934BD802BF880A10003EAD5 /* Shader */,
+				F9F00A462CD298E60097C165 /* Shape2D */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9E7945A2C19743A002615BA /* Stopwatch */,
 				F9070D812B9F175E00383E4D /* String */,
@@ -7367,6 +7430,7 @@
 				F95121F02CB125F000151291 /* IntersectAt.hpp */,
 				F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */,
 				F95121F22CB125F100151291 /* Misc.hpp */,
+				F9F00A532CD299910097C165 /* PoleOfInaccessibility.hpp */,
 				F96F960A2C359F070033353E /* Intersect.ipp */,
 				F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */,
 			);
@@ -7376,6 +7440,8 @@
 		F96F960F2C3712DC0033353E /* Geometry2D */ = {
 			isa = PBXGroup;
 			children = (
+				F9F00A432CD298D50097C165 /* SivGeometry2D_PoleOfInaccessibility.cpp */,
+				F9F00A412CD298CB0097C165 /* SivGeometry2D_IsClockwise.cpp */,
 				F95122412CB8232300151291 /* SivGeometry2D_BoundingRect.cpp */,
 				F96F960E2C3712DC0033353E /* SivGeometry2D_Intersect.cpp */,
 			);
@@ -10199,6 +10265,56 @@
 			path = ScreenCapture;
 			sourceTree = "<group>";
 		};
+		F9F00A462CD298E60097C165 /* Shape2D */ = {
+			isa = PBXGroup;
+			children = (
+				F9F00A452CD298E60097C165 /* Shape2D.cpp */,
+			);
+			path = Shape2D;
+			sourceTree = "<group>";
+		};
+		F9F00A512CD2995D0097C165 /* QualityFactor */ = {
+			isa = PBXGroup;
+			children = (
+				F9F00A502CD2995D0097C165 /* SivQualityFactor.cpp */,
+			);
+			path = QualityFactor;
+			sourceTree = "<group>";
+		};
+		F9F00A612CD299C10097C165 /* geometry */ = {
+			isa = PBXGroup;
+			children = (
+				F9F00A552CD299C10097C165 /* box.hpp */,
+				F9F00A562CD299C10097C165 /* empty.hpp */,
+				F9F00A572CD299C10097C165 /* envelope.hpp */,
+				F9F00A582CD299C10097C165 /* for_each_point.hpp */,
+				F9F00A592CD299C10097C165 /* geometry.hpp */,
+				F9F00A5A2CD299C10097C165 /* line_string.hpp */,
+				F9F00A5B2CD299C10097C165 /* multi_line_string.hpp */,
+				F9F00A5C2CD299C10097C165 /* multi_point.hpp */,
+				F9F00A5D2CD299C10097C165 /* multi_polygon.hpp */,
+				F9F00A5E2CD299C10097C165 /* point.hpp */,
+				F9F00A5F2CD299C10097C165 /* point_arithmetic.hpp */,
+				F9F00A602CD299C10097C165 /* polygon.hpp */,
+			);
+			path = geometry;
+			sourceTree = "<group>";
+		};
+		F9F00A692CD299C10097C165 /* mapbox */ = {
+			isa = PBXGroup;
+			children = (
+				F9F00A612CD299C10097C165 /* geometry */,
+				F9F00A622CD299C10097C165 /* feature.hpp */,
+				F9F00A632CD299C10097C165 /* geometry.hpp */,
+				F9F00A642CD299C10097C165 /* geometry_io.hpp */,
+				F9F00A652CD299C10097C165 /* polylabel.hpp */,
+				F9F00A662CD299C10097C165 /* recursive_wrapper.hpp */,
+				F9F00A672CD299C10097C165 /* variant.hpp */,
+				F9F00A682CD299C10097C165 /* variant_visitor.hpp */,
+			);
+			path = mapbox;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -10374,6 +10490,8 @@
 				F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */,
 				F9070CD62B9F175100383E4D /* LoggerBuffer.hpp in Headers */,
 				F90706AF2B9DAEC900383E4D /* uniform_real_distribution.h in Headers */,
+				F9F00A4A2CD299120097C165 /* PointsPerCircle.hpp in Headers */,
+				F9F00A4B2CD299120097C165 /* QualityFactor.hpp in Headers */,
 				F986001B2BCFBB53006A4C0F /* SkFontTypes.h in Headers */,
 				F986046C2BCFBB54006A4C0F /* SkSLConstantFolder.h in Headers */,
 				F9528C682BC05B0200222F45 /* IImageDecoder.hpp in Headers */,
@@ -10392,6 +10510,8 @@
 				F98600662BCFBB53006A4C0F /* SkShaderMaskFilter.h in Headers */,
 				F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */,
 				F9528CA62BC1209900222F45 /* zlib.h in Headers */,
+				F9F00A4E2CD2993F0097C165 /* PointsPerCircle.ipp in Headers */,
+				F9F00A4F2CD2993F0097C165 /* QualityFactor.ipp in Headers */,
 				F98605AE2BE49BE0006A4C0F /* IMouse.hpp in Headers */,
 				F9070E5D2B9F176B00383E4D /* CConsole.hpp in Headers */,
 				F98600292BCFBB53006A4C0F /* SkPaint.h in Headers */,
@@ -10999,6 +11119,25 @@
 				F980C4952C04B43300A86B68 /* FloatRect.ipp in Headers */,
 				F986042C2BCFBB54006A4C0F /* SkSLPostfixExpression.h in Headers */,
 				F9E794492C1973FD002615BA /* ArrayRandom.hpp in Headers */,
+				F9F00A6A2CD299C10097C165 /* polygon.hpp in Headers */,
+				F9F00A6B2CD299C10097C165 /* polylabel.hpp in Headers */,
+				F9F00A6C2CD299C10097C165 /* variant_visitor.hpp in Headers */,
+				F9F00A6D2CD299C10097C165 /* geometry.hpp in Headers */,
+				F9F00A6E2CD299C10097C165 /* geometry_io.hpp in Headers */,
+				F9F00A6F2CD299C10097C165 /* feature.hpp in Headers */,
+				F9F00A702CD299C10097C165 /* multi_polygon.hpp in Headers */,
+				F9F00A712CD299C10097C165 /* box.hpp in Headers */,
+				F9F00A722CD299C10097C165 /* multi_point.hpp in Headers */,
+				F9F00A732CD299C10097C165 /* empty.hpp in Headers */,
+				F9F00A742CD299C10097C165 /* point_arithmetic.hpp in Headers */,
+				F9F00A752CD299C10097C165 /* multi_line_string.hpp in Headers */,
+				F9F00A762CD299C10097C165 /* for_each_point.hpp in Headers */,
+				F9F00A772CD299C10097C165 /* recursive_wrapper.hpp in Headers */,
+				F9F00A782CD299C10097C165 /* line_string.hpp in Headers */,
+				F9F00A792CD299C10097C165 /* point.hpp in Headers */,
+				F9F00A7A2CD299C10097C165 /* envelope.hpp in Headers */,
+				F9F00A7B2CD299C10097C165 /* variant.hpp in Headers */,
+				F9F00A7C2CD299C10097C165 /* geometry.hpp in Headers */,
 				F986031D2BCFBB54006A4C0F /* SkPathOpsConic.h in Headers */,
 				F986000E2BCFBB53006A4C0F /* SkCubicMap.h in Headers */,
 				F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */,
@@ -11293,6 +11432,7 @@
 				F98605EE2BE61564006A4C0F /* RandomColor.hpp in Headers */,
 				F98603862BCFBB54006A4C0F /* SkOTTable_OS_2_V2.h in Headers */,
 				F98604752BCFBB54006A4C0F /* SkSLInliner.h in Headers */,
+				F9F00A542CD299910097C165 /* PoleOfInaccessibility.hpp in Headers */,
 				F9070CCA2B9F175100383E4D /* HeterogeneousLookupHelper.hpp in Headers */,
 				F986FA682BCFB53B006A4C0F /* ftstream.h in Headers */,
 				F9712A2C2C252EEA0049CC26 /* ScopedScissorRect2D.hpp in Headers */,
@@ -12089,6 +12229,7 @@
 				F980C4732C01B4B600A86B68 /* SivDepthStencilStateBuilder.cpp in Sources */,
 				F98601E72BCFBB53006A4C0F /* SkMaskCache.cpp in Sources */,
 				F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */,
+				F9F00A442CD298D50097C165 /* SivGeometry2D_PoleOfInaccessibility.cpp in Sources */,
 				F9070F362B9F252E00383E4D /* null_joystick.c in Sources */,
 				F98602CC2BCFBB54006A4C0F /* SkBlenders.cpp in Sources */,
 				F98602802BCFBB54006A4C0F /* SkSwizzle.cpp in Sources */,
@@ -12246,6 +12387,7 @@
 				F9070EDE2B9F1C8900383E4D /* glx_context.c in Sources */,
 				F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */,
 				F98600D62BCFBB53006A4C0F /* SkMalloc.cpp in Sources */,
+				F9F00A522CD2995D0097C165 /* SivQualityFactor.cpp in Sources */,
 				F98604AC2BCFBB54006A4C0F /* GlyphRun.cpp in Sources */,
 				F98600E22BCFBB53006A4C0F /* SkSemaphore.cpp in Sources */,
 				F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */,
@@ -12499,6 +12641,7 @@
 				F95122422CB8232300151291 /* SivGeometry2D_BoundingRect.cpp in Sources */,
 				F98604652BCFBB54006A4C0F /* SkSLAnalysis.cpp in Sources */,
 				F98604FC2BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp in Sources */,
+				F9F00A472CD298E60097C165 /* Shape2D.cpp in Sources */,
 				F9E7945D2C19743A002615BA /* SivStopwatch.cpp in Sources */,
 				F986060D2BE71918006A4C0F /* SivUserInfo_macOS.mm in Sources */,
 				F986021C2BCFBB54006A4C0F /* SkPictureData.cpp in Sources */,
@@ -12584,6 +12727,7 @@
 				F98600C92BCFBB53006A4C0F /* SkBuffer.cpp in Sources */,
 				F98602122BCFBB54006A4C0F /* SkPathEffect.cpp in Sources */,
 				F98604622BCFBB54006A4C0F /* SkSLRewriteIndexedSwizzle.cpp in Sources */,
+				F9F00A422CD298CB0097C165 /* SivGeometry2D_IsClockwise.cpp in Sources */,
 				F9712A2F2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp in Sources */,
 				F98601872BCFBB53006A4C0F /* SkColorSpace.cpp in Sources */,
 				F98606322BEBBBC7006A4C0F /* ProfilerFactory.cpp in Sources */,
