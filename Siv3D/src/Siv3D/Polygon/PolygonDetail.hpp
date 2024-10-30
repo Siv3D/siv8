@@ -171,10 +171,25 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
+		bool intersects(const Vec2& other) const;
+
+		[[nodiscard]]
 		bool intersects(const Line& other) const;
 
 		[[nodiscard]]
 		bool intersects(const RectF& other) const;
+
+		[[nodiscard]]
+		bool intersects(const Circle& other) const;
+
+		[[nodiscard]]
+		bool intersects(const Ellipse& other) const;
+
+		[[nodiscard]]
+		bool intersects(const Triangle& other) const;
+
+		[[nodiscard]]
+		bool intersects(const Quad& other) const;
 
 		[[nodiscard]]
 		bool intersects(const PolygonDetail& other) const;

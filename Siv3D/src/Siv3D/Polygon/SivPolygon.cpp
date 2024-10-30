@@ -555,6 +555,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	bool Polygon::intersects(const Vec2& other) const
+	{
+		return pImpl->intersects(other);
+	}
+
 	bool Polygon::intersects(const Line& other) const
 	{
 		return pImpl->intersects(other);
@@ -566,6 +571,26 @@ namespace s3d
 	}
 
 	bool Polygon::intersects(const RectF& other) const
+	{
+		return pImpl->intersects(other);
+	}
+
+	bool Polygon::intersects(const Circle& other) const
+	{
+		return pImpl->intersects(other);
+	}
+
+	bool Polygon::intersects(const Ellipse& other) const
+	{
+		return pImpl->intersects(other);
+	}
+
+	bool Polygon::intersects(const Triangle& other) const
+	{
+		return pImpl->intersects(other);
+	}
+
+	bool Polygon::intersects(const Quad& other) const
 	{
 		return pImpl->intersects(other);
 	}

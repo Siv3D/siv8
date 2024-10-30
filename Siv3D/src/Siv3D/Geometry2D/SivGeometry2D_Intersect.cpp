@@ -15,6 +15,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/Polygon.hpp>
 # include <Siv3D/ListUtility.hpp>
 # include <Siv3D/Geometry2D/Intersect.hpp>
 
@@ -221,6 +222,11 @@ namespace s3d
 			return Intersect(Vec2{ a }, b);
 		}
 
+		bool Intersect(const Point& a, const Polygon& b) noexcept
+		{
+			return b.intersects(Vec2{ a });
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Vec2, _)
@@ -230,6 +236,11 @@ namespace s3d
 		bool Intersect(const Vec2& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
+		}
+
+		bool Intersect(const Vec2& a, const Polygon& b) noexcept
+		{
+			return b.intersects(a);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -438,6 +449,11 @@ namespace s3d
 			return RoundRectParts{ b }.intersects(a);
 		}
 
+		bool Intersect(const Line& a, const Polygon& b) noexcept
+		{
+			return b.intersects(a);
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Rect, _)
@@ -464,6 +480,11 @@ namespace s3d
 		bool Intersect(const Rect& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
+		}
+
+		bool Intersect(const Rect& a, const Polygon& b) noexcept
+		{
+			return b.intersects(a);
 		}
 
 		//////////////////////////////////////////////////
@@ -494,6 +515,11 @@ namespace s3d
 			return RoundRectParts{ b }.intersects(a);
 		}
 
+		bool Intersect(const RectF& a, const Polygon& b) noexcept
+		{
+			return b.intersects(a);
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Circle, _)
@@ -519,6 +545,11 @@ namespace s3d
 		bool Intersect(const Circle& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
+		}
+
+		bool Intersect(const Circle& a, const Polygon& b) noexcept
+		{
+			return b.intersects(a);
 		}
 
 		//////////////////////////////////////////////////
@@ -558,6 +589,11 @@ namespace s3d
 			}
 
 			return Intersect(Circle{ a.a }, quad);
+		}
+
+		bool Intersect(const Ellipse& a, const Polygon& b) noexcept
+		{
+			return b.intersects(a);
 		}
 
 		//////////////////////////////////////////////////
@@ -663,6 +699,11 @@ namespace s3d
 			return RoundRectParts{ b }.intersects(a);
 		}
 
+		bool Intersect(const Triangle& a, const Polygon& b) noexcept
+		{
+			return b.intersects(a);
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Quad, _)
@@ -708,6 +749,11 @@ namespace s3d
 		bool Intersect(const Quad& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
+		}
+
+		bool Intersect(const Quad& a, const Polygon& b) noexcept
+		{
+			return b.intersects(a);
 		}
 
 		//////////////////////////////////////////////////
@@ -774,11 +820,93 @@ namespace s3d
 				 || partsA.intersects(partsB.circleBL));
 		}
 
+		bool Intersect(const RoundRect& a, const Polygon& b) noexcept
+		{
+			if (b.isEmpty())
+			{
+				return false;
+			}
+
+			if (not Intersect(a, b.boundingRect()))
+			{
+				return false;
+			}
+
+			const RoundRectParts partsA{ a };
+
+			const size_t num_triangles = b.num_triangles();
+
+			for (size_t i = 0; i < num_triangles; ++i)
+			{
+				if (partsA.intersects(b.triangleAtIndex(i)))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		//////////////////////////////////////////////////
 		//
 		//	Intersect(Polygon, _)
 		//
 		//////////////////////////////////////////////////
+
+		bool Intersect(const Polygon& a, const Point& b) noexcept
+		{
+			return a.intersects(Vec2{ b });
+		}
+
+		bool Intersect(const Polygon& a, const Vec2& b) noexcept
+		{
+			return a.intersects(b);
+		}
+
+		bool Intersect(const Polygon& a, const Line& b) noexcept
+		{
+			return a.intersects(b);
+		}
+
+		bool Intersect(const Polygon& a, const Rect& b) noexcept
+		{
+			return a.intersects(b);
+		}
+
+		bool Intersect(const Polygon& a, const RectF& b) noexcept
+		{
+			return a.intersects(b);
+		}
+
+		bool Intersect(const Polygon& a, const Circle& b) noexcept
+		{
+			return a.intersects(b);
+		}
+
+		bool Intersect(const Polygon& a, const Ellipse& b) noexcept
+		{
+			return a.intersects(b);
+		}
+
+		bool Intersect(const Polygon& a, const Triangle& b) noexcept
+		{
+			return a.intersects(b);
+		}
+
+		bool Intersect(const Polygon& a, const Quad& b) noexcept
+		{
+			return a.intersects(b);
+		}
+
+		bool Intersect(const Polygon& a, const RoundRect& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Polygon& a, const Polygon& b) noexcept
+		{
+			return a.intersects(b);
+		}
 
 		//////////////////////////////////////////////////
 		//
