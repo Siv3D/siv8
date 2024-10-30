@@ -14,6 +14,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromSceneScaling
+	//
+	////////////////////////////////////////////////////////////////
+
 	QualityFactor QualityFactor::FromSceneScaling(const double s) noexcept
 	{
 		return QualityFactor{ Graphics2D::GetMaxScaling() * s };
