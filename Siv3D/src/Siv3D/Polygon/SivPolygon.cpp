@@ -391,6 +391,26 @@ namespace s3d
 		}
 	}
 
+	bool Polygon::addHole(const RoundRect& roundRect, const PointsPerCircle& pointsPerCircle)
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
+
+		Array<Vec2> hole = roundRect.outer(pointsPerCircle).reversed();
+
+		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), std::move(hole)))
+		{
+			*this = std::move(result);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	bool Polygon::addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor)
 	{
 		if (isEmpty())
@@ -398,7 +418,9 @@ namespace s3d
 			return false;
 		}
 
-		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), roundRect.outer(qualityFactor).reversed()))
+		Array<Vec2> hole = roundRect.outer(qualityFactor).reversed();
+
+		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), std::move(hole)))
 		{
 			*this = std::move(result);
 			return true;

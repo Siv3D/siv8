@@ -346,11 +346,9 @@ namespace s3d
 
 		bool addHole(const Ellipse& ellipse, const QualityFactor& qualityFactor);
 
-		/// @brief 多角形に穴を追加します。分割数は半径に応じて自動的に決定されます。
-		/// @param roundRect 穴の形状
-		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
-		/// @return  穴の追加に成功したら true, それ以外の場合は false
-		bool addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
+		bool addHole(const RoundRect& roundRect, const PointsPerCircle& pointsPerCircle);
+
+		bool addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor);
 
 		/// @brief 多角形に穴を追加します。
 		/// @param hole 穴を構成する頂点配列

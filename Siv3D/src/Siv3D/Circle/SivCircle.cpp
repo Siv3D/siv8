@@ -147,7 +147,7 @@ namespace s3d
 			return{};
 		}
 
-		Array<Vec2> vertices = outer(pointsPerCircle);
+		const Array<Vec2> vertices = outer(pointsPerCircle);
 
 		const uint32 n = pointsPerCircle.value();
 

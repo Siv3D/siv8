@@ -47,30 +47,9 @@ namespace s3d
 				|| (innerThickness < 0.0) || (outerThickness < 0.0)
 				|| ((innerThickness == 0.0) && (outerThickness == 0.0)));
 		}
-		
-		[[nodiscard]]
-		constexpr Vertex2D::IndexType CalculateFanQuality(const double r) noexcept
-		{
-			if (r <= 2.0f)
-			{
-				return 2;
-			}
-			else if (r <= 4.0f)
-			{
-				return 3;
-			}
-			else if (r < 8.0f)
-			{
-				return 4;
-			}
-			else
-			{
-				return static_cast<Vertex2D::IndexType>(Min((5 + static_cast<int32>((r - 8.0f) / 8.0f)), 63));
-			}
-		}
 
 		[[nodiscard]]
-		static Array<Vec2> GetOuterVertices(const RoundRect& rect, const double offset, const QualityFactor& qualityFactor)
+		static Array<Vec2> GetOuterVertices(const RoundRect& rect, const double offset, const PointsPerCircle& pointsPerCircle)
 		{
 			if ((rect.w == 0.0) || (rect.h == 0.0))
 			{
@@ -83,7 +62,7 @@ namespace s3d
 			}
 
 			const double rr = (Min((rect.w * 0.5), (rect.h * 0.5), Max(0.0, Abs(rect.r))) + offset);
-			const uint32 quality = CalculateFanQuality(rr * qualityFactor.value());
+			const uint32 quality = ((pointsPerCircle.value() + 3) / 4 + 1);
 			const double radDelta = (Math::HalfPi / (quality - 1));
 
 			Array<Vec2> fanPositions(quality);
@@ -206,9 +185,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	Array<Vec2> RoundRect::outer(const PointsPerCircle& pointsPerCircle) const
+	{
+		return GetOuterVertices(*this, 0.0, pointsPerCircle);
+	}
+
 	Array<Vec2> RoundRect::outer(const QualityFactor& qualityFactor) const
 	{
-		return GetOuterVertices(*this, 0.0, qualityFactor);
+		const double rr = Min((w * 0.5), (h * 0.5), Max(0.0, Abs(r)));
+		
+		return outer(qualityFactor.toPointsPerCircle(rr));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -217,9 +203,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon RoundRect::asPolygon(const QualityFactor& qualityFactor) const
+	Polygon RoundRect::asPolygon(const PointsPerCircle& pointsPerCircle) const
 	{
-		const Array<Vec2> vertices = GetOuterVertices(*this, 0.0, qualityFactor);
+		const Array<Vec2> vertices = outer(pointsPerCircle);
 
 		Array<TriangleIndex> indices(vertices.size() - 2);
 		{
@@ -235,6 +221,13 @@ namespace s3d
 		}
 
 		return Polygon{ vertices, indices, rect, SkipValidation::Yes };
+	}
+
+	Polygon RoundRect::asPolygon(const QualityFactor& qualityFactor) const
+	{
+		const double rr = Min((w * 0.5), (h * 0.5), Max(0.0, Abs(r)));
+
+		return asPolygon(qualityFactor.toPointsPerCircle(rr));
 	}
 
 	////////////////////////////////////////////////////////////////

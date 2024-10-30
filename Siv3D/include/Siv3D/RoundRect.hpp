@@ -887,24 +887,30 @@ namespace s3d
 		//	outer
 		//
 		////////////////////////////////////////////////////////////////
+		
+		[[nodiscard]]
+		Array<Vec2> outer(const PointsPerCircle& pointsPerCircle) const;
 
 		/// @brief 角丸長方形の外周を表現する頂点配列を返します。分割数は半径に応じて自動的に決定されます。
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 角丸長方形の外周を表現する頂点配列
 		[[nodiscard]]
-		Array<Vec2> outer(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+		Array<Vec2> outer(const QualityFactor& qualityFactor) const;
 
 		////////////////////////////////////////////////////////////////
 		//
 		//	asPolygon
 		//
 		////////////////////////////////////////////////////////////////
+	
+		[[nodiscard]]
+		Polygon asPolygon(const PointsPerCircle& pointsPerCircle) const;
 
 		/// @brief 角丸長方形を Polygon として返します。
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 角丸長方形の Polygon
 		[[nodiscard]]
-		Polygon asPolygon(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+		Polygon asPolygon(const QualityFactor& qualityFactor) const;
 
 		////////////////////////////////////////////////////////////////
 		//
