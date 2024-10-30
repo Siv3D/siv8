@@ -18,9 +18,6 @@
 # include "Triangulate.hpp"
 # include <ThirdParty/boost/geometry/extensions/algorithms/dissolve.hpp>
 
-# include <Siv3D/Console.hpp>
-# include <Siv3D/SequenceFormatter.hpp>
-
 namespace s3d
 {
 	namespace
@@ -520,14 +517,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::PolygonDetail::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	Polygon Polygon::PolygonDetail::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
 	{
 		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
 
 		boost::geometry::buffer(m_polygon, multiPolygon,
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
-			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor) },
+			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor.value()) },
 			boost::geometry::strategy::buffer::end_round{},
 			boost::geometry::strategy::buffer::point_circle{ 0 });
 
@@ -545,10 +542,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::PolygonDetail::simplified(const double maxDistance) const
-	{
-		return{};
-	}
+	//Polygon Polygon::PolygonDetail::simplified(const double maxDistance) const
+	//{
+	//	return{};
+	//}
 
 
 	////////////////////////////////////////////////////////////////

@@ -818,6 +818,8 @@
 //// 3x3 行列 | 3x3 matrix
 //# include <Siv3D/Mat3x3.hpp>
 
+# include <Siv3D/QualityFactor.hpp>
+
 // 2D 図形コレクション | 2D shape collection
 # include <Siv3D/2DShapes.hpp> // ToDo
 
@@ -883,9 +885,9 @@
 
 # include <Siv3D/TriangleIndex32.hpp>
 
-//// 2D 形状コレクション | 2D shapes collection
-//# include <Siv3D/Shape2D.hpp>
-//
+// 2D 形状コレクション | 2D shapes collection
+# include <Siv3D/Shape2D.hpp>
+
 //// 2D 描画バッファ | Native 2D drawing buffer
 //# include <Siv3D/Buffer2D.hpp>
 

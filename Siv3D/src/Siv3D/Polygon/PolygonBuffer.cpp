@@ -52,7 +52,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon CalculateLineRoundBuffer(const Line& line, const double distance, const double qualityFactor)
+	Polygon CalculateLineRoundBuffer(const Line& line, const double distance, const QualityFactor& qualityFactor)
 	{
 		if (distance <= 0.0)
 		{
@@ -67,7 +67,7 @@ namespace s3d
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
 			boost::geometry::strategy::buffer::join_round{},
-			boost::geometry::strategy::buffer::end_round{ detail::CalculateCircleQuality(distance * qualityFactor) },
+			boost::geometry::strategy::buffer::end_round{ detail::CalculateCircleQuality(distance * qualityFactor.value()) },
 			boost::geometry::strategy::buffer::point_circle{ 0 });
 
 		if (multiPolygon.size() != 1)
@@ -84,7 +84,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon CalculateRoundedQuad(const Quad& quad, const double distance, const double qualityFactor)
+	Polygon CalculateRoundedQuad(const Quad& quad, const double distance, const QualityFactor& qualityFactor)
 	{
 		const CwOpenPolygon polygon{ { quad.p0, quad.p1, quad.p2, quad.p3 } };
 
@@ -107,7 +107,7 @@ namespace s3d
 		boost::geometry::buffer(stretchedPolygon.front(), multiPolygon,
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
-			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor) },
+			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor.value()) },
 			boost::geometry::strategy::buffer::end_round{},
 			boost::geometry::strategy::buffer::point_circle{ 0 });
 
@@ -158,7 +158,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon CalculatePolygonRoundBuffer(std::initializer_list<Vec2> outer, const double distance, const double qualityFactor)
+	Polygon CalculatePolygonRoundBuffer(std::initializer_list<Vec2> outer, const double distance, const QualityFactor& qualityFactor)
 	{
 		const CwOpenPolygon polygon{ outer };
 
@@ -167,7 +167,7 @@ namespace s3d
 		boost::geometry::buffer(polygon, multiPolygon,
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
-			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor) },
+			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor.value()) },
 			boost::geometry::strategy::buffer::end_round{},
 			boost::geometry::strategy::buffer::point_circle{ 0 });
 
@@ -185,14 +185,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon CircleToPolygon(const Circle& circle, const double qualityFactor)
+	Polygon CircleToPolygon(const Circle& circle, const QualityFactor& qualityFactor)
 	{
 		if (circle.r <= 0.0)
 		{
 			return{};
 		}
 
-		const size_t quality = detail::CalculateCircleQuality(circle.r * qualityFactor);
+		const size_t quality = detail::CalculateCircleQuality(circle.r * qualityFactor.value());
 
 		Array<Vec2> vertices(quality, circle.center);
 		Vec2* pPos = vertices.data();

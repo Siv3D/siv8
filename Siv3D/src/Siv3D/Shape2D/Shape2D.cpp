@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <array>
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Polygon.hpp>
 
@@ -457,7 +458,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Shape2D Shape2D::Heart(const double r, const Vec2& center, const double angle)
+	Shape2D Shape2D::Heart(const double r, const Vec2& center, const double angle, const QualityFactor& qualityFactor)
 	{
 		//-----------------------------------------------
 		//	Authors (OpenSiv3D challenge #03 participants)
@@ -473,7 +474,7 @@ namespace s3d
 		const float rf = static_cast<float>(r);
 		const float innerR = (1.121320307254791259765625f * rf);
 
-		const int32 quality = (8 + Min(static_cast<int32>(r / 14) * 2, 100));
+		const int32 quality = (8 + Min(static_cast<int32>(r * qualityFactor.value() / 14) * 2, 100));
 		const size_t vsize = (12 + quality);
 
 		Array<Float2> vertices(vsize);
@@ -634,10 +635,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Shape2D Shape2D::Astroid(const Vec2& center, const double a, const double b, const double angle, const double qualityFactor)
+	Shape2D Shape2D::Astroid(const Vec2& center, const double a, const double b, const double angle, const QualityFactor& qualityFactor)
 	{
 		const double majorAxis = Max(Abs(a), Abs(b));
-		const Vertex2D::IndexType quality = (static_cast<Vertex2D::IndexType>(Clamp((majorAxis * qualityFactor * 0.044 + 2.5), 2.0, 127.0)) * 2);
+		const Vertex2D::IndexType quality = (static_cast<Vertex2D::IndexType>(Clamp((majorAxis * qualityFactor.value() * 0.044 + 2.5), 2.0, 127.0)) * 2);
 		assert(IsEven(quality));
 
 		Array<Float2> vertices(quality * 4);

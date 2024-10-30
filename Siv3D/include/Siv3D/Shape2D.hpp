@@ -16,7 +16,7 @@
 # include "TriangleIndex.hpp"
 # include "2DShapes.hpp"
 # include "PredefinedNamedParameter.hpp"
-# include "Graphics2D.hpp"
+# include "QualityFactor.hpp"
 
 namespace s3d
 {
@@ -247,13 +247,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ハート形を作成します。
+		/// @brief ハート形を作成します。分割数はサイズに応じて自動的に決定されます。
 		/// @param r 外接する円の半径（ピクセル）
 		/// @param center 中心座標
 		/// @param angle 時計回りの回転角度
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 作成した形状
 		[[nodiscard]]
-		static Shape2D Heart(double r, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0);
+		static Shape2D Heart(double r, const Vec2& center = Vec2{ 0, 0 }, double angle = 0.0, const QualityFactor& qualityFactor = QualityFactor::FromSceneScaling());
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -275,15 +276,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 星芒形（アステロイド）を作成します。
+		/// @brief 星芒形（アステロイド）を作成します。分割数はサイズに応じて自動的に決定されます。
 		/// @param center 中心座標
 		/// @param a 外接する楕円の X 軸半径
 		/// @param b 外接する楕円の Y 軸半径
 		/// @param angle 時計回りの回転角度
-		/// @param qualityFactor 品質の調整パラメータ。通常は 1.0
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 作成した形状
 		[[nodiscard]]
-		static Shape2D Astroid(const Vec2& center, double a, double b, double angle = 0.0, double qualityFactor = Graphics2D::GetMaxScaling());
+		static Shape2D Astroid(const Vec2& center, double a, double b, double angle = 0.0, const QualityFactor& qualityFactor = QualityFactor::FromSceneScaling());
 
 		////////////////////////////////////////////////////////////////
 		//

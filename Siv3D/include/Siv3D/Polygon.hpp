@@ -17,6 +17,7 @@
 # include "2DShapes.hpp"
 # include "TriangleIndex.hpp"
 # include "PolygonFailureType.hpp"
+# include "QualityFactor.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
@@ -349,11 +350,11 @@ namespace s3d
 		/// @return  穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const Ellipse& ellipse, uint32 quality = 24);
 
-		/// @brief 多角形に穴を追加します。
+		/// @brief 多角形に穴を追加します。分割数は半径に応じて自動的に決定されます。
 		/// @param roundRect 穴の形状
-		/// @param quality 頂点分割の品質
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return  穴の追加に成功したら true, それ以外の場合は false
-		bool addHole(const RoundRect& roundRect, uint32 quality = 24);
+		bool addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
 		/// @brief 多角形に穴を追加します。
 		/// @param hole 穴を構成する頂点配列
@@ -696,7 +697,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 新しい多角形
 		[[nodiscard]]
-		Polygon calculateRoundBuffer(double distance, double qualityFactor = 1.0) const;
+		Polygon calculateRoundBuffer(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -707,8 +708,8 @@ namespace s3d
 		/// @brief 多角形を単純化した、新しい多角形を返します。
 		/// @param maxDistance 単純化に使う距離。大きいほど単純化されます。
 		/// @return 新しい多角形
-		[[nodiscard]]
-		Polygon simplified(double maxDistance = 2.0) const;
+		//[[nodiscard]]
+		//Polygon simplified(double maxDistance = 2.0) const;
 
 		////////////////////////////////////////////////////////////////
 		//

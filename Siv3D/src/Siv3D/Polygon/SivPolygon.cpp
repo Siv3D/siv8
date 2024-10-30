@@ -379,14 +379,14 @@ namespace s3d
 		}
 	}
 
-	bool Polygon::addHole(const RoundRect& roundRect, const uint32 quality)
+	bool Polygon::addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor)
 	{
 		if (isEmpty())
 		{
 			return false;
 		}
 
-		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), roundRect.outer(quality).reversed()))
+		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), roundRect.outer(qualityFactor).reversed()))
 		{
 			*this = std::move(result);
 			return true;
@@ -492,7 +492,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	Polygon Polygon::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
 	{
 		return pImpl->calculateRoundBuffer(distance, qualityFactor);
 	}
@@ -503,10 +503,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::simplified(const double maxDistance) const
-	{
-		return pImpl->simplified(maxDistance);
-	}
+	//Polygon Polygon::simplified(const double maxDistance) const
+	//{
+	//	return pImpl->simplified(maxDistance);
+	//}
 
 
 

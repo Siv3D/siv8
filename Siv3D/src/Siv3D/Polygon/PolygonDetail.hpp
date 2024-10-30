@@ -153,7 +153,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Polygon calculateRoundBuffer(double distance, double qualityFactor) const;
+		Polygon calculateRoundBuffer(double distance, const QualityFactor& qualityFactor) const;
 
 		////////////////////////////////////////////////////////////////
 		//

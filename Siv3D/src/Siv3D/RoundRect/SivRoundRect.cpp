@@ -17,6 +17,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/Polygon.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -69,7 +70,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Array<Vec2> GetOuterVertices(const RoundRect& rect, const double offset, const double qualityFactor)
+		static Array<Vec2> GetOuterVertices(const RoundRect& rect, const double offset, const QualityFactor& qualityFactor)
 		{
 			if ((rect.w == 0.0) || (rect.h == 0.0))
 			{
@@ -82,7 +83,7 @@ namespace s3d
 			}
 
 			const double rr = (Min((rect.w * 0.5), (rect.h * 0.5), Max(0.0, Abs(rect.r))) + offset);
-			const uint32 quality = CalculateFanQuality(rr * qualityFactor);
+			const uint32 quality = CalculateFanQuality(rr * qualityFactor.value());
 			const double radDelta = (Math::HalfPi / (quality - 1));
 
 			Array<Vec2> fanPositions(quality);
@@ -201,13 +202,39 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	outerVertices
+	//	outer
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Vec2> RoundRect::outer(const double qualityFactor) const
+	Array<Vec2> RoundRect::outer(const QualityFactor& qualityFactor) const
 	{
 		return GetOuterVertices(*this, 0.0, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon RoundRect::asPolygon(const QualityFactor& qualityFactor) const
+	{
+		const Array<Vec2> vertices = GetOuterVertices(*this, 0.0, qualityFactor);
+
+		Array<TriangleIndex> indices(vertices.size() - 2);
+		{
+			TriangleIndex* pDst = indices.data();
+
+			for (Vertex2D::IndexType i = 0; i < indices.size(); ++i)
+			{
+				pDst->i0 = 0;
+				pDst->i1 = (i + 1);
+				pDst->i2 = (i + 2);
+				++pDst;
+			}
+		}
+
+		return Polygon{ vertices, indices, rect, SkipValidation::Yes };
 	}
 
 	////////////////////////////////////////////////////////////////

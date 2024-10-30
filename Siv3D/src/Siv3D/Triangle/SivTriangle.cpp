@@ -371,7 +371,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Triangle::rounded(const double round, const double qualityFactor) const
+	Polygon Triangle::rounded(const double round, const QualityFactor& qualityFactor) const
 	{
 		if (round <= 0.0)
 		{
@@ -394,7 +394,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Triangle::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	Polygon Triangle::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
 	{
 		return CalculatePolygonRoundBuffer({ p0, p1, p2 }, distance, qualityFactor);
 	}

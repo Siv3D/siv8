@@ -276,7 +276,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Quad::rounded(const double round, const double qualityFactor) const
+	Polygon Quad::rounded(const double round, const QualityFactor& qualityFactor) const
 	{
 		if (round <= 0.0)
 		{
@@ -292,7 +292,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Quad::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	Polygon Quad::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
 	{
 		return CalculatePolygonRoundBuffer({ p0, p1, p2, p3 }, distance, qualityFactor);
 	}

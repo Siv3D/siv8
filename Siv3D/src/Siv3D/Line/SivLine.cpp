@@ -154,7 +154,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Line::calculateRoundBuffer(const double distance, const double qualityFactor) const
+	Polygon Line::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
 	{
 		return CalculateLineRoundBuffer(*this, distance, qualityFactor);
 	}

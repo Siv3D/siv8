@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
+# include "QualityFactor.hpp"
 # include "Array.hpp"
 # include "Optional.hpp"
 # include "PredefinedNamedParameter.hpp"
@@ -754,7 +755,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 新しい多角形。distance が 0 以下の場合は空の多角形
 		[[nodiscard]]
-		Polygon calculateRoundBuffer(double distance, double qualityFactor = 1.0) const;
+		Polygon calculateRoundBuffer(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//

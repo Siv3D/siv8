@@ -24,7 +24,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	Polygon CalculateLineRoundBuffer(const Line& line, double distance, double qualityFactor);
+	Polygon CalculateLineRoundBuffer(const Line& line, double distance, const QualityFactor& qualityFactor);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -33,7 +33,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	Polygon CalculateRoundedQuad(const Quad& quad, double distance, double qualityFactor);
+	Polygon CalculateRoundedQuad(const Quad& quad, double distance, const QualityFactor& qualityFactor);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -51,7 +51,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	Polygon CalculatePolygonRoundBuffer(std::initializer_list<Vec2> outer, double distance, double qualityFactor);
+	Polygon CalculatePolygonRoundBuffer(std::initializer_list<Vec2> outer, double distance, const QualityFactor& qualityFactor);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -60,5 +60,5 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	Polygon CircleToPolygon(const Circle& circle, double qualityFactor);
+	Polygon CircleToPolygon(const Circle& circle, const QualityFactor& qualityFactor);
 }
