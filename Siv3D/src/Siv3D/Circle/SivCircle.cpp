@@ -14,6 +14,7 @@
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/Polygon.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
@@ -94,6 +95,81 @@ namespace s3d
 	Circle::position_type Circle::interpolatedPointAt(const double t) const noexcept
 	{
 		return getPointByAngle(t * Math::TwoPi);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Vec2> Circle::outer(const PointsPerCircle& pointsPerCircle) const
+	{
+		if (r == 0.0)
+		{
+			return{};
+		}
+
+		const uint32 n = pointsPerCircle.value();
+
+		Array<Vec2> vertices(n, center);
+		{
+			Vec2* pPos = vertices.data();
+
+			const double d = (Math::TwoPi / n);
+
+			for (uint32 i = 0; i < n; ++i)
+			{
+				const auto [s, c] = FastMath::SinCos(i * d);
+
+				(pPos++)->moveBy((s * r), (-c * r));
+			}
+		}
+
+		return vertices;
+	}
+
+	Array<Vec2> Circle::outer(const QualityFactor& qualityFactor) const
+	{
+		return outer(qualityFactor.toPointsPerCircle(r));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Circle::asPolygon(const PointsPerCircle& pointsPerCircle) const
+	{
+		if (r == 0.0)
+		{
+			return{};
+		}
+
+		Array<Vec2> vertices = outer(pointsPerCircle);
+
+		const uint32 n = pointsPerCircle.value();
+
+		Array<TriangleIndex> indices(n - 2);
+		{
+			TriangleIndex* pIndex = indices.data();
+
+			for (Vertex2D::IndexType i = 0; i < (n - 2); ++i)
+			{
+				pIndex->i0 = 0;
+				pIndex->i1 = (i + 1);
+				pIndex->i2 = (i + 2);
+				++pIndex;
+			}
+		}
+
+		return Polygon{ vertices, std::move(indices), boundingRect(), SkipValidation::Yes };
+	}
+
+	Polygon Circle::asPolygon(const QualityFactor& qualityFactor) const
+	{
+		return asPolygon(qualityFactor.toPointsPerCircle(r));
 	}
 
 	////////////////////////////////////////////////////////////////

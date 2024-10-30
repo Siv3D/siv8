@@ -338,17 +338,13 @@ namespace s3d
 		/// @return  穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const Quad& quad);
 
-		/// @brief 多角形に穴を追加します。
-		/// @param circle 穴の形状
-		/// @param quality 頂点分割の品質
-		/// @return  穴の追加に成功したら true, それ以外の場合は false
-		bool addHole(const Circle& circle, uint32 quality = 24);
+		bool addHole(const Circle& circle, const PointsPerCircle& pointsPerCircle);
 
-		/// @brief 多角形に穴を追加します。
-		/// @param ellipse 穴の形状
-		/// @param quality 頂点分割の品質
-		/// @return  穴の追加に成功したら true, それ以外の場合は false
-		bool addHole(const Ellipse& ellipse, uint32 quality = 24);
+		bool addHole(const Circle& circle, const QualityFactor& qualityFactor);
+
+		bool addHole(const Ellipse& ellipse, const PointsPerCircle& pointsPerCircle);
+
+		bool addHole(const Ellipse& ellipse, const QualityFactor& qualityFactor);
 
 		/// @brief 多角形に穴を追加します。分割数は半径に応じて自動的に決定されます。
 		/// @param roundRect 穴の形状

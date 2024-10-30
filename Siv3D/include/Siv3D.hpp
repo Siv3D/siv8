@@ -818,6 +818,8 @@
 //// 3x3 行列 | 3x3 matrix
 //# include <Siv3D/Mat3x3.hpp>
 
+# include <Siv3D/PointsPerCircle.hpp>
+
 # include <Siv3D/QualityFactor.hpp>
 
 // 2D 図形コレクション | 2D shape collection

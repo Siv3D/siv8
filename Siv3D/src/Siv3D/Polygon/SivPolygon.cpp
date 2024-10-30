@@ -311,64 +311,76 @@ namespace s3d
 		}
 	}
 
-	bool Polygon::addHole(const Circle& circle, const uint32 quality)
+	bool Polygon::addHole(const Circle& circle, const PointsPerCircle& pointsPerCircle)
 	{
 		if (isEmpty())
 		{
 			return false;
 		}
 
-		const uint32 n = Max(quality, 3u);
+		Array<Vec2> hole = circle.outer(pointsPerCircle).reversed();
 
-		Array<Vec2> vertices(n, circle.center);
-		{
-			Vec2* pPos = vertices.data();
-
-			const double d = (-Math::TwoPi / n);
-
-			for (uint32 i = 0; i < n; ++i)
-			{
-				*pPos += Circular{ circle.r, (i * d) }.fastToVec2();
-				++pPos;
-			}
-		}
-
-		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), std::move(vertices)))
+		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), std::move(hole)))
 		{
 			*this = std::move(result);
 			return true;
 		}
-
 		else
 		{
 			return false;
 		}
 	}
 
-	bool Polygon::addHole(const Ellipse& ellipse, const uint32 quality)
+	bool Polygon::addHole(const Circle& circle, const QualityFactor& qualityFactor)
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
+		
+		Array<Vec2> hole = circle.outer(qualityFactor).reversed();
+		
+		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), std::move(hole)))
+		{
+			*this = std::move(result);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	bool Polygon::addHole(const Ellipse& ellipse, const PointsPerCircle& pointsPerCircle)
 	{
 		if (isEmpty())
 		{
 			return false;
 		}
 
-		const uint32 n = Max(quality, 3u);
+		Array<Vec2> hole = ellipse.outer(pointsPerCircle).reversed();
 
-		Array<Vec2> vertices(n, ellipse.center);
+		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), std::move(hole)))
 		{
-			Vec2* pPos = vertices.data();
-			const double d = (-Math::TwoPi / n);
+			*this = std::move(result);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
-			for (uint32 i = 0; i < n; ++i)
-			{
-				const double rad = (i * d);
-				const auto [s, c] = FastMath::SinCos(rad);
-				pPos->moveBy(ellipse.a * c, ellipse.b * s);
-				++pPos;
-			}
+	bool Polygon::addHole(const Ellipse& ellipse, const QualityFactor& qualityFactor)
+	{
+		if (isEmpty())
+		{
+			return false;
 		}
 
-		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), std::move(vertices)))
+		Array<Vec2> hole = ellipse.outer(qualityFactor).reversed();
+
+		if (Polygon result = AddHole(pImpl->outer(), pImpl->inners(), std::move(hole)))
 		{
 			*this = std::move(result);
 			return true;

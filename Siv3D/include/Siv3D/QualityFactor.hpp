@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "Utility.hpp"
+# include "PointsPerCircle.hpp"
 
 namespace s3d
 {
@@ -19,6 +20,8 @@ namespace s3d
 	class QualityFactor
 	{
 	public:
+
+		static constexpr double DefaultQuality = 1.0;
 
 		[[nodiscard]]
 		QualityFactor() = default;
@@ -39,11 +42,17 @@ namespace s3d
 		constexpr double value() const noexcept;
 
 		[[nodiscard]]
+		constexpr PointsPerCircle toPointsPerCircle(double r) const noexcept;
+
+		[[nodiscard]]
+		static constexpr QualityFactor Default() noexcept;
+
+		[[nodiscard]]
 		static QualityFactor FromSceneScaling(double s = 1.0) noexcept;
 
 	private:
 
-		double m_value = 1.0;
+		double m_value = DefaultQuality;
 	};
 }
 

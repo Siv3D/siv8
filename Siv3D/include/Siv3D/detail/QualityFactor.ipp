@@ -25,4 +25,32 @@ namespace s3d
 	{
 		return m_value;
 	}
+
+	constexpr PointsPerCircle QualityFactor::toPointsPerCircle(const double r) const noexcept
+	{
+		const double t = (m_value * Abs(r));
+
+		if (t <= 2.0)
+		{
+			return PointsPerCircle{ 8u };
+		}
+		else if (t <= 4.0)
+		{
+			return PointsPerCircle{ 12u };
+		}
+		else if (t < 8.0)
+		{
+			return PointsPerCircle{ 16u };
+		}
+		else
+		{
+			const uint32 n = Min((5 + static_cast<uint32>((t - 8.0) / 8.0)), 63u);
+			return PointsPerCircle{ n * 4 };
+		}
+	}
+
+	constexpr QualityFactor QualityFactor::Default() noexcept
+	{
+		return QualityFactor{ DefaultQuality };
+	}
 }

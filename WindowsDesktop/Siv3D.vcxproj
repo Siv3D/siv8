@@ -79,6 +79,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\OffsetCircular.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PointsPerCircle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Polygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\QualityFactor.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectanglePack.ipp" />
@@ -377,6 +378,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PNGFilter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Point.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Point3D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PointsPerCircle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PointVector.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Polygon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolygonFailureType.hpp" />

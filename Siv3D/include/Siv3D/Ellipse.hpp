@@ -585,15 +585,33 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	outer
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Array<Vec2> outer(const PointsPerCircle& pointsPerCircle) const;
+
+		[[nodiscard]]
+		Array<Vec2> outer(const QualityFactor& qualityFactor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	asPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 楕円から Polygon を作成します。
-		///// @param quality 品質
-		///// @return Polygon
-		//[[nodiscard]]
-		//Polygon asPolygon(uint32 quality = 24) const;
+		/// @brief 楕円から Polygon を作成します。
+		/// @param pointsPerCircle 頂点数
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon asPolygon(const PointsPerCircle& pointsPerCircle) const;
+
+		/// @brief 楕円から Polygon を作成します。分割数は半径に応じて自動的に決定されます。
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon asPolygon(const QualityFactor& qualityFactor) const;
 
 		////////////////////////////////////////////////////////////////
 		//
