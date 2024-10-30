@@ -702,8 +702,8 @@ namespace s3d
 		/// @brief 多角形を単純化した、新しい多角形を返します。
 		/// @param maxDistance 単純化に使う距離。大きいほど単純化されます。
 		/// @return 新しい多角形
-		//[[nodiscard]]
-		//Polygon simplified(double maxDistance = 2.0) const;
+		[[nodiscard]]
+		Polygon simplified(double maxDistance = 2.0) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -746,21 +746,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//bool intersects(const Shape2DType& other) const;
+		template <class Shape2DType>
+		[[nodiscard]]
+		bool intersects(const Shape2DType& other) const;
 
-		//[[nodiscard]]
-		//bool intersects(const Line& other) const;
+		[[nodiscard]]
+		bool intersects(const Line& other) const;
 
-		//[[nodiscard]]
-		//bool intersects(const Rect& other) const;
+		[[nodiscard]]
+		bool intersects(const Rect& other) const;
 
-		//[[nodiscard]]
-		//bool intersects(const RectF& other) const;
+		[[nodiscard]]
+		bool intersects(const RectF& other) const;
 
-		//[[nodiscard]]
-		//bool intersects(const Polygon& other) const;
+		[[nodiscard]]
+		bool intersects(const Polygon& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -788,20 +788,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形が現在のフレームで左クリックされ始めたかを返します。
-		///// @return 多角形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool leftClicked() const noexcept;
+		/// @brief 多角形が現在のフレームで左クリックされ始めたかを返します。
+		/// @return 多角形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
 
-		///// @brief 多角形が左クリックされているかを返します。
-		///// @return 多角形が左クリックされている場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool leftPressed() const noexcept;
+		/// @brief 多角形が左クリックされているかを返します。
+		/// @return 多角形が左クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
 
-		///// @brief 現在のフレームで多角形への左クリックが離されたかを返します。
-		///// @return 現在のフレームで多角形への左クリックが離された場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool leftReleased() const noexcept;
+		/// @brief 現在のフレームで多角形への左クリックが離されたかを返します。
+		/// @return 現在のフレームで多角形への左クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -809,20 +809,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形が現在のフレームで右クリックされ始めたかを返します。
-		///// @return 多角形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool rightClicked() const noexcept;
+		/// @brief 多角形が現在のフレームで右クリックされ始めたかを返します。
+		/// @return 多角形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
 
-		///// @brief 多角形が右クリックされているかを返します。
-		///// @return 多角形が右クリックされている場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool rightPressed() const noexcept;
+		/// @brief 多角形が右クリックされているかを返します。
+		/// @return 多角形が右クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
 
-		///// @brief 現在のフレームで多角形への右クリックが離されたかを返します。
-		///// @return 現在のフレームで多角形への右クリックが離された場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool rightReleased() const noexcept;
+		/// @brief 現在のフレームで多角形への右クリックが離されたかを返します。
+		/// @return 現在のフレームで多角形への右クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -830,10 +830,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形上にマウスカーソルがあるかを返します。
-		///// @return 多角形上にマウスカーソルがある場合 true, それ以外の場合は false
-		//[[nodiscard]]
-		//bool mouseOver() const noexcept;
+		/// @brief 多角形上にマウスカーソルがあるかを返します。
+		/// @return 多角形上にマウスカーソルがある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

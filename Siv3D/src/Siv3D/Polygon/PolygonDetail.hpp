@@ -164,8 +164,20 @@ namespace s3d
 		[[nodiscard]]
 		Polygon simplified(double maxDistance) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersects
+		//
+		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		bool intersects(const Line& other) const;
 
+		[[nodiscard]]
+		bool intersects(const RectF& other) const;
+
+		[[nodiscard]]
+		bool intersects(const PolygonDetail& other) const;
 
 
 

@@ -11,6 +11,8 @@
 
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Shape2D.hpp>
+# include <Siv3D/Cursor.hpp>
+# include <Siv3D/Mouse.hpp>
 # include "PolygonDetail.hpp"
 
 namespace s3d
@@ -537,12 +539,94 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//Polygon Polygon::simplified(const double maxDistance) const
-	//{
-	//	return pImpl->simplified(maxDistance);
-	//}
+	Polygon Polygon::simplified(const double maxDistance) const
+	{
+		if (maxDistance <= 0.0)
+		{
+			return *this;
+		}
 
+		return pImpl->simplified(maxDistance);
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Polygon::intersects(const Line& other) const
+	{
+		return pImpl->intersects(other);
+	}
+
+	bool Polygon::intersects(const Rect& other) const
+	{
+		return pImpl->intersects(other);
+	}
+
+	bool Polygon::intersects(const RectF& other) const
+	{
+		return pImpl->intersects(other);
+	}
+
+	bool Polygon::intersects(const Polygon& other) const
+	{
+		return pImpl->intersects(*other.pImpl);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	leftClicked, leftPressed, leftReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Polygon::leftClicked() const noexcept
+	{
+		return (MouseL.down() && mouseOver());
+	}
+
+	bool Polygon::leftPressed() const noexcept
+	{
+		return (MouseL.pressed() && mouseOver());
+	}
+
+	bool Polygon::leftReleased() const noexcept
+	{
+		return (MouseL.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rightClicked, rightPressed, rightReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Polygon::rightClicked() const noexcept
+	{
+		return (MouseR.down() && mouseOver());
+	}
+
+	bool Polygon::rightPressed() const noexcept
+	{
+		return (MouseR.pressed() && mouseOver());
+	}
+
+	bool Polygon::rightReleased() const noexcept
+	{
+		return (MouseR.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mouseOver
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Polygon::mouseOver() const noexcept
+	{
+		return Geometry2D::Intersect(Cursor::PosF(), *this);
+	}
 
 
 
