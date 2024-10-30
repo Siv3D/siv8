@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <array>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Utility.hpp>
 # include <Siv3D/FormatData.hpp>
@@ -44,6 +45,91 @@ namespace s3d
 			return ((rect.w <= 0.0) || (rect.h <= 0.0)
 				|| (innerThickness < 0.0) || (outerThickness < 0.0)
 				|| ((innerThickness == 0.0) && (outerThickness == 0.0)));
+		}
+		
+		[[nodiscard]]
+		constexpr Vertex2D::IndexType CalculateFanQuality(const double r) noexcept
+		{
+			if (r <= 2.0f)
+			{
+				return 2;
+			}
+			else if (r <= 4.0f)
+			{
+				return 3;
+			}
+			else if (r < 8.0f)
+			{
+				return 4;
+			}
+			else
+			{
+				return static_cast<Vertex2D::IndexType>(Min((5 + static_cast<int32>((r - 8.0f) / 8.0f)), 63));
+			}
+		}
+
+		[[nodiscard]]
+		static Array<Vec2> GetOuterVertices(const RoundRect& rect, const double offset, const double qualityFactor)
+		{
+			if ((rect.w == 0.0) || (rect.h == 0.0))
+			{
+				return{};
+			}
+
+			if (rect.r == 0.0)
+			{
+				return{ rect.tl(), rect.tr(), rect.br(), rect.bl() };
+			}
+
+			const double rr = (Min((rect.w * 0.5), (rect.h * 0.5), Max(0.0, Abs(rect.r))) + offset);
+			const uint32 quality = CalculateFanQuality(rr * qualityFactor);
+			const double radDelta = (Math::HalfPi / (quality - 1));
+
+			Array<Vec2> fanPositions(quality);
+
+			for (uint32 i = 0; i < quality; ++i)
+			{
+				fanPositions[i] = Circular{ rr, (radDelta * i) }.fastToVec2();
+			}
+
+			const bool uniteV = (rect.h * 0.5 == rr);
+			const bool uniteH = (rect.w * 0.5 == rr);
+			const std::array<Vec2, 4> centers =
+			{ {
+				{ (rect.x + rect.w - rr + offset), (rect.y + rr - offset) },
+				{ (rect.x + rect.w - rr + offset), (rect.y + rect.h - rr + offset) },
+				{ (rect.x + rr - offset), (rect.y + rect.h - rr + offset) },
+				{ (rect.x + rr - offset), (rect.y + rr - offset) },
+			} };
+
+			const uint32 vertexSize = ((quality - uniteV + quality - uniteH) * 2);
+
+			Array<Vec2> vertices(vertexSize);
+			{
+				Vec2* pVertex = vertices.data();
+
+				for (uint32 i = 0; i < (quality - uniteV); ++i)
+				{
+					*pVertex++ = (centers[0] + fanPositions[i]);
+				}
+
+				for (uint32 i = 0; i < (quality - uniteH); ++i)
+				{
+					*pVertex++ = (centers[1] + Float2{ fanPositions[quality - i - 1].x, -fanPositions[quality - i - 1].y });
+				}
+
+				for (uint32 i = 0; i < (quality - uniteV); ++i)
+				{
+					*pVertex++ = (centers[2] - fanPositions[i]);
+				}
+
+				for (uint32 i = 0; i < (quality - uniteH); ++i)
+				{
+					*pVertex++ = (centers[3] + Float2{ -fanPositions[quality - i - 1].x, fanPositions[quality - i - 1].y });
+				}
+			}
+
+			return vertices;
 		}
 	}
 
@@ -111,6 +197,17 @@ namespace s3d
 	Vec2 RoundRect::interpolatedPointAt(double t) const noexcept
 	{
 		return pointAtLength(t * perimeter());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outerVertices
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Vec2> RoundRect::outer(const double qualityFactor) const
+	{
+		return GetOuterVertices(*this, 0.0, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////

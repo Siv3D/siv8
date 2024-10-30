@@ -322,43 +322,43 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形に穴を追加します。
-		///// @param rect 穴の形状
-		///// @return 穴の追加に成功したら true, それ以外の場合は false
-		//bool addHole(const RectF& rect);
+		/// @brief 多角形に穴を追加します。
+		/// @param rect 穴の形状
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
+		bool addHole(const RectF& rect);
 
-		///// @brief 多角形に穴を追加します。
-		///// @param triangle 穴の形状
-		///// @return  穴の追加に成功したら true, それ以外の場合は false
-		//bool addHole(const Triangle& triangle);
+		/// @brief 多角形に穴を追加します。
+		/// @param triangle 穴の形状
+		/// @return  穴の追加に成功したら true, それ以外の場合は false
+		bool addHole(const Triangle& triangle);
 
-		///// @brief 多角形に穴を追加します。
-		///// @param quad 穴の形状
-		///// @return  穴の追加に成功したら true, それ以外の場合は false
-		//bool addHole(const Quad& quad);
+		/// @brief 多角形に穴を追加します。
+		/// @param quad 穴の形状
+		/// @return  穴の追加に成功したら true, それ以外の場合は false
+		bool addHole(const Quad& quad);
 
-		///// @brief 多角形に穴を追加します。
-		///// @param circle 穴の形状
-		///// @param quality 頂点分割の品質
-		///// @return  穴の追加に成功したら true, それ以外の場合は false
-		//bool addHole(const Circle& circle, uint32 quality = 24);
+		/// @brief 多角形に穴を追加します。
+		/// @param circle 穴の形状
+		/// @param quality 頂点分割の品質
+		/// @return  穴の追加に成功したら true, それ以外の場合は false
+		bool addHole(const Circle& circle, uint32 quality = 24);
 
-		///// @brief 多角形に穴を追加します。
-		///// @param ellipse 穴の形状
-		///// @param quality 頂点分割の品質
-		///// @return  穴の追加に成功したら true, それ以外の場合は false
-		//bool addHole(const Ellipse& ellipse, uint32 quality = 24);
+		/// @brief 多角形に穴を追加します。
+		/// @param ellipse 穴の形状
+		/// @param quality 頂点分割の品質
+		/// @return  穴の追加に成功したら true, それ以外の場合は false
+		bool addHole(const Ellipse& ellipse, uint32 quality = 24);
 
-		///// @brief 多角形に穴を追加します。
-		///// @param roundRect 穴の形状
-		///// @param quality 頂点分割の品質
-		///// @return  穴の追加に成功したら true, それ以外の場合は false
-		//bool addHole(const RoundRect& roundRect, uint32 quality = 24);
+		/// @brief 多角形に穴を追加します。
+		/// @param roundRect 穴の形状
+		/// @param quality 頂点分割の品質
+		/// @return  穴の追加に成功したら true, それ以外の場合は false
+		bool addHole(const RoundRect& roundRect, uint32 quality = 24);
 
-		///// @brief 多角形に穴を追加します。
-		///// @param hole 穴を構成する頂点配列
-		///// @return 穴の追加に成功したら true, それ以外の場合は false
-		//bool addHole(Array<Vec2> hole);
+		/// @brief 多角形に穴を追加します。
+		/// @param hole 穴を構成する頂点配列
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
+		bool addHole(Array<Vec2> hole);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -691,7 +691,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 多角形を丸く太らせた、新しい多角形を返します。
+		/// @brief 多角形を丸く太らせた、新しい多角形を返します。分割数は半径に応じて自動的に決定されます。
 		/// @param distance 太らせる距離。負の場合は細らせます。
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 新しい多角形
