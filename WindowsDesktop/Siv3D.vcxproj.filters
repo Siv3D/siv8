@@ -991,6 +991,12 @@
     <Filter Include="src\Siv3D\QualityFactor">
       <UniqueIdentifier>{bd355785-ce40-41e2-9027-2e28a6a54f15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\mapbox">
+      <UniqueIdentifier>{c69ec063-7a02-4042-ab4e-e7924ea57e3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\mapbox\geometry">
+      <UniqueIdentifier>{1b07ee94-c312-41b9-bf9b-29f96556e435}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3909,6 +3915,66 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PointsPerCircle.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\feature.hpp">
+      <Filter>src\ThirdParty\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry.hpp">
+      <Filter>src\ThirdParty\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry_io.hpp">
+      <Filter>src\ThirdParty\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\polylabel.hpp">
+      <Filter>src\ThirdParty\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\envelope.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\for_each_point.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\geometry.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\line_string.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\multi_line_string.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\multi_point.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\multi_polygon.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\point.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\point_arithmetic.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\polygon.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\box.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\empty.hpp">
+      <Filter>src\ThirdParty\mapbox\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\variant.hpp">
+      <Filter>src\ThirdParty\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\recursive_wrapper.hpp">
+      <Filter>src\ThirdParty\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\variant_visitor.hpp">
+      <Filter>src\ThirdParty\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PoleOfInaccessibility.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6295,6 +6361,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\QualityFactor\SivQualityFactor.cpp">
       <Filter>src\Siv3D\QualityFactor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_PoleOfInaccessibility.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

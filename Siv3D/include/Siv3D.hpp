@@ -900,6 +900,7 @@
 # include <Siv3D/Geometry2D/Distance.hpp> // ToDo
 # include <Siv3D/Geometry2D/Center.hpp> // ToDo
 # include <Siv3D/Geometry2D/IsClockwise.hpp> // ToDo
+# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp> // ToDo
 # include <Siv3D/Geometry2D/Misc.hpp> // ToDo
 
 // 長方形詰込み | Rectangle packing

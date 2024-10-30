@@ -23,4 +23,16 @@ namespace s3d
 	{
 		pImpl.swap(other.pImpl);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	bool Polygon::intersects(const Shape2DType& other) const
+	{
+		return Geometry2D::Intersect(*this, other);
+	}
 }

@@ -17,6 +17,7 @@ Name | Version
 [fast_float](https://github.com/fastfloat/fast_float) | Version 6.1.6
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.2
+[geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
 [GLFW](https://github.com/glfw/glfw) | 3.4
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 8.3.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
@@ -33,6 +34,7 @@ Name | Version
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
 [plutovg](https://github.com/sammycage/plutovg) | 
+[polylabel](https://github.com/mapbox/polylabel) | v2.0.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
 [simdutf](https://github.com/simdutf/simdutf) | Version 5.5.0
@@ -40,6 +42,7 @@ Name | Version
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
+[variant](https://github.com/mapbox/variant) | 
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2

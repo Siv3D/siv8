@@ -399,6 +399,12 @@ Legal Terms
 },
 
 {
+R"-(geometry.hpp)-",
+R"-(Copyright (c) 2016, Mapbox)-",
+ISC_LICENSE
+},
+
+{
 R"-(GLFW)-",
 R"-(Copyright (c) 2002-2006 Marcus Geelnard
 Copyright (c) 2006-2019 Camilla Löwy)-",
@@ -675,6 +681,12 @@ MIT_LICENSE
 R"-(plutovg)-",
 R"-(Copyright (c) 2020 Nwutobo Samuel Ugochukwu)-",
 MIT_LICENSE
+},
+
+{
+R"-(polylabel)-",
+R"-(Copyright (c) 2016 Mapbox)-",
+ISC_LICENSE
 },
 
 {
