@@ -330,6 +330,8 @@ namespace s3d
 		/// @return *this
 		const Shape2D& draw(const ColorF& color = Palette::White) const;
 
+		const Shape2D& draw(const PatternParameters& pattern) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawFrame
@@ -341,6 +343,8 @@ namespace s3d
 		/// @param color 色
 		/// @return *this
 		const Shape2D& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		const Shape2D& drawFrame(double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
