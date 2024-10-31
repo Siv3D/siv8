@@ -982,6 +982,11 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& colorBegin, const Float4& colorEnd)
+	{
+
+	}
+
 	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const PatternParameters& pattern)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, pattern.primaryColor, getMaxScaling()))

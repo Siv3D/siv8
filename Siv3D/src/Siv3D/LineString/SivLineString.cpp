@@ -53,6 +53,21 @@ namespace s3d
 		return draw(LineCap::Square, LineCap::Square, thickness, pattern);
 	}
 
+	const LineString& LineString::draw(const LineCap lineCap, const double thickness, const ColorF& color) const
+	{
+		return draw(lineCap, lineCap, thickness, color);
+	}
+
+	const LineString& LineString::draw(const LineCap lineCap, const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	{
+		return draw(lineCap, lineCap, thickness, colorBegin, colorEnd);
+	}
+
+	const LineString& LineString::draw(const LineCap lineCap, const double thickness, const PatternParameters& pattern) const
+	{
+		return draw(lineCap, lineCap, thickness, pattern);
+	}
+
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
@@ -64,15 +79,28 @@ namespace s3d
 		return *this;
 	}
 
-	//const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
-	//{
+	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
+			m_points, none,
+			Abs(static_cast<float>(thickness)), false,
+			CloseRing::No,
+			colorBegin.toFloat4(),
+			colorEnd.toFloat4());
 
-	//}
+		return *this;
+	}
 
-	//const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const PatternParameters& pattern) const
-	//{
+	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const PatternParameters& pattern) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
+			m_points, none,
+			Abs(static_cast<float>(thickness)), false,
+			CloseRing::No,
+			pattern);
 
-	//}
+		return *this;
+	}
 
 	const LineString& LineString::draw(const std::span<const ColorF> colors) const
 	{
@@ -84,10 +112,21 @@ namespace s3d
 		return draw(LineCap::Square, LineCap::Square, thickness, colors);
 	}
 
-	//const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, double thickness, std::span<const ColorF> colors) const
-	//{
+	const LineString& LineString::draw(const LineCap lineCap, double thickness, std::span<const ColorF> colors) const
+	{
+		return draw(lineCap, lineCap, thickness, colors);
+	}
 
-	//}
+	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, double thickness, std::span<const ColorF> colors) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
+			m_points, none,
+			Abs(static_cast<float>(thickness)), false,
+			CloseRing::No,
+			colors);
+
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -916,6 +916,12 @@ namespace s3d
 
 		const LineString& draw(double thickness, const PatternParameters& pattern) const;
 
+		const LineString& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White) const;
+
+		const LineString& draw(LineCap lineCap, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+
+		const LineString& draw(LineCap lineCap, double thickness, const PatternParameters& pattern) const;
+
 		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White) const;
 
 		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
@@ -925,6 +931,8 @@ namespace s3d
 		const LineString& draw(std::span<const ColorF> colors) const;
 
 		const LineString& draw(double thickness, std::span<const ColorF> colors) const;
+
+		const LineString& draw(LineCap lineCap, double thickness, std::span<const ColorF> colors) const;
 
 		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, std::span<const ColorF> colors) const;
 

@@ -398,6 +398,237 @@ namespace s3d
 
 			return IndexCount;
 		}
+
+		[[nodiscard]]
+		static Array<Float2> Simplify(const std::span<const Vec2> points, const float scale, const Optional<Float2>& offset)
+		{
+			const double threshold = (0.25f / scale);
+			const double thresholdSq = (threshold * threshold);
+			const size_t size = points.size();
+
+			Array<Float2> buffer(Arg::reserve = size);
+			{
+				Vec2 previous = points.front();
+
+				buffer.push_back(previous);
+
+				for (size_t i = 1; i < (size - 1); ++i)
+				{
+					const Vec2 current = points[i];
+
+					if (previous.distanceFromSq(current) < thresholdSq)
+					{
+						continue;
+					}
+
+					buffer.push_back(current);
+
+					previous = current;
+				}
+
+				const Vec2 current = points.back();
+
+				if (previous != current)
+				{
+					buffer.push_back(current);
+				}
+			}
+
+			if (offset)
+			{
+				const Float2 v = *offset;
+
+				for (Float2& point : buffer)
+				{
+					point += v;
+				}
+			}
+
+			return buffer;
+		}
+
+		[[nodiscard]]
+		static Array<Float2> Adjust(const Array<Float2>& base, const float scale, const bool inner)
+		{
+			const float epsilon = (0.001f / scale);
+			constexpr float AngleThreshold = 0.55f;
+
+			Array<Float2> results(Arg::reserve = base.size());
+			{
+				results.push_back(base.front());
+
+				const size_t count = (base.size() - 1);
+
+				for (size_t i = 1; i < count; ++i)
+				{
+					const Float2 back = base[i - 1];
+					const Float2 current = base[i];
+					const Float2 next = base[(i + 1) % base.size()];
+					const Float2 v1 = (back - current).normalized();
+					const Float2 v2 = (next - current).normalized();
+
+					results.push_back(current);
+
+					if ((not inner)
+						&& (AngleThreshold < v1.dot(v2)))
+					{
+						const Float2 line = (current - back);
+						const Float2 tangent = ((next - current).normalized() + (current - back).normalized()).normalized();
+						const Float2 line2 = (next - current);
+
+						const float a = tangent.dot(line2);
+						const float b = (-tangent).dot(line2);
+
+						if (a >= b)
+						{
+							results.push_back(current + tangent.normalized() * epsilon);
+						}
+						else if (a <= b)
+						{
+							results.push_back(current + (-tangent).normalized() * epsilon);
+						}
+						else
+						{
+							const Float2 normal = Float2{ -line.y, line.x }.normalized();
+							results.push_back(current + normal * epsilon);
+						}
+					}
+				}
+
+				results.push_back(base.back());
+			}
+
+			return results;
+		}
+
+		[[nodiscard]]
+		static Vertex2D::IndexType BuildUncappedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& color, float scale, float& startAngle, float& endAngle)
+		{
+			Array<Float2> base = Simplify(points, scale, offset);
+			Array<Float2> buf2 = Adjust(base, scale, inner);
+
+			const Vertex2D::IndexType newSize = static_cast<Vertex2D::IndexType>(buf2.size());
+			const Vertex2D::IndexType vertexSize = (newSize * 2), indexSize = (6 * (newSize - 1));
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexSize, indexSize);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float thicknessHalf = (thickness * 0.5f);
+
+			{
+				const Float2 p0 = buf2[0];
+				const Float2 p1 = buf2[1];
+				const Float2 line = (p1 - p0).normalize();
+				const Float2 vNormalBegin{ -line.y * thicknessHalf, line.x * thicknessHalf };
+
+				{
+					startAngle = std::atan2(vNormalBegin.x, -vNormalBegin.y);
+				}
+
+				pVertex[0].pos.set(p0 + vNormalBegin);
+				pVertex[1].pos.set(p0 - vNormalBegin);
+			}
+
+			for (Vertex2D::IndexType i = 0; i < (newSize - 2); ++i)
+			{
+				const Float2 p0 = buf2[i];
+				const Float2 p1 = buf2[i + 1];
+				const Float2 p2 = buf2[i + 2];
+				const Float2 line = p1 - p0;
+				const Float2 normal = Float2{ -line.y, line.x }.normalized();
+				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
+				const Float2 tangent = (v.lengthSq() > 0.001f) ? v.normalized() : (p2 - p0).normalized();
+				const Float2 miter = Float2{ -tangent.y, tangent.x };
+				const float length = thicknessHalf / miter.dot(normal);
+				const Float2 result0 = p1 + miter * length;
+				const Float2 result1 = p1 - miter * length;
+
+				pVertex[i * 2 + 2].pos.set(result0);
+				pVertex[i * 2 + 3].pos.set(result1);
+			}
+
+			{
+				const Float2 p0 = buf2[newSize - 2];
+				const Float2 p1 = buf2[newSize - 1];
+				const Float2 line = (p1 - p0).normalize();
+				const Float2 vNormalEnd{ -line.y * thicknessHalf, line.x * thicknessHalf };
+
+				{
+					endAngle = std::atan2(vNormalEnd.x, -vNormalEnd.y);
+				}
+
+				pVertex[newSize * 2 - 2].pos.set(p1 + vNormalEnd);
+				pVertex[newSize * 2 - 1].pos.set(p1 - vNormalEnd);
+			}
+
+			for (size_t i = 0; i < vertexSize; ++i)
+			{
+				(pVertex++)->color = color;
+			}
+
+			{
+				const Vertex2D::IndexType count = static_cast<Vertex2D::IndexType>(newSize - 1);
+
+				for (Vertex2D::IndexType k = 0; k < count; ++k)
+				{
+					for (Vertex2D::IndexType i = 0; i < 6; ++i)
+					{
+						*pIndex++ = (indexOffset + (RectIndexTable[i] + k * 2) % vertexSize);
+					}
+				}
+			}
+
+			return indexSize;
+		}
+
+		[[nodiscard]]
+		static Vertex2D::IndexType BuildLineStringCaps(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const Float2& center, const Optional<Float2>& offset, const float thickness, const Float4& color, const float scale)
+		{
+			const float halfThickness = (thickness * 0.5f);
+
+			const Float2 base = (center + offset.value_or(Float2{ 0, 0 }));
+
+			Vertex2D::IndexType indexCount = 0;
+
+			// draw startCap
+			{
+				if (startCap == LineCap::Square)
+				{
+					const FloatRect rect{ (base.x - halfThickness), (base.y - halfThickness), base.x, (base.y + halfThickness) };
+
+					indexCount += s3d::Vertex2DBuilder::BuildRect(bufferCreator, rect, color);
+				}
+				else if (startCap == LineCap::Round)
+				{
+					indexCount += BuildRoundCap(bufferCreator, base, halfThickness, 180_degF, color, scale);
+				}
+			}
+
+			// draw endCap
+			{
+				if (endCap == LineCap::Square)
+				{
+					const FloatRect rect{ base.x, (base.y - halfThickness), (base.x + halfThickness), (base.y + halfThickness) };
+
+					indexCount += s3d::Vertex2DBuilder::BuildRect(bufferCreator, rect, color);
+				}
+				else if (endCap == LineCap::Round)
+				{
+					indexCount += BuildRoundCap(bufferCreator, base, halfThickness, 0_degF, color, scale);
+				}
+			}
+
+			return indexCount;
+		}
+
+		[[nodiscard]]
+		static Vertex2D::IndexType BuildLineStringCaps(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const Float2& start, const float startAngle, const Float2& end, const float endAngle, const Optional<Float2>& offset, const float thickness, const Float4& color, const float scale)
+		{
+			return(0);
+		}
 	}
 
 	namespace Vertex2DBuilder
@@ -1741,24 +1972,7 @@ namespace s3d
 			}
 			else if (num_points == 1)
 			{
-				const Float2 center = (points[0] + offset.value_or(Float2{ 0, 0 }));
-				const float halfThickness = (thickness * 0.5f);
-
-				Vertex2D::IndexType indexCount = 0;
-
-				// draw startCap
-				if (startCap == LineCap::Round)
-				{
-					indexCount += BuildRoundCap(bufferCreator, center, halfThickness, 180_degF, color, scale);
-				}
-
-				// draw endCap
-				if (endCap == LineCap::Round)
-				{
-					indexCount += BuildRoundCap(bufferCreator, center, halfThickness, 0_degF, color, scale);
-				}
-
-				return indexCount;
+				return BuildLineStringCaps(bufferCreator, startCap, endCap, points[0], offset, thickness, color, scale);
 			}
 			else if (32760 <= num_points)
 			{
@@ -1770,7 +1984,15 @@ namespace s3d
 				return 0;
 			}
 
-			return(0);
+			{
+				float startAngle = 0.0f, endAngle = 0.0f;
+
+				Vertex2D::IndexType indexCount = BuildUncappedLineString(bufferCreator, points, offset, thickness, inner, color, scale, startAngle, endAngle);
+
+				indexCount += BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, color, scale);
+		
+				return indexCount;
+			}
 		}
 
 		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const std::span<const ColorF> colors, const float scale)
