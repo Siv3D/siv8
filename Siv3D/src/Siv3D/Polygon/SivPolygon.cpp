@@ -755,6 +755,62 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const Polygon& value)
+	{
+		formatData.string.append(U"((");
+
+		bool b = false;
+
+		for (const auto& point : value.outer())
+		{
+			if (std::exchange(b, true))
+			{
+				formatData.string.push_back(U',');
+			}
+
+			Formatter(formatData, point);
+		}
+
+		formatData.string.push_back(U')');
+
+		if (value.inners())
+		{
+			formatData.string.append(U",(");
+
+			b = false;
+
+			for (const auto& hole : value.inners())
+			{
+				if (std::exchange(b, true))
+				{
+					formatData.string.append(U",(");
+				}
+
+				bool b2 = false;
+
+				for (const auto& point : hole)
+				{
+					if (std::exchange(b2, true))
+					{
+						formatData.string.push_back(U',');
+					}
+
+					Formatter(formatData, point);
+				}
+
+				formatData.string.push_back(U')');
+			}
+		}
+
+		formatData.string.push_back(U')');
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
