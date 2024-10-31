@@ -1187,6 +1187,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseManagerFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\SivLicenseManager.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LineCap\SivLineCap.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\LineString\SivLineString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LineType\SivLineType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Line\SivLine.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LoggerBuffer\SivLoggerBuffer.cpp" />

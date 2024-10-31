@@ -872,9 +872,6 @@ namespace s3d
 
 
 
-
-
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator >>
@@ -900,6 +897,69 @@ namespace s3d
 		{
 			return output << Format(value.m_points);
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
+
+		const LineString& draw(const ColorF& color = Palette::White) const;
+
+		const LineString& draw(const ColorF& colorBegin, const ColorF& colorEnd) const;
+
+		const LineString& draw(const PatternParameters& pattern) const;
+
+		const LineString& draw(double thickness, const ColorF& color = Palette::White) const;
+
+		const LineString& draw(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+
+		const LineString& draw(double thickness, const PatternParameters& pattern) const;
+
+		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White) const;
+
+		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+
+		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, const PatternParameters& pattern) const;
+
+		const LineString& draw(std::span<const ColorF> colors) const;
+
+		const LineString& draw(double thickness, std::span<const ColorF> colors) const;
+
+		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, std::span<const ColorF> colors) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawClosed
+		//
+		////////////////////////////////////////////////////////////////
+
+
+
+
+		//const LineString& drawClosed(const ColorF& color = Palette::White) const;
+
+		//const LineString& drawClosed(double thickness, const ColorF& color = Palette::White) const;
+
+		//const LineString& drawClosed(double thickness, const Array<ColorF>& colors) const;
+
+		//const LineString& drawClosed(const LineStyle& style, double thickness, const ColorF& color = Palette::White) const;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -957,11 +1017,35 @@ namespace s3d
 			lhs.swap(rhs);
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
+
+		friend void Formatter(FormatData& formatData, const LineString& value);
+
 	private:
 
 		container_type m_points;
 	};
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::LineString, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::LineString& value, s3d::BufferContext& ctx);
+};
 
 ////////////////////////////////////////////////////////////////
 //

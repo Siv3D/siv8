@@ -27,9 +27,6 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	void Formatter(FormatData& formatData, std::span<Type> span);
-
-	template <class Type>
 	void Formatter(FormatData& formatData, std::span<const Type> span);
 
 	template <class Type, size_t N>

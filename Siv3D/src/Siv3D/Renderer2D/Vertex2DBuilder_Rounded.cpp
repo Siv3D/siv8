@@ -81,7 +81,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildCircleArcRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& color, const float scale)
+		static Vertex2D::IndexType BuildRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& color, const float scale)
 		{
 			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
 			const Vertex2D::IndexType VertexCount = (Quality + 1);
@@ -128,7 +128,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildCircleArcRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		static Vertex2D::IndexType BuildRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
 			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
 			const Vertex2D::IndexType VertexCount = (Quality + 1);
@@ -229,22 +229,22 @@ namespace s3d
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, c1, color1, scale);
+					indexCount += BuildRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, c1, color1, scale);
 				}
 				else
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), colorType, c0, color0, scale);
+					indexCount += BuildRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), colorType, c0, color0, scale);
 				}
 			}
 			else
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, color0, color1, scale);
+					indexCount += BuildRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, color0, color1, scale);
 				}
 				else
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), colorType, color0, color1, scale);
+					indexCount += BuildRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), colorType, color0, color1, scale);
 				}
 			}
 
@@ -314,22 +314,22 @@ namespace s3d
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, colorType, c0, color0, scale);
+					indexCount += BuildRoundCap(bufferCreator, endCenter, halfThickness, startAngle, colorType, c0, color0, scale);
 				}
 				else
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), colorType, c1, color1, scale);
+					indexCount += BuildRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), colorType, c1, color1, scale);
 				}
 			}
 			else
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, startAngle, colorType, color1, color0, scale);
+					indexCount += BuildRoundCap(bufferCreator, endCenter, halfThickness, startAngle, colorType, color1, color0, scale);
 				}
 				else
 				{
-					indexCount += BuildCircleArcRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), colorType, color1, color0, scale);
+					indexCount += BuildRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), colorType, color1, color0, scale);
 				}
 			}
 
@@ -459,12 +459,12 @@ namespace s3d
 
 			if (startCap == LineCap::Round)
 			{
-				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, start, halfThickness, startAngle, colors[0], scale);
+				roundIndexCount += BuildRoundCap(bufferCreator, start, halfThickness, startAngle, colors[0], scale);
 			}
 
 			if (endCap == LineCap::Round)
 			{
-				roundIndexCount += BuildCircleArcRoundCap(bufferCreator, end, halfThickness, (startAngle + Math::PiF), colors[1], scale);
+				roundIndexCount += BuildRoundCap(bufferCreator, end, halfThickness, (startAngle + Math::PiF), colors[1], scale);
 			}
 
 			return (IndexCount + roundIndexCount);
@@ -1729,6 +1729,53 @@ namespace s3d
 			}
 
 			return IndexCount;
+		}
+
+		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& color, const float scale)
+		{
+			const size_t num_points = points.size();
+
+			if (num_points == 0)
+			{
+				return 0;
+			}
+			else if (num_points == 1)
+			{
+				const Float2 center = (points[0] + offset.value_or(Float2{ 0, 0 }));
+				const float halfThickness = (thickness * 0.5f);
+
+				Vertex2D::IndexType indexCount = 0;
+
+				// draw startCap
+				if (startCap == LineCap::Round)
+				{
+					indexCount += BuildRoundCap(bufferCreator, center, halfThickness, 180_degF, color, scale);
+				}
+
+				// draw endCap
+				if (endCap == LineCap::Round)
+				{
+					indexCount += BuildRoundCap(bufferCreator, center, halfThickness, 0_degF, color, scale);
+				}
+
+				return indexCount;
+			}
+			else if (32760 <= num_points)
+			{
+				return 0;
+			}
+
+			if (thickness <= 0.0f)
+			{
+				return 0;
+			}
+
+			return(0);
+		}
+
+		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const std::span<const ColorF> colors, const float scale)
+		{
+			return(0);
 		}
 	}
 }

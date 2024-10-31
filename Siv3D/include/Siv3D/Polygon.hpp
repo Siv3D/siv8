@@ -1074,4 +1074,20 @@ namespace s3d
 	};
 }
 
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::Polygon, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::Polygon& value, s3d::BufferContext& ctx);
+};
+
 # include "detail/Polygon.ipp"

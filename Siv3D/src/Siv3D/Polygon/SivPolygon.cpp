@@ -820,3 +820,71 @@ namespace s3d
 		throw std::out_of_range{ "Polygon::triangleAtIndex() index out of range" };
 	}
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+s3d::ParseContext::iterator fmt::formatter<s3d::Polygon, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::Polygon, s3d::char32>::format(const s3d::Polygon& value, s3d::BufferContext& ctx)
+{
+	if (value.isEmpty())
+	{
+		return fmt::format_to(ctx.out(), U"()");
+	}
+
+	const std::u32string elementTag = (tag.empty() ? U"{}" : (U"{:" + tag + U"}"));
+
+	auto it = fmt::format_to(ctx.out(), U"((");
+
+	bool b = false;
+
+	for (const auto& point : value.outer())
+	{
+		if (std::exchange(b, true))
+		{
+			it = fmt::format_to(it, U",");
+		}
+
+		it = fmt::format_to(it, elementTag, point);
+	}
+
+	it = fmt::format_to(it, U")");
+
+	if (value.inners())
+	{
+		it = fmt::format_to(it, U",(");
+
+		b = false;
+
+		for (const auto& hole : value.inners())
+		{
+			if (std::exchange(b, true))
+			{
+				it = fmt::format_to(it, U",(");
+			}
+
+			bool b2 = false;
+
+			for (const auto& point : hole)
+			{
+				if (std::exchange(b2, true))
+				{
+					it = fmt::format_to(it, U",");
+				}
+
+				it = fmt::format_to(it, elementTag, point);
+			}
+
+			it = fmt::format_to(it, U")");
+		}
+	}
+
+	return fmt::format_to(it, U")");
+}
