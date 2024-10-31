@@ -960,6 +960,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addLineString
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& color)
+	{
+
+	}
+
+	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const PatternParameters& pattern)
+	{
+
+	}
+
+	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const std::span<const ColorF> colors)
+	{
+
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	flush
 	//
 	////////////////////////////////////////////////////////////////

@@ -55,4 +55,7 @@ namespace s3d
 
 	/// @brief 妥当性をチェックする
 	using SkipValidation		= YesNo<struct SkipValidation_tag>;
+
+	/// @brief 先頭と終端をつなげて輪を閉じる
+	using CloseRing				= YesNo<struct CloseRing_tag>;
 }
