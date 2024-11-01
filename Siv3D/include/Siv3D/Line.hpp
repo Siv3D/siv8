@@ -887,10 +887,10 @@ namespace s3d
 		const Line& draw(const ColorF& color = Palette::White) const;
 
 		/// @brief 線分を描きます。
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& draw(const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& draw(const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 線分を描きます。
 		/// @param thickness 線分の太さ
@@ -900,10 +900,10 @@ namespace s3d
 
 		/// @brief 線分を描きます。
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& draw(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& draw(double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 線分を描きます。
 		/// @param startCap 始点側の形状
@@ -917,10 +917,10 @@ namespace s3d
 		/// @param startCap 始点側の形状
 		/// @param endCap 終点側の形状
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 
+		/// @param colorStart 
 		/// @param colorEnd 
 		/// @return 
-		const Line& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 線分を描きます。
 		/// @param style 線のスタイル
@@ -932,10 +932,10 @@ namespace s3d
 		/// @brief 線分を描きます。
 		/// @param style 線のスタイル
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& draw(const LineStyle& style, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& draw(const LineStyle& style, double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -949,10 +949,10 @@ namespace s3d
 		const Line& drawUncapped(const ColorF& color = Palette::White) const;
 
 		/// @brief 始点や終点をキャップせずに線分を描きます。
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& drawUncapped(const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& drawUncapped(const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 始点や終点をキャップせずに線分を描きます。
 		/// @param thickness 線分の太さ
@@ -962,10 +962,10 @@ namespace s3d
 
 		/// @brief 始点や終点をキャップせずに線分を描きます。
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& drawUncapped(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& drawUncapped(double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -979,10 +979,10 @@ namespace s3d
 		const Line& drawRounded(const ColorF& color = Palette::White) const;
 
 		/// @brief 始点と終点が丸い線分を描きます。
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& drawRounded(const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& drawRounded(const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 始点と終点が丸い線分を描きます。
 		/// @param thickness 線分の太さ
@@ -992,10 +992,10 @@ namespace s3d
 
 		/// @brief 始点と終点が丸い線分を描きます。
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& drawRounded(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& drawRounded(double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -97,6 +97,9 @@ namespace s3d
 		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color, float scale);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& colorStart, const Float4& colorEnd, float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, std::span<const ColorF> colors, float scale);
 	}
 }
