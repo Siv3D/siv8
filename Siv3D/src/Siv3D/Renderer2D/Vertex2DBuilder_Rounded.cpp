@@ -746,11 +746,11 @@ namespace s3d
 			const Array<Float2> base = SimplifyOpen(points, scale, offset);
 			const Array<Float2> buffer = AdjustOpen(base, scale, inner);
 			const float baseLength = CalculateLength(buffer);
-			const float length = (baseLength + (hasStartCap ? halfThickness : 0.0f) + (hasEndCap ? halfThickness : 0.0f));
-			const Float4 color0 = (hasStartCap ? colorStart.lerp(colorEnd, (halfThickness / length)) : colorStart);
-			const Float4 color1 = (hasEndCap ? colorStart.lerp(colorEnd, (1.0f - halfThickness / length)) : colorEnd);
+			const float allLength = (baseLength + (hasStartCap ? halfThickness : 0.0f) + (hasEndCap ? halfThickness : 0.0f));
+			const Float4 color0 = (hasStartCap ? colorStart.lerp(colorEnd, (halfThickness / allLength)) : colorStart);
+			const Float4 color1 = (hasEndCap ? colorStart.lerp(colorEnd, (1.0f - halfThickness / allLength)) : colorEnd);
 			const Float4 colorDiff = (color1 - color0);
-			const float lengthInv = (1.0f / length);
+			const float lengthInv = (1.0f / allLength);
 
 			const Vertex2D::IndexType newSize = static_cast<Vertex2D::IndexType>(buffer.size());
 			const Vertex2D::IndexType vertexSize = (newSize * 2), indexSize = (6 * (newSize - 1));
@@ -2482,7 +2482,7 @@ namespace s3d
 			}
 		}
 
-		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& colorStart, const Float4& colorEnd, const float scale)
+		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& colorStart, const Float4& colorEnd, const float scale)
 		{
 			const size_t num_points = points.size();
 
@@ -2504,12 +2504,6 @@ namespace s3d
 				return 0;
 			}
 
-			if (closeRing && (3 <= num_points))
-			{
-				//return BuildClosedLineString(bufferCreator, points, offset, thickness, inner, color, scale);
-				return(0);
-			}
-			else
 			{
 				float startAngle = 0.0f, endAngle = 0.0f;
 				Float4 c1, c2;
@@ -2526,7 +2520,43 @@ namespace s3d
 
 		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const std::span<const ColorF> colors, const float scale)
 		{
-			return(0);
+			const size_t num_points = points.size();
+
+			if (num_points == 0)
+			{
+				return 0;
+			}
+			else if (num_points == 1)
+			{
+				//return BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), offset, thickness, color, scale);
+				return(0);
+			}
+			else if (32760 <= num_points)
+			{
+				return 0;
+			}
+
+			if (thickness <= 0.0f)
+			{
+				return 0;
+			}
+
+			if (closeRing && (3 <= num_points))
+			{
+				//return BuildClosedLineString(bufferCreator, points, offset, thickness, inner, color, scale);
+				return(0);
+			}
+			else
+			{
+				//float startAngle = 0.0f, endAngle = 0.0f;
+
+				//Vertex2D::IndexType indexCount = BuildUncappedLineString(bufferCreator, points, offset, thickness, inner, color, scale, startAngle, endAngle);
+
+				//indexCount += BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, color, scale);
+
+				//return indexCount;
+				return(0);
+			}
 		}
 	}
 }

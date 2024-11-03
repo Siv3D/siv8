@@ -982,9 +982,9 @@ namespace s3d
 		}
 	}
 
-	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& colorStart, const Float4& colorEnd)
+	void CRenderer2D_D3D11::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& colorStart, const Float4& colorEnd)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, colorStart, colorEnd, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), startCap, endCap, points, offset, thickness, inner, colorStart, colorEnd, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{

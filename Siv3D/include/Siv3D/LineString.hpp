@@ -944,13 +944,9 @@ namespace s3d
 
 		const LineString& drawClosed(const ColorF& color = Palette::White) const;
 
-		const LineString& drawClosed(const ColorF& colorStart, const ColorF& colorEnd) const;
-
 		const LineString& drawClosed(const PatternParameters& pattern) const;
 
 		const LineString& drawClosed(double thickness, const ColorF& color = Palette::White) const;
-
-		const LineString& drawClosed(double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		const LineString& drawClosed(double thickness, const PatternParameters& pattern) const;
 

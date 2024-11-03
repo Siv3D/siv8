@@ -84,7 +84,6 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
 			m_points, none,
 			Abs(static_cast<float>(thickness)), false,
-			CloseRing::No,
 			colorStart.toFloat4(),
 			colorEnd.toFloat4());
 
@@ -139,11 +138,6 @@ namespace s3d
 		return drawClosed(1.0, color);
 	}
 
-	const LineString& LineString::drawClosed(const ColorF& colorStart, const ColorF& colorEnd) const
-	{
-		return drawClosed(1.0, colorStart, colorEnd);
-	}
-
 	const LineString& LineString::drawClosed(const PatternParameters& pattern) const
 	{
 		return drawClosed(1.0, pattern);
@@ -157,18 +151,6 @@ namespace s3d
 			CloseRing::Yes,
 			color.toFloat4());
 
-		return *this;
-	}
-
-	const LineString& LineString::drawClosed(const double thickness, const ColorF& colorStart, const ColorF& colorEnd) const
-	{
-		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, none,
-			Abs(static_cast<float>(thickness)), false,
-			CloseRing::Yes,
-			colorStart.toFloat4(),
-			colorEnd.toFloat4());
-		
 		return *this;
 	}
 

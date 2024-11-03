@@ -951,7 +951,7 @@ namespace s3d
 
 	}
 
-	void CRenderer2D_Metal::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& colorStart, const Float4& colorEnd)
+	void CRenderer2D_Metal::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& colorStart, const Float4& colorEnd)
 	{
 
 	}
