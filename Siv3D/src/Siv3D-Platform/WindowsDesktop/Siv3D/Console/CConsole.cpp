@@ -69,6 +69,39 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	attach
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CConsole::attach()
+	{
+		if (m_isOpen)
+		{
+			return false;
+		}
+
+		if (::AttachConsole(ATTACH_PARENT_PROCESS))
+		{
+			m_oldCodePage = ::GetConsoleOutputCP();
+			::SetConsoleOutputCP(CP_UTF8);
+
+			::setlocale(LC_ALL, ".utf8");
+			::freopen_s(&m_fp, "CONIN$", "r", stdin);
+			::freopen_s(&m_fp, "CONOUT$", "w", stdout);
+			::freopen_s(&m_fp, "CONOUT$", "w", stderr);
+
+			m_isOpen = true;
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	close
 	//
 	////////////////////////////////////////////////////////////////
@@ -82,6 +115,7 @@ namespace s3d
 
 		if (m_fp)
 		{
+			::fflush(m_fp);
 			::fclose(m_fp);
 			m_fp = nullptr;
 		}
