@@ -42,6 +42,8 @@ namespace s3d
 			/// @brief 親プロセスのコンソールにアタッチします。
 			/// @return アタッチに成功した場合 true, それ以外の場合は false
 			/// @remark Windows 以外では何もせず、常に true を返します。
+			/// @remark cmd.exe では標準出力のファイルリダイレクトも可能です。
+			/// @remark PowerShell では標準出力のファイルリダイレクトができません。
 			bool attach() const;
 
 			////////////////////////////////////////////////////////////////
