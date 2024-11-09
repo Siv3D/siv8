@@ -951,6 +951,9 @@
 // UUID | UUID
 # include <Siv3D/UUIDValue.hpp>
 
+// Web ブラウザ | Web browser
+# include <Siv3D/WebBrowser.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	コンソール入出力 | Console input/output
