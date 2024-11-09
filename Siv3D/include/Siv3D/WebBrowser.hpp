@@ -11,7 +11,6 @@
 
 # pragma once
 # include "Types.hpp"
-# include "Optional.hpp"
 # include "String.hpp"
 
 namespace s3d
@@ -59,6 +58,12 @@ namespace s3d
 
 	namespace System
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetWebBrowserPath
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief Web ブラウザのパスを取得します。
 		/// @param webBrowser Web ブラウザ | Web browser
 		/// @return Web ブラウザのパス。失敗した場合は空の文字列 | The path to the web browser. An empty string if it fails.

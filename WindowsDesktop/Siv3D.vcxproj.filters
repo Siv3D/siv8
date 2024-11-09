@@ -1003,6 +1003,9 @@
     <Filter Include="src\Siv3D\WebBrowser">
       <UniqueIdentifier>{5e0b3223-353b-4ec5-897b-d8b7bc4cb78c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\WebBrowser">
+      <UniqueIdentifier>{bbfc247f-2c1e-49d1-b2d9-718b583ff3fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -6379,6 +6382,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\WebBrowser\SivWebBrowser.cpp">
       <Filter>src\Siv3D\WebBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\WebBrowser\SivWebBrowser_Windows.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\WebBrowser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
