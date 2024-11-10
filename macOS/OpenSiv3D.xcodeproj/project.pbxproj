@@ -2378,6 +2378,9 @@
 		F9F00A7A2CD299C10097C165 /* envelope.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A572CD299C10097C165 /* envelope.hpp */; };
 		F9F00A7B2CD299C10097C165 /* variant.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A672CD299C10097C165 /* variant.hpp */; };
 		F9F00A7C2CD299C10097C165 /* geometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A632CD299C10097C165 /* geometry.hpp */; };
+		F9F00A7F2CE06CA10097C165 /* SivLineString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A7D2CE06CA10097C165 /* SivLineString.cpp */; };
+		F9F00A822CE06CC20097C165 /* SivWebBrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A802CE06CC20097C165 /* SivWebBrowser.cpp */; };
+		F9F00A842CE06CD50097C165 /* WebBrowser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A832CE06CD50097C165 /* WebBrowser.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4864,6 +4867,9 @@
 		F9F00A662CD299C10097C165 /* recursive_wrapper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = recursive_wrapper.hpp; sourceTree = "<group>"; };
 		F9F00A672CD299C10097C165 /* variant.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = variant.hpp; sourceTree = "<group>"; };
 		F9F00A682CD299C10097C165 /* variant_visitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = variant_visitor.hpp; sourceTree = "<group>"; };
+		F9F00A7D2CE06CA10097C165 /* SivLineString.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLineString.cpp; sourceTree = "<group>"; };
+		F9F00A802CE06CC20097C165 /* SivWebBrowser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivWebBrowser.cpp; sourceTree = "<group>"; };
+		F9F00A832CE06CD50097C165 /* WebBrowser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WebBrowser.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -5899,6 +5905,7 @@
 				F9070C392B9F175000383E4D /* Version.hpp */,
 				F980C48D2C04B41300A86B68 /* Vertex2D.hpp */,
 				F934BD6F2BF880330003EAD5 /* VertexShader.hpp */,
+				F9F00A832CE06CD50097C165 /* WebBrowser.hpp */,
 				F9070C3A2B9F175000383E4D /* Window.hpp */,
 				F9070C3B2B9F175000383E4D /* WindowState.hpp */,
 				F9070C3C2B9F175000383E4D /* WindowStyle.hpp */,
@@ -6533,6 +6540,7 @@
 				F9528B762BB708A700222F45 /* LicenseManager */,
 				F9E794382C12DA78002615BA /* Line */,
 				F9D41B612C4FCE6300290998 /* LineCap */,
+				F9F00A7E2CE06CA10097C165 /* LineString */,
 				F9D41B662C534DA900290998 /* LineType */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
@@ -6616,6 +6624,7 @@
 				F9070DA62B9F175E00383E4D /* Vector3D */,
 				F9070DA82B9F175E00383E4D /* Vector4D */,
 				F934BD752BF880620003EAD5 /* VertexShader */,
+				F9F00A812CE06CC20097C165 /* WebBrowser */,
 				F9070DAB2B9F175E00383E4D /* Window */,
 			);
 			path = Siv3D;
@@ -10315,6 +10324,22 @@
 			path = mapbox;
 			sourceTree = "<group>";
 		};
+		F9F00A7E2CE06CA10097C165 /* LineString */ = {
+			isa = PBXGroup;
+			children = (
+				F9F00A7D2CE06CA10097C165 /* SivLineString.cpp */,
+			);
+			path = LineString;
+			sourceTree = "<group>";
+		};
+		F9F00A812CE06CC20097C165 /* WebBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				F9F00A802CE06CC20097C165 /* SivWebBrowser.cpp */,
+			);
+			path = WebBrowser;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -10867,6 +10892,7 @@
 				F980C45C2C01B20F00A86B68 /* RasterizerStateBuilder.hpp in Headers */,
 				F986F9A92BCA9D0A006A4C0F /* graphicselement.h in Headers */,
 				F9E7944B2C1973FD002615BA /* Periodic.hpp in Headers */,
+				F9F00A842CE06CD50097C165 /* WebBrowser.hpp in Headers */,
 				F98605C72BE4B680006A4C0F /* Input.ipp in Headers */,
 				F9070AFF2B9DEB5900383E4D /* utils.h in Headers */,
 				F9070EF62B9F1C8900383E4D /* posix_time.h in Headers */,
@@ -12176,6 +12202,7 @@
 				F98603BB2BCFBB54006A4C0F /* SkWorkingColorSpaceShader.cpp in Sources */,
 				F98603112BCFBB54006A4C0F /* SkOpCubicHull.cpp in Sources */,
 				F986F91E2BC8441F006A4C0F /* regexec.c in Sources */,
+				F9F00A822CE06CC20097C165 /* SivWebBrowser.cpp in Sources */,
 				F98603D52BCFBB54006A4C0F /* SkSLMetalCodeGenerator.cpp in Sources */,
 				F986045B2BCFBB54006A4C0F /* SkSLFindAndDeclareBuiltinFunctions.cpp in Sources */,
 				F98602422BCFBB54006A4C0F /* SkRecordedDrawable.cpp in Sources */,
@@ -12634,6 +12661,7 @@
 				F98600D22BCFBB53006A4C0F /* SkFloatingPoint.cpp in Sources */,
 				F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */,
 				F9070AF52B9DEB5900383E4D /* cached-powers.cc in Sources */,
+				F9F00A7F2CE06CA10097C165 /* SivLineString.cpp in Sources */,
 				F98601C92BCFBB53006A4C0F /* SkGlyphRunPainter.cpp in Sources */,
 				F98601922BCFBB53006A4C0F /* SkCpu.cpp in Sources */,
 				F986F9472BCA79DC006A4C0F /* SivRectF.cpp in Sources */,
