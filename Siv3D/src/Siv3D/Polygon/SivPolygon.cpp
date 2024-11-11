@@ -669,34 +669,72 @@ namespace s3d
 
 	const Polygon& Polygon::draw(const ColorF& color) const
 	{
-		pImpl->draw(color);
+		pImpl->draw(none, color);
 		return *this;
 	}
 
 	void Polygon::draw(const double x, const double y, const ColorF& color) const
 	{
-		pImpl->draw(Vec2{ x, y }, color);
+		pImpl->draw(Float2{ x, y }, color);
 	}
 
 	void Polygon::draw(const Vec2& pos, const ColorF& color) const
 	{
-		pImpl->draw(pos, color);
+		pImpl->draw(Float2{ pos }, color);
 	}
 
 	const Polygon& Polygon::draw(const PatternParameters& pattern) const
 	{
-		pImpl->draw(pattern);
+		pImpl->draw(none, pattern);
 		return *this;
 	}
 
 	void Polygon::draw(double x, double y, const PatternParameters& pattern) const
 	{
-		pImpl->draw(Vec2{ x, y }, pattern);
+		pImpl->draw(Float2{ x, y }, pattern);
 	}
 
 	void Polygon::draw(const Vec2& pos, const PatternParameters& pattern) const
 	{
-		pImpl->draw(pos, pattern);
+		pImpl->draw(Float2{ pos }, pattern);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Polygon& Polygon::drawFrame(const double thickness, const ColorF& color) const
+	{
+		pImpl->drawFrame(none, thickness, color);
+		return *this;
+	}
+
+	void Polygon::drawFrame(const double x, const double y, const double thickness, const ColorF& color) const
+	{
+		pImpl->drawFrame(Float2{ x, y }, thickness, color);
+	}
+
+	void Polygon::drawFrame(const Vec2& pos, const double thickness, const ColorF& color) const
+	{
+		pImpl->drawFrame(Float2{ pos }, thickness, color);
+	}
+
+	const Polygon& Polygon::drawFrame(const double thickness, const PatternParameters& pattern) const
+	{
+		pImpl->drawFrame(none, thickness, pattern);
+		return *this;
+	}
+
+	void Polygon::drawFrame(const double x, const double y, const double thickness, const PatternParameters& pattern) const
+	{
+		pImpl->drawFrame(Float2{ x, y }, thickness, pattern);
+	}
+
+	void Polygon::drawFrame(const Vec2& pos, const double thickness, const PatternParameters& pattern) const
+	{
+		pImpl->drawFrame(Float2{ pos }, thickness, pattern);
 	}
 
 	////////////////////////////////////////////////////////////////

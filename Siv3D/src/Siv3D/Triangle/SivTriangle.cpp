@@ -18,7 +18,7 @@
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
-# include "../Polygon/ClosedLineString.hpp"
+# include <Siv3D/Polygon/ClosedLineString.hpp>
 
 namespace s3d
 {

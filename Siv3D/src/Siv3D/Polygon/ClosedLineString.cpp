@@ -11,9 +11,12 @@
 
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Number.hpp>
+# include <Siv3D/LineCap.hpp>
 # include "ClosedLineString.hpp"
 # include "GeometryCommon.hpp"
 # include "Triangulate.hpp"
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
@@ -141,7 +144,11 @@ namespace s3d
 	{
 		if (joinStyle == JoinStyle::Default)
 		{
-			// [Siv3D ToDo]
+			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+				points, none,
+				Abs(static_cast<float>(thickness)), false,
+				CloseRing::Yes,
+				color.toFloat4());
 
 			return;
 		}
@@ -160,7 +167,11 @@ namespace s3d
 	{
 		if (joinStyle == JoinStyle::Default)
 		{
-			// [Siv3D ToDo]
+			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+				points, none,
+				Abs(static_cast<float>(thickness)), false,
+				CloseRing::Yes,
+				pattern);
 
 			return;
 		}

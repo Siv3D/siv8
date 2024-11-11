@@ -205,13 +205,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void draw(const ColorF& color) const;
+		void draw(const Optional<Float2>& offset, const ColorF& color) const;
 
-		void draw(const Vec2& offset, const ColorF& color) const;
+		void draw(const Optional<Float2>& offset, const PatternParameters& pattern) const;
 
-		void draw(const PatternParameters& pattern) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawFrame
+		//
+		////////////////////////////////////////////////////////////////
 
-		void draw(const Vec2& offset, const PatternParameters& pattern) const;
+		void drawFrame(const Optional<Float2>& offset, double thickness, const ColorF& color) const;
+
+		void drawFrame(const Optional<Float2>& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

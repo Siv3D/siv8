@@ -937,15 +937,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形の枠を描画します。
-		///// @param thickness 枠の太さ（ピクセル）
-		///// @param color 色
-		///// @return *this
-		//const Polygon& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
+		/// @brief 多角形の枠を描画します。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const Polygon& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		//void drawFrame(double x, double y, double thickness = 1.0, const ColorF& color = Palette::White) const;
+		void drawFrame(double x, double y, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		//void drawFrame(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
+		void drawFrame(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		const Polygon& drawFrame(double thickness, const PatternParameters& pattern) const;
+
+		void drawFrame(double x, double y, double thickness, const PatternParameters& pattern) const;
+
+		void drawFrame(const Vec2& pos, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

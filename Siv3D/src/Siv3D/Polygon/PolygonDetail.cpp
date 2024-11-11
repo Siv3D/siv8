@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/HashSet.hpp>
+# include <Siv3D/LineCap.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -771,17 +772,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Polygon::PolygonDetail::draw(const ColorF& color) const
-	{
-		if (m_indices.isEmpty())
-		{
-			return;
-		}
-
-		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, none, color.toFloat4());
-	}
-
-	void Polygon::PolygonDetail::draw(const Vec2& offset, const ColorF& color) const
+	void Polygon::PolygonDetail::draw(const Optional<Float2>& offset, const ColorF& color) const
 	{
 		if (m_indices.isEmpty())
 		{
@@ -791,17 +782,7 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, offset, color.toFloat4());
 	}
 
-	void Polygon::PolygonDetail::draw(const PatternParameters& pattern) const
-	{
-		if (m_indices.isEmpty())
-		{
-			return;
-		}
-
-		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, none, pattern);
-	}
-
-	void Polygon::PolygonDetail::draw(const Vec2& offset, const PatternParameters& pattern) const
+	void Polygon::PolygonDetail::draw(const Optional<Float2>& offset, const PatternParameters& pattern) const
 	{
 		if (m_indices.isEmpty())
 		{
@@ -809,6 +790,58 @@ namespace s3d
 		}
 
 		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, offset, pattern);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Polygon::PolygonDetail::drawFrame(const Optional<Float2>& offset, const double thickness, const ColorF& color) const
+	{
+		if (not m_polygon.outer())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+			m_polygon.outer(), offset,
+			Abs(static_cast<float>(thickness)), false,
+			CloseRing::Yes,
+			color.toFloat4());
+
+		for (const auto& hole : m_polygon.inners())
+		{
+			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+				m_polygon.outer(), offset,
+				Abs(static_cast<float>(thickness)), false,
+				CloseRing::Yes,
+				color.toFloat4());
+		}
+	}
+
+	void Polygon::PolygonDetail::drawFrame(const Optional<Float2>& offset, const double thickness, const PatternParameters& pattern) const
+	{
+		if (not m_polygon.outer())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+			m_polygon.outer(), offset,
+			Abs(static_cast<float>(thickness)), false,
+			CloseRing::Yes,
+			pattern);
+
+		for (const auto& hole : m_polygon.inners())
+		{
+			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+				m_polygon.outer(), offset,
+				Abs(static_cast<float>(thickness)), false,
+				CloseRing::Yes,
+				pattern);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
