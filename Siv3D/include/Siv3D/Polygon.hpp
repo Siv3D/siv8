@@ -959,24 +959,30 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形をワイヤフレーム表示で描画します。
-		///// @param thickness ワイヤフレームの太さ（ピクセル）
-		///// @param color 色
-		///// @return *this
-		//const Polygon& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
+		/// @brief 多角形をワイヤフレーム表示で描画します。
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const Polygon& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		///// @brief 多角形をワイヤフレーム表示で描画します。
-		///// @param x X 座標のオフセット
-		///// @param y Y 座標のオフセット
-		///// @param thickness ワイヤフレームの太さ（ピクセル）
-		///// @param color 色
-		//void drawWireframe(double x, double y, double thickness = 1.0, const ColorF& color = Palette::White) const;
+		/// @brief 多角形をワイヤフレーム表示で描画します。
+		/// @param x X 座標のオフセット
+		/// @param y Y 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param color 色
+		void drawWireframe(double x, double y, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		///// @brief 多角形をワイヤフレーム表示で描画します。
-		///// @param pos 座標のオフセット
-		///// @param thickness ワイヤフレームの太さ（ピクセル）
-		///// @param color 色
-		//void drawWireframe(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
+		/// @brief 多角形をワイヤフレーム表示で描画します。
+		/// @param pos 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param color 色
+		void drawWireframe(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		const Polygon& drawWireframe(double thickness, const PatternParameters& pattern) const;
+
+		void drawWireframe(double x, double y, double thickness, const PatternParameters& pattern) const;
+
+		void drawWireframe(const Vec2& pos, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -97,6 +97,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\BoundingRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Center.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Contains.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ConvexHull.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.ipp" />
@@ -1137,6 +1138,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FormatUtility\SivFormatUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_BoundingRect.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_ConvexHull.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_IsClockwise.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_PoleOfInaccessibility.cpp" />

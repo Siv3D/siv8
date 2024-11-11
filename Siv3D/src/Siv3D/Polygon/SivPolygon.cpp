@@ -739,6 +739,44 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawWireframe
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Polygon& Polygon::drawWireframe(const double thickness, const ColorF& color) const
+	{
+		pImpl->drawWireframe(none, thickness, color);
+		return *this;
+	}
+
+	void Polygon::drawWireframe(const double x, const double y, const double thickness, const ColorF& color) const
+	{
+		pImpl->drawWireframe(Float2{ x, y }, thickness, color);
+	}
+
+	void Polygon::drawWireframe(const Vec2& pos, const double thickness, const ColorF& color) const
+	{
+		pImpl->drawWireframe(Float2{ pos }, thickness, color);
+	}
+
+	const Polygon& Polygon::drawWireframe(const double thickness, const PatternParameters& pattern) const
+	{
+		pImpl->drawWireframe(none, thickness, pattern);
+		return *this;
+	}
+
+	void Polygon::drawWireframe(const double x, const double y, const double thickness, const PatternParameters& pattern) const
+	{
+		pImpl->drawWireframe(Float2{ x, y }, thickness, pattern);
+	}
+
+	void Polygon::drawWireframe(const Vec2& pos, const double thickness, const PatternParameters& pattern) const
+	{
+		pImpl->drawWireframe(Float2{ pos }, thickness, pattern);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Validate
 	//
 	////////////////////////////////////////////////////////////////

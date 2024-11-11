@@ -846,6 +846,63 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawWireframe
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Polygon::PolygonDetail::drawWireframe(const Optional<Float2>& offset, const double thickness, const ColorF& color) const
+	{
+		if (m_indices.isEmpty())
+		{
+			return;
+		}
+
+		const Float2* pVertex = m_vertices.data();
+		const TriangleIndex* pIndex = m_indices.data();
+		const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
+		const Float4 colorF = color.toFloat4();
+
+		while (pIndex != pIndexEnd)
+		{
+			const Vec2 points[3] = { pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2] };
+
+			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+				points, offset,
+				Abs(static_cast<float>(thickness)), false,
+				CloseRing::Yes,
+				colorF);
+
+			++pIndex;
+		}
+	}
+
+	void Polygon::PolygonDetail::drawWireframe(const Optional<Float2>& offset, const double thickness, const PatternParameters& pattern) const
+	{
+		if (m_indices.isEmpty())
+		{
+			return;
+		}
+
+		const Float2* pVertex = m_vertices.data();
+		const TriangleIndex* pIndex = m_indices.data();
+		const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
+
+		while (pIndex != pIndexEnd)
+		{
+			const Vec2 points[3] = { pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2] };
+
+			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+				points, offset,
+				Abs(static_cast<float>(thickness)), false,
+				CloseRing::Yes,
+				pattern);
+
+			++pIndex;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Validate
 	//
 	////////////////////////////////////////////////////////////////

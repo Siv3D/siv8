@@ -3987,6 +3987,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\WebBrowser.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ConvexHull.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6385,6 +6388,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\WebBrowser\SivWebBrowser_Windows.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\WebBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_ConvexHull.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

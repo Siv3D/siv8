@@ -896,9 +896,10 @@
 // 2D 幾何 | 2D geometry processing
 # include <Siv3D/Geometry2D/Intersect.hpp> // ToDo
 # include <Siv3D/Geometry2D/IntersectAt.hpp> // ToDo
-# include <Siv3D/Geometry2D/Contains.hpp> // ToDo
 # include <Siv3D/Geometry2D/Distance.hpp> // ToDo
 # include <Siv3D/Geometry2D/Center.hpp> // ToDo
+# include <Siv3D/Geometry2D/Contains.hpp> // ToDo
+# include <Siv3D/Geometry2D/ConvexHull.hpp> // ToDo
 # include <Siv3D/Geometry2D/IsClockwise.hpp> // ToDo
 # include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp> // ToDo
 # include <Siv3D/Geometry2D/Misc.hpp> // ToDo
