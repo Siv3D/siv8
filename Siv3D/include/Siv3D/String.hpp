@@ -377,7 +377,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr operator StringView() const noexcept;
+		constexpr operator StringView() const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -388,24 +388,24 @@ namespace s3d
 		/// @brief 文字列の先頭位置を指すイテレータを返します。
 		/// @return 文字列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator begin() noexcept;
+		constexpr iterator begin() noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の終端位置を指すイテレータを返します。
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 文字列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator end() noexcept;
+		constexpr iterator end() noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の先頭位置を指すイテレータを返します。
 		/// @return 文字列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator begin() const noexcept;
+		constexpr const_iterator begin() const noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の終端位置を指すイテレータを返します。
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 文字列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator end() const noexcept;
+		constexpr const_iterator end() const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -416,13 +416,13 @@ namespace s3d
 		/// @brief 文字列の先頭位置を指すイテレータを返します。
 		/// @return 文字列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cbegin() const noexcept;
+		constexpr const_iterator cbegin() const noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の終端位置を指すイテレータを返します。
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 文字列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cend() const noexcept;
+		constexpr const_iterator cend() const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -433,24 +433,24 @@ namespace s3d
 		/// @brief 文字列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 文字列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rbegin() noexcept;
+		constexpr reverse_iterator rbegin() noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の先端位置を指すリバース・イテレータを返します。
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 文字列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rend() noexcept;
+		constexpr reverse_iterator rend() noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 文字列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rbegin() const noexcept;
+		constexpr const_reverse_iterator rbegin() const noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の先端位置を指すリバース・イテレータを返します。
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 文字列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rend() const noexcept;
+		constexpr const_reverse_iterator rend() const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -461,13 +461,13 @@ namespace s3d
 		/// @brief 文字列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 文字列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crbegin() const noexcept;
+		constexpr const_reverse_iterator crbegin() const noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の先端位置を指すリバース・イテレータを返します。
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 文字列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crend() const noexcept;
+		constexpr const_reverse_iterator crend() const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -652,7 +652,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
-		constexpr iterator insert_range(const_iterator pos, Range&& range);
+		constexpr iterator insert_range(const_iterator pos, Range&& range) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -662,9 +662,9 @@ namespace s3d
 
 		constexpr String& erase(size_type offset = 0, size_type count = npos) SIV3D_LIFETIMEBOUND;
 
-		constexpr iterator erase(const_iterator pos) noexcept;
+		constexpr iterator erase(const_iterator pos) noexcept SIV3D_LIFETIMEBOUND;
 
-		constexpr iterator erase(const_iterator first, const_iterator last) noexcept;
+		constexpr iterator erase(const_iterator first, const_iterator last) noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1162,10 +1162,10 @@ namespace s3d
 		/// @param count 取得する文字数。末尾までの場合 npos
 		/// @return 部分文字列へのビュー
 		[[nodiscard]]
-		constexpr StringView substrView(size_type offset = 0, size_type count = npos) const&;
+		constexpr StringView substrView(size_type offset = 0, size_type count = npos) const& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr StringView substrView(size_type offset = 0, size_type count = npos)&& = delete;
+		constexpr StringView substrView(size_type offset = 0, size_type count = npos)&& = delete SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1233,14 +1233,14 @@ namespace s3d
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<value_type> subspan(size_type pos, size_type count) noexcept;
+		constexpr std::span<value_type> subspan(size_type pos, size_type count) noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 部分配列を指す span を返します。
 		/// @param pos 部分配列の開始位置
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<const value_type> subspan(size_type pos, size_type count) const noexcept;
+		constexpr std::span<const value_type> subspan(size_type pos, size_type count) const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
