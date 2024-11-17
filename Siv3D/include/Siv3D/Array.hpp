@@ -1327,7 +1327,7 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& remove_if(Fty f)& requires std::predicate<Fty&, const value_type&> SIV3D_LIFETIMEBOUND;
+		constexpr Array& remove_if(Fty f)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&> ;
 
 		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1398,7 +1398,7 @@ namespace s3d
 		/// @param newValue 新しい値
 		/// @return *this
 		template <class Fty>
-		constexpr Array& replace_if(Fty f, const value_type& newValue)& requires std::predicate<Fty&, const value_type&> SIV3D_LIFETIMEBOUND;
+		constexpr Array& replace_if(Fty f, const value_type& newValue)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>;
 		
 		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1509,7 +1509,7 @@ namespace s3d
 
 		/// @brief 要素を降順に並び替えます。
 		/// @return *this
-		constexpr Array& rsort()& requires Concept::LessThanComparable<value_type> SIV3D_LIFETIMEBOUND;
+		constexpr Array& rsort()& SIV3D_LIFETIMEBOUND requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を降順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
@@ -1604,7 +1604,7 @@ namespace s3d
 
 		/// @brief 要素を昇順に並び替えます。
 		/// @return *this
-		constexpr Array& sort()& requires Concept::LessThanComparable<value_type> SIV3D_LIFETIMEBOUND;
+		constexpr Array& sort()& SIV3D_LIFETIMEBOUND requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
@@ -1657,7 +1657,7 @@ namespace s3d
 		/// @param f 比較に使用する関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&> SIV3D_LIFETIMEBOUND;
+		constexpr Array& sort_by(Fty f)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1691,7 +1691,7 @@ namespace s3d
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えます。
 		/// @return *this
-		constexpr Array& stable_sort()& requires Concept::LessThanComparable<value_type> SIV3D_LIFETIMEBOUND;
+		constexpr Array& stable_sort()& SIV3D_LIFETIMEBOUND requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
@@ -1719,7 +1719,7 @@ namespace s3d
 		/// @param f 比較に使用する関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& stable_sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&> SIV3D_LIFETIMEBOUND;
+		constexpr Array& stable_sort_by(Fty f)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
