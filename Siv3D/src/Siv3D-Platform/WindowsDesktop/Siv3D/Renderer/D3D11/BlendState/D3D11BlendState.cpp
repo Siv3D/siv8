@@ -81,7 +81,7 @@ namespace s3d
 					.SrcBlendAlpha			= static_cast<D3D11_BLEND>(state.sourceAlpha),
 					.DestBlendAlpha			= static_cast<D3D11_BLEND>(state.destinationAlpha),
 					.BlendOpAlpha			= static_cast<D3D11_BLEND_OP>(state.alphaOperation),
-					.RenderTargetWriteMask	= ((state.writeA << 3) | (state.writeB << 2) | (state.writeG << 1) | uint32(state.writeR)),
+					.RenderTargetWriteMask	= UINT8((state.writeA << 3) | (state.writeB << 2) | (state.writeG << 1) | uint32(state.writeR)),
 				}
 			}
 		};
