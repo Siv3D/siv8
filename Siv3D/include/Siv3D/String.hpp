@@ -1165,7 +1165,7 @@ namespace s3d
 		constexpr StringView substrView(size_type offset = 0, size_type count = npos) const& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr StringView substrView(size_type offset = 0, size_type count = npos)&& = delete SIV3D_LIFETIMEBOUND;
+		constexpr StringView substrView(size_type offset = 0, size_type count = npos)&& SIV3D_LIFETIMEBOUND = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
