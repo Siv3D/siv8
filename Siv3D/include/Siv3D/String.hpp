@@ -204,32 +204,32 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr String& assign(size_type count, value_type ch);
+		constexpr String& assign(size_type count, value_type ch) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(const String& s);
+		constexpr String& assign(const String& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(const string_type& s);
+		constexpr String& assign(const string_type& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(const String& s, size_type pos, size_type count = npos);
+		constexpr String& assign(const String& s, size_type pos, size_type count = npos) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(const string_type& s, size_type pos, size_type count = npos);
+		constexpr String& assign(const string_type& s, size_type pos, size_type count = npos) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(String&& s) noexcept;
+		constexpr String& assign(String&& s) noexcept SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(string_type&& s) noexcept;
+		constexpr String& assign(string_type&& s) noexcept SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(const value_type* s, size_type count);
+		constexpr String& assign(const value_type* s, size_type count) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(const value_type* s);
+		constexpr String& assign(const value_type* s) SIV3D_LIFETIMEBOUND;
 
 		template <class Iterator>
-		constexpr String& assign(Iterator first, Iterator last);
+		constexpr String& assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(std::initializer_list<value_type> list);
+		constexpr String& assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(const StringViewLike auto& s);
+		constexpr String& assign(const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(const StringViewLike auto& s, size_type pos, size_type count = npos);
+		constexpr String& assign(const StringViewLike auto& s, size_type pos, size_type count = npos) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -238,7 +238,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
-		constexpr String& assign_range(Range&& range);
+		constexpr String& assign_range(Range&& range) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -258,10 +258,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr value_type& at(size_type index)&;
+		constexpr value_type& at(size_type index)& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr const value_type& at(size_type index) const&;
+		constexpr const value_type& at(size_type index) const& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
 		constexpr value_type at(size_type index)&&;
@@ -276,13 +276,13 @@ namespace s3d
 		/// @param index 要素の位置
 		/// @return 指定した位置の要素への参照
 		[[nodiscard]]
-		constexpr value_type& operator [](size_type index) & noexcept;
+		constexpr value_type& operator [](size_type index) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した位置の要素への参照を返します。
 		/// @param index 要素の位置
 		/// @return 指定した位置の要素への参照
 		[[nodiscard]]
-		constexpr const value_type& operator [](size_type index) const& noexcept;
+		constexpr const value_type& operator [](size_type index) const& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した位置の要素を返します。
 		/// @param index 要素の位置
@@ -300,13 +300,13 @@ namespace s3d
 		/// @remark 空の文字列に対しては使えません。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr value_type& front()& noexcept;
+		constexpr value_type& front()& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 先頭の要素への参照を返します。
 		/// @remark 空の文字列に対しては使えません。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr const value_type& front() const& noexcept;
+		constexpr const value_type& front() const& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 先頭の要素を返します。
 		/// @remark 空の文字列に対しては使えません。
@@ -324,13 +324,13 @@ namespace s3d
 		/// @remark 空の文字列に対しては使えません。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr value_type& back()& noexcept;
+		constexpr value_type& back()& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 末尾の要素への参照を返します。
 		/// @remark 空の文字列に対しては使えません。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr const value_type& back() const& noexcept;
+		constexpr const value_type& back() const& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 末尾の要素を返します。
 		/// @remark 空の文字列に対しては使えません。
@@ -345,10 +345,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr const value_type* data() const noexcept;
+		constexpr const value_type* data() const noexcept SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr value_type* data() noexcept;
+		constexpr value_type* data() noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -357,7 +357,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr const value_type* c_str() const noexcept;
+		constexpr const value_type* c_str() const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -366,10 +366,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr string_type& str() noexcept;
+		constexpr string_type& str() noexcept SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr const string_type& str() const noexcept;
+		constexpr const string_type& str() const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -622,28 +622,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr String& insert(size_type offset, size_type count, value_type ch);
+		constexpr String& insert(size_type offset, size_type count, value_type ch) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& insert(size_type offset, const value_type* s);
+		constexpr String& insert(size_type offset, const value_type* s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& insert(size_type offset, const value_type* s, size_type count);
+		constexpr String& insert(size_type offset, const value_type* s, size_type count) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& insert(size_type offset, const String& s);
+		constexpr String& insert(size_type offset, const String& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& insert(size_type offset, const String& s, size_type offset2, size_type count = npos);
+		constexpr String& insert(size_type offset, const String& s, size_type offset2, size_type count = npos) SIV3D_LIFETIMEBOUND;
 
-		constexpr iterator insert(const_iterator pos, value_type ch);
+		constexpr iterator insert(const_iterator pos, value_type ch) SIV3D_LIFETIMEBOUND;
 
-		constexpr iterator insert(const_iterator pos, size_type count, value_type ch);
+		constexpr iterator insert(const_iterator pos, size_type count, value_type ch) SIV3D_LIFETIMEBOUND;
 
 		template <class Iterator>
-		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last);
+		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
-		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list);
+		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& insert(size_type offset, const StringViewLike auto& s);
+		constexpr String& insert(size_type offset, const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& insert(size_type offset, const StringViewLike auto& s, size_type offset2, size_type count = npos);
+		constexpr String& insert(size_type offset, const StringViewLike auto& s, size_type offset2, size_type count = npos) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -660,7 +660,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr String& erase(size_type offset = 0, size_type count = npos);
+		constexpr String& erase(size_type offset = 0, size_type count = npos) SIV3D_LIFETIMEBOUND;
 
 		constexpr iterator erase(const_iterator pos) noexcept;
 
@@ -735,7 +735,7 @@ namespace s3d
 		/// @brief 文字を末尾に追加します。
 		/// @param ch 追加する文字
 		/// @return *this
-		constexpr String& operator <<(value_type ch);
+		constexpr String& operator <<(value_type ch) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -743,28 +743,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr String& append(value_type ch);
+		constexpr String& append(value_type ch) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(size_type count, value_type ch);
+		constexpr String& append(size_type count, value_type ch) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(const String& s);
+		constexpr String& append(const String& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(const string_type& s);
+		constexpr String& append(const string_type& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(const String& s, size_type offset, size_type count = npos);
+		constexpr String& append(const String& s, size_type offset, size_type count = npos) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(const value_type* s, size_type count);
+		constexpr String& append(const value_type* s, size_type count) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(const value_type* s);
+		constexpr String& append(const value_type* s) SIV3D_LIFETIMEBOUND;
 
 		template <class Iterator>
-		constexpr String& append(Iterator first, Iterator last);
+		constexpr String& append(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(std::initializer_list<value_type> list);
+		constexpr String& append(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(const StringViewLike auto& s);
+		constexpr String& append(const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(const StringViewLike auto& s, size_type pos, size_type count = npos);
+		constexpr String& append(const StringViewLike auto& s, size_type pos, size_type count = npos) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -773,7 +773,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
-		constexpr String& append_range(Range&& range);
+		constexpr String& append_range(Range&& range) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -799,20 +799,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr String& replace(size_type pos, size_type count, const String& s);
+		constexpr String& replace(size_type pos, size_type count, const String& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replate(const_iterator first, const_iterator last, const String& s);
+		constexpr String& replate(const_iterator first, const_iterator last, const String& s) SIV3D_LIFETIMEBOUND;
 		
-		constexpr String& replace(const_iterator first, const_iterator last, const value_type* s);
+		constexpr String& replace(const_iterator first, const_iterator last, const value_type* s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replate(const_iterator first, const_iterator last, const StringViewLike auto& s);
+		constexpr String& replate(const_iterator first, const_iterator last, const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replace(size_type pos, size_type count, const value_type* s);
+		constexpr String& replace(size_type pos, size_type count, const value_type* s) SIV3D_LIFETIMEBOUND;
 
 		template <class Iterator>
-		constexpr String& replace(const_iterator first, const_iterator last, Iterator newFirst, Iterator newLast);
+		constexpr String& replace(const_iterator first, const_iterator last, Iterator newFirst, Iterator newLast) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replace(size_type pos, size_type count, const StringViewLike auto& s);
+		constexpr String& replace(size_type pos, size_type count, const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1220,7 +1220,7 @@ namespace s3d
 		/// @brief 文字列を UTF-32 文字列に変換します。
 		/// @return 変換された文字列
 		[[nodiscard]]
-		constexpr const std::u32string& toUTF32() const noexcept;
+		constexpr const std::u32string& toUTF32() const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1303,7 +1303,7 @@ namespace s3d
 
 		/// @brief 最初に登場する英字を大文字にします。
 		/// @return *this
-		String& capitalize()& noexcept;
+		String& capitalize()& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 最初に登場する英字を大文字にした文字列を返します。
 		/// @return 新しい文字列
@@ -1329,12 +1329,12 @@ namespace s3d
 		/// @brief 文字列の要素を 1 つランダムに返します。
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice()&;
+		value_type& choice()& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の要素を 1 つランダムに返します。
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice() const&;
+		const value_type& choice() const& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の要素を 1 つランダムに返します。
 		/// @return 文字列からランダムに選ばれた要素
@@ -1345,13 +1345,13 @@ namespace s3d
 		/// @param rbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg)&;
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg)& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、文字列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
@@ -1539,7 +1539,7 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return *this
 		template <class Fty>
-		constexpr String& keep_if(Fty f) requires std::predicate<Fty&, const value_type&>;
+		constexpr String& keep_if(Fty f) SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1564,7 +1564,7 @@ namespace s3d
 		/// @param fillChar 埋め文字
 		/// @remark 元の文字列の長さが `length` より大きい場合、変更は行われません。 
 		/// @return *this
-		String& leftPad(size_type length, value_type fillChar = U' ') & noexcept;
+		String& leftPad(size_type length, value_type fillChar = U' ') & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の左を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の左を埋め文字で埋めた後の文字列の長さ
@@ -1610,7 +1610,7 @@ namespace s3d
 
 		/// @brief 英字をすべて小文字にします。
 		/// @return *this
-		String& lowercase()& noexcept;
+		String& lowercase()& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 英字をすべて小文字にした新しい文字列を返します。
 		/// @return 新しい文字列
@@ -1635,7 +1635,7 @@ namespace s3d
 
 		/// @brief 文字列の先頭に付いている空白文字を削除します。
 		/// @return *this
-		String& leftTrim() & noexcept;
+		String& leftTrim() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の先頭に付いている空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
@@ -1689,12 +1689,12 @@ namespace s3d
 		/// @brief 指定した文字を文字列から削除します。
 		/// @param ch 削除する文字
 		/// @return *this
-		String& remove(value_type ch) & noexcept;
+		String& remove(value_type ch) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した文字列をもとの文字列から削除します。
 		/// @param s 削除する文字列
 		/// @return *this
-		String& remove(StringView s) & noexcept;
+		String& remove(StringView s) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
 		/// @param ch 削除する文字
@@ -1742,7 +1742,7 @@ namespace s3d
 		/// @param index インデックス
 		/// @remark 範囲外のインデックスを指定した場合、何もしません。
 		/// @return *this
-		String& remove_at(size_type index) & noexcept;
+		String& remove_at(size_type index) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
 		/// @param index インデックス
@@ -1776,7 +1776,7 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return *this
 		template <class Fty>
-		constexpr String& remove_if(Fty f) & noexcept requires std::predicate<Fty&, const value_type&>;
+		constexpr String& remove_if(Fty f) & noexcept SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1824,7 +1824,7 @@ namespace s3d
 		/// @param oldChar 置換対象の文字
 		/// @param newChar 置換後の文字
 		/// @return *this
-		String& replace(value_type oldChar, value_type newChar)& noexcept;
+		String& replace(value_type oldChar, value_type newChar)& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した文字を置換した新しい文字列を返します。
 		/// @param oldChar 置換対象の文字
@@ -1850,7 +1850,7 @@ namespace s3d
 		/// @param oldStr 置換対象の文字列
 		/// @param newStr 置換後の文字列
 		/// @return *this
-		String& replace(StringView oldStr, StringView newStr)&;
+		String& replace(StringView oldStr, StringView newStr)& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した文字列を置換した新しい文字列を返します。
 		/// @param oldStr 置換対象の文字列
@@ -1878,7 +1878,7 @@ namespace s3d
 		/// @param newChar 置換後の文字
 		/// @return *this
 		template <class Fty>
-		constexpr String& replace_if(Fty f, value_type newChar) & noexcept requires std::predicate<Fty&, const value_type&>;
+		constexpr String& replace_if(Fty f, value_type newChar) & noexcept SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 指定した条件を満たす要素を別の文字に置き換えた新しい文字列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1917,7 +1917,7 @@ namespace s3d
 		/// @param regexp 置換対象の正規表現
 		/// @param replacement マッチした部分文字列を置換する文字列
 		/// @return *this
-		String& replaceFirst(const RegExp& regexp, StringView replacement);
+		String& replaceFirst(const RegExp& regexp, StringView replacement) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した正規表現にマッチする最初の部分文字列を置換した新しい文字列を返します。
 		/// @param regexp 置換対象の正規表現
@@ -1936,7 +1936,7 @@ namespace s3d
 		/// @param regexp 置換対象の正規表現
 		/// @param replacement マッチした部分文字列を置換する文字列
 		/// @return *this
-		String& replaceAll(const RegExp& regexp, StringView replacement);
+		String& replaceAll(const RegExp& regexp, StringView replacement) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した正規表現にマッチする部分文字列を置換した新しい文字列を返します。
 		/// @param regexp 置換対象の正規表現
@@ -1953,7 +1953,7 @@ namespace s3d
 
 		/// @brief 文字列を反転します。
 		/// @return *this
-		String& reverse() & noexcept;
+		String& reverse() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列を反転した文字列を返します。
 		/// @return 新しい文字列
@@ -1999,7 +1999,7 @@ namespace s3d
 		/// @param fillChar 埋め文字
 		/// @remark 元の文字列の長さが `length` より大きい場合、変更は行われません。 
 		/// @return *this
-		String& rightPad(size_type length, value_type fillChar = U' ') & noexcept;
+		String& rightPad(size_type length, value_type fillChar = U' ') & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の右を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の右を埋め文字で埋めた後の文字列の長さ
@@ -2033,7 +2033,7 @@ namespace s3d
 
 		/// @brief 文字列の末尾に付いている空白文字を削除します。
 		/// @return *this
-		String& rightTrim() & noexcept;
+		String& rightTrim() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の末尾に付いている空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2061,7 +2061,7 @@ namespace s3d
 		/// @remark index が文字列の長さ以上の場合、入れ替えは行われません。
 		/// @remark .rotate(2) の場合、"abcd" は "cdab" になります。
 		/// @return *this
-		String& rotate(size_type index) & noexcept;
+		String& rotate(size_type index) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した位置を中心に前半と後半を入れ替えた新しい文字列を返します。
 		/// @param index 入れ替える位置
@@ -2092,7 +2092,7 @@ namespace s3d
 
 		/// @brief 要素を降順にソートします。
 		/// @return *this
-		String& rsort() & noexcept;
+		String& rsort() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 要素を降順にソートした新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2117,7 +2117,7 @@ namespace s3d
 	
 		/// @brief 要素をシャッフルします。
 		/// @return *this
-		String& shuffle() & noexcept;
+		String& shuffle() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 要素をシャッフルした新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2137,7 +2137,7 @@ namespace s3d
 		/// @brief 指定された乱数生成器を使って要素をシャッフルします。
 		/// @param rbg 乱数生成器
 		/// @return *this
-		String& shuffle(Concept::UniformRandomBitGenerator auto&& rbg) & noexcept;
+		String& shuffle(Concept::UniformRandomBitGenerator auto&& rbg) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定された乱数生成器を使って要素をシャッフルした新しい文字列を返します。
 		/// @param rbg 乱数生成器
@@ -2165,7 +2165,7 @@ namespace s3d
 		
 		/// @brief 要素を昇順にソートします。
 		/// @return *this
-		String& sort() & noexcept;
+		String& sort() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 要素を昇順にソートした新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2193,7 +2193,7 @@ namespace s3d
 		/// @param f 比較関数
 		/// @return *this
 		template <class Fty>
-		String& sort_by(Fty f) & noexcept requires std::predicate<Fty&, const value_type&, const value_type&>;
+		String& sort_by(Fty f) & noexcept SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&, const value_type&>;
 		
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -2263,7 +2263,7 @@ namespace s3d
 
 		/// @brief 英字の大文字と小文字を入れ替えます。
 		/// @return *this
-		String& swapcase() & noexcept;
+		String& swapcase() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 英字の大文字と小文字を入れ替えた文字列を返します。
 		/// @return 新しい文字列
@@ -2332,7 +2332,7 @@ namespace s3d
 
 		/// @brief 文字列の先頭と末尾に付いている空白文字を削除します。
 		/// @return *this
-		String& trim()& noexcept;
+		String& trim()& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の先頭と末尾に付いている空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2357,7 +2357,7 @@ namespace s3d
 
 		/// @brief 英字をすべて大文字にします。
 		/// @return *this
-		String& uppercase() & noexcept;
+		String& uppercase() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 英字をすべて大文字にした新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2382,7 +2382,7 @@ namespace s3d
 		
 		/// @brief 文字列をソートせずに、重複する文字を削除します。
 		/// @return *this
-		String& stable_unique() & noexcept;
+		String& stable_unique() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列をソートせずに、重複する文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2402,7 +2402,7 @@ namespace s3d
 
 		/// @brief 文字列をソートしたあとに重複する文字を削除します。
 		/// @return *this
-		String& sort_and_unique() & noexcept;
+		String& sort_and_unique() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列をソートしたあとに重複する文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2427,7 +2427,7 @@ namespace s3d
 
 		/// @brief 同じ文字が連続する場合、その先頭以外を除去します。
 		/// @return *this
-		String& unique_consecutive() & noexcept;
+		String& unique_consecutive() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 同じ文字が連続する場合、その先頭以外を除去した新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2466,7 +2466,7 @@ namespace s3d
 		/// @brief XML エスケープを行います。
 		/// @remark &quot;, \, &amp;, &gt;, &lt; のエスケープを行います
 		/// @return *this
-		String& xml_escape();
+		String& xml_escape() SIV3D_LIFETIMEBOUND;
 
 		/// @brief XML エスケープした文字列を返します。
 		/// @remark &quot;, \, &amp;, &gt;, &lt; のエスケープを行います
