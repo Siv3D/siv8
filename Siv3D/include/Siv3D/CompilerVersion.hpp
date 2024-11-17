@@ -12,12 +12,12 @@
 # pragma once
 # include "Platform.hpp"
 
-// Visual Studio 2022 17.11 以降が必要です。
-// Visual Studio 2022 17.11 or later is required.
+// Visual Studio 2022 17.12 以降が必要です。
+// Visual Studio 2022 17.12 or later is required.
 
-# if (SIV3D_COMPILER(MSVC) && (_MSC_VER < 1941))
+# if (SIV3D_COMPILER(MSVC) && (_MSC_VER < 1942))
 
-	# pragma message("Siv3D は Visual Studio 2022 version 17.11 以降が必要です。Visual Studio をアップデートしてください。")
-	# error "Siv3D requires Visual Studio 2022 version 17.11 or later. Please update your Visual Studio installation."
+	# pragma message("Siv3D は Visual Studio 2022 version 17.12 以降が必要です。Visual Studio をアップデートしてください。")
+	# error "Siv3D requires Visual Studio 2022 version 17.12 or later. Please update your Visual Studio installation."
 
 # endif

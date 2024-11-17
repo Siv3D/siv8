@@ -2918,6 +2918,45 @@ namespace s3d
 
 			//////////////////////////////////////////////////
 			//
+			//	ClampAngle_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct ClampAngle_impl
+			{
+				[[nodiscard]]
+				double operator ()(const Concept::Arithmetic auto angle, const Concept::Arithmetic auto min, const Concept::Arithmetic auto max) const noexcept
+				{
+					const auto start = ((min + max) * 0.5 - Pi);
+					
+					const auto floor = (std::floor((angle - start) / TwoPi) * TwoPi);
+					
+					return Clamp(angle, (min + floor), (max + floor));
+				}
+
+				[[nodiscard]]
+				float operator ()(const float angle, const float min, const float max) const noexcept
+				{
+					const float start = ((min + max) * 0.5f - PiF);
+					
+					const float floor = (std::floor((angle - start) / TwoPiF) * TwoPiF);
+					
+					return Clamp(angle, (min + floor), (max + floor));
+				}
+
+				[[nodiscard]]
+				double operator ()(const double angle, const double min, const double max) const noexcept
+				{
+					const double start = ((min + max) * 0.5 - Pi);
+					
+					const double floor = (std::floor((angle - start) / TwoPi) * TwoPi);
+					
+					return Clamp(angle, (min + floor), (max + floor));
+				}
+			};
+
+			//////////////////////////////////////////////////
+			//
 			//	NormalizeAngle_impl
 			//
 			//////////////////////////////////////////////////
