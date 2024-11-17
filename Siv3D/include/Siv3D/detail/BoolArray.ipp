@@ -307,7 +307,7 @@ namespace s3d
 		constexpr Array(std::initializer_list<value_type> list, const Allocator& alloc = Allocator{})
 			: m_container(list, alloc) {}
 
-# ifdef __cpp_lib_containers_ranges
+	# ifdef __cpp_lib_containers_ranges
 
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
@@ -318,7 +318,7 @@ namespace s3d
 		constexpr Array(std::from_range_t, Range&& range, const Allocator& alloc = Allocator{})
 			: m_container(std::from_range, std::forward<Range>(range), alloc) {}
 
-# endif
+	# endif
 
 		/// @brief ジェネレータ関数を使って配列を作成します。
 		/// @param size 作成する配列の要素数
@@ -570,7 +570,7 @@ namespace s3d
 		/// @brief 先頭の要素への参照を返します。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr reference front() & noexcept SIV3D_LIFETIMEBOUND
+		constexpr reference front()& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.front();
 		}
@@ -600,7 +600,7 @@ namespace s3d
 		/// @brief 末尾の要素への参照を返します。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr reference back() & noexcept SIV3D_LIFETIMEBOUND
+		constexpr reference back()& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.back();
 		}
@@ -2159,7 +2159,7 @@ namespace s3d
 		/// @brief 要素を降順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array rsort()&&
+		constexpr Array rsort() &&
 		{
 			return std::move(rsort());
 		}
@@ -2180,7 +2180,7 @@ namespace s3d
 		/// @brief 要素を降順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array rsorted()&&
+		constexpr Array rsorted() &&
 		{
 			return std::move(rsort());
 		}
@@ -2271,7 +2271,7 @@ namespace s3d
 		/// @brief 要素を昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sort()&&
+		constexpr Array sort() &&
 		{
 			return std::move(sort());
 		}
@@ -2292,7 +2292,7 @@ namespace s3d
 		/// @brief 要素を昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sorted()&&
+		constexpr Array sorted() &&
 		{
 			return std::move(sort());
 		}
@@ -2398,7 +2398,7 @@ namespace s3d
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array stable_sorted()&&
+		constexpr Array stable_sorted() &&
 		{
 			return std::move(sort());
 		}
