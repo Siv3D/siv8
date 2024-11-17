@@ -64,10 +64,10 @@ namespace s3d
 		constexpr StringView() = default;
 
 		[[nodiscard]] 
-		constexpr StringView(const StringView&) = default;
+		constexpr StringView(const StringView& SIV3D_LIFETIMEBOUND) = default;
 
 		[[nodiscard]] 
-		constexpr StringView(const std::u32string& s) noexcept;
+		constexpr StringView(const std::u32string& s SIV3D_LIFETIMEBOUND) noexcept;
 
 		[[nodiscard]] 
 		constexpr StringView(std::u32string_view s) noexcept;
