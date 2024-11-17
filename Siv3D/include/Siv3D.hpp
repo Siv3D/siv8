@@ -43,7 +43,7 @@
 # include <Siv3D/Platform.hpp>
 
 // コンパイラのバージョン | Compiler version
-# include <Siv3D/CompilerVersion.hpp> // ToDo
+# include <Siv3D/CompilerVersion.hpp>
 
 // 基本型のエイリアス | Type aliases
 # include <Siv3D/Types.hpp>
@@ -241,8 +241,8 @@
 // 非同期タスク | Asynchronous task
 # include <Siv3D/AsyncTask.hpp>
 
-//// 子プロセス | Child process
-//# include <Siv3D/ChildProcess.hpp>
+// 子プロセス | Child process
+# include <Siv3D/ChildProcess.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1584,7 +1584,7 @@
 
 
 
-
+# include <Siv3D/Pipe.hpp>
 
 
 # include <Siv3D/EngineOption.hpp>

@@ -1006,6 +1006,15 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\WebBrowser">
       <UniqueIdentifier>{bbfc247f-2c1e-49d1-b2d9-718b583ff3fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Pipe">
+      <UniqueIdentifier>{e8470321-bcc4-4d02-9972-c7b7b011d0a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ChildProcess">
+      <UniqueIdentifier>{69990c5f-fe14-4444-9cee-b5654174446d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess">
+      <UniqueIdentifier>{11393b10-2f63-49cc-8dad-9b448a03f01b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3990,6 +3999,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ConvexHull.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pipe.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ChildProcess.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess\ChildProcessDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6391,6 +6409,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_ConvexHull.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Pipe\SivPipe.cpp">
+      <Filter>src\Siv3D\Pipe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ChildProcess\SivChildProcess.cpp">
+      <Filter>src\Siv3D\ChildProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess\ChildProcessDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

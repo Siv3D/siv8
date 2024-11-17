@@ -32,6 +32,12 @@
 	# pragma comment (lib, "zlib/zlib" SIV3D_DEBUG_LIB_SUFFIX(d))
 	# pragma comment (lib, "siv3d/Siv3D" SIV3D_DEBUG_LIB_SUFFIX(_d))
 
+	# if SIV3D_BUILD(DEBUG)
+	#	pragma comment (lib, "boost/libboost_filesystem-vc143-mt-sgd-x64-1_83")
+	# else
+	#	pragma comment (lib, "boost/libboost_filesystem-vc143-mt-s-x64-1_83")
+	# endif
+
 	# if (SIV3D_USE_MIMALLOC)
 	#	pragma comment (lib, "mimalloc/mimalloc-static" SIV3D_DEBUG_LIB_SUFFIX(_d))
 	# endif
