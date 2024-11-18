@@ -500,6 +500,16 @@
 		F934BD9C2BFA59000003EAD5 /* SivEngineOption.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD972BFA59000003EAD5 /* SivEngineOption.cpp */; };
 		F934BD9D2BFA59000003EAD5 /* SivHLSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD992BFA59000003EAD5 /* SivHLSL.cpp */; };
 		F934BD9F2BFA59320003EAD5 /* HLSL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD9E2BFA59320003EAD5 /* HLSL.hpp */; };
+		F944BAA52CEACE0700CC4D42 /* ConvexHull.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA42CEACE0700CC4D42 /* ConvexHull.hpp */; };
+		F944BAA72CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F944BAA62CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp */; };
+		F944BAAA2CEACF4300CC4D42 /* Pipe.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA92CEACF4300CC4D42 /* Pipe.hpp */; };
+		F944BAAB2CEACF4300CC4D42 /* ChildProcess.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA82CEACF4300CC4D42 /* ChildProcess.hpp */; };
+		F944BAB02CEACF6C00CC4D42 /* SivChildProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F944BAAC2CEACF6C00CC4D42 /* SivChildProcess.cpp */; };
+		F944BAB12CEACF6C00CC4D42 /* SivPipe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F944BAAE2CEACF6C00CC4D42 /* SivPipe.cpp */; };
+		F944BAB52CEACFAB00CC4D42 /* ChildProcessDetail.mm in Sources */ = {isa = PBXBuildFile; fileRef = F944BAB32CEACFAB00CC4D42 /* ChildProcessDetail.mm */; };
+		F944BAB62CEACFAB00CC4D42 /* ChildProcessDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAB22CEACFAB00CC4D42 /* ChildProcessDetail.hpp */; };
+		F944BABA2CEAD93900CC4D42 /* NSTaskWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAB82CEAD93900CC4D42 /* NSTaskWrapper.hpp */; };
+		F944BABB2CEAD93900CC4D42 /* NSTaskWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F944BAB92CEAD93900CC4D42 /* NSTaskWrapper.mm */; };
 		F95121F52CB125F100151291 /* IntersectAt.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F02CB125F000151291 /* IntersectAt.hpp */; };
 		F95121F62CB125F100151291 /* Distance.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F12CB125F100151291 /* Distance.hpp */; };
 		F95121F72CB125F100151291 /* Misc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F22CB125F100151291 /* Misc.hpp */; };
@@ -2883,6 +2893,16 @@
 		F934BD972BFA59000003EAD5 /* SivEngineOption.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEngineOption.cpp; sourceTree = "<group>"; };
 		F934BD992BFA59000003EAD5 /* SivHLSL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivHLSL.cpp; sourceTree = "<group>"; };
 		F934BD9E2BFA59320003EAD5 /* HLSL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HLSL.hpp; sourceTree = "<group>"; };
+		F944BAA42CEACE0700CC4D42 /* ConvexHull.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ConvexHull.hpp; sourceTree = "<group>"; };
+		F944BAA62CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_ConvexHull.cpp; sourceTree = "<group>"; };
+		F944BAA82CEACF4300CC4D42 /* ChildProcess.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcess.hpp; sourceTree = "<group>"; };
+		F944BAA92CEACF4300CC4D42 /* Pipe.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Pipe.hpp; sourceTree = "<group>"; };
+		F944BAAC2CEACF6C00CC4D42 /* SivChildProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivChildProcess.cpp; sourceTree = "<group>"; };
+		F944BAAE2CEACF6C00CC4D42 /* SivPipe.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPipe.cpp; sourceTree = "<group>"; };
+		F944BAB22CEACFAB00CC4D42 /* ChildProcessDetail.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcessDetail.hpp; sourceTree = "<group>"; };
+		F944BAB32CEACFAB00CC4D42 /* ChildProcessDetail.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ChildProcessDetail.mm; sourceTree = "<group>"; };
+		F944BAB82CEAD93900CC4D42 /* NSTaskWrapper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSTaskWrapper.hpp; sourceTree = "<group>"; };
+		F944BAB92CEAD93900CC4D42 /* NSTaskWrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NSTaskWrapper.mm; sourceTree = "<group>"; };
 		F95121F02CB125F000151291 /* IntersectAt.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IntersectAt.hpp; sourceTree = "<group>"; };
 		F95121F12CB125F100151291 /* Distance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Distance.hpp; sourceTree = "<group>"; };
 		F95121F22CB125F100151291 /* Misc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Misc.hpp; sourceTree = "<group>"; };
@@ -5650,6 +5670,7 @@
 				F9766B732C29C75E00DE4107 /* Camera2DControl.hpp */,
 				F9766B722C29C75E00DE4107 /* Camera2DControlBuilder.hpp */,
 				F9070BC62B9F175000383E4D /* Char.hpp */,
+				F944BAA82CEACF4300CC4D42 /* ChildProcess.hpp */,
 				F9D41CE62C99730500290998 /* Choice.hpp */,
 				F98605272BD10459006A4C0F /* Circle.hpp */,
 				F9E7943E2C158B8F002615BA /* Circular.hpp */,
@@ -5817,6 +5838,7 @@
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
 				F9E794472C1973FC002615BA /* Periodic.hpp */,
+				F944BAA92CEACF4300CC4D42 /* Pipe.hpp */,
 				F934BD6E2BF880330003EAD5 /* PixelShader.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
 				F9528C942BC1205300222F45 /* PNGFilter.hpp */,
@@ -6465,6 +6487,7 @@
 				F9766B7C2C29C7A600DE4107 /* Camera2D */,
 				F9766B7E2C29C7A600DE4107 /* Camera2DControl */,
 				F9766B802C29C7A700DE4107 /* Camera2DControlBuilder */,
+				F944BAAD2CEACF6C00CC4D42 /* ChildProcess */,
 				F9E794252C1203A3002615BA /* Circle */,
 				F9070D272B9F175E00383E4D /* Color */,
 				F9070D292B9F175E00383E4D /* ColorF */,
@@ -6568,6 +6591,7 @@
 				F9070D742B9F175E00383E4D /* ParseErrorReason */,
 				F9070D762B9F175E00383E4D /* ParseFloat */,
 				F9070D782B9F175E00383E4D /* ParseInt */,
+				F944BAAF2CEACF6C00CC4D42 /* Pipe */,
 				F934BD772BF880620003EAD5 /* PixelShader */,
 				F9070D7A2B9F175E00383E4D /* Point */,
 				F9528B9C2BBC771000222F45 /* Point3D */,
@@ -6653,6 +6677,7 @@
 			isa = PBXGroup;
 			children = (
 				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
+				F944BAB42CEACFAB00CC4D42 /* ChildProcess */,
 				F9E794842C2493FF002615BA /* ConstantBuffer */,
 				F98605812BDA7E32006A4C0F /* Cursor */,
 				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
@@ -6959,6 +6984,33 @@
 				F934BD992BFA59000003EAD5 /* SivHLSL.cpp */,
 			);
 			path = HLSL;
+			sourceTree = "<group>";
+		};
+		F944BAAD2CEACF6C00CC4D42 /* ChildProcess */ = {
+			isa = PBXGroup;
+			children = (
+				F944BAAC2CEACF6C00CC4D42 /* SivChildProcess.cpp */,
+			);
+			path = ChildProcess;
+			sourceTree = "<group>";
+		};
+		F944BAAF2CEACF6C00CC4D42 /* Pipe */ = {
+			isa = PBXGroup;
+			children = (
+				F944BAAE2CEACF6C00CC4D42 /* SivPipe.cpp */,
+			);
+			path = Pipe;
+			sourceTree = "<group>";
+		};
+		F944BAB42CEACFAB00CC4D42 /* ChildProcess */ = {
+			isa = PBXGroup;
+			children = (
+				F944BAB82CEAD93900CC4D42 /* NSTaskWrapper.hpp */,
+				F944BAB92CEAD93900CC4D42 /* NSTaskWrapper.mm */,
+				F944BAB22CEACFAB00CC4D42 /* ChildProcessDetail.hpp */,
+				F944BAB32CEACFAB00CC4D42 /* ChildProcessDetail.mm */,
+			);
+			path = ChildProcess;
 			sourceTree = "<group>";
 		};
 		F95121FF2CB62E2300151291 /* RectanglePack */ = {
@@ -7437,6 +7489,7 @@
 				F951223F2CB822FF00151291 /* BoundingRect.hpp */,
 				F95121F32CB125F100151291 /* Center.hpp */,
 				F95121F42CB125F100151291 /* Contains.hpp */,
+				F944BAA42CEACE0700CC4D42 /* ConvexHull.hpp */,
 				F95121F12CB125F100151291 /* Distance.hpp */,
 				F96F96092C359F070033353E /* Intersect.hpp */,
 				F95121F02CB125F000151291 /* IntersectAt.hpp */,
@@ -7452,10 +7505,11 @@
 		F96F960F2C3712DC0033353E /* Geometry2D */ = {
 			isa = PBXGroup;
 			children = (
-				F9F00A432CD298D50097C165 /* SivGeometry2D_PoleOfInaccessibility.cpp */,
-				F9F00A412CD298CB0097C165 /* SivGeometry2D_IsClockwise.cpp */,
 				F95122412CB8232300151291 /* SivGeometry2D_BoundingRect.cpp */,
+				F944BAA62CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp */,
 				F96F960E2C3712DC0033353E /* SivGeometry2D_Intersect.cpp */,
+				F9F00A412CD298CB0097C165 /* SivGeometry2D_IsClockwise.cpp */,
+				F9F00A432CD298D50097C165 /* SivGeometry2D_PoleOfInaccessibility.cpp */,
 			);
 			path = Geometry2D;
 			sourceTree = "<group>";
@@ -10392,6 +10446,8 @@
 				F98603792BCFBB54006A4C0F /* SkOTTable_gasp.h in Headers */,
 				F98601AB2BCFBB53006A4C0F /* SkDrawShadowInfo.h in Headers */,
 				F9528B992BBC76EA00222F45 /* Step3D.ipp in Headers */,
+				F944BAAA2CEACF4300CC4D42 /* Pipe.hpp in Headers */,
+				F944BAAB2CEACF4300CC4D42 /* ChildProcess.hpp in Headers */,
 				F986FA9E2BCFB53B006A4C0F /* tttables.h in Headers */,
 				F9528C3C2BBF026F00222F45 /* zstd_decompress_block.h in Headers */,
 				F98601FB2BCFBB53006A4C0F /* SkMeshPriv.h in Headers */,
@@ -10544,6 +10600,7 @@
 				F98602412BCFBB54006A4C0F /* SkRecordDraw.h in Headers */,
 				F96F95EA2C359E390033353E /* InputDeviceType.hpp in Headers */,
 				F98600662BCFBB53006A4C0F /* SkShaderMaskFilter.h in Headers */,
+				F944BAB62CEACFAB00CC4D42 /* ChildProcessDetail.hpp in Headers */,
 				F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */,
 				F9528CA62BC1209900222F45 /* zlib.h in Headers */,
 				F9F00A4E2CD2993F0097C165 /* PointsPerCircle.ipp in Headers */,
@@ -10888,6 +10945,7 @@
 				F9528C672BC05B0200222F45 /* BMPEncoder.hpp in Headers */,
 				F986000B2BCFBB53006A4C0F /* SkColorType.h in Headers */,
 				F98600492BCFBB53006A4C0F /* SkTextureCompressionType.h in Headers */,
+				F944BAA52CEACE0700CC4D42 /* ConvexHull.hpp in Headers */,
 				F934BD732BF880330003EAD5 /* ShaderStage.hpp in Headers */,
 				F986052C2BD10459006A4C0F /* Line.hpp in Headers */,
 				F980C45E2C01B20F00A86B68 /* BlendStateBuilder.hpp in Headers */,
@@ -11024,6 +11082,7 @@
 				F986FA512BCFB53B006A4C0F /* svprop.h in Headers */,
 				F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */,
 				F9E5FC2D2BC15AEE0081A4F7 /* SIMDMath.hpp in Headers */,
+				F944BABA2CEAD93900CC4D42 /* NSTaskWrapper.hpp in Headers */,
 				F986FA492BCFB53B006A4C0F /* svgldict.h in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
 				F97203182BF09E2E000E21DD /* SceneStyle.hpp in Headers */,
@@ -12081,6 +12140,7 @@
 				F98601ED2BCFBB53006A4C0F /* SkMasks.cpp in Sources */,
 				F98600EB2BCFBB53006A4C0F /* SkThreadID.cpp in Sources */,
 				F98601772BCFBB53006A4C0F /* SkCachedData.cpp in Sources */,
+				F944BABB2CEAD93900CC4D42 /* NSTaskWrapper.mm in Sources */,
 				F98602032BCFBB53006A4C0F /* SkMipmapDrawDownSampler.cpp in Sources */,
 				F9070DD32B9F175E00383E4D /* SivHSV.cpp in Sources */,
 				F98603DF2BCFBB54006A4C0F /* SkSLSPIRVtoHLSL.cpp in Sources */,
@@ -12450,6 +12510,7 @@
 				F986047A2BCFBB54006A4C0F /* SkSLMangler.cpp in Sources */,
 				F986045C2BCFBB54006A4C0F /* SkSLFindAndDeclareBuiltinStructs.cpp in Sources */,
 				F9528B4C2BB69EAD00222F45 /* SivBigFloat.cpp in Sources */,
+				F944BAA72CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp in Sources */,
 				F9D41CF72C9FCDE900290998 /* Vertex2DBuilder_StraightEdged.cpp in Sources */,
 				F98603F42BCFBB54006A4C0F /* SkSLConstructorDiagonalMatrix.cpp in Sources */,
 				F9070DFD2B9F175E00383E4D /* SivUUIDValue.cpp in Sources */,
@@ -12524,6 +12585,8 @@
 				F9D41CF62C9FCDE900290998 /* Vertex2DBuilder_Rounded.cpp in Sources */,
 				F9070DB62B9F175E00383E4D /* SivColorF.cpp in Sources */,
 				F98601502BCFBB53006A4C0F /* SkAutoPixmapStorage.cpp in Sources */,
+				F944BAB02CEACF6C00CC4D42 /* SivChildProcess.cpp in Sources */,
+				F944BAB12CEACF6C00CC4D42 /* SivPipe.cpp in Sources */,
 				F98602192BCFBB54006A4C0F /* SkPathRef.cpp in Sources */,
 				F9070DC32B9F175E00383E4D /* EmptyFactory.cpp in Sources */,
 				F98602112BCFBB54006A4C0F /* SkPathBuilder.cpp in Sources */,
@@ -12596,6 +12659,7 @@
 				F98603C72BCFBB54006A4C0F /* SkSLIsSameExpressionTree.cpp in Sources */,
 				F98601A32BCFBB53006A4C0F /* SkDraw_vertices.cpp in Sources */,
 				F9528C892BC05B5B00222F45 /* ImageEncoderFactory.cpp in Sources */,
+				F944BAB52CEACFAB00CC4D42 /* ChildProcessDetail.mm in Sources */,
 				F98602282BCFBB54006A4C0F /* SkPixmap.cpp in Sources */,
 				F98604DC2BCFBB54006A4C0F /* SkJSONWriter.cpp in Sources */,
 				F9070DBF2B9F175E00383E4D /* SivDemangle.cpp in Sources */,
