@@ -342,7 +342,7 @@
 
 	# define SIV3D_LIFETIMEBOUND [[msvc::lifetimebound]]
 
-# elif SIV3D_COMPILER(Clang)
+# elif SIV3D_COMPILER(CLANG)
 
 	# define SIV3D_LIFETIMEBOUND [[clang::lifetimebound]]
 

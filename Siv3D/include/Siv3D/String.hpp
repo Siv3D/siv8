@@ -227,9 +227,9 @@ namespace s3d
 
 		constexpr String& assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& assign(const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
+		constexpr String& assign(const StringViewLike auto& s);
 
-		constexpr String& assign(const StringViewLike auto& s, size_type pos, size_type count = npos) SIV3D_LIFETIMEBOUND;
+		constexpr String& assign(const StringViewLike auto& s, size_type pos, size_type count = npos);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -641,9 +641,9 @@ namespace s3d
 
 		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& insert(size_type offset, const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
+		constexpr String& insert(size_type offset, const StringViewLike auto& s);
 
-		constexpr String& insert(size_type offset, const StringViewLike auto& s, size_type offset2, size_type count = npos) SIV3D_LIFETIMEBOUND;
+		constexpr String& insert(size_type offset, const StringViewLike auto& s, size_type offset2, size_type count = npos);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -762,9 +762,9 @@ namespace s3d
 
 		constexpr String& append(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& append(const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
+		constexpr String& append(const StringViewLike auto& s);
 
-		constexpr String& append(const StringViewLike auto& s, size_type pos, size_type count = npos) SIV3D_LIFETIMEBOUND;
+		constexpr String& append(const StringViewLike auto& s, size_type pos, size_type count = npos);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -805,14 +805,14 @@ namespace s3d
 		
 		constexpr String& replace(const_iterator first, const_iterator last, const value_type* s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replate(const_iterator first, const_iterator last, const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
+		constexpr String& replate(const_iterator first, const_iterator last, const StringViewLike auto& s);
 
 		constexpr String& replace(size_type pos, size_type count, const value_type* s) SIV3D_LIFETIMEBOUND;
 
 		template <class Iterator>
 		constexpr String& replace(const_iterator first, const_iterator last, Iterator newFirst, Iterator newLast) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replace(size_type pos, size_type count, const StringViewLike auto& s) SIV3D_LIFETIMEBOUND;
+		constexpr String& replace(size_type pos, size_type count, const StringViewLike auto& s);
 
 		////////////////////////////////////////////////////////////////
 		//
