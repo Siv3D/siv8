@@ -1334,7 +1334,7 @@ namespace s3d
 		/// @brief 文字列の要素を 1 つランダムに返します。
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice() const& SIV3D_LIFETIMEBOUND;
+		value_type choice() const&;
 
 		/// @brief 文字列の要素を 1 つランダムに返します。
 		/// @return 文字列からランダムに選ばれた要素
@@ -1351,7 +1351,7 @@ namespace s3d
 		/// @param rbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const& SIV3D_LIFETIMEBOUND;
+		value_type choice(Concept::UniformRandomBitGenerator auto&& rbg) const&;
 
 		/// @brief 指定した乱数エンジンを用いて、文字列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン

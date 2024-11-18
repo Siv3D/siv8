@@ -79,7 +79,15 @@ namespace s3d
 		constexpr StringView(const value_type* s) noexcept;
 
 		template <class Range>
-		explicit constexpr StringView(Range&& range);
+			requires(
+			!std::same_as<std::remove_cvref_t<Range>, StringView>
+			&& std::ranges::contiguous_range<Range>
+			&& std::ranges::sized_range<Range>
+			&& std::same_as<std::ranges::range_value_t<Range>, char32>
+			&& !std::is_convertible_v<Range, const char32*>
+			&& !requires(std::remove_cvref_t<Range>& range) { range.operator StringView; })
+		[[nodiscard]]
+		explicit constexpr StringView(Range&& range SIV3D_LIFETIMEBOUND);
 
 		////////////////////////////////////////////////////////////////
 		//
