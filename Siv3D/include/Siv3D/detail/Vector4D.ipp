@@ -70,11 +70,11 @@ namespace s3d
 		, w{ zw.y } {}
 
 	template <class Type>
-	constexpr Vector4D<Type>::Vector4D(const Vector3D<value_type>& xyz, const Concept::Arithmetic auto _z) noexcept
+	constexpr Vector4D<Type>::Vector4D(const Vector3D<value_type>& xyz, const Concept::Arithmetic auto _w) noexcept
 		: x{ xyz.x }
 		, y{ xyz.y }
 		, z{ xyz.z }
-		, w{ static_cast<value_type>(_z) } {}
+		, w{ static_cast<value_type>(_w) } {}
 
 	template <class Type>
 	constexpr Vector4D<Type>::Vector4D(const Concept::Arithmetic auto _x, const Vector3D<value_type>& yzw) noexcept

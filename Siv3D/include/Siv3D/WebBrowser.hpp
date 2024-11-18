@@ -54,6 +54,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief WebBrowser をフォーマットします。
+	/// @param formatData フォーマットデータ
+	/// @param value WebBrowser
 	void Formatter(FormatData& formatData, WebBrowser value);
 
 	namespace System

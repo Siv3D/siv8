@@ -45,7 +45,6 @@ namespace s3d
 		void SetTitle(const String& title);
 
 		/// @brief ウィンドウのタイトルを変更します。
-		/// @tparam ...Args 新しいタイトルの値の型
 		/// @param ...args 新しいタイトル
 		void SetTitle(const Concept::Formattable auto&... args);
 
@@ -270,6 +269,12 @@ namespace s3d
 
 	namespace Platform::Windows::Window
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetHWND
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief ウィンドウハンドルを返します。
 		/// @return ウィンドウハンドル
 		/// @remark この関数の戻り値を HWND にキャストして使用します。

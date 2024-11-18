@@ -35,6 +35,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		VertexShader();
 
@@ -44,6 +45,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デストラクタ
 		virtual ~VertexShader();
 
 		////////////////////////////////////////////////////////////////
@@ -52,6 +54,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 頂点シェーダのバイトコードを返します。
+		/// @return 頂点シェーダのバイトコード
 		[[nodiscard]]
 		const Blob& getBytecode() const noexcept;
 
@@ -61,6 +65,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の VertexShader と内容を交換します。
+		/// @param other 別の VertexShader
 		void swap(VertexShader& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -69,6 +75,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの VertexShader を入れ替えます。
+		/// @param lhs 一方の VertexShader
+		/// @param rhs もう一方の VertexShader
 		friend void swap(VertexShader& lhs, VertexShader& rhs) noexcept
 		{
 			lhs.swap(rhs);
@@ -99,9 +108,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief MSL ファイルから頂点シェーダを作成します。
+		/// @param entryPoint エントリーポイント
+		/// @return 頂点シェーダ
 		[[nodiscard]]
 		static VertexShader MSL(StringView entryPoint);
 
+		/// @brief MSL ファイルから頂点シェーダを作成します。
+		/// @param path MSL ファイルのパス
+		/// @param entryPoint エントリーポイント
+		/// @return 頂点シェーダ
 		[[nodiscard]]
 		static VertexShader MSL(FilePathView path, StringView entryPoint);
 

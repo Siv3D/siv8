@@ -936,16 +936,16 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	projection
+	//	projectOnVector
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::projection(const Vector2D onto) const noexcept
+	constexpr Vector2D<Type> Vector2D<Type>::projectOnVector(const Vector2D v) const noexcept
 	{
-		if (const value_type ontoLengthSq = onto.lengthSq())
+		if (const value_type ontoLengthSq = v.lengthSq())
 		{
-			return (onto * dot(onto) / ontoLengthSq);
+			return (v * dot(v) / ontoLengthSq);
 		}
 		else
 		{

@@ -48,18 +48,30 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		Vector2D() = default;
 
+		/// @brief 2 次元のベクトルを作成します。
+		/// @param _x X 成分
+		/// @param _y Y 成分
 		[[nodiscard]]
 		constexpr Vector2D(value_type _x, value_type _y) noexcept;
 
+		/// @brief 2 次元のベクトルを作成します。
+		/// @param _x X 成分
+		/// @param _y Y 成分
 		[[nodiscard]]
 		constexpr Vector2D(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y) noexcept;
 
+		/// @brief 2 次元のベクトルを作成します。
+		/// @param p ベクトル
 		[[nodiscard]]
 		constexpr Vector2D(Point p) noexcept;
 
+		/// @brief 2 次元のベクトルをコピーして作成します。
+		/// @tparam U コピーするベクトルの要素の型
+		/// @param v コピーするベクトル
 		template <class U>
 		[[nodiscard]]
 		constexpr Vector2D(const Vector2D<U>& v) noexcept;
@@ -83,14 +95,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief x 成分へのポインタを返します。
-		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
 		/// @return x 成分へのポインタ
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
 		[[nodiscard]]
 		constexpr value_type* getPointer() noexcept;
 
 		/// @brief x 成分へのポインタを返します。
-		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
 		/// @return x 成分へのポインタ
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
 		[[nodiscard]]
 		constexpr const value_type* getPointer() const noexcept;
 
@@ -100,9 +112,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 自身を返します。
+		/// @return *this
 		[[nodiscard]]
 		constexpr Vector2D operator +() const noexcept;
 
+		/// @brief ベクトルを加算した結果を返します。
+		/// @param v 加算するベクトル
+		/// @return 加算した結果
 		[[nodiscard]]
 		constexpr Vector2D operator +(Vector2D v) const noexcept;
 
@@ -112,9 +129,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 符号を反転したベクトルを返します。
+		/// @return 符号を反転したベクトル
 		[[nodiscard]]
 		constexpr Vector2D operator -() const noexcept;
 
+		/// @brief ベクトルを減算した結果を返します。
+		/// @param v 減算するベクトル
+		/// @return 減算した結果
 		[[nodiscard]]
 		constexpr Vector2D operator -(Vector2D v) const noexcept;
 
@@ -124,12 +146,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの各成分にスカラーを乗算した結果を返します。
+		/// @param s スカラー
+		/// @return 乗算した結果
 		[[nodiscard]]
 		constexpr Vector2D operator *(value_type s) const noexcept;
 
+		/// @brief ベクトル同士の各成分同士を乗算した結果を返します。
+		/// @param v 乗算するベクトル
+		/// @return 乗算した結果
 		[[nodiscard]]
 		constexpr Vector2D operator *(Vector2D v) const noexcept;
-		
+
+		/// @brief ベクトルの各成分にスカラーを乗算した結果を返します。
+		/// @tparam U スカラーの型
+		/// @param s スカラー
+		/// @param v ベクトル
+		/// @return 乗算した結果
 		template <Concept::Arithmetic U> // IntelliSense のエラー回避のため template を使う (17.12 Preview 2)
 		[[nodiscard]]
 		friend constexpr Vector2D operator *(const U s, const Vector2D v) noexcept
@@ -143,9 +176,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの各成分をスカラーで除算した結果を返します。
+		/// @param s スカラー
+		/// @return 除算した結果
 		[[nodiscard]]
 		constexpr Vector2D operator /(value_type s) const noexcept;
 
+		/// @brief ベクトル同士の各成分同士を除算した結果を返します。
+		/// @param v 除算するベクトル
+		/// @return 除算した結果
 		[[nodiscard]]
 		constexpr Vector2D operator /(Vector2D v) const noexcept;
 
@@ -155,6 +194,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルを加算します。
+		/// @param v 加算するベクトル
+		/// @return *this
 		constexpr Vector2D& operator +=(Vector2D v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -163,6 +205,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルを減算します。
+		/// @param v 減算するベクトル
+		/// @return *this
 		constexpr Vector2D& operator -=(Vector2D v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -171,8 +216,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの各成分にスカラーを乗算します。
+		/// @param s スカラー
+		/// @return *this
 		constexpr Vector2D& operator *=(value_type s) noexcept;
 
+		/// @brief ベクトル同士の各成分同士を乗算します。
+		/// @param v 乗算するベクトル
+		/// @return *this
 		constexpr Vector2D& operator *=(Vector2D v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -181,8 +232,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの各成分をスカラーで除算します。
+		/// @param s スカラー
+		/// @return *this
 		constexpr Vector2D& operator /=(value_type s) noexcept;
 
+		/// @brief ベクトル同士の各成分同士を除算します。
+		/// @param v 除算するベクトル
+		/// @return *this
 		constexpr Vector2D& operator /=(Vector2D v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -677,9 +734,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 時計回りに回転したベクトルを返します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return 時計回りに回転したベクトル
 		[[nodiscard]]
 		Vector2D rotated(value_type angle) const noexcept;
 
+		/// @brief 自身を時計回りに回転します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return *this
 		Vector2D& rotate(value_type angle) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -688,9 +751,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief center を中心とし、時計回りに回転した位置ベクトルを返します。
+		/// @param center 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return center を中心とし、時計回りに回転した位置ベクトル
 		[[nodiscard]]
 		Vector2D rotatedAt(Vector2D center, value_type angle) const noexcept;
 
+		/// @brief center を中心とし、自身を時計回りに回転します。
+		/// @param center 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return *this
 		Vector2D& rotateAt(Vector2D center, value_type angle) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -716,14 +787,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief centerを中心とし、時計回りに 90°* n 回転したベクトルを返します。
+		/// @brief center を中心とし、時計回りに 90° * n 回転したベクトルを返します。
 		/// @param center 回転の中心座標
 		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
-		/// @return centerを中心とし、時計回りに 90°* n 回転したベクトル
+		/// @return centerを中心とし、時計回りに 90° * n 回転したベクトル
 		[[nodiscard]]
 		constexpr Vector2D rotated90At(Vector2D center, int32 n = 1) const noexcept;
 
-		/// @brief centerを中心とし、自身を時計回りに 90°* n 回転します。
+		/// @brief center を中心とし、自身を時計回りに 90° * n 回転します。
 		/// @param center 回転の中心座標
 		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
 		/// @return *this
@@ -735,9 +806,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの方向を表す角度（ラジアン）を返します。
+		/// @return ベクトルの方向を表す角度（ラジアン）。ゼロベクトルの場合は 0 を返します。
 		[[nodiscard]]
 		value_type getAngle() const noexcept;
 
+		/// @brief 2 つのベクトルがなす角度（ラジアン）を返します。
+		/// @param other もう一方のベクトル
+		/// @return 2 つのベクトルがなす角度（ラジアン）。どちらかのベクトルがゼロベクトルの場合は NaN を返します。
 		[[nodiscard]]
 		value_type getAngle(Vector2D other) const noexcept;
 
@@ -763,20 +839,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別の座標との中点を返します。
-		/// @param other 別の座標
-		/// @return 別の座標との中点
+		/// @brief 2 つのベクトルの中間点を返します。
+		/// @param other もう一方のベクトル
+		/// @return 2 つのベクトルの中間点
 		[[nodiscard]]
 		constexpr Vector2D getMidpoint(Vector2D other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	projection
+		//	projectOnVector
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別のベクトルに射影した結果を返します。
+		/// @tparam U 射影先のベクトルの要素の型
+		/// @param v 射影先のベクトル
+		/// @return 射影先のベクトルに射影した結果を表すベクトル
 		[[nodiscard]]
-		constexpr Vector2D projection(Vector2D onto) const noexcept;
+		constexpr Vector2D projectOnVector(Vector2D v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -797,10 +877,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別のベクトルとの線形補間を返します。
-		/// @param other 別のベクトル
+		/// @brief 2 つのベクトル間を線形補間したベクトルを返します。
+		/// @param other もう一方のベクトル
 		/// @param f 補間係数
-		/// @return 線形補間されたベクトル
+		/// @return 2 つのベクトル間を線形補間したベクトル
 		[[nodiscard]]
 		constexpr Vector2D lerp(Vector2D other, value_type f) const noexcept;
 
@@ -821,7 +901,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 点を中心とした円を作成します。
+		/// @brief 点を中心とした円 Circle{ *this, r } を作成します。
 		/// @param r 円の半径
 		/// @return 円
 		[[nodiscard]]
@@ -916,7 +996,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vector2D{ 0, 0 } を返します。
+		/// @brief ゼロベクトル Vector2D{ 0, 0 } を返します。
 		/// @return Vector2D{ 0, 0 }
 		[[nodiscard]]
 		static constexpr Vector2D Zero() noexcept;
@@ -927,7 +1007,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vector2D{ 1, 1 } を返します。
+		/// @brief 全ての成分が 1 のベクトル Vector2D{ 1, 1 } を返します。
 		/// @return Vector2D{ 1, 1 }
 		[[nodiscard]]
 		static constexpr Vector2D One() noexcept;
@@ -938,8 +1018,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vector2D{ value, value } を返します。
-		/// @param value 値
+		/// @brief 全ての成分が value のベクトル Vector2D{ value, value } を返します。
+		/// @param value 成分の値
 		/// @return Vector2D{ value, value }
 		[[nodiscard]]
 		static constexpr Vector2D All(value_type value = 1) noexcept;
@@ -950,12 +1030,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vector2D{ 1, 0 } を返します。
+		/// @brief X 成分が 1 でそれ以外が 0 のベクトル Vector2D{ 1, 0 } を返します。
 		/// @return Vector2D{ 1, 0 }
 		[[nodiscard]]
 		static constexpr Vector2D UnitX() noexcept;
 
-		/// @brief Vector2D{ 0, 1 } を返します。
+		/// @brief Y 成分が 1 でそれ以外が 0 のベクトル Vector2D{ 0, 1 } を返します。
 		/// @return Vector2D{ 0, 1 }
 		[[nodiscard]]
 		static constexpr Vector2D UnitY() noexcept;
@@ -1094,6 +1174,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルを出力します。
+		/// @tparam CharType 出力ストリームの文字型
+		/// @param output 出力ストリーム
+		/// @param value ベクトル
+		/// @return 出力ストリーム
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Vector2D& value)
 		{
@@ -1108,6 +1193,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルを入力します。
+		/// @tparam CharType 入力ストリームの文字型
+		/// @param input 入力ストリーム
+		/// @param value 入力した値を格納するベクトル
+		/// @return 入力ストリーム
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Vector2D& value)
 		{
@@ -1123,17 +1213,33 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルをフォーマットします。
+		/// @param formatData フォーマットデータ
+		/// @param value ベクトル
 		friend void Formatter(FormatData& formatData, const Vector2D& value)
 		{
 			_Formatter(formatData, value);
 		}
 
+	private:
+
 		static void _Formatter(FormatData& formatData, const Vector2D& value);
 	};
 
-	using Float2	= Vector2D<float>;
-	using Vec2		= Vector2D<double>;
-	using SizeF		= Vec2;
+	////////////////////////////////////////////////////////////////
+	//
+	//	Float2, Vec2, SizeF
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 成分が float 型の 2 次元ベクトル
+	using Float2 = Vector2D<float>;
+
+	/// @brief 成分が double 型の 2 次元ベクトル
+	using Vec2 = Vector2D<double>;
+
+	/// @brief 2 次元のサイズ
+	using SizeF = Vec2;
 }
 
 ////////////////////////////////////////////////////////////////

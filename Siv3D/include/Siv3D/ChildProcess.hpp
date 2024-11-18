@@ -19,7 +19,7 @@
 
 namespace s3d
 {
-	/// @brief 子プロセスの作成と管理
+	/// @brief 子プロセス
 	class ChildProcess
 	{
 	public:

@@ -51,25 +51,45 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		Vector3D() = default;
 
+		/// @brief 3 次元のベクトルを作成します。
+		/// @param _x X 成分
+		/// @param _y Y 成分
+		/// @param _z Z 成分
 		[[nodiscard]]
 		constexpr Vector3D(value_type _x, value_type _y, value_type _z) noexcept;
 
+		/// @brief 3 次元のベクトルを作成します。
+		/// @param _x X 成分
+		/// @param _y Y 成分
+		/// @param _z Z 成分
 		[[nodiscard]]
 		constexpr Vector3D(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, Concept::Arithmetic auto _z) noexcept;
 
+		/// @brief 3 次元のベクトルを作成します。
+		/// @param p ベクトル
 		[[nodiscard]]
 		constexpr Vector3D(Point3D p) noexcept;
 
+		/// @brief 3 次元のベクトルをコピーして作成します。
+		/// @tparam U コピーするベクトルの要素の型
+		/// @param v コピーするベクトル
 		template <class U>
 		[[nodiscard]]
 		constexpr Vector3D(const Vector3D<U>& v) noexcept;
 
+		/// @brief 3 次元のベクトルを作成します。
+		/// @param xy XY 成分
+		/// @param _z Z 成分
 		[[nodiscard]]
 		constexpr Vector3D(const Vector2D<value_type>& xy, Concept::Arithmetic auto _z) noexcept;
 
+		/// @brief 3 次元のベクトルを作成します。
+		/// @param _x X 成分
+		/// @param yz YZ 成分
 		[[nodiscard]]
 		constexpr Vector3D(Concept::Arithmetic auto _x, const Vector2D<value_type>& yz) noexcept;
 
@@ -79,6 +99,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの要素を返します。
+		/// @param index インデックス
+		/// @return 指定したインデックスの要素。index が範囲外の場合は 0
+		/// @remark index が 0 の場合は x, 1 の場合は y, 2 の場合は z を返します。
 		[[nodiscard]]
 		constexpr value_type elem(size_t index) const noexcept;
 
@@ -88,9 +112,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief x 成分へのポインタを返します。
+		/// @return x 成分へのポインタ
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分、[2] で z 成分にアクセスできます。
 		[[nodiscard]]
 		constexpr value_type* getPointer() noexcept;
 
+		/// @brief x 成分へのポインタを返します。
+		/// @return x 成分へのポインタ
+		/// @remark 戻り値に対して [0] で x 成分、[1] で y 成分、[2] で z 成分にアクセスできます。
 		[[nodiscard]]
 		constexpr const value_type* getPointer() const noexcept;
 
@@ -100,9 +130,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 自身を返します。
+		/// @return *this
 		[[nodiscard]]
 		constexpr Vector3D operator +() const noexcept;
 
+		/// @brief ベクトルを加算した結果を返します。
+		/// @param v 加算するベクトル
+		/// @return 加算した結果
 		[[nodiscard]]
 		constexpr Vector3D operator +(Vector3D v) const noexcept;
 
@@ -112,9 +147,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 符号を反転したベクトルを返します。
+		/// @return 符号を反転したベクトル
 		[[nodiscard]]
 		constexpr Vector3D operator -() const noexcept;
 
+		/// @brief ベクトルを減算した結果を返します。
+		/// @param v 減算するベクトル
+		/// @return 減算した結果
 		[[nodiscard]]
 		constexpr Vector3D operator -(Vector3D v) const noexcept;
 
@@ -124,12 +164,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの各成分にスカラーを乗算した結果を返します。
+		/// @param s スカラー
+		/// @return 乗算した結果
 		[[nodiscard]]
 		constexpr Vector3D operator *(value_type s) const noexcept;
 
+		/// @brief ベクトル同士の各成分同士を乗算した結果を返します。
+		/// @param v 乗算するベクトル
+		/// @return 乗算した結果
 		[[nodiscard]]
 		constexpr Vector3D operator *(Vector3D v) const noexcept;
 
+		/// @brief ベクトルの各成分にスカラーを乗算した結果を返します。
+		/// @tparam U スカラーの型
+		/// @param s スカラー
+		/// @param v ベクトル
+		/// @return 乗算した結果
 		template <Concept::Arithmetic U> // IntelliSense のエラー回避のため template を使う (17.12 Preview 2)
 		[[nodiscard]]
 		friend constexpr Vector3D operator *(const U s, const Vector3D v) noexcept
@@ -143,9 +194,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの各成分をスカラーで除算した結果を返します。
+		/// @param s スカラー
+		/// @return 除算した結果
 		[[nodiscard]]
 		constexpr Vector3D operator /(value_type s) const noexcept;
 
+		/// @brief ベクトル同士の各成分同士を除算した結果を返します。
+		/// @param v 除算するベクトル
+		/// @return 除算した結果
 		[[nodiscard]]
 		constexpr Vector3D operator /(Vector3D v) const noexcept;
 
@@ -155,6 +212,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルを加算します。
+		/// @param v 加算するベクトル
+		/// @return *this
 		constexpr Vector3D& operator +=(Vector3D v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -163,6 +223,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルを減算します。
+		/// @param v 減算するベクトル
+		/// @return *this
 		constexpr Vector3D& operator -=(Vector3D v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -171,8 +234,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの各成分にスカラーを乗算します。
+		/// @param s スカラー
+		/// @return *this
 		constexpr Vector3D& operator *=(value_type s) noexcept;
 
+		/// @brief ベクトル同士の各成分同士を乗算します。
+		/// @param v 乗算するベクトル
+		/// @return *this
 		constexpr Vector3D& operator *=(Vector3D v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -181,8 +250,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルの各成分をスカラーで除算します。
+		/// @param s スカラー
+		/// @return *this
 		constexpr Vector3D& operator /=(value_type s) noexcept;
 
+		/// @brief ベクトル同士の各成分同士を除算します。
+		/// @param v 除算するベクトル
+		/// @return *this
 		constexpr Vector3D& operator /=(Vector3D v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -191,6 +266,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つのベクトルが等しいかを返します。
+		/// @param lhs 一方のベクトル
+		/// @param rhs もう一方のベクトル
+		/// @return 2 つのベクトルが等しい場合 true, それ以外の場合は false
+		/// @remark 誤差を許容して比較したい場合は `.epsilonEquals()` を使用してください。
 		[[nodiscard]]
 		friend constexpr bool operator ==(const Vector3D lhs, const Vector3D rhs) noexcept
 		{
@@ -313,8 +393,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 各成分を変更します。
+		/// @param xy 新しい XY 成分
+		/// @param _z 新しい Z 成分
+		/// @return *this
 		constexpr Vector3D& set(const Vector2D<value_type>& xy, value_type _z) noexcept;
 
+		/// @brief 各成分を変更します。
+		/// @param _x 新しい X 成分
+		/// @param yz 新しい YZ 成分
+		/// @return *this
 		constexpr Vector3D& set(value_type _x, const Vector2D<value_type>& yz) noexcept;
 
 		/// @brief 各成分を変更します。
@@ -384,6 +472,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトル同士の内積を返します。
+		/// @tparam U もう一方のベクトルの要素の型
+		/// @param v もう一方のベクトル
+		/// @return 内積
 		template <class U>
 		[[nodiscard]]
 		constexpr auto dot(Vector3D<U> v) const noexcept;
@@ -394,6 +486,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトル同士の外積を返します。
+		/// @tparam U もう一方のベクトルの要素の型
+		/// @param v もう一方のベクトル
+		/// @return 外積
 		template <class U>
 		[[nodiscard]]
 		constexpr auto cross(Vector3D<U> v) const noexcept;
@@ -404,6 +500,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別のベクトルとのなす角（ラジアン）を返します。
+		/// @tparam U もう一方のベクトルの要素の型
+		/// @param v もう一方のベクトル
+		/// @return 別のベクトルとのなす角（ラジアン）
 		template <class U>
 		[[nodiscard]]
 		auto angleTo(Vector3D<U> v) const noexcept;
@@ -414,6 +514,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別のベクトルに射影した結果を返します。
+		/// @tparam U 射影先のベクトルの要素の型
+		/// @param v 射影先のベクトル
+		/// @return 射影先のベクトルに射影した結果を表すベクトル
 		template <class U>
 		[[nodiscard]]
 		constexpr auto projectOnVector(Vector3D<U> v) const noexcept;
@@ -424,6 +528,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 平面に射影したベクトルを返します。
+		/// @tparam U 平面の法線ベクトルの要素の型
+		/// @param planeNormal 平面の法線ベクトル
+		/// @return 平面上に射影した結果を表すベクトル
 		template <class U>
 		[[nodiscard]]
 		constexpr auto projectOnPlane(Vector3D<U> planeNormal) const noexcept;
@@ -695,6 +803,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つのベクトルの中間点を返します。
+		/// @param other もう一方のベクトル
+		/// @return 2 つのベクトルの中間点
 		[[nodiscard]]
 		constexpr Vector3D getMidpoint(Vector3D other) const noexcept;
 
@@ -704,6 +815,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つのベクトル間を線形補間したベクトルを返します。
+		/// @param other もう一方のベクトル
+		/// @param f 補間係数
+		/// @return 2 つのベクトル間を線形補間したベクトル
 		[[nodiscard]]
 		constexpr Vector3D lerp(Vector3D other, value_type f) const noexcept;
 
@@ -736,6 +851,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
@@ -745,30 +862,48 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Vector2D{ x, x } を返します。
+		/// @return Vector2D{ x, x }
 		[[nodiscard]]
 		constexpr Vector2D<value_type> xx() const noexcept;
 
+		/// @brief Vector2D{ x, y } を返します。
+		/// @return Vector2D{ x, y }
 		[[nodiscard]]
 		constexpr Vector2D<value_type> xy() const noexcept;
 
+		/// @brief Vector2D{ x, z } を返します。
+		/// @return Vector2D{ x, z }
 		[[nodiscard]]
 		constexpr Vector2D<value_type> xz() const noexcept;
 
+		/// @brief Vector2D{ y, x } を返します。
+		/// @return Vector2D{ y, x }
 		[[nodiscard]]
 		constexpr Vector2D<value_type> yx() const noexcept;
 
+		/// @brief Vector2D{ y, y } を返します。
+		/// @return Vector2D{ y, y }
 		[[nodiscard]]
 		constexpr Vector2D<value_type> yy() const noexcept;
 
+		/// @brief Vector2D{ y, z } を返します。
+		/// @return Vector2D{ y, z }
 		[[nodiscard]]
 		constexpr Vector2D<value_type> yz() const noexcept;
 
+		/// @brief Vector2D{ z, x } を返します。
+		/// @return Vector2D{ z, x }
 		[[nodiscard]]
 		constexpr Vector2D<value_type> zx() const noexcept;
 
+		/// @brief Vector2D{ z, y } を返します。
+		/// @return Vector2D{ z, y }
 		[[nodiscard]]
 		constexpr Vector2D<value_type> zy() const noexcept;
 
+		/// @brief Vector2D{ z, z } を返します。
+		/// @return Vector2D{ z, z }
 		[[nodiscard]]
 		constexpr Vector2D<value_type> zz() const noexcept;
 
@@ -778,30 +913,48 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Vector3D{ x, x, x } を返します。
+		/// @return Vector3D{ x, x, x }
 		[[nodiscard]]
 		constexpr Vector3D xxx() const noexcept;
 
+		/// @brief Vector3D{ x, y, z } を返します。
+		/// @return Vector3D{ x, y, z }
 		[[nodiscard]]
 		constexpr Vector3D xyz() const noexcept;
 
+		/// @brief Vector3D{ x, z, y } を返します。
+		/// @return Vector3D{ x, z, y }
 		[[nodiscard]]
 		constexpr Vector3D xzy() const noexcept;
 
+		/// @brief Vector3D{ y, y, y } を返します。
+		/// @return Vector3D{ y, y, y }
 		[[nodiscard]]
 		constexpr Vector3D yyy() const noexcept;
 
+		/// @brief Vector3D{ y, x, z } を返します。
+		/// @return Vector3D{ y, x, z }
 		[[nodiscard]]
 		constexpr Vector3D yxz() const noexcept;
 
+		/// @brief Vector3D{ y, z, x } を返します。
+		/// @return Vector3D{ y, z, x }
 		[[nodiscard]]
 		constexpr Vector3D yzx() const noexcept;
 
+		/// @brief Vector3D{ z, z, z } を返します。
+		/// @return Vector3D{ z, z, z }
 		[[nodiscard]]
 		constexpr Vector3D zzz() const noexcept;
 
+		/// @brief Vector3D{ z, x, y } を返します。
+		/// @return Vector3D{ z, x, y }
 		[[nodiscard]]
 		constexpr Vector3D zxy() const noexcept;
 
+		/// @brief Vector3D{ z, y, x } を返します。
+		/// @return Vector3D{ z, y, x }
 		[[nodiscard]]
 		constexpr Vector3D zyx() const noexcept;
 
@@ -810,10 +963,14 @@ namespace s3d
 		//	xyz0, xyz1
 		//
 		////////////////////////////////////////////////////////////////
-
+		
+		/// @brief Vector4D{ x, y, z, 0 } を返します。
+		/// @return Vector4D{ x, y, z, 0 }
 		[[nodiscard]]
 		constexpr Vector4D<Type> xyz0() const noexcept;
 
+		/// @brief Vector4D{ x, y, z, 1 } を返します。
+		/// @return Vector4D{ x, y, z, 1 }
 		[[nodiscard]]
 		constexpr Vector4D<Type> xyz1() const noexcept;
 
@@ -823,7 +980,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vector3D{ 0, 0, 0 } を返します。
+		/// @brief ゼロベクトル Vector3D{ 0, 0, 0 } を返します。
 		/// @return Vector3D{ 0, 0, 0 }
 		[[nodiscard]]
 		static constexpr Vector3D Zero() noexcept;
@@ -834,7 +991,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vector3D{ 1, 1, 1 } を返します。
+		/// @brief 全ての成分が 1 のベクトル Vector3D{ 1, 1, 1 } を返します。
 		/// @return Vector3D{ 1, 1, 1 }
 		[[nodiscard]]
 		static constexpr Vector3D One() noexcept;
@@ -845,7 +1002,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vector3D{ value, value, value } を返します。
+		/// @brief 全ての成分が value のベクトル Vector3D{ value, value, value } を返します。
 		/// @return Vector3D{ value, value, value }
 		[[nodiscard]]
 		static constexpr Vector3D All(value_type value = 1) noexcept;
@@ -856,17 +1013,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vector3D{ 1, 0, 0 } を返します。
+		/// @brief X 成分が 1 でそれ以外が 0 のベクトル Vector3D{ 1, 0, 0 } を返します。
 		/// @return Vector3D{ 1, 0, 0 }
 		[[nodiscard]]
 		static constexpr Vector3D UnitX() noexcept;
 
-		/// @brief Vector3D{ 0, 1, 0 } を返します。
+		/// @brief Y 成分が 1 でそれ以外が 0 のベクトル Vector3D{ 0, 1, 0 } を返します。
 		/// @return Vector3D{ 0, 1, 0 }
 		[[nodiscard]]
 		static constexpr Vector3D UnitY() noexcept;
 
-		/// @brief Vector3D{ 0, 0, 1 } を返します。
+		/// @brief Z 成分が 1 でそれ以外が 0 のベクトル Vector3D{ 0, 0, 1 } を返します。
 		/// @return Vector3D{ 0, 0, 1 }
 		[[nodiscard]]
 		static constexpr Vector3D UnitZ() noexcept;
@@ -913,6 +1070,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルを出力します。
+		/// @tparam CharType 出力ストリームの文字型
+		/// @param output 出力ストリーム
+		/// @param value ベクトル
+		/// @return 出力ストリーム
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Vector3D& value)
 		{
@@ -928,6 +1090,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルを入力します。
+		/// @tparam CharType 入力ストリームの文字型
+		/// @param input 入力ストリーム
+		/// @param value 入力した値を格納するベクトル
+		/// @return 入力ストリーム
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Vector3D& value)
 		{
@@ -944,17 +1111,33 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ベクトルをフォーマットします。
+		/// @param formatData フォーマットデータ
+		/// @param value ベクトル
 		friend void Formatter(FormatData& formatData, const Vector3D& value)
 		{
 			_Formatter(formatData, value);
 		}
 
+	private:
+
 		static void _Formatter(FormatData& formatData, const Vector3D& value);
 	};
 
-	using Float3	= Vector3D<float>;
-	using Vec3		= Vector3D<double>;
-	using Size3DF	= Vec3;
+	////////////////////////////////////////////////////////////////
+	//
+	//	Float3, Vec3, Size3DF
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 成分が float 型の 3 次元ベクトル
+	using Float3 = Vector3D<float>;
+	
+	/// @brief 成分が double 型の 3 次元ベクトル
+	using Vec3 = Vector3D<double>;
+
+	/// @brief 3 次元のサイズ
+	using Size3DF = Vec3;
 }
 
 ////////////////////////////////////////////////////////////////
