@@ -76,6 +76,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		friend constexpr bool operator ==(const WindowState&, const WindowState&) = default;
+		/// @brief 2 つの WindowState が等しいかを返します。
+		/// @param lhs 一方の WindowState
+		/// @param rhs もう一方の WindowState
+		/// @return 2 つの WindowState が等しい場合 true, それ以外の場合は false
+		friend constexpr bool operator ==(const WindowState& lhs, const WindowState& rhs) = default;
 	};
 }

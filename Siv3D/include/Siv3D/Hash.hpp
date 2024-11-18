@@ -16,13 +16,16 @@
 
 namespace s3d
 {
-	namespace wyhash
+	namespace rapidhash
 	{
-		/// @brief wyhash のシークレット値 | Secret value for wyhash
-		using Secret = uint64[4];
-		
-		/// @brief wyhash のデフォルトのシークレット値 | Default secret value for wyhash
-		inline constexpr Secret DefaultHashSecret{ 0xa0761d6478bd642full, 0xe7037ed1a0b428dbull, 0x8ebc6af09c88c6e3ull, 0x589965cc75374cc3ull };
+		/// @brief rapidhash のデフォルトのシード値 | Default seed value for rapidhash
+		inline constexpr uint64 DefaultSeed = 0xbdd89aa982704029ull;
+
+		/// @brief rapidhash のシークレット値 | Secret value for rapidhash
+		using Secret = uint64[3];
+
+		/// @brief rapidhash のデフォルトのシークレット値 | Default secret value for rapidhash
+		inline constexpr Secret DefaultHashSecret{ 0x2d358dccaa6c78a5ull, 0x8bb84b93962eacc9ull, 0x4b33a62ed433d4a3ull };
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -63,6 +66,9 @@ namespace s3d
 
 	inline namespace xxHash3
 	{
+		/// @brief xxHash3 のデフォルトのシード値 | Default seed value for xxHash3
+		inline constexpr uint64 DefaultSeed = 0;
+
 		/// @brief xxHash3 のシークレット値 | Secret value for xxHash3
 		using Secret = uint8[192];
 

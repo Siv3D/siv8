@@ -20,12 +20,6 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	void Formatter(FormatData& formatData, const std::span<Type> span)
-	{
-		Formatter(formatData, std::span<const Type>{ span });
-	}
-
-	template <class Type>
 	void Formatter(FormatData& formatData, const std::span<const Type> span)
 	{
 		formatData.string.push_back(U'[');

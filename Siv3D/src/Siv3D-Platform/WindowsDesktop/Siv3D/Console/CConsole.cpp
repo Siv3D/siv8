@@ -10,14 +10,28 @@
 //-----------------------------------------------
 
 # include <cstdio>
-# include <ios>
+# include <iostream>
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Windows/MinWindows.hpp>
 # include "CConsole.hpp"
 # include <Siv3D/EngineLog.hpp>
+# include <Siv3D/Error.hpp>
 
 namespace s3d
 {
+	namespace
+	{
+		/// @brief 標準出力がファイルにリダイレクトされているかを返します。
+		/// @return 標準出力がファイルにリダイレクトされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool IsStdoutRedirected()
+		{
+			const DWORD fileType = ::GetFileType(::GetStdHandle(STD_OUTPUT_HANDLE));
+			
+			return (fileType == FILE_TYPE_DISK); // FILE_TYPE_DISK = ファイルにリダイレクトされている
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -63,8 +77,53 @@ namespace s3d
 		::freopen_s(&m_fp, "CONOUT$", "w", stderr);
 
 		std::ios_base::sync_with_stdio(false);
-
 		m_isOpen = true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	attach
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CConsole::attach()
+	{
+		if (m_isOpen)
+		{
+			return false;
+		}
+
+		// 標準入力がファイルにリダイレクトされている場合は新しいコンソールを作成しない
+		if (IsStdoutRedirected())
+		{
+			::setlocale(LC_ALL, ".utf8");
+
+			std::ios_base::sync_with_stdio(false);
+			m_isOpen = true;
+
+			return true;
+		}
+
+		// 呼び出し元のコンソールがある場合は新しいコンソールを作成しない
+		if (::AttachConsole(ATTACH_PARENT_PROCESS))
+		{
+			m_oldCodePage = ::GetConsoleOutputCP();
+			::SetConsoleOutputCP(CP_UTF8);
+
+			::setlocale(LC_ALL, ".utf8");
+			::freopen_s(&m_fp, "CONIN$", "r", stdin);
+			::freopen_s(&m_fp, "CONOUT$", "w", stdout);
+			::freopen_s(&m_fp, "CONOUT$", "w", stderr);
+
+			std::ios_base::sync_with_stdio(false);
+			m_isOpen = true;
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -80,13 +139,23 @@ namespace s3d
 			return;
 		}
 
+		std::cout.flush();
+		std::cerr.flush();
+		std::clog.flush();
+		std::cin.clear();
+
 		if (m_fp)
 		{
+			::fflush(m_fp);
 			::fclose(m_fp);
 			m_fp = nullptr;
 		}
 
-		::SetConsoleOutputCP(m_oldCodePage);
+		if (m_oldCodePage)
+		{
+			::SetConsoleOutputCP(m_oldCodePage);
+		}
+
 		::FreeConsole();
 	}
 }

@@ -704,9 +704,17 @@ void _glfwTerminateCocoa(void)
 
     _glfw_free(_glfw.ns.clipboardString);
 
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+	/*
     _glfwTerminateNSGL();
     _glfwTerminateEGL();
     _glfwTerminateOSMesa();
+	 */
+	//
+	//-----------------------------------------------
 
     } // autoreleasepool
 }

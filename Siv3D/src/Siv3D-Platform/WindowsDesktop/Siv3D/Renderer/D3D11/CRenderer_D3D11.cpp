@@ -64,6 +64,7 @@ namespace s3d
 		m_rasterizerState.init(m_device);
 		m_samplerState.init(m_device);
 		m_depthStencilState.init(m_device);
+		m_screenCapture.init(m_device);
 
 		m_device.getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
@@ -236,6 +237,29 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	captureScreenshot
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer_D3D11::captureScreenshot()
+	{
+		auto [texture, size] = m_backBuffer.getCaptureTexture();
+		m_screenCapture.capture(texture, size);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getScreenCapture
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Image& CRenderer_D3D11::getScreenCapture() const
+	{
+		return m_screenCapture.getImage();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getDevice
 	//
 	////////////////////////////////////////////////////////////////
@@ -244,6 +268,12 @@ namespace s3d
 	{
 		return m_device;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBackBuffer
+	//
+	////////////////////////////////////////////////////////////////
 
 	D3D11BackBuffer& CRenderer_D3D11::getBackBuffer() noexcept
 	{

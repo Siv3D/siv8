@@ -13,9 +13,12 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/Polygon.hpp>
+# include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/Polygon/ClosedLineString.hpp>
 
 namespace s3d
 {
@@ -66,8 +69,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Triangle Triangle::stretched(const value_type size) const noexcept
+	Triangle Triangle::stretched(value_type size) const noexcept
 	{
+		if (size < 0.0)
+		{
+			size = Max(size, -inradius());
+		}
+
 		Line lines[3] =
 		{
 			{ p0, p1 }, { p1, p2 }, { p2, p0 }
@@ -122,6 +130,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	mirroredAlongP0P1, mirroredAlongP1P2, mirroredAlongP2P0
+	//
+	////////////////////////////////////////////////////////////////
+
+	Triangle Triangle::mirroredAlongP0P1() const noexcept
+	{
+		return{ p1, p0, (2 * p0p1().projectPoint(p2) - p2) };
+	}
+
+	Triangle Triangle::mirroredAlongP1P2() const noexcept
+	{
+		return{ p2, p1, (2 * p1p2().projectPoint(p0) - p0) };
+	}
+
+	Triangle Triangle::mirroredAlongP2P0() const noexcept
+	{
+		return{ p0, p2, (2 * p2p0().projectPoint(p1) - p1) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	pointAtLength
 	//
 	////////////////////////////////////////////////////////////////
@@ -144,7 +173,7 @@ namespace s3d
 		}
 		else
 		{
-			return Line{ p2, p0 }.pointAtLength(length - l0 - l1);
+			return Line{ p2, p0 }.pointAtLength(length - (l0 + l1));
 		}
 	}
 
@@ -173,7 +202,7 @@ namespace s3d
 		}
 		else
 		{
-			return Line{ p2, p0 }.pointAtLength(length - l0 - l1);
+			return Line{ p2, p0 }.pointAtLength(length - (l0 + l1));
 		}
 	}
 
@@ -183,7 +212,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	size_t Triangle::sideIndexAtLength(double length) const
+	size_t Triangle::sideIndexAtLength(double length) const noexcept
 	{
 		const double l0 = p1.distanceFrom(p0);
 		const double l1 = p2.distanceFrom(p1);
@@ -220,15 +249,57 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	inradius
+	//
+	////////////////////////////////////////////////////////////////
+
+	Triangle::value_type Triangle::inradius() const noexcept
+	{
+		const double area2 = Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y));
+		return (area2 / perimeter());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	boundingRect
 	//
 	////////////////////////////////////////////////////////////////
 
 	RectF Triangle::boundingRect() const noexcept
 	{
-		auto [xMin, xMax] = std::minmax({ p0.x, p1.x, p2.x });
-		auto [yMin, yMax] = std::minmax({ p0.y, p1.y, p2.y });
+		const auto [xMin, xMax] = std::minmax({ p0.x, p1.x, p2.x });
+		const auto [yMin, yMax] = std::minmax({ p0.y, p1.y, p2.y });
 		return{ xMin, yMin, (xMax - xMin), (yMax - yMin) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	boundingCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle Triangle::boundingCircle() const noexcept
+	{
+		const Circle c0{ p0, p1 };
+		const Circle c1{ p1, p2 };
+		const Circle c2{ p2, p0 };
+		
+		if (c0.intersects(p2))
+		{
+			return c0;
+		}
+		else if (c1.intersects(p0))
+		{
+			return c1;
+		}
+		else if (c2.intersects(p1))
+		{
+			return c2;
+		}
+		else
+		{
+			return getCircumscribedCircle();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -273,10 +344,71 @@ namespace s3d
 		const double d1 = p0.distanceFrom(p2);
 		const double d2 = p1.distanceFrom(p0);
 		const double perimeter = (d0 + d1 + d2);
-		const Vec2 center{ (d0 * p0 + d1 * p1 + d2 * p2) / perimeter };
+		const Vec2 center{ (p0 * d0 + p1 * d1 + p2 * d2) / perimeter };
 		const double area2 = Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y));
 
 		return{ center, (area2 / perimeter) };
+	}
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Vec2> Triangle::outer() const
+	{
+		return{ p0, p1, p2 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Triangle::asPolygon() const
+	{
+		return Polygon{ { p0, p1, p2 },
+			{{ 0, 1, 2 }},
+			boundingRect(),
+			SkipValidation::Yes };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Triangle::rounded(const double round, const QualityFactor& qualityFactor) const
+	{
+		if (round <= 0.0)
+		{
+			return asPolygon();
+		}
+
+		if (inradius() <= round)
+		{
+			return CircleToPolygon(getInscribedCircle(), qualityFactor);
+		}
+
+		const Triangle inner = stretched(-round);
+
+		return inner.calculateRoundBuffer(round, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	calculateRoundBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Triangle::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
+	{
+		return CalculatePolygonRoundBuffer({ p0, p1, p2 }, distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -359,6 +491,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Triangle& Triangle::drawFrame(const double thickness, const ColorF& color, const JoinStyle joinStyle) const
+	{
+		DrawClosedLineString({ p0, p1, p2, p0, p1 }, joinStyle, thickness, color);
+		return *this;
+	}
+
+	const Triangle& Triangle::drawFrame(const double thickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
+	{
+		DrawClosedLineString({ p0, p1, p2, p0, p1 }, joinStyle, thickness, pattern);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	FromBaseCenter
 	//
 	////////////////////////////////////////////////////////////////
@@ -409,5 +559,44 @@ namespace s3d
 	void Triangle::ThrowSideAtIndexOutOfRange()
 	{
 		throw std::out_of_range{ "Triangle::sideAtIndex() index out of range" };
+	}
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+fmt::format_context::iterator fmt::formatter<s3d::Triangle>::format(const s3d::Triangle& value, fmt::format_context& ctx)
+{
+	if (tag.empty())
+	{
+		return fmt::format_to(ctx.out(), "(({}, {}), ({}, {}), ({}, {}))", value.p0.x, value.p0.y, value.p1.x, value.p1.y, value.p2.x, value.p2.y);
+	}
+	else
+	{
+		const std::string format
+			= ("(({:" + tag + "}, {:" + tag + "}), ({:" + tag + "}, {:" + tag + "}), ({:" + tag + "}, {:" + tag + "}))");
+		return fmt::vformat_to(ctx.out(), format, fmt::make_format_args(value.p0.x, value.p0.y, value.p1.x, value.p1.y, value.p2.x, value.p2.y));
+	}
+}
+
+s3d::ParseContext::iterator fmt::formatter<s3d::Triangle, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::Triangle, s3d::char32>::format(const s3d::Triangle& value, s3d::BufferContext& ctx)
+{
+	if (tag.empty())
+	{
+		return format_to(ctx.out(), U"(({}, {}), ({}, {}), ({}, {}))", value.p0.x, value.p0.y, value.p1.x, value.p1.y, value.p2.x, value.p2.y);
+	}
+	else
+	{
+		const std::u32string format
+			= (U"(({:" + tag + U"}, {:" + tag + U"}), ({:" + tag + U"}, {:" + tag + U"}), ({:" + tag + U"}, {:" + tag + U"}))");
+		return format_to(ctx.out(), format, value.p0.x, value.p0.y, value.p1.x, value.p1.y, value.p2.x, value.p2.y);
 	}
 }

@@ -1,0 +1,101 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+# include "Common.hpp"
+# include "Utility.hpp"
+# include "PointsPerCircle.hpp"
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	Default
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 品質係数
+	class QualityFactor
+	{
+	public:
+
+		static constexpr double DefaultQuality = 1.0;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		QualityFactor() = default;
+
+		[[nodiscard]]
+		explicit constexpr QualityFactor(double value) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator *
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr QualityFactor operator *(double s) const noexcept;
+
+		[[nodiscard]]
+		friend constexpr QualityFactor operator *(double s, const QualityFactor& q) noexcept
+		{
+			return QualityFactor{ q.m_value * s };
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	value
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr double value() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	toPointsPerCircle
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr PointsPerCircle toPointsPerCircle(double r) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Default
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static constexpr QualityFactor Default() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromSceneScaling
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static QualityFactor FromSceneScaling(double s = 1.0) noexcept;
+
+	private:
+
+		double m_value = DefaultQuality;
+	};
+}
+
+# include "detail/QualityFactor.ipp"

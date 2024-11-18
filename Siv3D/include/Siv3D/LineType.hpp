@@ -22,18 +22,25 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 線の種類
 	enum class LineType : uint8
 	{
+		/// @brief 実線
 		Solid,
 
+		/// @brief ドット
 		Dotted,
 
+		/// @brief ダッシュ
 		Dashed,
 
+		/// @brief 長いダッシュ
 		LongDash,
 
+		/// @brief ダッシュとドット
 		DashDot,
 
+		/// @brief 丸いドット
 		RoundDot,
 	};
 

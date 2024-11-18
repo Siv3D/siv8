@@ -18,7 +18,7 @@ TEST_CASE("Step.step(n)")
 
 		for (auto i : step(3))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -30,7 +30,7 @@ TEST_CASE("Step.step(n)")
 
 		for (auto i : step(0))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -42,7 +42,7 @@ TEST_CASE("Step.step(n)")
 
 		for (auto i : step(3ull))
 		{
-			static_assert(std::is_same_v<decltype(i), uint64>);
+			static_assert(std::is_same_v<decltype(i), unsigned long long>);
 			v.push_back(i);
 		}
 
@@ -76,7 +76,7 @@ TEST_CASE("Step.step(a, n, step)")
 
 		for (auto i : step(10, 4, 5))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -88,7 +88,7 @@ TEST_CASE("Step.step(a, n, step)")
 
 		for (auto i : step(-10, 4, 5))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -100,7 +100,7 @@ TEST_CASE("Step.step(a, n, step)")
 
 		for (auto i : step(10, 4, -5))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -115,7 +115,7 @@ TEST_CASE("Step.step_backward(n)")
 
 		for (auto i : step_backward(3))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -127,7 +127,7 @@ TEST_CASE("Step.step_backward(n)")
 
 		for (auto i : step_backward(0))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -139,7 +139,7 @@ TEST_CASE("Step.step_backward(n)")
 
 		for (auto i : step_backward(3ull))
 		{
-			static_assert(std::is_same_v<decltype(i), uint64>);
+			static_assert(std::is_same_v<decltype(i), unsigned long long>);
 			v.push_back(i);
 		}
 
@@ -173,7 +173,7 @@ TEST_CASE("Step.Range(n)")
 
 		for (auto i : Range(0, 3))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -185,7 +185,7 @@ TEST_CASE("Step.Range(n)")
 
 		for (auto i : Range(-2, 2))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -197,7 +197,7 @@ TEST_CASE("Step.Range(n)")
 
 		for (auto i : Range(0, 0))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -209,7 +209,7 @@ TEST_CASE("Step.Range(n)")
 
 		for (auto i : Range(0, -1))
 		{
-			static_assert(std::is_same_v<decltype(i), int32>);
+			static_assert(std::is_same_v<decltype(i), int>);
 			v.push_back(i);
 		}
 
@@ -221,7 +221,7 @@ TEST_CASE("Step.Range(n)")
 
 		for (auto i : Range(0ull, 3ull))
 		{
-			static_assert(std::is_same_v<decltype(i), uint64>);
+			static_assert(std::is_same_v<decltype(i), unsigned long long>);
 			v.push_back(i);
 		}
 

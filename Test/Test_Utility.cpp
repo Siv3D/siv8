@@ -143,16 +143,16 @@ TEST_CASE("Utility")
 
 		static_assert(AbsDiff(std::numeric_limits<int32>::max(), std::numeric_limits<int32>::min()) == std::numeric_limits<uint32>::max());
 		static_assert(AbsDiff(std::numeric_limits<int32>::min(), std::numeric_limits<int32>::max()) == std::numeric_limits<uint32>::max());
-		static_assert(AbsDiff(std::numeric_limits<int32>::min(), 0) == 2147483648u);
-		static_assert(AbsDiff(0, std::numeric_limits<int32>::max()) == 2147483647u);
+		static_assert(AbsDiff(std::numeric_limits<int32>::min(), int32{ 0 }) == 2147483648u);
+		static_assert(AbsDiff(int32{ 0 }, std::numeric_limits<int32>::max()) == 2147483647u);
 
-		static_assert(AbsDiff(std::numeric_limits<uint32>::max(), 0u) == std::numeric_limits<uint32>::max());
-		static_assert(AbsDiff(0u, std::numeric_limits<uint32>::max()) == std::numeric_limits<uint32>::max());
+		static_assert(AbsDiff(std::numeric_limits<uint32>::max(), uint32{ 0 }) == std::numeric_limits<uint32>::max());
+		static_assert(AbsDiff(uint32{ 0 }, std::numeric_limits<uint32>::max()) == std::numeric_limits<uint32>::max());
 
 		static_assert(AbsDiff(std::numeric_limits<int64>::max(), std::numeric_limits<int64>::min()) == std::numeric_limits<uint64>::max());
 		static_assert(AbsDiff(std::numeric_limits<int64>::min(), std::numeric_limits<int64>::max()) == std::numeric_limits<uint64>::max());
-		static_assert(AbsDiff(std::numeric_limits<int64>::min(), 0LL) == 9223372036854775808ull);
-		static_assert(AbsDiff(0LL, std::numeric_limits<int64>::max()) == 9223372036854775807ull);
+		static_assert(AbsDiff(std::numeric_limits<int64>::min(), int64{ 0 }) == 9223372036854775808ull);
+		static_assert(AbsDiff(int64{ 0 }, std::numeric_limits<int64>::max()) == 9223372036854775807ull);
 
 		static_assert(AbsDiff(std::numeric_limits<double>::max(), 0.0) == std::numeric_limits<double>::max());
 		static_assert(AbsDiff(0.0, std::numeric_limits<double>::max()) == std::numeric_limits<double>::max());

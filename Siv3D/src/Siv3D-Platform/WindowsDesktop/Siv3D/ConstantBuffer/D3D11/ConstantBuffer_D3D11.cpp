@@ -69,16 +69,20 @@ namespace s3d
 		}
 
 		D3D11_MAPPED_SUBRESOURCE mapped;
-
-		if (FAILED(m_context->Map(m_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
 		{
-			return false;
-		}
+			if (FAILED(m_context->Map(m_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
+			{
+				return false;
+			}
 
-		if (void* const dst = mapped.pData)
-		{
-			std::memcpy(dst, data, size);
+			if (not mapped.pData)
+			{
+				m_context->Unmap(m_buffer.Get(), 0);
+				return false;
+			}
 
+			std::memcpy(mapped.pData, data, size);
+			
 			m_context->Unmap(m_buffer.Get(), 0);
 		}
 

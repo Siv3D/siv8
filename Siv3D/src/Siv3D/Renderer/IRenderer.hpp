@@ -58,5 +58,9 @@ namespace s3d
 		virtual void setLowLatencyMode(bool enabled) = 0;
 
 		virtual bool isLowLatencyMode() const = 0;
+
+		virtual void captureScreenshot() = 0;
+
+		virtual const Image& getScreenCapture() const = 0;
 	};
 }

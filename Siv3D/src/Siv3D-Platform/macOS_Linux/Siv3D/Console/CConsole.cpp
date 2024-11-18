@@ -21,5 +21,10 @@ namespace s3d
 
 	void CConsole::open() {}
 
+	bool CConsole::attach()
+	{	
+		return true;
+	}
+
 	void CConsole::close() {}
 }

@@ -244,7 +244,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::at(const size_type y, const size_type x)&
 	{
-		if (not inBounds(Point{ x, y }))
+		if (not indexInBounds(y, x))
 		{
 			detail::ThrowGridAtOutOfRange();
 		}
@@ -255,7 +255,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::at(const size_type y, const size_type x) const&
 	{
-		if (not inBounds(Point{ x, y }))
+		if (not indexInBounds(y, x))
 		{
 			detail::ThrowGridAtOutOfRange();
 		}
@@ -266,7 +266,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::at(const size_type y, const size_type x)&&
 	{
-		if (not inBounds(Point{ x, y }))
+		if (not indexInBounds(y, x))
 		{
 			detail::ThrowGridAtOutOfRange();
 		}
@@ -277,7 +277,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::at(const Point pos)&
 	{
-		if (not inBounds(pos))
+		if (not indexInBounds(pos))
 		{
 			detail::ThrowGridAtOutOfRange();
 		}
@@ -288,7 +288,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::at(const Point pos) const&
 	{
-		if (not inBounds(pos))
+		if (not indexInBounds(pos))
 		{
 			detail::ThrowGridAtOutOfRange();
 		}
@@ -299,7 +299,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::at(const Point pos)&&
 	{
-		if (not inBounds(pos))
+		if (not indexInBounds(pos))
 		{
 			detail::ThrowGridAtOutOfRange();
 		}
@@ -314,16 +314,16 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Grid<Type, Allocator>::pointer Grid<Type, Allocator>::operator [](const size_t y)
+	constexpr typename Grid<Type, Allocator>::pointer Grid<Type, Allocator>::operator [](const size_type y)
 	{
-		assert(y < static_cast<size_t>(m_size.y));
+		assert(y < static_cast<size_type>(m_size.y));
 		return (m_container.data() + (y * m_size.x));
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Grid<Type, Allocator>::const_pointer Grid<Type, Allocator>::operator [](const size_t y) const
+	constexpr typename Grid<Type, Allocator>::const_pointer Grid<Type, Allocator>::operator [](const size_type y) const
 	{
-		assert(y < static_cast<size_t>(m_size.y));
+		assert(y < static_cast<size_type>(m_size.y));
 		return (m_container.data() + (y * m_size.x));
 	}
 
@@ -336,37 +336,37 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::operator [](const Point pos) const&
 	{
-		assert(inBounds(pos));
+		assert(indexInBounds(pos));
 		return *(m_container.data() + (pos.y * m_size.x + pos.x));
 	}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const Point pos)&&
 	{
-		assert(inBounds(pos));
+		assert(indexInBounds(pos));
 		return *(m_container.data() + (pos.y * m_size.x + pos.x));
 	}
 
 # ifdef __cpp_multidimensional_subscript
 
 	template <class Type, class Allocator>
-	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::operator [](const size_t x, const size_t y)&
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::operator [](const size_type x, const size_type y)&
 	{
-		assert(inBounds(Point{ x, y }));
+		assert(indexInBounds(y, x));
 		return *(m_container.data() + (y * m_size.x + x));
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::operator [](const size_t x, const size_t y) const&
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::operator [](const size_type x, const size_type y) const&
 	{
-		assert(inBounds(Point{ x, y }));
+		assert(indexInBounds(y, x));
 		return *(m_container.data() + (y * m_size.x + x));
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const size_t x, const size_t y)&&
+	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const size_type x, const size_type y)&&
 	{
-		assert(inBounds(Point{ x, y }));
+		assert(indexInBounds(y, x));
 		return *(m_container.data() + (y * m_size.x + x));
 	}
 
@@ -422,12 +422,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	inBounds
+	//	indexInBounds
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr bool Grid<Type, Allocator>::inBounds(const Point pos) const noexcept
+	constexpr bool Grid<Type, Allocator>::indexInBounds(const size_type y, const size_type x) const noexcept
+	{
+		return ((y < static_cast<size_type>(m_size.y)) && (x < static_cast<size_type>(m_size.x)));
+	}
+
+	template <class Type, class Allocator>
+	constexpr bool Grid<Type, Allocator>::indexInBounds(const Point pos) const noexcept
 	{
 		return (InRange(pos.x, 0, (m_size.x - 1)) && InRange(pos.y, 0, (m_size.y - 1)));
 	}
@@ -728,16 +734,16 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::row(const size_t y) noexcept
+	constexpr auto Grid<Type, Allocator>::row(const size_type y) noexcept
 	{
-		assert(y < static_cast<size_t>(m_size.y));
+		assert(y < static_cast<size_type>(m_size.y));
 		return std::span(m_container.data() + (y * m_size.x), m_size.x);
 	}
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::row(const size_t y) const noexcept
+	constexpr auto Grid<Type, Allocator>::row(const size_type y) const noexcept
 	{
-		assert(y < static_cast<size_t>(m_size.y));
+		assert(y < static_cast<size_type>(m_size.y));
 		return std::span(m_container.data() + (y * m_size.x), m_size.x);
 	}
 
@@ -748,20 +754,20 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::column(const size_t x) noexcept
+	constexpr auto Grid<Type, Allocator>::column(const size_type x) noexcept
 	{
-		assert(x < static_cast<size_t>(m_size.x));
-		return std::views::iota(0u, static_cast<size_t>(m_size.y))
-			| std::views::transform([base = (m_container.data() + x), stride = m_size.x](size_t y) -> reference
+		assert(x < static_cast<size_type>(m_size.x));
+		return std::views::iota(0u, static_cast<size_type>(m_size.y))
+			| std::views::transform([base = (m_container.data() + x), stride = m_size.x](size_type y) -> reference
 				{ return *(base + (y * stride)); });
 	}
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::column(const size_t x) const noexcept
+	constexpr auto Grid<Type, Allocator>::column(const size_type x) const noexcept
 	{
-		assert(x < static_cast<size_t>(m_size.x));
-		return std::views::iota(0u, static_cast<size_t>(m_size.y))
-			| std::views::transform([base = (m_container.data() + x), stride = m_size.x](size_t y) -> const_reference
+		assert(x < static_cast<size_type>(m_size.x));
+		return std::views::iota(0u, static_cast<size_type>(m_size.y))
+			| std::views::transform([base = (m_container.data() + x), stride = m_size.x](size_type y) -> const_reference
 				{ return *(base + (y * stride)); });
 	}
 

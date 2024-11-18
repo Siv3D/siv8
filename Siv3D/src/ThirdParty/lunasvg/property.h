@@ -98,7 +98,7 @@ public:
     const std::string& ref() const { return m_ref; }
     bool isNone() const { return m_ref.empty() && m_color.isNone(); }
 
-public:
+private:
     std::string m_ref;
     Color m_color{Color::Transparent};
 };
@@ -175,6 +175,8 @@ public:
     static Transform scaled(double sx, double sy);
     static Transform sheared(double shx, double shy);
     static Transform translated(double tx, double ty);
+
+    static const Transform Identity;
 
 public:
     double m00{1};

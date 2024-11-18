@@ -31,6 +31,7 @@
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/ScreenCapture/IScreenCapture.hpp>
 
 namespace s3d
 {

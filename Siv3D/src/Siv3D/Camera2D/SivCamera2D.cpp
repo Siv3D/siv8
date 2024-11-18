@@ -199,7 +199,7 @@ namespace s3d
 			{
 				m_pointedScale.reset();
 				delta.normalize();
-				m_targetCenter += (m_cameraControl.controlSpeedFactor * deltaTime * (delta / Math::Exp2(m_targetScaleLog)));
+				m_targetCenter += ((delta / Math::Exp2(m_targetScaleLog)) * (m_cameraControl.controlSpeedFactor * deltaTime));
 			}
 		}
 
@@ -233,7 +233,7 @@ namespace s3d
 		else if (m_grabbedPos)
 		{
 			const Vec2 delta = (Cursor::PosF() - *m_grabbedPos);
-			m_targetCenter += (m_cameraControl.grabSpeedFactor * deltaTime * (delta / Math::Exp2(m_targetScaleLog)));
+			m_targetCenter += ((delta / Math::Exp2(m_targetScaleLog)) * (m_cameraControl.grabSpeedFactor * deltaTime));
 
 			if (MouseR.up())
 			{

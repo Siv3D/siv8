@@ -24,10 +24,21 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		template <class PointType>
+		[[nodiscard]]
 		constexpr bool IsClockwise(const PointType& p0, const PointType& p1, const PointType& p2) noexcept;
 
 		template <class PointType>
+		[[nodiscard]]
 		constexpr bool IsClockwise(const PointType& p0, const PointType& p1, const PointType& p2, const PointType& p3) noexcept;
+
+		[[nodiscard]]
+		bool IsClockwise(std::span<const Point> points) noexcept;
+		
+		[[nodiscard]]
+		bool IsClockwise(std::span<const Float2> points) noexcept;
+		
+		[[nodiscard]]
+		bool IsClockwise(std::span<const Vec2> points) noexcept;
 	}
 }
 

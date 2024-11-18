@@ -306,6 +306,13 @@ namespace s3d
 		return *this;
 	}
 
+	constexpr Circle& Circle::set(const Circle& circle) noexcept
+	{
+		center = circle.center;
+		r = circle.r;
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	movedBy
@@ -433,7 +440,7 @@ namespace s3d
 
 	constexpr Circle::value_type Circle::perimeter() const noexcept
 	{
-		return (2 * r * Math::Pi);
+		return (r * Math::TwoPi);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -480,5 +487,4 @@ namespace s3d
 	{
 		return Geometry2D::Intersect(*this, other);
 	}
-
 }

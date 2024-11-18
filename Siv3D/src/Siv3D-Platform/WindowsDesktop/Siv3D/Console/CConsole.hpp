@@ -25,6 +25,8 @@ namespace s3d
 
 		void open() override;
 
+		bool attach() override;
+
 		void close() override;
 
 	private:

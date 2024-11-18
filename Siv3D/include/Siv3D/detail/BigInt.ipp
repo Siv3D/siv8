@@ -371,7 +371,7 @@ namespace s3d
 
 	inline void BigInt::swap(BigInt& other) noexcept
 	{
-		std::swap(pImpl, other.pImpl);
+		pImpl.swap(other.pImpl);
 	}
 
 	////////////////////////////////////////////////////////////////

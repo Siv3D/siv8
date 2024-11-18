@@ -208,12 +208,12 @@ namespace s3d
 		/// @brief コピーコンストラクタ
 		/// @param other コピーする配列
 		[[nodiscard]]
-		Array(const Array&) = default;
+		Array(const Array& other) = default;
 
 		/// @brief ムーブコンストラクタ
 		/// @param other ムーブする配列
 		[[nodiscard]]
-		Array(Array&&) = default;
+		Array(Array&& other) = default;
 
 		/// @brief std::vector からのコピーで配列を作成します。
 		/// @param other コピーする配列
@@ -334,7 +334,7 @@ namespace s3d
 		constexpr Array(size_type size, Arg::generator_<FunctionRef<value_type(size_t)>> generator)
 			: Array(IndexedGenerate(size, *generator)) {}
 
-		/// @brief 配列を作成し、`reserve()` します。
+		/// @brief 空の配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
 		[[nodiscard]]
 		explicit constexpr Array(Arg::reserve_<size_type> size)
@@ -351,12 +351,12 @@ namespace s3d
 		/// @brief コピー代入演算子
 		/// @param other コピーする配列
 		/// @return *this
-		Array& operator =(const Array&) SIV3D_LIFETIMEBOUND = default;
+		Array& operator =(const Array& other) SIV3D_LIFETIMEBOUND = default;
 
 		/// @brief ムーブ代入演算子
 		/// @param other ムーブする配列
 		/// @return *this
-		Array& operator =(Array&&) SIV3D_LIFETIMEBOUND = default;
+		Array& operator =(Array&& other) SIV3D_LIFETIMEBOUND = default;
 
 		/// @brief コピー代入演算子
 		/// @param other コピーする配列
@@ -1138,6 +1138,23 @@ namespace s3d
 		/// @param value 追加する値
 		constexpr void push_front(value_type value)
 		{
+			m_container.insert(m_container.begin(), value);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	emplace_front
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の先頭に要素を構築して追加します。
+		/// @tparam ...Args 構築する要素の引数の型
+		/// @param ...args 構築する要素の引数
+		/// @return 追加された要素への参照
+		template <class... Args>
+		constexpr reference emplace_front(Args&&... args)
+		{
+			const value_type value(std::forward<Args>(args)...);
 			m_container.insert(m_container.begin(), value);
 		}
 

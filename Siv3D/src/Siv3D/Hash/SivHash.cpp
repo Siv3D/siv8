@@ -11,6 +11,7 @@
 
 # include <Siv3D/Hash.hpp>
 # include <ThirdParty/wyhash/wyhash.h>
+# include <ThirdParty/rapidhash/rapidhash.h>
 # define XXH_IMPLEMENTATION
 # define XXH_STATIC_LINKING_ONLY
 # define XXH_NO_STREAM
@@ -19,7 +20,7 @@
 
 namespace s3d
 {
-	namespace wyhash
+	namespace rapidhash
 	{
 		////////////////////////////////////////////////////////////////
 		//
@@ -29,17 +30,17 @@ namespace s3d
 
 		uint64 Hash(const void* data, const size_t size) noexcept
 		{
-			return ::wyhash(data, size, 0, DefaultHashSecret);
+			return ::rapidhash_internal(data, size, DefaultSeed, rapid_secret);
 		}
 
 		uint64 Hash(const void* data, const size_t size, const uint64 seed) noexcept
 		{
-			return ::wyhash(data, size, seed, DefaultHashSecret);
+			return ::rapidhash_internal(data, size, seed, rapid_secret);
 		}
 
 		uint64 Hash(const void* data, const size_t size, const uint64 seed, const Secret& secret) noexcept
 		{
-			return ::wyhash(data, size, seed, secret);
+			return ::rapidhash_internal(data, size, seed, secret);
 		}
 	}
 
