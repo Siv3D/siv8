@@ -156,11 +156,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr Grid& assign(size_type w, size_type h, const value_type& value);
+		constexpr Grid& assign(size_type w, size_type h, const value_type& value) SIV3D_LIFETIMEBOUND;
 
-		constexpr Grid& assign(Size size, const value_type& value);
+		constexpr Grid& assign(Size size, const value_type& value) SIV3D_LIFETIMEBOUND;
 
-		constexpr Grid& assign(const std::initializer_list<std::initializer_list<value_type>>& set);
+		constexpr Grid& assign(const std::initializer_list<std::initializer_list<value_type>>& set) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -182,7 +182,7 @@ namespace s3d
 		/// @brief Array への const 参照を返します。
 		/// @return Array への const 参照
 		[[nodiscard]]
-		constexpr const container_type& getContainer() const& noexcept;
+		constexpr const container_type& getContainer() const& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief Array を返します。
 		/// @return Array
@@ -195,15 +195,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr reference at(size_type y, size_type x)&;
+		constexpr reference at(size_type y, size_type x)& SIV3D_LIFETIMEBOUND;
 
-		constexpr const_reference at(size_type y, size_type x) const&;
+		constexpr const_reference at(size_type y, size_type x) const& SIV3D_LIFETIMEBOUND;
 
 		constexpr value_type at(size_type y, size_type x)&&;
 
-		constexpr reference at(Point pos)&;
+		constexpr reference at(Point pos)& SIV3D_LIFETIMEBOUND;
 
-		constexpr const_reference at(Point pos) const&;
+		constexpr const_reference at(Point pos) const& SIV3D_LIFETIMEBOUND;
 
 		constexpr value_type at(Point pos)&&;
 
@@ -214,16 +214,16 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr pointer operator [](size_type y);
+		constexpr pointer operator [](size_type y) SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr const_pointer operator [](size_type y) const;
+		constexpr const_pointer operator [](size_type y) const SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr reference operator [](Point pos)&;
+		constexpr reference operator [](Point pos)& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr const_reference operator [](Point pos) const&;
+		constexpr const_reference operator [](Point pos) const& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
 		constexpr value_type operator [](Point pos)&&;
@@ -231,10 +231,10 @@ namespace s3d
 	# ifdef __cpp_multidimensional_subscript
 
 		[[nodiscard]]
-		constexpr reference operator [](size_type x, size_type y)&;
+		constexpr reference operator [](size_type x, size_type y)& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr const_reference operator [](size_type x, size_type y) const&;
+		constexpr const_reference operator [](size_type x, size_type y) const& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
 		constexpr value_type operator [](size_type x, size_type y)&&;
@@ -250,12 +250,12 @@ namespace s3d
 		/// @brief 先頭の要素への参照を返します。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr reference front() & noexcept;
+		constexpr reference front() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 先頭の要素への参照を返します。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr const_reference front() const& noexcept;
+		constexpr const_reference front() const& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 先頭の要素を返します。
 		/// @return 先頭の要素
@@ -271,12 +271,12 @@ namespace s3d
 		/// @brief 末尾の要素への参照を返します。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr reference back() & noexcept;
+		constexpr reference back() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 末尾の要素への参照を返します。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr const_reference back() const& noexcept;
+		constexpr const_reference back() const& noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 末尾の要素を返します。
 		/// @return 末尾の要素
@@ -304,12 +304,12 @@ namespace s3d
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr pointer data() noexcept;
+		constexpr pointer data() noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr const_pointer data() const noexcept;
+		constexpr const_pointer data() const noexcept SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -164,34 +164,34 @@ namespace s3d
 
 		/// @brief 要素のポインタ型
 		using pointer					= typename container_type::pointer;
-		
+
 		/// @brief 要素の const ポインタ型
 		using const_pointer				= typename container_type::const_pointer;
-		
+
 		/// @brief 要素の参照型
 		using reference					= typename container_type::reference;
-		
+
 		/// @brief 要素の const 参照型
 		using const_reference			= typename container_type::const_reference;
-		
+
 		/// @brief イテレータ型
 		using iterator					= typename container_type::iterator;
-		
+
 		/// @brief const イテレータ型
 		using const_iterator			= typename container_type::const_iterator;
-		
+
 		/// @brief リバース・イテレータ型
 		using reverse_iterator			= typename container_type::reverse_iterator;
-		
+
 		/// @brief const リバース・イテレータ型
 		using const_reverse_iterator	= typename container_type::const_reverse_iterator;
-		
+
 		/// @brief 要素の個数を表現する型
 		using size_type					= typename container_type::size_type;
-		
+
 		/// @brief 2 つの要素間の距離を表現する型
 		using difference_type			= typename container_type::difference_type;
-		
+
 		/// @brief アロケータの型
 		using allocator_type			= typename container_type::allocator_type;
 
@@ -308,7 +308,7 @@ namespace s3d
 			: m_container(list, alloc) {}
 
 	# ifdef __cpp_lib_containers_ranges
-		
+
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
@@ -319,7 +319,7 @@ namespace s3d
 			: m_container(std::from_range, std::forward<Range>(range), alloc) {}
 
 	# endif
-		
+
 		/// @brief ジェネレータ関数を使って配列を作成します。
 		/// @param size 作成する配列の要素数
 		/// @param generator ジェネレータ関数
@@ -351,17 +351,17 @@ namespace s3d
 		/// @brief コピー代入演算子
 		/// @param other コピーする配列
 		/// @return *this
-		Array& operator =(const Array& other) = default;
+		Array& operator =(const Array& other) SIV3D_LIFETIMEBOUND = default;
 
 		/// @brief ムーブ代入演算子
 		/// @param other ムーブする配列
 		/// @return *this
-		Array& operator =(Array&& other) = default;
+		Array& operator =(Array&& other) SIV3D_LIFETIMEBOUND = default;
 
 		/// @brief コピー代入演算子
 		/// @param other コピーする配列
 		/// @return *this
-		constexpr Array& operator =(const container_type& other)
+		constexpr Array& operator =(const container_type& other) SIV3D_LIFETIMEBOUND
 		{
 			m_container = other;
 			return *this;
@@ -370,7 +370,7 @@ namespace s3d
 		/// @brief ムーブ代入演算子
 		/// @param other ムーブする配列
 		/// @return *this
-		constexpr Array& operator =(container_type&& other)
+		constexpr Array& operator =(container_type&& other) SIV3D_LIFETIMEBOUND
 		{
 			m_container = std::move(other);
 			return *this;
@@ -379,7 +379,7 @@ namespace s3d
 		/// @brief コピー代入演算子
 		/// @param a メンバ関数 `.asArray()` を持つ型
 		/// @return *this
-		constexpr Array& operator =(const HasAsArray auto& a)
+		constexpr Array& operator =(const HasAsArray auto& a) SIV3D_LIFETIMEBOUND
 		{
 			m_container = a.asArray();
 			return *this;
@@ -388,7 +388,7 @@ namespace s3d
 		/// @brief ムーブ代入演算子
 		/// @param a メンバ関数 `.asArray()` を持つ型
 		/// @return *this
-		constexpr Array& operator =(HasAsArray auto&& a)
+		constexpr Array& operator =(HasAsArray auto&& a) SIV3D_LIFETIMEBOUND
 		{
 			m_container = std::forward<decltype(a)>(a).asArray();
 			return *this;
@@ -397,7 +397,7 @@ namespace s3d
 		/// @brief コピー代入演算子
 		/// @param list リスト
 		/// @return *this
-		constexpr Array& operator =(std::initializer_list<value_type> list)
+		constexpr Array& operator =(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND
 		{
 			m_container = list;
 			return *this;
@@ -413,7 +413,7 @@ namespace s3d
 		/// @param count 要素数
 		/// @param value 要素の値
 		/// @return *this
-		constexpr Array& assign(size_type count, value_type value)
+		constexpr Array& assign(size_type count, value_type value) SIV3D_LIFETIMEBOUND
 		{
 			m_container.assign(count, value);
 			return *this;
@@ -425,7 +425,7 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
 		template <class Iterator>
-		constexpr Array& assign(Iterator first, Iterator last)
+		constexpr Array& assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			m_container.assign(first, last);
 			return *this;
@@ -434,7 +434,7 @@ namespace s3d
 		/// @brief リストから配列を作成します。
 		/// @param list リスト
 		/// @return *this
-		constexpr Array& assign(std::initializer_list<value_type> list)
+		constexpr Array& assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND
 		{
 			m_container.assign(list);
 			return *this;
@@ -451,7 +451,7 @@ namespace s3d
 		/// @param range 範囲
 		/// @return *this
 		template <Concept::ContainerCompatibleRange<bool> Range>
-		constexpr Array& assign_range(Range&& range)
+		constexpr Array& assign_range(Range&& range) SIV3D_LIFETIMEBOUND
 		{
 			m_container.assign_range(std::forward<Range>(range));
 			return *this;
@@ -480,7 +480,7 @@ namespace s3d
 		/// @brief std::basic_string&gt;bool&lt; への const 参照を返します。
 		/// @return std::basic_string&gt;bool&lt; への const 参照
 		[[nodiscard]]
-		constexpr const container_type& getContainer() const noexcept
+		constexpr const container_type& getContainer() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container;
 		}
@@ -505,7 +505,7 @@ namespace s3d
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
 		/// @throw std::out_of_range 範囲外アクセスの場合 throw
-		constexpr const value_type& at(size_type index) const&
+		constexpr const value_type& at(size_type index) const& SIV3D_LIFETIMEBOUND
 		{
 			return m_container.at(index);
 		}
@@ -514,7 +514,7 @@ namespace s3d
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
 		/// @throw std::out_of_range 範囲外アクセスの場合 throw
-		constexpr value_type& at(size_type index)&
+		constexpr value_type& at(size_type index)& SIV3D_LIFETIMEBOUND
 		{
 			return m_container.at(index);
 		}
@@ -538,7 +538,7 @@ namespace s3d
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
 		[[nodiscard]]
-		constexpr const value_type& operator [](size_type index) const& noexcept
+		constexpr const value_type& operator [](size_type index) const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container[index];
 		}
@@ -547,7 +547,7 @@ namespace s3d
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
 		[[nodiscard]]
-		constexpr value_type& operator [](size_type index) & noexcept
+		constexpr value_type& operator [](size_type index) & noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container[index];
 		}
@@ -570,7 +570,7 @@ namespace s3d
 		/// @brief 先頭の要素への参照を返します。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr reference front()& noexcept
+		constexpr reference front()& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.front();
 		}
@@ -578,7 +578,7 @@ namespace s3d
 		/// @brief 先頭の要素への参照を返します。
 		/// @return 先頭の要素への参照
 		[[nodiscard]]
-		constexpr const_reference front() const& noexcept
+		constexpr const_reference front() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.front();
 		}
@@ -600,7 +600,7 @@ namespace s3d
 		/// @brief 末尾の要素への参照を返します。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr reference back()& noexcept
+		constexpr reference back()& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.back();
 		}
@@ -608,7 +608,7 @@ namespace s3d
 		/// @brief 末尾の要素への参照を返します。
 		/// @return 末尾の要素への参照
 		[[nodiscard]]
-		constexpr const_reference back() const& noexcept
+		constexpr const_reference back() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.back();
 		}
@@ -630,7 +630,7 @@ namespace s3d
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr value_type* data() noexcept
+		constexpr value_type* data() noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.data();
 		}
@@ -638,7 +638,7 @@ namespace s3d
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr const value_type* data() const noexcept
+		constexpr const value_type* data() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.data();
 		}
@@ -652,7 +652,7 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator begin() noexcept
+		constexpr iterator begin() noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.begin();
 		}
@@ -661,7 +661,7 @@ namespace s3d
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator end() noexcept
+		constexpr iterator end() noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.end();
 		}
@@ -669,7 +669,7 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator begin() const noexcept
+		constexpr const_iterator begin() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.begin();
 		}
@@ -678,7 +678,7 @@ namespace s3d
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator end() const noexcept
+		constexpr const_iterator end() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.end();
 		}
@@ -692,7 +692,7 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cbegin() const noexcept
+		constexpr const_iterator cbegin() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.cbegin();
 		}
@@ -701,7 +701,7 @@ namespace s3d
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cend() const noexcept
+		constexpr const_iterator cend() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.cend();
 		}
@@ -715,7 +715,7 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rbegin() noexcept
+		constexpr reverse_iterator rbegin() noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.rbegin();
 		}
@@ -724,7 +724,7 @@ namespace s3d
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rend() noexcept
+		constexpr reverse_iterator rend() noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.rend();
 		}
@@ -732,7 +732,7 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rbegin() const noexcept
+		constexpr const_reverse_iterator rbegin() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.rbegin();
 		}
@@ -741,7 +741,7 @@ namespace s3d
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rend() const noexcept
+		constexpr const_reverse_iterator rend() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.rend();
 		}
@@ -755,7 +755,7 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crbegin() const noexcept
+		constexpr const_reverse_iterator crbegin() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.crbegin();
 		}
@@ -764,7 +764,7 @@ namespace s3d
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crend() const noexcept
+		constexpr const_reverse_iterator crend() const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.crend();
 		}
@@ -959,7 +959,7 @@ namespace s3d
 		/// @param pos 挿入する位置
 		/// @param value 挿入する値
 		/// @return 挿入された要素を指すイテレータ
-		constexpr iterator insert(const_iterator pos, value_type value)
+		constexpr iterator insert(const_iterator pos, value_type value) SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, value);
 		}
@@ -969,7 +969,7 @@ namespace s3d
 		/// @param count 挿入する個数
 		/// @param value 挿入する値
 		/// @return 挿入された要素の先頭を指すイテレータ
-		constexpr iterator insert(const_iterator pos, size_type count, value_type value)
+		constexpr iterator insert(const_iterator pos, size_type count, value_type value) SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, count, value);
 		}
@@ -981,7 +981,7 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return 挿入された要素の先頭を指すイテレータ
 		template <class Iterator>
-		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last)
+		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, first, last);
 		}
@@ -990,7 +990,7 @@ namespace s3d
 		/// @param pos 挿入する位置
 		/// @param list リスト
 		/// @return 挿入された要素の先頭を指すイテレータ
-		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list)
+		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, list);
 		}
@@ -1007,7 +1007,7 @@ namespace s3d
 		/// @param ...args 構築する要素の引数
 		/// @return 挿入された要素を指すイテレータ
 		template <class... Args>
-		constexpr iterator emplace(const_iterator pos, Args&&... args)
+		constexpr iterator emplace(const_iterator pos, Args&&... args) SIV3D_LIFETIMEBOUND
 		{
 			const value_type value(std::forward<Args>(args)...);
 			return m_container.insert(pos, value);
@@ -1037,7 +1037,7 @@ namespace s3d
 		/// @brief 指定した位置の要素を削除します。
 		/// @param pos 削除する要素の位置
 		/// @return 削除した要素の次の要素を指すイテレータ
-		constexpr iterator erase(const_iterator pos)
+		constexpr iterator erase(const_iterator pos) SIV3D_LIFETIMEBOUND
 		{
 			return m_container.erase(pos);
 		}
@@ -1046,7 +1046,7 @@ namespace s3d
 		/// @param first 削除する範囲の開始位置
 		/// @param last 削除する範囲の終端位置
 		/// @return 削除された範囲の次を指すイテレータ
-		constexpr iterator erase(const_iterator first, const_iterator last)
+		constexpr iterator erase(const_iterator first, const_iterator last) SIV3D_LIFETIMEBOUND
 		{
 			return m_container.erase(first, last);
 		}
@@ -1075,7 +1075,7 @@ namespace s3d
 		/// @param ...args 構築する要素の引数
 		/// @return 追加された要素への参照
 		template <class... Args>
-		constexpr reference emplace_back(Args&&... args)
+		constexpr reference emplace_back(Args&&... args) SIV3D_LIFETIMEBOUND
 		{
 			const value_type value(std::forward<Args>(args)...);
 			push_back(value);
@@ -1207,7 +1207,7 @@ namespace s3d
 		/// @brief 配列の末尾に要素を追加します。
 		/// @param value 追加する値
 		/// @return *this
-		constexpr Array& operator <<(value_type value)
+		constexpr Array& operator <<(value_type value) SIV3D_LIFETIMEBOUND
 		{
 			m_container.push_back(value);
 			return *this;
@@ -1224,7 +1224,7 @@ namespace s3d
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<value_type> subspan(size_type pos, size_type count) noexcept
+		constexpr std::span<value_type> subspan(size_type pos, size_type count) noexcept SIV3D_LIFETIMEBOUND
 		{
 			return std::span{ m_container }.subspan(pos, count);
 		}
@@ -1234,7 +1234,7 @@ namespace s3d
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<const value_type> subspan(size_type pos, size_type count) const noexcept
+		constexpr std::span<const value_type> subspan(size_type pos, size_type count) const noexcept SIV3D_LIFETIMEBOUND
 		{
 			return std::span{ m_container }.subspan(pos, count);
 		}
@@ -1282,7 +1282,7 @@ namespace s3d
 		/// @brief 配列の末尾に別の配列を追加します。
 		/// @param other 追加する配列
 		/// @return *this
-		constexpr Array& append(const Array& other)
+		constexpr Array& append(const Array& other) SIV3D_LIFETIMEBOUND
 		{
 			m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
 			return *this;
@@ -1294,7 +1294,7 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
 		template <class Iterator>
-		constexpr Array& append(Iterator first, Iterator last)
+		constexpr Array& append(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			m_container.insert(m_container.end(), first, last);
 			return *this;
@@ -1303,7 +1303,7 @@ namespace s3d
 		/// @brief 配列の末尾にリストの要素を追加します。
 		/// @param list リスト
 		/// @return *this
-		constexpr Array& append(std::initializer_list<value_type> list)
+		constexpr Array& append(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND
 		{
 			m_container.insert(m_container.end(), list);
 			return *this;
@@ -1318,24 +1318,24 @@ namespace s3d
 		/// @brief 配列の要素を 1 つランダムに返します。
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice();
+		value_type& choice() SIV3D_LIFETIMEBOUND;
 
 		/// @brief 配列の要素を 1 つランダムに返します。
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice() const;
+		const value_type& choice() const SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg);
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const SIV3D_LIFETIMEBOUND;
 
 		/// @brief 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
@@ -1563,7 +1563,7 @@ namespace s3d
 		/// @brief 指定した値をすべての要素に代入します。
 		/// @param value 代入する値
 		/// @return *this
-		constexpr Array& fill(const value_type& value)
+		constexpr Array& fill(const value_type& value) SIV3D_LIFETIMEBOUND
 		{
 			std::fill(m_container.begin(), m_container.end(), value);
 			return *this;
@@ -1741,7 +1741,7 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return 区分化された境界を指すイテレータ
 		template <class Fty>
-		constexpr auto partition(Fty f) requires std::predicate<Fty&, const value_type&>
+		constexpr auto partition(Fty f) SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>
 		{
 			return std::partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		}
@@ -1770,7 +1770,7 @@ namespace s3d
 		/// @brief 指定した値と等しいすべての要素を削除します。
 		/// @param value 削除する値
 		/// @return *this
-		constexpr Array& remove(const value_type& value)&
+		constexpr Array& remove(const value_type& value)& SIV3D_LIFETIMEBOUND
 		{
 			m_container.erase(std::remove(m_container.begin(), m_container.end(), value), m_container.end());
 			return *this;
@@ -1792,7 +1792,7 @@ namespace s3d
 		constexpr Array removed(const value_type& value) const&
 		{
 			const isize newSize = std::count(m_container.begin(), m_container.end(), (not value));
-			
+
 			return Array(newSize, (not value));
 		}
 
@@ -1814,7 +1814,7 @@ namespace s3d
 		/// @brief 指定したインデックスにある要素を削除します。
 		/// @param index インデックス
 		/// @return *this
-		constexpr Array& remove_at(size_type index)&
+		constexpr Array& remove_at(size_type index)& SIV3D_LIFETIMEBOUND
 		{
 			if (m_container.size() <= index)
 			{
@@ -1873,7 +1873,7 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& remove_if(Fty f)& requires std::predicate<Fty&, const value_type&>
+		constexpr Array& remove_if(Fty f)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>
 		{
 			erase(std::remove_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))), m_container.end());
 			return *this;
@@ -1932,7 +1932,7 @@ namespace s3d
 		/// @param oldValue 置き換えられる値
 		/// @param newValue 新しい値
 		/// @return *this
-		constexpr Array& replace(const value_type& oldValue, const value_type& newValue)&
+		constexpr Array& replace(const value_type& oldValue, const value_type& newValue)& SIV3D_LIFETIMEBOUND
 		{
 			if (oldValue == newValue)
 			{
@@ -1994,7 +1994,7 @@ namespace s3d
 		/// @param newValue 新しい値
 		/// @return *this
 		template <class Fty>
-		constexpr Array& replace_if(Fty f, const value_type& newValue)& requires std::predicate<Fty&, const value_type&>
+		constexpr Array& replace_if(Fty f, const value_type& newValue)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>
 		{
 			std::replace_if(m_container.begin(), m_container.end(), f, newValue);
 			return *this;
@@ -2051,7 +2051,7 @@ namespace s3d
 
 		/// @brief 配列の要素を逆順に並び替えます。
 		/// @return *this
-		constexpr Array& reverse()&
+		constexpr Array& reverse()& SIV3D_LIFETIMEBOUND
 		{
 			std::reverse(m_container.begin(), m_container.end());
 			return *this;
@@ -2116,7 +2116,7 @@ namespace s3d
 		/// @brief 指定した位置を境に配列の前半と後半を入れ替えます。
 		/// @param middle 境の位置
 		/// @return *this
-		constexpr Array& rotate(size_type middle)&
+		constexpr Array& rotate(size_type middle)& SIV3D_LIFETIMEBOUND
 		{
 			std::rotate(m_container.begin(), (m_container.begin() + middle), m_container.end());
 			return *this;
@@ -2163,7 +2163,7 @@ namespace s3d
 
 		/// @brief 要素を降順に並び替えます。
 		/// @return *this
-		constexpr Array& rsort()&
+		constexpr Array& rsort()& SIV3D_LIFETIMEBOUND
 		{
 			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
 
@@ -2210,7 +2210,7 @@ namespace s3d
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルします。
 		/// @return *this
-		constexpr Array& shuffle()&;
+		constexpr Array& shuffle()& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @return 新しい配列
@@ -2230,7 +2230,7 @@ namespace s3d
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルします。
 		/// @param rbg 使用する乱数エンジン
 		/// @return *this
-		constexpr Array& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&;
+		constexpr Array& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
 		/// @param rbg 使用する乱数エンジン
@@ -2275,7 +2275,7 @@ namespace s3d
 
 		/// @brief 要素を昇順に並び替えます。
 		/// @return *this
-		constexpr Array& sort()&
+		constexpr Array& sort()& SIV3D_LIFETIMEBOUND
 		{
 			const isize falseCount = std::count(m_container.begin(), m_container.end(), false);
 
@@ -2322,7 +2322,7 @@ namespace s3d
 
 		/// @brief 配列をソートしたあとに重複する要素を削除します。
 		/// @return *this
-		constexpr Array& sort_and_unique() & noexcept
+		constexpr Array& sort_and_unique() & noexcept SIV3D_LIFETIMEBOUND
 		{
 			const bool hasTrue = (std::find(m_container.begin(), m_container.end(), true) != m_container.end());
 			const bool hasFalse = (std::find(m_container.begin(), m_container.end(), false) != m_container.end());
@@ -2391,7 +2391,7 @@ namespace s3d
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えます。
 		/// @return *this
-		constexpr Array& stable_sort()&
+		constexpr Array& stable_sort()& SIV3D_LIFETIMEBOUND
 		{
 			return sort();
 		}
@@ -2431,7 +2431,7 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return 区分化された境界を指すイテレータ
 		template <class Fty>
-		constexpr auto stable_partition(Fty f) requires std::predicate<Fty&, const value_type&>
+		constexpr auto stable_partition(Fty f) SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>
 		{
 			return partition(std::forward<Fty>(f));
 		}
@@ -2444,7 +2444,7 @@ namespace s3d
 
 		/// @brief 要素をソートせずに、重複する要素を削除します。
 		/// @return *this
-		constexpr Array& stable_unique() & noexcept
+		constexpr Array& stable_unique() & noexcept SIV3D_LIFETIMEBOUND
 		{
 			const auto itTrue = std::find(m_container.begin(), m_container.end(), true);
 			const auto itFalse = std::find(m_container.begin(), m_container.end(), false);
@@ -2595,7 +2595,7 @@ namespace s3d
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去します。
 		/// @return *this
-		constexpr Array& unique_consecutive() & noexcept;
+		constexpr Array& unique_consecutive() & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列

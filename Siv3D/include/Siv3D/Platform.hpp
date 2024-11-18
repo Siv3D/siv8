@@ -334,6 +334,30 @@
 
 //////////////////////////////////////////////////
 //
+//	lifetimebound
+//
+//////////////////////////////////////////////////
+
+# if SIV3D_COMPILER(MSVC)
+
+	# define SIV3D_LIFETIMEBOUND [[msvc::lifetimebound]]
+
+# elif SIV3D_COMPILER(Clang)
+
+	# define SIV3D_LIFETIMEBOUND [[clang::lifetimebound]]
+
+# elif SIV3D_COMPILER(GCC)
+
+	# define SIV3D_LIFETIMEBOUND __attribute__((lifetimebound))
+
+# else
+
+	# define SIV3D_LIFETIMEBOUND
+
+# endif
+
+//////////////////////////////////////////////////
+//
 //	警告の抑制 | Warning suppression
 //
 //	SIV3D_DISABLE_MSVC_WARNINGS_PUSH(warnings)
