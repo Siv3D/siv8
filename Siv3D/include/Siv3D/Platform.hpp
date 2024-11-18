@@ -345,7 +345,7 @@
 	# include <CppCoreCheck/Warnings.h>
 	# pragma warning(default: CPPCORECHECK_LIFETIME_WARNINGS)
 
-# elif SIV3D_COMPILER(CLANG)
+# elif (SIV3D_COMPILER(APPLECLANG) || SIV3D_COMPILER(CLANG))
 
 	# define SIV3D_LIFETIMEBOUND [[clang::lifetimebound]]
 
