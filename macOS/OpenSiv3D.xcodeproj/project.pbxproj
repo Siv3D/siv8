@@ -510,6 +510,7 @@
 		F944BAB62CEACFAB00CC4D42 /* ChildProcessDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAB22CEACFAB00CC4D42 /* ChildProcessDetail.hpp */; };
 		F944BABA2CEAD93900CC4D42 /* NSTaskWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAB82CEAD93900CC4D42 /* NSTaskWrapper.hpp */; };
 		F944BABB2CEAD93900CC4D42 /* NSTaskWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F944BAB92CEAD93900CC4D42 /* NSTaskWrapper.mm */; };
+		F944BABC2CEAF38D00CC4D42 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */; };
 		F95121F52CB125F100151291 /* IntersectAt.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F02CB125F000151291 /* IntersectAt.hpp */; };
 		F95121F62CB125F100151291 /* Distance.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F12CB125F100151291 /* Distance.hpp */; };
 		F95121F72CB125F100151291 /* Misc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121F22CB125F100151291 /* Misc.hpp */; };
@@ -4902,6 +4903,7 @@
 				F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */,
 				F97204312BF0A314000E21DD /* Metal.framework in Frameworks */,
 				F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */,
+				F944BABC2CEAF38D00CC4D42 /* libboost_filesystem.a in Frameworks */,
 				F986FAA22BCFB875006A4C0F /* libfreetype.a in Frameworks */,
 				F986FAA42BCFBB2E006A4C0F /* libharfbuzz.a in Frameworks */,
 				F9E5FC292BC13F950081A4F7 /* libturbojpeg.a in Frameworks */,
@@ -12950,6 +12952,7 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
+					../Siv3D/lib/macOS/boost,
 					../Siv3D/lib/macOS/freetype,
 					../Siv3D/lib/macOS/harfbuzz,
 					"../Siv3D/lib/macOS/libjpeg-turbo",
@@ -13020,6 +13023,7 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
+					../Siv3D/lib/macOS/boost,
 					../Siv3D/lib/macOS/freetype,
 					../Siv3D/lib/macOS/harfbuzz,
 					"../Siv3D/lib/macOS/libjpeg-turbo",
