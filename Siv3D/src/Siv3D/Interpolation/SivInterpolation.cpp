@@ -45,8 +45,8 @@ namespace s3d
 				}
 			}
 
-			const VectorType temp = ((velocity + omega * change) * deltaTime);
-			velocity = ((velocity - omega * temp) * exp);
+			const VectorType temp = ((velocity + change * omega) * deltaTime);
+			velocity = ((velocity - temp * omega) * exp);
 
 			VectorType result = ((from - change) + (change + temp) * exp);
 

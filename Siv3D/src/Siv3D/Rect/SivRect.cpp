@@ -13,6 +13,7 @@
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/Polygon.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
@@ -122,7 +123,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	size_t Rect::sideIndexAtLength(double length) const
+	size_t Rect::sideIndexAtLength(double length) const noexcept
 	{
 		length = WrapLength(length, perimeter());
 
@@ -201,12 +202,42 @@ namespace s3d
 
 		for (int32 i = 0; i < 4; ++i)
 		{
-			auto& p = quad.p(i);
+			auto& p = quad.pointAtIndex(i);
 			p.x = (pts[i].x * c - pts[i].y * s + _pos.x);
 			p.y = (pts[i].x * s + pts[i].y * c + _pos.y);
 		}
 
 		return quad;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Vec2> Rect::outer() const
+	{
+		return{ tl(), tr(), br(), bl() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::asPolygon() const
+	{
+		if ((w <= 0) || (h <= 0))
+		{
+			return{};
+		}
+
+		return Polygon{ { tl(), tr(), br(), bl() },
+			{ { 0, 1, 3 }, { 3, 1, 2 }},
+			*this,
+			SkipValidation::Yes };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -455,6 +486,17 @@ namespace s3d
 			static_cast<float>(innerThickness + outerThickness),
 			pattern);
 
+		return *this;
+	}
+
+	const Rect& Rect::drawFrame(const double thickness, const LineType lineType, const ColorF& color) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), lineType, color);
+	}
+
+	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const LineType lineType, const ColorF& color) const
+	{
+		RectF{ *this }.drawFrame(innerThickness, outerThickness, lineType, color);
 		return *this;
 	}
 

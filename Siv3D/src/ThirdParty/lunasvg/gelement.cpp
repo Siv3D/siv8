@@ -8,23 +8,17 @@ GElement::GElement()
 {
 }
 
-void GElement::layout(LayoutContext* context, LayoutContainer* current) const
+void GElement::layout(LayoutContext* context, LayoutContainer* current)
 {
     if(isDisplayNone())
         return;
-
-    auto group = makeUnique<LayoutGroup>();
+    auto group = makeUnique<LayoutGroup>(this);
     group->transform = transform();
     group->opacity = opacity();
     group->masker = context->getMasker(mask());
     group->clipper = context->getClipper(clip_path());
     layoutChildren(context, group.get());
     current->addChildIfNotEmpty(std::move(group));
-}
-
-std::unique_ptr<Node> GElement::clone() const
-{
-    return cloneElement<GElement>();
 }
 
 } // namespace lunasvg

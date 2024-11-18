@@ -43,7 +43,7 @@
 # include <Siv3D/Platform.hpp>
 
 // コンパイラのバージョン | Compiler version
-# include <Siv3D/CompilerVersion.hpp> // ToDo
+# include <Siv3D/CompilerVersion.hpp>
 
 // 基本型のエイリアス | Type aliases
 # include <Siv3D/Types.hpp>
@@ -241,8 +241,8 @@
 // 非同期タスク | Asynchronous task
 # include <Siv3D/AsyncTask.hpp>
 
-//// 子プロセス | Child process
-//# include <Siv3D/ChildProcess.hpp>
+// 子プロセス | Child process
+# include <Siv3D/ChildProcess.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -803,9 +803,9 @@
 // 円座標 | Polar coordinates system (2D)
 # include <Siv3D/Circular.hpp>
 
-//// オフセット付き円座標 | Polar coordinates system with offset (2D)
-//# include <Siv3D/OffsetCircular.hpp>
-//
+// オフセット付き円座標 | Polar coordinates system with offset (2D)
+# include <Siv3D/OffsetCircular.hpp>
+
 //// 円柱座標 | Cylindrical coordinate system
 //# include <Siv3D/Cylindrical.hpp>
 //
@@ -817,6 +817,10 @@
 
 //// 3x3 行列 | 3x3 matrix
 //# include <Siv3D/Mat3x3.hpp>
+
+# include <Siv3D/PointsPerCircle.hpp>
+
+# include <Siv3D/QualityFactor.hpp>
 
 // 2D 図形コレクション | 2D shape collection
 # include <Siv3D/2DShapes.hpp> // ToDo
@@ -853,21 +857,21 @@
 // 角丸長方形 | Rounded rectangle
 # include <Siv3D/RoundRect.hpp> // ToDo
 
-//// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
-//# include <Siv3D/LineString.hpp>
-//
-//// 多角形 | Polygon
-//# include <Siv3D/Polygon.hpp>
-//
-//// 複数の多角形 | Multi-polygon
-//# include <Siv3D/MultiPolygon.hpp>
-//
-//// 2 次ベジェ曲線 | Quadratic Bézier curve
-//# include <Siv3D/Bezier2.hpp>
-//
-//// 3 次ベジェ曲線 | Cubic Bézier curve
-//# include <Siv3D/Bezier3.hpp>
-//
+// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
+# include <Siv3D/LineString.hpp> // ToDo
+
+// 多角形 | Polygon
+# include <Siv3D/Polygon.hpp> // ToDo
+
+// 複数の多角形 | Multi-polygon
+# include <Siv3D/MultiPolygon.hpp> // ToDo
+
+// 2 次ベジェ曲線 | Quadratic Bézier curve
+# include <Siv3D/Bezier2.hpp> // ToDo
+
+// 3 次ベジェ曲線 | Cubic Bézier curve
+# include <Siv3D/Bezier3.hpp> // ToDo
+
 //// Catmull-Rom スプライン曲線 | Catmull-Rom spline curves
 //# include <Siv3D/Spline2D.hpp>
 
@@ -877,18 +881,32 @@
 // float 型の四角形 | Quad (float)
 # include <Siv3D/FloatQuad.hpp>
 
-//// 2D 形状コレクション | 2D shapes collection
-//# include <Siv3D/Shape2D.hpp>
-//
+# include <Siv3D/JoinStyle.hpp>
+
+# include <Siv3D/TriangleIndex.hpp>
+
+# include <Siv3D/TriangleIndex32.hpp>
+
+// 2D 形状コレクション | 2D shapes collection
+# include <Siv3D/Shape2D.hpp>
+
 //// 2D 描画バッファ | Native 2D drawing buffer
 //# include <Siv3D/Buffer2D.hpp>
 
 // 2D 幾何 | 2D geometry processing
-# include <Siv3D/Geometry2D/Intersect.hpp>
+# include <Siv3D/Geometry2D/Intersect.hpp> // ToDo
+# include <Siv3D/Geometry2D/IntersectAt.hpp> // ToDo
+# include <Siv3D/Geometry2D/Distance.hpp> // ToDo
+# include <Siv3D/Geometry2D/Center.hpp> // ToDo
+# include <Siv3D/Geometry2D/Contains.hpp> // ToDo
+# include <Siv3D/Geometry2D/ConvexHull.hpp> // ToDo
+# include <Siv3D/Geometry2D/IsClockwise.hpp> // ToDo
+# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp> // ToDo
+# include <Siv3D/Geometry2D/Misc.hpp> // ToDo
 
-//// 長方形詰込み | Rectangle packing
-//# include <Siv3D/RectanglePacking.hpp>
-//
+// 長方形詰込み | Rectangle packing
+# include <Siv3D/RectanglePack.hpp>
+
 //// 平面分割 | Planar subdivisions
 //# include <Siv3D/Subdivision2D.hpp>
 
@@ -933,6 +951,9 @@
 
 // UUID | UUID
 # include <Siv3D/UUIDValue.hpp>
+
+// Web ブラウザ | Web browser
+# include <Siv3D/WebBrowser.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1549,12 +1570,21 @@
 
 
 
+//////////////////////////////////////////////////
+//
+//	スクリーンキャプチャ | Screen Capture
+//
+//////////////////////////////////////////////////
+
+// スクリーンキャプチャ | Screen capture
+# include <Siv3D/ScreenCapture.hpp> // ToDo
 
 
 
 
 
 
+# include <Siv3D/Pipe.hpp>
 
 
 # include <Siv3D/EngineOption.hpp>

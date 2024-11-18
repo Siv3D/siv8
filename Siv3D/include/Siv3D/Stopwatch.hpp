@@ -330,10 +330,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief Stopwatch を出力します。
+		/// @param os 出力先のストリーム
+		/// @param value Stopwatch
+		/// @return 出力ストリーム
 		friend std::ostream& operator <<(std::ostream& os, const Stopwatch& value);
 
+		/// @brief Stopwatch を出力します。
+		/// @param os 出力先のストリーム
+		/// @param value Stopwatch
+		/// @return 出力ストリーム
 		friend std::wostream& operator <<(std::wostream& os, const Stopwatch& value);
 
+		/// @brief Stopwatch を出力します。
+		/// @param os 出力先のストリーム
+		/// @param value Stopwatch
+		/// @return 出力ストリーム
 		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Stopwatch& value);
 
 		////////////////////////////////////////////////////////////////
@@ -342,9 +354,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @param formatData 
-		/// @param value 
+		/// @brief Stopwatch をフォーマットします。
+		/// @param formatData フォーマットデータ
+		/// @param value Stopwatch
 		friend void Formatter(FormatData& formatData, const Stopwatch& value);
 
 	private:

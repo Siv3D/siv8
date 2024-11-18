@@ -109,7 +109,7 @@ namespace s3d
 
 			for (int32 x = 0; x < width; ++x)
 			{
-				std::swap(line[index], line[index + 2]);
+				std::ranges::swap(line[index], line[index + 2]);
 				index += 4;
 			}
 
@@ -154,7 +154,7 @@ namespace s3d
 
 			for (int32 x = 0; x < width; ++x)
 			{
-				std::swap(line[index], line[index + 2]);
+				std::ranges::swap(line[index], line[index + 2]);
 				index += 4;
 			}
 

@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Circular.hpp"
+# include "OffsetCircular.hpp"
 # include "Line.hpp"
 # include "Rect.hpp"
 # include "RectF.hpp"
@@ -20,6 +22,8 @@
 # include "RoundRect.hpp"
 # include "Geometry2D/Intersect.hpp"
 # include "Geometry2D/IsClockwise.hpp"
+# include "detail/Circular.ipp"
+# include "detail/OffsetCircular.ipp"
 # include "detail/Line.ipp"
 # include "detail/Rect.ipp"
 # include "detail/RectF.ipp"

@@ -13,8 +13,8 @@
 
 namespace s3d
 {
-	namespace wyhash
-	{		
+	namespace rapidhash
+	{
 		////////////////////////////////////////////////////////////////
 		//
 		//	Hash

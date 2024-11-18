@@ -12,8 +12,8 @@
 # pragma once
 # include "Common.hpp"
 # include "PointVector.hpp"
-# include "Circular.hpp"
 # include "ColorHSV.hpp"
+# include "QualityFactor.hpp"
 # include "Array.hpp"
 # include "Optional.hpp"
 # include "PredefinedNamedParameter.hpp"
@@ -584,8 +584,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 線分の長さの 2 乗を返します。
-		/// @return 線分の長さの 2 乗
+		/// @brief 線分の長さの二乗を返します。
+		/// @return 線分の長さの二乗
 		[[nodiscard]]
 		constexpr value_type lengthSq() const noexcept;
 
@@ -600,13 +600,13 @@ namespace s3d
 		/// @return 指定したインデックスの頂点座標の参照
 		/// @throw std::out_of_range index が 0 または 1 でない場合
 		[[nodiscard]]
-		position_type& pointAtIndex(size_t index) noexcept;
+		position_type& pointAtIndex(size_t index);
 
 		/// @brief 指定したインデックスの頂点座標の参照を返します
 		/// @param index インデックス（0: 始点, 1: 終点）
 		/// @return 指定したインデックスの頂点座標の参照
 		[[nodiscard]]
-		const position_type& pointAtIndex(size_t index) const noexcept;
+		const position_type& pointAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -658,6 +658,71 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	projectPoint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標を、線分を通る直線に射影した座標を返します。
+		/// @param pos 座標
+		/// @return 指定した座標を、線分を通る直線に射影した座標
+		/// @remark `.closestPointTo(pos)` と異なり、線分の範囲外の座標を返すことがあります。
+		[[nodiscard]]
+		position_type projectPoint(position_type pos) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標からの距離を返します。
+		/// @param pos 座標
+		/// @return 指定した座標からの距離
+		/// @remark `.distanceTo(pos)` と同じです。
+		[[nodiscard]]
+		double distanceFrom(position_type pos) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceFromSq
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標からの距離の二乗を返します。
+		/// @param pos 座標
+		/// @return 指定した座標からの距離の二乗
+		/// @remark `.distanceToSq(pos)` と同じです。
+		[[nodiscard]]
+		double distanceFromSq(position_type pos) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標への距離を返します。
+		/// @param pos 座標
+		/// @return 指定した座標への距離
+		/// @remark `.distanceFrom(pos)` と同じです。
+		[[nodiscard]]
+		double distanceTo(position_type pos) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	distanceToSq
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標への距離の二乗を返します。
+		/// @param pos 座標
+		/// @return 指定した座標への距離の二乗
+		/// @remark `.distanceFromSq(pos)` と同じです。
+		[[nodiscard]]
+		double distanceToSq(position_type pos) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	boundingRect
 		//
 		////////////////////////////////////////////////////////////////
@@ -665,7 +730,32 @@ namespace s3d
 		/// @brief 線分を囲む最小の長方形を返します。
 		/// @return 線分を囲む最小の長方形
 		[[nodiscard]]
-		RectF boundingRect() const noexcept;
+		constexpr RectF boundingRect() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withThickness
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 線分に太さを与えて作成した、新しい四角形を返します。
+		/// @param thickness 太さ
+		/// @return 新しい四角形
+		[[nodiscard]]
+		Quad withThickness(double thickness) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateRoundBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 線分を丸く太らせて作成した、新しい多角形を返します。分割数は半径に応じて自動的に決定されます。
+		/// @param distance 太らせる距離
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 新しい多角形。distance が 0 以下の場合は空の多角形
+		[[nodiscard]]
+		Polygon calculateRoundBuffer(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -797,10 +887,10 @@ namespace s3d
 		const Line& draw(const ColorF& color = Palette::White) const;
 
 		/// @brief 線分を描きます。
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& draw(const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& draw(const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 線分を描きます。
 		/// @param thickness 線分の太さ
@@ -810,10 +900,10 @@ namespace s3d
 
 		/// @brief 線分を描きます。
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& draw(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& draw(double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 線分を描きます。
 		/// @param startCap 始点側の形状
@@ -827,10 +917,10 @@ namespace s3d
 		/// @param startCap 始点側の形状
 		/// @param endCap 終点側の形状
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 
+		/// @param colorStart 
 		/// @param colorEnd 
 		/// @return 
-		const Line& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 線分を描きます。
 		/// @param style 線のスタイル
@@ -842,10 +932,10 @@ namespace s3d
 		/// @brief 線分を描きます。
 		/// @param style 線のスタイル
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& draw(const LineStyle& style, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& draw(const LineStyle& style, double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -859,10 +949,10 @@ namespace s3d
 		const Line& drawUncapped(const ColorF& color = Palette::White) const;
 
 		/// @brief 始点や終点をキャップせずに線分を描きます。
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& drawUncapped(const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& drawUncapped(const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 始点や終点をキャップせずに線分を描きます。
 		/// @param thickness 線分の太さ
@@ -872,10 +962,10 @@ namespace s3d
 
 		/// @brief 始点や終点をキャップせずに線分を描きます。
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& drawUncapped(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& drawUncapped(double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -889,10 +979,10 @@ namespace s3d
 		const Line& drawRounded(const ColorF& color = Palette::White) const;
 
 		/// @brief 始点と終点が丸い線分を描きます。
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& drawRounded(const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& drawRounded(const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 始点と終点が丸い線分を描きます。
 		/// @param thickness 線分の太さ
@@ -902,10 +992,10 @@ namespace s3d
 
 		/// @brief 始点と終点が丸い線分を描きます。
 		/// @param thickness 線分の太さ
-		/// @param colorBegin 始点側の色
+		/// @param colorStart 始点側の色
 		/// @param colorEnd 終点側の色
 		/// @return *this
-		const Line& drawRounded(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
+		const Line& drawRounded(double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -940,7 +1030,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 出力ストリームに Line の内容を出力します。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 出力ストリームの文字型
 		/// @param output 出力ストリーム
 		/// @param value Line
 		/// @return 出力ストリーム
@@ -959,7 +1049,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 入力ストリームから Line の内容を読み込みます。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 入力ストリームの文字型
 		/// @param input 入力ストリーム
 		/// @param value Line の格納先
 		/// @return 入力ストリーム

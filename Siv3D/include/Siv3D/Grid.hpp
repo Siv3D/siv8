@@ -214,10 +214,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr pointer operator [](size_t y);
+		constexpr pointer operator [](size_type y);
 
 		[[nodiscard]]
-		constexpr const_pointer operator [](size_t y) const;
+		constexpr const_pointer operator [](size_type y) const;
 
 		[[nodiscard]]
 		constexpr reference operator [](Point pos)&;
@@ -231,13 +231,13 @@ namespace s3d
 	# ifdef __cpp_multidimensional_subscript
 
 		[[nodiscard]]
-		constexpr reference operator [](size_t x, size_t y)&;
+		constexpr reference operator [](size_type x, size_type y)&;
 
 		[[nodiscard]]
-		constexpr const_reference operator [](size_t x, size_t y) const&;
+		constexpr const_reference operator [](size_type x, size_type y) const&;
 
 		[[nodiscard]]
-		constexpr value_type operator [](size_t x, size_t y)&&;
+		constexpr value_type operator [](size_type x, size_type y)&&;
 
 	# endif
 
@@ -285,12 +285,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	inBounds
+		//	indexInBounds
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr bool inBounds(Point pos) const noexcept;
+		constexpr bool indexInBounds(size_type y, size_type x) const noexcept;
+
+		[[nodiscard]]
+		constexpr bool indexInBounds(Point pos) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -555,13 +558,13 @@ namespace s3d
 		/// @param y 行のインデックス
 		/// @return 指定した行の要素にアクセスするビュー
 		[[nodiscard]]
-		constexpr auto row(size_t y) noexcept;
+		constexpr auto row(size_type y) noexcept;
 
 		/// @brief 指定した行の要素にアクセスするビューを返します。
 		/// @param y 行のインデックス
 		/// @return 指定した行の要素にアクセスするビュー
 		[[nodiscard]]
-		constexpr auto row(size_t y) const noexcept;
+		constexpr auto row(size_type y) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -573,13 +576,13 @@ namespace s3d
 		/// @param x 列のインデックス
 		/// @return 指定した列の要素にアクセスするビュー
 		[[nodiscard]]
-		constexpr auto column(size_t x) noexcept;
+		constexpr auto column(size_type x) noexcept;
 
 		/// @brief 指定した列の要素にアクセスするビューを返します。
 		/// @param x 列のインデックス
 		/// @return 指定した列の要素にアクセスするビュー
 		[[nodiscard]]
-		constexpr auto column(size_t x) const noexcept;
+		constexpr auto column(size_type x) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -603,7 +606,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void pop_back_row_N(size_t n);
+		void pop_back_row_N(size_type n);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -627,7 +630,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void pop_back_column_N(size_t n);
+		void pop_back_column_N(size_type n);
 
 		////////////////////////////////////////////////////////////////
 		//

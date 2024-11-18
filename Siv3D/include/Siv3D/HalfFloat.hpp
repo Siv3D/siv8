@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <iostream>
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "SIMDMath.hpp"

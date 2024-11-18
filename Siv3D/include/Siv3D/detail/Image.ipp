@@ -223,17 +223,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	inBounds
+	//	indexInBounds
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline bool Image::inBounds(const int64 y, const int64 x) const noexcept
+	inline bool Image::indexInBounds(const int64 y, const int64 x) const noexcept
 	{
 		return ((0 <= y) && (y < static_cast<int64>(m_size.y))
 			 && (0 <= x) && (x < static_cast<int64>(m_size.x)));
 	}
 
-	inline bool Image::inBounds(const Point pos) const noexcept
+	inline bool Image::indexInBounds(const Point pos) const noexcept
 	{
 		return ((0 <= pos.y) && (pos.y < static_cast<int64>(m_size.y))
 			 && (0 <= pos.x) && (pos.x < static_cast<int64>(m_size.x)));

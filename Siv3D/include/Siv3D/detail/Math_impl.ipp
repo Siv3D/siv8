@@ -2064,55 +2064,70 @@ namespace s3d
 				[[nodiscard]]
 				double operator ()(const Concept::Integral auto y, const Concept::Integral auto x) const noexcept
 				{
+					if ((x == 0) && (y == 0))
+					{
+						return 0.0;
+					}
+
 					return std::atan2(static_cast<double>(y), static_cast<double>(x));
 				}
 
 				[[nodiscard]]
 				float operator ()(const float y, const float x) const noexcept
 				{
+					if ((x == 0.0f) && (y == 0.0f))
+					{
+						return 0.0f;
+					}
+
 					return std::atan2(y, x);
 				}
 
 				[[nodiscard]]
 				double operator ()(const double y, const double x) const noexcept
 				{
+					if ((x == 0.0) && (y == 0.0))
+					{
+						return 0.0;
+					}
+
 					return std::atan2(y, x);
 				}
 
 				[[nodiscard]]
 				Float2 operator ()(const Float2 y, const Float2 x) const noexcept
 				{
-					return{ std::atan2(y.x, x.x), std::atan2(y.y, x.y) };
+					return{ operator()(y.x, x.x), operator()(y.y, x.y) };
 				}
 
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 y, const Vec2 x) const noexcept
 				{
-					return{ std::atan2(y.x, x.x), std::atan2(y.y, x.y) };
+					return{ operator()(y.x, x.x), operator()(y.y, x.y) };
 				}
 
 				[[nodiscard]]
 				Float3 operator ()(const Float3 y, const Float3 x) const noexcept
 				{
-					return{ std::atan2(y.x, x.x), std::atan2(y.y, x.y), std::atan2(y.z, x.z) };
+					return{ operator()(y.x, x.x), operator()(y.y, x.y), operator()(y.z, x.z) };
 				}
 
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 y, const Vec3 x) const noexcept
 				{
-					return{ std::atan2(y.x, x.x), std::atan2(y.y, x.y), std::atan2(y.z, x.z) };
+					return{ operator()(y.x, x.x), operator()(y.y, x.y), operator()(y.z, x.z) };
 				}
 
 				[[nodiscard]]
 				Float4 operator ()(const Float4 y, const Float4 x) const noexcept
 				{
-					return{ std::atan2(y.x, x.x), std::atan2(y.y, x.y), std::atan2(y.z, x.z), std::atan2(y.w, x.w) };
+					return{ operator()(y.x, x.x), operator()(y.y, x.y), operator()(y.z, x.z), operator()(y.w, x.w) };
 				}
 
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 y, const Vec4 x) const noexcept
 				{
-					return{ std::atan2(y.x, x.x), std::atan2(y.y, x.y), std::atan2(y.z, x.z), std::atan2(y.w, x.w) };
+					return{ operator()(y.x, x.x), operator()(y.y, x.y), operator()(y.z, x.z), operator()(y.w, x.w) };
 				}
 
 				[[nodiscard]]
@@ -2899,6 +2914,45 @@ namespace s3d
 
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
+			};
+
+			//////////////////////////////////////////////////
+			//
+			//	ClampAngle_impl
+			//
+			//////////////////////////////////////////////////
+
+			struct ClampAngle_impl
+			{
+				[[nodiscard]]
+				double operator ()(const Concept::Arithmetic auto angle, const Concept::Arithmetic auto min, const Concept::Arithmetic auto max) const noexcept
+				{
+					const auto start = ((min + max) * 0.5 - Pi);
+					
+					const auto floor = (std::floor((angle - start) / TwoPi) * TwoPi);
+					
+					return Clamp(angle, (min + floor), (max + floor));
+				}
+
+				[[nodiscard]]
+				float operator ()(const float angle, const float min, const float max) const noexcept
+				{
+					const float start = ((min + max) * 0.5f - PiF);
+					
+					const float floor = (std::floor((angle - start) / TwoPiF) * TwoPiF);
+					
+					return Clamp(angle, (min + floor), (max + floor));
+				}
+
+				[[nodiscard]]
+				double operator ()(const double angle, const double min, const double max) const noexcept
+				{
+					const double start = ((min + max) * 0.5 - Pi);
+					
+					const double floor = (std::floor((angle - start) / TwoPi) * TwoPi);
+					
+					return Clamp(angle, (min + floor), (max + floor));
+				}
 			};
 
 			//////////////////////////////////////////////////

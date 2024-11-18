@@ -36,6 +36,7 @@ namespace s3d
 	class ISiv3DShader;
 	class ISiv3DEngineShader;
 	class ISiv3DRenderer2D;
+	class ISiv3DScreenCapture;
 
 	class Siv3DEngine
 	{
@@ -64,7 +65,8 @@ namespace s3d
 			Siv3DComponent<ISiv3DRenderer>,
 			Siv3DComponent<ISiv3DShader>,
 			Siv3DComponent<ISiv3DEngineShader>,
-			Siv3DComponent<ISiv3DRenderer2D>
+			Siv3DComponent<ISiv3DRenderer2D>,
+			Siv3DComponent<ISiv3DScreenCapture>
 		> m_components;
 
 	public:

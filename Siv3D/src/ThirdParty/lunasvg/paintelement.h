@@ -12,8 +12,8 @@ class PaintElement : public StyledElement {
 public:
     PaintElement(ElementID id);
 
-    bool isPaint() const { return true; }
-    virtual std::unique_ptr<LayoutObject> getPainter(LayoutContext* context) const = 0;
+    bool isPaint() const final { return true; }
+    virtual std::unique_ptr<LayoutObject> getPainter(LayoutContext* context) = 0;
 };
 
 class GradientElement : public PaintElement {
@@ -27,7 +27,7 @@ public:
     GradientStops buildGradientStops() const;
 };
 
-class LinearGradientElement : public GradientElement {
+class LinearGradientElement final : public GradientElement {
 public:
     LinearGradientElement();
 
@@ -36,11 +36,10 @@ public:
     Length x2() const;
     Length y2() const;
 
-    std::unique_ptr<LayoutObject> getPainter(LayoutContext* context) const;
-    std::unique_ptr<Node> clone() const;
+    std::unique_ptr<LayoutObject> getPainter(LayoutContext* context) final;
 };
 
-class RadialGradientElement : public GradientElement {
+class RadialGradientElement final : public GradientElement {
 public:
     RadialGradientElement();
 
@@ -50,11 +49,10 @@ public:
     Length fx() const;
     Length fy() const;
 
-    std::unique_ptr<LayoutObject> getPainter(LayoutContext* context) const;
-    std::unique_ptr<Node> clone() const;
+    std::unique_ptr<LayoutObject> getPainter(LayoutContext* context) final;
 };
 
-class PatternElement : public PaintElement {
+class PatternElement final : public PaintElement {
 public:
     PatternElement();
 
@@ -70,16 +68,14 @@ public:
     PreserveAspectRatio preserveAspectRatio() const;
     std::string href() const;
 
-    std::unique_ptr<LayoutObject> getPainter(LayoutContext* context) const;
-    std::unique_ptr<Node> clone() const;
+    std::unique_ptr<LayoutObject> getPainter(LayoutContext* context) final;
 };
 
-class SolidColorElement : public PaintElement {
+class SolidColorElement final : public PaintElement {
 public:
     SolidColorElement();
 
-    std::unique_ptr<LayoutObject> getPainter(LayoutContext*) const;
-    std::unique_ptr<Node> clone() const;
+    std::unique_ptr<LayoutObject> getPainter(LayoutContext*) final;
 };
 
 class GradientAttributes {
@@ -243,7 +239,7 @@ public:
     Units patternContentUnits() const { return m_patternContentUnits; }
     const Rect& viewBox() const { return m_viewBox; }
     const PreserveAspectRatio& preserveAspectRatio() const { return m_preserveAspectRatio; }
-    const PatternElement* patternContentElement() const { return m_patternContentElement; }
+    PatternElement* patternContentElement() const { return m_patternContentElement; }
 
     bool hasX() const { return m_hasX; }
     bool hasY() const { return m_hasY; }
@@ -301,7 +297,7 @@ public:
         m_hasPreserveAspectRatio = true;
     }
 
-    void setPatternContentElement(const PatternElement* patternContentElement) {
+    void setPatternContentElement(PatternElement* patternContentElement) {
         m_patternContentElement = patternContentElement;
         m_hasPatternContentElement = true;
     }
@@ -316,7 +312,7 @@ private:
     Units m_patternContentUnits{Units::UserSpaceOnUse};
     Rect m_viewBox{Rect::Invalid};
     PreserveAspectRatio m_preserveAspectRatio;
-    const PatternElement* m_patternContentElement{nullptr};
+    PatternElement* m_patternContentElement{nullptr};
 
     bool m_hasX{false};
     bool m_hasY{false};

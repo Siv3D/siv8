@@ -73,16 +73,49 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String::size_type String::levenshteinDistanceFrom(const StringView other) const noexcept
+	StringView::size_type StringView::levenshteinDistanceFrom(const StringView other) const noexcept
 	{
 	# if SIV3D_INTRINSIC(SSE)
 
-		return levenshteinSSE::levenshtein(m_string, other);
+		return levenshteinSSE::levenshtein(*this, other);
 
 	# else
 
-		return LevenshteinDistance(m_string, other);
+		return LevenshteinDistance(*this, other);
 
 	# endif
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	levenshteinDistanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	StringView::size_type StringView::levenshteinDistanceTo(const StringView other) const noexcept
+	{
+		return levenshteinDistanceFrom(other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	levenshteinDistanceFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	String::size_type String::levenshteinDistanceFrom(const StringView other) const noexcept
+	{
+		return StringView{ *this }.levenshteinDistanceFrom(other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	levenshteinDistanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	String::size_type String::levenshteinDistanceTo(const StringView other) const noexcept
+	{
+		return StringView{ *this }.levenshteinDistanceFrom(other);
 	}
 }

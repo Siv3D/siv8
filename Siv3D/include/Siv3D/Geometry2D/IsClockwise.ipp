@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include "../Common.hpp"
+# include "../PointVector.hpp"
 
 namespace s3d
 {

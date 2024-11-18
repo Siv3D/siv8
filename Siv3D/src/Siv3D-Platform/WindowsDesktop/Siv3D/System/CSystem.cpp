@@ -28,6 +28,7 @@
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/ScreenCapture/IScreenCapture.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -82,6 +83,7 @@ namespace s3d
 		SIV3D_ENGINE(Shader)->init();
 		SIV3D_ENGINE(EngineShader)->init();
 		SIV3D_ENGINE(Renderer2D)->init();
+		SIV3D_ENGINE(ScreenCapture)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}
@@ -123,6 +125,8 @@ namespace s3d
 		{
 			return false;
 		}
+
+		SIV3D_ENGINE(ScreenCapture)->update();
 
 		//
 		//	previous frame

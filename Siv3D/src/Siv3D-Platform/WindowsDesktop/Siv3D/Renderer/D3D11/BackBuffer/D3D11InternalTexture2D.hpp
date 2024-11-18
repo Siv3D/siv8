@@ -48,6 +48,12 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		ID3D11Texture2D* getTexture() const noexcept
+		{
+			return m_texture.Get();
+		}
+
+		[[nodiscard]]
 		ID3D11ShaderResourceView* getSRV() const noexcept
 		{
 			return m_shaderResourceView.Get();

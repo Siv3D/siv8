@@ -9,11 +9,12 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/Circle.hpp>
+# include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Utility.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/Polygon.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
@@ -72,6 +73,103 @@ namespace s3d
 		const double s = std::sin(angle);
 		const double c = std::cos(angle);
 		return{ ((s * r) + x), ((-c * r) + y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pointAtLength
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle::position_type Circle::pointAtLength(const double length) const noexcept
+	{
+		return getPointByAngle(length / r);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	interpolatedPointAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle::position_type Circle::interpolatedPointAt(const double t) const noexcept
+	{
+		return getPointByAngle(t * Math::TwoPi);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Vec2> Circle::outer(const PointsPerCircle& pointsPerCircle) const
+	{
+		if (r == 0.0)
+		{
+			return{};
+		}
+
+		const uint32 n = pointsPerCircle.value();
+
+		Array<Vec2> vertices(n, center);
+		{
+			Vec2* pPos = vertices.data();
+
+			const double d = (Math::TwoPi / n);
+
+			for (uint32 i = 0; i < n; ++i)
+			{
+				const auto [s, c] = FastMath::SinCos(i * d);
+
+				(pPos++)->moveBy((s * r), (-c * r));
+			}
+		}
+
+		return vertices;
+	}
+
+	Array<Vec2> Circle::outer(const QualityFactor& qualityFactor) const
+	{
+		return outer(qualityFactor.toPointsPerCircle(r));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Circle::asPolygon(const PointsPerCircle& pointsPerCircle) const
+	{
+		if (r == 0.0)
+		{
+			return{};
+		}
+
+		const Array<Vec2> vertices = outer(pointsPerCircle);
+
+		const uint32 n = pointsPerCircle.value();
+
+		Array<TriangleIndex> indices(n - 2);
+		{
+			TriangleIndex* pIndex = indices.data();
+
+			for (Vertex2D::IndexType i = 0; i < (n - 2); ++i)
+			{
+				pIndex->i0 = 0;
+				pIndex->i1 = (i + 1);
+				pIndex->i2 = (i + 2);
+				++pIndex;
+			}
+		}
+
+		return Polygon{ vertices, std::move(indices), boundingRect(), SkipValidation::Yes };
+	}
+
+	Polygon Circle::asPolygon(const QualityFactor& qualityFactor) const
+	{
+		return asPolygon(qualityFactor.toPointsPerCircle(r));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -197,6 +295,7 @@ namespace s3d
 
 		return *this;
 	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	drawFrame
@@ -557,6 +656,17 @@ namespace s3d
 		);
 
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromPoints
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle Circle::FromPoints(const position_type& p0, const position_type& p1, const position_type& p2) noexcept
+	{
+		return Circle{ p0, p1, p2 };
 	}
 
 	////////////////////////////////////////////////////////////////

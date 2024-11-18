@@ -25,6 +25,8 @@ namespace s3d
 
 		virtual void open() = 0;
 
+		virtual bool attach() = 0;
+
 		virtual void close() = 0;
 	};
 }

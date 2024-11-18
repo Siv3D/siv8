@@ -496,7 +496,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	inline Line::position_type& Line::pointAtIndex(const size_t index) noexcept
+	inline Line::position_type& Line::pointAtIndex(const size_t index)
 	{
 		if (index == 0)
 		{
@@ -513,7 +513,7 @@ namespace s3d
 	}
 
 	[[nodiscard]]
-	inline const Line::position_type& Line::pointAtIndex(const size_t index) const noexcept
+	inline const Line::position_type& Line::pointAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{
@@ -561,6 +561,19 @@ namespace s3d
 	constexpr Line::position_type Line::center() const noexcept
 	{
 		return{ ((start.x + end.x) * 0.5), ((start.y + end.y) * 0.5) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	boundingRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF Line::boundingRect() const noexcept
+	{
+		const auto [x1, x2] = MinMax(start.x, end.x);
+		const auto [y1, y2] = MinMax(start.y, end.y);
+		return{ x1, y1, (x2 - x1), (y2 - y1) };
 	}
 
 	////////////////////////////////////////////////////////////////

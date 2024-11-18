@@ -107,7 +107,7 @@ namespace s3d
 	{
 		assert(src || (sizeBytes == 0));
 
-		if (sizeBytes == 0)
+		if (sizeBytes <= 0)
 		{
 			return 0;
 		}
@@ -120,7 +120,10 @@ namespace s3d
 		{
 			const size_t newSize = (static_cast<size_t>(m_writePos) + sizeBytes);
 
-			m_blob.resize(newSize);
+			if (m_blob.size() < newSize)
+			{
+				m_blob.resize(newSize);
+			}
 
 			std::memcpy((m_blob.data() + m_writePos), src, sizeBytes);
 		}

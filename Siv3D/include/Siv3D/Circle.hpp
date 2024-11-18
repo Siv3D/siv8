@@ -13,6 +13,8 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
+# include "PointsPerCircle.hpp"
+# include "QualityFactor.hpp"
 # include "PredefinedNamedParameter.hpp"
 
 namespace s3d
@@ -433,6 +435,11 @@ namespace s3d
 		/// @return *this
 		constexpr Circle& set(Arg::leftCenter_<position_type> leftCenter, size_type _r) noexcept;
 
+		/// @brief 円を変更します。
+		/// @param circle 新しい円
+		/// @return *this
+		constexpr Circle& set(const Circle& circle) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	movedBy
@@ -596,15 +603,57 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	pointAtLength
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円周上の指定した距離に対応する座標を返します。
+		/// @param length 距離（最も上の点から時計回り）
+		/// @return 円周上の指定した距離に対応する座標
+		[[nodiscard]]
+		position_type pointAtLength(double length) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	interpolatedPointAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円周の長さを 1 として、周上の指定した位置に対応する座標を返します。
+		/// @param t 位置（最も上の点から時計回り、周の長さを 1 とした場合の位置）
+		/// @return 円周上の指定した位置に対応する座標
+		[[nodiscard]]
+		position_type interpolatedPointAt(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	outer
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Array<Vec2> outer(const PointsPerCircle& pointsPerCircle) const;
+
+		[[nodiscard]]
+		Array<Vec2> outer(const QualityFactor& qualityFactor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	asPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 円から Polygon を作成します。
-		///// @param quality 品質
-		///// @return Polygon
-		//[[nodiscard]]
-		//Polygon asPolygon(uint32 quality = 24) const;
+		/// @brief 円から Polygon を作成します。
+		/// @param pointsPerCircle 頂点数
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon asPolygon(const PointsPerCircle& pointsPerCircle) const;
+
+		/// @brief 円から Polygon を作成します。分割数は半径に応じて自動的に決定されます。
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon asPolygon(const QualityFactor& qualityFactor) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -828,6 +877,9 @@ namespace s3d
 		/// @return *this
 		const Circle& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 		
+		/// @brief 円を描きます。
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& draw(const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -837,35 +889,44 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 円の枠を描きます
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 枠の色
 		/// @return *this
 		const Circle& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 円の枠を描きます
-		/// @param thickness 枠の太さ
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param innerColor 内側部分の枠の色
 		/// @param outerColor 外側部分の枠の色
 		/// @return *this
 		const Circle& drawFrame(double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		/// @brief 円の枠を描きます。
-		/// @param innerThickness 基準の円から内側方向への枠の太さ
-		/// @param outerThickness 基準の円から外側方向への枠の太さ
+		/// @param innerThickness 基準の円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の円から外側方向への枠の太さ（ピクセル）
 		/// @param color 枠の色
 		/// @return *this
 		const Circle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		/// @brief 円の枠を描きます。
-		/// @param innerThickness 基準の円から内側方向への枠の太さ
-		/// @param outerThickness 基準の円から外側方向への枠の太さ
+		/// @param innerThickness 基準の円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の円から外側方向への枠の太さ（ピクセル）
 		/// @param innerColor 内側部分の枠の色
 		/// @param outerColor 外側部分の枠の色
 		/// @return *this
 		const Circle& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		/// @brief 円の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawFrame(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 円の枠を描きます。
+		/// @param innerThickness 基準の円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の円から外側方向への枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -889,6 +950,11 @@ namespace s3d
 		/// @return *this
 		const Circle& drawPie(double startAngle, double angle, const ColorF& innerColor, const ColorF& outerColor) const;
 		
+		/// @brief 扇形を描きます。
+		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 扇形の角度（ラジアン）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawPie(double startAngle, double angle, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -916,6 +982,14 @@ namespace s3d
 		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		/// @brief 円の弧を描きます。
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param startColor 弧の開始部分の色
+		/// @param endColor 弧の終了部分の色
+		/// @return 
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
 		/// @brief 円の弧を描きます。
@@ -950,8 +1024,23 @@ namespace s3d
 		/// @return *this
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, Arg::start_<ColorF> startColor, Arg::end_<ColorF> endColor) const;
 
+		/// @brief 円の弧を描きます。
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawArc(double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
+		/// @brief 円の弧を描きます。
+		/// @param lineCap 線端のスタイル
+		/// @param startAngle 弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弧の角度（ラジアン）
+		/// @param innerThickness 基準の円から内側方向への弧の太さ
+		/// @param outerThickness 基準の円から外側方向への弧の太さ
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawArc(LineCap lineCap, double startAngle, double angle, double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -967,6 +1056,11 @@ namespace s3d
 		/// @return *this
 		const Circle& drawSegment(double arcMidpointAngle, double height, const ColorF& color = Palette::White) const;
 
+		/// @brief 弓形を描きます。
+		/// @param arcMidpointAngle 弓形の弧の中心を円の中心から見た角度（ラジアン, 0 時の方向から時計回り）
+		/// @param height 弓形の高さ
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawSegment(double arcMidpointAngle, double height, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -982,6 +1076,11 @@ namespace s3d
 		/// @return *this
 		const Circle& drawSegmentFromAngles(double startAngle, double angle, const ColorF& color = Palette::White) const;
 
+		/// @brief 弓形を描きます。
+		/// @param startAngle 弓形の弧の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 弓形の弧の角度（ラジアン）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Circle& drawSegmentFromAngles(double startAngle, double angle, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1012,12 +1111,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	FromPoints
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した 3 点を通る円を作成します。
+		/// @param p0 点
+		/// @param p1 点
+		/// @param p2 点
+		/// @return 作成した円
+		[[nodiscard]]
+		static Circle FromPoints(const position_type& p0, const position_type& p1, const position_type& p2) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	operator <<
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 出力ストリームに Circle の内容を出力します。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 出力ストリームの文字型
 		/// @param output 出力ストリーム
 		/// @param value Circle
 		/// @return 出力ストリーム
@@ -1037,7 +1150,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 入力ストリームから Circle の内容を読み込みます。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 入力ストリームの文字型
 		/// @param input 入力ストリーム
 		/// @param value Circle の格納先
 		/// @return 入力ストリーム

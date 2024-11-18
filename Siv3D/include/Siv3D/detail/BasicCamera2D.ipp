@@ -44,7 +44,7 @@ namespace s3d
 	constexpr Mat3x2 BasicCamera2D::getMat3x2(const Size renderTargetSize) const noexcept
 	{
 		return Mat3x2::Scale(m_scale)
-			.translated((renderTargetSize * 0.5) - m_scale * m_center);
+			.translated((renderTargetSize * 0.5) - m_center * m_scale);
 	}
 
 	inline Transformer2D BasicCamera2D::createTransformer() const

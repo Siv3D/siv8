@@ -13,6 +13,7 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -36,6 +37,7 @@ namespace s3d
 	Line::position_type Line::closestPointTo(const position_type pos) const noexcept
 	{
 		Vec2 v = (end - start);
+		
 		const double d = v.length();
 
 		if (d == 0.0)
@@ -44,6 +46,7 @@ namespace s3d
 		}
 
 		v /= d;
+		
 		const double t = v.dot(pos - start);
 
 		if (t < 0.0)
@@ -61,15 +64,99 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	boundingRect
+	//	projectPoint
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF Line::boundingRect() const noexcept
+	Line::position_type Line::projectPoint(const position_type pos) const noexcept
 	{
-		const auto [x1, x2] = MinMax(start.x, end.x);
-		const auto [y1, y2] = MinMax(start.y, end.y);
-		return{ x1, y1, (x2 - x1), (y2 - y1) };
+		Vec2 v = (end - start);
+		
+		const double d = v.length();
+
+		if (d == 0.0)
+		{
+			return start;
+		}
+
+		v /= d;
+
+		const double t = v.dot(pos - start);
+
+		return (start + v * t);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Line::distanceFrom(const position_type pos) const noexcept
+	{
+		return closestPointTo(pos).distanceFrom(pos);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceFromSq
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Line::distanceFromSq(const position_type pos) const noexcept
+	{
+		return closestPointTo(pos).distanceFromSq(pos);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Line::distanceTo(const position_type pos) const noexcept
+	{
+		return distanceFrom(pos);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceToSq
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Line::distanceToSq(const position_type pos) const noexcept
+	{
+		return distanceFromSq(pos);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withThickness
+	//
+	////////////////////////////////////////////////////////////////
+
+	Quad Line::withThickness(const double thickness) const
+	{
+		if (thickness <= 0.0)
+		{
+			return{ start, end, end, start };
+		}
+
+		const Vec2 nv = ((thickness * 0.5) * perpendicularUnitVector());
+
+		return{ (start + nv), (end + nv), (end - nv), (start - nv) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	calculateRoundBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Line::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
+	{
+		return CalculateLineRoundBuffer(*this, distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -84,7 +171,7 @@ namespace s3d
 		// `Line::intersectsAt()` is based on
 		// https://www.codeproject.com/Tips/862988/Find-the-Intersection-Point-of-Two-Line-Segments
 		//
-		// Licenced with the Code Project Open Licence (CPOL)
+		// Licensed with the Code Project Open License (CPOL)
 		// http://www.codeproject.com/info/cpol10.aspx
 		//
 
@@ -155,7 +242,7 @@ namespace s3d
 			if ((0.0 <= t && t <= 1.0) && (0.0 <= u && u <= 1.0))
 			{
 				// An intersection was found
-				return (start + t * r);
+				return (start + r * t);
 			}
 
 			// Two line segments are not parallel but do not intersect
@@ -176,9 +263,9 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::draw(const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::draw(const ColorF& colorStart, const ColorF& colorEnd) const
 	{
-		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Square, LineCap::Square, start, end, 1.0f, { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Square, LineCap::Square, start, end, 1.0f, { colorStart.toFloat4(), colorEnd.toFloat4() });
 		return *this;
 	}
 
@@ -194,14 +281,14 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::draw(const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::draw(const double thickness, const ColorF& colorStart, const ColorF& colorEnd) const
 	{
 		if (thickness <= 0.0)
 		{
 			return *this;
 		}
 
-		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Square, LineCap::Square, start, end, static_cast<float>(thickness), { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Square, LineCap::Square, start, end, static_cast<float>(thickness), { colorStart.toFloat4(), colorEnd.toFloat4() });
 		return *this;
 	}
 
@@ -217,14 +304,14 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& colorStart, const ColorF& colorEnd) const
 	{
 		if (thickness <= 0.0)
 		{
 			return *this;
 		}
 
-		SIV3D_ENGINE(Renderer2D)->addLine(startCap, endCap, start, end, static_cast<float>(thickness), { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		SIV3D_ENGINE(Renderer2D)->addLine(startCap, endCap, start, end, static_cast<float>(thickness), { colorStart.toFloat4(), colorEnd.toFloat4() });
 		return *this;
 	}
 
@@ -240,14 +327,14 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::draw(const LineStyle& style, const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::draw(const LineStyle& style, const double thickness, const ColorF& colorStart, const ColorF& colorEnd) const
 	{
 		if (thickness <= 0.0)
 		{
 			return *this;
 		}
 
-		SIV3D_ENGINE(Renderer2D)->addLine(style, start, end, static_cast<float>(thickness), { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		SIV3D_ENGINE(Renderer2D)->addLine(style, start, end, static_cast<float>(thickness), { colorStart.toFloat4(), colorEnd.toFloat4() });
 		return *this;
 	}
 
@@ -264,9 +351,9 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::drawUncapped(const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::drawUncapped(const ColorF& colorStart, const ColorF& colorEnd) const
 	{
-		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Flat, LineCap::Flat, start, end, 1.0f, { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Flat, LineCap::Flat, start, end, 1.0f, { colorStart.toFloat4(), colorEnd.toFloat4() });
 		return *this;
 	}
 
@@ -282,14 +369,14 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::drawUncapped(const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::drawUncapped(const double thickness, const ColorF& colorStart, const ColorF& colorEnd) const
 	{
 		if (thickness <= 0.0)
 		{
 			return *this;
 		}
 
-		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Flat, LineCap::Flat, start, end, static_cast<float>(thickness), { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Flat, LineCap::Flat, start, end, static_cast<float>(thickness), { colorStart.toFloat4(), colorEnd.toFloat4() });
 		return *this;
 	}
 
@@ -306,9 +393,9 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::drawRounded(const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::drawRounded(const ColorF& colorStart, const ColorF& colorEnd) const
 	{
-		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Round, LineCap::Round, start, end, 1.0f, { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Round, LineCap::Round, start, end, 1.0f, { colorStart.toFloat4(), colorEnd.toFloat4() });
 		return *this;
 	}
 
@@ -324,14 +411,14 @@ namespace s3d
 		return *this;
 	}
 
-	const Line& Line::drawRounded(const double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const
+	const Line& Line::drawRounded(const double thickness, const ColorF& colorStart, const ColorF& colorEnd) const
 	{
 		if (thickness <= 0.0)
 		{
 			return *this;
 		}
 
-		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Round, LineCap::Round, start, end, static_cast<float>(thickness), { colorBegin.toFloat4(), colorEnd.toFloat4() });
+		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Round, LineCap::Round, start, end, static_cast<float>(thickness), { colorStart.toFloat4(), colorEnd.toFloat4() });
 		return *this;
 	}
 

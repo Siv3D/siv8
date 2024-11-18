@@ -14,6 +14,7 @@
 # include <Siv3D/Optional.hpp>
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/TriangleIndex.hpp>
 # include "ColorFillDirection.hpp"
 
 namespace s3d
@@ -79,13 +80,13 @@ namespace s3d
 
 		virtual void addCircleSegment(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) = 0;
 
-		//virtual void addEllipse(const Float2& center, float a, float b, const Float4& innerColor, const Float4& outerColor) = 0;
+		virtual void addEllipse(const Float2& center, float a, float b, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 
-		//virtual void addEllipse(const Float2& center, float a, float b, const Float4& innerColor, const PatternParameters& pattern) = 0;
+		virtual void addEllipse(const Float2& center, float a, float b, const PatternParameters& pattern) = 0;
 
-		//virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+		virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
 
-		//virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) = 0;
+		virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) = 0;
 
 		virtual void addQuad(const FloatQuad& quad, const Float4& color) = 0;
 
@@ -93,16 +94,33 @@ namespace s3d
 
 		virtual void addQuad(const FloatQuad& quad, const PatternParameters& pattern) = 0;
 
-		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const Float4& color) = 0;
+		virtual void addRoundRect(const FloatRect& rect, float r, const Float4& color) = 0;
 
-		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+		virtual void addRoundRect(const FloatRect& rect, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 
-		//virtual void addRoundRect(const FloatRect& rect, float w, float h, float r, const PatternParameters& pattern) = 0;
+		virtual void addRoundRect(const FloatRect& rect, float r, const PatternParameters& pattern) = 0;
 
-		//virtual void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
+		virtual void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color) = 0;
 
-		//virtual void addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const PatternParameters& pattern) = 0;
+		virtual void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 
+		virtual void addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const PatternParameters& pattern) = 0;
+
+		virtual void addPolygon(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const Float4& color) = 0;
+
+		virtual void addPolygon(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const PatternParameters& pattern) = 0;
+
+		virtual void addPolygon(std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const Float4& color) = 0;
+
+		virtual void addPolygon(std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const PatternParameters& pattern) = 0;
+
+		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color) = 0;
+
+		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, const Float4& colorStart, const Float4& colorEnd) = 0;
+
+		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const PatternParameters& pattern) = 0;
+
+		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, std::span<const ColorF> colors) = 0;
 
 
 

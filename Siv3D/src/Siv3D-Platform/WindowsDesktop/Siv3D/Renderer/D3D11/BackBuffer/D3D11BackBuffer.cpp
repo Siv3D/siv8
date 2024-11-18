@@ -297,6 +297,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getCaptureTexture
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::pair<ID3D11Texture2D*, Size> D3D11BackBuffer::getCaptureTexture()
+	{
+		unbindAllRenderTargets();
+
+		if (m_sceneBuffers.sampleCount == 1)
+		{
+			return{ m_sceneBuffers.nonMSAA.getTexture(), m_sceneBuffers.nonMSAA.size() };
+		}
+		else
+		{
+			const Size sceneSize = m_sceneBuffers.msaa.size();
+
+			if (m_backBuffer.size() == sceneSize)
+			{
+				if (m_sceneBuffers.nonMSAA.size() != sceneSize)
+				{
+					m_sceneBuffers.nonMSAA = D3D11InternalTexture2D::CreateRenderTexture(m_device, sceneSize);
+				}
+
+				m_sceneBuffers.msaa.resolveTo(m_context, m_sceneBuffers.nonMSAA);
+			}
+
+			return{ m_sceneBuffers.nonMSAA.getTexture(), m_sceneBuffers.nonMSAA.size() };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////

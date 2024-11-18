@@ -157,10 +157,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief メモリ上のデータから MD5 ハッシュを計算します。
+		/// @brief メモリ上のデータから MD5 ハッシュ値を計算します。
 		/// @param data データの先頭ポインタ
 		/// @param size データのサイズ（バイト）
-		/// @return 計算された MD5 ハッシュ
+		/// @return 計算された MD5 ハッシュ値
 		[[nodiscard]]
 		static MD5Value FromMemory(const void* const data, size_t size) noexcept;
 
@@ -170,9 +170,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Blob から MD5 ハッシュを計算します。
+		/// @brief Blob から MD5 ハッシュ値を計算します。
 		/// @param blob Blob
-		/// @return 計算された MD5 ハッシュ
+		/// @return 計算された MD5 ハッシュ値
 		[[nodiscard]]
 		static MD5Value FromBlob(const Blob& blob) noexcept;
 
@@ -182,9 +182,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列 (UTF-8) から MD5 ハッシュを計算します。
+		/// @brief 文字列 (UTF-8) から MD5 ハッシュ値を計算します。
 		/// @param view 文字列 (UTF-8)
-		/// @return 計算された MD5 ハッシュ
+		/// @return 計算された MD5 ハッシュ値
 		[[nodiscard]]
 		static MD5Value FromUTF8(std::string_view view) noexcept;
 
@@ -194,9 +194,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列 (UTF-32) から MD5 ハッシュを計算します。
+		/// @brief 文字列 (UTF-32) から MD5 ハッシュ値を計算します。
 		/// @param view 文字列 (UTF-32)
-		/// @return 計算された MD5 ハッシュ
+		/// @return 計算された MD5 ハッシュ値
 		[[nodiscard]]
 		static MD5Value FromUTF32(StringView view) noexcept;
 
@@ -206,9 +206,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ファイルから MD5 ハッシュを計算します。
+		/// @brief ファイルから MD5 ハッシュ値を計算します。
 		/// @param path ファイルのパス
-		/// @return 計算された MD5 ハッシュ
+		/// @return 計算された MD5 ハッシュ値
 		[[nodiscard]]
 		static MD5Value FromFile(FilePathView path);
 

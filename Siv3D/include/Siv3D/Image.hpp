@@ -352,15 +352,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	inBounds
+		//	indexInBounds
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		bool inBounds(int64 y, int64 x) const noexcept;
+		bool indexInBounds(int64 y, int64 x) const noexcept;
 
 		[[nodiscard]]
-		bool inBounds(Point pos) const noexcept;
+		bool indexInBounds(Point pos) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

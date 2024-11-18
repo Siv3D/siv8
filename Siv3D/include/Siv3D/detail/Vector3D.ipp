@@ -627,6 +627,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	manhattanDistanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr typename Vector3D<Type>::value_type Vector3D<Type>::manhattanDistanceTo(const value_type _x, const value_type _y, const value_type _z) const noexcept
+	{
+		return manhattanDistanceFrom(_x, _y, _z);
+	}
+
+	template <class Type>
+	constexpr typename Vector3D<Type>::value_type Vector3D<Type>::manhattanDistanceTo(const Vector3D v) const noexcept
+	{
+		return manhattanDistanceFrom(v.x, v.y, v.z);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	distanceFrom
 	//
 	////////////////////////////////////////////////////////////////
@@ -660,6 +678,42 @@ namespace s3d
 
 	template <class Type>
 	constexpr typename Vector3D<Type>::value_type Vector3D<Type>::distanceFromSq(const Vector3D v) const noexcept
+	{
+		return distanceFromSq(v.x, v.y, v.z);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	typename Vector3D<Type>::value_type Vector3D<Type>::distanceTo(const value_type _x, const value_type _y, const value_type _z) const noexcept
+	{
+		return distanceFrom(_x, _y, _z);
+	}
+
+	template <class Type>
+	typename Vector3D<Type>::value_type Vector3D<Type>::distanceTo(const Vector3D v) const noexcept
+	{
+		return distanceFrom(v.x, v.y, v.z);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	distanceToSq
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr typename Vector3D<Type>::value_type Vector3D<Type>::distanceToSq(const value_type _x, const value_type _y, const value_type _z) const noexcept
+	{
+		return distanceFromSq(_x, _y, _z);
+	}
+
+	template <class Type>
+	constexpr typename Vector3D<Type>::value_type Vector3D<Type>::distanceToSq(const Vector3D v) const noexcept
 	{
 		return distanceFromSq(v.x, v.y, v.z);
 	}

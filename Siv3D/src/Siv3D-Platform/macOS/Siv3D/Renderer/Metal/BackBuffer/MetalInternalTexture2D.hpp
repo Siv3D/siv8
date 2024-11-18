@@ -41,6 +41,12 @@ namespace s3d
 		}
 		
 		[[nodiscard]]
+		MTL::Texture* getTexture() noexcept
+		{
+			return m_texture.get();
+		}
+		
+		[[nodiscard]]
         const MTL::Texture* getTexture() const noexcept
         {
             return m_texture.get();

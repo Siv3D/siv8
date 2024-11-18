@@ -20,6 +20,7 @@ namespace s3d
 	struct RectF;
 	struct FormatData;
 	struct PatternParameters;
+	enum class LineType : uint8;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -775,7 +776,7 @@ namespace s3d
 		constexpr Rect& set(position_type _pos, size_type _size) noexcept;
 
 		/// @brief 長方形の左上の座標とサイズを変更します。
-		/// @param r 新しい長方形
+		/// @param rect 新しい長方形
 		/// @return *this
 		constexpr Rect& set(const Rect& rect) noexcept;
 
@@ -1206,7 +1207,7 @@ namespace s3d
 		/// @param length 距離（左上から時計回り）
 		/// @return 長方形の周上の指定した距離に対応する辺のインデックス（0 が上辺、1 が右辺、2 が下辺、3 が左辺）
 		[[nodiscard]]
-		size_t sideIndexAtLength(double length) const;
+		size_t sideIndexAtLength(double length) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1435,6 +1436,27 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	chamfered
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形を面取りした Polygon を返します。
+		/// @param size 面取りの大きさ
+		/// @return 面取りした Polygon
+		//[[nodiscard]]
+		//Polygon chamfered(double size) const;
+	
+		/// @brief 長方形を面取りした Polygon を返します。
+		/// @param tl 左上の面取りの大きさ
+		/// @param tr 右上の面取りの大きさ
+		/// @param br 右下の面取りの大きさ
+		/// @param bl 左下の面取りの大きさ
+		/// @return 面取りした Polygon
+		//[[nodiscard]]
+		//Polygon chamfered(double tl, double tr, double br, double bl) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	asQuad
 		//
 		////////////////////////////////////////////////////////////////
@@ -1465,14 +1487,23 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	outer
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Array<Vec2> outer() const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	asPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形を Polygon として返します。
-		///// @return 長方形の Polygon
-		//[[nodiscard]]
-		//Polygon asPolygon() const;
+		/// @brief 長方形を Polygon として返します。
+		/// @return 長方形の Polygon
+		[[nodiscard]]
+		Polygon asPolygon() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1666,45 +1697,48 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 長方形を描画します。
+		/// @brief 長方形を描きます。
 		/// @param color 色
 		/// @return *this
 		const Rect& draw(const ColorF& color = Palette::White) const;
 
-		/// @brief 長方形を描画します。
+		/// @brief 長方形を描きます。
 		/// @param colors 左上、右上、右下、左下の各頂点の色
 		/// @remark 描画時には 2 つの三角形に分割されるため、斜め方向のグラデーションは方向によってグラデーションのかかり方が変わります。上下、左右方向のグラデーションには影響しません。
 		/// @return *this
 		const Rect& draw(const ColorF(&colors)[4]) const;
 
-		/// @brief 長方形を描画します。
+		/// @brief 長方形を描きます。
 		/// @param topColor 長方形の上側の色
 		/// @param bottomColor 長方形の下側の色
 		/// @remark `rect.draw(Arg::top = ColorF{ 0.0 }, Arg::bottom = ColorF{ 1.0 })` のように呼びます。
 		/// @return *this
 		const Rect& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
-		/// @brief 長方形を描画します。
+		/// @brief 長方形を描きます。
 		/// @param leftColor 長方形の左側の色
 		/// @param rightColor 長方形の右側の色
 		/// @remark `rect.draw(Arg::left = ColorF{ 0.0 }, Arg::right = ColorF{ 1.0 })` のように呼びます。
 		/// @return *this
 		const Rect& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
-		/// @brief 長方形を描画します。
+		/// @brief 長方形を描きます。
 		/// @param topLeftColor 長方形の左上の色
 		/// @param bottomRightColor 長方形の右下の色
 		/// @remark `rect.draw(Arg::topLeft = ColorF{ 0.0 }, Arg::bottomRight = ColorF{ 1.0 })` のように呼びます。
 		/// @return *this
 		const Rect& draw(Arg::topLeft_<ColorF> topLeftColor, Arg::bottomRight_<ColorF> bottomRightColor) const;
 
-		/// @brief 長方形を描画します。
+		/// @brief 長方形を描きます。
 		/// @param topRightColor 長方形の右上の色
 		/// @param bottomLeftColor 長方形の左下の色
 		/// @remark `rect.draw(Arg::topRight = ColorF{ 0.0 }, Arg::bottomLeft = ColorF{ 1.0 })` のように呼びます。
 		/// @return 
 		const Rect& draw(Arg::topRight_<ColorF> topRightColor, Arg::bottomLeft_<ColorF> bottomLeftColor) const;
 
+		/// @brief 長方形を描きます。
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Rect& draw(const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1713,67 +1747,91 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 長方形の枠を描画します。
-		/// @param thickness 枠の太さ
+		/// @brief 長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 色
 		/// @return *this
 		const Rect& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		/// @brief 長方形の枠を描画します。
-		/// @param thickness 枠の太さ
-		/// @param innerColor 内側寄りの枠の色
-		/// @param outerColor 外側寄りの枠の色
+		/// @brief 長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param innerColor 内側の色
+		/// @param outerColor 外側の色
 		/// @return *this
 		const Rect& drawFrame(double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
-		/// @brief 長方形の枠を描画します。
-		/// @param thickness 枠の太さ
+		/// @brief 長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param topColor 上側の色
 		/// @param bottomColor 下側の色
 		/// @return *this
 		const Rect& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
-		/// @brief 長方形の枠を描画します。
-		/// @param thickness 枠の太さ
+		/// @brief 長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
 		/// @param leftColor 左側の色
 		/// @param rightColor 右側の色
 		/// @return *this
 		const Rect& drawFrame(double thickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
-		/// @brief 長方形の枠を描画します。
-		/// @param innerThickness 内側寄りの枠の太さ
-		/// @param outerThickness 外側寄りの枠の太さ
+		/// @brief 長方形の枠を描きます。
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
 		/// @param color 色
 		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
-		/// @brief 長方形の枠を描画します。
-		/// @param innerThickness 内側寄りの枠の太さ
-		/// @param outerThickness 外側寄りの枠の太さ
-		/// @param innerColor 内側寄りの枠の色
-		/// @param outerColor 外側寄りの枠の色
+		/// @brief 長方形の枠を描きます。
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
+		/// @param innerColor 内側の色
+		/// @param outerColor 外側の色
 		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
-		/// @brief 長方形の枠を描画します。
-		/// @param innerThickness 内側寄りの枠の太さ
-		/// @param outerThickness 外側寄りの枠の太さ
+		/// @brief 長方形の枠を描きます。
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
 		/// @param topColor 上側の色
 		/// @param bottomColor 下側の色
 		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
-		/// @brief 長方形の枠を描画します。
-		/// @param innerThickness 内側寄りの枠の太さ
-		/// @param outerThickness 外側寄りの枠の太さ
+		/// @brief 長方形の枠を描きます。
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
 		/// @param leftColor 左側の色
 		/// @param rightColor 右側の色
 		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		/// @brief 長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Rect& drawFrame(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 長方形の枠を描きます。
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		/// @brief 長方形の枠を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param lineType 線の種類
+		/// @param color 色
+		/// @return *this
+		const Rect& drawFrame(double thickness, LineType lineType, const ColorF& color = Palette::White) const;
+
+		/// @brief 長方形の枠を描きます。
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
+		/// @param lineType 線の種類
+		/// @param color 色
+		/// @return *this
+		const Rect& drawFrame(double innerThickness, double outerThickness, LineType lineType, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1781,7 +1839,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 長方形の影を描画します。
+		/// @brief 長方形の影を描きます。
 		/// @param offset 影の位置のオフセット（ピクセル）
 		/// @param blur ぼかしの大きさ（ピクセル）
 		/// @param spread 影の膨張（ピクセル）
@@ -1833,7 +1891,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 出力ストリームに Rect の内容を出力します。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 出力ストリームの文字型
 		/// @param output 出力ストリーム
 		/// @param value Rect
 		/// @return 出力ストリーム
@@ -1854,7 +1912,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 入力ストリームから Rect の内容を読み込みます。
-		/// @tparam CharType ストリームの文字型
+		/// @tparam CharType 入力ストリームの文字型
 		/// @param input 入力ストリーム
 		/// @param value Rect の格納先
 		/// @return 入力ストリーム

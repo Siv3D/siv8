@@ -1173,8 +1173,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列のハッシュを返します。
-		/// @return 文字列のハッシュ
+		/// @brief 文字列のハッシュ値を返します。
+		/// @return 文字列のハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
@@ -1599,8 +1599,22 @@ namespace s3d
 		/// @brief 別の文字列とのレーベンシュタイン距離を計算して返します。
 		/// @param other 別の文字列
 		/// @return 別の文字列とのレーベンシュタイン距離
+		/// @remark `.levenshteinDistanceTo(other)` と同じです。
 		[[nodiscard]]
 		size_type levenshteinDistanceFrom(StringView other) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	levenshteinDistanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の文字列とのレーベンシュタイン距離を計算して返します。
+		/// @param other 別の文字列
+		/// @return 別の文字列とのレーベンシュタイン距離
+		/// @remark `.levenshteinDistanceFrom(other)` と同じです。
+		[[nodiscard]]
+		size_type levenshteinDistanceTo(StringView other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -46,7 +46,7 @@ namespace s3d
 		textureDescriptor->setPixelFormat(MTL::PixelFormatRGBA8Unorm);
 		textureDescriptor->setWidth(size.x);
 		textureDescriptor->setHeight(size.y);
-		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
+		textureDescriptor->setStorageMode(MTL::StorageModeShared);
 		textureDescriptor->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
 
 		MetalInternalTexture2D texture;
