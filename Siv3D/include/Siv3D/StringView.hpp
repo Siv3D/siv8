@@ -766,11 +766,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		friend std::ostream& operator <<(std::ostream& os, const StringView& value);
+		friend std::ostream& operator <<(std::ostream& output, const StringView& value);
 
-		friend std::wostream& operator <<(std::wostream& os, const StringView& value);
+		friend std::wostream& operator <<(std::wostream& output, const StringView& value);
 
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const StringView& value);
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const StringView& value);
 
 		////////////////////////////////////////////////////////////////
 		//

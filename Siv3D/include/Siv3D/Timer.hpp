@@ -399,11 +399,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		friend std::ostream& operator <<(std::ostream& os, const Timer& value);
+		friend std::ostream& operator <<(std::ostream& output, const Timer& value);
 
-		friend std::wostream& operator <<(std::wostream& os, const Timer& value);
+		friend std::wostream& operator <<(std::wostream& output, const Timer& value);
 
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Timer& value);
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const Timer& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -411,9 +411,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @param formatData 
-		/// @param value 
+		/// @brief 残り時間を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value ストップウォッチ
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Timer& value);
 
 	private:

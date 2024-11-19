@@ -1134,9 +1134,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ベクトルをフォーマットします。
-		/// @param formatData フォーマットデータ
+		/// @brief ベクトルを文字列に変換します。
+		/// @param formatData 文字列バッファ
 		/// @param value ベクトル
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Vector4D& value)
 		{
 			_Formatter(formatData, value);

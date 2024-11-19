@@ -108,11 +108,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		friend std::ostream& operator <<(std::ostream& os, const Error& value);
+		friend std::ostream& operator <<(std::ostream& output, const Error& value);
 
-		friend std::wostream& operator <<(std::wostream& os, const Error& value);
+		friend std::wostream& operator <<(std::wostream& output, const Error& value);
 
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Error& value);
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const Error& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -120,6 +120,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief エラーを文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value エラー
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Error& value);
 
 	protected:
