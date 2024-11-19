@@ -38,5 +38,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 三角形の塗りつぶしモードを文字列に変換します。
+	/// @param formatData 文字列バッファ
+	/// @param value 三角形の塗りつぶしモード
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, TriangleFillMode value);
 }

@@ -24,6 +24,7 @@ namespace s3d
 	/// @brief 三角形を構成する頂点インデックス
 	struct alignas(alignof(Vertex2D::IndexType)) TriangleIndex
 	{
+		/// @brief インデックスの値の型
 		using value_type = Vertex2D::IndexType;
 
 		/// @brief 頂点 0
@@ -55,6 +56,18 @@ namespace s3d
 		/// @return すべてのインデックス値が 0 の TriangleIndex
 		[[nodiscard]]
 		static constexpr TriangleIndex Zero() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三角形を構成する頂点インデックスを文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value 三角形を構成する頂点インデックス
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
+		friend void Formatter(FormatData& formatData, const TriangleIndex& value);
 	};
 }
 

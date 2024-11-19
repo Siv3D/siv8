@@ -399,10 +399,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 残り時間を出力します。
+		/// @param output 出力ストリーム
+		/// @param value タイマー
+		/// @return 出力ストリーム
 		friend std::ostream& operator <<(std::ostream& output, const Timer& value);
 
+		/// @brief 残り時間を出力します。
+		/// @param output 出力ストリーム
+		/// @param value タイマー
+		/// @return 出力ストリーム
 		friend std::wostream& operator <<(std::wostream& output, const Timer& value);
 
+		/// @brief 残り時間を出力します。
+		/// @param output 出力ストリーム
+		/// @param value タイマー
+		/// @return 出力ストリーム
 		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const Timer& value);
 
 		////////////////////////////////////////////////////////////////

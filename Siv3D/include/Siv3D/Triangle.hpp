@@ -768,8 +768,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の頂点の配列 { p0, p1, p2 } を返します。
+		/// @return 三角形の頂点の配列 { p0, p1, p2 }
 		[[nodiscard]]
 		Array<Vec2> outer() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ring
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三角形の頂点の配列 { p0, p1, p2, p0 } を返します。
+		/// @return 三角形の頂点の配列 { p0, p1, p2, p0 }
+		[[nodiscard]]
+		Array<Vec2> ring() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -987,13 +1000,6 @@ namespace s3d
 		/// @return *this
 		const Triangle& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White, JoinStyle joinStyle = JoinStyle::Default) const;
 
-		///// @brief 三角形の枠を描きます。
-		///// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
-		///// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
-		///// @param color 枠の色
-		///// @return *this
-		//const Triangle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
-
 		/// @brief 三角形の枠を描きます。
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
@@ -1001,12 +1007,19 @@ namespace s3d
 		/// @return *this
 		const Triangle& drawFrame(double thickness, const PatternParameters& pattern, JoinStyle joinStyle = JoinStyle::Default) const;
 
-		///// @brief 三角形の枠を描きます。
-		///// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
-		///// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
+		/// @brief 三角形の枠を描きます。
+		/// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
+		/// @param color 枠の色
+		/// @return *this
+		const Triangle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+
+		/// @brief 三角形の枠を描きます。
+		/// @param innerThickness 基準の三角形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の三角形から外側方向への枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
-		///// @return *this
-		//const Triangle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+		/// @return *this
+		const Triangle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
