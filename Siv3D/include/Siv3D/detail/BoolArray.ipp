@@ -453,7 +453,12 @@ namespace s3d
 		template <Concept::ContainerCompatibleRange<bool> Range>
 		constexpr Array& assign_range(Range&& range) SIV3D_LIFETIMEBOUND
 		{
+		# if __cpp_lib_containers_ranges >= 202202L
 			m_container.assign_range(std::forward<Range>(range));
+		# else
+			auto common_range = std::views::common(std::forward<Range>(range));
+			m_container.assign(common_range.begin(), common_range.end());
+		# endif
 			return *this;
 		}
 
@@ -1025,7 +1030,12 @@ namespace s3d
 		template <Concept::ContainerCompatibleRange<bool> Range>
 		constexpr void append_range(Range&& range)
 		{
+		# if __cpp_lib_containers_ranges >= 202202L
 			m_container.append_range(std::forward<Range>(range));
+		# else
+			auto common_range = std::views::common(std::forward<Range>(range));
+			m_container.insert(m_container.end(), common_range.begin(), common_range.end());
+		# endif
 		}
 
 		////////////////////////////////////////////////////////////////
