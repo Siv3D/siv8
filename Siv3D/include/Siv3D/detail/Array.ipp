@@ -87,7 +87,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>::Array(const std::initializer_list<value_type> list, const Allocator& alloc)
 		: m_container(list, alloc) {}
 
-# ifdef __cpp_lib_containers_ranges
+# if __cpp_lib_containers_ranges >= 202202L
 	   
 	template <class Type, class Allocator>
 	template <Concept::ContainerCompatibleRange<Type> Range>
@@ -1976,7 +1976,7 @@ namespace s3d
 	template <class Range, class Elem>
 	constexpr Array<Elem> ToArray(Range&& range) requires Concept::ContainerCompatibleRange<Range, Elem>
 	{
-	# ifdef __cpp_lib_containers_ranges
+	# if __cpp_lib_containers_ranges >= 202202L
 	   
 		return Array<Elem>(std::from_range, std::forward<Range>(range));
 	

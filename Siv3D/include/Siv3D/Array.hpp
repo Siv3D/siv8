@@ -10,8 +10,9 @@
 //-----------------------------------------------
 
 # pragma once
-# include <vector>
 # include <algorithm>
+# include <vector>
+# include <version>
 # include "String.hpp"
 # include "Unicode.hpp"
 # include "Format.hpp"
@@ -188,7 +189,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(std::initializer_list<value_type> list, const Allocator& alloc = Allocator{});
 
-	# ifdef __cpp_lib_containers_ranges
+	# if __cpp_lib_containers_ranges >= 202202L
 		
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
@@ -2074,8 +2075,8 @@ namespace s3d
 	Array(Iterator, Iterator, Allocator = Allocator{})
 		-> Array<typename std::iterator_traits<Iterator>::value_type, Allocator>;
 
-# ifdef __cpp_lib_containers_ranges
-	   
+# if __cpp_lib_containers_ranges >= 202202L
+	
 	template<std::ranges::input_range Range, class Allocator = std::allocator<std::ranges::range_value_t<Range>>>
 	Array(std::from_range_t, Range&&, Allocator = Allocator{})
 		-> Array<std::ranges::range_value_t<Range>, Allocator>;
