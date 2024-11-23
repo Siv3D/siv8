@@ -226,7 +226,7 @@ namespace s3d
 	# else
 
 		auto common_range = std::views::common(std::forward<Range>(range));
-		m_string.assign(common_range.begin(), common_range.end());
+x		m_string.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
 		
 	# endif
 
@@ -721,7 +721,7 @@ namespace s3d
 	# else
 
 		auto common_range = std::views::common(std::forward<Range>(range));
-		return m_string.insert(pos, common_range.begin(), common_range.end());
+		return m_string.insert(pos, std::ranges::begin(common_range), std::ranges::end(common_range));
 		
 	# endif
 	}
@@ -915,7 +915,7 @@ namespace s3d
 	# else
 
 		auto common_range = std::views::common(std::forward<Range>(range));
-		m_string.append(common_range.begin(), common_range.end());
+		m_string.append(std::ranges::begin(common_range), std::ranges::end(common_range));
 		
 	# endif
 		

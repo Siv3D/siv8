@@ -193,7 +193,7 @@ namespace s3d
 		m_container.assign_range(std::forward<Range>(range));
 	# else
 		auto common_range = std::views::common(std::forward<Range>(range));
-		m_container.assign(common_range.begin(), common_range.end());
+		m_container.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
 	# endif
 		return *this;
 	}
@@ -677,7 +677,7 @@ namespace s3d
 		m_container.append_range(std::forward<Range>(range));
 	# else
 		auto common_range = std::views::common(std::forward<Range>(range));
-		m_container.insert(m_container.end(), common_range.begin(), common_range.end());
+		m_container.insert(m_container.end(), std::ranges::begin(common_range), std::ranges::end(common_range));
 	# endif
 	}
 
