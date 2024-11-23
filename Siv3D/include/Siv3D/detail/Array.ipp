@@ -652,6 +652,23 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	insert_range
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <Concept::ContainerCompatibleRange<Type> Range>
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert_range(const const_iterator pos, Range&& range) {
+	# if __cpp_lib_containers_ranges >= 202202L
+		return m_container.insert_range(pos, std::forward<Range>(range));
+	# else
+		auto common_range = std::views::common(std::forward<Range>(range));
+		return m_container.insert(pos, std::ranges::begin(common_range), std::ranges::end(common_range));
+	# endif
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	emplace
 	//
 	////////////////////////////////////////////////////////////////

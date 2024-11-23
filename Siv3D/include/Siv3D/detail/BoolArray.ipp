@@ -1002,6 +1002,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	insert_range
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置に範囲の要素を挿入します。
+		/// @param pos 挿入する位置
+		/// @tparam Range 範囲の型
+		/// @param range 範囲
+		template <Concept::ContainerCompatibleRange<Type> Range>
+		constexpr iterator insert_range(const_iterator pos, Range&& range) {
+		# if __cpp_lib_containers_ranges >= 202202L
+			return m_container.insert_range(pos, std::forward<Range>(range));
+		# else
+			auto common_range = std::views::common(std::forward<Range>(range));
+			return m_container.insert(pos, std::ranges::begin(common_range), std::ranges::end(common_range));
+		# endif
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	emplace
 		//
 		////////////////////////////////////////////////////////////////
