@@ -226,7 +226,7 @@ namespace s3d
 	# else
 
 		auto common_range = std::views::common(std::forward<Range>(range));
-x		m_string.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
+ 		m_string.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
 		
 	# endif
 
