@@ -1010,7 +1010,7 @@ namespace s3d
 		/// @param pos 挿入する位置
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
-		template <Concept::ContainerCompatibleRange<Type> Range>
+		template <Concept::ContainerCompatibleRange<bool> Range>
 		constexpr iterator insert_range(const_iterator pos, Range&& range) {
 		# if __cpp_lib_containers_ranges >= 202202L
 			return m_container.insert_range(pos, std::forward<Range>(range));
