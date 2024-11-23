@@ -801,11 +801,11 @@ namespace s3d
 
 		constexpr String& replace(size_type pos, size_type count, const String& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replate(const_iterator first, const_iterator last, const String& s) SIV3D_LIFETIMEBOUND;
+		constexpr String& replace(const_iterator first, const_iterator last, const String& s) SIV3D_LIFETIMEBOUND;
 		
 		constexpr String& replace(const_iterator first, const_iterator last, const value_type* s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replate(const_iterator first, const_iterator last, const StringViewLike auto& s);
+		constexpr String& replace(const_iterator first, const_iterator last, const StringViewLike auto& s);
 
 		constexpr String& replace(size_type pos, size_type count, const value_type* s) SIV3D_LIFETIMEBOUND;
 
