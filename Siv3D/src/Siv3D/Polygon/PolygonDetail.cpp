@@ -814,7 +814,7 @@ namespace s3d
 		for (const auto& hole : m_polygon.inners())
 		{
 			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-				m_polygon.outer(), offset,
+				hole, offset,
 				Abs(static_cast<float>(thickness)), false,
 				CloseRing::Yes,
 				color.toFloat4());
@@ -837,7 +837,7 @@ namespace s3d
 		for (const auto& hole : m_polygon.inners())
 		{
 			SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-				m_polygon.outer(), offset,
+				hole, offset,
 				Abs(static_cast<float>(thickness)), false,
 				CloseRing::Yes,
 				pattern);
