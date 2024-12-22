@@ -1015,6 +1015,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess">
       <UniqueIdentifier>{11393b10-2f63-49cc-8dad-9b448a03f01b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\TriangleIndex">
+      <UniqueIdentifier>{19d4725f-95e3-47e1-a633-04b750b83b30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TriangleIndex32">
+      <UniqueIdentifier>{85d42f3e-0da5-4f06-b66f-0a9e3f2fcc06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -6418,6 +6424,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess\ChildProcessDetail.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TriangleIndex\SivTriangleIndex.cpp">
+      <Filter>src\Siv3D\TriangleIndex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TriangleIndex32\SivTriangleIndex32.cpp">
+      <Filter>src\Siv3D\TriangleIndex32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

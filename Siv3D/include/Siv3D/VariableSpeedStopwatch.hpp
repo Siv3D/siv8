@@ -353,11 +353,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		friend std::ostream& operator <<(std::ostream& os, const VariableSpeedStopwatch& value);
+		/// @brief 経過時間を出力します。
+		/// @param output 出力ストリーム
+		/// @param value ストップウォッチ
+		/// @return 出力ストリーム
+		friend std::ostream& operator <<(std::ostream& output, const VariableSpeedStopwatch& value);
 
-		friend std::wostream& operator <<(std::wostream& os, const VariableSpeedStopwatch& value);
+		/// @brief 経過時間を出力します。
+		/// @param output 出力ストリーム
+		/// @param value ストップウォッチ
+		/// @return 出力ストリーム
+		friend std::wostream& operator <<(std::wostream& output, const VariableSpeedStopwatch& value);
 
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const VariableSpeedStopwatch& value);
+		/// @brief 経過時間を出力します。
+		/// @param output 出力ストリーム
+		/// @param value ストップウォッチ
+		/// @return 出力ストリーム
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const VariableSpeedStopwatch& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -365,9 +377,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 
-		/// @param formatData 
-		/// @param value 
+		/// @brief 経過時間を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value ストップウォッチ
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const VariableSpeedStopwatch& value);
 
 	private:

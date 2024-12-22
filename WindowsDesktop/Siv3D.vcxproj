@@ -1294,6 +1294,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Timer\SivTimer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Transformer2D\SivTransformer2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TriangleFillMode\SivTriangleFillMode.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TriangleIndex32\SivTriangleIndex32.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TriangleIndex\SivTriangleIndex.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Triangle\SivTriangle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\UnicodeConverter\SivUnicodeConverter.cpp" />

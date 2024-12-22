@@ -19,7 +19,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr StringView::StringView(const std::u32string& s) noexcept
+	constexpr StringView::StringView(const std::u32string& s SIV3D_LIFETIMEBOUND) noexcept
 		: m_view{ s } {}
 
 	constexpr StringView::StringView(const std::u32string_view s) noexcept
@@ -32,7 +32,27 @@ namespace s3d
 		: m_view{ s } {}
 
 	template <class Range>
+		requires(
+		!std::same_as<std::remove_cvref_t<Range>, StringView>
+		&& std::ranges::contiguous_range<Range>
+		&& std::ranges::sized_range<Range>
+		&& std::same_as<std::ranges::range_value_t<Range>, char32>
+		&& !std::is_convertible_v<Range, const char32*>
+		&& !requires(std::remove_cvref_t<Range>& range) { range.operator StringView; }
+		&& std::ranges::borrowed_range<Range>)
 	constexpr StringView::StringView(Range&& range)
+		: m_view{ std::forward<Range>(range) } {}
+
+	template <class Range>
+		requires(
+		!std::same_as<std::remove_cvref_t<Range>, StringView>
+		&& std::ranges::contiguous_range<Range>
+		&& std::ranges::sized_range<Range>
+		&& std::same_as<std::ranges::range_value_t<Range>, char32>
+		&& !std::is_convertible_v<Range, const char32*>
+		&& !requires(std::remove_cvref_t<Range>& range) { range.operator StringView; }
+		&& !std::ranges::borrowed_range<Range>)
+	constexpr StringView::StringView(Range&& range SIV3D_LIFETIMEBOUND)
 		: m_view{ std::forward<Range>(range) } {}
 
 	////////////////////////////////////////////////////////////////

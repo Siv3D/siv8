@@ -79,7 +79,28 @@ namespace s3d
 		constexpr StringView(const value_type* s) noexcept;
 
 		template <class Range>
+			requires(
+			!std::same_as<std::remove_cvref_t<Range>, StringView>
+			&& std::ranges::contiguous_range<Range>
+			&& std::ranges::sized_range<Range>
+			&& std::same_as<std::ranges::range_value_t<Range>, char32>
+			&& !std::is_convertible_v<Range, const char32*>
+			&& !requires(std::remove_cvref_t<Range>& range) { range.operator StringView; }
+			&& std::ranges::borrowed_range<Range>)
+		[[nodiscard]]
 		explicit constexpr StringView(Range&& range);
+
+		template <class Range>
+			requires(
+		!std::same_as<std::remove_cvref_t<Range>, StringView>
+			&& std::ranges::contiguous_range<Range>
+			&& std::ranges::sized_range<Range>
+			&& std::same_as<std::ranges::range_value_t<Range>, char32>
+			&& !std::is_convertible_v<Range, const char32*>
+			&& !requires(std::remove_cvref_t<Range>& range) { range.operator StringView; }
+			&& !std::ranges::borrowed_range<Range>)
+			[[nodiscard]]
+		explicit constexpr StringView(Range&& range SIV3D_LIFETIMEBOUND);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -745,11 +766,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		friend std::ostream& operator <<(std::ostream& os, const StringView& value);
+		friend std::ostream& operator <<(std::ostream& output, const StringView& value);
 
-		friend std::wostream& operator <<(std::wostream& os, const StringView& value);
+		friend std::wostream& operator <<(std::wostream& output, const StringView& value);
 
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const StringView& value);
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const StringView& value);
 
 		////////////////////////////////////////////////////////////////
 		//

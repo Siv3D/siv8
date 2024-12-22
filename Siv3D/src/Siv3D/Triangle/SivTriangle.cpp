@@ -14,6 +14,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/LineCap.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -365,6 +366,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	ring
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Vec2> Triangle::ring() const
+	{
+		return{ p0, p1, p2, p0 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	asPolygon
 	//
 	////////////////////////////////////////////////////////////////
@@ -504,6 +516,34 @@ namespace s3d
 	const Triangle& Triangle::drawFrame(const double thickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
 	{
 		DrawClosedLineString({ p0, p1, p2, p0, p1 }, joinStyle, thickness, pattern);
+		return *this;
+	}
+
+	const Triangle& Triangle::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		const double offset = (outerThickness - innerThickness) * 0.5;
+		const Triangle t = stretched(offset);
+
+		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+			std::span<const Vec2>(&p0, 3), none,
+			Abs(static_cast<float>(innerThickness + outerThickness)),
+			(outerThickness == 0.0), CloseRing::Yes,
+			color.toFloat4());
+
+		return *this;
+	}
+
+	const Triangle& Triangle::drawFrame(const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
+	{
+		const double offset = (outerThickness - innerThickness) * 0.5;
+		const Triangle t = stretched(offset);
+
+		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+			std::span<const Vec2>(&p0, 3), none,
+			Abs(static_cast<float>(innerThickness + outerThickness)),
+			(outerThickness == 0.0), CloseRing::Yes,
+			pattern);
+
 		return *this;
 	}
 

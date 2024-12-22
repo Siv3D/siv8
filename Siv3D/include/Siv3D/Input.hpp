@@ -212,6 +212,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 入力オブジェクトを文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value 入力オブジェクト
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Input& value);
 
 		////////////////////////////////////////////////////////////////

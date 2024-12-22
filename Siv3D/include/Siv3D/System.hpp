@@ -30,6 +30,45 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	Exit
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief プログラムを終了させるために、この直後の `System::Update()` が false を返すように設定します。
+		/// @remark この関数自体は終了処理を行わないため、この関数の呼び出しは必須ではありません。
+		//void Exit() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetTerminationTriggers, GetTerminationTriggers
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief アプリケーション終了トリガーに設定するユーザアクションを設定します。
+		/// @param userActionFlags アプリケーション終了トリガーに設定するユーザアクションのフラグ
+		/// @remark フラグには `UserAction` の値の組み合わせを使います。
+		//void SetTerminationTriggers(uint32 userActionFlags) noexcept;
+
+		/// @brief アプリケーション終了トリガーに設定したユーザアクションのフラグの現在の設定を返します。
+		/// @remark フラグには `UserAction` の値の組み合わせが使われています。
+		/// @return プリケーション終了トリガーに設定したユーザアクションのフラグの組み合わせ
+		//[[nodiscard]]
+		//uint32 GetTerminationTriggers() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetUserActions
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 前回のフレームで発生したユーザアクションを返します。
+		/// @remarkフラグには `UserAction` の値の組み合わせが使われています。
+		/// @return 前のフレームで発生したユーザアクションのフラグの組み合わせ
+		//[[nodiscard]]
+		//uint32 GetUserActions() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Sleep
 		//
 		////////////////////////////////////////////////////////////////
@@ -52,5 +91,49 @@ namespace s3d
 		/// @param url URL
 		/// @return オープンに成功した場合 true, それ以外の場合は false
 		bool LaunchBrowser(FilePathView url);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ShowInFileManager
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ファイルパスをファイルマネージャー上で表示します。
+		/// @param path ファイルパス
+		/// @return ファイルマネージャー上での表示に成功した場合 true, それ以外の場合は false
+		//bool ShowInFileManager(FilePathView path);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	LaunchFile
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したファイルをデフォルトのアプリケーションで開きます。 | Opens the specified file with the default application.
+		/// @param fileName ファイル名 | File name
+		/// @return アプリケーションの起動に成功した場合 true, それ以外の場合は false | Returns true if the application was launched successfully, otherwise false.
+		//bool LaunchFile(FilePathView fileName);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	LaunchFileWithTextEditor
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したファイルをテキストエディタで開きます。 | Opens the specified file with the default text editor.
+		/// @param fileName ファイル名 | File name
+		/// @return テキストエディタの起動に成功した場合 true, それ以外の場合は false | Returns true if the text editor was launched successfully, otherwise false.
+		//bool LaunchFileWithTextEditor(FilePathView fileName);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetRendererType
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief レンダラーの設定を返します。
+		/// @return レンダラーの設定
+		//[[nodiscard]]
+		//EngineOption::Renderer GetRendererType();
 	}
 }

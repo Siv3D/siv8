@@ -23,6 +23,7 @@ namespace s3d
 
 	namespace detail
 	{
+		/// @brief テキストファイル書き込みバッファ
 		class TextWriterBuffer
 		{
 		public:
@@ -35,6 +36,9 @@ namespace s3d
 
 			~TextWriterBuffer();
 
+			/// @brief テキストファイル書き込みバッファにデータを書き込みます。
+			/// @param value 書き込むデータ
+			/// @return *this
 			TextWriterBuffer& operator <<(const Concept::Formattable auto& value);
 
 		private:

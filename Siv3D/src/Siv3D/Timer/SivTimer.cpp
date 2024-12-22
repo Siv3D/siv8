@@ -31,19 +31,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::ostream& operator <<(std::ostream& os, const Timer& value)
+	std::ostream& operator <<(std::ostream& output, const Timer& value)
 	{
-		return (os << value.format());
+		return (output << value.format());
 	}
 
-	std::wostream& operator <<(std::wostream& os, const Timer& value)
+	std::wostream& operator <<(std::wostream& output, const Timer& value)
 	{
-		return (os << value.format());
+		return (output << value.format());
 	}
 
-	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Timer& value)
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const Timer& value)
 	{
-		return (os << value.format());
+		return (output << value.format());
 	}
 
 	////////////////////////////////////////////////////////////////
