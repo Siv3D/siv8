@@ -56,38 +56,38 @@ namespace s3d
 	/// @brief 指定した乱数エンジンを用いて、Range から要素をランダムに返します。
 	/// @tparam Range ランダムアクセス可能な Range の型
 	/// @param range Range
-	/// @param urbg 乱数エンジン
+	/// @param rbg 乱数エンジン
 	/// @return Range からランダムに選択された要素への参照
 	template <std::ranges::random_access_range Range>
 	[[nodiscard]]
-	auto& Choice(Range& range, Concept::UniformRandomBitGenerator auto&& urbg);
+	auto& Choice(Range& range, Concept::UniformRandomBitGenerator auto&& rbg);
 
 	/// @brief 指定した乱数エンジンを用いて、Range から要素をランダムに返します。
 	/// @tparam Range ランダムアクセス可能な Range の型
 	/// @param range Range
-	/// @param urbg 乱数エンジン
+	/// @param rbg 乱数エンジン
 	/// @return Range からランダムに選択された要素への参照
 	template <std::ranges::random_access_range Range>
 	[[nodiscard]]
-	const auto& Choice(const Range& range, Concept::UniformRandomBitGenerator auto&& urbg);
+	const auto& Choice(const Range& range, Concept::UniformRandomBitGenerator auto&& rbg);
 
 	/// @brief 指定した乱数エンジンを用いて、Range から要素をランダムに返します。
 	/// @tparam Range ランダムアクセス可能な Range の型
 	/// @param range Range
-	/// @param urbg 乱数エンジン
+	/// @param rbg 乱数エンジン
 	/// @return Range からランダムに選択された要素
 	template <std::ranges::random_access_range Range>
 	[[nodiscard]]
-	auto Choice(Range&& range, Concept::UniformRandomBitGenerator auto&& urbg);
+	auto Choice(Range&& range, Concept::UniformRandomBitGenerator auto&& rbg);
 
 	/// @brief 指定した乱数エンジンを用いて、リストから要素をランダムに返します。
 	/// @tparam Type 要素の型
 	/// @param list リスト
-	/// @param urbg 乱数エンジン
+	/// @param rbg 乱数エンジン
 	/// @return リストからランダムに選択された要素
 	template <class Type>
 	[[nodiscard]]
-	auto Choice(std::initializer_list<Type> list, Concept::UniformRandomBitGenerator auto&& urbg);
+	auto Choice(std::initializer_list<Type> list, Concept::UniformRandomBitGenerator auto&& rbg);
 
 	/// @brief 指定した範囲から要素をランダムに返します。
 	/// @tparam RandomIt 先頭イテレータの型
@@ -114,11 +114,11 @@ namespace s3d
 	/// @tparam Sentinel 終端イテレータの型
 	/// @param first 範囲の先頭を指すイテレータ
 	/// @param last 範囲の終端を指すイテレータ
-	/// @param urbg 乱数エンジン
+	/// @param rbg 乱数エンジン
 	/// @return 範囲からランダムに選択された要素への参照
 	template <std::random_access_iterator RandomIt, std::sentinel_for<RandomIt> Sentinel>
 	[[nodiscard]]
-	auto& Choice(RandomIt first, Sentinel last, Concept::UniformRandomBitGenerator auto&& urbg);
+	auto& Choice(RandomIt first, Sentinel last, Concept::UniformRandomBitGenerator auto&& rbg);
 }
 
 # include "detail/Choice.ipp"

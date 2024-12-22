@@ -44,27 +44,27 @@ namespace s3d
 	}
 
 	template <std::ranges::random_access_range Range>
-	auto& Choice(Range& range, Concept::UniformRandomBitGenerator auto&& urbg)
+	auto& Choice(Range& range, Concept::UniformRandomBitGenerator auto&& rbg)
 	{
-		return Choice(std::ranges::begin(range), std::ranges::end(range), std::forward<decltype(urbg)>(urbg));
+		return Choice(std::ranges::begin(range), std::ranges::end(range), std::forward<decltype(rbg)>(rbg));
 	}
 
 	template <std::ranges::random_access_range Range>
-	const auto& Choice(const Range& range, Concept::UniformRandomBitGenerator auto&& urbg)
+	const auto& Choice(const Range& range, Concept::UniformRandomBitGenerator auto&& rbg)
 	{
-		return Choice(std::ranges::begin(range), std::ranges::end(range), std::forward<decltype(urbg)>(urbg));
+		return Choice(std::ranges::begin(range), std::ranges::end(range), std::forward<decltype(rbg)>(rbg));
 	}
 
 	template <std::ranges::random_access_range Range>
-	auto Choice(Range&& range, Concept::UniformRandomBitGenerator auto&& urbg)
+	auto Choice(Range&& range, Concept::UniformRandomBitGenerator auto&& rbg)
 	{
-		return Choice(std::ranges::begin(range), std::ranges::end(range), std::forward<decltype(urbg)>(urbg));
+		return Choice(std::ranges::begin(range), std::ranges::end(range), std::forward<decltype(rbg)>(rbg));
 	}
 
 	template <class Type>
-	auto Choice(std::initializer_list<Type> list, Concept::UniformRandomBitGenerator auto&& urbg)
+	auto Choice(std::initializer_list<Type> list, Concept::UniformRandomBitGenerator auto&& rbg)
 	{
-		return Choice(list.begin(), list.end(), std::forward<decltype(urbg)>(urbg));
+		return Choice(list.begin(), list.end(), std::forward<decltype(rbg)>(rbg));
 	}
 
 	template <std::random_access_iterator RandomIt, std::sentinel_for<RandomIt> Sentinel>
@@ -80,10 +80,10 @@ namespace s3d
 	}
 
 	template <std::random_access_iterator RandomIt, std::sentinel_for<RandomIt> Sentinel>
-	auto& Choice(RandomIt first, Sentinel last, Concept::UniformRandomBitGenerator auto&& urbg)
+	auto& Choice(RandomIt first, Sentinel last, Concept::UniformRandomBitGenerator auto&& rbg)
 	{
 		const auto size = (last - first);
-		const auto randomIndex = RandomClosedOpen<size_t>(0, size, std::forward<decltype(urbg)>(urbg));
+		const auto randomIndex = RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg));
 		return *(first + randomIndex);
 	}
 }

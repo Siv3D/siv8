@@ -592,6 +592,54 @@ namespace s3d
 		return{ (pos.x - left), (pos.y - top), (size.x + left + right), (size.y + top + bottom) };
 	}
 
+	template <Concept::Integral Integral>
+	constexpr Rect Rect::stretched(const Arg::top_<Integral> top) const noexcept
+	{
+		return stretched(top.value(), 0, 0, 0);
+	}
+
+	template <Concept::Integral Integral>
+	constexpr Rect Rect::stretched(const Arg::right_<Integral> right) const noexcept
+	{
+		return stretched(0, right.value(), 0, 0);
+	}
+
+	template <Concept::Integral Integral>
+	constexpr Rect Rect::stretched(const Arg::bottom_<Integral> bottom) const noexcept
+	{
+		return stretched(0, 0, bottom.value(), 0);
+	}
+
+	template <Concept::Integral Integral>
+	constexpr Rect Rect::stretched(const Arg::left_<Integral> left) const noexcept
+	{
+		return stretched(0, 0, 0, left.value());
+	}
+
+	template <Concept::FloatingPoint FloatingPoint>
+	constexpr RectF Rect::stretched(const Arg::top_<FloatingPoint> top) const noexcept
+	{
+		return stretched(top.value(), 0, 0, 0);
+	}
+
+	template <Concept::FloatingPoint FloatingPoint>
+	constexpr RectF Rect::stretched(const Arg::right_<FloatingPoint> right) const noexcept
+	{
+		return stretched(0, right.value(), 0, 0);
+	}
+
+	template <Concept::FloatingPoint FloatingPoint>
+	constexpr RectF Rect::stretched(const Arg::bottom_<FloatingPoint> bottom) const noexcept
+	{
+		return stretched(0, 0, bottom.value(), 0);
+	}
+
+	template <Concept::FloatingPoint FloatingPoint>
+	constexpr RectF Rect::stretched(const Arg::left_<FloatingPoint> left) const noexcept
+	{
+		return stretched(0, 0, 0, left.value());
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	scaledFromCenter
