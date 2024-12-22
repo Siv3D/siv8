@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------
 // DirectXMath.h -- SIMD C++ Math library
 //
 // Copyright (c) Microsoft Corporation.
@@ -151,7 +151,11 @@
 #endif
 #endif // !_XM_NO_INTRINSICS_
 
-#include "sal.h"
+#if !defined(_MSC_VER)
+#   define PAL_STDCPP_COMPAT
+#   include "sal.h"
+# endif
+
 #include <assert.h>
 
 #ifdef _MSC_VER

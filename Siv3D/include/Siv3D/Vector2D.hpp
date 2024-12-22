@@ -326,11 +326,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 最小の成分を返します。
+		/// @remark Vec2{ 3, -2 } の場合、-2 を返します。
 		/// @return 最小の成分
 		[[nodiscard]]
 		constexpr value_type minComponent() const noexcept;
 
 		/// @brief 最大の成分を返します。
+		/// @remark Vec2{ 3, -4 } の場合、3 を返します。
 		/// @return 最大の成分
 		[[nodiscard]]
 		constexpr value_type maxComponent() const noexcept;
