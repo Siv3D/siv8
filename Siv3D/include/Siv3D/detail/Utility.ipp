@@ -26,7 +26,7 @@ namespace s3d
 	}
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-	constexpr const Type& Min(const Type& a, const Type& b) noexcept(noexcept(b < a))
+	constexpr const Type& Min(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND) noexcept(noexcept(b < a))
 	{
 		return ((b < a) ? b : a);
 	}
@@ -38,7 +38,7 @@ namespace s3d
 	}
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-		constexpr const Type& Min(const Type& a, const Type& b, const Type& c) noexcept(noexcept(b < a))
+		constexpr const Type& Min(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND, const Type& c SIV3D_LIFETIMEBOUND) noexcept(noexcept(b < a))
 	{
 		return Min(Min(a, b), c);
 	}
@@ -56,7 +56,7 @@ namespace s3d
 	}
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b))
+	constexpr const Type& Max(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND) noexcept(noexcept(a < b))
 	{
 		return ((a < b) ? b : a);
 	}
@@ -68,7 +68,7 @@ namespace s3d
 	}
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-	constexpr const Type& Max(const Type& a, const Type& b, const Type& c) noexcept(noexcept(a < b))
+	constexpr const Type& Max(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND, const Type& c SIV3D_LIFETIMEBOUND) noexcept(noexcept(a < b))
 	{
 		return Max(Max(a, b), c);
 	}
@@ -96,7 +96,7 @@ namespace s3d
 	}
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-	constexpr const Type& Clamp(const Type& v, const Type& min, const Type& max) noexcept(noexcept(max < v))
+	constexpr const Type& Clamp(const Type& v SIV3D_LIFETIMEBOUND, const Type& min SIV3D_LIFETIMEBOUND, const Type& max SIV3D_LIFETIMEBOUND) noexcept(noexcept(max < v))
 	{
 		if (max < v)
 		{
