@@ -7,14 +7,14 @@ Name | Version
 [Abseil](https://github.com/abseil/abseil-cpp) | 20240722.0
 [CoreRT](https://github.com/dotnet/corert) | 
 [cpu_features](https://github.com/google/cpu_features) | 
-[DirectXMath](https://github.com/microsoft/DirectXMath) | February 2024
+[DirectXMath](https://github.com/microsoft/DirectXMath) | October 2024
 [doctest](https://github.com/doctest/doctest) | v2.4.11
 [double-conversion](https://github.com/google/double-conversion) | v3.3.0
 [Easing Equations](http://robertpenner.com/easing/) | 
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 6.1.6
+[fast_float](https://github.com/fastfloat/fast_float) | Version 7.0.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.2
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
@@ -29,7 +29,7 @@ Name | Version
 [miniutf](https://github.com/dropbox/miniutf) | 
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
-[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.6.1
+[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.6.2
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
@@ -37,7 +37,7 @@ Name | Version
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 5.5.0
+[simdutf](https://github.com/simdutf/simdutf) | Version 5.7.0
 [skia](https://github.com/google/skia) |
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
