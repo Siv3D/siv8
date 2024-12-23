@@ -17,6 +17,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
+# include <Siv3D/Console/IConsole.hpp>
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -536,6 +537,11 @@ namespace s3d
 		if (not focused)
 		{
 			SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::WindowDeactivated);
+		}
+
+		if (focused)
+		{
+			SIV3D_ENGINE(Console)->clearSelection();
 		}
 
 		m_state.focused = focused;

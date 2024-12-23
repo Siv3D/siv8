@@ -27,6 +27,8 @@ namespace s3d
 
 		virtual bool attach() = 0;
 
+		virtual void clearSelection() = 0;
+
 		virtual void close() = 0;
 	};
 }

@@ -26,5 +26,7 @@ namespace s3d
 		return true;
 	}
 
+	void CConsole::clearSelection() {}
+
 	void CConsole::close() {}
 }
