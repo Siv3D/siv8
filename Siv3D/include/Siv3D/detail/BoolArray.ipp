@@ -307,7 +307,7 @@ namespace s3d
 		constexpr Array(std::initializer_list<value_type> list, const Allocator& alloc = Allocator{})
 			: m_container(list, alloc) {}
 
-	# ifdef __cpp_lib_containers_ranges
+	# if __cpp_lib_containers_ranges >= 202202L
 
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
@@ -453,7 +453,12 @@ namespace s3d
 		template <Concept::ContainerCompatibleRange<bool> Range>
 		constexpr Array& assign_range(Range&& range) SIV3D_LIFETIMEBOUND
 		{
+		# if __cpp_lib_containers_ranges >= 202202L
 			m_container.assign_range(std::forward<Range>(range));
+		# else
+			auto common_range = std::views::common(std::forward<Range>(range));
+			m_container.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
+		# endif
 			return *this;
 		}
 
@@ -997,6 +1002,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	insert_range
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置に範囲の要素を挿入します。
+		/// @param pos 挿入する位置
+		/// @tparam Range 範囲の型
+		/// @param range 範囲
+		template <Concept::ContainerCompatibleRange<bool> Range>
+		constexpr iterator insert_range(const_iterator pos, Range&& range) {
+		# if __cpp_lib_containers_ranges >= 202202L
+			return m_container.insert_range(pos, std::forward<Range>(range));
+		# else
+			auto common_range = std::views::common(std::forward<Range>(range));
+			return m_container.insert(pos, std::ranges::begin(common_range), std::ranges::end(common_range));
+		# endif
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	emplace
 		//
 		////////////////////////////////////////////////////////////////
@@ -1025,7 +1050,12 @@ namespace s3d
 		template <Concept::ContainerCompatibleRange<bool> Range>
 		constexpr void append_range(Range&& range)
 		{
+		# if __cpp_lib_containers_ranges >= 202202L
 			m_container.append_range(std::forward<Range>(range));
+		# else
+			auto common_range = std::views::common(std::forward<Range>(range));
+			m_container.insert(m_container.end(), std::ranges::begin(common_range), std::ranges::end(common_range));
+		# endif
 		}
 
 		////////////////////////////////////////////////////////////////
