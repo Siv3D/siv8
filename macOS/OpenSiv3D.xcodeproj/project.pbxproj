@@ -480,6 +480,9 @@
 		F9070F342B9F252E00383E4D /* null_joystick.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070F2D2B9F252E00383E4D /* null_joystick.h */; };
 		F9070F352B9F252E00383E4D /* null_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070F2E2B9F252E00383E4D /* null_platform.h */; };
 		F9070F362B9F252E00383E4D /* null_joystick.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2F2B9F252E00383E4D /* null_joystick.c */; };
+		F90DA0402D1945190003E1E8 /* SmallestEnclosingCircle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90DA03F2D1945190003E1E8 /* SmallestEnclosingCircle.ipp */; };
+		F90DA0412D1945190003E1E8 /* SmallestEnclosingCircle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90DA03E2D1945190003E1E8 /* SmallestEnclosingCircle.hpp */; };
+		F90DA0432D1945680003E1E8 /* SivGeometry2D_SmallestEnclosingCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0422D1945680003E1E8 /* SivGeometry2D_SmallestEnclosingCircle.cpp */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
 		F934BD712BF880330003EAD5 /* PixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6E2BF880330003EAD5 /* PixelShader.hpp */; };
 		F934BD722BF880330003EAD5 /* VertexShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6F2BF880330003EAD5 /* VertexShader.hpp */; };
@@ -2874,6 +2877,9 @@
 		F9070F2D2B9F252E00383E4D /* null_joystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = null_joystick.h; sourceTree = "<group>"; };
 		F9070F2E2B9F252E00383E4D /* null_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = null_platform.h; sourceTree = "<group>"; };
 		F9070F2F2B9F252E00383E4D /* null_joystick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_joystick.c; sourceTree = "<group>"; };
+		F90DA03E2D1945190003E1E8 /* SmallestEnclosingCircle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SmallestEnclosingCircle.hpp; sourceTree = "<group>"; };
+		F90DA03F2D1945190003E1E8 /* SmallestEnclosingCircle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SmallestEnclosingCircle.ipp; sourceTree = "<group>"; };
+		F90DA0422D1945680003E1E8 /* SivGeometry2D_SmallestEnclosingCircle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_SmallestEnclosingCircle.cpp; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F934BD6E2BF880330003EAD5 /* PixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PixelShader.hpp; sourceTree = "<group>"; };
 		F934BD6F2BF880330003EAD5 /* VertexShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VertexShader.hpp; sourceTree = "<group>"; };
@@ -7498,8 +7504,10 @@
 				F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */,
 				F95121F22CB125F100151291 /* Misc.hpp */,
 				F9F00A532CD299910097C165 /* PoleOfInaccessibility.hpp */,
+				F90DA03E2D1945190003E1E8 /* SmallestEnclosingCircle.hpp */,
 				F96F960A2C359F070033353E /* Intersect.ipp */,
 				F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */,
+				F90DA03F2D1945190003E1E8 /* SmallestEnclosingCircle.ipp */,
 			);
 			path = Geometry2D;
 			sourceTree = "<group>";
@@ -7512,6 +7520,7 @@
 				F96F960E2C3712DC0033353E /* SivGeometry2D_Intersect.cpp */,
 				F9F00A412CD298CB0097C165 /* SivGeometry2D_IsClockwise.cpp */,
 				F9F00A432CD298D50097C165 /* SivGeometry2D_PoleOfInaccessibility.cpp */,
+				F90DA0422D1945680003E1E8 /* SivGeometry2D_SmallestEnclosingCircle.cpp */,
 			);
 			path = Geometry2D;
 			sourceTree = "<group>";
@@ -11451,6 +11460,8 @@
 				F96F95E32C2B0F430033353E /* FloatQuad.ipp in Headers */,
 				F986FA652BCFB53B006A4C0F /* ftpsprop.h in Headers */,
 				F98602512BCFBB54006A4C0F /* SkResourceCache.h in Headers */,
+				F90DA0402D1945190003E1E8 /* SmallestEnclosingCircle.ipp in Headers */,
+				F90DA0412D1945190003E1E8 /* SmallestEnclosingCircle.hpp in Headers */,
 				F980C4912C04B41300A86B68 /* Vertex2D.hpp in Headers */,
 				F97203152BF09DD9000E21DD /* Graphics.hpp in Headers */,
 				F98603F12BCFBB54006A4C0F /* SkSLConstructorCompound.h in Headers */,
@@ -12525,6 +12536,7 @@
 				F9E794722C19B720002615BA /* SivArray.cpp in Sources */,
 				F98601B92BCFBB53006A4C0F /* SkFontDescriptor.cpp in Sources */,
 				F9766B812C29C7A700DE4107 /* SivCamera2D.cpp in Sources */,
+				F90DA0432D1945680003E1E8 /* SivGeometry2D_SmallestEnclosingCircle.cpp in Sources */,
 				F98602EE2BCFBB54006A4C0F /* SkSurface_Base.cpp in Sources */,
 				F98602B92BCFBB54006A4C0F /* SkBlendImageFilter.cpp in Sources */,
 				F9528C442BBF026F00222F45 /* zdict.c in Sources */,
