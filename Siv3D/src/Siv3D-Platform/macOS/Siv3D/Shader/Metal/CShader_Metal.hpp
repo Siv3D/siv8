@@ -23,6 +23,8 @@ namespace s3d
 	{
 	public:
 
+		CShader_Metal();
+
 		~CShader_Metal();
 
 		void init() override;

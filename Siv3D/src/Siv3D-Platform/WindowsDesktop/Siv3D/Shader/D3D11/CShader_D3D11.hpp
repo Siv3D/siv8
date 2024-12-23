@@ -25,6 +25,8 @@ namespace s3d
 	{
 	public:
 
+		CShader_D3D11();
+
 		~CShader_D3D11() override;
 
 		void init() override;

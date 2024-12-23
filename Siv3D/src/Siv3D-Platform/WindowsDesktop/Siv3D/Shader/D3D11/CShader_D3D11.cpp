@@ -72,6 +72,14 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	CShader_D3D11::CShader_D3D11() {}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	(destructor)
 	//
 	////////////////////////////////////////////////////////////////
@@ -79,6 +87,12 @@ namespace s3d
 	CShader_D3D11::~CShader_D3D11()
 	{
 		LOG_SCOPED_DEBUG("CShader_D3D11::~CShader_D3D11()");
+
+		// PS の管理を破棄
+		m_pixelShaders.destroy();
+
+		// VS の管理を破棄
+		m_vertexShaders.destroy();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -91,9 +105,9 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CShader_D3D11::init()");
 
-		pRenderer = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
-		m_device = pRenderer->getDevice().getDevice();
-		m_context = pRenderer->getDevice().getContext();
+		pRenderer	= static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
+		m_device	= pRenderer->getDevice().getDevice();
+		m_context	= pRenderer->getDevice().getContext();
 
 		// null VS を管理に登録
 		{

@@ -1404,6 +1404,7 @@
 # include <Siv3D/TextureDesc.hpp>
 
 
+# include <Siv3D/Texture.hpp>
 
 
 ////////////////////////////////////////////////////////////////

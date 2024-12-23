@@ -86,9 +86,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline size_t Image::stride() const noexcept
+	inline uint32 Image::stride() const noexcept
 	{
-		return (m_size.x * sizeof(Color));
+		return static_cast<uint32>(m_size.x * sizeof(Color));
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -22,6 +22,7 @@
 
 namespace s3d
 {
+	class CTexture_D3D11;
 	class CRenderer2D_D3D11;
 
 	class CRenderer_D3D11 final : public ISiv3DRenderer
@@ -93,6 +94,8 @@ namespace s3d
 		D3D11DepthStencilState& getDepthStencilState() noexcept;
 
 	private:
+
+		CTexture_D3D11* m_pTexture = nullptr;
 
 		CRenderer2D_D3D11* m_pRenderer2D = nullptr;
 

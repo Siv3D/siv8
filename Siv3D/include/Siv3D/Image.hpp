@@ -226,7 +226,7 @@ namespace s3d
 		/// @remark `(width() * sizeof(Color))` です。
 		/// @return 画像の各行のサイズ（バイト）
 		[[nodiscard]]
-		size_t stride() const noexcept;
+		uint32 stride() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
