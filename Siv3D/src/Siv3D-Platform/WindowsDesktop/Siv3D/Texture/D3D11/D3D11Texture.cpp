@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "D3D11Texture.hpp"
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -41,6 +42,92 @@ namespace s3d
 		{
 			LOG_FAIL(U"❌ D3D11Texture::D3D11Texture() : Failed to create ShaderResourceView. [Error {:#X}]"_fmt(hr));
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	D3D11Texture::D3D11Texture(NoMipmap, ID3D11Device* device, const Image& image, const TextureDesc desc)
+		: m_desc{ desc,
+			TextureType::Default,
+			image.size(),
+			1,
+			1, 0,
+			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm),
+			false
+		}
+	{
+		// [メインテクスチャ] を作成
+		{
+			const Array<D3D11_SUBRESOURCE_DATA> initData = MakeSubResourceData(image.data(), image.width(), m_desc.format.pixelSize(), m_desc.mipLevels);
+
+			const D3D11_TEXTURE2D_DESC d3d11Desc = m_desc.makeD3D11_TEXTURE2D_DESC(D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE);
+			
+			if (HRESULT hr = device->CreateTexture2D(&d3d11Desc, initData.data(), &m_texture);
+				FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+
+		// [シェーダ・リソース・ビュー] を作成
+		{
+			const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
+
+			if (HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView);
+				FAILED(hr))
+			{
+				Error_ShaderResourceView(hr);
+				return;
+			}
+		}
+
+		m_initialized = true;
+	}
+
+	D3D11Texture::D3D11Texture(GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Image& image, const TextureDesc desc)
+		: m_desc{ desc,
+			TextureType::Default,
+			image.size(),
+			ImageProcessing::CalculateMipmapLevel(image.width(), image.height()),
+			1, 0,
+			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm),
+			false
+		}
+	{
+		// [メインテクスチャ] を作成
+		{
+			const Array<D3D11_SUBRESOURCE_DATA> initData = MakeSubResourceData(image.data(), image.width(), m_desc.format.pixelSize(), m_desc.mipLevels);
+			const D3D11_TEXTURE2D_DESC d3d11Desc = m_desc.makeD3D11_TEXTURE2D_DESC((D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET),
+				D3D11_USAGE_DEFAULT, 0, { 1, 0 }, D3D11_RESOURCE_MISC_GENERATE_MIPS);
+			
+			if (HRESULT hr = device->CreateTexture2D(&d3d11Desc, initData.data(), &m_texture);
+				FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+
+		// [シェーダ・リソース・ビュー] を作成
+		{
+			const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
+
+			if (HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView);
+				FAILED(hr))
+			{
+				Error_ShaderResourceView(hr);
+				return;
+			}
+		}
+
+		m_initialized = true;
+
+		generateMipmaps(context);
 	}
 
 	D3D11Texture::D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
@@ -90,9 +177,41 @@ namespace s3d
 		m_initialized = true;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	isInitialized
+	//
+	////////////////////////////////////////////////////////////////
+
 	bool D3D11Texture::isInitialized() const noexcept
 	{
 		return m_initialized;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getDesc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const D3D11Texture2DDesc& D3D11Texture::getDesc() const noexcept
+	{
+		return m_desc;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	generateMipmaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Texture::generateMipmaps(ID3D11DeviceContext* context)
+	{
+		if (m_desc.mipLevels <= 1)
+		{
+			return;
+		}
+
+		context->GenerateMips(m_shaderResourceView.Get());
+	}
 }

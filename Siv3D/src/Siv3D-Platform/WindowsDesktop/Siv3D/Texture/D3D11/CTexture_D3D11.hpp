@@ -31,7 +31,15 @@ namespace s3d
 		~CTexture_D3D11() override;
 
 		void init();
-	
+
+		[[nodiscard]]
+		Texture::IDType create(const Image& image, TextureDesc desc) override;
+
+		[[nodiscard]]
+		Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) override;
+
+		void release(Texture::IDType handleID) override;
+
 	private:
 
 		CRenderer_D3D11* m_pRenderer = nullptr;

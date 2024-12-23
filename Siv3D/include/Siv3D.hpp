@@ -1218,9 +1218,9 @@
 // 画像 | Image
 # include <Siv3D/Image.hpp> // ToDo
 
-//// 追加の画像処理 | Extra image processing
-//# include <Siv3D/ImageProcessing.hpp>
-//
+// 追加の画像処理 | Extra image processing
+# include <Siv3D/ImageProcessing.hpp>
+
 //// カスケード分類器 | Cascade classifier
 //# include <Siv3D/CascadeClassifier.hpp>
 //

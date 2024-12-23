@@ -125,4 +125,66 @@ namespace s3d
 			m_textures.setNullData(std::move(nullTexture));
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	create
+	//
+	////////////////////////////////////////////////////////////////
+
+	Texture::IDType CTexture_D3D11::create(const Image& image, const TextureDesc desc)
+	{
+		if (not image)
+		{
+			return Texture::IDType::Null();
+		}
+
+		std::unique_ptr<D3D11Texture> texture;
+
+		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }))
+		{
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, image, desc);
+		}
+		else
+		{
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::GenerateMipmap{}, m_device, m_context, image, desc);
+		}
+
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	Texture::IDType CTexture_D3D11::create(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
+	{
+		if (not image)
+		{
+			return Texture::IDType::Null();
+		}
+
+		auto texture = std::make_unique<D3D11Texture>(m_device, image, mipmaps, desc);
+
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	release
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CTexture_D3D11::release(const Texture::IDType handleID)
+	{
+		m_textures.erase(handleID);
+	}
 }

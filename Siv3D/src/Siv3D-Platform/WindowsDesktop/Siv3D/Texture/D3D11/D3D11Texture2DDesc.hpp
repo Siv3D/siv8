@@ -36,7 +36,7 @@ namespace s3d
 		MSRender,
 	};
 
-	struct D3D11TextureDesc : TextureDesc
+	struct D3D11Texture2DDesc : TextureDesc
 	{
 		TextureType type = TextureType::Default;
 
@@ -70,5 +70,8 @@ namespace s3d
 
 		[[nodiscard]]
 		D3D11_SHADER_RESOURCE_VIEW_DESC makeD3D11_SHADER_RESOURCE_VIEW_DESC() const noexcept;
+
+		[[nodiscard]]
+		String toString() const;
 	};
 }

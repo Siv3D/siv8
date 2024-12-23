@@ -12,7 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Image.hpp>
-# include "D3D11TextureDesc.hpp"
+# include "D3D11Texture2DDesc.hpp"
 
 namespace s3d
 {
@@ -20,15 +20,30 @@ namespace s3d
 	{
 	public:
 
+		struct NoMipmap {};
+
+		struct GenerateMipmap {};
+
+		[[nodiscard]]
+		D3D11Texture(NoMipmap, ID3D11Device* device, const Image& image, TextureDesc desc);
+
+		[[nodiscard]]
+		D3D11Texture(GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Image& image, TextureDesc desc);
+
 		[[nodiscard]]
 		D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;
 
+		[[nodiscard]]
+		const D3D11Texture2DDesc& getDesc() const noexcept;
+
+		void generateMipmaps(ID3D11DeviceContext* context);
+
 	private:
 
-		D3D11TextureDesc m_desc;
+		D3D11Texture2DDesc m_desc;
 
 		bool m_initialized = false;
 
@@ -36,7 +51,7 @@ namespace s3d
 		ComPtr<ID3D11Texture2D> m_texture;
 
 		// [マルチサンプル・テクスチャ]
-		ComPtr<ID3D11Texture2D> m_multiSampledTexture;
+		ComPtr<ID3D11Texture2D> m_multiSampleTexture;
 
 		// [ステージング・テクスチャ]
 		ComPtr<ID3D11Texture2D> m_stagingTexture;
