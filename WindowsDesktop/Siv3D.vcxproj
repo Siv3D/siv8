@@ -88,6 +88,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDescBuilder.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureFormat.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex32.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Zip.ipp" />
@@ -476,7 +479,11 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEncoding.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextReader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureAddressMode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureDesc.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureDescBuilder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureFilter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureFormat.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TexturePixelFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextWriter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ThousandSeparate.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Threading.hpp" />
@@ -1290,6 +1297,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextureAddressMode\SivTextureAddressMode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextureFilter\SivTextureFilter.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextureFormat\SivTextureFormat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\SivTextWriter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ThousandSeparate\SivThousandSeparate.cpp" />
