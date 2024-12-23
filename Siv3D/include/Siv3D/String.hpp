@@ -2239,11 +2239,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した区切り文字で文字列を分割します。
+		/// @brief 指定した区切り文字で文字列を分割した結果を String の配列で返します。
 		/// @param ch 区切り文字
 		/// @return 分割された文字列
 		[[nodiscard]]
 		Array<String, std::allocator<String>> split(value_type ch) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	splitView
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した区切り文字で文字列を分割した結果を StringView の配列で返します。
+		/// @param ch 区切り文字
+		/// @return 分割された文字列
+		/// @remark 戻り値は元の文字列を参照します。元の文字列のライフタイムに注意してください。
+		[[nodiscard]]
+		Array<StringView, std::allocator<StringView>> splitView(value_type ch) const SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -272,17 +272,17 @@ namespace s3d
 
 # ifdef __cpp_multidimensional_subscript
 
-	inline Color& Image::operator [](const size_t x, const size_t y)&
+	inline Color& Image::operator [](const size_t y, const size_t x)&
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
 	}
 
-	inline const Color& Image::operator [](const size_t x, const size_t y) const&
+	inline const Color& Image::operator [](const size_t y, const size_t x) const&
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
 	}
 
-	inline Color Image::operator [](const size_t x, const size_t y)&&
+	inline Color Image::operator [](const size_t y, const size_t x)&&
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
 	}

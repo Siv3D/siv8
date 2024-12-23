@@ -899,9 +899,10 @@
 # include <Siv3D/Geometry2D/Distance.hpp> // ToDo
 # include <Siv3D/Geometry2D/Center.hpp> // ToDo
 # include <Siv3D/Geometry2D/Contains.hpp> // ToDo
-# include <Siv3D/Geometry2D/ConvexHull.hpp> // ToDo
-# include <Siv3D/Geometry2D/IsClockwise.hpp> // ToDo
-# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp> // ToDo
+# include <Siv3D/Geometry2D/ConvexHull.hpp>
+# include <Siv3D/Geometry2D/IsClockwise.hpp>
+# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
+# include <Siv3D/Geometry2D/SmallestEnclosingCircle.hpp>
 # include <Siv3D/Geometry2D/Misc.hpp> // ToDo
 
 // 長方形詰込み | Rectangle packing

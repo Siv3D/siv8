@@ -403,27 +403,28 @@ namespace s3d
 	# ifdef __cpp_multidimensional_subscript
 
 		/// @brief 指定した位置のピクセルの参照を返します。
-		/// @param x 位置（列）
 		/// @param y 位置（行）
-		/// @remark image[x, y] で指定したピクセルにアクセスします。
+		/// @param x 位置（列）
+		/// @remark image[y, x] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
-		Color& operator [](size_t x, size_t y)&;
+		Color& operator [](size_t y, size_t x)&;
 
 		/// @brief 指定した位置のピクセルの参照を返します。
-		/// @param x 位置（列）
 		/// @param y 位置（行）
-		/// @remark image[x, y] で指定したピクセルにアクセスします。
+		/// @param x 位置（列）
+		/// @remark image[y, x] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
-		const Color& operator [](size_t x, size_t y) const&;
+		const Color& operator [](size_t y, size_t x) const&;
 
 		/// @brief 指定した位置のピクセルを返します。
-		/// @param x 位置（列）
 		/// @param y 位置（行）
+		/// @param x 位置（列）
+		/// @remark image[y, x] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセル
 		[[nodiscard]]
-		Color operator [](size_t x, size_t y)&&;
+		Color operator [](size_t y, size_t x)&&;
 
 	# endif
 

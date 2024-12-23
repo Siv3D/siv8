@@ -23,12 +23,21 @@ namespace s3d
 		//
 		//////////////////////////////////////////////////
 
+		/// @brief 一連の点から凸包を計算します。
+		/// @param points 一連の点
+		/// @return 凸包
 		[[nodiscard]]
 		Polygon ConvexHull(const std::span<const Point> points);
 		
+		/// @brief 一連の点から凸包を計算します。
+		/// @param points 一連の点
+		/// @return 凸包
 		[[nodiscard]]
 		Polygon ConvexHull(const std::span<const Float2> points);
 		
+		/// @brief 一連の点から凸包を計算します。
+		/// @param points 一連の点
+		/// @return 凸包
 		[[nodiscard]]
 		Polygon ConvexHull(const std::span<const Vec2> points);
 	}
