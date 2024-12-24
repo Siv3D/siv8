@@ -108,6 +108,7 @@ namespace s3d
 		
 		m_renderPipelineState.init(m_device, m_pShader);
 		
+		SIV3D_ENGINE(Texture)->init();
 		SIV3D_ENGINE(Shader)->init();
 		SIV3D_ENGINE(EngineShader)->init();
 

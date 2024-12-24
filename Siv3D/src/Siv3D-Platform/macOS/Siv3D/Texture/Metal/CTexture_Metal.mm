@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "CTexture_Metal.hpp"
+# include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -46,6 +47,9 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CTexture_Metal::init()");
 
+		m_pRenderer	= static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		m_device	= m_pRenderer->getDevice();
+
 		// null Texture を管理に登録
 		{
 			const Image image{ 16, Palette::Yellow };
@@ -55,7 +59,7 @@ namespace s3d
 			};
 
 			// null Texture を作成
-			auto nullTexture = std::make_unique<MetalTexture>(image, mipmaps, TextureDesc::Mipmap);
+			auto nullTexture = std::make_unique<MetalTexture>(m_device, image, mipmaps, TextureDesc::Mipmap);
 
 			if (not nullTexture->isInitialized()) // もし作成に失敗していたら
 			{

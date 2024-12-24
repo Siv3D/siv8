@@ -46,8 +46,6 @@ namespace s3d
 		// デフォルトは 1
 		uint8 multiSampleCount = 1;
 
-		uint8 multiSampleQuality = 0;
-
 		TextureFormat format = TextureFormat::Unknown;
 
 		bool hasDepth = false;

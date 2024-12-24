@@ -17,6 +17,8 @@
 
 namespace s3d
 {
+	class CRenderer_Metal;
+
 	class CTexture_Metal final : public ISiv3DTexture
 	{
 	public:
@@ -50,6 +52,11 @@ namespace s3d
 		TextureFormat getFormat(Texture::IDType handleID) override;
 
 	private:
+	
+		CRenderer_Metal* m_pRenderer = nullptr;
+
+		// device のコピー	
+		MTL::Device* m_device = nullptr;
 
 		// Texture の管理
 		AssetHandleManager<Texture::IDType, MetalTexture> m_textures{ "Texture" };

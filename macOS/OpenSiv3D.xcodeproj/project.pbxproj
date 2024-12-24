@@ -503,7 +503,7 @@
 		F90DA06E2D1A934E0003E1E8 /* MetalTexture.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0652D1A934E0003E1E8 /* MetalTexture.mm */; };
 		F90DA06F2D1A934E0003E1E8 /* CTexture_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0632D1A934E0003E1E8 /* CTexture_Metal.mm */; };
 		F90DA0702D1A934E0003E1E8 /* MetalTexture2DDesc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0672D1A934E0003E1E8 /* MetalTexture2DDesc.cpp */; };
-		F90DA0712D1A934E0003E1E8 /* TextureFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0692D1A934E0003E1E8 /* TextureFactory.cpp */; };
+		F90DA0712D1A934E0003E1E8 /* TextureFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0692D1A934E0003E1E8 /* TextureFactory.mm */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
 		F934BD712BF880330003EAD5 /* PixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6E2BF880330003EAD5 /* PixelShader.hpp */; };
 		F934BD722BF880330003EAD5 /* VertexShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6F2BF880330003EAD5 /* VertexShader.hpp */; };
@@ -2921,7 +2921,7 @@
 		F90DA0652D1A934E0003E1E8 /* MetalTexture.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalTexture.mm; sourceTree = "<group>"; };
 		F90DA0662D1A934E0003E1E8 /* MetalTexture2DDesc.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalTexture2DDesc.hpp; sourceTree = "<group>"; };
 		F90DA0672D1A934E0003E1E8 /* MetalTexture2DDesc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MetalTexture2DDesc.cpp; sourceTree = "<group>"; };
-		F90DA0692D1A934E0003E1E8 /* TextureFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TextureFactory.cpp; sourceTree = "<group>"; };
+		F90DA0692D1A934E0003E1E8 /* TextureFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TextureFactory.mm; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F934BD6E2BF880330003EAD5 /* PixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PixelShader.hpp; sourceTree = "<group>"; };
 		F934BD6F2BF880330003EAD5 /* VertexShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VertexShader.hpp; sourceTree = "<group>"; };
@@ -6981,7 +6981,7 @@
 			isa = PBXGroup;
 			children = (
 				F90DA0682D1A934E0003E1E8 /* Metal */,
-				F90DA0692D1A934E0003E1E8 /* TextureFactory.cpp */,
+				F90DA0692D1A934E0003E1E8 /* TextureFactory.mm */,
 			);
 			path = Texture;
 			sourceTree = "<group>";
@@ -12523,7 +12523,7 @@
 				F90DA06E2D1A934E0003E1E8 /* MetalTexture.mm in Sources */,
 				F90DA06F2D1A934E0003E1E8 /* CTexture_Metal.mm in Sources */,
 				F90DA0702D1A934E0003E1E8 /* MetalTexture2DDesc.cpp in Sources */,
-				F90DA0712D1A934E0003E1E8 /* TextureFactory.cpp in Sources */,
+				F90DA0712D1A934E0003E1E8 /* TextureFactory.mm in Sources */,
 				F98602552BCFBB54006A4C0F /* SkRTree.cpp in Sources */,
 				F986039A2BCFBB54006A4C0F /* SkSweepGradient.cpp in Sources */,
 				F98605372BD1049D006A4C0F /* TGADecoder.cpp in Sources */,

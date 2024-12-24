@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Image.hpp>
+# include <Siv3D/Renderer/Metal/Metal.hpp>
 # include "MetalTexture2DDesc.hpp"
 
 namespace s3d
@@ -25,7 +26,7 @@ namespace s3d
 		struct GenerateMipmap {};
 
 		[[nodiscard]]
-		MetalTexture(const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
+		MetalTexture(MTL::Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;
@@ -38,5 +39,7 @@ namespace s3d
 		MetalTexture2DDesc m_desc;
 
 		bool m_initialized = false;
+		
+		NS::SharedPtr<MTL::Texture> m_texture;
 	};
 }
