@@ -151,4 +151,15 @@ namespace s3d
 	{
 		return m_textures[handleID]->getDesc().format;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasDepth
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CTexture_Metal::hasDepth(const Texture::IDType handleID)
+	{
+		return m_textures[handleID]->hasDepth();
+	}
 }

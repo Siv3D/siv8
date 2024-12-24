@@ -50,6 +50,9 @@ namespace s3d
 
 		[[nodiscard]]
 		TextureFormat getFormat(Texture::IDType handleID) override;
+		
+		[[nodiscard]]
+		bool hasDepth(Texture::IDType handleID) override;
 
 	private:
 	

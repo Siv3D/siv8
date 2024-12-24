@@ -34,6 +34,9 @@ namespace s3d
 		[[nodiscard]]
 		const MetalTexture2DDesc& getDesc() const noexcept;
 
+		[[nodiscard]]
+		bool hasDepth() const noexcept;
+
 	private:
 
 		MetalTexture2DDesc m_desc;

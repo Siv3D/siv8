@@ -53,21 +53,25 @@ float4 s3d_positionTransform(float2 pos, float2x4 t)
 	return float4((t._13_14 + (pos.x * t._11_12) + (pos.y * t._21_22)), t._23_24);
 }
 
-float4 s3d_shapeColor(float4 color)
+float4 s3d_premultiplyAlpha(float4 color)
 {
-	return (color + (g_colorAdd * color.a));
+	return float4((color.rgb * color.a), color.a);
 }
 
-float4 s3d_textureColor(float4 color, float4 textureColor)
+float4 s3d_shapeColor(float4 vertexColor)
 {
-	color *= textureColor;
-	return (color + (g_colorAdd * color.a));
+	return (vertexColor + (g_colorAdd * vertexColor.a));
+}
+
+float4 s3d_textureColor(float4 vertexColor, float4 textureColor)
+{
+	vertexColor *= textureColor;
+	return (vertexColor + (g_colorAdd * vertexColor.a));
 }
 	
-float4 s3d_patternBackgroundColor(float4 color)
+float4 s3d_patternBackgroundColor()
 {
-	color *= g_patternBackgroundColorMul;
-	color.rgb *= color.a;
+	const float4 color = s3d_premultiplyAlpha(g_patternBackgroundColor * g_patternBackgroundColorMul);
 	return (color + (g_colorAdd * color.a));
 }
 
@@ -80,8 +84,7 @@ PSInput VS(VSInput input)
 {
 	PSInput result;
 	result.position	= s3d_positionTransform(input.position, g_transform);
-	result.color	= (input.color * g_colorMul);
-	result.color.rgb *= result.color.a;
+	result.color	= s3d_premultiplyAlpha(input.color * g_colorMul);
 	result.uv		= input.uv;
 	return result;
 }
@@ -175,7 +178,7 @@ float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 	const float c = smoothstep((radiusScale - fw), (radiusScale + fw), value);
 
 	const float4 primary = s3d_shapeColor(input.color);
-	const float4 background = s3d_patternBackgroundColor(g_patternBackgroundColor);
+	const float4 background = s3d_patternBackgroundColor();
 
 	return lerp(primary, background, c);
 }
@@ -191,7 +194,7 @@ float4 PS_PatternStripe(PSInput input) : SV_TARGET
 	const float c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 
 	const float4 primary = s3d_shapeColor(input.color);
-	const float4 background = s3d_patternBackgroundColor(g_patternBackgroundColor);
+	const float4 background = s3d_patternBackgroundColor();
 
 	return lerp(primary, background, c);
 }
@@ -208,7 +211,7 @@ float4 PS_PatternGrid(PSInput input) : SV_TARGET
 	const float c2 = min(c.x, c.y);
 
 	const float4 primary = s3d_shapeColor(input.color);
-	const float4 background = s3d_patternBackgroundColor(g_patternBackgroundColor);
+	const float4 background = s3d_patternBackgroundColor();
 
 	return lerp(primary, background, c2);
 }
@@ -235,7 +238,7 @@ float4 PS_PatternChecker(PSInput input) : SV_TARGET
 	const float c = CheckersFiltered(uv, g_patternUVTransform_params[1].zw);
 
 	const float4 primary = s3d_shapeColor(input.color);
-	const float4 background = s3d_patternBackgroundColor(g_patternBackgroundColor);
+	const float4 background = s3d_patternBackgroundColor();
 
 	return lerp(primary, background, c);
 }
@@ -262,7 +265,7 @@ float4 PS_PatternTriangle(PSInput input) : SV_TARGET
 	const float c = dot(ss, 0.25);
 
 	const float4 primary = s3d_shapeColor(input.color);
-	const float4 background = s3d_patternBackgroundColor(g_patternBackgroundColor);
+	const float4 background = s3d_patternBackgroundColor();
 
 	return lerp(primary, background, c);
 }
@@ -287,7 +290,7 @@ float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
 	const float c = smoothstep((thicknessScale - w), (thicknessScale + w), h);
 
 	const float4 primary = s3d_shapeColor(input.color);
-	const float4 background = s3d_patternBackgroundColor(g_patternBackgroundColor);
+	const float4 background = s3d_patternBackgroundColor();
 
 	return lerp(background, primary, c);
 }

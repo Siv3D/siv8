@@ -39,9 +39,13 @@ namespace s3d
 		[[nodiscard]]
 		const D3D11Texture2DDesc& getDesc() const noexcept;
 
+		[[nodiscard]]
+		bool hasDepth() const noexcept;
+
 		void generateMipmaps(ID3D11DeviceContext* context);
 
 		ID3D11ShaderResourceView** getSRVPtr();
+
 	private:
 
 		D3D11Texture2DDesc m_desc;

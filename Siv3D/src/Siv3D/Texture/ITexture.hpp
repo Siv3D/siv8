@@ -45,5 +45,8 @@ namespace s3d
 
 		[[nodiscard]]
 		virtual TextureFormat getFormat(Texture::IDType handleID) = 0;
+
+		[[nodiscard]]
+		virtual bool hasDepth(Texture::IDType handleID) = 0;
 	};
 }
