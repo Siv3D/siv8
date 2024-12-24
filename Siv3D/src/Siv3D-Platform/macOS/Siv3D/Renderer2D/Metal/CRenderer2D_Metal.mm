@@ -118,6 +118,7 @@ namespace s3d
 
 		m_engineShader.vs					= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
 		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		m_engineShader.psTexture			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D).id();
 		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
 		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
 		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();

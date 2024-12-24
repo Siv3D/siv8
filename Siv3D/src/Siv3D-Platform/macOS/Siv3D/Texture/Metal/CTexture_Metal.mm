@@ -84,7 +84,24 @@ namespace s3d
 			return Texture::IDType::Null();
 		}
 
-		return Texture::IDType::Null();
+		std::unique_ptr<MetalTexture> texture;
+
+		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }))
+		{
+			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, image, desc);
+		}
+		else
+		{
+			texture = std::make_unique<MetalTexture>(MetalTexture::GenerateMipmap{}, m_device, image, desc);
+		}
+
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
 	}
 
 	Texture::IDType CTexture_Metal::create(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
@@ -94,7 +111,15 @@ namespace s3d
 			return Texture::IDType::Null();
 		}
 
-		return Texture::IDType::Null();
+		auto texture = std::make_unique<MetalTexture>(m_device, image, mipmaps, desc);
+
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
 	}
 
 	////////////////////////////////////////////////////////////////

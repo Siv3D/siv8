@@ -15,6 +15,56 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	MetalTexture::MetalTexture(NoMipmap, MTL::Device* device, const Image& image, const TextureDesc desc)
+		: m_desc{ desc,
+			TextureType::Default,
+			image.size(),
+			1,
+			1,
+			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm),
+			false
+		}
+	{
+		NS::SharedPtr<MTL::TextureDescriptor> textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
+		textureDescriptor->setTextureType(MTL::TextureType2D);
+		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
+		textureDescriptor->setWidth(image.width());
+		textureDescriptor->setHeight(image.height());
+		textureDescriptor->setStorageMode(MTL::StorageModeShared);
+		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
+
+		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
+		
+		if (not m_texture)
+		{
+			return;
+		}
+		
+		const MTL::Region region = MTL::Region::Make2D(0, 0, image.width(), image.height());
+		m_texture->replaceRegion(region, 0, image.data(), (image.width() * m_desc.format.pixelSize()));
+		
+		m_initialized = true;
+	}
+
+	MetalTexture::MetalTexture(GenerateMipmap, MTL::Device* device, const Image& image, const TextureDesc desc)
+		: m_desc{ desc,
+			TextureType::Default,
+			image.size(),
+			ImageProcessing::CalculateMipmapLevel(image.width(), image.height()),
+			1,
+			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm),
+			false
+		}
+	{
+
+	}
+
 	MetalTexture::MetalTexture(MTL::Device* device, const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Default,

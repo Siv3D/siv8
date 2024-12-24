@@ -26,6 +26,12 @@ namespace s3d
 		struct GenerateMipmap {};
 
 		[[nodiscard]]
+		MetalTexture(NoMipmap, MTL::Device* device, const Image& image, TextureDesc desc);
+
+		[[nodiscard]]
+		MetalTexture(GenerateMipmap, MTL::Device* device, const Image& image, TextureDesc desc);
+
+		[[nodiscard]]
 		MetalTexture(MTL::Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
 
 		[[nodiscard]]

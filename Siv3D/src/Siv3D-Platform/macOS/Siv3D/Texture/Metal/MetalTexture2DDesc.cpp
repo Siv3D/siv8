@@ -14,4 +14,15 @@
 namespace s3d
 {
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	toString
+	//
+	////////////////////////////////////////////////////////////////
+
+	String MetalTexture2DDesc::toString() const
+	{
+		return U"(Type: Default, Size: {0}x{1}, MipLevels: {2}, Format: {3}, HasDepth: {4})"_fmt(
+			size.x, size.y, mipLevels, format.name(), (hasDepth ? U"Yes" : U"No"));
+	}
 }
