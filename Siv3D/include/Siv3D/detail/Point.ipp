@@ -129,8 +129,8 @@ namespace s3d
 		return{ (x + p.x), (y + p.y) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Point::operator +(const Vector2D<Type> v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::operator +(const Vector2D<Float> v) const noexcept
 	{
 		return{ (x + v.x), (y + v.y) };
 	}
@@ -151,8 +151,8 @@ namespace s3d
 		return{ (x - p.x), (y - p.y) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Point::operator -(const Vector2D<Type> v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::operator -(const Vector2D<Float> v) const noexcept
 	{
 		return{ (x - v.x), (y - v.y) };
 	}
@@ -183,8 +183,8 @@ namespace s3d
 		return{ (x * p.x), (y * p.y) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Point::operator *(const Vector2D<Type> v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::operator *(const Vector2D<Float> v) const noexcept
 	{
 		return{ (x * v.x), (y * v.y) };
 	}
@@ -215,8 +215,8 @@ namespace s3d
 		return{ (x / p.x), (y / p.y) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Point::operator /(const Vector2D<Type> v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::operator /(const Vector2D<Float> v) const noexcept
 	{
 		return{ (x / v.x), (y / v.y) };
 	}
@@ -395,8 +395,8 @@ namespace s3d
 		return{ (x + p.x), (y + p.y) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Point::movedBy(const Vector2D<Type> v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::movedBy(const Vector2D<Float> v) const noexcept
 	{
 		return{ (x + v.x), (y + v.y) };
 	}
@@ -495,11 +495,11 @@ namespace s3d
 		return manhattanDistanceFrom(p.x, p.y);
 	}
 
-	template <class Type>
-	constexpr Type Point::manhattanDistanceFrom(const Vector2D<Type> p) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Float Point::manhattanDistanceFrom(const Vector2D<Float> p) const noexcept
 	{
-		const Type x_ = static_cast<Type>(x);
-		const Type y_ = static_cast<Type>(y);
+		const auto x_ = static_cast<Float>(x);
+		const auto y_ = static_cast<Float>(y);
 		const auto xMinMax = MinMax(x_, p.x);
 		const auto yMinMax = MinMax(y_, p.y);
 		return ((xMinMax.second - xMinMax.first) + (yMinMax.second - yMinMax.first));
@@ -521,10 +521,10 @@ namespace s3d
 		return manhattanDistanceFrom(p.x, p.y);
 	}
 
-	template <class Type>
-	constexpr Type Point::manhattanDistanceTo(const Vector2D<Type> p) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Float Point::manhattanDistanceTo(const Vector2D<Float> p) const noexcept
 	{
-		return manhattanDistanceFrom(p);
+		return manhattanDistanceFrom<Float>(p);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -543,11 +543,11 @@ namespace s3d
 		return distanceFrom(p.x, p.y);
 	}
 
-	template <class Type>
-	Type Point::distanceFrom(const Vector2D<Type> p) const noexcept
+	template <Concept::FloatingPoint Float>
+	Float Point::distanceFrom(const Vector2D<Float> p) const noexcept
 	{
-		const Type xx = (x - p.x);
-		const Type yy = (y - p.y);
+		const Float xx = (x - p.x);
+		const Float yy = (y - p.y);
 		return std::sqrt((xx * xx) + (yy * yy));
 	}
 
@@ -569,11 +569,11 @@ namespace s3d
 		return distanceFromSq(p.x, p.y);
 	}
 
-	template <class Type>
-	constexpr Type Point::distanceFromSq(const Vector2D<Type> p) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Float Point::distanceFromSq(const Vector2D<Float> p) const noexcept
 	{
-		const Type xx = (x - p.x);
-		const Type yy = (y - p.y);
+		const Float xx = (x - p.x);
+		const Float yy = (y - p.y);
 		return ((xx * xx) + (yy * yy));
 	}
 
@@ -593,8 +593,8 @@ namespace s3d
 		return distanceFrom(p.x, p.y);
 	}
 
-	template <class Type>
-	Type Point::distanceTo(const Vector2D<Type> p) const noexcept
+	template <Concept::FloatingPoint Float>
+	Float Point::distanceTo(const Vector2D<Float> p) const noexcept
 	{
 		return distanceFrom(p);
 	}
@@ -615,8 +615,8 @@ namespace s3d
 		return distanceFromSq(p.x, p.y);
 	}
 
-	template <class Type>
-	constexpr Type Point::distanceToSq(const Vector2D<Type> p) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Float Point::distanceToSq(const Vector2D<Float> p) const noexcept
 	{
 		return distanceFromSq(p);
 	}
@@ -627,10 +627,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Type Point::area() const noexcept
+	template <Concept::Arithmetic Arithmetic>
+	constexpr Arithmetic Point::area() const noexcept
 	{
-		return (static_cast<Type>(x) * y);
+		return (static_cast<Arithmetic>(x) * y);
 	}
 
 	////////////////////////////////////////////////////////////////

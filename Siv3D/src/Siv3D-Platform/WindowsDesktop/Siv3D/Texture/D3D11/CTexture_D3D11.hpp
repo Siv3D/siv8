@@ -40,6 +40,18 @@ namespace s3d
 
 		void release(Texture::IDType handleID) override;
 
+		[[nodiscard]]
+		Size getSize(Texture::IDType handleID) override;
+
+		[[nodiscard]]
+		uint32 getMipLevels(Texture::IDType handleID) override;
+
+		[[nodiscard]]
+		TextureDesc getDesc(Texture::IDType handleID) override;
+
+		[[nodiscard]]
+		TextureFormat getFormat(Texture::IDType handleID) override;
+
 	private:
 
 		CRenderer_D3D11* m_pRenderer = nullptr;

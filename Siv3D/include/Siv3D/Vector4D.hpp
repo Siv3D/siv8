@@ -26,12 +26,12 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 4 次元のベクトル
-	/// @tparam Type ベクトルの要素の型
-	template <class Type>
+	/// @tparam Float ベクトルの要素の型
+	template <Concept::FloatingPoint Float>
 	struct Vector4D
 	{
 		/// @brief ベクトルの要素の型
-		using value_type = Type;
+		using value_type = Float;
 
 		/// @brief ベクトルの次元数
 		static constexpr size_t Dimension = 4;
@@ -77,7 +77,7 @@ namespace s3d
 		/// @brief 4 次元のベクトルをコピーして作成します。
 		/// @tparam U コピーするベクトルの要素の型
 		/// @param v コピーするベクトル
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr Vector4D(const Vector4D<U>& v) noexcept;
 
@@ -531,7 +531,7 @@ namespace s3d
 		/// @tparam U もう一方のベクトルの要素の型
 		/// @param v もう一方のベクトル
 		/// @return 内積
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr auto dot(Vector4D<U> v) const noexcept;
 

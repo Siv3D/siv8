@@ -31,5 +31,17 @@ namespace s3d
 		virtual Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) = 0;
 
 		virtual void release(Texture::IDType handleID) = 0;
+
+		[[nodiscard]]
+		virtual Size getSize(Texture::IDType handleID) = 0;
+
+		[[nodiscard]]
+		virtual uint32 getMipLevels(Texture::IDType handleID) = 0;
+
+		[[nodiscard]]
+		virtual TextureDesc getDesc(Texture::IDType handleID) = 0;
+
+		[[nodiscard]]
+		virtual TextureFormat getFormat(Texture::IDType handleID) = 0;
 	};
 }

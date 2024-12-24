@@ -26,12 +26,12 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 2 次元のベクトル
-	/// @tparam Type ベクトルの要素の型
-	template <class Type>
+	/// @tparam Float ベクトルの要素の型
+	template <Concept::FloatingPoint Float>
 	struct Vector2D
 	{
 		/// @brief ベクトルの要素の型
-		using value_type = Type;
+		using value_type = Float;
 
 		/// @brief ベクトルの次元数
 		static constexpr size_t Dimension = 2;
@@ -72,7 +72,7 @@ namespace s3d
 		/// @brief 2 次元のベクトルをコピーして作成します。
 		/// @tparam U コピーするベクトルの要素の型
 		/// @param v コピーするベクトル
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr Vector2D(const Vector2D<U>& v) noexcept;
 
@@ -441,10 +441,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 内積を返します。
-		/// @tparam U もう一方のベクトルの型
+		/// @tparam U もう一方のベクトルの要素の型
 		/// @param v もう一方のベクトル
 		/// @return 内積
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr auto dot(Vector2D<U> v) const noexcept;
 
@@ -455,11 +455,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 外積を返します。
-		/// @tparam U もう一方のベクトルの型
+		/// @tparam U もう一方のベクトルの要素の型
 		/// @param v もう一方のベクトル
 		/// @return 外積
 		/// @remark `(x * v.y) - (y * v.x)` を返します。
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr auto cross(Vector2D<U> v) const noexcept;
 
@@ -979,7 +979,7 @@ namespace s3d
 		/// @brief Vector3D{ x, y, 0 } を返します。
 		/// @return Vector3D{ x, y, 0 }
 		[[nodiscard]]
-		constexpr Vector3D<Type> xy0() const noexcept;
+		constexpr Vector3D<value_type> xy0() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -990,7 +990,7 @@ namespace s3d
 		/// @brief Vector4D{ x, y, 0, 0 } を返します。
 		/// @return Vector4D{ x, y, 0, 0 }
 		[[nodiscard]]
-		constexpr Vector4D<Type> xy00() const noexcept;
+		constexpr Vector4D<value_type> xy00() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

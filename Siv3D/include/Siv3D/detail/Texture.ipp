@@ -13,5 +13,9 @@
 
 namespace s3d
 {
-
+	template <Concept::FloatingPoint Float>
+	Float Texture::horizontalAspectRatio() const
+	{
+		return size().horizontalAspectRatio<Float>();
+	}
 }
