@@ -33,37 +33,38 @@ namespace s3d
 
 		RasterizerState,
 
-		//VSSamplerState0,
+		VSSamplerState0,
 
-		//VSSamplerState1,
+		VSSamplerState1,
 
-		//VSSamplerState2,
+		VSSamplerState2,
 
-		//VSSamplerState3,
+		VSSamplerState3,
 
-		//VSSamplerState4,
+		VSSamplerState4,
 
-		//VSSamplerState5,
+		VSSamplerState5,
 
-		//VSSamplerState6,
+		VSSamplerState6,
 
-		//VSSamplerState7,
+		VSSamplerState7,
 
-		//PSSamplerState0,
 
-		//PSSamplerState1,
+		PSSamplerState0,
 
-		//PSSamplerState2,
+		PSSamplerState1,
 
-		//PSSamplerState3,
+		PSSamplerState2,
 
-		//PSSamplerState4,
+		PSSamplerState3,
 
-		//PSSamplerState5,
+		PSSamplerState4,
 
-		//PSSamplerState6,
+		PSSamplerState5,
 
-		//PSSamplerState7,
+		PSSamplerState6,
+
+		PSSamplerState7,
 
 		ScissorRect,
 
@@ -83,37 +84,37 @@ namespace s3d
 
 		//SetConstantBuffer,
 
-		//VSTexture0,
+		VSTexture0,
 
-		//VSTexture1,
+		VSTexture1,
 
-		//VSTexture2,
+		VSTexture2,
 
-		//VSTexture3,
+		VSTexture3,
 
-		//VSTexture4,
+		VSTexture4,
 
-		//VSTexture5,
+		VSTexture5,
 
-		//VSTexture6,
+		VSTexture6,
 
-		//VSTexture7,
+		VSTexture7,
 
-		//PSTexture0,
+		PSTexture0,
 
-		//PSTexture1,
+		PSTexture1,
 
-		//PSTexture2,
+		PSTexture2,
 
-		//PSTexture3,
+		PSTexture3,
 
-		//PSTexture4,
+		PSTexture4,
 
-		//PSTexture5,
+		PSTexture5,
 
-		//PSTexture6,
+		PSTexture6,
 
-		//PSTexture7,
+		PSTexture7,
 
 		SIZE_,
 	};

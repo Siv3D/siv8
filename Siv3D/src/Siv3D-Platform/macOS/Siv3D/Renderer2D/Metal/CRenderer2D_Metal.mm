@@ -1040,7 +1040,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.psTexture);
 			}
 
-			//m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushPSTexture(0, texture);
 			m_commandManager.pushDraw(indexCount);
 		}
 	}
@@ -1207,6 +1207,36 @@ namespace s3d
 						LOG_COMMAND(fmt::format("RasterizerState[{}]", command.index));
 						break;
 					}
+				case MetalRenderer2DCommandType::VSSamplerState0:
+				case MetalRenderer2DCommandType::VSSamplerState1:
+				case MetalRenderer2DCommandType::VSSamplerState2:
+				case MetalRenderer2DCommandType::VSSamplerState3:
+				case MetalRenderer2DCommandType::VSSamplerState4:
+				case MetalRenderer2DCommandType::VSSamplerState5:
+				case MetalRenderer2DCommandType::VSSamplerState6:
+				case MetalRenderer2DCommandType::VSSamplerState7:
+					{
+						const uint32 slot = FromEnum(command.type) - FromEnum(MetalRenderer2DCommandType::VSSamplerState0);
+						const auto& samplerState = m_commandManager.getVSSamplerState(slot, command.index);
+						//m_pRenderer->getSamplerState().setVS(slot, samplerState);
+						LOG_COMMAND(fmt::format("VSSamplerState{}[{}] ", slot, command.index));
+						break;
+					}
+				case MetalRenderer2DCommandType::PSSamplerState0:
+				case MetalRenderer2DCommandType::PSSamplerState1:
+				case MetalRenderer2DCommandType::PSSamplerState2:
+				case MetalRenderer2DCommandType::PSSamplerState3:
+				case MetalRenderer2DCommandType::PSSamplerState4:
+				case MetalRenderer2DCommandType::PSSamplerState5:
+				case MetalRenderer2DCommandType::PSSamplerState6:
+				case MetalRenderer2DCommandType::PSSamplerState7:
+					{
+						const uint32 slot = FromEnum(command.type) - FromEnum(MetalRenderer2DCommandType::PSSamplerState0);
+						const auto& samplerState = m_commandManager.getPSSamplerState(slot, command.index);
+						//m_pRenderer->getSamplerState().setPS(slot, samplerState);
+						LOG_COMMAND(fmt::format("PSSamplerState{}[{}] ", slot, command.index));
+						break;
+					}
 				case MetalRenderer2DCommandType::ScissorRect:
 					{
 						const auto& scissorRect = m_commandManager.getScissorRect(command.index);
@@ -1273,6 +1303,58 @@ namespace s3d
 						m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
 
 						LOG_COMMAND(U"Transform[{}] {}"_fmt(command.index, matrix));
+						break;
+					}
+				case MetalRenderer2DCommandType::VSTexture0:
+				case MetalRenderer2DCommandType::VSTexture1:
+				case MetalRenderer2DCommandType::VSTexture2:
+				case MetalRenderer2DCommandType::VSTexture3:
+				case MetalRenderer2DCommandType::VSTexture4:
+				case MetalRenderer2DCommandType::VSTexture5:
+				case MetalRenderer2DCommandType::VSTexture6:
+				case MetalRenderer2DCommandType::VSTexture7:
+					{
+						const uint32 slot = (FromEnum(command.type) - FromEnum(MetalRenderer2DCommandType::VSTexture0));
+						const auto& textureID = m_commandManager.getVSTexture(slot, command.index);
+
+						if (textureID.isInvalid())
+						{
+							//ID3D11ShaderResourceView* nullAttach[1] = { nullptr };
+							//m_context->VSSetShaderResources(slot, 1, nullAttach);
+							LOG_COMMAND(fmt::format("VSTexture{}[{}]: null", slot, command.index));
+						}
+						else
+						{
+							//m_context->VSSetShaderResources(slot, 1, m_pTexture->getSRVPtr(textureID));
+							LOG_COMMAND(fmt::format("VSTexture{}[{}]: {}", slot, command.index, textureID));
+						}
+						
+						break;
+					}
+				case MetalRenderer2DCommandType::PSTexture0:
+				case MetalRenderer2DCommandType::PSTexture1:
+				case MetalRenderer2DCommandType::PSTexture2:
+				case MetalRenderer2DCommandType::PSTexture3:
+				case MetalRenderer2DCommandType::PSTexture4:
+				case MetalRenderer2DCommandType::PSTexture5:
+				case MetalRenderer2DCommandType::PSTexture6:
+				case MetalRenderer2DCommandType::PSTexture7:
+					{
+						const uint32 slot = (FromEnum(command.type) - FromEnum(D3D11Renderer2DCommandType::PSTexture0));
+						const auto& textureID = m_commandManager.getPSTexture(slot, command.index);
+
+						if (textureID.isInvalid())
+						{
+							//ID3D11ShaderResourceView* nullAttach[1] = { nullptr };
+							//m_context->PSSetShaderResources(slot, 1, nullAttach);
+							LOG_COMMAND(fmt::format("PSTexture{}[{}]: null", slot, command.index));
+						}
+						else
+						{
+							//m_context->PSSetShaderResources(slot, 1, m_pTexture->getSRVPtr(textureID));
+							LOG_COMMAND(fmt::format("PSTexture{}[{}]: {}", slot, command.index, textureID));
+						}
+						
 						break;
 					}
 				}
