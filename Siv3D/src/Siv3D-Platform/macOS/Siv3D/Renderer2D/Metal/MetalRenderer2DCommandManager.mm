@@ -84,7 +84,7 @@ namespace s3d
 		{
 			//m_reservedVSs.clear();
 			//m_reservedPSs.clear();
-			m_reservedTextures.clear();
+			m_reserved.textures.clear();
 		}
 
 		// Begin a new frame

@@ -82,7 +82,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MetalTexture2DDesc::hasDepth() const noexcept
+	bool MetalTexture::hasDepth() const noexcept
 	{
 		return m_desc.hasDepth;
 	}

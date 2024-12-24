@@ -179,6 +179,10 @@ namespace s3d
 
 			float maxScaling					= 1.0f;
 
+			std::array<Texture::IDType, Graphics::TextureSlotCount> vsTextures;
+
+			std::array<Texture::IDType, Graphics::TextureSlotCount> psTextures;
+
 		} m_current;
 
 		struct Reserved
