@@ -15,6 +15,7 @@
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/TriangleIndex.hpp>
+# include <Siv3D/Texture.hpp>
 # include "ColorFillDirection.hpp"
 
 namespace s3d
@@ -121,6 +122,10 @@ namespace s3d
 		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const PatternParameters& pattern) = 0;
 
 		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, std::span<const ColorF> colors) = 0;
+
+
+
+		virtual void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color) = 0;
 
 
 

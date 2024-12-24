@@ -26,6 +26,7 @@ namespace s3d
 	{
 		FullScreenTriangle,
 		Shape2D,
+		Texture2D,
 		LineDot,
 		LineDash,
 		LineLongDash,

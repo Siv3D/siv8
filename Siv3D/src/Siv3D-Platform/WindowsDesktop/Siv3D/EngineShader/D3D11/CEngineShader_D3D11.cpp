@@ -60,6 +60,11 @@ namespace s3d
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
 		}
 
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_texture.ps", ShaderStage::Pixel, U"PS_Texture"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
 		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_line_dot.ps", ShaderStage::Pixel, U"PS_LineDot"))
 		{
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
@@ -130,6 +135,7 @@ namespace s3d
 		{
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/fullscreen_triangle.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_shape.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_texture.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_dot.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_dash.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_long_dash.ps" };

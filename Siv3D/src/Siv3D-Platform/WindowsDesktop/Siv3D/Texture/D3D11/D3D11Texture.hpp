@@ -41,6 +41,7 @@ namespace s3d
 
 		void generateMipmaps(ID3D11DeviceContext* context);
 
+		ID3D11ShaderResourceView** getSRVPtr();
 	private:
 
 		D3D11Texture2DDesc m_desc;

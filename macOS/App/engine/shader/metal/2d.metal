@@ -75,6 +75,14 @@ float4 PS_Shape(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]]
 }
 
 fragment
+float4 PS_Texture(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
+{
+	float4 result = in.color;
+
+	return s3d_colorTransform(result, c);
+}
+
+fragment
 float4 PS_LineDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
 {
 	float4 result = in.color;

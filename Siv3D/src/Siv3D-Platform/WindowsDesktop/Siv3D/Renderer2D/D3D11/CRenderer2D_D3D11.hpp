@@ -220,6 +220,24 @@ namespace s3d
 
 		void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, std::span<const ColorF> colors) override;
 
+
+
+
+
+
+
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addTextureRegion
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color) override;
+
+
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	flush
@@ -346,15 +364,15 @@ namespace s3d
 
 	private:
 
-		CRenderer_D3D11* m_pRenderer = nullptr;
+		CRenderer_D3D11* m_pRenderer	= nullptr;
 
-		CShader_D3D11* m_pShader = nullptr;
+		CShader_D3D11* m_pShader		= nullptr;
 
-		//CTexture_D3D11* m_pTexture	= nullptr;
+		CTexture_D3D11* m_pTexture		= nullptr;
 
-		ID3D11Device* m_device = nullptr;
+		ID3D11Device* m_device			= nullptr;
 
-		ID3D11DeviceContext* m_context = nullptr;
+		ID3D11DeviceContext* m_context	= nullptr;
 
 		ComPtr<ID3D11InputLayout> m_inputLayout;
 
@@ -367,6 +385,8 @@ namespace s3d
 			VertexShader::IDType vs;
 
 			PixelShader::IDType psShape;
+
+			PixelShader::IDType psTexture;
 
 			PixelShader::IDType psLineDot;
 

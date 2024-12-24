@@ -10,7 +10,9 @@
 //-----------------------------------------------
 
 # include <Siv3D/Texture.hpp>
+# include <Siv3D/FloatRect.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -141,5 +143,27 @@ namespace s3d
 	void Texture::swap(Texture& other) noexcept
 	{
 		m_handle.swap(other.m_handle);
+	}
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF Texture::draw(const double x, const double y, const ColorF& diffuse) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		SIV3D_ENGINE(Renderer2D)->addTextureRegion(
+			*this,
+			FloatRect{ x, y, (x + size.x), (y + size.y) },
+			FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f },
+			diffuse.toFloat4()
+		);
+
+		return{ x, y, size };
 	}
 }

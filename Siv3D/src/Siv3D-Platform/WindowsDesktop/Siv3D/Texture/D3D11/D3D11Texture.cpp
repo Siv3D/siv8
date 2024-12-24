@@ -214,4 +214,15 @@ namespace s3d
 
 		context->GenerateMips(m_shaderResourceView.Get());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSRVPtr
+	//
+	////////////////////////////////////////////////////////////////
+
+	ID3D11ShaderResourceView** D3D11Texture::getSRVPtr()
+	{
+		return m_shaderResourceView.GetAddressOf();
+	}
 }

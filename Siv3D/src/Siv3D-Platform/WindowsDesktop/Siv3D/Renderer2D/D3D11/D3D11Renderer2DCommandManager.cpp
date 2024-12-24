@@ -57,15 +57,15 @@ namespace s3d
 			m_buffer.blendStates = { m_buffer.blendStates.back() };
 			m_buffer.rasterizerStates = { m_buffer.rasterizerStates.back() };
 
-			//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-			//{
-			//	m_vsSamplerStates[i] = { m_vsSamplerStates[i].back() };
-			//}
+			for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+			{
+				m_buffer.vsSamplerStates[i] = { m_buffer.vsSamplerStates[i].back() };
+			}
 
-			//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-			//{
-			//	m_psSamplerStates[i] = { m_psSamplerStates[i].back() };
-			//}
+			for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+			{
+				m_buffer.psSamplerStates[i] = { m_buffer.psSamplerStates[i].back() };
+			}
 
 			m_buffer.scissorRects	= { m_buffer.scissorRects.back() };
 			m_buffer.viewports		= { m_buffer.viewports.back() };
@@ -84,7 +84,7 @@ namespace s3d
 		{
 			//m_reservedVSs.clear();
 			//m_reservedPSs.clear();
-			//m_reservedTextures.clear();
+			m_reserved.textures.clear();
 		}
 
 		// Begin a new frame
@@ -107,19 +107,19 @@ namespace s3d
 			m_commands.emplace_back(D3D11Renderer2DCommandType::RasterizerState, 0);
 			m_current.rasterizerState = m_buffer.rasterizerStates.front();
 
-			//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-			//{
-			//	const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSSamplerState0) + i);
-			//	m_commands.emplace_back(command, 0);
-			//	m_currentVSSamplerStates[i] = m_currentVSSamplerStates.front();
-			//}
+			for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+			{
+				const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSSamplerState0) + i);
+				m_commands.emplace_back(command, 0);
+				m_current.vsSamplerStates[i] = m_buffer.vsSamplerStates[i].front();
+			}
 
-			//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-			//{
-			//	const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSSamplerState0) + i);
-			//	m_commands.emplace_back(command, 0);
-			//	m_currentPSSamplerStates[i] = m_currentPSSamplerStates.front();
-			//}
+			for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+			{
+				const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSSamplerState0) + i);
+				m_commands.emplace_back(command, 0);
+				m_current.psSamplerStates[i] = m_buffer.psSamplerStates[i].front();
+			}
 
 			m_commands.emplace_back(D3D11Renderer2DCommandType::ScissorRect, 0);
 			m_current.scissorRect = m_buffer.scissorRects.front();
@@ -145,25 +145,27 @@ namespace s3d
 			m_commands.emplace_back(D3D11Renderer2DCommandType::Transform, 0);
 			m_current.combinedTransform = m_buffer.combinedTransforms.front();
 
-			//{
-			//	for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-			//	{
-			//		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSTexture0) + i);
-			//		m_vsTextures[i] = { Texture::IDType::InvalidValue() };
-			//		m_commands.emplace_back(command, 0);
-			//	}
-			//	m_currentVSTextures.fill(Texture::IDType::InvalidValue());
-			//}
+			{
+				for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+				{
+					const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSTexture0) + i);
+					m_buffer.vsTextures[i] = { Texture::IDType::Invalid() };
+					m_commands.emplace_back(command, 0);
+				}
 
-			//{
-			//	for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-			//	{
-			//		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSTexture0) + i);
-			//		m_psTextures[i] = { Texture::IDType::InvalidValue() };
-			//		m_commands.emplace_back(command, 0);
-			//	}
-			//	m_currentPSTextures.fill(Texture::IDType::InvalidValue());
-			//}
+				m_current.vsTextures.fill(Texture::IDType::Invalid());
+			}
+
+			{
+				for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+				{
+					const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSTexture0) + i);
+					m_buffer.psTextures[i] = { Texture::IDType::Invalid() };
+					m_commands.emplace_back(command, 0);
+				}
+				
+				m_current.psTextures.fill(Texture::IDType::Invalid());
+			}
 		}
 	}
 
@@ -217,27 +219,26 @@ namespace s3d
 			m_buffer.rasterizerStates.push_back(m_current.rasterizerState);
 		}
 
-		//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-		//{
-		//	const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSSamplerState0) + i);
+		for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+		{
+			const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSSamplerState0) + i);
 
-		//	if (m_changes.has(command))
-		//	{
-		//		m_commands.emplace_back(command, static_cast<uint32>(m_vsSamplerStates[i].size()));
-		//		m_vsSamplerStates[i].push_back(m_currentVSSamplerStates[i]);
-		//	}
-		//}
+			if (m_stateTracker.has(command))
+			{
+				m_commands.emplace_back(command, static_cast<uint32>(m_buffer.vsSamplerStates[i].size()));
+				m_buffer.vsSamplerStates[i].push_back(m_current.vsSamplerStates[i]);
+			}
+		}
 
-		//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-		//{
-		//	const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSSamplerState0) + i);
-
-		//	if (m_changes.has(command))
-		//	{
-		//		m_commands.emplace_back(command, static_cast<uint32>(m_psSamplerStates[i].size()));
-		//		m_psSamplerStates[i].push_back(m_currentPSSamplerStates[i]);
-		//	}
-		//}
+		for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+		{
+			const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSSamplerState0) + i);
+			if (m_stateTracker.has(command))
+			{
+				m_commands.emplace_back(command, static_cast<uint32>(m_buffer.psSamplerStates[i].size()));
+				m_buffer.psSamplerStates[i].push_back(m_current.psSamplerStates[i]);
+			}
+		}
 
 		if (m_stateTracker.has(D3D11Renderer2DCommandType::ScissorRect))
 		{
@@ -293,27 +294,27 @@ namespace s3d
 		//	m_commands.emplace_back(D3D11Renderer2DCommandType::SetConstantBuffer, static_cast<uint32>(m_constantBufferCommands.size()) - 1);
 		//}
 
-		//for (uint32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-		//{
-		//	const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSTexture0) + i);
+		for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+		{
+			const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSTexture0) + i);
 
-		//	if (m_changes.has(command))
-		//	{
-		//		m_commands.emplace_back(command, static_cast<uint32>(m_vsTextures[i].size()));
-		//		m_vsTextures[i].push_back(m_currentVSTextures[i]);
-		//	}
-		//}
+			if (m_stateTracker.has(command))
+			{
+				m_commands.emplace_back(command, static_cast<uint32>(m_buffer.vsTextures[i].size()));
+				m_buffer.vsTextures[i].push_back(m_current.vsTextures[i]);
+			}
+		}
 
-		//for (int32 i = 0; i < SamplerState::MaxSamplerCount; ++i)
-		//{
-		//	const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSTexture0) + i);
-
-		//	if (m_changes.has(command))
-		//	{
-		//		m_commands.emplace_back(command, static_cast<uint32>(m_psTextures[i].size()));
-		//		m_psTextures[i].push_back(m_currentPSTextures[i]);
-		//	}
-		//}
+		for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
+		{
+			const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSTexture0) + i);
+			
+			if (m_stateTracker.has(command))
+			{
+				m_commands.emplace_back(command, static_cast<uint32>(m_buffer.psTextures[i].size()));
+				m_buffer.psTextures[i].push_back(m_current.psTextures[i]);
+			}
+		}
 
 		m_stateTracker.clear();
 	}
@@ -566,6 +567,100 @@ namespace s3d
 	const RasterizerState& D3D11Renderer2DCommandManager::getCurrentRasterizerState() const
 	{
 		return m_current.rasterizerState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushVSSamplerState, getVSSamplerState, getVSCurrentSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushVSSamplerState(const SamplerState& state, const uint32 slot)
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSSamplerState0) + slot);
+		auto& current = m_current.vsSamplerStates[slot];
+		auto& buffer = m_buffer.vsSamplerStates[slot];
+
+		if (not m_stateTracker.has(command))
+		{
+			if (state != current)
+			{
+				current = state;
+				m_stateTracker.set(command);
+			}
+		}
+		else
+		{
+			if (state == buffer.back())
+			{
+				m_stateTracker.clear(command);
+			}
+
+			current = state;
+		}
+	}
+	
+	const SamplerState& D3D11Renderer2DCommandManager::getVSSamplerState(const uint32 slot, const uint32 index) const
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		return m_buffer.vsSamplerStates[slot][index];
+	}
+	
+	const SamplerState& D3D11Renderer2DCommandManager::getVSCurrentSamplerState(const uint32 slot) const
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		return m_current.vsSamplerStates[slot];
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushPSSamplerState, getPSSamplerState, getPSCurrentSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushPSSamplerState(const SamplerState& state, const uint32 slot)
+	{
+		assert(slot < Graphics::TextureSlotCount);
+		
+		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSSamplerState0) + slot);
+		auto& current = m_current.psSamplerStates[slot];
+		auto& buffer = m_buffer.psSamplerStates[slot];
+		
+		if (not m_stateTracker.has(command))
+		{
+			if (state != current)
+			{
+				current = state;
+				m_stateTracker.set(command);
+			}
+		}
+		else
+		{
+			if (state == buffer.back())
+			{
+				m_stateTracker.clear(command);
+			}
+			
+			current = state;
+		}
+	}
+
+	const SamplerState& D3D11Renderer2DCommandManager::getPSSamplerState(const uint32 slot, const uint32 index) const
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		return m_buffer.psSamplerStates[slot][index];
+	}
+
+	const SamplerState& D3D11Renderer2DCommandManager::getPSCurrentSamplerState(const uint32 slot) const
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		return m_current.psSamplerStates[slot];
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -831,5 +926,184 @@ namespace s3d
 	float D3D11Renderer2DCommandManager::getCurrentMaxScaling() const noexcept
 	{
 		return m_current.maxScaling;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushVSTextureUnbind, pushVSTexture, getVSTexture, getCurrentVSTextures
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushVSTextureUnbind(const uint32 slot)
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		static constexpr auto InvalidID = Texture::IDType::Invalid();
+		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSTexture0) + slot);
+		auto& current = m_current.vsTextures[slot];
+		auto& buffer = m_buffer.vsTextures[slot];
+
+		if (not m_stateTracker.has(command))
+		{
+			if (InvalidID != current)
+			{
+				current = InvalidID;
+				m_stateTracker.set(command);
+			}
+		}
+		else
+		{
+			if (InvalidID == buffer.back())
+			{
+				m_stateTracker.clear(command);
+			}
+
+			current = InvalidID;
+		}
+	}
+
+	void D3D11Renderer2DCommandManager::pushVSTexture(const uint32 slot, const Texture& texture)
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSTexture0) + slot);
+		auto& current = m_current.vsTextures[slot];
+		auto& buffer = m_buffer.vsTextures[slot];
+
+		if (not m_stateTracker.has(command))
+		{
+			if (texture.id() != current)
+			{
+				current = texture.id();
+				m_stateTracker.set(command);
+			}
+		}
+		else
+		{
+			if (texture.id() == buffer.back())
+			{
+				m_stateTracker.clear(command);
+			}
+
+			current = texture.id();
+		}
+	}
+	
+	const Texture::IDType& D3D11Renderer2DCommandManager::getVSTexture(const uint32 slot, const uint32 index) const
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		return m_buffer.vsTextures[slot][index];
+	}
+
+	const std::array<Texture::IDType, Graphics::TextureSlotCount>& D3D11Renderer2DCommandManager::getCurrentVSTextures() const
+	{
+		return m_current.vsTextures;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushPSTextureUnbind, pushPSTexture, getPSTexture, getCurrentPSTextures
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushPSTextureUnbind(const uint32 slot)
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		static constexpr auto InvalidID = Texture::IDType::Invalid();
+		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSTexture0) + slot);
+		auto& current = m_current.psTextures[slot];
+		auto& buffer = m_buffer.psTextures[slot];
+
+		if (not m_stateTracker.has(command))
+		{
+			if (InvalidID != current)
+			{
+				current = InvalidID;
+				m_stateTracker.set(command);
+			}
+		}
+		else
+		{
+			if (InvalidID == buffer.back())
+			{
+				m_stateTracker.clear(command);
+			}
+
+			current = InvalidID;
+		}
+	}
+
+	void D3D11Renderer2DCommandManager::pushPSTexture(const uint32 slot, const Texture& texture)
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSTexture0) + slot);
+		auto& current = m_current.psTextures[slot];
+		auto& buffer = m_buffer.psTextures[slot];
+
+		if (not m_stateTracker.has(command))
+		{
+			if (texture.id() != current)
+			{
+				current = texture.id();
+				m_stateTracker.set(command);
+			}
+		}
+		else
+		{
+			if (texture.id() == buffer.back())
+			{
+				m_stateTracker.clear(command);
+			}
+
+			current = texture.id();
+		}
+	}
+
+	const Texture::IDType& D3D11Renderer2DCommandManager::getPSTexture(const uint32 slot, const uint32 index) const
+	{
+		assert(slot < Graphics::TextureSlotCount);
+
+		return m_buffer.psTextures[slot][index];
+	}
+
+	const std::array<Texture::IDType, Graphics::TextureSlotCount>& D3D11Renderer2DCommandManager::getCurrentPSTextures() const
+	{
+		return m_current.psTextures;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::array<Array<SamplerState>, Graphics::TextureSlotCount> D3D11Renderer2DCommandManager::MakeDefaultSamplerStates()
+	{
+		std::array<Array<SamplerState>, Graphics::TextureSlotCount> result;
+		
+		result.fill(Array<SamplerState>{ SamplerState::Default2D });
+		
+		return result;
+	}
+
+	std::array<SamplerState, Graphics::TextureSlotCount> D3D11Renderer2DCommandManager::MakeDefaultSamplerState()
+	{
+		std::array<SamplerState, Graphics::TextureSlotCount> result;
+
+		result.fill(SamplerState::Default2D);
+
+		return result;
+	}
+
+	std::array<Array<Texture::IDType>, Graphics::TextureSlotCount> D3D11Renderer2DCommandManager::MakeDefaultTextures()
+	{
+		std::array<Array<Texture::IDType>, Graphics::TextureSlotCount> result;
+		
+		result.fill(Array<Texture::IDType>{ Texture::IDType::Invalid() });
+		
+		return result;
 	}
 }

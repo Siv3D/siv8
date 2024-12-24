@@ -143,6 +143,34 @@ namespace s3d
 		/// @param other 別の Texture
 		void swap(Texture& other) noexcept;
 
+
+
+
+
+		/// @brief 左上位置を指定してテクスチャを描画します。
+		/// @param x 描画を開始する左上の X 座標
+		/// @param y 描画を開始する左上の Y 座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(double x, double y, const ColorF& diffuse = Palette::White) const;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	swap

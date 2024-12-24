@@ -50,6 +50,7 @@ namespace s3d
 		{
 			m_pixelShaders << MSL{ U"PS_FullscreenTriangle" };
 			m_pixelShaders << MSL{ U"PS_Shape" };
+			m_pixelShaders << MSL{ U"PS_Texture" };
 			m_pixelShaders << MSL{ U"PS_LineDot" };
 			m_pixelShaders << MSL{ U"PS_LineDash" };
 			m_pixelShaders << MSL{ U"PS_LineLongDash" };

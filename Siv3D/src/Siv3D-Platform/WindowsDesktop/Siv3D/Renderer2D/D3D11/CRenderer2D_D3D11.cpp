@@ -19,6 +19,7 @@
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FmtOptional.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -106,7 +107,7 @@ namespace s3d
 		{
 			m_pRenderer	= static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer));
 			m_pShader	= static_cast<CShader_D3D11*>(SIV3D_ENGINE(Shader));
-			//m_pTexture = static_cast<CTexture_D3D11*>(SIV3D_ENGINE(Texture));
+			m_pTexture	= static_cast<CTexture_D3D11*>(SIV3D_ENGINE(Texture));
 			m_device	= m_pRenderer->getDevice().getDevice();
 			m_context	= m_pRenderer->getDevice().getContext();
 		}
@@ -136,6 +137,7 @@ namespace s3d
 
 		m_engineShader.vs					= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
 		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
+		m_engineShader.psTexture			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D).id();
 		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
 		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
 		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
@@ -1038,6 +1040,34 @@ namespace s3d
 		}
 	}
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addTextureRegion
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTextureRegion(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, uv, color))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+
+			m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	flush
@@ -1118,7 +1148,8 @@ namespace s3d
 			case D3D11Renderer2DCommandType::ColorMul:
 				{
 					const Float4 colorMul = m_commandManager.getColorMul(command.index);
-					m_psConstants->colorMul = colorMul;
+					m_vsConstants->colorMul = colorMul;
+					m_psConstants->patternBackgroundColorMul = colorMul;
 					LOG_COMMAND(fmt::format("ColorMul[{}] {}", command.index, colorMul));
 					break;
 				}
@@ -1158,6 +1189,36 @@ namespace s3d
 					}
 
 					LOG_COMMAND(fmt::format("RasterizerState[{}]", command.index));
+					break;
+				}
+			case D3D11Renderer2DCommandType::VSSamplerState0:
+			case D3D11Renderer2DCommandType::VSSamplerState1:
+			case D3D11Renderer2DCommandType::VSSamplerState2:
+			case D3D11Renderer2DCommandType::VSSamplerState3:
+			case D3D11Renderer2DCommandType::VSSamplerState4:
+			case D3D11Renderer2DCommandType::VSSamplerState5:
+			case D3D11Renderer2DCommandType::VSSamplerState6:
+			case D3D11Renderer2DCommandType::VSSamplerState7:
+				{
+					const uint32 slot = FromEnum(command.type) - FromEnum(D3D11Renderer2DCommandType::VSSamplerState0);
+					const auto& samplerState = m_commandManager.getVSSamplerState(slot, command.index);
+					m_pRenderer->getSamplerState().setVS(slot, samplerState);
+					LOG_COMMAND(fmt::format("VSSamplerState{}[{}] ", slot, command.index));
+					break;
+				}
+			case D3D11Renderer2DCommandType::PSSamplerState0:
+			case D3D11Renderer2DCommandType::PSSamplerState1:
+			case D3D11Renderer2DCommandType::PSSamplerState2:
+			case D3D11Renderer2DCommandType::PSSamplerState3:
+			case D3D11Renderer2DCommandType::PSSamplerState4:
+			case D3D11Renderer2DCommandType::PSSamplerState5:
+			case D3D11Renderer2DCommandType::PSSamplerState6:
+			case D3D11Renderer2DCommandType::PSSamplerState7:
+				{
+					const uint32 slot = FromEnum(command.type) - FromEnum(D3D11Renderer2DCommandType::PSSamplerState0);
+					const auto& samplerState = m_commandManager.getPSSamplerState(slot, command.index);
+					m_pRenderer->getSamplerState().setPS(slot, samplerState);
+					LOG_COMMAND(fmt::format("PSSamplerState{}[{}] ", slot, command.index));
 					break;
 				}
 			case D3D11Renderer2DCommandType::ScissorRect:
@@ -1234,7 +1295,59 @@ namespace s3d
 					m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
 					m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
 
-					LOG_COMMAND(U"Transform[{}] {}"_fmt(command.index, matrix));
+					LOG_COMMAND(fmt::format("Transform[{}] {}", command.index, matrix));
+					break;
+				}
+			case D3D11Renderer2DCommandType::VSTexture0:
+			case D3D11Renderer2DCommandType::VSTexture1:
+			case D3D11Renderer2DCommandType::VSTexture2:
+			case D3D11Renderer2DCommandType::VSTexture3:
+			case D3D11Renderer2DCommandType::VSTexture4:
+			case D3D11Renderer2DCommandType::VSTexture5:
+			case D3D11Renderer2DCommandType::VSTexture6:
+			case D3D11Renderer2DCommandType::VSTexture7:
+				{
+					const uint32 slot = (FromEnum(command.type) - FromEnum(D3D11Renderer2DCommandType::VSTexture0));
+					const auto& textureID = m_commandManager.getVSTexture(slot, command.index);
+
+					if (textureID.isInvalid())
+					{
+						ID3D11ShaderResourceView* nullAttach[1] = { nullptr };
+						m_context->VSSetShaderResources(slot, 1, nullAttach);
+						LOG_COMMAND(fmt::format("VSTexture{}[{}]: null", slot, command.index));
+					}
+					else
+					{
+						m_context->VSSetShaderResources(slot, 1, m_pTexture->getSRVPtr(textureID));
+						LOG_COMMAND(fmt::format("VSTexture{}[{}]: {}", slot, command.index, textureID));
+					}
+					
+					break;
+				}
+			case D3D11Renderer2DCommandType::PSTexture0:
+			case D3D11Renderer2DCommandType::PSTexture1:
+			case D3D11Renderer2DCommandType::PSTexture2:
+			case D3D11Renderer2DCommandType::PSTexture3:
+			case D3D11Renderer2DCommandType::PSTexture4:
+			case D3D11Renderer2DCommandType::PSTexture5:
+			case D3D11Renderer2DCommandType::PSTexture6:
+			case D3D11Renderer2DCommandType::PSTexture7:
+				{
+					const uint32 slot = (FromEnum(command.type) - FromEnum(D3D11Renderer2DCommandType::PSTexture0));
+					const auto& textureID = m_commandManager.getPSTexture(slot, command.index);
+
+					if (textureID.isInvalid())
+					{
+						ID3D11ShaderResourceView* nullAttach[1] = { nullptr };
+						m_context->PSSetShaderResources(slot, 1, nullAttach);
+						LOG_COMMAND(fmt::format("PSTexture{}[{}]: null", slot, command.index));
+					}
+					else
+					{
+						m_context->PSSetShaderResources(slot, 1, m_pTexture->getSRVPtr(textureID));
+						LOG_COMMAND(fmt::format("PSTexture{}[{}]: {}", slot, command.index, textureID));
+					}
+					
 					break;
 				}
 			}

@@ -52,6 +52,9 @@ namespace s3d
 		[[nodiscard]]
 		TextureFormat getFormat(Texture::IDType handleID) override;
 
+		[[nodiscard]]
+		ID3D11ShaderResourceView** getSRVPtr(Texture::IDType handleID);
+
 	private:
 
 		CRenderer_D3D11* m_pRenderer = nullptr;
