@@ -27,7 +27,7 @@ namespace s3d
 
 		~CTexture_Metal() override;
 
-		void init();
+		void init() override;
 
 		[[nodiscard]]
 		Texture::IDType create(const Image& image, TextureDesc desc) override;
