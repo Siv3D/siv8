@@ -18,11 +18,12 @@ struct PSInput
 struct VSConstants2D
 {
 	float2x4 g_transform;
+	float4 g_colorMul;
 };
 
 struct PSConstants2D
 {
-	float4 g_colorMul;
+	float4 g_patternBackgroundColorMul;
 	float4 g_colorAdd;
 };
 
@@ -40,12 +41,16 @@ float4 s3d_positionTransform2D(float2 pos, float2x4 t)
 	return float4((t_13_14 + (pos.x * t_11_12) + (pos.y * t_21_22)), 0.0f, 1.0f);
 }
 
-float4 s3d_colorTransform(float4 color, constant PSConstants2D* c)
+float4 s3d_shapeColor(float4 color, constant PSConstants2D* c)
 {
-	color *= c->g_colorMul;
-	color += c->g_colorAdd;
+	return (color + (c->g_colorAdd * color.a));
+}
+
+float4 s3d_patternBackgroundColor(float4 color, constant PSConstants2D* c)
+{
+	color *= c->g_patternBackgroundColorMul;
 	color.rgb *= color.a;
-	return color;
+	return (color + (c->g_colorAdd * color.a));
 }
 
 float2 s3d_patternTransform(float2 uv, float2x4 t)
@@ -62,6 +67,7 @@ PSInput VS_Shape(uint vertexID [[vertex_id]], constant VSInput* vertices, consta
 	PSInput out;
 	out.position	= s3d_positionTransform2D(vertices[vertexID].position, c->g_transform);
 	out.color		= vertices[vertexID].color;
+	out.color.rgb *= out.color.a;
 	out.uv			= vertices[vertexID].uv;
 	return out;
 }
@@ -69,17 +75,13 @@ PSInput VS_Shape(uint vertexID [[vertex_id]], constant VSInput* vertices, consta
 fragment
 float4 PS_Shape(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
 {
-	float4 result = in.color;
-
-	return s3d_colorTransform(result, c);
+	return s3d_shapeColor(in.color, c);
 }
 
 fragment
 float4 PS_Texture(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
 {
-	float4 result = in.color;
-
-	return s3d_colorTransform(result, c);
+	return s3d_shapeColor(in.color, c);
 }
 
 fragment
@@ -91,9 +93,9 @@ float4 PS_LineDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)
 	const float w = fwidth(u);
 	const float distance = abs(2.0 * fract(u) - 1.0);
 	const float alpha = smoothstep((0.5 - w), (0.5 + w), distance);
-	result.a *= alpha;
+	result *= alpha;
 
-	return s3d_colorTransform(result, c);
+	return s3d_shapeColor(result, c);
 }
 
 fragment
@@ -105,9 +107,9 @@ float4 PS_LineDash(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0
     const float w = fwidth(u);
     const float distance = abs(2.0 * fract(u) - 1.0);
     const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
-    result.a *= alpha;
+    result *= alpha;
 
-	return s3d_colorTransform(result, c);
+	return s3d_shapeColor(result, c);
 }
 
 fragment
@@ -119,9 +121,9 @@ float4 PS_LineLongDash(PSInput in [[stage_in]], constant PSConstants2D* c [[buff
     const float w = fwidth(u);
     const float distance = abs(2.0 * fract(u) - 1.0);
     const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
-    result.a *= alpha;
+    result *= alpha;
 
-	return s3d_colorTransform(result, c);
+	return s3d_shapeColor(result, c);
 }
 
 fragment
@@ -136,9 +138,9 @@ float4 PS_LineDashDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buffe
     const float distance2 = abs(2.0 * fract(u2) - 1.0);
     const float alpha1 = smoothstep((0.4 - w), (0.4 + w), distance);
     const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
-    result.a *= max(alpha1, alpha2);
+    result *= max(alpha1, alpha2);
 
-	return s3d_colorTransform(result, c);
+	return s3d_shapeColor(result, c);
 }
 
 fragment
@@ -150,9 +152,9 @@ float4 PS_LineRoundDot(PSInput in [[stage_in]], constant PSConstants2D* c [[buff
     const float w = fwidth(uv.y);
     const float distance = length(float2(4.0, 2.0) * fract(uv) - float2(2.0, 1.0));
     const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
-    result.a *= alpha;
+    result *= alpha;
 
-	return s3d_colorTransform(result, c);
+	return s3d_shapeColor(result, c);
 }
 
 fragment
@@ -168,8 +170,8 @@ float4 PS_PatternPolkaDot(PSInput in [[stage_in]],
 	const float radiusScale = p->g_patternUVTransform_params[1].z;
 	const float c_val = smoothstep((radiusScale - fw), (radiusScale + fw), value);
 
-	const float4 primary = s3d_colorTransform(in.color, c);
-	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	const float4 primary = s3d_shapeColor(in.color, c);
+	const float4 background = s3d_patternBackgroundColor(p->g_patternBackgroundColor, c);
 	
 	return mix(primary, background, c_val);
 }
@@ -187,8 +189,8 @@ float4 PS_PatternStripe(PSInput in [[stage_in]],
 	const float thicknessScale = (p->g_patternUVTransform_params[1].z * (1 + 2 * fw) - fw);
 	const float c1 = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 
-	const float4 primary = s3d_colorTransform(in.color, c);
-	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	const float4 primary = s3d_shapeColor(in.color, c);
+	const float4 background = s3d_patternBackgroundColor(p->g_patternBackgroundColor, c);
 
 	return mix(primary, background, c1);
 }
@@ -207,8 +209,8 @@ float4 PS_PatternGrid(PSInput in [[stage_in]],
 	const float2 c1 = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 	const float c2 = min(c1.x, c1.y);
 
-	const float4 primary = s3d_colorTransform(in.color, c);
-	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	const float4 primary = s3d_shapeColor(in.color, c);
+	const float4 background = s3d_patternBackgroundColor(p->g_patternBackgroundColor, c);
 
 	return mix(primary, background, c2);
 }
@@ -237,8 +239,8 @@ float4 PS_PatternChecker(PSInput in [[stage_in]],
 	const float2 uv = s3d_patternTransform(in.position.xy, p->g_patternUVTransform_params);
 	const float c1 = CheckersFiltered(uv, p->g_patternUVTransform_params[1].zw);
 
-	const float4 primary = s3d_colorTransform(in.color, c);
-	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	const float4 primary = s3d_shapeColor(in.color, c);
+	const float4 background = s3d_patternBackgroundColor(p->g_patternBackgroundColor, c);
 	
 	return mix(primary, background, c1);
 }
@@ -267,8 +269,8 @@ float4 PS_PatternTriangle(PSInput in [[stage_in]],
 	const float4 ss = float4(step(f1.x, f1.y), step(f1.z, f1.w), step(f2.x, f2.y), step(f2.z, f2.w));
 	const float c1 = dot(ss, 0.25);
 
-	const float4 primary = s3d_colorTransform(in.color, c);
-	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	const float4 primary = s3d_shapeColor(in.color, c);
+	const float4 background = s3d_patternBackgroundColor(p->g_patternBackgroundColor, c);
 	
 	return mix(primary, background, c1);
 }
@@ -295,8 +297,8 @@ float4 PS_PatternHexGrid(PSInput in [[stage_in]],
 	const float h = Hex(uv);
 	const float c1 = smoothstep((thicknessScale - w), (thicknessScale + w), h);
 
-	const float4 primary = s3d_colorTransform(in.color, c);
-	const float4 background = s3d_colorTransform(p->g_patternBackgroundColor, c);
+	const float4 primary = s3d_shapeColor(in.color, c);
+	const float4 background = s3d_patternBackgroundColor(p->g_patternBackgroundColor, c);
 	
 	return mix(background, primary, c1);
 }

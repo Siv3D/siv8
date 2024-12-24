@@ -223,6 +223,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addTextureRegion
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	flush
 		//
 		////////////////////////////////////////////////////////////////
@@ -372,7 +380,9 @@ namespace s3d
 			VertexShader::IDType vs;
 
 			PixelShader::IDType psShape;
-			
+
+			PixelShader::IDType psTexture;
+						
 			PixelShader::IDType psLineDot;
 			
 			PixelShader::IDType psLineDash;
