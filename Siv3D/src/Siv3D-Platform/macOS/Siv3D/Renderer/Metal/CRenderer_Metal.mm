@@ -17,6 +17,7 @@
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Texture/Metal/CTexture_Metal.hpp>
 # include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Renderer2D/Metal/CRenderer2D_Metal.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
@@ -71,8 +72,9 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CRenderer_Metal::init()");
 		
-		m_pShader = static_cast<CShader_Metal*>(SIV3D_ENGINE(Shader));
-		m_pRenderer2D = static_cast<CRenderer2D_Metal*>(SIV3D_ENGINE(Renderer2D));
+		m_pTexture		= static_cast<CTexture_Metal*>(SIV3D_ENGINE(Texture));
+		m_pShader		= static_cast<CShader_Metal*>(SIV3D_ENGINE(Shader));
+		m_pRenderer2D	= static_cast<CRenderer2D_Metal*>(SIV3D_ENGINE(Renderer2D));
 
 		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 		m_metalWindow = ::glfwGetCocoaWindow(glfwWindow);

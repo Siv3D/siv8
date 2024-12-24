@@ -21,6 +21,7 @@
 
 namespace s3d
 {
+	class CTexture_Metal;
 	class CShader_Metal;
 	class CRenderer2D_Metal;
 
@@ -80,6 +81,8 @@ namespace s3d
 		
 	private:
 
+		CTexture_Metal* m_pTexture = nullptr;
+		
 		CShader_Metal* m_pShader = nullptr;
 		
 		CRenderer2D_Metal* m_pRenderer2D = nullptr;
