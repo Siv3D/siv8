@@ -30,14 +30,25 @@ namespace s3d
 		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
 		textureDescriptor->setWidth(image.width());
 		textureDescriptor->setHeight(image.height());
-		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-		textureDescriptor->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageShaderWrite);
+		textureDescriptor->setStorageMode(MTL::StorageModeShared);
+		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
+		textureDescriptor->setMipmapLevelCount(m_desc.mipLevels);
 
 		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
 		
 		if (not m_texture)
 		{
 			return;
+		}
+		
+		const MTL::Region region = MTL::Region::Make2D(0, 0, image.width(), image.height());
+		m_texture->replaceRegion(region, 0, image.data(), (image.width() * m_desc.format.pixelSize()));
+		
+		for (uint32 i = 0; i < mipmaps.size(); ++i)
+		{
+			const Image& mipmap = mipmaps[i];
+			const MTL::Region region = MTL::Region::Make2D(0, 0, mipmap.width(), mipmap.height());
+			m_texture->replaceRegion(region, (i + 1), mipmap.data(), (mipmap.width() * m_desc.format.pixelSize()));
 		}
 		
 		m_initialized = true;
