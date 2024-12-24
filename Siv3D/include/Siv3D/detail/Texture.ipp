@@ -13,12 +13,5 @@
 
 namespace s3d
 {
-	namespace Scene
-	{
-		template <Concept::FloatingPoint Float>
-		Float HorizontalAspectRatio() noexcept
-		{
-			return Size().horizontalAspectRatio<Float>();
-		}
-	}
+
 }

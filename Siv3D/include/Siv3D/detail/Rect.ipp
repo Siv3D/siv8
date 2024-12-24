@@ -988,15 +988,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Type Rect::horizontalAspectRatio() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Float Rect::horizontalAspectRatio() const noexcept
 	{
 		if (size.y == 0)
 		{
 			return 0;
 		}
 
-		return (static_cast<Type>(size.x) / size.y);
+		return (static_cast<Float>(size.x) / size.y);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -71,6 +71,18 @@ namespace s3d
 	Texture::Texture(IReader&& reader, const TextureDesc desc)
 		: Texture{ (CheckEngine(), Image{ std::move(reader) }), desc } {}
 
+	Texture::Texture(const FilePathView rgb, const FilePathView alpha, const TextureDesc desc)
+		: Texture{ (CheckEngine(), Image{ rgb, alpha }), desc } {}
+
+	Texture::Texture(const Color& rgb, const FilePathView alpha, const TextureDesc desc)
+		: Texture{ (CheckEngine(), Image{ rgb, alpha }), desc } {}
+
+	Texture::Texture(const Emoji& emoji, const TextureDesc desc)
+		: Texture{ (CheckEngine(), Image{ emoji }), desc } {}
+
+	Texture::Texture(const Emoji& emoji, const int32 size, const TextureDesc desc)
+		: Texture{ (CheckEngine(), Image{ emoji, size }), desc } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -78,6 +90,12 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Texture::~Texture() {}
+
+
+
+
+
+
 
 	////////////////////////////////////////////////////////////////
 	//

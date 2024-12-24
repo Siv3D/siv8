@@ -150,6 +150,53 @@ namespace s3d
 		*this = ImageDecoder::Decode(reader, premultiplyAlpha, format);
 	}
 
+	Image::Image(const FilePathView rgb, const FilePathView alpha, const PremultiplyAlpha premultiplyAlpha)
+		: Image{ rgb, PremultiplyAlpha::No }
+	{
+		const Image alphaImage{ alpha, PremultiplyAlpha::No };
+
+		if (m_size != alphaImage.size())
+		{
+			release();
+			return;
+		}
+
+		{
+			const Color* pSrcAlpha = alphaImage.data();
+			Color* pDst = m_pixels.data();
+			const Color* const pDstEnd = (pDst + m_pixels.size());
+
+			while (pDst != pDstEnd)
+			{
+				pDst->a = pSrcAlpha->r;
+				++pSrcAlpha;
+				++pDst;
+			}
+		}
+
+		if (premultiplyAlpha == PremultiplyAlpha::Yes)
+		{
+			this->premultiplyAlpha();
+		}
+	}
+
+	Image::Image(const Color rgb, const FilePathView alpha, const PremultiplyAlpha premultiplyAlpha)
+		: Image{ alpha, PremultiplyAlpha::No }
+	{
+		for (auto& pixel : *this)
+		{
+			pixel.a = pixel.r;
+			pixel.r = rgb.r;
+			pixel.g = rgb.g;
+			pixel.b = rgb.b;
+		}
+
+		if (premultiplyAlpha == PremultiplyAlpha::Yes)
+		{
+			this->premultiplyAlpha();
+		}
+	}
+
 	Image::Image(const Emoji& emoji, const int32 size)
 	{
 		*this = Emoji::CreateImage(emoji.codePoints, size);

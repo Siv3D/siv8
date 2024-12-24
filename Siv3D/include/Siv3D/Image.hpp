@@ -164,11 +164,19 @@ namespace s3d
 		[[nodiscard]]
 		explicit Image(IReader&& reader, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
 
-		//[[nodiscard]]
-		//Image(FilePathView rgb, FilePathView alpha);
+		/// @brief 一方の画像ファイルから RGB チャンネルを、もう一方の画像ファイルからアルファチャンネルを読み込んで画像データを作成します。
+		/// @param rgb RGB チャンネルの画像ファイルのパス
+		/// @param alpha アルファチャンネルの画像ファイルのパス（R 成分がアルファチャンネルとして使用されます）
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
+		[[nodiscard]]
+		Image(FilePathView rgb, FilePathView alpha, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes);
 
-		//[[nodiscard]]
-		//Image(Color rgb, FilePathView alpha);
+		/// @brief 指定した色を RGB チャンネルに、指定した画像ファイルの内容をアルファチャンネルに使用して画像データを作成します。
+		/// @param rgb RGB チャンネルの色
+		/// @param alpha アルファチャンネルの画像ファイルのパス（R 成分がアルファチャンネルとして使用されます）
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
+		[[nodiscard]]
+		Image(Color rgb, FilePathView alpha, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes);
 
 		[[nodiscard]]
 		explicit Image(const Emoji& emoji, int32 size = Emoji::DefaultSize);
@@ -291,9 +299,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		Type horizontalAspectRatio() const noexcept;
+		Float horizontalAspectRatio() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

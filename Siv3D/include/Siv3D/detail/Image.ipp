@@ -152,10 +152,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Type Image::horizontalAspectRatio() const noexcept
+	template <Concept::FloatingPoint Float>
+	Float Image::horizontalAspectRatio() const noexcept
 	{
-		return m_size.horizontalAspectRatio<Type>();
+		return m_size.horizontalAspectRatio<Float>();
 	}
 
 	////////////////////////////////////////////////////////////////

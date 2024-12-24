@@ -129,11 +129,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief シーンのアスペクト比（幅 / 高さ）を返します。
-		/// @tparam Type アスペクト比の型
+		/// @tparam Float アスペクト比の型
 		/// @return シーンのアスペクト比（幅 / 高さ）
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		Type HorizontalAspectRatio() noexcept;
+		Float HorizontalAspectRatio() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

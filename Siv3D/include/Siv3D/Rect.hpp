@@ -1307,11 +1307,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 長方形の横縦比（幅 / 高さ）を返します。
-		/// @tparam Type 横縦比の型
+		/// @tparam Float 横縦比の型
 		/// @return 長方形の横縦比（幅 / 高さ）。高さが 0 の場合は 0
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Type horizontalAspectRatio() const noexcept;
+		constexpr Float horizontalAspectRatio() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

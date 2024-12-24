@@ -427,15 +427,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Type Point::horizontalAspectRatio() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Float Point::horizontalAspectRatio() const noexcept
 	{
 		if (y == 0)
 		{
 			return 0;
 		}
 
-		return (static_cast<Type>(x) / y);
+		return (static_cast<Float>(x) / y);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -444,12 +444,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	inline Type Point::length() const noexcept
+	template <Concept::FloatingPoint Float>
+	inline Float Point::length() const noexcept
 	{
-		const Type x_ = static_cast<Type>(x);
-		const Type y_ = static_cast<Type>(y);
-		return static_cast<Type>(std::sqrt((x_ * x_) + (y_ * y_)));
+		const auto x_ = static_cast<Float>(x);
+		const auto y_ = static_cast<Float>(y);
+		return std::sqrt((x_ * x_) + (y_ * y_));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -458,11 +458,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Type Point::lengthSq() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Float Point::lengthSq() const noexcept
 	{
-		const Type x_ = static_cast<Type>(x);
-		const Type y_ = static_cast<Type>(y);
+		const auto x_ = static_cast<Float>(x);
+		const auto y_ = static_cast<Float>(y);
 		return ((x_ * x_) + (y_ * y_));
 	}
 
@@ -684,8 +684,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Type Point::getAngle() const noexcept
+	template <Concept::FloatingPoint Float>
+	Float Point::getAngle() const noexcept
 	{
 		if (isZero())
 		{
@@ -695,15 +695,15 @@ namespace s3d
 		return std::atan2(x, -y);
 	}
 
-	template <class Type>
-	Type Point::getAngle(const Vector2D<Type> other) const noexcept
+	template <Concept::FloatingPoint Float>
+	Float Point::getAngle(const Vector2D<Float> other) const noexcept
 	{
 		if (isZero() || other.isZero())
 		{
-			return Math::NaN_v<Type>;
+			return Math::NaN_v<Float>;
 		}
 
-		return std::atan2(Vector2D<Type>{ *this }.cross(other), Vector2D<Type>{ *this }.dot(other));
+		return std::atan2(Vector2D<Float>{ *this }.cross(other), Vector2D<Float>{ *this }.dot(other));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -728,16 +728,18 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Point::getMidpoint(const Point other) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::getMidpoint(const Point other) const noexcept
 	{
-		return{ (x + (other.x - x) * 0.5), (y + (other.y - y) * 0.5) };
+		static constexpr auto Half = static_cast<Float>(0.5);
+		return{ (x + (other.x - x) * Half), (y + (other.y - y) * Half) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Point::getMidpoint(const Vector2D<Type> other) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::getMidpoint(const Vector2D<Float> other) const noexcept
 	{
-		return{ (x * 0.5 + other.x * 0.5), (y * 0.5 + other.y * 0.5) };
+		static constexpr auto Half = static_cast<Float>(0.5);
+		return{ (x * Half + other.x * Half), (y * Half + other.y * Half) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -764,16 +766,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Point::lerp(const Point other, const double f) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::lerp(const Point other, const double f) const noexcept
 	{
 		return{ (x + (other.x - x) * f), (y + (other.y - y) * f) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Point::lerp(const Vector2D<Type> other, const double f) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::lerp(const Vector2D<Float> other, const double f) const noexcept
 	{
-		return{ (x + (other.x - x) * static_cast<Type>(f)), (y + (other.y - y) * static_cast<Type>(f)) };
+		return{ (x + (other.x - x) * static_cast<Float>(f)), (y + (other.y - y) * static_cast<Float>(f)) };
 	}
 
 	////////////////////////////////////////////////////////////////

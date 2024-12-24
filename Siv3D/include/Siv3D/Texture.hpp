@@ -51,16 +51,53 @@ namespace s3d
 		[[nodiscard]]
 		explicit Texture(IReader&& reader, TextureDesc desc = TextureDesc::Default2D);
 
+		[[nodiscard]]
+		Texture(FilePathView rgb, FilePathView alpha, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		Texture(const Color& rgb, FilePathView alpha, TextureDesc desc = TextureDesc::Default2D);
+
+		/// @brief 絵文字からテクスチャを作成します。
+		/// @param emoji 絵文字
+		/// @remark テクスチャのサイズは `Emoji::ImageSize` です。
+		/// @param desc テクスチャの設定
+		[[nodiscard]]
+		explicit Texture(const Emoji& emoji, TextureDesc desc = TextureDesc::Default2D);
+
+		/// @brief 絵文字からテクスチャを作成します。
+		/// @param emoji 絵文字
+		/// @param size テクスチャのサイズ
+		/// @param desc テクスチャの設定
+		[[nodiscard]]
+		explicit Texture(const Emoji& emoji, int32 size, TextureDesc desc = TextureDesc::Default2D);
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	(desctructor)
+		//	(destructor)
 		//
 		////////////////////////////////////////////////////////////////
 
 		virtual ~Texture();
 		
 
+		/// @brief テクスチャの幅（ピクセル）を返します。
+		/// @return  テクスチャの幅（ピクセル）
+		[[nodiscard]]
+		int32 width() const;
 
+		/// @brief テクスチャの高さ（ピクセル）を返します。
+		/// @return  テクスチャの高さ（ピクセル）
+		[[nodiscard]]
+		int32 height() const;
+
+		/// @brief テクスチャの幅と高さ（ピクセル）を返します。
+		/// @return  テクスチャの幅と高さ（ピクセル）
+		[[nodiscard]]
+		Size size() const;
+
+		template <Concept::FloatingPoint Float = double>
+		[[nodiscard]]
+		Float horizontalAspectRatio() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -88,3 +125,5 @@ namespace s3d
 
 	};
 }
+
+# include "detail/Texture.ipp"

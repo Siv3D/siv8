@@ -376,12 +376,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 水平方向のアスペクト比を返します。
-		/// @tparam Type 戻り値の型
+		/// @tparam Float 戻り値の型
 		/// @remark Point{ 3, 2 } の場合、1.5 を返します。
 		/// @return 水平方向のアスペクト比
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Type horizontalAspectRatio() const noexcept;
+		constexpr Float horizontalAspectRatio() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -390,11 +390,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ベクトルの大きさ（長さ）を返します。
-		/// @tparam Type 結果の型
+		/// @tparam Float 結果の型
 		/// @return ベクトルの大きさ（長さ）
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		Type length() const noexcept;
+		Float length() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -403,12 +403,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ベクトルの大きさ（長さ）の二乗を返します。
-		/// @tparam Type 結果の型
+		/// @tparam Float 結果の型
 		/// @remark 平方根を計算しないため `length()` より高速です。
 		/// @return ベクトルの大きさ（長さ）の二乗
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Type lengthSq() const noexcept;
+		constexpr Float lengthSq() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -660,13 +660,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		Type getAngle() const noexcept;
+		Float getAngle() const noexcept;
 
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		Type getAngle(Vector2D<Type> other) const noexcept;
+		Float getAngle(Vector2D<Float> other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -691,20 +691,20 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 別の座標との中間にある座標を返します。
-		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @tparam Float 戻り値の二次元座標の要素の型
 		/// @param other 別の座標
 		/// @return 別の座標との中間にある座標
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Vector2D<Type> getMidpoint(Point other) const noexcept;
+		constexpr Vector2D<Float> getMidpoint(Point other) const noexcept;
 
 		/// @brief 別の座標との中間にある座標を返します。
-		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @tparam Float 戻り値の二次元座標の要素の型
 		/// @param other 別の座標
 		/// @return 別の座標との中間にある座標
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Vector2D<Type> getMidpoint(Vector2D<Type> other) const noexcept;
+		constexpr Vector2D<Float> getMidpoint(Vector2D<Float> other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -726,22 +726,22 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 別の座標との線形補間を返します。
-		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @tparam Float 戻り値の二次元座標の要素の型
 		/// @param other 別の座標
 		/// @param f 補間係数
 		/// @return 線形補間された座標
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Vector2D<Type> lerp(Point other, double f) const noexcept;
+		constexpr Vector2D<Float> lerp(Point other, double f) const noexcept;
 
 		/// @brief 別の座標との線形補間を返します。
-		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @tparam Float 戻り値の二次元座標の要素の型
 		/// @param other 別の座標
 		/// @param f 補間係数
 		/// @return 線形補間された座標
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Vector2D<Type> lerp(Vector2D<Type> other, double f) const noexcept;
+		constexpr Vector2D<Float> lerp(Vector2D<Float> other, double f) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
