@@ -157,8 +157,8 @@ namespace s3d
 		[[nodiscard]]
 		explicit Image(FilePathView path, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
 
-		/// @brief IReader から画像データを作成します。
-		/// @param reader IReader オブジェクト
+		/// @brief Reader から画像ファイルを読み込んで画像データを作成します。
+		/// @param reader Reader オブジェクト
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
 		[[nodiscard]]

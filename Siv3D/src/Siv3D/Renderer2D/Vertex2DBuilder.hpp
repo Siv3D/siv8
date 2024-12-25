@@ -104,5 +104,8 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildTextureRegion(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const FloatRect& uv, const Float4& color);
+		
+		[[nodiscard]]
+		Vertex2D::IndexType BuildTextureRegion(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4]);
 	}
 }

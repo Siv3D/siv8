@@ -447,5 +447,29 @@ namespace s3d
 
 			return IndexCount;
 		}
+
+		Vertex2D::IndexType BuildTextureRegion(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4])
+		{
+			constexpr Vertex2D::IndexType VertexCount = 4;
+			constexpr Vertex2D::IndexType IndexCount = 6;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			pVertex[0].set(rect.left, rect.top, uv.left, uv.top, colors[0]);
+			pVertex[1].set(rect.right, rect.top, uv.right, uv.top, colors[1]);
+			pVertex[2].set(rect.left, rect.bottom, uv.left, uv.bottom, colors[3]);
+			pVertex[3].set(rect.right, rect.bottom, uv.right, uv.bottom, colors[2]);
+
+			for (Vertex2D::IndexType i = 0; i < IndexCount; ++i)
+			{
+				*pIndex++ = (indexOffset + RectIndexTable[i]);
+			}
+
+			return IndexCount;
+		}
 	}
 }

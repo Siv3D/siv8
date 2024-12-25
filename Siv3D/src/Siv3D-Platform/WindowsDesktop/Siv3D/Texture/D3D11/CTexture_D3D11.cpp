@@ -166,7 +166,16 @@ namespace s3d
 			return Texture::IDType::Null();
 		}
 
-		auto texture = std::make_unique<D3D11Texture>(m_device, image, mipmaps, desc);
+		std::unique_ptr<D3D11Texture> texture;
+
+		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }) || mipmaps.isEmpty())
+		{
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, image, desc);
+		}
+		else
+		{
+			texture = std::make_unique<D3D11Texture>(m_device, image, mipmaps, desc);
+		}
 
 		if (not texture->isInitialized())
 		{

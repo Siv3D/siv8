@@ -1066,6 +1066,25 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_D3D11::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4])
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTextureRegion(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, uv, colors))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+
+			m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
 
 
 	////////////////////////////////////////////////////////////////

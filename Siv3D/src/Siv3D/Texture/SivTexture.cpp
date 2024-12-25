@@ -264,6 +264,21 @@ namespace s3d
 		return draw(0.0, 0.0, diffuse);
 	}
 
+	RectF Texture::draw(const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw(0.0, 0.0, topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw(0.0, 0.0, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw(0.0, 0.0, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
 	RectF Texture::draw(const double x, const double y, const ColorF& diffuse) const
 	{
 		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
@@ -276,5 +291,282 @@ namespace s3d
 		);
 
 		return{ x, y, size };
+	}
+
+	RectF Texture::draw(const double x, const double y, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		const Float4 colors[4] = { topLeftColor.toFloat4(), topRightColor.toFloat4(), bottomRightColor.toFloat4(), bottomLeftColor.toFloat4() };
+
+		SIV3D_ENGINE(Renderer2D)->addTextureRegion(
+			*this,
+			FloatRect{ x, y, (x + size.x), (y + size.y) },
+			FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f },
+			colors
+		);
+
+		return{ x, y, size };
+	}
+
+	RectF Texture::draw(const double x, const double y, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw(x, y, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const double x, const double y, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw(x, y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Vec2& pos, const ColorF& diffuse) const
+	{
+		return draw(pos.x, pos.y, diffuse);
+	}
+
+	RectF Texture::draw(const Vec2& pos, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw(pos.x, pos.y, topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Vec2& pos, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw(pos.x, pos.y, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Vec2& pos, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw(pos.x, pos.y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Arg::topLeft_<Vec2> topLeft, const ColorF& diffuse) const
+	{
+		return draw(topLeft->x, topLeft->y, diffuse);
+	}
+
+	RectF Texture::draw(const Arg::topLeft_<Vec2> topLeft, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw(topLeft->x, topLeft->y, topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Arg::topLeft_<Vec2> topLeft, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw(topLeft->x, topLeft->y, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::topLeft_<Vec2> topLeft, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw(topLeft->x, topLeft->y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Arg::topRight_<Vec2> topRight, const ColorF& diffuse) const
+	{
+		return draw((topRight->x - width()), topRight->y, diffuse);
+	}
+
+	RectF Texture::draw(const Arg::topRight_<Vec2> topRight, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw((topRight->x - width()), topRight->y, topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+	
+	RectF Texture::draw(const Arg::topRight_<Vec2> topRight, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw((topRight->x - width()), topRight->y, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::topRight_<Vec2> topRight, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw((topRight->x - width()), topRight->y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& diffuse) const
+	{
+		return draw(bottomLeft->x, (bottomLeft->y - height()), diffuse);
+	}
+
+	RectF Texture::draw(const Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw(bottomLeft->x, (bottomLeft->y - height()), topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Arg::bottomLeft_<Vec2> bottomLeft, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw(bottomLeft->x, (bottomLeft->y - height()), *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::bottomLeft_<Vec2> bottomLeft, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw(bottomLeft->x, (bottomLeft->y - height()), *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Arg::bottomRight_<Vec2> bottomRight, const ColorF& diffuse) const
+	{
+		return draw((bottomRight->x - width()), (bottomRight->y - height()), diffuse);
+	}
+
+	RectF Texture::draw(const Arg::bottomRight_<Vec2> bottomRight, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw((bottomRight->x - width()), (bottomRight->y - height()), topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Arg::bottomRight_<Vec2> bottomRight, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw((bottomRight->x - width()), (bottomRight->y - height()), *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::bottomRight_<Vec2> bottomRight, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw((bottomRight->x - width()), (bottomRight->y - height()), *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Arg::topCenter_<Vec2> topCenter, const ColorF& diffuse) const
+	{
+		return draw((topCenter->x - (width() * 0.5)), topCenter->y, diffuse);
+	}
+
+	RectF Texture::draw(const Arg::topCenter_<Vec2> topCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw((topCenter->x - (width() * 0.5)), topCenter->y, topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Arg::topCenter_<Vec2> topCenter, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw((topCenter->x - (width() * 0.5)), topCenter->y, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::topCenter_<Vec2> topCenter, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw((topCenter->x - (width() * 0.5)), topCenter->y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& diffuse) const
+	{
+		return draw((bottomCenter->x - (width() * 0.5)), (bottomCenter->y - height()), diffuse);
+	}
+
+	RectF Texture::draw(const Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw((bottomCenter->x - (width() * 0.5)), (bottomCenter->y - height()), topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Arg::bottomCenter_<Vec2> bottomCenter, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw((bottomCenter->x - (width() * 0.5)), (bottomCenter->y - height()), *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::bottomCenter_<Vec2> bottomCenter, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw((bottomCenter->x - (width() * 0.5)), (bottomCenter->y - height()), *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Arg::leftCenter_<Vec2> leftCenter, const ColorF& diffuse) const
+	{
+		return draw(leftCenter->x, (leftCenter->y - (height() * 0.5)), diffuse);
+	}
+
+	RectF Texture::draw(const Arg::leftCenter_<Vec2> leftCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw(leftCenter->x, (leftCenter->y - (height() * 0.5)), topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Arg::leftCenter_<Vec2> leftCenter, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw(leftCenter->x, (leftCenter->y - (height() * 0.5)), *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::leftCenter_<Vec2> leftCenter, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw(leftCenter->x, (leftCenter->y - (height() * 0.5)), *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Arg::rightCenter_<Vec2>rightCenter, const ColorF& diffuse) const
+	{
+		return draw((rightCenter->x - width()), (rightCenter->y - (height() * 0.5)), diffuse);
+	}
+
+	RectF Texture::draw(const Arg::rightCenter_<Vec2>rightCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		return draw((rightCenter->x - width()), (rightCenter->y - (height() * 0.5)), topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Arg::rightCenter_<Vec2>rightCenter, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return draw((rightCenter->x - width()), (rightCenter->y - (height() * 0.5)), *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::rightCenter_<Vec2>rightCenter, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return draw((rightCenter->x - width()), (rightCenter->y - (height() * 0.5)), *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::draw(const Arg::center_<Vec2> center, const ColorF& diffuse) const
+	{
+		const Vec2 topLeft = center->movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, diffuse);
+	}
+
+	RectF Texture::draw(const Arg::center_<Vec2> center, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		const Vec2 topLeft = center->movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::draw(const Arg::center_<Vec2> center, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		const Vec2 topLeft = center->movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::draw(const Arg::center_<Vec2> center, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		const Vec2 topLeft = center->movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::drawAt(const double x, const double y, const ColorF& diffuse) const
+	{
+		const Vec2 topLeft = Vec2{ x, y }.movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, diffuse);
+	}
+
+	RectF Texture::drawAt(const double x, const double y, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		const Vec2 topLeft = Vec2{ x, y }.movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::drawAt(const double x, const double y, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		const Vec2 topLeft = Vec2{ x, y }.movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::drawAt(const double x, const double y, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		const Vec2 topLeft = Vec2{ x, y }.movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+	RectF Texture::drawAt(const Vec2& pos, const ColorF& diffuse) const
+	{
+		const Vec2 topLeft = pos.movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, diffuse);
+	}
+
+	RectF Texture::drawAt(const Vec2& pos, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		const Vec2 topLeft = pos.movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, topLeftColor, topRightColor, bottomRightColor, bottomLeftColor);
+	}
+
+	RectF Texture::drawAt(const Vec2& pos, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		const Vec2 topLeft = pos.movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	RectF Texture::drawAt(const Vec2& pos, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		const Vec2 topLeft = pos.movedBy(size() * -0.5);
+		return draw(topLeft.x, topLeft.y, *leftColor, *rightColor, *rightColor, *leftColor);
 	}
 }

@@ -236,7 +236,7 @@ namespace s3d
 
 		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color) override;
 
-
+		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4]) override;
 
 		////////////////////////////////////////////////////////////////
 		//

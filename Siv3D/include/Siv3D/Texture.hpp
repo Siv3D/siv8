@@ -17,8 +17,18 @@
 # include "AssetHandle.hpp"
 # include "2DShapesFwd.hpp"
 
+# if SIV3D_PLATFORM(WINDOWS)
+
+	struct ID3D11Texture2D;
+
+# endif
+
 namespace s3d
 {
+	struct TextureRegion;
+	struct TexturedQuad;
+	struct TexturedRoundRect;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Texture
@@ -36,24 +46,46 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ。空のテクスチャを作成します。
 		[[nodiscard]]
 		Texture();
 
+		/// @brief 画像からテクスチャを作成します。
+		/// @param image 画像
+		/// @param desc テクスチャの設定
 		[[nodiscard]]
 		explicit Texture(const Image& image, TextureDesc desc = TextureDesc::Default2D);
 
+		/// @brief 画像とミップマップからテクスチャを作成します。
+		/// @param image 基本画像
+		/// @param mipmaps ミップマップ
+		/// @param desc テクスチャの設定
 		[[nodiscard]]
 		Texture(const Image& image, const Array<Image>& mipmaps, TextureDesc desc = TextureDesc::Default2D);
 
+		/// @brief 画像ファイルを読み込んでテクスチャを作成します。
+		/// @param path 画像ファイルのパス
+		/// @param desc テクスチャの設定
 		[[nodiscard]]
 		explicit Texture(FilePathView path, TextureDesc desc = TextureDesc::Default2D);
 
+		/// @brief Reader から画像ファイルを読み込んでテクスチャを作成します。
+		/// @param reader Reader オブジェクト
+		/// @param desc テクスチャの設定
 		[[nodiscard]]
 		explicit Texture(IReader&& reader, TextureDesc desc = TextureDesc::Default2D);
 
+		/// @brief 一方の画像ファイルから RGB チャンネルを、もう一方の画像ファイルからアルファチャンネルを読み込んでテクスチャを作成します。
+		/// @param rgb RGB チャンネルの画像ファイルのパス
+		/// @param alpha アルファチャンネルの画像ファイルのパス（R 成分がアルファチャンネルとして使用されます）
+		/// @param desc テクスチャの設定
 		[[nodiscard]]
 		Texture(FilePathView rgb, FilePathView alpha, TextureDesc desc = TextureDesc::Default2D);
 
+		/// @brief 指定した色を RGB チャンネルに、指定した画像ファイルの内容をアルファチャンネルに使用してテクスチャを作成します。
+		/// @param rgb RGB チャンネルの色
+		/// @param alpha アルファチャンネルの画像ファイルのパス（R 成分がアルファチャンネルとして使用されます）
+		/// @param desc テクスチャの設定
 		[[nodiscard]]
 		Texture(const Color& rgb, FilePathView alpha, TextureDesc desc = TextureDesc::Default2D);
 
@@ -84,6 +116,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デストラクタ
 		virtual ~Texture();
 
 		////////////////////////////////////////////////////////////////
@@ -119,6 +152,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テクスチャのアスペクト比（幅 / 高さ）を返します。
+		/// @tparam Float アスペクト比の型
+		/// @return テクスチャのアスペクト比（幅 / 高さ）
 		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
 		Float horizontalAspectRatio() const;
@@ -140,8 +176,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ミップマップを持つかを返します。
-		/// @return ミップマップを持つ場合 true, それ以外の場合は false
+		/// @brief テクスチャがミップマップを持つかを返します。
+		/// @return テクスチャがミップマップを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool hasMipmaps() const;
 
@@ -151,6 +187,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief シェーダでのサンプリング時に sRGB → Linear への変換が行われるかを返します。
+		/// @return シェーダでのサンプリング時に sRGB → Linear への変換が行われる場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isSRGB() const;
 
@@ -160,6 +198,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テクスチャが SDF (Signed Distance Field) であるかを返します。
+		/// @return テクスチャが SDF (Signed Distance Field) である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isSDF() const;
 
@@ -169,6 +209,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テクスチャのミップマップレベル数を返します。
+		/// @return テクスチャのミップマップレベル数。ミップマップを持たない場合は 1
 		[[nodiscard]]
 		uint32 mipLevels() const;
 
@@ -189,6 +231,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テクスチャが深度バッファを持つかを返します。
+		/// @return テクスチャが深度バッファを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool hasDepth() const;
 
@@ -208,15 +252,29 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置にテクスチャを描画する際の領域を返します。
+		/// @param x テクスチャの左上を配置する X 座標
+		/// @param y テクスチャの左上を配置する Y 座標
+		/// @return テクスチャが描画される領域
 		[[nodiscard]]
 		Rect region(int32 x, int32 y) const;
 
+		/// @brief 指定した位置にテクスチャを描画する際の領域を返します。
+		/// @param pos テクスチャの左上を配置する座標
+		/// @return テクスチャが描画される領域
 		[[nodiscard]]
 		Rect region(Point pos = Point{ 0, 0 }) const;
 
+		/// @brief 指定した位置にテクスチャを描画する際の領域を返します。
+		/// @param x テクスチャの左上を配置する X 座標
+		/// @param y テクスチャの左上を配置する Y 座標
+		/// @return テクスチャが描画される領域
 		[[nodiscard]]
 		RectF region(double x, double y) const;
 
+		/// @brief 指定した位置にテクスチャを描画する際の領域を返します。
+		/// @param pos テクスチャの左上を配置する座標
+		/// @return テクスチャが描画される領域
 		[[nodiscard]]
 		RectF region(Vec2 pos) const;
 
@@ -226,9 +284,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置を中心にテクスチャを描画する際の領域を返します。
+		/// @param x テクスチャの中心を配置する X 座標
+		/// @param y テクスチャの中心を配置する Y 座標
+		/// @return テクスチャが描画される領域
 		[[nodiscard]]
 		RectF regionAt(double x, double y) const;
 
+		/// @brief 指定した位置を中心にテクスチャを描画する際の領域を返します。
+		/// @param pos テクスチャの中心を配置する座標
+		/// @return テクスチャが描画される領域
 		[[nodiscard]]
 		RectF regionAt(Vec2 pos) const;
 
@@ -238,31 +303,622 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 位置 (0, 0) にテクスチャを描画します。
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
 		RectF draw(const ColorF& diffuse = Palette::White) const;
 
-		/// @brief 左上位置を指定してテクスチャを描画します。
-		/// @param x 描画を開始する左上の X 座標
-		/// @param y 描画を開始する左上の Y 座標
+		/// @brief 位置 (0, 0) にテクスチャを描画します。
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 位置 (0, 0) にテクスチャを描画します。
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 位置 (0, 0) にテクスチャを描画します。
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param x テクスチャの左上を配置する X 座標
+		/// @param y テクスチャの左上を配置する Y 座標
 		/// @param diffuse 描画時に乗算する色
 		/// @return テクスチャが描画された領域
 		RectF draw(double x, double y, const ColorF& diffuse = Palette::White) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param x テクスチャの左上を配置する X 座標
+		/// @param y テクスチャの左上を配置する Y 座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(double x, double y, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param x テクスチャの左上を配置する X 座標
+		/// @param y テクスチャの左上を配置する Y 座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(double x, double y, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param x テクスチャの左上を配置する X 座標
+		/// @param y テクスチャの左上を配置する Y 座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(double x, double y, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param pos テクスチャの左上を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(const Vec2& pos, const ColorF& diffuse = Palette::White) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param pos テクスチャの左上を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(const Vec2& pos, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param pos テクスチャの左上を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(const Vec2& pos, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param pos テクスチャの左上を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(const Vec2& pos, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topLeft テクスチャの左上を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topLeft_<Vec2> topLeft, const ColorF& diffuse = Palette::White) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topLeft テクスチャの左上を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topLeft_<Vec2> topLeft, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topLeft テクスチャの左上を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topLeft_<Vec2> topLeft, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topLeft テクスチャの左上を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topLeft_<Vec2> topLeft, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topRight テクスチャの右上を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topRight_<Vec2> topRight, const ColorF& diffuse = Palette::White) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topRight テクスチャの右上を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topRight_<Vec2> topRight, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topRight テクスチャの右上を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topRight_<Vec2> topRight, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topRight テクスチャの右上を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topRight_<Vec2> topRight, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomLeft テクスチャの左下を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& diffuse = Palette::White) const;
 
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomLeft テクスチャの左下を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomLeft テクスチャの左下を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomLeft_<Vec2> bottomLeft, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomLeft テクスチャの左下を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomLeft_<Vec2> bottomLeft, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomRight テクスチャの右下を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomRight_<Vec2> bottomRight, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomRight テクスチャの右下を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomRight_<Vec2> bottomRight, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomRight テクスチャの右下を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomRight_<Vec2> bottomRight, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomRight テクスチャの右下を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomRight_<Vec2> bottomRight, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topCenter テクスチャの上辺の中心を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topCenter_<Vec2> topCenter, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topCenter テクスチャの上辺の中心を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topCenter_<Vec2> topCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topCenter テクスチャの上辺の中心を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topCenter_<Vec2> topCenter, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param topCenter テクスチャの上辺の中心を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::topCenter_<Vec2> topCenter, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomCenter テクスチャの下辺の中心を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomCenter テクスチャの下辺の中心を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomCenter テクスチャの下辺の中心を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomCenter_<Vec2> bottomCenter, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param bottomCenter テクスチャの下辺の中心を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::bottomCenter_<Vec2> bottomCenter, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param leftCenter テクスチャの左辺の中心を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::leftCenter_<Vec2> leftCenter, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param leftCenter テクスチャの左辺の中心を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::leftCenter_<Vec2> leftCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param leftCenter テクスチャの左辺の中心を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::leftCenter_<Vec2> leftCenter, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param leftCenter テクスチャの左辺の中心を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::leftCenter_<Vec2> leftCenter, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param rightCenter テクスチャの右辺の中心を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::rightCenter_<Vec2>rightCenter, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param rightCenter テクスチャの右辺の中心を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::rightCenter_<Vec2>rightCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param rightCenter テクスチャの右辺の中心を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::rightCenter_<Vec2>rightCenter, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 指定した位置にテクスチャを描画します。
+		/// @param rightCenter テクスチャの右辺の中心を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::rightCenter_<Vec2>rightCenter, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param center テクスチャの中心を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::center_<Vec2> center, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param center テクスチャの中心を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::center_<Vec2> center, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param center テクスチャの中心を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::center_<Vec2> center, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param center テクスチャの中心を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF draw(Arg::center_<Vec2> center, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param x テクスチャの中心を配置する X 座標
+		/// @param y テクスチャの中心を配置する Y 座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF drawAt(double x, double y, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param x テクスチャの中心を配置する X 座標
+		/// @param y テクスチャの中心を配置する Y 座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF drawAt(double x, double y, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param x テクスチャの中心を配置する X 座標
+		/// @param y テクスチャの中心を配置する Y 座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF drawAt(double x, double y, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param x テクスチャの中心を配置する X 座標
+		/// @param y テクスチャの中心を配置する Y 座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF drawAt(double x, double y, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param pos テクスチャの中心を配置する座標
+		/// @param diffuse 描画時に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF drawAt(const Vec2& pos, const ColorF& diffuse = Palette::White) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param pos テクスチャの中心を配置する座標
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF drawAt(const Vec2& pos, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param pos テクスチャの中心を配置する座標
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF drawAt(const Vec2& pos, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 指定した位置を中心にテクスチャを描画します。
+		/// @param pos テクスチャの中心を配置する座標
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return テクスチャが描画された領域
+		RectF drawAt(const Vec2& pos, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawClipped
+		//
+		////////////////////////////////////////////////////////////////
+
+		//RectF drawClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+
+		//RectF drawClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawAtClipped
+		//
+		////////////////////////////////////////////////////////////////
+
+		//RectF drawAtClipped(double x, double y, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+
+		//RectF drawAtClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ()
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		TextureRegion operator ()(double x, double y, double size) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(double x, double y, double w, double h) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(const Vec2& xy, double w, double h) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(double x, double y, const Vec2& size) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(const Vec2& xy, double size) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(const Vec2& xy, const Vec2& size) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(const RectF& rect) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	uv
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		TextureRegion uv(double u, double v, double w, double h) const;
+
+		[[nodiscard]]
+		TextureRegion uv(double u, double v, double uvSize) const;
+
+		[[nodiscard]]
+		TextureRegion uv(const RectF& rect) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mirrored
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		TextureRegion mirrored() const;
+
+		[[nodiscard]]
+		TextureRegion mirrored(bool doMirror) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	flipped
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		TextureRegion flipped() const;
+
+		[[nodiscard]]
+		TextureRegion flipped(bool doFlip) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaled
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		TextureRegion scaled(double s) const;
+
+		[[nodiscard]]
+		TextureRegion scaled(double xs, double ys) const;
+
+		[[nodiscard]]
+		TextureRegion scaled(Vec2 s) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	resized
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		TextureRegion resized(double size) const;
+
+		[[nodiscard]]
+		TextureRegion resized(double width, double height) const;
+
+		[[nodiscard]]
+		TextureRegion resized(Vec2 size) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	repeated
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		TextureRegion repeated(double repeat) const;
+
+		[[nodiscard]]
+		TextureRegion repeated(double xRepeat, double yRepeat) const;
+
+		[[nodiscard]]
+		TextureRegion repeated(Vec2 repeat) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mapped
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		TextureRegion mapped(double size) const;
+
+		[[nodiscard]]
+		TextureRegion mapped(double width, double height) const;
+
+		[[nodiscard]]
+		TextureRegion mapped(Vec2 size) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fitted
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//TextureRegion fitted(double width, double height, AllowScaleUp allowScaleUp = AllowScaleUp::Yes) const;
+
+		//[[nodiscard]]
+		//TextureRegion fitted(const Vec2& size, AllowScaleUp allowScaleUp = AllowScaleUp::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//TexturedQuad rotated(double angle) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotatedAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//TexturedQuad rotatedAt(double x, double y, double angle) const;
+
+		//[[nodiscard]]
+		//TexturedQuad rotatedAt(const Vec2& pos, double angle) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rounded
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//TexturedRoundRect rounded(double r) const;
+
+	# if SIV3D_PLATFORM(WINDOWS)
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getD3D11Texture2D
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//ID3D11Texture2D* getD3D11Texture2D();
+
+	# endif
 
 		////////////////////////////////////////////////////////////////
 		//

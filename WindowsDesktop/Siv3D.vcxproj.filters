@@ -1033,6 +1033,9 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11">
       <UniqueIdentifier>{704ac88d-8b33-4f2d-850e-7e1df26ba726}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\TextureRegion">
+      <UniqueIdentifier>{4d342f16-e231-49fa-9982-391ff5fdccf9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4077,6 +4080,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureRegion.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6514,6 +6520,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\D3D11Texture2DDesc.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextureRegion\SivTextureRegion.cpp">
+      <Filter>src\Siv3D\TextureRegion</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

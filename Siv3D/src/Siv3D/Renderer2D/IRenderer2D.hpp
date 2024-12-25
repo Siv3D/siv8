@@ -127,6 +127,8 @@ namespace s3d
 
 		virtual void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color) = 0;
 
+		virtual void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4]) = 0;
+
 
 
 		virtual void flush() = 0;
