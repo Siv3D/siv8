@@ -914,6 +914,8 @@
 		F980C4A92C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4A62C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp */; };
 		F980C4AA2C0F6D2C00A86B68 /* MetalRenderPipelineState.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C4A72C0F6D2C00A86B68 /* MetalRenderPipelineState.mm */; };
 		F980C4AC2C0F6DFB00A86B68 /* PipelineStateDesc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4AB2C0F6DFB00A86B68 /* PipelineStateDesc.hpp */; };
+		F981F6DB2D1BDF9B009F6627 /* MetalSamplerState.mm in Sources */ = {isa = PBXBuildFile; fileRef = F981F6D92D1BDF9B009F6627 /* MetalSamplerState.mm */; };
+		F981F6DC2D1BDF9B009F6627 /* MetalSamplerState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F981F6D82D1BDF9B009F6627 /* MetalSamplerState.hpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
 		F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */; };
 		F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABE2BCFBB53006A4C0F /* SkBlendMode.h */; };
@@ -3418,6 +3420,8 @@
 		F980C4A62C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalRenderPipelineState.hpp; sourceTree = "<group>"; };
 		F980C4A72C0F6D2C00A86B68 /* MetalRenderPipelineState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalRenderPipelineState.mm; sourceTree = "<group>"; };
 		F980C4AB2C0F6DFB00A86B68 /* PipelineStateDesc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PipelineStateDesc.hpp; sourceTree = "<group>"; };
+		F981F6D82D1BDF9B009F6627 /* MetalSamplerState.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalSamplerState.hpp; sourceTree = "<group>"; };
+		F981F6D92D1BDF9B009F6627 /* MetalSamplerState.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalSamplerState.mm; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
 		F9838AD42BFF793C001EB6C5 /* SceneUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneUtility.cpp; sourceTree = "<group>"; };
 		F98604F82BCFBBA1006A4C0F /* SkFontHost_FreeType_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkFontHost_FreeType_common.h; sourceTree = "<group>"; };
@@ -7720,6 +7724,7 @@
 		F972031E2BF09E80000E21DD /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				F981F6DA2D1BDF9B009F6627 /* SamplerState */,
 				F980C4A82C0F6D2C00A86B68 /* RenderPipelineState */,
 				F9807D7E2BF1229700D9B590 /* BackBuffer */,
 				F97204342BF0A39F000E21DD /* Metal.cpp */,
@@ -8123,6 +8128,15 @@
 				F980C4A72C0F6D2C00A86B68 /* MetalRenderPipelineState.mm */,
 			);
 			path = RenderPipelineState;
+			sourceTree = "<group>";
+		};
+		F981F6DA2D1BDF9B009F6627 /* SamplerState */ = {
+			isa = PBXGroup;
+			children = (
+				F981F6D82D1BDF9B009F6627 /* MetalSamplerState.hpp */,
+				F981F6D92D1BDF9B009F6627 /* MetalSamplerState.mm */,
+			);
+			path = SamplerState;
 			sourceTree = "<group>";
 		};
 		F98605202BD0E2A3006A4C0F /* EngineResource */ = {
@@ -11225,6 +11239,7 @@
 				F986FA5D2BCFB53B006A4C0F /* ftcalc.h in Headers */,
 				F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */,
 				F980C4852C04B3EB00A86B68 /* Renderer2DCommon.hpp in Headers */,
+				F981F6DC2D1BDF9B009F6627 /* MetalSamplerState.hpp in Headers */,
 				F98605292BD10459006A4C0F /* Triangle.hpp in Headers */,
 				F96F95F12C359E7D0033353E /* nanoflann.hpp in Headers */,
 				F9070CB32B9F175000383E4D /* DLL.hpp in Headers */,
@@ -12593,6 +12608,7 @@
 				F986F9BB2BCA9D0A006A4C0F /* styledelement.cpp in Sources */,
 				F9070E582B9F176B00383E4D /* BinaryReaderDetail.cpp in Sources */,
 				F98600CF2BCFBB53006A4C0F /* SkDeque.cpp in Sources */,
+				F981F6DB2D1BDF9B009F6627 /* MetalSamplerState.mm in Sources */,
 				F986040D2BCFBB54006A4C0F /* SkSLForStatement.cpp in Sources */,
 				F98603D92BCFBB54006A4C0F /* SkSLRasterPipelineBuilder.cpp in Sources */,
 				F98604562BCFBB54006A4C0F /* SkSLEliminateDeadGlobalVariables.cpp in Sources */,

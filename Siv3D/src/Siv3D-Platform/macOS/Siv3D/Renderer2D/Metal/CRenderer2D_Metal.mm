@@ -1219,7 +1219,7 @@ namespace s3d
 					{
 						const uint32 slot = FromEnum(command.type) - FromEnum(MetalRenderer2DCommandType::VSSamplerState0);
 						const auto& samplerState = m_commandManager.getVSSamplerState(slot, command.index);
-						//m_pRenderer->getSamplerState().setVS(slot, samplerState);
+						m_pRenderer->getSamplerState().setVS(renderCommandEncoder, slot, samplerState);
 						LOG_COMMAND(fmt::format("VSSamplerState{}[{}] ", slot, command.index));
 						break;
 					}
@@ -1234,7 +1234,7 @@ namespace s3d
 					{
 						const uint32 slot = FromEnum(command.type) - FromEnum(MetalRenderer2DCommandType::PSSamplerState0);
 						const auto& samplerState = m_commandManager.getPSSamplerState(slot, command.index);
-						//m_pRenderer->getSamplerState().setPS(slot, samplerState);
+						m_pRenderer->getSamplerState().setPS(renderCommandEncoder, slot, samplerState);
 						LOG_COMMAND(fmt::format("PSSamplerState{}[{}] ", slot, command.index));
 						break;
 					}

@@ -18,6 +18,7 @@
 # include "Metal.hpp"
 # include "BackBuffer/MetalInternalTexture2D.hpp"
 # include "RenderPipelineState/MetalRenderPipelineState.hpp"
+# include "SamplerState/MetalSamplerState.hpp"
 
 namespace s3d
 {
@@ -69,15 +70,23 @@ namespace s3d
 		
 		void updateSceneBufferSize();
 
-		MTL::Device* getDevice() const;
-		
-		uint32 getSceneSampleCount() const;
+		[[nodiscard]]
+		MTL::Device* getDevice() const noexcept;
 
-		const MetalInternalTexture2D& getSceneTextureMSAA() const;
+		[[nodiscard]]		
+		uint32 getSceneSampleCount() const noexcept;
 
-		const MetalInternalTexture2D& getSceneTextureNonMSAA() const;
+		[[nodiscard]]
+		const MetalInternalTexture2D& getSceneTextureMSAA() const noexcept;
+
+		[[nodiscard]]
+		const MetalInternalTexture2D& getSceneTextureNonMSAA() const noexcept;
 		
-		MetalRenderPipelineState& getRenderPipelineState();
+		[[nodiscard]]
+		MetalRenderPipelineState& getRenderPipelineState() noexcept;
+		
+		[[nodiscard]]
+		MetalSamplerState& getSamplerState() noexcept;
 		
 	private:
 
@@ -128,6 +137,8 @@ namespace s3d
 		Image m_screenCapture;
 		
 		MetalRenderPipelineState m_renderPipelineState;
+		
+		MetalSamplerState m_samplerState;
 
 		const MTL::RenderPipelineState* m_fullscreenTriangleRenderPipelineState = nullptr;
 		

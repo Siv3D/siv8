@@ -107,6 +107,7 @@ namespace s3d
 		}
 		
 		m_renderPipelineState.init(m_device, m_pShader);
+		m_samplerState.init(m_device);
 		
 		SIV3D_ENGINE(Texture)->init();
 		SIV3D_ENGINE(Shader)->init();
@@ -425,7 +426,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MTL::Device* CRenderer_Metal::getDevice() const
+	MTL::Device* CRenderer_Metal::getDevice() const noexcept
 	{
 		return m_device;
 	}
@@ -436,7 +437,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint32 CRenderer_Metal::getSceneSampleCount() const
+	uint32 CRenderer_Metal::getSceneSampleCount() const noexcept
 	{
 		return m_sceneBuffers.sampleCount;
 	}
@@ -447,7 +448,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const MetalInternalTexture2D& CRenderer_Metal::getSceneTextureMSAA() const
+	const MetalInternalTexture2D& CRenderer_Metal::getSceneTextureMSAA() const noexcept
 	{
 		return m_sceneBuffers.msaa;
 	}
@@ -458,14 +459,31 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const MetalInternalTexture2D& CRenderer_Metal::getSceneTextureNonMSAA() const
+	const MetalInternalTexture2D& CRenderer_Metal::getSceneTextureNonMSAA() const noexcept
 	{
 		return m_sceneBuffers.nonMSAA;
 	}
 
-	MetalRenderPipelineState& CRenderer_Metal::getRenderPipelineState()
+	////////////////////////////////////////////////////////////////
+	//
+	//	getRenderPipelineState
+	//
+	////////////////////////////////////////////////////////////////
+
+	MetalRenderPipelineState& CRenderer_Metal::getRenderPipelineState() noexcept
 	{
 		return m_renderPipelineState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	MetalSamplerState& CRenderer_Metal::getSamplerState() noexcept
+	{
+		return m_samplerState;
 	}
 
 	////////////////////////////////////////////////////////////////
