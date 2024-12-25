@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Texture.hpp>
+# include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -207,9 +208,6 @@ namespace s3d
 	{
 		m_handle.swap(other.m_handle);
 	}
-
-
-
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -568,5 +566,62 @@ namespace s3d
 	{
 		const Vec2 topLeft = pos.movedBy(size() * -0.5);
 		return draw(topLeft.x, topLeft.y, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
+
+
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ()
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::operator ()(const double x, const double y, const double size) const
+	{
+		return operator()(x, y, size, size);
+	}
+
+	TextureRegion Texture::operator ()(const double x, const double y, const double w, const double h) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		const double invSizeX = (1.0 / size.x);
+		const double invSizeY = (1.0 / size.y);
+		return{
+			*this,
+			static_cast<float>(x * invSizeX),
+			static_cast<float>(y * invSizeY),
+			static_cast<float>((x + w) * invSizeX),
+			static_cast<float>((y + h) * invSizeY),
+			w,
+			h
+		};
+	}
+
+	TextureRegion Texture::operator ()(const Vec2& xy, const double w, const double h) const
+	{
+		return operator()(xy.x, xy.y, w, h);
+	}
+
+	TextureRegion Texture::operator ()(const double x, const double y, const Vec2& size) const
+	{
+		return operator()(x, y, size.x, size.y);
+	}
+
+	TextureRegion Texture::operator ()(const Vec2& xy, const double size) const
+	{
+		return operator()(xy.x, xy.y, size, size);
+	}
+
+	TextureRegion Texture::operator ()(const Vec2& xy, const Vec2& size) const
+	{
+		return operator()(xy.x, xy.y, size.x, size.y);
+	}
+
+	TextureRegion Texture::operator ()(const RectF& rect) const
+	{
+		return operator()(rect.pos.x, rect.pos.y, rect.size.x, rect.size.y);
 	}
 }
