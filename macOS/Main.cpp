@@ -9,11 +9,15 @@ void Main()
 	//Window::SetStyle(WindowStyle::Sizable);
 	//Scene::SetResizeMode(ResizeMode::Keep);
 
+	const Texture texture{ U"example/windmill.png", TextureDesc::NoMipmap };
+
 	while (System::Update())
 	{
 		const double t = Scene::Time();
 
 		Scene::Rect().draw(Pattern::Checker{ ColorF{ 0.2 }, ColorF{ 0.25 }, 40 });
+
+		texture.draw(10, 10);
 
 		RectF{ 40, 40, 120 }.draw();
 		RectF{ 200, 40, 120 }.draw(Pattern::PolkaDot{ ColorF{ 0.2, 1.0, 0.5 }, ColorF{ 0.2, 0.2, 0.8 }, 18, 0.8, 45_deg, Vec2::All(t) });

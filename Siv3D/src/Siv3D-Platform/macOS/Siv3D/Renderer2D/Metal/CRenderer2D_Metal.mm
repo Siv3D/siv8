@@ -1443,7 +1443,7 @@ namespace s3d
 
 	SamplerState CRenderer2D_Metal::getVSSamplerState(const uint32 slot) const
 	{
-		return m_commandManager.getVSCurrentSamplerState(slot);
+		return m_commandManager.getCurrentVSSamplerState(slot);
 	}
 
 	void CRenderer2D_Metal::setVSSamplerState(const uint32 slot, const SamplerState& state)
@@ -1459,7 +1459,7 @@ namespace s3d
 
 	SamplerState CRenderer2D_Metal::getPSSamplerState(const uint32 slot) const
 	{
-		return m_commandManager.getPSCurrentSamplerState(slot);
+		return m_commandManager.getCurrentPSSamplerState(slot);
 	}
 
 	void CRenderer2D_Metal::setPSSamplerState(const uint32 slot, const SamplerState& state)

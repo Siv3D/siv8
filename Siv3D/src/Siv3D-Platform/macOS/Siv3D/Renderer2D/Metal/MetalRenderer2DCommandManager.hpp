@@ -65,11 +65,11 @@ namespace s3d
 
 		void pushVSSamplerState(const SamplerState& state, uint32 slot);
 		const SamplerState& getVSSamplerState(uint32 slot, uint32 index) const;
-		const SamplerState& getVSCurrentSamplerState(uint32 slot) const;
+		const SamplerState& getCurrentVSSamplerState(uint32 slot) const;
 
 		void pushPSSamplerState(const SamplerState& state, uint32 slot);
 		const SamplerState& getPSSamplerState(uint32 slot, uint32 index) const;
-		const SamplerState& getPSCurrentSamplerState(uint32 slot) const;
+		const SamplerState& getCurrentPSSamplerState(uint32 slot) const;
 
 		void pushScissorRect(const Optional<Rect>& state);
 		const Optional<Rect>& getScissorRect(uint32 index) const;
