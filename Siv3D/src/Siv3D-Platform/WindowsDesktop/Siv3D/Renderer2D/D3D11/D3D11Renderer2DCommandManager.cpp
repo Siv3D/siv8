@@ -609,7 +609,7 @@ namespace s3d
 		return m_buffer.vsSamplerStates[slot][index];
 	}
 	
-	const SamplerState& D3D11Renderer2DCommandManager::getVSCurrentSamplerState(const uint32 slot) const
+	const SamplerState& D3D11Renderer2DCommandManager::getCurrentVSSamplerState(const uint32 slot) const
 	{
 		assert(slot < Graphics::TextureSlotCount);
 
@@ -656,7 +656,7 @@ namespace s3d
 		return m_buffer.psSamplerStates[slot][index];
 	}
 
-	const SamplerState& D3D11Renderer2DCommandManager::getPSCurrentSamplerState(const uint32 slot) const
+	const SamplerState& D3D11Renderer2DCommandManager::getCurrentPSSamplerState(const uint32 slot) const
 	{
 		assert(slot < Graphics::TextureSlotCount);
 

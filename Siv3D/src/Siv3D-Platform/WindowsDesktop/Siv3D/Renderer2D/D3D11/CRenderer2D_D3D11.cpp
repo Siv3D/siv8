@@ -1426,13 +1426,12 @@ namespace s3d
 
 	SamplerState CRenderer2D_D3D11::getVSSamplerState(const uint32 slot) const
 	{
-		// [Siv3D ToDo]
-		return SamplerState{};
+		return m_commandManager.getCurrentVSSamplerState(slot);
 	}
 
 	void CRenderer2D_D3D11::setVSSamplerState(const uint32 slot, const SamplerState& state)
 	{
-		// [Siv3D ToDo]
+		m_commandManager.pushVSSamplerState(state, slot);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1443,13 +1442,12 @@ namespace s3d
 
 	SamplerState CRenderer2D_D3D11::getPSSamplerState(const uint32 slot) const
 	{
-		// [Siv3D ToDo]
-		return SamplerState{};
+		return m_commandManager.getCurrentPSSamplerState(slot);
 	}
 
 	void CRenderer2D_D3D11::setPSSamplerState(const uint32 slot, const SamplerState& state)
 	{
-		// [Siv3D ToDo]
+		m_commandManager.pushPSSamplerState(state, slot);
 	}
 
 	////////////////////////////////////////////////////////////////
