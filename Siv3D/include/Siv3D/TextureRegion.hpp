@@ -42,16 +42,22 @@ namespace s3d
 		TextureRegion(const Texture& _texture);
 
 		[[nodiscard]]
-		TextureRegion(const Texture& _texture, float l, float t, float r, float b, double sx, double sy);
+		TextureRegion(const Texture& _texture, double width, double height);
 
 		[[nodiscard]]
-		TextureRegion(const Texture& _texture, float l, float t, float r, float b, const Vec2& _size);
+		TextureRegion(const Texture& _texture, const SizeF& _size);
 
 		[[nodiscard]]
-		TextureRegion(const Texture& _texture, const FloatRect& _uvRect, double sx, double sy);
+		TextureRegion(const Texture& _texture, float l, float t, float r, float b, double width, double height);
 
 		[[nodiscard]]
-		TextureRegion(const Texture& _texture, const FloatRect& _uvRect, const Vec2& _size);
+		TextureRegion(const Texture& _texture, float l, float t, float r, float b, const SizeF& _size);
+
+		[[nodiscard]]
+		TextureRegion(const Texture& _texture, const FloatRect& _uvRect, double width, double height);
+
+		[[nodiscard]]
+		TextureRegion(const Texture& _texture, const FloatRect& _uvRect, const SizeF& _size);
 
 		////////////////////////////////////////////////////////////////
 		//

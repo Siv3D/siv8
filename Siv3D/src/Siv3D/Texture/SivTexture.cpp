@@ -624,4 +624,230 @@ namespace s3d
 	{
 		return operator()(rect.pos.x, rect.pos.y, rect.size.x, rect.size.y);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	uv
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::uv(const double u, const double v, const double w, const double h) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		return{
+			*this,
+			static_cast<float>(u),
+			static_cast<float>(v),
+			static_cast<float>(u + w),
+			static_cast<float>(v + h),
+			(size.x * w),
+			(size.y * h)
+		};
+	}
+
+	TextureRegion Texture::uv(const double u, const double v, const double uvSize) const
+	{
+		return uv(u, v, uvSize, uvSize);
+	}
+
+	TextureRegion Texture::uv(const RectF& rect) const
+	{
+		return uv(rect.x, rect.y, rect.w, rect.h);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mirrored
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::mirrored() const
+	{
+		return{ *this, FloatRect{ 1.0f, 0.0f, 0.0f, 1.0f }, size() };
+	}
+
+	TextureRegion Texture::mirrored(const bool doMirror) const
+	{
+		if (doMirror)
+		{
+			return mirrored();
+		}
+		else
+		{
+			return{ *this };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	flipped
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::flipped() const
+	{
+		return{ *this, FloatRect{ 0.0f, 1.0f, 1.0f, 0.0f }, size() };
+	}
+
+	TextureRegion Texture::flipped(const bool doFlip) const
+	{
+		if (doFlip)
+		{
+			return flipped();
+		}
+		else
+		{
+			return{ *this };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaled
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::scaled(const double s) const
+	{
+		return scaled(s, s);
+	}
+
+	TextureRegion Texture::scaled(const double xs, const double ys) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		return{ *this, (size.x * xs), (size.y * ys) };
+	}
+
+	TextureRegion Texture::scaled(const Vec2 s) const
+	{
+		return scaled(s.x, s.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resized
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::resized(const double size) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		return scaled(static_cast<double>(size) / Max(baseSize.x, baseSize.y));
+	}
+
+	TextureRegion Texture::resized(const double width, const double height) const
+	{
+		return{ *this, width, height };
+	}
+
+	TextureRegion Texture::resized(const Vec2 size) const
+	{
+		return resized(size.x, size.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	repeated
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::repeated(const double repeat) const
+	{
+		return repeated(repeat, repeat);
+	}
+
+	TextureRegion Texture::repeated(const double xRepeat, const double yRepeat) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		return{
+			*this,
+			0.0f,
+			0.0f,
+			static_cast<float>(xRepeat),
+			static_cast<float>(yRepeat),
+			(baseSize.x * xRepeat),
+			(baseSize.y * yRepeat)
+		};
+	}
+
+	TextureRegion Texture::repeated(const Vec2 repeat) const
+	{
+		return repeated(repeat.x, repeat.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mapped
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::mapped(const double size) const
+	{
+		return mapped(size, size);
+	}
+
+	TextureRegion Texture::mapped(const double width, const double height) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		return{
+			*this,
+			0.0f,
+			0.0f,
+			static_cast<float>(width / baseSize.x),
+			static_cast<float>(height / baseSize.y),
+			width,
+			height
+		};
+	}
+
+	TextureRegion Texture::mapped(const Vec2 size) const
+	{
+		return mapped(size.x, size.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fitted
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::fitted(double width, double height, const AllowUpscale allowUpscale) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		if (not allowUpscale)
+		{
+			width	= Min<double>(width, baseSize.x);
+			height	= Min<double>(height, baseSize.y);
+		}
+
+		// どれだけの倍率で拡大縮小するか
+		double ws = (width / baseSize.x);
+		double hs = (height / baseSize.y);
+		double targetWidth, targetHeight;
+
+		if (ws < hs)
+		{
+			targetWidth		= width;
+			targetHeight	= (baseSize.y * ws);
+		}
+		else
+		{
+			targetWidth		= (baseSize.x * hs);
+			targetHeight	= height;
+		}
+
+		return{ *this, targetWidth, targetHeight };
+	}
+
+	TextureRegion Texture::fitted(const Vec2& size, const AllowUpscale allowUpscale) const
+	{
+		return fitted(size.x, size.y, allowUpscale);
+	}
+
 }

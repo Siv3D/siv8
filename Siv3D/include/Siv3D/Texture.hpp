@@ -871,11 +871,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TextureRegion fitted(double width, double height, AllowScaleUp allowScaleUp = AllowScaleUp::Yes) const;
+		[[nodiscard]]
+		TextureRegion fitted(double width, double height, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
 
-		//[[nodiscard]]
-		//TextureRegion fitted(const Vec2& size, AllowScaleUp allowScaleUp = AllowScaleUp::Yes) const;
+		[[nodiscard]]
+		TextureRegion fitted(const Vec2& size, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

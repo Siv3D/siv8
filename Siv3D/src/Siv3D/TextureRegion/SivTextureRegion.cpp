@@ -26,26 +26,36 @@ namespace s3d
 		, uvRect{ 0.0f, 0.0f, 1.0f, 1.0f }
 		, size{ _texture.size() } {}
 
-	TextureRegion::TextureRegion(
-		const Texture& _texture,
-		const float l, const float t, const float r, const float b, const double sx, const double sy)
+	TextureRegion::TextureRegion(const Texture& _texture, const double width, const double height)
 		: texture{ _texture }
-		, uvRect{ l, t, r, b }
-		, size{ sx, sy } {}
+		, uvRect{ 0.0f, 0.0f, 1.0f, 1.0f }
+		, size{ width, height } {}
+
+	TextureRegion::TextureRegion(const Texture& _texture, const SizeF& _size)
+		: texture{ _texture }
+		, uvRect{ 0.0f, 0.0f, 1.0f, 1.0f }
+		, size{ _size } {}
 
 	TextureRegion::TextureRegion(
 		const Texture& _texture,
-		const float l, const float t, const float r, const float b, const Vec2& _size)
+		const float l, const float t, const float r, const float b, const double width, const double height)
+		: texture{ _texture }
+		, uvRect{ l, t, r, b }
+		, size{ width, height } {}
+
+	TextureRegion::TextureRegion(
+		const Texture& _texture,
+		const float l, const float t, const float r, const float b, const SizeF& _size)
 		: texture{ _texture }
 		, uvRect{ l, t, r, b }
 		, size{ _size } {}
 
-	TextureRegion::TextureRegion(const Texture& _texture, const FloatRect& _uvRect, const double sx, const double sy)
+	TextureRegion::TextureRegion(const Texture& _texture, const FloatRect& _uvRect, const double width, const double height)
 		: texture{ _texture }
 		, uvRect{ _uvRect }
-		, size{ sx, sy } {}
+		, size{ width, height } {}
 
-	TextureRegion::TextureRegion(const Texture& _texture, const FloatRect& _uvRect, const Vec2& _size)
+	TextureRegion::TextureRegion(const Texture& _texture, const FloatRect& _uvRect, const SizeF& _size)
 		: texture{ _texture }
 		, uvRect{ _uvRect }
 		, size{ _size } {}
