@@ -29,7 +29,7 @@ namespace s3d
 		MetalTexture(NoMipmap, MTL::Device* device, const Image& image, TextureDesc desc);
 
 		[[nodiscard]]
-		MetalTexture(GenerateMipmap, MTL::Device* device, const Image& image, TextureDesc desc);
+		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, TextureDesc desc);
 
 		[[nodiscard]]
 		MetalTexture(MTL::Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);

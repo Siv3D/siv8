@@ -9,7 +9,7 @@ void Main()
 	//Window::SetStyle(WindowStyle::Sizable);
 	//Scene::SetResizeMode(ResizeMode::Keep);
 
-	const Texture texture{ U"example/windmill.png", TextureDesc::NoMipmap };
+	const Texture texture{ U"example/windmill.png" };
 
 	while (System::Update())
 	{

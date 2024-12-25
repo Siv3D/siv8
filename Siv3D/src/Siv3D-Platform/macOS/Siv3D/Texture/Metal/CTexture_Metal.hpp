@@ -61,8 +61,9 @@ namespace s3d
 	
 		CRenderer_Metal* m_pRenderer = nullptr;
 
-		// device のコピー	
 		MTL::Device* m_device = nullptr;
+
+		MTL::CommandQueue* m_commandQueue = nullptr;
 
 		// Texture の管理
 		AssetHandleManager<Texture::IDType, MetalTexture> m_textures{ "Texture" };

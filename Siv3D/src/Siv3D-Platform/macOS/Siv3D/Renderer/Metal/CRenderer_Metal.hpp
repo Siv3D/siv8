@@ -72,6 +72,9 @@ namespace s3d
 
 		[[nodiscard]]
 		MTL::Device* getDevice() const noexcept;
+		
+		[[nodiscard]]
+		MTL::CommandQueue* getCommandQueue() const noexcept;
 
 		[[nodiscard]]		
 		uint32 getSceneSampleCount() const noexcept;

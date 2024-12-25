@@ -47,8 +47,9 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CTexture_Metal::init()");
 
-		m_pRenderer	= static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
-		m_device	= m_pRenderer->getDevice();
+		m_pRenderer		= static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		m_device		= m_pRenderer->getDevice();
+		m_commandQueue	= m_pRenderer->getCommandQueue();
 
 		// null Texture を管理に登録
 		{
@@ -92,7 +93,7 @@ namespace s3d
 		}
 		else
 		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::GenerateMipmap{}, m_device, image, desc);
+			texture = std::make_unique<MetalTexture>(MetalTexture::GenerateMipmap{}, m_device, m_commandQueue, image, desc);
 		}
 
 		if (not texture->isInitialized())
