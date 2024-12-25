@@ -19,6 +19,9 @@
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
+# include <Siv3D/Shader/Metal/CShader_Metal.hpp>
+# include <Siv3D/Texture/Metal/CTexture_Metal.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FmtOptional.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -113,6 +116,7 @@ namespace s3d
 		{
 			m_pRenderer	= static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 			m_pShader	= static_cast<CShader_Metal*>(SIV3D_ENGINE(Shader));
+			m_pTexture	= static_cast<CTexture_Metal*>(SIV3D_ENGINE(Texture));
 			m_device	= m_pRenderer->getDevice();
 		}
 
@@ -1100,6 +1104,8 @@ namespace s3d
 				.blendState = BlendState::Default2D,
 			};
 			
+			m_pRenderer->getSamplerState().resetStates();
+			
 			CommandState commandState;
 			commandState.screenMat = Mat3x2::Screen(currentRenderTargetSize);
 			
@@ -1320,14 +1326,14 @@ namespace s3d
 
 						if (textureID.isInvalid())
 						{
-							//ID3D11ShaderResourceView* nullAttach[1] = { nullptr };
-							//m_context->VSSetShaderResources(slot, 1, nullAttach);
+							renderCommandEncoder->setVertexTexture(nullptr, slot);
 							LOG_COMMAND(fmt::format("VSTexture{}[{}]: null", slot, command.index));
 						}
 						else
 						{
-							//m_context->VSSetShaderResources(slot, 1, m_pTexture->getSRVPtr(textureID));
-							LOG_COMMAND(fmt::format("VSTexture{}[{}]: {}", slot, command.index, textureID));
+							const MTL::Texture* texture = m_pTexture->getTexture(textureID);
+							renderCommandEncoder->setVertexTexture(texture, slot);
+							LOG_COMMAND(fmt::format("VSTexture{}[{}]: {}", slot, command.index, textureID.value()));
 						}
 						
 						break;
@@ -1346,14 +1352,14 @@ namespace s3d
 
 						if (textureID.isInvalid())
 						{
-							//ID3D11ShaderResourceView* nullAttach[1] = { nullptr };
-							//m_context->PSSetShaderResources(slot, 1, nullAttach);
+							renderCommandEncoder->setFragmentTexture(nullptr, slot);
 							LOG_COMMAND(fmt::format("PSTexture{}[{}]: null", slot, command.index));
 						}
 						else
 						{
-							//m_context->PSSetShaderResources(slot, 1, m_pTexture->getSRVPtr(textureID));
-							LOG_COMMAND(fmt::format("PSTexture{}[{}]: {}", slot, command.index, textureID));
+							const MTL::Texture* texture = m_pTexture->getTexture(textureID);
+							renderCommandEncoder->setFragmentTexture(texture, slot);
+							LOG_COMMAND(fmt::format("PSTexture{}[{}]: {}", slot, command.index, textureID.value()));
 						}
 						
 						break;
@@ -1437,13 +1443,12 @@ namespace s3d
 
 	SamplerState CRenderer2D_Metal::getVSSamplerState(const uint32 slot) const
 	{
-		// [Siv3D ToDo]
-		return SamplerState{};
+		return m_commandManager.getVSCurrentSamplerState(slot);
 	}
 
 	void CRenderer2D_Metal::setVSSamplerState(const uint32 slot, const SamplerState& state)
 	{
-		// [Siv3D ToDo]
+		m_commandManager.pushVSSamplerState(state, slot);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1454,13 +1459,12 @@ namespace s3d
 
 	SamplerState CRenderer2D_Metal::getPSSamplerState(const uint32 slot) const
 	{
-		// [Siv3D ToDo]
-		return SamplerState{};
+		return m_commandManager.getPSCurrentSamplerState(slot);
 	}
 
 	void CRenderer2D_Metal::setPSSamplerState(const uint32 slot, const SamplerState& state)
 	{
-		// [Siv3D ToDo]
+		m_commandManager.pushPSSamplerState(state, slot);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -41,9 +41,15 @@ float4 s3d_positionTransform2D(float2 pos, float2x4 t)
 	return float4((t_13_14 + (pos.x * t_11_12) + (pos.y * t_21_22)), 0.0f, 1.0f);
 }
 
-float4 s3d_shapeColor(float4 color, constant PSConstants2D* c)
+float4 s3d_shapeColor(float4 vertexColor, constant PSConstants2D* c)
 {
-	return (color + (c->g_colorAdd * color.a));
+	return (vertexColor + (c->g_colorAdd * vertexColor.a));
+}
+
+float4 s3d_textureColor(float4 vertexColor, float4 textureColor, constant PSConstants2D* c)
+{
+	vertexColor *= textureColor;
+	return (vertexColor + (c->g_colorAdd * vertexColor.a));
 }
 
 float4 s3d_patternBackgroundColor(float4 color, constant PSConstants2D* c)
@@ -79,9 +85,10 @@ float4 PS_Shape(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]]
 }
 
 fragment
-float4 PS_Texture(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]])
+float4 PS_Texture(PSInput in [[stage_in]], constant PSConstants2D* c [[buffer(0)]],
+				  texture2d<float> texture0 [[texture(0)]], sampler sampler0 [[sampler(0)]])
 {
-	return s3d_shapeColor(in.color, c);
+	return s3d_textureColor(in.color, texture0.sample(sampler0, in.uv), c);
 }
 
 fragment

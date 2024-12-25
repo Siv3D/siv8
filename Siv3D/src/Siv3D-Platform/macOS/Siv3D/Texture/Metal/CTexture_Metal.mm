@@ -187,4 +187,15 @@ namespace s3d
 	{
 		return m_textures[handleID]->hasDepth();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getTexture
+	//
+	////////////////////////////////////////////////////////////////
+
+	MTL::Texture* CTexture_Metal::getTexture(const Texture::IDType handleID)
+	{
+		return m_textures[handleID]->getTexture();
+	}
 }

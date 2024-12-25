@@ -53,6 +53,9 @@ namespace s3d
 		
 		[[nodiscard]]
 		bool hasDepth(Texture::IDType handleID) override;
+		
+		[[nodiscard]]
+		MTL::Texture* getTexture(Texture::IDType handleID);
 
 	private:
 	

@@ -13,8 +13,6 @@
 # include <Siv3D/Optional.hpp>
 # include <Siv3D/ConstantBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
-# include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
-# include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Renderer2D/Renderer2DCommon.hpp>
 # include "MetalVertexBufferManager2D.hpp"
 # include "MetalRenderer2DCommandManager.hpp"
@@ -22,6 +20,9 @@
 namespace s3d
 {
 	enum class PatternType : uint8;
+	class CRenderer_Metal;
+	class CShader_Metal;
+	class CTexture_Metal;
 
 	class CRenderer2D_Metal final : public ISiv3DRenderer2D
 	{
@@ -368,6 +369,8 @@ namespace s3d
 		CRenderer_Metal* m_pRenderer	= nullptr;
 		
 		CShader_Metal* m_pShader		= nullptr;
+
+		CTexture_Metal* m_pTexture		= nullptr;
 
 		MetalVertexBufferManager2D m_vertexBufferManager;
 

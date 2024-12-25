@@ -23,6 +23,8 @@ namespace s3d
 	public:
 
 		void init(MTL::Device* device);
+		
+		void resetStates();
 
 		void setVS(MTL::RenderCommandEncoder* renderCommandEncoder, uint32 slot, const SamplerState& state);
 

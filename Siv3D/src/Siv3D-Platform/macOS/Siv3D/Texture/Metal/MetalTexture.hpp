@@ -43,6 +43,9 @@ namespace s3d
 		[[nodiscard]]
 		bool hasDepth() const noexcept;
 
+		[[nodiscard]]
+		MTL::Texture* getTexture() const noexcept;
+
 	private:
 
 		MetalTexture2DDesc m_desc;
