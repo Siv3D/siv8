@@ -2483,6 +2483,11 @@
 		F9FD0BAC2D1D334700A584CE /* MTLRenderPass.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0B632D1D334700A584CE /* MTLRenderPass.hpp */; };
 		F9FD0BAD2D1D334700A584CE /* MTLBinaryArchive.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0B392D1D334700A584CE /* MTLBinaryArchive.hpp */; };
 		F9FD0BAE2D1D334700A584CE /* MTLComputePipeline.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0B442D1D334700A584CE /* MTLComputePipeline.hpp */; };
+		F9FD0BB02D1DA6B900A584CE /* Mat3x3.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0BAF2D1DA6B900A584CE /* Mat3x3.hpp */; };
+		F9FD0BB22D1DA6CC00A584CE /* Mat3x3.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0BB12D1DA6CC00A584CE /* Mat3x3.ipp */; };
+		F9FD0BB52D1DA6EA00A584CE /* SivMat3x3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */; };
+		F9FD0D0A2D1DABA000A584CE /* libopencv_core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D082D1DABA000A584CE /* libopencv_core.a */; };
+		F9FD0D0B2D1DABA000A584CE /* libopencv_imgproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -5014,6 +5019,11 @@
 		F9FD0B6D2D1D334700A584CE /* MTLVersion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLVersion.hpp; sourceTree = "<group>"; };
 		F9FD0B6E2D1D334700A584CE /* MTLVertexDescriptor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLVertexDescriptor.hpp; sourceTree = "<group>"; };
 		F9FD0B6F2D1D334700A584CE /* MTLVisibleFunctionTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MTLVisibleFunctionTable.hpp; sourceTree = "<group>"; };
+		F9FD0BAF2D1DA6B900A584CE /* Mat3x3.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat3x3.hpp; sourceTree = "<group>"; };
+		F9FD0BB12D1DA6CC00A584CE /* Mat3x3.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat3x3.ipp; sourceTree = "<group>"; };
+		F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMat3x3.cpp; sourceTree = "<group>"; };
+		F9FD0D082D1DABA000A584CE /* libopencv_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_core.a; path = ../Siv3D/lib/macOS/opencv/libopencv_core.a; sourceTree = "<group>"; };
+		F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_imgproc.a; path = ../Siv3D/lib/macOS/opencv/libopencv_imgproc.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -5028,6 +5038,8 @@
 				F986FAA22BCFB875006A4C0F /* libfreetype.a in Frameworks */,
 				F986FAA42BCFBB2E006A4C0F /* libharfbuzz.a in Frameworks */,
 				F9E5FC292BC13F950081A4F7 /* libturbojpeg.a in Frameworks */,
+				F9FD0D0A2D1DABA000A584CE /* libopencv_core.a in Frameworks */,
+				F9FD0D0B2D1DABA000A584CE /* libopencv_imgproc.a in Frameworks */,
 				F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */,
 				F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */,
 				2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */,
@@ -5047,6 +5059,8 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F9FD0D082D1DABA000A584CE /* libopencv_core.a */,
+				F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */,
 				F97204322BF0A31C000E21DD /* QuartzCore.framework */,
 				F97204302BF0A314000E21DD /* Metal.framework */,
 				F986FAA32BCFBB2E006A4C0F /* libharfbuzz.a */,
@@ -5671,6 +5685,7 @@
 				F9528B2C2BAFCDCF00222F45 /* MappedMemory.ipp */,
 				F9528C4F2BBFEC4D00222F45 /* MappedMemoryView.ipp */,
 				F986056D2BDA32B4006A4C0F /* Mat3x2.ipp */,
+				F9FD0BB12D1DA6CC00A584CE /* Mat3x3.ipp */,
 				F986F8B72BC843E0006A4C0F /* MatchResults.ipp */,
 				F986F93B2BCA7996006A4C0F /* Math_impl.ipp */,
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
@@ -5927,6 +5942,7 @@
 				F9528B282BAFCDB400222F45 /* MappedMemory.hpp */,
 				F9528C4D2BBFEC3800222F45 /* MappedMemoryView.hpp */,
 				F986056B2BDA329E006A4C0F /* Mat3x2.hpp */,
+				F9FD0BAF2D1DA6B900A584CE /* Mat3x3.hpp */,
 				F986F8B42BC843CF006A4C0F /* MatchResults.hpp */,
 				F986F9412BCA79B4006A4C0F /* Math.hpp */,
 				F9070C002B9F175000383E4D /* MathConstants.hpp */,
@@ -6705,6 +6721,7 @@
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
 				F98605702BDA32D4006A4C0F /* Mat3x2 */,
+				F9FD0BB42D1DA6EA00A584CE /* Mat3x3 */,
 				F98605422BD203BC006A4C0F /* MathParser */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
 				F9528C4B2BBFEC2400222F45 /* MemoryMappedFile */,
@@ -10607,6 +10624,14 @@
 			path = Metal;
 			sourceTree = "<group>";
 		};
+		F9FD0BB42D1DA6EA00A584CE /* Mat3x3 */ = {
+			isa = PBXGroup;
+			children = (
+				F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */,
+			);
+			path = Mat3x3;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -10798,6 +10823,7 @@
 				F986045F2BCFBB54006A4C0F /* SkSLProgramWriter.h in Headers */,
 				F98600B02BCFBB53006A4C0F /* SkParsePath.h in Headers */,
 				F9D41B862C56057700290998 /* PatternParameters.ipp in Headers */,
+				F9FD0BB02D1DA6B900A584CE /* Mat3x3.hpp in Headers */,
 				F98600062BCFBB53006A4C0F /* SkColor.h in Headers */,
 				F98602412BCFBB54006A4C0F /* SkRecordDraw.h in Headers */,
 				F96F95EA2C359E390033353E /* InputDeviceType.hpp in Headers */,
@@ -11351,6 +11377,7 @@
 				F986005A2BCFBB53006A4C0F /* SkColorMatrix.h in Headers */,
 				F98600642BCFBB53006A4C0F /* SkPerlinNoiseShader.h in Headers */,
 				F9528C6D2BC05B1A00222F45 /* ImageDecoder.ipp in Headers */,
+				F9FD0BB22D1DA6CC00A584CE /* Mat3x3.ipp in Headers */,
 				F986029B2BCFBB54006A4C0F /* SkWriteBuffer.h in Headers */,
 				F98604812BCFBB54006A4C0F /* SkSLOperator.h in Headers */,
 				F9528C362BBF026F00222F45 /* zstdmt_compress.h in Headers */,
@@ -12710,6 +12737,7 @@
 				F98600D72BCFBB53006A4C0F /* SkMathPriv.cpp in Sources */,
 				F9070DBA2B9F175E00383E4D /* SivConsoleBuffer.cpp in Sources */,
 				F986027D2BCFBB54006A4C0F /* SkStrokerPriv.cpp in Sources */,
+				F9FD0BB52D1DA6EA00A584CE /* SivMat3x3.cpp in Sources */,
 				F9070AEE2B9DEB5900383E4D /* int128.cc in Sources */,
 				F986022D2BCFBB54006A4C0F /* SkPtrRecorder.cpp in Sources */,
 				F95122562CB8239800151291 /* PolygonDetail.cpp in Sources */,
@@ -13247,6 +13275,7 @@
 					../Siv3D/lib/macOS/harfbuzz,
 					"../Siv3D/lib/macOS/libjpeg-turbo",
 					../Siv3D/lib/macOS/libpng,
+					../Siv3D/lib/macOS/opencv,
 					../Siv3D/lib/macOS/zlib,
 					../Siv3D/lib/macOS/siv3d,
 				);
@@ -13318,6 +13347,7 @@
 					../Siv3D/lib/macOS/harfbuzz,
 					"../Siv3D/lib/macOS/libjpeg-turbo",
 					../Siv3D/lib/macOS/libpng,
+					../Siv3D/lib/macOS/opencv,
 					../Siv3D/lib/macOS/zlib,
 					../Siv3D/lib/macOS/siv3d,
 				);
@@ -13483,6 +13513,7 @@
 					"../Siv3D/src/Siv3D-Platform/macOS_Linux",
 					../Siv3D/src/ThirdParty,
 					../Siv3D/src/ThirdParty/skia,
+					"../Siv3D/src/ThirdParty-prebuilt",
 					"../Siv3D/src/ThirdParty-prebuilt/freetype",
 					../Dependencies/boost_1_83_0,
 				);
@@ -13559,6 +13590,7 @@
 					"../Siv3D/src/Siv3D-Platform/macOS_Linux",
 					../Siv3D/src/ThirdParty,
 					../Siv3D/src/ThirdParty/skia,
+					"../Siv3D/src/ThirdParty-prebuilt",
 					"../Siv3D/src/ThirdParty-prebuilt/freetype",
 					../Dependencies/boost_1_83_0,
 				);
