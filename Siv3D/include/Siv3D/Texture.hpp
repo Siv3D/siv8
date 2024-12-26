@@ -745,24 +745,56 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param x 範囲の左上の X 座標
+		/// @param y 範囲の左上の Y 座標
+		/// @param size 範囲の幅と高さ（ピクセル）
+		/// @return 部分テクスチャ
 		[[nodiscard]]
 		TextureRegion operator ()(double x, double y, double size) const;
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param x 範囲の左上の X 座標
+		/// @param y 範囲の左上の Y 座標
+		/// @param w 範囲の幅（ピクセル）
+		/// @param h 範囲の高さ（ピクセル）
+		/// @return 部分テクスチャ
 		[[nodiscard]]
 		TextureRegion operator ()(double x, double y, double w, double h) const;
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param xy 範囲の左上の座標
+		/// @param w 範囲の幅（ピクセル）
+		/// @param h 範囲の高さ（ピクセル）
+		/// @return 部分テクスチャ
 		[[nodiscard]]
 		TextureRegion operator ()(const Vec2& xy, double w, double h) const;
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param x 範囲の左上の X 座標
+		/// @param y 範囲の左上の Y 座標
+		/// @param size 範囲の幅と高さ（ピクセル）
+		/// @return 部分テクスチャ
 		[[nodiscard]]
-		TextureRegion operator ()(double x, double y, const Vec2& size) const;
+		TextureRegion operator ()(double x, double y, const SizeF& size) const;
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param xy 範囲の左上の座標
+		/// @param size 範囲の幅と高さ（ピクセル）
+		/// @return 部分テクスチャ
 		[[nodiscard]]
 		TextureRegion operator ()(const Vec2& xy, double size) const;
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param xy 範囲の左上の座標
+		/// @param size 範囲の幅と高さ（ピクセル）
+		/// @return 部分テクスチャ
 		[[nodiscard]]
-		TextureRegion operator ()(const Vec2& xy, const Vec2& size) const;
+		TextureRegion operator ()(const Vec2& xy, const SizeF& size) const;
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param rect 範囲
+		/// @return 部分テクスチャ
 		[[nodiscard]]
 		TextureRegion operator ()(const RectF& rect) const;
 
@@ -772,12 +804,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param u 範囲の左上の U 座標
+		/// @param v 範囲の左上の V 座標
+		/// @param w 範囲の幅（UV 座標）
+		/// @param h 範囲の高さ（UV 座標）
+		/// @return 部分テクスチャ
 		[[nodiscard]]
 		TextureRegion uv(double u, double v, double w, double h) const;
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param u 範囲の左上の U 座標
+		/// @param v 範囲の左上の V 座標
+		/// @param uvSize 範囲の幅と高さ（UV 座標）
+		/// @return 部分テクスチャ
 		[[nodiscard]]
 		TextureRegion uv(double u, double v, double uvSize) const;
 
+		/// @brief 部分テクスチャを作成します。
+		/// @param rect 範囲（UV 座標）
+		/// @return 部分テクスチャ
 		[[nodiscard]]
 		TextureRegion uv(const RectF& rect) const;
 
@@ -787,9 +833,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テクスチャを左右反転した部分テクスチャを作成します。
+		/// @return 左右反転した部分テクスチャ
 		[[nodiscard]]
 		TextureRegion mirrored() const;
 
+		/// @brief テクスチャを左右反転した部分テクスチャを作成します。
+		/// @param doMirror 左右反転する場合 true, それ以外の場合は false
+		/// @return 左右反転またはそのままの部分テクスチャ
 		[[nodiscard]]
 		TextureRegion mirrored(bool doMirror) const;
 
@@ -799,9 +850,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テクスチャを上下反転した部分テクスチャを作成します。
+		/// @return 上下反転した部分テクスチャ
 		[[nodiscard]]
 		TextureRegion flipped() const;
 
+		/// @brief テクスチャを上下反転した部分テクスチャを作成します。
+		/// @param doFlip 上下反転する場合 true, それ以外の場合は false
+		/// @return 上下反転またはそのままの部分テクスチャ
 		[[nodiscard]]
 		TextureRegion flipped(bool doFlip) const;
 

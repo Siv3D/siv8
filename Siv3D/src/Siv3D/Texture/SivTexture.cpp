@@ -605,7 +605,7 @@ namespace s3d
 		return operator()(xy.x, xy.y, w, h);
 	}
 
-	TextureRegion Texture::operator ()(const double x, const double y, const Vec2& size) const
+	TextureRegion Texture::operator ()(const double x, const double y, const SizeF& size) const
 	{
 		return operator()(x, y, size.x, size.y);
 	}
@@ -615,7 +615,7 @@ namespace s3d
 		return operator()(xy.x, xy.y, size, size);
 	}
 
-	TextureRegion Texture::operator ()(const Vec2& xy, const Vec2& size) const
+	TextureRegion Texture::operator ()(const Vec2& xy, const SizeF& size) const
 	{
 		return operator()(xy.x, xy.y, size.x, size.y);
 	}
