@@ -25,6 +25,7 @@ Name | Version
 [libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
 [lunasvg](https://github.com/sammycage/lunasvg) | v2.4.1
+[metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
 [muparser](https://github.com/beltoforion/muparser) | 
@@ -32,6 +33,7 @@ Name | Version
 [nanoflann](https://github.com/jlblancoc/nanoflann) | v1.6.2
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
+[OpenCV](https://github.com/opencv/opencv) | 4.10.0
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
 [plutovg](https://github.com/sammycage/plutovg) | 
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1

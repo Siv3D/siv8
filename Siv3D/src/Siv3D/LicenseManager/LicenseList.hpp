@@ -627,7 +627,7 @@ MIT_LICENSE
 
 {
 R"-(Metal-cpp)-",
-R"-(Copyright (c) 2023 Apple Inc.)-",
+R"-(Copyright (c) 2024 Apple Inc.)-",
 APACHE_2_LICENSE
 },
 
@@ -669,6 +669,22 @@ R"-(Oniguruma)-",
 R"-(Copyright (c) 2002-2021  K.Kosako  <kkosako0@gmail.com>
 All rights reserved.)-",
 BSD_2_LICENSE
+},
+
+{
+R"-(OpenCV)-",
+R"-(Copyright (C) 2000-2022, Intel Corporation, all rights reserved.
+Copyright (C) 2009-2011, Willow Garage Inc., all rights reserved.
+Copyright (C) 2009-2016, NVIDIA Corporation, all rights reserved.
+Copyright (C) 2010-2013, Advanced Micro Devices, Inc., all rights reserved.
+Copyright (C) 2015-2023, OpenCV Foundation, all rights reserved.
+Copyright (C) 2008-2016, Itseez Inc., all rights reserved.
+Copyright (C) 2019-2023, Xperience AI, all rights reserved.
+Copyright (C) 2019-2022, Shenzhen Institute of Artificial Intelligence and Robotics for Society, all rights reserved.
+Copyright (C) 2022-2023, Southern University of Science And Technology, all rights reserved.
+
+Third party copyrights are property of their respective owners.)-",
+APACHE_2_LICENSE
 },
 
 {
