@@ -1052,7 +1052,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTextureRegion(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, uv, color))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), FloatQuad{ rect }, uv, color))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1071,7 +1071,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTextureRegion(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), rect, uv, colors))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), FloatQuad{ rect }, uv, colors))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1088,7 +1088,6 @@ namespace s3d
 		}
 	}
 
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	addQuadWarp
@@ -1097,7 +1096,7 @@ namespace s3d
 
 	void CRenderer2D_D3D11::addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTextureRegion(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f }, uv, color))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, color))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1141,7 +1140,6 @@ namespace s3d
 		m_commandManager.flush();
 		m_context->IASetInputLayout(m_inputLayout.Get());
 		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
-		m_pShader->setConstantBufferVS(1, m_vsQuadWarpConstants._base());
 		m_pShader->setConstantBufferPS(0, m_psConstants._base());
 		m_pShader->setConstantBufferPS(1, m_psPatternConstants._base());
 		m_pShader->setConstantBufferPS(2, m_psQuadWarpConstants._base());
@@ -1186,7 +1184,6 @@ namespace s3d
 			case D3D11Renderer2DCommandType::Draw:
 				{
 					m_vsConstants._update_if_dirty();
-					m_vsQuadWarpConstants._update_if_dirty();
 					m_psConstants._update_if_dirty();
 					m_psPatternConstants._update_if_dirty();
 					m_psQuadWarpConstants._update_if_dirty();
@@ -1231,8 +1228,6 @@ namespace s3d
 					else
 					{
 						const Mat3x3 mat = Mat3x3::Homography(quad);
-						m_vsQuadWarpConstants->homography = { Float4{ mat._11, mat._12, mat._13, 0 }, Float4{ mat._21, mat._22, mat._23, 0 }, Float4{ mat._31, mat._32, mat._33, 0 } };
-						
 						const Mat3x3 matInv = mat.inverse();
 						m_psQuadWarpConstants->invHomography = { Float4{ matInv._11, matInv._12, matInv._13, 0 }, Float4{ matInv._21, matInv._22, matInv._23, 0 }, Float4{ matInv._31, matInv._32, matInv._33, 0 } };
 						m_psQuadWarpConstants->uvTransform = quadWarpParameter[2];

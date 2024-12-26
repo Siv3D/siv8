@@ -444,8 +444,6 @@ namespace s3d
 
 		ConstantBuffer<VSConstants2D> m_vsConstants;
 
-		ConstantBuffer<VSQuadWarpConstants> m_vsQuadWarpConstants;
-
 		ConstantBuffer<PSConstants2D> m_psConstants;
 
 		ConstantBuffer<PSPatternConstants2D> m_psPatternConstants;

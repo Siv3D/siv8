@@ -22,11 +22,6 @@ namespace s3d
 		Float4 colorMul{ 1.0f, 1.0f, 1.0f, 1.0f };
 	};
 
-	struct VSQuadWarpConstants
-	{
-		std::array<Float4, 3> homography;
-	};
-
 	struct PSConstants2D
 	{
 		Float4 patternBackgroundColorMul{ 1.0f, 1.0f, 1.0f, 1.0f };
