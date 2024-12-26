@@ -12,6 +12,7 @@
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
@@ -570,6 +571,24 @@ namespace s3d
 
 
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawQuadWarp
+	//
+	////////////////////////////////////////////////////////////////
+
+	Quad Texture::drawQuadWarp(const Quad& quad, const ColorF& diffuse) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addQuadWarp(
+			*this,
+			FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f },
+			FloatQuad{ quad },
+			diffuse.toFloat4()
+		);
+
+		return quad;
+	}
 
 
 

@@ -66,6 +66,11 @@ namespace s3d
 		};
 	}
 
+	Mat3x3 Mat3x3::Homography(const std::array<Float2, 4>& to)
+	{
+		return Homography(Quad{ to[0], to[1], to[2], to[3] });
+	}
+
 	Mat3x3 Mat3x3::Homography(const RectF& from, const RectF& to)
 	{
 		return Homography(from.asQuad(), to.asQuad());

@@ -32,6 +32,11 @@ cbuffer VSConstants2D : register(b0)
 	float4 g_colorMul;
 }
 
+cbuffer VSQuadWarp : register(b1)
+{
+	row_major float3x3 g_homography;
+}
+
 cbuffer PSConstants2D : register(b0)
 {
 	float4 g_patternBackgroundColorMul;
@@ -48,9 +53,23 @@ cbuffer PSPatternConstants2D : register(b1)
 	float4 g_patternBackgroundColor;
 }
 
+cbuffer PSQuadWarp : register(b2)
+{
+	row_major float3x3 g_invHomography;
+	float4 g_uvTransform;
+}
+
 float4 s3d_positionTransform(float2 pos, float2x4 t)
 {
 	return float4((t._13_14 + (pos.x * t._11_12) + (pos.y * t._21_22)), t._23_24);
+}
+
+float2 s3d_quadWarpTransform(float2 pos, float3x3 mat)
+{
+	const float s = (mat._13 * pos.x + mat._23 * pos.y + mat._33);
+	const float x = ((mat._11 * pos.x + mat._21 * pos.y + mat._31) / s);
+	const float y = ((mat._12 * pos.x + mat._22 * pos.y + mat._32) / s);
+	return float2(x, y);
 }
 
 float4 s3d_premultiplyAlpha(float4 color)
@@ -89,6 +108,17 @@ PSInput VS(VSInput input)
 	return result;
 }
 
+PSInput VS_QuadWarp(VSInput input)
+{
+	input.position	= s3d_quadWarpTransform(input.position, g_homography);
+	
+	PSInput result;
+	result.position	= s3d_positionTransform(input.position, g_transform);
+	result.color	= s3d_premultiplyAlpha(input.color * g_colorMul);
+	result.uv		= input.position;
+	return result;
+}
+
 float4 PS_Shape(PSInput input) : SV_TARGET
 {
 	return s3d_shapeColor(input.color);
@@ -97,6 +127,12 @@ float4 PS_Shape(PSInput input) : SV_TARGET
 float4 PS_Texture(PSInput input) : SV_TARGET
 {
 	return s3d_textureColor(input.color, g_texture0.Sample(g_sampler0, input.uv));
+}
+
+float4 PS_QuadWarp(PSInput input) : SV_TARGET
+{
+	const float2 uv = (s3d_quadWarpTransform(input.uv, g_invHomography) * g_uvTransform.xy + g_uvTransform.zw);
+	return s3d_textureColor(input.color, g_texture0.Sample(g_sampler0, uv));
 }
 
 float4 PS_LineDot(PSInput input) : SV_TARGET

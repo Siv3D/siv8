@@ -20,6 +20,7 @@ namespace s3d
 	{
 		FullScreenTriangle,
 		Shape2D,
+		QuadWarp,
 	};
 
 	enum class EnginePS
@@ -27,6 +28,7 @@ namespace s3d
 		FullScreenTriangle,
 		Shape2D,
 		Texture2D,
+		QuadWarp,
 		LineDot,
 		LineDash,
 		LineLongDash,

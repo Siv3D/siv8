@@ -38,7 +38,7 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CEngineShader_D3D11::init()");
 
 		// エンジンシェーダを再コンパイルする場合、0 を 1 に変更する
-	# if 0
+	# if 1
 
 		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/fullscreen_triangle.hlsl", U"engine/shader/d3d11/fullscreen_triangle.vs", ShaderStage::Vertex, U"VS"))
 		{
@@ -55,12 +55,22 @@ namespace s3d
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
 		}
 
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_quadwarp.vs", ShaderStage::Vertex, U"VS_QuadWarp"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
 		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_shape.ps", ShaderStage::Pixel, U"PS_Shape"))
 		{
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
 		}
 
 		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_texture.ps", ShaderStage::Pixel, U"PS_Texture"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_quadwarp.ps", ShaderStage::Pixel, U"PS_QuadWarp"))
 		{
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
 		}
@@ -125,6 +135,7 @@ namespace s3d
 		{
 			m_vertexShaders << HLSL{ U"engine/shader/d3d11/fullscreen_triangle.vs" };
 			m_vertexShaders << HLSL{ U"engine/shader/d3d11/2d.vs" };
+			m_vertexShaders << HLSL{ U"engine/shader/d3d11/2d_quadwarp.vs" };
 
 			if (not m_vertexShaders.all([](const auto& vs) { return static_cast<bool>(vs); })) // もしロードに失敗したシェーダがあれば
 			{
@@ -136,6 +147,7 @@ namespace s3d
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/fullscreen_triangle.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_shape.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_texture.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_quadwarp.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_dot.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_dash.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_line_long_dash.ps" };

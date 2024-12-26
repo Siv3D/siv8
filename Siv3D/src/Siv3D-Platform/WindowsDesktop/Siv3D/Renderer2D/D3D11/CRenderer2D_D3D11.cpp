@@ -13,6 +13,7 @@
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/Mat3x2.hpp>
+# include <Siv3D/Mat3x3.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
@@ -136,8 +137,10 @@ namespace s3d
 		}
 
 		m_engineShader.vs					= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		m_engineShader.vsQuadWarp			= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::QuadWarp).id();
 		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 		m_engineShader.psTexture			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D).id();
+		m_engineShader.psQuadWarp			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::QuadWarp).id();
 		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
 		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
 		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
@@ -1086,6 +1089,38 @@ namespace s3d
 	}
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	addQuadWarp
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTextureRegion(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f }, uv, color))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsQuadWarp);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psQuadWarp);
+			}
+
+			const std::array<Float4, 3> quadWarpParams =
+			{
+				Float4{ quad.p[0], quad.p[1] },
+				Float4{ quad.p[2], quad.p[3] },
+				Float4{ (uv.right - uv.left), (uv.bottom - uv.top), uv.left, uv.top }
+			};
+			m_commandManager.pushQuadWarpParameter(quadWarpParams);
+
+			m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1106,8 +1141,11 @@ namespace s3d
 		m_commandManager.flush();
 		m_context->IASetInputLayout(m_inputLayout.Get());
 		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
+		m_pShader->setConstantBufferVS(1, m_vsQuadWarpConstants._base());
 		m_pShader->setConstantBufferPS(0, m_psConstants._base());
 		m_pShader->setConstantBufferPS(1, m_psPatternConstants._base());
+		m_pShader->setConstantBufferPS(2, m_psQuadWarpConstants._base());
+
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		{
@@ -1148,8 +1186,10 @@ namespace s3d
 			case D3D11Renderer2DCommandType::Draw:
 				{
 					m_vsConstants._update_if_dirty();
+					m_vsQuadWarpConstants._update_if_dirty();
 					m_psConstants._update_if_dirty();
 					m_psPatternConstants._update_if_dirty();
+					m_psQuadWarpConstants._update_if_dirty();
 
 					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);
 					const uint32 indexCount = draw.indexCount;
@@ -1177,6 +1217,28 @@ namespace s3d
 					const Float3 colorAdd = m_commandManager.getColorAdd(command.index);
 					m_psConstants->colorAdd.set(colorAdd, 0.0f);
 					LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, colorAdd));
+					break;
+				}
+			case D3D11Renderer2DCommandType::QuadWarpParameters:
+				{
+					const auto& quadWarpParameter = m_commandManager.getQuadWarpParameter(command.index);
+					const Quad quad{ quadWarpParameter[0].xy(), quadWarpParameter[0].zw(), quadWarpParameter[1].xy(), quadWarpParameter[1].zw() };
+					
+					if (quad.p0.isZero() && quad.p1.isZero() && quad.p2.isZero() && quad.p3.isZero())
+					{
+
+					}
+					else
+					{
+						const Mat3x3 mat = Mat3x3::Homography(quad);
+						m_vsQuadWarpConstants->homography = { Float4{ mat._11, mat._12, mat._13, 0 }, Float4{ mat._21, mat._22, mat._23, 0 }, Float4{ mat._31, mat._32, mat._33, 0 } };
+						
+						const Mat3x3 matInv = mat.inverse();
+						m_psQuadWarpConstants->invHomography = { Float4{ matInv._11, matInv._12, matInv._13, 0 }, Float4{ matInv._21, matInv._22, matInv._23, 0 }, Float4{ matInv._31, matInv._32, matInv._33, 0 } };
+						m_psQuadWarpConstants->uvTransform = quadWarpParameter[2];
+					}
+					
+					LOG_COMMAND(fmt::format("QuadWarpParameters[{}]", command.index));
 					break;
 				}
 			case D3D11Renderer2DCommandType::PatternParameters:
@@ -1338,7 +1400,7 @@ namespace s3d
 					else
 					{
 						m_context->VSSetShaderResources(slot, 1, m_pTexture->getSRVPtr(textureID));
-						LOG_COMMAND(fmt::format("VSTexture{}[{}]: {}", slot, command.index, textureID));
+						LOG_COMMAND(fmt::format("VSTexture{}[{}]: {}", slot, command.index, textureID.value()));
 					}
 					
 					break;
@@ -1364,7 +1426,7 @@ namespace s3d
 					else
 					{
 						m_context->PSSetShaderResources(slot, 1, m_pTexture->getSRVPtr(textureID));
-						LOG_COMMAND(fmt::format("PSTexture{}[{}]: {}", slot, command.index, textureID));
+						LOG_COMMAND(fmt::format("PSTexture{}[{}]: {}", slot, command.index, textureID.value()));
 					}
 					
 					break;

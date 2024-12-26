@@ -121,6 +121,9 @@ namespace s3d
 		static Mat3x3 Homography(const Quad& to);
 
 		[[nodiscard]]
+		static Mat3x3 Homography(const std::array<Float2, 4>& to);
+
+		[[nodiscard]]
 		static Mat3x3 Homography(const RectF& from, const RectF& to);
 
 		[[nodiscard]]

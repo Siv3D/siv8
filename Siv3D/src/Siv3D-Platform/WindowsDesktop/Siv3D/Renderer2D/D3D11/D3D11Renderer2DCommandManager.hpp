@@ -53,6 +53,10 @@ namespace s3d
 		const Float3& getColorAdd(uint32 index) const;
 		const Float3& getCurrentColorAdd() const;
 
+		void pushQuadWarpParameter(const std::array<Float4, 3>& color);
+		const std::array<Float4, 3>& getQuadWarpParameter(uint32 index) const;
+		const std::array<Float4, 3>& getQuadWarpParameter() const;
+
 		void pushPatternParameter(const std::array<Float4, 3>& color);
 		const std::array<Float4, 3>& getPatternParameter(uint32 index) const;
 		const std::array<Float4, 3>& getPatternParameter() const;
@@ -121,7 +125,9 @@ namespace s3d
 			
 			Array<Float3> colorAdds					= { Float3{ 0.0f, 0.0f, 0.0f } };
 
-			Array<std::array<Float4, 3>> patternParameters = { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
+			Array<std::array<Float4, 3>> quadWarpParameters	= { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
+
+			Array<std::array<Float4, 3>> patternParameters	= { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
 
 			Array<BlendState> blendStates			= { BlendState::Default2D };
 
@@ -155,7 +161,9 @@ namespace s3d
 			
 			Float3 colorAdd						= Float3{ 0.0f, 0.0f, 0.0f };
 
-			std::array<Float4, 3> patternParameter = { Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } };
+			std::array<Float4, 3> quadWarpParameter	= { Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } };
+
+			std::array<Float4, 3> patternParameter	= { Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } };
 		
 			BlendState blendState				= BlendState::Default2D;
 
