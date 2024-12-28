@@ -56,6 +56,9 @@ namespace s3d
 		bool hasDepth(Texture::IDType handleID) override;
 
 		[[nodiscard]]
+		ID3D11Texture2D* getTexture(Texture::IDType handleID);
+
+		[[nodiscard]]
 		ID3D11ShaderResourceView** getSRVPtr(Texture::IDType handleID);
 
 	private:

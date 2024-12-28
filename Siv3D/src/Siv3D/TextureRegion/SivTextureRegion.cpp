@@ -507,4 +507,152 @@ namespace s3d
 		return drawQuadWarp(quad, *leftColor, *rightColor, *rightColor, *leftColor);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	mirrored
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion TextureRegion::mirrored() const
+	{
+		return{
+			texture,
+			uvRect.right, uvRect.top, uvRect.left, uvRect.bottom,
+			size
+		};
+	}
+
+	TextureRegion TextureRegion::mirrored(const bool doMirror) const
+	{
+		if (doMirror)
+		{
+			return mirrored();
+		}
+		else
+		{
+			return *this;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	flipped
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion TextureRegion::flipped() const
+	{
+		return{
+			texture,
+			uvRect.left, uvRect.bottom, uvRect.right, uvRect.top,
+			size
+		};
+	}
+
+	TextureRegion TextureRegion::flipped(const bool doFlip) const
+	{
+		if (doFlip)
+		{
+			return flipped();
+		}
+		else
+		{
+			return *this;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaled
+	//
+	////////////////////////////////////////////////////////////////
+	
+	TextureRegion TextureRegion::scaled(double s) const
+	{
+		return scaled(s, s);
+	}
+
+	TextureRegion TextureRegion::scaled(const double sx, const double sy) const
+	{
+		return{
+			texture,
+			uvRect,
+			(size.x * sx), (size.y * sy)
+		};
+	}
+
+	TextureRegion TextureRegion::scaled(const SizeF s) const
+	{
+		return scaled(s.x, s.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resized
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion TextureRegion::resized(const double _size) const
+	{
+		return resized(_size, _size);
+	}
+
+	TextureRegion TextureRegion::resized(const double width, const double height) const
+	{
+		return{
+			texture,
+			uvRect,
+			width, height
+		};
+	}
+
+	TextureRegion TextureRegion::resized(const SizeF _size) const
+	{
+		return resized(_size.x, _size.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fitted
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion TextureRegion::fitted(const double size, const AllowUpscale allowUpscale) const
+	{
+		return fitted(size, size, allowUpscale);
+	}
+
+	TextureRegion TextureRegion::fitted(double width, double height, const AllowUpscale allowUpscale) const
+	{
+		if (not allowUpscale)
+		{
+			width	= Min<double>(width, size.x);
+			height	= Min<double>(height, size.y);
+		}
+
+		// どれだけの倍率で拡大縮小するか
+		double ws = (width / size.x);
+		double hs = (height / size.y);
+		double targetWidth, targetHeight;
+
+		if (ws < hs)
+		{
+			targetWidth = width;
+			targetHeight = (size.y * ws);
+		}
+		else
+		{
+			targetWidth = (size.x * hs);
+			targetHeight = height;
+		}
+
+		return{ texture, uvRect, targetWidth, targetHeight };
+	}
+
+	TextureRegion TextureRegion::fitted(const SizeF& size, const AllowUpscale allowUpscale) const
+	{
+		return fitted(size.x, size.y, allowUpscale);
+	}
+
+
 }

@@ -550,12 +550,33 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した四角形にパース変形して部分テクスチャを描画します。
+		/// @param quad パース変形の形状
+		/// @param diffuse 描画時に乗算する色
+		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
 		bool drawQuadWarp(const Quad& quad, const ColorF& diffuse = Palette::White) const;
 
+		/// @brief 指定した四角形にパース変形して部分テクスチャを描画します。
+		/// @param quad パース変形の形状
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
 		bool drawQuadWarp(const Quad& quad, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
 
+		/// @brief 指定した四角形にパース変形して部分テクスチャを描画します。
+		/// @param quad パース変形の形状
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
 		bool drawQuadWarp(const Quad& quad, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		/// @brief 指定した四角形にパース変形して部分テクスチャを描画します。
+		/// @param quad パース変形の形状
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
 		bool drawQuadWarp(const Quad& quad, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		////////////////////////////////////////////////////////////////
@@ -564,11 +585,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TextureRegion mirrored() const;
+		[[nodiscard]]
+		TextureRegion mirrored() const;
 
-		//[[nodiscard]]
-		//TextureRegion mirrored(bool doMirror) const;
+		[[nodiscard]]
+		TextureRegion mirrored(bool doMirror) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -576,11 +597,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TextureRegion flipped() const;
+		[[nodiscard]]
+		TextureRegion flipped() const;
 
-		//[[nodiscard]]
-		//TextureRegion flipped(bool doFlip) const;
+		[[nodiscard]]
+		TextureRegion flipped(bool doFlip) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -588,14 +609,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TextureRegion scaled(double s) const;
+		[[nodiscard]]
+		TextureRegion scaled(double s) const;
 
-		//[[nodiscard]]
-		//TextureRegion scaled(double sx, double sy) const;
+		[[nodiscard]]
+		TextureRegion scaled(double sx, double sy) const;
 
-		//[[nodiscard]]
-		//TextureRegion scaled(Vec2 s) const;
+		[[nodiscard]]
+		TextureRegion scaled(SizeF s) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -603,14 +624,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TextureRegion resized(double _size) const;
+		[[nodiscard]]
+		TextureRegion resized(double _size) const;
 
-		//[[nodiscard]]
-		//TextureRegion resized(double width, double height) const;
+		[[nodiscard]]
+		TextureRegion resized(double width, double height) const;
 
-		//[[nodiscard]]
-		//TextureRegion resized(Vec2 _size) const;
+		[[nodiscard]]
+		TextureRegion resized(SizeF _size) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -618,11 +639,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TextureRegion fitted(double width, double height, AllowScaleUp allowScaleUp = AllowScaleUp::Yes) const;
+		[[nodiscard]]
+		TextureRegion fitted(double size, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
 
-		//[[nodiscard]]
-		//TextureRegion fitted(const Vec2& _size, AllowScaleUp allowScaleUp = AllowScaleUp::Yes) const;
+		[[nodiscard]]
+		TextureRegion fitted(double width, double height, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
+
+		[[nodiscard]]
+		TextureRegion fitted(const SizeF& size, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

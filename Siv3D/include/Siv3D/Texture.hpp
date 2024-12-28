@@ -745,12 +745,33 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した四角形にパース変形してテクスチャを描画します。
+		/// @param quad パース変形の形状
+		/// @param diffuse 描画時に乗算する色
+		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
 		bool drawQuadWarp(const Quad& quad, const ColorF& diffuse = Palette::White) const;
 
+		/// @brief 指定した四角形にパース変形してテクスチャを描画します。
+		/// @param quad パース変形の形状
+		/// @param topLeftColor 描画時に左上の頂点に乗算する色
+		/// @param topRightColor 描画時に右上の頂点に乗算する色
+		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
+		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
+		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
 		bool drawQuadWarp(const Quad& quad, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
 
+		/// @brief 指定した四角形にパース変形してテクスチャを描画します。
+		/// @param quad パース変形の形状
+		/// @param topColor 描画時に上側の頂点に乗算する色
+		/// @param bottomColor 描画時に下側の頂点に乗算する色
+		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
 		bool drawQuadWarp(const Quad& quad, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
+		/// @brief 指定した四角形にパース変形してテクスチャを描画します。
+		/// @param quad パース変形の形状
+		/// @param leftColor 描画時に左側の頂点に乗算する色
+		/// @param rightColor 描画時に右側の頂点に乗算する色
+		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
 		bool drawQuadWarp(const Quad& quad, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		////////////////////////////////////////////////////////////////
@@ -888,7 +909,7 @@ namespace s3d
 		TextureRegion scaled(double xs, double ys) const;
 
 		[[nodiscard]]
-		TextureRegion scaled(Vec2 s) const;
+		TextureRegion scaled(SizeF s) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -903,7 +924,7 @@ namespace s3d
 		TextureRegion resized(double width, double height) const;
 
 		[[nodiscard]]
-		TextureRegion resized(Vec2 size) const;
+		TextureRegion resized(SizeF size) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -918,7 +939,7 @@ namespace s3d
 		TextureRegion repeated(double xRepeat, double yRepeat) const;
 
 		[[nodiscard]]
-		TextureRegion repeated(Vec2 repeat) const;
+		TextureRegion repeated(SizeF repeat) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -933,7 +954,7 @@ namespace s3d
 		TextureRegion mapped(double width, double height) const;
 
 		[[nodiscard]]
-		TextureRegion mapped(Vec2 size) const;
+		TextureRegion mapped(SizeF size) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -942,10 +963,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
+		TextureRegion fitted(double size, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
+
+		[[nodiscard]]
 		TextureRegion fitted(double width, double height, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
 
 		[[nodiscard]]
-		TextureRegion fitted(const Vec2& size, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
+		TextureRegion fitted(const SizeF& size, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -985,8 +1009,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//ID3D11Texture2D* getD3D11Texture2D();
+		[[nodiscard]]
+		ID3D11Texture2D* getD3D11Texture2D();
 
 	# endif
 

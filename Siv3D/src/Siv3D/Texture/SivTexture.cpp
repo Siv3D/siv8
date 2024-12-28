@@ -18,6 +18,10 @@
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
+# if SIV3D_PLATFORM(WINDOWS)
+#	include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
+# endif
+
 namespace s3d
 {
 	namespace
@@ -771,7 +775,7 @@ namespace s3d
 		return{ *this, (size.x * xs), (size.y * ys) };
 	}
 
-	TextureRegion Texture::scaled(const Vec2 s) const
+	TextureRegion Texture::scaled(const SizeF s) const
 	{
 		return scaled(s.x, s.y);
 	}
@@ -794,7 +798,7 @@ namespace s3d
 		return{ *this, width, height };
 	}
 
-	TextureRegion Texture::resized(const Vec2 size) const
+	TextureRegion Texture::resized(const SizeF size) const
 	{
 		return resized(size.x, size.y);
 	}
@@ -825,7 +829,7 @@ namespace s3d
 		};
 	}
 
-	TextureRegion Texture::repeated(const Vec2 repeat) const
+	TextureRegion Texture::repeated(const SizeF repeat) const
 	{
 		return repeated(repeat.x, repeat.y);
 	}
@@ -856,7 +860,7 @@ namespace s3d
 		};
 	}
 
-	TextureRegion Texture::mapped(const Vec2 size) const
+	TextureRegion Texture::mapped(const SizeF size) const
 	{
 		return mapped(size.x, size.y);
 	}
@@ -866,6 +870,11 @@ namespace s3d
 	//	fitted
 	//
 	////////////////////////////////////////////////////////////////
+
+	TextureRegion Texture::fitted(const double size, const AllowUpscale allowUpscale) const
+	{
+		return fitted(size, size, allowUpscale);
+	}
 
 	TextureRegion Texture::fitted(double width, double height, const AllowUpscale allowUpscale) const
 	{
@@ -896,9 +905,30 @@ namespace s3d
 		return{ *this, targetWidth, targetHeight };
 	}
 
-	TextureRegion Texture::fitted(const Vec2& size, const AllowUpscale allowUpscale) const
+	TextureRegion Texture::fitted(const SizeF& size, const AllowUpscale allowUpscale) const
 	{
 		return fitted(size.x, size.y, allowUpscale);
 	}
 
+
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getD3D11Texture2D
+	//
+	////////////////////////////////////////////////////////////////
+
+	ID3D11Texture2D* Texture::getD3D11Texture2D()
+	{
+		if (auto p = dynamic_cast<CTexture_D3D11*>(SIV3D_ENGINE(Texture)))
+		{
+			return p->getTexture(m_handle->id());
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
 }
