@@ -595,7 +595,34 @@ namespace s3d
 		return true;
 	}
 
+	bool Texture::drawQuadWarp(const Quad& quad, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		if (not quad.isConvex())
+		{
+			return false;
+		}
+		
+		const Float4 colors[4] = { topLeftColor.toFloat4(), topRightColor.toFloat4(), bottomRightColor.toFloat4(), bottomLeftColor.toFloat4() };
+		
+		SIV3D_ENGINE(Renderer2D)->addQuadWarp(
+			*this,
+			FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f },
+			FloatQuad{ quad },
+			colors
+		);
 
+		return true;
+	}
+
+	bool Texture::drawQuadWarp(const Quad& quad, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return drawQuadWarp(quad, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	bool Texture::drawQuadWarp(const Quad& quad, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return drawQuadWarp(quad, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

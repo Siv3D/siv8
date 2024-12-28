@@ -82,7 +82,7 @@ float2 s3d_patternTransform(float2 uv)
 	return (g_patternUVTransform._13_14 + (uv.x * g_patternUVTransform._11_12) + (uv.y * g_patternUVTransform._21_22));
 }
 
-PSInput VS(VSInput input)
+PSInput VS_Shape(VSInput input)
 {
 	PSInput result;
 	result.position	= s3d_positionTransform(input.position, g_transform);

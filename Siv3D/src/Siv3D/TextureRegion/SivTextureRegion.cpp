@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -451,4 +452,59 @@ namespace s3d
 	{
 		return draw((pos.x - size.x * 0.5), (pos.y - size.y * 0.5), *leftColor, *rightColor, *rightColor, *leftColor);
 	}
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawQuadWarp
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool TextureRegion::drawQuadWarp(const Quad& quad, const ColorF& diffuse) const
+	{
+		if (not quad.isConvex())
+		{
+			return false;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addQuadWarp(
+			texture,
+			uvRect,
+			FloatQuad{ quad },
+			diffuse.toFloat4()
+		);
+
+		return true;
+	}
+
+	bool TextureRegion::drawQuadWarp(const Quad& quad, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const
+	{
+		if (not quad.isConvex())
+		{
+			return false;
+		}
+		
+		const Float4 colors[4] = { topLeftColor.toFloat4(), topRightColor.toFloat4(), bottomRightColor.toFloat4(), bottomLeftColor.toFloat4() };
+		
+		SIV3D_ENGINE(Renderer2D)->addQuadWarp(
+			texture,
+			uvRect,
+			FloatQuad{ quad },
+			colors
+		);
+		
+		return true;
+	}
+
+	bool TextureRegion::drawQuadWarp(const Quad& quad, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return drawQuadWarp(quad, *topColor, *topColor, *bottomColor, *bottomColor);
+	}
+
+	bool TextureRegion::drawQuadWarp(const Quad& quad, const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		return drawQuadWarp(quad, *leftColor, *rightColor, *rightColor, *leftColor);
+	}
+
 }

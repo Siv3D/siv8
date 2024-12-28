@@ -1121,6 +1121,33 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_D3D11::addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4(&colors)[4])
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, colors))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsQuadWarp);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psQuadWarp);
+			}
+
+			const std::array<Float4, 3> quadWarpParams =
+			{
+				Float4{ quad.p[0], quad.p[1] },
+				Float4{ quad.p[2], quad.p[3] },
+				Float4{ (uv.right - uv.left), (uv.bottom - uv.top), uv.left, uv.top }
+			};
+			m_commandManager.pushQuadWarpParameter(quadWarpParams);
+
+			m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	flush

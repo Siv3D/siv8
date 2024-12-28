@@ -544,17 +544,49 @@ namespace s3d
 
 		//RectF drawAtClipped(const Vec2& pos, const RectF& clipRect, const ColorF& diffuse = Palette::White) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawQuadWarp
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool drawQuadWarp(const Quad& quad, const ColorF& diffuse = Palette::White) const;
+
+		bool drawQuadWarp(const Quad& quad, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		bool drawQuadWarp(const Quad& quad, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		bool drawQuadWarp(const Quad& quad, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mirrored
+		//
+		////////////////////////////////////////////////////////////////
+
 		//[[nodiscard]]
 		//TextureRegion mirrored() const;
 
 		//[[nodiscard]]
 		//TextureRegion mirrored(bool doMirror) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	flipped
+		//
+		////////////////////////////////////////////////////////////////
+
 		//[[nodiscard]]
 		//TextureRegion flipped() const;
 
 		//[[nodiscard]]
 		//TextureRegion flipped(bool doFlip) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaled
+		//
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//TextureRegion scaled(double s) const;
@@ -565,6 +597,12 @@ namespace s3d
 		//[[nodiscard]]
 		//TextureRegion scaled(Vec2 s) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	resized
+		//
+		////////////////////////////////////////////////////////////////
+
 		//[[nodiscard]]
 		//TextureRegion resized(double _size) const;
 
@@ -574,20 +612,44 @@ namespace s3d
 		//[[nodiscard]]
 		//TextureRegion resized(Vec2 _size) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	fitted
+		//
+		////////////////////////////////////////////////////////////////
+
 		//[[nodiscard]]
 		//TextureRegion fitted(double width, double height, AllowScaleUp allowScaleUp = AllowScaleUp::Yes) const;
 
 		//[[nodiscard]]
 		//TextureRegion fitted(const Vec2& _size, AllowScaleUp allowScaleUp = AllowScaleUp::Yes) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated
+		//
+		////////////////////////////////////////////////////////////////
+
 		//[[nodiscard]]
 		//TexturedQuad rotated(double angle) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotatedAt
+		//
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//TexturedQuad rotatedAt(double x, double y, double angle) const;
 
 		//[[nodiscard]]
 		//TexturedQuad rotatedAt(const Vec2& pos, double angle) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rounded
+		//
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//TexturedRoundRect rounded(double r) const;

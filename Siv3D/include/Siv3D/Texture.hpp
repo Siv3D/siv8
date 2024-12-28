@@ -747,6 +747,12 @@ namespace s3d
 
 		bool drawQuadWarp(const Quad& quad, const ColorF& diffuse = Palette::White) const;
 
+		bool drawQuadWarp(const Quad& quad, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+
+		bool drawQuadWarp(const Quad& quad, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		bool drawQuadWarp(const Quad& quad, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator ()

@@ -239,6 +239,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color) override;
+
+		void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4(&colors)[4]) override;
 		
 		////////////////////////////////////////////////////////////////
 		//
