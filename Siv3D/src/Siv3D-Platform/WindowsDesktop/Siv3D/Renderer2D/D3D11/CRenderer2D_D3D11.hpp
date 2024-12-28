@@ -446,9 +446,7 @@ namespace s3d
 
 		ConstantBuffer<PSConstants2D> m_psConstants;
 
-		ConstantBuffer<PSPatternConstants2D> m_psPatternConstants;
-
-		ConstantBuffer<PSQuadWarpConstants> m_psQuadWarpConstants;
+		ConstantBuffer<PSEffectConstants2D> m_psEffectConstants;
 
 		Vertex2DBufferPointer createBuffer(uint16 vertexCount, uint32 indexCount);
 	};

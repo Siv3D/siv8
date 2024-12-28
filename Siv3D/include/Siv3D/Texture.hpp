@@ -745,7 +745,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Quad drawQuadWarp(const Quad& quad, const ColorF& diffuse = Palette::White) const;
+		bool drawQuadWarp(const Quad& quad, const ColorF& diffuse = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

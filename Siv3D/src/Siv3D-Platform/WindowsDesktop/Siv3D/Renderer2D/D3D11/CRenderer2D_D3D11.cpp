@@ -1141,9 +1141,7 @@ namespace s3d
 		m_context->IASetInputLayout(m_inputLayout.Get());
 		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
 		m_pShader->setConstantBufferPS(0, m_psConstants._base());
-		m_pShader->setConstantBufferPS(1, m_psPatternConstants._base());
-		m_pShader->setConstantBufferPS(2, m_psQuadWarpConstants._base());
-
+		m_pShader->setConstantBufferPS(1, m_psEffectConstants._base());
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		{
@@ -1185,8 +1183,7 @@ namespace s3d
 				{
 					m_vsConstants._update_if_dirty();
 					m_psConstants._update_if_dirty();
-					m_psPatternConstants._update_if_dirty();
-					m_psQuadWarpConstants._update_if_dirty();
+					m_psEffectConstants._update_if_dirty();
 
 					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);
 					const uint32 indexCount = draw.indexCount;
@@ -1220,26 +1217,15 @@ namespace s3d
 				{
 					const auto& quadWarpParameter = m_commandManager.getQuadWarpParameter(command.index);
 					const Quad quad{ quadWarpParameter[0].xy(), quadWarpParameter[0].zw(), quadWarpParameter[1].xy(), quadWarpParameter[1].zw() };
-					
-					if (quad.p0.isZero() && quad.p1.isZero() && quad.p2.isZero() && quad.p3.isZero())
-					{
-
-					}
-					else
-					{
-						const Mat3x3 mat = Mat3x3::Homography(quad);
-						const Mat3x3 matInv = mat.inverse();
-						m_psQuadWarpConstants->invHomography = { Float4{ matInv._11, matInv._12, matInv._13, 0 }, Float4{ matInv._21, matInv._22, matInv._23, 0 }, Float4{ matInv._31, matInv._32, matInv._33, 0 } };
-						m_psQuadWarpConstants->uvTransform = quadWarpParameter[2];
-					}
-					
+					const Mat3x3 mat = Mat3x3::Homography(quad).inverse();
+					m_psEffectConstants->setQuadWarp(mat, quadWarpParameter[2]);			
 					LOG_COMMAND(fmt::format("QuadWarpParameters[{}]", command.index));
 					break;
 				}
 			case D3D11Renderer2DCommandType::PatternParameters:
 				{
 					const auto& patternParameter = m_commandManager.getPatternParameter(command.index);
-					*m_psPatternConstants = { { patternParameter[0], patternParameter[1] }, patternParameter[2] };
+					m_psEffectConstants->setPattern(patternParameter);
 					LOG_COMMAND(fmt::format("PatternParameters[{}]", command.index));
 					break;
 				}

@@ -125,7 +125,7 @@ namespace s3d
 			
 			Array<Float3> colorAdds					= { Float3{ 0.0f, 0.0f, 0.0f } };
 
-			Array<std::array<Float4, 3>> quadWarpParameters	= { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
+			Array<std::array<Float4, 3>> quadWarpParameters	= { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 1.0f, 0.0f }, Float4{ 1.0f, 1.0f, 0.0f, 1.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
 
 			Array<std::array<Float4, 3>> patternParameters	= { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
 

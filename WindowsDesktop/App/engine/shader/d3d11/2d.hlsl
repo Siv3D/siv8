@@ -42,16 +42,12 @@ cbuffer PSConstants2D : register(b0)
 	//float4 g_internal;
 }
 
-cbuffer PSPatternConstants2D : register(b1)
+cbuffer PSEffectConstants2D : register(b1)
 {
-	row_major float2x4 g_patternUVTransform_params;
+	row_major float2x4 g_patternUVTransform;
 	float4 g_patternBackgroundColor;
-}
-
-cbuffer PSQuadWarp : register(b2)
-{
-	row_major float3x3 g_invHomography;
-	float4 g_uvTransform;
+	row_major float3x3 g_quadWarpInvHomography;
+	float4 g_quadWarpUVTransform;
 }
 
 float4 s3d_positionTransform(float2 pos, float2x4 t)
@@ -83,7 +79,7 @@ float4 s3d_patternBackgroundColor()
 
 float2 s3d_patternTransform(float2 uv)
 {
-	return (g_patternUVTransform_params._13_14 + (uv.x * g_patternUVTransform_params._11_12) + (uv.y * g_patternUVTransform_params._21_22));
+	return (g_patternUVTransform._13_14 + (uv.x * g_patternUVTransform._11_12) + (uv.y * g_patternUVTransform._21_22));
 }
 
 PSInput VS(VSInput input)
@@ -116,8 +112,8 @@ float4 PS_Texture(PSInput input) : SV_TARGET
 
 float4 PS_QuadWarp(PSInput input) : SV_TARGET
 {
-	const float3 t = mul(float3(input.uv, 1.0f), g_invHomography);
-	const float2 uv = ((t.xy / t.z) * g_uvTransform.xy + g_uvTransform.zw);
+	const float3 t = mul(float3(input.uv, 1.0f), g_quadWarpInvHomography);
+	const float2 uv = ((t.xy / t.z) * g_quadWarpUVTransform.xy + g_quadWarpUVTransform.zw);
 	return s3d_textureColor(input.color, g_texture0.Sample(g_sampler0, uv));
 }
 
@@ -196,7 +192,7 @@ float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 	const float value = length(repeat);
 	const float fw = (length(float2(ddx(value), ddy(value))) * 0.70710678118);
 
-	const float radiusScale = g_patternUVTransform_params[1].z;
+	const float radiusScale = g_patternUVTransform[1].z;
 	const float c = smoothstep((radiusScale - fw), (radiusScale + fw), value);
 
 	const float4 primary = s3d_shapeColor(input.color);
@@ -212,7 +208,7 @@ float4 PS_PatternStripe(PSInput input) : SV_TARGET
 	const float repeat = (2.0 * frac(u) - 1.0);
 	const float value = abs(repeat);
 
-	const float thicknessScale = (g_patternUVTransform_params[1].z * (1 + 2 * fw) - fw);
+	const float thicknessScale = (g_patternUVTransform[1].z * (1 + 2 * fw) - fw);
 	const float c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 
 	const float4 primary = s3d_shapeColor(input.color);
@@ -228,7 +224,7 @@ float4 PS_PatternGrid(PSInput input) : SV_TARGET
 	const float2 repeat = (2.0 * frac(uv) - 1.0);
 	const float2 value = abs(repeat);
 
-	const float2 thicknessScale = (g_patternUVTransform_params[1].zz * float2(1 + fw) - fw);
+	const float2 thicknessScale = (g_patternUVTransform[1].zz * float2(1 + fw) - fw);
 	const float2 c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 	const float c2 = min(c.x, c.y);
 
@@ -257,7 +253,7 @@ float CheckersFiltered(float2 p, float2 hv)
 float4 PS_PatternChecker(PSInput input) : SV_TARGET
 {
 	const float2 uv = s3d_patternTransform(input.position.xy);
-	const float c = CheckersFiltered(uv, g_patternUVTransform_params[1].zw);
+	const float c = CheckersFiltered(uv, g_patternUVTransform[1].zw);
 
 	const float4 primary = s3d_shapeColor(input.color);
 	const float4 background = s3d_patternBackgroundColor();
@@ -307,7 +303,7 @@ float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
 	const float2 fw = fwidth(uv);
 	const float w = (max(fw.x, fw.y) * 0.5);
 
-	const float thicknessScale = (g_patternUVTransform_params[1].z * (1 + 2 * w));
+	const float thicknessScale = (g_patternUVTransform[1].z * (1 + 2 * w));
 	const float h = Hex(uv);
 	const float c = smoothstep((thicknessScale - w), (thicknessScale + w), h);
 

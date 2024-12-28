@@ -578,8 +578,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Quad Texture::drawQuadWarp(const Quad& quad, const ColorF& diffuse) const
+	bool Texture::drawQuadWarp(const Quad& quad, const ColorF& diffuse) const
 	{
+		if (not quad.isConvex())
+		{
+			return false;
+		}
+
 		SIV3D_ENGINE(Renderer2D)->addQuadWarp(
 			*this,
 			FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f },
@@ -587,7 +592,7 @@ namespace s3d
 			diffuse.toFloat4()
 		);
 
-		return quad;
+		return true;
 	}
 
 
