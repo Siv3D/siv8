@@ -920,6 +920,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+# if SIV3D_PLATFORM(WINDOWS)
+
 	ID3D11Texture2D* Texture::getD3D11Texture2D()
 	{
 		if (auto p = dynamic_cast<CTexture_D3D11*>(SIV3D_ENGINE(Texture)))
@@ -931,4 +933,6 @@ namespace s3d
 			return nullptr;
 		}
 	}
+
+# endif
 }
