@@ -2490,6 +2490,8 @@
 		F9FD0D0B2D1DABA000A584CE /* libopencv_imgproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */; };
 		F9FD0D0D2D20434C00A584CE /* RandomAngle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */; };
 		F9FD0D0F2D20436000A584CE /* RandomAngle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */; };
+		F9FD0D112D204FA000A584CE /* SampleBorderColor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */; };
+		F9FD0D142D204FBE00A584CE /* SivSampleBorderColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D122D204FBE00A584CE /* SivSampleBorderColor.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -5028,6 +5030,8 @@
 		F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_imgproc.a; path = ../Siv3D/lib/macOS/opencv/libopencv_imgproc.a; sourceTree = "<group>"; };
 		F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomAngle.hpp; sourceTree = "<group>"; };
 		F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomAngle.ipp; sourceTree = "<group>"; };
+		F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SampleBorderColor.hpp; sourceTree = "<group>"; };
+		F9FD0D122D204FBE00A584CE /* SivSampleBorderColor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSampleBorderColor.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -6023,6 +6027,7 @@
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
 				F98606182BEB7651006A4C0F /* RoundRect.hpp */,
+				F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */,
 				F980C4262C00D2B500A86B68 /* SamplerState.hpp */,
 				F980C4572C01B20F00A86B68 /* SamplerStateBuilder.hpp */,
 				F97202F52BEDF2D8000E21DD /* Scene.hpp */,
@@ -6769,6 +6774,7 @@
 				F980C47F2C04B3EA00A86B68 /* Renderer2D */,
 				F97203042BEDF2FF000E21DD /* ResizeMode */,
 				F9D41CF22C9FCDC300290998 /* RoundRect */,
+				F9FD0D132D204FBE00A584CE /* SampleBorderColor */,
 				F980C4532C00E2AE00A86B68 /* SamplerState */,
 				F980C46A2C01B4B600A86B68 /* SamplerStateBuilder */,
 				F97203022BEDF2FF000E21DD /* Scene */,
@@ -10638,6 +10644,14 @@
 			path = Mat3x3;
 			sourceTree = "<group>";
 		};
+		F9FD0D132D204FBE00A584CE /* SampleBorderColor */ = {
+			isa = PBXGroup;
+			children = (
+				F9FD0D122D204FBE00A584CE /* SivSampleBorderColor.cpp */,
+			);
+			path = SampleBorderColor;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -10979,6 +10993,7 @@
 				F90706982B9DAEC900383E4D /* type_traits.h in Headers */,
 				F9070D142B9F175100383E4D /* WindowState.hpp in Headers */,
 				F986052B2BD10459006A4C0F /* Circle.hpp in Headers */,
+				F9FD0D112D204FA000A584CE /* SampleBorderColor.hpp in Headers */,
 				F9070DC22B9F175E00383E4D /* CEmpty.hpp in Headers */,
 				F9E794412C158BA1002615BA /* Circular.ipp in Headers */,
 				F986F9902BCA9D0A006A4C0F /* plutovg-ft-math.h in Headers */,
@@ -12769,6 +12784,7 @@
 				F986021E2BCFBB54006A4C0F /* SkPictureFlat.cpp in Sources */,
 				F98604482BCFBB54006A4C0F /* SkSLVarDeclarations.cpp in Sources */,
 				F9070DD02B9F175E00383E4D /* SivFormatter.cpp in Sources */,
+				F9FD0D142D204FBE00A584CE /* SivSampleBorderColor.cpp in Sources */,
 				F98601C22BCFBB53006A4C0F /* SkGaussFilter.cpp in Sources */,
 				F980C4562C00E2AE00A86B68 /* SivSamplerState.cpp in Sources */,
 				F98601972BCFBB53006A4C0F /* SkData.cpp in Sources */,
