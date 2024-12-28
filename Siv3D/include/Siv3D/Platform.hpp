@@ -349,10 +349,6 @@
 
 	# define SIV3D_LIFETIMEBOUND [[clang::lifetimebound]]
 
-# elif SIV3D_COMPILER(GCC)
-
-	# define SIV3D_LIFETIMEBOUND __attribute__((lifetimebound))
-
 # else
 
 	# define SIV3D_LIFETIMEBOUND

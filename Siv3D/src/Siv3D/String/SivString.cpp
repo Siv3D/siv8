@@ -11,6 +11,7 @@
 
 # include <iostream>
 # include <stdexcept>
+# include <ranges>
 # include <Siv3D/HashSet.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Random.hpp>
@@ -820,27 +821,22 @@ namespace s3d
 
 	Array<String> String::split(const value_type ch) const
 	{
-		if (m_string.empty())
-		{
-			return{};
-		}
+		auto split_views = m_string | std::views::split(ch) | std::views::transform([](auto&& part) { return String{ part.begin(), part.end() }; });
 
-		Array<String> result;
+		return Array<String>(split_views.begin(), split_views.end());
+	}
 
-		size_t start = 0;
+	////////////////////////////////////////////////////////////////
+	//
+	//	splitView
+	//
+	////////////////////////////////////////////////////////////////
 
-		for (size_t i = 0; i < m_string.length(); ++i)
-		{
-			if (m_string[i] == ch)
-			{
-				result.push_back(m_string.substr(start, (i - start)));
-				start = (i + 1);
-			}
-		}
+	Array<StringView> String::splitView(const value_type ch) const SIV3D_LIFETIMEBOUND
+	{
+		auto split_views = m_string | std::views::split(ch) | std::views::transform([](auto&& part) { return StringView{ part }; });
 
-		result.push_back(m_string.substr(start));
-
-		return result;
+		return Array<StringView>(split_views.begin(), split_views.end());
 	}
 
 	////////////////////////////////////////////////////////////////

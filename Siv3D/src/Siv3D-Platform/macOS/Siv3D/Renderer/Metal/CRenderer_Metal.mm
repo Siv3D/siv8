@@ -17,6 +17,7 @@
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Texture/Metal/CTexture_Metal.hpp>
 # include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Renderer2D/Metal/CRenderer2D_Metal.hpp>
 # include <Siv3D/Scene/SceneUtility.hpp>
@@ -71,8 +72,9 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CRenderer_Metal::init()");
 		
-		m_pShader = static_cast<CShader_Metal*>(SIV3D_ENGINE(Shader));
-		m_pRenderer2D = static_cast<CRenderer2D_Metal*>(SIV3D_ENGINE(Renderer2D));
+		m_pTexture		= static_cast<CTexture_Metal*>(SIV3D_ENGINE(Texture));
+		m_pShader		= static_cast<CShader_Metal*>(SIV3D_ENGINE(Shader));
+		m_pRenderer2D	= static_cast<CRenderer2D_Metal*>(SIV3D_ENGINE(Renderer2D));
 
 		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 		m_metalWindow = ::glfwGetCocoaWindow(glfwWindow);
@@ -105,7 +107,9 @@ namespace s3d
 		}
 		
 		m_renderPipelineState.init(m_device, m_pShader);
+		m_samplerState.init(m_device);
 		
+		SIV3D_ENGINE(Texture)->init();
 		SIV3D_ENGINE(Shader)->init();
 		SIV3D_ENGINE(EngineShader)->init();
 
@@ -422,9 +426,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MTL::Device* CRenderer_Metal::getDevice() const
+	MTL::Device* CRenderer_Metal::getDevice() const noexcept
 	{
 		return m_device;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCommandQueue
+	//
+	////////////////////////////////////////////////////////////////
+
+	MTL::CommandQueue* CRenderer_Metal::getCommandQueue() const noexcept
+	{
+		return m_commandQueue.get();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -433,7 +448,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint32 CRenderer_Metal::getSceneSampleCount() const
+	uint32 CRenderer_Metal::getSceneSampleCount() const noexcept
 	{
 		return m_sceneBuffers.sampleCount;
 	}
@@ -444,7 +459,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const MetalInternalTexture2D& CRenderer_Metal::getSceneTextureMSAA() const
+	const MetalInternalTexture2D& CRenderer_Metal::getSceneTextureMSAA() const noexcept
 	{
 		return m_sceneBuffers.msaa;
 	}
@@ -455,14 +470,31 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const MetalInternalTexture2D& CRenderer_Metal::getSceneTextureNonMSAA() const
+	const MetalInternalTexture2D& CRenderer_Metal::getSceneTextureNonMSAA() const noexcept
 	{
 		return m_sceneBuffers.nonMSAA;
 	}
 
-	MetalRenderPipelineState& CRenderer_Metal::getRenderPipelineState()
+	////////////////////////////////////////////////////////////////
+	//
+	//	getRenderPipelineState
+	//
+	////////////////////////////////////////////////////////////////
+
+	MetalRenderPipelineState& CRenderer_Metal::getRenderPipelineState() noexcept
 	{
 		return m_renderPipelineState;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSamplerState
+	//
+	////////////////////////////////////////////////////////////////
+
+	MetalSamplerState& CRenderer_Metal::getSamplerState() noexcept
+	{
+		return m_samplerState;
 	}
 
 	////////////////////////////////////////////////////////////////

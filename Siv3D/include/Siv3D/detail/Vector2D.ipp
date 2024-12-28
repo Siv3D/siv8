@@ -67,24 +67,24 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type>::Vector2D(const value_type _x, const value_type _y) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>::Vector2D(const value_type _x, const value_type _y) noexcept
 		: x{ _x }
 		, y{ _y } {}
 
-	template <class Type>
-	constexpr Vector2D<Type>::Vector2D(const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>::Vector2D(const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y) noexcept
 		: x{ static_cast<value_type>(_x) }
 		, y{ static_cast<value_type>(_y) } {}
 
-	template <class Type>
-	constexpr Vector2D<Type>::Vector2D(const Point p) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>::Vector2D(const Point p) noexcept
 		: x{ static_cast<value_type>(p.x) }
 		, y{ static_cast<value_type>(p.y) } {}
 
-	template <class Type>
-	template <class U>
-	constexpr Vector2D<Type>::Vector2D(const Vector2D<U>& v) noexcept
+	template <Concept::FloatingPoint Float>
+	template <Concept::FloatingPoint U>
+	constexpr Vector2D<Float>::Vector2D(const Vector2D<U>& v) noexcept
 		: x{ static_cast<value_type>(v.x) }
 		, y{ static_cast<value_type>(v.y) } {}
 
@@ -94,8 +94,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::elem(const size_t index) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::elem(const size_t index) const noexcept
 	{
 		if (index == 0)
 		{
@@ -117,14 +117,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type* Vector2D<Type>::getPointer() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type* Vector2D<Float>::getPointer() noexcept
 	{
 		return &x;
 	}
 
-	template <class Type>
-	constexpr const typename Vector2D<Type>::value_type* Vector2D<Type>::getPointer() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr const typename Vector2D<Float>::value_type* Vector2D<Float>::getPointer() const noexcept
 	{
 		return &x;
 	}
@@ -135,14 +135,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::operator +() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::operator +() const noexcept
 	{
 		return *this;
 	}
 	
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::operator +(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::operator +(const Vector2D v) const noexcept
 	{
 		return{ (x + v.x), (y + v.y) };
 	}
@@ -153,14 +153,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::operator -() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::operator -() const noexcept
 	{
 		return{ -x, -y };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::operator -(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::operator -(const Vector2D v) const noexcept
 	{
 		return{ (x - v.x), (y - v.y) };
 	}
@@ -171,14 +171,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::operator *(const value_type s) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::operator *(const value_type s) const noexcept
 	{
 		return{ (x * s), (y * s) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::operator *(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::operator *(const Vector2D v) const noexcept
 	{
 		return{ (x * v.x), (y * v.y) };
 	}
@@ -189,16 +189,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 	
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::operator /(const value_type s) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::operator /(const value_type s) const noexcept
 	{
 		const auto invS = (static_cast<value_type>(1.0) / s);
 
 		return{ (x * invS), (y * invS) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::operator /(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::operator /(const Vector2D v) const noexcept
 	{
 		return{ (x / v.x), (y / v.y) };
 	}
@@ -209,8 +209,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::operator +=(const Vector2D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::operator +=(const Vector2D v) noexcept
 	{
 		x += v.x;
 		y += v.y;
@@ -223,8 +223,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 	
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::operator -=(const Vector2D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::operator -=(const Vector2D v) noexcept
 	{
 		x -= v.x;
 		y -= v.y;
@@ -237,16 +237,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::operator *=(const value_type s) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::operator *=(const value_type s) noexcept
 	{
 		x *= s;
 		y *= s;
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::operator *=(const Vector2D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::operator *=(const Vector2D v) noexcept
 	{
 		x *= v.x;
 		y *= v.y;
@@ -259,14 +259,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::operator /=(const value_type s) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::operator /=(const value_type s) noexcept
 	{
 		return (*this *= (static_cast<value_type>(1.0) / s));
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::operator /=(const Vector2D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::operator /=(const Vector2D v) noexcept
 	{
 		x /= v.x;
 		y /= v.y;
@@ -279,8 +279,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr bool Vector2D<Type>::epsilonEquals(const Vector2D other, const value_type epsilon) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr bool Vector2D<Float>::epsilonEquals(const Vector2D other, const value_type epsilon) const noexcept
 	{
 		return ((AbsDiff(x, other.x) <= epsilon)
 			 && (AbsDiff(y, other.y) <= epsilon));
@@ -292,8 +292,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr bool Vector2D<Type>::hasSameDirection(const Vector2D other) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr bool Vector2D<Float>::hasSameDirection(const Vector2D other) const noexcept
 	{
 		return (0 < dot(other));
 	}
@@ -304,8 +304,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr bool Vector2D<Type>::hasOppositeDirection(const Vector2D other) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr bool Vector2D<Float>::hasOppositeDirection(const Vector2D other) const noexcept
 	{
 		return (dot(other) < 0);
 	}
@@ -316,8 +316,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 	
-	template <class Type>
-	constexpr bool Vector2D<Type>::isZero() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr bool Vector2D<Float>::isZero() const noexcept
 	{
 		return ((x == 0)
 			 && (y == 0));
@@ -329,8 +329,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	bool Vector2D<Type>::hasNaN() const noexcept
+	template <Concept::FloatingPoint Float>
+	bool Vector2D<Float>::hasNaN() const noexcept
 	{
 		return (std::isnan(x)
 			 || std::isnan(y));
@@ -342,14 +342,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::minComponent() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::minComponent() const noexcept
 	{
 		return Min(x, y);
 	}
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::maxComponent() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::maxComponent() const noexcept
 	{
 		return Max(x, y);
 	}
@@ -360,8 +360,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr void Vector2D<Type>::clear() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr void Vector2D<Float>::clear() noexcept
 	{
 		x = 0;
 		y = 0;
@@ -373,14 +373,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::withX(const value_type _x) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::withX(const value_type _x) const noexcept
 	{
 		return{ _x, y };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::withY(const value_type _y) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::withY(const value_type _y) const noexcept
 	{
 		return{ x, _y };
 	}
@@ -391,16 +391,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::set(const value_type _x, const value_type _y) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::set(const value_type _x, const value_type _y) noexcept
 	{
 		x = _x;
 		y = _y;
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::set(const Vector2D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::set(const Vector2D v) noexcept
 	{
 		return (*this = v);
 	}
@@ -411,14 +411,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::movedBy(const value_type _x, const value_type _y) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::movedBy(const value_type _x, const value_type _y) const noexcept
 	{
 		return{ (x + _x), (y + _y) };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::movedBy(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::movedBy(const Vector2D v) const noexcept
 	{
 		return{ (x + v.x), (y + v.y) };
 	}
@@ -429,16 +429,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::moveBy(const value_type _x, const value_type _y) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::moveBy(const value_type _x, const value_type _y) noexcept
 	{
 		x += _x;
 		y += _y;
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::moveBy(const Vector2D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::moveBy(const Vector2D v) noexcept
 	{
 		x += v.x;
 		y += v.y;
@@ -451,9 +451,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	template <class U>
-	constexpr auto Vector2D<Type>::dot(const Vector2D<U> v) const noexcept
+	template <Concept::FloatingPoint Float>
+	template <Concept::FloatingPoint U>
+	constexpr auto Vector2D<Float>::dot(const Vector2D<U> v) const noexcept
 	{
 		return ((x * v.x) + (y * v.y));
 	}
@@ -464,9 +464,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	template <class U>
-	constexpr auto Vector2D<Type>::cross(const Vector2D<U> v) const noexcept
+	template <Concept::FloatingPoint Float>
+	template <Concept::FloatingPoint U>
+	constexpr auto Vector2D<Float>::cross(const Vector2D<U> v) const noexcept
 	{
 		return ((x * v.y) - (y * v.x));
 	}
@@ -477,8 +477,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::horizontalAspectRatio() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::horizontalAspectRatio() const noexcept
 	{
 		if (y == 0)
 		{
@@ -494,8 +494,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	typename Vector2D<Type>::value_type Vector2D<Type>::length() const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector2D<Float>::value_type Vector2D<Float>::length() const noexcept
 	{
 		return std::sqrt((x * x) + (y * y));
 	}
@@ -506,8 +506,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::lengthSq() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::lengthSq() const noexcept
 	{
 		return ((x * x) + (y * y));
 	}
@@ -518,8 +518,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	typename Vector2D<Type>::value_type Vector2D<Type>::invLength() const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector2D<Float>::value_type Vector2D<Float>::invLength() const noexcept
 	{
 		return (static_cast<value_type>(1.0) / length());
 	}
@@ -530,8 +530,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::manhattanLength() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::manhattanLength() const noexcept
 	{
 		return (Abs(x) + Abs(y));
 	}
@@ -542,8 +542,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::manhattanDistanceFrom(const value_type _x, const value_type _y) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::manhattanDistanceFrom(const value_type _x, const value_type _y) const noexcept
 	{
 		const auto xMinMax = MinMax(x, _x);
 		const auto yMinMax = MinMax(y, _y);
@@ -551,8 +551,8 @@ namespace s3d
 			  + (yMinMax.second - yMinMax.first));
 	}
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::manhattanDistanceFrom(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::manhattanDistanceFrom(const Vector2D v) const noexcept
 	{
 		return manhattanDistanceFrom(v.x, v.y);
 	}
@@ -563,14 +563,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::manhattanDistanceTo(const value_type _x, const value_type _y) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::manhattanDistanceTo(const value_type _x, const value_type _y) const noexcept
 	{
 		return manhattanDistanceFrom(_x, _y);
 	}
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::manhattanDistanceTo(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::manhattanDistanceTo(const Vector2D v) const noexcept
 	{
 		return manhattanDistanceFrom(v.x, v.y);
 	}
@@ -581,14 +581,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	typename Vector2D<Type>::value_type Vector2D<Type>::distanceFrom(const value_type _x, const value_type _y) const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector2D<Float>::value_type Vector2D<Float>::distanceFrom(const value_type _x, const value_type _y) const noexcept
 	{
 		return std::sqrt(distanceFromSq(_x, _y));
 	}
 
-	template <class Type>
-	typename Vector2D<Type>::value_type Vector2D<Type>::distanceFrom(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector2D<Float>::value_type Vector2D<Float>::distanceFrom(const Vector2D v) const noexcept
 	{
 		return std::sqrt(distanceFromSq(v.x, v.y));
 	}
@@ -599,16 +599,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::distanceFromSq(const value_type _x, const value_type _y) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::distanceFromSq(const value_type _x, const value_type _y) const noexcept
 	{
 		const value_type xx = (x - _x) * (x - _x);
 		const value_type yy = (y - _y) * (y - _y);
 		return (xx + yy);
 	}
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::distanceFromSq(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::distanceFromSq(const Vector2D v) const noexcept
 	{
 		return distanceFromSq(v.x, v.y);
 	}
@@ -619,14 +619,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	typename Vector2D<Type>::value_type Vector2D<Type>::distanceTo(const value_type _x, const value_type _y) const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector2D<Float>::value_type Vector2D<Float>::distanceTo(const value_type _x, const value_type _y) const noexcept
 	{
 		return distanceFrom(_x, _y);
 	}
 
-	template <class Type>
-	typename Vector2D<Type>::value_type Vector2D<Type>::distanceTo(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector2D<Float>::value_type Vector2D<Float>::distanceTo(const Vector2D v) const noexcept
 	{
 		return distanceFrom(v.x, v.y);
 	}
@@ -637,14 +637,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::distanceToSq(const value_type _x, const value_type _y) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::distanceToSq(const value_type _x, const value_type _y) const noexcept
 	{
 		return distanceFromSq(_x, _y);
 	}
 
-	template <class Type>
-	constexpr typename Vector2D<Type>::value_type Vector2D<Type>::distanceToSq(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector2D<Float>::value_type Vector2D<Float>::distanceToSq(const Vector2D v) const noexcept
 	{
 		return distanceFromSq(v.x, v.y);
 	}
@@ -655,8 +655,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 	
-	template <class Type>
-	Vector2D<Type> Vector2D<Type>::withLength(const value_type _length) const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float> Vector2D<Float>::withLength(const value_type _length) const noexcept
 	{
 		if (const value_type len = length())
 		{
@@ -672,8 +672,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector2D<Type>& Vector2D<Type>::setLength(const value_type _length) noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float>& Vector2D<Float>::setLength(const value_type _length) noexcept
 	{
 		if (const value_type len = length())
 		{
@@ -689,8 +689,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector2D<Type> Vector2D<Type>::withMaxLength(const value_type maxLength) const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float> Vector2D<Float>::withMaxLength(const value_type maxLength) const noexcept
 	{
 		if (const value_type len = length();
 			maxLength < len)
@@ -707,8 +707,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector2D<Type>& Vector2D<Type>::setMaxLength(const value_type maxLength) noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float>& Vector2D<Float>::setMaxLength(const value_type maxLength) noexcept
 	{
 		if (const value_type len = length();
 			maxLength < len)
@@ -725,8 +725,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector2D<Type> Vector2D<Type>::normalized() const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float> Vector2D<Float>::normalized() const noexcept
 	{
 		const value_type lenSq = lengthSq();
 
@@ -745,8 +745,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector2D<Type> Vector2D<Type>::normalized_or(const Vector2D valueIfZero) const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float> Vector2D<Float>::normalized_or(const Vector2D valueIfZero) const noexcept
 	{
 		const value_type lenSq = lengthSq();
 
@@ -765,8 +765,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector2D<Type>& Vector2D<Type>::normalize() noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float>& Vector2D<Float>::normalize() noexcept
 	{
 		const value_type lenSq = lengthSq();
 
@@ -790,16 +790,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector2D<Type> Vector2D<Type>::rotated(const value_type angle) const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float> Vector2D<Float>::rotated(const value_type angle) const noexcept
 	{
 		const value_type s = std::sin(angle);
 		const value_type c = std::cos(angle);
 		return{ (x * c - y * s), (x * s + y * c) };
 	}
 
-	template <class Type>
-	Vector2D<Type>& Vector2D<Type>::rotate(const value_type angle) noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float>& Vector2D<Float>::rotate(const value_type angle) noexcept
 	{
 		return (*this = rotated(angle));
 	}
@@ -810,8 +810,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector2D<Type> Vector2D<Type>::rotatedAt(const Vector2D center, const value_type angle) const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float> Vector2D<Float>::rotatedAt(const Vector2D center, const value_type angle) const noexcept
 	{
 		const value_type s = std::sin(angle);
 		const value_type c = std::cos(angle);
@@ -820,8 +820,8 @@ namespace s3d
 		return (p + center);
 	}
 
-	template <class Type>
-	Vector2D<Type>& Vector2D<Type>::rotateAt(const Vector2D center, const value_type angle) noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float>& Vector2D<Float>::rotateAt(const Vector2D center, const value_type angle) noexcept
 	{
 		return (*this = rotatedAt(center, angle));
 	}
@@ -832,8 +832,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template<class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::rotated90(const int32 n) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::rotated90(const int32 n) const noexcept
 	{
 		switch (n % 4) // 時計回りに何回 90° 回転するか
 		{
@@ -851,8 +851,8 @@ namespace s3d
 		}
 	}
 
-	template<class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::rotate90(const int32 n) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::rotate90(const int32 n) noexcept
 	{
 		return (*this = rotated90(n));
 	}
@@ -863,14 +863,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template<class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::rotated90At(const Vector2D center, const int32 n) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::rotated90At(const Vector2D center, const int32 n) const noexcept
 	{
 		return ((*this - center).rotated90(n) + center);
 	}
 
-	template<class Type>
-	constexpr Vector2D<Type>& Vector2D<Type>::rotate90At(const Vector2D center, const int32 n) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float>& Vector2D<Float>::rotate90At(const Vector2D center, const int32 n) noexcept
 	{
 		return (*this = rotated90At(center, n));
 	}
@@ -881,8 +881,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	typename Vector2D<Type>::value_type Vector2D<Type>::getAngle() const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector2D<Float>::value_type Vector2D<Float>::getAngle() const noexcept
 	{
 		if (isZero())
 		{
@@ -892,12 +892,12 @@ namespace s3d
 		return std::atan2(x, -y);
 	}
 
-	template <class Type>
-	typename Vector2D<Type>::value_type Vector2D<Type>::getAngle(const Vector2D other) const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector2D<Float>::value_type Vector2D<Float>::getAngle(const Vector2D other) const noexcept
 	{
 		if (isZero() || other.isZero())
 		{
-			return Math::NaN_v<Type>;
+			return Math::NaN_v<Float>;
 		}
 
 		return std::atan2(cross(other), dot(other));
@@ -909,14 +909,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::getPerpendicularCW() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::getPerpendicularCW() const noexcept
 	{
 		return{ -y, x };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::getPerpendicularCCW() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::getPerpendicularCCW() const noexcept
 	{
 		return{ y, -x };
 	}
@@ -927,8 +927,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::getMidpoint(const Vector2D other) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::getMidpoint(const Vector2D other) const noexcept
 	{
 		constexpr value_type half(0.5);
 		return{ (x * half + other.x * half), (y * half + other.y * half) };
@@ -940,8 +940,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::projectOnVector(const Vector2D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::projectOnVector(const Vector2D v) const noexcept
 	{
 		if (const value_type ontoLengthSq = v.lengthSq())
 		{
@@ -959,8 +959,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector2D<Type> Vector2D<Type>::getPointByAngleAndDistance(const value_type angle, const value_type distance) const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector2D<Float> Vector2D<Float>::getPointByAngleAndDistance(const value_type angle, const value_type distance) const noexcept
 	{
 		const auto s = std::sin(angle);
 		const auto c = std::cos(angle);
@@ -973,8 +973,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 	
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::lerp(const Vector2D other, const value_type f) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::lerp(const Vector2D other, const value_type f) const noexcept
 	{
 		return{ (x + (other.x - x) * f), (y + (other.y - y) * f) };
 	}
@@ -985,8 +985,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Point Vector2D<Type>::asPoint() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Point Vector2D<Float>::asPoint() const noexcept
 	{
 		return{ static_cast<Point::value_type>(x), static_cast<Point::value_type>(y) };
 	}
@@ -997,9 +997,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
+	template <Concept::FloatingPoint Float>
 	template <class Shape2DType>
-	constexpr bool Vector2D<Type>::intersects(const Shape2DType& other) const
+	constexpr bool Vector2D<Float>::intersects(const Shape2DType& other) const
 	{
 		if constexpr (std::is_same_v<value_type, double>)
 		{
@@ -1017,8 +1017,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	uint64 Vector2D<Type>::hash() const noexcept
+	template <Concept::FloatingPoint Float>
+	uint64 Vector2D<Float>::hash() const noexcept
 	{
 		return Hash(*this);
 	}
@@ -1029,38 +1029,38 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::xx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::xx() const noexcept
 	{
 		return{ x, x };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::xy() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::xy() const noexcept
 	{
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::yx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::yx() const noexcept
 	{
 		return{ y, x };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::yy() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::yy() const noexcept
 	{
 		return{ y, y };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::x0() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::x0() const noexcept
 	{
 		return{ x, 0 };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::y0() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::y0() const noexcept
 	{
 		return{ y, 0 };
 	}
@@ -1071,8 +1071,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector2D<Type>::xy0() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector2D<Float>::xy0() const noexcept
 	{
 		return{ x, y, 0 };
 	}
@@ -1083,8 +1083,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector2D<Type>::xy00() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector2D<Float>::xy00() const noexcept
 	{
 		return{ x, y, 0, 0 };
 	}
@@ -1095,8 +1095,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::Zero() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::Zero() noexcept
 	{
 		return{ 0, 0 };
 	}
@@ -1107,8 +1107,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::One() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::One() noexcept
 	{
 		return{ 1, 1 };
 	}
@@ -1119,8 +1119,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::All(const value_type value) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::All(const value_type value) noexcept
 	{
 		return{ value, value };
 	}
@@ -1131,14 +1131,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::UnitX() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::UnitX() noexcept
 	{
 		return{ 1, 0 };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::UnitY() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::UnitY() noexcept
 	{
 		return{ 0, 1 };
 	}
@@ -1149,26 +1149,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::Left(const value_type length) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::Left(const value_type length) noexcept
 	{
 		return{ -length, 0 };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::Right(const value_type length) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::Right(const value_type length) noexcept
 	{
 		return{ length, 0 };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::Up(const value_type length) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::Up(const value_type length) noexcept
 	{
 		return{ 0, -length };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::Down(const value_type length) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::Down(const value_type length) noexcept
 	{
 		return{ 0, length };
 	}
@@ -1179,10 +1179,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::AnchorCenter() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::AnchorCenter() noexcept
 	{
-		return{ Type(0.5), Type(0.5) };
+		return{ static_cast<value_type>(0.5), static_cast<value_type>(0.5) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1191,8 +1191,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::AnchorTopLeft() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::AnchorTopLeft() noexcept
 	{
 		return{ 0, 0 };
 	}
@@ -1203,10 +1203,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::AnchorTopCenter() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::AnchorTopCenter() noexcept
 	{
-		return{ Type(0.5), 0 };
+		return{ static_cast<value_type>(0.5), 0 };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1215,8 +1215,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::AnchorTopRight() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::AnchorTopRight() noexcept
 	{
 		return{ 1, 0 };
 	}
@@ -1227,10 +1227,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::AnchorRightCenter() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::AnchorRightCenter() noexcept
 	{
-		return{ 1, Type(0.5) };
+		return{ 1, static_cast<value_type>(0.5) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1239,8 +1239,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::AnchorBottomRight() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::AnchorBottomRight() noexcept
 	{
 		return{ 1, 1 };
 	}
@@ -1251,10 +1251,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::AnchorBottomCenter() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::AnchorBottomCenter() noexcept
 	{
-		return{ Type(0.5), 1 };
+		return{ static_cast<value_type>(0.5), 1 };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1263,8 +1263,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::AnchorBottomLeft() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::AnchorBottomLeft() noexcept
 	{
 		return{ 0, 1 };
 	}
@@ -1275,9 +1275,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector2D<Type>::AnchorLeftCenter() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::AnchorLeftCenter() noexcept
 	{
-		return{ 0, Type(0.5) };
+		return{ 0, static_cast<value_type>(0.5) };
 	}
 }

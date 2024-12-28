@@ -17,7 +17,7 @@ namespace s3d
 	namespace Graphics
 	{
 		/// @brief シェーダの最大テクスチャスロット数
-		inline constexpr uint32 TextureSlotCount = 16;
+		inline constexpr uint32 TextureSlotCount = 8;
 
 		/// @brief シェーダの最大出力レンダーターゲット数
 		inline constexpr uint32 RenderTargetCount = 8;

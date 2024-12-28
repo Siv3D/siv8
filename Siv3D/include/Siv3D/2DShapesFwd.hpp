@@ -45,7 +45,7 @@ namespace s3d
 
 	/// @brief 2 次元のベクトル
 	/// @tparam Type ベクトルの成分の型
-	template <class Type> struct Vector2D;
+	template <Concept::FloatingPoint Float> struct Vector2D;
 	
 	/// @brief 成分が float 型の 2 次元ベクトル
 	using Float2 = Vector2D<float>;
@@ -64,7 +64,7 @@ namespace s3d
 
 	/// @brief 3 次元のベクトル
 	/// @tparam Type ベクトルの成分の型
-	template <class Type> struct Vector3D;
+	template <Concept::FloatingPoint Float> struct Vector3D;
 
 	/// @brief 成分が float 型の 3 次元ベクトル
 	using Float3 = Vector3D<float>;
@@ -83,7 +83,7 @@ namespace s3d
 
 	/// @brief 4 次元のベクトル
 	/// @tparam Type ベクトルの成分の型
-	template <class Type> struct Vector4D;
+	template <Concept::FloatingPoint Float> struct Vector4D;
 
 	/// @brief 成分が float 型の 4 次元ベクトル
 	using Float4 = Vector4D<float>;

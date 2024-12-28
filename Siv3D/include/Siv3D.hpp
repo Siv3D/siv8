@@ -749,6 +749,9 @@
 // ランダムな時間 | Random duration
 # include <Siv3D/RandomDuration.hpp>
 
+// ランダムな角度の作成 | Random Angle generation
+# include <Siv3D/RandomAngle.hpp>
+
 // ランダムな Point の作成 | Random Point generation
 # include <Siv3D/RandomPoint.hpp>
 
@@ -815,8 +818,8 @@
 // 3x2 行列 | 3x2 matrix
 # include <Siv3D/Mat3x2.hpp>
 
-//// 3x3 行列 | 3x3 matrix
-//# include <Siv3D/Mat3x3.hpp>
+// 3x3 行列 | 3x3 matrix
+# include <Siv3D/Mat3x3.hpp>
 
 # include <Siv3D/PointsPerCircle.hpp>
 
@@ -899,9 +902,10 @@
 # include <Siv3D/Geometry2D/Distance.hpp> // ToDo
 # include <Siv3D/Geometry2D/Center.hpp> // ToDo
 # include <Siv3D/Geometry2D/Contains.hpp> // ToDo
-# include <Siv3D/Geometry2D/ConvexHull.hpp> // ToDo
-# include <Siv3D/Geometry2D/IsClockwise.hpp> // ToDo
-# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp> // ToDo
+# include <Siv3D/Geometry2D/ConvexHull.hpp>
+# include <Siv3D/Geometry2D/IsClockwise.hpp>
+# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
+# include <Siv3D/Geometry2D/SmallestEnclosingCircle.hpp>
 # include <Siv3D/Geometry2D/Misc.hpp> // ToDo
 
 // 長方形詰込み | Rectangle packing
@@ -1217,9 +1221,9 @@
 // 画像 | Image
 # include <Siv3D/Image.hpp> // ToDo
 
-//// 追加の画像処理 | Extra image processing
-//# include <Siv3D/ImageProcessing.hpp>
-//
+// 追加の画像処理 | Extra image processing
+# include <Siv3D/ImageProcessing.hpp>
+
 //// カスケード分類器 | Cascade classifier
 //# include <Siv3D/CascadeClassifier.hpp>
 //
@@ -1387,6 +1391,24 @@
 # include <Siv3D/AssetIDWrapper.hpp>
 # include <Siv3D/AssetHandle.hpp>
 
+
+
+////////////////////////////////////////////////////////////////
+//
+//	テクスチャ | Texture
+//
+////////////////////////////////////////////////////////////////
+
+# include <Siv3D/TexturePixelFormat.hpp>
+
+# include <Siv3D/TextureFormat.hpp>
+
+# include <Siv3D/TextureDescBuilder.hpp>
+# include <Siv3D/TextureDesc.hpp>
+
+
+# include <Siv3D/Texture.hpp>
+# include <Siv3D/TextureRegion.hpp>
 
 
 ////////////////////////////////////////////////////////////////

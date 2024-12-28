@@ -890,6 +890,62 @@ namespace s3d
 		/// @return 上下左右方向に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr RectF stretched(Concept::Arithmetic auto top, Concept::Arithmetic auto right, Concept::Arithmetic auto bottom, Concept::Arithmetic auto left) const noexcept;
+		
+		/// @brief 上方向に拡大縮小した長方形を返します。
+		/// @param top 上方向の拡大縮小量
+		/// @return 上方向に拡大縮小した長方形
+		template <Concept::Integral Integral>
+		[[nodiscard]]
+		constexpr Rect stretched(Arg::top_<Integral> top) const noexcept;
+		
+		/// @brief 右方向に拡大縮小した長方形を返します。
+		/// @param right 右方向の拡大縮小量
+		/// @return 右方向に拡大縮小した長方形
+		template <Concept::Integral Integral>
+		[[nodiscard]]
+		constexpr Rect stretched(Arg::right_<Integral> right) const noexcept;
+		
+		/// @brief 下方向に拡大縮小した長方形を返します。
+		/// @param bottom 下方向の拡大縮小量
+		/// @return 下方向に拡大縮小した長方形
+		template <Concept::Integral Integral>
+		[[nodiscard]]
+		constexpr Rect stretched(Arg::bottom_<Integral> bottom) const noexcept;
+		
+		/// @brief 左方向に拡大縮小した長方形を返します。
+		/// @param left 左方向の拡大縮小量
+		/// @return 左方向に拡大縮小した長方形
+		template <Concept::Integral Integral>
+		[[nodiscard]]
+		constexpr Rect stretched(Arg::left_<Integral> left) const noexcept;
+
+		/// @brief 上方向に拡大縮小した長方形を返します。
+		/// @param top 上方向の拡大縮小量
+		/// @return 上方向に拡大縮小した長方形
+		template <Concept::FloatingPoint FloatingPoint>
+		[[nodiscard]]
+		constexpr RectF stretched(Arg::top_<FloatingPoint> top) const noexcept;
+
+		/// @brief 右方向に拡大縮小した長方形を返します。
+		/// @param right 右方向の拡大縮小量
+		/// @return 右方向に拡大縮小した長方形
+		template <Concept::FloatingPoint FloatingPoint>
+		[[nodiscard]]
+		constexpr RectF stretched(Arg::right_<FloatingPoint> right) const noexcept;
+
+		/// @brief 下方向に拡大縮小した長方形を返します。
+		/// @param bottom 下方向の拡大縮小量
+		/// @return 下方向に拡大縮小した長方形
+		template <Concept::FloatingPoint FloatingPoint>
+		[[nodiscard]]
+		constexpr RectF stretched(Arg::bottom_<FloatingPoint> bottom) const noexcept;
+
+		/// @brief 左方向に拡大縮小した長方形を返します。
+		/// @param left 左方向の拡大縮小量
+		/// @return 左方向に拡大縮小した長方形
+		template <Concept::FloatingPoint FloatingPoint>
+		[[nodiscard]]
+		constexpr RectF stretched(Arg::left_<FloatingPoint> left) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1251,11 +1307,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 長方形の横縦比（幅 / 高さ）を返します。
-		/// @tparam Type 横縦比の型
+		/// @tparam Float 横縦比の型
 		/// @return 長方形の横縦比（幅 / 高さ）。高さが 0 の場合は 0
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Type horizontalAspectRatio() const noexcept;
+		constexpr Float horizontalAspectRatio() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

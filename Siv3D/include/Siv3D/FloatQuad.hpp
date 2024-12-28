@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "2DShapes.hpp"
+# include "FloatRect.hpp"
 
 namespace s3d
 {
@@ -40,9 +41,12 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr FloatQuad(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3) noexcept;
-	
+
 		[[nodiscard]]
 		explicit constexpr FloatQuad(const Quad& q) noexcept;
+
+		[[nodiscard]]
+		explicit constexpr FloatQuad(const FloatRect& rect) noexcept;
 	};
 }
 

@@ -86,9 +86,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline size_t Image::stride() const noexcept
+	inline uint32 Image::stride() const noexcept
 	{
-		return (m_size.x * sizeof(Color));
+		return static_cast<uint32>(m_size.x * sizeof(Color));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -152,10 +152,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Type Image::horizontalAspectRatio() const noexcept
+	template <Concept::FloatingPoint Float>
+	Float Image::horizontalAspectRatio() const noexcept
 	{
-		return m_size.horizontalAspectRatio<Type>();
+		return m_size.horizontalAspectRatio<Float>();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -272,17 +272,17 @@ namespace s3d
 
 # ifdef __cpp_multidimensional_subscript
 
-	inline Color& Image::operator [](const size_t x, const size_t y)&
+	inline Color& Image::operator [](const size_t y, const size_t x)&
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
 	}
 
-	inline const Color& Image::operator [](const size_t x, const size_t y) const&
+	inline const Color& Image::operator [](const size_t y, const size_t x) const&
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
 	}
 
-	inline Color Image::operator [](const size_t x, const size_t y)&&
+	inline Color Image::operator [](const size_t y, const size_t x)&&
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
 	}

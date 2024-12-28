@@ -12,7 +12,7 @@
 # include <cstdio>
 # include <iostream>
 # include <Siv3D/Common.hpp>
-# include <Siv3D/Windows/MinWindows.hpp>
+# include <Siv3D/Windows/Windows.hpp>
 # include "CConsole.hpp"
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Error.hpp>
@@ -123,6 +123,27 @@ namespace s3d
 		else
 		{
 			return false;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	clearSelection
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CConsole::clearSelection()
+	{
+		if (not m_isOpen)
+		{
+			return;
+		}
+
+		if (HWND hConsoleWindow = ::GetConsoleWindow())
+		{
+			// ESC キーを送信
+			::SendMessage(hConsoleWindow, WM_KEYDOWN, VK_ESCAPE, 0);
+			::SendMessage(hConsoleWindow, WM_KEYUP, VK_ESCAPE, 0);
 		}
 	}
 

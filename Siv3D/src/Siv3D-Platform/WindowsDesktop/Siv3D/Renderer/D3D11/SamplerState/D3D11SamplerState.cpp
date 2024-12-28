@@ -140,10 +140,22 @@ namespace s3d
 			.MipLODBias		= 0.0f,
 			.MaxAnisotropy	= state.maxAnisotropy,
 			.ComparisonFunc	= D3D11_COMPARISON_FUNC(FromEnum(state.compareFunction)),
-			.BorderColor	= { state.borderColor.x, state.borderColor.y, state.borderColor.z, state.borderColor.w },
+			.BorderColor	= { 0.0f, 0.0f, 0.0f, 0.0f },
 			.MinLOD			= state.minLOD,
 			.MaxLOD			= D3D11_FLOAT32_MAX,
 		};
+
+		if (state.borderColor == SampleBorderColor::OpaqueBlack)
+		{
+			desc.BorderColor[3] = 1.0f;
+		}
+		else if (state.borderColor == SampleBorderColor::OpaqueWhite)
+		{
+			desc.BorderColor[0] = 1.0f;
+			desc.BorderColor[1] = 1.0f;
+			desc.BorderColor[2] = 1.0f;
+			desc.BorderColor[3] = 1.0f;
+		}
 
 		if ((desc.Filter == D3D11_FILTER_MIN_MAG_MIP_LINEAR)
 			&& (1 < desc.MaxAnisotropy))

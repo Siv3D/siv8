@@ -11,11 +11,11 @@
 
 # pragma once
 # include <span>
+# include "Common.hpp"
+# include "Array.hpp"
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(6294)
 # include <ThirdParty/absl/random/discrete_distribution.h>
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
-# include "Common.hpp"
-# include "Array.hpp"
 
 namespace s3d
 {
@@ -75,7 +75,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		result_type operator ()(Concept::UniformRandomBitGenerator auto&& urbg);
+		result_type operator ()(Concept::UniformRandomBitGenerator auto&& rbg);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -113,19 +113,19 @@ namespace s3d
 
 	template <class Iterator>
 	[[nodiscard]]
-	auto DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight);
+	decltype(auto) DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight);
 
 	template <class Iterator>
 	[[nodiscard]]
-	auto DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg);
+	decltype(auto) DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg);
 
 	template <class Container>
 	[[nodiscard]]
-	auto DiscreteSample(const Container& c, DiscreteDistribution& weight);
+	decltype(auto) DiscreteSample(const Container& c SIV3D_LIFETIMEBOUND, DiscreteDistribution& weight);
 
 	template <class Container>
 	[[nodiscard]]
-	auto DiscreteSample(const Container& c, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg);
+	decltype(auto) DiscreteSample(const Container& c SIV3D_LIFETIMEBOUND, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg);
 
 	template <class Type>
 	[[nodiscard]]
@@ -133,7 +133,7 @@ namespace s3d
 	
 	template <class Type>
 	[[nodiscard]]
-	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg);
+	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg);
 }
 
 # include "detail/DiscreteDistribution.ipp"

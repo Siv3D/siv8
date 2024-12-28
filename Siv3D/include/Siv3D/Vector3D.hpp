@@ -26,12 +26,12 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 3 次元のベクトル
-	/// @tparam Type ベクトルの要素の型
-	template <class Type>
+	/// @tparam Float ベクトルの要素の型
+	template <Concept::FloatingPoint Float>
 	struct Vector3D
 	{
 		/// @brief ベクトルの要素の型
-		using value_type = Type;
+		using value_type = Float;
 
 		/// @brief ベクトルの次元数
 		static constexpr size_t Dimension = 3;
@@ -77,7 +77,7 @@ namespace s3d
 		/// @brief 3 次元のベクトルをコピーして作成します。
 		/// @tparam U コピーするベクトルの要素の型
 		/// @param v コピーするベクトル
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr Vector3D(const Vector3D<U>& v) noexcept;
 
@@ -345,11 +345,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 最小の成分を返します。
+		/// @remark Vec3{ 3, -2, 0 } の場合、-2 を返します。
 		/// @return 最小の成分
 		[[nodiscard]]
 		constexpr value_type minComponent() const noexcept;
 
 		/// @brief 最大の成分を返します。
+		/// @remark Vec3{ 3, -4, 0 } の場合、3 を返します。
 		/// @return 最大の成分
 		[[nodiscard]]
 		constexpr value_type maxComponent() const noexcept;
@@ -476,7 +478,7 @@ namespace s3d
 		/// @tparam U もう一方のベクトルの要素の型
 		/// @param v もう一方のベクトル
 		/// @return 内積
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr auto dot(Vector3D<U> v) const noexcept;
 
@@ -490,7 +492,7 @@ namespace s3d
 		/// @tparam U もう一方のベクトルの要素の型
 		/// @param v もう一方のベクトル
 		/// @return 外積
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr auto cross(Vector3D<U> v) const noexcept;
 
@@ -504,7 +506,7 @@ namespace s3d
 		/// @tparam U もう一方のベクトルの要素の型
 		/// @param v もう一方のベクトル
 		/// @return 別のベクトルとのなす角（ラジアン）
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		auto angleTo(Vector3D<U> v) const noexcept;
 
@@ -518,7 +520,7 @@ namespace s3d
 		/// @tparam U 射影先のベクトルの要素の型
 		/// @param v 射影先のベクトル
 		/// @return 射影先のベクトルに射影した結果を表すベクトル
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr auto projectOnVector(Vector3D<U> v) const noexcept;
 
@@ -532,7 +534,7 @@ namespace s3d
 		/// @tparam U 平面の法線ベクトルの要素の型
 		/// @param planeNormal 平面の法線ベクトル
 		/// @return 平面上に射影した結果を表すベクトル
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr auto projectOnPlane(Vector3D<U> planeNormal) const noexcept;
 
@@ -967,12 +969,12 @@ namespace s3d
 		/// @brief Vector4D{ x, y, z, 0 } を返します。
 		/// @return Vector4D{ x, y, z, 0 }
 		[[nodiscard]]
-		constexpr Vector4D<Type> xyz0() const noexcept;
+		constexpr Vector4D<value_type> xyz0() const noexcept;
 
 		/// @brief Vector4D{ x, y, z, 1 } を返します。
 		/// @return Vector4D{ x, y, z, 1 }
 		[[nodiscard]]
-		constexpr Vector4D<Type> xyz1() const noexcept;
+		constexpr Vector4D<value_type> xyz1() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

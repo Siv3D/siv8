@@ -29,6 +29,8 @@
 	# pragma comment (lib, "harfbuzz/harfbuzz" SIV3D_DEBUG_LIB_SUFFIX(_d))
 	# pragma comment (lib, "libjpeg-turbo/turbojpeg-static" SIV3D_DEBUG_LIB_SUFFIX(_d))
 	# pragma comment (lib, "libpng/libpng16" SIV3D_DEBUG_LIB_SUFFIX(_d))
+	# pragma comment (lib, "opencv/opencv_core4100" SIV3D_DEBUG_LIB_SUFFIX(d))
+	# pragma comment (lib, "opencv/opencv_imgproc4100" SIV3D_DEBUG_LIB_SUFFIX(d))
 	# pragma comment (lib, "zlib/zlib" SIV3D_DEBUG_LIB_SUFFIX(d))
 	# pragma comment (lib, "siv3d/Siv3D" SIV3D_DEBUG_LIB_SUFFIX(_d))
 

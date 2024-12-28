@@ -1,0 +1,64 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2024 Ryo Suzuki
+//	Copyright (c) 2016-2024 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr TextureDescBuilder::TextureDescBuilder(
+		const bool _hasMipmap,
+		const bool _sRGB,
+		const bool _isSDF
+	) noexcept
+		: m_hasMipmap{ _hasMipmap }
+		, m_sRGB{ _sRGB }
+		, m_isSDF{ _isSDF } {}
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasMipmap
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool TextureDescBuilder::hasMipmap() const noexcept
+	{
+		return m_hasMipmap;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sRGB
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool TextureDescBuilder::sRGB() const noexcept
+	{
+		return m_sRGB;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isSDF
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool TextureDescBuilder::isSDF() const noexcept
+	{
+		return m_isSDF;
+	}
+}

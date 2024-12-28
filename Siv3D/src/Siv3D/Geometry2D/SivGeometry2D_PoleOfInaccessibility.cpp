@@ -16,6 +16,12 @@ namespace s3d
 {
 	namespace Geometry2D
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	PoleOfInaccessibility
+		//
+		////////////////////////////////////////////////////////////////
+
 		Vec2 PoleOfInaccessibility(std::span<const Vec2> points, const double precision)
 		{
 			std::vector<mapbox::geometry::point<double>> mpoints(points.size());

@@ -58,4 +58,7 @@ namespace s3d
 
 	/// @brief 先頭と終端をつなげて輪を閉じるか | Close ring
 	using CloseRing				= YesNo<struct CloseRing_tag>;
+	
+	/// @brief 画像の拡大を許可するか | Allow upscaling
+	using AllowUpscale			= YesNo<struct AllowUpscale_tag>;
 }

@@ -27,4 +27,7 @@ namespace s3d
 
 	constexpr FloatQuad::FloatQuad(const Quad& q) noexcept
 		: p{ q.p0, q.p1, q.p2, q.p3 } {}
+
+	constexpr FloatQuad::FloatQuad(const FloatRect& rect) noexcept
+		: p{ { rect.left, rect.top }, { rect.right, rect.top }, { rect.right, rect.bottom }, { rect.left, rect.bottom } } {}
 }
