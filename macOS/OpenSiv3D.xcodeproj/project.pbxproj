@@ -2488,6 +2488,8 @@
 		F9FD0BB52D1DA6EA00A584CE /* SivMat3x3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */; };
 		F9FD0D0A2D1DABA000A584CE /* libopencv_core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D082D1DABA000A584CE /* libopencv_core.a */; };
 		F9FD0D0B2D1DABA000A584CE /* libopencv_imgproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */; };
+		F9FD0D0D2D20434C00A584CE /* RandomAngle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */; };
+		F9FD0D0F2D20436000A584CE /* RandomAngle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -5024,6 +5026,8 @@
 		F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMat3x3.cpp; sourceTree = "<group>"; };
 		F9FD0D082D1DABA000A584CE /* libopencv_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_core.a; path = ../Siv3D/lib/macOS/opencv/libopencv_core.a; sourceTree = "<group>"; };
 		F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_imgproc.a; path = ../Siv3D/lib/macOS/opencv/libopencv_imgproc.a; sourceTree = "<group>"; };
+		F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomAngle.hpp; sourceTree = "<group>"; };
+		F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomAngle.ipp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -5712,6 +5716,7 @@
 				F98605F62BE61586006A4C0F /* Quad.ipp */,
 				F9F00A4D2CD2993F0097C165 /* QualityFactor.ipp */,
 				F9070B982B9F175000383E4D /* Random.ipp */,
+				F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */,
 				F98605F22BE61586006A4C0F /* RandomColor.ipp */,
 				F9070B992B9F175000383E4D /* RandomDuration.ipp */,
 				F98605F52BE61586006A4C0F /* RandomPoint.ipp */,
@@ -6001,6 +6006,7 @@
 				F98605262BD10459006A4C0F /* Quad.hpp */,
 				F9F00A492CD299120097C165 /* QualityFactor.hpp */,
 				F9070C1A2B9F175000383E4D /* Random.hpp */,
+				F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */,
 				F98605EA2BE61563006A4C0F /* RandomColor.hpp */,
 				F9070C1B2B9F175000383E4D /* RandomDuration.hpp */,
 				F98605EB2BE61564006A4C0F /* RandomPoint.hpp */,
@@ -10931,6 +10937,7 @@
 				F98600082BCFBB53006A4C0F /* SkColorPriv.h in Headers */,
 				F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */,
 				F986F91C2BC8441F006A4C0F /* regenc.h in Headers */,
+				F9FD0D0F2D20436000A584CE /* RandomAngle.ipp in Headers */,
 				F98601712BCFBB53006A4C0F /* SkBlitter.h in Headers */,
 				F98603002BCFBB54006A4C0F /* SkAddIntersections.h in Headers */,
 				F98604892BCFBB54006A4C0F /* SkSLPosition.h in Headers */,
@@ -11554,6 +11561,7 @@
 				F9FD0BA42D1D334700A584CE /* MTLResource.hpp in Headers */,
 				F9FD0BA52D1D334700A584CE /* MTLIndirectCommandEncoder.hpp in Headers */,
 				F9FD0BA62D1D334700A584CE /* MTLFence.hpp in Headers */,
+				F9FD0D0D2D20434C00A584CE /* RandomAngle.hpp in Headers */,
 				F9FD0BA72D1D334700A584CE /* MTLIOCommandQueue.hpp in Headers */,
 				F9FD0BA82D1D334700A584CE /* MTLCounters.hpp in Headers */,
 				F9FD0BA92D1D334700A584CE /* MTLResidencySet.hpp in Headers */,
