@@ -1,5 +1,4 @@
-﻿
-# include <Siv3D.hpp> // Siv3D v0.8.0
+﻿# include <Siv3D.hpp> // Siv3D v0.8.0
 # include "../Test/Siv3DTest.hpp"
 //SIV3D_SET(EngineOption::D3D11Driver::WARP);
 
