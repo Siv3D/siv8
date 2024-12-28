@@ -231,7 +231,15 @@ namespace s3d
 		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color) override;
 
 		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4]) override;
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	addQuadWarp
+		//
+		////////////////////////////////////////////////////////////////
 
+		void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color) override;
+		
 		////////////////////////////////////////////////////////////////
 		//
 		//	flush
@@ -382,12 +390,16 @@ namespace s3d
 
 		struct EngineShader
 		{
-			VertexShader::IDType vs;
-
+			VertexShader::IDType vsShape;
+			
+			VertexShader::IDType vsQuadWarp;
+			
 			PixelShader::IDType psShape;
 
 			PixelShader::IDType psTexture;
 						
+			PixelShader::IDType psQuadWarp;
+			
 			PixelShader::IDType psLineDot;
 			
 			PixelShader::IDType psLineDash;
@@ -427,7 +439,7 @@ namespace s3d
 
 		ConstantBuffer<PSConstants2D> m_psConstants;
 
-		ConstantBuffer<PSPatternConstants2D> m_psPatternConstants;
+		ConstantBuffer<PSEffectConstants2D> m_psEffectConstants;
 		
 		Vertex2DBufferPointer createBuffer(uint16 vertexCount, uint32 indexCount);
 	};

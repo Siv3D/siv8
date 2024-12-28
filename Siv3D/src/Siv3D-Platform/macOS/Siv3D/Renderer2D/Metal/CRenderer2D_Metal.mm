@@ -15,6 +15,7 @@
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
@@ -120,9 +121,11 @@ namespace s3d
 			m_device	= m_pRenderer->getDevice();
 		}
 
-		m_engineShader.vs					= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		m_engineShader.vsShape				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
+		m_engineShader.vsQuadWarp			= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::QuadWarp).id();
 		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 		m_engineShader.psTexture			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D).id();
+		m_engineShader.psQuadWarp			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::QuadWarp).id();
 		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
 		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
 		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
@@ -150,7 +153,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -168,7 +171,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -212,7 +215,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -230,7 +233,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -248,7 +251,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -274,7 +277,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -292,7 +295,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -310,7 +313,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -336,7 +339,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -354,7 +357,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -380,7 +383,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -398,7 +401,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -424,7 +427,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -442,7 +445,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -468,7 +471,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -486,7 +489,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -512,7 +515,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -530,7 +533,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -556,7 +559,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -574,7 +577,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -600,7 +603,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -618,7 +621,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 			
 			if (not m_currentCustomShader.ps)
@@ -644,7 +647,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -661,7 +664,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 			
 			if (not m_currentCustomShader.ps)
@@ -687,7 +690,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -705,7 +708,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -723,7 +726,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -749,7 +752,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 			
 			if (not m_currentCustomShader.ps)
@@ -767,7 +770,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -785,7 +788,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -812,7 +815,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -831,7 +834,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 			if (not m_currentCustomShader.ps)
 			{
@@ -849,7 +852,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 			
 			if (not m_currentCustomShader.ps)
@@ -875,7 +878,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -893,7 +896,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -913,7 +916,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -931,7 +934,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -957,7 +960,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -975,7 +978,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -993,7 +996,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1013,7 +1016,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1033,11 +1036,11 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTextureRegion(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, uv, color))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), FloatQuad{ rect }, uv, color))
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1052,17 +1055,50 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTextureRegion(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, uv, colors))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), FloatQuad{ rect }, uv, colors))
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
 			{
 				m_commandManager.pushEnginePS(m_engineShader.psTexture);
 			}
+
+			m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addQuadWarp
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, color))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsQuadWarp);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psQuadWarp);
+			}
+
+			const std::array<Float4, 3> quadWarpParams =
+			{
+				Float4{ quad.p[0], quad.p[1] },
+				Float4{ quad.p[2], quad.p[3] },
+				Float4{ (uv.right - uv.left), (uv.bottom - uv.top), uv.left, uv.top }
+			};
+			m_commandManager.pushQuadWarpParameter(quadWarpParams);
 
 			m_commandManager.pushPSTexture(0, texture);
 			m_commandManager.pushDraw(indexCount);
@@ -1115,7 +1151,7 @@ namespace s3d
 			
 			PipelineStateDesc pipelineStateDesc
 			{
-				.vs = m_engineShader.vs,
+				.vs = m_engineShader.vsShape,
 				.ps = m_engineShader.psShape,
 				.pixelFormat = static_cast<uint16>(MTL::PixelFormatRGBA8Unorm),
 				.sampleCount = static_cast<uint16>(m_pRenderer->getSceneSampleCount()),
@@ -1155,10 +1191,10 @@ namespace s3d
 							renderCommandEncoder->setFragmentBytes(m_psConstants.data(), m_psConstants.size(), 0);
 						}
 
-						if (m_psPatternConstants.isDirty())
+						if (m_psEffectConstants.isDirty())
 						{
-							m_psPatternConstants._update_if_dirty();
-							renderCommandEncoder->setFragmentBytes(m_psPatternConstants.data(), m_psPatternConstants.size(), 1);
+							m_psEffectConstants._update_if_dirty();
+							renderCommandEncoder->setFragmentBytes(m_psEffectConstants.data(), m_psEffectConstants.size(), 1);
 						}
 
 						const MetalDrawCommand& draw = m_commandManager.getDraw(command.index);
@@ -1190,10 +1226,19 @@ namespace s3d
 						LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, colorAdd));
 						break;
 					}
+				case MetalRenderer2DCommandType::QuadWarpParameters:
+					{
+						const auto& quadWarpParameter = m_commandManager.getQuadWarpParameter(command.index);
+						const Quad quad{ quadWarpParameter[0].xy(), quadWarpParameter[0].zw(), quadWarpParameter[1].xy(), quadWarpParameter[1].zw() };
+						const Mat3x3 mat = Mat3x3::Homography(quad).inverse();
+						m_psEffectConstants->setQuadWarp(mat, quadWarpParameter[2]);			
+						LOG_COMMAND(fmt::format("QuadWarpParameters[{}]", command.index));
+						break;
+					}
 				case MetalRenderer2DCommandType::PatternParameters:
 					{
 						const auto& patternParameter = m_commandManager.getPatternParameter(command.index);
-						*m_psPatternConstants = { { patternParameter[0], patternParameter[1] }, patternParameter[2] };
+						m_psEffectConstants->setPattern(patternParameter);
 						LOG_COMMAND(fmt::format("PatternParameters[{}]", command.index));
 						break;
 					}

@@ -53,7 +53,8 @@ namespace s3d
 			//m_nullDraws.clear();
 			m_buffer.colorMuls = { m_buffer.colorMuls.back() };
 			m_buffer.colorAdds = { m_buffer.colorAdds.back() };
-			m_buffer.patternParameters = { m_buffer.patternParameters.back() };
+			m_buffer.quadWarpParameters	= { m_buffer.quadWarpParameters.back() };
+			m_buffer.patternParameters	= { m_buffer.patternParameters.back() };
 			m_buffer.blendStates = { m_buffer.blendStates.back() };
 			m_buffer.rasterizerStates = { m_buffer.rasterizerStates.back() };
 
@@ -94,6 +95,9 @@ namespace s3d
 
 			m_commands.emplace_back(MetalRenderer2DCommandType::ColorAdd, 0);
 			m_current.colorAdd = m_buffer.colorAdds.front();
+
+			m_commands.emplace_back(MetalRenderer2DCommandType::QuadWarpParameters, 0);
+			m_current.quadWarpParameter = m_buffer.quadWarpParameters.front();
 
 			m_commands.emplace_back(MetalRenderer2DCommandType::PatternParameters, 0);
 			m_current.patternParameter = m_buffer.patternParameters.front();
@@ -193,6 +197,12 @@ namespace s3d
 			m_buffer.colorAdds.push_back(m_current.colorAdd);
 		}
 		
+		if (m_stateTracker.has(MetalRenderer2DCommandType::QuadWarpParameters))
+		{
+			m_commands.emplace_back(MetalRenderer2DCommandType::QuadWarpParameters, static_cast<uint32>(m_buffer.quadWarpParameters.size()));
+			m_buffer.quadWarpParameters.push_back(m_current.quadWarpParameter);
+		}
+
 		if (m_stateTracker.has(MetalRenderer2DCommandType::PatternParameters))
 		{
 			m_commands.emplace_back(MetalRenderer2DCommandType::PatternParameters, static_cast<uint32>(m_buffer.patternParameters.size()));
@@ -423,6 +433,47 @@ namespace s3d
 	const Float3& MetalRenderer2DCommandManager::getCurrentColorAdd() const
 	{
 		return m_current.colorAdd;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushQuadWarpParameter, getQuadWarpParameter, getQuadWarpParameter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalRenderer2DCommandManager::pushQuadWarpParameter(const std::array<Float4, 3>& params)
+	{
+		constexpr auto Command = MetalRenderer2DCommandType::QuadWarpParameters;
+		auto& current = m_current.quadWarpParameter;
+		auto& buffer = m_buffer.quadWarpParameters;
+		
+		if (not m_stateTracker.has(Command))
+		{
+			if (params != current)
+			{
+				current = params;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (params == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = params;
+		}
+	}
+
+	const std::array<Float4, 3>& MetalRenderer2DCommandManager::getQuadWarpParameter(const uint32 index) const
+	{
+		return m_buffer.quadWarpParameters[index];
+	}
+	
+	const std::array<Float4, 3>& MetalRenderer2DCommandManager::getQuadWarpParameter() const
+	{
+		return m_current.quadWarpParameter;
 	}
 
 	////////////////////////////////////////////////////////////////

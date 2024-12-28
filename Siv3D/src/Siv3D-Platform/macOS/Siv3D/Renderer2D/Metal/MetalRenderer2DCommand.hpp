@@ -26,6 +26,8 @@ namespace s3d
 		ColorMul,
 
 		ColorAdd,
+
+		QuadWarpParameters,
 		
 		PatternParameters,
 
