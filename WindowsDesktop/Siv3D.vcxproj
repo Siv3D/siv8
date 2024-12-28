@@ -85,6 +85,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PointsPerCircle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Polygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\QualityFactor.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectanglePack.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Shape2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp" />
@@ -402,6 +403,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Quad.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\QualityFactor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Random.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomAngle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomColor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomDuration.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomPoint.hpp" />

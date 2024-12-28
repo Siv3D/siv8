@@ -749,6 +749,9 @@
 // ランダムな時間 | Random duration
 # include <Siv3D/RandomDuration.hpp>
 
+// ランダムな角度の作成 | Random Angle generation
+# include <Siv3D/RandomAngle.hpp>
+
 // ランダムな Point の作成 | Random Point generation
 # include <Siv3D/RandomPoint.hpp>
 
