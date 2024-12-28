@@ -44,7 +44,7 @@ namespace s3d
 			TextureFilter _mipFilter = TextureFilter::Linear,
 			uint8 _maxAnisotropy = 1,
 			CompareFunction _compareFunction = CompareFunction::Never,
-			Float4 _borderColor = Float4{ 0.0f, 0.0f, 0.0f, 0.0f },
+			SampleBorderColor _borderColor = SampleBorderColor::TransparentBlack,
 			float _minLOD = 0.0f
 		) noexcept;
 
@@ -151,10 +151,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr SamplerStateBuilder borderColor(const Float4 _borderColor) const noexcept;
+		constexpr SamplerStateBuilder borderColor(SampleBorderColor _borderColor) const noexcept;
 
 		[[nodiscard]]
-		constexpr const Float4 borderColor() const noexcept;
+		constexpr SampleBorderColor borderColor() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -192,9 +192,9 @@ namespace s3d
 
 		uint8 m_maxAnisotropy = 1;
 
-		CompareFunction m_compareFunction = CompareFunction::Never;
+		CompareFunction m_compareFunction	: 4 = CompareFunction::Never;
 
-		Float4 m_borderColor = Float4{ 0.0f, 0.0f, 0.0f, 0.0f };
+		SampleBorderColor m_borderColor		: 4 = SampleBorderColor::TransparentBlack;
 
 		float m_minLOD = 0.0f;
 	};

@@ -1039,6 +1039,9 @@
     <Filter Include="src\Siv3D\Mat3x3">
       <UniqueIdentifier>{5b81c5fa-7ed8-4d07-b4ee-1ad8b7993733}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\SampleBorderColor">
+      <UniqueIdentifier>{f6f2a0d7-2477-40aa-8053-22aa6c12e2bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4098,6 +4101,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SampleBorderColor.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6541,6 +6547,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mat3x3\SivMat3x3.cpp">
       <Filter>src\Siv3D\Mat3x3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SampleBorderColor\SivSampleBorderColor.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\SampleBorderColor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

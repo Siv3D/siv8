@@ -455,6 +455,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedNamedParameter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedYesNo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RoundRect.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SampleBorderColor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerStateBuilder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Scene.hpp" />
@@ -1284,6 +1285,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder_Rounded.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ResizeMode\SivResizeMode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RoundRect\SivRoundRect.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SampleBorderColor\SivSampleBorderColor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SamplerStateBuilder\SivSamplerStateBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SamplerState\SivSamplerState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\CScene.cpp" />

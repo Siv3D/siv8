@@ -38,6 +38,13 @@ namespace s3d
 			MTL::CompareFunctionGreaterEqual,
 			MTL::CompareFunctionAlways,
 		};
+
+		static constexpr MTL::SamplerBorderColor SamplerBorderColorTable[3] =
+		{
+			MTL::SamplerBorderColorTransparentBlack,
+			MTL::SamplerBorderColorOpaqueBlack,
+			MTL::SamplerBorderColorOpaqueWhite,
+		};
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -147,20 +154,7 @@ namespace s3d
 		samplerDescriptor->setMipFilter((state.mipFilter == TextureFilter::Linear) ? MTL::SamplerMipFilterLinear : MTL::SamplerMipFilterNearest);
 		samplerDescriptor->setMaxAnisotropy(state.maxAnisotropy);
 		samplerDescriptor->setCompareFunction(CompareFunctionTable[FromEnum(state.compareFunction)]);
-
-		if (state.borderColor == Float4{ 0.0f, 0.0f, 0.0f, 1.0f })
-		{
-			samplerDescriptor->setBorderColor(MTL::SamplerBorderColorOpaqueBlack);
-		}
-		else if (state.borderColor == Float4{ 1.0f, 1.0f, 1.0f, 1.0f })
-		{
-			samplerDescriptor->setBorderColor(MTL::SamplerBorderColorOpaqueWhite);
-		}
-		else
-		{
-			samplerDescriptor->setBorderColor(MTL::SamplerBorderColorTransparentBlack);
-		}
-		
+		samplerDescriptor->setBorderColor(SamplerBorderColorTable[FromEnum(state.borderColor)]);
 		samplerDescriptor->setLodMinClamp(state.minLOD);
 
 		LOG_TRACE(U"MTL::Device::newSamplerState()");
