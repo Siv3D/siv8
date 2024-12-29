@@ -2498,6 +2498,10 @@
 		F9FD0D212D215DE000A584CE /* SivTexturedRoundRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D1F2D215DE000A584CE /* SivTexturedRoundRect.cpp */; };
 		F9FD0D222D215DE000A584CE /* SivTexturedCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D1B2D215DE000A584CE /* SivTexturedCircle.cpp */; };
 		F9FD0D232D215DE000A584CE /* SivTexturedQuad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D1D2D215DE000A584CE /* SivTexturedQuad.cpp */; };
+		F9FD0D292D21693100A584CE /* IAssetMonitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D272D21693100A584CE /* IAssetMonitor.hpp */; };
+		F9FD0D2A2D21693100A584CE /* CAssetMonitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D252D21693100A584CE /* CAssetMonitor.hpp */; };
+		F9FD0D2B2D21693100A584CE /* CAssetMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D262D21693100A584CE /* CAssetMonitor.cpp */; };
+		F9FD0D2C2D21693100A584CE /* AssetMonitorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D242D21693100A584CE /* AssetMonitorFactory.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -5044,6 +5048,10 @@
 		F9FD0D1B2D215DE000A584CE /* SivTexturedCircle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturedCircle.cpp; sourceTree = "<group>"; };
 		F9FD0D1D2D215DE000A584CE /* SivTexturedQuad.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturedQuad.cpp; sourceTree = "<group>"; };
 		F9FD0D1F2D215DE000A584CE /* SivTexturedRoundRect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturedRoundRect.cpp; sourceTree = "<group>"; };
+		F9FD0D242D21693100A584CE /* AssetMonitorFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AssetMonitorFactory.cpp; sourceTree = "<group>"; };
+		F9FD0D252D21693100A584CE /* CAssetMonitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CAssetMonitor.hpp; sourceTree = "<group>"; };
+		F9FD0D262D21693100A584CE /* CAssetMonitor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CAssetMonitor.cpp; sourceTree = "<group>"; };
+		F9FD0D272D21693100A584CE /* IAssetMonitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAssetMonitor.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -6647,6 +6655,7 @@
 			children = (
 				F9E794712C19B720002615BA /* Array */,
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
+				F9FD0D282D21693100A584CE /* AssetMonitor */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
 				F9528B4A2BB69EAD00222F45 /* BigFloat */,
 				F9070D1B2B9F175E00383E4D /* BigInt */,
@@ -10694,6 +10703,17 @@
 			path = TexturedRoundRect;
 			sourceTree = "<group>";
 		};
+		F9FD0D282D21693100A584CE /* AssetMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				F9FD0D242D21693100A584CE /* AssetMonitorFactory.cpp */,
+				F9FD0D252D21693100A584CE /* CAssetMonitor.hpp */,
+				F9FD0D262D21693100A584CE /* CAssetMonitor.cpp */,
+				F9FD0D272D21693100A584CE /* IAssetMonitor.hpp */,
+			);
+			path = AssetMonitor;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -11511,6 +11531,8 @@
 				F986003E2BCFBB53006A4C0F /* SkSerialProcs.h in Headers */,
 				F9070EEF2B9F1C8900383E4D /* platform.h in Headers */,
 				F98602F52BCFBB54006A4C0F /* SkBitmapProcState_opts.h in Headers */,
+				F9FD0D292D21693100A584CE /* IAssetMonitor.hpp in Headers */,
+				F9FD0D2A2D21693100A584CE /* CAssetMonitor.hpp in Headers */,
 				F98603DE2BCFBB54006A4C0F /* SkSLSPIRVCodeGenerator.h in Headers */,
 				F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */,
 				F9F00A402CC7F5FB0097C165 /* PolygonBuffer.hpp in Headers */,
@@ -13004,6 +13026,8 @@
 				F98603162BCFBB54006A4C0F /* SkOpSpan.cpp in Sources */,
 				F986F9A02BCA9D0A006A4C0F /* defselement.cpp in Sources */,
 				F98602E82BCFBB54006A4C0F /* SkImage.cpp in Sources */,
+				F9FD0D2B2D21693100A584CE /* CAssetMonitor.cpp in Sources */,
+				F9FD0D2C2D21693100A584CE /* AssetMonitorFactory.cpp in Sources */,
 				F98605032BCFBC12006A4C0F /* SkImageGenerator_FromEncoded.cpp in Sources */,
 				F98603A62BCFBB54006A4C0F /* SkEmptyShader.cpp in Sources */,
 				F98601CF2BCFBB53006A4C0F /* SkImageFilterCache.cpp in Sources */,
