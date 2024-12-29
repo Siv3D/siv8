@@ -1040,7 +1040,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1065,7 +1065,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1084,7 +1084,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1109,7 +1109,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vs);
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
 			}
 
 			if (not m_currentCustomShader.ps)
