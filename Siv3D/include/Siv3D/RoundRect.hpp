@@ -20,6 +20,7 @@
 namespace s3d
 {
 	struct PatternParameters;
+	struct TexturedRoundRect;
 
 	/// @brief 角丸長方形
 	struct RoundRect
@@ -1159,11 +1160,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedRoundRect operator ()(const Texture& texture) const;
+		[[nodiscard]]
+		TexturedRoundRect operator ()(const Texture& texture) const;
 
-		//[[nodiscard]]
-		//TexturedRoundRect operator ()(const TextureRegion& textureRegion) const;
+		[[nodiscard]]
+		TexturedRoundRect operator ()(const TextureRegion& textureRegion) const;
 
 		////////////////////////////////////////////////////////////////
 		//

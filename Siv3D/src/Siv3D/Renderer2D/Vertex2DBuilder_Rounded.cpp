@@ -2881,6 +2881,12 @@ namespace s3d
 			return IndexCount;
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildLineString
+		//
+		////////////////////////////////////////////////////////////////
+
 		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& color, const float scale)
 		{
 			const size_t num_points = points.size();
@@ -2995,6 +3001,251 @@ namespace s3d
 
 				return indexCount;
 			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildTexturedCircle
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildTexturedCircle(const BufferCreatorFunc& bufferCreator, const Circle& circle, const FloatRect& uv, const Float4& color, const float scale)
+		{
+			const float rf = Abs(static_cast<float>(circle.r));
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(rf * scale);
+			const Vertex2D::IndexType VertexCount = (Quality + 1);
+			const Vertex2D::IndexType IndexCount = (Quality * 3);
+
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			// 中心
+			const float centerX = static_cast<float>(circle.x);
+			const float centerY = static_cast<float>(circle.y);
+			
+			const float centerU = ((uv.left + uv.right) * 0.5f);
+			const float centerV = ((uv.top + uv.bottom) * 0.5f);
+			const float rU = ((uv.right - uv.left) * 0.5f);
+			const float rV = ((uv.bottom - uv.top) * 0.5f);
+			
+			pVertex[0].set(centerX, centerY, centerU, centerV);
+
+			// 周
+			{
+				const float radDelta = (Math::TwoPiF / Quality);
+				Vertex2D* pDst = &pVertex[1];
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const float rad = (radDelta * i);
+					const auto [s, c] = FastMath::SinCos(rad);
+					(pDst++)->set((centerX + rf * c), (centerY - rf * s), (centerU + rU * c), (centerV - rV * s));
+				}
+			}
+
+			for (size_t i = 0; i < VertexCount; ++i)
+			{
+				(pVertex++)->color = color;
+			}
+
+			{
+				for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+				{
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = indexOffset;
+					*pIndex++ = indexOffset + (i + 2);
+				}
+
+				*pIndex++ = (indexOffset + Quality);
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + 1);
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildTexturedRoundRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildTexturedRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color, const float scale)
+		{
+			const Vertex2D::IndexType Quality				= CalculateCircleQuality(r * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType FanOuterVertexCount	= (Quality + 1); // 1 つの扇型の曲線部分の頂点数
+			const Vertex2D::IndexType FanVertexCount		= (FanOuterVertexCount + 1); // 1 つの扇型の頂点数
+			const Vertex2D::IndexType FanTriangleCount		= Quality; // 1 つの扇型の三角形の数
+			const Vertex2D::IndexType VertexCount			= (FanVertexCount * 4); // 頂点数
+			const Vertex2D::IndexType IndexCount			= ((Quality * 3 * 4) + (6 * 3)); // インデックス数
+			auto [pVertex, pIndex, indexOffset]				= bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float leftCenterX		= (rect.left + r);
+			const float rightCenterX	= (rect.right - r);
+			const float topCenterY		= (rect.top + r);
+			const float bottomCenterY	= (rect.bottom - r);
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			Vertex2D* pDst0 = pVertex;
+			Vertex2D* pDst1 = (pDst0 + FanOuterVertexCount);
+			Vertex2D* pDst2 = (pDst1 + FanOuterVertexCount);
+			Vertex2D* pDst3 = (pDst2 + FanOuterVertexCount);
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float x = (cs->x * r);
+				const float y = (cs->y * r);
+
+				pDst0->set((rightCenterX + x), (topCenterY + y), color);
+				pDst1->set((rightCenterX - y), (bottomCenterY + x), color);
+				pDst2->set((leftCenterX - x), (bottomCenterY - y), color);
+				pDst3->set((leftCenterX + y), (topCenterY - x), color);
+
+				++pDst0;
+				++pDst1;
+				++pDst2;
+				++pDst3;
+			}
+
+			// Fan の最後の頂点
+			{
+				const float x = (pCS->x * r);
+				const float y = (pCS->y * r);
+
+				pDst0->set((rightCenterX - y), (topCenterY + x), color);
+				pDst1->set((rightCenterX - x), (bottomCenterY - y), color);
+				pDst2->set((leftCenterX + y), (bottomCenterY - x), color);
+				pDst3->set((leftCenterX + x), (topCenterY + y), color);
+
+				++pDst0;
+				++pDst1;
+				++pDst2;
+				++pDst3;
+			}
+
+			// Fan の中心の頂点
+			{
+				(pDst3++)->set(rightCenterX, topCenterY, color);
+				(pDst3++)->set(rightCenterX, bottomCenterY, color);
+				(pDst3++)->set(leftCenterX, bottomCenterY, color);
+				(pDst3++)->set(leftCenterX, topCenterY, color);
+			}
+
+			// UV 座標を設定する
+			{
+				const float uOffset	= uvRect.left;
+				const float vOffset	= uvRect.top;
+				const float left	= rect.left;
+				const float top		= rect.top;
+				const float ws		= ((uvRect.right - uvRect.left) / w);
+				const float hs		= ((uvRect.bottom - uvRect.top) / h);
+
+				Vertex2D* pDst = pVertex;
+
+				for (size_t i = 0; i < VertexCount; ++i)
+				{
+					const float u = (uOffset + (pDst->pos.x - left) * ws);
+					const float v = (vOffset + (pDst->pos.y - top) * hs);
+					(pDst++)->tex.set(u, v);
+				}
+			}
+
+			const Vertex2D::IndexType trFanStartIndex	= indexOffset;
+			const Vertex2D::IndexType trFanEndIndex		= (trFanStartIndex + Quality);
+			const Vertex2D::IndexType brFanStartIndex	= (trFanEndIndex + 1);
+			const Vertex2D::IndexType brFanEndIndex		= (brFanStartIndex + Quality);
+			const Vertex2D::IndexType blFanStartIndex	= (brFanEndIndex + 1);
+			const Vertex2D::IndexType blFanEndIndex		= (blFanStartIndex + Quality);
+			const Vertex2D::IndexType tlFanStartIndex	= (blFanEndIndex + 1);
+			const Vertex2D::IndexType tlFanEndIndex		= (tlFanStartIndex + Quality);
+
+			const Vertex2D::IndexType trCenterIndex = (indexOffset + FanOuterVertexCount * 4);
+			const Vertex2D::IndexType brCenterIndex = (trCenterIndex + 1);
+			const Vertex2D::IndexType blCenterIndex = (trCenterIndex + 2);
+			const Vertex2D::IndexType tlCenterIndex = (trCenterIndex + 3);
+
+			{
+				// tr
+				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
+				{
+					*pIndex++ = (indexOffset + i);
+					*pIndex++ = (indexOffset + i + 1);
+					*pIndex++ = trCenterIndex;
+				}
+
+				indexOffset += FanOuterVertexCount;
+
+				// br
+				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
+				{
+					*pIndex++ = (indexOffset + i);
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = brCenterIndex;
+				}
+
+				indexOffset += FanOuterVertexCount;
+
+				// bl
+				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
+				{
+					*pIndex++ = (indexOffset + i);
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = blCenterIndex;
+				}
+
+				indexOffset += FanOuterVertexCount;
+
+				// tl
+				for (Vertex2D::IndexType i = 0; i < FanTriangleCount; ++i)
+				{
+					*pIndex++ = (indexOffset + i);
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = tlCenterIndex;
+				}
+
+				// rectangles
+				{
+					// topRect
+					*pIndex++ = tlFanEndIndex;
+					*pIndex++ = trFanStartIndex;
+					*pIndex++ = tlCenterIndex;
+
+					*pIndex++ = tlCenterIndex;
+					*pIndex++ = trFanStartIndex;
+					*pIndex++ = trCenterIndex;
+
+					// middleRect
+					*pIndex++ = tlFanStartIndex;
+					*pIndex++ = trFanEndIndex;
+					*pIndex++ = blFanEndIndex;
+
+					*pIndex++ = blFanEndIndex;
+					*pIndex++ = trFanEndIndex;
+					*pIndex++ = brFanStartIndex;
+
+					// bottomRect
+					*pIndex++ = blCenterIndex;
+					*pIndex++ = brCenterIndex;
+					*pIndex++ = blFanStartIndex;
+
+					*pIndex++ = blFanStartIndex;
+					*pIndex++ = brCenterIndex;
+					*pIndex++ = brFanEndIndex;
+				}
+			}
+
+			return IndexCount;
 		}
 	}
 }

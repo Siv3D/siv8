@@ -1030,6 +1030,31 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addTexturedCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), circle, uv, color, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+
+			m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addTexturedQuad
 	//
 	////////////////////////////////////////////////////////////////
@@ -1056,6 +1081,31 @@ namespace s3d
 	void CRenderer2D_Metal::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4])
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, colors))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vs);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+
+			m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addTexturedRoundRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addTexturedRoundRect(const Texture& texture, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, w, h, r, uvRect, color, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{

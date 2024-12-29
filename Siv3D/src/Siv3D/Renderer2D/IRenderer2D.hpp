@@ -125,13 +125,13 @@ namespace s3d
 
 
 
-		//virtual void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color) = 0;
+		virtual void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color) = 0;
 
 		virtual void addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color) = 0;
 
 		virtual void addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4]) = 0;
 
-		//virtual void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color) = 0;
+		virtual void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color) = 0;
 
 
 		virtual void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color) = 0;

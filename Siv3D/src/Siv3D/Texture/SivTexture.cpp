@@ -12,6 +12,7 @@
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedQuad.hpp>
+# include <Siv3D/TexturedRoundRect.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
@@ -952,8 +953,36 @@ namespace s3d
 		return rotatedAt(pos.x, pos.y, angle);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
 
+	TexturedRoundRect Texture::rounded(const double r) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		const double round = Min(Abs(r), (Min(baseSize.x, baseSize.y) * 0.5));
 
+		return{
+			*this,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			RoundRect{ 0, 0, baseSize, round }
+		};
+	}
+
+	TexturedRoundRect Texture::rounded(const double x, const double y, const double w, const double h, const double r) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		const double round = Min(Abs(r), (Min(w, h) * 0.5));
+
+		return{
+			*this,
+			static_cast<float>(x / baseSize.x), static_cast<float>(y / baseSize.y),
+			static_cast<float>((x + w) / baseSize.x), static_cast<float>((y + h) / baseSize.y),
+			RoundRect{ 0, 0, w, h, round }
+		};
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

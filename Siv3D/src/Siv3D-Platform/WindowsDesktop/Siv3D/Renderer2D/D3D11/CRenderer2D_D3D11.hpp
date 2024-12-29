@@ -234,7 +234,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color) override;
+		void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -252,7 +252,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color) override;
+		void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color) override;
 
 		////////////////////////////////////////////////////////////////
 		//
