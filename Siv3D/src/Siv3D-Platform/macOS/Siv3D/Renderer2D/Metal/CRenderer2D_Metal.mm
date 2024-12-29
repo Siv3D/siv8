@@ -1030,17 +1030,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addTextureRegion
+	//	addTexturedQuad
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_Metal::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color)
+	void CRenderer2D_Metal::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), FloatQuad{ rect }, uv, color))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, color))
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vs);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1053,13 +1053,13 @@ namespace s3d
 		}
 	}
 
-	void CRenderer2D_Metal::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4])
+	void CRenderer2D_Metal::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), FloatQuad{ rect }, uv, colors))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, colors))
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vs);
 			}
 
 			if (not m_currentCustomShader.ps)

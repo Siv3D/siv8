@@ -1742,11 +1742,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedQuad operator ()(const Texture& texture) const;
+		[[nodiscard]]
+		TexturedQuad operator ()(const Texture& texture) const;
 
-		//[[nodiscard]]
-		//TexturedQuad operator ()(const TextureRegion& textureRegion) const;
+		[[nodiscard]]
+		TexturedQuad operator ()(const TextureRegion& textureRegion) const;
 
 		////////////////////////////////////////////////////////////////
 		//

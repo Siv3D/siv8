@@ -17,7 +17,10 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "PolygonDetail.hpp"
 # include "Triangulate.hpp"
+
+SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4127)
 # include <ThirdParty/boost/geometry/extensions/algorithms/dissolve.hpp>
+SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
 {

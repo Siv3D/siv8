@@ -30,4 +30,15 @@ namespace s3d
 
 	constexpr FloatQuad::FloatQuad(const FloatRect& rect) noexcept
 		: p{ { rect.left, rect.top }, { rect.right, rect.top }, { rect.right, rect.bottom }, { rect.left, rect.bottom } } {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr FloatQuad FloatQuad::FromRect(double x, double y, double w, double h) noexcept
+	{
+		return{ Float2{ x, y }, Float2{ (x + w), y }, Float2{ (x + w), (y + h) }, Float2{ x, (y + h) } };
+	}
 }

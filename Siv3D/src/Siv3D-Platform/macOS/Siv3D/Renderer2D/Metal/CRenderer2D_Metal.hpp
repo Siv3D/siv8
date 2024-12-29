@@ -224,14 +224,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	addTextureRegion
+		//	addTexturedQuad
 		//
 		////////////////////////////////////////////////////////////////
 
-		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color) override;
+		void addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color) override;
 
-		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4]) override;
-		
+		void addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4]) override;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addQuadWarp

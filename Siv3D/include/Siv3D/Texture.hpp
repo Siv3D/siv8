@@ -977,8 +977,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedQuad rotated(double angle) const;
+		[[nodiscard]]
+		TexturedQuad rotated(double angle) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -986,11 +986,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedQuad rotatedAt(double x, double y, double angle) const;
+		[[nodiscard]]
+		TexturedQuad rotatedAt(double x, double y, double angle) const;
 
-		//[[nodiscard]]
-		//TexturedQuad rotatedAt(const Vec2& pos, double angle) const;
+		[[nodiscard]]
+		TexturedQuad rotatedAt(const Vec2& pos, double angle) const;
 
 		////////////////////////////////////////////////////////////////
 		//

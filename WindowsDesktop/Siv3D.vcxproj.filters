@@ -1042,6 +1042,15 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\SampleBorderColor">
       <UniqueIdentifier>{f6f2a0d7-2477-40aa-8053-22aa6c12e2bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\TexturedQuad">
+      <UniqueIdentifier>{e6fc4787-f669-4985-9469-85e92ee8d092}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TexturedCircle">
+      <UniqueIdentifier>{f30e8830-b89c-4e4e-b467-fea4c6aac353}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TexturedRoundRect">
+      <UniqueIdentifier>{3c5714c6-e6af-4ed4-a503-ce97eaeed0b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4104,6 +4113,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SampleBorderColor.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TexturedQuad.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TexturedCircle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TexturedRoundRect.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6550,6 +6568,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\SampleBorderColor\SivSampleBorderColor.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\SampleBorderColor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TexturedQuad\SivTexturedQuad.cpp">
+      <Filter>src\Siv3D\TexturedQuad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TexturedCircle\SivTexturedCircle.cpp">
+      <Filter>src\Siv3D\TexturedCircle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TexturedRoundRect\SivTexturedRoundRect.cpp">
+      <Filter>src\Siv3D\TexturedRoundRect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

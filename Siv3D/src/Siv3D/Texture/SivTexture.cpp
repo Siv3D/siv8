@@ -11,6 +11,7 @@
 
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/TexturedQuad.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
@@ -286,9 +287,9 @@ namespace s3d
 	{
 		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
 
-		SIV3D_ENGINE(Renderer2D)->addTextureRegion(
+		SIV3D_ENGINE(Renderer2D)->addTexturedQuad(
 			*this,
-			FloatRect{ x, y, (x + size.x), (y + size.y) },
+			FloatQuad::FromRect(x, y, size.x, size.y),
 			FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f },
 			diffuse.toFloat4()
 		);
@@ -301,9 +302,9 @@ namespace s3d
 		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
 		const Float4 colors[4] = { topLeftColor.toFloat4(), topRightColor.toFloat4(), bottomRightColor.toFloat4(), bottomLeftColor.toFloat4() };
 
-		SIV3D_ENGINE(Renderer2D)->addTextureRegion(
+		SIV3D_ENGINE(Renderer2D)->addTexturedQuad(
 			*this,
-			FloatRect{ x, y, (x + size.x), (y + size.y) },
+			FloatQuad::FromRect(x, y, size.x, size.y),
 			FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f },
 			colors
 		);
@@ -910,6 +911,46 @@ namespace s3d
 		return fitted(size.x, size.y, allowUpscale);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedQuad Texture::rotated(const double angle) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		return{
+			*this,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			Rect{ size }.rotated(angle),
+			Float2{ (size.x * 0.5f), (size.y * 0.5f) }
+		};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotatedAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedQuad Texture::rotatedAt(const double x, const double y, const double angle) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		return{
+			*this,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			Rect{ baseSize }.rotatedAt(x, y, angle),
+			Float2{ x, y }
+		};
+	}
+
+	TexturedQuad Texture::rotatedAt(const Vec2& pos, const double angle) const
+	{
+		return rotatedAt(pos.x, pos.y, angle);
+	}
 
 
 

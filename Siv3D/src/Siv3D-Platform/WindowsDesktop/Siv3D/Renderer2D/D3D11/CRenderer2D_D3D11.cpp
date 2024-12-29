@@ -1043,16 +1043,15 @@ namespace s3d
 		}
 	}
 
-
 	////////////////////////////////////////////////////////////////
 	//
-	//	addTextureRegion
+	//	addTexturedQuad
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_D3D11::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color)
+	void CRenderer2D_D3D11::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), FloatQuad{ rect }, uv, color))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, color))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1069,9 +1068,9 @@ namespace s3d
 		}
 	}
 
-	void CRenderer2D_D3D11::addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4])
+	void CRenderer2D_D3D11::addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), FloatQuad{ rect }, uv, colors))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, colors))
 		{
 			if (not m_currentCustomShader.vs)
 			{
