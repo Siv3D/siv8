@@ -12,6 +12,7 @@
 # include <cstdlib>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/Shader/IShader.hpp>
+# include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -57,13 +58,13 @@ namespace s3d
 	VertexShader::VertexShader(const FilePathView path, const StringView entryPoint)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromFile(path, entryPoint))) }
 	{
-		//SIV3D_ENGINE(AssetMonitor)->created();
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
 	VertexShader::VertexShader(const Blob& bytecode)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromBytecode(bytecode))) }
 	{
-		//SIV3D_ENGINE(AssetMonitor)->created();
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
 	////////////////////////////////////////////////////////////////

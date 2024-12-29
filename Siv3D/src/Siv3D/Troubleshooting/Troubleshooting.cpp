@@ -24,7 +24,7 @@ namespace s3d
 		{ {
 			{
 				U"Assets are newly created and discarded in consecutive frames. This may cause performance issues.",
-				U"アセットが毎フレーム連続して新規作成・破棄されています。これはパフォーマンスの低下を引き起こします。",
+				U"アセットが毎フレーム連続して新規作成・破棄されています。これは処理速度の低下を引き起こします。",
 			}
 		} };
 

@@ -409,7 +409,7 @@ namespace s3d
 
 		struct EngineShader
 		{
-			VertexShader::IDType vs;
+			VertexShader::IDType vsShape;
 
 			VertexShader::IDType vsQuadWarp;
 

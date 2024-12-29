@@ -1051,6 +1051,9 @@
     <Filter Include="src\Siv3D\TexturedRoundRect">
       <UniqueIdentifier>{3c5714c6-e6af-4ed4-a503-ce97eaeed0b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\AssetMonitor">
+      <UniqueIdentifier>{d341ade3-1b43-4c0c-8de3-d7a7432b786f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4122,6 +4125,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TexturedRoundRect.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\AssetMonitor\CAssetMonitor.hpp">
+      <Filter>src\Siv3D\AssetMonitor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\AssetMonitor\IAssetMonitor.hpp">
+      <Filter>src\Siv3D\AssetMonitor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6577,6 +6586,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\TexturedRoundRect\SivTexturedRoundRect.cpp">
       <Filter>src\Siv3D\TexturedRoundRect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\AssetMonitorFactory.cpp">
+      <Filter>src\Siv3D\AssetMonitor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\CAssetMonitor.cpp">
+      <Filter>src\Siv3D\AssetMonitor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

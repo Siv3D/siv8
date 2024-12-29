@@ -17,6 +17,7 @@
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -66,13 +67,13 @@ namespace s3d
 	Texture::Texture(const Image& image, const TextureDesc desc)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image, desc))) }
 	{
-		//SIV3D_ENGINE(AssetMonitor)->created();
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
 	Texture::Texture(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image, mipmaps, desc))) }
 	{
-		//SIV3D_ENGINE(AssetMonitor)->created();
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
 	Texture::Texture(const FilePathView path, const TextureDesc desc)
