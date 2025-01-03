@@ -12,12 +12,13 @@
 # pragma once
 # include "Common.hpp"
 # include "Number.hpp"
+# include "FormatData.hpp"
 
 namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	AseetID
+	//	AssetID
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -126,6 +127,17 @@ namespace s3d
 		/// @return Invalid アセット ID
 		[[nodiscard]]
 		static constexpr AssetID Invalid() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
+
+		friend void Formatter(FormatData& formatData, const AssetID& value)
+		{
+			Formatter(formatData, value.value());
+		}
 
 	private:
 

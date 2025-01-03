@@ -64,9 +64,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	DiscreteDistribution::result_type DiscreteDistribution::operator ()(Concept::UniformRandomBitGenerator auto&& urbg)
+	DiscreteDistribution::result_type DiscreteDistribution::operator ()(Concept::UniformRandomBitGenerator auto&& rbg)
 	{
-		return m_distribution(std::forward<decltype(urbg)>(urbg));
+		return m_distribution(std::forward<decltype(rbg)>(rbg));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -103,35 +103,35 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Iterator>
-	auto DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight)
+	decltype(auto) DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight)
 	{
 		return DiscreteSample(begin, end, weight, GetDefaultRNG());
 	}
 
 	template <class Iterator>
-	auto DiscreteSample(Iterator begin, [[maybe_unused]] Iterator end, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg)
+	decltype(auto) DiscreteSample(Iterator begin, [[maybe_unused]] Iterator end, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg)
 	{
 		assert(begin != end);
 		assert(std::distance(begin, end) == static_cast<int64>(weight.size()));
 
-		std::advance(begin, weight(std::forward<decltype(urbg)>(urbg)));
+		std::advance(begin, weight(std::forward<decltype(rbg)>(rbg)));
 		return *begin;
 	}
 
 	template <class Container>
-	auto DiscreteSample(const Container& c, DiscreteDistribution& weight)
+	decltype(auto) DiscreteSample(const Container& c SIV3D_LIFETIMEBOUND, DiscreteDistribution& weight)
 	{
 		return DiscreteSample(c, weight, GetDefaultRNG());
 	}
 
 	template <class Container>
-	auto DiscreteSample(const Container& c, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg)
+	decltype(auto) DiscreteSample(const Container& c SIV3D_LIFETIMEBOUND, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg)
 	{
 		assert(std::size(c) != 0);
 		assert(std::size(c) == weight.size());
 
 		auto it = std::begin(c);
-		std::advance(it, weight(std::forward<decltype(urbg)>(urbg)));
+		std::advance(it, weight(std::forward<decltype(rbg)>(rbg)));
 		return *it;
 	}
 
@@ -142,9 +142,9 @@ namespace s3d
 	}
 
 	template <class Type>
-	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg)
+	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg)
 	{
 		assert(ilist.size() != 0);
-		return *(ilist.begin() + weight(std::forward<decltype(urbg)>(urbg)));
+		return *(ilist.begin() + weight(std::forward<decltype(rbg)>(rbg)));
 	}
 }

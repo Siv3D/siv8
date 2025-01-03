@@ -64,7 +64,7 @@ namespace s3d
 	/// @return 2 つの値のうち小さい方の値。等しい場合は a | The lesser of a and b. If they are equivalent, returns a
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Min(const Type& a, const Type& b) noexcept(noexcept(b < a));
+	constexpr const Type& Min(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND) noexcept(noexcept(b < a));
 
 	/// @brief 3 つの値のうち最小の値を返します。 | Returns the smallest of the three.
 	/// @tparam Scalar 比較する値の型 | The type of the values to compare
@@ -84,7 +84,7 @@ namespace s3d
 	/// @return 3 つの値のうち最小の値 | The smallest of the three
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Min(const Type& a, const Type& b, const Type& c) noexcept(noexcept(b < a));
+	constexpr const Type& Min(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND, const Type& c SIV3D_LIFETIMEBOUND) noexcept(noexcept(b < a));
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -108,7 +108,7 @@ namespace s3d
 	/// @return 2 つの値のうち大きい方の値。等しい場合は a | The greater of a and b. If they are equivalent, returns a
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Max(const Type& a, const Type& b) noexcept(noexcept(a < b));
+	constexpr const Type& Max(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND) noexcept(noexcept(a < b));
 
 	/// @brief 3 つの値のうち最大の値を返します。 | Returns the greatest of the three.
 	/// @tparam Scalar 比較する値の型 | The type of the values to compare
@@ -128,7 +128,7 @@ namespace s3d
 	/// @return 3 つの値のうち最大の値 | The greatest of the three
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Max(const Type& a, const Type& b, const Type& c) noexcept(noexcept(a < b));
+	constexpr const Type& Max(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND, const Type& c SIV3D_LIFETIMEBOUND) noexcept(noexcept(a < b));
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -152,7 +152,7 @@ namespace s3d
 	/// @return v をクランプした値 | The clamped value for the v
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Clamp(const Type& v, const Type& min, const Type& max) noexcept(noexcept(max < v));
+	constexpr const Type& Clamp(const Type& v SIV3D_LIFETIMEBOUND, const Type& min SIV3D_LIFETIMEBOUND, const Type& max SIV3D_LIFETIMEBOUND) noexcept(noexcept(max < v));
 
 	////////////////////////////////////////////////////////////////
 	//

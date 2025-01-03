@@ -189,74 +189,88 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief 日数をフォーマットします。 | Formats the number of days.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief 日数を文字列に変換します。 | Converts the number of days to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param days 日数 | Days
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const Days& days);
 
-	/// @brief 日数をフォーマットします。 | Formats the number of days.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief 日数を文字列に変換します。 | Converts the number of days to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param days 日数 | Days
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const DaysF& days);
 
-	/// @brief 時間をフォーマットします。 | Formats the number of hours.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief 時間を文字列に変換します。 | Converts the hours to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param hours 時間 | Hours
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const Hours& hours);
 
-	/// @brief 時間をフォーマットします。 | Formats the number of hours.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief 時間を文字列に変換します。 | Converts the hours to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param hours 時間 | Hours
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const HoursF& hours);
 
-	/// @brief 分をフォーマットします。 | Formats the number of minutes.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief 分を文字列に変換します。 | Converts the minutes to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param minutes 分 | Minutes
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const Minutes& minutes);
 
-	/// @brief 分をフォーマットします。 | Formats the number of minutes.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief 分を文字列に変換します。 | Converts the minutes to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param minutes 分 | Minutes
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const MinutesF& minutes);
 
-	/// @brief 秒をフォーマットします。 | Formats the number of seconds.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief 秒を文字列に変換します。 | Converts the seconds to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param seconds 秒 | Seconds
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const Seconds& seconds);
 
-	/// @brief 秒をフォーマットします。 | Formats the number of seconds.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief 秒を文字列に変換します。 | Converts the seconds to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param seconds 秒 | Seconds
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const SecondsF& seconds);
 
-	/// @brief ミリ秒をフォーマットします。 | Formats the number of milliseconds.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief ミリ秒を文字列に変換します。 | Converts the milliseconds to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param milliseconds ミリ秒 | Milliseconds
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const Milliseconds& milliseconds);
 
-	/// @brief ミリ秒をフォーマットします。 | Formats the number of milliseconds.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief ミリ秒を文字列に変換します。 | Converts the milliseconds to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param milliseconds ミリ秒 | Milliseconds
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const MillisecondsF& milliseconds);
 
-	/// @brief マイクロ秒をフォーマットします。 | Formats the number of microseconds.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief マイクロ秒を文字列に変換します。 | Converts the microseconds to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param microseconds マイクロ秒 | Microseconds
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const Microseconds& microseconds);
 
-	/// @brief マイクロ秒をフォーマットします。 | Formats the number of microseconds.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief マイクロ秒を文字列に変換します。 | Converts the microseconds to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param microseconds マイクロ秒 | Microseconds
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const MicrosecondsF& microseconds);
 
-	/// @brief ナノ秒をフォーマットします。 | Formats the number of nanoseconds.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief ナノ秒を文字列に変換します。 | Converts the nanoseconds to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param nanoseconds ナノ秒 | Nanoseconds
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const Nanoseconds& nanoseconds);
 
-	/// @brief ナノ秒をフォーマットします。 | Formats the number of nanoseconds.
-	/// @param formatData フォーマットデータ | Format data
+	/// @brief ナノ秒を文字列に変換します。 | Converts the nanoseconds to a string.
+	/// @param formatData 文字列バッファ | String buffer
 	/// @param nanoseconds ナノ秒 | Nanoseconds
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, const NanosecondsF& nanoseconds);
 }
 

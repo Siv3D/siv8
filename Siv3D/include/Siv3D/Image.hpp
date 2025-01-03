@@ -157,18 +157,26 @@ namespace s3d
 		[[nodiscard]]
 		explicit Image(FilePathView path, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
 
-		/// @brief IReader から画像データを作成します。
-		/// @param reader IReader オブジェクト
+		/// @brief Reader から画像ファイルを読み込んで画像データを作成します。
+		/// @param reader Reader オブジェクト
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
 		[[nodiscard]]
 		explicit Image(IReader&& reader, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
 
-		//[[nodiscard]]
-		//Image(FilePathView rgb, FilePathView alpha);
+		/// @brief 一方の画像ファイルから RGB チャンネルを、もう一方の画像ファイルからアルファチャンネルを読み込んで画像データを作成します。
+		/// @param rgb RGB チャンネルの画像ファイルのパス
+		/// @param alpha アルファチャンネルの画像ファイルのパス（R 成分がアルファチャンネルとして使用されます）
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
+		[[nodiscard]]
+		Image(FilePathView rgb, FilePathView alpha, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes);
 
-		//[[nodiscard]]
-		//Image(Color rgb, FilePathView alpha);
+		/// @brief 指定した色を RGB チャンネルに、指定した画像ファイルの内容をアルファチャンネルに使用して画像データを作成します。
+		/// @param rgb RGB チャンネルの色
+		/// @param alpha アルファチャンネルの画像ファイルのパス（R 成分がアルファチャンネルとして使用されます）
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
+		[[nodiscard]]
+		Image(Color rgb, FilePathView alpha, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes);
 
 		[[nodiscard]]
 		explicit Image(const Emoji& emoji, int32 size = Emoji::DefaultSize);
@@ -226,7 +234,7 @@ namespace s3d
 		/// @remark `(width() * sizeof(Color))` です。
 		/// @return 画像の各行のサイズ（バイト）
 		[[nodiscard]]
-		size_t stride() const noexcept;
+		uint32 stride() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -291,9 +299,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		Type horizontalAspectRatio() const noexcept;
+		Float horizontalAspectRatio() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -403,27 +411,28 @@ namespace s3d
 	# ifdef __cpp_multidimensional_subscript
 
 		/// @brief 指定した位置のピクセルの参照を返します。
-		/// @param x 位置（列）
 		/// @param y 位置（行）
-		/// @remark image[x, y] で指定したピクセルにアクセスします。
+		/// @param x 位置（列）
+		/// @remark image[y, x] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
-		Color& operator [](size_t x, size_t y)&;
+		Color& operator [](size_t y, size_t x)&;
 
 		/// @brief 指定した位置のピクセルの参照を返します。
-		/// @param x 位置（列）
 		/// @param y 位置（行）
-		/// @remark image[x, y] で指定したピクセルにアクセスします。
+		/// @param x 位置（列）
+		/// @remark image[y, x] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
-		const Color& operator [](size_t x, size_t y) const&;
+		const Color& operator [](size_t y, size_t x) const&;
 
 		/// @brief 指定した位置のピクセルを返します。
-		/// @param x 位置（列）
 		/// @param y 位置（行）
+		/// @param x 位置（列）
+		/// @remark image[y, x] で指定したピクセルにアクセスします。
 		/// @return 指定した位置のピクセル
 		[[nodiscard]]
-		Color operator [](size_t x, size_t y)&&;
+		Color operator [](size_t y, size_t x)&&;
 
 	# endif
 

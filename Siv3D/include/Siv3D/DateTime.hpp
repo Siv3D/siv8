@@ -317,6 +317,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 日付と時刻を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value 日付と時刻
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。	
 		friend void Formatter(FormatData& formatData, const DateTime& value);
 	};
 

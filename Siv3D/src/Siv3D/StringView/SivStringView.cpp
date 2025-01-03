@@ -108,19 +108,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::ostream& operator <<(std::ostream& os, const StringView& value)
+	std::ostream& operator <<(std::ostream& output, const StringView& value)
 	{
-		return (os << Unicode::ToUTF8(value));
+		return (output << Unicode::ToUTF8(value));
 	}
 
-	std::wostream& operator <<(std::wostream& os, const StringView& value)
+	std::wostream& operator <<(std::wostream& output, const StringView& value)
 	{
-		return (os << Unicode::ToWstring(value));
+		return (output << Unicode::ToWstring(value));
 	}
 
-	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const StringView& value)
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const StringView& value)
 	{
-		return os.write(value.data(), value.size());
+		return output.write(value.data(), value.size());
 	}
 
 	////////////////////////////////////////////////////////////////

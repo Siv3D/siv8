@@ -41,5 +41,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 線端のスタイルを文字列に変換します。
+	/// @param formatData 文字列バッファ
+	/// @param value 線端のスタイル
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, LineCap value);
 }

@@ -1015,6 +1015,33 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess">
       <UniqueIdentifier>{11393b10-2f63-49cc-8dad-9b448a03f01b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\TriangleIndex">
+      <UniqueIdentifier>{19d4725f-95e3-47e1-a633-04b750b83b30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TriangleIndex32">
+      <UniqueIdentifier>{85d42f3e-0da5-4f06-b66f-0a9e3f2fcc06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TextureFormat">
+      <UniqueIdentifier>{0650134f-adbe-461b-9c97-2020dff1a5da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Texture">
+      <UniqueIdentifier>{d48cb258-4732-4bff-9879-572916c60a6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture">
+      <UniqueIdentifier>{c1db1362-c29e-4b5f-b2c3-eca67ba61bcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11">
+      <UniqueIdentifier>{704ac88d-8b33-4f2d-850e-7e1df26ba726}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TextureRegion">
+      <UniqueIdentifier>{4d342f16-e231-49fa-9982-391ff5fdccf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Mat3x3">
+      <UniqueIdentifier>{5b81c5fa-7ed8-4d07-b4ee-1ad8b7993733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\SampleBorderColor">
+      <UniqueIdentifier>{f6f2a0d7-2477-40aa-8053-22aa6c12e2bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4008,6 +4035,75 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess\ChildProcessDetail.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.ipp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureDesc.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureDescBuilder.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDescBuilder.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureFormat.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TexturePixelFormat.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureFormat.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Texture.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\CTexture_D3D11.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Texture\ITexture.hpp">
+      <Filter>src\Siv3D\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\D3D11Texture.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\D3D11Texture2DDesc.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageProcessing.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageProcessing.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextureRegion.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mat3x3.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat3x3.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomAngle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SampleBorderColor.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6418,6 +6514,42 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess\ChildProcessDetail.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TriangleIndex\SivTriangleIndex.cpp">
+      <Filter>src\Siv3D\TriangleIndex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TriangleIndex32\SivTriangleIndex32.cpp">
+      <Filter>src\Siv3D\TriangleIndex32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SmallestEnclosingCircle.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextureFormat\SivTextureFormat.cpp">
+      <Filter>src\Siv3D\TextureFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\TextureFactory.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\CTexture_D3D11.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Texture\SivTexture.cpp">
+      <Filter>src\Siv3D\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\D3D11Texture.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\D3D11Texture2DDesc.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextureRegion\SivTextureRegion.cpp">
+      <Filter>src\Siv3D\TextureRegion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mat3x3\SivMat3x3.cpp">
+      <Filter>src\Siv3D\Mat3x3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SampleBorderColor\SivSampleBorderColor.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\SampleBorderColor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

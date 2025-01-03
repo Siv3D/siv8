@@ -253,7 +253,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		template <class CharType>
-		friend inline std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Mat3x2& value)
+		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Mat3x2& value)
 		{
 			return output << CharType('(')
 				<< Float2{ value._11, value._12 } << CharType(',')
@@ -268,7 +268,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		template <class CharType>
-		friend inline std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Mat3x2& value)
+		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, Mat3x2& value)
 		{
 			CharType unused;
 			Float2 r1, r2, r3;

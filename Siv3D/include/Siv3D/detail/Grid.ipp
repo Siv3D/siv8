@@ -350,21 +350,21 @@ namespace s3d
 # ifdef __cpp_multidimensional_subscript
 
 	template <class Type, class Allocator>
-	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::operator [](const size_type x, const size_type y)&
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::operator [](const size_type y, const size_type x)&
 	{
 		assert(indexInBounds(y, x));
 		return *(m_container.data() + (y * m_size.x + x));
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::operator [](const size_type x, const size_type y) const&
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::operator [](const size_type y, const size_type x) const&
 	{
 		assert(indexInBounds(y, x));
 		return *(m_container.data() + (y * m_size.x + x));
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const size_type x, const size_type y)&&
+	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const size_type y, const size_type x)&&
 	{
 		assert(indexInBounds(y, x));
 		return *(m_container.data() + (y * m_size.x + x));

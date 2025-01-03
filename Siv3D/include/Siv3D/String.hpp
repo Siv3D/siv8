@@ -803,11 +803,11 @@ namespace s3d
 
 		constexpr String& replace(size_type pos, size_type count, const String& s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replate(const_iterator first, const_iterator last, const String& s) SIV3D_LIFETIMEBOUND;
+		constexpr String& replace(const_iterator first, const_iterator last, const String& s) SIV3D_LIFETIMEBOUND;
 		
 		constexpr String& replace(const_iterator first, const_iterator last, const value_type* s) SIV3D_LIFETIMEBOUND;
 
-		constexpr String& replate(const_iterator first, const_iterator last, const StringViewLike auto& s);
+		constexpr String& replace(const_iterator first, const_iterator last, const StringViewLike auto& s);
 
 		constexpr String& replace(size_type pos, size_type count, const value_type* s) SIV3D_LIFETIMEBOUND;
 
@@ -1336,7 +1336,7 @@ namespace s3d
 		/// @brief 文字列の要素を 1 つランダムに返します。
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice() const& SIV3D_LIFETIMEBOUND;
+		value_type choice() const&;
 
 		/// @brief 文字列の要素を 1 つランダムに返します。
 		/// @return 文字列からランダムに選ばれた要素
@@ -1353,7 +1353,7 @@ namespace s3d
 		/// @param rbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const& SIV3D_LIFETIMEBOUND;
+		value_type choice(Concept::UniformRandomBitGenerator auto&& rbg) const&;
 
 		/// @brief 指定した乱数エンジンを用いて、文字列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
@@ -2241,11 +2241,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した区切り文字で文字列を分割します。
+		/// @brief 指定した区切り文字で文字列を分割した結果を String の配列で返します。
 		/// @param ch 区切り文字
 		/// @return 分割された文字列
 		[[nodiscard]]
 		Array<String, std::allocator<String>> split(value_type ch) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	splitView
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した区切り文字で文字列を分割した結果を StringView の配列で返します。
+		/// @param ch 区切り文字
+		/// @return 分割された文字列
+		/// @remark 戻り値は元の文字列を参照します。元の文字列のライフタイムに注意してください。
+		[[nodiscard]]
+		Array<StringView, std::allocator<StringView>> splitView(value_type ch) const SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2672,11 +2685,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		friend std::ostream& operator <<(std::ostream& os, const String& value);
+		friend std::ostream& operator <<(std::ostream& output, const String& value);
 
-		friend std::wostream& operator <<(std::wostream& os, const String& value);
+		friend std::wostream& operator <<(std::wostream& output, const String& value);
 
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const String& value);
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const String& value);
 
 		////////////////////////////////////////////////////////////////
 		//

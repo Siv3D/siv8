@@ -20,20 +20,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::ostream& operator <<(std::ostream& os, const None_t&)
+	std::ostream& operator <<(std::ostream& output, const None_t&)
 	{
-		return (os << "none");
+		return (output << "none");
 	}
 
-	std::wostream& operator <<(std::wostream& os, const None_t&)
+	std::wostream& operator <<(std::wostream& output, const None_t&)
 	{
-		return (os << L"none");
+		return (output << L"none");
 	}
 
-	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const None_t&)
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const None_t&)
 	{
 		static const std::u32string_view s = U"none";
-		return os.write(s.data(), s.size());
+		return output.write(s.data(), s.size());
 	}
 
 	////////////////////////////////////////////////////////////////

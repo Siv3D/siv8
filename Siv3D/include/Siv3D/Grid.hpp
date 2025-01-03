@@ -231,13 +231,13 @@ namespace s3d
 	# ifdef __cpp_multidimensional_subscript
 
 		[[nodiscard]]
-		constexpr reference operator [](size_type x, size_type y)& SIV3D_LIFETIMEBOUND;
+		constexpr reference operator [](size_type y, size_type x)& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr const_reference operator [](size_type x, size_type y) const& SIV3D_LIFETIMEBOUND;
+		constexpr const_reference operator [](size_type y, size_type x) const& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr value_type operator [](size_type x, size_type y)&&;
+		constexpr value_type operator [](size_type y, size_type x)&&;
 
 	# endif
 

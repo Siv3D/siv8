@@ -331,22 +331,22 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief Stopwatch を出力します。
-		/// @param os 出力先のストリーム
+		/// @param output 出力先のストリーム
 		/// @param value Stopwatch
 		/// @return 出力ストリーム
-		friend std::ostream& operator <<(std::ostream& os, const Stopwatch& value);
+		friend std::ostream& operator <<(std::ostream& output, const Stopwatch& value);
 
 		/// @brief Stopwatch を出力します。
-		/// @param os 出力先のストリーム
+		/// @param output 出力先のストリーム
 		/// @param value Stopwatch
 		/// @return 出力ストリーム
-		friend std::wostream& operator <<(std::wostream& os, const Stopwatch& value);
+		friend std::wostream& operator <<(std::wostream& output, const Stopwatch& value);
 
 		/// @brief Stopwatch を出力します。
-		/// @param os 出力先のストリーム
+		/// @param output 出力先のストリーム
 		/// @param value Stopwatch
 		/// @return 出力ストリーム
-		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Stopwatch& value);
+		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const Stopwatch& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -354,9 +354,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Stopwatch をフォーマットします。
-		/// @param formatData フォーマットデータ
-		/// @param value Stopwatch
+		/// @brief 経過時間を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value ストップウォッチ
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Stopwatch& value);
 
 	private:

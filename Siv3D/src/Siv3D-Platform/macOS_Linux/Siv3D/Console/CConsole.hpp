@@ -24,6 +24,8 @@ namespace s3d
 
 		bool attach() override;
 
+		void clearSelection() override;
+
 		void close() override;
 	};
 }

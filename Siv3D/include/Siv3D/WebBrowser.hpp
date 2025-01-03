@@ -54,9 +54,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief WebBrowser をフォーマットします。
-	/// @param formatData フォーマットデータ
-	/// @param value WebBrowser
+	/// @brief Web ブラウザを文字列に変換します。
+	/// @param formatData 文字列バッファ
+	/// @param value Web ブラウザ
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 	void Formatter(FormatData& formatData, WebBrowser value);
 
 	namespace System

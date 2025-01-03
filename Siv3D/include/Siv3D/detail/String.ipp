@@ -976,7 +976,7 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr String& String::replate(const_iterator first, const_iterator last, const String& s)
+	constexpr String& String::replace(const_iterator first, const_iterator last, const String& s)
 	{
 		m_string.replace(first, last, s.m_string);
 		return *this;
@@ -988,7 +988,7 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr String& String::replate(const_iterator first, const_iterator last, const StringViewLike auto& s)
+	constexpr String& String::replace(const_iterator first, const_iterator last, const StringViewLike auto& s)
 	{
 		m_string.replace(first, last, s);
 		return *this;

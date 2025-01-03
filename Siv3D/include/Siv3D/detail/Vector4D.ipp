@@ -19,65 +19,65 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type>::Vector4D(const value_type _x, const value_type _y, const value_type _z, const value_type _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>::Vector4D(const value_type _x, const value_type _y, const value_type _z, const value_type _w) noexcept
 		: x{ _x }
 		, y{ _y }
 		, z{ _z }
 		, w{ _w } {}
 
-	template <class Type>
-	constexpr Vector4D<Type>::Vector4D(const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y, const Concept::Arithmetic auto _z, const Concept::Arithmetic auto _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>::Vector4D(const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y, const Concept::Arithmetic auto _z, const Concept::Arithmetic auto _w) noexcept
 		: x{ static_cast<value_type>(_x) }
 		, y{ static_cast<value_type>(_y) }
 		, z{ static_cast<value_type>(_z) }
 		, w{ static_cast<value_type>(_w) } {}
 
-	template <class Type>
-	template <class U>
-	constexpr Vector4D<Type>::Vector4D(const Vector4D<U>& v) noexcept
+	template <Concept::FloatingPoint Float>
+	template <Concept::FloatingPoint U>
+	constexpr Vector4D<Float>::Vector4D(const Vector4D<U>& v) noexcept
 		: x{ static_cast<value_type>(v.x) }
 		, y{ static_cast<value_type>(v.y) }
 		, z{ static_cast<value_type>(v.z) }
 		, w{ static_cast<value_type>(v.w) } {}
 
-	template <class Type>
-	constexpr Vector4D<Type>::Vector4D(const Vector2D<value_type>& xy, const Concept::Arithmetic auto _z, const Concept::Arithmetic auto _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>::Vector4D(const Vector2D<value_type>& xy, const Concept::Arithmetic auto _z, const Concept::Arithmetic auto _w) noexcept
 		: x{ xy.x }
 		, y{ xy.y }
 		, z{ static_cast<value_type>(_z) }
 		, w{ static_cast<value_type>(_w) } {}
 
-	template <class Type>
-	constexpr Vector4D<Type>::Vector4D(const Concept::Arithmetic auto _x, const Vector2D<value_type>& yz, const Concept::Arithmetic auto _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>::Vector4D(const Concept::Arithmetic auto _x, const Vector2D<value_type>& yz, const Concept::Arithmetic auto _w) noexcept
 		: x{ static_cast<value_type>(_x) }
 		, y{ yz.x }
 		, z{ yz.y }
 		, w{ static_cast<value_type>(_w) } {}
 
-	template <class Type>
-	constexpr Vector4D<Type>::Vector4D(const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y, const Vector2D<value_type>& zw) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>::Vector4D(const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y, const Vector2D<value_type>& zw) noexcept
 		: x{ static_cast<value_type>(_x) }
 		, y{ static_cast<value_type>(_y) }
 		, z{ zw.x }
 		, w{ zw.y } {}
 
-	template <class Type>
-	constexpr Vector4D<Type>::Vector4D(const Vector2D<value_type>& xy, const Vector2D<value_type>& zw) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>::Vector4D(const Vector2D<value_type>& xy, const Vector2D<value_type>& zw) noexcept
 		: x{ xy.x }
 		, y{ xy.y }
 		, z{ zw.x }
 		, w{ zw.y } {}
 
-	template <class Type>
-	constexpr Vector4D<Type>::Vector4D(const Vector3D<value_type>& xyz, const Concept::Arithmetic auto _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>::Vector4D(const Vector3D<value_type>& xyz, const Concept::Arithmetic auto _w) noexcept
 		: x{ xyz.x }
 		, y{ xyz.y }
 		, z{ xyz.z }
 		, w{ static_cast<value_type>(_w) } {}
 
-	template <class Type>
-	constexpr Vector4D<Type>::Vector4D(const Concept::Arithmetic auto _x, const Vector3D<value_type>& yzw) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>::Vector4D(const Concept::Arithmetic auto _x, const Vector3D<value_type>& yzw) noexcept
 		: x{ static_cast<value_type>(_x) }
 		, y{ yzw.x }
 		, z{ yzw.y }
@@ -89,8 +89,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::elem(const size_t index) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::elem(const size_t index) const noexcept
 	{
 		if (index == 0)
 		{
@@ -120,14 +120,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type* Vector4D<Type>::getPointer() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type* Vector4D<Float>::getPointer() noexcept
 	{
 		return &x;
 	}
 
-	template <class Type>
-	constexpr const typename Vector4D<Type>::value_type* Vector4D<Type>::getPointer() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr const typename Vector4D<Float>::value_type* Vector4D<Float>::getPointer() const noexcept
 	{
 		return &x;
 	}
@@ -138,14 +138,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::operator +() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::operator +() const noexcept
 	{
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::operator +(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::operator +(const Vector4D v) const noexcept
 	{
 		return{ (x + v.x), (y + v.y), (z + v.z), (w + v.w) };
 	}
@@ -156,14 +156,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::operator -() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::operator -() const noexcept
 	{
 		return{ -x, -y, -z, -w };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::operator -(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::operator -(const Vector4D v) const noexcept
 	{
 		return{ (x - v.x), (y - v.y), (z - v.z), (w - v.w) };
 	}
@@ -174,14 +174,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::operator *(const value_type s) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::operator *(const value_type s) const noexcept
 	{
 		return{ (x * s), (y * s), (z * s), (w * s) };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::operator *(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::operator *(const Vector4D v) const noexcept
 	{
 		return{ (x * v.x), (y * v.y), (z * v.z), (w * v.w) };
 	}
@@ -192,16 +192,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::operator /(const value_type s) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::operator /(const value_type s) const noexcept
 	{
 		const auto invS = (static_cast<value_type>(1.0) / s);
 
 		return{ (x * invS), (y * invS), (z * invS), (w * invS) };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::operator /(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::operator /(const Vector4D v) const noexcept
 	{
 		return{ (x / v.x), (y / v.y), (z / v.z), (w / v.w) };
 	}
@@ -212,8 +212,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::operator +=(const Vector4D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::operator +=(const Vector4D v) noexcept
 	{
 		x += v.x;
 		y += v.y;
@@ -228,8 +228,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::operator -=(const Vector4D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::operator -=(const Vector4D v) noexcept
 	{
 		x -= v.x;
 		y -= v.y;
@@ -244,8 +244,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::operator *=(const value_type s) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::operator *=(const value_type s) noexcept
 	{
 		x *= s;
 		y *= s;
@@ -254,8 +254,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::operator *=(const Vector4D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::operator *=(const Vector4D v) noexcept
 	{
 		x *= v.x;
 		y *= v.y;
@@ -270,8 +270,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::operator /=(const value_type s) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::operator /=(const value_type s) noexcept
 	{
 		const auto invS = (static_cast<value_type>(1.0) / s);
 		x *= invS;
@@ -281,8 +281,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::operator /=(const Vector4D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::operator /=(const Vector4D v) noexcept
 	{
 		x /= v.x;
 		y /= v.y;
@@ -297,8 +297,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr bool Vector4D<Type>::epsilonEquals(const Vector4D other, const value_type epsilon) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr bool Vector4D<Float>::epsilonEquals(const Vector4D other, const value_type epsilon) const noexcept
 	{
 		return ((AbsDiff(x, other.x) <= epsilon)
 			&&  (AbsDiff(y, other.y) <= epsilon)
@@ -312,8 +312,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr bool Vector4D<Type>::hasSameDirection(const Vector4D other) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr bool Vector4D<Float>::hasSameDirection(const Vector4D other) const noexcept
 	{
 		return (0 < dot(other));
 	}
@@ -324,8 +324,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr bool Vector4D<Type>::hasOppositeDirection(const Vector4D other) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr bool Vector4D<Float>::hasOppositeDirection(const Vector4D other) const noexcept
 	{
 		return (dot(other) < 0);
 	}
@@ -336,8 +336,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr bool Vector4D<Type>::isZero() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr bool Vector4D<Float>::isZero() const noexcept
 	{
 		return ((x == 0)
 			&&  (y == 0)
@@ -351,8 +351,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	bool Vector4D<Type>::hasNaN() const noexcept
+	template <Concept::FloatingPoint Float>
+	bool Vector4D<Float>::hasNaN() const noexcept
 	{
 		return (std::isnan(x)
 			||  std::isnan(y)
@@ -366,14 +366,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::minComponent() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::minComponent() const noexcept
 	{
 		return Min(Min(x, y), Min(z, w));
 	}
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::maxComponent() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::maxComponent() const noexcept
 	{
 		return Max(Max(x, y), Max(z, w));
 	}
@@ -384,8 +384,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr void Vector4D<Type>::clear() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr void Vector4D<Float>::clear() noexcept
 	{
 		x = 0;
 		y = 0;
@@ -399,26 +399,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::withX(const value_type _x) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withX(const value_type _x) const noexcept
 	{
 		return{ _x, y, z, w };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::withY(const value_type _y) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withY(const value_type _y) const noexcept
 	{
 		return{ x, _y, z, w };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::withZ(const value_type _z) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withZ(const value_type _z) const noexcept
 	{
 		return{ x, y, _z, w };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::withW(const value_type _w) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withW(const value_type _w) const noexcept
 	{
 		return{ x, y, z, _w };
 	}
@@ -429,8 +429,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::set(const Vector2D<value_type>& xy, const Vector2D<value_type>& zw) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::set(const Vector2D<value_type>& xy, const Vector2D<value_type>& zw) noexcept
 	{
 		x = xy.x;
 		y = xy.y;
@@ -439,8 +439,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::set(const Vector2D<value_type>& xy, const value_type _z, const value_type _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::set(const Vector2D<value_type>& xy, const value_type _z, const value_type _w) noexcept
 	{
 		x = xy.x;
 		y = xy.y;
@@ -449,8 +449,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::set(const value_type _x, const Vector2D<value_type>& yz, const value_type _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::set(const value_type _x, const Vector2D<value_type>& yz, const value_type _w) noexcept
 	{
 		x = _x;
 		y = yz.x;
@@ -459,8 +459,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::set(const value_type _x, const value_type _y, const Vector2D<value_type>& zw) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::set(const value_type _x, const value_type _y, const Vector2D<value_type>& zw) noexcept
 	{
 		x = _x;
 		y = _y;
@@ -469,8 +469,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::set(const Vector3D<value_type>& xyz, const value_type _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::set(const Vector3D<value_type>& xyz, const value_type _w) noexcept
 	{
 		x = xyz.x;
 		y = xyz.y;
@@ -479,8 +479,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::set(const value_type _x, const Vector3D<value_type>& yzw) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::set(const value_type _x, const Vector3D<value_type>& yzw) noexcept
 	{
 		x = _x;
 		y = yzw.x;
@@ -489,8 +489,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::set(const value_type _x, const value_type _y, const value_type _z, const value_type _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::set(const value_type _x, const value_type _y, const value_type _z, const value_type _w) noexcept
 	{
 		x = _x;
 		y = _y;
@@ -499,8 +499,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::set(const Vector4D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::set(const Vector4D v) noexcept
 	{
 		x = v.x;
 		y = v.y;
@@ -515,14 +515,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::movedBy(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::movedBy(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
 	{
 		return{ (x + _x), (y + _y), (z + _z), (w + _w) };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::movedBy(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::movedBy(const Vector4D v) const noexcept
 	{
 		return{ (x + v.x), (y + v.y), (z + v.z), (w + v.w) };
 	}
@@ -533,8 +533,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::moveBy(const value_type _x, const value_type _y, const value_type _z, const value_type _w) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::moveBy(const value_type _x, const value_type _y, const value_type _z, const value_type _w) noexcept
 	{
 		x += _x;
 		y += _y;
@@ -543,8 +543,8 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type>& Vector4D<Type>::moveBy(const Vector4D v) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float>& Vector4D<Float>::moveBy(const Vector4D v) noexcept
 	{
 		x += v.x;
 		y += v.y;
@@ -559,9 +559,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	template <class U>
-	constexpr auto Vector4D<Type>::dot(const Vector4D<U> v) const noexcept
+	template <Concept::FloatingPoint Float>
+	template <Concept::FloatingPoint U>
+	constexpr auto Vector4D<Float>::dot(const Vector4D<U> v) const noexcept
 	{
 		return ((x * v.x) + (y * v.y) + (z * v.z) + (w * v.w));
 	}
@@ -572,8 +572,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	typename Vector4D<Type>::value_type Vector4D<Type>::length() const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector4D<Float>::value_type Vector4D<Float>::length() const noexcept
 	{
 		return std::sqrt((x * x) + (y * y) + (z * z) + (w * w));
 	}
@@ -584,8 +584,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::lengthSq() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::lengthSq() const noexcept
 	{
 		return ((x * x) + (y * y) + (z * z) + (w * w));
 	}
@@ -596,8 +596,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	typename Vector4D<Type>::value_type Vector4D<Type>::invLength() const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector4D<Float>::value_type Vector4D<Float>::invLength() const noexcept
 	{
 		return (static_cast<value_type>(1.0) / length());
 	}
@@ -608,8 +608,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::manhattanLength() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::manhattanLength() const noexcept
 	{
 		return (Abs(x) + Abs(y) + Abs(z) + Abs(w));
 	}
@@ -620,8 +620,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::manhattanDistanceFrom(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::manhattanDistanceFrom(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
 	{
 		const auto xMinMax = MinMax(x, _x);
 		const auto yMinMax = MinMax(y, _y);
@@ -633,8 +633,8 @@ namespace s3d
 			  + (wMinMax.second - wMinMax.first));
 	}
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::manhattanDistanceFrom(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::manhattanDistanceFrom(const Vector4D v) const noexcept
 	{
 		return manhattanDistanceFrom(v.x, v.y, v.z, v.w);
 	}
@@ -645,14 +645,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::manhattanDistanceTo(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::manhattanDistanceTo(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
 	{
 		return manhattanDistanceFrom(_x, _y, _z, _w);
 	}
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::manhattanDistanceTo(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::manhattanDistanceTo(const Vector4D v) const noexcept
 	{
 		return manhattanDistanceFrom(v.x, v.y, v.z, v.w);
 	}
@@ -663,14 +663,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	typename Vector4D<Type>::value_type Vector4D<Type>::distanceFrom(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector4D<Float>::value_type Vector4D<Float>::distanceFrom(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
 	{
 		return std::sqrt(distanceFromSq(_x, _y, _z, _w));
 	}
 
-	template <class Type>
-	typename Vector4D<Type>::value_type Vector4D<Type>::distanceFrom(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector4D<Float>::value_type Vector4D<Float>::distanceFrom(const Vector4D v) const noexcept
 	{
 		return std::sqrt(distanceFromSq(v.x, v.y, v.z, v.w));
 	}
@@ -681,8 +681,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::distanceFromSq(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::distanceFromSq(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
 	{
 		const value_type xx = (x - _x) * (x - _x);
 		const value_type yy = (y - _y) * (y - _y);
@@ -691,8 +691,8 @@ namespace s3d
 		return (xx + yy + zz + ww);
 	}
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::distanceFromSq(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::distanceFromSq(const Vector4D v) const noexcept
 	{
 		return distanceFromSq(v.x, v.y, v.z, v.w);
 	}
@@ -703,14 +703,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	typename Vector4D<Type>::value_type Vector4D<Type>::distanceTo(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector4D<Float>::value_type Vector4D<Float>::distanceTo(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
 	{
 		return distanceFrom(_x, _y, _z, _w);
 	}
 
-	template <class Type>
-	typename Vector4D<Type>::value_type Vector4D<Type>::distanceTo(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	typename Vector4D<Float>::value_type Vector4D<Float>::distanceTo(const Vector4D v) const noexcept
 	{
 		return distanceFrom(v.x, v.y, v.z, v.w);
 	}
@@ -721,14 +721,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::distanceToSq(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::distanceToSq(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
 	{
 		return distanceFromSq(_x, _y, _z, _w);
 	}
 
-	template <class Type>
-	constexpr typename Vector4D<Type>::value_type Vector4D<Type>::distanceToSq(const Vector4D v) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr typename Vector4D<Float>::value_type Vector4D<Float>::distanceToSq(const Vector4D v) const noexcept
 	{
 		return distanceFromSq(v.x, v.y, v.z, v.w);
 	}
@@ -739,8 +739,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector4D<Type> Vector4D<Type>::withLength(const value_type _length) const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector4D<Float> Vector4D<Float>::withLength(const value_type _length) const noexcept
 	{
 		if (const value_type len = length())
 		{
@@ -756,8 +756,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector4D<Type>& Vector4D<Type>::setLength(const value_type _length) noexcept
+	template <Concept::FloatingPoint Float>
+	Vector4D<Float>& Vector4D<Float>::setLength(const value_type _length) noexcept
 	{
 		if (const value_type len = length())
 		{
@@ -773,8 +773,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector4D<Type> Vector4D<Type>::withMaxLength(const value_type maxLength) const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector4D<Float> Vector4D<Float>::withMaxLength(const value_type maxLength) const noexcept
 	{
 		if (const value_type len = length();
 			maxLength < len)
@@ -791,8 +791,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector4D<Type>& Vector4D<Type>::setMaxLength(const value_type maxLength) noexcept
+	template <Concept::FloatingPoint Float>
+	Vector4D<Float>& Vector4D<Float>::setMaxLength(const value_type maxLength) noexcept
 	{
 		if (const value_type len = length();
 			maxLength < len)
@@ -809,8 +809,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector4D<Type> Vector4D<Type>::normalized() const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector4D<Float> Vector4D<Float>::normalized() const noexcept
 	{
 		const value_type lenSq = lengthSq();
 
@@ -829,8 +829,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector4D<Type> Vector4D<Type>::normalized_or(const Vector4D valueIfZero) const noexcept
+	template <Concept::FloatingPoint Float>
+	Vector4D<Float> Vector4D<Float>::normalized_or(const Vector4D valueIfZero) const noexcept
 	{
 		const value_type lenSq = lengthSq();
 
@@ -849,8 +849,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	Vector4D<Type>& Vector4D<Type>::normalize() noexcept
+	template <Concept::FloatingPoint Float>
+	Vector4D<Float>& Vector4D<Float>::normalize() noexcept
 	{
 		const value_type lenSq = lengthSq();
 
@@ -876,8 +876,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::getMidpoint(const Vector4D other) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::getMidpoint(const Vector4D other) const noexcept
 	{
 		constexpr value_type half(0.5);
 		return{ (x * half + other.x * half), (y * half + other.y * half), (z * half + other.z * half), (w * half + other.w * half) };
@@ -889,8 +889,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::lerp(const Vector4D other, const value_type f) const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::lerp(const Vector4D other, const value_type f) const noexcept
 	{
 		return{ (x + (other.x - x) * f), (y + (other.y - y) * f), (z + (other.z - z) * f), (w + (other.w - w) * f) };
 	}
@@ -901,8 +901,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	uint64 Vector4D<Type>::hash() const noexcept
+	template <Concept::FloatingPoint Float>
+	uint64 Vector4D<Float>::hash() const noexcept
 	{
 		return Hash(*this);
 	}
@@ -913,98 +913,98 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::xx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::xx() const noexcept
 	{
 		return{ x, x };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::xy() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::xy() const noexcept
 	{
 		return{ x, y };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::xz() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::xz() const noexcept
 	{
 		return{ x, z };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::xw() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::xw() const noexcept
 	{
 		return{ x, w };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::yx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::yx() const noexcept
 	{
 		return{ y, x };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::yy() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::yy() const noexcept
 	{
 		return{ y, y };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::yz() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::yz() const noexcept
 	{
 		return{ y, z };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::yw() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::yw() const noexcept
 	{
 		return{ y, w };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::zx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::zx() const noexcept
 	{
 		return{ z, x };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::zy() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::zy() const noexcept
 	{
 		return{ z, y };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::zz() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::zz() const noexcept
 	{
 		return{ z, z };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::zw() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::zw() const noexcept
 	{
 		return{ z, w };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::wx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::wx() const noexcept
 	{
 		return{ w, x };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::wy() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::wy() const noexcept
 	{
 		return{ w, y };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::wz() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::wz() const noexcept
 	{
 		return{ w, z };
 	}
 
-	template <class Type>
-	constexpr Vector2D<Type> Vector4D<Type>::ww() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector4D<Float>::ww() const noexcept
 	{
 		return{ w, w };
 	}
@@ -1015,56 +1015,56 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector4D<Type>::xxx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector4D<Float>::xxx() const noexcept
 	{
 		return{ x, x, x };
 	}
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector4D<Type>::xyz() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector4D<Float>::xyz() const noexcept
 	{
 		return{ x, y, z };
 	}
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector4D<Type>::yyy() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector4D<Float>::yyy() const noexcept
 	{
 		return{ y, y, y };
 	}
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector4D<Type>::yxz() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector4D<Float>::yxz() const noexcept
 	{
 		return{ y, x, z };
 	}
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector4D<Type>::yzw() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector4D<Float>::yzw() const noexcept
 	{
 		return{ y, z, w };
 	}
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector4D<Type>::zzz() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector4D<Float>::zzz() const noexcept
 	{
 		return{ z, z, z };
 	}
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector4D<Type>::zyx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector4D<Float>::zyx() const noexcept
 	{
 		return{ z, y, x };
 	}
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector4D<Type>::www() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector4D<Float>::www() const noexcept
 	{
 		return{ w, w, w };
 	}
 
-	template <class Type>
-	constexpr Vector3D<Type> Vector4D<Type>::wzy() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector4D<Float>::wzy() const noexcept
 	{
 		return{ w, z, y };
 	}
@@ -1075,14 +1075,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::xyz0() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::xyz0() const noexcept
 	{
 		return{ x, y, z, 0 };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::xyz1() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::xyz1() const noexcept
 	{
 		return{ x, y, z, 1 };
 	}
@@ -1093,38 +1093,38 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::xyzw() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::xyzw() const noexcept
 	{
 		return *this;
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::xxxx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::xxxx() const noexcept
 	{
 		return{ x, x, x, x };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::yyyy() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::yyyy() const noexcept
 	{
 		return{ y, y, y, y };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::zzzz() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::zzzz() const noexcept
 	{
 		return{ z, z, z, z };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::wwww() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::wwww() const noexcept
 	{
 		return{ w, w, w, w };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::wzyx() const noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::wzyx() const noexcept
 	{
 		return{ w, z, y, x };
 	}
@@ -1135,8 +1135,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::Zero() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::Zero() noexcept
 	{
 		return{ 0, 0, 0, 0 };
 	}
@@ -1147,8 +1147,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::One() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::One() noexcept
 	{
 		return{ 1, 1, 1, 1 };
 	}
@@ -1159,8 +1159,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::All(const value_type value) noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::All(const value_type value) noexcept
 	{
 		return{ value, value, value, value };
 	}
@@ -1171,26 +1171,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::UnitX() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::UnitX() noexcept
 	{
 		return{ 1, 0, 0, 0 };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::UnitY() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::UnitY() noexcept
 	{
 		return{ 0, 1, 0, 0 };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::UnitZ() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::UnitZ() noexcept
 	{
 		return{ 0, 0, 1, 0 };
 	}
 
-	template <class Type>
-	constexpr Vector4D<Type> Vector4D<Type>::UnitW() noexcept
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::UnitW() noexcept
 	{
 		return{ 0, 0, 0, 1 };
 	}

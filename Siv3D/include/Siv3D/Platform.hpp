@@ -342,13 +342,12 @@
 
 	# define SIV3D_LIFETIMEBOUND [[msvc::lifetimebound]]
 
-# elif SIV3D_COMPILER(CLANG)
+	# include <CppCoreCheck/Warnings.h>
+	# pragma warning(default: CPPCORECHECK_LIFETIME_WARNINGS)
+
+# elif (SIV3D_COMPILER(APPLECLANG) || SIV3D_COMPILER(CLANG))
 
 	# define SIV3D_LIFETIMEBOUND [[clang::lifetimebound]]
-
-# elif SIV3D_COMPILER(GCC)
-
-	# define SIV3D_LIFETIMEBOUND __attribute__((lifetimebound))
 
 # else
 

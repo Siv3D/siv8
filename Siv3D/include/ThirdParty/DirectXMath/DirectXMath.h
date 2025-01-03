@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------
 // DirectXMath.h -- SIMD C++ Math library
 //
 // Copyright (c) Microsoft Corporation.
@@ -13,7 +13,7 @@
 #error DirectX Math requires C++
 #endif
 
-#define DIRECTX_MATH_VERSION 319
+#define DIRECTX_MATH_VERSION 320
 
 #if defined(_MSC_VER) && (_MSC_VER < 1910)
 #error DirectX Math requires Visual C++ 2017 or later.
@@ -342,7 +342,7 @@ namespace DirectX
      *
      ****************************************************************************/
 
-#ifdef _MSC_VER    
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4201 4365 4324 4820)
      // C4068: ignore unknown pragmas
@@ -1739,7 +1739,7 @@ namespace DirectX
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
 // PermuteHelper internal template (SSE only)
-    namespace Internal
+    namespace MathInternal
     {
         // Slow path fallback for permutes that do not map to a single SSE shuffle opcode.
         template<uint32_t Shuffle, bool WhichX, bool WhichY, bool WhichZ, bool WhichW> struct PermuteHelper
@@ -1808,7 +1808,7 @@ namespace DirectX
         constexpr bool WhichZ = PermuteZ > 3;
         constexpr bool WhichW = PermuteW > 3;
 
-        return Internal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
+        return MathInternal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
 #else
 
         return XMVectorPermute(V1, V2, PermuteX, PermuteY, PermuteZ, PermuteW);
@@ -2160,7 +2160,7 @@ namespace DirectX
      *
      ****************************************************************************/
 
-#ifdef _MSC_VER    
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4214 4204 4365 4616 4640 6001 6101)
      // C4068/4616: ignore unknown pragmas
@@ -2168,7 +2168,7 @@ namespace DirectX
      // C4365/4640: Off by default noise
      // C6001/6101: False positives
 #endif
-    
+
 #ifdef _PREFAST_
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
@@ -2285,7 +2285,7 @@ namespace DirectX
 #ifdef _PREFAST_
 #pragma prefast(pop)
 #endif
-#ifdef _MSC_VER    
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 

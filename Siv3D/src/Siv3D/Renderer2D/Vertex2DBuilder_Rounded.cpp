@@ -1257,17 +1257,6 @@ namespace s3d
 				pVertex[newSize * 2 - 1].pos.set(result1);
 			}
 
-			if (offset)
-			{
-				const Float2 v = *offset;
-				Vertex2D* pDst = pVertex;
-
-				for (Vertex2D::IndexType i = 0; i < vertexSize; ++i)
-				{
-					(pDst++)->pos.moveBy(v);
-				}
-			}
-
 			for (size_t i = 0; i < vertexSize; ++i)
 			{
 				(pVertex++)->color = color;
@@ -1364,17 +1353,6 @@ namespace s3d
 				const Float4& color = cBuf[newSize - 1];
 				pVertex[newSize * 2 - 2].set(result0, color);
 				pVertex[newSize * 2 - 1].set(result1, color);
-			}
-
-			if (offset)
-			{
-				const Float2 v = *offset;
-				Vertex2D* pDst = pVertex;
-
-				for (Vertex2D::IndexType i = 0; i < vertexSize; ++i)
-				{
-					(pDst++)->pos.moveBy(v);
-				}
 			}
 
 			{

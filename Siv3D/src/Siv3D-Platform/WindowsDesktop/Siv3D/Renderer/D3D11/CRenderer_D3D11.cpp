@@ -12,6 +12,7 @@
 # include "CRenderer_D3D11.hpp"
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
+# include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
 # include <Siv3D/Renderer2D/D3D11/CRenderer2D_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -51,7 +52,8 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CRenderer_D3D11::init()");
 
-		m_pRenderer2D = static_cast<CRenderer2D_D3D11*>(SIV3D_ENGINE(Renderer2D));
+		m_pTexture		= static_cast<CTexture_D3D11*>(SIV3D_ENGINE(Texture));
+		m_pRenderer2D	= static_cast<CRenderer2D_D3D11*>(SIV3D_ENGINE(Renderer2D));
 
 		m_device.init();
 
@@ -65,6 +67,8 @@ namespace s3d
 		m_samplerState.init(m_device);
 		m_depthStencilState.init(m_device);
 		m_screenCapture.init(m_device);
+
+		m_pTexture->init();
 
 		m_device.getContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}

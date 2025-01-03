@@ -13,8 +13,6 @@
 # include <Siv3D/Optional.hpp>
 # include <Siv3D/ConstantBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
-# include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
-# include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Renderer2D/Renderer2DCommon.hpp>
 # include "MetalVertexBufferManager2D.hpp"
 # include "MetalRenderer2DCommandManager.hpp"
@@ -22,6 +20,9 @@
 namespace s3d
 {
 	enum class PatternType : uint8;
+	class CRenderer_Metal;
+	class CShader_Metal;
+	class CTexture_Metal;
 
 	class CRenderer2D_Metal final : public ISiv3DRenderer2D
 	{
@@ -223,6 +224,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addTextureRegion
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4& color) override;
+
+		void addTextureRegion(const Texture& texture, const FloatRect& rect, const FloatRect& uv, const Float4(&colors)[4]) override;
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	addQuadWarp
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color) override;
+
+		void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4(&colors)[4]) override;
+		
+		////////////////////////////////////////////////////////////////
+		//
 		//	flush
 		//
 		////////////////////////////////////////////////////////////////
@@ -361,6 +382,8 @@ namespace s3d
 		
 		CShader_Metal* m_pShader		= nullptr;
 
+		CTexture_Metal* m_pTexture		= nullptr;
+
 		MetalVertexBufferManager2D m_vertexBufferManager;
 
 		MetalRenderer2DCommandManager m_commandManager;
@@ -369,9 +392,15 @@ namespace s3d
 
 		struct EngineShader
 		{
-			VertexShader::IDType vs;
-
+			VertexShader::IDType vsShape;
+			
+			VertexShader::IDType vsQuadWarp;
+			
 			PixelShader::IDType psShape;
+
+			PixelShader::IDType psTexture;
+						
+			PixelShader::IDType psQuadWarp;
 			
 			PixelShader::IDType psLineDot;
 			
@@ -412,7 +441,7 @@ namespace s3d
 
 		ConstantBuffer<PSConstants2D> m_psConstants;
 
-		ConstantBuffer<PSPatternConstants2D> m_psPatternConstants;
+		ConstantBuffer<PSEffectConstants2D> m_psEffectConstants;
 		
 		Vertex2DBufferPointer createBuffer(uint16 vertexCount, uint32 indexCount);
 	};

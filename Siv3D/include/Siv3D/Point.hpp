@@ -108,9 +108,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Point operator +(Point p) const noexcept;
 
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Vector2D<Type> operator +(Vector2D<Type> v) const noexcept;
+		constexpr Vector2D<Float> operator +(Vector2D<Float> v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -124,9 +124,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Point operator -(Point p) const noexcept;
 
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Vector2D<Type> operator -(Vector2D<Type> v) const noexcept;
+		constexpr Vector2D<Float> operator -(Vector2D<Float> v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -146,9 +146,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Point operator *(Point p) const noexcept;
 
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Vector2D<Type> operator *(Vector2D<Type> v) const noexcept;
+		constexpr Vector2D<Float> operator *(Vector2D<Float> v) const noexcept;
 
 		[[nodiscard]]
 		friend constexpr Point operator *(int32 s, Point p) noexcept
@@ -186,9 +186,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Point operator /(Point p) const noexcept;
 
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Vector2D<Type> operator /(Vector2D<Type> v) const noexcept;
+		constexpr Vector2D<Float> operator /(Vector2D<Float> v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -276,15 +276,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 最大の成分を返します。
-		/// @remark Point{ 3, 2 } の場合、3 を返します。
-		/// @return 最大の成分
+		/// @brief 最小の成分を返します。
+		/// @remark Point{ 3, -2 } の場合、-2 を返します。
+		/// @return 最小の成分
 		[[nodiscard]]
 		constexpr value_type minComponent() const noexcept;
 
-		/// @brief 最小の成分を返します。
-		/// @remark Point{ 3, 2 } の場合、2 を返します。
-		/// @return 最小の成分
+		/// @brief 最大の成分を返します。
+		/// @remark Point{ 3, -4 } の場合、3 を返します。
+		/// @return 最大の成分
 		[[nodiscard]]
 		constexpr value_type maxComponent() const noexcept;
 
@@ -345,12 +345,12 @@ namespace s3d
 		constexpr Point movedBy(Point p) const noexcept;
 
 		/// @brief 現在の座標から移動した座標を返します。
-		/// @tparam Type 移動量を表す二次元ベクトルの要素の型
+		/// @tparam Float 移動量を表す二次元ベクトルの要素の型
 		/// @param v 移動量
 		/// @return 現在の座標から移動した座標
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Vector2D<Type> movedBy(Vector2D<Type> v) const noexcept;
+		constexpr Vector2D<Float> movedBy(Vector2D<Float> v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -376,12 +376,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 水平方向のアスペクト比を返します。
-		/// @tparam Type 戻り値の型
+		/// @tparam Float 戻り値の型
 		/// @remark Point{ 3, 2 } の場合、1.5 を返します。
 		/// @return 水平方向のアスペクト比
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Type horizontalAspectRatio() const noexcept;
+		constexpr Float horizontalAspectRatio() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -390,11 +390,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ベクトルの大きさ（長さ）を返します。
-		/// @tparam Type 結果の型
+		/// @tparam Float 結果の型
 		/// @return ベクトルの大きさ（長さ）
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		Type length() const noexcept;
+		Float length() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -403,12 +403,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ベクトルの大きさ（長さ）の二乗を返します。
-		/// @tparam Type 結果の型
+		/// @tparam Float 結果の型
 		/// @remark 平方根を計算しないため `length()` より高速です。
 		/// @return ベクトルの大きさ（長さ）の二乗
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Type lengthSq() const noexcept;
+		constexpr Float lengthSq() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -443,12 +443,13 @@ namespace s3d
 		constexpr int32 manhattanDistanceFrom(Point p) const noexcept;
 
 		/// @brief 別の座標からのマンハッタン距離を返します。
+		/// @tparam Float 別の座標の成分の型
 		/// @param p 別の座標
 		/// @return 別の座標からのマンハッタン距離
 		/// @remark `.manhattanDistanceTo(p)` と同じです。
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Type manhattanDistanceFrom(Vector2D<Type> p) const noexcept;
+		constexpr Float manhattanDistanceFrom(Vector2D<Float> p) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -472,12 +473,13 @@ namespace s3d
 		constexpr int32 manhattanDistanceTo(Point p) const noexcept;
 
 		/// @brief 別の座標へのマンハッタン距離を返します。
+		/// @tparam Float 別の座標の成分の型
 		/// @param p 別の座標
 		/// @return 別の座標へのマンハッタン距離
 		/// @remark `.manhattanDistanceFrom(p)` と同じです。
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Type manhattanDistanceTo(Vector2D<Type> p) const noexcept;
+		constexpr Float manhattanDistanceTo(Vector2D<Float> p) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -501,13 +503,13 @@ namespace s3d
 		double distanceFrom(Point p) const noexcept;
 
 		/// @brief 別の座標からの距離を返します。
-		/// @tparam Type 別の座標の成分の型
+		/// @tparam Float 別の座標の成分の型
 		/// @param p 別の座標
 		/// @return 別の座標からの距離
 		/// @remark `.distanceTo(p)` と同じです。
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		Type distanceFrom(Vector2D<Type> p) const noexcept;
+		Float distanceFrom(Vector2D<Float> p) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -533,14 +535,14 @@ namespace s3d
 		constexpr double distanceFromSq(Point p) const noexcept;
 
 		/// @brief 別の座標からの距離の二乗を返します。
-		/// @tparam Type 別の座標の成分の型
+		/// @tparam Float 別の座標の成分の型
 		/// @param p 別の座標
 		/// @return 別の座標からの距離の二乗
 		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
 		/// @remark `.distanceToSq(p)` と同じです。
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Type distanceFromSq(Vector2D<Type> p) const noexcept;
+		constexpr Float distanceFromSq(Vector2D<Float> p) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -564,13 +566,13 @@ namespace s3d
 		double distanceTo(Point p) const noexcept;
 
 		/// @brief 別の座標への距離を返します。
-		/// @tparam Type 別の座標の成分の型
+		/// @tparam Float 別の座標の成分の型
 		/// @param p 別の座標
 		/// @return 別の座標への距離
 		/// @remark `.distanceFrom(p)` と同じです。
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		Type distanceTo(Vector2D<Type> p) const noexcept;
+		Float distanceTo(Vector2D<Float> p) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -596,14 +598,14 @@ namespace s3d
 		constexpr double distanceToSq(Point p) const noexcept;
 
 		/// @brief 別の座標からの距離の二乗を返します。
-		/// @tparam Type 別の座標の成分の型
+		/// @tparam Float 別の座標の成分の型
 		/// @param p 別の座標
 		/// @return 別の座標への距離の二乗
 		/// @remark 平方根を計算しないため `distanceTo()` より高速です。
 		/// @remark `.distanceFromSq(p)` と同じです。
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Type distanceToSq(Vector2D<Type> p) const noexcept;
+		constexpr Float distanceToSq(Vector2D<Float> p) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -612,11 +614,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 幅 x, 高さ y の長方形の面積を返します。
+		/// @tparam Arithmetic 結果の型
 		/// @return 幅 x, 高さ y の長方形の面積
 		/// @remark `x * y` を返します。要素の符号によっては負の値を返すことがあります。
-		template <class Type = int64>
+		template <Concept::Arithmetic Arithmetic = int64>
 		[[nodiscard]]
-		constexpr Type area() const noexcept;
+		constexpr Arithmetic area() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -660,13 +663,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		Type getAngle() const noexcept;
+		Float getAngle() const noexcept;
 
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		Type getAngle(Vector2D<Type> other) const noexcept;
+		Float getAngle(Vector2D<Float> other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -691,20 +694,20 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 別の座標との中間にある座標を返します。
-		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @tparam Float 戻り値の二次元座標の要素の型
 		/// @param other 別の座標
 		/// @return 別の座標との中間にある座標
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Vector2D<Type> getMidpoint(Point other) const noexcept;
+		constexpr Vector2D<Float> getMidpoint(Point other) const noexcept;
 
 		/// @brief 別の座標との中間にある座標を返します。
-		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @tparam Float 戻り値の二次元座標の要素の型
 		/// @param other 別の座標
 		/// @return 別の座標との中間にある座標
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Vector2D<Type> getMidpoint(Vector2D<Type> other) const noexcept;
+		constexpr Vector2D<Float> getMidpoint(Vector2D<Float> other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -726,22 +729,22 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 別の座標との線形補間を返します。
-		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @tparam Float 戻り値の二次元座標の要素の型
 		/// @param other 別の座標
 		/// @param f 補間係数
 		/// @return 線形補間された座標
-		template <class Type = double>
+		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
-		constexpr Vector2D<Type> lerp(Point other, double f) const noexcept;
+		constexpr Vector2D<Float> lerp(Point other, double f) const noexcept;
 
 		/// @brief 別の座標との線形補間を返します。
-		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @tparam Float 戻り値の二次元座標の要素の型
 		/// @param other 別の座標
 		/// @param f 補間係数
 		/// @return 線形補間された座標
-		template <class Type>
+		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
-		constexpr Vector2D<Type> lerp(Vector2D<Type> other, double f) const noexcept;
+		constexpr Vector2D<Float> lerp(Vector2D<Float> other, double f) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

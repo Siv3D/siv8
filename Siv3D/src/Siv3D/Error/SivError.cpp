@@ -76,19 +76,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::ostream& operator <<(std::ostream& os, const Error& value)
+	std::ostream& operator <<(std::ostream& output, const Error& value)
 	{
-		return (os << '[' << value.type() << "] " << value.what());
+		return (output << '[' << value.type() << "] " << value.what());
 	}
 
-	std::wostream& operator <<(std::wostream& os, const Error& value)
+	std::wostream& operator <<(std::wostream& output, const Error& value)
 	{
-		return (os << L'[' << value.type() << L"] " << Unicode::ToWstring(value.what()));
+		return (output << L'[' << value.type() << L"] " << Unicode::ToWstring(value.what()));
 	}
 
-	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& os, const Error& value)
+	std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const Error& value)
 	{
-		return os << (U'[' + value.type() + U"] " + value.message());
+		return output << (U'[' + value.type() + U"] " + value.message());
 	}
 		
 	////////////////////////////////////////////////////////////////

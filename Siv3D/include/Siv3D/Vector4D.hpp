@@ -26,12 +26,12 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 4 次元のベクトル
-	/// @tparam Type ベクトルの要素の型
-	template <class Type>
+	/// @tparam Float ベクトルの要素の型
+	template <Concept::FloatingPoint Float>
 	struct Vector4D
 	{
 		/// @brief ベクトルの要素の型
-		using value_type = Type;
+		using value_type = Float;
 
 		/// @brief ベクトルの次元数
 		static constexpr size_t Dimension = 4;
@@ -77,7 +77,7 @@ namespace s3d
 		/// @brief 4 次元のベクトルをコピーして作成します。
 		/// @tparam U コピーするベクトルの要素の型
 		/// @param v コピーするベクトル
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr Vector4D(const Vector4D<U>& v) noexcept;
 
@@ -373,11 +373,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 最小の成分を返します。
+		/// @remark Vec4{ 3, -2, 0, 0 } の場合、-2 を返します。
 		/// @return 最小の成分
 		[[nodiscard]]
 		constexpr value_type minComponent() const noexcept;
 
 		/// @brief 最大の成分を返します。
+		/// @remark Vec4{ 3, -4, 0, 0 } の場合、3 を返します。
 		/// @return 最大の成分
 		[[nodiscard]]
 		constexpr value_type maxComponent() const noexcept;
@@ -529,7 +531,7 @@ namespace s3d
 		/// @tparam U もう一方のベクトルの要素の型
 		/// @param v もう一方のベクトル
 		/// @return 内積
-		template <class U>
+		template <Concept::FloatingPoint U>
 		[[nodiscard]]
 		constexpr auto dot(Vector4D<U> v) const noexcept;
 
@@ -1134,9 +1136,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ベクトルをフォーマットします。
-		/// @param formatData フォーマットデータ
+		/// @brief ベクトルを文字列に変換します。
+		/// @param formatData 文字列バッファ
 		/// @param value ベクトル
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Vector4D& value)
 		{
 			_Formatter(formatData, value);

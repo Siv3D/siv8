@@ -28,6 +28,7 @@
 # include <Siv3D/Mouse/IMouse.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
+# include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>

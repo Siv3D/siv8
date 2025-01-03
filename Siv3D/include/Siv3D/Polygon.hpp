@@ -885,14 +885,14 @@ namespace s3d
 		/// @return *this
 		const Polygon& draw(const ColorF& color = Palette::White) const;
 
-		/// @brief 多角形を移動して描画します。
-		/// @param x X 方向の移動量
-		/// @param y Y 方向の移動量
+		/// @brief 移動させた位置に多角形を描画します。
+		/// @param x X 座標のオフセット
+		/// @param y Y 座標のオフセット
 		/// @param color 色
 		void draw(double x, double y, const ColorF& color = Palette::White) const;
 
-		/// @brief 多角形を移動して描画します。
-		/// @param pos 移動量
+		/// @brief 移動させた位置に多角形を描画します。
+		/// @param pos 座標のオフセット
 		/// @param color 色
 		void draw(const Vec2& pos, const ColorF& color = Palette::White) const;
 
@@ -901,14 +901,14 @@ namespace s3d
 		/// @return *this
 		const Polygon& draw(const PatternParameters& pattern) const;
 
-		/// @brief 多角形を移動して描画します。
-		/// @param x X 方向の移動量
-		/// @param y Y 方向の移動量
+		/// @brief 移動させた位置に多角形を描画します。
+		/// @param x X 座標のオフセット
+		/// @param y Y 座標のオフセット
 		/// @param pattern 塗りつぶしパターン
 		void draw(double x, double y, const PatternParameters& pattern) const;
 
-		/// @brief 多角形を移動して描画します。
-		/// @param pos 移動量
+		/// @brief 移動させた位置に多角形を描画します。
+		/// @param pos 座標のオフセット
 		/// @param pattern 塗りつぶしパターン
 		void draw(const Vec2& pos, const PatternParameters& pattern) const;
 
@@ -943,14 +943,36 @@ namespace s3d
 		/// @return *this
 		const Polygon& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 移動させた位置に多角形の枠を描画します。
+		/// @param x X 座標のオフセット
+		/// @param y Y 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
 		void drawFrame(double x, double y, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 移動させた位置に多角形の枠を描画します。
+		/// @param pos 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
 		void drawFrame(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 多角形の枠を描画します。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Polygon& drawFrame(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 移動させた位置に多角形の枠を描画します。
+		/// @param x X 座標のオフセット
+		/// @param y Y 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
 		void drawFrame(double x, double y, double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 移動させた位置に多角形の枠を描画します。
+		/// @param pos 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
 		void drawFrame(const Vec2& pos, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -965,23 +987,36 @@ namespace s3d
 		/// @return *this
 		const Polygon& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		/// @brief 多角形をワイヤフレーム表示で描画します。
+		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
 		/// @param x X 座標のオフセット
 		/// @param y Y 座標のオフセット
 		/// @param thickness ワイヤフレームの太さ（ピクセル）
 		/// @param color 色
 		void drawWireframe(double x, double y, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		/// @brief 多角形をワイヤフレーム表示で描画します。
+		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
 		/// @param pos 座標のオフセット
 		/// @param thickness ワイヤフレームの太さ（ピクセル）
 		/// @param color 色
 		void drawWireframe(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 多角形をワイヤフレーム表示で描画します。
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
 		const Polygon& drawWireframe(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
+		/// @param x X 座標のオフセット
+		/// @param y Y 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
 		void drawWireframe(double x, double y, double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
+		/// @param pos 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
 		void drawWireframe(const Vec2& pos, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1008,6 +1043,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 頂点配列が多角形として有効かを検証します。
+		/// @param outer 外周の頂点配列（時計回り）
+		/// @param holes 多角形の穴の頂点配列（反時計回り）
+		/// @return 多角形として有効であれば `PolygonFailureType::OK`, それ以外の場合はエラーの種類
 		[[nodiscard]]
 		static PolygonFailureType Validate(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 
@@ -1017,7 +1056,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 頂点配列から多角形を生成します。
+		/// @brief 頂点配列を修正して多角形を生成します。
 		/// @param vertices 頂点配列
 		/// @param holes 多角形の穴
 		/// @return 頂点配列から生成した多角形の配列
@@ -1030,7 +1069,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 頂点配列から多角形を生成し、最も面積の大きい多角形を返します。
+		/// @brief 頂点配列を修正して多角形を生成し、最も面積の大きい多角形を返します。
 		/// @param vertices 頂点配列
 		/// @param holes 多角形の穴
 		/// @return 頂点配列から生成した多角形のうち、最も面積の大きい多角形
@@ -1052,6 +1091,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形を出力します。
+		/// @tparam CharType 出力ストリームの文字型
+		/// @param output 出力ストリーム
+		/// @param value 多角形
+		/// @return 出力ストリーム
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Polygon& value)
 		{
@@ -1064,6 +1108,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの多角形を入れ替えます。
+		/// @param lhs 一方の多角形
+		/// @param rhs もう一方の多角形
 		friend void swap(Polygon& lhs, Polygon& rhs) noexcept
 		{
 			lhs.swap(rhs);
@@ -1075,6 +1122,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value 多角形
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Polygon& value);
 
 	private:
