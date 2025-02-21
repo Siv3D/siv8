@@ -98,7 +98,7 @@ namespace s3d
 
 			auto& outer = polygon.outer();
 			{
-				outer.assign_range(outerVertices);
+				outer.assign(outerVertices.begin(), outerVertices.end());
 			}
 
 			return polygon;
@@ -277,7 +277,7 @@ namespace s3d
 
 		m_polygon		= std::move(polygon);
 
-		m_vertices.assign_range(outer);
+		m_vertices.assign(outer.begin(), outer.end());
 
 		m_boundingRect	= boundingRect;
 	}
