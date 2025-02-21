@@ -11,10 +11,13 @@
 
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/TexturedQuad.hpp>
+# include <Siv3D/TexturedRoundRect.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -64,13 +67,13 @@ namespace s3d
 	Texture::Texture(const Image& image, const TextureDesc desc)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image, desc))) }
 	{
-		//SIV3D_ENGINE(AssetMonitor)->created();
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
 	Texture::Texture(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image, mipmaps, desc))) }
 	{
-		//SIV3D_ENGINE(AssetMonitor)->created();
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
 	Texture::Texture(const FilePathView path, const TextureDesc desc)
@@ -286,9 +289,9 @@ namespace s3d
 	{
 		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
 
-		SIV3D_ENGINE(Renderer2D)->addTextureRegion(
+		SIV3D_ENGINE(Renderer2D)->addTexturedQuad(
 			*this,
-			FloatRect{ x, y, (x + size.x), (y + size.y) },
+			FloatQuad::FromRect(x, y, size.x, size.y),
 			FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f },
 			diffuse.toFloat4()
 		);
@@ -301,9 +304,9 @@ namespace s3d
 		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
 		const Float4 colors[4] = { topLeftColor.toFloat4(), topRightColor.toFloat4(), bottomRightColor.toFloat4(), bottomLeftColor.toFloat4() };
 
-		SIV3D_ENGINE(Renderer2D)->addTextureRegion(
+		SIV3D_ENGINE(Renderer2D)->addTexturedQuad(
 			*this,
-			FloatRect{ x, y, (x + size.x), (y + size.y) },
+			FloatQuad::FromRect(x, y, size.x, size.y),
 			FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f },
 			colors
 		);
@@ -910,9 +913,77 @@ namespace s3d
 		return fitted(size.x, size.y, allowUpscale);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotated
+	//
+	////////////////////////////////////////////////////////////////
 
+	TexturedQuad Texture::rotated(const double angle) const
+	{
+		const Size size = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
 
+		return{
+			*this,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			Rect{ size }.rotated(angle),
+			Float2{ (size.x * 0.5f), (size.y * 0.5f) }
+		};
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotatedAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedQuad Texture::rotatedAt(const double x, const double y, const double angle) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+
+		return{
+			*this,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			Rect{ baseSize }.rotatedAt(x, y, angle),
+			Float2{ x, y }
+		};
+	}
+
+	TexturedQuad Texture::rotatedAt(const Vec2& pos, const double angle) const
+	{
+		return rotatedAt(pos.x, pos.y, angle);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedRoundRect Texture::rounded(const double r) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		const double round = Min(Abs(r), (Min(baseSize.x, baseSize.y) * 0.5));
+
+		return{
+			*this,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			RoundRect{ 0, 0, baseSize, round }
+		};
+	}
+
+	TexturedRoundRect Texture::rounded(const double x, const double y, const double w, const double h, const double r) const
+	{
+		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
+		const double round = Min(Abs(r), (Min(w, h) * 0.5));
+
+		return{
+			*this,
+			static_cast<float>(x / baseSize.x), static_cast<float>(y / baseSize.y),
+			static_cast<float>((x + w) / baseSize.x), static_cast<float>((y + h) / baseSize.y),
+			RoundRect{ 0, 0, w, h, round }
+		};
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

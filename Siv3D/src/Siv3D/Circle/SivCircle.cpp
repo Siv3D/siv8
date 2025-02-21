@@ -18,6 +18,8 @@
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/TexturedCircle.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -656,6 +658,30 @@ namespace s3d
 		);
 
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ()
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedCircle Circle::operator ()(const Texture& texture) const
+	{
+		return{
+			texture,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			*this
+		};
+	}
+
+	TexturedCircle Circle::operator ()(const TextureRegion& textureRegion) const
+	{
+		return{
+			textureRegion.texture,
+			textureRegion.uvRect,
+			*this
+		};
 	}
 
 	////////////////////////////////////////////////////////////////

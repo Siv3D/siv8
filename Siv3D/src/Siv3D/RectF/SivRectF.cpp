@@ -16,6 +16,8 @@
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
+# include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/TexturedQuad.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -550,6 +552,32 @@ namespace s3d
 		}
 
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ()
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedQuad RectF::operator ()(const Texture& texture) const
+	{
+		return{
+			texture,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			asQuad(),
+			center()
+		};
+	}
+
+	TexturedQuad RectF::operator ()(const TextureRegion& textureRegion) const
+	{
+		return{
+			textureRegion.texture,
+			textureRegion.uvRect,
+			asQuad(),
+			center()
+		};
 	}
 
 	////////////////////////////////////////////////////////////////

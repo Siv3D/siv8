@@ -21,6 +21,7 @@ namespace s3d
 {
 	enum class LineCap : uint8;
 	struct PatternParameters;
+	struct TexturedCircle;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1103,11 +1104,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedCircle operator ()(const Texture& texture) const;
+		[[nodiscard]]
+		TexturedCircle operator ()(const Texture& texture) const;
 
-		//[[nodiscard]]
-		//TexturedCircle operator ()(const TextureRegion& textureRegion) const;
+		[[nodiscard]]
+		TexturedCircle operator ()(const TextureRegion& textureRegion) const;
 
 		////////////////////////////////////////////////////////////////
 		//

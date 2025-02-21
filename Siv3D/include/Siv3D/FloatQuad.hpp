@@ -47,6 +47,9 @@ namespace s3d
 
 		[[nodiscard]]
 		explicit constexpr FloatQuad(const FloatRect& rect) noexcept;
+
+		[[nodiscard]]
+		static constexpr FloatQuad FromRect(double x, double y, double w, double h) noexcept;
 	};
 }
 

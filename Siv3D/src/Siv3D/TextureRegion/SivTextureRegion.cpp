@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/TexturedQuad.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -173,9 +174,9 @@ namespace s3d
 
 	RectF TextureRegion::draw(const double x, const double y, const ColorF& diffuse) const
 	{
-		SIV3D_ENGINE(Renderer2D)->addTextureRegion(
+		SIV3D_ENGINE(Renderer2D)->addTexturedQuad(
 			texture,
-			FloatRect{ x, y, (x + size.x), (y + size.y) },
+			FloatQuad::FromRect(x, y, size.x, size.y),
 			uvRect,
 			diffuse.toFloat4()
 		);
@@ -187,9 +188,9 @@ namespace s3d
 	{
 		const Float4 colors[4] = { topLeftColor.toFloat4(), topRightColor.toFloat4(), bottomRightColor.toFloat4(), bottomLeftColor.toFloat4() };
 
-		SIV3D_ENGINE(Renderer2D)->addTextureRegion(
+		SIV3D_ENGINE(Renderer2D)->addTexturedQuad(
 			texture,
-			FloatRect{ x, y, (x + size.x), (y + size.y) },
+			FloatQuad::FromRect(x, y, size.x, size.y),
 			uvRect,
 			colors
 		);
@@ -617,9 +618,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextureRegion TextureRegion::fitted(const double size, const AllowUpscale allowUpscale) const
+	TextureRegion TextureRegion::fitted(const double _size, const AllowUpscale allowUpscale) const
 	{
-		return fitted(size, size, allowUpscale);
+		return fitted(_size, _size, allowUpscale);
 	}
 
 	TextureRegion TextureRegion::fitted(double width, double height, const AllowUpscale allowUpscale) const
@@ -649,10 +650,46 @@ namespace s3d
 		return{ texture, uvRect, targetWidth, targetHeight };
 	}
 
-	TextureRegion TextureRegion::fitted(const SizeF& size, const AllowUpscale allowUpscale) const
+	TextureRegion TextureRegion::fitted(const SizeF& _size, const AllowUpscale allowUpscale) const
 	{
-		return fitted(size.x, size.y, allowUpscale);
+		return fitted(_size.x, _size.y, allowUpscale);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedQuad TextureRegion::rotated(const double angle) const
+	{
+		return{ 
+			texture,
+			uvRect,
+			RectF{ size }.rotated(angle),
+			(size * 0.5f)
+		};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotatedAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedQuad TextureRegion::rotatedAt(const double x, const double y, const double angle) const
+	{
+		return{
+			texture,
+			uvRect,
+			RectF{ size }.rotatedAt(x, y, angle),
+			Float2{ x, y }
+		};
+	}
+
+	TexturedQuad TextureRegion::rotatedAt(const Vec2& pos, const double angle) const
+	{
+		return rotatedAt(pos.x, pos.y, angle);
+	}
 
 }

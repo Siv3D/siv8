@@ -977,8 +977,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedQuad rotated(double angle) const;
+		[[nodiscard]]
+		TexturedQuad rotated(double angle) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -986,11 +986,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedQuad rotatedAt(double x, double y, double angle) const;
+		[[nodiscard]]
+		TexturedQuad rotatedAt(double x, double y, double angle) const;
 
-		//[[nodiscard]]
-		//TexturedQuad rotatedAt(const Vec2& pos, double angle) const;
+		[[nodiscard]]
+		TexturedQuad rotatedAt(const Vec2& pos, double angle) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -998,16 +998,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedRoundRect rounded(double r) const;
+		[[nodiscard]]
+		TexturedRoundRect rounded(double r) const;
 
-	# if SIV3D_PLATFORM(WINDOWS)
+		[[nodiscard]]
+		TexturedRoundRect rounded(double x, double y, double w, double h, double r) const;
 
 		////////////////////////////////////////////////////////////////
 		//
 		//	getD3D11Texture2D
 		//
 		////////////////////////////////////////////////////////////////
+
+	# if SIV3D_PLATFORM(WINDOWS)
 
 		[[nodiscard]]
 		ID3D11Texture2D* getD3D11Texture2D();

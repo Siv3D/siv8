@@ -2492,6 +2492,16 @@
 		F9FD0D0F2D20436000A584CE /* RandomAngle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */; };
 		F9FD0D112D204FA000A584CE /* SampleBorderColor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */; };
 		F9FD0D142D204FBE00A584CE /* SivSampleBorderColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D122D204FBE00A584CE /* SivSampleBorderColor.cpp */; };
+		F9FD0D182D215DB300A584CE /* TexturedCircle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D152D215DB300A584CE /* TexturedCircle.hpp */; };
+		F9FD0D192D215DB300A584CE /* TexturedQuad.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D162D215DB300A584CE /* TexturedQuad.hpp */; };
+		F9FD0D1A2D215DB300A584CE /* TexturedRoundRect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D172D215DB300A584CE /* TexturedRoundRect.hpp */; };
+		F9FD0D212D215DE000A584CE /* SivTexturedRoundRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D1F2D215DE000A584CE /* SivTexturedRoundRect.cpp */; };
+		F9FD0D222D215DE000A584CE /* SivTexturedCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D1B2D215DE000A584CE /* SivTexturedCircle.cpp */; };
+		F9FD0D232D215DE000A584CE /* SivTexturedQuad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D1D2D215DE000A584CE /* SivTexturedQuad.cpp */; };
+		F9FD0D292D21693100A584CE /* IAssetMonitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D272D21693100A584CE /* IAssetMonitor.hpp */; };
+		F9FD0D2A2D21693100A584CE /* CAssetMonitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D252D21693100A584CE /* CAssetMonitor.hpp */; };
+		F9FD0D2B2D21693100A584CE /* CAssetMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D262D21693100A584CE /* CAssetMonitor.cpp */; };
+		F9FD0D2C2D21693100A584CE /* AssetMonitorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D242D21693100A584CE /* AssetMonitorFactory.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -5032,6 +5042,16 @@
 		F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomAngle.ipp; sourceTree = "<group>"; };
 		F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SampleBorderColor.hpp; sourceTree = "<group>"; };
 		F9FD0D122D204FBE00A584CE /* SivSampleBorderColor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSampleBorderColor.cpp; sourceTree = "<group>"; };
+		F9FD0D152D215DB300A584CE /* TexturedCircle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TexturedCircle.hpp; sourceTree = "<group>"; };
+		F9FD0D162D215DB300A584CE /* TexturedQuad.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TexturedQuad.hpp; sourceTree = "<group>"; };
+		F9FD0D172D215DB300A584CE /* TexturedRoundRect.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TexturedRoundRect.hpp; sourceTree = "<group>"; };
+		F9FD0D1B2D215DE000A584CE /* SivTexturedCircle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturedCircle.cpp; sourceTree = "<group>"; };
+		F9FD0D1D2D215DE000A584CE /* SivTexturedQuad.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturedQuad.cpp; sourceTree = "<group>"; };
+		F9FD0D1F2D215DE000A584CE /* SivTexturedRoundRect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturedRoundRect.cpp; sourceTree = "<group>"; };
+		F9FD0D242D21693100A584CE /* AssetMonitorFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AssetMonitorFactory.cpp; sourceTree = "<group>"; };
+		F9FD0D252D21693100A584CE /* CAssetMonitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CAssetMonitor.hpp; sourceTree = "<group>"; };
+		F9FD0D262D21693100A584CE /* CAssetMonitor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CAssetMonitor.cpp; sourceTree = "<group>"; };
+		F9FD0D272D21693100A584CE /* IAssetMonitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAssetMonitor.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -6060,8 +6080,11 @@
 				F9070C292B9F175000383E4D /* TextReader.hpp */,
 				F90DA0442D1A91850003E1E8 /* Texture.hpp */,
 				F980C4492C00E27800A86B68 /* TextureAddressMode.hpp */,
+				F9FD0D152D215DB300A584CE /* TexturedCircle.hpp */,
 				F90DA0452D1A91850003E1E8 /* TextureDesc.hpp */,
 				F90DA0462D1A91850003E1E8 /* TextureDescBuilder.hpp */,
+				F9FD0D162D215DB300A584CE /* TexturedQuad.hpp */,
+				F9FD0D172D215DB300A584CE /* TexturedRoundRect.hpp */,
 				F97202F62BEDF2D8000E21DD /* TextureFilter.hpp */,
 				F90DA0472D1A91850003E1E8 /* TextureFormat.hpp */,
 				F90DA0482D1A91850003E1E8 /* TexturePixelFormat.hpp */,
@@ -6632,6 +6655,7 @@
 			children = (
 				F9E794712C19B720002615BA /* Array */,
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
+				F9FD0D282D21693100A584CE /* AssetMonitor */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
 				F9528B4A2BB69EAD00222F45 /* BigFloat */,
 				F9070D1B2B9F175E00383E4D /* BigInt */,
@@ -6796,6 +6820,9 @@
 				F9070D8D2B9F175E00383E4D /* TextReader */,
 				F90DA0582D1A91D90003E1E8 /* Texture */,
 				F980C4512C00E2AE00A86B68 /* TextureAddressMode */,
+				F9FD0D1C2D215DE000A584CE /* TexturedCircle */,
+				F9FD0D1E2D215DE000A584CE /* TexturedQuad */,
+				F9FD0D202D215DE000A584CE /* TexturedRoundRect */,
 				F97203062BEDF2FF000E21DD /* TextureFilter */,
 				F90DA05A2D1A91D90003E1E8 /* TextureFormat */,
 				F9FD0B2E2D1D314A00A584CE /* TextureRegion */,
@@ -10652,6 +10679,41 @@
 			path = SampleBorderColor;
 			sourceTree = "<group>";
 		};
+		F9FD0D1C2D215DE000A584CE /* TexturedCircle */ = {
+			isa = PBXGroup;
+			children = (
+				F9FD0D1B2D215DE000A584CE /* SivTexturedCircle.cpp */,
+			);
+			path = TexturedCircle;
+			sourceTree = "<group>";
+		};
+		F9FD0D1E2D215DE000A584CE /* TexturedQuad */ = {
+			isa = PBXGroup;
+			children = (
+				F9FD0D1D2D215DE000A584CE /* SivTexturedQuad.cpp */,
+			);
+			path = TexturedQuad;
+			sourceTree = "<group>";
+		};
+		F9FD0D202D215DE000A584CE /* TexturedRoundRect */ = {
+			isa = PBXGroup;
+			children = (
+				F9FD0D1F2D215DE000A584CE /* SivTexturedRoundRect.cpp */,
+			);
+			path = TexturedRoundRect;
+			sourceTree = "<group>";
+		};
+		F9FD0D282D21693100A584CE /* AssetMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				F9FD0D242D21693100A584CE /* AssetMonitorFactory.cpp */,
+				F9FD0D252D21693100A584CE /* CAssetMonitor.hpp */,
+				F9FD0D262D21693100A584CE /* CAssetMonitor.cpp */,
+				F9FD0D272D21693100A584CE /* IAssetMonitor.hpp */,
+			);
+			path = AssetMonitor;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -11469,6 +11531,8 @@
 				F986003E2BCFBB53006A4C0F /* SkSerialProcs.h in Headers */,
 				F9070EEF2B9F1C8900383E4D /* platform.h in Headers */,
 				F98602F52BCFBB54006A4C0F /* SkBitmapProcState_opts.h in Headers */,
+				F9FD0D292D21693100A584CE /* IAssetMonitor.hpp in Headers */,
+				F9FD0D2A2D21693100A584CE /* CAssetMonitor.hpp in Headers */,
 				F98603DE2BCFBB54006A4C0F /* SkSLSPIRVCodeGenerator.h in Headers */,
 				F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */,
 				F9F00A402CC7F5FB0097C165 /* PolygonBuffer.hpp in Headers */,
@@ -12095,6 +12159,9 @@
 				F98603802BCFBB54006A4C0F /* SkOTTable_maxp_TT.h in Headers */,
 				F96F96072C359ED90033353E /* morton3D_LUTs.h in Headers */,
 				F986FA662BCFB53B006A4C0F /* ftrfork.h in Headers */,
+				F9FD0D182D215DB300A584CE /* TexturedCircle.hpp in Headers */,
+				F9FD0D192D215DB300A584CE /* TexturedQuad.hpp in Headers */,
+				F9FD0D1A2D215DB300A584CE /* TexturedRoundRect.hpp in Headers */,
 				F986F9C02BCA9D0A006A4C0F /* svgelement.h in Headers */,
 				F98600872BCFBB53006A4C0F /* SkTFitsIn.h in Headers */,
 				F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */,
@@ -12760,6 +12827,9 @@
 				F98600D72BCFBB53006A4C0F /* SkMathPriv.cpp in Sources */,
 				F9070DBA2B9F175E00383E4D /* SivConsoleBuffer.cpp in Sources */,
 				F986027D2BCFBB54006A4C0F /* SkStrokerPriv.cpp in Sources */,
+				F9FD0D212D215DE000A584CE /* SivTexturedRoundRect.cpp in Sources */,
+				F9FD0D222D215DE000A584CE /* SivTexturedCircle.cpp in Sources */,
+				F9FD0D232D215DE000A584CE /* SivTexturedQuad.cpp in Sources */,
 				F9FD0BB52D1DA6EA00A584CE /* SivMat3x3.cpp in Sources */,
 				F9070AEE2B9DEB5900383E4D /* int128.cc in Sources */,
 				F986022D2BCFBB54006A4C0F /* SkPtrRecorder.cpp in Sources */,
@@ -12956,6 +13026,8 @@
 				F98603162BCFBB54006A4C0F /* SkOpSpan.cpp in Sources */,
 				F986F9A02BCA9D0A006A4C0F /* defselement.cpp in Sources */,
 				F98602E82BCFBB54006A4C0F /* SkImage.cpp in Sources */,
+				F9FD0D2B2D21693100A584CE /* CAssetMonitor.cpp in Sources */,
+				F9FD0D2C2D21693100A584CE /* AssetMonitorFactory.cpp in Sources */,
 				F98605032BCFBC12006A4C0F /* SkImageGenerator_FromEncoded.cpp in Sources */,
 				F98603A62BCFBB54006A4C0F /* SkEmptyShader.cpp in Sources */,
 				F98601CF2BCFBB53006A4C0F /* SkImageFilterCache.cpp in Sources */,

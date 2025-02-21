@@ -11,12 +11,14 @@
 
 # include <Siv3D/Mat3x3.hpp>
 
+SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4127)
 # if __has_include(<opencv2/core.hpp>)
 #	include <opencv2/core.hpp>
 # endif
 # if  __has_include(<opencv2/imgproc.hpp>)
 #	include <opencv2/imgproc.hpp>
 # endif
+SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
 {

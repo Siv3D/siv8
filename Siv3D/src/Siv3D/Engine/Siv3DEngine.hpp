@@ -21,6 +21,7 @@ namespace s3d
 	class ISiv3DSystem;
 	class ISiv3DEngineResource;
 	class ISiv3DProfiler;
+	class ISiv3DAssetMonitor;
 	class ISiv3DUserAction;
 	class ISiv3DWindow;
 	class ISiv3DScene;
@@ -52,6 +53,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DSystem>,
 			Siv3DComponent<ISiv3DEngineResource>,
 			Siv3DComponent<ISiv3DProfiler>,
+			Siv3DComponent<ISiv3DAssetMonitor>,
 			Siv3DComponent<ISiv3DUserAction>,
 			Siv3DComponent<ISiv3DWindow>,
 			Siv3DComponent<ISiv3DScene>,

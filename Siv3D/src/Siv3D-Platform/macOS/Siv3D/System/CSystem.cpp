@@ -14,6 +14,7 @@
 # include <Siv3D/RegExp/IRegExp.hpp>
 # include <Siv3D/EngineResource/IEngineResource.hpp>
 # include <Siv3D/Profiler/IProfiler.hpp>
+# include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Scene/CScene.hpp>
@@ -69,7 +70,6 @@ namespace s3d
 		if (SIV3D_ENGINE(UserAction)->shouldTerminate())
 		{
 			m_shouldTerminate = true;
-			
 			return false;
 		}
 	
@@ -87,6 +87,13 @@ namespace s3d
 		//
 		
 		SIV3D_ENGINE(Profiler)->beginFrame();
+
+		if (not SIV3D_ENGINE(AssetMonitor)->update())
+		{
+			m_shouldTerminate = true;
+			return false;
+		}
+
 		SIV3D_ENGINE(Window)->update();
 		SIV3D_ENGINE(Scene)->update();
 		SIV3D_ENGINE(Renderer)->beginFrame();

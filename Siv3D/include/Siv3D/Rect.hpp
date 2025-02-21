@@ -21,6 +21,9 @@ namespace s3d
 	struct FormatData;
 	struct PatternParameters;
 	enum class LineType : uint8;
+	class Texture;
+	struct TextureRegion;
+	struct TexturedQuad;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1919,11 +1922,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedQuad operator ()(const Texture& texture) const;
+		[[nodiscard]]
+		TexturedQuad operator ()(const Texture& texture) const;
 
-		//[[nodiscard]]
-		//TexturedQuad operator ()(const TextureRegion& textureRegion) const;
+		[[nodiscard]]
+		TexturedQuad operator ()(const TextureRegion& textureRegion) const;
 
 		////////////////////////////////////////////////////////////////
 		//

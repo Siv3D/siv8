@@ -1409,6 +1409,9 @@
 
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/TexturedQuad.hpp>
+# include <Siv3D/TexturedCircle.hpp>
+# include <Siv3D/TexturedRoundRect.hpp>
 
 
 ////////////////////////////////////////////////////////////////

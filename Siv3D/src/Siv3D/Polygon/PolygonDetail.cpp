@@ -17,7 +17,10 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "PolygonDetail.hpp"
 # include "Triangulate.hpp"
+
+SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4127)
 # include <ThirdParty/boost/geometry/extensions/algorithms/dissolve.hpp>
+SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
 {
@@ -95,7 +98,7 @@ namespace s3d
 
 			auto& outer = polygon.outer();
 			{
-				outer.assign_range(outerVertices);
+				outer.assign(outerVertices.begin(), outerVertices.end());
 			}
 
 			return polygon;
@@ -274,7 +277,7 @@ namespace s3d
 
 		m_polygon		= std::move(polygon);
 
-		m_vertices.assign_range(outer);
+		m_vertices.assign(outer.begin(), outer.end());
 
 		m_boundingRect	= boundingRect;
 	}

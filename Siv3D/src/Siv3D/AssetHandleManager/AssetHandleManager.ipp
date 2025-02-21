@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
@@ -95,7 +97,7 @@ namespace s3d
 
 		m_data.erase(it);
 
-		//SIV3D_ENGINE(AssetMonitor)->released();
+		SIV3D_ENGINE(AssetMonitor)->reportAssetRelease();
 	}
 
 	template <class IDType, class Data>

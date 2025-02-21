@@ -35,12 +35,12 @@ namespace s3d
 
 		static void Error_Texture2D(const HRESULT hr)
 		{
-			LOG_FAIL(U"❌ D3D11Texture::D3D11Texture() : Failed to create Texture2D. [Error {:#X}]"_fmt(hr));
+			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture() : Failed to create Texture2D. [Error {:#X}]", hr));
 		}
 
 		static void Error_ShaderResourceView(const HRESULT hr)
 		{
-			LOG_FAIL(U"❌ D3D11Texture::D3D11Texture() : Failed to create ShaderResourceView. [Error {:#X}]"_fmt(hr));
+			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture() : Failed to create ShaderResourceView. [Error {:#X}]", hr));
 		}
 	}
 

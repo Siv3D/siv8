@@ -18,6 +18,8 @@
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/TexturedRoundRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -525,6 +527,30 @@ namespace s3d
 		);
 
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ()
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedRoundRect RoundRect::operator ()(const Texture& texture) const
+	{
+		return{
+			texture,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			*this
+		};
+	}
+
+	TexturedRoundRect RoundRect::operator ()(const TextureRegion& textureRegion) const
+	{
+		return{
+			textureRegion.texture,
+			textureRegion.uvRect,
+			*this
+		};
 	}
 
 	////////////////////////////////////////////////////////////////

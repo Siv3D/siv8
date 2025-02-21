@@ -33,40 +33,40 @@ namespace s3d
 		using container_type			= Array<Vec2>;
 
 		/// @brief 配列の要素の型
-		using value_type				= typename container_type::value_type;
+		using value_type				= container_type::value_type;
 
 		/// @brief 要素のポインタ型
-		using pointer					= typename container_type::pointer;
+		using pointer					= container_type::pointer;
 		
 		/// @brief 要素の const ポインタ型
-		using const_pointer				= typename container_type::const_pointer;
+		using const_pointer				= container_type::const_pointer;
 		
 		/// @brief 要素の参照型
-		using reference					= typename container_type::reference;
+		using reference					= container_type::reference;
 		
 		/// @brief 要素の const 参照型
-		using const_reference			= typename container_type::const_reference;
+		using const_reference			= container_type::const_reference;
 		
 		/// @brief イテレータ型
-		using iterator					= typename container_type::iterator;
+		using iterator					= container_type::iterator;
 		
 		/// @brief const イテレータ型
-		using const_iterator			= typename container_type::const_iterator;
+		using const_iterator			= container_type::const_iterator;
 		
 		/// @brief リバース・イテレータ型
-		using reverse_iterator			= typename container_type::reverse_iterator;
+		using reverse_iterator			= container_type::reverse_iterator;
 		
 		/// @brief const リバース・イテレータ型
-		using const_reverse_iterator	= typename container_type::const_reverse_iterator;
+		using const_reverse_iterator	= container_type::const_reverse_iterator;
 		
 		/// @brief 要素の個数を表現する型
-		using size_type					= typename container_type::size_type;
+		using size_type					= container_type::size_type;
 		
 		/// @brief 2 つの要素間の距離を表現する型
-		using difference_type			= typename container_type::difference_type;
+		using difference_type			= container_type::difference_type;
 		
 		/// @brief アロケータの型
-		using allocator_type			= typename container_type::allocator_type;
+		using allocator_type			= container_type::allocator_type;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -88,12 +88,12 @@ namespace s3d
 		[[nodiscard]]
 		LineString(LineString&& other) = default;
 
-		/// @brief std::vector からのコピーで点の配列を作成します。
+		/// @brief Array からのコピーで点の配列を作成します。
 		/// @param other コピーする配列
 		[[nodiscard]]
 		constexpr LineString(const container_type& other);
 
-		/// @brief std::vector からのムーブで点の配列を作成します。
+		/// @brief Array からのムーブで点の配列を作成します。
 		/// @param other ムーブする配列
 		[[nodiscard]]
 		constexpr LineString(container_type&& other);
