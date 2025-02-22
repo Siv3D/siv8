@@ -87,7 +87,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>::Array(const std::initializer_list<value_type> list, const Allocator& alloc)
 		: m_container(list, alloc) {}
 
-# ifdef __cpp_lib_containers_ranges
+# if __cpp_lib_containers_ranges >= 202202L
 	   
 	template <class Type, class Allocator>
 	template <Concept::ContainerCompatibleRange<Type> Range>
@@ -189,7 +189,12 @@ namespace s3d
 	template <Concept::ContainerCompatibleRange<Type> Range>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign_range(Range&& range)
 	{
+	# if __cpp_lib_containers_ranges >= 202202L
 		m_container.assign_range(std::forward<Range>(range));
+	# else
+		auto common_range = std::views::common(std::forward<Range>(range));
+		m_container.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
+	# endif
 		return *this;
 	}
 
@@ -647,6 +652,23 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	insert_range
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <Concept::ContainerCompatibleRange<Type> Range>
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert_range(const const_iterator pos, Range&& range) {
+	# if __cpp_lib_containers_ranges >= 202202L
+		return m_container.insert_range(pos, std::forward<Range>(range));
+	# else
+		auto common_range = std::views::common(std::forward<Range>(range));
+		return m_container.insert(pos, std::ranges::begin(common_range), std::ranges::end(common_range));
+	# endif
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	emplace
 	//
 	////////////////////////////////////////////////////////////////
@@ -668,7 +690,12 @@ namespace s3d
 	template <Concept::ContainerCompatibleRange<Type> Range>
 	constexpr void Array<Type, Allocator>::append_range(Range&& range)
 	{
+	# if __cpp_lib_containers_ranges >= 202202L
 		m_container.append_range(std::forward<Range>(range));
+	# else
+		auto common_range = std::views::common(std::forward<Range>(range));
+		m_container.insert(m_container.end(), std::ranges::begin(common_range), std::ranges::end(common_range));
+	# endif
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1976,7 +2003,7 @@ namespace s3d
 	template <class Range, class Elem>
 	constexpr Array<Elem> ToArray(Range&& range) requires Concept::ContainerCompatibleRange<Range, Elem>
 	{
-	# ifdef __cpp_lib_containers_ranges
+	# if __cpp_lib_containers_ranges >= 202202L
 	   
 		return Array<Elem>(std::from_range, std::forward<Range>(range));
 	
