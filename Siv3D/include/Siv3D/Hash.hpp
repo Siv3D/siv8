@@ -11,8 +11,10 @@
 
 # pragma once
 # include <memory> // std::addressof
+# include <span>
 # include "Types.hpp"
 # include "Concepts.hpp"
+# include "Byte.hpp"
 
 namespace s3d
 {
@@ -56,6 +58,27 @@ namespace s3d
 		/// @return ハッシュ値 | Hash value
 		[[nodiscard]]
 		uint64 Hash(const void* data, size_t size, uint64 seed, const Secret& secret) noexcept;
+
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
+		uint64 Hash(std::span<const Byte> data) noexcept;
+		
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @param seed シード値 | Seed value
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
+		uint64 Hash(std::span<const Byte> data, uint64 seed) noexcept;
+
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @param seed シード値 | Seed value
+		/// @param secret シークレット値 | Secret value
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
+		uint64 Hash(std::span<const Byte> data, uint64 seed, const Secret& secret) noexcept;
 
 		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
 		/// @param data 計算対象のデータ | Data to be calculated
@@ -106,6 +129,27 @@ namespace s3d
 		/// @param data 計算対象のデータ | Data to be calculated
 		/// @return ハッシュ値 | Hash value
 		[[nodiscard]]
+		uint64 Hash(std::span<const Byte> data) noexcept;
+
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @param seed シード値 | Seed value
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
+		uint64 Hash(std::span<const Byte> data, uint64 seed) noexcept;
+
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @param seed シード値 | Seed value
+		/// @param secret シークレット値 | Secret value
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
+		uint64 Hash(std::span<const Byte> data, uint64 seed, const Secret& secret) noexcept;
+
+		/// @brief ハッシュ値を計算します。 | Calculates a hash value.
+		/// @param data 計算対象のデータ | Data to be calculated
+		/// @return ハッシュ値 | Hash value
+		[[nodiscard]]
 		uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept;
 	}
 
@@ -117,5 +161,21 @@ namespace s3d
 	[[nodiscard]]
 	uint64 MixHash(uint64 a, uint64 b) noexcept;
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	std::hash
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct std::hash<s3d::Byte>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::Byte& value) const noexcept
+	{
+		return s3d::Hash(value);
+	}
+};
 
 # include "detail/Hash.ipp"

@@ -19,7 +19,7 @@ namespace s3d
 	constexpr std::pair<Scalar, Scalar> MinMax(Scalar a, Scalar b);
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-	constexpr std::pair<const Type&, const Type&> MinMax(const Type& a, const Type& b);
+	constexpr std::pair<const Type&, const Type&> MinMax(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND);
 }
 
 # include "detail/MinMax.ipp"

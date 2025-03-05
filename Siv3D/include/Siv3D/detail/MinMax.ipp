@@ -20,7 +20,7 @@ namespace s3d
 	}
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-	constexpr std::pair<const Type&, const Type&> MinMax(const Type& a, const Type& b)
+	constexpr std::pair<const Type&, const Type&> MinMax(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND)
 	{
 		return ((b < a) ? std::pair<const Type&, const Type&>{ b, a } : std::pair<const Type&, const Type&>{ a, b });
 	}

@@ -11,6 +11,7 @@
 
 # pragma once
 # include <stdexcept>
+# include <source_location>
 # include "StringView.hpp"
 
 namespace s3d
@@ -36,28 +37,27 @@ namespace s3d
 
 		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
 		/// @param message エラーメッセージ | Error message
+		/// @param location エラーの発生箇所 | Error location
 		[[nodiscard]]
-		explicit Error(const char* message);
+		explicit Error(const char* message, const std::source_location& location = std::source_location::current());
 
 		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
 		/// @param message エラーメッセージ | Error message
+		/// @param location エラーの発生箇所 | Error location
 		[[nodiscard]]
-		explicit Error(std::string_view message);
+		explicit Error(std::string_view message, const std::source_location& location = std::source_location::current());
 
 		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
 		/// @param message エラーメッセージ | Error message
+		/// @param location エラーの発生箇所 | Error location
 		[[nodiscard]]
-		explicit Error(const std::string& message);
+		explicit Error(const std::string& message, const std::source_location& location = std::source_location::current());
 
 		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
 		/// @param message エラーメッセージ | Error message
+		/// @param location エラーの発生箇所 | Error location
 		[[nodiscard]]
-		explicit Error(const char32* message);
-
-		/// @brief メッセージ付きのエラーを作成します。 | Creates an error with a message.
-		/// @param message エラーメッセージ | Error message
-		[[nodiscard]]
-		explicit Error(StringView message);
+		explicit Error(StringView message, const std::source_location& location = std::source_location::current());
 
 		explicit Error(std::nullptr_t) = delete;
 
@@ -104,6 +104,35 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	location
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief エラーの発生位置情報を返します。 | Returns the source location where the error occurred.
+		/// @return エラーの発生位置情報 | Source location information
+		[[nodiscard]]
+		const std::source_location& location() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	locationString
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		virtual String locationString() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	locationStringUTF8
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		virtual std::string locationStringUTF8() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	operator <<
 		//
 		////////////////////////////////////////////////////////////////
@@ -136,5 +165,7 @@ namespace s3d
 
 		[[nodiscard]]
 		const char* what() const noexcept override;
+
+		std::source_location m_sourceLocation;
 	};
 }

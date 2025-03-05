@@ -42,6 +42,21 @@ namespace s3d
 		{
 			return ::rapidhash_internal(data, size, seed, secret);
 		}
+
+		uint64 Hash(const std::span<const Byte> data) noexcept
+		{
+			return ::rapidhash_internal(data.data(), data.size_bytes(), DefaultSeed, rapid_secret);
+		}
+
+		uint64 Hash(const std::span<const Byte> data, const uint64 seed) noexcept
+		{
+			return ::rapidhash_internal(data.data(), data.size_bytes(), seed, rapid_secret);
+		}
+
+		uint64 Hash(const std::span<const Byte> data, const uint64 seed, const Secret& secret) noexcept
+		{
+			return ::rapidhash_internal(data.data(), data.size_bytes(), seed, secret);
+		}
 	}
 
 	inline namespace xxHash3
@@ -65,6 +80,21 @@ namespace s3d
 		uint64 Hash(const void* data, const size_t size, const uint64 seed, const Secret& secret) noexcept
 		{
 			return SIV3D_XXH3_64bits_withSecretandSeed(data, size, secret, sizeof(secret), seed);
+		}
+
+		uint64 Hash(const std::span<const Byte> data) noexcept
+		{
+			return SIV3D_XXH3_64bits(data.data(), data.size_bytes());
+		}
+
+		uint64 Hash(const std::span<const Byte> data, const uint64 seed) noexcept
+		{
+			return SIV3D_XXH3_64bits_withSeed(data.data(), data.size_bytes(), seed);
+		}
+
+		uint64 Hash(const std::span<const Byte> data, const uint64 seed, const Secret& secret) noexcept
+		{
+			return SIV3D_XXH3_64bits_withSecretandSeed(data.data(), data.size_bytes(), secret, sizeof(secret), seed);
 		}
 	}
 
