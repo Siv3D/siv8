@@ -237,6 +237,43 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	IsHiragana
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief ひらがなであるかを返します。 | Returns whether the character is a hiragana character.
+	/// @param ch 文字 | Character
+	/// @return ひらがなである場合 true, それ以外の場合は false | If the character is a hiragana character, true, otherwise false
+	[[nodiscard]]
+	constexpr bool IsHiragana(char32 ch) noexcept;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsKatakana
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief カタカナであるかを返します。 | Returns whether the character is a katakana character.
+	/// @param ch 文字 | Character
+	/// @return カタカナである場合 true, それ以外の場合は false | If the character is a katakana character, true, otherwise false
+	[[nodiscard]]
+	constexpr bool IsKatakana(char32 ch) noexcept;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsCJKUnifiedIdeograph
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief CJK 統合漢字であるかを返します。 | Returns whether the character is a CJK Unified Ideograph.
+	/// @param ch 文字 | Character
+	/// @return CJK 統合漢字である場合 true, それ以外の場合は false | If the character is a CJK Unified Ideograph, true, otherwise false
+	/// @remark CJK 統合漢字および CJK 統合漢字拡張 A～E を含みます。 | Includes CJK Unified Ideographs and CJK Unified Ideographs Extension A to E.
+	[[nodiscard]]
+	constexpr bool IsCJKUnifiedIdeograph(char32 ch) noexcept;
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	CaseInsensitiveCompare
 	//
 	////////////////////////////////////////////////////////////////

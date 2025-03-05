@@ -109,7 +109,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool ParseBool(const std::string_view s, [[maybe_unsed]] const std::source_location& location)
+	bool ParseBool(const std::string_view s, [[maybe_unused]] const std::source_location& location)
 	{
 		if (const auto reason = ParseBoolWithReason(s))
 		{
@@ -125,7 +125,7 @@ namespace s3d
 		}
 	}
 
-	bool ParseBool(const StringView s, [[maybe_unsed]] const std::source_location& location)
+	bool ParseBool(const StringView s, [[maybe_unused]] const std::source_location& location)
 	{
 		if (const auto reason = ParseBoolWithReason(s))
 		{

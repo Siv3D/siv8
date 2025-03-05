@@ -119,6 +119,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief エラーの発生位置情報を文字列で返します。 | Returns the source location where the error occurred as a string.
+		/// @return エラーの発生位置情報 | Source location information
 		[[nodiscard]]
 		virtual String locationString() const noexcept;
 
@@ -128,6 +130,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief エラーの発生位置情報を UTF-8 文字列で返します。 | Returns the source location where the error occurred as a UTF-8 string.
+		/// @return エラーの発生位置情報 | Source location information
 		[[nodiscard]]
 		virtual std::string locationStringUTF8() const noexcept;
 
@@ -137,10 +141,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief エラーを出力します。 | Outputs the error.
+		/// @param output 出力先 | Output destination
+		/// @param value エラー | Error
+		/// @return 出力先 | Output destination
 		friend std::ostream& operator <<(std::ostream& output, const Error& value);
 
+		/// @brief エラーを出力します。 | Outputs the error.
+		/// @param output 出力先 | Output destination
+		/// @param value エラー | Error
+		/// @return 出力先 | Output destination
 		friend std::wostream& operator <<(std::wostream& output, const Error& value);
 
+		/// @brief エラーを出力します。 | Outputs the error.
+		/// @param output 出力先 | Output destination
+		/// @param value エラー | Error
+		/// @return 出力先 | Output destination
 		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const Error& value);
 
 		////////////////////////////////////////////////////////////////
@@ -163,6 +179,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief エラーメッセージを返します。 | Returns the error message.
+		/// @return エラーメッセージ | The error message
 		[[nodiscard]]
 		const char* what() const noexcept override;
 
