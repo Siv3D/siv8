@@ -44,9 +44,9 @@ namespace s3d
 		/// @brief 長方形の配列から詰め込み結果を作成します。
 		/// @param rects 長方形の配列
 		/// @param maxSide 詰め込み先の長方形の長辺の最大サイズ（ピクセル）
-		/// @param allowFlip 詰め込む長方形の 90° 回転を許可するか
+		/// @param allowRotation 詰め込む長方形の 90° 回転を許可するか
 		[[nodiscard]]
-		static RectanglePack Pack(const Array<Rect>& rects, int32 maxSide, AllowFlip allowFlip) noexcept;
+		static RectanglePack Pack(const Array<Rect>& rects, int32 maxSide, AllowRotation allowRotation) noexcept;
 	};
 }
 

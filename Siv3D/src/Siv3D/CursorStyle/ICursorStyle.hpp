@@ -35,7 +35,7 @@ namespace s3d
 
 		virtual void setDefaultStyle(CursorStyle style) = 0;
 
-		virtual bool registerCustomStyle(StringView name, const Image& image, Point hotSpot, AlphaPremultiplied alphaPremultiplied) = 0;
+		virtual bool registerCustomStyle(StringView name, const Image& image, Point hotSpot, IsAlphaPremultiplied isAlphaPremultiplied) = 0;
 
 		virtual void unregisterCustomStyle(StringView name) = 0;
 

@@ -23,11 +23,11 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static GLFWcursor* CreateCursor(const Image& image, const Point hotSpot, const AlphaPremultiplied alphaPremultiplied)
+		static GLFWcursor* CreateCursor(const Image& image, const Point hotSpot, const IsAlphaPremultiplied isAlphaPremultiplied)
 		{
 			Image pixels = image.cloned();
 
-			if (alphaPremultiplied)
+			if (isAlphaPremultiplied)
 			{
 				for (auto& pixel : pixels)
 				{
@@ -77,7 +77,7 @@ namespace s3d
 		m_systemCursors[FromEnum(CursorStyle::ResizeNWSE)]		= ::glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
 		m_systemCursors[FromEnum(CursorStyle::ResizeNESW)]		= ::glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
 		m_systemCursors[FromEnum(CursorStyle::ResizeAll)]		= ::glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR);
-		m_systemCursors[FromEnum(CursorStyle::Hidden)]			= CreateCursor(Image{ 16, 16, Color{ 0, 0 } }, Point::Zero(), AlphaPremultiplied::No);
+		m_systemCursors[FromEnum(CursorStyle::Hidden)]			= CreateCursor(Image{ 16, 16, Color{ 0, 0 } }, Point::Zero(), IsAlphaPremultiplied::No);
 
 		m_currentCursor		= m_systemCursors[FromEnum(CursorStyle::Arrow)];
 		m_defaultCursor		= m_currentCursor;
@@ -123,7 +123,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CCursorStyle::registerCustomStyle(const StringView name, const Image& image, const Point hotSpot, const AlphaPremultiplied alphaPremultiplied)
+	bool CCursorStyle::registerCustomStyle(const StringView name, const Image& image, const Point hotSpot, const IsAlphaPremultiplied isAlphaPremultiplied)
 	{
 		if (m_customCursors.contains(name))
 		{
@@ -131,7 +131,7 @@ namespace s3d
 			return false;
 		}
 
-		if (GLFWcursor* cursor = CreateCursor(image, hotSpot, alphaPremultiplied))
+		if (GLFWcursor* cursor = CreateCursor(image, hotSpot, isAlphaPremultiplied))
 		{
 			m_customCursors.emplace(name, UniqueResource{ cursor, CursorDeleter });
 			return true;

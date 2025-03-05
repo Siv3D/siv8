@@ -58,13 +58,13 @@
 # include <Siv3D/YesNo.hpp>
 
 // 定義済み Yes/No タグ | Predefined Yes/No tag
-# include <Siv3D/PredefinedYesNo.hpp> // ToDo
+# include <Siv3D/PredefinedYesNo.hpp>
 
 // 名前付き引数 | Named parameter
 # include <Siv3D/NamedParameter.hpp>
 
 // 定義済み名前付き引数 | Predefined named parameter
-# include <Siv3D/PredefinedNamedParameter.hpp> // ToDo
+# include <Siv3D/PredefinedNamedParameter.hpp>
 
 // ユーティリティー | Utilities
 # include <Siv3D/Utility.hpp>

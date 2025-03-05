@@ -33,7 +33,7 @@ namespace s3d
 
 		void setDefaultStyle(CursorStyle style) override;
 
-		bool registerCustomStyle(StringView name, const Image& image, Point hotSpot, AlphaPremultiplied alphaPremultiplied) override;
+		bool registerCustomStyle(StringView name, const Image& image, Point hotSpot, IsAlphaPremultiplied isAlphaPremultiplied) override;
 
 		void unregisterCustomStyle(StringView name) override;
 

@@ -86,9 +86,9 @@ namespace s3d
 		/// @param name カスタムマウスカーソルの名前
 		/// @param image カスタムマウスカーソルの画像
 		/// @param hotSpot 画像中のクリック位置
-		/// @param alphaPremultiplied 画像がアルファ乗算済みの場合は `AlphaPremultiplied::Yes`, それ以外の場合は `AlphaPremultiplied::No`
+		/// @param isAlphaPremultiplied 画像がアルファ乗算済みの場合は `IsAlphaPremultiplied::Yes`, それ以外の場合は `IsAlphaPremultiplied::No`
 		/// @return カスタムのマウスカーソルの登録に成功した場合 true, それ以外の場合は false
-		bool Register(StringView name, const Image& image, Point hotSpot = Point{ 0, 0 }, AlphaPremultiplied alphaPremultiplied = AlphaPremultiplied::Yes);
+		bool Register(StringView name, const Image& image, Point hotSpot = Point{ 0, 0 }, IsAlphaPremultiplied isAlphaPremultiplied = IsAlphaPremultiplied::Yes);
 
 		////////////////////////////////////////////////////////////////
 		//

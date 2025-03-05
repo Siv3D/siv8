@@ -87,14 +87,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String ThousandSeparate(const float value, const int32 decimalPlace, const Fixed fixed, const char32 separator)
+	String ThousandSeparate(const float value, const int32 decimalPlace, const FixDecimalPlace fixDecimalPlace, const char32 separator)
 	{
-		return detail::ThousandsSeparateFloat(fixed ? ToFixed(value, decimalPlace) : ToString(value, decimalPlace), separator);
+		return detail::ThousandsSeparateFloat(fixDecimalPlace ? ToFixed(value, decimalPlace) : ToString(value, decimalPlace), separator);
 	}
 
-	String ThousandSeparate(const double value, const int32 decimalPlace, const Fixed fixed, const char32 separator)
+	String ThousandSeparate(const double value, const int32 decimalPlace, const FixDecimalPlace fixDecimalPlace, const char32 separator)
 	{
-		return detail::ThousandsSeparateFloat(fixed ? ToFixed(value, decimalPlace) : ToString(value, decimalPlace), separator);
+		return detail::ThousandsSeparateFloat(fixDecimalPlace ? ToFixed(value, decimalPlace) : ToString(value, decimalPlace), separator);
 	}
 
 	String ThousandSeparate(const int128& value, const char32 separator)

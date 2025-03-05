@@ -96,7 +96,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CCursorStyle::registerCustomStyle(const StringView name, const Image& image, const Point hotSpot, const AlphaPremultiplied alphaPremultiplied)
+	bool CCursorStyle::registerCustomStyle(const StringView name, const Image& image, const Point hotSpot, const IsAlphaPremultiplied isAlphaPremultiplied)
 	{
 		if (m_customCursors.contains(name))
 		{
@@ -142,7 +142,7 @@ namespace s3d
 			uint8* pDst = static_cast<uint8*>(pData);
 			const Color* pSrc = image.data();
 			
-			if (alphaPremultiplied)
+			if (isAlphaPremultiplied)
 			{
 				for (size_t i = 0; i < image.num_pixels(); ++i)
 				{

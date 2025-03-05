@@ -34,9 +34,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Register(const StringView name, const Image& image, const Point hotSpot, const AlphaPremultiplied alphaPremultiplied)
+		bool Register(const StringView name, const Image& image, const Point hotSpot, const IsAlphaPremultiplied isAlphaPremultiplied)
 		{
-			return SIV3D_ENGINE(CursorStyle)->registerCustomStyle(name, image, hotSpot, alphaPremultiplied);
+			return SIV3D_ENGINE(CursorStyle)->registerCustomStyle(name, image, hotSpot, isAlphaPremultiplied);
 		}
 
 		////////////////////////////////////////////////////////////////
