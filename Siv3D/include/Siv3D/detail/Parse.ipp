@@ -17,6 +17,9 @@ namespace s3d
 	{
 		[[noreturn]]
 		void ThrowParseError(const char* type, std::string_view s);
+
+		[[noreturn]]
+		void ThrowParseError(const char* type, std::string_view s, const std::source_location& location);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -26,19 +29,19 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	Type Parse(const std::string_view s)
+	Type Parse(const std::string_view s, [[maybe_unused]] const std::source_location& location)
 	{
 		if constexpr (std::is_same_v<Type, bool>)
 		{
-			return ParseBool(s);
+			return ParseBool(s, location);
 		}
 		else if constexpr (Concept::Integral<Type>)
 		{
-			return ParseInt<Type>(s);
+			return ParseInt<Type>(s, 10, location);
 		}
 		else if constexpr (Concept::FloatingPoint<Type>)
 		{
-			return ParseFloat<Type>(s);
+			return ParseFloat<Type>(s, location);
 		}
 		else
 		{
@@ -46,7 +49,11 @@ namespace s3d
 
 			if (not(std::istringstream{ std::string{ s } } >> to))
 			{
+			# if SIV3D_BUILD(DEBUG)
+				detail::ThrowParseError(typeid(Type).name(), s, location);
+			# else
 				detail::ThrowParseError(typeid(Type).name(), s);
+			# endif
 			}
 
 			return to;
@@ -54,19 +61,19 @@ namespace s3d
 	}
 
 	template <class Type>
-	Type Parse(const StringView s)
+	Type Parse(const StringView s, [[maybe_unused]] const std::source_location& location)
 	{
 		if constexpr (std::is_same_v<Type, bool>)
 		{
-			return ParseBool(s);
+			return ParseBool(s, location);
 		}
 		else if constexpr (Concept::Integral<Type>)
 		{
-			return ParseInt<Type>(s);
+			return ParseInt<Type>(s, 10, location);
 		}
 		else if constexpr (Concept::FloatingPoint<Type>)
 		{
-			return ParseFloat<Type>(s);
+			return ParseFloat<Type>(s, location);
 		}
 		else
 		{
@@ -76,7 +83,11 @@ namespace s3d
 
 			if (not(std::istringstream{ utf8 } >> to))
 			{
+			# if SIV3D_BUILD(DEBUG)
+				detail::ThrowParseError(typeid(Type).name(), utf8, location);
+			# else
 				detail::ThrowParseError(typeid(Type).name(), utf8);
+			# endif
 			}
 
 			return to;

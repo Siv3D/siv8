@@ -33,9 +33,28 @@ namespace s3d
 		}
 
 		[[noreturn]]
+		static void ThrowParseFloatError(const std::string_view s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			if (reason == ParseErrorReason::EmptyInput)
+			{
+				throw ParseError{ "ParseFloat(): Empty input", location };
+			}
+			else
+			{
+				throw ParseError{ fmt::format("ParseFloat(): Failed to parse `{}`", s), location };
+			}
+		}
+
+		[[noreturn]]
 		static void ThrowParseFloatError(const StringView s, const ParseErrorReason reason)
 		{
 			ThrowParseFloatError(Unicode::ToUTF8(s), reason);
+		}
+
+		[[noreturn]]
+		static void ThrowParseFloatError(const StringView s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			ThrowParseFloatError(Unicode::ToUTF8(s), reason, location);
 		}
 
 		template <Concept::FloatingPoint Float, class SV>
@@ -70,7 +89,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <>
-	float ParseFloat<float>(const std::string_view s)
+	float ParseFloat<float>(const std::string_view s, [[maybe_unused]] const std::source_location& location)
 	{
 		if (const auto result = ParseFloatWithReason<float>(s))
 		{
@@ -78,12 +97,16 @@ namespace s3d
 		}
 		else
 		{
+		# if SIV3D_BUILD(DEBUG)
+			ThrowParseFloatError(s, result.error(), location);
+		# else
 			ThrowParseFloatError(s, result.error());
+		# endif
 		}
 	}
 
 	template <>
-	double ParseFloat<double>(const std::string_view s)
+	double ParseFloat<double>(const std::string_view s, [[maybe_unused]] const std::source_location& location)
 	{
 		if (const auto result = ParseFloatWithReason<double>(s))
 		{
@@ -91,12 +114,16 @@ namespace s3d
 		}
 		else
 		{
+		# if SIV3D_BUILD(DEBUG)
+			ThrowParseFloatError(s, result.error(), location);
+		# else
 			ThrowParseFloatError(s, result.error());
+		# endif
 		}
 	}
 
 	template <>
-	float ParseFloat(const StringView s)
+	float ParseFloat(const StringView s, [[maybe_unused]] const std::source_location& location)
 	{
 		if (const auto result = ParseFloatWithReason<float>(s))
 		{
@@ -104,12 +131,16 @@ namespace s3d
 		}
 		else
 		{
+		# if SIV3D_BUILD(DEBUG)
+			ThrowParseFloatError(s, result.error(), location);
+		# else
 			ThrowParseFloatError(s, result.error());
+		# endif
 		}
 	}
 
 	template <>
-	double ParseFloat(const StringView s)
+	double ParseFloat(const StringView s, [[maybe_unused]] const std::source_location& location)
 	{
 		if (const auto result = ParseFloatWithReason<double>(s))
 		{
@@ -117,7 +148,11 @@ namespace s3d
 		}
 		else
 		{
+		# if SIV3D_BUILD(DEBUG)
+			ThrowParseFloatError(s, result.error(), location);
+		# else
 			ThrowParseFloatError(s, result.error());
+		# endif
 		}
 	}
 

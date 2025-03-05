@@ -11,6 +11,7 @@
 
 # pragma once
 # include <sstream>
+# include <source_location>
 # include "Common.hpp"
 # include "Error.hpp"
 # include "Unicode.hpp"
@@ -28,20 +29,22 @@ namespace s3d
 	/// @brief 文字列から Type 型の値をパースします。 | Parses a string into a value of type Type.
 	/// @tparam Type パースする値の型 | Type of the value to parse
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @throws ParseError パースに失敗した場合 | If parsing fails
 	/// @return パースによって得られた値 | The value obtained by parsing
 	template <class Type>
 	[[nodiscard]]
-	Type Parse(std::string_view s);
+	Type Parse(std::string_view s, const std::source_location& location = std::source_location::current());
 
 	/// @brief 文字列から Type 型の値をパースします。 | Parses a string into a value of type Type.
 	/// @tparam Type パースする値の型 | Type of the value to parse
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @throws ParseError パースに失敗した場合 | If parsing fails
 	/// @return パースによって得られた値 | The value obtained by parsing
 	template <class Type>
 	[[nodiscard]]
-	Type Parse(StringView s);
+	Type Parse(StringView s, const std::source_location& location = std::source_location::current());
 
 	////////////////////////////////////////////////////////////////
 	//

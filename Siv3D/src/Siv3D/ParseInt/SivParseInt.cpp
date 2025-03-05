@@ -33,9 +33,28 @@ namespace s3d
 		}
 
 		[[noreturn]]
+		void ThrowParseIntError(const std::string_view s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			if (reason == ParseErrorReason::EmptyInput)
+			{
+				throw ParseError{ "ParseInt(): Empty input", location };
+			}
+			else
+			{
+				throw ParseError{ fmt::format("ParseInt(): Failed to parse `{}`", s), location };
+			}
+		}
+
+		[[noreturn]]
 		void ThrowParseIntError(const StringView s, const ParseErrorReason reason)
 		{
 			ThrowParseIntError(Unicode::ToUTF8(s), reason);
+		}
+
+		[[noreturn]]
+		void ThrowParseIntError(const StringView s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			ThrowParseIntError(Unicode::ToUTF8(s), reason, location);
 		}
 	}
 
