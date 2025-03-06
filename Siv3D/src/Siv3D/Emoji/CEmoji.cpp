@@ -166,7 +166,7 @@ namespace s3d
 		::hb_buffer_reset(m_hbBuffer);
 		::hb_buffer_add_utf32(m_hbBuffer,
 			reinterpret_cast<const uint32*>(emoji.data()),
-			static_cast<int32>(emoji.length()), 0, static_cast<int32>(emoji.length()));
+			static_cast<int32>(emoji.size()), 0, static_cast<int32>(emoji.size()));
 		::hb_buffer_guess_segment_properties(m_hbBuffer);
 		::hb_shape(m_hbFont, m_hbBuffer, nullptr, 0);
 
@@ -192,7 +192,7 @@ namespace s3d
 		::hb_buffer_reset(m_hbBuffer);
 		::hb_buffer_add_utf32(m_hbBuffer,
 			reinterpret_cast<const uint32*>(emoji.data()),
-			static_cast<int32>(emoji.length()), 0, static_cast<int32>(emoji.length()));
+			static_cast<int32>(emoji.size()), 0, static_cast<int32>(emoji.size()));
 		::hb_buffer_guess_segment_properties(m_hbBuffer);
 		::hb_shape(m_hbFont, m_hbBuffer, nullptr, 0);
 

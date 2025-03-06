@@ -145,35 +145,35 @@ namespace s3d
 		, b{ 0 }
 		, a{ 255 }
 	{
-		if (code.length() == 4) // #RGB
+		if (code.size() == 4) // #RGB
 		{
 			r = detail::HexToColor(code[1]);
 			g = detail::HexToColor(code[2]);
 			b = detail::HexToColor(code[3]);
 			a = 255;
 		}
-		else if (code.length() == 5) // #RGBA
+		else if (code.size() == 5) // #RGBA
 		{
 			r = detail::HexToColor(code[1]);
 			g = detail::HexToColor(code[2]);
 			b = detail::HexToColor(code[3]);
 			a = detail::HexToColor(code[4]);
 		}
-		else if (code.length() == 7) // #RRGGBB
+		else if (code.size() == 7) // #RRGGBB
 		{
 			r = detail::HexToColor(code[1], code[2]);
 			g = detail::HexToColor(code[3], code[4]);
 			b = detail::HexToColor(code[5], code[6]);
 			a = 255;
 		}
-		else if (code.length() == 8) // RRGGBBAA
+		else if (code.size() == 8) // RRGGBBAA
 		{
 			r = detail::HexToColor(code[0], code[1]);
 			g = detail::HexToColor(code[2], code[3]);
 			b = detail::HexToColor(code[4], code[5]);
 			a = detail::HexToColor(code[6], code[7]);
 		}
-		else if (code.length() == 9) // #RRGGBBAA
+		else if (code.size() == 9) // #RRGGBBAA
 		{
 			r = detail::HexToColor(code[1], code[2]);
 			g = detail::HexToColor(code[3], code[4]);

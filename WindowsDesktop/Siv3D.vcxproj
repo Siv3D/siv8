@@ -91,6 +91,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewAlgorithm.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDescBuilder.ipp" />
@@ -482,6 +484,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\StringAlgorithm.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringRandom.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringView.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\StringViewAlgorithm.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\StringViewRandom.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SVG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\System.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEncoding.hpp" />

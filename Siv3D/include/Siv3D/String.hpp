@@ -1826,7 +1826,7 @@ namespace s3d
 		/// @param count 繰り返す回数
 		/// @return 新しい文字列
 		[[nodiscard]]
-		constexpr String repeat(size_t count) const;
+		String repeat(size_t count) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2479,7 +2479,7 @@ namespace s3d
 
 		/// @brief 指定したインデックスの文字からなる新しい文字列を返します。
 		/// @param indices インデックス
-		/// @remark `String(U"abcde").values_at({0, 3, 4}); // U"ade"`
+		/// @remark `String{ U"abcde" }.values_at({0, 3, 4}); // U"ade"`
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String values_at(std::initializer_list<size_type> indices) const;

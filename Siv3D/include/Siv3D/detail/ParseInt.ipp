@@ -15,17 +15,23 @@ namespace s3d
 {
 	namespace detail
 	{
-		[[noreturn]]
-		void ThrowParseIntError(std::string_view s, const ParseErrorReason reason);
-
+	# if SIV3D_BUILD(DEBUG)
+	
 		[[noreturn]]
 		void ThrowParseIntError(std::string_view s, const ParseErrorReason reason, const std::source_location& location);
 
 		[[noreturn]]
-		void ThrowParseIntError(StringView s, const ParseErrorReason reason);
+		void ThrowParseIntError(StringView s, const ParseErrorReason reason, const std::source_location& location);
+		
+	# else
 
 		[[noreturn]]
-		void ThrowParseIntError(StringView s, const ParseErrorReason reason, const std::source_location& location);
+		void ThrowParseIntError(std::string_view s, const ParseErrorReason reason);
+
+		[[noreturn]]
+		void ThrowParseIntError(StringView s, const ParseErrorReason reason);
+
+	# endif
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -19,18 +19,7 @@ namespace s3d
 {
 	namespace
 	{
-		[[noreturn]]
-		static void ThrowParseBoolExtendedError(const std::string_view s, const ParseErrorReason reason)
-		{
-			if (reason == ParseErrorReason::EmptyInput)
-			{
-				throw ParseError{ "ParseBoolExtended(): Empty input" };
-			}
-			else
-			{
-				throw ParseError{ fmt::format("ParseBoolExtended(): Failed to parse `{}`", s) };
-			}
-		}
+	# if SIV3D_BUILD(DEBUG)
 
 		[[noreturn]]
 		static void ThrowParseBoolExtendedError(const std::string_view s, const ParseErrorReason reason, const std::source_location& location)
@@ -46,16 +35,33 @@ namespace s3d
 		}
 
 		[[noreturn]]
+		static void ThrowParseBoolExtendedError(const StringView s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			ThrowParseBoolExtendedError(Unicode::ToUTF8(s), reason, location);
+		}
+
+	# else
+
+		[[noreturn]]
+		static void ThrowParseBoolExtendedError(const std::string_view s, const ParseErrorReason reason)
+		{
+			if (reason == ParseErrorReason::EmptyInput)
+			{
+				throw ParseError{ "ParseBoolExtended(): Empty input" };
+			}
+			else
+			{
+				throw ParseError{ fmt::format("ParseBoolExtended(): Failed to parse `{}`", s) };
+			}
+		}
+
+		[[noreturn]]
 		static void ThrowParseBoolExtendedError(const StringView s, const ParseErrorReason reason)
 		{
 			ThrowParseBoolExtendedError(Unicode::ToUTF8(s), reason);
 		}
 
-		[[noreturn]]
-		static void ThrowParseBoolExtendedError(const StringView s, const ParseErrorReason reason, const std::source_location& location)
-		{
-			ThrowParseBoolExtendedError(Unicode::ToUTF8(s), reason, location);
-		}
+	# endif
 
 		template <class Char>
 		[[nodiscard]]

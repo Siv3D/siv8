@@ -11,10 +11,7 @@
 
 # include <iostream>
 # include <stdexcept>
-# include <ranges>
-# include <Siv3D/HashSet.hpp>
 # include <Siv3D/String.hpp>
-# include <Siv3D/Random.hpp>
 # include <Siv3D/Char.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/FormatData.hpp>
@@ -31,21 +28,6 @@ namespace s3d
 		{
 			return (ch <= 0x20) || ((ch - 0x7F) <= (0x9F - 0x7F));
 		}
-
-		class StringStableUniqueHelper
-		{
-		public:
-
-			[[nodiscard]]
-			bool operator()(const char32 value)
-			{
-				return m_set.insert(value).second;
-			}
-
-		private:
-
-			HashSet<char32> m_set;
-		};
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -89,31 +71,7 @@ namespace s3d
 
 	int32 String::case_insensitive_compare(const StringView s) const noexcept
 	{
-		auto first1 = begin(), last1 = end();
-		auto first2 = s.begin(), last2 = s.end();
-
-		for (; (first1 != last1) && (first2 != last2); ++first1, ++first2)
-		{
-			const int32 c = CaseInsensitiveCompare(*first1, *first2);
-
-			if (c != 0)
-			{
-				return c;
-			}
-		}
-
-		if ((first1 == last1) && (first2 != last2))
-		{
-			return -1;
-		}
-		else if ((first1 != last1) && (first2 == last2))
-		{
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
+		return StringView{ m_string }.case_insensitive_compare(s);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -124,25 +82,7 @@ namespace s3d
 
 	bool String::case_insensitive_equals(const StringView s) const noexcept
 	{
-		if (m_string.size() != s.size())
-		{
-			return false;
-		}
-
-		auto first1 = m_string.begin(), last1 = m_string.end();
-		auto first2 = s.begin(), last2 = s.end();
-
-		for (; (first1 != last1) && (first2 != last2); ++first1, ++first2)
-		{
-			const int32 c = CaseInsensitiveCompare(*first1, *first2);
-
-			if (c != 0)
-			{
-				return false;
-			}
-		}
-
-		return true;
+		return StringView{ m_string }.case_insensitive_equals(s);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -172,9 +112,7 @@ namespace s3d
 
 	String String::capitalized() const&
 	{
-		String result{ *this };
-		result.capitalize();
-		return result;
+		return StringView{ m_string }.capitalized();
 	}
 
 	String String::capitalized()&& noexcept
@@ -190,17 +128,7 @@ namespace s3d
 
 	int64 String::count(const StringView s) const
 	{
-		int64 count = 0;
-
-		for (auto it = begin();; ++it, ++count)
-		{
-			it = std::search(it, end(), s.begin(), s.end());
-
-			if (it == end())
-			{
-				return count;
-			}
-		}
+		return StringView{ m_string }.count(s);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -211,21 +139,7 @@ namespace s3d
 
 	String String::expandTabs(const size_type tabSize) const
 	{
-		String expanded;
-
-		for (auto ch : m_string)
-		{
-			if (ch == U'\t')
-			{
-				expanded.m_string.append(tabSize, U' ');
-			}
-			else
-			{
-				expanded.m_string.push_back(ch);
-			}
-		}
-
-		return expanded;
+		return StringView{ m_string }.expandTabs(tabSize);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -236,41 +150,7 @@ namespace s3d
 
 	String String::layout(size_type width) const
 	{
-		if (width == 0)
-		{
-			width = 1;
-		}
-
-		String result;
-		result.reserve(m_string.length() + (m_string.length() / width));
-
-		size_t count = 0;
-
-		for (auto ch : m_string)
-		{
-			if (ch == U'\n')
-			{
-				count = 0;
-			}
-			else if (ch == U'\r')
-			{
-				continue;
-			}
-			else
-			{
-				++count;
-			}
-
-			if (width < count)
-			{
-				result.push_back(U'\n');
-				count = 1;
-			}
-
-			result.push_back(ch);
-		}
-
-		return result;
+		return StringView{ m_string }.layout(width);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -281,12 +161,12 @@ namespace s3d
 
 	String& String::leftPad(const size_type length, const value_type fillChar) & noexcept
 	{
-		if (length <= m_string.length())
+		if (length <= m_string.size())
 		{
 			return *this;
 		}
 
-		m_string.insert(m_string.begin(), (length - m_string.length()), fillChar);
+		m_string.insert(m_string.begin(), (length - m_string.size()), fillChar);
 
 		return *this;
 	}
@@ -298,13 +178,7 @@ namespace s3d
 
 	String String::leftPadded(const size_type length, const value_type fillChar) const&
 	{
-		String result;
-		result.reserve(Max(m_string.length(), length));
-
-		result.append((length - m_string.length()), fillChar);
-		result.append(m_string);
-
-		return result;
+		return StringView{ m_string }.leftPadded(length, fillChar);
 	}
 
 	String String::leftPadded(const size_type length, const value_type fillChar) && noexcept
@@ -335,9 +209,7 @@ namespace s3d
 
 	String String::lowercased() const&
 	{
-		String result{ *this };
-		result.lowercase();
-		return result;
+		return StringView{ m_string }.lowercased();
 	}
 
 	String String::lowercased()&& noexcept
@@ -364,8 +236,7 @@ namespace s3d
 
 	String String::leftTrimmed() const&
 	{
-		auto it = std::find_if(m_string.begin(), m_string.end(), IsTrimmable);
-		return String(it, m_string.end());
+		return StringView{ m_string }.leftTrimmed();
 	}
 
 	String String::leftTrimmed() && noexcept
@@ -402,43 +273,12 @@ namespace s3d
 
 	String String::removed(const value_type ch) const&
 	{
-		String result;
-		result.reserve(m_string.length());
-
-		for (auto c : m_string)
-		{
-			if (c != ch)
-			{
-				result.push_back(c);
-			}
-		}
-
-		return result;
+		return StringView{ m_string }.removed(ch);
 	}
 
 	String String::removed(const StringView s) const&
 	{
-		if (s.isEmpty())
-		{
-			return *this;
-		}
-
-		String result;
-
-		const auto itEnd = m_string.end();
-		auto itCurrent = m_string.begin();
-		auto itNext = std::search(itCurrent, itEnd, s.begin(), s.end());
-
-		while (itNext != itEnd)
-		{
-			result.append(itCurrent, itNext);
-			itCurrent = (itNext + s.length());
-			itNext = std::search(itCurrent, itEnd, s.begin(), s.end());
-		}
-
-		result.append(itCurrent, itNext);
-
-		return result;
+		return StringView{ m_string }.removed(s);
 	}
 
 	String String::removed(const value_type ch) && noexcept
@@ -476,22 +316,23 @@ namespace s3d
 
 	String String::removed_at(const size_type index) const&
 	{
-		if (m_string.size() <= index)
-		{
-			return *this;
-		}
-
-		String result;
-		result.reserve(m_string.length() - 1);
-		result.append(m_string.begin(), (m_string.begin() + index));
-		result.append((m_string.begin() + index + 1), m_string.end());
-
-		return result;
+		return StringView{ m_string }.removed_at(index);
 	}
 
 	String String::removed_at(const size_type index) && noexcept
 	{
 		return std::move(remove_at(index));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	repeat
+	//
+	////////////////////////////////////////////////////////////////
+
+	String String::repeat(const size_t count) const
+	{
+		return StringView{ m_string }.repeat(count);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -513,9 +354,7 @@ namespace s3d
 
 	String String::replaced(const value_type oldChar, const value_type newChar) const&
 	{
-		String result{ *this };
-		result.replace(oldChar, newChar);
-		return result;
+		return StringView{ m_string }.replaced(oldChar, newChar);
 	}
 
 	String String::replaced(const value_type oldChar, const value_type newChar) && noexcept
@@ -535,28 +374,7 @@ namespace s3d
 
 	String String::replaced(const StringView oldStr, const StringView newStr) const&
 	{
-		String result;
-
-		if (oldStr.length() <= newStr.length())
-		{
-			result.reserve(m_string.length());
-		}
-
-		const auto itEnd = m_string.end();
-		auto itCurrent = m_string.begin();
-		auto itNext = std::search(itCurrent, itEnd, oldStr.begin(), oldStr.end());
-
-		while (itNext != itEnd)
-		{
-			result.append(itCurrent, itNext);
-			result.append(newStr);
-			itCurrent = (itNext + oldStr.length());
-			itNext = std::search(itCurrent, itEnd, oldStr.begin(), oldStr.end());
-		}
-
-		result.append(itCurrent, itNext);
-
-		return result;
+		return StringView{ m_string }.replaced(oldStr, newStr);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -626,12 +444,12 @@ namespace s3d
 
 	String& String::rightPad(const size_type length, const value_type fillChar) & noexcept
 	{
-		if (length <= m_string.length())
+		if (length <= m_string.size())
 		{
 			return *this;
 		}
 
-		m_string.append((length - m_string.length()), fillChar);
+		m_string.append((length - m_string.size()), fillChar);
 
 		return *this;
 	}
@@ -643,13 +461,7 @@ namespace s3d
 
 	String String::rightPadded(const size_type length, const value_type fillChar) const&
 	{
-		String result;
-		result.reserve(Max(m_string.length(), length));
-
-		result.append(m_string);
-		result.append((length - m_string.length()), fillChar);
-
-		return result;
+		return StringView{ m_string }.rightPadded(length, fillChar);
 	}
 
 	String String::rightPadded(const size_type length, const value_type fillChar) && noexcept
@@ -676,8 +488,7 @@ namespace s3d
 
 	String String::rightTrimmed() const&
 	{
-		auto it = std::find_if_not(m_string.rbegin(), m_string.rend(), IsTrimmable).base();
-		return String(m_string.begin(), it);
+		return StringView{ m_string }.rightTrimmed();
 	}
 
 	String String::rightTrimmed() && noexcept
@@ -693,7 +504,7 @@ namespace s3d
 
 	String& String::rotate(const size_type index) & noexcept
 	{
-		if (m_string.length() <= index)
+		if (m_string.size() <= index)
 		{
 			return *this;
 		}
@@ -710,18 +521,7 @@ namespace s3d
 
 	String String::rotated(const size_type index) const&
 	{
-		if (m_string.length() <= index)
-		{
-			return *this;
-		}
-
-		String result;
-		result.reserve(m_string.length());
-
-		result.append((m_string.begin() + index), m_string.end());
-		result.append(m_string.begin(), (m_string.begin() + index));
-
-		return result;
+		return StringView{ m_string }.rotated(index);
 	}
 
 	String String::rotated(const size_type index) && noexcept
@@ -748,9 +548,7 @@ namespace s3d
 
 	String String::rsorted() const&
 	{
-		String result{ *this };
-		result.rsort();
-		return result;
+		return StringView{ m_string }.rsorted();
 	}
 
 	String String::rsorted() && noexcept
@@ -803,9 +601,7 @@ namespace s3d
 
 	String String::sorted() const&
 	{
-		String result{ *this };
-		result.sort();
-		return result;
+		return StringView{ m_string }.sorted();
 	}
 
 	String String::sorted() && noexcept
@@ -821,9 +617,7 @@ namespace s3d
 
 	Array<String> String::split(const value_type ch) const
 	{
-		auto split_views = m_string | std::views::split(ch) | std::views::transform([](auto&& part) { return String{ part.begin(), part.end() }; });
-
-		return Array<String>(split_views.begin(), split_views.end());
+		return StringView{ m_string }.split(ch);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -834,9 +628,7 @@ namespace s3d
 
 	Array<StringView> String::splitView(const value_type ch) const SIV3D_LIFETIMEBOUND
 	{
-		auto split_views = m_string | std::views::split(ch) | std::views::transform([](auto&& part) { return StringView{ part }; });
-
-		return Array<StringView>(split_views.begin(), split_views.end());
+		return StringView{ m_string }.splitView(ch);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -858,33 +650,7 @@ namespace s3d
 
 	Array<String, std::allocator<String>> String::split_lines() const
 	{
-		if (m_string.empty())
-		{
-			return{};
-		}
-
-		Array<String> result(1);
-
-		const value_type* pSrc = m_string.data();
-		const value_type* const pSrcEnd = (pSrc + m_string.length());
-		String* currentLine = &result.back();
-
-		while (pSrc != pSrcEnd)
-		{
-			if (*pSrc == U'\n')
-			{
-				result.emplace_back();
-				currentLine = &result.back();
-			}
-			else if (*pSrc != U'\r')
-			{
-				currentLine->push_back(*pSrc);
-			}
-
-			++pSrc;
-		}
-
-		return result;
+		return StringView{ m_string }.split_lines();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -917,9 +683,7 @@ namespace s3d
 
 	String String::swapcased() const&
 	{
-		String result{ *this };
-		result.swapcase();
-		return result;
+		return StringView{ m_string }.swapcased();
 	}
 
 	String String::swapcased() && noexcept
@@ -966,20 +730,7 @@ namespace s3d
 
 	String String::trimmed() const&
 	{
-		const char32* start = m_string.data();
-		const char32* end = (start + m_string.size());
-
-		while ((start < end) && IsTrimmable(*start))
-		{
-			++start;
-		}
-
-		while ((start < end) && IsTrimmable(*(end - 1)))
-		{
-			--end;
-		}
-
-		return String(start, end);
+		return StringView{ m_string }.trimmed();
 	}
 
 	String String::trimmed() && noexcept
@@ -1010,9 +761,7 @@ namespace s3d
 
 	String String::uppercased() const&
 	{
-		String result{ *this };
-		result.uppercase();
-		return result;
+		return StringView{ m_string }.uppercased();
 	}
 
 	String String::uppercased() && noexcept
@@ -1038,13 +787,7 @@ namespace s3d
 
 	String String::stable_uniqued() const
 	{
-		String result;
-
-		StringStableUniqueHelper pred;
-
-		std::copy_if(m_string.begin(), m_string.end(), std::back_inserter(result), std::ref(pred));
-
-		return result;
+		return StringView{ m_string }.stable_uniqued();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1067,9 +810,7 @@ namespace s3d
 
 	String String::sorted_and_uniqued() const&
 	{
-		String result{ *this };
-		result.sort_and_unique();
-		return result;
+		return StringView{ m_string }.sorted_and_uniqued();
 	}
 
 	String String::sorted_and_uniqued() && noexcept
@@ -1096,9 +837,7 @@ namespace s3d
 
 	String String::uniqued_consecutive() const&
 	{
-		String result;
-		std::unique_copy(m_string.begin(), m_string.end(), std::back_inserter(result));
-		return result;
+		return StringView{ m_string }.uniqued_consecutive();
 	}
 
 	String String::uniqued_consecutive() && noexcept
@@ -1117,7 +856,7 @@ namespace s3d
 		String result;
 		result.reserve(indices.size());
 
-		for (auto index : indices)
+		for (const auto index : indices)
 		{
 			if (index < m_string.size())
 			{
@@ -1145,35 +884,7 @@ namespace s3d
 
 	String String::xml_escaped() const
 	{
-		String result;
-		result.reserve(m_string.length());
-
-		for (const auto ch : m_string)
-		{
-			switch (ch)
-			{
-			case U'&':
-				result.append(U"&amp;");
-				break;
-			case U'<':
-				result.append(U"&lt;");
-				break;
-			case U'>':
-				result.append(U"&gt;");
-				break;
-			case U'\"':
-				result.append(U"&quot;");
-				break;
-			case U'\'':
-				result.append(U"&apos;");
-				break;
-			default:
-				result.push_back(ch);
-				break;
-			}
-		}
-
-		return result;
+		return StringView{ m_string }.xml_escaped();
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -19,6 +19,29 @@ namespace s3d
 {
 	namespace
 	{
+	# if SIV3D_BUILD(DEBUG)
+
+		[[noreturn]]
+		static void ThrowParseFloatError(const std::string_view s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			if (reason == ParseErrorReason::EmptyInput)
+			{
+				throw ParseError{ "ParseFloat(): Empty input", location };
+			}
+			else
+			{
+				throw ParseError{ fmt::format("ParseFloat(): Failed to parse `{}`", s), location };
+			}
+		}
+		
+		[[noreturn]]
+		static void ThrowParseFloatError(const StringView s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			ThrowParseFloatError(Unicode::ToUTF8(s), reason, location);
+		}
+
+	# else
+
 		[[noreturn]]
 		static void ThrowParseFloatError(const std::string_view s, const ParseErrorReason reason)
 		{
@@ -33,29 +56,12 @@ namespace s3d
 		}
 
 		[[noreturn]]
-		static void ThrowParseFloatError(const std::string_view s, const ParseErrorReason reason, const std::source_location& location)
-		{
-			if (reason == ParseErrorReason::EmptyInput)
-			{
-				throw ParseError{ "ParseFloat(): Empty input", location };
-			}
-			else
-			{
-				throw ParseError{ fmt::format("ParseFloat(): Failed to parse `{}`", s), location };
-			}
-		}
-
-		[[noreturn]]
 		static void ThrowParseFloatError(const StringView s, const ParseErrorReason reason)
 		{
 			ThrowParseFloatError(Unicode::ToUTF8(s), reason);
 		}
 
-		[[noreturn]]
-		static void ThrowParseFloatError(const StringView s, const ParseErrorReason reason, const std::source_location& location)
-		{
-			ThrowParseFloatError(Unicode::ToUTF8(s), reason, location);
-		}
+	# endif
 
 		template <Concept::FloatingPoint Float, class SV>
 		Result<Float, ParseErrorReason> ParseFloatWithReason_impl(const SV s) noexcept

@@ -21,7 +21,7 @@ namespace s3d
 		String ThousandSeparateInt(const String& value, const char32 separator)
 		{
 			const bool isNegative = (value.starts_with(U'-'));
-			const size_t digits = (value.length() - (isNegative ? 1 : 0));
+			const size_t digits = (value.size() - (isNegative ? 1 : 0));
 
 			if (digits <= 3)
 			{
@@ -29,7 +29,7 @@ namespace s3d
 			}
 
 			const size_t count = ((digits - 1) / 3);
-			const size_t resultLength = (value.length() + count);
+			const size_t resultLength = (value.size() + count);
 
 			String result;
 			result.reserve(resultLength);

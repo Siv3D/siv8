@@ -36,9 +36,9 @@ namespace s3d
 		{
 			const int32 targetLength = padding.first;
 
-			if (static_cast<int32>(s.length()) < targetLength)
+			if (static_cast<int32>(s.size()) < targetLength)
 			{
-				const int32 paddingCount = (targetLength - static_cast<int32>(s.length()));
+				const int32 paddingCount = (targetLength - static_cast<int32>(s.size()));
 
 				s.insert(s.begin(), paddingCount, padding.second);
 			}

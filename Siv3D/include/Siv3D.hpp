@@ -155,6 +155,8 @@
 
 // 文字列ビュー | String view
 # include <Siv3D/StringView.hpp>
+# include <Siv3D/StringViewRandom.hpp>
+# include <Siv3D/StringViewAlgorithm.hpp>
 
 // 文字列 | String
 # include <Siv3D/String.hpp>

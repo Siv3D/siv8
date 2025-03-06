@@ -125,7 +125,7 @@ namespace s3d
 
 		char32 previousChar = U'\0';
 
-		for (size_t i = 0; i < format.length(); ++i)
+		for (size_t i = 0; i < format.size(); ++i)
 		{
 			const char32 ch = format[i];
 
@@ -159,7 +159,7 @@ namespace s3d
 
 				if (ch == U'\'')
 				{
-					if (((i + 1) < format.length()) &&
+					if (((i + 1) < format.size()) &&
 						(format[i + 1] == U'\''))
 					{
 						result.push_back(U'\'');

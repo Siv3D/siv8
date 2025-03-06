@@ -19,18 +19,7 @@ namespace s3d
 {
 	namespace detail
 	{
-		[[noreturn]]
-		void ThrowParseIntError(const std::string_view s, const ParseErrorReason reason)
-		{
-			if (reason == ParseErrorReason::EmptyInput)
-			{
-				throw ParseError{ "ParseInt(): Empty input" };
-			}
-			else
-			{
-				throw ParseError{ fmt::format("ParseInt(): Failed to parse `{}`", s) };
-			}
-		}
+	# if SIV3D_BUILD(DEBUG)
 
 		[[noreturn]]
 		void ThrowParseIntError(const std::string_view s, const ParseErrorReason reason, const std::source_location& location)
@@ -46,16 +35,33 @@ namespace s3d
 		}
 
 		[[noreturn]]
+		void ThrowParseIntError(const StringView s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			ThrowParseIntError(Unicode::ToUTF8(s), reason, location);
+		}
+
+	# else
+
+		[[noreturn]]
+		void ThrowParseIntError(const std::string_view s, const ParseErrorReason reason)
+		{
+			if (reason == ParseErrorReason::EmptyInput)
+			{
+				throw ParseError{ "ParseInt(): Empty input" };
+			}
+			else
+			{
+				throw ParseError{ fmt::format("ParseInt(): Failed to parse `{}`", s) };
+			}
+		}
+
+		[[noreturn]]
 		void ThrowParseIntError(const StringView s, const ParseErrorReason reason)
 		{
 			ThrowParseIntError(Unicode::ToUTF8(s), reason);
 		}
 
-		[[noreturn]]
-		void ThrowParseIntError(const StringView s, const ParseErrorReason reason, const std::source_location& location)
-		{
-			ThrowParseIntError(Unicode::ToUTF8(s), reason, location);
-		}
+	# endif
 	}
 
 	namespace
