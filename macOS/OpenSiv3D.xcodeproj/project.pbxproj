@@ -832,6 +832,10 @@
 		F9766B812C29C7A700DE4107 /* SivCamera2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7B2C29C7A600DE4107 /* SivCamera2D.cpp */; };
 		F9766B822C29C7A700DE4107 /* SivCamera2DControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7D2C29C7A600DE4107 /* SivCamera2DControl.cpp */; };
 		F9766B832C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */; };
+		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
+		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
+		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
+		F97E6DB12D79D6A80066E408 /* StringViewAlgorithm.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */; };
 		F9807D792BF1092600D9B590 /* 2d.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D762BF1092600D9B590 /* 2d.metal */; };
 		F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */; };
 		F9807D7F2BF1229700D9B590 /* MetalInternalTexture2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */; };
@@ -3362,6 +3366,10 @@
 		F9766B7B2C29C7A600DE4107 /* SivCamera2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2D.cpp; sourceTree = "<group>"; };
 		F9766B7D2C29C7A600DE4107 /* SivCamera2DControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2DControl.cpp; sourceTree = "<group>"; };
 		F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2DControlBuilder.cpp; sourceTree = "<group>"; };
+		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
+		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
+		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
+		F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.ipp; sourceTree = "<group>"; };
 		F9807D762BF1092600D9B590 /* 2d.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = 2d.metal; sourceTree = "<group>"; };
 		F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = fullscreen_triangle.metal; sourceTree = "<group>"; };
 		F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalInternalTexture2D.hpp; sourceTree = "<group>"; };
@@ -5769,6 +5777,8 @@
 				F9E7946C2C19B6F2002615BA /* StringAlgorithm.ipp */,
 				F9E7944F2C197417002615BA /* StringRandom.ipp */,
 				F9070BA22B9F175000383E4D /* StringView.ipp */,
+				F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */,
+				F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */,
 				F986F9C72BCA9D3E006A4C0F /* SVG.ipp */,
 				F9070BA32B9F175000383E4D /* TextEncoding.ipp */,
 				F9070BA42B9F175000383E4D /* TextReader.ipp */,
@@ -6074,6 +6084,8 @@
 				F9E794662C19B6D7002615BA /* StringAlgorithm.hpp */,
 				F9E794482C1973FC002615BA /* StringRandom.hpp */,
 				F9070C262B9F175000383E4D /* StringView.hpp */,
+				F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */,
+				F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */,
 				F986F9C52BCA9D25006A4C0F /* SVG.hpp */,
 				F9070C272B9F175000383E4D /* System.hpp */,
 				F9070C282B9F175000383E4D /* TextEncoding.hpp */,
@@ -11298,6 +11310,8 @@
 				F90706892B9DAEC900383E4D /* fast_type_id.h in Headers */,
 				F986FFEC2BCFBB53006A4C0F /* SkCodec.h in Headers */,
 				F98605BE2BE4B65B006A4C0F /* InputGroup.hpp in Headers */,
+				F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */,
+				F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */,
 				F986029D2BCFBB54006A4C0F /* SkWritePixelsRec.h in Headers */,
 				F98600892BCFBB53006A4C0F /* SkThreadID.h in Headers */,
 				F98600BA2BCFBB53006A4C0F /* Transform_inl.h in Headers */,
@@ -11668,6 +11682,8 @@
 				F9070C9D2B9F175000383E4D /* BoolToString.hpp in Headers */,
 				F986F8B62BC843CF006A4C0F /* MatchResults.hpp in Headers */,
 				F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */,
+				F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */,
+				F97E6DB12D79D6A80066E408 /* StringViewAlgorithm.ipp in Headers */,
 				F986004C2BCFBB53006A4C0F /* SkTraceMemoryDump.h in Headers */,
 				F986038F2BCFBB54006A4C0F /* SkPanose.h in Headers */,
 				F9070C9B2B9F175000383E4D /* BinaryWriter.hpp in Headers */,
