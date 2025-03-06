@@ -289,4 +289,72 @@ namespace s3d
 			}
 		}
 	}
+
+	String RegExp::RegExpDetail::replaceAll(const StringView s, const FunctionRef<String(const MatchResults&)> replacementFunc) const
+	{
+		if (not isValid())
+		{
+			return{};
+		}
+
+		const UChar* pString = reinterpret_cast<const UChar*>(s.data());
+		const size_t stringLength = (s.size() * sizeof(char32));
+
+		const unsigned char* pStart = pString;
+		const unsigned char* pPreviousStart = pStart;
+		const unsigned char* pEnd = pString + stringLength;
+		const unsigned char* pRange = pEnd;
+
+		OnigRegion* region = ::onig_region_new();
+		ScopeExit cleanup = [=]() { ::onig_region_free(region, 1); };
+
+		String result;
+
+		for (;;)
+		{
+			const int r = ::onig_search(m_regex, pString, pEnd, pStart, pRange, region, ONIG_OPTION_NONE);
+
+			if (0 <= r)
+			{
+				Array<Optional<StringView>> matches;
+
+				for (int32 i = 0; i < region->num_regs; ++i)
+				{
+					if ((region->beg[i] == ONIG_REGION_NOTPOS)
+						|| (region->end[i] == ONIG_REGION_NOTPOS))
+					{
+						matches.emplace_back();
+						continue;
+					}
+
+					const size_t begIndex = (region->beg[i] / sizeof(char32));
+					const size_t endIndex = (region->end[i] / sizeof(char32));
+					const size_t length = (endIndex - begIndex);
+					matches.push_back(s.substr(begIndex, length));
+				}
+
+				const MatchResults matchResults{ std::move(matches) };
+
+				result.append(s.substr(((pPreviousStart - pString) / sizeof(char32)), (region->beg[0] / sizeof(char32) - (pPreviousStart - pString) / sizeof(char32))));
+				result.append(replacementFunc(matchResults));
+
+				const size_t begIndex = (region->beg[0] / sizeof(char32));
+				const size_t endIndex = (region->end[0] / sizeof(char32));
+				const size_t length = (endIndex - begIndex);
+				pStart = (pString + (begIndex + length) * sizeof(char32));
+
+				if (pStart == pPreviousStart)
+				{
+					pStart += sizeof(char32);
+				}
+
+				pPreviousStart = pStart;
+			}
+			else
+			{
+				result.append(s.substr((pPreviousStart - pString) / sizeof(char32)));
+				return result;
+			}
+		}
+	}
 }

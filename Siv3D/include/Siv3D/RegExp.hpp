@@ -13,6 +13,7 @@
 # include <memory>
 # include "Common.hpp"
 # include "MatchResults.hpp"
+# include "FunctionRef.hpp"
 
 namespace s3d
 {
@@ -138,6 +139,13 @@ namespace s3d
 		/// @return 置換後の文字列
 		[[nodiscard]]
 		String replaceAll(StringView s, StringView replacement) const;
+
+		/// @brief 文字列内で正規表現パターンにマッチするすべての部分文字列を置換します。
+		/// @param s 文字列
+		/// @param replacementFunc マッチした部分文字列を置換する関数
+		/// @return 置換後の文字列
+		[[nodiscard]]
+		String replaceAll(StringView s, FunctionRef<String(const MatchResults&)> replacementFunc) const;
 
 	private:
 
