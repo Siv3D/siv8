@@ -317,6 +317,17 @@ namespace s3d
 		return String(it, m_view.end());
 	}
 
+	String StringView::leftTrimmed(const StringView chars) const
+	{
+		auto it = m_view.begin();
+
+		while (it != m_view.end() && chars.contains(*it))
+		{
+			++it;
+		}
+
+		return String(it, m_view.end());
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -487,6 +498,18 @@ namespace s3d
 	{
 		auto it = std::find_if_not(m_view.rbegin(), m_view.rend(), IsTrimmable).base();
 		return String(m_view.begin(), it);
+	}
+
+	String StringView::rightTrimmed(const StringView chars) const
+	{
+		auto it = m_view.rbegin();
+		
+		while (it != m_view.rend() && chars.contains(*it))
+		{
+			++it;
+		}
+		
+		return String(m_view.begin(), it.base());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -668,6 +691,24 @@ namespace s3d
 			--end;
 		}
 
+		return String(start, end);
+	}
+
+	String StringView::trimmed(const StringView chars) const
+	{
+		const char32* start = m_view.data();
+		const char32* end = (start + m_view.size());
+		
+		while ((start < end) && chars.contains(*start))
+		{
+			++start;
+		}
+		
+		while ((start < end) && chars.contains(*(end - 1)))
+		{
+			--end;
+		}
+		
 		return String(start, end);
 	}
 

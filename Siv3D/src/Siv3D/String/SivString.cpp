@@ -234,6 +234,25 @@ namespace s3d
 		return std::move(leftTrim());
 	}
 
+	String& String::leftTrim(const StringView chars) & noexcept
+	{
+		auto it = m_string.begin();
+
+		while (it != m_string.end() && chars.contains(*it))
+		{
+			++it;
+		}
+
+		m_string.erase(m_string.begin(), it);
+
+		return *this;
+	}
+
+	String String::leftTrim(const StringView chars) && noexcept
+	{
+		return std::move(leftTrim(chars));
+	}
+
 	String String::leftTrimmed() const&
 	{
 		return StringView{ m_string }.leftTrimmed();
@@ -242,6 +261,16 @@ namespace s3d
 	String String::leftTrimmed() && noexcept
 	{
 		return std::move(leftTrim());
+	}
+
+	String String::leftTrimmed(const StringView chars) const&
+	{
+		return StringView{ m_string }.leftTrimmed(chars);
+	}
+
+	String String::leftTrimmed(const StringView chars) && noexcept
+	{
+		return std::move(leftTrim(chars));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -486,6 +515,25 @@ namespace s3d
 		return std::move(rightTrim());
 	}
 
+	String& String::rightTrim(const StringView chars) & noexcept
+	{
+		auto it = m_string.rbegin();
+		
+		while (it != m_string.rend() && chars.contains(*it))
+		{
+			++it;
+		}
+		
+		m_string.erase(it.base(), m_string.end());
+		
+		return *this;
+	}
+
+	String String::rightTrim(const StringView chars) && noexcept
+	{
+		return std::move(rightTrim(chars));
+	}
+
 	String String::rightTrimmed() const&
 	{
 		return StringView{ m_string }.rightTrimmed();
@@ -494,6 +542,16 @@ namespace s3d
 	String String::rightTrimmed() && noexcept
 	{
 		return std::move(rightTrim());
+	}
+
+	String String::rightTrimmed(const StringView chars) const&
+	{
+		return StringView{ m_string }.rightTrimmed(chars);
+	}
+
+	String String::rightTrimmed(const StringView chars) && noexcept
+	{
+		return std::move(rightTrim(chars));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -728,6 +786,16 @@ namespace s3d
 		return std::move(trim());
 	}
 
+	String& String::trim(const StringView chars) & noexcept
+	{
+		return rightTrim(chars).leftTrim(chars);
+	}
+
+	String String::trim(const StringView chars) && noexcept
+	{
+		return std::move(trim(chars));
+	}
+
 	String String::trimmed() const&
 	{
 		return StringView{ m_string }.trimmed();
@@ -736,6 +804,16 @@ namespace s3d
 	String String::trimmed() && noexcept
 	{
 		return std::move(trim());
+	}
+
+	String String::trimmed(const StringView chars) const&
+	{
+		return StringView{ m_string }.trimmed(chars);
+	}
+
+	String String::trimmed(const StringView chars) && noexcept
+	{
+		return std::move(trim(chars));
 	}
 
 	////////////////////////////////////////////////////////////////

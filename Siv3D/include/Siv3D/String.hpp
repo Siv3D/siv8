@@ -1647,24 +1647,47 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列の先頭に付いている空白文字を削除します。
+		/// @brief 文字列の先頭から空白文字を削除します。
 		/// @return *this
 		String& leftTrim() & noexcept SIV3D_LIFETIMEBOUND;
 
-		/// @brief 文字列の先頭に付いている空白文字を削除した新しい文字列を返します。
+		/// @brief 文字列の先頭から空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String leftTrim() && noexcept;
 
-		/// @brief 文字列の先頭に付いている空白文字を削除した新しい文字列を返します。
+		/// @brief 文字列の先頭から指定した文字を削除します。
+		/// @param chars 削除する文字の集合
+		/// @return *this
+		String& leftTrim(StringView chars) & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 文字列の先頭から指定した文字を削除した新しい文字列を返します。
+		/// @param chars 削除する文字の集合
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String leftTrim(StringView chars) && noexcept;
+
+		/// @brief 文字列の先頭から空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String leftTrimmed() const&;
 
-		/// @brief 文字列の先頭に付いている空白文字を削除した新しい文字列を返します。
+		/// @brief 文字列の先頭から空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String leftTrimmed() && noexcept;
+
+		/// @brief 文字列の先頭から指定した文字を削除した新しい文字列を返します。
+		/// @param chars 削除する文字の集合
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String leftTrimmed(StringView chars) const&;
+
+		/// @brief 文字列の先頭から指定した文字を削除した新しい文字列を返します。
+		/// @param chars 削除する文字の集合
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String leftTrimmed(StringView chars) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2045,24 +2068,47 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列の末尾に付いている空白文字を削除します。
+		/// @brief 文字列の末尾から空白文字を削除します。
 		/// @return *this
 		String& rightTrim() & noexcept SIV3D_LIFETIMEBOUND;
 
-		/// @brief 文字列の末尾に付いている空白文字を削除した新しい文字列を返します。
+		/// @brief 文字列の末尾から空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String rightTrim() && noexcept;
 
-		/// @brief 文字列の末尾に付いている空白文字を削除した新しい文字列を返します。
+		/// @brief 文字列の末尾から指定した文字を削除します。
+		/// @param chars 削除する文字の集合
+		/// @return *this
+		String& rightTrim(StringView chars) & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 文字列の末尾から指定した文字を削除した新しい文字列を返します。
+		/// @param chars 削除する文字の集合
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String rightTrim(StringView chars) && noexcept;
+
+		/// @brief 文字列の末尾から空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String rightTrimmed() const&;
 
-		/// @brief 文字列の末尾に付いている空白文字を削除した新しい文字列を返します。
+		/// @brief 文字列の末尾から空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String rightTrimmed() && noexcept;
+
+		/// @brief 文字列の末尾から指定した文字を削除した新しい文字列を返します。
+		/// @param chars 削除する文字の集合
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String rightTrimmed(StringView chars) const&;
+
+		/// @brief 文字列の末尾から指定した文字を削除した新しい文字列を返します。
+		/// @param chars 削除する文字の集合
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String rightTrimmed(StringView chars) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2357,24 +2403,47 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列の先頭と末尾に付いている空白文字を削除します。
+		/// @brief 文字列の先頭と末尾から空白文字を削除します。
 		/// @return *this
 		String& trim()& noexcept SIV3D_LIFETIMEBOUND;
 
-		/// @brief 文字列の先頭と末尾に付いている空白文字を削除した新しい文字列を返します。
+		/// @brief 文字列の先頭と末尾から空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String trim()&& noexcept;
 
-		/// @brief 文字列の先頭と末尾に付いている空白文字を削除した新しい文字列を返します。
+		/// @brief 文字列の先頭と末尾から指定した文字を削除します。
+		/// @param chars 削除する文字の集合
+		/// @return *this
+		String& trim(StringView chars) & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 文字列の先頭と末尾から指定した文字を削除した新しい文字列を返します。
+		/// @param chars 削除する文字の集合
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String trim(StringView chars) && noexcept;
+
+		/// @brief 文字列の先頭と末尾から空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String trimmed() const&;
 
-		/// @brief 文字列の先頭と末尾に付いている空白文字を削除した新しい文字列を返します。
+		/// @brief 文字列の先頭と末尾から空白文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String trimmed()&& noexcept;
+
+		/// @brief 文字列の先頭と末尾から指定した文字を削除した新しい文字列を返します。
+		/// @param chars 削除する文字の集合
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String trimmed(StringView chars) const&;
+
+		/// @brief 文字列の先頭と末尾から指定した文字を削除した新しい文字列を返します。
+		/// @param chars 削除する文字の集合
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String trimmed(StringView chars) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
