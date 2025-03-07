@@ -737,14 +737,14 @@ namespace s3d
 	constexpr auto Grid<Type, Allocator>::row(const size_type y) noexcept
 	{
 		assert(y < static_cast<size_type>(m_size.y));
-		return std::span(m_container.data() + (y * m_size.x), m_size.x);
+		return std::span((m_container.data() + (y * m_size.x)), m_size.x);
 	}
 
 	template <class Type, class Allocator>
 	constexpr auto Grid<Type, Allocator>::row(const size_type y) const noexcept
 	{
 		assert(y < static_cast<size_type>(m_size.y));
-		return std::span(m_container.data() + (y * m_size.x), m_size.x);
+		return std::span((m_container.data() + (y * m_size.x)), m_size.x);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -757,18 +757,14 @@ namespace s3d
 	constexpr auto Grid<Type, Allocator>::column(const size_type x) noexcept
 	{
 		assert(x < static_cast<size_type>(m_size.x));
-		return std::views::iota(0u, static_cast<size_type>(m_size.y))
-			| std::views::transform([base = (m_container.data() + x), stride = m_size.x](size_type y) -> reference
-				{ return *(base + (y * stride)); });
+		return (m_container | std::views::drop(x) | std::views::stride(m_size.x));
 	}
 
 	template <class Type, class Allocator>
 	constexpr auto Grid<Type, Allocator>::column(const size_type x) const noexcept
 	{
 		assert(x < static_cast<size_type>(m_size.x));
-		return std::views::iota(0u, static_cast<size_type>(m_size.y))
-			| std::views::transform([base = (m_container.data() + x), stride = m_size.x](size_type y) -> const_reference
-				{ return *(base + (y * stride)); });
+		return (m_container | std::views::drop(x) | std::views::stride(m_size.x));
 	}
 
 
