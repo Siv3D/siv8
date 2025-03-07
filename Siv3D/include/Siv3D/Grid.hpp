@@ -592,7 +592,7 @@ namespace s3d
 
 		/// @brief 末尾に行を追加します。
 		/// @param value 追加した行の要素の初期値
-		void push_back_row(const value_type& value);
+		constexpr void push_back_row(const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -602,7 +602,7 @@ namespace s3d
 
 		/// @brief 末尾の行を削除します。
 		/// @throw std::out_of_range 配列の高さ（行数）が 0 の場合
-		void pop_back_row();
+		constexpr void pop_back_row();
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -612,7 +612,7 @@ namespace s3d
 
 		/// @brief 末尾に列を追加します。
 		/// @param value 追加した列の要素の初期値
-		void push_back_column(const value_type& value);
+		constexpr void push_back_column(const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -622,7 +622,7 @@ namespace s3d
 
 		/// @brief 末尾の列を削除します。
 		/// @throw std::out_of_range 配列の幅（列数）が 0 の場合
-		void pop_back_column();
+		constexpr void pop_back_column();
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -634,7 +634,7 @@ namespace s3d
 		/// @param y 挿入する行のインデックス
 		/// @param value 挿入する行の要素の初期値
 		/// @throw std::out_of_range 挿入する行のインデックスが範囲外の場合
-		void insert_row(size_type y, const value_type& value);
+		constexpr void insert_row(size_type y, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -647,7 +647,7 @@ namespace s3d
 		/// @param n 挿入する行の数
 		/// @param value 挿入する行の要素の初期値
 		/// @throw std::out_of_range 挿入する行のインデックスが範囲外の場合
-		void insert_rows(size_type y, size_type n, const value_type& value);
+		constexpr void insert_rows(size_type y, size_type n, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -659,7 +659,7 @@ namespace s3d
 		/// @param x 挿入する列のインデックス
 		/// @param value 挿入する列の要素の初期値
 		/// @throw std::out_of_range 挿入する列のインデックスが範囲外の場合
-		void insert_column(size_type x, const value_type& value);
+		constexpr void insert_column(size_type x, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -672,7 +672,7 @@ namespace s3d
 		/// @param n 挿入する列の数
 		/// @param value 挿入する列の要素の初期値
 		/// @throw std::out_of_range 挿入する列のインデックスが範囲外の場合
-		void insert_columns(size_type x, size_type n, const value_type& value);
+		constexpr void insert_columns(size_type x, size_type n, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -683,7 +683,7 @@ namespace s3d
 		/// @brief 指定した行を削除します。
 		/// @param y 削除する行のインデックス
 		/// @throw std::out_of_range 削除する行のインデックスが範囲外の場合
-		void remove_row(size_type y);
+		constexpr void remove_row(size_type y);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -695,7 +695,7 @@ namespace s3d
 		/// @param y 削除を開始する行のインデックス
 		/// @param count 削除する行の数
 		/// @throw std::out_of_range 削除する対象が範囲外の場合
-		void remove_rows(size_type y, size_type count);
+		constexpr void remove_rows(size_type y, size_type n);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -703,7 +703,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void remove_column(size_type x);
+		/// @brief 指定した列を削除します。
+		/// @param x 削除する列のインデックス
+		/// @throw std::out_of_range 削除する列のインデックスが範囲外の場合
+		constexpr void remove_column(size_type x);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -711,21 +714,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void remove_columns(size_type x, size_type count);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	resize
-		//
-		////////////////////////////////////////////////////////////////
-
-		void resize(size_type w, size_type h);
-
-		void resize(Size size);
-
-		void resize(size_type w, size_type h, const value_type& value);
-
-		void resize(Size size, const value_type& value);
+		/// @brief 指定した列を削除します。
+		/// @param x 削除を開始する列のインデックス
+		/// @param count 削除する列の数
+		/// @throw std::out_of_range 削除する対象が範囲外の場合
+		constexpr void remove_columns(size_type x, size_type count);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -733,9 +726,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void resizeWidth(size_type w);
+		/// @brief 幅を変更します。
+		/// @param w 新しい幅
+		/// @remark 新しい幅が現在の幅より小さい場合、右端の列が削除されます。
+		/// @remark 新しい幅が現在の幅より大きい場合、右端に追加される列の要素は `value_type{}` で初期化されます。
+		constexpr void resizeWidth(size_type w);
 
-		void resizeWidth(size_type w, const value_type& value);
+		/// @brief 幅を変更します。
+		/// @param w 新しい幅
+		/// @param value 新しい列の要素の初期値
+		/// @remark 新しい幅が現在の幅より小さい場合、右端の列が削除されます。
+		/// @remark 新しい幅が現在の幅より大きい場合、右端に追加される列の要素は `value` で初期化されます。
+		constexpr void resizeWidth(size_type w, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -743,9 +745,52 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void resizeHeight(size_type h);
+		/// @brief 高さを変更します。
+		/// @param h 新しい高さ
+		/// @remark 新しい高さが現在の高さより小さい場合、下端の行が削除されます。
+		/// @remark 新しい高さが現在の高さより大きい場合、下端に追加される行の要素は `value_type{}` で初期化されます。
+		constexpr void resizeHeight(size_type h);
 
-		void resizeHeight(size_type h, const value_type& value);
+		/// @brief 高さを変更します。
+		/// @param h 新しい高さ
+		/// @param value 新しい行の要素の初期値
+		/// @remark 新しい高さが現在の高さより小さい場合、下端の行が削除されます。
+		/// @remark 新しい高さが現在の高さより大きい場合、下端に追加される行の要素は `value` で初期化されます。
+		constexpr void resizeHeight(size_type h, const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	resize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 幅と高さを変更します。
+		/// @param w 新しい幅
+		/// @param h 新しい高さ
+		/// @remark 新しい幅や高さが現在のよりも小さい場合、右端の列、下端の行が削除されます。
+		/// @remark 新しい幅や高さが現在のよりも大きい場合、右端に追加される列、下端に追加される行の要素は `value_type{}` で初期化されます。
+		constexpr void resize(size_type w, size_type h);
+
+		/// @brief 幅と高さを変更します。
+		/// @param size 新しい幅と高さ
+		/// @remark 新しい幅や高さが現在のよりも小さい場合、右端の列、下端の行が削除されます。
+		/// @remark 新しい幅や高さが現在のよりも大きい場合、右端に追加される列、下端に追加される行の要素は `value_type{}` で初期化されます。
+		constexpr void resize(Size size);
+
+		/// @brief 幅と高さを変更します。
+		/// @param w 新しい幅
+		/// @param h 新しい高さ
+		/// @param value 新しい列、行の要素の初期値
+		/// @remark 新しい幅や高さが現在のよりも小さい場合、右端の列、下端の行が削除されます。
+		/// @remark 新しい幅や高さが現在のよりも大きい場合、右端に追加される列、下端に追加される行の要素は `value` で初期化されます。
+		constexpr void resize(size_type w, size_type h, const value_type& value);
+
+		/// @brief 幅と高さを変更します。
+		/// @param size 新しい幅と高さ
+		/// @param value 新しい列、行の要素の初期値
+		/// @remark 新しい幅や高さが現在のよりも小さい場合、右端の列、下端の行が削除されます。
+		/// @remark 新しい幅や高さが現在のよりも大きい場合、右端に追加される列、下端に追加される行の要素は `value` で初期化されます。
+		constexpr void resize(Size size, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -753,7 +798,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void rotate90() noexcept;
+		/// @brief 90° 回転します。
+		/// @remark 幅と高さが入れ替わります。
+		void rotate90();
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -761,7 +808,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void rotate180() noexcept;
+		/// @brief 180° 回転します。
+		constexpr void rotate180() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -769,7 +817,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void rotate270() noexcept;
+		/// @brief 270° 回転します。
+		/// @remark 幅と高さが入れ替わります。
+		void rotate270();
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -777,7 +827,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void mirror() noexcept;
+		/// @brief 左右反転します。
+		constexpr void mirror() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -785,7 +836,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void flip() noexcept;
+		/// @brief 上下反転します。
+		constexpr void flip() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	transpose
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 転置します。
+		void transpose();
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -986,13 +1047,6 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 		//
 		//	parallel_map
-		//
-		////////////////////////////////////////////////////////////////
-
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	operator >>
 		//
 		////////////////////////////////////////////////////////////////
 

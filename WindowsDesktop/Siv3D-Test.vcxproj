@@ -25,6 +25,7 @@
     <ClCompile Include="..\Test\Test_Concepts.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
+    <ClCompile Include="..\Test\Test_Grid.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFile.cpp" />

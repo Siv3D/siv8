@@ -54,6 +54,12 @@ namespace s3d
 
 		[[noreturn]]
 		void ThrowGridRemoveRowsOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridRemoveColumnOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridRemoveColumnsOutOfRange();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -795,7 +801,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::push_back_row(const value_type& value)
+	constexpr void Grid<Type, Allocator>::push_back_row(const value_type& value)
 	{
 		m_container.insert(m_container.end(), m_size.x, value);
 		++m_size.y;
@@ -808,7 +814,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::pop_back_row()
+	constexpr void Grid<Type, Allocator>::pop_back_row()
 	{
 		if (m_size.y == 0)
 		{
@@ -826,7 +832,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::push_back_column(const value_type& value)
+	constexpr void Grid<Type, Allocator>::push_back_column(const value_type& value)
 	{
 		if (m_size.y == 0)
 		{
@@ -859,7 +865,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::pop_back_column()
+	constexpr void Grid<Type, Allocator>::pop_back_column()
 	{
 		if (m_size.x == 0)
 		{
@@ -894,7 +900,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::insert_row(const size_type y, const value_type& value)
+	constexpr void Grid<Type, Allocator>::insert_row(const size_type y, const value_type& value)
 	{
 		if (static_cast<size_type>(m_size.y) < y)
 		{
@@ -915,7 +921,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::insert_rows(const size_type y, const size_type count, const value_type& value)
+	constexpr void Grid<Type, Allocator>::insert_rows(const size_type y, const size_type count, const value_type& value)
 	{
 		if (static_cast<size_type>(m_size.y) < y)
 		{
@@ -936,7 +942,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::insert_column(const size_type x, const value_type& value)
+	constexpr void Grid<Type, Allocator>::insert_column(const size_type x, const value_type& value)
 	{
 		if (static_cast<size_type>(m_size.x) < x)
 		{
@@ -983,7 +989,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::insert_columns(const size_type x, const size_type n, const value_type& value)
+	constexpr void Grid<Type, Allocator>::insert_columns(const size_type x, const size_type n, const value_type& value)
 	{
 		if (static_cast<size_type>(m_size.x) < x)
 		{
@@ -1043,7 +1049,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::remove_row(const size_type y)
+	constexpr void Grid<Type, Allocator>::remove_row(const size_type y)
 	{
 		if (static_cast<size_type>(m_size.y) <= y)
 		{
@@ -1064,7 +1070,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	void Grid<Type, Allocator>::remove_rows(const size_type y, const size_type count)
+	constexpr void Grid<Type, Allocator>::remove_rows(const size_type y, const size_type count)
 	{
 		if (static_cast<size_type>(m_size.y) < (y + count))
 		{
@@ -1084,7 +1090,46 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::remove_column(const size_type x)
+	{
+		if (static_cast<size_type>(m_size.x) <= x)
+		{
+			detail::ThrowGridRemoveColumnOutOfRange();
+		}
 
+		if (m_size.y == 0)
+		{
+			--m_size.x;
+			return;
+		}
+
+		const int32 oldWidth = m_size.x;
+		const int32 newWidth = (oldWidth - 1);
+
+		for (int32 row = 0; row < m_size.y; ++row)
+		{
+			const int32 srcRowStart = (row * oldWidth);
+			const int32 destRowStart = (row * newWidth);
+
+			if (0 < x)
+			{
+				std::move((m_container.begin() + srcRowStart),
+					(m_container.begin() + srcRowStart + x),
+					(m_container.begin() + destRowStart));
+			}
+
+			if (x < (oldWidth - 1))
+			{
+				std::move((m_container.begin() + srcRowStart + x + 1),
+					(m_container.begin() + srcRowStart + oldWidth),
+					(m_container.begin() + destRowStart + x));
+			}
+		}
+
+		m_container.resize(m_size.y * newWidth);
+		m_size.x = newWidth;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1092,7 +1137,116 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::remove_columns(const size_type x, const size_type n)
+	{
+		if (static_cast<size_type>(m_size.x) < (x + n))
+		{
+			detail::ThrowGridRemoveColumnsOutOfRange();
+		}
 
+		if (n == 0)
+		{
+			return;
+		}
+
+		if (m_size.y == 0)
+		{
+			m_size.x -= static_cast<int32>(n);
+			return;
+		}
+
+		const int32 oldWidth = m_size.x;
+		const int32 newWidth = (oldWidth - static_cast<int32>(n));
+
+		if (newWidth == 0)
+		{
+			m_container.clear();
+			m_size.x = 0;
+			return;
+		}
+
+		for (int32 row = 0; row < m_size.y; ++row)
+		{
+			const int32 srcRowStart = (row * oldWidth);
+			const int32 destRowStart = (row * newWidth);
+			
+			if (0 < x)
+			{
+				std::move((m_container.begin() + srcRowStart),
+					(m_container.begin() + srcRowStart + x),
+					(m_container.begin() + destRowStart));
+			}
+			
+			if (x < (oldWidth - n))
+			{
+				std::move((m_container.begin() + srcRowStart + x + n),
+					(m_container.begin() + srcRowStart + oldWidth),
+					(m_container.begin() + destRowStart + x));
+			}
+		}
+
+		m_container.resize(m_size.y * newWidth);
+		m_size.x = newWidth;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resizeWidth
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::resizeWidth(const size_type w)
+	{
+		resizeWidth(w, value_type{});
+	}
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::resizeWidth(const size_type w, const value_type& value)
+	{
+		const int32 newWidth = static_cast<int32>(w);
+
+		if (m_size.x == newWidth)
+		{
+			return;
+		}
+
+		if (m_size.x == 0)
+		{
+			m_container.clear();
+			m_size.x = newWidth;
+			return;
+		}
+
+		if (newWidth < m_size.x) // shrink
+		{
+			remove_columns(newWidth, (m_size.x - newWidth));
+		}
+		else if (m_size.x < newWidth) // expand
+		{
+			insert_columns(m_size.x, (newWidth - m_size.x), value);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resizeHeight
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::resizeHeight(const size_type h)
+	{
+		resizeHeight(h, value_type{});
+	}
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::resizeHeight(const size_type h, const value_type& value)
+	{
+		m_container.resize((m_size.x * h), value);
+		m_size.y = static_cast<int32>(h);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1100,7 +1254,333 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::resize(const size_type w, const size_type h)
+	{
+		resize(w, h, value_type{});
+	}
 
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::resize(const Size size)
+	{
+		resize(size.x, size.y, value_type{});
+	}
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::resize(const size_type w, const size_type h, const value_type& value)
+	{
+		const int32 oldHeight = m_size.y;
+		const int32 newWidth = static_cast<int32>(w);
+		const int32 newHeight = static_cast<int32>(h);
+
+		if ((newWidth == 0) || (newHeight == 0))
+		{
+			m_container.clear();
+			m_size.x = newWidth;
+			m_size.y = newHeight;
+			return;
+		}
+
+		if (m_container.isEmpty())
+		{
+			m_container.resize((newWidth * newHeight), value);
+			m_size.x = newWidth;
+			m_size.y = newHeight;
+			return;
+		}
+
+		if (newHeight < oldHeight)
+		{
+			resizeHeight(newHeight, value);
+			resizeWidth(newWidth, value);
+		}
+		else
+		{
+			m_container.reserve(newWidth * newHeight);
+			resizeWidth(newWidth, value);
+			resizeHeight(newHeight, value);
+		}
+	}
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::resize(const Size size, const value_type& value)
+	{
+		resize(size.x, size.y, value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate90
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::rotate90()
+	{
+		constexpr size_t BlockSize = 8;
+		const size_t oldWidth = m_size.x;
+		const size_t oldHeight = m_size.y;
+
+		if (oldWidth == oldHeight)
+		{
+			value_type* const pData = data();
+			const size_t halfHeight = (oldHeight / 2);
+			const size_t halfWidth = (halfHeight + oldHeight % 2);
+
+			for (size_t b = 0; b < halfWidth; b += BlockSize)
+			{
+				for (size_t y = 0; y < halfHeight; ++y)
+				{
+					value_type* p1 = (pData + y * oldWidth + b);
+					value_type* p2 = (pData + (oldHeight - b - 1) * oldWidth + y);
+					value_type* p3 = (pData + (oldHeight - y) * oldWidth - b - 1);
+					value_type* p4 = (pData + (b + 1) * oldWidth - y - 1);
+					const size_t w = Min((halfWidth - b), BlockSize);
+
+					for (size_t x = 0; x < w; ++x)
+					{
+						value_type tmp = std::move(*p1);
+						*p1 = std::move(*p2);
+						*p2 = std::move(*p3);
+						*p3 = std::move(*p4);
+						*p4 = std::move(tmp);
+						++p1;
+						p2 -= oldWidth;
+						--p3;
+						p4 += oldWidth;
+					}
+				}
+			}
+		}
+		else
+		{
+			Grid newGrid(oldHeight, oldWidth);
+
+			value_type* const pSrcBase = m_container.data();
+			value_type* const pDstBase = newGrid.data();
+
+			for (size_t b = 0; b < oldWidth; b += BlockSize)
+			{
+				value_type* const pDstLine = (pDstBase + b * oldHeight);
+				const size_t w = Min((oldWidth - b), BlockSize);
+
+				for (size_t y = 0; y < oldHeight; ++y)
+				{
+					value_type* pSrc = (pSrcBase + (y * oldWidth + b));
+					value_type* pDst = (pDstLine + (oldHeight - y - 1));
+
+					for (size_t x = 0; x < w; ++x)
+					{
+						*pDst = std::move(*pSrc++);
+						pDst += oldHeight;
+					}
+				}
+			}
+			
+			swap(newGrid);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate180
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::rotate180() noexcept
+	{
+		std::reverse(m_container.begin(), m_container.end());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate270
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::rotate270()
+	{
+		constexpr size_t BlockSize = 8;
+		const size_t oldWidth = m_size.x;
+		const size_t oldHeight = m_size.y;
+
+		if (oldWidth == oldHeight)
+		{
+			value_type* const pData = data();
+			const size_t halfHeight = (oldHeight / 2);
+			const size_t halfWidth = (halfHeight + oldHeight % 2);
+
+			for (size_t b = 0; b < halfWidth; b += BlockSize)
+			{
+				for (size_t y = 0; y < halfHeight; ++y)
+				{
+					value_type* p1 = (pData + y * oldWidth + b);
+					value_type* p2 = (pData + (oldHeight - b - 1) * oldWidth + y);
+					value_type* p3 = (pData + (oldHeight - y) * oldWidth - b - 1);
+					value_type* p4 = (pData + (b + 1) * oldWidth - y - 1);
+					const size_t w = Min((halfWidth - b), BlockSize);
+
+					for (size_t x = 0; x < w; ++x)
+					{
+						value_type tmp = std::move(*p1);
+						*p1 = std::move(*p4);
+						*p4 = std::move(*p3);
+						*p3 = std::move(*p2);
+						*p2 = std::move(tmp);
+						++p1;
+						p2 -= oldWidth;
+						--p3;
+						p4 += oldWidth;
+					}
+				}
+			}
+		}
+		else
+		{
+			Grid newGrid(oldHeight, oldWidth);
+
+			value_type* const pSrcBase = m_container.data();
+			value_type* const pDstBase = newGrid.data();
+
+			for (size_t b = 0; b < oldWidth; b += BlockSize)
+			{
+				value_type* const pDstLine = (pDstBase + (oldWidth - b - 1) * oldHeight);
+				const size_t w = Min((oldWidth - b), BlockSize);
+
+				for (size_t y = 0; y < oldHeight; ++y)
+				{
+					value_type* pSrc = (pSrcBase + (y * oldWidth + b));
+					value_type* pDst = (pDstLine + y);
+
+					for (size_t x = 0; x < w; ++x)
+					{
+						*pDst = std::move(*pSrc++);
+						pDst -= oldHeight;
+					}
+				}
+			}
+
+			swap(newGrid);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mirror
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::mirror() noexcept
+	{
+		auto it = m_container.begin();
+
+		for (int32 y = 0; y < m_size.y; ++y)
+		{
+			std::reverse(it, (it + m_size.x));
+			it += m_size.x;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	flip
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr void Grid<Type, Allocator>::flip() noexcept
+	{
+		for (int32 y = 0; y < (m_size.y / 2); ++y)
+		{
+			const auto rowTop = (m_container.begin() + (y * m_size.x));
+			const auto rowBottom = (m_container.begin() + ((m_size.y - 1 - y) * m_size.x));
+
+			std::swap_ranges(rowTop, (rowTop + m_size.x), rowBottom);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	transpose
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::transpose()
+	{
+		constexpr size_t BlockSize = 8;
+
+		if (m_size.x == m_size.y)
+		{
+			value_type* const pData = data();
+
+			for (size_t i = 0; i < m_size.x; i += BlockSize)
+			{
+				const size_t iMax = Min<size_t>((i + BlockSize), m_size.x);
+
+				for (size_t y = i; y < iMax; ++y)
+				{
+					for (size_t x = i; x < y; ++x)
+					{
+						value_type* p1 = (pData + y * m_size.x + x);
+						value_type* p2 = (pData + x * m_size.x + y);
+
+						value_type tmp = std::move(*p1);
+						*p1 = std::move(*p2);
+						*p2 = std::move(tmp);
+					}
+				}
+
+				for (size_t k = i + BlockSize; k < m_size.x; k += BlockSize)
+				{
+					const size_t kMax = Min<size_t>((k + BlockSize), m_size.x);
+
+					for (size_t y = i; y < iMax; ++y)
+					{
+						for (size_t x = k; x < kMax; ++x)
+						{
+							value_type* p1 = (pData + y * m_size.x + x);
+							value_type* p2 = (pData + x * m_size.x + y);
+
+							value_type tmp = std::move(*p1);
+							*p1 = std::move(*p2);
+							*p2 = std::move(tmp);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			Grid newGrid(m_size.y, m_size.x);
+
+			value_type* const pSrcBase = data();
+			value_type* const pDstBase = newGrid.data();
+
+			for (size_t b = 0; b < m_size.x; b += BlockSize)
+			{
+				value_type* const pDstLine = (pDstBase + b * m_size.y);
+				const size_t w = Min<size_t>((m_size.x - b), BlockSize);
+
+				for (size_t y = 0; y < m_size.y; ++y)
+				{
+					value_type* pSrc = (pSrcBase + (y * m_size.x + b));
+					value_type* pDst = (pDstLine + y);
+
+					for (size_t x = 0; x < w; ++x)
+					{
+						*pDst = std::move(*pSrc++);
+						pDst += m_size.y;
+					}
+				}
+			}
+
+			swap(newGrid);
+		}
+	}
 
 
 

@@ -67,5 +67,17 @@ namespace s3d
 			// 指定した行が存在しないため、行を削除できません。
 			throw std::out_of_range{ "Grid::remove_rows(): index out of range" };
 		}
+
+		void ThrowGridRemoveColumnOutOfRange()
+		{
+			// 指定した列が存在しないため、列を削除できません。
+			throw std::out_of_range{ "Grid::remove_column(): index out of range" };
+		}
+
+		void ThrowGridRemoveColumnsOutOfRange()
+		{
+			// 指定した列が存在しないため、列を削除できません。
+			throw std::out_of_range{ "Grid::remove_columns(): index out of range" };
+		}
 	}
 }
