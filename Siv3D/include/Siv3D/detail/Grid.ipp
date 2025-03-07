@@ -30,6 +30,30 @@ namespace s3d
 
 		[[noreturn]]
 		void ThrowGridAtOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridPopBackRowOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridPopBackColumnOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridInsertRowOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridInsertRowsOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridInsertColumnOutOfRange();
+	
+		[[noreturn]]
+		void ThrowGridInsertColumnsOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridRemoveRowOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridRemoveRowsOutOfRange();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -724,9 +748,6 @@ namespace s3d
 		m_container.swap(other.m_container);
 	}
 
-
-
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	row
@@ -766,6 +787,318 @@ namespace s3d
 		assert(x < static_cast<size_type>(m_size.x));
 		return (m_container | std::views::drop(x) | std::views::stride(m_size.x));
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	push_back_row
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::push_back_row(const value_type& value)
+	{
+		m_container.insert(m_container.end(), m_size.x, value);
+		++m_size.y;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pop_back_row
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::pop_back_row()
+	{
+		if (m_size.y == 0)
+		{
+			detail::ThrowGridPopBackRowOutOfRange();
+		}
+		
+		m_container.resize(m_container.size() - m_size.x);
+		--m_size.y;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	push_back_column
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::push_back_column(const value_type& value)
+	{
+		if (m_size.y == 0)
+		{
+			++m_size.x;
+			return;
+		}
+
+		const int32 oldWidth = m_size.x;
+		const int32 newWidth = (m_size.x + 1);
+
+		m_container.resize(m_size.y * newWidth);
+
+		for (int32 row = (m_size.y - 1); 0 <= row; --row)
+		{
+			const auto srcBegin = (m_container.begin() + row * oldWidth);
+			const auto srcEnd = (srcBegin + oldWidth);
+			const auto dstEnd = (m_container.begin() + row * newWidth + oldWidth);
+			
+			std::move_backward(srcBegin, srcEnd, dstEnd);
+			m_container[row * newWidth + oldWidth] = value;
+		}
+		
+		m_size.x = newWidth;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pop_back_column
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::pop_back_column()
+	{
+		if (m_size.x == 0)
+		{
+			detail::ThrowGridPopBackColumnOutOfRange();
+		}
+
+		if (m_size.y == 0)
+		{
+			--m_size.x;
+			return;
+		}
+		
+		const int32 newWidth = (m_size.x - 1);
+
+		for (int32 row = 0; row < m_size.y; ++row)
+		{
+			const auto srcBegin = (m_container.begin() + row * m_size.x);
+			const auto srcEnd = (srcBegin + newWidth);
+			const auto dstBegin = (m_container.begin() + row * newWidth);
+
+			std::move(srcBegin, srcEnd, dstBegin);
+		}
+
+		m_container.resize(m_size.y * newWidth);
+		m_size.x = newWidth;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	insert_row
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::insert_row(const size_type y, const value_type& value)
+	{
+		if (static_cast<size_type>(m_size.y) < y)
+		{
+			detail::ThrowGridInsertRowOutOfRange();
+		}
+
+		const auto it = (m_container.begin() + (y * m_size.x));
+
+		m_container.insert(it, m_size.x, value);
+
+		++m_size.y;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	insert_rows
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::insert_rows(const size_type y, const size_type count, const value_type& value)
+	{
+		if (static_cast<size_type>(m_size.y) < y)
+		{
+			detail::ThrowGridInsertRowsOutOfRange();
+		}
+
+		const auto it = (m_container.begin() + (y * m_size.x));
+
+		m_container.insert(it, (m_size.x * count), value);
+		
+		m_size.y += count;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	insert_column
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::insert_column(const size_type x, const value_type& value)
+	{
+		if (static_cast<size_type>(m_size.x) < x)
+		{
+			detail::ThrowGridInsertColumnOutOfRange();
+		}
+		
+		if (m_size.y == 0)
+		{
+			++m_size.x;
+			return;
+		}
+		
+		const int32 oldWidth = m_size.x;
+		const int32 newWidth = oldWidth + 1;
+
+		m_container.resize(m_size.y * newWidth);
+
+		for (int32 row = (m_size.y - 1); 0 <= row; --row)
+		{
+			const int32 oldRowStart = (row * oldWidth);
+			const int32 newRowStart = (row * newWidth);
+
+			std::move_backward((m_container.begin() + oldRowStart + x),
+				(m_container.begin() + oldRowStart + oldWidth),
+				(m_container.begin() + newRowStart + newWidth));
+
+			m_container[newRowStart + x] = value;
+
+			if (newRowStart != oldRowStart)
+			{
+				std::copy(m_container.begin() + oldRowStart,
+					m_container.begin() + oldRowStart + x,
+					m_container.begin() + newRowStart);
+			}
+		}
+
+		m_size.x = newWidth;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	insert_columns
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::insert_columns(const size_type x, const size_type n, const value_type& value)
+	{
+		if (static_cast<size_type>(m_size.x) < x)
+		{
+			detail::ThrowGridInsertColumnsOutOfRange();
+		}
+
+		if (n == 0)
+		{
+			return;
+		}
+
+		if (m_size.y == 0)
+		{
+			m_size.x += static_cast<int32>(n);
+			return;
+		}
+
+		const int32 oldWidth = m_size.x;
+		const int32 newWidth = (oldWidth + static_cast<int32>(n));
+
+		m_container.resize(m_size.y * newWidth);
+
+		for (int32 row = (m_size.y - 1); 0 <= row; --row)
+		{
+			const int32 oldRowStart = (row * oldWidth);
+			const int32 newRowStart = (row * newWidth);
+
+			std::move_backward(
+				(m_container.begin() + oldRowStart + x),
+				(m_container.begin() + oldRowStart + oldWidth),
+				(m_container.begin() + newRowStart + newWidth)
+			);
+
+			std::fill(
+				(m_container.begin() + newRowStart + x),
+				(m_container.begin() + newRowStart + x + n),
+				value
+			);
+
+			if (newRowStart != oldRowStart)
+			{
+				std::move_backward(
+					(m_container.begin() + oldRowStart),
+					(m_container.begin() + oldRowStart + x),
+					(m_container.begin() + newRowStart + x)
+				);
+			}
+		}
+
+		m_size.x = newWidth;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	remove_row
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::remove_row(const size_type y)
+	{
+		if (static_cast<size_type>(m_size.y) <= y)
+		{
+			detail::ThrowGridRemoveRowOutOfRange();
+		}
+
+		const auto it = (m_container.begin() + (y * m_size.x));
+		
+		m_container.erase(it, (it + m_size.x));
+		
+		--m_size.y;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	remove_rows
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	void Grid<Type, Allocator>::remove_rows(const size_type y, const size_type count)
+	{
+		if (static_cast<size_type>(m_size.y) < (y + count))
+		{
+			detail::ThrowGridRemoveRowsOutOfRange();
+		}
+
+		const auto it = (m_container.begin() + (y * m_size.x));
+
+		m_container.erase(it, (it + m_size.x * count));
+
+		m_size.y -= static_cast<int32>(count);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	remove_column
+	//
+	////////////////////////////////////////////////////////////////
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	remove_columns
+	//
+	////////////////////////////////////////////////////////////////
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resize
+	//
+	////////////////////////////////////////////////////////////////
 
 
 
