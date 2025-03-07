@@ -1323,10 +1323,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Format.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\SequenceFormatter.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\RangeFormatter.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SequenceFormatter.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RangeFormatter.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\EscapedFormatter.hpp">

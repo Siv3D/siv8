@@ -11,7 +11,7 @@
 
 # include "Siv3DTest.hpp"
 
-TEST_CASE("SequenceFormatter")
+TEST_CASE("RangeFormatter")
 {
 	{
 		const int32 ia[3] = { 1, 2, 3 };

@@ -32,7 +32,7 @@
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
-    <ClCompile Include="..\Test\Test_SequenceFormatter.cpp" />
+    <ClCompile Include="..\Test\Test_RangeFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FunctionRef.cpp" />
     <ClCompile Include="..\Test\Test_Hash.cpp" />
     <ClCompile Include="..\Test\Test_Indexed.cpp" />

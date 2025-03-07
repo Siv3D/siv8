@@ -67,7 +67,7 @@
     <ClCompile Include="..\Test\Test_FmtExtension.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Test\Test_SequenceFormatter.cpp">
+    <ClCompile Include="..\Test\Test_RangeFormatter.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_TupleFormatter.cpp">

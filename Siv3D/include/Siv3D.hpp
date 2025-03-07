@@ -270,7 +270,7 @@
 # include <Siv3D/Formatter.hpp>
 
 // 配列のフォーマッタ | Array formatter
-# include <Siv3D/SequenceFormatter.hpp>
+# include <Siv3D/RangeFormatter.hpp>
 
 // タプルのフォーマッタ | Tuple formatter
 # include <Siv3D/TupleFormatter.hpp>

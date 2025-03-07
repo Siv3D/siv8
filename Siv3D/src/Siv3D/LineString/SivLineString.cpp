@@ -11,7 +11,7 @@
 
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/LineCap.hpp>
-# include <Siv3D/SequenceFormatter.hpp>
+# include <Siv3D/RangeFormatter.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
