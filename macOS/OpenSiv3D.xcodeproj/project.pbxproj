@@ -256,7 +256,6 @@
 		F9070CC62B9F175000383E4D /* HardwareRNG.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BED2B9F175000383E4D /* HardwareRNG.hpp */; };
 		F9070CC72B9F175000383E4D /* Hash.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BEE2B9F175000383E4D /* Hash.hpp */; };
 		F9070CC82B9F175000383E4D /* HashSet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BEF2B9F175000383E4D /* HashSet.hpp */; };
-		F9070CC92B9F175000383E4D /* HashTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BF02B9F175000383E4D /* HashTable.hpp */; };
 		F9070CCA2B9F175100383E4D /* HeterogeneousLookupHelper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BF12B9F175000383E4D /* HeterogeneousLookupHelper.hpp */; };
 		F9070CCB2B9F175100383E4D /* HSV.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BF22B9F175000383E4D /* HSV.hpp */; };
 		F9070CCC2B9F175100383E4D /* Indexed.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BF32B9F175000383E4D /* Indexed.hpp */; };
@@ -282,8 +281,6 @@
 		F9070CE02B9F175100383E4D /* Obfuscation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C072B9F175000383E4D /* Obfuscation.hpp */; };
 		F9070CE12B9F175100383E4D /* OpenMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C082B9F175000383E4D /* OpenMode.hpp */; };
 		F9070CE22B9F175100383E4D /* Optional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C092B9F175000383E4D /* Optional.hpp */; };
-		F9070CE32B9F175100383E4D /* OrderedSet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C0A2B9F175000383E4D /* OrderedSet.hpp */; };
-		F9070CE42B9F175100383E4D /* OrderedTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C0B2B9F175000383E4D /* OrderedTable.hpp */; };
 		F9070CE52B9F175100383E4D /* Palette.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C0C2B9F175000383E4D /* Palette.hpp */; };
 		F9070CE62B9F175100383E4D /* Parse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C0D2B9F175000383E4D /* Parse.hpp */; };
 		F9070CE72B9F175100383E4D /* ParseBool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C0E2B9F175000383E4D /* ParseBool.hpp */; };
@@ -836,6 +833,10 @@
 		F97E6DB32D7A89CF0066E408 /* RangeFormatter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DB22D7A89CF0066E408 /* RangeFormatter.hpp */; };
 		F97E6DB52D7A89F10066E408 /* RangeFormatter.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DB42D7A89F10066E408 /* RangeFormatter.ipp */; };
 		F97E6DB72D7A8A1F0066E408 /* Test_RangeFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97E6DB62D7A8A1F0066E408 /* Test_RangeFormatter.cpp */; };
+		F97E6DB92D7B3B9A0066E408 /* Test_Grid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F97E6DB82D7B3B9A0066E408 /* Test_Grid.cpp */; };
+		F97E6DBB2D7B3BC40066E408 /* BTreeMap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DBA2D7B3BC40066E408 /* BTreeMap.hpp */; };
+		F97E6DBD2D7B3BCF0066E408 /* BTreeSet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DBC2D7B3BCF0066E408 /* BTreeSet.hpp */; };
+		F97E6DBF2D7B3BEA0066E408 /* HashMap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DBE2D7B3BEA0066E408 /* HashMap.hpp */; };
 		F9807D792BF1092600D9B590 /* 2d.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D762BF1092600D9B590 /* 2d.metal */; };
 		F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */ = {isa = PBXBuildFile; fileRef = F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */; };
 		F9807D7F2BF1229700D9B590 /* MetalInternalTexture2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */; };
@@ -2763,7 +2764,6 @@
 		F9070BED2B9F175000383E4D /* HardwareRNG.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HardwareRNG.hpp; sourceTree = "<group>"; };
 		F9070BEE2B9F175000383E4D /* Hash.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Hash.hpp; sourceTree = "<group>"; };
 		F9070BEF2B9F175000383E4D /* HashSet.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HashSet.hpp; sourceTree = "<group>"; };
-		F9070BF02B9F175000383E4D /* HashTable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HashTable.hpp; sourceTree = "<group>"; };
 		F9070BF12B9F175000383E4D /* HeterogeneousLookupHelper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HeterogeneousLookupHelper.hpp; sourceTree = "<group>"; };
 		F9070BF22B9F175000383E4D /* HSV.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HSV.hpp; sourceTree = "<group>"; };
 		F9070BF32B9F175000383E4D /* Indexed.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Indexed.hpp; sourceTree = "<group>"; };
@@ -2789,8 +2789,6 @@
 		F9070C072B9F175000383E4D /* Obfuscation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Obfuscation.hpp; sourceTree = "<group>"; };
 		F9070C082B9F175000383E4D /* OpenMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = OpenMode.hpp; sourceTree = "<group>"; };
 		F9070C092B9F175000383E4D /* Optional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Optional.hpp; sourceTree = "<group>"; };
-		F9070C0A2B9F175000383E4D /* OrderedSet.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = OrderedSet.hpp; sourceTree = "<group>"; };
-		F9070C0B2B9F175000383E4D /* OrderedTable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = OrderedTable.hpp; sourceTree = "<group>"; };
 		F9070C0C2B9F175000383E4D /* Palette.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Palette.hpp; sourceTree = "<group>"; };
 		F9070C0D2B9F175000383E4D /* Parse.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Parse.hpp; sourceTree = "<group>"; };
 		F9070C0E2B9F175000383E4D /* ParseBool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ParseBool.hpp; sourceTree = "<group>"; };
@@ -3370,6 +3368,10 @@
 		F97E6DB22D7A89CF0066E408 /* RangeFormatter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RangeFormatter.hpp; sourceTree = "<group>"; };
 		F97E6DB42D7A89F10066E408 /* RangeFormatter.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RangeFormatter.ipp; sourceTree = "<group>"; };
 		F97E6DB62D7A8A1F0066E408 /* Test_RangeFormatter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RangeFormatter.cpp; sourceTree = "<group>"; };
+		F97E6DB82D7B3B9A0066E408 /* Test_Grid.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Grid.cpp; sourceTree = "<group>"; };
+		F97E6DBA2D7B3BC40066E408 /* BTreeMap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BTreeMap.hpp; sourceTree = "<group>"; };
+		F97E6DBC2D7B3BCF0066E408 /* BTreeSet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BTreeSet.hpp; sourceTree = "<group>"; };
+		F97E6DBE2D7B3BEA0066E408 /* HashMap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HashMap.hpp; sourceTree = "<group>"; };
 		F9807D762BF1092600D9B590 /* 2d.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = 2d.metal; sourceTree = "<group>"; };
 		F9807D7A2BF10A3100D9B590 /* fullscreen_triangle.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = fullscreen_triangle.metal; sourceTree = "<group>"; };
 		F9807D7C2BF1229700D9B590 /* MetalInternalTexture2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalInternalTexture2D.hpp; sourceTree = "<group>"; };
@@ -5168,6 +5170,7 @@
 				F90702BC2B9DAEB900383E4D /* Test_FileSystem.cpp */,
 				F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */,
 				F90702BE2B9DAEB900383E4D /* Test_FunctionRef.cpp */,
+				F97E6DB82D7B3B9A0066E408 /* Test_Grid.cpp */,
 				F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */,
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
 				F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */,
@@ -5847,6 +5850,8 @@
 				F980C45A2C01B20F00A86B68 /* BlendStateBuilder.hpp */,
 				F9070BC32B9F175000383E4D /* Blob.hpp */,
 				F9070BC42B9F175000383E4D /* BoolToString.hpp */,
+				F97E6DBA2D7B3BC40066E408 /* BTreeMap.hpp */,
+				F97E6DBC2D7B3BCF0066E408 /* BTreeSet.hpp */,
 				F9070BC52B9F175000383E4D /* Byte.hpp */,
 				F9766B712C29C75E00DE4107 /* Camera2D.hpp */,
 				F9766B732C29C75E00DE4107 /* Camera2DControl.hpp */,
@@ -5925,8 +5930,8 @@
 				F9E5FC2A2BC15AEE0081A4F7 /* HalfFloat.hpp */,
 				F9070BED2B9F175000383E4D /* HardwareRNG.hpp */,
 				F9070BEE2B9F175000383E4D /* Hash.hpp */,
+				F97E6DBE2D7B3BEA0066E408 /* HashMap.hpp */,
 				F9070BEF2B9F175000383E4D /* HashSet.hpp */,
-				F9070BF02B9F175000383E4D /* HashTable.hpp */,
 				F9070BF12B9F175000383E4D /* HeterogeneousLookupHelper.hpp */,
 				F934BD9E2BFA59320003EAD5 /* HLSL.hpp */,
 				F9070BF22B9F175000383E4D /* HSV.hpp */,
@@ -6011,8 +6016,6 @@
 				F9D41CF82C9FD7F200290998 /* OffsetCircular.hpp */,
 				F9070C082B9F175000383E4D /* OpenMode.hpp */,
 				F9070C092B9F175000383E4D /* Optional.hpp */,
-				F9070C0A2B9F175000383E4D /* OrderedSet.hpp */,
-				F9070C0B2B9F175000383E4D /* OrderedTable.hpp */,
 				F9070C0C2B9F175000383E4D /* Palette.hpp */,
 				F9070C0D2B9F175000383E4D /* Parse.hpp */,
 				F9070C0E2B9F175000383E4D /* ParseBool.hpp */,
@@ -10899,6 +10902,7 @@
 				F98600312BCFBB53006A4C0F /* SkPictureRecorder.h in Headers */,
 				F9070CD22B9F175100383E4D /* IWriter.hpp in Headers */,
 				F986FA3F2BCFB53B006A4C0F /* ftmodule.h in Headers */,
+				F97E6DBB2D7B3BC40066E408 /* BTreeMap.hpp in Headers */,
 				F98600982BCFBB53006A4C0F /* SkEncodedInfo.h in Headers */,
 				F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */,
 				F9070CD62B9F175100383E4D /* LoggerBuffer.hpp in Headers */,
@@ -10983,6 +10987,7 @@
 				F98601D22BCFBB53006A4C0F /* SkImageFilterTypes.h in Headers */,
 				F9528BB02BBE7D1100222F45 /* MemoryReader.ipp in Headers */,
 				F98601452BCFBB53006A4C0F /* SkAAClip.h in Headers */,
+				F97E6DBD2D7B3BCF0066E408 /* BTreeSet.hpp in Headers */,
 				F98600222BCFBB53006A4C0F /* SkMallocPixelRef.h in Headers */,
 				F9070D0C2B9F175100383E4D /* UserAction.hpp in Headers */,
 				F9070C9E2B9F175000383E4D /* Byte.hpp in Headers */,
@@ -11189,7 +11194,6 @@
 				F90DA04D2D1A91850003E1E8 /* TextureDescBuilder.hpp in Headers */,
 				F980C41C2C0023BB00A86B68 /* MetalPixelShader.hpp in Headers */,
 				F986FA542BCFB53B006A4C0F /* svsfnt.h in Headers */,
-				F9070CE42B9F175100383E4D /* OrderedTable.hpp in Headers */,
 				F98601B22BCFBB53006A4C0F /* SkEffectPriv.h in Headers */,
 				F9070C8B2B9F175000383E4D /* YesNo.ipp in Headers */,
 				F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */,
@@ -11838,6 +11842,7 @@
 				F9E7942C2C12B861002615BA /* MSL.hpp in Headers */,
 				F9ED45AF2CC156EC006BA10F /* dissolve_traverse.hpp in Headers */,
 				F90706B62B9DAEC900383E4D /* xchar.h in Headers */,
+				F97E6DBF2D7B3BEA0066E408 /* HashMap.hpp in Headers */,
 				F98603092BCFBB54006A4C0F /* SkLineParameters.h in Headers */,
 				F986004E2BCFBB53006A4C0F /* SkTypes.h in Headers */,
 				F9070C4F2B9F175000383E4D /* DateTime.ipp in Headers */,
@@ -11882,7 +11887,6 @@
 				F98600B62BCFBB53006A4C0F /* skcms_Transform.h in Headers */,
 				F9070CF32B9F175100383E4D /* Random.hpp in Headers */,
 				F9070CDB2B9F175100383E4D /* Memory.hpp in Headers */,
-				F9070CC92B9F175000383E4D /* HashTable.hpp in Headers */,
 				F98602072BCFBB53006A4C0F /* SkOpts.h in Headers */,
 				F9E7943D2C12F35F002615BA /* LineStyle.ipp in Headers */,
 				F98600672BCFBB53006A4C0F /* SkTableMaskFilter.h in Headers */,
@@ -12196,7 +12200,6 @@
 				F9528C422BBF026F00222F45 /* divsufsort.h in Headers */,
 				F986FA902BCFB53B006A4C0F /* ftparams.h in Headers */,
 				F9528C192BBF026F00222F45 /* zstd_deps.h in Headers */,
-				F9070CE32B9F175100383E4D /* OrderedSet.hpp in Headers */,
 				F980C4652C01B22900A86B68 /* BlendStateBuilder.ipp in Headers */,
 				F98602672BCFBB54006A4C0F /* SkScan.h in Headers */,
 				F90DA05F2D1A91FB0003E1E8 /* ImageProcessing.hpp in Headers */,
@@ -12450,6 +12453,7 @@
 				F90702FB2B9DAEB900383E4D /* Test_Concepts.cpp in Sources */,
 				F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */,
 				F9528B322BB0564800222F45 /* Test_MemoryMappedFileView.cpp in Sources */,
+				F97E6DB92D7B3B9A0066E408 /* Test_Grid.cpp in Sources */,
 				F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */,
 				F9528B162BAC58A300222F45 /* Test_String.cpp in Sources */,
 				2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */,
