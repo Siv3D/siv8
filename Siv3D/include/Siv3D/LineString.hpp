@@ -16,6 +16,7 @@
 # include "Array.hpp"
 # include "2DShapes.hpp"
 # include "PredefinedYesNo.hpp"
+# include "RangeFormatter.hpp"
 
 namespace s3d
 {

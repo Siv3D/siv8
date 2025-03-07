@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/SpecialFolder.hpp>
+# include <Siv3D/String.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/StringViewAlgorithm.hpp>
 # include <Siv3D/FileSystem.hpp>
