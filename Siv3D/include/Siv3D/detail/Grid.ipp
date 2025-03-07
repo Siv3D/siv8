@@ -780,6 +780,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+# if defined(__cpp_lib_ranges_stride)
+
 	template <class Type, class Allocator>
 	constexpr auto Grid<Type, Allocator>::column(const size_type x) noexcept
 	{
@@ -793,6 +795,8 @@ namespace s3d
 		assert(x < static_cast<size_type>(m_size.x));
 		return (m_container | std::views::drop(x) | std::views::stride(m_size.x));
 	}
+
+# endif
 
 	////////////////////////////////////////////////////////////////
 	//

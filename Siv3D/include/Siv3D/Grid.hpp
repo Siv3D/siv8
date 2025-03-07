@@ -572,6 +572,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+	# if defined(__cpp_lib_ranges_stride)
+
 		/// @brief 指定した列の要素にアクセスするビューを返します。
 		/// @param x 列のインデックス
 		/// @return 指定した列の要素にアクセスするビュー
@@ -583,6 +585,8 @@ namespace s3d
 		/// @return 指定した列の要素にアクセスするビュー
 		[[nodiscard]]
 		constexpr auto column(size_type x) const noexcept;
+
+	# endif
 
 		////////////////////////////////////////////////////////////////
 		//
