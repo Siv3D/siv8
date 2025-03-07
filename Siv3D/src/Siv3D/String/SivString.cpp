@@ -433,9 +433,19 @@ namespace s3d
 		return (*this = regexp.replaceAll(*this, replacement));
 	}
 
+	String& String::replaceAll(const RegExp& regexp, FunctionRef<String(const MatchResults&)> replacementFunc)
+	{
+		return (*this = regexp.replaceAll(*this, replacementFunc));
+	}
+
 	String String::replacedAll(const RegExp& regexp, const StringView replacement) const
 	{
 		return regexp.replaceAll(*this, replacement);
+	}
+
+	String String::replacedAll(const RegExp& regexp, FunctionRef<String(const MatchResults&)> replacementFunc) const
+	{
+		return regexp.replaceAll(*this, replacementFunc);
 	}
 
 	////////////////////////////////////////////////////////////////

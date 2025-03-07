@@ -40,7 +40,7 @@ namespace s3d
 
 			if (r >= 0)
 			{
-				Array<Optional<StringView>> matches;
+				Array<StringView> matches;
 
 				for (int32 i = 0; i < region->num_regs; ++i)
 				{
@@ -161,7 +161,7 @@ namespace s3d
 
 		for (;;)
 		{
-			Array<Optional<StringView>> matches;
+			Array<StringView> matches;
 
 			const int r = ::onig_search(m_regex, pString, pEnd, pStart, pRange, region, ONIG_OPTION_NONE);
 
@@ -316,7 +316,7 @@ namespace s3d
 
 			if (0 <= r)
 			{
-				Array<Optional<StringView>> matches;
+				Array<StringView> matches;
 
 				for (int32 i = 0; i < region->num_regs; ++i)
 				{

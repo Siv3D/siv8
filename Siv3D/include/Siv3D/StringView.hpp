@@ -15,6 +15,7 @@
 # include <string>
 # include "Hash.hpp"
 # include "Utility.hpp"
+# include "FunctionRef.hpp"
 
 namespace s3d
 {
@@ -23,6 +24,9 @@ namespace s3d
 
 	struct FormatData;
 	class String;
+
+	class RegExp;
+	class MatchResults;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1098,6 +1102,39 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		constexpr String replaced_if(Fty f, value_type newChar) const requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replacedFirst
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した正規表現にマッチする最初の部分文字列を置換した新しい文字列を返します。
+		/// @param regexp 置換対象の正規表現
+		/// @param replacement マッチした部分文字列を置換する文字列
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String replacedFirst(const RegExp& regexp, StringView replacement) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replacedAll
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した正規表現にマッチする部分文字列を置換した新しい文字列を返します。
+		/// @param regexp 置換対象の正規表現
+		/// @param replacement マッチした部分文字列を置換する文字列
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String replacedAll(const RegExp& regexp, StringView replacement) const;
+
+		/// @brief 指定した正規表現にマッチする部分文字列を置換した新しい文字列を返します。
+		/// @param regexp 置換対象の正規表現
+		/// @param replacementFunc マッチした部分文字列を置換する関数
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String replacedAll(const RegExp& regexp, FunctionRef<String(const MatchResults&)> replacementFunc) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -21,6 +21,7 @@
 # include <Siv3D/Random.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/HashSet.hpp>
+# include <Siv3D/RegExp.hpp>
 
 namespace s3d
 {
@@ -469,6 +470,33 @@ namespace s3d
 	String StringView::reversed() const
 	{
 		return String{ m_view.rbegin(), m_view.rend() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replacedFirst
+	//
+	////////////////////////////////////////////////////////////////
+
+	String StringView::replacedFirst(const RegExp& regexp, const StringView replacement) const
+	{
+		return regexp.replaceFirst(*this, replacement);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replacedAll
+	//
+	////////////////////////////////////////////////////////////////
+
+	String StringView::replacedAll(const RegExp& regexp, const StringView replacement) const
+	{
+		return regexp.replaceAll(*this, replacement);
+	}
+
+	String StringView::replacedAll(const RegExp& regexp, FunctionRef<String(const MatchResults&)> replacementFunc) const
+	{
+		return regexp.replaceAll(*this, replacementFunc);
 	}
 
 	////////////////////////////////////////////////////////////////

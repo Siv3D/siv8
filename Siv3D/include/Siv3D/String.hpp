@@ -25,8 +25,6 @@ namespace s3d
 	template <class Type>
 	concept StringViewLike = (std::is_convertible_v<const Type&, std::u32string_view> && (not std::is_convertible_v<const Type&, const char32*>));
 
-	class RegExp;
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	String
@@ -1975,12 +1973,25 @@ namespace s3d
 		/// @return *this
 		String& replaceAll(const RegExp& regexp, StringView replacement) SIV3D_LIFETIMEBOUND;
 
+		/// @brief 指定した正規表現にマッチする部分文字列を置換します。
+		/// @param regexp 置換対象の正規表現
+		/// @param replacement マッチした部分文字列を置換する文字列
+		/// @return *this
+		String& replaceAll(const RegExp& regexp, FunctionRef<String(const MatchResults&)> replacementFunc) SIV3D_LIFETIMEBOUND;
+
 		/// @brief 指定した正規表現にマッチする部分文字列を置換した新しい文字列を返します。
 		/// @param regexp 置換対象の正規表現
 		/// @param replacement マッチした部分文字列を置換する文字列
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String replacedAll(const RegExp& regexp, StringView replacement) const;
+
+		/// @brief 指定した正規表現にマッチする部分文字列を置換した新しい文字列を返します。
+		/// @param regexp 置換対象の正規表現
+		/// @param replacementFunc マッチした部分文字列を置換する関数
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String replacedAll(const RegExp& regexp, FunctionRef<String(const MatchResults&)> replacementFunc) const;
 
 		////////////////////////////////////////////////////////////////
 		//
