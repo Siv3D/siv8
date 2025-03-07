@@ -1582,6 +1582,32 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	all
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Grid<Type, Allocator>::all(Fty f) const requires std::predicate<Fty&, const value_type&>
+	{
+		return m_container.all(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	any
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Grid<Type, Allocator>::any(Fty f) const requires std::predicate<Fty&, const value_type&>
+	{
+		return m_container.any(std::forward<Fty>(f));
+	}
+
 
 
 

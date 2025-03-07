@@ -854,6 +854,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief すべての要素が条件を満たすかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -861,13 +868,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	choice
-		//
-		////////////////////////////////////////////////////////////////
-
+		/// @brief 条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -875,11 +882,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した値と等しい要素があるかを返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool contains(const value_type& value) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	contains_if
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @remark `.any(f)` と同じです。
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -887,11 +909,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した値と等しい要素の個数を返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素の個数
+		[[nodiscard]]
+		constexpr isize count(const value_type& value) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	count_if
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素の個数を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素の個数
+		template <class Fty>
+		[[nodiscard]]
+		constexpr isize count_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -899,11 +935,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	each_index
-		//
-		////////////////////////////////////////////////////////////////
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (auto& x : xs) f(x);` と同じです。
+		template <class Fty>
+		constexpr void each(Fty f) requires std::invocable<Fty&, value_type&>;
+
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark `for (const auto& x : xs) f(x);` と同じです。
+		template <class Fty>
+		constexpr void each(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -911,11 +955,35 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスにある要素を返します。インデックスが範囲外の場合デフォルト値を返します。
+		/// @tparam U デフォルト値の型
+		/// @param y Y インデックス
+		/// @param x X インデックス
+		/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
+		/// @return 指定したインデックスにある要素。範囲外の場合は defaultValue
+		template <class U>
+		[[nodiscard]]
+		constexpr value_type fetch(size_type y, size_type x, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>;
+
+		/// @brief 指定した位置にある要素を返します。位置が範囲外の場合デフォルト値を返します。
+		/// @tparam U デフォルト値の型
+		/// @param pos インデックス
+		/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
+		/// @return 指定したインデックスにある要素。範囲外の場合は defaultValue
+		template <class U>
+		[[nodiscard]]
+		constexpr value_type fetch(Point pos, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	fill
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値をすべての要素に代入します。
+		/// @param value 代入する値
+		/// @return *this
+		constexpr Grid& fill(const value_type& value) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -923,11 +991,27 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 各要素に関数を適用した戻り値からなる新しい配列を返します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @return 各要素に関数を適用した戻り値からなる新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr auto map(Fty f) const requires std::invocable<Fty&, const value_type&>;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	none
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素が存在しないかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool none(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -935,11 +1019,73 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えます。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return *this
+		constexpr Grid& replace(const value_type& oldValue, const value_type& newValue)& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid replace(const value_type& oldValue, const value_type& newValue)&&;
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid replaced(const value_type& oldValue, const value_type& newValue) const&;
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid replaced(const value_type& oldValue, const value_type& newValue)&&;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	replace_if, replaced_if
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return *this
+		template <class Fty>
+		constexpr Grid& replace_if(Fty f, const value_type& newValue)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Grid replace_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Grid replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Grid replaced_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -947,17 +1093,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	reverse_each
-		//
-		////////////////////////////////////////////////////////////////
+		/// @brief 配列の要素を逆順に並び替えます。
+		/// @return *this
+		constexpr Grid& reverse()& SIV3D_LIFETIMEBOUND;
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	rotate, rotated
-		//
-		////////////////////////////////////////////////////////////////
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid reverse()&&;
+
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid reversed() const&;
+
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid reversed()&&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -970,6 +1123,48 @@ namespace s3d
 		//	shuffle, shuffled
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素の並び順をランダムにシャッフルします。
+		/// @return *this
+		constexpr Grid& shuffle()& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid shuffle()&&;
+
+		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid shuffled() const&;
+
+		/// @brief 配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid shuffled()&&;
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルします。
+		/// @param rbg 使用する乱数エンジン
+		/// @return *this
+		constexpr Grid& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&;
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+
+		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1050,6 +1245,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用します。
+		/// @tparam Fty 適用する関数の型
+		/// @param f 適用する関数
+		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
+		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
+		template <class Fty>
+		constexpr auto operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
