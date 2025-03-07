@@ -1612,11 +1612,358 @@ namespace s3d
 		return m_container.any(std::forward<Fty>(f));
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr bool Grid<Type, Allocator>::contains(const value_type& value) const
+	{
+		return m_container.contains(value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Grid<Type, Allocator>::contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+	{
+		return m_container.contains_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr isize Grid<Type, Allocator>::count(const value_type& value) const
+	{
+		return m_container.count(value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr isize Grid<Type, Allocator>::count_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+	{
+		return m_container.count_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr void Grid<Type, Allocator>::each(Fty f) requires std::invocable<Fty&, value_type&>
+	{
+		m_container.each(std::forward<Fty>(f));
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr void Grid<Type, Allocator>::each(Fty f) const requires std::invocable<Fty&, const value_type&>
+	{
+		m_container.each(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fetch
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class U>
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const size_type y, const size_type x, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
+	{
+		if (not indexInBounds(y, x))
+		{
+			return value_type(std::forward<U>(defaultValue));
+		}
+
+		return m_container[y * m_size.x + x];
+	}
+
+	template <class Type, class Allocator>
+	template <class U>
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const Point pos, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
+	{
+		return fetch(pos.y, pos.x, std::forward<U>(defaultValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fill
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::fill(const value_type& value)
+	{
+		m_container.fill(value);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	map
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr auto Grid<Type, Allocator>::map(Fty f) const requires std::invocable<Fty&, const value_type&>
+	{
+		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
+
+		Grid<result_value_type> result(m_size);
+
+		auto itDst = result.begin();
+
+		for (const auto& value : m_container)
+		{
+			*itDst++ = f(value);
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	none
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Grid<Type, Allocator>::none(Fty f) const requires std::predicate<Fty&, const value_type&>
+	{
+		return m_container.none(std::forward<Fty>(f));
+	}
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	replace, replaced
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::replace(const value_type& oldValue, const value_type& newValue)&
+	{
+		m_container.replace(oldValue, newValue);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replace(const value_type& oldValue, const value_type& newValue)&&
+	{
+		return std::move(replace(oldValue, newValue));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replaced(const value_type& oldValue, const value_type& newValue) const&
+	{
+		Grid result(*this);
+
+		result.replace(oldValue, newValue);
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replaced(const value_type& oldValue, const value_type& newValue)&&
+	{
+		return std::move(replace(oldValue, newValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replace_if, replaced_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::replace_if(Fty f, const value_type& newValue)& requires std::predicate<Fty&, const value_type&>
+	{
+		m_container.replace_if(std::forward<Fty>(f), newValue);
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replace_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>
+	{
+		return std::move(replace_if(f, newValue));
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty&, const value_type&>
+	{
+		Grid result(*this);
+
+		result.replace_if(std::forward<Fty>(f), newValue);
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replaced_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>
+	{
+		return std::move(replace_if(f, newValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse, reversed
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::reverse()&
+	{
+		m_container.reverse();
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::reverse()&&
+	{
+		return std::move(reverse());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::reversed() const&
+	{
+		Grid result;
+		result.m_container.assign(m_container.rbegin(), m_container.rend());
+		result.m_size = m_size;
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::reversed()&&
+	{
+		return std::move(reverse());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate_rows, rotated_rows
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shuffle, shuffled
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	slice
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sort, sorted
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sort_by, sorted_by
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stable_sort, stable_sorted
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stable_sort_by, stable_sorted_by
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sum
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sumF
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	swap_columns
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	swap_rows
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	values_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	parallel_count_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	parallel_each
+	//
+	////////////////////////////////////////////////////////////////
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	parallel_map
+	//
+	////////////////////////////////////////////////////////////////
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator >>
+	//
+	////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////
 	//

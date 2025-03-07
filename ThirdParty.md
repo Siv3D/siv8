@@ -14,7 +14,7 @@ Name | Version
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 7.0.0
+[fast_float](https://github.com/fastfloat/fast_float) | Version 8.0.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.2
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3

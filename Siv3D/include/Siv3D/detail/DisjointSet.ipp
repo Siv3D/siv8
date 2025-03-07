@@ -76,12 +76,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	find
+	//	root
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <Concept::Integral IndexType>
-	typename DisjointSet<IndexType>::index_type DisjointSet<IndexType>::find(const index_type i) noexcept
+	typename DisjointSet<IndexType>::index_type DisjointSet<IndexType>::root(const index_type i) noexcept
 	{
 		assert(static_cast<size_t>(i) < size());
 
@@ -91,7 +91,7 @@ namespace s3d
 		}
 
 		// path compression
-		return (m_parentsOrSize[i] = find(static_cast<index_type>(m_parentsOrSize[i])));
+		return (m_parentsOrSize[i] = root(static_cast<index_type>(m_parentsOrSize[i])));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ namespace s3d
 		assert(static_cast<size_t>(i) < size());
 		assert(static_cast<size_t>(k) < size());
 
-		return (find(i) == find(k));
+		return (root(i) == root(k));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -132,8 +132,8 @@ namespace s3d
 	template <Concept::Integral IndexType>
 	bool DisjointSet<IndexType>::merge(index_type i, index_type k) noexcept
 	{
-		i = find(i);
-		k = find(k);
+		i = root(i);
+		k = root(k);
 
 		if (i == k) // i and k are already in the same set
 		{
@@ -164,7 +164,7 @@ namespace s3d
 	{
 		assert(static_cast<size_t>(i) < size());
 
-		return static_cast<size_t>(-m_parentsOrSize[find(i)]);
+		return static_cast<size_t>(-m_parentsOrSize[root(i)]);
 	}
 
 	////////////////////////////////////////////////////////////////

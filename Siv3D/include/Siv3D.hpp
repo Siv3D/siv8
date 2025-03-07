@@ -799,9 +799,6 @@
 // 4 次元ベクトル | 4D vector
 # include <Siv3D/Vector4D.hpp> // ToDo
 
-//// ベクトルクラステンプレートの計算補助 | Vector class templates support
-//# include <Siv3D/CommonVector.hpp>
-
 // 2D 描画の頂点 | Vertex elements for 2D rendering
 # include <Siv3D/Vertex2D.hpp>
 
