@@ -42,7 +42,7 @@ Name | Version
 [simdutf](https://github.com/simdutf/simdutf) | Version 6.3.1
 [skia](https://github.com/google/skia) |
 [stduuid](https://github.com/mariusbancila/stduuid) | 
-[The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
+[The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
 [variant](https://github.com/mapbox/variant) | 
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
