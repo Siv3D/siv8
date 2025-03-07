@@ -32,41 +32,41 @@ namespace s3d
 			/// @return 引数を文字列に変換して連結した文字列
 			template <Concept::Formattable... Args>
 			[[nodiscard]]
-			String operator ()(const Args&... args) const;
+			static String operator ()(const Args&... args);
 
 			/// @brief Format できない値が Format() に渡されたときに発生するエラーです
 			template <class... Args>
-			String operator ()(const Args&...) const = delete;
+			static String operator ()(const Args&...) = delete;
 
 			/// @brief 引数を文字列に変換します。
 			/// @param ch 変換する値
 			/// @return 引数から変換された文字列	
 			[[nodiscard]]
-			String operator ()(char32 ch) const;
+			static String operator ()(char32 ch);
 
 			/// @brief 引数を文字列に変換します。
 			/// @param s 変換する値
 			/// @return 引数から変換された文字列	
 			[[nodiscard]]
-			String operator ()(const char32* s) const noexcept;
+			static String operator ()(const char32* s) noexcept;
 
 			/// @brief 引数を文字列に変換します。
 			/// @param s 変換する値
 			/// @return 引数から変換された文字列	
 			[[nodiscard]]
-			String operator ()(StringView s) const noexcept;
+			static String operator ()(StringView s) noexcept;
 
 			/// @brief 引数を文字列に変換します。
 			/// @param s 変換する値
 			/// @return 引数から変換された文字列	
 			[[nodiscard]]
-			String operator ()(const String& s) const;
+			static String operator ()(const String& s);
 
 			/// @brief 引数を文字列に変換します。
 			/// @param s 変換する値
 			/// @return 引数から変換された文字列	
 			[[nodiscard]]
-			String operator ()(String&& s) const noexcept;
+			static String operator ()(String&& s) noexcept;
 
 		private:
 

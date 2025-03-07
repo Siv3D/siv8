@@ -20,7 +20,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Key, class Compare, class Alloc>
-	void Formatter(FormatData& formatData, const OrderedSet<Key, Compare, Alloc>& set)
+	void Formatter(FormatData& formatData, const BTreeSet<Key, Compare, Alloc>& set)
 	{
 		formatData.string.push_back(U'[');
 
@@ -48,7 +48,7 @@ namespace s3d
 	}
 
 	template <class Key, class Value, class Compare, class Alloc>
-	void Formatter(FormatData& formatData, const OrderedTable<Key, Value, Compare, Alloc>& table)
+	void Formatter(FormatData& formatData, const BTreeMap<Key, Value, Compare, Alloc>& table)
 	{
 		formatData.string.push_back(U'{');
 

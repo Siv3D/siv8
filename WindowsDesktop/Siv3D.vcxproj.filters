@@ -1605,10 +1605,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HeterogeneousLookupHelper.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\OrderedSet.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\BTreeSet.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\OrderedTable.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\BTreeMap.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\MapFormatter.hpp">

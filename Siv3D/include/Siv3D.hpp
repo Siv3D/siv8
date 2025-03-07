@@ -210,16 +210,16 @@
 // 文字列ルックアップヘルパー | Heterogeneous lookup helper
 # include <Siv3D/HeterogeneousLookupHelper.hpp>
 
-// 順序付けセット | Ordered set
-# include <Siv3D/OrderedSet.hpp>
+// B-tree セット | B-tree set
+# include <Siv3D/BTreeSet.hpp>
 
-// 順序付けテーブル | Ordered table
-# include <Siv3D/OrderedTable.hpp>
+// B-tree マップ | B-tree map
+# include <Siv3D/BTreeMap.hpp>
 
 // ハッシュセット | Hash set
 # include <Siv3D/HashSet.hpp>
 
-// ハッシュテーブル | Hash table
+// ハッシュマップ | Hash map
 # include <Siv3D/HashTable.hpp>
 
 // kd 木 | kd-tree

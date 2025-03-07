@@ -10,8 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
-# include "OrderedSet.hpp"
-# include "OrderedTable.hpp"
+# include "BTreeSet.hpp"
+# include "BTreeMap.hpp"
 # include "HashSet.hpp"
 # include "HashTable.hpp"
 # include "Formatter.hpp"
@@ -26,10 +26,10 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Key, class Compare, class Alloc>
-	void Formatter(FormatData& formatData, const OrderedSet<Key, Compare, Alloc>& set);
+	void Formatter(FormatData& formatData, const BTreeSet<Key, Compare, Alloc>& set);
 
 	template <class Key, class Value, class Compare, class Alloc>
-	void Formatter(FormatData& formatData, const OrderedTable<Key, Value, Compare, Alloc>& table);
+	void Formatter(FormatData& formatData, const BTreeMap<Key, Value, Compare, Alloc>& table);
 
 	template <class Key, class Hash, class Eq, class Alloc>
 	void Formatter(FormatData& formatData, const HashSet<Key, Hash, Eq, Alloc>& set);

@@ -374,8 +374,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MultiPolygon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OffsetCircular.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\OrderedSet.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\OrderedTable.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\BTreeSet.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\BTreeMap.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Palette.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Parse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ParseFloat.hpp" />
