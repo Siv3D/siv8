@@ -39,7 +39,7 @@ Name | Version
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 5.7.0
+[simdutf](https://github.com/simdutf/simdutf) | Version 6.3.1
 [skia](https://github.com/google/skia) |
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
