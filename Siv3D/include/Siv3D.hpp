@@ -220,7 +220,7 @@
 # include <Siv3D/HashSet.hpp>
 
 // ハッシュマップ | Hash map
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 
 // kd 木 | kd-tree
 # include <Siv3D/KDTree.hpp>

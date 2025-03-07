@@ -13,7 +13,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/RasterizerState.hpp>
 # include <Siv3D/2DShapes.hpp>
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 # include "../Device/D3D11Device.hpp"
 
 namespace s3d
@@ -30,7 +30,7 @@ namespace s3d
 	
 	private:
 
-		using StateTable = HashTable<std::pair<RasterizerState, bool>, ComPtr<ID3D11RasterizerState>>;
+		using StateTable = HashMap<std::pair<RasterizerState, bool>, ComPtr<ID3D11RasterizerState>>;
 
 		ID3D11Device* m_device = nullptr;
 

@@ -13,7 +13,7 @@
 # include "BTreeSet.hpp"
 # include "BTreeMap.hpp"
 # include "HashSet.hpp"
-# include "HashTable.hpp"
+# include "HashMap.hpp"
 # include "Formatter.hpp"
 # include "EscapedFormatter.hpp"
 
@@ -35,7 +35,7 @@ namespace s3d
 	void Formatter(FormatData& formatData, const HashSet<Key, Hash, Eq, Alloc>& set);
 
 	template <class Key, class Value, class Hash, class Eq, class Alloc>
-	void Formatter(FormatData& formatData, const HashTable<Key, Value, Hash, Eq, Alloc>& table);
+	void Formatter(FormatData& formatData, const HashMap<Key, Value, Hash, Eq, Alloc>& table);
 }
 
 # include "detail/MapFormatter.ipp"

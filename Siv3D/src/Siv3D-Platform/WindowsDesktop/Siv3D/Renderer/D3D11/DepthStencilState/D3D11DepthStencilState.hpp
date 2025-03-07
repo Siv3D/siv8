@@ -12,7 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/DepthStencilState.hpp>
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 # include "../Device/D3D11Device.hpp"
 
 namespace s3d
@@ -27,7 +27,7 @@ namespace s3d
 
 	private:
 
-		using StateTable = HashTable<DepthStencilState, ComPtr<ID3D11DepthStencilState>>;
+		using StateTable = HashMap<DepthStencilState, ComPtr<ID3D11DepthStencilState>>;
 
 		ID3D11Device* m_device = nullptr;
 

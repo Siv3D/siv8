@@ -197,11 +197,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HashTable<String, double*> MathParser::MathParserDetail::getUsedVariables() const
+	HashMap<String, double*> MathParser::MathParserDetail::getUsedVariables() const
 	{
 		try
 		{
-			HashTable<String, double*> result;
+			HashMap<String, double*> result;
 
 			for (const auto&[name, value] : m_parser.GetUsedVar())
 			{
@@ -224,11 +224,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HashTable<String, double*> MathParser::MathParserDetail::getVariables() const
+	HashMap<String, double*> MathParser::MathParserDetail::getVariables() const
 	{
 		try
 		{
-			HashTable<String, double*> result;
+			HashMap<String, double*> result;
 
 			for (const auto& [name, value] : m_parser.GetVar())
 			{
@@ -251,11 +251,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HashTable<String, double> MathParser::MathParserDetail::getConstants() const
+	HashMap<String, double> MathParser::MathParserDetail::getConstants() const
 	{
 		try
 		{
-			HashTable<String, double> result;
+			HashMap<String, double> result;
 
 			for (const auto& [name, value] : m_parser.GetConst())
 			{

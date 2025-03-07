@@ -11,7 +11,7 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 # include <Siv3D/Renderer/Metal/Metal.hpp>
 # include "PipelineStateDesc.hpp"
 
@@ -33,6 +33,6 @@ namespace s3d
 
 		CShader_Metal* m_pShader		= nullptr;
 
-		HashTable<PipelineStateDesc, NS::SharedPtr<MTL::RenderPipelineState>> m_pipelineStates;
+		HashMap<PipelineStateDesc, NS::SharedPtr<MTL::RenderPipelineState>> m_pipelineStates;
 	};
 }

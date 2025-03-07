@@ -13,7 +13,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/SamplerState.hpp>
 # include <Siv3D/Graphics.hpp>
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 # include "../Metal.hpp"
 
 namespace s3d
@@ -32,7 +32,7 @@ namespace s3d
 	
 	private:
 	
-		using StateTable = HashTable<SamplerState, NS::SharedPtr<MTL::SamplerState>>;
+		using StateTable = HashMap<SamplerState, NS::SharedPtr<MTL::SamplerState>>;
 		
 		MTL::Device* m_device = nullptr;
 

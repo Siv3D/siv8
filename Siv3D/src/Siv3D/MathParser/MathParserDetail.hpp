@@ -67,13 +67,13 @@ namespace s3d
 		String getExpression() const;
 
 		[[nodiscard]]
-		HashTable<String, double*> getUsedVariables() const;
+		HashMap<String, double*> getUsedVariables() const;
 
 		[[nodiscard]]
-		HashTable<String, double*> getVariables() const;
+		HashMap<String, double*> getVariables() const;
 
 		[[nodiscard]]
-		HashTable<String, double> getConstants() const;
+		HashMap<String, double> getConstants() const;
 
 		[[nodiscard]]
 		String validNameCharacters() const;

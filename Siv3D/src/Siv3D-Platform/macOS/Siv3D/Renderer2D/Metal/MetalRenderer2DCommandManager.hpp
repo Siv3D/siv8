@@ -11,7 +11,7 @@
 
 # pragma once
 # include <Siv3D/Array.hpp>
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/BlendState.hpp>
@@ -195,7 +195,7 @@ namespace s3d
 
 		struct Reserved
 		{
-			HashTable<Texture::IDType, Texture> textures;
+			HashMap<Texture::IDType, Texture> textures;
 
 		} m_reserved;
 

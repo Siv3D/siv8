@@ -106,7 +106,7 @@ namespace s3d
 	}
 
 	template <class Key, class Value, class Hash, class Eq, class Alloc>
-	void Formatter(FormatData& formatData, const HashTable<Key, Value, Hash, Eq, Alloc>& table)
+	void Formatter(FormatData& formatData, const HashMap<Key, Value, Hash, Eq, Alloc>& table)
 	{
 		formatData.string.push_back(U'{');
 

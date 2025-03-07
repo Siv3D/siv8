@@ -13,7 +13,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/SamplerState.hpp>
 # include <Siv3D/Graphics.hpp>
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 # include "../Device/D3D11Device.hpp"
 
 namespace s3d
@@ -30,7 +30,7 @@ namespace s3d
 	
 	private:
 
-		using StateTable = HashTable<SamplerState, ComPtr<ID3D11SamplerState>>;
+		using StateTable = HashMap<SamplerState, ComPtr<ID3D11SamplerState>>;
 
 		ID3D11Device* m_device = nullptr;
 

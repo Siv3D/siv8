@@ -297,7 +297,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HalfFloat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HardwareRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HashSet.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\HashTable.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\HashMap.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HeterogeneousLookupHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HLSL.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HSV.hpp" />
