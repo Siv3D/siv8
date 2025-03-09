@@ -785,7 +785,7 @@
 # include <Siv3D/PointVector.hpp>
 
 // 整数の 2 次元ベクトル | 2D vector (integer)
-# include <Siv3D/Point.hpp> // ToDo
+# include <Siv3D/Point.hpp>
 
 // 整数の 3 次元ベクトル | 3D vector (integer)
 # include <Siv3D/Point3D.hpp> // ToDo

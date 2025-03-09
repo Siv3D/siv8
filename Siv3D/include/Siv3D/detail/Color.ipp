@@ -624,6 +624,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	Blend
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Color Color::Blend(const Color dst, const Color src) noexcept
+	{
+		const uint32 srcAlpha = src.a;
+		const uint32 invSrcAlpha = (255 - srcAlpha);
+
+		return
+		{
+			static_cast<uint8>(((dst.r * invSrcAlpha) + (src.r * srcAlpha)) / 255),
+			static_cast<uint8>(((dst.g * invSrcAlpha) + (src.g * srcAlpha)) / 255),
+			static_cast<uint8>(((dst.b * invSrcAlpha) + (src.b * srcAlpha)) / 255),
+			dst.a
+		};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Alpha
 	//
 	////////////////////////////////////////////////////////////////
