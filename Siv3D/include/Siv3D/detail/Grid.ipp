@@ -1528,18 +1528,19 @@ namespace s3d
 
 		if (m_size.x == m_size.y)
 		{
+			const size_t N = m_size.x;
 			value_type* const pData = data();
 
-			for (size_t i = 0; i < m_size.x; i += BlockSize)
+			for (size_t i = 0; i < N; i += BlockSize)
 			{
-				const size_t iMax = Min<size_t>((i + BlockSize), m_size.x);
+				const size_t iMax = Min((i + BlockSize), N);
 
 				for (size_t y = i; y < iMax; ++y)
 				{
 					for (size_t x = i; x < y; ++x)
 					{
-						value_type* p1 = (pData + y * m_size.x + x);
-						value_type* p2 = (pData + x * m_size.x + y);
+						value_type* p1 = (pData + y * N + x);
+						value_type* p2 = (pData + x * N + y);
 
 						value_type tmp = std::move(*p1);
 						*p1 = std::move(*p2);
@@ -1547,16 +1548,16 @@ namespace s3d
 					}
 				}
 
-				for (size_t k = i + BlockSize; k < m_size.x; k += BlockSize)
+				for (size_t k = i + BlockSize; k < N; k += BlockSize)
 				{
-					const size_t kMax = Min<size_t>((k + BlockSize), m_size.x);
+					const size_t kMax = Min((k + BlockSize), N);
 
 					for (size_t y = i; y < iMax; ++y)
 					{
 						for (size_t x = k; x < kMax; ++x)
 						{
-							value_type* p1 = (pData + y * m_size.x + x);
-							value_type* p2 = (pData + x * m_size.x + y);
+							value_type* p1 = (pData + y * N + x);
+							value_type* p2 = (pData + x * N + y);
 
 							value_type tmp = std::move(*p1);
 							*p1 = std::move(*p2);
@@ -1570,23 +1571,25 @@ namespace s3d
 		{
 			Grid newGrid(m_size.y, m_size.x);
 
+			const size_t W = m_size.x;
+			const size_t H = m_size.y;
 			value_type* const pSrcBase = data();
 			value_type* const pDstBase = newGrid.data();
 
-			for (size_t b = 0; b < m_size.x; b += BlockSize)
+			for (size_t b = 0; b < W; b += BlockSize)
 			{
-				value_type* const pDstLine = (pDstBase + b * m_size.y);
-				const size_t w = Min<size_t>((m_size.x - b), BlockSize);
+				value_type* const pDstLine = (pDstBase + b * H);
+				const size_t w = Min((W - b), BlockSize);
 
-				for (size_t y = 0; y < m_size.y; ++y)
+				for (size_t y = 0; y < H; ++y)
 				{
-					value_type* pSrc = (pSrcBase + (y * m_size.x + b));
+					value_type* pSrc = (pSrcBase + (y * W + b));
 					value_type* pDst = (pDstLine + y);
 
 					for (size_t x = 0; x < w; ++x)
 					{
 						*pDst = std::move(*pSrc++);
-						pDst += m_size.y;
+						pDst += H;
 					}
 				}
 			}
