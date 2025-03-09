@@ -60,6 +60,15 @@ namespace s3d
 
 		[[noreturn]]
 		void ThrowGridRemoveColumnsOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridSwapColumnsOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridSwapRowsOutOfRange();
+		
+		[[noreturn]]
+		void ThrowGridValuesAtOutOfRange();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1722,6 +1731,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	isSorted
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr bool Grid<Type, Allocator>::isSorted() const requires Concept::LessThanComparable<value_type>
+	{
+		return m_container.isSorted();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	map
 	//
 	////////////////////////////////////////////////////////////////
@@ -1756,7 +1777,6 @@ namespace s3d
 	{
 		return m_container.none(std::forward<Fty>(f));
 	}
-
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1869,9 +1889,127 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	rotate_columns, rotated_columns
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::rotate_columns(const size_type middle)&
+	{
+		auto it = m_container.begin();
+
+		for (int32 y = 0; y < m_size.y; ++y)
+		{
+			std::rotate(it, (it + middle), (it + m_size.x));
+			it += m_size.x;
+		}
+
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotate_columns(const size_type middle)&&
+	{
+		return std::move(rotate_columns(middle));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotated_columns(const size_type middle) const&
+	{
+		Grid result(m_size);
+		auto itSrc = m_container.begin();
+		auto itDst = result.m_container.begin();
+
+		for (int32 y = 0; y < m_size.y; ++y)
+		{
+			std::copy((itSrc + middle), (itSrc + m_size.x), itDst);
+			itDst += (m_size.x - middle);
+			std::copy(itSrc, (itSrc + middle), itDst);
+			itDst += middle;
+			itSrc += m_size.x;
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotated_columns(const size_type middle)&&
+	{
+		return std::move(rotate_columns(middle));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	rotate_rows, rotated_rows
 	//
 	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::rotate_rows(const size_type middle)&
+	{
+		const auto itMiddle = (m_container.begin() + (middle * m_size.x));
+
+		std::rotate(m_container.begin(), itMiddle, m_container.end());
+		
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotate_rows(const size_type middle)&&
+	{
+		return std::move(rotate_rows(middle));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotated_rows(const size_type middle) const&
+	{
+		Grid result(m_size);
+
+		const auto itMiddle = (m_container.begin() + (middle * m_size.x));
+		std::copy(itMiddle, m_container.end(), result.m_container.begin());
+		std::copy(m_container.begin(), itMiddle, (result.m_container.begin() + (m_size.y - middle) * m_size.x));
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotated_rows(const size_type middle)&&
+	{
+		return std::move(rotate_rows(middle));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rsort, rsorted
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::rsort()& requires Concept::LessThanComparable<value_type>
+	{
+		m_container.rsort();
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rsort() && requires Concept::LessThanComparable<value_type>
+	{
+		return std::move(rsort());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rsorted() const& requires Concept::LessThanComparable<value_type>
+	{
+		Grid result(*this);
+		result.rsort();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rsorted() && requires Concept::LessThanComparable<value_type>
+	{
+		return std::move(rsort());
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1879,11 +2017,59 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	slice
-	//
-	////////////////////////////////////////////////////////////////
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::shuffle()&
+	{
+		Shuffle(m_container.begin(), m_container.end(), GetDefaultRNG());
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffle()&&
+	{
+		return std::move(shuffle());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffled() const&
+	{
+		Grid result(*this);
+		result.shuffle();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffled()&&
+	{
+		return std::move(shuffle());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
+	{
+		Shuffle(m_container.begin(), m_container.end(), std::forward<decltype(rbg)>(rbg));
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	{
+		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	{
+		Grid result(*this);
+		result.shuffle(std::forward<decltype(rbg)>(rbg));
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	{
+		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1891,11 +2077,69 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::sort()& requires Concept::LessThanComparable<value_type>
+	{
+		m_container.sort();
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sort() && requires Concept::LessThanComparable<value_type>
+	{
+		return std::move(sort());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted() const& requires Concept::LessThanComparable<value_type>
+	{
+		Grid result(*this);
+		result.sort();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted() && requires Concept::LessThanComparable<value_type>
+	{
+		return std::move(sort());
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	sort_by, sorted_by
 	//
 	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>
+	{
+		m_container.sort_by(std::forward<Fty>(f));
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	{
+		return std::move(sort_by(std::forward<Fty>(f)));
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
+	{
+		Grid result(*this);
+		result.sort_by(std::forward<Fty>(f));
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	{
+		return std::move(sort_by(std::forward<Fty>(f)));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1903,11 +2147,69 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::stable_sort()& requires Concept::LessThanComparable<value_type>
+	{
+		m_container.stable_sort();
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sort() && requires Concept::LessThanComparable<value_type>
+	{
+		return std::move(stable_sort());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted() const& requires Concept::LessThanComparable<value_type>
+	{
+		Grid result(*this);
+		result.stable_sort();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted() && requires Concept::LessThanComparable<value_type>
+	{
+		return std::move(stable_sort());
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	stable_sort_by, stable_sorted_by
 	//
 	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::stable_sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>
+	{
+		m_container.stable_sort_by(std::forward<Fty>(f));
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	{
+		return std::move(stable_sort_by(std::forward<Fty>(f)));
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
+	{
+		Grid result(*this);
+		result.stable_sort_by(std::forward<Fty>(f));
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	{
+		return std::move(stable_sort_by(std::forward<Fty>(f)));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1915,11 +2217,23 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::sum() const requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>)
+	{
+		return m_container.sum();
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	sumF
 	//
 	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::sumF() const requires Concept::FloatingPoint<value_type>
+	{
+		return m_container.sumF();
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1927,23 +2241,89 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::swap_columns(const size_type a, const size_type b)
+	{
+		if ((static_cast<size_type>(m_size.x) <= a) || (static_cast<size_type>(m_size.x) <= b))
+		{
+			detail::ThrowGridSwapColumnsOutOfRange();
+		}
+
+		size_t aBase = a;
+		size_t bBase = b;
+
+		for (int32 y = 0; y < m_size.y; ++y)
+		{
+			using std::swap;
+			swap(m_container[aBase], m_container[bBase]);
+			aBase += m_size.x;
+			bBase += m_size.x;
+		}
+
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	swap_rows
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::swap_rows(const size_type a, const size_type b)
+	{
+		if ((static_cast<size_type>(m_size.y) <= a) || (static_cast<size_type>(m_size.y) <= b))
+		{
+			detail::ThrowGridSwapRowsOutOfRange();
+		}
+
+		auto itA = (m_container.begin() + (a * m_size.x));
+		auto itB = (m_container.begin() + (b * m_size.x));
+
+		std::swap_ranges(itA, (itA + m_size.x), itB);
+
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	values_at
 	//
 	////////////////////////////////////////////////////////////////
+	
+	template <class Type, class Allocator>
+	constexpr Array<Type> Grid<Type, Allocator>::values_at(const std::initializer_list<Point> indices) const
+	{
+		Array result;
+		result.reserve(indices.size());
 
+		for (auto index : indices)
+		{
+			if (index < m_container.size())
+			{
+				result.push_back(m_container[index.y * m_size.x + index.x]);
+			}
+			else
+			{
+				detail::ThrowGridValuesAtOutOfRange();
+			}
+		}
+
+		return result;
+	}
+	
 	////////////////////////////////////////////////////////////////
 	//
 	//	parallel_count_if
 	//
 	////////////////////////////////////////////////////////////////
+	
+	template <class Type, class Allocator>
+	template <class Fty>
+	isize Grid<Type, Allocator>::parallel_count_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+	{
+		return m_container.parallel_count_if(std::forward<Fty>(f));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1951,6 +2331,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	template <class Fty>
+	void Grid<Type, Allocator>::parallel_each(Fty f) requires std::invocable<Fty&, value_type&>
+	{
+		m_container.parallel_each(std::forward<Fty>(f));
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	void Grid<Type, Allocator>::parallel_each(Fty f) const requires std::invocable<Fty&, const value_type&>
+	{
+		m_container.parallel_each(std::forward<Fty>(f));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1958,12 +2351,34 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class Type, class Allocator>
+	template <class Fty>
+	auto Grid<Type, Allocator>::parallel_map(Fty f) const requires std::invocable<Fty&, const value_type&>
+	{
+		return Grid(m_size, m_container.parallel_map(std::forward<Fty>(f)));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
 	//	operator >>
 	//
 	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr auto Grid<Type, Allocator>::operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>
+	{
+		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
+
+		if constexpr (std::is_same_v<result_value_type, void>)
+		{
+			each(std::forward<Fty>(f));
+		}
+		else
+		{
+			return map(std::forward<Fty>(f));
+		}
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1994,7 +2409,4 @@ namespace s3d
 
 		formatData.string.push_back(U']');
 	}
-
-
-
 }

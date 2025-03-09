@@ -14,6 +14,7 @@
 # include "Common.hpp"
 # include "Array.hpp"
 # include "PointVector.hpp"
+# include "Random.hpp"
 
 namespace s3d
 {
@@ -991,6 +992,17 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	isSorted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素が昇順にソートされているかを返します。
+		/// @return 配列の要素が昇順にソートされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isSorted() const requires Concept::LessThanComparable<value_type>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	map
 		//
 		////////////////////////////////////////////////////////////////
@@ -1118,9 +1130,86 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	rotate_columns, rotated_columns
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を境に前半の列と後半の列を入れ替えます。
+		/// @param middle 境の位置
+		/// @return *this
+		constexpr Grid& rotate_columns(size_type middle)& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した位置を境に前半の列と後半の列を入れ替えた新しい配列を返します。
+		/// @param middle 境の位置
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid rotate_columns(size_type middle)&&;
+
+		/// @brief 指定した位置を境に前半の列と後半の列を入れ替えた新しい配列を返します。
+		/// @param middle 境の位置
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid rotated_columns(size_type middle) const&;
+
+		/// @brief 指定した位置を境に前半の列と後半の列を入れ替えた新しい配列を返します。
+		/// @param middle 境の位置
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid rotated_columns(size_type middle)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	rotate_rows, rotated_rows
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を境に前半の行と後半の行を入れ替えます。
+		/// @param middle 境の位置
+		/// @return *this
+		constexpr Grid& rotate_rows(size_type middle)& SIV3D_LIFETIMEBOUND;
+		
+		/// @brief 指定した位置を境に前半の行と後半の行を入れ替えた新しい配列を返します。
+		/// @param middle 境の位置
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid rotate_rows(size_type middle)&&;
+
+		/// @brief 指定した位置を境に前半の行と後半の行を入れ替えた新しい配列を返します。
+		/// @param middle 境の位置
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid rotated_rows(size_type middle) const&;
+
+		/// @brief 指定した位置を境に前半の行と後半の行を入れ替えた新しい配列を返します。
+		/// @param middle 境の位置
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid rotated_rows(size_type middle)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rsort, rsorted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を降順に並び替えます。
+		/// @return *this
+		constexpr Grid& rsort()& SIV3D_LIFETIMEBOUND requires Concept::LessThanComparable<value_type>;
+
+		/// @brief 要素を降順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid rsort() && requires Concept::LessThanComparable<value_type>;
+
+		/// @brief 要素を降順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid rsorted() const& requires Concept::LessThanComparable<value_type>;
+
+		/// @brief 要素を降順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid rsorted() && requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1172,15 +1261,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	slice
-		//
-		////////////////////////////////////////////////////////////////
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	sort, sorted
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を昇順に並び替えます。
+		/// @return *this
+		constexpr Grid& sort()& SIV3D_LIFETIMEBOUND requires Concept::LessThanComparable<value_type>;
+
+		/// @brief 要素を昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid sort() && requires Concept::LessThanComparable<value_type>;
+
+		/// @brief 要素を昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid sorted() const& requires Concept::LessThanComparable<value_type>;
+
+		/// @brief 要素を昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid sorted() && requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1188,11 +1290,61 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した関数を用いて要素を昇順に並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
+		template <class Fty>
+		constexpr Grid& sort_by(Fty f)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Grid sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Grid sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Grid sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	stable_sort, stable_sorted
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えます。
+		/// @return *this
+		constexpr Grid& stable_sort()& SIV3D_LIFETIMEBOUND requires Concept::LessThanComparable<value_type>;
+
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid stable_sort() && requires Concept::LessThanComparable<value_type>;
+
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid stable_sorted() const& requires Concept::LessThanComparable<value_type>;
+
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Grid stable_sorted() && requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1200,11 +1352,47 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
+		template <class Fty>
+		constexpr Grid& stable_sort_by(Fty f)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Grid stable_sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Grid stable_sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Grid stable_sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	sum
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を `+` 演算子を用いて合計します。
+		/// @return 合計値
+		[[nodiscard]]
+		constexpr auto sum() const requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1212,11 +1400,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 浮動小数点数型の要素を、誤差が小さくなるように合計します。
+		/// @remark `sum()` よりも浮動小数点数誤差が小さくなります。
+		/// @return 合計値
+		[[nodiscard]]
+		constexpr auto sumF() const requires Concept::FloatingPoint<value_type>;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	swap_columns
 		//
 		////////////////////////////////////////////////////////////////
+
+		constexpr Grid& swap_columns(size_type a, size_type b);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1224,24 +1420,48 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		constexpr Grid& swap_rows(size_type a, size_type b);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	values_at
 		//
 		////////////////////////////////////////////////////////////////
-
+		
+		[[nodiscard]]
+		constexpr Array<Type> values_at(std::initializer_list<Point> indices) const;
+		
 		////////////////////////////////////////////////////////////////
 		//
 		//	parallel_count_if
 		//
 		////////////////////////////////////////////////////////////////
-
+		
+		/// @brief 条件を満たす要素の個数を返します（並列実行）。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素の個数
+		template <class Fty>
+		[[nodiscard]]
+		isize parallel_count_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		
 		////////////////////////////////////////////////////////////////
 		//
 		//	parallel_each
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief すべての要素に対して関数を並列実行します。
+		/// @tparam Fty 関数の型
+		/// @param f 関数
+		template <class Fty>
+		void parallel_each(Fty f) requires std::invocable<Fty&, value_type&>;
+
+		/// @brief すべての要素に対して関数を並列実行します。
+		/// @tparam Fty 関数の型
+		/// @param f 関数
+		template <class Fty>
+		void parallel_each(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1249,6 +1469,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief すべての要素に対して関数を適用した結果からなる新しい配列を返します（並列実行）。
+		/// @tparam Fty 関数の型
+		/// @param f 関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		auto parallel_map(Fty f) const requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

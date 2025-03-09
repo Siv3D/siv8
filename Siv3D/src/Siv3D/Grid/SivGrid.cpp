@@ -79,5 +79,23 @@ namespace s3d
 			// 指定した列が存在しないため、列を削除できません。
 			throw std::out_of_range{ "Grid::remove_columns(): index out of range" };
 		}
+
+		void ThrowGridSwapColumnsOutOfRange()
+		{
+			// 指定した列が存在しないため、列を入れ替えできません。
+			throw std::out_of_range{ "Grid::swap_columns(): index out of range" };
+		}
+
+		void ThrowGridSwapRowsOutOfRange()
+		{
+			// 指定した行が存在しないため、行を入れ替えできません。
+			throw std::out_of_range{ "Grid::swap_rows(): index out of range" };
+		}
+
+		void ThrowGridValuesAtOutOfRange()
+		{
+			// 指定したインデックスが範囲外のため、要素にアクセスできません。
+			throw std::out_of_range{ "Grid::values_at(): index out of range" };
+		}
 	}
 }
