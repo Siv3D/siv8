@@ -2294,7 +2294,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type> Grid<Type, Allocator>::values_at(const std::initializer_list<Point> indices) const
 	{
-		Array result;
+		Array<value_type> result;
 		result.reserve(indices.size());
 
 		for (auto index : indices)
