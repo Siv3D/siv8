@@ -13,6 +13,7 @@
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/Texture/TextureUtility.hpp>
 
 namespace s3d
 {
@@ -184,6 +185,50 @@ namespace s3d
 
 		const String info = texture->getDesc().toString();
 		return m_textures.add(std::move(texture), info);
+	}
+
+	Texture::IDType CTexture_D3D11::createDynamic(const Size& size, const void* pData, uint32 stride, const TextureFormat& format, const TextureDesc desc)
+	{
+		if ((size.x <= 0) || (size.y <= 0))
+		{
+			return Texture::IDType::Null();
+		}
+
+		std::unique_ptr<D3D11Texture> texture;
+
+		//if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
+		//{
+		//	texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, size, pData, stride, format, desc);
+		//}
+		//else
+		//{
+		//	texture = std::make_unique<D3D11Texture>(D3D11Texture::GenerateMipmap{}, m_device, m_context, size, pData, stride, format, desc);
+		//}
+
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	Texture::IDType CTexture_D3D11::createDynamic(const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
+	{
+		if ((size.x <= 0) || (size.y <= 0))
+		{
+			return Texture::IDType::Null();
+		}
+
+		const Array<Byte> initialData = GenerateInitialColorBuffer(size, color, format);
+
+		if (not initialData)
+		{
+			return Texture::IDType::Null();
+		}
+
+		return createDynamic(size, initialData.data(), static_cast<uint32>(initialData.size() / size.y), format, desc);
 	}
 
 	////////////////////////////////////////////////////////////////

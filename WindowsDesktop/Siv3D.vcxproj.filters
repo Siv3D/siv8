@@ -1054,6 +1054,9 @@
     <Filter Include="src\Siv3D\AssetMonitor">
       <UniqueIdentifier>{d341ade3-1b43-4c0c-8de3-d7a7432b786f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\DynamicTexture">
+      <UniqueIdentifier>{3584d68e-3e62-41c8-8d7a-4e684658b622}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4146,6 +4149,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp">
+      <Filter>src\Siv3D\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6607,6 +6613,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\CAssetMonitor.cpp">
       <Filter>src\Siv3D\AssetMonitor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DynamicTexture\SivDynamicTexture.cpp">
+      <Filter>src\Siv3D\DynamicTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.cpp">
+      <Filter>src\Siv3D\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

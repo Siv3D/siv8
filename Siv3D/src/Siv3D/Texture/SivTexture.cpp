@@ -29,11 +29,11 @@ namespace s3d
 {
 	namespace
 	{
-		static void CheckEngine()
+		static void CheckEngine(const StringView type = U"Texture")
 		{
 			if (Siv3DEngine::isNull())
 			{
-				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, U"Texture");
+				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, type);
 				std::exit(EXIT_FAILURE);
 			}
 		}
@@ -93,6 +93,18 @@ namespace s3d
 
 	Texture::Texture(const Emoji& emoji, const int32 size, const TextureDesc desc)
 		: Texture{ (CheckEngine(), Image{ emoji, size }), desc } {}
+
+	Texture::Texture(Dynamic, const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)
+		: AssetHandle{ (CheckEngine(U"DynamicTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createDynamic(size, pData, stride, format, desc))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	Texture::Texture(Dynamic, const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
+		: AssetHandle{ (CheckEngine(U"DynamicTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createDynamic(size, color, format, desc))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

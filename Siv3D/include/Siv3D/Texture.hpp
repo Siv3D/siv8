@@ -1030,6 +1030,20 @@ namespace s3d
 		{
 			lhs.swap(rhs);
 		}
+
+	protected:
+
+		struct Dynamic {};
+
+		struct Render {};
+
+		struct MSRender {};
+
+		[[nodiscard]]
+		Texture(Dynamic, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		Texture(Dynamic, const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc);
 	};
 }
 

@@ -13,6 +13,17 @@
 
 namespace s3d
 {
+	namespace
+	{
+		static constexpr std::array TextureTypeStrings =
+		{
+			U"Default"_sv,
+			U"Dynamic"_sv,
+			U"Render"_sv,
+			U"MSRender"_sv,
+		};
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	makeD3D11_TEXTURE2D_DESC
@@ -58,7 +69,7 @@ namespace s3d
 
 	String D3D11Texture2DDesc::toString() const
 	{
-		return U"(Type: Default, Size: {0}x{1}, MipLevels: {2}, Format: {3}, HasDepth: {4})"_fmt(
-			size.x, size.y, mipLevels, format.name(), (hasDepth ? U"Yes" : U"No"));
+		return U"(Type: {0}, Size: {1}x{2}, MipLevels: {3}, Format: {4}, HasDepth: {5})"_fmt(
+			TextureTypeStrings[FromEnum(type)],	size.x, size.y, mipLevels, format.name(), (hasDepth ? U"Yes" : U"No"));
 	}
 }
