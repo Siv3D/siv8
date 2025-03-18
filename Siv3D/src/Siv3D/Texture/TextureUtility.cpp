@@ -92,21 +92,22 @@ namespace s3d
 		uint32 ToR11G11B10_UFloat(const ColorF color)
 		{
 			// 負の値は 0 にクランプ（unsigned float形式のため）
-			const float r = Max(static_cast<float>(color.r), 0.0f);
-			const float g = Max(static_cast<float>(color.g), 0.0f);
-			const float b = Max(static_cast<float>(color.b), 0.0f);
+			const float r = Clamp(static_cast<float>(color.r), 0.0f, 1.0f);
+			const float g = Clamp(static_cast<float>(color.g), 0.0f, 1.0f);
+			const float b = Clamp(static_cast<float>(color.b), 0.0f, 1.0f);
 
-			// R と G の 11-bit 浮動小数点変換 (5 ビット指数, 6 ビット仮数)
+			// R の 11-bit 浮動小数点変換 (5 ビット指数, 6 ビット仮数)
 			uint32 rBits = 0;
 			if (0.0f < r)
 			{
-				int32 rExp;
-				const float rMantissa = std::frexpf(r, &rExp);
-				rExp += 14; // バイアス調整 (15-1)
+				int32 rExp = static_cast<int32>(std::floor(std::log2f(r)));
+				float rMantissa = (r / std::powf(2.0f, static_cast<float>(rExp)) - 1.0f);
+
+				rExp += 15; // バイアス調整
 
 				if (rExp <= 0)
 				{
-					// デノーマル数（非常に小さい値）またはゼロ
+					// デノーマル数またはゼロ
 					rBits = 0;
 				}
 				else if (31 <= rExp)
@@ -116,7 +117,8 @@ namespace s3d
 				}
 				else
 				{
-					const uint32 rMantissaBits = static_cast<uint32>(rMantissa * 64.0f);
+					// 6ビット仮数に変換 (0-63)
+					uint32 rMantissaBits = static_cast<uint32>(std::roundf(rMantissa * 64.0f));
 					rBits = ((rExp << 6) | (rMantissaBits & 0x3F));
 				}
 			}
@@ -125,9 +127,10 @@ namespace s3d
 			uint32 gBits = 0;
 			if (0.0f < g)
 			{
-				int32 gExp;
-				const float gMantissa = std::frexpf(g, &gExp);
-				gExp += 14; // バイアス調整
+				int32 gExp = static_cast<int32>(std::floor(std::log2f(g)));
+				float gMantissa = (g / std::powf(2.0f, static_cast<float>(gExp)) - 1.0f);
+
+				gExp += 15; // バイアス調整
 
 				if (gExp <= 0)
 				{
@@ -139,7 +142,7 @@ namespace s3d
 				}
 				else
 				{
-					const uint32 gMantissaBits = static_cast<uint32>(gMantissa * 64.0f);
+					uint32 gMantissaBits = static_cast<uint32>(std::roundf(gMantissa * 64.0f));
 					gBits = ((gExp << 6) | (gMantissaBits & 0x3F));
 				}
 			}
@@ -148,9 +151,10 @@ namespace s3d
 			uint32 bBits = 0;
 			if (0.0f < b)
 			{
-				int32 bExp;
-				const float bMantissa = std::frexpf(b, &bExp);
-				bExp += 14; // バイアス調整
+				int32 bExp = static_cast<int32>(std::floor(std::log2f(b)));
+				float bMantissa = (b / std::powf(2.0f, static_cast<float>(bExp)) - 1.0f);
+
+				bExp += 15; // バイアス調整
 
 				if (bExp <= 0)
 				{
@@ -162,7 +166,7 @@ namespace s3d
 				}
 				else
 				{
-					const uint32 bMantissaBits = static_cast<uint32>(bMantissa * 32.0f);
+					uint32 bMantissaBits = static_cast<uint32>(std::roundf(bMantissa * 32.0f));
 					bBits = ((bExp << 5) | (bMantissaBits & 0x1F));
 				}
 			}
@@ -180,7 +184,7 @@ namespace s3d
 		}
 
 		// 1 行のバイト数
-		const size_t rowStride = (((size.x * format.pixelSize()) + 3) / 4 * 4);
+		const size_t rowStride = format.rowPitch(size.x);
 
 		// 全体のバイト数
 		const size_t bufferSizeBytes = (rowStride * size.y);

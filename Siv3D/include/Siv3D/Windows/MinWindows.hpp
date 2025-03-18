@@ -73,7 +73,7 @@
 	# endif
 
 	# ifndef NTDDI_VERSION
-	#	define NTDDI_VERSION NTDDI_WIN10
+	#	define NTDDI_VERSION NTDDI_WIN10_RS3
 	# endif
 
 	# include <Windows.h>

@@ -51,8 +51,8 @@ namespace s3d
 		[[nodiscard]]
 		DynamicTexture(const Image& image, TextureDesc desc);
 
-		[[nodiscard]]
-		explicit DynamicTexture(const Image& image, const TextureFormat& format = TextureFormat::R8G8B8A8_Unorm, TextureDesc desc = TextureDesc::NoMipmap);
+		//[[nodiscard]]
+		//explicit DynamicTexture(const Image& image, const TextureFormat& format = TextureFormat::R8G8B8A8_Unorm, TextureDesc desc = TextureDesc::NoMipmap);
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -21,8 +21,8 @@ namespace s3d
 	DynamicTexture::DynamicTexture(const uint32 width, const uint32 height, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
 		: DynamicTexture{ Size{ width, height }, color, format, desc } {}
 	
-	DynamicTexture::DynamicTexture(const Image& image, const TextureDesc desc)
-		: DynamicTexture{ image, TextureFormat::R8G8B8A8_Unorm, desc } {}
+	//DynamicTexture::DynamicTexture(const Image& image, const TextureDesc desc)
+	//	: DynamicTexture{ image, TextureFormat::R8G8B8A8_Unorm, desc } {}
 
 	//DynamicTexture::DynamicTexture(const Image& image, const TextureFormat& format, const TextureDesc desc)
 	//	: Texture{ Texture::Dynamic{}, image.size(), image.data(), image.stride(), format, desc }
@@ -33,10 +33,10 @@ namespace s3d
 	//	}
 	//}
 
-	//DynamicTexture::DynamicTexture(const Size& size, const TextureFormat& format, const TextureDesc desc)
-	//	: Texture{ Texture::Dynamic{}, size, nullptr, 0, format, desc } {}
+	DynamicTexture::DynamicTexture(const Size& size, const TextureFormat& format, const TextureDesc desc)
+		: Texture{ Texture::Dynamic{}, size, nullptr, 0, format, desc } {}
 
-	//DynamicTexture::DynamicTexture(const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
-	//	: Texture{ Texture::Dynamic{}, size, color, format, desc } {}
+	DynamicTexture::DynamicTexture(const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
+		: Texture{ Texture::Dynamic{}, size, color, format, desc } {}
 
 }

@@ -35,12 +35,12 @@ namespace s3d
 
 		static void Error_Texture2D(const HRESULT hr)
 		{
-			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture() : Failed to create Texture2D. [Error {:#X}]", hr));
+			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture() : Failed to create Texture2D. [Error {:#X}]", static_cast<uint32>(hr)));
 		}
 
 		static void Error_ShaderResourceView(const HRESULT hr)
 		{
-			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture() : Failed to create ShaderResourceView. [Error {:#X}]", hr));
+			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture() : Failed to create ShaderResourceView. [Error {:#X}]", static_cast<uint32>(hr)));
 		}
 	}
 
@@ -166,6 +166,57 @@ namespace s3d
 		{
 			const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
 			
+			if (HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView);
+				FAILED(hr))
+			{
+				Error_ShaderResourceView(hr);
+				return;
+			}
+		}
+
+		m_initialized = true;
+	}
+
+	D3D11Texture::D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)
+		: m_desc{ desc,
+			TextureType::Dynamic,
+			size,
+			1,
+			1, 0,
+			format,
+			false
+		}
+	{
+		const D3D11_SUBRESOURCE_DATA initData = { pData, stride, 0 };
+		
+		// [メインテクスチャ] を作成
+		{
+			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DEFAULT);
+
+			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (pData ? &initData : nullptr), &m_texture);
+				FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+
+		// [ステージング・テクスチャ] を作成
+		{
+			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(0, D3D11_USAGE_STAGING, D3D11_CPU_ACCESS_WRITE);
+
+			if (HRESULT hr = device->CreateTexture2D(&textureDesc, nullptr, &m_stagingTexture);
+				FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+
+		// [シェーダ・リソース・ビュー] を作成
+		{
+			const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
+
 			if (HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView);
 				FAILED(hr))
 			{

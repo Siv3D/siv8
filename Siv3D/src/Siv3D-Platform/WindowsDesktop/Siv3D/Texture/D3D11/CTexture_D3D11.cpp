@@ -196,10 +196,10 @@ namespace s3d
 
 		std::unique_ptr<D3D11Texture> texture;
 
-		//if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
-		//{
-		//	texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, size, pData, stride, format, desc);
-		//}
+		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
+		{
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::Dynamic{}, D3D11Texture::NoMipmap{}, m_device, size, pData, stride, format, desc);
+		}
 		//else
 		//{
 		//	texture = std::make_unique<D3D11Texture>(D3D11Texture::GenerateMipmap{}, m_device, m_context, size, pData, stride, format, desc);
