@@ -36,7 +36,7 @@ namespace s3d
 		D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
 
 		[[nodiscard]]
-		D3D11Texture(NoMipmap, ID3D11Device* device, const Size& size, const void* pData, size_t size_bytes, const TextureFormat& format, TextureDesc desc);
+		D3D11Texture(NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);

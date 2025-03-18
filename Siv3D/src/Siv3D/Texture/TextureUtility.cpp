@@ -110,7 +110,7 @@ namespace s3d
 		case TexturePixelFormat::R8G8B8A8_Unorm:
 		case TexturePixelFormat::R8G8B8A8_Unorm_SRGB:
 			{
-				Fill(pBytes, bufferSizeBytes, color.toR8G8B8A8_Unorm());
+				Fill(pBytes, bufferSizeBytes, color.toR8G8B8A8_Unorm().asUint32());
 				break;
 			}
 		case TexturePixelFormat::R16G16_Unorm:

@@ -187,7 +187,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_D3D11::create(const Size& size, const void* pData, const size_t size_bytes, const TextureFormat& format, const TextureDesc desc)
+	Texture::IDType CTexture_D3D11::create(const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 	{
 		if ((size.x <= 0) || (size.y <= 0))
 		{
@@ -198,7 +198,7 @@ namespace s3d
 
 		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
 		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, size, pData, size_bytes, format, desc);
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, size, data, format, desc);
 		}
 		//else
 		//{

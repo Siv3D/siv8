@@ -177,7 +177,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	D3D11Texture::D3D11Texture(NoMipmap, ID3D11Device* device, const Size& size, const void* pData, const size_t size_bytes, const TextureFormat& format, const TextureDesc desc)
+	D3D11Texture::D3D11Texture(NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Default,
 			size,
@@ -190,13 +190,13 @@ namespace s3d
 		const uint32 rowPitch = format.rowPitch(size.x);
 		const size_t expectedSize = (rowPitch * size.y);
 
-		if (size_bytes != expectedSize)
+		if (data.size_bytes() != expectedSize)
 		{
-			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): size_bytes[{}] != expectedSize[{}]", size_bytes, expectedSize));
+			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): size_bytes[{}] != expectedSize[{}]", data.size_bytes(), expectedSize));
 			return;
 		}
 
-		const D3D11_SUBRESOURCE_DATA initData = { pData, rowPitch, 0 };
+		const D3D11_SUBRESOURCE_DATA initData = { data.data(), rowPitch, 0};
 
 		// [メインテクスチャ] を作成
 		{

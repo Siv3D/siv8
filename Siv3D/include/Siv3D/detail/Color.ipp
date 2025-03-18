@@ -540,9 +540,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr uint32 Color::toR8G8B8A8_Unorm() const noexcept
+	constexpr Color Color::toR8G8B8A8_Unorm() const noexcept
 	{
-		return asUint32();
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
