@@ -86,9 +86,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint16 ColorF::toR16_Float() const noexcept
+	HalfFloat ColorF::toR16_Float() const noexcept
 	{
-		return HalfFloat{ r }.getBits();
+		return HalfFloat{ r };
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -104,7 +104,7 @@ namespace s3d
 			}
 		case TexturePixelFormat::R16_Float:
 			{
-				Fill(pBytes, bufferSizeBytes, color.toR16_Float());
+				Fill(pBytes, bufferSizeBytes, color.toR16_Float().getBits());
 				break;
 			}
 		case TexturePixelFormat::R8G8B8A8_Unorm:

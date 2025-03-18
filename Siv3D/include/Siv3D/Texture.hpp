@@ -12,6 +12,8 @@
 # pragma once
 # include "Common.hpp"
 # include "Image.hpp"
+# include "Grid.hpp"
+# include "HalfFloat.hpp"
 # include "TextureDesc.hpp"
 # include "TextureFormat.hpp"
 # include "AssetHandle.hpp"
@@ -1031,6 +1033,57 @@ namespace s3d
 			lhs.swap(rhs);
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR8_Unorm(const Size& size, uint8 r);
+
+		[[nodiscard]]
+		static Texture CreateR8_Unorm(const Size& size, const ColorF& r);
+
+		[[nodiscard]]
+		static Texture CreateR8_Unorm(const Grid<uint8>& image);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8G8_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR8G8_Unorm(const Size& size, uint8 r, uint8 g);
+		
+		[[nodiscard]]
+		static Texture CreateR8G8_Unorm(const Size& size, uint16 rg);
+
+		[[nodiscard]]
+		static Texture CreateR8G8_Unorm(const Size& size, const ColorF& rg);
+
+		[[nodiscard]]
+		static Texture CreateR8G8_Unorm(const Grid<uint16>& image);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR16_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR16_Float(const Size& size, HalfFloat r);
+
+		[[nodiscard]]
+		static Texture CreateR16_Float(const Size& size, float r);
+
+		[[nodiscard]]
+		static Texture CreateR16_Float(const Size& size, const ColorF& r);
+
+		[[nodiscard]]
+		static Texture CreateR16_Float(const Grid<HalfFloat>& image);
+
 	protected:
 
 		struct Dynamic {};
@@ -1038,6 +1091,9 @@ namespace s3d
 		struct Render {};
 
 		struct MSRender {};
+
+		[[nodiscard]]
+		Texture(const Size& size, const void* pData, size_t size_bytes, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		Texture(Dynamic, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);

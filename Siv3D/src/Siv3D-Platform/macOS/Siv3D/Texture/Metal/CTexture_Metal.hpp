@@ -38,6 +38,9 @@ namespace s3d
 		Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) override;
 
 		[[nodiscard]]
+		Texture::IDType create(const Size& size, const void* pData, size_t size_bytes, const TextureFormat& format, TextureDesc desc) override;
+
+		[[nodiscard]]
 		Texture::IDType createDynamic(const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc) override;
 
 		[[nodiscard]]

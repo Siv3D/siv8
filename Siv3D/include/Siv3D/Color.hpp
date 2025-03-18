@@ -21,6 +21,7 @@ namespace s3d
 {
 	struct ColorF;
 	struct HSV;
+	class HalfFloat;
 	template <Concept::FloatingPoint Float> struct Vector2D;
 	using Float2 = Vector2D<float>;
 	template <Concept::FloatingPoint Float> struct Vector4D;
@@ -545,7 +546,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		uint16 toR16_Float() const noexcept;
+		HalfFloat toR16_Float() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

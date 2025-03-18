@@ -94,6 +94,12 @@ namespace s3d
 	Texture::Texture(const Emoji& emoji, const int32 size, const TextureDesc desc)
 		: Texture{ (CheckEngine(), Image{ emoji, size }), desc } {}
 
+	Texture::Texture(const Size& size, const void* pData, const size_t size_bytes, const TextureFormat& format, const TextureDesc desc)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(size, pData, size_bytes, format, desc))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
 	Texture::Texture(Dynamic, const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)
 		: AssetHandle{ (CheckEngine(U"DynamicTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createDynamic(size, pData, stride, format, desc))) }
 	{
@@ -1018,4 +1024,138 @@ namespace s3d
 	}
 
 # endif
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateR8_Unorm
+	//
+	////////////////////////////////////////////////////////////////
+
+	Texture Texture::CreateR8_Unorm(const Size& size, const uint8 r)
+	{
+		const size_t width = ((size.x + 3) & ~3);
+		const size_t height = size.y;
+		const Grid<uint8> padded(width, height, r);
+
+		return Texture{ size, padded.data(), padded.size_bytes(), TextureFormat::R8_Unorm, TextureDesc::NoMipmap };
+	}
+
+	Texture Texture::CreateR8_Unorm(const Size& size, const ColorF& r)
+	{
+		return CreateR8_Unorm(size, r.toR8_Unorm());
+	}
+
+	Texture Texture::CreateR8_Unorm(const Grid<uint8>& image)
+	{
+		if ((image.width()) % 4 == 0)
+		{
+			return Texture{ image.size(), image.data(), image.size_bytes(), TextureFormat::R8_Unorm, TextureDesc::NoMipmap };
+		}
+		else
+		{
+			const size_t width = ((image.width() + 3) & ~3);
+			const size_t height = image.height();
+			Grid<uint8> padded(width, height);
+			
+			for (size_t y = 0; y < height; ++y)
+			{
+				std::memcpy(padded[y], image[y], image.width());
+			}
+
+			return Texture{ image.size(), padded.data(), padded.size_bytes(), TextureFormat::R8_Unorm, TextureDesc::NoMipmap };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateR8G8_Unorm
+	//
+	////////////////////////////////////////////////////////////////
+
+	Texture Texture::CreateR8G8_Unorm(const Size& size, const uint8 r, const uint8 g)
+	{
+		return CreateR8G8_Unorm(size, ((static_cast<uint16>(g) << 8) | r));
+	}
+
+	Texture Texture::CreateR8G8_Unorm(const Size& size, const uint16 rg)
+	{
+		const size_t width = ((size.x + 1) & ~1);
+		const size_t height = size.y;
+		const Grid<uint16> padded(width, height, rg);
+
+		return Texture{ size, padded.data(), padded.size_bytes(), TextureFormat::R8G8_Unorm, TextureDesc::NoMipmap };
+	}
+
+	Texture Texture::CreateR8G8_Unorm(const Size& size, const ColorF& rg)
+	{
+		return CreateR8G8_Unorm(size, rg.toR8G8_Unorm());
+	}
+
+	Texture Texture::CreateR8G8_Unorm(const Grid<uint16>& image)
+	{
+		if ((image.width()) % 2 == 0)
+		{
+			return Texture{ image.size(), image.data(), image.size_bytes(), TextureFormat::R8G8_Unorm, TextureDesc::NoMipmap };
+		}
+		else
+		{
+			const size_t width = ((image.width() + 1) & ~1);
+			const size_t height = image.height();
+			Grid<uint16> padded(width, height);
+			
+			for (size_t y = 0; y < height; ++y)
+			{
+				std::memcpy(padded[y], image[y], image.width() * sizeof(uint16));
+			}
+			
+			return Texture{ image.size(), padded.data(), padded.size_bytes(), TextureFormat::R8G8_Unorm, TextureDesc::NoMipmap };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateR16_Float
+	//
+	////////////////////////////////////////////////////////////////
+
+	Texture Texture::CreateR16_Float(const Size& size, HalfFloat r)
+	{
+		const size_t width = ((size.x + 1) & ~1);
+		const size_t height = size.y;
+		const Grid<HalfFloat> padded(width, height, r);
+
+		return Texture{ size, padded.data(), padded.size_bytes(), TextureFormat::R16_Float, TextureDesc::NoMipmap };
+	}
+
+	Texture Texture::CreateR16_Float(const Size& size, float r)
+	{
+		return CreateR16_Float(size, HalfFloat{ r });
+	}
+
+	Texture Texture::CreateR16_Float(const Size& size, const ColorF& r)
+	{
+		return CreateR16_Float(size, r.toR16_Float());
+	}
+
+	Texture Texture::CreateR16_Float(const Grid<HalfFloat>& image)
+	{
+		if ((image.width()) % 2 == 0)
+		{
+			return Texture{ image.size(), image.data(), image.size_bytes(), TextureFormat::R16_Float, TextureDesc::NoMipmap };
+		}
+		else
+		{
+			const size_t width = ((image.width() + 1) & ~1);
+			const size_t height = image.height();
+			Grid<HalfFloat> padded(width, height);
+
+			for (size_t y = 0; y < height; ++y)
+			{
+				std::memcpy(padded[y], image[y], image.width() * sizeof(HalfFloat));
+			}
+
+			return Texture{ image.size(), padded.data(), padded.size_bytes(), TextureFormat::R16_Float, TextureDesc::NoMipmap };
+		}
+	}
 }
