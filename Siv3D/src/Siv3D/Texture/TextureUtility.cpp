@@ -71,109 +71,6 @@ namespace s3d
 			Float4* const pEnd = (pDst + count);
 			std::fill(pDst, pEnd, value);
 		}
-
-		[[nodiscard]]
-		uint32 ToR10G10B10A2(const ColorF color)
-		{
-			const double r = Clamp(color.r, 0.0, 1.0);
-			const double g = Clamp(color.g, 0.0, 1.0);
-			const double b = Clamp(color.b, 0.0, 1.0);
-			const double a = Clamp(color.a, 0.0, 1.0);
-
-			const uint32 rBits = static_cast<uint32>(r * 1023.0 + 0.5); // 10 ビット (0-1023)
-			const uint32 gBits = static_cast<uint32>(g * 1023.0 + 0.5); // 10 ビット (0-1023)
-			const uint32 bBits = static_cast<uint32>(b * 1023.0 + 0.5); // 10 ビット (0-1023)
-			const uint32 aBits = static_cast<uint32>(a * 3.0 + 0.5);    //  2 ビット (0-3)
-
-			return ((rBits) | (gBits << 10) | (bBits << 20) | (aBits << 30));
-		}
-
-		[[nodiscard]]
-		uint32 ToR11G11B10_UFloat(const ColorF color)
-		{
-			// 負の値は 0 にクランプ（unsigned float形式のため）
-			const float r = Clamp(static_cast<float>(color.r), 0.0f, 1.0f);
-			const float g = Clamp(static_cast<float>(color.g), 0.0f, 1.0f);
-			const float b = Clamp(static_cast<float>(color.b), 0.0f, 1.0f);
-
-			// R の 11-bit 浮動小数点変換 (5 ビット指数, 6 ビット仮数)
-			uint32 rBits = 0;
-			if (0.0f < r)
-			{
-				int32 rExp = static_cast<int32>(std::floor(std::log2f(r)));
-				float rMantissa = (r / std::powf(2.0f, static_cast<float>(rExp)) - 1.0f);
-
-				rExp += 15; // バイアス調整
-
-				if (rExp <= 0)
-				{
-					// デノーマル数またはゼロ
-					rBits = 0;
-				}
-				else if (31 <= rExp)
-				{
-					// オーバーフロー - 最大値に設定
-					rBits = 0x7FF;
-				}
-				else
-				{
-					// 6ビット仮数に変換 (0-63)
-					uint32 rMantissaBits = static_cast<uint32>(std::roundf(rMantissa * 64.0f));
-					rBits = ((rExp << 6) | (rMantissaBits & 0x3F));
-				}
-			}
-
-			// G の 11-bit 浮動小数点変換
-			uint32 gBits = 0;
-			if (0.0f < g)
-			{
-				int32 gExp = static_cast<int32>(std::floor(std::log2f(g)));
-				float gMantissa = (g / std::powf(2.0f, static_cast<float>(gExp)) - 1.0f);
-
-				gExp += 15; // バイアス調整
-
-				if (gExp <= 0)
-				{
-					gBits = 0;
-				}
-				else if (31 <= gExp)
-				{
-					gBits = 0x7FF;
-				}
-				else
-				{
-					uint32 gMantissaBits = static_cast<uint32>(std::roundf(gMantissa * 64.0f));
-					gBits = ((gExp << 6) | (gMantissaBits & 0x3F));
-				}
-			}
-
-			// B の 10-bit 浮動小数点変換 (5 ビット指数, 5 ビット仮数)
-			uint32 bBits = 0;
-			if (0.0f < b)
-			{
-				int32 bExp = static_cast<int32>(std::floor(std::log2f(b)));
-				float bMantissa = (b / std::powf(2.0f, static_cast<float>(bExp)) - 1.0f);
-
-				bExp += 15; // バイアス調整
-
-				if (bExp <= 0)
-				{
-					bBits = 0;
-				}
-				else if (31 <= bExp)
-				{
-					bBits = 0x3FF;
-				}
-				else
-				{
-					uint32 bMantissaBits = static_cast<uint32>(std::roundf(bMantissa * 32.0f));
-					bBits = ((bExp << 5) | (bMantissaBits & 0x1F));
-				}
-			}
-
-			// R11G11B10 形式にパック
-			return (rBits | (gBits << 11) | (bBits << 22));
-		}
 	}
 
 	Array<Byte> GenerateInitialColorBuffer(const Size& size, const ColorF& color, const TextureFormat& format)
@@ -189,8 +86,6 @@ namespace s3d
 		// 全体のバイト数
 		const size_t bufferSizeBytes = (rowStride * size.y);
 
-		const Color color8 = color.toColor();
-
 		Array<Byte> bytes(bufferSizeBytes);
 		
 		void* pBytes = static_cast<void*>(bytes.data());
@@ -199,77 +94,63 @@ namespace s3d
 		{
 		case TexturePixelFormat::R8_Unorm:
 			{
-				Fill(pBytes, bufferSizeBytes, color8.r);
+				Fill(pBytes, bufferSizeBytes, color.toR8_Unorm());
 				break;
 			}
 		case TexturePixelFormat::R8G8_Unorm:
 			{
-				const uint16 rg = ((static_cast<uint16>(color8.g) << 8) | color8.r);
-				Fill(pBytes, bufferSizeBytes, rg);
+				Fill(pBytes, bufferSizeBytes, color.toR8G8_Unorm());
 				break;
 			}
 		case TexturePixelFormat::R16_Float:
 			{
-				const uint16 r = HalfFloat{ color.r }.getBits();
-				Fill(pBytes, bufferSizeBytes, r);
+				Fill(pBytes, bufferSizeBytes, color.toR16_Float());
 				break;
 			}
 		case TexturePixelFormat::R8G8B8A8_Unorm:
 		case TexturePixelFormat::R8G8B8A8_Unorm_SRGB:
 			{
-				const uint32 rgba = color8.asUint32();
-				Fill(pBytes, bufferSizeBytes, rgba);
+				Fill(pBytes, bufferSizeBytes, color.toR8G8B8A8_Unorm());
 				break;
 			}
 		case TexturePixelFormat::R16G16_Unorm:
 			{
-				const uint16 r = static_cast<uint16>(Clamp(color.r, 0.0, 1.0) * 65535.0 + 0.5);
-				const uint16 g = static_cast<uint16>(Clamp(color.g, 0.0, 1.0) * 65535.0 + 0.5);
-				const uint32 rg = ((g << 16) | r);
-				Fill(pBytes, bufferSizeBytes, rg);
+				Fill(pBytes, bufferSizeBytes, color.toR16G16_Unorm());
 				break;
 			}
 		case TexturePixelFormat::R16G16_Float:
 			{
-				const uint32 rg = ((static_cast<uint32>(HalfFloat{ color.g }.getBits()) << 16) | HalfFloat{ color.r }.getBits());
-				Fill(pBytes, bufferSizeBytes, rg);
+				Fill(pBytes, bufferSizeBytes, color.toR16G16_Float());
 				break;
 			}
 		case TexturePixelFormat::R32_Float:
 			{
-				Fill(pBytes, bufferSizeBytes, static_cast<float>(color.r));
+				Fill(pBytes, bufferSizeBytes, color.toR32_Float());
 				break;
 			}
 		case TexturePixelFormat::R10G10B10A2_Unorm:
 			{
-				const uint32 rgba = ToR10G10B10A2(color);
-				Fill(pBytes, bufferSizeBytes, rgba);
+				Fill(pBytes, bufferSizeBytes, color.toR10G10B10A2_Unorm());
 				break;
 			}
 		case TexturePixelFormat::R11G11B10_UFloat:
 			{
-				const uint32 rgb = ToR11G11B10_UFloat(color);
-				Fill(pBytes, bufferSizeBytes, rgb);
+				Fill(pBytes, bufferSizeBytes, color.toR11G11B10_UFloat());
 				break;
 			}
 		case TexturePixelFormat::R16G16B16A16_Float:
 			{
-				const uint16 r = HalfFloat{ color.r }.getBits();
-				const uint16 g = HalfFloat{ color.g }.getBits();
-				const uint16 b = HalfFloat{ color.b }.getBits();
-				const uint16 a = HalfFloat{ color.a }.getBits();
-				const uint64 rgba = ((static_cast<uint64>(a) << 48) | (static_cast<uint64>(b) << 32) | (static_cast<uint64>(g) << 16) | r);
-				Fill(pBytes, bufferSizeBytes, rgba);
+				Fill(pBytes, bufferSizeBytes, color.toR16G16B16A16_Float());
 				break;
 			}
 		case TexturePixelFormat::R32G32_Float:
 			{
-				Fill(pBytes, bufferSizeBytes, color.rg());
+				Fill(pBytes, bufferSizeBytes, color.toR32G32_Float());
 				break;
 			}
 		case TexturePixelFormat::R32G32B32A32_Float:
 			{
-				Fill(pBytes, bufferSizeBytes, color.rgba());
+				Fill(pBytes, bufferSizeBytes, color.toR32G32B32A32_Float());
 				break;
 			}
 		}

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/ColorHSV.hpp>
+# include <Siv3D/HalfFloat.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
 namespace s3d
@@ -77,6 +78,135 @@ namespace s3d
 				ApplySRGBCurve(b),
 				a
 		};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR16_Float
+	//
+	////////////////////////////////////////////////////////////////
+
+	uint16 ColorF::toR16_Float() const noexcept
+	{
+		return HalfFloat{ r }.getBits();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR16G16_Float
+	//
+	////////////////////////////////////////////////////////////////
+
+	uint32 ColorF::toR16G16_Float() const noexcept
+	{
+		return ((static_cast<uint32>(HalfFloat{ g }.getBits()) << 16) | HalfFloat{ r }.getBits());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR11G11B10_UFloat
+	//
+	////////////////////////////////////////////////////////////////
+
+	uint32 ColorF::toR11G11B10_UFloat() const noexcept
+	{
+		// 負の値は 0 にクランプ（unsigned float 形式のため）
+		const float rf = Clamp(static_cast<float>(r), 0.0f, 1.0f);
+		const float gf = Clamp(static_cast<float>(g), 0.0f, 1.0f);
+		const float bf = Clamp(static_cast<float>(b), 0.0f, 1.0f);
+
+		// R の 11-bit 浮動小数点変換 (5 ビット指数, 6 ビット仮数)
+		uint32 rBits = 0;
+		if (0.0f < rf)
+		{
+			int32 rExp = static_cast<int32>(std::floor(std::log2f(rf)));
+			float rMantissa = (rf / std::powf(2.0f, static_cast<float>(rExp)) - 1.0f);
+
+			rExp += 15; // バイアス調整
+
+			if (rExp <= 0)
+			{
+				// デノーマル数またはゼロ
+				rBits = 0;
+			}
+			else if (31 <= rExp)
+			{
+				// オーバーフロー - 最大値に設定
+				rBits = 0x7FF;
+			}
+			else
+			{
+				// 6ビット仮数に変換 (0-63)
+				uint32 rMantissaBits = static_cast<uint32>(std::roundf(rMantissa * 64.0f));
+				rBits = ((rExp << 6) | (rMantissaBits & 0x3F));
+			}
+		}
+
+		// G の 11-bit 浮動小数点変換
+		uint32 gBits = 0;
+		if (0.0f < gf)
+		{
+			int32 gExp = static_cast<int32>(std::floor(std::log2f(gf)));
+			float gMantissa = (gf / std::powf(2.0f, static_cast<float>(gExp)) - 1.0f);
+
+			gExp += 15; // バイアス調整
+
+			if (gExp <= 0)
+			{
+				gBits = 0;
+			}
+			else if (31 <= gExp)
+			{
+				gBits = 0x7FF;
+			}
+			else
+			{
+				uint32 gMantissaBits = static_cast<uint32>(std::roundf(gMantissa * 64.0f));
+				gBits = ((gExp << 6) | (gMantissaBits & 0x3F));
+			}
+		}
+
+		// B の 10-bit 浮動小数点変換 (5 ビット指数, 5 ビット仮数)
+		uint32 bBits = 0;
+		if (0.0f < bf)
+		{
+			int32 bExp = static_cast<int32>(std::floor(std::log2f(bf)));
+			float bMantissa = (bf / std::powf(2.0f, static_cast<float>(bExp)) - 1.0f);
+
+			bExp += 15; // バイアス調整
+
+			if (bExp <= 0)
+			{
+				bBits = 0;
+			}
+			else if (31 <= bExp)
+			{
+				bBits = 0x3FF;
+			}
+			else
+			{
+				uint32 bMantissaBits = static_cast<uint32>(std::roundf(bMantissa * 32.0f));
+				bBits = ((bExp << 5) | (bMantissaBits & 0x1F));
+			}
+		}
+
+		// R11G11B10 形式にパック
+		return (rBits | (gBits << 11) | (bBits << 22));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR16G16B16A16_Float
+	//
+	////////////////////////////////////////////////////////////////
+
+	uint64 ColorF::toR16G16B16A16_Float() const noexcept
+	{
+		const uint16 r16 = HalfFloat{ r }.getBits();
+		const uint16 g16 = HalfFloat{ g }.getBits();
+		const uint16 b16 = HalfFloat{ b }.getBits();
+		const uint16 a16 = HalfFloat{ a }.getBits();
+		return ((static_cast<uint64>(a16) << 48) | (static_cast<uint64>(b16) << 32) | (static_cast<uint64>(g16) << 16) | r16);
 	}
 
 	////////////////////////////////////////////////////////////////
