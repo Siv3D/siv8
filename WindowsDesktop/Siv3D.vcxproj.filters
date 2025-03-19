@@ -1063,6 +1063,12 @@
     <Filter Include="src\Siv3D\ImageFormat\BCn">
       <UniqueIdentifier>{dc1cb156-1aed-4393-a7e7-aebbfff93282}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\stb">
+      <UniqueIdentifier>{dc420f78-f3f7-4862-af40-9bfeec90b127}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ImageProcessing">
+      <UniqueIdentifier>{053a7db9-300d-4dc8-b07d-f61a2d7015a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4194,6 +4200,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BCnData.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\stb\stb_image_resize2.h">
+      <Filter>src\ThirdParty\stb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6685,6 +6694,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\BCn\BCnEncoder.cpp">
       <Filter>src\Siv3D\ImageFormat\BCn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageProcessing\SivImageProcessing.cpp">
+      <Filter>src\Siv3D\ImageProcessing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

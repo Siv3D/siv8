@@ -1011,6 +1011,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sfnt\SkPanose.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sfnt\SkSFNTHeader.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\src\sfnt\SkTTCFHeader.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\stb\stb_image_resize2.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\stduuid\uuid.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\tinycolormap\tinycolormap.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\wyhash\wyhash.h" />
@@ -1228,6 +1229,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\TGA\TGADecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\TGA\TGAEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImagePixelFormat\SivImagePixelFormat.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageProcessing\SivImageProcessing.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage_SIMD.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INIItem\SivINIItem.cpp" />

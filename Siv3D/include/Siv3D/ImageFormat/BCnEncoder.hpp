@@ -103,10 +103,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool encodeBC1(const Image& image, IWriter& writer) const;
+		bool encodeBC1(const Image& image, IWriter& writer, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 
 		[[nodiscard]]
-		Blob encodeBC1(const Image& image) const;
+		Blob encodeBC1(const Image& image, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -114,10 +114,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool encodeBC3(const Image& image, IWriter& writer) const;
+		bool encodeBC3(const Image& image, IWriter& writer, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 
 		[[nodiscard]]
-		Blob encodeBC3(const Image& image) const;
+		Blob encodeBC3(const Image& image, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -125,10 +125,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool encodeBC4(const Image& image, IWriter& writer) const;
+		bool encodeBC4(const Image& image, IWriter& writer, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 
 		[[nodiscard]]
-		Blob encodeBC4(const Image& image) const;
+		Blob encodeBC4(const Image& image, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -136,10 +136,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool encodeBC5(const Image& image, IWriter& writer) const;
+		bool encodeBC5(const Image& image, IWriter& writer, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 
 		[[nodiscard]]
-		Blob encodeBC5(const Image& image) const;
+		Blob encodeBC5(const Image& image, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -147,9 +147,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool encodeBC7(const Image& image, IWriter& writer) const;
+		bool encodeBC7(const Image& image, IWriter& writer, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 
 		[[nodiscard]]
-		Blob encodeBC7(const Image& image) const;
+		Blob encodeBC7(const Image& image, GenerateMipmaps generateMipmaps = GenerateMipmaps::Yes) const;
 	};
 }

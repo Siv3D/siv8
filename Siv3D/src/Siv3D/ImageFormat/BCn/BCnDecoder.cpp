@@ -531,7 +531,7 @@ namespace s3d
 
 		const uint32 width = desc.dwWidth;
 		const uint32 height = desc.dwHeight;
-		const uint32 mipCount = Min(desc.dwMipMapCount, 1u);
+		const uint32 mipCount = Max(desc.dwMipMapCount, 1u);
 
 		if (not InRange<int32>(width, 1, Image::MaxWidth)
 			|| not InRange<int32>(height, 1, Image::MaxHeight))
@@ -594,7 +594,7 @@ namespace s3d
 			bcnData.textures.push_back(std::move(blob));
 		}
 
-		LOG_TRACE(fmt::format("Image ({}x{}) decoded", width, height));
+		LOG_TRACE(fmt::format("Image ({}x{}, Mips: {}) decoded", width, height, mipCount));
 
 		return bcnData;
 	}

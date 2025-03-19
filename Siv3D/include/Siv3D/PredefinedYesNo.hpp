@@ -61,4 +61,7 @@ namespace s3d
 
 	/// @brief 画像の拡大処理を許可するかどうかを指定 | Whether to allow image upscaling
 	using AllowUpscale = YesNo<struct AllowUpscale_tag>;
+
+	/// @brief ミップマップを生成するかどうかを指定 | Whether to generate mipmaps
+	using GenerateMipmaps = YesNo<struct GenerateMipmaps_tag>;
 }
