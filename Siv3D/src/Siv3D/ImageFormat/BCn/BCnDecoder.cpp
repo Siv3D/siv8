@@ -531,7 +531,7 @@ namespace s3d
 
 		const uint32 width = desc.dwWidth;
 		const uint32 height = desc.dwHeight;
-		const uint32 mipCount = desc.dwMipMapCount;
+		const uint32 mipCount = Min(desc.dwMipMapCount, 1u);
 
 		if (not InRange<int32>(width, 1, Image::MaxWidth)
 			|| not InRange<int32>(height, 1, Image::MaxHeight))
@@ -570,8 +570,6 @@ namespace s3d
 			}
 		}
 
-		//const uint32 xBlocks = ((width + 3) / 4);
-		//const uint32 yBlocks = ((height + 3) / 4);
 		const uint32 blockSize = (((dxgiFormat == DXGI_FORMAT_BC1_UNORM) || (dxgiFormat == DXGI_FORMAT_BC4_UNORM)) ? 8 : 16);
 
 		BCnData bcnData;
