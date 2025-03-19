@@ -24,8 +24,8 @@ namespace s3d
 		{
 			switch (imageFormat)
 			{
-			case ImageFormat::DDS:
-				return U"DDS"_sv;
+			case ImageFormat::BCn:
+				return U"BCn"_sv;
 			case ImageFormat::PNG:
 				return U"PNG"_sv;
 			case ImageFormat::JPEG:

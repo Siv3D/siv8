@@ -28,8 +28,8 @@ namespace s3d
 		/// @brief 不明
 		Unknown,
 
-		/// @brief DDS
-		DDS,
+		/// @brief BCn
+		BCn,
 
 		/// @brief PNG
 		PNG,

@@ -5,6 +5,7 @@ To view the license information, press the <kbd>F1</kbd> key while the Siv3D app
 Name | Version
 --- | ---
 [Abseil](https://github.com/abseil/abseil-cpp) | 20240722.0
+[bc7enc](https://github.com/richgel999/bc7enc_rdo) | 
 [CoreRT](https://github.com/dotnet/corert) | 
 [cpu_features](https://github.com/google/cpu_features) | 
 [DirectXMath](https://github.com/microsoft/DirectXMath) | October 2024
