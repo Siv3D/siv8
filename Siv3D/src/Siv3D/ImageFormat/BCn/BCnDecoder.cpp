@@ -11,11 +11,35 @@
 
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
 # include <Siv3D/IReader.hpp>
+# include <Siv3D/BinaryReader.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <ThirdParty/bc7enc_rdo/rdo_bc_encoder.h>
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static constexpr TextureFormat ToTextureFormat(const DXGI_FORMAT format) noexcept
+		{
+			switch (format)
+			{
+			case DXGI_FORMAT_BC1_UNORM:
+				return TextureFormat::BC1_RGBA_Unorm;
+			case DXGI_FORMAT_BC3_UNORM:
+				return TextureFormat::BC3_RGBA_Unorm;
+			case DXGI_FORMAT_BC4_UNORM:
+				return TextureFormat::BC4_R_Unorm;
+			case DXGI_FORMAT_BC5_UNORM:
+				return TextureFormat::BC5_RG_Unorm;
+			case DXGI_FORMAT_BC7_UNORM:
+				return TextureFormat::BC7_RGBA_Unorm;
+			default:
+				return TextureFormat::Unknown;
+			}
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	name
@@ -111,8 +135,10 @@ namespace s3d
 		const Size size{ desc.dwWidth, desc.dwHeight };
 
 		if (not((desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT1) // BC1
-			|| (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT5)  // BC3
-			|| (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('D', 'X', '1', '0')))) // BC4, BC5, BC7
+			 || (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT5)  // BC3
+			 || (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('B', 'C', '4', 'U')) // BC4
+			 || (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('B', 'C', '5', 'U')) // BC5
+			 || (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('D', 'X', '1', '0')))) // BC4, BC5, BC7
 		{
 			return{};
 		}
@@ -439,5 +465,139 @@ namespace s3d
 		LOG_TRACE(fmt::format("Image ({}x{}) decoded", width, height));
 
 		return image;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	decodeNative
+	//
+	////////////////////////////////////////////////////////////////
+
+	BCnData BCnDecoder::decodeNative(const FilePathView path) const
+	{
+		BinaryReader reader{ path };
+
+		if (not reader)
+		{
+			return{};
+		}
+
+		return decodeNative(reader, path);
+	}
+
+	BCnData BCnDecoder::decodeNative(IReader& reader, const FilePathView) const
+	{
+		LOG_SCOPED_DEBUG("BCnDecoder::decodeNative()");
+
+		DDSURFACEDESC2 desc{};
+
+		if (reader.read(&desc, 4, sizeof(desc)) != sizeof(desc))
+		{
+			LOG_FAIL("❌ BCnDecoder::decodeNative(): Failed to read header");
+			return{};
+		}
+
+		if (desc.dwSize != 124)
+		{
+			LOG_FAIL("❌ BCnDecoder::decodeNative(): Invalid header size");
+			return{};
+		}
+
+		const bool hasDX10Header = (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('D', 'X', '1', '0'));
+
+		DXGI_FORMAT dxgiFormat = DXGI_FORMAT_UNKNOWN;
+
+		if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT1) // BC1
+		{
+			dxgiFormat = DXGI_FORMAT_BC1_UNORM;
+		}
+		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT5) // BC3
+		{
+			dxgiFormat = DXGI_FORMAT_BC3_UNORM;
+		}
+		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('B', 'C', '4', 'U')) // BC4
+		{
+			dxgiFormat = DXGI_FORMAT_BC4_UNORM;
+		}
+		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('B', 'C', '5', 'U')) // BC5
+		{
+			dxgiFormat = DXGI_FORMAT_BC5_UNORM;
+		}
+		else if (not hasDX10Header)
+		{
+			LOG_FAIL(fmt::format("❌ BCnDecoder::decodeNative(): Unsupported format {:#X}", desc.ddpfPixelFormat.dwFourCC));
+			return{};
+		}
+
+		const uint32 width = desc.dwWidth;
+		const uint32 height = desc.dwHeight;
+		const uint32 mipCount = desc.dwMipMapCount;
+
+		if (not InRange<int32>(width, 1, Image::MaxWidth)
+			|| not InRange<int32>(height, 1, Image::MaxHeight))
+		{
+			LOG_FAIL(fmt::format("BCnDecoder::decodeNative(): Image size {}x{} is not supported", width, height));
+			return{};
+		}
+
+		DDS_HEADER_DXT10 hdr10{};
+
+		if (hasDX10Header)
+		{
+			if (reader.read(&hdr10, sizeof(hdr10)) != sizeof(hdr10))
+			{
+				LOG_FAIL("❌ BCnDecoder::decodeNative(): Failed to read DXT10 header");
+				return{};
+			}
+
+			if (hdr10.dxgiFormat == DXGI_FORMAT_BC4_UNORM) // BC4
+			{
+				dxgiFormat = DXGI_FORMAT_BC4_UNORM;
+			}
+			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC5_UNORM) // BC5
+			{
+				dxgiFormat = DXGI_FORMAT_BC5_UNORM;
+			}
+			else if ((hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM)
+				|| (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM_SRGB)) // BC7
+			{
+				dxgiFormat = DXGI_FORMAT_BC7_UNORM;
+			}
+			else if (dxgiFormat == DXGI_FORMAT_UNKNOWN)
+			{
+				LOG_FAIL(fmt::format("❌ BCnDecoder::decode(): Unsupported DXGI format {:#X}", static_cast<uint32>(hdr10.dxgiFormat)));
+				return{};
+			}
+		}
+
+		//const uint32 xBlocks = ((width + 3) / 4);
+		//const uint32 yBlocks = ((height + 3) / 4);
+		const uint32 blockSize = (((dxgiFormat == DXGI_FORMAT_BC1_UNORM) || (dxgiFormat == DXGI_FORMAT_BC4_UNORM)) ? 8 : 16);
+
+		BCnData bcnData;
+		bcnData.size = { width, height };
+		bcnData.format = ToTextureFormat(dxgiFormat);
+
+		for (uint32 i = 0; i < mipCount; ++i)
+		{
+			const uint32 mipWidth = Max(1u, (width >> i));
+			const uint32 mipHeight = Max(1u, (height >> i));
+			const uint32 xBlocks = ((mipWidth + 3) / 4);
+			const uint32 yBlocks = ((mipHeight + 3) / 4);
+			const size_t textureSize = (xBlocks * yBlocks * blockSize);
+
+			Blob blob{ textureSize };
+			if (reader.read(blob.data(), textureSize) != static_cast<int64>(textureSize))
+			{
+				LOG_FAIL("❌ BCnDecoder::decodeNative(): Failed to read texture data");
+				return{};
+			}
+
+			bcnData.textures.push_back(std::move(blob));
+		}
+
+		LOG_TRACE(fmt::format("Image ({}x{}) decoded", width, height));
+
+		return bcnData;
 	}
 }

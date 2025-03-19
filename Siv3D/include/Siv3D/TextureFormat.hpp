@@ -140,12 +140,30 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	isBCn
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool isBCn() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	rowPitch
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		uint32 rowPitch(uint32 width) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	blockSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		uint32 blockSize() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -204,6 +222,16 @@ namespace s3d
 		static constexpr TexturePixelFormat R32G32_Float		= TexturePixelFormat::R32G32_Float;
 
 		static constexpr TexturePixelFormat R32G32B32A32_Float	= TexturePixelFormat::R32G32B32A32_Float;
+
+		static constexpr TexturePixelFormat BC1_RGBA_Unorm		= TexturePixelFormat::BC1_RGBA_Unorm;
+
+		static constexpr TexturePixelFormat BC3_RGBA_Unorm		= TexturePixelFormat::BC3_RGBA_Unorm;
+
+		static constexpr TexturePixelFormat BC4_R_Unorm			= TexturePixelFormat::BC4_R_Unorm;
+
+		static constexpr TexturePixelFormat BC5_RG_Unorm		= TexturePixelFormat::BC5_RG_Unorm;
+
+		static constexpr TexturePixelFormat BC7_RGBA_Unorm		= TexturePixelFormat::BC7_RGBA_Unorm;
 
 		////////////////////////////////////////////////////////////////
 		//

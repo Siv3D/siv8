@@ -41,6 +41,9 @@ namespace s3d
 		Texture::IDType create(const Size& size, const std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) override;
 
 		[[nodiscard]]
+		Texture::IDType create(const BCnData& bcnData) override;
+
+		[[nodiscard]]
 		Texture::IDType createDynamic(const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc) override;
 
 		[[nodiscard]]

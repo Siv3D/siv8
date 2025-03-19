@@ -11,6 +11,7 @@
 
 # include "D3D11Texture.hpp"
 # include <Siv3D/ImageProcessing.hpp>
+# include <Siv3D/BCnData.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -203,6 +204,61 @@ namespace s3d
 			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE);
 
 			if (HRESULT hr = device->CreateTexture2D(&textureDesc, &initData, &m_texture);
+				FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+
+		// [シェーダ・リソース・ビュー] を作成
+		{
+			const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
+
+			if (HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView);
+				FAILED(hr))
+			{
+				Error_ShaderResourceView(hr);
+				return;
+			}
+		}
+
+		m_initialized = true;
+	}
+
+	D3D11Texture::D3D11Texture(ID3D11Device* device, const BCnData& bcnData)
+		: m_desc{ ((1 < bcnData.textures.size()) ? TextureDesc::Mipmap : TextureDesc::NoMipmap),
+			TextureType::Default,
+			bcnData.size,
+			static_cast<uint8>(bcnData.textures.size()),
+			1, 0,
+			bcnData.format,
+			false
+		}
+	{
+		const uint32 blockSize = bcnData.format.blockSize();
+
+		Array<D3D11_SUBRESOURCE_DATA> initDataList(m_desc.mipLevels);
+
+		for (uint32 i = 0; i < bcnData.textures.size(); ++i)
+		{
+			const uint32 mipWidth = Max<uint32>((bcnData.size.x >> i), 1);
+			const uint32 paddedWidth = ((mipWidth + 3) & ~3);
+			const uint32 xBlocks = (paddedWidth / 4);
+
+			initDataList[i] =
+			{
+				.pSysMem = bcnData.textures[i].data(),
+				.SysMemPitch = (xBlocks * blockSize),
+				.SysMemSlicePitch = 0
+			};
+		}
+
+		// [メインテクスチャ] を作成
+		{
+			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE);
+
+			if (HRESULT hr = device->CreateTexture2D(&textureDesc, initDataList.data(), &m_texture);
 				FAILED(hr))
 			{
 				Error_Texture2D(hr);

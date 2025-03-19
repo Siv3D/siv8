@@ -1281,6 +1281,12 @@
 //# include <Siv3D/ImageFormat/TIFFDecoder.hpp>
 ////# include <Siv3D/ImageFormat/TIFFEncoder.hpp>
 
+// BCn 画像 | BCn image
+# include <Siv3D/BCnData.hpp>
+# include <Siv3D/ImageFormat/BCnDecoder.hpp>
+# include <Siv3D/ImageFormat/BCnEncoder.hpp>
+
+
 // SVG 画像 | SVG image
 # include <Siv3D/SVG.hpp>
 # include <Siv3D/ImageFormat/SVGDecoder.hpp>
@@ -1292,10 +1298,6 @@
 // TGA 画像 | TGA image
 # include <Siv3D/ImageFormat/TGADecoder.hpp>
 # include <Siv3D/ImageFormat/TGAEncoder.hpp>
-
-// BCn 画像 | BCn image
-# include <Siv3D/ImageFormat/BCnDecoder.hpp>
-# include <Siv3D/ImageFormat/BCnEncoder.hpp>
 
 //// アニメーション GIF の読み込み | Animated GIF reader
 //# include <Siv3D/AnimatedGIFReader.hpp>

@@ -30,6 +30,7 @@ namespace s3d
 	struct TextureRegion;
 	struct TexturedQuad;
 	struct TexturedRoundRect;
+	struct BCnData;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1189,6 +1190,15 @@ namespace s3d
 		[[nodiscard]]
 		static Texture CreateR32G32B32A32_Float(const Grid<Float4>& image);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateBCn
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateBCn(const BCnData& bcnData);
+
 	protected:
 
 		struct Dynamic {};
@@ -1199,6 +1209,9 @@ namespace s3d
 
 		[[nodiscard]]
 		Texture(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		explicit Texture(const BCnData& bcnData);
 
 		[[nodiscard]]
 		Texture(Dynamic, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);

@@ -14,6 +14,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Texture/TextureUtility.hpp>
+# include <Siv3D/BCnData.hpp>
 
 namespace s3d
 {
@@ -205,6 +206,24 @@ namespace s3d
 		//	texture = std::make_unique<D3D11Texture>(D3D11Texture::GenerateMipmap{}, m_device, m_context, size, pData, size_bytes, format, desc);
 		//}
 		
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
+	}
+
+	Texture::IDType CTexture_D3D11::create(const BCnData& bcnData)
+	{
+		if (not bcnData)
+		{
+			return Texture::IDType::Null();
+		}
+
+		std::unique_ptr<D3D11Texture> texture = std::make_unique<D3D11Texture>(m_device, bcnData);
+
 		if (not texture->isInitialized())
 		{
 			return Texture::IDType::Null();

@@ -16,6 +16,8 @@
 
 namespace s3d
 {
+	struct BCnData;
+
 	class D3D11Texture
 	{
 	public:
@@ -37,6 +39,9 @@ namespace s3d
 
 		[[nodiscard]]
 		D3D11Texture(NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		D3D11Texture(ID3D11Device* device, const BCnData& bcnData);
 
 		[[nodiscard]]
 		D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);

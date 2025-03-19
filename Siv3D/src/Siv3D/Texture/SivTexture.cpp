@@ -100,6 +100,12 @@ namespace s3d
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
+	Texture::Texture(const BCnData& bcnData)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(bcnData))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
 	Texture::Texture(Dynamic, const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)
 		: AssetHandle{ (CheckEngine(U"DynamicTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createDynamic(size, pData, stride, format, desc))) }
 	{
@@ -1301,5 +1307,16 @@ namespace s3d
 	Texture Texture::CreateR32G32B32A32_Float(const Grid<Float4>& image)
 	{
 		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R32G32B32A32_Float, TextureDesc::NoMipmap };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CreateBCn
+	//
+	////////////////////////////////////////////////////////////////
+
+	Texture Texture::CreateBCn(const BCnData& bcnData)
+	{
+		return Texture{ bcnData };
 	}
 }

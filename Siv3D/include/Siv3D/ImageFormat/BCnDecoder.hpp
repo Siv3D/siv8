@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/IImageDecoder.hpp>
+# include <Siv3D/BCnData.hpp>
 
 namespace s3d
 {	
@@ -109,5 +110,17 @@ namespace s3d
 		/// @return 作成した Image
 		[[nodiscard]]
 		Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	decodeNative
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BCnData decodeNative(FilePathView path) const;
+
+		[[nodiscard]]
+		BCnData decodeNative(IReader& reader, FilePathView pathHint = {}) const;
 	};
 }
