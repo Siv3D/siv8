@@ -132,6 +132,30 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
+	Texture::IDType CTexture_Metal::create(const Size& size, const std::span<const Byte> data, const TextureFormat& format, TextureDesc desc)
+	{
+		// [Siv3D ToDo]
+		return(Texture::IDType::Null());	
+	}
+
+	Texture::IDType CTexture_Metal::create(const BCnData& bcnData)
+	{
+		// [Siv3D ToDo]
+		return(Texture::IDType::Null());
+	}
+
+	Texture::IDType CTexture_Metal::createDynamic(const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)
+	{
+		// [Siv3D ToDo]
+		return(Texture::IDType::Null());
+	}
+
+	Texture::IDType CTexture_Metal::createDynamic(const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
+	{
+		// [Siv3D ToDo]
+		return(Texture::IDType::Null());
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	release

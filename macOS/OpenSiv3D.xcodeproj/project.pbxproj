@@ -2271,6 +2271,30 @@
 		F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABB2BCFBB53006A4C0F /* SkBBHFactory.h */; };
 		F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABC2BCFBB53006A4C0F /* SkBitmap.h */; };
 		F986FFFF2BCFBB53006A4C0F /* SkBlender.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABD2BCFBB53006A4C0F /* SkBlender.h */; };
+		F9B7D9EC2D8C71ED002ABACE /* DynamicTexture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */; };
+		F9B7D9EF2D8C7215002ABACE /* TextureUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */; };
+		F9B7D9F02D8C7215002ABACE /* TextureUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */; };
+		F9B7D9F32D8C722A002ABACE /* SivDynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9F12D8C722A002ABACE /* SivDynamicTexture.cpp */; };
+		F9B7D9F62D8C7269002ABACE /* BCnDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9F42D8C7269002ABACE /* BCnDecoder.hpp */; };
+		F9B7D9F72D8C7269002ABACE /* BCnEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9F52D8C7269002ABACE /* BCnEncoder.hpp */; };
+		F9B7D9FB2D8C729A002ABACE /* BCnDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9F82D8C729A002ABACE /* BCnDecoder.cpp */; };
+		F9B7D9FC2D8C729A002ABACE /* BCnEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9F92D8C729A002ABACE /* BCnEncoder.cpp */; };
+		F9B7DA0C2D8C72C0002ABACE /* bc7decomp.h in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9FD2D8C72C0002ABACE /* bc7decomp.h */; };
+		F9B7DA0D2D8C72C0002ABACE /* dds_defs.h in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA012D8C72C0002ABACE /* dds_defs.h */; };
+		F9B7DA0E2D8C72C0002ABACE /* ert.h in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA022D8C72C0002ABACE /* ert.h */; };
+		F9B7DA0F2D8C72C0002ABACE /* rgbcx_table4.h in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA082D8C72C0002ABACE /* rgbcx_table4.h */; };
+		F9B7DA102D8C72C0002ABACE /* rdo_bc_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA042D8C72C0002ABACE /* rdo_bc_encoder.h */; };
+		F9B7DA112D8C72C0002ABACE /* rgbcx.h in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA062D8C72C0002ABACE /* rgbcx.h */; };
+		F9B7DA122D8C72C0002ABACE /* bc7enc.h in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9FF2D8C72C0002ABACE /* bc7enc.h */; };
+		F9B7DA132D8C72C0002ABACE /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA092D8C72C0002ABACE /* utils.h */; };
+		F9B7DA142D8C72C0002ABACE /* rgbcx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7DA072D8C72C0002ABACE /* rgbcx.cpp */; };
+		F9B7DA152D8C72C0002ABACE /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7DA0A2D8C72C0002ABACE /* utils.cpp */; };
+		F9B7DA162D8C72C0002ABACE /* bc7enc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7DA002D8C72C0002ABACE /* bc7enc.cpp */; };
+		F9B7DA172D8C72C0002ABACE /* rdo_bc_encoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7DA052D8C72C0002ABACE /* rdo_bc_encoder.cpp */; };
+		F9B7DA182D8C72C0002ABACE /* ert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7DA032D8C72C0002ABACE /* ert.cpp */; };
+		F9B7DA192D8C72C0002ABACE /* bc7decomp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9FE2D8C72C0002ABACE /* bc7decomp.cpp */; };
+		F9B7DA1B2D8C72DF002ABACE /* BCnData.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */; };
+		F9B7DA1D2D8C72F5002ABACE /* BCnData.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */; };
 		F9D41B5C2C4BCCDD00290998 /* IsClockwise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */; };
 		F9D41B5D2C4BCCDD00290998 /* IsClockwise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */; };
 		F9D41B5F2C4FCE4600290998 /* LineCap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5E2C4FCE4600290998 /* LineCap.hpp */; };
@@ -4817,6 +4841,30 @@
 		F986FFDA2BCFBB53006A4C0F /* SkPatchUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkPatchUtils.cpp; sourceTree = "<group>"; };
 		F986FFE22BCFBB53006A4C0F /* SkShadowUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkShadowUtils.cpp; sourceTree = "<group>"; };
 		F986FFE52BCFBB53006A4C0F /* SkTextUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkTextUtils.cpp; sourceTree = "<group>"; };
+		F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DynamicTexture.hpp; sourceTree = "<group>"; };
+		F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureUtility.hpp; sourceTree = "<group>"; };
+		F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TextureUtility.cpp; sourceTree = "<group>"; };
+		F9B7D9F12D8C722A002ABACE /* SivDynamicTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDynamicTexture.cpp; sourceTree = "<group>"; };
+		F9B7D9F42D8C7269002ABACE /* BCnDecoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnDecoder.hpp; sourceTree = "<group>"; };
+		F9B7D9F52D8C7269002ABACE /* BCnEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnEncoder.hpp; sourceTree = "<group>"; };
+		F9B7D9F82D8C729A002ABACE /* BCnDecoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BCnDecoder.cpp; sourceTree = "<group>"; };
+		F9B7D9F92D8C729A002ABACE /* BCnEncoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BCnEncoder.cpp; sourceTree = "<group>"; };
+		F9B7D9FD2D8C72C0002ABACE /* bc7decomp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bc7decomp.h; sourceTree = "<group>"; };
+		F9B7D9FE2D8C72C0002ABACE /* bc7decomp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bc7decomp.cpp; sourceTree = "<group>"; };
+		F9B7D9FF2D8C72C0002ABACE /* bc7enc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bc7enc.h; sourceTree = "<group>"; };
+		F9B7DA002D8C72C0002ABACE /* bc7enc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bc7enc.cpp; sourceTree = "<group>"; };
+		F9B7DA012D8C72C0002ABACE /* dds_defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dds_defs.h; sourceTree = "<group>"; };
+		F9B7DA022D8C72C0002ABACE /* ert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ert.h; sourceTree = "<group>"; };
+		F9B7DA032D8C72C0002ABACE /* ert.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ert.cpp; sourceTree = "<group>"; };
+		F9B7DA042D8C72C0002ABACE /* rdo_bc_encoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rdo_bc_encoder.h; sourceTree = "<group>"; };
+		F9B7DA052D8C72C0002ABACE /* rdo_bc_encoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rdo_bc_encoder.cpp; sourceTree = "<group>"; };
+		F9B7DA062D8C72C0002ABACE /* rgbcx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rgbcx.h; sourceTree = "<group>"; };
+		F9B7DA072D8C72C0002ABACE /* rgbcx.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rgbcx.cpp; sourceTree = "<group>"; };
+		F9B7DA082D8C72C0002ABACE /* rgbcx_table4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rgbcx_table4.h; sourceTree = "<group>"; };
+		F9B7DA092D8C72C0002ABACE /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		F9B7DA0A2D8C72C0002ABACE /* utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = utils.cpp; sourceTree = "<group>"; };
+		F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnData.hpp; sourceTree = "<group>"; };
+		F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnData.ipp; sourceTree = "<group>"; };
 		F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IsClockwise.hpp; sourceTree = "<group>"; };
 		F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IsClockwise.ipp; sourceTree = "<group>"; };
 		F9D41B5E2C4FCE4600290998 /* LineCap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineCap.hpp; sourceTree = "<group>"; };
@@ -5569,6 +5617,7 @@
 			isa = PBXGroup;
 			children = (
 				F9070A5A2B9DEB5900383E4D /* absl */,
+				F9B7DA0B2D8C72C0002ABACE /* bc7enc_rdo */,
 				F9ED45AE2CC156EC006BA10F /* boost */,
 				F9070A6A2B9DEB5900383E4D /* double-conversion */,
 				F951223D2CB822D600151291 /* Earcut */,
@@ -5646,6 +5695,7 @@
 				F9070B662B9F175000383E4D /* AsyncTask.ipp */,
 				F9528B1D2BAFB65000222F45 /* Base64Value.ipp */,
 				F9766B792C29C78800DE4107 /* BasicCamera2D.ipp */,
+				F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */,
 				F9528B442BB69D8500222F45 /* BigFloat.ipp */,
 				F9070B672B9F175000383E4D /* BigInt.ipp */,
 				F9070B682B9F175000383E4D /* BinaryReader.ipp */,
@@ -5838,6 +5888,7 @@
 				F9070BBF2B9F175000383E4D /* AsyncTask.hpp */,
 				F9528B1F2BAFB66200222F45 /* Base64Value.hpp */,
 				F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */,
+				F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */,
 				F95122102CB62E6B00151291 /* Bezier2.hpp */,
 				F95122112CB62E6B00151291 /* Bezier3.hpp */,
 				F9528B422BB69CA900222F45 /* BigFloat.hpp */,
@@ -5895,6 +5946,7 @@
 				F9070BD92B9F175000383E4D /* Distribution.hpp */,
 				F9070BDA2B9F175000383E4D /* DLL.hpp */,
 				F9070BDB2B9F175000383E4D /* Duration.hpp */,
+				F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */,
 				F9E794282C12B861002615BA /* Easing.hpp */,
 				F98606172BEB7651006A4C0F /* Ellipse.hpp */,
 				F98605162BCFF7C2006A4C0F /* Emoji.hpp */,
@@ -6712,6 +6764,7 @@
 				F980C46C2C01B4B600A86B68 /* DepthStencilStateBuilder */,
 				F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */,
 				F9070D3B2B9F175E00383E4D /* Duration */,
+				F9B7D9F22D8C722A002ABACE /* DynamicTexture */,
 				F9D41CEF2C9AB1D500290998 /* Ellipse */,
 				F986F9CF2BCFB514006A4C0F /* Emoji */,
 				F9070D402B9F175E00383E4D /* Empty */,
@@ -7098,6 +7151,8 @@
 			children = (
 				F90DA0562D1A91D90003E1E8 /* ITexture.hpp */,
 				F90DA0572D1A91D90003E1E8 /* SivTexture.cpp */,
+				F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */,
+				F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */,
 			);
 			path = Texture;
 			sourceTree = "<group>";
@@ -7590,6 +7645,8 @@
 		F9528C5E2BC05B0200222F45 /* ImageFormat */ = {
 			isa = PBXGroup;
 			children = (
+				F9B7D9F42D8C7269002ABACE /* BCnDecoder.hpp */,
+				F9B7D9F52D8C7269002ABACE /* BCnEncoder.hpp */,
 				F9528C5C2BC05B0200222F45 /* BMPDecoder.hpp */,
 				F9528C5D2BC05B0200222F45 /* BMPEncoder.hpp */,
 				F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */,
@@ -7624,6 +7681,7 @@
 			isa = PBXGroup;
 			children = (
 				F98605312BD10495006A4C0F /* SivImageFormat.cpp */,
+				F9B7D9FA2D8C729A002ABACE /* BCn */,
 				F9528C742BC05B5A00222F45 /* BMP */,
 				F9E5FC222BC13CD00081A4F7 /* JPEG */,
 				F9528C982BC1206E00222F45 /* PNG */,
@@ -10182,6 +10240,44 @@
 			path = skia;
 			sourceTree = "<group>";
 		};
+		F9B7D9F22D8C722A002ABACE /* DynamicTexture */ = {
+			isa = PBXGroup;
+			children = (
+				F9B7D9F12D8C722A002ABACE /* SivDynamicTexture.cpp */,
+			);
+			path = DynamicTexture;
+			sourceTree = "<group>";
+		};
+		F9B7D9FA2D8C729A002ABACE /* BCn */ = {
+			isa = PBXGroup;
+			children = (
+				F9B7D9F82D8C729A002ABACE /* BCnDecoder.cpp */,
+				F9B7D9F92D8C729A002ABACE /* BCnEncoder.cpp */,
+			);
+			path = BCn;
+			sourceTree = "<group>";
+		};
+		F9B7DA0B2D8C72C0002ABACE /* bc7enc_rdo */ = {
+			isa = PBXGroup;
+			children = (
+				F9B7D9FD2D8C72C0002ABACE /* bc7decomp.h */,
+				F9B7D9FE2D8C72C0002ABACE /* bc7decomp.cpp */,
+				F9B7D9FF2D8C72C0002ABACE /* bc7enc.h */,
+				F9B7DA002D8C72C0002ABACE /* bc7enc.cpp */,
+				F9B7DA012D8C72C0002ABACE /* dds_defs.h */,
+				F9B7DA022D8C72C0002ABACE /* ert.h */,
+				F9B7DA032D8C72C0002ABACE /* ert.cpp */,
+				F9B7DA042D8C72C0002ABACE /* rdo_bc_encoder.h */,
+				F9B7DA052D8C72C0002ABACE /* rdo_bc_encoder.cpp */,
+				F9B7DA062D8C72C0002ABACE /* rgbcx.h */,
+				F9B7DA072D8C72C0002ABACE /* rgbcx.cpp */,
+				F9B7DA082D8C72C0002ABACE /* rgbcx_table4.h */,
+				F9B7DA092D8C72C0002ABACE /* utils.h */,
+				F9B7DA0A2D8C72C0002ABACE /* utils.cpp */,
+			);
+			path = bc7enc_rdo;
+			sourceTree = "<group>";
+		};
 		F9D41B612C4FCE6300290998 /* LineCap */ = {
 			isa = PBXGroup;
 			children = (
@@ -11148,6 +11244,8 @@
 				F9528B5B2BB6DC6800222F45 /* MicrosecClock.ipp in Headers */,
 				F986F9BE2BCA9D0A006A4C0F /* styleelement.h in Headers */,
 				F986043B2BCFBB54006A4C0F /* SkSLSwitchStatement.h in Headers */,
+				F9B7D9F62D8C7269002ABACE /* BCnDecoder.hpp in Headers */,
+				F9B7D9F72D8C7269002ABACE /* BCnEncoder.hpp in Headers */,
 				F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */,
 				F9528CA52BC1209900222F45 /* zconf.h in Headers */,
 				F98604032BCFBB54006A4C0F /* SkSLEmptyExpression.h in Headers */,
@@ -11185,6 +11283,14 @@
 				F986FA982BCFB53B006A4C0F /* fttrigon.h in Headers */,
 				F986FAA02BCFB53B006A4C0F /* ft2build.h in Headers */,
 				F98602092BCFBB54006A4C0F /* SkOSFile.h in Headers */,
+				F9B7DA0C2D8C72C0002ABACE /* bc7decomp.h in Headers */,
+				F9B7DA0D2D8C72C0002ABACE /* dds_defs.h in Headers */,
+				F9B7DA0E2D8C72C0002ABACE /* ert.h in Headers */,
+				F9B7DA0F2D8C72C0002ABACE /* rgbcx_table4.h in Headers */,
+				F9B7DA102D8C72C0002ABACE /* rdo_bc_encoder.h in Headers */,
+				F9B7DA112D8C72C0002ABACE /* rgbcx.h in Headers */,
+				F9B7DA122D8C72C0002ABACE /* bc7enc.h in Headers */,
+				F9B7DA132D8C72C0002ABACE /* utils.h in Headers */,
 				F98600852BCFBB53006A4C0F /* SkTDArray.h in Headers */,
 				F98600362BCFBB53006A4C0F /* SkRasterHandleAllocator.h in Headers */,
 				F90DA0492D1A91850003E1E8 /* TexturePixelFormat.hpp in Headers */,
@@ -11260,6 +11366,7 @@
 				F9070D122B9F175100383E4D /* Version.hpp in Headers */,
 				F9E7946D2C19B6F2002615BA /* MinMax.ipp in Headers */,
 				F9E794602C198133002615BA /* RangeConcepts.hpp in Headers */,
+				F9B7D9EF2D8C7215002ABACE /* TextureUtility.hpp in Headers */,
 				F9070D062B9F175100383E4D /* Time.hpp in Headers */,
 				F986FA6D2BCFB53B006A4C0F /* sfnt.h in Headers */,
 				F98600842BCFBB53006A4C0F /* SkTArray.h in Headers */,
@@ -11787,6 +11894,7 @@
 				F986F9B52BCA9D0A006A4C0F /* parser.h in Headers */,
 				F986042E2BCFBB54006A4C0F /* SkSLPrefixExpression.h in Headers */,
 				F98600432BCFBB53006A4C0F /* SkString.h in Headers */,
+				F9B7DA1D2D8C72F5002ABACE /* BCnData.ipp in Headers */,
 				F986046F2BCFBB54006A4C0F /* SkSLDefines.h in Headers */,
 				F98604832BCFBB54006A4C0F /* SkSLOutputStream.h in Headers */,
 				F98601862BCFBB53006A4C0F /* SkColorFilterPriv.h in Headers */,
@@ -12205,6 +12313,7 @@
 				F90DA05F2D1A91FB0003E1E8 /* ImageProcessing.hpp in Headers */,
 				F986FA732BCFB53B006A4C0F /* ftadvanc.h in Headers */,
 				F98605872BDA869C006A4C0F /* HighTemporalResolutionCursor.hpp in Headers */,
+				F9B7DA1B2D8C72DF002ABACE /* BCnData.hpp in Headers */,
 				F9070C502B9F175000383E4D /* DiscreteDistribution.ipp in Headers */,
 				F98602472BCFBB54006A4C0F /* SkRecordOpts.h in Headers */,
 				F98603212BCFBB54006A4C0F /* SkPathOpsCurve.h in Headers */,
@@ -12288,6 +12397,7 @@
 				F95122162CB62E6B00151291 /* Bezier3.hpp in Headers */,
 				F98600152BCFBB53006A4C0F /* SkFont.h in Headers */,
 				F9070ED62B9F1C8900383E4D /* cocoa_platform.h in Headers */,
+				F9B7D9EC2D8C71ED002ABACE /* DynamicTexture.hpp in Headers */,
 				F9ED45B02CC156EC006BA10F /* dissolver.hpp in Headers */,
 				F9E794542C197418002615BA /* ArrayRandom.ipp in Headers */,
 				F986FA932BCFB53B006A4C0F /* ftsizes.h in Headers */,
@@ -12703,6 +12813,7 @@
 				F98601492BCFBB53006A4C0F /* SkAnalyticEdge.cpp in Sources */,
 				F98604EC2BCFBB54006A4C0F /* SkPatchUtils.cpp in Sources */,
 				F9528C3E2BBF026F00222F45 /* zstd_decompress.c in Sources */,
+				F9B7D9F32D8C722A002ABACE /* SivDynamicTexture.cpp in Sources */,
 				F98602AD2BCFBB54006A4C0F /* SkComposeColorFilter.cpp in Sources */,
 				F98604882BCFBB54006A4C0F /* SkSLPosition.cpp in Sources */,
 				F986019C2BCFBB53006A4C0F /* SkDevice.cpp in Sources */,
@@ -12739,6 +12850,7 @@
 				F98605112BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp in Sources */,
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
 				F986030D2BCFBB54006A4C0F /* SkOpCoincidence.cpp in Sources */,
+				F9B7D9F02D8C7215002ABACE /* TextureUtility.cpp in Sources */,
 				F98602DE2BCFBB54006A4C0F /* SkImage_Base.cpp in Sources */,
 				F98603B92BCFBB54006A4C0F /* SkTriColorShader.cpp in Sources */,
 				F98601B02BCFBB53006A4C0F /* SkEdgeClipper.cpp in Sources */,
@@ -12909,6 +13021,8 @@
 				F95122592CB8239800151291 /* Triangulate.cpp in Sources */,
 				F934BD892BF881110003EAD5 /* ShaderFactory.mm in Sources */,
 				F98602982BCFBB54006A4C0F /* SkVertState.cpp in Sources */,
+				F9B7D9FB2D8C729A002ABACE /* BCnDecoder.cpp in Sources */,
+				F9B7D9FC2D8C729A002ABACE /* BCnEncoder.cpp in Sources */,
 				F98600E32BCFBB53006A4C0F /* SkSharedMutex.cpp in Sources */,
 				F9070DF12B9F175E00383E4D /* TextWriterDetail.cpp in Sources */,
 				F98605AF2BE49BE0006A4C0F /* MouseFactory.cpp in Sources */,
@@ -13021,6 +13135,12 @@
 				F98601502BCFBB53006A4C0F /* SkAutoPixmapStorage.cpp in Sources */,
 				F944BAB02CEACF6C00CC4D42 /* SivChildProcess.cpp in Sources */,
 				F944BAB12CEACF6C00CC4D42 /* SivPipe.cpp in Sources */,
+				F9B7DA142D8C72C0002ABACE /* rgbcx.cpp in Sources */,
+				F9B7DA152D8C72C0002ABACE /* utils.cpp in Sources */,
+				F9B7DA162D8C72C0002ABACE /* bc7enc.cpp in Sources */,
+				F9B7DA172D8C72C0002ABACE /* rdo_bc_encoder.cpp in Sources */,
+				F9B7DA182D8C72C0002ABACE /* ert.cpp in Sources */,
+				F9B7DA192D8C72C0002ABACE /* bc7decomp.cpp in Sources */,
 				F98602192BCFBB54006A4C0F /* SkPathRef.cpp in Sources */,
 				F9070DC32B9F175E00383E4D /* EmptyFactory.cpp in Sources */,
 				F98602112BCFBB54006A4C0F /* SkPathBuilder.cpp in Sources */,

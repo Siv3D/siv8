@@ -9,7 +9,6 @@
 //
 //-----------------------------------------------
 
-# pragma once
 # include "TextureUtility.hpp"
 # include <Siv3D/HalfFloat.hpp>
 
