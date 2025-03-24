@@ -10,8 +10,10 @@
 //-----------------------------------------------
 
 # pragma once
-# include <vector>
 # include <algorithm>
+# include <ranges>
+# include <vector>
+# include <version>
 # include "String.hpp"
 # include "Unicode.hpp"
 # include "Format.hpp"
@@ -188,7 +190,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(std::initializer_list<value_type> list, const Allocator& alloc = Allocator{});
 
-	# ifdef __cpp_lib_containers_ranges
+	# if __cpp_lib_containers_ranges >= 202202L
 		
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
@@ -712,6 +714,19 @@ namespace s3d
 		/// @param list リスト
 		/// @return 挿入された要素の先頭を指すイテレータ
 		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	insert_range
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置に範囲の要素を挿入します。
+		/// @param pos 挿入する位置
+		/// @tparam Range 範囲の型
+		/// @param range 範囲
+		template <Concept::ContainerCompatibleRange<Type> Range>
+		constexpr iterator insert_range(const_iterator pos, Range&& range);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2075,8 +2090,8 @@ namespace s3d
 	Array(Iterator, Iterator, Allocator = Allocator{})
 		-> Array<typename std::iterator_traits<Iterator>::value_type, Allocator>;
 
-# ifdef __cpp_lib_containers_ranges
-	   
+# if __cpp_lib_containers_ranges >= 202202L
+	
 	template<std::ranges::input_range Range, class Allocator = std::allocator<std::ranges::range_value_t<Range>>>
 	Array(std::from_range_t, Range&&, Allocator = Allocator{})
 		-> Array<std::ranges::range_value_t<Range>, Allocator>;

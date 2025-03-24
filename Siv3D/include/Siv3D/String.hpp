@@ -10,9 +10,11 @@
 //-----------------------------------------------
 
 # pragma once
-# include <string>
-# include <span>
 # include <functional>
+# include <ranges>
+# include <span>
+# include <string>
+# include <version>
 # include "Concepts.hpp"
 # include "RangeConcepts.hpp"
 # include "StringView.hpp"
