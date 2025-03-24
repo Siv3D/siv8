@@ -13,6 +13,7 @@
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/ImageFormat/BCnDecoder.hpp>
 
 namespace s3d
 {
@@ -77,6 +78,26 @@ namespace s3d
 	//	create
 	//
 	////////////////////////////////////////////////////////////////
+
+	Texture::IDType CTexture_Metal::create(IReader&& reader, FilePathView pathHint, const TextureDesc desc)
+	{
+		if (not reader.isOpen())
+		{
+			return Texture::IDType::Null();
+		}
+
+		const BCnDecoder bcnDecoder{};
+		const bool isBCn = bcnDecoder.getImageInfo(reader).has_value();
+
+		if (isBCn)
+		{
+			return create(bcnDecoder.decodeNative(reader, pathHint));
+		}
+		else
+		{
+			return create(Image{ std::move(reader) }, desc);
+		}
+	}
 
 	Texture::IDType CTexture_Metal::create(const Image& image, const TextureDesc desc)
 	{

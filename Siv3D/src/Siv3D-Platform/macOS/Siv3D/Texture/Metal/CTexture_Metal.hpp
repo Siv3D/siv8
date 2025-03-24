@@ -30,6 +30,9 @@ namespace s3d
 		~CTexture_Metal() override;
 
 		void init() override;
+		
+		[[nodiscard]]
+		Texture::IDType create(IReader&& reader, FilePathView pathHint, TextureDesc desc) override;
 
 		[[nodiscard]]
 		Texture::IDType create(const Image& image, TextureDesc desc) override;

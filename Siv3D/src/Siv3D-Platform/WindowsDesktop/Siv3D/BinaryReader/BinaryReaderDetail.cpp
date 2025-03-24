@@ -282,12 +282,19 @@ namespace s3d
 		}
 		else
 		{
+			const auto previousPos = getPos();
+
 			if (pos != setPos(pos))
 			{
+				setPos(previousPos);
 				return 0;
 			}
 
-			return m_file.lookahead(dst, readSize, m_info.fileSize, m_info.fullPath);
+			const int64 readBytes = m_file.lookahead(dst, readSize, m_info.fileSize, m_info.fullPath);
+
+			setPos(previousPos);
+
+			return readBytes;
 		}
 	}
 

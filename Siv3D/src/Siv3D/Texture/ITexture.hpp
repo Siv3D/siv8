@@ -25,7 +25,10 @@ namespace s3d
 		virtual ~ISiv3DTexture() = default;
 
 		virtual void init() = 0;
-		
+
+		[[nodiscard]]
+		virtual Texture::IDType create(IReader&& reader, FilePathView pathHint, TextureDesc desc) = 0;
+
 		[[nodiscard]]
 		virtual Texture::IDType create(const Image& image, TextureDesc desc) = 0;
 
