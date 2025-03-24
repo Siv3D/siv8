@@ -62,7 +62,7 @@ namespace s3d
 			};
 
 			// null Texture を作成
-			auto nullTexture = std::make_unique<MetalTexture>(m_device, image, mipmaps, TextureDesc::Mipmap);
+			auto nullTexture = std::make_unique<MetalTexture>(m_device, m_commandQueue, image, mipmaps, TextureDesc::Mipmap);
 
 			if (not nullTexture->isInitialized()) // もし作成に失敗していたら
 			{
@@ -142,7 +142,7 @@ namespace s3d
 		}
 		else
 		{
-			texture = std::make_unique<MetalTexture>(m_device, image, mipmaps, desc);
+			texture = std::make_unique<MetalTexture>(m_device, m_commandQueue, image, mipmaps, desc);
 		}
 
 		if (not texture->isInitialized())
