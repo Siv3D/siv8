@@ -111,7 +111,7 @@ namespace s3d
 
 		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }))
 		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, image, desc);
+			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, m_commandQueue, image, desc);
 		}
 		else
 		{
@@ -138,7 +138,7 @@ namespace s3d
 
 		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }) || mipmaps.isEmpty())
 		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, image, desc);
+			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, m_commandQueue, image, desc);
 		}
 		else
 		{

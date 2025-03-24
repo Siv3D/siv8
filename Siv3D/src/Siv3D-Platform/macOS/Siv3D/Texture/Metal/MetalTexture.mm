@@ -22,7 +22,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MetalTexture::MetalTexture(NoMipmap, MTL::Device* device, const Image& image, const TextureDesc desc)
+	MetalTexture::MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Default,
 			image.size(),
@@ -32,12 +32,12 @@ namespace s3d
 			false
 		}
 	{
-		NS::SharedPtr<MTL::TextureDescriptor> textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
+		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
 		textureDescriptor->setWidth(image.width());
 		textureDescriptor->setHeight(image.height());
-		textureDescriptor->setStorageMode(MTL::StorageModeShared);
+		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
 		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
 
 		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
@@ -47,9 +47,20 @@ namespace s3d
 			return;
 		}
 		
-		const MTL::Region region = MTL::Region::Make2D(0, 0, image.width(), image.height());
-		m_texture->replaceRegion(region, 0, image.data(), (image.width() * m_desc.format.pixelSize()));
+		const NSUInteger dataSize = (image.stride() * image.height());
+		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
 		
+		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
+		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		{
+			const MTL::Size size{ static_cast<NSUInteger>(image.width()), static_cast<NSUInteger>(image.height()), 1 };
+			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, image.stride(), 0, size, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
+			blitCommandEncoder->endEncoding();
+		}
+		
+		commandBuffer->commit();
+		commandBuffer->waitUntilCompleted();
+
 		m_initialized = true;
 	}
 
@@ -208,13 +219,13 @@ namespace s3d
 	}
 
 	MetalTexture::MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
-	: m_desc{ desc,
-		TextureType::Default,
-		size,
-		ImageProcessing::CalculateMipmapLevel(size.x, size.y),
-		1,
-		format,
-		false
+		: m_desc{ desc,
+			TextureType::Default,
+			size,
+			ImageProcessing::CalculateMipmapLevel(size.x, size.y),
+			1,
+			format,
+			false
 		}
 	{
 		NS::SharedPtr<MTL::TextureDescriptor> textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
