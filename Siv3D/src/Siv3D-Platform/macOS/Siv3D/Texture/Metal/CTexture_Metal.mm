@@ -182,8 +182,20 @@ namespace s3d
 
 	Texture::IDType CTexture_Metal::create(const BCnData& bcnData)
 	{
-		// [Siv3D ToDo]
-		return(Texture::IDType::Null());
+		if (not bcnData)
+		{
+			return Texture::IDType::Null();
+		}
+		
+		std::unique_ptr<MetalTexture> texture = std::make_unique<MetalTexture>(m_device, bcnData);
+		
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
 	}
 
 	Texture::IDType CTexture_Metal::createDynamic(const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)

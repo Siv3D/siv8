@@ -17,6 +17,8 @@
 
 namespace s3d
 {
+	struct BCnData;
+
 	class MetalTexture
 	{
 	public:
@@ -36,7 +38,10 @@ namespace s3d
 
 		[[nodiscard]]
 		MetalTexture(NoMipmap, MTL::Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
-		
+
+		[[nodiscard]]
+		MetalTexture(MTL::Device* device, const BCnData& bcnData);
+
 		[[nodiscard]]
 		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 

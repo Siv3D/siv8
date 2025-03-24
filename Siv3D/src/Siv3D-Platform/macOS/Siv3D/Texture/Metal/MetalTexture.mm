@@ -11,6 +11,7 @@
 
 # include "MetalTexture.hpp"
 # include <Siv3D/ImageProcessing.hpp>
+# include <Siv3D/BCnData.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -161,6 +162,47 @@ namespace s3d
 		const MTL::Region region = MTL::Region::Make2D(0, 0, size.x, size.y);
 		const uint32 rowPitch = (((size.x * m_desc.format.pixelSize()) + 3) & ~3);
 		m_texture->replaceRegion(region, 0, data.data(), rowPitch);
+		
+		m_initialized = true;
+	}
+
+	MetalTexture::MetalTexture(MTL::Device* device, const BCnData& bcnData)
+		: m_desc{ ((1 < bcnData.textures.size()) ? TextureDesc::Mipmap : TextureDesc::NoMipmap),
+			TextureType::Default,
+			bcnData.size,
+			static_cast<uint8>(bcnData.textures.size()),
+			1,
+			bcnData.format,
+			false
+		}
+	{
+		NS::SharedPtr<MTL::TextureDescriptor> textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
+		textureDescriptor->setTextureType(MTL::TextureType2D);
+		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
+		textureDescriptor->setWidth(bcnData.size.x);
+		textureDescriptor->setHeight(bcnData.size.y);
+		textureDescriptor->setStorageMode(MTL::StorageModeShared);
+		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
+		textureDescriptor->setMipmapLevelCount(m_desc.mipLevels);
+
+		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
+		
+		if (not m_texture)
+		{
+			return;
+		}
+
+		for (uint32 i = 0; i < bcnData.textures.size(); ++i)
+		{
+			const uint32 mipWidth = Max<uint32>((bcnData.size.x >> i), 1);
+			const uint32 mipHeight = Max<uint32>((bcnData.size.y >> i), 1);
+			const uint32 paddedWidth = ((mipWidth + 3) & ~3);
+			const uint32 xBlocks = (paddedWidth / 4);
+			const uint32 rowPitch = (xBlocks * bcnData.format.blockSize());
+			
+			const MTL::Region region = MTL::Region::Make2D(0, 0, mipWidth, mipHeight);
+			m_texture->replaceRegion(region, i, bcnData.textures[i].data(), rowPitch);
+		}
 		
 		m_initialized = true;
 	}
