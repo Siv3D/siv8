@@ -353,8 +353,49 @@ namespace s3d
 	}
 
 	MetalTexture::MetalTexture(Dynamic, GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)
+		: m_desc{ desc,
+			TextureType::Dynamic,
+			size,
+			ImageProcessing::CalculateMipmapLevel(size.x, size.y),
+			1,
+			format,
+			false
+		}
 	{
+		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
+		textureDescriptor->setTextureType(MTL::TextureType2D);
+		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
+		textureDescriptor->setWidth(size.x);
+		textureDescriptor->setHeight(size.y);
+		textureDescriptor->setStorageMode(MTL::StorageModeShared);
+		textureDescriptor->setCpuCacheMode(MTL::CPUCacheModeWriteCombined);
+		textureDescriptor->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
+		textureDescriptor->setMipmapLevelCount(m_desc.mipLevels);
 
+		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
+		
+		if (not m_texture)
+		{
+			return;
+		}
+	
+		const NSUInteger dataSize = (stride * size.y);
+		m_uploadBuffer = NS::TransferPtr(device->newBuffer(pData, dataSize, MTL::ResourceOptionCPUCacheModeDefault));
+	
+		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
+		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		{
+			const MTL::Size sourceSize{ static_cast<NSUInteger>(size.x), static_cast<NSUInteger>(size.y), 1 };
+			blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, stride, 0, sourceSize, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
+			
+			blitCommandEncoder->generateMipmaps(m_texture.get());
+			blitCommandEncoder->endEncoding();
+		}
+		
+		commandBuffer->commit();
+		commandBuffer->waitUntilCompleted();
+
+		m_initialized = true;
 	}
 
 	////////////////////////////////////////////////////////////////
