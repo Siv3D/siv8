@@ -165,7 +165,7 @@ namespace s3d
 		
 		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
 		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, size, data, format, desc);
+			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, m_commandQueue, size, data, format, desc);
 		}
 		else
 		{
@@ -188,7 +188,7 @@ namespace s3d
 			return Texture::IDType::Null();
 		}
 		
-		std::unique_ptr<MetalTexture> texture = std::make_unique<MetalTexture>(m_device, bcnData);
+		std::unique_ptr<MetalTexture> texture = std::make_unique<MetalTexture>(m_device, m_commandQueue, bcnData);
 		
 		if (not texture->isInitialized())
 		{
