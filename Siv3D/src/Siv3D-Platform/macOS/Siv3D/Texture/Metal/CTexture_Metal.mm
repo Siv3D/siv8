@@ -153,10 +153,31 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_Metal::create(const Size& size, const std::span<const Byte> data, const TextureFormat& format, TextureDesc desc)
+	Texture::IDType CTexture_Metal::create(const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 	{
-		// [Siv3D ToDo]
-		return(Texture::IDType::Null());	
+		if ((size.x <= 0) || (size.y <= 0))
+		{
+			return Texture::IDType::Null();
+		}
+		
+		std::unique_ptr<MetalTexture> texture;
+		
+		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
+		{
+			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, size, data, format, desc);
+		}
+		else
+		{
+			texture = std::make_unique<MetalTexture>(MetalTexture::GenerateMipmap{}, m_device, m_commandQueue, size, data, format, desc);
+		}
+		
+		if (not texture->isInitialized())
+		{
+			return Texture::IDType::Null();
+		}
+
+		const String info = texture->getDesc().toString();
+		return m_textures.add(std::move(texture), info);
 	}
 
 	Texture::IDType CTexture_Metal::create(const BCnData& bcnData)

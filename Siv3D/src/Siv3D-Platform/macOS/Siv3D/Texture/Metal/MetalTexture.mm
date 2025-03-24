@@ -134,6 +134,45 @@ namespace s3d
 		m_initialized = true;
 	}
 
+	MetalTexture::MetalTexture(NoMipmap, MTL::Device* device, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
+		: m_desc{ desc,
+			TextureType::Default,
+			size,
+			1,
+			1,
+			format,
+			false
+		}
+	{
+		NS::SharedPtr<MTL::TextureDescriptor> textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
+		textureDescriptor->setTextureType(MTL::TextureType2D);
+		textureDescriptor->setPixelFormat(ToEnum<MTL::PixelFormat>(m_desc.format.MTLPixelFormat()));
+		textureDescriptor->setWidth(size.x);
+		textureDescriptor->setHeight(size.y);
+		textureDescriptor->setStorageMode(MTL::StorageModeShared);
+		textureDescriptor->setUsage(MTL::TextureUsageShaderRead);
+
+		m_texture = NS::TransferPtr(device->newTexture(textureDescriptor.get()));
+		
+		if (not m_texture)
+		{
+			return;
+		}
+		
+		const MTL::Region region = MTL::Region::Make2D(0, 0, size.x, size.y);
+		const uint32 rowPitch = (((size.x * m_desc.format.pixelSize()) + 3) & ~3);
+								 
+		m_texture->replaceRegion(region, 0, data.data(), rowPitch);
+		
+		m_initialized = true;
+	}
+
+	MetalTexture::MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
+	{
+		
+	}
+
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	isInitialized
