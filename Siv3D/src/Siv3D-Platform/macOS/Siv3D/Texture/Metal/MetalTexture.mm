@@ -48,7 +48,7 @@ namespace s3d
 		}
 		
 		const NSUInteger dataSize = (image.stride() * image.height());
-		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
+		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
 		
 		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
 		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
