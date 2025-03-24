@@ -1037,20 +1037,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR8_Unorm(const Size& size, const ColorF& color)
+	Texture Texture::CreateR8_Unorm(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const size_t width = ((size.x + 3) & ~3);
 		const size_t height = size.y;
 		const Grid<uint8> padded(width, height, color.toR8_Unorm());
 
-		return Texture{ size, std::as_bytes(std::span{ padded }), TextureFormat::R8_Unorm, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ padded }), TextureFormat::R8_Unorm, desc };
 	}
 
-	Texture Texture::CreateR8_Unorm(const Grid<uint8>& image)
+	Texture Texture::CreateR8_Unorm(const Grid<uint8>& image, const TextureDesc desc)
 	{
 		if ((image.width()) % 4 == 0)
 		{
-			return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R8_Unorm, TextureDesc::NoMipmap };
+			return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R8_Unorm, desc };
 		}
 		else
 		{
@@ -1063,7 +1063,7 @@ namespace s3d
 				std::memcpy(padded[y], image[y], image.width());
 			}
 
-			return Texture{ image.size(), std::as_bytes(std::span{ padded }), TextureFormat::R8_Unorm, TextureDesc::NoMipmap };
+			return Texture{ image.size(), std::as_bytes(std::span{ padded }), TextureFormat::R8_Unorm, desc };
 		}
 	}
 
@@ -1073,20 +1073,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR8G8_Unorm(const Size& size, const ColorF& color)
+	Texture Texture::CreateR8G8_Unorm(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const size_t width = ((size.x + 1) & ~1);
 		const size_t height = size.y;
 		const Grid<uint16> padded(width, height, color.toR8G8_Unorm());
 
-		return Texture{ size, std::as_bytes(std::span{ padded }), TextureFormat::R8G8_Unorm, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ padded }), TextureFormat::R8G8_Unorm, desc };
 	}
 
-	Texture Texture::CreateR8G8_Unorm(const Grid<uint16>& image)
+	Texture Texture::CreateR8G8_Unorm(const Grid<uint16>& image, const TextureDesc desc)
 	{
 		if ((image.width()) % 2 == 0)
 		{
-			return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R8G8_Unorm, TextureDesc::NoMipmap };
+			return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R8G8_Unorm, desc };
 		}
 		else
 		{
@@ -1099,7 +1099,7 @@ namespace s3d
 				std::memcpy(padded[y], image[y], image.width() * sizeof(uint16));
 			}
 			
-			return Texture{ image.size(), std::as_bytes(std::span{ padded }), TextureFormat::R8G8_Unorm, TextureDesc::NoMipmap };
+			return Texture{ image.size(), std::as_bytes(std::span{ padded }), TextureFormat::R8G8_Unorm, desc };
 		}
 	}
 
@@ -1109,20 +1109,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR16_Float(const Size& size, const ColorF& color)
+	Texture Texture::CreateR16_Float(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const size_t width = ((size.x + 1) & ~1);
 		const size_t height = size.y;
 		const Grid<HalfFloat> padded(width, height, color.toR16_Float());
 		
-		return Texture{ size, std::as_bytes(std::span{ padded }), TextureFormat::R16_Float, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ padded }), TextureFormat::R16_Float, desc };
 	}
 
-	Texture Texture::CreateR16_Float(const Grid<HalfFloat>& image)
+	Texture Texture::CreateR16_Float(const Grid<HalfFloat>& image, const TextureDesc desc)
 	{
 		if ((image.width()) % 2 == 0)
 		{
-			return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16_Float, TextureDesc::NoMipmap };
+			return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16_Float, desc };
 		}
 		else
 		{
@@ -1135,7 +1135,7 @@ namespace s3d
 				std::memcpy(padded[y], image[y], image.width() * sizeof(HalfFloat));
 			}
 
-			return Texture{ image.size(), std::as_bytes(std::span{ padded }), TextureFormat::R16_Float, TextureDesc::NoMipmap };
+			return Texture{ image.size(), std::as_bytes(std::span{ padded }), TextureFormat::R16_Float, desc };
 		}
 	}
 
@@ -1145,15 +1145,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR8G8B8A8_Unorm(const Size& size, const ColorF& color)
+	Texture Texture::CreateR8G8B8A8_Unorm(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<Color> image(size, color.toR8G8B8A8_Unorm());
-		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R8G8B8A8_Unorm, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R8G8B8A8_Unorm, desc };
 	}
 
-	Texture Texture::CreateR8G8B8A8_Unorm(const Grid<Color>& image)
+	Texture Texture::CreateR8G8B8A8_Unorm(const Grid<Color>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R8G8B8A8_Unorm, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R8G8B8A8_Unorm, desc };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1162,15 +1162,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR8G8B8A8_Unorm_SRGB(const Size& size, const ColorF& color)
+	Texture Texture::CreateR8G8B8A8_Unorm_SRGB(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<Color> image(size, color.toR8G8B8A8_Unorm());
-		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R8G8B8A8_Unorm_SRGB, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R8G8B8A8_Unorm_SRGB, desc };
 	}
 
-	Texture Texture::CreateR8G8B8A8_Unorm_SRGB(const Grid<Color>& image)
+	Texture Texture::CreateR8G8B8A8_Unorm_SRGB(const Grid<Color>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R8G8B8A8_Unorm_SRGB, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R8G8B8A8_Unorm_SRGB, desc };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1179,15 +1179,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR16G16_Unorm(const Size& size, const ColorF& color)
+	Texture Texture::CreateR16G16_Unorm(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<uint32> image(size, color.toR16G16_Unorm());
-		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R16G16_Unorm, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R16G16_Unorm, desc };
 	}
 
-	Texture Texture::CreateR16G16_Unorm(const Grid<uint32>& image)
+	Texture Texture::CreateR16G16_Unorm(const Grid<uint32>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16_Unorm, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16_Unorm, desc };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1196,15 +1196,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR16G16_Float(const Size& size, const ColorF& color)
+	Texture Texture::CreateR16G16_Float(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<uint32> image(size, color.toR16G16_Float());
-		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R16G16_Float, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R16G16_Float, desc };
 	}
 
-	Texture Texture::CreateR16G16_Float(const Grid<uint32>& image)
+	Texture Texture::CreateR16G16_Float(const Grid<uint32>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16_Float, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16_Float, desc };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1213,15 +1213,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR32_Float(const Size& size, const ColorF& color)
+	Texture Texture::CreateR32_Float(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<float> image(size, color.toR32_Float());
-		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R32_Float, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R32_Float, desc };
 	}
 
-	Texture Texture::CreateR32_Float(const Grid<float>& image)
+	Texture Texture::CreateR32_Float(const Grid<float>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R32_Float, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R32_Float, desc };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1230,15 +1230,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR10G10B10A2_Unorm(const Size& size, const ColorF& color)
+	Texture Texture::CreateR10G10B10A2_Unorm(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<uint32> image(size, color.toR10G10B10A2_Unorm());
-		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R10G10B10A2_Unorm, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R10G10B10A2_Unorm, desc };
 	}
 
-	Texture Texture::CreateR10G10B10A2_Unorm(const Grid<uint32>& image)
+	Texture Texture::CreateR10G10B10A2_Unorm(const Grid<uint32>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R10G10B10A2_Unorm, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R10G10B10A2_Unorm, desc };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1247,15 +1247,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR11G11B10_UFloat(const Size& size, const ColorF& color)
+	Texture Texture::CreateR11G11B10_UFloat(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<uint32> image(size, color.toR11G11B10_UFloat());
-		return Texture{ size,std::as_bytes(std::span{ image }), TextureFormat::R11G11B10_UFloat, TextureDesc::NoMipmap };
+		return Texture{ size,std::as_bytes(std::span{ image }), TextureFormat::R11G11B10_UFloat, desc };
 	}
 
-	Texture Texture::CreateR11G11B10_UFloat(const Grid<uint32>& image)
+	Texture Texture::CreateR11G11B10_UFloat(const Grid<uint32>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R11G11B10_UFloat, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R11G11B10_UFloat, desc };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1264,15 +1264,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR16G16B16A16_Float(const Size& size, const ColorF& color)
+	Texture Texture::CreateR16G16B16A16_Float(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<uint64> image(size, color.toR16G16B16A16_Float());
-		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R16G16B16A16_Float, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R16G16B16A16_Float, desc };
 	}
 
-	Texture Texture::CreateR16G16B16A16_Float(const Grid<uint64>& image)
+	Texture Texture::CreateR16G16B16A16_Float(const Grid<uint64>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16B16A16_Float, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16B16A16_Float, desc };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1281,15 +1281,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR32G32_Float(const Size& size, const ColorF& color)
+	Texture Texture::CreateR32G32_Float(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<Float2> image(size, color.toR32G32_Float());
-		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R32G32_Float, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R32G32_Float, desc };
 	}
 
-	Texture Texture::CreateR32G32_Float(const Grid<Float2>& image)
+	Texture Texture::CreateR32G32_Float(const Grid<Float2>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R32G32_Float, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R32G32_Float, desc };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1298,15 +1298,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture Texture::CreateR32G32B32A32_Float(const Size& size, const ColorF& color)
+	Texture Texture::CreateR32G32B32A32_Float(const Size& size, const ColorF& color, const TextureDesc desc)
 	{
 		const Grid<Float4> image(size, color.toR32G32B32A32_Float());
-		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R32G32B32A32_Float, TextureDesc::NoMipmap };
+		return Texture{ size, std::as_bytes(std::span{ image }), TextureFormat::R32G32B32A32_Float, desc };
 	}
 
-	Texture Texture::CreateR32G32B32A32_Float(const Grid<Float4>& image)
+	Texture Texture::CreateR32G32B32A32_Float(const Grid<Float4>& image, const TextureDesc desc)
 	{
-		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R32G32B32A32_Float, TextureDesc::NoMipmap };
+		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R32G32B32A32_Float, desc };
 	}
 
 	////////////////////////////////////////////////////////////////

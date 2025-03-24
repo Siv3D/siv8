@@ -25,8 +25,10 @@ namespace s3d
 
 			for (uint32 i = 0; i < mipLevel; ++i)
 			{
+				const uint32 rowPitch = (static_cast<uint32>(width * pixelSize) + 3) & ~3;
+
 				// ミップマップにおける imageData は仮のデータ。あとで generateMips() で上書きする
-				subResourceData[i] = { imageData, static_cast<uint32>(width * pixelSize) };
+				subResourceData[i] = { imageData, rowPitch };
 
 				width = Max<size_t>((width / 2), 1);
 			}
@@ -224,6 +226,56 @@ namespace s3d
 		}
 
 		m_initialized = true;
+	}
+
+	D3D11Texture::D3D11Texture(GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
+		: m_desc{ desc,
+			TextureType::Default,
+			size,
+			ImageProcessing::CalculateMipmapLevel(size.x, size.y),
+			1, 0,
+			format,
+			false
+		}
+	{
+		const uint32 rowPitch = format.rowPitch(size.x);
+		const size_t expectedSize = (rowPitch * size.y);
+
+		if (data.size_bytes() != expectedSize)
+		{
+			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): size_bytes[{}] != expectedSize[{}]", data.size_bytes(), expectedSize));
+			return;
+		}
+
+		// [メインテクスチャ] を作成
+		{
+			const Array<D3D11_SUBRESOURCE_DATA> initData = MakeSubResourceData(data.data(), size.x, m_desc.format.pixelSize(), m_desc.mipLevels);
+			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC((D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET),
+				D3D11_USAGE_DEFAULT, 0, { 1, 0 }, D3D11_RESOURCE_MISC_GENERATE_MIPS);
+
+			if (HRESULT hr = device->CreateTexture2D(&textureDesc, initData.data(), &m_texture);
+				FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+
+		// [シェーダ・リソース・ビュー] を作成
+		{
+			const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
+
+			if (HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView);
+				FAILED(hr))
+			{
+				Error_ShaderResourceView(hr);
+				return;
+			}
+		}
+
+		m_initialized = true;
+
+		generateMipmaps(context);
 	}
 
 	D3D11Texture::D3D11Texture(ID3D11Device* device, const BCnData& bcnData)

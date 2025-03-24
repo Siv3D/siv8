@@ -1041,10 +1041,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR8_Unorm(const Size& size, const ColorF& color);
+		static Texture CreateR8_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 
 		[[nodiscard]]
-		static Texture CreateR8_Unorm(const Grid<uint8>& image);
+		static Texture CreateR8_Unorm(const Grid<uint8>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1053,10 +1053,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR8G8_Unorm(const Size& size, const ColorF& color);
+		static Texture CreateR8G8_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 
 		[[nodiscard]]
-		static Texture CreateR8G8_Unorm(const Grid<uint16>& image);
+		static Texture CreateR8G8_Unorm(const Grid<uint16>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1065,10 +1065,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR16_Float(const Size& size, const ColorF& color);
+		static Texture CreateR16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 
 		[[nodiscard]]
-		static Texture CreateR16_Float(const Grid<HalfFloat>& image);
+		static Texture CreateR16_Float(const Grid<HalfFloat>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1077,10 +1077,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR8G8B8A8_Unorm(const Size& size, const ColorF& color);
+		static Texture CreateR8G8B8A8_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 		
 		[[nodiscard]]
-		static Texture CreateR8G8B8A8_Unorm(const Grid<Color>& image);
+		static Texture CreateR8G8B8A8_Unorm(const Grid<Color>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1089,10 +1089,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR8G8B8A8_Unorm_SRGB(const Size& size, const ColorF& color);
+		static Texture CreateR8G8B8A8_Unorm_SRGB(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 
 		[[nodiscard]]
-		static Texture CreateR8G8B8A8_Unorm_SRGB(const Grid<Color>& image);
+		static Texture CreateR8G8B8A8_Unorm_SRGB(const Grid<Color>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1101,10 +1101,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR16G16_Unorm(const Size& size, const ColorF& color);
+		static Texture CreateR16G16_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 		
 		[[nodiscard]]
-		static Texture CreateR16G16_Unorm(const Grid<uint32>& image);
+		static Texture CreateR16G16_Unorm(const Grid<uint32>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1113,10 +1113,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR16G16_Float(const Size& size, const ColorF& color);
+		static Texture CreateR16G16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 		
 		[[nodiscard]]
-		static Texture CreateR16G16_Float(const Grid<uint32>& image);
+		static Texture CreateR16G16_Float(const Grid<uint32>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1125,10 +1125,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR32_Float(const Size& size, const ColorF& color);
+		static Texture CreateR32_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 		
 		[[nodiscard]]
-		static Texture CreateR32_Float(const Grid<float>& image);
+		static Texture CreateR32_Float(const Grid<float>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1137,10 +1137,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR10G10B10A2_Unorm(const Size& size, const ColorF& color);
+		static Texture CreateR10G10B10A2_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 		
 		[[nodiscard]]
-		static Texture CreateR10G10B10A2_Unorm(const Grid<uint32>& image);
+		static Texture CreateR10G10B10A2_Unorm(const Grid<uint32>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1149,10 +1149,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR11G11B10_UFloat(const Size& size, const ColorF& color);
+		static Texture CreateR11G11B10_UFloat(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 
 		[[nodiscard]]
-		static Texture CreateR11G11B10_UFloat(const Grid<uint32>& image);
+		static Texture CreateR11G11B10_UFloat(const Grid<uint32>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1161,10 +1161,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR16G16B16A16_Float(const Size& size, const ColorF& color);
+		static Texture CreateR16G16B16A16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 
 		[[nodiscard]]
-		static Texture CreateR16G16B16A16_Float(const Grid<uint64>& image);
+		static Texture CreateR16G16B16A16_Float(const Grid<uint64>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1173,10 +1173,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR32G32_Float(const Size& size, const ColorF& color);
+		static Texture CreateR32G32_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 
 		[[nodiscard]]
-		static Texture CreateR32G32_Float(const Grid<Float2>& image);
+		static Texture CreateR32G32_Float(const Grid<Float2>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1185,10 +1185,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		static Texture CreateR32G32B32A32_Float(const Size& size, const ColorF& color);
+		static Texture CreateR32G32B32A32_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
 		
 		[[nodiscard]]
-		static Texture CreateR32G32B32A32_Float(const Grid<Float4>& image);
+		static Texture CreateR32G32B32A32_Float(const Grid<Float4>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -201,10 +201,10 @@ namespace s3d
 		{
 			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, size, data, format, desc);
 		}
-		//else
-		//{
-		//	texture = std::make_unique<D3D11Texture>(D3D11Texture::GenerateMipmap{}, m_device, m_context, size, pData, size_bytes, format, desc);
-		//}
+		else
+		{
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::GenerateMipmap{}, m_device, m_context, size, data, format, desc);
+		}
 		
 		if (not texture->isInitialized())
 		{
