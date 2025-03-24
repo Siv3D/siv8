@@ -17,6 +17,7 @@
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
     <ClCompile Include="..\Test\Test_Base64Value.cpp" />
+    <ClCompile Include="..\Test\Test_BinaryReader.cpp" />
     <ClCompile Include="..\Test\Test_BinaryWriter.cpp" />
     <ClCompile Include="..\Test\Test_Byte.cpp" />
     <ClCompile Include="..\Test\Test_Color.cpp" />
