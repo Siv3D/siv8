@@ -22,6 +22,8 @@ namespace s3d
 	class MetalTexture
 	{
 	public:
+		
+		struct Dynamic {};
 
 		struct NoMipmap {};
 
@@ -44,6 +46,12 @@ namespace s3d
 
 		[[nodiscard]]
 		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		MetalTexture(Dynamic, NoMipmap, MTL::Device* device, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		MetalTexture(Dynamic, GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;
