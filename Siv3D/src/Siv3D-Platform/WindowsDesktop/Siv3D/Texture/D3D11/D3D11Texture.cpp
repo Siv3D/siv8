@@ -384,6 +384,75 @@ namespace s3d
 		m_initialized = true;
 	}
 
+	D3D11Texture::D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)
+		: m_desc{ desc,
+			TextureType::Dynamic,
+			size,
+			ImageProcessing::CalculateMipmapLevel(size.x, size.y),
+			1, 0,
+			format,
+			false
+		}
+	{
+		// [メインテクスチャ] を作成
+		{
+			const Array<D3D11_SUBRESOURCE_DATA> initData = MakeSubResourceData(pData, size.x, m_desc.format.pixelSize(), m_desc.mipLevels);
+			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC((D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET),
+				D3D11_USAGE_DEFAULT, 0, { 1, 0 }, D3D11_RESOURCE_MISC_GENERATE_MIPS);
+
+			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (pData ? initData.data() : nullptr), &m_texture);
+				FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+
+		// [ステージング・テクスチャ] を作成
+		{
+			const D3D11Texture2DDesc stagingDesc
+			{
+				desc,
+				TextureType::Default,
+				size,
+				1u,
+				1, 0,
+				format,
+				false
+			};
+
+			const D3D11_TEXTURE2D_DESC textureDesc = stagingDesc.makeD3D11_TEXTURE2D_DESC(0, D3D11_USAGE_STAGING, D3D11_CPU_ACCESS_WRITE);
+
+			const D3D11_SUBRESOURCE_DATA initData = { pData, stride, 0 };
+
+			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (pData ? &initData : nullptr), &m_stagingTexture);
+				FAILED(hr))
+			{
+				Error_Texture2D(hr);
+				return;
+			}
+		}
+
+		// [シェーダ・リソース・ビュー] を作成
+		{
+			const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
+
+			if (HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView);
+				FAILED(hr))
+			{
+				Error_ShaderResourceView(hr);
+				return;
+			}
+		}
+
+		m_initialized = true;
+
+		if (pData)
+		{
+			generateMipmaps(context);
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	isInitialized
