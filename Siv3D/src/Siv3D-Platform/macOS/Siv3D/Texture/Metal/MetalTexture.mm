@@ -48,7 +48,7 @@ namespace s3d
 		}
 		
 		const NSUInteger dataSize = (image.stride() * image.height());
-		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
+		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
 		
 		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
 		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
@@ -74,12 +74,12 @@ namespace s3d
 			false
 		}
 	{
-		NS::SharedPtr<MTL::TextureDescriptor> textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
+		auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 		textureDescriptor->setTextureType(MTL::TextureType2D);
 		textureDescriptor->setPixelFormat(desc.sRGB ? MTL::PixelFormatRGBA8Unorm_sRGB : MTL::PixelFormatRGBA8Unorm);
 		textureDescriptor->setWidth(image.width());
 		textureDescriptor->setHeight(image.height());
-		textureDescriptor->setStorageMode(MTL::StorageModeShared);
+		textureDescriptor->setStorageMode(MTL::StorageModePrivate);
 		textureDescriptor->setUsage(MTL::TextureUsageShaderRead | MTL::TextureUsageRenderTarget);
 		textureDescriptor->setMipmapLevelCount(m_desc.mipLevels);
 
@@ -90,12 +90,15 @@ namespace s3d
 			return;
 		}
 		
-		const MTL::Region region = MTL::Region::Make2D(0, 0, image.width(), image.height());
-		m_texture->replaceRegion(region, 0, image.data(), (image.width() * m_desc.format.pixelSize()));
+		const NSUInteger dataSize = (image.stride() * image.height());
+		auto uploadBuffer = NS::TransferPtr(device->newBuffer(image.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
 		
-		NS::SharedPtr<MTL::CommandBuffer> commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
-		NS::SharedPtr<MTL::BlitCommandEncoder> blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
+		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
 		{
+			const MTL::Size size{ static_cast<NSUInteger>(image.width()), static_cast<NSUInteger>(image.height()), 1 };
+			blitCommandEncoder->copyFromBuffer(uploadBuffer.get(), 0, image.stride(), 0, size, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
+			
 			blitCommandEncoder->generateMipmaps(m_texture.get());
 			blitCommandEncoder->endEncoding();
 		}
