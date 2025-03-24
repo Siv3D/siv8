@@ -3,6 +3,6 @@ Siv3D v0.8 の開発リポジトリ | Development repository for Siv3D v0.8
 
 | Platform           | Requirements                  |
 |:------------------:|:------------------------------|
-| Windows            | - Windows 10 (64-bit) / 11<br>- Microsoft Visual C++ 2022 17.12<br>- Windows 10 SDK<br>- Intel / AMD CPU |
-| macOS              | - macOS Ventura / Sonoma<br>- Xcode 16.1<br>- Apple Silicon |
+| Windows            | - Windows 10 (64-bit) / 11<br>- Microsoft Visual C++ 2022 17.14<br>- Windows 10 SDK<br>- Intel / AMD CPU |
+| macOS              | - macOS Ventura / Sonoma<br>- Xcode 16.2<br>- Apple Silicon |
 | Linux              | (TBA) |

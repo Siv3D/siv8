@@ -250,7 +250,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HashTable<String, double*> MathParser::getUsedVariables() const
+	HashMap<String, double*> MathParser::getUsedVariables() const
 	{
 		return pImpl->getUsedVariables();
 	}
@@ -261,7 +261,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HashTable<String, double*> MathParser::getVariables() const
+	HashMap<String, double*> MathParser::getVariables() const
 	{
 		return pImpl->getVariables();
 	}
@@ -272,7 +272,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HashTable<String, double> MathParser::getConstants() const
+	HashMap<String, double> MathParser::getConstants() const
 	{
 		return pImpl->getConstants();
 	}

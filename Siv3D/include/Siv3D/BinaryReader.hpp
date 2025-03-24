@@ -20,6 +20,7 @@ namespace s3d
 {
 	class String;
 	using FilePath = String;
+	class Blob;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -171,28 +172,71 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	readBlob
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ファイルの終端までのデータを読み込み、Blob として返します。
+		/// @return 読み込んだデータ
+		[[nodiscard]]
+		Blob readBlob();
+
+		/// @brief ファイルからデータを読み込み、Blob として返します。
+		/// @param size 読み込むサイズ（バイト）
+		/// @return 読み込んだデータ
+		[[nodiscard]]
+		Blob readBlob(int64 size);
+
+		/// @brief ファイルからデータを読み込み、Blob として返します。
+		/// @param pos 先頭から数えた読み込み開始位置（バイト）
+		/// @param size 読み込むサイズ（バイト）
+		/// @return 読み込んだデータ
+		[[nodiscard]]
+		Blob readBlob(int64 pos, int64 size);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	lookahead
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 読み込み位置を変更しないでファイルからデータを読み込みます。
+		/// @brief 読み込み位置を動かさずにファイルからデータを読み込みます。
 		/// @param dst 読み込み先
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
 		int64 lookahead(void* dst, int64 size) const override;
 
-		/// @brief 読み込み位置を変更しないでファイルからデータを読み込みます。
+		/// @brief 読み込み位置を動かさずにファイルからデータを読み込みます。
 		/// @param dst 読み込み先
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
 		int64 lookahead(void* dst, int64 pos, int64 size) const override;
 
-		/// @brief 読み込み位置を変更しないでファイルからデータを読み込みます。
+		/// @brief 読み込み位置を動かさずにファイルからデータを読み込みます。
 		/// @tparam TriviallyCopyable 読み込む値の型
 		/// @param dst 読み込み先
 		/// @return 読み込みに成功したら true, それ以外の場合は false
 		bool lookahead(Concept::TriviallyCopyable auto& dst) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	lookaheadBlob
+		//
+		////////////////////////////////////////////////////////////////
+		
+		/// @brief 読み込み位置を動かさずにファイルからデータを読み込み、Blob として返します。
+		/// @param size 読み込むサイズ（バイト）
+		/// @return 読み込んだデータ
+		[[nodiscard]]
+		Blob lookaheadBlob(int64 size);
+		
+		/// @brief 読み込み位置を動かさずにファイルからデータを読み込み、Blob として返します。
+		/// @param pos 先頭から数えた読み込み開始位置（バイト）
+		/// @param size 読み込むサイズ（バイト）
+		/// @return 読み込んだデータ
+		[[nodiscard]]
+		Blob lookaheadBlob(int64 pos, int64 size);
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -11,8 +11,10 @@
 
 # pragma once
 # include <string>
+# include <span>
 # include "Unicode.hpp"
 # include "Result.hpp"
+# include "Byte.hpp"
 
 namespace s3d
 {
@@ -75,6 +77,10 @@ namespace s3d
 		/// @param src データの先頭ポインタ
 		/// @param size データのサイズ（バイト）
 		void encodeFromMemory(const void* src, size_t size);
+
+		/// @brief メモリ上のデータから Base64 値を作成します。
+		/// @param src データ
+		void encodeFromMemory(std::span<const Byte> src);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -250,6 +256,12 @@ namespace s3d
 		/// @return 作成された Base64 値
 		[[nodiscard]]
 		static Base64Value EncodeFromMemory(const void* src, size_t size);
+
+		/// @brief メモリ上のデータから Base64 値を作成します。
+		/// @param src データ
+		/// @return 作成された Base64 値
+		[[nodiscard]]
+		static Base64Value EncodeFromMemory(std::span<const Byte> src);
 
 		////////////////////////////////////////////////////////////////
 		//

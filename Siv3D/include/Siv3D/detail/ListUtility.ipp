@@ -36,4 +36,17 @@ namespace s3d
 	{
 		return *std::max_element(values.begin(), values.end());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	MinMax
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr std::pair<Type, Type> MinMax(std::initializer_list<Type> values)
+	{
+		const auto [minIt, maxIt] = std::minmax_element(values.begin(), values.end());
+		return{ *minIt, *maxIt };
+	}
 }

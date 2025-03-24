@@ -115,6 +115,11 @@ namespace s3d
 		return pImpl->replaceAll(s, replacement);
 	}
 
+	String RegExp::replaceAll(StringView s, FunctionRef<String(const MatchResults&)> replacementFunc) const
+	{
+		return pImpl->replaceAll(s, replacementFunc);
+	}
+
 	inline namespace Literals
 	{
 		inline namespace RegExpLiterals

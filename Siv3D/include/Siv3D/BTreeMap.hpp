@@ -21,18 +21,19 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	OrderedSet
+	//	BTreeMap
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief テーブル
+	/// @brief B-tree マップ
 	/// @tparam Key キーの型
+	/// @tparam Value 値の型
 	/// @tparam Compare キーの比較関数の型
 	/// @tparam Alloc アロケータの型
-	template <class Key,
+	template <class Key, class Value,
 		class Compare = phmap::Less<Key>,
-		class Alloc = phmap::priv::Allocator<Key>>
-	using OrderedSet = phmap::btree_set<Key, Compare, Alloc>;
+		class Alloc = phmap::priv::Allocator<phmap::priv::Pair<const Key, Value>>>
+	using BTreeMap = phmap::btree_map<Key, Value, Compare, Alloc>;
 }
 
 # if SIV3D_INTRINSIC(SSE)

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <source_location>
 # include "Common.hpp"
 # include "ParseErrorReason.hpp"
 # include "Optional.hpp"
@@ -25,19 +26,21 @@ namespace s3d
 
 	/// @brief 文字列を bool 値にパースします。 | Parses a string into a bool value.
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @throws ParseError パースに失敗した場合 | If parsing fails
 	/// @return パースによって得られた bool 値 | The bool value obtained by parsing
 	/// @remark 小文字と大文字は問いません。 | Case insensitive.
 	[[nodiscard]]
-	bool ParseBool(std::string_view s);
+	bool ParseBool(std::string_view s, const std::source_location& location = std::source_location::current());
 
 	/// @brief 文字列を bool 値にパースします。 | Parses a string into a bool value.
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @throws ParseError パースに失敗した場合 | If parsing fails
 	/// @return パースによって得られた bool 値 | The bool value obtained by parsing
 	/// @remark 小文字と大文字は問いません。 | Case insensitive.
 	[[nodiscard]]
-	bool ParseBool(StringView s);
+	bool ParseBool(StringView s, const std::source_location& location = std::source_location::current());
 
 	////////////////////////////////////////////////////////////////
 	//

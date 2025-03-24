@@ -13,7 +13,7 @@
 # include <memory>
 # include "Common.hpp"
 # include "Array.hpp"
-# include "HashTable.hpp"
+# include "HashMap.hpp"
 # include "Optional.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
@@ -289,7 +289,7 @@ namespace s3d
 		/// @brief 数式で使用されている変数一覧を返します。
 		/// @return 数式で使用されている変数一覧
 		[[nodiscard]]
-		HashTable<String, double*> getUsedVariables() const;
+		HashMap<String, double*> getUsedVariables() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -300,7 +300,7 @@ namespace s3d
 		/// @brief 登録されている変数一覧を返します。
 		/// @return 登録されている変数一覧
 		[[nodiscard]]
-		HashTable<String, double*> getVariables() const;
+		HashMap<String, double*> getVariables() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -311,7 +311,7 @@ namespace s3d
 		/// @brief 登録されている定数一覧を返します。
 		/// @return 登録されている定数一覧
 		[[nodiscard]]
-		HashTable<String, double> getConstants() const;
+		HashMap<String, double> getConstants() const;
 
 		////////////////////////////////////////////////////////////////
 		//

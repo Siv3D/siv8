@@ -30,12 +30,27 @@ namespace s3d
 		~CTexture_Metal() override;
 
 		void init() override;
+		
+		[[nodiscard]]
+		Texture::IDType create(IReader&& reader, FilePathView pathHint, TextureDesc desc) override;
 
 		[[nodiscard]]
 		Texture::IDType create(const Image& image, TextureDesc desc) override;
 
 		[[nodiscard]]
 		Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) override;
+
+		[[nodiscard]]
+		Texture::IDType create(const Size& size, const std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) override;
+
+		[[nodiscard]]
+		Texture::IDType create(const BCnData& bcnData) override;
+
+		[[nodiscard]]
+		Texture::IDType createDynamic(const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc) override;
+
+		[[nodiscard]]
+		Texture::IDType createDynamic(const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc) override;
 
 		void release(Texture::IDType handleID) override;
 

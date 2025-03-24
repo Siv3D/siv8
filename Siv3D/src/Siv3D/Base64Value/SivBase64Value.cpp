@@ -37,6 +37,11 @@ namespace s3d
 		simdutf::binary_to_base64(static_cast<const char*>(src), size, m_base64.data());
 	}
 
+	void Base64Value::encodeFromMemory(const std::span<const Byte> src)
+	{
+		encodeFromMemory(src.data(), src.size_bytes());
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	encodeFromBlob
@@ -288,6 +293,11 @@ namespace s3d
 		base64Value.encodeFromMemory(src, size);
 
 		return base64Value;
+	}
+
+	Base64Value Base64Value::EncodeFromMemory(const std::span<const Byte> src)
+	{
+		return EncodeFromMemory(src.data(), src.size_bytes());
 	}
 
 	////////////////////////////////////////////////////////////////

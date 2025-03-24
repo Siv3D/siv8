@@ -27,8 +27,8 @@ namespace s3d
 	{
 	public:
 
-		using container			= Array<Optional<StringView>>;
-		using value_type		= Optional<StringView>;
+		using container			= Array<StringView>;
+		using value_type		= StringView;
 		using const_reference	= const value_type&;
 		using reference			= value_type&;
 		using const_iterator	= typename container::const_iterator;

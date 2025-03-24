@@ -12,7 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/BlendState.hpp>
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 # include <Siv3D/PointVector.hpp>
 # include "../Device/D3D11Device.hpp"
 
@@ -28,7 +28,7 @@ namespace s3d
 	
 	private:
 
-		using StateTable = HashTable<BlendState, ComPtr<ID3D11BlendState>>;
+		using StateTable = HashMap<BlendState, ComPtr<ID3D11BlendState>>;
 
 		ID3D11Device* m_device = nullptr;
 

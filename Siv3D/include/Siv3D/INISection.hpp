@@ -11,7 +11,7 @@
 
 # pragma once
 # include "INIItem.hpp"
-# include "HashTable.hpp"
+# include "HashMap.hpp"
 
 namespace s3d
 {
@@ -24,15 +24,15 @@ namespace s3d
 	/// @brief INI ファイルのセクション
 	struct INISection
 	{
-		using iterator = HashTable<String, INIItem>::iterator;
+		using iterator = HashMap<String, INIItem>::iterator;
 
-		using const_iterator = HashTable<String, INIItem>::const_iterator;
+		using const_iterator = HashMap<String, INIItem>::const_iterator;
 
 		/// @brief セクション名
 		String name;
 
 		/// @brief プロパティ
-		HashTable<String, INIItem> items;
+		HashMap<String, INIItem> items;
 
 		////////////////////////////////////////////////////////////////
 		//

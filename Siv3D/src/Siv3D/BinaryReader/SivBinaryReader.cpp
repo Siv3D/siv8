@@ -11,6 +11,7 @@
 
 # include <Siv3D/BinaryReader.hpp>
 # include <Siv3D/Error.hpp>
+# include <Siv3D/Blob.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/BinaryReader/BinaryReaderDetail.hpp>
 
@@ -187,7 +188,53 @@ namespace s3d
 
 		return pImpl->read(NonNull{ dst }, pos, readSize);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readBlob
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob BinaryReader::readBlob()
+	{
+		const int64 toReadBytes = (size() - getPos());
+		Blob blob(toReadBytes);
+
+		const int64 readBytes = read(blob.data(), toReadBytes);
+		blob.resize(readBytes);
+
+		return blob;
+	}
+
+	Blob BinaryReader::readBlob(const int64 _size)
+	{
+		const int64 toReadBytes = Min(_size, (size() - getPos()));
+		Blob blob(toReadBytes);
+
+		const int64 readBytes = read(blob.data(), toReadBytes);
+		blob.resize(readBytes);
+
+		return blob;
+	}
+
+	Blob BinaryReader::readBlob(const int64 pos, const int64 _size)
+	{
+		const int64 fileSize = pImpl->size();
+
+		if (not InRange<int64>(pos, 0, fileSize))
+		{
+			ThrowReadRangeError(pos, fileSize);
+		}
+
+		const int64 toReadBytes = Min(_size, (fileSize - pos));
+		Blob blob(toReadBytes);
 		
+		const int64 readBytes = read(blob.data(), pos, toReadBytes);
+		blob.resize(readBytes);
+		
+		return blob;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	lookahead
@@ -229,7 +276,42 @@ namespace s3d
 
 		return pImpl->lookahead(NonNull{ dst }, pos, readSize);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	lookaheadBlob
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob BinaryReader::lookaheadBlob(const int64 _size)
+	{
+		const int64 toReadBytes = Min(_size, (size() - getPos()));
+		Blob blob(toReadBytes);
+
+		const int64 readBytes = lookahead(blob.data(), toReadBytes);
+		blob.resize(readBytes);
+
+		return blob;
+	}
+
+	Blob BinaryReader::lookaheadBlob(const int64 pos, const int64 _size)
+	{
+		const int64 fileSize = pImpl->size();
 		
+		if (not InRange<int64>(pos, 0, fileSize))
+		{
+			ThrowLookaheadRangeError(pos, fileSize);
+		}
+		
+		const int64 toReadBytes = Min(_size, (fileSize - pos));
+		Blob blob(toReadBytes);
+		
+		const int64 readBytes = lookahead(blob.data(), pos, toReadBytes);
+		blob.resize(readBytes);
+		
+		return blob;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	path

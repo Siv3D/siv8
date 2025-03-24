@@ -17,22 +17,41 @@
 
 namespace s3d
 {
+	struct BCnData;
+
 	class MetalTexture
 	{
 	public:
+		
+		struct Dynamic {};
 
 		struct NoMipmap {};
 
 		struct GenerateMipmap {};
 
 		[[nodiscard]]
-		MetalTexture(NoMipmap, MTL::Device* device, const Image& image, TextureDesc desc);
+		MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, TextureDesc desc);
 
 		[[nodiscard]]
 		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, TextureDesc desc);
 
 		[[nodiscard]]
-		MetalTexture(MTL::Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
+		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
+
+		[[nodiscard]]
+		MetalTexture(NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		MetalTexture(GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const BCnData& bcnData);
+
+		[[nodiscard]]
+		MetalTexture(Dynamic, NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		MetalTexture(Dynamic, GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;
@@ -53,5 +72,7 @@ namespace s3d
 		bool m_initialized = false;
 		
 		NS::SharedPtr<MTL::Texture> m_texture;
+		
+		NS::SharedPtr<MTL::Buffer> m_uploadBuffer;
 	};
 }

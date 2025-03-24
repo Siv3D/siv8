@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/DLL.hpp>
-# include <Siv3D/SequenceFormatter.hpp>
+# include <Siv3D/RangeFormatter.hpp>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "DirectoryWatcherDetail.hpp"

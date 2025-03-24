@@ -186,6 +186,12 @@ APACHE_2_LICENSE
 },
 
 {
+R"-(bc7enc)-",
+R"-(Copyright(c) 2020-2021 Richard Geldreich, Jr.)-",
+MIT_LICENSE
+},
+
+{
 R"-(DirectXMath)-",
 R"-(Copyright (c) Microsoft Corporation.)-",
 MIT_LICENSE

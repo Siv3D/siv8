@@ -14,7 +14,7 @@
 # include <cstddef> // std::byte
 # include <iostream>
 # include "Platform.hpp"
-# include "Hash.hpp"
+# include "Types.hpp"
 
 namespace s3d
 {
@@ -113,21 +113,5 @@ namespace s3d
 
 	std::wistream& operator >>(std::wistream& input, Byte& value);
 }
-
-////////////////////////////////////////////////////////////////
-//
-//	std::hash
-//
-////////////////////////////////////////////////////////////////
-
-template <>
-struct std::hash<s3d::Byte>
-{
-	[[nodiscard]]
-	size_t operator ()(const s3d::Byte& value) const noexcept
-	{
-		return s3d::Hash(value);
-	}
-};
 
 # include "detail/Byte.ipp"

@@ -16,9 +16,13 @@
 
 namespace s3d
 {
+	struct BCnData;
+
 	class D3D11Texture
 	{
 	public:
+
+		struct Dynamic {};
 
 		struct NoMipmap {};
 
@@ -32,6 +36,21 @@ namespace s3d
 
 		[[nodiscard]]
 		D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
+
+		[[nodiscard]]
+		D3D11Texture(NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		D3D11Texture(GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		D3D11Texture(ID3D11Device* device, const BCnData& bcnData);
+
+		[[nodiscard]]
+		D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;

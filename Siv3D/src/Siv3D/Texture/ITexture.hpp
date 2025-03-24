@@ -25,12 +25,27 @@ namespace s3d
 		virtual ~ISiv3DTexture() = default;
 
 		virtual void init() = 0;
-		
+
+		[[nodiscard]]
+		virtual Texture::IDType create(IReader&& reader, FilePathView pathHint, TextureDesc desc) = 0;
+
 		[[nodiscard]]
 		virtual Texture::IDType create(const Image& image, TextureDesc desc) = 0;
 
 		[[nodiscard]]
 		virtual Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) = 0;
+
+		[[nodiscard]]
+		virtual Texture::IDType create(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) = 0;
+
+		[[nodiscard]]
+		virtual Texture::IDType create(const BCnData& bcnData) = 0;
+
+		[[nodiscard]]
+		virtual Texture::IDType createDynamic(const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc) = 0;
+
+		[[nodiscard]]
+		virtual Texture::IDType createDynamic(const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc) = 0;
 
 		virtual void release(Texture::IDType handleID) = 0;
 

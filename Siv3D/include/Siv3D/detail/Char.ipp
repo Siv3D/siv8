@@ -198,6 +198,47 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	IsHiragana
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsHiragana(const char32 ch) noexcept
+	{
+		return (((0x3041 <= ch) && (ch <= 0x3096))		// Hiragana
+			 || ((0x3099 <= ch) && (ch <= 0x309F)));	// Hiragana
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsKatakana
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsKatakana(const char32 ch) noexcept
+	{
+		return (((0x30A0 <= ch) && (ch <= 0x30FF))		// Katakana
+			 || ((0x31F0 <= ch) && (ch <= 0x31FF))		// Katakana Phonetic Extensions
+			 || ((0xFF65 <= ch) && (ch <= 0xFF9F)));	// Halfwidth Katakana
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsCJKUnifiedIdeograph
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool IsCJKUnifiedIdeograph(const char32 ch) noexcept
+	{
+		return (((0x4E00 <= ch) && (ch <= 0x9FFF))		// CJK Unified Ideographs
+			 || ((0x3400 <= ch) && (ch <= 0x4DBF))		// CJK Unified Ideographs Extension A
+			 || ((0x20000 <= ch) && (ch <= 0x2A6DF))	// CJK Unified Ideographs Extension B
+			 || ((0x2A700 <= ch) && (ch <= 0x2B739))	// CJK Unified Ideographs Extension C
+			 || ((0x2B740 <= ch) && (ch <= 0x2B81D))	// CJK Unified Ideographs Extension D
+			 || ((0x2B820 <= ch) && (ch <= 0x2CEA1)));	// CJK Unified Ideographs Extension E
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	CaseInsensitiveCompare
 	//
 	////////////////////////////////////////////////////////////////

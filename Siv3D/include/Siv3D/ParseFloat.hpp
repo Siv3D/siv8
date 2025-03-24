@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <source_location>
 # include "Common.hpp"
 # include "ParseErrorReason.hpp"
 # include "Optional.hpp"
@@ -26,51 +27,57 @@ namespace s3d
 	/// @brief 文字列をパースして浮動小数点数を返します。 | Parses a string and returns a floating-point number.
 	/// @tparam Float 浮動小数点数の型 | Floating-point type
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
 	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::FloatingPoint Float>
 	[[nodiscard]]
-	Float ParseFloat(std::string_view s);
+	Float ParseFloat(std::string_view s, const std::source_location& location = std::source_location::current());
 
 	/// @brief 文字列をパースして浮動小数点数を返します。 | Parses a string and returns a floating-point number.
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
 	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <>
 	[[nodiscard]]
-	float ParseFloat<float>(std::string_view s);
+	float ParseFloat<float>(std::string_view s, const std::source_location& location);
 
 	/// @brief 文字列をパースして浮動小数点数を返します。 | Parses a string and returns a floating-point number.
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
 	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <>
 	[[nodiscard]]
-	double ParseFloat<double>(std::string_view s);
+	double ParseFloat<double>(std::string_view s, const std::source_location& location);
 
 	/// @brief 文字列をパースして浮動小数点数を返します。 | Parses a string and returns a floating-point number.
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
 	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::FloatingPoint Float>
 	[[nodiscard]]
-	Float ParseFloat(StringView s);
+	Float ParseFloat(StringView s, const std::source_location& location = std::source_location::current());
 
 	/// @brief 文字列をパースして浮動小数点数を返します。 | Parses a string and returns a floating-point number.
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
 	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <>
 	[[nodiscard]]
-	float ParseFloat<float>(StringView s);
+	float ParseFloat<float>(StringView s, const std::source_location& location);
 
 	/// @brief 文字列をパースして浮動小数点数を返します。 | Parses a string and returns a floating-point number.
 	/// @param s パースする文字列 | String to parse
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
 	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <>
 	[[nodiscard]]
-	double ParseFloat<double>(StringView s);
+	double ParseFloat<double>(StringView s, const std::source_location& location);
 
 	////////////////////////////////////////////////////////////////
 	//

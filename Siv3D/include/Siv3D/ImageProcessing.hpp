@@ -11,9 +11,12 @@
 
 # pragma once
 # include "Common.hpp"
+# include "PointVector.hpp"
 
 namespace s3d
 {
+	class Image;
+
 	namespace ImageProcessing
 	{
 		/// @brief ミップマップのレベル数を計算します。
@@ -22,6 +25,9 @@ namespace s3d
 		/// @return ミップマップのレベル数
 		[[nodiscard]]
 		constexpr uint8 CalculateMipmapLevel(size_t width, size_t height) noexcept;
+
+		[[nodiscard]]
+		Image Resize(const Image& src, const Size& size);
 	}
 }
 

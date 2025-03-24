@@ -97,7 +97,7 @@ namespace s3d
 
 	String String::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
 	{
-		String result{ *this };
+		String result{ m_string };
 		result.shuffle(std::forward<decltype(rbg)>(rbg));
 		return result;
 	}

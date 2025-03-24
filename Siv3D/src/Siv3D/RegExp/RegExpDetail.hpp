@@ -46,6 +46,9 @@ namespace s3d
 		[[nodiscard]]
 		String replaceAll(StringView s, StringView replacement) const;
 
+		[[nodiscard]]
+		String replaceAll(StringView s, FunctionRef<String(const MatchResults&)> replacementFunc) const;
+
 	private:
 
 		regex_t* m_regex = nullptr;

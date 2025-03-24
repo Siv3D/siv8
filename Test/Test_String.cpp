@@ -92,6 +92,31 @@ TEST_CASE("String.operator ==")
 	CHECK_NE(sb10000, sa10000);
 }
 
+TEST_CASE("String.replacedAll")
+{
+	{
+		const String text = UR"(<Div class="Test">Hello <SPAN>World</SPAN></Div>)";
+		const String result = text.replacedAll(U"<(/?)([A-Za-z][A-Za-z0-9]*)([^>]*)>"_re,
+			[](const MatchResults& match)
+			{
+				return U"<{}{}{}>"_fmt(match[1], match[2].lowercased(), match[3]);
+			});
+		const String expected = UR"(<div class="Test">Hello <span>World</span></div>)";
+		CHECK_EQ(result, expected);
+	}
+
+	{
+		const String text = U"I have 8 apples, 9 oranges, and 10 bananas.";
+		const String result = text.replacedAll(U"\\d+"_re,
+			[](const MatchResults& match)
+			{
+				return Format(Parse<int32>(match[0]) + 1);
+			});
+		const String expected = U"I have 9 apples, 10 oranges, and 11 bananas.";
+		CHECK_EQ(result, expected);
+	}
+}
+
 # if SIV3D_RUN_BENCHMARK
 
 TEST_CASE("String.levenshteinDistanceFrom.Benchmark")

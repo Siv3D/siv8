@@ -37,6 +37,8 @@
 //	std::u16string UTF32ToUTF16(std::u32string_view s);
 //	Result<void, size_t> ValidateAscii(std::string_view s);
 //	Result<void, size_t> ValidateUTF8(std::string_view s);
+//	Result<void, size_t> ValidateUTF16(std::u16string_view s);
+//	Result<void, size_t> ValidateUTF32(std::u32string_view s);
 //	bool IsHighSurrogate(const char16 ch);
 //	bool IsLowSurrogate(const char16 ch);
 // 
@@ -236,7 +238,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列が ASCII 文字のみで構成されているかを検証します。 | Validates that a string consists of ASCII characters only.
+		/// @brief ASCII 文字列が正しいかを検証します。 | Validates an ASCII string.
 		/// @param s 文字列 | A string
 		/// @return 検証結果。エラー時はエラーの位置 | The validation result, or the error position on failure
 		[[nodiscard]]
@@ -248,11 +250,35 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列が UTF-8 文字のみで構成されているかを検証します。 | Validates that a string consists of UTF-8 characters only.
+		/// @brief UTF-8 文字列を検証します。 | Validates a UTF-8 string.
 		/// @param s 文字列 | A string
 		/// @return 検証結果。エラー時はエラーの位置 | The validation result, or the error position on failure
 		[[nodiscard]]
 		Result<void, size_t> ValidateUTF8(std::string_view s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ValidateUTF16
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief UTF-16 文字列を検証します。 | Validates a UTF-16 string.
+		/// @param s 文字列 | A string
+		/// @return 検証結果。エラー時はエラーの位置 | The validation result, or the error position on failure
+		[[nodiscard]]
+		Result<void, size_t> ValidateUTF16(std::u16string_view s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ValidateUTF32
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief UTF-32 文字列を検証します。 | Validates a UTF-32 string.
+		/// @param s 文字列 | A string
+		/// @return 検証結果。エラー時はエラーの位置 | The validation result, or the error position on failure
+		[[nodiscard]]
+		Result<void, size_t> ValidateUTF32(std::u32string_view s);
 
 		////////////////////////////////////////////////////////////////
 		//

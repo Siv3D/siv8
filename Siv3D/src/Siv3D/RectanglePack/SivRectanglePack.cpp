@@ -17,11 +17,11 @@ namespace s3d
 {
 	namespace
 	{
-		template <bool AllowFlip>
+		template <bool AllowRotation>
 		[[nodiscard]]
 		static RectanglePack PackRectangles(const Array<Rect>& rects, const int32 maxSide)
 		{
-			using SpacesType	= rectpack2D::empty_spaces<AllowFlip, rectpack2D::default_empty_spaces>;
+			using SpacesType	= rectpack2D::empty_spaces<AllowRotation, rectpack2D::default_empty_spaces>;
 			using RectType		= rectpack2D::output_rect_t<SpacesType>;
 
 			std::vector<RectType> rectangles(rects.size());
@@ -44,7 +44,7 @@ namespace s3d
 				return rectpack2D::callback_result::ABORT_PACKING;
 			};
 
-			const rectpack2D::flipping_option flippingOption = (AllowFlip ? rectpack2D::flipping_option::ENABLED : rectpack2D::flipping_option::DISABLED);
+			const rectpack2D::flipping_option flippingOption = (AllowRotation ? rectpack2D::flipping_option::ENABLED : rectpack2D::flipping_option::DISABLED);
 
 			const auto resultSize = rectpack2D::find_best_packing<SpacesType>(
 				rectangles,
@@ -78,9 +78,9 @@ namespace s3d
 		return PackRectangles<false>(rects, maxSide);
 	}
 
-	RectanglePack RectanglePack::Pack(const Array<Rect>& rects, const int32 maxSide, const AllowFlip allowFlip) noexcept
+	RectanglePack RectanglePack::Pack(const Array<Rect>& rects, const int32 maxSide, const AllowRotation allowRotation) noexcept
 	{
-		if (allowFlip)
+		if (allowRotation)
 		{
 			return PackRectangles<true>(rects, maxSide);
 		}

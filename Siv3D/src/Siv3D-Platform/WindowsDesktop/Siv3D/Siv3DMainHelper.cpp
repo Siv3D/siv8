@@ -88,7 +88,7 @@ namespace s3d
 			return EXCEPTION_EXECUTE_HANDLER;
 		}
 
-		static std::string MakeErrorMessage(const std::string_view error, const std::string_view what)
+		static std::string MakeErrorMessage(const std::string_view location, const std::string_view error, const std::string_view what)
 		{
 			std::string errorMessage;
 
@@ -96,22 +96,38 @@ namespace s3d
 
 			if (isJapanese) // 日本語
 			{
-				errorMessage = "プログラムでエラーが発生しました。\n内容: ";
+				errorMessage = "プログラムでエラーが発生しました。\n\n内容: ";
 			}
 			else
 			{
-				errorMessage = "An error occurred in the program.\n";
+				errorMessage = "An error occurred in the program.\n\n";
 			}
 
-			errorMessage += fmt::format("[{}] {}\n\n", error, what);
-	
-			if (isJapanese)
+			errorMessage += fmt::format("[{}] {}\n", error, what);
+
+			if (not location.empty())
 			{
-				errorMessage += fmt::format("（開発者向け情報）例外の発生場所を特定するには、Visual Studio メニュー［デバッグ］→［ウィンドウ］→［例外設定］→［スローされたときに中断］→［C++ Exceptions］において、`{}` を追加または有効にしてください。", error);
+				if (isJapanese) // 日本語
+				{
+					errorMessage += fmt::format("場所: {}\n\n", location);
+				}
+				else
+				{
+					errorMessage += fmt::format("Location: {}\n\n", location);
+				}
 			}
 			else
 			{
-				errorMessage += fmt::format("(For developers) To identify the location where the exception occurred, add or enable `{}` in [Debug] -> [Windows] -> [Exception Settings] -> [Break When Thrown] -> [C++ Exceptions].", error);
+				errorMessage.push_back('\n');
+			}
+
+			if (isJapanese)
+			{
+				errorMessage += fmt::format("（開発者向け情報）例外の発生場所を IDE 上で表示するには、Visual Studio メニュー［デバッグ］→［ウィンドウ］→［例外設定］→［スローされたときに中断］→［C++ Exceptions］において、`{}` を追加または有効にしてください。", error);
+			}
+			else
+			{
+				errorMessage += fmt::format("(For developers) To display the exception location in the IDE, please add or enable `{}` in Visual Studio menu [Debug] -> [Windows] -> [Exception Settings] -> [Break When Thrown] -> [C++ Exceptions].", error);
 			}
 
 			return errorMessage;
@@ -128,23 +144,23 @@ namespace s3d
 			}
 			catch (const Error& error)
 			{
-				errorMessage = MakeErrorMessage("s3d::Error", error.messageUTF8());
+				errorMessage = MakeErrorMessage(error.locationStringUTF8(), "s3d::Error", error.messageUTF8());
 			}
 			catch (const fmt::format_error& error)
 			{
-				errorMessage = MakeErrorMessage("fmt::format_error", error.what());
+				errorMessage = MakeErrorMessage({}, "fmt::format_error", error.what());
 			}
 			catch (const std::runtime_error& error)
 			{
-				errorMessage = MakeErrorMessage("std::runtime_error", error.what());
+				errorMessage = MakeErrorMessage({}, "std::runtime_error", error.what());
 			}
 			catch (const std::out_of_range& error)
 			{
-				errorMessage = MakeErrorMessage("std::out_of_range", error.what());
+				errorMessage = MakeErrorMessage({}, "std::out_of_range", error.what());
 			}
 			catch (const std::exception& error)
 			{
-				errorMessage = MakeErrorMessage("std::exception", error.what());
+				errorMessage = MakeErrorMessage({}, "std::exception", error.what());
 			}
 
 			if (not errorMessage.empty())

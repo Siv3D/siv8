@@ -12,6 +12,8 @@
 # pragma once
 # include "Common.hpp"
 # include "Image.hpp"
+# include "Grid.hpp"
+# include "HalfFloat.hpp"
 # include "TextureDesc.hpp"
 # include "TextureFormat.hpp"
 # include "AssetHandle.hpp"
@@ -28,6 +30,7 @@ namespace s3d
 	struct TextureRegion;
 	struct TexturedQuad;
 	struct TexturedRoundRect;
+	struct BCnData;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1030,6 +1033,191 @@ namespace s3d
 		{
 			lhs.swap(rhs);
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR8_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		static Texture CreateR8_Unorm(const Grid<uint8>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8G8_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR8G8_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		static Texture CreateR8G8_Unorm(const Grid<uint16>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR16_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		static Texture CreateR16_Float(const Grid<HalfFloat>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8G8B8A8_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR8G8B8A8_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+		
+		[[nodiscard]]
+		static Texture CreateR8G8B8A8_Unorm(const Grid<Color>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8G8B8A8_Unorm_SRGB
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR8G8B8A8_Unorm_SRGB(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		static Texture CreateR8G8B8A8_Unorm_SRGB(const Grid<Color>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR16G16_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR16G16_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+		
+		[[nodiscard]]
+		static Texture CreateR16G16_Unorm(const Grid<uint32>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR16G16_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR16G16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+		
+		[[nodiscard]]
+		static Texture CreateR16G16_Float(const Grid<uint32>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR32_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR32_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+		
+		[[nodiscard]]
+		static Texture CreateR32_Float(const Grid<float>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR10G10B10A2_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR10G10B10A2_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+		
+		[[nodiscard]]
+		static Texture CreateR10G10B10A2_Unorm(const Grid<uint32>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR11G11B10_UFloat
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR11G11B10_UFloat(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		static Texture CreateR11G11B10_UFloat(const Grid<uint32>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR16G16B16A16_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR16G16B16A16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		static Texture CreateR16G16B16A16_Float(const Grid<uint64>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR32G32_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR32G32_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		static Texture CreateR32G32_Float(const Grid<Float2>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR32G32B32A32_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateR32G32B32A32_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::Default2D);
+		
+		[[nodiscard]]
+		static Texture CreateR32G32B32A32_Float(const Grid<Float4>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateBCn
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Texture CreateBCn(const BCnData& bcnData);
+
+	protected:
+
+		struct Dynamic {};
+
+		struct Render {};
+
+		struct MSRender {};
+
+		[[nodiscard]]
+		Texture(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		explicit Texture(const BCnData& bcnData);
+
+		[[nodiscard]]
+		Texture(Dynamic, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+
+		[[nodiscard]]
+		Texture(Dynamic, const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc);
 	};
 }
 

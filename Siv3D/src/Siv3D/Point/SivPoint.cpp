@@ -85,16 +85,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Point& Point::paint(Image& dst, const Color& color) const
+	{
+		if (not dst.indexInBounds(*this))
+		{
+			return *this;
+		}
+
+		Color* pDst = &dst[*this];
+
+		*pDst = Color::Blend(*pDst, color);
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	overwrite
 	//
 	////////////////////////////////////////////////////////////////
 
 	const Point& Point::overwrite(Image& dst, const Color& color) const noexcept
 	{
-		if (dst.indexInBounds(*this))
+		if (not dst.indexInBounds(*this))
 		{
-			dst[*this] = color;
+			return *this;
 		}
+
+		dst[*this] = color;
 
 		return *this;
 	}

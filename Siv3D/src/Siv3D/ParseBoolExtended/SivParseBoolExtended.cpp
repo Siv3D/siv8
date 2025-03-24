@@ -19,6 +19,29 @@ namespace s3d
 {
 	namespace
 	{
+	# if SIV3D_BUILD(DEBUG)
+
+		[[noreturn]]
+		static void ThrowParseBoolExtendedError(const std::string_view s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			if (reason == ParseErrorReason::EmptyInput)
+			{
+				throw ParseError{ "ParseBoolExtended(): Empty input", location };
+			}
+			else
+			{
+				throw ParseError{ fmt::format("ParseBoolExtended(): Failed to parse `{}`", s), location };
+			}
+		}
+
+		[[noreturn]]
+		static void ThrowParseBoolExtendedError(const StringView s, const ParseErrorReason reason, const std::source_location& location)
+		{
+			ThrowParseBoolExtendedError(Unicode::ToUTF8(s), reason, location);
+		}
+
+	# else
+
 		[[noreturn]]
 		static void ThrowParseBoolExtendedError(const std::string_view s, const ParseErrorReason reason)
 		{
@@ -37,6 +60,8 @@ namespace s3d
 		{
 			ThrowParseBoolExtendedError(Unicode::ToUTF8(s), reason);
 		}
+
+	# endif
 
 		template <class Char>
 		[[nodiscard]]
@@ -60,14 +85,16 @@ namespace s3d
 			if (auto length = (end - start);
 				length == 1)
 			{
-				// 0
-				if (start[0] == '0')
+				// 0, N, n
+				if ((start[0] == '0')
+					|| (start[0] == 'N') || (start[0] == 'n'))
 				{
 					return false;
 				}
 
-				// 1
-				if (start[0] == '1')
+				// 1, Y, y
+				if ((start[0] == '1')
+					|| (start[0] == 'Y') || (start[0] == 'y'))
 				{
 					return true;
 				}
@@ -140,27 +167,35 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool ParseBoolExtended(const std::string_view s)
+	bool ParseBoolExtended(const std::string_view s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto checked = ParseBoolExtendedWithReason(s))
+		if (const auto reason = ParseBoolExtendedWithReason(s))
 		{
-			return *checked;
+			return *reason;
 		}
 		else
 		{
-			ThrowParseBoolExtendedError(s, checked.error());
+		# if SIV3D_BUILD(DEBUG)
+			ThrowParseBoolExtendedError(s, reason.error(), location);
+		# else
+			ThrowParseBoolExtendedError(s, reason.error());
+		# endif
 		}
 	}
 
-	bool ParseBoolExtended(const StringView s)
+	bool ParseBoolExtended(const StringView s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto checked = ParseBoolExtendedWithReason(s))
+		if (const auto reason = ParseBoolExtendedWithReason(s))
 		{
-			return *checked;
+			return *reason;
 		}
 		else
 		{
-			ThrowParseBoolExtendedError(s, checked.error());
+		# if SIV3D_BUILD(DEBUG)
+			ThrowParseBoolExtendedError(s, reason.error(), location);
+		# else
+			ThrowParseBoolExtendedError(s, reason.error());
+		# endif
 		}
 	}
 

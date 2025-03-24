@@ -58,13 +58,13 @@
 # include <Siv3D/YesNo.hpp>
 
 // 定義済み Yes/No タグ | Predefined Yes/No tag
-# include <Siv3D/PredefinedYesNo.hpp> // ToDo
+# include <Siv3D/PredefinedYesNo.hpp>
 
 // 名前付き引数 | Named parameter
 # include <Siv3D/NamedParameter.hpp>
 
 // 定義済み名前付き引数 | Predefined named parameter
-# include <Siv3D/PredefinedNamedParameter.hpp> // ToDo
+# include <Siv3D/PredefinedNamedParameter.hpp>
 
 // ユーティリティー | Utilities
 # include <Siv3D/Utility.hpp>
@@ -155,6 +155,8 @@
 
 // 文字列ビュー | String view
 # include <Siv3D/StringView.hpp>
+# include <Siv3D/StringViewRandom.hpp>
+# include <Siv3D/StringViewAlgorithm.hpp>
 
 // 文字列 | String
 # include <Siv3D/String.hpp>
@@ -203,22 +205,22 @@
 # include <Siv3D/ArrayParallel.hpp>
 
 // 動的配列（二次元）| 2D array
-# include <Siv3D/Grid.hpp> // ToDo
+# include <Siv3D/Grid.hpp>
 
 // 文字列ルックアップヘルパー | Heterogeneous lookup helper
 # include <Siv3D/HeterogeneousLookupHelper.hpp>
 
-// 順序付けセット | Ordered set
-# include <Siv3D/OrderedSet.hpp>
+// B-tree セット | B-tree set
+# include <Siv3D/BTreeSet.hpp>
 
-// 順序付けテーブル | Ordered table
-# include <Siv3D/OrderedTable.hpp>
+// B-tree マップ | B-tree map
+# include <Siv3D/BTreeMap.hpp>
 
 // ハッシュセット | Hash set
 # include <Siv3D/HashSet.hpp>
 
-// ハッシュテーブル | Hash table
-# include <Siv3D/HashTable.hpp>
+// ハッシュマップ | Hash map
+# include <Siv3D/HashMap.hpp>
 
 // kd 木 | kd-tree
 # include <Siv3D/KDTree.hpp>
@@ -268,7 +270,7 @@
 # include <Siv3D/Formatter.hpp>
 
 // 配列のフォーマッタ | Array formatter
-# include <Siv3D/SequenceFormatter.hpp>
+# include <Siv3D/RangeFormatter.hpp>
 
 // タプルのフォーマッタ | Tuple formatter
 # include <Siv3D/TupleFormatter.hpp>
@@ -783,7 +785,7 @@
 # include <Siv3D/PointVector.hpp>
 
 // 整数の 2 次元ベクトル | 2D vector (integer)
-# include <Siv3D/Point.hpp> // ToDo
+# include <Siv3D/Point.hpp>
 
 // 整数の 3 次元ベクトル | 3D vector (integer)
 # include <Siv3D/Point3D.hpp> // ToDo
@@ -796,9 +798,6 @@
 
 // 4 次元ベクトル | 4D vector
 # include <Siv3D/Vector4D.hpp> // ToDo
-
-//// ベクトルクラステンプレートの計算補助 | Vector class templates support
-//# include <Siv3D/CommonVector.hpp>
 
 // 2D 描画の頂点 | Vertex elements for 2D rendering
 # include <Siv3D/Vertex2D.hpp>
@@ -1282,6 +1281,12 @@
 //# include <Siv3D/ImageFormat/TIFFDecoder.hpp>
 ////# include <Siv3D/ImageFormat/TIFFEncoder.hpp>
 
+// BCn 画像 | BCn image
+# include <Siv3D/BCnData.hpp>
+# include <Siv3D/ImageFormat/BCnDecoder.hpp>
+# include <Siv3D/ImageFormat/BCnEncoder.hpp>
+
+
 // SVG 画像 | SVG image
 # include <Siv3D/SVG.hpp>
 # include <Siv3D/ImageFormat/SVGDecoder.hpp>
@@ -1413,6 +1418,8 @@
 # include <Siv3D/TexturedCircle.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
 
+// 動的テクスチャ | Dynamic texture
+# include <Siv3D/DynamicTexture.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

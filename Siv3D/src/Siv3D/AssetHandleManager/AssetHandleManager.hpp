@@ -13,7 +13,7 @@
 # include <memory>
 # include <mutex>
 # include <Siv3D/Common.hpp>
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -24,7 +24,7 @@ namespace s3d
 	{
 	public:
 
-		using container_type	= HashTable<IDType, std::unique_ptr<Data>>;
+		using container_type	= HashMap<IDType, std::unique_ptr<Data>>;
 		using iterator			= typename container_type::iterator;
 		using const_iterator	= typename container_type::const_iterator;
 

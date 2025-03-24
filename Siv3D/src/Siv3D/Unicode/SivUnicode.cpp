@@ -408,7 +408,7 @@ namespace s3d
 
 			if (result.error == simdutf::SUCCESS)
 			{
-				return {};
+				return{};
 			}
 			else
 			{
@@ -418,7 +418,7 @@ namespace s3d
 			
 		////////////////////////////////////////////////////////////////
 		//
-		//	VaidateUTF8
+		//	ValidateUTF8
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -428,7 +428,47 @@ namespace s3d
 
 			if (result.error == simdutf::SUCCESS)
 			{
+				return{};
+			}
+			else
+			{
+				return Err{ result.count };
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ValidateUTF16
+		//
+		////////////////////////////////////////////////////////////////
+
+		Result<void, size_t> ValidateUTF16(const std::u16string_view s)
+		{
+			const simdutf::result result = simdutf::validate_utf16_with_errors(s.data(), s.size());
+			
+			if (result.error == simdutf::SUCCESS)
+			{
 				return {};
+			}
+			else
+			{
+				return Err{ result.count };
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ValidateUTF32
+		//
+		////////////////////////////////////////////////////////////////
+
+		Result<void, size_t> ValidateUTF32(const std::u32string_view s)
+		{
+			const simdutf::result result = simdutf::validate_utf32_with_errors(s.data(), s.size());
+
+			if (result.error == simdutf::SUCCESS)
+			{
+				return{};
 			}
 			else
 			{

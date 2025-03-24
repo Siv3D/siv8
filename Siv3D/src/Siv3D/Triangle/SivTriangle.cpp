@@ -525,7 +525,7 @@ namespace s3d
 		const Triangle t = stretched(offset);
 
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			std::span<const Vec2>(&p0, 3), none,
+			std::span<const Vec2>(&t.p0, 3), none,
 			Abs(static_cast<float>(innerThickness + outerThickness)),
 			(outerThickness == 0.0), CloseRing::Yes,
 			color.toFloat4());
@@ -539,7 +539,7 @@ namespace s3d
 		const Triangle t = stretched(offset);
 
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			std::span<const Vec2>(&p0, 3), none,
+			std::span<const Vec2>(&t.p0, 3), none,
 			Abs(static_cast<float>(innerThickness + outerThickness)),
 			(outerThickness == 0.0), CloseRing::Yes,
 			pattern);

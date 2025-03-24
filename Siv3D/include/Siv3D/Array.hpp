@@ -1144,9 +1144,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定したインデックスにある要素を返します。インデックスが範囲外の場合デフォルト値を返します。
+		/// @tparam U デフォルト値の型
 		/// @param index インデックス
 		/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
-		/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue
+		/// @return 指定したインデックスにある要素。範囲外の場合は defaultValue
 		template <class U>
 		[[nodiscard]]
 		constexpr value_type fetch(size_type index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>;

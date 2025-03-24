@@ -22,5 +22,10 @@ namespace s3d
 		{
 			throw ParseError{ fmt::format("Parse<{}>(\"{}\") failed", DemangleUTF8(type), s) };
 		}
+
+		void ThrowParseError(const char* type, std::string_view s, const std::source_location& location)
+		{
+			throw ParseError{ fmt::format("Parse<{}>(\"{}\") failed", DemangleUTF8(type), s), location };
+		}
 	}
 }

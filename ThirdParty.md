@@ -5,6 +5,7 @@ To view the license information, press the <kbd>F1</kbd> key while the Siv3D app
 Name | Version
 --- | ---
 [Abseil](https://github.com/abseil/abseil-cpp) | 20240722.0
+[bc7enc](https://github.com/richgel999/bc7enc_rdo) | 
 [CoreRT](https://github.com/dotnet/corert) | 
 [cpu_features](https://github.com/google/cpu_features) | 
 [DirectXMath](https://github.com/microsoft/DirectXMath) | October 2024
@@ -14,7 +15,7 @@ Name | Version
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 7.0.0
+[fast_float](https://github.com/fastfloat/fast_float) | Version 8.0.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.2
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
@@ -39,10 +40,11 @@ Name | Version
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 5.7.0
+[simdutf](https://github.com/simdutf/simdutf) | Version 6.3.1
 [skia](https://github.com/google/skia) |
+[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.13
 [stduuid](https://github.com/mariusbancila/stduuid) | 
-[The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v1.3.12
+[The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
 [variant](https://github.com/mapbox/variant) | 
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 

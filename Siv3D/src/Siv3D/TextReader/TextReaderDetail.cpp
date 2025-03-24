@@ -30,7 +30,7 @@ namespace s3d
 
 			size_t start = 0;
 
-			for (size_t i = 0; i < s.length(); ++i)
+			for (size_t i = 0; i < s.size(); ++i)
 			{
 				if (s[i] == '\n')
 				{
@@ -53,7 +53,7 @@ namespace s3d
 
 			size_t start = 0;
 
-			for (size_t i = 0; i < s.length(); ++i)
+			for (size_t i = 0; i < s.size(); ++i)
 			{
 				if (s[i] == '\n')
 				{

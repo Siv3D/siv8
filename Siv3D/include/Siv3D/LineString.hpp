@@ -15,8 +15,8 @@
 # include "ColorHSV.hpp"
 # include "Array.hpp"
 # include "2DShapes.hpp"
-# include "SequenceFormatter.hpp"
 # include "PredefinedYesNo.hpp"
+# include "RangeFormatter.hpp"
 
 namespace s3d
 {

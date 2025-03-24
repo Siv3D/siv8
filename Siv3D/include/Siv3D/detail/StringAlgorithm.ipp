@@ -248,7 +248,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	remove_if / removed_if
+	//	remove_if, removed_if
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -260,14 +260,12 @@ namespace s3d
 	}
 
 	template <class Fty>
-	[[nodiscard]]
 	constexpr String String::remove_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>
 	{
 		return std::move(remove_if(std::forward<Fty>(f)));
 	}
 
 	template <class Fty>
-	[[nodiscard]]
 	constexpr String String::removed_if(Fty f) const& requires std::predicate<Fty&, const value_type&>
 	{
 		String result;
@@ -284,7 +282,6 @@ namespace s3d
 	}
 
 	template <class Fty>
-	[[nodiscard]]
 	constexpr String String::removed_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>
 	{
 		return std::move(remove_if(std::forward<Fty>(f)));
@@ -292,31 +289,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	repeat
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr String String::repeat(const size_t count) const
-	{
-		const size_t blockLength = m_string.size();
-		const size_t blockMemorySize = (blockLength * sizeof(value_type));
-
-		String result((blockLength * count), U'\0');
-		value_type* pDst = result.data();
-		const value_type* pSrc = m_string.data();
-
-		for (size_t i = 0; i < count; ++i)
-		{
-			std::memcpy(pDst, pSrc, blockMemorySize);
-			pDst += blockLength;
-		}
-
-		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	replace_if / replaced_if
+	//	replace_if, replaced_if
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -343,7 +316,7 @@ namespace s3d
 	template <class Fty>
 	constexpr String String::replaced_if(Fty f, const value_type newChar) const& requires std::predicate<Fty&, const value_type&>
 	{
-		String result{ *this };
+		String result{ m_string };
 		result.replace_if(f, newChar);
 		return result;
 	}
@@ -386,7 +359,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	sort_by / sorted_by
+	//	sort_by, sorted_by
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -407,7 +380,7 @@ namespace s3d
 	template <class Fty>
 	String String::sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
-		String result{ *this };
+		String result{ m_string };
 		result.sort_by(std::forward<Fty>(f));
 		return result;
 	}

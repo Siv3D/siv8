@@ -145,35 +145,35 @@ namespace s3d
 		, b{ 0 }
 		, a{ 255 }
 	{
-		if (code.length() == 4) // #RGB
+		if (code.size() == 4) // #RGB
 		{
 			r = detail::HexToColor(code[1]);
 			g = detail::HexToColor(code[2]);
 			b = detail::HexToColor(code[3]);
 			a = 255;
 		}
-		else if (code.length() == 5) // #RGBA
+		else if (code.size() == 5) // #RGBA
 		{
 			r = detail::HexToColor(code[1]);
 			g = detail::HexToColor(code[2]);
 			b = detail::HexToColor(code[3]);
 			a = detail::HexToColor(code[4]);
 		}
-		else if (code.length() == 7) // #RRGGBB
+		else if (code.size() == 7) // #RRGGBB
 		{
 			r = detail::HexToColor(code[1], code[2]);
 			g = detail::HexToColor(code[3], code[4]);
 			b = detail::HexToColor(code[5], code[6]);
 			a = 255;
 		}
-		else if (code.length() == 8) // RRGGBBAA
+		else if (code.size() == 8) // RRGGBBAA
 		{
 			r = detail::HexToColor(code[0], code[1]);
 			g = detail::HexToColor(code[2], code[3]);
 			b = detail::HexToColor(code[4], code[5]);
 			a = detail::HexToColor(code[6], code[7]);
 		}
-		else if (code.length() == 9) // #RRGGBBAA
+		else if (code.size() == 9) // #RRGGBBAA
 		{
 			r = detail::HexToColor(code[1], code[2]);
 			g = detail::HexToColor(code[3], code[4]);
@@ -507,9 +507,82 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline constexpr Color Color::abgr() const noexcept
+	constexpr Color Color::abgr() const noexcept
 	{
 		return{ a, b, g, r };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR8_Unorm
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr uint8 Color::toR8_Unorm() const noexcept
+	{
+		return r;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR8G8_Unorm
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr uint16 Color::toR8G8_Unorm() const noexcept
+	{
+		return ((static_cast<uint16>(g) << 8) | r);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR8G8B8A8_Unorm
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Color Color::toR8G8B8A8_Unorm() const noexcept
+	{
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR16G16_Unorm
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr uint32 Color::toR16G16_Unorm() const noexcept
+	{
+		const uint16 r16 = static_cast<uint16>((r * 65535 + 127) / 255);
+		const uint16 g16 = static_cast<uint16>((g * 65535 + 127) / 255);
+		return ((g16 << 16) | r16);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR32_Float
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr float Color::toR32_Float() const noexcept
+	{
+		return (r / 255.0f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR10G10B10A2_Unorm
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr uint32 Color::toR10G10B10A2_Unorm() const noexcept
+	{
+		const uint32 rBits = static_cast<uint32>((r * 1023 + 127) / 255);
+		const uint32 gBits = static_cast<uint32>((g * 1023 + 127) / 255);
+		const uint32 bBits = static_cast<uint32>((b * 1023 + 127) / 255);
+		const uint32 aBits = static_cast<uint32>((a * 3 + 127) / 255);
+
+		return ((rBits) | (gBits << 10) | (bBits << 20) | (aBits << 30));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -620,6 +693,26 @@ namespace s3d
 		const uint8 g = static_cast<uint8>((static_cast<uint16>(color.g) * 255) / color.a);
 		const uint8 b = static_cast<uint8>((static_cast<uint16>(color.b) * 255) / color.a);
 		return{ r, g, b, color.a };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Blend
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Color Color::Blend(const Color dst, const Color src) noexcept
+	{
+		const uint32 srcAlpha = src.a;
+		const uint32 invSrcAlpha = (255 - srcAlpha);
+
+		return
+		{
+			static_cast<uint8>(((dst.r * invSrcAlpha) + (src.r * srcAlpha)) / 255),
+			static_cast<uint8>(((dst.g * invSrcAlpha) + (src.g * srcAlpha)) / 255),
+			static_cast<uint8>(((dst.b * invSrcAlpha) + (src.b * srcAlpha)) / 255),
+			dst.a
+		};
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -430,7 +430,7 @@ namespace s3d
 
 		Array<INISection> m_sections;
 
-		HashTable<String, size_t> m_sectionIndex;
+		HashMap<String, size_t> m_sectionIndex;
 
 		const String* getPropertyValue(StringView section, StringView key) const;
 	};

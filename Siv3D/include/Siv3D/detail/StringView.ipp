@@ -13,6 +13,22 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		template <class Fty>
+		constexpr auto PassFunction(Fty f)
+		{
+			if constexpr (std::is_member_pointer_v<std::remove_cvref_t<Fty>>)
+			{
+				return [f](auto& elem) { return std::invoke(f, elem); };
+			}
+			else
+			{
+				return f;
+			}
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)

@@ -22,34 +22,34 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		template <Concept::Formattable... Args>
-		inline String Format_impl::operator ()(const Args&... args) const
+		inline String Format_impl::operator ()(const Args&... args)
 		{
 			FormatData formatData;
 			Apply(formatData, args...);
 			return std::move(formatData.string);
 		}
 
-		inline String Format_impl::operator ()(const char32 ch) const
+		inline String Format_impl::operator ()(const char32 ch)
 		{
 			return String(1, ch);
 		}
 
-		inline String Format_impl::operator ()(const char32* s) const noexcept
+		inline String Format_impl::operator ()(const char32* s) noexcept
 		{
 			return String{ s };
 		}
 
-		inline String Format_impl::operator ()(const StringView s) const noexcept
+		inline String Format_impl::operator ()(const StringView s) noexcept
 		{
 			return String{ s };
 		}
 
-		inline String Format_impl::operator ()(const String& s) const
+		inline String Format_impl::operator ()(const String& s)
 		{
 			return s;
 		}
 
-		inline String Format_impl::operator ()(String&& s) const noexcept
+		inline String Format_impl::operator ()(String&& s) noexcept
 		{
 			return std::move(s);
 		}

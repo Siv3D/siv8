@@ -23,7 +23,7 @@ namespace s3d
 			{
 				auto& vertexBuffer = buffer.vertexBuffer;
 				vertexBuffer.bufferIndex = bufferIndex;
-				vertexBuffer.buffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D) * InitialVertexBufferSize), MTL::ResourceStorageModeShared));
+				vertexBuffer.buffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D) * InitialVertexBufferSize), MTL::ResourceOptionCPUCacheModeWriteCombined));
 				vertexBuffer.pointer = static_cast<Vertex2D*>(vertexBuffer.buffer->contents());
 				vertexBuffer.size = InitialVertexBufferSize;
 			}
@@ -31,7 +31,7 @@ namespace s3d
 			{
 				auto& indexBuffer = buffer.indexBuffer;
 				indexBuffer.bufferIndex = bufferIndex;
-				indexBuffer.buffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D::IndexType) * InitialIndexBufferSize), MTL::ResourceStorageModeShared));
+				indexBuffer.buffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D::IndexType) * InitialIndexBufferSize), MTL::ResourceOptionCPUCacheModeWriteCombined));
 				indexBuffer.pointer = static_cast<Vertex2D::IndexType*>(indexBuffer.buffer->contents());
 				indexBuffer.size = InitialIndexBufferSize;
 			}
@@ -116,7 +116,7 @@ namespace s3d
 		const uint32 oldSize = size;
 			
 		const uint32 newVertexArraySize = std::bit_ceil(vertexArrayWritePosTarget);
-		NS::SharedPtr<MTL::Buffer> newBuffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D) * newVertexArraySize), MTL::ResourceStorageModeShared));
+		NS::SharedPtr<MTL::Buffer> newBuffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D) * newVertexArraySize), MTL::ResourceOptionCPUCacheModeWriteCombined));
 		Vertex2D* newPointer = static_cast<Vertex2D*>(newBuffer->contents());
 
 		std::memcpy(newPointer, oldPointer, (sizeof(Vertex2D) * oldSize));
@@ -134,7 +134,7 @@ namespace s3d
 		const uint32 oldSize = size;
 			
 		const uint32 newIndexArraySize = std::bit_ceil(indexArrayWritePosTarget);
-		NS::SharedPtr<MTL::Buffer> newBuffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D::IndexType) * newIndexArraySize), MTL::ResourceStorageModeShared));
+		NS::SharedPtr<MTL::Buffer> newBuffer = NS::TransferPtr(device->newBuffer((sizeof(Vertex2D::IndexType) * newIndexArraySize), MTL::ResourceOptionCPUCacheModeWriteCombined));
 		Vertex2D::IndexType* newPointer = static_cast<Vertex2D::IndexType*>(newBuffer->contents());
 	
 		std::memcpy(newPointer, oldPointer, (sizeof(Vertex2D::IndexType) * oldSize));

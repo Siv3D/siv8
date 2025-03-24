@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <source_location>
 # include "Common.hpp"
 # include "ParseErrorReason.hpp"
 # include "Optional.hpp"
@@ -27,21 +28,23 @@ namespace s3d
 	/// @tparam Int 整数の型 | Integer type
 	/// @param s パースする文字列 | String to parse
 	/// @param radix 基数（2 から 36 まで） | Radix (from 2 to 36)
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした整数値 | Parsed integer value
 	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::Integral Int>
 	[[nodiscard]]
-	Int ParseInt(std::string_view s, int32 radix = 10);
+	Int ParseInt(std::string_view s, int32 radix = 10, const std::source_location& location = std::source_location::current());
 
 	/// @brief 文字列をパースして整数値を返します。 | Parses a string and returns an integer value.
 	/// @tparam Int 整数の型 | Integer type
 	/// @param s パースする文字列 | String to parse
 	/// @param radix 基数（2 から 36 まで） | Radix (from 2 to 36)
+	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした整数値 | Parsed integer value
 	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::Integral Int>
 	[[nodiscard]]
-	Int ParseInt(StringView s, int32 radix = 10);
+	Int ParseInt(StringView s, int32 radix = 10, const std::source_location& location = std::source_location::current());
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -17,6 +17,7 @@
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
     <ClCompile Include="..\Test\Test_Base64Value.cpp" />
+    <ClCompile Include="..\Test\Test_BinaryReader.cpp" />
     <ClCompile Include="..\Test\Test_BinaryWriter.cpp" />
     <ClCompile Include="..\Test\Test_Byte.cpp" />
     <ClCompile Include="..\Test\Test_Color.cpp" />
@@ -25,6 +26,7 @@
     <ClCompile Include="..\Test\Test_Concepts.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
+    <ClCompile Include="..\Test\Test_Grid.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFile.cpp" />
@@ -32,7 +34,7 @@
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
-    <ClCompile Include="..\Test\Test_SequenceFormatter.cpp" />
+    <ClCompile Include="..\Test\Test_RangeFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FunctionRef.cpp" />
     <ClCompile Include="..\Test\Test_Hash.cpp" />
     <ClCompile Include="..\Test\Test_Indexed.cpp" />

@@ -1054,6 +1054,21 @@
     <Filter Include="src\Siv3D\AssetMonitor">
       <UniqueIdentifier>{d341ade3-1b43-4c0c-8de3-d7a7432b786f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\DynamicTexture">
+      <UniqueIdentifier>{3584d68e-3e62-41c8-8d7a-4e684658b622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\bc7enc_rdo">
+      <UniqueIdentifier>{292bb396-1b44-4e78-9523-e4f585729366}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ImageFormat\BCn">
+      <UniqueIdentifier>{dc1cb156-1aed-4393-a7e7-aebbfff93282}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\stb">
+      <UniqueIdentifier>{dc420f78-f3f7-4862-af40-9bfeec90b127}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ImageProcessing">
+      <UniqueIdentifier>{053a7db9-300d-4dc8-b07d-f61a2d7015a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1323,10 +1338,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Format.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\SequenceFormatter.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\RangeFormatter.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SequenceFormatter.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RangeFormatter.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\EscapedFormatter.hpp">
@@ -1605,10 +1620,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HeterogeneousLookupHelper.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\OrderedSet.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\BTreeSet.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\OrderedTable.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\BTreeMap.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\MapFormatter.hpp">
@@ -1620,7 +1635,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HashSet.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\HashTable.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\HashMap.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\ThirdParty\EnumBitmask\EnumBitmask.hpp">
@@ -4131,6 +4146,63 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\AssetMonitor\IAssetMonitor.hpp">
       <Filter>src\Siv3D\AssetMonitor</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewAlgorithm.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewRandom.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\StringViewAlgorithm.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\StringViewRandom.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp">
+      <Filter>src\Siv3D\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\BCnDecoder.hpp">
+      <Filter>include\Siv3D\ImageFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\BCnEncoder.hpp">
+      <Filter>include\Siv3D\ImageFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\bc7decomp.h">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\bc7enc.h">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\rdo_bc_encoder.h">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\utils.h">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\dds_defs.h">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\ert.h">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\rgbcx.h">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\rgbcx_table4.h">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BCnData.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BCnData.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\stb\stb_image_resize2.h">
+      <Filter>src\ThirdParty\stb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6592,6 +6664,39 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\CAssetMonitor.cpp">
       <Filter>src\Siv3D\AssetMonitor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DynamicTexture\SivDynamicTexture.cpp">
+      <Filter>src\Siv3D\DynamicTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.cpp">
+      <Filter>src\Siv3D\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\bc7decomp.cpp">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\bc7enc.cpp">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\rdo_bc_encoder.cpp">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\utils.cpp">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\ert.cpp">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\rgbcx.cpp">
+      <Filter>src\ThirdParty\bc7enc_rdo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\BCn\BCnDecoder.cpp">
+      <Filter>src\Siv3D\ImageFormat\BCn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\BCn\BCnEncoder.cpp">
+      <Filter>src\Siv3D\ImageFormat\BCn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageProcessing\SivImageProcessing.cpp">
+      <Filter>src\Siv3D\ImageProcessing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

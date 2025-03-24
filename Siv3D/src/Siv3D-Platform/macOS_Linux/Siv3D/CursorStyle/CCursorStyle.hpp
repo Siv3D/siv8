@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/HashTable.hpp>
+# include <Siv3D/HashMap.hpp>
 # include <Siv3D/UniqueResource.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
@@ -31,7 +31,7 @@ namespace s3d
 
 		void setDefaultStyle(CursorStyle style) override;
 
-		bool registerCustomStyle(StringView name, const Image& image, Point hotSpot, AlphaPremultiplied alphaPremultiplied) override;
+		bool registerCustomStyle(StringView name, const Image& image, Point hotSpot, IsAlphaPremultiplied isAlphaPremultiplied) override;
 
 		void unregisterCustomStyle(StringView name) override;
 
@@ -57,6 +57,6 @@ namespace s3d
 
 		static void CursorDeleter(GLFWcursor* h);
 		
-		HashTable<String, UniqueResource<GLFWcursor*, decltype(&CursorDeleter)>> m_customCursors;
+		HashMap<String, UniqueResource<GLFWcursor*, decltype(&CursorDeleter)>> m_customCursors;
 	};
 }
