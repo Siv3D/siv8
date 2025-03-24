@@ -210,7 +210,7 @@ namespace s3d
 		
 		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
 		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::NoMipmap{}, m_device, size, pData, stride, format, desc);
+			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::NoMipmap{}, m_device, m_commandQueue, size, pData, stride, format, desc);
 		}
 		else
 		{
