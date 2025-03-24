@@ -498,6 +498,7 @@
 		F90DA06F2D1A934E0003E1E8 /* CTexture_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0632D1A934E0003E1E8 /* CTexture_Metal.mm */; };
 		F90DA0702D1A934E0003E1E8 /* MetalTexture2DDesc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0672D1A934E0003E1E8 /* MetalTexture2DDesc.cpp */; };
 		F90DA0712D1A934E0003E1E8 /* TextureFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0692D1A934E0003E1E8 /* TextureFactory.mm */; };
+		F90F2BE02D91749500CC89CA /* Test_BinaryReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F2BDF2D91749500CC89CA /* Test_BinaryReader.cpp */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
 		F934BD712BF880330003EAD5 /* PixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6E2BF880330003EAD5 /* PixelShader.hpp */; };
 		F934BD722BF880330003EAD5 /* VertexShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6F2BF880330003EAD5 /* VertexShader.hpp */; };
@@ -3030,6 +3031,7 @@
 		F90DA0662D1A934E0003E1E8 /* MetalTexture2DDesc.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalTexture2DDesc.hpp; sourceTree = "<group>"; };
 		F90DA0672D1A934E0003E1E8 /* MetalTexture2DDesc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MetalTexture2DDesc.cpp; sourceTree = "<group>"; };
 		F90DA0692D1A934E0003E1E8 /* TextureFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TextureFactory.mm; sourceTree = "<group>"; };
+		F90F2BDF2D91749500CC89CA /* Test_BinaryReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BinaryReader.cpp; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F934BD6E2BF880330003EAD5 /* PixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PixelShader.hpp; sourceTree = "<group>"; };
 		F934BD6F2BF880330003EAD5 /* VertexShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VertexShader.hpp; sourceTree = "<group>"; };
@@ -5209,6 +5211,7 @@
 				F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */,
 				F90702B62B9DAEB900383E4D /* Test_Array.cpp */,
 				F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */,
+				F90F2BDF2D91749500CC89CA /* Test_BinaryReader.cpp */,
 				F90702B72B9DAEB900383E4D /* Test_BinaryWriter.cpp */,
 				F90702B82B9DAEB900383E4D /* Test_Byte.cpp */,
 				F90702B92B9DAEB900383E4D /* Test_Color.cpp */,
@@ -12566,6 +12569,7 @@
 				F97E6DB92D7B3B9A0066E408 /* Test_Grid.cpp in Sources */,
 				F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */,
 				F9528B162BAC58A300222F45 /* Test_String.cpp in Sources */,
+				F90F2BE02D91749500CC89CA /* Test_BinaryReader.cpp in Sources */,
 				2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */,
 				F907030B2B9DAEB900383E4D /* Test_Unicode.cpp in Sources */,
 				F9528B382BB05D0600222F45 /* Test_Base64Value.cpp in Sources */,
