@@ -66,8 +66,14 @@ namespace s3d
 		/// @brief BC1 (DXT1) 圧縮形式
 		BC1_RGBA_Unorm,
 
+		/// @brief BC1 (DXT1) 圧縮形式
+		BC1_RGBA_Unorm_SRGB,
+
 		/// @brief BC3 (DXT5) 圧縮形式
 		BC3_RGBA_Unorm,
+
+		/// @brief BC3 (DXT5) 圧縮形式
+		BC3_RGBA_Unorm_SRGB,
 
 		/// @brief BC4 圧縮形式
 		BC4_R_Unorm,
@@ -77,5 +83,8 @@ namespace s3d
 
 		/// @brief BC7 圧縮形式
 		BC7_RGBA_Unorm,
+
+		/// @brief BC7 圧縮形式
+		BC7_RGBA_Unorm_SRGB,
 	};
 }

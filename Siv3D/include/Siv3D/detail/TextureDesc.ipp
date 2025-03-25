@@ -19,6 +19,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	constexpr TextureDesc::TextureDesc(const bool _hasMipmap, const bool _sRGB, bool const _isSDF) noexcept
+		: hasMipmap{ _hasMipmap }
+		, sRGB{ _sRGB }
+		, isSDF{ _isSDF } {}
+
 	constexpr TextureDesc::TextureDesc(const TextureDescBuilder& builder) noexcept
 		: hasMipmap{ builder.hasMipmap() }
 		, sRGB{ builder.sRGB() }

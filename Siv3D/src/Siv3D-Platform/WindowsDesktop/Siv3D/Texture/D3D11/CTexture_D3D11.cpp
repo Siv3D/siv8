@@ -145,7 +145,7 @@ namespace s3d
 
 		if (isBCn)
 		{
-			return create(bcnDecoder.decodeNative(reader, pathHint));
+			return create(bcnDecoder.decodeNative(reader, desc.sRGB, pathHint));
 		}
 		else
 		{
@@ -295,7 +295,8 @@ namespace s3d
 
 	TextureDesc CTexture_D3D11::getDesc(const Texture::IDType handleID)
 	{
-		return m_textures[handleID]->getDesc();
+		const auto& desc = m_textures[handleID]->getDesc();
+		return{ desc.hasMipmap, desc.sRGB, desc.isSDF };
 	}
 
 	////////////////////////////////////////////////////////////////

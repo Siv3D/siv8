@@ -118,9 +118,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		BCnData decodeNative(FilePathView path) const;
+		BCnData decodeNative(FilePathView path, bool sRGB) const;
 
 		[[nodiscard]]
-		BCnData decodeNative(IReader& reader, FilePathView pathHint = {}) const;
+		BCnData decodeNative(IReader& reader, bool sRGB, FilePathView pathHint = {}) const;
 	};
 }

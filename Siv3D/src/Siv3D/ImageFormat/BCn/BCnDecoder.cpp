@@ -26,14 +26,20 @@ namespace s3d
 			{
 			case DXGI_FORMAT_BC1_UNORM:
 				return TextureFormat::BC1_RGBA_Unorm;
+			case DXGI_FORMAT_BC1_UNORM_SRGB:
+				return TextureFormat::BC1_RGBA_Unorm_SRGB;
 			case DXGI_FORMAT_BC3_UNORM:
 				return TextureFormat::BC3_RGBA_Unorm;
+			case DXGI_FORMAT_BC3_UNORM_SRGB:
+				return TextureFormat::BC3_RGBA_Unorm_SRGB;
 			case DXGI_FORMAT_BC4_UNORM:
 				return TextureFormat::BC4_R_Unorm;
 			case DXGI_FORMAT_BC5_UNORM:
 				return TextureFormat::BC5_RG_Unorm;
 			case DXGI_FORMAT_BC7_UNORM:
 				return TextureFormat::BC7_RGBA_Unorm;
+			case DXGI_FORMAT_BC7_UNORM_SRGB:
+				return TextureFormat::BC7_RGBA_Unorm_SRGB;
 			default:
 				return TextureFormat::Unknown;
 			}
@@ -229,10 +235,13 @@ namespace s3d
 			{
 				dxgiFormat = DXGI_FORMAT_BC5_UNORM;
 			}
-			else if ((hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM)
-				|| (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM_SRGB)) // BC7
+			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM) // BC7
 			{
 				dxgiFormat = DXGI_FORMAT_BC7_UNORM;
+			}
+			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM_SRGB) // BC7_SRGB
+			{
+				dxgiFormat = DXGI_FORMAT_BC7_UNORM_SRGB;
 			}
 			else if (dxgiFormat == DXGI_FORMAT_UNKNOWN)
 			{
@@ -414,7 +423,7 @@ namespace s3d
 				}
 			}
 		}
-		else if (dxgiFormat == DXGI_FORMAT_BC7_UNORM)
+		else if ((dxgiFormat == DXGI_FORMAT_BC7_UNORM) || (dxgiFormat == DXGI_FORMAT_BC7_UNORM_SRGB))
 		{
 			constexpr uint32 BlockSize = 16;
 			const size_t lineSize = (xBlocks * BlockSize);
@@ -473,7 +482,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	BCnData BCnDecoder::decodeNative(const FilePathView path) const
+	BCnData BCnDecoder::decodeNative(const FilePathView path, const bool sRGB) const
 	{
 		BinaryReader reader{ path };
 
@@ -482,10 +491,10 @@ namespace s3d
 			return{};
 		}
 
-		return decodeNative(reader, path);
+		return decodeNative(reader, sRGB, path);
 	}
 
-	BCnData BCnDecoder::decodeNative(IReader& reader, const FilePathView) const
+	BCnData BCnDecoder::decodeNative(IReader& reader, const bool sRGB, const FilePathView) const
 	{
 		LOG_SCOPED_DEBUG("BCnDecoder::decodeNative()");
 
@@ -509,11 +518,11 @@ namespace s3d
 
 		if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT1) // BC1
 		{
-			dxgiFormat = DXGI_FORMAT_BC1_UNORM;
+			dxgiFormat = (sRGB ? DXGI_FORMAT_BC1_UNORM_SRGB : DXGI_FORMAT_BC1_UNORM);
 		}
 		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_DXT5) // BC3
 		{
-			dxgiFormat = DXGI_FORMAT_BC3_UNORM;
+			dxgiFormat = (sRGB ? DXGI_FORMAT_BC3_UNORM_SRGB : DXGI_FORMAT_BC3_UNORM);
 		}
 		else if (desc.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('B', 'C', '4', 'U')) // BC4
 		{
@@ -558,10 +567,13 @@ namespace s3d
 			{
 				dxgiFormat = DXGI_FORMAT_BC5_UNORM;
 			}
-			else if ((hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM)
-				|| (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM_SRGB)) // BC7
+			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM) // BC7
 			{
-				dxgiFormat = DXGI_FORMAT_BC7_UNORM;
+				dxgiFormat = (sRGB ? DXGI_FORMAT_BC7_UNORM_SRGB : DXGI_FORMAT_BC7_UNORM);
+			}
+			else if (hdr10.dxgiFormat == DXGI_FORMAT_BC7_UNORM_SRGB) // BC7_SRGB
+			{
+				dxgiFormat = DXGI_FORMAT_BC7_UNORM_SRGB;
 			}
 			else if (dxgiFormat == DXGI_FORMAT_UNKNOWN)
 			{
@@ -570,11 +582,12 @@ namespace s3d
 			}
 		}
 
-		const uint32 blockSize = (((dxgiFormat == DXGI_FORMAT_BC1_UNORM) || (dxgiFormat == DXGI_FORMAT_BC4_UNORM)) ? 8 : 16);
+		const TextureFormat textureFormat = ToTextureFormat(dxgiFormat);
+		const uint32 blockSize = textureFormat.blockSize();
 
 		BCnData bcnData;
 		bcnData.size = { width, height };
-		bcnData.format = ToTextureFormat(dxgiFormat);
+		bcnData.format = textureFormat;
 
 		for (uint32 i = 0; i < mipCount; ++i)
 		{

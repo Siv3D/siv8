@@ -225,13 +225,19 @@ namespace s3d
 
 		static constexpr TexturePixelFormat BC1_RGBA_Unorm		= TexturePixelFormat::BC1_RGBA_Unorm;
 
+		static constexpr TexturePixelFormat BC1_RGBA_Unorm_SRGB	= TexturePixelFormat::BC1_RGBA_Unorm_SRGB;
+
 		static constexpr TexturePixelFormat BC3_RGBA_Unorm		= TexturePixelFormat::BC3_RGBA_Unorm;
+
+		static constexpr TexturePixelFormat BC3_RGBA_Unorm_SRGB	= TexturePixelFormat::BC3_RGBA_Unorm_SRGB;
 
 		static constexpr TexturePixelFormat BC4_R_Unorm			= TexturePixelFormat::BC4_R_Unorm;
 
 		static constexpr TexturePixelFormat BC5_RG_Unorm		= TexturePixelFormat::BC5_RG_Unorm;
 
 		static constexpr TexturePixelFormat BC7_RGBA_Unorm		= TexturePixelFormat::BC7_RGBA_Unorm;
+
+		static constexpr TexturePixelFormat BC7_RGBA_Unorm_SRGB = TexturePixelFormat::BC7_RGBA_Unorm_SRGB;
 
 		////////////////////////////////////////////////////////////////
 		//
