@@ -669,8 +669,8 @@
 //// 統計 | Statistics
 //# include <Siv3D/Statistics.hpp>
 //
-//// 素数判定 | Primality test
-//# include <Siv3D/PrimeNumber.hpp>
+// 素数判定 | Primality test
+# include <Siv3D/IsPrime.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

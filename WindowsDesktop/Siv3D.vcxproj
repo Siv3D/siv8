@@ -86,6 +86,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PointsPerCircle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Polygon.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IsPrime_impl.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\QualityFactor.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectanglePack.ipp" />
@@ -404,6 +405,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PointVector.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Polygon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolygonFailureType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IsPrime.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Profiler.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ProfilerStat.hpp" />
@@ -554,6 +556,8 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\core.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\format.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeCommon.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\IsPrimeNoTable.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanoflann\nanoflann.hpp" />

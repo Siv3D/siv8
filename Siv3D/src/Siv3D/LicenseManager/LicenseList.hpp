@@ -471,6 +471,12 @@ MIT_LICENSE
 },
 
 {
+R"-(libcpprime)-",
+R"-(Copyright (c) 2025 Rac75116)-",
+MIT_LICENSE
+},
+
+{
 R"-(libjpeg-turbo)-",
 R"-()-",
 R"-(This software is based in part on the work of the Independent JPEG Group.)-"

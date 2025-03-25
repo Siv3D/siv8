@@ -22,6 +22,7 @@ Name | Version
 [GLFW](https://github.com/glfw/glfw) | 3.4
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 8.3.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
+[libcpprime](https://github.com/Rac75116/libcpprime) | ver 1.2.11
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
 [libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43

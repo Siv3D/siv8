@@ -1069,6 +1069,12 @@
     <Filter Include="src\Siv3D\ImageProcessing">
       <UniqueIdentifier>{053a7db9-300d-4dc8-b07d-f61a2d7015a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\libcpprime">
+      <UniqueIdentifier>{d3a4f24d-910e-43f3-b95c-f7fd88af572c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\libcpprime\internal">
+      <UniqueIdentifier>{452d3b08-f6e5-4ef0-b6c8-3d1536db6a66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4202,6 +4208,18 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\stb\stb_image_resize2.h">
       <Filter>src\ThirdParty\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\IsPrime.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IsPrime_impl.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\IsPrimeNoTable.hpp">
+      <Filter>include\ThirdParty\libcpprime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeCommon.hpp">
+      <Filter>include\ThirdParty\libcpprime\internal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
