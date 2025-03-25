@@ -15,7 +15,6 @@
 //-----------------------------------------------
 
 # pragma once
-# include <ThirdParty/libcpprime/IsPrimeNoTable.hpp>
 
 namespace s3d
 {

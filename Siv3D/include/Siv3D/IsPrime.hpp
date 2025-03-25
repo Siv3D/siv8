@@ -16,6 +16,16 @@
 
 # pragma once
 # include "Common.hpp"
+
+# if SIV3D_COMPILER(APPLE_CLANG)
+#	pragma clang diagnostic push
+#	pragma clang diagnostic ignored "-Wcomma"
+# endif
+# include <ThirdParty/libcpprime/IsPrimeNoTable.hpp>
+# if SIV3D_COMPILER(APPLE_CLANG)
+#	pragma clang diagnostic pop
+# endif
+
 # include "detail/IsPrime_impl.ipp"
 
 namespace s3d
