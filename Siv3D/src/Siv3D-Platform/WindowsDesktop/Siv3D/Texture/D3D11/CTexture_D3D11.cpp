@@ -255,7 +255,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_D3D11::createDynamic(const Size& size, const void* pData, uint32 stride, const TextureFormat& format, const TextureDesc desc)
+	Texture::IDType CTexture_D3D11::createDynamic(const Size& size, std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 	{
 		if ((size.x <= 0) || (size.y <= 0))
 		{
@@ -266,11 +266,11 @@ namespace s3d
 
 		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
 		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::Dynamic{}, D3D11Texture::NoMipmap{}, m_device, size, pData, format, desc);
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::Dynamic{}, D3D11Texture::NoMipmap{}, m_device, size, data, format, desc);
 		}
 		else
 		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::Dynamic{}, D3D11Texture::GenerateMipmap{}, m_device, m_context, size, pData, format, desc);
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::Dynamic{}, D3D11Texture::GenerateMipmap{}, m_device, m_context, size, data, format, desc);
 		}
 
 		if (not texture->isInitialized())
@@ -296,7 +296,7 @@ namespace s3d
 			return Texture::IDType::Null();
 		}
 
-		return createDynamic(size, initialData.data(), static_cast<uint32>(initialData.size() / size.y), format, desc);
+		return createDynamic(size, std::as_bytes(std::span{ initialData }), format, desc);
 	}
 
 	////////////////////////////////////////////////////////////////

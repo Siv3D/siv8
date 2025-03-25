@@ -1214,7 +1214,7 @@ namespace s3d
 		explicit Texture(const BCnData& bcnData);
 
 		[[nodiscard]]
-		Texture(Dynamic, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+		Texture(Dynamic, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		Texture(Dynamic, const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc);

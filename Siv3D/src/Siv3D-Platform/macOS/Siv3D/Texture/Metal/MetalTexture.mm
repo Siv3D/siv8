@@ -309,7 +309,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	MetalTexture::MetalTexture(Dynamic, NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, const TextureFormat& format, const TextureDesc desc)
+	MetalTexture::MetalTexture(Dynamic, NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Dynamic,
 			size,
@@ -337,7 +337,7 @@ namespace s3d
 
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
 		const NSUInteger dataSize = (bytesPerRow * size.y);
-		m_uploadBuffer = NS::TransferPtr(device->newBuffer(pData, dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
+		m_uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
 		
 		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
 		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
@@ -353,7 +353,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	MetalTexture::MetalTexture(Dynamic, GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, const TextureFormat& format, const TextureDesc desc)
+	MetalTexture::MetalTexture(Dynamic, GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Dynamic,
 			size,
@@ -382,7 +382,7 @@ namespace s3d
 	
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
 		const NSUInteger dataSize = (bytesPerRow * size.y);
-		m_uploadBuffer = NS::TransferPtr(device->newBuffer(pData, dataSize, MTL::ResourceOptionCPUCacheModeDefault));
+		m_uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
 	
 		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
 		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());

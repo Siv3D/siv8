@@ -199,7 +199,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_Metal::createDynamic(const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)
+	Texture::IDType CTexture_Metal::createDynamic(const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 	{
 		if ((size.x <= 0) || (size.y <= 0))
 		{
@@ -210,11 +210,11 @@ namespace s3d
 		
 		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
 		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::NoMipmap{}, m_device, m_commandQueue, size, pData, format, desc);
+			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::NoMipmap{}, m_device, m_commandQueue, size, data, format, desc);
 		}
 		else
 		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::GenerateMipmap{}, m_device, m_commandQueue, size, pData, format, desc);
+			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::GenerateMipmap{}, m_device, m_commandQueue, size, data, format, desc);
 		}
 		
 		if (not texture->isInitialized())

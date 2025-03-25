@@ -28,7 +28,7 @@ namespace s3d
 	//}
 
 	DynamicTexture::DynamicTexture(const Size& size, const TextureFormat& format, const TextureDesc desc)
-		: Texture{ Texture::Dynamic{}, size, nullptr, 0, format, desc } {}
+		: Texture{ Texture::Dynamic{}, size, std::span<const Byte>{}, format, desc } {}
 
 	DynamicTexture::DynamicTexture(const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
 		: Texture{ Texture::Dynamic{}, size, color, format, desc } {}

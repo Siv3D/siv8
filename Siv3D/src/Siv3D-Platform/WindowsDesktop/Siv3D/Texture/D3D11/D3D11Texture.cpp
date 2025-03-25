@@ -251,7 +251,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	D3D11Texture::D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, const TextureFormat& format, const TextureDesc desc)
+	D3D11Texture::D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Dynamic,
 			size,
@@ -262,13 +262,13 @@ namespace s3d
 		}
 	{
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
-		const D3D11_SUBRESOURCE_DATA initData = { pData, bytesPerRow, 0 };
+		const D3D11_SUBRESOURCE_DATA initData = { data.data(), bytesPerRow, 0};
 		
 		// [メインテクスチャ] を作成
 		{
 			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DEFAULT);
 
-			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (pData ? &initData : nullptr), &m_texture);
+			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (data.empty() ? nullptr : &initData), &m_texture);
 				FAILED(hr))
 			{
 				Error_Texture2D(hr);
@@ -303,7 +303,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	D3D11Texture::D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, const void* pData, const TextureFormat& format, const TextureDesc desc)
+	D3D11Texture::D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Dynamic,
 			size,
@@ -315,11 +315,11 @@ namespace s3d
 	{
 		// [メインテクスチャ] を作成
 		{
-			const Array<D3D11_SUBRESOURCE_DATA> initData = MakeSubResourceData(pData, size.x, m_desc.format.pixelSize(), m_desc.mipLevels);
+			const Array<D3D11_SUBRESOURCE_DATA> initData = MakeSubResourceData(data.data(), size.x, m_desc.format.pixelSize(), m_desc.mipLevels);
 			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC((D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET),
 				D3D11_USAGE_DEFAULT, 0, { 1, 0 }, D3D11_RESOURCE_MISC_GENERATE_MIPS);
 
-			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (pData ? initData.data() : nullptr), &m_texture);
+			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (data.empty() ? nullptr : initData.data()), &m_texture);
 				FAILED(hr))
 			{
 				Error_Texture2D(hr);
@@ -343,9 +343,9 @@ namespace s3d
 			const D3D11_TEXTURE2D_DESC textureDesc = stagingDesc.makeD3D11_TEXTURE2D_DESC(0, D3D11_USAGE_STAGING, D3D11_CPU_ACCESS_WRITE);
 
 			const uint32 bytesPerRow = format.bytesPerRow(size.x);
-			const D3D11_SUBRESOURCE_DATA initData = { pData, bytesPerRow, 0 };
+			const D3D11_SUBRESOURCE_DATA initData = { data.data(), bytesPerRow, 0};
 
-			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (pData ? &initData : nullptr), &m_stagingTexture);
+			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (data.empty() ? nullptr : &initData), &m_stagingTexture);
 				FAILED(hr))
 			{
 				Error_Texture2D(hr);
@@ -367,7 +367,7 @@ namespace s3d
 
 		m_initialized = true;
 
-		if (pData)
+		if (not data.empty())
 		{
 			generateMipmaps(context);
 		}
