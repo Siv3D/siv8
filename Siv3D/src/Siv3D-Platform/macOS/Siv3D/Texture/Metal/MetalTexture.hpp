@@ -48,10 +48,10 @@ namespace s3d
 		MetalTexture(MTL::Device* device, MTL::CommandQueue* commandQueue, const BCnData& bcnData);
 
 		[[nodiscard]]
-		MetalTexture(Dynamic, NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+		MetalTexture(Dynamic, NoMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
-		MetalTexture(Dynamic, GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+		MetalTexture(Dynamic, GenerateMipmap, MTL::Device* device, MTL::CommandQueue* commandQueue, const Size& size, const void* pData, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;
