@@ -500,6 +500,10 @@
 		F90DA0712D1A934E0003E1E8 /* TextureFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0692D1A934E0003E1E8 /* TextureFactory.mm */; };
 		F90F2BE02D91749500CC89CA /* Test_BinaryReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F2BDF2D91749500CC89CA /* Test_BinaryReader.cpp */; };
 		F90F2BE32D91861F00CC89CA /* SivImageProcessing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F2BE12D91861F00CC89CA /* SivImageProcessing.cpp */; };
+		F90F2BE52D9278A400CC89CA /* IsPrime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE42D9278A400CC89CA /* IsPrime.hpp */; };
+		F90F2BE72D9278BB00CC89CA /* IsPrime_impl.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */; };
+		F90F2BEC2D9278DE00CC89CA /* IsPrimeNoTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BEA2D9278DE00CC89CA /* IsPrimeNoTable.hpp */; };
+		F90F2BED2D9278DE00CC89CA /* IsPrimeCommon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE82D9278DE00CC89CA /* IsPrimeCommon.hpp */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
 		F934BD712BF880330003EAD5 /* PixelShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6E2BF880330003EAD5 /* PixelShader.hpp */; };
 		F934BD722BF880330003EAD5 /* VertexShader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD6F2BF880330003EAD5 /* VertexShader.hpp */; };
@@ -3034,6 +3038,10 @@
 		F90DA0692D1A934E0003E1E8 /* TextureFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TextureFactory.mm; sourceTree = "<group>"; };
 		F90F2BDF2D91749500CC89CA /* Test_BinaryReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BinaryReader.cpp; sourceTree = "<group>"; };
 		F90F2BE12D91861F00CC89CA /* SivImageProcessing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivImageProcessing.cpp; sourceTree = "<group>"; };
+		F90F2BE42D9278A400CC89CA /* IsPrime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrime.hpp; sourceTree = "<group>"; };
+		F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrime_impl.ipp; sourceTree = "<group>"; };
+		F90F2BE82D9278DE00CC89CA /* IsPrimeCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrimeCommon.hpp; sourceTree = "<group>"; };
+		F90F2BEA2D9278DE00CC89CA /* IsPrimeNoTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrimeNoTable.hpp; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F934BD6E2BF880330003EAD5 /* PixelShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PixelShader.hpp; sourceTree = "<group>"; };
 		F934BD6F2BF880330003EAD5 /* VertexShader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VertexShader.hpp; sourceTree = "<group>"; };
@@ -5474,6 +5482,7 @@
 				F90704172B9DAEC900383E4D /* doctest */,
 				F907041A2B9DAEC900383E4D /* EnumBitmask */,
 				F907041E2B9DAEC900383E4D /* fmt */,
+				F90F2BEB2D9278DE00CC89CA /* libcpprime */,
 				F90704202B9DAEC900383E4D /* mimalloc */,
 				F90704222B9DAEC900383E4D /* nanobench */,
 				F96F95F02C359E7D0033353E /* nanoflann */,
@@ -5764,6 +5773,7 @@
 				F9070B852B9F175000383E4D /* IntFormatter.ipp */,
 				F9070B862B9F175000383E4D /* IntToString.ipp */,
 				F9070B872B9F175000383E4D /* IReader.ipp */,
+				F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */,
 				F9070B882B9F175000383E4D /* ISteadyClock.ipp */,
 				F9070B892B9F175000383E4D /* IWriter.ipp */,
 				F9E5FCD42BC3AD580081A4F7 /* JSON.ipp */,
@@ -6017,6 +6027,7 @@
 				F9070BF52B9F175000383E4D /* IntFormatter.hpp */,
 				F9070BF62B9F175000383E4D /* IntToString.hpp */,
 				F9070BF72B9F175000383E4D /* IReader.hpp */,
+				F90F2BE42D9278A400CC89CA /* IsPrime.hpp */,
 				F9070BF82B9F175000383E4D /* ISteadyClock.hpp */,
 				F9070BF92B9F175000383E4D /* IWriter.hpp */,
 				F95122452CB8236100151291 /* JoinStyle.hpp */,
@@ -7199,6 +7210,23 @@
 				F90F2BE12D91861F00CC89CA /* SivImageProcessing.cpp */,
 			);
 			path = ImageProcessing;
+			sourceTree = "<group>";
+		};
+		F90F2BE92D9278DE00CC89CA /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				F90F2BE82D9278DE00CC89CA /* IsPrimeCommon.hpp */,
+			);
+			path = internal;
+			sourceTree = "<group>";
+		};
+		F90F2BEB2D9278DE00CC89CA /* libcpprime */ = {
+			isa = PBXGroup;
+			children = (
+				F90F2BE92D9278DE00CC89CA /* internal */,
+				F90F2BEA2D9278DE00CC89CA /* IsPrimeNoTable.hpp */,
+			);
+			path = libcpprime;
 			sourceTree = "<group>";
 		};
 		F934BD752BF880620003EAD5 /* VertexShader */ = {
@@ -10912,6 +10940,7 @@
 				F9070CE22B9F175100383E4D /* Optional.hpp in Headers */,
 				F9E794612C198133002615BA /* ListUtility.hpp in Headers */,
 				F90706932B9DAEC900383E4D /* port.h in Headers */,
+				F90F2BE52D9278A400CC89CA /* IsPrime.hpp in Headers */,
 				F9807D862BF6676100D9B590 /* AssetID.hpp in Headers */,
 				F98602FB2BCFBB54006A4C0F /* SkOpts_SetTarget.h in Headers */,
 				F986037D2BCFBB54006A4C0F /* SkOTTable_hmtx.h in Headers */,
@@ -10964,6 +10993,8 @@
 				F986019D2BCFBB53006A4C0F /* SkDevice.h in Headers */,
 				F98600722BCFBB53006A4C0F /* SkCPUTypes.h in Headers */,
 				F98600552BCFBB53006A4C0F /* SkXPSDocument.h in Headers */,
+				F90F2BEC2D9278DE00CC89CA /* IsPrimeNoTable.hpp in Headers */,
+				F90F2BED2D9278DE00CC89CA /* IsPrimeCommon.hpp in Headers */,
 				F98600632BCFBB53006A4C0F /* SkOverdrawColorFilter.h in Headers */,
 				F98603782BCFBB54006A4C0F /* SkOTTable_fvar.h in Headers */,
 				F98604732BCFBB54006A4C0F /* SkSLGLSL.h in Headers */,
@@ -11417,6 +11448,7 @@
 				F95122132CB62E6B00151291 /* MultiPolygon.hpp in Headers */,
 				F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */,
 				F9E794532C197418002615BA /* StringRandom.ipp in Headers */,
+				F90F2BE72D9278BB00CC89CA /* IsPrime_impl.ipp in Headers */,
 				F98601DF2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.h in Headers */,
 				F980C4772C01BA5600A86B68 /* DepthStencilState.ipp in Headers */,
 				F980C45C2C01B20F00A86B68 /* RasterizerStateBuilder.hpp in Headers */,
