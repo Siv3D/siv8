@@ -395,11 +395,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	rowPitch
+	//	bytesPerRow
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint32 TextureFormat::rowPitch(const uint32 width) const noexcept
+	uint32 TextureFormat::bytesPerRow(const uint32 width) const noexcept
 	{
 		if (isBCn())
 		{

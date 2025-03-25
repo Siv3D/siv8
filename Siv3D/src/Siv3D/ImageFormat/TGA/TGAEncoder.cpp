@@ -84,7 +84,7 @@ namespace s3d
 
 		const int32 width			= image.width();
 		const int32 height			= image.height();
-		const size_t stride_bytes	= image.stride();
+		const size_t stride_bytes	= image.bytesPerRow();
 		const TGAHeader header		= TGAHeader::Make(width, height);
 
 		std::unique_ptr<uint8[]> line;
@@ -125,14 +125,14 @@ namespace s3d
 	{
 		const int32 width			= image.width();
 		const int32 height			= image.height();
-		const size_t stride_bytes	= image.stride();
-		const size_t size_bytes		= (stride_bytes * height);
+		const size_t bytesPerRow	= image.bytesPerRow();
+		const size_t size_bytes		= (bytesPerRow * height);
 		const TGAHeader header		= TGAHeader::Make(width, height);
 
 		std::unique_ptr<uint8[]> line;
 		try
 		{
-			line = std::make_unique<uint8[]>(stride_bytes);
+			line = std::make_unique<uint8[]>(bytesPerRow);
 		}
 		catch (const std::bad_alloc&)
 		{
@@ -148,7 +148,7 @@ namespace s3d
 
 		for (int32 y = 0; y < height; ++y)
 		{
-			std::memcpy(line.get(), pSrc, stride_bytes);
+			std::memcpy(line.get(), pSrc, bytesPerRow);
 
 			size_t index = 0;
 
@@ -158,8 +158,8 @@ namespace s3d
 				index += 4;
 			}
 
-			std::memcpy(pDstLine, line.get(), stride_bytes);
-			pDstLine += stride_bytes;
+			std::memcpy(pDstLine, line.get(), bytesPerRow);
+			pDstLine += bytesPerRow;
 			pSrc += width;
 		}
 

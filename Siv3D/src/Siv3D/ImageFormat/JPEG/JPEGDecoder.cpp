@@ -179,7 +179,7 @@ namespace s3d
 			static_cast<unsigned long>(size),
 			image.dataAsUint8(),
 			image.width(),
-			static_cast<int32>(image.stride()),
+			static_cast<int32>(image.bytesPerRow()),
 			image.height(),
 			sizeof(Color),
 			0);

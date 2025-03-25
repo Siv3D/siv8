@@ -39,7 +39,7 @@ namespace s3d
 				constexpr float ScalingFactor = (436.90667f / 512);
 				font.setSize(ScalingFactor * size);
 
-				auto canvas = SkCanvas::MakeRasterDirectN32(size, size, (uint32*)image.data(), static_cast<int32>(image.stride()));
+				auto canvas = SkCanvas::MakeRasterDirectN32(size, size, (uint32*)image.data(), static_cast<int32>(image.bytesPerRow()));
 
 				SkFontMetrics metrics;
 				font.getMetrics(&metrics);

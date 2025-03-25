@@ -82,11 +82,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	stride
+	//	bytesPerRow
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline uint32 Image::stride() const noexcept
+	inline uint32 Image::bytesPerRow() const noexcept
 	{
 		return static_cast<uint32>(m_size.x * sizeof(Color));
 	}
@@ -110,7 +110,7 @@ namespace s3d
 
 	inline size_t Image::size_bytes() const noexcept
 	{
-		return (stride() * m_size.y);
+		return (bytesPerRow() * m_size.y);
 	}
 
 	////////////////////////////////////////////////////////////////

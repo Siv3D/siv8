@@ -80,10 +80,10 @@ namespace s3d
 		}
 
 		// 1 行のバイト数
-		const size_t rowStride = format.rowPitch(size.x);
+		const size_t bytesPerRow = format.bytesPerRow(size.x);
 
 		// 全体のバイト数
-		const size_t bufferSizeBytes = (rowStride * size.y);
+		const size_t bufferSizeBytes = (bytesPerRow * size.y);
 
 		Array<Byte> bytes(bufferSizeBytes);
 		

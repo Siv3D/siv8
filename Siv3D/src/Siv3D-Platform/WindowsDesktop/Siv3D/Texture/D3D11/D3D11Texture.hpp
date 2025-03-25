@@ -47,10 +47,10 @@ namespace s3d
 		D3D11Texture(ID3D11Device* device, const BCnData& bcnData);
 
 		[[nodiscard]]
-		D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+		D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, uint32 bytesPerRow, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
-		D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+		D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, const void* pData, uint32 bytesPerRow, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;

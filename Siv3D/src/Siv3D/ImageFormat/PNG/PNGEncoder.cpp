@@ -159,7 +159,7 @@ namespace s3d
 		{
 			::png_write_row(png_ptr, pRow);
 
-			pRow += image.stride();
+			pRow += image.bytesPerRow();
 		}
 
 		::png_write_end(png_ptr, info_ptr);
@@ -206,7 +206,7 @@ namespace s3d
 
 		const uint8* pRow = static_cast<const uint8*>(static_cast<const void*>(image.data()));
 
-		const uint32 stride = (width * sizeof(uint16));
+		const uint32 bytesPerRow = (width * sizeof(uint16));
 
 		Array<const uint8*> rows(image.height());
 
@@ -214,7 +214,7 @@ namespace s3d
 		{
 			rows[y] = pRow;
 
-			pRow += stride;
+			pRow += bytesPerRow;
 		}
 
 		::png_set_rows(png_ptr, info_ptr, (png_bytepp)rows.data());
@@ -269,7 +269,7 @@ namespace s3d
 		{
 			::png_write_row(png_ptr, pRow);
 
-			pRow += image.stride();
+			pRow += image.bytesPerRow();
 		}
 
 		::png_write_end(png_ptr, info_ptr);
@@ -313,7 +313,7 @@ namespace s3d
 
 		const uint8* pRow = static_cast<const uint8*>(static_cast<const void*>(image.data()));
 
-		const uint32 stride = (width * sizeof(uint16));
+		const uint32 bytesPerRow = (width * sizeof(uint16));
 
 		Array<const uint8*> rows(image.height());
 
@@ -321,7 +321,7 @@ namespace s3d
 		{
 			rows[y] = pRow;
 
-			pRow += stride;
+			pRow += bytesPerRow;
 		}
 
 		::png_set_rows(png_ptr, info_ptr, (png_bytepp)rows.data());
