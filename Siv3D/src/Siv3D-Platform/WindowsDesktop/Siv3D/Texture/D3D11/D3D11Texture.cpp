@@ -19,18 +19,15 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static Array<D3D11_SUBRESOURCE_DATA> MakeSubResourceData(const void* imageData, size_t width, const size_t pixelSize, const uint32 mipLevel)
+		static Array<D3D11_SUBRESOURCE_DATA> MakeSubResourceData(const void* imageData, const uint32 width, const uint32 bytesPerPixel, const uint32 mipLevel)
 		{
 			Array<D3D11_SUBRESOURCE_DATA> subResourceData(mipLevel);
 
 			for (uint32 i = 0; i < mipLevel; ++i)
 			{
-				const uint32 rowPitch = (static_cast<uint32>(width * pixelSize) + 3) & ~3;
-
-				// ミップマップにおける imageData は仮のデータ。あとで generateMips() で上書きする
-				subResourceData[i] = { imageData, rowPitch };
-
-				width = Max<size_t>((width / 2), 1);
+				const uint32 mipmapWidth = Max((width >> i), 1u);
+				const uint32 bytesPerRow = (((mipmapWidth * bytesPerPixel) + 3) & ~3);
+				subResourceData[i] = { imageData, bytesPerRow }; // 0 < i における imageData は仮のデータ。あとで generateMips() で上書きする
 			}
 
 			return subResourceData;
@@ -52,86 +49,6 @@ namespace s3d
 	//	(constructor)
 	//
 	////////////////////////////////////////////////////////////////
-
-	D3D11Texture::D3D11Texture(NoMipmap, ID3D11Device* device, const Image& image, const TextureDesc desc)
-		: m_desc{ desc,
-			TextureType::Default,
-			image.size(),
-			1,
-			1, 0,
-			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm),
-			false
-		}
-	{
-		// [メインテクスチャ] を作成
-		{
-			const Array<D3D11_SUBRESOURCE_DATA> initData = MakeSubResourceData(image.data(), image.width(), m_desc.format.pixelSize(), m_desc.mipLevels);
-
-			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE);
-			
-			if (HRESULT hr = device->CreateTexture2D(&textureDesc, initData.data(), &m_texture);
-				FAILED(hr))
-			{
-				Error_Texture2D(hr);
-				return;
-			}
-		}
-
-		// [シェーダ・リソース・ビュー] を作成
-		{
-			const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
-
-			if (HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView);
-				FAILED(hr))
-			{
-				Error_ShaderResourceView(hr);
-				return;
-			}
-		}
-
-		m_initialized = true;
-	}
-
-	D3D11Texture::D3D11Texture(GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Image& image, const TextureDesc desc)
-		: m_desc{ desc,
-			TextureType::Default,
-			image.size(),
-			ImageProcessing::CalculateMipmapLevel(image.width(), image.height()),
-			1, 0,
-			(desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm),
-			false
-		}
-	{
-		// [メインテクスチャ] を作成
-		{
-			const Array<D3D11_SUBRESOURCE_DATA> initData = MakeSubResourceData(image.data(), image.width(), m_desc.format.pixelSize(), m_desc.mipLevels);
-			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC((D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET),
-				D3D11_USAGE_DEFAULT, 0, { 1, 0 }, D3D11_RESOURCE_MISC_GENERATE_MIPS);
-			
-			if (HRESULT hr = device->CreateTexture2D(&textureDesc, initData.data(), &m_texture);
-				FAILED(hr))
-			{
-				Error_Texture2D(hr);
-				return;
-			}
-		}
-
-		// [シェーダ・リソース・ビュー] を作成
-		{
-			const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = m_desc.makeD3D11_SHADER_RESOURCE_VIEW_DESC();
-
-			if (HRESULT hr = device->CreateShaderResourceView(m_texture.Get(), &srvDesc, &m_shaderResourceView);
-				FAILED(hr))
-			{
-				Error_ShaderResourceView(hr);
-				return;
-			}
-		}
-
-		m_initialized = true;
-
-		generateMipmaps(context);
-	}
 
 	D3D11Texture::D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
 		: m_desc{ desc,
@@ -191,18 +108,18 @@ namespace s3d
 		}
 	{
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
-		const size_t expectedSize = (bytesPerRow * size.y);
-
-		if (data.size_bytes() != expectedSize)
+		
+		if (const size_t expectedSize = (bytesPerRow * size.y); 
+			data.size_bytes() != expectedSize)
 		{
 			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): size_bytes[{}] != expectedSize[{}]", data.size_bytes(), expectedSize));
 			return;
 		}
 
-		const D3D11_SUBRESOURCE_DATA initData = { data.data(), bytesPerRow, 0};
-
 		// [メインテクスチャ] を作成
 		{
+			const D3D11_SUBRESOURCE_DATA initData{ data.data(), bytesPerRow, 0 };
+			
 			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC(D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE);
 
 			if (HRESULT hr = device->CreateTexture2D(&textureDesc, &initData, &m_texture);
@@ -239,9 +156,9 @@ namespace s3d
 		}
 	{
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
-		const size_t expectedSize = (bytesPerRow * size.y);
-
-		if (data.size_bytes() != expectedSize)
+		
+		if (const size_t expectedSize = (bytesPerRow * size.y); 
+			data.size_bytes() != expectedSize)
 		{
 			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): size_bytes[{}] != expectedSize[{}]", data.size_bytes(), expectedSize));
 			return;
@@ -250,6 +167,7 @@ namespace s3d
 		// [メインテクスチャ] を作成
 		{
 			const Array<D3D11_SUBRESOURCE_DATA> initData = MakeSubResourceData(data.data(), size.x, m_desc.format.pixelSize(), m_desc.mipLevels);
+			
 			const D3D11_TEXTURE2D_DESC textureDesc = m_desc.makeD3D11_TEXTURE2D_DESC((D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET),
 				D3D11_USAGE_DEFAULT, 0, { 1, 0 }, D3D11_RESOURCE_MISC_GENERATE_MIPS);
 

@@ -161,15 +161,16 @@ namespace s3d
 			return Texture::IDType::Null();
 		}
 
+		const TextureFormat format = (desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm);
 		std::unique_ptr<D3D11Texture> texture;
 
 		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }))
 		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, image, desc);
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, image.size(), std::as_bytes(std::span{ image }), format, desc);
 		}
 		else
 		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::GenerateMipmap{}, m_device, m_context, image, desc);
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::GenerateMipmap{}, m_device, m_context, image.size(), std::as_bytes(std::span{ image }), format, desc);
 		}
 
 		if (not texture->isInitialized())
@@ -192,7 +193,8 @@ namespace s3d
 
 		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }) || mipmaps.isEmpty())
 		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, image, desc);
+			const TextureFormat format = (desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm);
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, image.size(), std::as_bytes(std::span{ image }), format, desc);
 		}
 		else
 		{
