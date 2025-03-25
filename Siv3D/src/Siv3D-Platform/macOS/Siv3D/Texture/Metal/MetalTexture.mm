@@ -337,7 +337,15 @@ namespace s3d
 
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
 		const NSUInteger dataSize = (bytesPerRow * size.y);
-		m_uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
+
+		if (data.empty())
+		{
+			m_uploadBuffer = NS::TransferPtr(device->newBuffer(dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
+		}
+		else
+		{
+			m_uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
+		}
 		
 		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
 		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
@@ -382,8 +390,16 @@ namespace s3d
 	
 		const uint32 bytesPerRow = format.bytesPerRow(size.x);
 		const NSUInteger dataSize = (bytesPerRow * size.y);
-		m_uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeDefault));
-	
+		
+		if (data.empty())
+		{
+			m_uploadBuffer = NS::TransferPtr(device->newBuffer(dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
+		}
+		else
+		{
+			m_uploadBuffer = NS::TransferPtr(device->newBuffer(data.data(), dataSize, MTL::ResourceOptionCPUCacheModeWriteCombined));
+		}
+
 		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
 		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
 		{

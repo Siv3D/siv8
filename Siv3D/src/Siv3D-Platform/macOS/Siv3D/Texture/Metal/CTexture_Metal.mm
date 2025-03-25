@@ -240,7 +240,7 @@ namespace s3d
 			return Texture::IDType::Null();
 		}
 
-		return createDynamic(size, initialData.data(), static_cast<uint32>(initialData.size() / size.y), format, desc);
+		return createDynamic(size, std::as_bytes(std::span{ initialData }), format, desc);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -10,7 +10,6 @@ void Main()
 
 	const Texture texture{ U"example/windmill.png" };
 	const Texture emoji{ U"🔥"_emoji, 200 };
-	Console << SamplerState::Default2D;
 
 	while (System::Update())
 	{
