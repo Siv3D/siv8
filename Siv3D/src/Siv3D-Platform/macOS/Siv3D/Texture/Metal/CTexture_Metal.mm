@@ -95,7 +95,8 @@ namespace s3d
 		}
 		else
 		{
-			return create(Image{ std::move(reader) }, desc);
+			const Image image{ std::move(reader) };
+			return create(image.size(), std::as_bytes(std::span{ image }), (desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm), desc);
 		}
 	}
 
