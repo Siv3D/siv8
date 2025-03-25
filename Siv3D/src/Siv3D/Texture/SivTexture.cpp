@@ -21,6 +21,7 @@
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include "TextureUtility.hpp"
 
 # if SIV3D_PLATFORM(WINDOWS)
 #	include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
@@ -66,7 +67,7 @@ namespace s3d
 	Texture::Texture() {}
 
 	Texture::Texture(const Image& image, const TextureDesc desc)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image, desc))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(image.size(), std::as_bytes(std::span{ image }), (desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm), desc))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
@@ -101,14 +102,14 @@ namespace s3d
 	Texture::Texture(const Emoji& emoji, const int32 size, const TextureDesc desc)
 		: Texture{ (CheckEngine(), Image{ emoji, size }), desc } {}
 
-	Texture::Texture(const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(size, data, format, desc))) }
+	Texture::Texture(const BCnData& bcnData)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(bcnData))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
-	Texture::Texture(const BCnData& bcnData)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(bcnData))) }
+	Texture::Texture(const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(size, data, format, desc))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
@@ -120,7 +121,7 @@ namespace s3d
 	}
 
 	Texture::Texture(Dynamic, const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
-		: AssetHandle{ (CheckEngine(U"DynamicTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createDynamic(size, color, format, desc))) }
+		: AssetHandle{ (CheckEngine(U"DynamicTexture"), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->createDynamic(size, std::as_bytes(std::span<const Byte>{ GenerateInitialColorBuffer(size, color, format) }), format, desc))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
@@ -1314,16 +1315,5 @@ namespace s3d
 	Texture Texture::CreateR32G32B32A32_Float(const Grid<Float4>& image, const TextureDesc desc)
 	{
 		return Texture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R32G32B32A32_Float, desc };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	CreateBCn
-	//
-	////////////////////////////////////////////////////////////////
-
-	Texture Texture::CreateBCn(const BCnData& bcnData)
-	{
-		return Texture{ bcnData };
 	}
 }

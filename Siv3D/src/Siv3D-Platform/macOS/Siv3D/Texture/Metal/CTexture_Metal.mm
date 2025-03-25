@@ -13,7 +13,6 @@
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
-# include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
 
 namespace s3d
@@ -98,33 +97,6 @@ namespace s3d
 		{
 			return create(Image{ std::move(reader) }, desc);
 		}
-	}
-
-	Texture::IDType CTexture_Metal::create(const Image& image, const TextureDesc desc)
-	{
-		if (not image)
-		{
-			return Texture::IDType::Null();
-		}
-
-		std::unique_ptr<MetalTexture> texture;
-
-		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }))
-		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, m_commandQueue, image, desc);
-		}
-		else
-		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::GenerateMipmap{}, m_device, m_commandQueue, image, desc);
-		}
-
-		if (not texture->isInitialized())
-		{
-			return Texture::IDType::Null();
-		}
-
-		const String info = texture->getDesc().toString();
-		return m_textures.add(std::move(texture), info);
 	}
 
 	Texture::IDType CTexture_Metal::create(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
@@ -224,23 +196,6 @@ namespace s3d
 			
 		const String info = texture->getDesc().toString();
 		return m_textures.add(std::move(texture), info);
-	}
-
-	Texture::IDType CTexture_Metal::createDynamic(const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
-	{
-		if ((size.x <= 0) || (size.y <= 0))
-		{
-			return Texture::IDType::Null();
-		}
-
-		const Array<Byte> initialData = GenerateInitialColorBuffer(size, color, format);
-
-		if (not initialData)
-		{
-			return Texture::IDType::Null();
-		}
-
-		return createDynamic(size, std::as_bytes(std::span{ initialData }), format, desc);
 	}
 
 	////////////////////////////////////////////////////////////////

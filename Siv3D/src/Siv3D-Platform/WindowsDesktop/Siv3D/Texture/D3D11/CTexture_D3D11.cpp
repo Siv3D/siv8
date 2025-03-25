@@ -13,7 +13,6 @@
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
-# include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
 
 namespace s3d
@@ -150,36 +149,9 @@ namespace s3d
 		}
 		else
 		{
-			return create(Image{ std::move(reader) }, desc);
+			const Image image{ std::move(reader) };
+			return create(image.size(), std::as_bytes(std::span{ image }), (desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm), desc);
 		}
-	}
-
-	Texture::IDType CTexture_D3D11::create(const Image& image, const TextureDesc desc)
-	{
-		if (not image)
-		{
-			return Texture::IDType::Null();
-		}
-
-		const TextureFormat format = (desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm);
-		std::unique_ptr<D3D11Texture> texture;
-
-		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }))
-		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::NoMipmap{}, m_device, image.size(), std::as_bytes(std::span{ image }), format, desc);
-		}
-		else
-		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::GenerateMipmap{}, m_device, m_context, image.size(), std::as_bytes(std::span{ image }), format, desc);
-		}
-
-		if (not texture->isInitialized())
-		{
-			return Texture::IDType::Null();
-		}
-
-		const String info = texture->getDesc().toString();
-		return m_textures.add(std::move(texture), info);
 	}
 
 	Texture::IDType CTexture_D3D11::create(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
@@ -280,23 +252,6 @@ namespace s3d
 
 		const String info = texture->getDesc().toString();
 		return m_textures.add(std::move(texture), info);
-	}
-
-	Texture::IDType CTexture_D3D11::createDynamic(const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
-	{
-		if ((size.x <= 0) || (size.y <= 0))
-		{
-			return Texture::IDType::Null();
-		}
-
-		const Array<Byte> initialData = GenerateInitialColorBuffer(size, color, format);
-
-		if (not initialData)
-		{
-			return Texture::IDType::Null();
-		}
-
-		return createDynamic(size, std::as_bytes(std::span{ initialData }), format, desc);
 	}
 
 	////////////////////////////////////////////////////////////////

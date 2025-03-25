@@ -113,6 +113,9 @@ namespace s3d
 		//[[nodiscard]]
 		//explicit Texture(const Icon& icon, int32 size, TextureDesc desc = TextureDesc::Default2D);
 
+		[[nodiscard]]
+		explicit Texture(const BCnData& bcnData);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(destructor)
@@ -1190,15 +1193,6 @@ namespace s3d
 		[[nodiscard]]
 		static Texture CreateR32G32B32A32_Float(const Grid<Float4>& image, TextureDesc desc = TextureDesc::Default2D);
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	CreateBCn
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		static Texture CreateBCn(const BCnData& bcnData);
-
 	protected:
 
 		struct Dynamic {};
@@ -1209,9 +1203,6 @@ namespace s3d
 
 		[[nodiscard]]
 		Texture(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
-
-		[[nodiscard]]
-		explicit Texture(const BCnData& bcnData);
 
 		[[nodiscard]]
 		Texture(Dynamic, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
