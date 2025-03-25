@@ -251,7 +251,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	D3D11Texture::D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, const uint32 bytesPerRow, const TextureFormat& format, const TextureDesc desc)
+	D3D11Texture::D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, const TextureFormat& format, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Dynamic,
 			size,
@@ -261,6 +261,7 @@ namespace s3d
 			false
 		}
 	{
+		const uint32 bytesPerRow = format.bytesPerRow(size.x);
 		const D3D11_SUBRESOURCE_DATA initData = { pData, bytesPerRow, 0 };
 		
 		// [メインテクスチャ] を作成
@@ -302,7 +303,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	D3D11Texture::D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, const void* pData, const uint32 bytesPerRow, const TextureFormat& format, const TextureDesc desc)
+	D3D11Texture::D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, const void* pData, const TextureFormat& format, const TextureDesc desc)
 		: m_desc{ desc,
 			TextureType::Dynamic,
 			size,
@@ -341,6 +342,7 @@ namespace s3d
 
 			const D3D11_TEXTURE2D_DESC textureDesc = stagingDesc.makeD3D11_TEXTURE2D_DESC(0, D3D11_USAGE_STAGING, D3D11_CPU_ACCESS_WRITE);
 
+			const uint32 bytesPerRow = format.bytesPerRow(size.x);
 			const D3D11_SUBRESOURCE_DATA initData = { pData, bytesPerRow, 0 };
 
 			if (HRESULT hr = device->CreateTexture2D(&textureDesc, (pData ? &initData : nullptr), &m_stagingTexture);

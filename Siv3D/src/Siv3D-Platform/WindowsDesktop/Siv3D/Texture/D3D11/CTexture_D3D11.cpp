@@ -266,11 +266,11 @@ namespace s3d
 
 		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
 		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::Dynamic{}, D3D11Texture::NoMipmap{}, m_device, size, pData, stride, format, desc);
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::Dynamic{}, D3D11Texture::NoMipmap{}, m_device, size, pData, format, desc);
 		}
 		else
 		{
-			texture = std::make_unique<D3D11Texture>(D3D11Texture::Dynamic{}, D3D11Texture::GenerateMipmap{}, m_device, m_context, size, pData, stride, format, desc);
+			texture = std::make_unique<D3D11Texture>(D3D11Texture::Dynamic{}, D3D11Texture::GenerateMipmap{}, m_device, m_context, size, pData, format, desc);
 		}
 
 		if (not texture->isInitialized())
