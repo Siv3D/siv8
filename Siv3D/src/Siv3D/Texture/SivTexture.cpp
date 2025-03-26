@@ -102,6 +102,24 @@ namespace s3d
 	Texture::Texture(const Emoji& emoji, const int32 size, const TextureDesc desc)
 		: Texture{ (CheckEngine(), Image{ emoji, size }), desc } {}
 
+	Texture::Texture(const Grid<uint8>& image, const TextureDesc desc)
+		: Texture{ CreateR8_Unorm(image, desc) } {}
+
+	Texture::Texture(const Grid<HalfFloat>& image, const TextureDesc desc)
+		: Texture{ CreateR16_Float(image, desc) } {}
+
+	Texture::Texture(const Grid<Color>& image, const TextureDesc desc)
+		: Texture{ CreateR8G8B8A8_Unorm(image, desc) } {}
+
+	Texture::Texture(const Grid<float>& image, const TextureDesc desc)
+		: Texture{ CreateR32_Float(image, desc) } {}
+
+	Texture::Texture(const Grid<Float2>& image, const TextureDesc desc)
+		: Texture{ CreateR32G32_Float(image, desc) } {}
+
+	Texture::Texture(const Grid<Float4>& image, const TextureDesc desc)
+		: Texture{ CreateR32G32B32A32_Float(image, desc) } {}
+
 	Texture::Texture(const BCnData& bcnData)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(bcnData))) }
 	{

@@ -112,6 +112,24 @@ namespace s3d
 		///// @param desc テクスチャの設定
 		//[[nodiscard]]
 		//explicit Texture(const Icon& icon, int32 size, TextureDesc desc = TextureDesc::Default2D);
+		
+		[[nodiscard]]
+		explicit Texture(const Grid<uint8>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<HalfFloat>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<Color>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<float>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<Float2>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<Float4>& image, TextureDesc desc = TextureDesc::Default2D);
 
 		[[nodiscard]]
 		explicit Texture(const BCnData& bcnData);

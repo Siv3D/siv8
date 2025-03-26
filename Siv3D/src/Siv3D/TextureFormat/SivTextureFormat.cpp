@@ -145,6 +145,7 @@ enum DXGI_FORMAT
 // https://github.com/bkaradzic/metal-cpp/blob/metal-cpp_macOS15.2_iOS18.2/Metal/MTLPixelFormat.hpp
 enum MTLPixelFormat
 {
+	A8Unorm = 1,
 	R8Unorm = 10,
 	RG8Unorm = 30,
 	R16Float = 25,
@@ -170,9 +171,11 @@ enum MTLPixelFormat
 
 enum GL_CONSTANTS
 {
+	GL_ALPHA = 0x1906,
 	GL_RGBA = 0x1908,
 	GL_UNSIGNED_BYTE = 0x1401,
 	GL_UNSIGNED_SHORT = 0x1403,
+	GL_R8 = 0x8229,
 	GL_SRGB8_ALPHA8 = 0x8C43,
 	GL_RG16F = 0x822F,
 	GL_RG = 0x8227,
