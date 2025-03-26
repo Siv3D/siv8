@@ -50,7 +50,18 @@ namespace s3d
 
 	DynamicTexture::DynamicTexture(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc)
 		: Texture{ Texture::Dynamic{}, size, data, format, desc } {}
-	
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	generateMips
+	//
+	////////////////////////////////////////////////////////////////
+
+	void DynamicTexture::generateMips() const
+	{
+		SIV3D_ENGINE(Texture)->generateMips(m_handle->id());
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	swap

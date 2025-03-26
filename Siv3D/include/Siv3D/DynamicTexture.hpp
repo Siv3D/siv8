@@ -77,6 +77,24 @@ namespace s3d
 		/// @return 動的テクスチャの更新または作成に成功した場合 true, それ以外の場合は false
 		bool fill(const Image& image);
 
+		bool fill(const Grid<uint8>& image);
+
+		bool fill(const Grid<HalfFloat>& image);
+
+		bool fill(const Grid<uint16>& image);
+
+		bool fill(const Grid<Color>& image);
+
+		bool fill(const Grid<float>& image);
+
+		bool fill(const Grid<uint32>& image);
+
+		bool fill(const Grid<uint64>& image);
+
+		bool fill(const Grid<Float2>& image);
+
+		bool fill(const Grid<Float4>& image);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	fillRegion
@@ -87,6 +105,24 @@ namespace s3d
 
 		bool fillRegion(const Image& image, const Rect& rect);
 
+		bool fillRegion(const Grid<uint8>& image, const Rect& rect);
+
+		bool fillRegion(const Grid<HalfFloat>& image, const Rect& rect);
+
+		bool fillRegion(const Grid<uint16>& image, const Rect& rect);
+
+		bool fillRegion(const Grid<Color>& image, const Rect& rect);
+
+		bool fillRegion(const Grid<float>& image, const Rect& rect);
+
+		bool fillRegion(const Grid<uint32>& image, const Rect& rect);
+
+		bool fillRegion(const Grid<uint64>& image, const Rect& rect);
+
+		bool fillRegion(const Grid<Float2>& image, const Rect& rect);
+
+		bool fillRegion(const Grid<Float4>& image, const Rect& rect);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	fillIfNotBusy
@@ -94,6 +130,24 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		bool fillIfNotBusy(const Image& image);
+
+		bool fillIfNotBusy(const Grid<uint8>& image);
+
+		bool fillIfNotBusy(const Grid<HalfFloat>& image);
+
+		bool fillIfNotBusy(const Grid<uint16>& image);
+
+		bool fillIfNotBusy(const Grid<Color>& image);
+
+		bool fillIfNotBusy(const Grid<float>& image);
+
+		bool fillIfNotBusy(const Grid<uint32>& image);
+
+		bool fillIfNotBusy(const Grid<uint64>& image);
+
+		bool fillIfNotBusy(const Grid<Float2>& image);
+
+		bool fillIfNotBusy(const Grid<Float4>& image);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -103,6 +157,24 @@ namespace s3d
 
 		bool fillRegionIfNotBusy(const Image& image, const Rect& rect);
 
+		bool fillRegionIfNotBusy(const Grid<uint8>& image, const Rect& rect);
+
+		bool fillRegionIfNotBusy(const Grid<HalfFloat>& image, const Rect& rect);
+
+		bool fillRegionIfNotBusy(const Grid<uint16>& image, const Rect& rect);
+
+		bool fillRegionIfNotBusy(const Grid<Color>& image, const Rect& rect);
+
+		bool fillRegionIfNotBusy(const Grid<float>& image, const Rect& rect);
+
+		bool fillRegionIfNotBusy(const Grid<uint32>& image, const Rect& rect);
+
+		bool fillRegionIfNotBusy(const Grid<uint64>& image, const Rect& rect);
+
+		bool fillRegionIfNotBusy(const Grid<Float2>& image, const Rect& rect);
+
+		bool fillRegionIfNotBusy(const Grid<Float4>& image, const Rect& rect);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	generateMips
@@ -111,7 +183,7 @@ namespace s3d
 
 		/// @brief ミップマップを生成します。
 		/// @remark この関数は、テクスチャの作成時に Mipmap を有効にした場合にのみ効果があります。
-		void generateMips();
+		void generateMips() const;
 
 		////////////////////////////////////////////////////////////////
 		//
