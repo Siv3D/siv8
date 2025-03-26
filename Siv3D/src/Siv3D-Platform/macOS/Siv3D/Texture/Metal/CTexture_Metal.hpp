@@ -62,6 +62,16 @@ namespace s3d
 		
 		[[nodiscard]]
 		bool hasDepth(Texture::IDType handleID) override;
+
+		bool fill(Texture::IDType handleID, const ColorF& color, bool wait) override;
+
+		bool fill(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, bool wait) override;
+
+		bool fillRegion(Texture::IDType handleID, const ColorF& color, const Rect& rect) override;
+
+		bool fillRegion(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, const Rect& rect, bool wait) override;
+
+		void generateMips(Texture::IDType handleID) override;
 		
 		[[nodiscard]]
 		MTL::Texture* getTexture(Texture::IDType handleID);

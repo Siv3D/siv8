@@ -268,6 +268,49 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	fill
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CTexture_Metal::fill(const Texture::IDType handleID, const ColorF& color, const bool wait)
+	{
+		return(false);
+	}
+
+	bool CTexture_Metal::fill(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const bool wait)
+	{
+		return(false);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fillRegion
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CTexture_Metal::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect)
+	{
+		return(false);
+	}
+
+	bool CTexture_Metal::fillRegion(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
+	{
+		return(false);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	generateMips
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CTexture_Metal::generateMips(const Texture::IDType handleID)
+	{
+		return (void)0;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getTexture
 	//
 	////////////////////////////////////////////////////////////////

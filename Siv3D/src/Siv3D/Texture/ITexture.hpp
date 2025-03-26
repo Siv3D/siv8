@@ -57,5 +57,15 @@ namespace s3d
 
 		[[nodiscard]]
 		virtual bool hasDepth(Texture::IDType handleID) = 0;
+
+		virtual bool fill(Texture::IDType handleID, const ColorF& color, bool wait) = 0;
+
+		virtual bool fill(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, bool wait) = 0;
+
+		virtual bool fillRegion(Texture::IDType handleID, const ColorF& color, const Rect& rect) = 0;
+
+		virtual bool fillRegion(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, const Rect& rect, bool wait) = 0;
+
+		virtual void generateMips(Texture::IDType handleID) = 0;
 	};
 }

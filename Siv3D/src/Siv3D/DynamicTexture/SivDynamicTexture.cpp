@@ -50,6 +50,17 @@ namespace s3d
 
 	DynamicTexture::DynamicTexture(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc)
 		: Texture{ Texture::Dynamic{}, size, data, format, desc } {}
+	
+	////////////////////////////////////////////////////////////////
+	//
+	//	swap
+	//
+	////////////////////////////////////////////////////////////////
+
+	void DynamicTexture::swap(DynamicTexture& other) noexcept
+	{
+		m_handle.swap(other.m_handle);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
