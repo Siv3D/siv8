@@ -240,7 +240,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextureFormat Texture::getFormat() const
+	TextureFormat Texture::format() const
 	{
 		return SIV3D_ENGINE(Texture)->getFormat(m_handle->id());
 	}

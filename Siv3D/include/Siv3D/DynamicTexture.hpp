@@ -42,14 +42,26 @@ namespace s3d
 		[[nodiscard]]
 		DynamicTexture(const Size& size, const ColorF& color, const TextureFormat& format = TextureFormat::R8G8B8A8_Unorm, TextureDesc desc = TextureDesc::NoMipmap);
 
-		//[[nodiscard]]
-		//DynamicTexture(const Image& image, TextureDesc desc);
+		[[nodiscard]]
+		explicit DynamicTexture(const Image& image, TextureDesc desc = TextureDesc::NoMipmap);
 
-		//[[nodiscard]]
-		//explicit DynamicTexture(const Image& image, const TextureFormat& format = TextureFormat::R8G8B8A8_Unorm, TextureDesc desc = TextureDesc::NoMipmap);
+		[[nodiscard]]
+		explicit DynamicTexture(const Grid<uint8>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
-		//[[nodiscard]]
-		//DynamicTexture(const Grid<uint8>& image, const TextureFormat& format = TextureFormat::R8G8B8A8_Unorm, TextureDesc desc = TextureDesc::NoMipmap);
+		[[nodiscard]]
+		explicit DynamicTexture(const Grid<HalfFloat>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		explicit DynamicTexture(const Grid<Color>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		explicit DynamicTexture(const Grid<float>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		explicit DynamicTexture(const Grid<Float2>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		explicit DynamicTexture(const Grid<Float4>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -124,5 +136,166 @@ namespace s3d
 		{
 			lhs.swap(rhs);
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR8_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR8_Unorm(const Grid<uint8>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8G8_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR8G8_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR8G8_Unorm(const Grid<uint16>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR16_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16_Float(const Grid<HalfFloat>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8G8B8A8_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR8G8B8A8_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR8G8B8A8_Unorm(const Grid<Color>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR8G8B8A8_Unorm_SRGB
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR8G8B8A8_Unorm_SRGB(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR8G8B8A8_Unorm_SRGB(const Grid<Color>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR16G16_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16G16_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16G16_Unorm(const Grid<uint32>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR16G16_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16G16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16G16_Float(const Grid<uint32>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR32_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR32_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR32_Float(const Grid<float>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR10G10B10A2_Unorm
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR10G10B10A2_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR10G10B10A2_Unorm(const Grid<uint32>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR11G11B10_UFloat
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR11G11B10_UFloat(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR11G11B10_UFloat(const Grid<uint32>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR16G16B16A16_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16G16B16A16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16G16B16A16_Float(const Grid<uint64>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR32G32_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR32G32_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR32G32_Float(const Grid<Float2>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	CreateR32G32B32A32_Float
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static DynamicTexture CreateR32G32B32A32_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR32G32B32A32_Float(const Grid<Float4>& image, TextureDesc desc = TextureDesc::NoMipmap);
+	
+	protected:
+
+		[[nodiscard]]
+		DynamicTexture(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 	};
 }
