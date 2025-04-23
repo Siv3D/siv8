@@ -204,7 +204,7 @@ namespace s3d
 			{
 				m_pointedScale.reset();
 				delta.normalize();
-				m_targetCenter += ((delta / Math::Exp2(m_targetScaleLog)) * (m_cameraControl.controlSpeedFactor * deltaTime));
+				m_targetCenter += ((delta / Math::Exp2(m_targetScaleLog)) * (m_cameraControl.controlPanningSpeed * deltaTime));
 			}
 		}
 
@@ -212,14 +212,14 @@ namespace s3d
 			if (m_cameraControl.zoomIn
 				&& m_cameraControl.zoomIn())
 			{
-				m_targetScaleLog += (m_cameraControl.controlScaleFactor * deltaTime);
+				m_targetScaleLog += (m_cameraControl.controlZoomSpeed * deltaTime);
 				m_targetScaleLog = Min(m_targetScaleLog, Math::Log2(m_cameraControl.maxZoom));
 			}
 
 			if (m_cameraControl.zoomOut
 				&& m_cameraControl.zoomOut())
 			{
-				m_targetScaleLog -= (m_cameraControl.controlScaleFactor * deltaTime);
+				m_targetScaleLog -= (m_cameraControl.controlZoomSpeed * deltaTime);
 				m_targetScaleLog = Max(m_targetScaleLog, Math::Log2(m_cameraControl.minZoom));
 			}
 		}

@@ -20,29 +20,35 @@ namespace s3d
 	{
 	public:
 
-		/// @brief デフォルトの最小カメラズーム
+		/// @brief 最小カメラズームのデフォルト値
 		static constexpr double DefaultMinZoom = (1.0 / 128.0);
 
-		/// @brief デフォルトの最大カメラズーム
+		/// @brief 最大カメラズームのデフォルト値
 		static constexpr double DefaultMaxZoom = 128.0;
 
-		/// @brief デフォルトのカメラズームの平滑化時間（秒）
+		/// @brief カメラズームの平滑化時間（秒）のデフォルト値
 		static constexpr double DefaultZoomSmoothTime = 0.2;
 
-		/// @brief デフォルトのカメラ位置の平滑化時間（秒）
+		/// @brief カメラ位置の平滑化時間（秒）のデフォルト値
 		static constexpr double DefaultPositionSmoothTime = 0.2;
 
-		/// @brief デフォルトのホイールによるカメラズームのスピード
+		/// @brief ホイールによるカメラズームの速さのデフォルト値
 		static constexpr double DefaultWheelZoomSpeed = 0.15;
 
 		/// @brief ホイールによるカメラズーム無し
 		static constexpr double NoWheelZoom = 0.0;
 
-		/// @brief デフォルトの右ボタンドラッグによるカメラ移動のスピード
+		/// @brief 右ボタンドラッグによるカメラ移動の速さのデフォルト値
 		static constexpr double DefaultMouseDragPanningSpeed = 4.0;
 
 		/// @brief 右ボタンドラッグによるカメラ移動無し
 		static constexpr double NoMouseDragPanning = 0.0;
+
+		/// @brief キー入力によるカメラズームの速さのデフォルト値
+		static constexpr double DefaultControlZoomSpeed = 2.0;
+
+		/// @brief キー入力によるカメラ移動の速さのデフォルト値
+		static constexpr double DefaultControlPanningSpeed = 400.0;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -58,8 +64,8 @@ namespace s3d
 			double _positionSmoothTime = DefaultPositionSmoothTime,
 			double _wheelZoomSpeed = DefaultWheelZoomSpeed,
 			double _mouseDragPanningSpeed = DefaultMouseDragPanningSpeed,
-			double _controlScaleFactor = 2.0,
-			double _controlSpeedFactor = 400.0,
+			double _controlZoomSpeed = DefaultControlZoomSpeed,
+			double _controlPanningSpeed = DefaultControlPanningSpeed,
 			std::function<bool()> _moveToUp = DefaultMoveToUp,
 			std::function<bool()> _moveToRight = DefaultMoveToRight,
 			std::function<bool()> _moveToDown = DefaultMoveToDown,
@@ -142,27 +148,27 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	controlScaleFactor
+		//	controlZoomSpeed
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Camera2DControlBuilder controlScaleFactor(double _controlScaleFactor) const noexcept;
+		Camera2DControlBuilder controlZoomSpeed(double _controlZoomSpeed) const noexcept;
 
 		[[nodiscard]]
-		double controlScaleFactor() const noexcept;
+		double controlZoomSpeed() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	controlSpeedFactor
+		//	controlPanningSpeed
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Camera2DControlBuilder controlSpeedFactor(double _controlSpeedFactor) const noexcept;
+		Camera2DControlBuilder controlPanningSpeed(double _controlPanningSpeed) const noexcept;
 
 		[[nodiscard]]
-		double controlSpeedFactor() const noexcept;
+		double controlPanningSpeed() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -304,9 +310,9 @@ namespace s3d
 
 		double m_mouseDragPanningSpeed = DefaultMouseDragPanningSpeed;
 
-		double m_controlScaleFactor = 2.0;
+		double m_controlZoomSpeed = DefaultControlZoomSpeed;
 
-		double m_controlSpeedFactor = 400.0;
+		double m_controlPanningSpeed = DefaultControlPanningSpeed;
 
 		std::function<bool()> m_moveToUp = DefaultMoveToUp;
 

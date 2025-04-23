@@ -28,8 +28,8 @@ namespace s3d
 		const double _positionSmoothTime,
 		const double _wheelZoomSpeed,
 		const double _mouseDragPanningSpeed,
-		const double _controlScaleFactor,
-		const double _controlSpeedFactor,
+		const double _controlZoomSpeed,
+		const double _controlPanningSpeed,
 		std::function<bool()> _moveToUp,
 		std::function<bool()> _moveToRight,
 		std::function<bool()> _moveToDown,
@@ -42,8 +42,8 @@ namespace s3d
 		, m_positionSmoothTime{ _positionSmoothTime }
 		, m_wheelZoomSpeed{ _wheelZoomSpeed }
 		, m_mouseDragPanningSpeed{ _mouseDragPanningSpeed }
-		, m_controlScaleFactor{ _controlScaleFactor }
-		, m_controlSpeedFactor{ _controlSpeedFactor }
+		, m_controlZoomSpeed{ _controlZoomSpeed }
+		, m_controlPanningSpeed{ _controlPanningSpeed }
 		, m_moveToUp{ std::move(_moveToUp) }
 		, m_moveToRight{ std::move(_moveToRight) }
 		, m_moveToDown{ std::move(_moveToDown) }
@@ -161,20 +161,20 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	controlScaleFactor
+	//	controlZoomSpeed
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::controlScaleFactor(const double _controlScaleFactor) const noexcept
+	Camera2DControlBuilder Camera2DControlBuilder::controlZoomSpeed(const double _controlZoomSpeed) const noexcept
 	{
 		Camera2DControlBuilder result{ *this };
-		result.m_controlScaleFactor = _controlScaleFactor;
+		result.m_controlZoomSpeed = _controlZoomSpeed;
 		return result;
 	}
 
-	double Camera2DControlBuilder::controlScaleFactor() const noexcept
+	double Camera2DControlBuilder::controlZoomSpeed() const noexcept
 	{
-		return m_controlScaleFactor;
+		return m_controlZoomSpeed;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -183,16 +183,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::controlSpeedFactor(const double _controlSpeedFactor) const noexcept
+	Camera2DControlBuilder Camera2DControlBuilder::controlPanningSpeed(const double _controlPanningSpeed) const noexcept
 	{
 		Camera2DControlBuilder result{ *this };
-		result.m_controlSpeedFactor = _controlSpeedFactor;
+		result.m_controlPanningSpeed = _controlPanningSpeed;
 		return result;
 	}
 
-	double Camera2DControlBuilder::controlSpeedFactor() const noexcept
+	double Camera2DControlBuilder::controlPanningSpeed() const noexcept
 	{
-		return m_controlSpeedFactor;
+		return m_controlPanningSpeed;
 	}
 
 	////////////////////////////////////////////////////////////////

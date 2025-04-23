@@ -26,8 +26,8 @@ namespace s3d
 		const double _positionSmoothTime,
 		const double _wheelZoomSpeed,
 		const double _mouseDragPanningSpeed,
-		const double _controlScaleFactor,
-		const double _controlSpeedFactor,
+		const double _controlZoomSpeed,
+		const double _controlPanningSpeed,
 		std::function<bool()> _moveToUp,
 		std::function<bool()> _moveToRight,
 		std::function<bool()> _moveToDown,
@@ -40,8 +40,8 @@ namespace s3d
 		, positionSmoothTime{ _positionSmoothTime }
 		, wheelZoomSpeed{ _wheelZoomSpeed }
 		, mouseDragPanningSpeed{ _mouseDragPanningSpeed }
-		, controlScaleFactor{ _controlScaleFactor }
-		, controlSpeedFactor{ _controlSpeedFactor }
+		, controlZoomSpeed{ _controlZoomSpeed }
+		, controlPanningSpeed{ _controlPanningSpeed }
 		, moveToUp{ std::move(_moveToUp) }
 		, moveToRight{ std::move(_moveToRight) }
 		, moveToDown{ std::move(_moveToDown) }
@@ -56,8 +56,8 @@ namespace s3d
 		, positionSmoothTime{ builder.positionSmoothTime() }
 		, wheelZoomSpeed{ builder.wheelZoomSpeed() }
 		, mouseDragPanningSpeed{ builder.mouseDragPanningSpeed() }
-		, controlScaleFactor{ builder.controlScaleFactor() }
-		, controlSpeedFactor{ builder.controlSpeedFactor() }
+		, controlZoomSpeed{ builder.controlZoomSpeed() }
+		, controlPanningSpeed{ builder.controlPanningSpeed() }
 		, moveToUp{ builder.moveToUp() }
 		, moveToRight{ builder.moveToRight() }
 		, moveToDown{ builder.moveToDown() }
