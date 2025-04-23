@@ -78,7 +78,7 @@ namespace s3d
 
 		{
 			const double oldScale = m_scale;
-			m_scale = Math::Exp2(Math::SmoothDamp(Math::Log2(m_scale), m_targetScaleLog, m_scaleChangeVelocity, m_cameraControl.scaleSmoothTime, unspecified, deltaTime));
+			m_scale = Math::Exp2(Math::SmoothDamp(Math::Log2(m_scale), m_targetScaleLog, m_scaleChangeVelocity, m_cameraControl.zoomSmoothTime, unspecified, deltaTime));
 
 			if (deltaTime && (m_scale != Math::Exp2(m_targetScaleLog)) && (m_scale == oldScale))
 			{
@@ -138,6 +138,11 @@ namespace s3d
 
 	void Camera2D::updateWheel(const SizeF& sceneSize)
 	{
+		if (m_cameraControl.wheelZoomSpeed == Camera2DControl::NoWheelZoom)
+		{
+			return;
+		}
+
 		const double wheel = Mouse::Wheel();
 
 		if (wheel == 0.0)
@@ -149,14 +154,14 @@ namespace s3d
 
 		if (wheel < 0.0)
 		{
-			m_targetScaleLog += m_cameraControl.wheelScaleFactor;
+			m_targetScaleLog += m_cameraControl.wheelZoomSpeed;
 		}
 		else
 		{
-			m_targetScaleLog -= m_cameraControl.wheelScaleFactor;
+			m_targetScaleLog -= m_cameraControl.wheelZoomSpeed;
 		}
 
-		m_targetScaleLog = Clamp(m_targetScaleLog, Math::Log2(m_cameraControl.minScale), Math::Log2(m_cameraControl.maxScale));
+		m_targetScaleLog = Clamp(m_targetScaleLog, Math::Log2(m_cameraControl.minZoom), Math::Log2(m_cameraControl.maxZoom));
 
 		const auto t1 = Transformer2D{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetLocal };
 		const auto t2 = Transformer2D{ Mat3x2::Identity(), TransformCursor::Yes, Transformer2D::Target::SetCamera };
@@ -208,14 +213,14 @@ namespace s3d
 				&& m_cameraControl.zoomIn())
 			{
 				m_targetScaleLog += (m_cameraControl.controlScaleFactor * deltaTime);
-				m_targetScaleLog = Min(m_targetScaleLog, Math::Log2(m_cameraControl.maxScale));
+				m_targetScaleLog = Min(m_targetScaleLog, Math::Log2(m_cameraControl.maxZoom));
 			}
 
 			if (m_cameraControl.zoomOut
 				&& m_cameraControl.zoomOut())
 			{
 				m_targetScaleLog -= (m_cameraControl.controlScaleFactor * deltaTime);
-				m_targetScaleLog = Max(m_targetScaleLog, Math::Log2(m_cameraControl.minScale));
+				m_targetScaleLog = Max(m_targetScaleLog, Math::Log2(m_cameraControl.minZoom));
 			}
 		}
 	}
@@ -233,7 +238,7 @@ namespace s3d
 		else if (m_grabbedPos)
 		{
 			const Vec2 delta = (Cursor::PosF() - *m_grabbedPos);
-			m_targetCenter += ((delta / Math::Exp2(m_targetScaleLog)) * (m_cameraControl.grabSpeedFactor * deltaTime));
+			m_targetCenter += ((delta / Math::Exp2(m_targetScaleLog)) * (m_cameraControl.mouseDragPanningSpeed * deltaTime));
 
 			if (MouseR.up())
 			{

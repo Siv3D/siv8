@@ -12,12 +12,37 @@
 # pragma once
 # include <functional>
 # include "Common.hpp"
+# include "Optional.hpp"
 
 namespace s3d
 {
 	class Camera2DControlBuilder
 	{
 	public:
+
+		/// @brief デフォルトの最小カメラズーム
+		static constexpr double DefaultMinZoom = (1.0 / 128.0);
+
+		/// @brief デフォルトの最大カメラズーム
+		static constexpr double DefaultMaxZoom = 128.0;
+
+		/// @brief デフォルトのカメラズームの平滑化時間（秒）
+		static constexpr double DefaultZoomSmoothTime = 0.2;
+
+		/// @brief デフォルトのカメラ位置の平滑化時間（秒）
+		static constexpr double DefaultPositionSmoothTime = 0.2;
+
+		/// @brief デフォルトのホイールによるカメラズームのスピード
+		static constexpr double DefaultWheelZoomSpeed = 0.15;
+
+		/// @brief ホイールによるカメラズーム無し
+		static constexpr double NoWheelZoom = 0.0;
+
+		/// @brief デフォルトの右ボタンドラッグによるカメラ移動のスピード
+		static constexpr double DefaultMouseDragPanningSpeed = 4.0;
+
+		/// @brief 右ボタンドラッグによるカメラ移動無し
+		static constexpr double NoMouseDragPanning = 0.0;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -27,12 +52,12 @@ namespace s3d
 
 		[[nodiscard]]
 		explicit Camera2DControlBuilder(
-			double _minScale = (1.0 / 128.0),
-			double _maxScale = 128.0,
-			double _scaleSmoothTime = 0.2,
-			double _positionSmoothTime = 0.2,
-			double _wheelScaleFactor = 0.15,
-			double _grabSpeedFactor = 4.0,
+			double _minZoom = DefaultMinZoom,
+			double _maxZoom = DefaultMaxZoom,
+			double _zoomSmoothTime = DefaultZoomSmoothTime,
+			double _positionSmoothTime = DefaultPositionSmoothTime,
+			double _wheelZoomSpeed = DefaultWheelZoomSpeed,
+			double _mouseDragPanningSpeed = DefaultMouseDragPanningSpeed,
 			double _controlScaleFactor = 2.0,
 			double _controlSpeedFactor = 400.0,
 			std::function<bool()> _moveToUp = DefaultMoveToUp,
@@ -45,39 +70,39 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	minScale
+		//	minZoom
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Camera2DControlBuilder minScale(double _minScale) const noexcept;
+		Camera2DControlBuilder minZoom(double _minZoom) const noexcept;
 
 		[[nodiscard]]
-		double minScale() const noexcept;
+		double minZoom() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	maxScale
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		Camera2DControlBuilder maxScale(double _maxScale) const noexcept;
-
-		[[nodiscard]]
-		double maxScale() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	scaleSmoothTime
+		//	maxZoom
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Camera2DControlBuilder scaleSmoothTime(double _scaleSmoothTime) const noexcept;
+		Camera2DControlBuilder maxZoom(double _maxZoom) const noexcept;
 
 		[[nodiscard]]
-		double scaleSmoothTime() const noexcept;
+		double maxZoom() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	zoomSmoothTime
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Camera2DControlBuilder zoomSmoothTime(double _zoomSmoothTime) const noexcept;
+
+		[[nodiscard]]
+		double zoomSmoothTime() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -93,27 +118,27 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	wheelScaleFactor
+		//	wheelZoomSpeed
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Camera2DControlBuilder wheelScaleFactor(double _wheelScaleFactor) const noexcept;
+		Camera2DControlBuilder wheelZoomSpeed(double _wheelZoomSpeed) const noexcept;
 
 		[[nodiscard]]
-		double wheelScaleFactor() const noexcept;
+		double wheelZoomSpeed() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	grabSpeedFactor
+		//	mouseDragPanningSpeed
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Camera2DControlBuilder grabSpeedFactor(double _grabSpeedFactor) const noexcept;
+		Camera2DControlBuilder mouseDragPanningSpeed(double _mouseDragPanningSpeed) const noexcept;
 
 		[[nodiscard]]
-		double grabSpeedFactor() const noexcept;
+		double mouseDragPanningSpeed() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -240,12 +265,12 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	rightClick
+		//	mouseDragPanning
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Camera2DControlBuilder rightClick(bool enabled) const;
+		Camera2DControlBuilder mouseDragPanning(bool enabled) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -267,17 +292,17 @@ namespace s3d
 
 	private:
 
-		double m_minScale = (1.0 / 128.0);
+		double m_minZoom = DefaultMinZoom;
 
-		double m_maxScale = 128.0;
+		double m_maxZoom = DefaultMaxZoom;
 
-		double m_scaleSmoothTime = 0.2;
+		double m_zoomSmoothTime = DefaultZoomSmoothTime;
 
-		double m_positionSmoothTime = 0.2;
+		double m_positionSmoothTime = DefaultPositionSmoothTime;
 
-		double m_wheelScaleFactor = 0.15;
+		double m_wheelZoomSpeed = DefaultWheelZoomSpeed;
 
-		double m_grabSpeedFactor = 4.0;
+		double m_mouseDragPanningSpeed = DefaultMouseDragPanningSpeed;
 
 		double m_controlScaleFactor = 2.0;
 

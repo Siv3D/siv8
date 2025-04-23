@@ -20,12 +20,12 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Camera2DControl::Camera2DControl(
-		const double _minScale,
-		const double _maxScale,
-		const double _scaleSmoothTime,
+		const double _minZoom,
+		const double _maxZoom,
+		const double _zoomSmoothTime,
 		const double _positionSmoothTime,
-		const double _wheelScaleFactor,
-		const double _grabSpeedFactor,
+		const double _wheelZoomSpeed,
+		const double _mouseDragPanningSpeed,
 		const double _controlScaleFactor,
 		const double _controlSpeedFactor,
 		std::function<bool()> _moveToUp,
@@ -34,12 +34,12 @@ namespace s3d
 		std::function<bool()> _moveToLeft,
 		std::function<bool()> _zoomIn,
 		std::function<bool()> _zoomOut)
-		: minScale{ _minScale }
-		, maxScale{ _maxScale }
-		, scaleSmoothTime{ _scaleSmoothTime }
+		: minZoom{ _minZoom }
+		, maxZoom{ _maxZoom }
+		, zoomSmoothTime{ _zoomSmoothTime }
 		, positionSmoothTime{ _positionSmoothTime }
-		, wheelScaleFactor{ _wheelScaleFactor }
-		, grabSpeedFactor{ _grabSpeedFactor }
+		, wheelZoomSpeed{ _wheelZoomSpeed }
+		, mouseDragPanningSpeed{ _mouseDragPanningSpeed }
 		, controlScaleFactor{ _controlScaleFactor }
 		, controlSpeedFactor{ _controlSpeedFactor }
 		, moveToUp{ std::move(_moveToUp) }
@@ -50,12 +50,12 @@ namespace s3d
 		, zoomOut{ std::move(_zoomOut) } {}
 
 	Camera2DControl::Camera2DControl(const Camera2DControlBuilder& builder)
-		: minScale{ builder.minScale() }
-		, maxScale{ builder.maxScale() }
-		, scaleSmoothTime{ builder.scaleSmoothTime() }
+		: minZoom{ builder.minZoom() }
+		, maxZoom{ builder.maxZoom() }
+		, zoomSmoothTime{ builder.zoomSmoothTime() }
 		, positionSmoothTime{ builder.positionSmoothTime() }
-		, wheelScaleFactor{ builder.wheelScaleFactor() }
-		, grabSpeedFactor{ builder.grabSpeedFactor() }
+		, wheelZoomSpeed{ builder.wheelZoomSpeed() }
+		, mouseDragPanningSpeed{ builder.mouseDragPanningSpeed() }
 		, controlScaleFactor{ builder.controlScaleFactor() }
 		, controlSpeedFactor{ builder.controlSpeedFactor() }
 		, moveToUp{ builder.moveToUp() }
