@@ -435,6 +435,8 @@ namespace s3d
 				return false;
 			}
 
+			assert(m_desc.format.bytesPerRow(m_desc.size.x) <= mapped.RowPitch);
+
 			FillWithColor(mapped.pData, (mapped.RowPitch * m_desc.size.x), color, m_desc.format);
 
 			context->Unmap(m_stagingTexture.Get(), 0);
@@ -459,7 +461,38 @@ namespace s3d
 			return false;
 		}
 
-		return(false);
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		{
+			const UINT flag = (wait ? 0 : D3D11_MAP_FLAG_DO_NOT_WAIT);
+
+			if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_WRITE, flag, &mapped)))
+			{
+				return false;
+			}
+
+			if (mapped.pData == nullptr)
+			{
+				context->Unmap(m_stagingTexture.Get(), 0);
+				return false;
+			}
+
+			assert(m_desc.format.bytesPerRow(m_desc.size.x) <= mapped.RowPitch);
+
+			FillWithImage(mapped.pData, m_desc.size, mapped.RowPitch, data, srcBytesPerRow);
+
+			context->Unmap(m_stagingTexture.Get(), 0);
+		}
+
+		if (m_desc.hasMipmap)
+		{
+			context->CopySubresourceRegion(m_texture.Get(), 0, 0, 0, 0, m_stagingTexture.Get(), 0, nullptr);
+		}
+		else
+		{
+			context->CopyResource(m_texture.Get(), m_stagingTexture.Get());
+		}
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
