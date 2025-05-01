@@ -274,12 +274,12 @@ namespace s3d
 
 	bool CTexture_Metal::fill(const Texture::IDType handleID, const ColorF& color, const bool wait)
 	{
-		return(false);
+		return m_textures[handleID]->fill(color, wait);
 	}
 
 	bool CTexture_Metal::fill(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const bool wait)
 	{
-		return(false);
+		return m_textures[handleID]->fill(src, srcBytesPerRow, wait);
 	}
 
 	////////////////////////////////////////////////////////////////
