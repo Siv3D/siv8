@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "MetalTexture.hpp"
+# include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/BCnData.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -455,14 +456,68 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MetalTexture::fill(const ColorF& color, bool wait)
+	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const ColorF& color, bool)
 	{
-		return(false);
+		if (m_desc.type != TextureType::Dynamic)
+		{
+			return false;
+		}
+
+		const uint32 bytesPerRow = m_desc.format.bytesPerRow(m_desc.size.x);
+		const uint32 totalBytes = (bytesPerRow * m_desc.size.y);
+		void* ptr = m_uploadBuffer->contents();
+		
+		if (not ptr)
+		{
+			return false;
+		}
+
+		FillWithColor(ptr, totalBytes, color, m_desc.format);
+
+		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
+		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		{
+			const MTL::Size size { static_cast<NSUInteger>(m_desc.size.x), static_cast<NSUInteger>(m_desc.size.y), 1 };
+			blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, size, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
+			blitCommandEncoder->endEncoding();
+		}
+		
+		commandBuffer->commit();
+		commandBuffer->waitUntilCompleted();
+
+		return true;
 	}
 
-	bool MetalTexture::fill(std::span<const Byte> data, uint32 srcBytesPerRow, bool wait)
+	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const std::span<const Byte> data, const uint32 srcBytesPerRow, bool)
 	{
-		return(false);
+		if (m_desc.type != TextureType::Dynamic)
+		{
+			return false;
+		}
+
+		const uint32 bytesPerRow = m_desc.format.bytesPerRow(m_desc.size.x);
+		const uint32 totalBytes = (bytesPerRow * m_desc.size.y);
+		void* ptr = m_uploadBuffer->contents();
+		
+		if (not ptr)
+		{
+			return false;
+		}
+		
+		FillWithImage(ptr, m_desc.size, bytesPerRow, data, srcBytesPerRow);
+
+		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
+		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		{
+			const MTL::Size size { static_cast<NSUInteger>(m_desc.size.x), static_cast<NSUInteger>(m_desc.size.y), 1 };
+			blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, size, m_texture.get(), 0, 0, MTL::Origin{ 0, 0, 0 });
+			blitCommandEncoder->endEncoding();
+		}
+		
+		commandBuffer->commit();
+		commandBuffer->waitUntilCompleted();
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////

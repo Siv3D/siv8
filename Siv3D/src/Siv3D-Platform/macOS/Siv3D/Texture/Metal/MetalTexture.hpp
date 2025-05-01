@@ -62,9 +62,9 @@ namespace s3d
 		[[nodiscard]]
 		bool hasDepth() const noexcept;
 
-		bool fill(const ColorF& color, bool wait);
+		bool fill(MTL::CommandQueue* commandQueue, const ColorF& color, bool wait);
 
-		bool fill(std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
+		bool fill(MTL::CommandQueue* commandQueue, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
 
 		[[nodiscard]]
 		MTL::Texture* getTexture() const noexcept;
