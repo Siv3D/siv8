@@ -169,7 +169,9 @@ namespace s3d
 			return false;
 		}
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(uint16) * 2);
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, true);
 	}
 
 	bool DynamicTexture::fill(const Grid<std::pair<HalfFloat, HalfFloat>>& image)
@@ -192,8 +194,10 @@ namespace s3d
 		{
 			return false;
 		}
+		
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 2);
 
-		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, true);
 	}
 
 	bool DynamicTexture::fill(const Grid<Color>& image)
