@@ -39,8 +39,17 @@ namespace s3d
 	DynamicTexture::DynamicTexture(const Grid<Color>& image, const TextureDesc desc)
 		: DynamicTexture{ CreateR8G8B8A8_Unorm(image, desc) } {}
 
+	DynamicTexture::DynamicTexture(const Grid<std::pair<uint16, uint16>>& image, const TextureDesc desc)
+		: DynamicTexture{ CreateR16G16_Unorm(image, desc) } {}
+
+	DynamicTexture::DynamicTexture(const Grid<std::pair<HalfFloat, HalfFloat>>& image, const TextureDesc desc)
+		: DynamicTexture{ CreateR16G16_Float(image, desc) } {}
+
 	DynamicTexture::DynamicTexture(const Grid<float>& image, const TextureDesc desc)
 		: DynamicTexture{ CreateR32_Float(image, desc) } {}
+
+	DynamicTexture::DynamicTexture(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, const TextureDesc desc)
+		: DynamicTexture{ CreateR16G16B16A16_Float(image, desc) } {}
 
 	DynamicTexture::DynamicTexture(const Grid<Float2>& image, const TextureDesc desc)
 		: DynamicTexture{ CreateR32G32_Float(image, desc) } {}
@@ -139,29 +148,53 @@ namespace s3d
 		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
 	}
 
-	//bool DynamicTexture::fill(const Grid<uint16>& image)
-	//{
-	//	if (isEmpty())
-	//	{
-	//		*this = CreateR8G8_Unorm(image);
-	//		return true;
-	//	}
+	bool DynamicTexture::fill(const Grid<std::pair<uint16, uint16>>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
 
-	//	if (image.size() != size())
-	//	{
-	//		return false;
-	//	}
+		if (image.size() != size())
+		{
+			return false;
+		}
 
-	//	const auto handleID = m_handle->id();
+		const auto handleID = m_handle->id();
 
-	//	if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
-	//		format != TextureFormat::R8G8_Unorm)
-	//	{
-	//		return false;
-	//	}
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R16G16_Unorm)
+		{
+			return false;
+		}
 
-	//	return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
-	//}
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+	}
+
+	bool DynamicTexture::fill(const Grid<std::pair<HalfFloat, HalfFloat>>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R16G16_Float)
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
+	}
 
 	bool DynamicTexture::fill(const Grid<Color>& image)
 	{
@@ -211,35 +244,31 @@ namespace s3d
 		return SIV3D_ENGINE(Texture)->fill(m_handle->id(), std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
 	}
 
-	//bool DynamicTexture::fill(const Grid<uint32>& image)
-	//{
-	//	if (isEmpty())
-	//	{
-	//		*this = DynamicTexture{ image };
-	//		return true;
-	//	}
-	//	else if (image.size() != size())
-	//	{
-	//		return false;
-	//	}
+	bool DynamicTexture::fill(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
 
-	//	return SIV3D_ENGINE(Texture)->fill(m_handle->id(), std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
-	//}
+		if (image.size() != size())
+		{
+			return false;
+		}
 
-	//bool DynamicTexture::fill(const Grid<uint64>& image)
-	//{
-	//	if (isEmpty())
-	//	{
-	//		*this = DynamicTexture{ image };
-	//		return true;
-	//	}
-	//	else if (image.size() != size())
-	//	{
-	//		return false;
-	//	}
+		const auto handleID = m_handle->id();
 
-	//	return SIV3D_ENGINE(Texture)->fill(m_handle->id(), std::as_bytes(std::span{ image }), image.bytesPerRow(), true);
-	//}
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R16G16B16A16_Float)
+		{
+			return false;
+		}
+
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 4);
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, true);
+	}
 
 	bool DynamicTexture::fill(const Grid<Float2>& image)
 	{
@@ -465,6 +494,11 @@ namespace s3d
 		return DynamicTexture{ size, std::as_bytes(std::span{ image }), TextureFormat::R16G16_Unorm, desc };
 	}
 
+	DynamicTexture DynamicTexture::CreateR16G16_Unorm(const Grid<std::pair<uint16, uint16>>& image, const TextureDesc desc)
+	{
+		return DynamicTexture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16_Unorm, desc };
+	}
+
 	DynamicTexture DynamicTexture::CreateR16G16_Unorm(const Grid<uint32>& image, const TextureDesc desc)
 	{
 		return DynamicTexture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16_Unorm, desc };
@@ -480,6 +514,11 @@ namespace s3d
 	{
 		const Grid<uint32> image(size, color.toR16G16_Float());
 		return DynamicTexture{ size, std::as_bytes(std::span{ image }), TextureFormat::R16G16_Float, desc };
+	}
+
+	DynamicTexture DynamicTexture::CreateR16G16_Float(const Grid<std::pair<HalfFloat, HalfFloat>>& image, const TextureDesc desc)
+	{
+		return DynamicTexture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16_Float, desc };
 	}
 
 	DynamicTexture DynamicTexture::CreateR16G16_Float(const Grid<uint32>& image, const TextureDesc desc)
@@ -548,6 +587,11 @@ namespace s3d
 	{
 		const Grid<uint64> image(size, color.toR16G16B16A16_Float());
 		return DynamicTexture{ size, std::as_bytes(std::span{ image }), TextureFormat::R16G16B16A16_Float, desc };
+	}
+
+	DynamicTexture DynamicTexture::CreateR16G16B16A16_Float(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, const TextureDesc desc)
+	{
+		return DynamicTexture{ image.size(), std::as_bytes(std::span{ image }), TextureFormat::R16G16B16A16_Float, desc };
 	}
 
 	DynamicTexture DynamicTexture::CreateR16G16B16A16_Float(const Grid<uint64>& image, const TextureDesc desc)

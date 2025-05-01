@@ -55,7 +55,16 @@ namespace s3d
 		explicit DynamicTexture(const Grid<Color>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 		[[nodiscard]]
+		explicit DynamicTexture(const Grid<std::pair<uint16, uint16>>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		explicit DynamicTexture(const Grid<std::pair<HalfFloat, HalfFloat>>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
 		explicit DynamicTexture(const Grid<float>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		explicit DynamicTexture(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 		[[nodiscard]]
 		explicit DynamicTexture(const Grid<Float2>& image, TextureDesc desc = TextureDesc::NoMipmap);
@@ -81,15 +90,17 @@ namespace s3d
 
 		bool fill(const Grid<HalfFloat>& image);
 
-		bool fill(const Grid<uint16>& image);
+		bool fill(const Grid<std::pair<uint16, uint16>>& image);
+
+		bool fill(const Grid<std::pair<HalfFloat, HalfFloat>>& image);
 
 		bool fill(const Grid<Color>& image);
 
 		bool fill(const Grid<float>& image);
 
-		bool fill(const Grid<uint32>& image);
+		//bool fill(const Grid<uint32>& image);
 
-		bool fill(const Grid<uint64>& image);
+		bool fill(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image);
 
 		bool fill(const Grid<Float2>& image);
 
@@ -279,6 +290,9 @@ namespace s3d
 		static DynamicTexture CreateR16G16_Unorm(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
 
 		[[nodiscard]]
+		static DynamicTexture CreateR16G16_Unorm(const Grid<std::pair<uint16, uint16>>& image, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
 		static DynamicTexture CreateR16G16_Unorm(const Grid<uint32>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 		////////////////////////////////////////////////////////////////
@@ -289,6 +303,9 @@ namespace s3d
 
 		[[nodiscard]]
 		static DynamicTexture CreateR16G16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16G16_Float(const Grid<std::pair<HalfFloat, HalfFloat>>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 		[[nodiscard]]
 		static DynamicTexture CreateR16G16_Float(const Grid<uint32>& image, TextureDesc desc = TextureDesc::NoMipmap);
@@ -337,6 +354,9 @@ namespace s3d
 
 		[[nodiscard]]
 		static DynamicTexture CreateR16G16B16A16_Float(const Size& size, const ColorF& color, TextureDesc desc = TextureDesc::NoMipmap);
+
+		[[nodiscard]]
+		static DynamicTexture CreateR16G16B16A16_Float(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 		[[nodiscard]]
 		static DynamicTexture CreateR16G16B16A16_Float(const Grid<uint64>& image, TextureDesc desc = TextureDesc::NoMipmap);
