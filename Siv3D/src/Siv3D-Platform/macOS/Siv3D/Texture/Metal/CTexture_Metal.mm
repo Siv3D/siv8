@@ -306,7 +306,7 @@ namespace s3d
 
 	void CTexture_Metal::generateMips(const Texture::IDType handleID)
 	{
-		return (void)0;
+		return m_textures[handleID]->generateMips(m_commandQueue);
 	}
 
 	////////////////////////////////////////////////////////////////

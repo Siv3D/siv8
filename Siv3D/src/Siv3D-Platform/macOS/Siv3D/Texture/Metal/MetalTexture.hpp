@@ -66,6 +66,8 @@ namespace s3d
 
 		bool fill(MTL::CommandQueue* commandQueue, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
 
+		void generateMips(MTL::CommandQueue* commandQueue);
+		
 		[[nodiscard]]
 		MTL::Texture* getTexture() const noexcept;
 

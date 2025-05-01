@@ -496,7 +496,6 @@ namespace s3d
 		}
 
 		const uint32 bytesPerRow = m_desc.format.bytesPerRow(m_desc.size.x);
-		const uint32 totalBytes = (bytesPerRow * m_desc.size.y);
 		void* ptr = m_uploadBuffer->contents();
 		
 		if (not ptr)
@@ -518,6 +517,30 @@ namespace s3d
 		commandBuffer->waitUntilCompleted();
 
 		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	generateMips
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalTexture::generateMips(MTL::CommandQueue* commandQueue)
+	{
+		if (m_desc.mipLevels <= 1)
+		{
+			return;
+		}
+
+		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
+		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+		{
+			blitCommandEncoder->generateMipmaps(m_texture.get());
+			blitCommandEncoder->endEncoding();
+		}
+
+		commandBuffer->commit();
+		commandBuffer->waitUntilCompleted();
 	}
 
 	////////////////////////////////////////////////////////////////
