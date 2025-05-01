@@ -156,4 +156,72 @@ namespace s3d
 
 		return bytes;
 	}
+
+	void FillWithColor(void* const dstBuffer, const size_t bufferSizeBytes, const ColorF& color, const TextureFormat& format)
+	{
+		switch (format.value())
+		{
+			case TexturePixelFormat::R8_Unorm:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR8_Unorm());
+				break;
+			}
+			case TexturePixelFormat::R8G8_Unorm:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR8G8_Unorm());
+				break;
+			}
+			case TexturePixelFormat::R16_Float:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR16_Float().getBits());
+				break;
+			}
+			case TexturePixelFormat::R8G8B8A8_Unorm:
+			case TexturePixelFormat::R8G8B8A8_Unorm_SRGB:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR8G8B8A8_Unorm().asUint32());
+				break;
+			}
+			case TexturePixelFormat::R16G16_Unorm:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR16G16_Unorm());
+				break;
+			}
+			case TexturePixelFormat::R16G16_Float:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR16G16_Float());
+				break;
+			}
+			case TexturePixelFormat::R32_Float:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR32_Float());
+				break;
+			}
+			case TexturePixelFormat::R10G10B10A2_Unorm:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR10G10B10A2_Unorm());
+				break;
+			}
+			case TexturePixelFormat::R11G11B10_UFloat:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR11G11B10_UFloat());
+				break;
+			}
+			case TexturePixelFormat::R16G16B16A16_Float:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR16G16B16A16_Float());
+				break;
+			}
+			case TexturePixelFormat::R32G32_Float:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR32G32_Float());
+				break;
+			}
+			case TexturePixelFormat::R32G32B32A32_Float:
+			{
+				Fill(dstBuffer, bufferSizeBytes, color.toR32G32B32A32_Float());
+				break;
+			}
+		}
+	}
 }

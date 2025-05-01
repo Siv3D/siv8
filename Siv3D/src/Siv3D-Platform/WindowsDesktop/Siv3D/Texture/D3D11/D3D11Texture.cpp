@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "D3D11Texture.hpp"
+# include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/BCnData.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -404,6 +405,61 @@ namespace s3d
 	bool D3D11Texture::hasDepth() const noexcept
 	{
 		return m_desc.hasDepth;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fill
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool D3D11Texture::fill(ID3D11DeviceContext* context, const ColorF& color, const bool wait)
+	{
+		if (m_desc.type != TextureType::Dynamic)
+		{
+			return false;
+		}
+
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		{
+			const UINT flag = (wait ? 0 : D3D11_MAP_FLAG_DO_NOT_WAIT);
+
+			if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_WRITE, flag, &mapped)))
+			{
+				return false;
+			}
+
+			if (mapped.pData == nullptr)
+			{
+				context->Unmap(m_stagingTexture.Get(), 0);
+				return false;
+			}
+
+			FillWithColor(mapped.pData, (mapped.RowPitch * m_desc.size.x), color, m_desc.format);
+
+			context->Unmap(m_stagingTexture.Get(), 0);
+		}
+
+		if (m_desc.hasMipmap)
+		{
+			context->CopySubresourceRegion(m_texture.Get(), 0, 0, 0, 0, m_stagingTexture.Get(), 0, nullptr);
+		}
+		else
+		{
+			context->CopyResource(m_texture.Get(), m_stagingTexture.Get());
+		}
+
+		return true;
+	}
+
+	bool D3D11Texture::fill(ID3D11DeviceContext* context, const std::span<const Byte> data, const uint32 srcBytesPerRow, const bool wait)
+	{
+		if (m_desc.type != TextureType::Dynamic)
+		{
+			return false;
+		}
+
+		return(false);
 	}
 
 	////////////////////////////////////////////////////////////////

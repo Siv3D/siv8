@@ -21,4 +21,6 @@ namespace s3d
 {
 	[[nodiscard]]
 	Array<Byte> GenerateInitialColorBuffer(const Size& size, const ColorF& color, const TextureFormat& format);
+
+	void FillWithColor(void* const dstBuffer, size_t bufferSizeBytes, const ColorF& color, const TextureFormat& format);
 }
