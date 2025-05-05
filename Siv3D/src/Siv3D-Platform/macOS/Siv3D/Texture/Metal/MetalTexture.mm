@@ -483,7 +483,6 @@ namespace s3d
 		}
 		
 		commandBuffer->commit();
-		commandBuffer->waitUntilCompleted();
 
 		return true;
 	}
@@ -514,7 +513,6 @@ namespace s3d
 		}
 		
 		commandBuffer->commit();
-		commandBuffer->waitUntilCompleted();
 
 		return true;
 	}
@@ -540,7 +538,6 @@ namespace s3d
 		}
 
 		commandBuffer->commit();
-		commandBuffer->waitUntilCompleted();
 	}
 
 	////////////////////////////////////////////////////////////////
