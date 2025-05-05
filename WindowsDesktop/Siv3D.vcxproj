@@ -810,6 +810,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-draw.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-face.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-font.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-fontations.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ft.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gdi.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-glib.h" />
@@ -830,11 +831,12 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-var.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-paint.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-script-list.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-set.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-shape-plan.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-shape.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-style.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-subset-repacker.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-subset-serialize.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-subset.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-unicode.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-uniscribe.h" />

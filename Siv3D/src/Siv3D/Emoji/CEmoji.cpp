@@ -133,11 +133,11 @@ namespace s3d
 			return;
 		}
 
-		m_hbFont = ::hb_ft_font_create(m_face, nullptr);
+		m_hbFont = ::hb_ft_font_create_referenced(m_face);
 
 		if (not m_hbFont)
 		{
-			LOG_FAIL("hb_ft_font_create(): failed");
+			LOG_FAIL("hb_ft_font_create_referenced (): failed");
 			return;
 		}
 

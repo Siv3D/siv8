@@ -2508,135 +2508,6 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Emoji\CEmoji.hpp">
       <Filter>src\Siv3D\Emoji</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-math.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-meta.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-metrics.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-name.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-shape.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-var.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-paint.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-set.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-shape.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-shape-plan.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-style.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-subset.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-subset-repacker.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-unicode.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-uniscribe.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-version.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-wasm-api.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-aat.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-aat-layout.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-blob.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-buffer.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-cairo.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-common.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-coretext.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-deprecated.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-directwrite.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-draw.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-face.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-font.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ft.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gdi.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-glib.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gobject.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gobject-structs.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-graphite2.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-icu.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-map.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-color.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-deprecated.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-font.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-layout.h">
-      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\freetype\ft2build.h">
       <Filter>src\ThirdParty-prebuilt\freetype\freetype</Filter>
     </ClInclude>
@@ -4220,6 +4091,141 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeCommon.hpp">
       <Filter>include\ThirdParty\libcpprime\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-aat.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-aat-layout.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-blob.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-buffer.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-cairo.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-common.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-coretext.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-deprecated.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-directwrite.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-draw.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-face.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-font.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-fontations.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ft.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gdi.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-glib.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gobject.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-gobject-structs.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-graphite2.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-icu.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-map.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-color.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-deprecated.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-font.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-layout.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-math.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-meta.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-metrics.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-name.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-shape.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-ot-var.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-paint.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-script-list.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-set.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-shape.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-shape-plan.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-style.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-subset.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-subset-serialize.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-unicode.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-uniscribe.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-version.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\harfbuzz\hb-wasm-api.h">
+      <Filter>src\ThirdParty-prebuilt\harfbuzz</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
