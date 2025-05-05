@@ -108,6 +108,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatQuad.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtOptional.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Font.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\BoundingRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Center.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Contains.hpp" />
@@ -648,6 +649,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ExtensionFilter\ExtensionFilter.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\CFont.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\FontData.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\IFont.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.hpp" />
@@ -1203,6 +1205,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatToString\SivFloatToString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FmtExtension\SivFmtExtension.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\CFont.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontData.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FormatUtility\SivFormatUtility.cpp" />
