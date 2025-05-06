@@ -34,14 +34,6 @@ namespace s3d
 
 		uint16 unitsPerEM = 0;
 
-		int16 ascender = 0;
-
-		int16 descender = 0;
-
-		int16 height = 0;
-
-		Rect bbox{ 0, 0, 0, 0 };
-
 		bool hasColor = false;
 
 		bool isBold = false;

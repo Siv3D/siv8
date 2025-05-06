@@ -10,17 +10,43 @@
 //-----------------------------------------------
 
 # include "CFont.hpp"
-# include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/MemoryMappedFileView.hpp>
-# include <Siv3D/EngineLog.hpp>
+# include <Siv3D/Error/InternalEngineError.hpp>
 
 namespace s3d
 {
 	namespace
 	{
 		[[nodiscard]]
-		static FontFaceProperties GetFontFaceProperties(const ::FT_Face face)
+		static String ToString(const ::FT_SfntName& name)
+		{
+			if ((name.platform_id == TT_PLATFORM_APPLE_UNICODE)
+				|| ((name.platform_id == TT_PLATFORM_MICROSOFT) && (name.encoding_id == 1)) // Unicode BMP
+				|| ((name.platform_id == TT_PLATFORM_MICROSOFT) && (name.encoding_id == 10)) // UTS
+				)
+			{
+				const size_t nameBytes = name.string_len;
+
+				if ((nameBytes % 2) == 0)
+				{
+					const char16_t* pName = static_cast<const char16_t*>(static_cast<const void*>(name.string));
+					const size_t nameLength = (nameBytes / sizeof(char16_t));
+					return Unicode::FromUTF16BE(std::u16string_view{ pName, nameLength });
+				}
+			}
+			else
+			{
+				const char* pName = static_cast<const char*>(static_cast<const void*>(name.string));
+				const size_t nameLength = name.string_len;
+				return Unicode::FromUTF8(std::string_view{ pName, nameLength });
+			}
+
+			return U"";
+		}
+
+		[[nodiscard]]
+		static FontFaceProperties GetFontFaceProperties(const ::FT_Face face, const FT_Fixed* namedStyleCoords)
 		{
 			if (not face)
 			{
@@ -57,21 +83,7 @@ namespace s3d
 
 					if (name.name_id == TT_NAME_ID_VERSION_STRING)
 					{
-						if ((name.platform_id == TT_PLATFORM_APPLE_UNICODE)
-							|| ((name.platform_id == TT_PLATFORM_MICROSOFT) && (name.encoding_id == 1)) // Unicode BMP
-							|| ((name.platform_id == TT_PLATFORM_MICROSOFT) && (name.encoding_id == 10)) // UTS
-							)
-						{
-							const size_t nameBytes = name.string_len;
-
-							if ((nameBytes % 2) == 0)
-							{
-								const char16_t* pName = static_cast<const char16_t*>(static_cast<const void*>(name.string));
-								const size_t nameLength = (nameBytes / sizeof(char16_t));
-								properties.version = Unicode::FromUTF16BE(std::u16string_view{ pName, nameLength });
-							}
-						}
-
+						properties.version = ToString(name);
 						break;
 					}
 				}
@@ -82,21 +94,18 @@ namespace s3d
 				properties.availableBitmapSizes << face->available_sizes[i].height;
 			}
 
-			properties.numGlyphs		= face->num_glyphs;
-			properties.unitsPerEM		= face->units_per_EM;
-			properties.ascender			= face->ascender;
-			properties.descender		= face->descender;
-			properties.height			= face->height;
-			properties.bbox				= Rect{ face->bbox.xMin, face->bbox.yMin, (face->bbox.xMax - face->bbox.xMin), (face->bbox.yMax - face->bbox.yMin) };
+			properties.numGlyphs = face->num_glyphs;
+			properties.unitsPerEM = face->units_per_EM;
+			properties.isBold = ((face->style_flags & FT_STYLE_FLAG_BOLD) != 0);
 
 			{
 				::FT_MM_Var* mmVar = nullptr;
 
 				if (::FT_Get_MM_Var(face, &mmVar) == 0)
 				{
-					for (::FT_UInt i = 0; i < mmVar->num_axis; ++i)
+					for (::FT_UInt axisIndex = 0; axisIndex < mmVar->num_axis; ++axisIndex)
 					{
-						const auto& mmVarAxis = mmVar->axis[i];
+						const ::FT_Var_Axis& mmVarAxis = mmVar->axis[axisIndex];
 
 						FontVariationAxis axis;
 
@@ -115,10 +124,17 @@ namespace s3d
 							tag[3] = static_cast<char>(mmVarAxis.tag >> 0);
 							axis.tag = String{ tag[0], tag[1], tag[2], tag[3] };
 						}
-						
-						axis.minValue = (mmVarAxis.minimum / 65536.0f);
-						axis.defaultValue = (mmVarAxis.def / 65536.0f);
-						axis.maxValue = (mmVarAxis.maximum / 65536.0f);
+
+						axis.minValue		= (mmVarAxis.minimum / 65536.0f);
+						axis.defaultValue	= (mmVarAxis.def / 65536.0f);
+						axis.maxValue		= (mmVarAxis.maximum / 65536.0f);
+						axis.value			= (namedStyleCoords ? (namedStyleCoords[axisIndex] / 65536.0f) : axis.defaultValue);
+
+						if ((axis.tag == U"wght")
+							&& (700 <= axis.value))
+						{
+							properties.isBold = true;
+						}
 
 						properties.variationAxes << axis;
 					}
@@ -126,7 +142,6 @@ namespace s3d
 			}
 
 			properties.hasColor			= FT_HAS_COLOR(face);
-			properties.isBold			= ((face->style_flags & FT_STYLE_FLAG_BOLD) != 0);
 			properties.isItalic			= ((face->style_flags & FT_STYLE_FLAG_ITALIC) != 0);
 			properties.isScalable		= FT_IS_SCALABLE(face);
 			properties.isVariable		= FT_HAS_MULTIPLE_MASTERS(face);
@@ -136,6 +151,32 @@ namespace s3d
 			properties.hasKerning		= FT_HAS_KERNING(face);
 
 			return properties;
+		}
+
+		[[nodiscard]]
+		static Array<FontFaceProperties> GetFontFaces(const ::FT_Library library, const ::FT_Face face)
+		{
+			Array<FontFaceProperties> faces;
+
+			::FT_MM_Var* mmVar = nullptr;
+
+			if (::FT_Get_MM_Var(face, &mmVar) == 0)
+			{
+				for (::FT_UInt styleIndex = 0; styleIndex < mmVar->num_namedstyles; ++styleIndex)
+				{
+					::FT_Set_Named_Instance(face, (1 + styleIndex));
+					
+					faces << GetFontFaceProperties(face, mmVar->namedstyle[styleIndex].coords);
+				}
+
+				::FT_Done_MM_Var(library, mmVar);
+			}
+			else
+			{
+				faces << GetFontFaceProperties(face, nullptr);
+			}
+
+			return faces;
 		}
 	}
 
@@ -211,11 +252,12 @@ namespace s3d
 			return{};
 		}
 
-		Array<FontFaceProperties> faces;
-		faces.reserve(face0->num_faces);
-		faces << GetFontFaceProperties(face0);
+		const FT_Long numFaces = face0->num_faces;
 
-		for (FT_Long index = 1; index < face0->num_faces; ++index)
+		Array<FontFaceProperties> faces;
+		faces.append(GetFontFaces(m_freeType, face0));
+
+		for (FT_Long index = 1; index < numFaces; ++index)
 		{
 			FT_Face face = nullptr;
 
@@ -225,7 +267,7 @@ namespace s3d
 				continue;
 			}
 
-			faces << GetFontFaceProperties(face);
+			faces.append(GetFontFaces(m_freeType, face));
 
 			::FT_Done_Face(face);
 		}
