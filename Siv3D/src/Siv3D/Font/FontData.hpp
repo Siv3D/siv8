@@ -10,25 +10,10 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/StringView.hpp>
 # include <Siv3D/FontMethod.hpp>
-# include <Siv3D/FontStyle.hpp>
 # include <Siv3D/MemoryMappedFileView.hpp>
 # include "IFont.hpp"
-
-# if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS)
-#	include <ThirdParty-prebuilt/harfbuzz/hb.h>
-#	include <ThirdParty-prebuilt/harfbuzz/hb-ft.h>
-#	include <ThirdParty-prebuilt/freetype/freetype/ftsnames.h>
-#	include <ThirdParty-prebuilt/freetype/freetype/ttnameid.h>
-#	include <ThirdParty-prebuilt/freetype/freetype/ftmm.h>
-# else
-#	include <harfbuzz/hb.h>
-#	include <harfbuzz/hb-ft.h>
-#	include <freetype/freetype/ftsnames.h>
-#	include <freetype/freetype/ttnameid.h>
-#	include <freetype/freetype/ftmm.h>
-# endif
+# include "FontFace.hpp"
 
 namespace s3d
 {
@@ -50,9 +35,14 @@ namespace s3d
 		[[nodiscard]]
 		String toString() const;
 
+		[[nodiscard]]
+		const FontFaceProperties& getProperties() const noexcept;
+
 	private:
 
 		MemoryMappedFileView m_mappedFileView;
+
+		std::unique_ptr<FontFace> m_face;
 
 		uint16 m_faceIndex = 0;
 

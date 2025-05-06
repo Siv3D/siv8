@@ -21,6 +21,8 @@ namespace s3d
 
 	FontData::FontData(Null)
 	{
+		m_face = std::make_unique<FontFace>();
+
 		m_initialized = true;
 	}
 
@@ -45,10 +47,12 @@ namespace s3d
 			return;
 		}
 
-		::FT_Done_Face(baseFace);
+		m_face = std::make_unique<FontFace>();
 
-
-
+		if (not m_face->init(library, baseFace, styleName, baseSize, style))
+		{
+			return;
+		}
 
 		m_faceIndex		= static_cast<uint16>(faceIndex);
 		m_fontMethod	= fontMethod;
@@ -77,4 +81,16 @@ namespace s3d
 	{
 		return U"()";
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getProperties
+	//
+	////////////////////////////////////////////////////////////////
+
+	const FontFaceProperties& FontData::getProperties() const noexcept
+	{
+		return m_face->getProperties();
+	}
+
 }
