@@ -1621,6 +1621,8 @@
 
 # include <Siv3D/FontStyle.hpp>
 # include <Siv3D/FontMethod.hpp>
+# include <Siv3D/FontFileInfo.hpp>
+# include <Siv3D/FontFaceProperties.hpp>
 # include <Siv3D/Font.hpp>
 
 
