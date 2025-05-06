@@ -42,7 +42,7 @@ namespace s3d
 				return Unicode::FromUTF8(std::string_view{ pName, nameLength });
 			}
 
-			return U"";
+			return{};
 		}
 
 		[[nodiscard]]
@@ -50,7 +50,7 @@ namespace s3d
 		{
 			if (not face)
 			{
-				return {};
+				return{};
 			}
 
 			FontFaceProperties properties;
@@ -94,9 +94,9 @@ namespace s3d
 				properties.availableBitmapSizes << face->available_sizes[i].height;
 			}
 
-			properties.numGlyphs = face->num_glyphs;
-			properties.unitsPerEM = face->units_per_EM;
-			properties.isBold = ((face->style_flags & FT_STYLE_FLAG_BOLD) != 0);
+			properties.numGlyphs	= face->num_glyphs;
+			properties.unitsPerEM	= face->units_per_EM;
+			properties.isBold		= ((face->style_flags & FT_STYLE_FLAG_BOLD) != 0);
 
 			{
 				::FT_MM_Var* mmVar = nullptr;
@@ -245,35 +245,77 @@ namespace s3d
 
 		const MappedMemoryView view = file.mapAll();
 
-		FT_Face face0 = nullptr;
-
-		if (const FT_Error error = ::FT_New_Memory_Face(m_freeType, static_cast<const FT_Byte*>(view.data), static_cast<FT_Long>(view.size), 0, &face0))
+		if (not view)
 		{
 			return{};
 		}
 
-		const FT_Long numFaces = face0->num_faces;
-
 		Array<FontFaceProperties> faces;
-		faces.append(GetFontFaces(m_freeType, face0));
-
-		for (FT_Long index = 1; index < numFaces; ++index)
 		{
-			FT_Face face = nullptr;
+			FT_Face face0 = nullptr;
 
-			if (const FT_Error error = ::FT_New_Memory_Face(m_freeType, static_cast<const FT_Byte*>(view.data), static_cast<FT_Long>(view.size), index, &face))
+			if (const FT_Error error = ::FT_New_Memory_Face(m_freeType, static_cast<const FT_Byte*>(view.data), static_cast<FT_Long>(view.size), 0, &face0))
 			{
-				faces.emplace_back();
-				continue;
+				return{};
 			}
 
-			faces.append(GetFontFaces(m_freeType, face));
+			const FT_Long numFaces = face0->num_faces;
 
-			::FT_Done_Face(face);
+			faces.append(GetFontFaces(m_freeType, face0));
+
+			for (FT_Long index = 1; index < numFaces; ++index)
+			{
+				FT_Face face = nullptr;
+
+				if (const FT_Error error = ::FT_New_Memory_Face(m_freeType, static_cast<const FT_Byte*>(view.data), static_cast<FT_Long>(view.size), index, &face))
+				{
+					faces.emplace_back();
+					continue;
+				}
+
+				faces.append(GetFontFaces(m_freeType, face));
+
+				::FT_Done_Face(face);
+			}
+
+			::FT_Done_Face(face0);
 		}
 
-		::FT_Done_Face(face0);
-
 		return faces;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	create
+	//
+	////////////////////////////////////////////////////////////////
+
+	Font::IDType CFont::create(const FilePathView path, const size_t faceIndex, const StringView styleName, const FontMethod fontMethod, const int32 baseSize, const FontStyle style)
+	{
+		if (not path)
+		{
+			return Font::IDType::Null();
+		}
+
+		std::unique_ptr<FontData> font = std::make_unique<FontData>(m_freeType, path, faceIndex, styleName, fontMethod, baseSize, style);
+
+		if (not font->isInitialized())
+		{
+			return Font::IDType::Null();
+		}
+
+		const String info = font->toString();
+		return m_fonts.add(std::move(font), info);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	release
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CFont::release(const Font::IDType handleID)
+	{
+		m_fonts.erase(handleID);
 	}
 }

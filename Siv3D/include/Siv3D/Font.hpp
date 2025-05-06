@@ -12,6 +12,8 @@
 # pragma once
 # include "Common.hpp"
 # include "AssetHandle.hpp"
+# include "FontMethod.hpp"
+# include "FontStyle.hpp"
 
 namespace s3d
 {
@@ -35,6 +37,8 @@ namespace s3d
 		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		Font();
+
+		Font(int32 fontSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Default);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -62,9 +66,6 @@ namespace s3d
 		{
 			lhs.swap(rhs);
 		}
-
-	private:
-
 	};
 }
 

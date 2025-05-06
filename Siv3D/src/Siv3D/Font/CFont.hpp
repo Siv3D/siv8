@@ -29,7 +29,12 @@ namespace s3d
 
 		[[nodiscard]]
 		Array<FontFaceProperties> getFontFaces(FilePathView path) const override;
+		
+		[[nodiscard]]
+		Font::IDType create(FilePathView path, size_t faceIndex, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style) override;
 
+		void release(Font::IDType handleID) override;
+	
 	private:
 
 		FT_Library m_freeType = nullptr;

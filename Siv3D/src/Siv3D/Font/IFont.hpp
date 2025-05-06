@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Array.hpp>
+# include <Siv3D/Font.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
 
 namespace s3d
@@ -29,5 +30,10 @@ namespace s3d
 
 		[[nodiscard]]
 		virtual Array<FontFaceProperties> getFontFaces(FilePathView path) const = 0;
+
+		[[nodiscard]]
+		virtual Font::IDType create(FilePathView path, size_t faceIndex, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style) = 0;
+
+		virtual void release(Font::IDType handleID) = 0;
 	};
 }
