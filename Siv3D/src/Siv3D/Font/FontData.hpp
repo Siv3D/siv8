@@ -10,7 +10,18 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/StringView.hpp>
+# include <Siv3D/FontMethod.hpp>
+# include <Siv3D/FontStyle.hpp>
 # include "IFont.hpp"
+
+# if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS)
+#	include <ThirdParty-prebuilt/harfbuzz/hb.h>
+#	include <ThirdParty-prebuilt/harfbuzz/hb-ft.h>
+# else
+#	include <harfbuzz/hb.h>
+#	include <harfbuzz/hb-ft.h>
+# endif
 
 namespace s3d
 {
@@ -23,6 +34,8 @@ namespace s3d
 		FontData() = default;
 
 		explicit FontData(Null);
+
+		FontData(FT_Library library, FilePathView path, size_t faceIndex, FontMethod fontMethod, int32 fontSize, FontStyle style);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;

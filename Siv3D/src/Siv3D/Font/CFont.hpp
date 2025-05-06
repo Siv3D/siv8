@@ -15,14 +15,6 @@
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
 # include "FontData.hpp"
 
-# if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS)
-#	include <ThirdParty-prebuilt/harfbuzz/hb.h>
-#	include <ThirdParty-prebuilt/harfbuzz/hb-ft.h>
-# else
-#	include <harfbuzz/hb.h>
-#	include <harfbuzz/hb-ft.h>
-# endif
-
 namespace s3d
 {
 	class CFont final : public ISiv3DFont

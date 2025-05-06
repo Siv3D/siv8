@@ -1078,6 +1078,12 @@
     <Filter Include="src\Siv3D\Font">
       <UniqueIdentifier>{f2cbb28a-cce5-4b01-a8e0-90bea2b021a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\FontMethod">
+      <UniqueIdentifier>{05b5fcea-931d-46b1-8440-550acca7f98d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\FontStyle">
+      <UniqueIdentifier>{129d9867-29d1-4bae-ae20-94b0eb6e388c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4242,6 +4248,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Font.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FontMethod.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\FontStyle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6745,6 +6757,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontData.cpp">
       <Filter>src\Siv3D\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FontMethod\SivFontMethod.cpp">
+      <Filter>src\Siv3D\FontMethod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FontStyle\SivFontStyle.cpp">
+      <Filter>src\Siv3D\FontStyle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
