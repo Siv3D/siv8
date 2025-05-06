@@ -13,6 +13,7 @@
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/FontStyle.hpp>
+# include <Siv3D/MemoryMappedFileView.hpp>
 # include "IFont.hpp"
 
 # if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS)
@@ -50,6 +51,12 @@ namespace s3d
 		String toString() const;
 
 	private:
+
+		MemoryMappedFileView m_mappedFileView;
+
+		uint16 m_faceIndex = 0;
+
+		FontMethod m_fontMethod = FontMethod::Bitmap;
 
 		bool m_initialized = false;
 	};

@@ -38,7 +38,7 @@ namespace s3d
 		[[nodiscard]]
 		Font();
 
-		Font(int32 fontSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Default);
+		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Default);
 
 		////////////////////////////////////////////////////////////////
 		//

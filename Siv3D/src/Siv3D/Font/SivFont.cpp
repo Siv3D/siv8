@@ -11,6 +11,7 @@
 
 # include <Siv3D/Font.hpp>
 # include <Siv3D/Font/IFont.hpp>
+# include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -52,6 +53,12 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Font::Font() {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const size_t faceIndex, const StringView styleName, const FontStyle style)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(path, faceIndex, styleName, fontMethod, baseSize, style))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
