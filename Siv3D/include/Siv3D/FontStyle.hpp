@@ -20,8 +20,8 @@ namespace s3d
 	/// @brief フォントのスタイル
 	enum class FontStyle : uint8
 	{
-		/// @brief デフォルト
-		Default				= 0x0,
+		/// @brief 通常
+		Normal				= 0x0,
 
 		/// @brief ボールド
 		Bold				= 0x01,

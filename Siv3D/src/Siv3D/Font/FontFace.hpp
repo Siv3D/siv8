@@ -46,6 +46,14 @@ namespace s3d
 
 		int32 m_baseSize = 16;
 
-		FontStyle m_style = FontStyle::Default;
+		FontStyle m_style = FontStyle::Normal;
+
+		int16 m_tabSize = 8;
+
+		float m_ascender = 0.0f;
+
+		float m_descender = 0.0f;
+
+		float m_spaceWidth = 0.0f;
 	};
 }

@@ -11,9 +11,33 @@
 
 # include "FontFace.hpp"
 # include "FontUtility.hpp"
+# include <Siv3D/ScopeExit.hpp>
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static ::FT_Int SelectBestSize(const ::FT_Face face, const int32 size)
+		{
+			::FT_Int bestMatch = 0;
+			int32 bestDiff = std::numeric_limits<int32>::max();
+			
+			for (::FT_Int i = 0; i < face->num_fixed_sizes; ++i)
+			{
+				const int32 diff = std::abs(face->available_sizes[i].height - size);
+			
+				if (diff < bestDiff)
+				{
+					bestDiff = diff;
+					bestMatch = i;
+				}
+			}
+			
+			return bestMatch;
+		}
+	}
+
 	FontFace::~FontFace()
 	{
 		if (m_face != nullptr)
@@ -23,58 +47,93 @@ namespace s3d
 		}
 	}
 
-	bool FontFace::init(const ::FT_Library library, ::FT_Face face, const StringView styleName, const int32 baseSize, const FontStyle style)
+	bool FontFace::init(const ::FT_Library library, ::FT_Face face, const StringView styleName, int32 baseSize, const FontStyle style)
 	{
-		::FT_MM_Var* mmVar = nullptr;
-
-		if (::FT_Get_MM_Var(face, &mmVar) == 0) // Variable font
+		if (baseSize <= 0)
 		{
-			if (styleName)
+			return false;
+		}
+
+		{
+			::FT_MM_Var* mmVar = nullptr;
+
+			const ScopeExit cleanup([&]()
+			{
+				if (mmVar)
+				{
+					::FT_Done_MM_Var(library, mmVar);
+					mmVar = nullptr;
+				}
+			});
+
+			if ((::FT_Get_MM_Var(face, &mmVar) == 0)
+				&& (1 <= mmVar->num_namedstyles)) // Variable font
 			{
 				bool found = false;
 
-				for (::FT_UInt styleIndex = 0; styleIndex < mmVar->num_namedstyles; ++styleIndex)
+				if (styleName)
 				{
-					::FT_Set_Named_Instance(face, (1 + styleIndex));
-
-					const FontFaceProperties properties = GetFontFaceProperties(face, mmVar->namedstyle[styleIndex].coords);
-
-					if (properties.styleName == styleName)
+					for (::FT_UInt styleIndex = 0; styleIndex < mmVar->num_namedstyles; ++styleIndex)
 					{
-						m_properties = properties;
-						found = true;
-						break;
+						if (::FT_Set_Named_Instance(face, (1 + styleIndex)))
+						{
+							continue;
+						}
+
+						const FontFaceProperties properties = GetFontFaceProperties(face, mmVar->namedstyle[styleIndex].coords);
+
+						if (properties.styleName == styleName)
+						{
+							m_properties = properties;
+							found = true;
+							break;
+						}
 					}
 				}
-
+				
 				if (not found)
 				{
+					// 1-origin
 					::FT_UInt defaultStyleIndex = 0;
-					::FT_Get_Default_Named_Instance(face, &defaultStyleIndex);
 
-					::FT_Set_Named_Instance(face, defaultStyleIndex);
-					m_properties = GetFontFaceProperties(face, nullptr);
+					if (::FT_Get_Default_Named_Instance(face, &defaultStyleIndex))
+					{
+						return false;
+					}
+
+					if (::FT_Set_Named_Instance(face, defaultStyleIndex))
+					{
+						return false;
+					}
+
+					assert(0 < defaultStyleIndex);
+					m_properties = GetFontFaceProperties(face, mmVar->namedstyle[defaultStyleIndex - 1].coords);
 				}
 			}
 			else
 			{
-				::FT_UInt defaultStyleIndex = 0;
-				::FT_Get_Default_Named_Instance(face, &defaultStyleIndex);
-
-				::FT_Set_Named_Instance(face, defaultStyleIndex);
 				m_properties = GetFontFaceProperties(face, nullptr);
 			}
-
-			::FT_Done_MM_Var(library, mmVar);
 		}
-		else
+
+		// スケーリングできないフォント
+		if (::FT_Set_Pixel_Sizes(face, 0, baseSize))
 		{
-			m_properties = GetFontFaceProperties(face, nullptr);
+			const ::FT_Int bestSizeIndex = SelectBestSize(face, baseSize);
+
+			if (::FT_Select_Size(face, bestSizeIndex) != 0)
+			{
+				return false;
+			}
+
+			baseSize = face->available_sizes[bestSizeIndex].height;
 		}
 
 		m_face		= face;
 		m_baseSize	= baseSize;
 		m_style		= style;
+		m_ascender	= (m_face->size->metrics.ascender / 64.0f);
+		m_descender	= -(m_face->size->metrics.descender / 64.0f);
 
 		return true;
 	}

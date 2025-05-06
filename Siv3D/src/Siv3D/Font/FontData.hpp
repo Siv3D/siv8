@@ -46,7 +46,7 @@ namespace s3d
 
 		uint16 m_faceIndex = 0;
 
-		FontMethod m_fontMethod = FontMethod::Bitmap;
+		FontMethod m_renderingMethod = FontMethod::Bitmap;
 
 		bool m_initialized = false;
 	};

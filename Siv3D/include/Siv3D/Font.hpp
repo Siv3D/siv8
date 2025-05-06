@@ -40,7 +40,7 @@ namespace s3d
 		[[nodiscard]]
 		Font();
 
-		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Default);
+		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -51,6 +51,38 @@ namespace s3d
 		/// @brief デストラクタ
 		virtual ~Font();
 		
+		////////////////////////////////////////////////////////////////
+		//
+		//	baseSize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief フォトの基本サイズを返します。
+		/// @return フォントの基本サイズ
+		[[nodiscard]]
+		int32 baseSize() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	method
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief フォントのレンダリング方式を返します。
+		/// @return フォントのレンダリング方式
+		[[nodiscard]]
+		FontMethod method() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	style
+		//
+		////////////////////////////////////////////////////////////////
+		
+		/// @brief フォントのスタイルを返します。
+		/// @return フォントのスタイル
+		[[nodiscard]]
+		FontStyle style() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -60,8 +92,6 @@ namespace s3d
 
 		[[nodiscard]]
 		const FontFaceProperties& properties() const;
-
-
 
 		////////////////////////////////////////////////////////////////
 		//

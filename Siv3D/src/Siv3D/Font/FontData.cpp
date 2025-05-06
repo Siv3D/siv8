@@ -54,8 +54,16 @@ namespace s3d
 			return;
 		}
 
-		m_faceIndex		= static_cast<uint16>(faceIndex);
-		m_fontMethod	= fontMethod;
+		m_faceIndex	= static_cast<uint16>(faceIndex);
+		
+		if (not m_face->getProperties().isScalable)
+		{
+			m_renderingMethod = FontMethod::Bitmap;
+		}
+		else
+		{
+			m_renderingMethod = fontMethod;
+		}
 
 		m_initialized	= true;
 	}
@@ -79,7 +87,11 @@ namespace s3d
 
 	String FontData::toString() const
 	{
-		return U"()";
+		const auto& properties = m_face->getProperties();
+		const int32 baseSize = m_face->getBaseSize();
+		const FontStyle style = m_face->getStyle();
+
+		return U"({0}, {1}, {2}, {3})"_fmt(properties.postscriptName, m_renderingMethod, baseSize, style);
 	}
 
 	////////////////////////////////////////////////////////////////

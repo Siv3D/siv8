@@ -20,7 +20,7 @@ namespace s3d
 	{
 		static constexpr std::array FontStyleStrings =
 		{
-			U"Default"_sv,
+			U"Normal"_sv,
 			U"Bold"_sv,
 			U"Italic"_sv,
 			U"BoldItalic"_sv,
