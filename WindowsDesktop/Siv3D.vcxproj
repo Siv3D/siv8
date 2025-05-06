@@ -109,8 +109,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtOptional.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Font.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FontVariationAxis.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontFaceProperties.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\FontFileInfo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FontFile.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontMethod.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\BoundingRect.hpp" />
@@ -1208,6 +1209,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\SivFloatFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatToString\SivFloatToString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FmtExtension\SivFmtExtension.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\FontFile\SivFontFile.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FontMethod\SivFontMethod.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FontStyle\SivFontStyle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\CFont.cpp" />

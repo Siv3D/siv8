@@ -28,7 +28,7 @@ namespace s3d
 		void init() override;
 
 		[[nodiscard]]
-		FontFileInfo getFontFileInfo(FilePathView path) const override;
+		Array<FontFaceProperties> getFontFaces(FilePathView path) const override;
 
 	private:
 

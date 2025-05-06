@@ -20,7 +20,7 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static FontFaceProperties GetFontFaceProperties(const FT_Face face)
+		static FontFaceProperties GetFontFaceProperties(const ::FT_Face face)
 		{
 			if (not face)
 			{
@@ -39,9 +39,42 @@ namespace s3d
 				properties.styleName = Unicode::FromUTF8(face->style_name);
 			}
 
-			if (const char* postscriptName = FT_Get_Postscript_Name(face))
+			if (const char* postscriptName = ::FT_Get_Postscript_Name(face))
 			{
 				properties.postscriptName = Unicode::FromUTF8(postscriptName);
+			}
+
+			if (const ::FT_UInt nameCount = ::FT_Get_Sfnt_Name_Count(face))
+			{
+				for (::FT_UInt i = 0; i < nameCount; ++i)
+				{
+					::FT_SfntName name;
+
+					if (const ::FT_Error error = ::FT_Get_Sfnt_Name(face, i, &name))
+					{
+						continue;
+					}
+
+					if (name.name_id == TT_NAME_ID_VERSION_STRING)
+					{
+						if ((name.platform_id == TT_PLATFORM_APPLE_UNICODE)
+							|| ((name.platform_id == TT_PLATFORM_MICROSOFT) && (name.encoding_id == 1)) // Unicode BMP
+							|| ((name.platform_id == TT_PLATFORM_MICROSOFT) && (name.encoding_id == 10)) // UTS
+							)
+						{
+							const size_t nameBytes = name.string_len;
+
+							if ((nameBytes % 2) == 0)
+							{
+								const char16_t* pName = static_cast<const char16_t*>(static_cast<const void*>(name.string));
+								const size_t nameLength = (nameBytes / sizeof(char16_t));
+								properties.version = Unicode::FromUTF16BE(std::u16string_view{ pName, nameLength });
+							}
+						}
+
+						break;
+					}
+				}
 			}
 
 			for (int32 i = 0; i < face->num_fixed_sizes; ++i)
@@ -56,7 +89,45 @@ namespace s3d
 			properties.height			= face->height;
 			properties.bbox				= Rect{ face->bbox.xMin, face->bbox.yMin, (face->bbox.xMax - face->bbox.xMin), (face->bbox.yMax - face->bbox.yMin) };
 
+			{
+				::FT_MM_Var* mmVar = nullptr;
+
+				if (::FT_Get_MM_Var(face, &mmVar) == 0)
+				{
+					for (::FT_UInt i = 0; i < mmVar->num_axis; ++i)
+					{
+						const auto& mmVarAxis = mmVar->axis[i];
+
+						FontVariationAxis axis;
+
+						// name
+						if (mmVarAxis.name)
+						{
+							axis.name = Unicode::FromUTF8(mmVarAxis.name);
+						}
+
+						// tag
+						{
+							char32 tag[4]{};
+							tag[0] = static_cast<char>(mmVarAxis.tag >> 24);
+							tag[1] = static_cast<char>(mmVarAxis.tag >> 16);
+							tag[2] = static_cast<char>(mmVarAxis.tag >> 8);
+							tag[3] = static_cast<char>(mmVarAxis.tag >> 0);
+							axis.tag = String{ tag[0], tag[1], tag[2], tag[3] };
+						}
+						
+						axis.minValue = (mmVarAxis.minimum / 65536.0f);
+						axis.defaultValue = (mmVarAxis.def / 65536.0f);
+						axis.maxValue = (mmVarAxis.maximum / 65536.0f);
+
+						properties.variationAxes << axis;
+					}
+				}
+			}
+
 			properties.hasColor			= FT_HAS_COLOR(face);
+			properties.isBold			= ((face->style_flags & FT_STYLE_FLAG_BOLD) != 0);
+			properties.isItalic			= ((face->style_flags & FT_STYLE_FLAG_ITALIC) != 0);
 			properties.isScalable		= FT_IS_SCALABLE(face);
 			properties.isVariable		= FT_HAS_MULTIPLE_MASTERS(face);
 			properties.isFixedPitch		= FT_IS_FIXED_WIDTH(face);
@@ -127,7 +198,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	FontFileInfo CFont::getFontFileInfo(const FilePathView path) const
+	Array<FontFaceProperties> CFont::getFontFaces(const FilePathView path) const
 	{
 		MemoryMappedFileView file{ path };
 
@@ -140,9 +211,9 @@ namespace s3d
 			return{};
 		}
 
-		FontFileInfo info;
-		info.fontFaces.reserve(face0->num_faces);
-		info.fontFaces << GetFontFaceProperties(face0);
+		Array<FontFaceProperties> faces;
+		faces.reserve(face0->num_faces);
+		faces << GetFontFaceProperties(face0);
 
 		for (FT_Long index = 1; index < face0->num_faces; ++index)
 		{
@@ -150,17 +221,17 @@ namespace s3d
 
 			if (const FT_Error error = ::FT_New_Memory_Face(m_freeType, static_cast<const FT_Byte*>(view.data), static_cast<FT_Long>(view.size), index, &face))
 			{
-				info.fontFaces.emplace_back();
+				faces.emplace_back();
 				continue;
 			}
 
-			info.fontFaces << GetFontFaceProperties(face);
+			faces << GetFontFaceProperties(face);
 
 			::FT_Done_Face(face);
 		}
 
 		::FT_Done_Face(face0);
 
-		return info;
+		return faces;
 	}
 }

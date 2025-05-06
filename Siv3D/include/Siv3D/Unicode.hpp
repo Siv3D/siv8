@@ -21,6 +21,7 @@
 //	String FromAscii(std::string_view asciiText);
 //	String FromUTF8(std::string_view s);
 //	String FromUTF16(std::u16string_view s);
+//	String FromUTF16BE(std::u16string_view s);
 //	String FromWstring(std::wstring_view s);
 //	String FromUTF32(std::u32string_view s);
 //	std::string ToAscii(StringView asciiText);
@@ -82,11 +83,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief UTF-16 文字列を String に変換します。 | Converts a UTF-16 string to String.
-		/// @param s 変換する UTF-16 文字列 | The UTF-16 string to convert
+		/// @brief UTF-16LE 文字列を String に変換します。 | Converts a UTF-16LE string to String.
+		/// @param s 変換する UTF-16LE 文字列 | The UTF-16LE string to convert
 		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
 		[[nodiscard]]
 		String FromUTF16(std::u16string_view s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromUTF16BE
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief UTF-16BE 文字列を String に変換します。 | Converts a UTF-16BE string to String.
+		/// @param s 変換する UTF-16BE 文字列 | The UTF-16BE string to convert
+		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
+		[[nodiscard]]
+		String FromUTF16BE(std::u16string_view s);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -262,11 +275,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief UTF-16 文字列を検証します。 | Validates a UTF-16 string.
+		/// @brief UTF-16LE 文字列を検証します。 | Validates a UTF-16LE string.
 		/// @param s 文字列 | A string
 		/// @return 検証結果。エラー時はエラーの位置 | The validation result, or the error position on failure
 		[[nodiscard]]
 		Result<void, size_t> ValidateUTF16(std::u16string_view s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ValidateUTF16BE
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief UTF-16BE 文字列を検証します。 | Validates a UTF-16BE string.
+		/// @param s 文字列 | A string
+		/// @return 検証結果。エラー時はエラーの位置 | The validation result, or the error position on failure
+		[[nodiscard]]
+		Result<void, size_t> ValidateUTF16BE(std::u16string_view s);
 
 		////////////////////////////////////////////////////////////////
 		//

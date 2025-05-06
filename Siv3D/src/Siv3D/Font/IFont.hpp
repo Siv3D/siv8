@@ -11,7 +11,8 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
-# include <Siv3D/FontFileInfo.hpp>
+# include <Siv3D/Array.hpp>
+# include <Siv3D/FontFaceProperties.hpp>
 
 namespace s3d
 {
@@ -27,6 +28,6 @@ namespace s3d
 		virtual void init() = 0;
 
 		[[nodiscard]]
-		virtual FontFileInfo getFontFileInfo(FilePathView path) const = 0;
+		virtual Array<FontFaceProperties> getFontFaces(FilePathView path) const = 0;
 	};
 }

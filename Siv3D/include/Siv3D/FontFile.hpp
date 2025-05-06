@@ -15,8 +15,9 @@
 
 namespace s3d
 {
-	struct FontFileInfo
+	namespace FontFile
 	{
-		Array<FontFaceProperties> fontFaces;
-	};
+		[[nodiscard]]
+		Array<FontFaceProperties> GetFontFaces(FilePathView path);
+	}
 }

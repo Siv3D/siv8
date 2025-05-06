@@ -12,19 +12,24 @@
 # pragma once
 # include "String.hpp"
 # include "2DShapes.hpp"
+# include "FontVariationAxis.hpp"
 
 namespace s3d
 {
 	struct FontFaceProperties
 	{
 		String familyName;
-		
+
 		String styleName;
 
 		String postscriptName;
 
+		String version;
+
 		Array<int32> availableBitmapSizes;
-		
+
+		Array<FontVariationAxis> variationAxes;
+
 		uint32 numGlyphs = 0;
 
 		uint16 unitsPerEM = 0;
@@ -38,6 +43,10 @@ namespace s3d
 		Rect bbox{ 0, 0, 0, 0 };
 
 		bool hasColor = false;
+
+		bool isBold = false;
+
+		bool isItalic = false;
 
 		bool isScalable = false;
 
