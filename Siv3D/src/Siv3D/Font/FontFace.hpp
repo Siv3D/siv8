@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/PredefinedYesNo.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FontStyle.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
@@ -17,6 +18,13 @@
 
 namespace s3d
 {
+	struct HarfBuzzGlyphInfo
+	{
+		const hb_glyph_info_t* info = nullptr;
+
+		size_t count = 0;
+	};
+
 	class FontFace
 	{
 	public:
@@ -37,6 +45,9 @@ namespace s3d
 		
 		[[nodiscard]]
 		FontStyle getStyle() const noexcept;
+
+		[[nodiscard]]
+		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, Ligature ligature) const;
 
 	private:
 

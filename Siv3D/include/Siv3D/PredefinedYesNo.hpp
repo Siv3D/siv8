@@ -64,4 +64,7 @@ namespace s3d
 
 	/// @brief ミップマップを生成するかどうかを指定 | Whether to generate mipmaps
 	using GenerateMipmaps = YesNo<struct GenerateMipmaps_tag>;
+
+	/// @brief リガチャ（合字）を使うかどうかを指定 | Whether to use ligatures
+	using Ligature = YesNo<struct Ligature_tag>;
 }

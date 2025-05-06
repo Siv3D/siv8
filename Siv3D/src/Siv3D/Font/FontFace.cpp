@@ -11,12 +11,21 @@
 
 # include "FontFace.hpp"
 # include "FontUtility.hpp"
+# include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/ScopeExit.hpp>
 
 namespace s3d
 {
 	namespace
 	{
+		static constexpr std::array<hb_feature_t, 5> NoLigatureFeatures{ {
+			{ HB_TAG('l','i','g','a'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 標準合字
+			{ HB_TAG('r','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 必須合字
+			{ HB_TAG('d','i','g','a'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 分音記号合字
+			{ HB_TAG('c','a','l','t'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト依存代替字形
+			{ HB_TAG('c','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト合字
+		} };
+
 		[[nodiscard]]
 		static ::FT_Int SelectBestSize(const ::FT_Face face, const int32 size)
 		{
@@ -153,6 +162,23 @@ namespace s3d
 			}
 		}
 
+		// 半角空白の幅を取得
+		{
+			const HarfBuzzGlyphInfo glyphInfo = getHarfBuzzGlyphInfo(U" ", Ligature::Yes);
+
+			if (glyphInfo.count == 0)
+			{
+				::FT_Done_Face(face);
+				return false;
+			}
+
+			{
+				const GlyphIndex spaceGlyphIndex = glyphInfo.info[0].codepoint;
+
+				//m_spaceWidth = GetGlyphInfo(m_face, spaceGlyphIndex, m_property, method, 0).xAdvance;
+			}
+		}
+
 		m_face		= face;
 		m_baseSize	= baseSize;
 		m_style		= style;
@@ -175,6 +201,36 @@ namespace s3d
 	FontStyle FontFace::getStyle() const noexcept
 	{
 		return m_style;
+	}
+
+	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const Ligature ligature) const
+	{
+		const auto& hbObjects = *m_hbObjects;
+
+		::hb_buffer_clear_contents(hbObjects.hbBuffer);
+		::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_LTR);
+		::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_COMMON);
+
+		const int32 textLength = static_cast<int32>(s.length());
+		::hb_buffer_add_utf32(hbObjects.hbBuffer, reinterpret_cast<const uint32_t*>(s.data()), textLength, 0, textLength);
+		::hb_buffer_guess_segment_properties(hbObjects.hbBuffer);
+
+		if (ligature) // リガチャあり
+		{
+			::hb_shape(hbObjects.hbFont, hbObjects.hbBuffer, nullptr, 0);
+		}
+		else // リガチャ無し
+		{
+			::hb_shape(hbObjects.hbFont, hbObjects.hbBuffer, NoLigatureFeatures.data(), static_cast<uint32_t>(NoLigatureFeatures.size()));
+		}
+
+		uint32 glyphCount = 0;
+		const hb_glyph_info_t* glyphInfo = ::hb_buffer_get_glyph_infos(hbObjects.hbBuffer, &glyphCount);
+
+		return{
+			.info = glyphInfo,
+			.count = glyphCount
+		};
 	}
 
 	FontFace::HarfBuzzObjects::~HarfBuzzObjects()
