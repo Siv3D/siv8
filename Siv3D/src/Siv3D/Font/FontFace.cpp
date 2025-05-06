@@ -40,6 +40,8 @@ namespace s3d
 
 	FontFace::~FontFace()
 	{
+		m_hbObjects.reset();
+
 		if (m_face != nullptr)
 		{
 			::FT_Done_Face(m_face);
@@ -49,8 +51,11 @@ namespace s3d
 
 	bool FontFace::init(const ::FT_Library library, ::FT_Face face, const StringView styleName, int32 baseSize, const FontStyle style)
 	{
+		assert(m_face == nullptr);
+
 		if (baseSize <= 0)
 		{
+			::FT_Done_Face(face);
 			return false;
 		}
 
@@ -98,11 +103,13 @@ namespace s3d
 
 					if (::FT_Get_Default_Named_Instance(face, &defaultStyleIndex))
 					{
+						::FT_Done_Face(face);
 						return false;
 					}
 
 					if (::FT_Set_Named_Instance(face, defaultStyleIndex))
 					{
+						::FT_Done_Face(face);
 						return false;
 					}
 
@@ -119,14 +126,31 @@ namespace s3d
 		// スケーリングできないフォント
 		if (::FT_Set_Pixel_Sizes(face, 0, baseSize))
 		{
+			if (face->num_fixed_sizes == 0)
+			{
+				::FT_Done_Face(face);
+				return false;
+			}
+
 			const ::FT_Int bestSizeIndex = SelectBestSize(face, baseSize);
 
 			if (::FT_Select_Size(face, bestSizeIndex) != 0)
 			{
+				::FT_Done_Face(face);
 				return false;
 			}
 
 			baseSize = face->available_sizes[bestSizeIndex].height;
+		}
+
+		{
+			m_hbObjects = std::make_unique<HarfBuzzObjects>();
+
+			if (not m_hbObjects->init(face))
+			{
+				::FT_Done_Face(face);
+				return false;
+			}
 		}
 
 		m_face		= face;
@@ -151,5 +175,44 @@ namespace s3d
 	FontStyle FontFace::getStyle() const noexcept
 	{
 		return m_style;
+	}
+
+	FontFace::HarfBuzzObjects::~HarfBuzzObjects()
+	{
+		if (hbBuffer)
+		{
+			::hb_buffer_destroy(hbBuffer);
+			hbBuffer = nullptr;
+		}
+
+		if (hbFont)
+		{
+			::hb_font_destroy(hbFont);
+			hbFont = nullptr;
+		}
+	}
+
+	bool FontFace::HarfBuzzObjects::init(::FT_Face face)
+	{
+		assert(hbFont == nullptr);
+		assert(hbBuffer == nullptr);
+
+		hbFont = ::hb_ft_font_create(face, nullptr);
+
+		if (hbFont == nullptr)
+		{
+			return false;
+		}
+
+		hbBuffer = ::hb_buffer_create();
+
+		if (not ::hb_buffer_allocation_successful(hbBuffer))
+		{
+			::hb_font_destroy(hbFont);
+			hbFont = nullptr;
+			return false;
+		}
+
+		return true;
 	}
 }

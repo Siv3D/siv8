@@ -40,7 +40,20 @@ namespace s3d
 
 	private:
 
+		struct HarfBuzzObjects
+		{
+			::hb_font_t* hbFont = nullptr;
+
+			::hb_buffer_t* hbBuffer = nullptr;
+
+			~HarfBuzzObjects();
+
+			bool init(::FT_Face face);
+		};
+
 		::FT_Face m_face = nullptr;
+
+		std::unique_ptr<HarfBuzzObjects> m_hbObjects;
 
 		FontFaceProperties m_properties;
 
