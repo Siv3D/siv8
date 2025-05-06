@@ -27,6 +27,9 @@ namespace s3d
 
 		void init() override;
 
+		[[nodiscard]]
+		FontFileInfo getFontFileInfo(FilePathView path) const override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;

@@ -10,3 +10,13 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Array.hpp"
+# include "FontFaceProperties.hpp"
+
+namespace s3d
+{
+	struct FontFileInfo
+	{
+		Array<FontFaceProperties> fontFaces;
+	};
+}
