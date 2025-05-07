@@ -42,5 +42,14 @@ namespace s3d
 		virtual const FontFaceInfo& getInfo(Font::IDType handleID) = 0;
 
 		virtual void setTabSize(Font::IDType handleID, int32 tabSize) = 0;
+
+		[[nodiscard]]
+		virtual GlyphIndex getGlyphIndex(Font::IDType handleID, char32 codePoint) = 0;
+
+		[[nodiscard]]
+		virtual GlyphIndex getGlyphIndex(Font::IDType handleID, StringView ch) = 0;
+
+		[[nodiscard]]
+		virtual String getGlyphNameByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
 	};
 }

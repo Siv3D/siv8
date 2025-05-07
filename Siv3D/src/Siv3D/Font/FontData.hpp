@@ -40,6 +40,15 @@ namespace s3d
 
 		void setTabSize(int32 tabSize) noexcept;
 
+		[[nodiscard]]
+		GlyphIndex getGlyphIndex(char32 codePoint);
+
+		[[nodiscard]]
+		GlyphIndex getGlyphIndex(StringView ch);
+		
+		[[nodiscard]]
+		String getGlyphNameByGlyphIndex(GlyphIndex glyphIndex);
+
 	private:
 
 		MemoryMappedFileView m_mappedFileView;

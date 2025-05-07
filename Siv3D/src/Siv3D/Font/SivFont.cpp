@@ -55,6 +55,9 @@ namespace s3d
 
 	Font::Font() {}
 
+	Font::Font(const int32 baseSize, const FilePathView path)
+		: Font{ FontMethod::MSDF, baseSize, path, 0, U"", FontStyle::Normal } {}
+
 	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const size_t faceIndex, const StringView styleName, const FontStyle style)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(path, faceIndex, styleName, fontMethod, baseSize, style))) }
 	{
@@ -204,6 +207,48 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->getInfo(m_handle->id()).properties.numGlyphs;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasGlyph
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Font::hasGlyph(const char32 codePoint) const
+	{
+		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint) != GlyphIndexNotdef);
+	}
+
+	bool Font::hasGlyph(const StringView ch) const
+	{
+		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch) != GlyphIndexNotdef);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	GlyphIndex Font::getGlyphIndex(const char32 codePoint) const
+	{
+		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
+	}
+
+	GlyphIndex Font::getGlyphIndex(const StringView ch) const
+	{
+		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphNameByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	String Font::getGlyphNameByGlyphIndex(const GlyphIndex glyphIndex) const
+	{
+		return SIV3D_ENGINE(Font)->getGlyphNameByGlyphIndex(m_handle->id(), glyphIndex);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

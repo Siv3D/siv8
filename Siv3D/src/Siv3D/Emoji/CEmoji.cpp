@@ -27,7 +27,7 @@ namespace s3d
 	{
 		static Image RenderEmoji(const GlyphIndex emoji, const int32 size, SkFont& font)
 		{
-			if (emoji == InvalidGlyphIndex)
+			if (emoji == GlyphIndexNotdef)
 			{
 				return{};
 			}
@@ -186,7 +186,7 @@ namespace s3d
 	{
 		if (not m_available)
 		{
-			return InvalidGlyphIndex;
+			return GlyphIndexNotdef;
 		}
 
 		::hb_buffer_reset(m_hbBuffer);
@@ -201,7 +201,7 @@ namespace s3d
 
 		if (glyphCount != 1)
 		{
-			return InvalidGlyphIndex;
+			return GlyphIndexNotdef;
 		}
 
 		return static_cast<GlyphIndex>(glyphInfo[0].codepoint);

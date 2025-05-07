@@ -51,5 +51,7 @@ namespace s3d
 		bool hasVertical = false;
 
 		bool hasKerning = false;
+
+		bool hasGlyphNames = false;
 	};
 }

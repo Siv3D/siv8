@@ -147,6 +147,7 @@ namespace s3d
 		properties.hasHorizontal	= FT_HAS_HORIZONTAL(face);
 		properties.hasVertical		= FT_HAS_VERTICAL(face);
 		properties.hasKerning		= FT_HAS_KERNING(face);
+		properties.hasGlyphNames	= FT_HAS_GLYPH_NAMES(face);
 
 		return properties;
 	}

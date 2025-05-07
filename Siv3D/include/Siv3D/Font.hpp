@@ -41,6 +41,8 @@ namespace s3d
 		[[nodiscard]]
 		Font();
 
+		Font(int32 baseSize, FilePathView path);
+
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
 
 		////////////////////////////////////////////////////////////////
@@ -186,10 +188,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した文字のグリフを持つかを返します。
-		/// @param ch 文字
+		/// @param codePoint 文字
 		/// @return グリフを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool hasGlyph(char32 ch) const;
+		bool hasGlyph(char32 codePoint) const;
 
 		/// @brief 指定した文字のグリフを持つかを返します。
 		/// @param ch 文字
@@ -205,10 +207,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した文字の、このフォント内でのグリフインデックスを返します。
-		/// @param ch 文字
+		/// @param codePoint 文字
 		/// @return このフォント内でのグリフインデックス
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(char32 ch) const;
+		GlyphIndex getGlyphIndex(char32 codePoint) const;
 
 		/// @brief 指定した文字の、このフォント内でのグリフインデックスを返します。
 		/// @param ch 文字
@@ -216,6 +218,15 @@ namespace s3d
 		/// @return このフォント内でのグリフインデックス
 		[[nodiscard]]
 		GlyphIndex getGlyphIndex(StringView ch) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlyphNameByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		String getGlyphNameByGlyphIndex(GlyphIndex glyphIndex) const;
 
 
 

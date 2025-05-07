@@ -205,4 +205,31 @@ namespace s3d
 	{
 		m_fonts[handleID]->setTabSize(tabSize);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	GlyphIndex CFont::getGlyphIndex(const Font::IDType handleID, const char32 codePoint)
+	{
+		return m_fonts[handleID]->getGlyphIndex(codePoint);
+	}
+
+	GlyphIndex CFont::getGlyphIndex(const Font::IDType handleID, const StringView ch)
+	{
+		return m_fonts[handleID]->getGlyphIndex(ch);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphNameByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	String CFont::getGlyphNameByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex)
+	{
+		return m_fonts[handleID]->getGlyphNameByGlyphIndex(glyphIndex);
+	}
 }

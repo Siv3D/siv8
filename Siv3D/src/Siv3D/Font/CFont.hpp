@@ -40,6 +40,12 @@ namespace s3d
 
 		void setTabSize(Font::IDType handleID, int32 tabSize) override;
 
+		GlyphIndex getGlyphIndex(Font::IDType handleID, char32 codePoint) override;
+
+		GlyphIndex getGlyphIndex(Font::IDType handleID, StringView ch) override;
+
+		String getGlyphNameByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;

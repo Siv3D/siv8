@@ -14,6 +14,7 @@
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FontStyle.hpp>
 # include <Siv3D/FontMethod.hpp>
+# include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
 # include "FontCommon.hpp"
 
@@ -72,6 +73,15 @@ namespace s3d
 
 		[[nodiscard]]
 		Optional<float> getYAdvance(char32 codePoint);
+
+		[[nodiscard]]
+		GlyphIndex getGlyphIndex(char32 codePoint);
+
+		[[nodiscard]]
+		GlyphIndex getGlyphIndex(StringView ch);
+
+		[[nodiscard]]
+		String getGlyphNameByGlyphIndex(GlyphIndex glyphIndex);
 
 	private:
 

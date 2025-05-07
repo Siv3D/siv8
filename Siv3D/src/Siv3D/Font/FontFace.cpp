@@ -47,6 +47,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	FontFace::~FontFace()
 	{
 		m_hbObjects.reset();
@@ -57,6 +63,12 @@ namespace s3d
 			m_face = nullptr;
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	init
+	//
+	////////////////////////////////////////////////////////////////
 
 	bool FontFace::init(const ::FT_Library library, ::FT_Face face, const StringView styleName, const FontMethod fontMethod, int32 baseSize, const FontStyle style)
 	{
@@ -178,15 +190,33 @@ namespace s3d
 		return true;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getInfo
+	//
+	////////////////////////////////////////////////////////////////
+
 	const FontFaceInfo& FontFace::getInfo() const noexcept
 	{
 		return m_info;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setTabSize
+	//
+	////////////////////////////////////////////////////////////////
+
 	void FontFace::setTabSize(const int32 tabSize) noexcept
 	{
 		m_info.tabSize = static_cast<int16>(Clamp(tabSize, 0, 32767));
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getHarfBuzzGlyphInfo
+	//
+	////////////////////////////////////////////////////////////////
 
 	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const Ligature ligature) const
 	{
@@ -217,6 +247,12 @@ namespace s3d
 			.count = glyphCount
 		};
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getXAdvance
+	//
+	////////////////////////////////////////////////////////////////
 
 	Optional<float> FontFace::getXAdvance(const char32 codePoint)
 	{
@@ -261,6 +297,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getYAdvance
+	//
+	////////////////////////////////////////////////////////////////
+
 	Optional<float> FontFace::getYAdvance(const char32 codePoint)
 	{
 		const GlyphIndex glyphIndex = ::FT_Get_Char_Index(m_face, codePoint);
@@ -304,6 +346,65 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	GlyphIndex FontFace::getGlyphIndex(const char32 codePoint)
+	{
+		return ::FT_Get_Char_Index(m_face, codePoint);
+	}
+
+	GlyphIndex FontFace::getGlyphIndex(const StringView ch)
+	{
+		if (const size_t length = ch.size();
+			length == 0)
+		{
+			return GlyphIndexNotdef;
+		}
+		else if (length == 1)
+		{
+			return getGlyphIndex(ch[0]);
+		}
+		else
+		{
+			const HarfBuzzGlyphInfo glyphInfo = getHarfBuzzGlyphInfo(ch, Ligature::Yes);
+
+			if (glyphInfo.count != 1)
+			{
+				return GlyphIndexNotdef;
+			}
+
+			return glyphInfo.info[0].codepoint;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphNameByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	String FontFace::getGlyphNameByGlyphIndex(const GlyphIndex glyphIndex)
+	{
+		char glyphNameBuffer[256]{};
+
+		if (::FT_Get_Glyph_Name(m_face, glyphIndex, glyphNameBuffer, sizeof(glyphNameBuffer)) != 0)
+		{
+			return{};
+		}
+
+		return Unicode::FromUTF8(glyphNameBuffer);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	FontFace::HarfBuzzObjects::~HarfBuzzObjects()
 	{
 		if (hbBuffer)
@@ -318,6 +419,12 @@ namespace s3d
 			hbFont = nullptr;
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	init
+	//
+	////////////////////////////////////////////////////////////////
 
 	bool FontFace::HarfBuzzObjects::init(::FT_Face face)
 	{

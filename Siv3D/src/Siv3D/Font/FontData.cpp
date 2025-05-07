@@ -103,4 +103,31 @@ namespace s3d
 	{
 		m_face->setTabSize(tabSize);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	GlyphIndex FontData::getGlyphIndex(const char32 codePoint)
+	{
+		return m_face->getGlyphIndex(codePoint);
+	}
+
+	GlyphIndex FontData::getGlyphIndex(const StringView ch)
+	{
+		return m_face->getGlyphIndex(ch);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphNameByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	String FontData::getGlyphNameByGlyphIndex(const GlyphIndex glyphIndex)
+	{
+		return m_face->getGlyphNameByGlyphIndex(glyphIndex);
+	}
 }
