@@ -14,6 +14,7 @@
 # include "AssetHandle.hpp"
 # include "FontMethod.hpp"
 # include "FontStyle.hpp"
+# include "GlyphIndex.hpp"
 
 namespace s3d
 {
@@ -166,6 +167,56 @@ namespace s3d
 		/// @param tabSize インデントに含まれるスペースの数
 		/// @return *this
 		const Font& setTabSize(int32 tabSize) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	num_glyphs
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief フォントが持つグリフの数を返します。
+		/// @return フォントが持つグリフの数。
+		[[nodiscard]]
+		uint32 num_glyphs() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	hasGlyph
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した文字のグリフを持つかを返します。
+		/// @param ch 文字
+		/// @return グリフを持つ場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool hasGlyph(char32 ch) const;
+
+		/// @brief 指定した文字のグリフを持つかを返します。
+		/// @param ch 文字
+		/// @remark char32 型の要素 1 つでは表現できない文字のための関数です。
+		/// @return グリフを持つ場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool hasGlyph(StringView ch) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した文字の、このフォント内でのグリフインデックスを返します。
+		/// @param ch 文字
+		/// @return このフォント内でのグリフインデックス
+		[[nodiscard]]
+		GlyphIndex getGlyphIndex(char32 ch) const;
+
+		/// @brief 指定した文字の、このフォント内でのグリフインデックスを返します。
+		/// @param ch 文字
+		/// @remark char32 型の要素 1 つでは表現できない文字のための関数です。
+		/// @return このフォント内でのグリフインデックス
+		[[nodiscard]]
+		GlyphIndex getGlyphIndex(StringView ch) const;
+
 
 
 
