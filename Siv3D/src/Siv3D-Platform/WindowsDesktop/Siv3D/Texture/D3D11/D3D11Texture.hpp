@@ -29,12 +29,6 @@ namespace s3d
 		struct GenerateMipmap {};
 
 		[[nodiscard]]
-		D3D11Texture(NoMipmap, ID3D11Device* device, const Image& image, TextureDesc desc);
-
-		[[nodiscard]]
-		D3D11Texture(GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Image& image, TextureDesc desc);
-
-		[[nodiscard]]
 		D3D11Texture(ID3D11Device* device, const Image& image, const Array<Image>& mipmaps, TextureDesc desc);
 
 		[[nodiscard]]
@@ -47,10 +41,10 @@ namespace s3d
 		D3D11Texture(ID3D11Device* device, const BCnData& bcnData);
 
 		[[nodiscard]]
-		D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+		D3D11Texture(Dynamic, NoMipmap, ID3D11Device* device, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
-		D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+		D3D11Texture(Dynamic, GenerateMipmap, ID3D11Device* device, ID3D11DeviceContext* context, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		bool isInitialized() const noexcept;
@@ -60,6 +54,10 @@ namespace s3d
 
 		[[nodiscard]]
 		bool hasDepth() const noexcept;
+
+		bool fill(ID3D11DeviceContext* context, const ColorF& color, bool wait);
+
+		bool fill(ID3D11DeviceContext* context, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
 
 		void generateMipmaps(ID3D11DeviceContext* context);
 

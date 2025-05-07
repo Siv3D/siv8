@@ -32,7 +32,7 @@
 //
 // doctest
 //
-# if SIV3D_COMPILER(APPLECLANG) // Xcode では色付けを無効化
+# if SIV3D_COMPILER(APPLE_CLANG) // Xcode では色付けを無効化
 #   define DOCTEST_CONFIG_COLORS_NONE
 # endif
 # include <ThirdParty/doctest/doctest.h>

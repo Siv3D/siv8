@@ -53,10 +53,10 @@ namespace s3d
 					return false;
 				}
 
-				const size_t srcStride = mapped.RowPitch;
-				const size_t dstStride = image.stride();
+				const size_t srcBytesPerRow = mapped.RowPitch;
+				const size_t dstBytesPerRow = image.bytesPerRow();
 
-				if (srcStride == dstStride)
+				if (srcBytesPerRow == dstBytesPerRow)
 				{
 					std::memcpy(image.data(), mapped.pData, image.size_bytes());
 				}
@@ -70,9 +70,9 @@ namespace s3d
 
 					for (size_t y = 0; y < height; ++y)
 					{
-						std::memcpy(pDst, pSrc, dstStride);
+						std::memcpy(pDst, pSrc, dstBytesPerRow);
 						pDst += width;
-						pSrc += srcStride;
+						pSrc += srcBytesPerRow;
 					}
 				}
 

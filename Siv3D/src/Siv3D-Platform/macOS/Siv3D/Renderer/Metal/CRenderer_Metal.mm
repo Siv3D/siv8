@@ -386,7 +386,7 @@ namespace s3d
 		m_commandBuffer->waitUntilCompleted();
 		
 		m_sceneBuffers.nonMSAA.getTexture()->getBytes(m_screenCapture.data(),
-												   m_screenCapture.stride(),
+												   m_screenCapture.bytesPerRow(),
 												   MTL::Region(0, 0, sceneSize.x, sceneSize.y),
 												   0);
 	}

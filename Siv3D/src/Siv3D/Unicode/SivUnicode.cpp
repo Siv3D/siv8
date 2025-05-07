@@ -103,7 +103,27 @@ namespace s3d
 
 			return result;
 		}
-			
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromUTF16BE
+		//
+		////////////////////////////////////////////////////////////////
+
+		String FromUTF16BE(std::u16string_view s)
+		{
+			const size_t requiredLength = simdutf::utf32_length_from_utf16be(s.data(), s.size());
+
+			String result;
+
+			result.resize_and_overwrite(requiredLength, [&](char32* buf, size_t)
+				{
+					return simdutf::convert_utf16be_to_utf32(s.data(), s.size(), buf);
+				});
+
+			return result;
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	FromWstring
@@ -444,8 +464,28 @@ namespace s3d
 
 		Result<void, size_t> ValidateUTF16(const std::u16string_view s)
 		{
-			const simdutf::result result = simdutf::validate_utf16_with_errors(s.data(), s.size());
+			const simdutf::result result = simdutf::validate_utf16le_with_errors(s.data(), s.size());
 			
+			if (result.error == simdutf::SUCCESS)
+			{
+				return {};
+			}
+			else
+			{
+				return Err{ result.count };
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ValidateUTF16BE
+		//
+		////////////////////////////////////////////////////////////////
+
+		Result<void, size_t> ValidateUTF16BE(const std::u16string_view s)
+		{
+			const simdutf::result result = simdutf::validate_utf16be_with_errors(s.data(), s.size());
+
 			if (result.error == simdutf::SUCCESS)
 			{
 				return {};

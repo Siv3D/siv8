@@ -39,6 +39,9 @@ namespace s3d
 		TextureDesc() = default;
 
 		[[nodiscard]]
+		constexpr TextureDesc(bool _hasMipmap, bool _sRGB, bool _isSDF) noexcept;
+
+		[[nodiscard]]
 		constexpr TextureDesc(const TextureDescBuilder& builder) noexcept;
 
 		////////////////////////////////////////////////////////////////

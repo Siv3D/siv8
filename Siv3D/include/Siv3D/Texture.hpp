@@ -112,6 +112,27 @@ namespace s3d
 		///// @param desc テクスチャの設定
 		//[[nodiscard]]
 		//explicit Texture(const Icon& icon, int32 size, TextureDesc desc = TextureDesc::Default2D);
+		
+		[[nodiscard]]
+		explicit Texture(const Grid<uint8>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<HalfFloat>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<Color>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<float>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<Float2>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const Grid<Float4>& image, TextureDesc desc = TextureDesc::Default2D);
+
+		[[nodiscard]]
+		explicit Texture(const BCnData& bcnData);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -219,14 +240,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getFormat
+		//	format
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief テクスチャのフォーマットを返します。
 		/// @return テクスチャのフォーマット
 		[[nodiscard]]
-		TextureFormat getFormat() const;
+		TextureFormat format() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1190,15 +1211,6 @@ namespace s3d
 		[[nodiscard]]
 		static Texture CreateR32G32B32A32_Float(const Grid<Float4>& image, TextureDesc desc = TextureDesc::Default2D);
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	CreateBCn
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		static Texture CreateBCn(const BCnData& bcnData);
-
 	protected:
 
 		struct Dynamic {};
@@ -1211,10 +1223,7 @@ namespace s3d
 		Texture(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
-		explicit Texture(const BCnData& bcnData);
-
-		[[nodiscard]]
-		Texture(Dynamic, const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc);
+		Texture(Dynamic, const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc);
 
 		[[nodiscard]]
 		Texture(Dynamic, const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc);

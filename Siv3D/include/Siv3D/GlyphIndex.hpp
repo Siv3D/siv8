@@ -19,6 +19,7 @@ namespace s3d
 	/// @remark 0 は、存在しないなど無効なグリフを意味します
 	using GlyphIndex = uint32;
 
-	inline constexpr GlyphIndex InvalidGlyphIndex = 0;
+	/// @brief .notdef グリフインデックス
+	inline constexpr GlyphIndex GlyphIndexNotdef = 0;
 }
 

@@ -20,28 +20,28 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Camera2DControl::Camera2DControl(
-		const double _minScale,
-		const double _maxScale,
-		const double _scaleSmoothTime,
+		const double _minZoom,
+		const double _maxZoom,
+		const double _zoomSmoothTime,
 		const double _positionSmoothTime,
-		const double _wheelScaleFactor,
-		const double _grabSpeedFactor,
-		const double _controlScaleFactor,
-		const double _controlSpeedFactor,
+		const double _wheelZoomSpeed,
+		const double _mouseDragPanningSpeed,
+		const double _controlZoomSpeed,
+		const double _controlPanningSpeed,
 		std::function<bool()> _moveToUp,
 		std::function<bool()> _moveToRight,
 		std::function<bool()> _moveToDown,
 		std::function<bool()> _moveToLeft,
 		std::function<bool()> _zoomIn,
 		std::function<bool()> _zoomOut)
-		: minScale{ _minScale }
-		, maxScale{ _maxScale }
-		, scaleSmoothTime{ _scaleSmoothTime }
+		: minZoom{ _minZoom }
+		, maxZoom{ _maxZoom }
+		, zoomSmoothTime{ _zoomSmoothTime }
 		, positionSmoothTime{ _positionSmoothTime }
-		, wheelScaleFactor{ _wheelScaleFactor }
-		, grabSpeedFactor{ _grabSpeedFactor }
-		, controlScaleFactor{ _controlScaleFactor }
-		, controlSpeedFactor{ _controlSpeedFactor }
+		, wheelZoomSpeed{ _wheelZoomSpeed }
+		, mouseDragPanningSpeed{ _mouseDragPanningSpeed }
+		, controlZoomSpeed{ _controlZoomSpeed }
+		, controlPanningSpeed{ _controlPanningSpeed }
 		, moveToUp{ std::move(_moveToUp) }
 		, moveToRight{ std::move(_moveToRight) }
 		, moveToDown{ std::move(_moveToDown) }
@@ -50,14 +50,14 @@ namespace s3d
 		, zoomOut{ std::move(_zoomOut) } {}
 
 	Camera2DControl::Camera2DControl(const Camera2DControlBuilder& builder)
-		: minScale{ builder.minScale() }
-		, maxScale{ builder.maxScale() }
-		, scaleSmoothTime{ builder.scaleSmoothTime() }
+		: minZoom{ builder.minZoom() }
+		, maxZoom{ builder.maxZoom() }
+		, zoomSmoothTime{ builder.zoomSmoothTime() }
 		, positionSmoothTime{ builder.positionSmoothTime() }
-		, wheelScaleFactor{ builder.wheelScaleFactor() }
-		, grabSpeedFactor{ builder.grabSpeedFactor() }
-		, controlScaleFactor{ builder.controlScaleFactor() }
-		, controlSpeedFactor{ builder.controlSpeedFactor() }
+		, wheelZoomSpeed{ builder.wheelZoomSpeed() }
+		, mouseDragPanningSpeed{ builder.mouseDragPanningSpeed() }
+		, controlZoomSpeed{ builder.controlZoomSpeed() }
+		, controlPanningSpeed{ builder.controlPanningSpeed() }
 		, moveToUp{ builder.moveToUp() }
 		, moveToRight{ builder.moveToRight() }
 		, moveToDown{ builder.moveToDown() }

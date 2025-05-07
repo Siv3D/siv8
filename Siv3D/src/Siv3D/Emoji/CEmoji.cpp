@@ -27,7 +27,7 @@ namespace s3d
 	{
 		static Image RenderEmoji(const GlyphIndex emoji, const int32 size, SkFont& font)
 		{
-			if (emoji == InvalidGlyphIndex)
+			if (emoji == GlyphIndexNotdef)
 			{
 				return{};
 			}
@@ -39,7 +39,7 @@ namespace s3d
 				constexpr float ScalingFactor = (436.90667f / 512);
 				font.setSize(ScalingFactor * size);
 
-				auto canvas = SkCanvas::MakeRasterDirectN32(size, size, (uint32*)image.data(), static_cast<int32>(image.stride()));
+				auto canvas = SkCanvas::MakeRasterDirectN32(size, size, (uint32*)image.data(), static_cast<int32>(image.bytesPerRow()));
 
 				SkFontMetrics metrics;
 				font.getMetrics(&metrics);
@@ -133,11 +133,11 @@ namespace s3d
 			return;
 		}
 
-		m_hbFont = ::hb_ft_font_create(m_face, nullptr);
+		m_hbFont = ::hb_ft_font_create_referenced(m_face);
 
 		if (not m_hbFont)
 		{
-			LOG_FAIL("hb_ft_font_create(): failed");
+			LOG_FAIL("hb_ft_font_create_referenced (): failed");
 			return;
 		}
 
@@ -186,7 +186,7 @@ namespace s3d
 	{
 		if (not m_available)
 		{
-			return InvalidGlyphIndex;
+			return GlyphIndexNotdef;
 		}
 
 		::hb_buffer_reset(m_hbBuffer);
@@ -201,7 +201,7 @@ namespace s3d
 
 		if (glyphCount != 1)
 		{
-			return InvalidGlyphIndex;
+			return GlyphIndexNotdef;
 		}
 
 		return static_cast<GlyphIndex>(glyphInfo[0].codepoint);

@@ -142,8 +142,10 @@ enum DXGI_FORMAT
 	DXGI_FORMAT_FORCE_UINT = 0xffffffff
 };
 
+// https://github.com/bkaradzic/metal-cpp/blob/metal-cpp_macOS15.2_iOS18.2/Metal/MTLPixelFormat.hpp
 enum MTLPixelFormat
 {
+	A8Unorm = 1,
 	R8Unorm = 10,
 	RG8Unorm = 30,
 	R16Float = 25,
@@ -158,17 +160,22 @@ enum MTLPixelFormat
 	RG32Float = 105,
 	RGBA32Float	= 125,
 	BC1_RGBAUnorm = 130,
+	BC1_RGBAUnorm_sRGB = 131,
 	BC3_RGBAUnorm = 134,
+	BC3_RGBAUnorm_sRGB = 135,
 	BC4_RUnorm = 140,
 	BC5_RGUnorm = 142,
 	BC7_RGBAUnorm = 152,
+	BC7_RGBAUnorm_sRGB = 153,
 };
 
 enum GL_CONSTANTS
 {
+	GL_ALPHA = 0x1906,
 	GL_RGBA = 0x1908,
 	GL_UNSIGNED_BYTE = 0x1401,
 	GL_UNSIGNED_SHORT = 0x1403,
+	GL_R8 = 0x8229,
 	GL_SRGB8_ALPHA8 = 0x8C43,
 	GL_RG16F = 0x822F,
 	GL_RG = 0x8227,
@@ -187,10 +194,13 @@ enum GL_CONSTANTS
 	GL_RG16UI = 0x823A,
 
 	GL_COMPRESSED_RGBA_S3TC_DXT1_EXT = 0x83F1,
+	GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT = 0x8C4D,
 	GL_COMPRESSED_RGBA_S3TC_DXT5_EXT = 0x83F3,
+	GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT = 0x8C4F,
 	GL_COMPRESSED_RED_RGTC1 = 0x8DBB,
 	GL_COMPRESSED_RG_RGTC2 = 0x8DBD,
 	GL_COMPRESSED_RGBA_BPTC_UNORM = 0x8E8C,
+	GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM = 0x8E8D,
 };
 
 enum WGPU_CONSTANTS
@@ -209,10 +219,13 @@ enum WGPU_CONSTANTS
 	TextureFormat_RGBA16Float = 0x21,
 	TextureFormat_RGBA32Float = 0x22,
 	TextureFormat_BC1RGBAUnorm = 0x2C,
+	TextureFormat_BC1RGBAUnormSrgb = 0x2D,
 	TextureFormat_BC3RGBAUnorm = 0x30,
+	TextureFormat_BC3RGBAUnormSrgb = 0x31,
 	TextureFormat_BC4RUnorm = 0x32,
 	TextureFormat_BC5RGUnorm = 0x34,
 	TextureFormat_BC7RGBAUnorm = 0x38,
+	TextureFormat_BC7RGBAUnormSrgb = 0x39,
 };
 
 namespace s3d
@@ -244,7 +257,7 @@ namespace s3d
 			bool isSRGB = false;
 		};
 
-		static constexpr std::array<TextureFormatData, 19> TextureFormatPropertyTable =
+		static constexpr std::array<TextureFormatData, 22> TextureFormatPropertyTable =
 		{ {
 			{ U"Unknown", DXGI_FORMAT_UNKNOWN, MTLPixelFormat(0), GL_CONSTANTS(0), GL_CONSTANTS(0), GL_CONSTANTS(0), WGPU_CONSTANTS(0), 0, 0 },
 			{ U"R8_Unorm", DXGI_FORMAT_R8_UNORM, MTLPixelFormat::R8Unorm, GL_RED, GL_RED, GL_UNSIGNED_BYTE, TextureFormat_R8Unorm, 1, 1 },
@@ -261,10 +274,13 @@ namespace s3d
 			{ U"R32G32_Float", DXGI_FORMAT_R32G32_FLOAT, MTLPixelFormat::RG32Float, GL_RG32F, GL_RG, GL_FLOAT, TextureFormat_RG32Float, 8, 2 },
 			{ U"R32G32B32A32_Float", DXGI_FORMAT_R32G32B32A32_FLOAT, MTLPixelFormat::RGBA32Float, GL_RGBA32F, GL_RGBA, GL_FLOAT, TextureFormat_RGBA32Float, 16, 4 },
 			{ U"BC1_RGBA_Unorm", DXGI_FORMAT_BC1_UNORM, MTLPixelFormat::BC1_RGBAUnorm, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, GL_UNSIGNED_BYTE, TextureFormat_BC1RGBAUnorm, 0, 4 },
-			{ U"BC3_RGBA_Unorm", DXGI_FORMAT_BC3_UNORM, MTLPixelFormat::BC3_RGBAUnorm, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_UNSIGNED_BYTE , TextureFormat_BC3RGBAUnorm, 0, 4 },
+			{ U"BC1_RGBA_Unorm_SRGB", DXGI_FORMAT_BC1_UNORM_SRGB, MTLPixelFormat::BC1_RGBAUnorm_sRGB, GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT, GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT, GL_UNSIGNED_BYTE, TextureFormat_BC1RGBAUnormSrgb, 0, 4 },		
+			{ U"BC3_RGBA_Unorm", DXGI_FORMAT_BC3_UNORM, MTLPixelFormat::BC3_RGBAUnorm, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_UNSIGNED_BYTE, TextureFormat_BC3RGBAUnorm, 0, 4 },
+			{ U"BC3_RGBA_Unorm_SRGB", DXGI_FORMAT_BC3_UNORM_SRGB, MTLPixelFormat::BC3_RGBAUnorm_sRGB, GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT, GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT, GL_UNSIGNED_BYTE, TextureFormat_BC3RGBAUnormSrgb, 0, 4 },
 			{ U"BC4_R_Unorm", DXGI_FORMAT_BC4_UNORM, MTLPixelFormat::BC4_RUnorm, GL_COMPRESSED_RED_RGTC1, GL_COMPRESSED_RED_RGTC1, GL_UNSIGNED_BYTE , TextureFormat_BC4RUnorm, 0, 1 },
 			{ U"BC5_RG_Unorm", DXGI_FORMAT_BC5_UNORM, MTLPixelFormat::BC5_RGUnorm, GL_COMPRESSED_RG_RGTC2, GL_COMPRESSED_RG_RGTC2, GL_UNSIGNED_BYTE , TextureFormat_BC5RGUnorm, 0, 2 },
 			{ U"BC7_RGBA_Unorm", DXGI_FORMAT_BC7_UNORM, MTLPixelFormat::BC7_RGBAUnorm, GL_COMPRESSED_RGBA_BPTC_UNORM, GL_COMPRESSED_RGBA_BPTC_UNORM, GL_UNSIGNED_BYTE, TextureFormat_BC7RGBAUnorm, 0, 4 },
+			{ U"BC7_RGBA_Unorm_SRGB", DXGI_FORMAT_BC7_UNORM_SRGB, MTLPixelFormat::BC7_RGBAUnorm_sRGB, GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM, GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM, GL_UNSIGNED_BYTE, TextureFormat_BC7RGBAUnormSrgb, 0, 4 },
 		} };
 	}
 
@@ -386,20 +402,16 @@ namespace s3d
 
 	bool TextureFormat::isBCn() const noexcept
 	{
-		return ((m_value == TexturePixelFormat::BC1_RGBA_Unorm)
-			 || (m_value == TexturePixelFormat::BC3_RGBA_Unorm)
-			 || (m_value == TexturePixelFormat::BC4_R_Unorm)
-			 || (m_value == TexturePixelFormat::BC5_RG_Unorm)
-			 || (m_value == TexturePixelFormat::BC7_RGBA_Unorm));
+		return InRange(m_value, TexturePixelFormat::BC1_RGBA_Unorm, TexturePixelFormat::BC7_RGBA_Unorm_SRGB);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	rowPitch
+	//	bytesPerRow
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint32 TextureFormat::rowPitch(const uint32 width) const noexcept
+	uint32 TextureFormat::bytesPerRow(const uint32 width) const noexcept
 	{
 		if (isBCn())
 		{
@@ -421,13 +433,16 @@ namespace s3d
 	uint32 TextureFormat::blockSize() const noexcept
 	{
 		if ((m_value == TexturePixelFormat::BC1_RGBA_Unorm)
+		 || (m_value == TexturePixelFormat::BC1_RGBA_Unorm_SRGB)
 		 || (m_value == TexturePixelFormat::BC4_R_Unorm))
 		{
 			return 8;
 		}
 		else if ((m_value == TexturePixelFormat::BC3_RGBA_Unorm)
+			  || (m_value == TexturePixelFormat::BC3_RGBA_Unorm_SRGB)
 			  || (m_value == TexturePixelFormat::BC5_RG_Unorm)
-			  || (m_value == TexturePixelFormat::BC7_RGBA_Unorm))
+			  || (m_value == TexturePixelFormat::BC7_RGBA_Unorm)
+			  || (m_value == TexturePixelFormat::BC7_RGBA_Unorm_SRGB))
 		{
 			return 16;
 		}

@@ -28,6 +28,7 @@
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/ScreenCapture/IScreenCapture.hpp>
+# include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -56,6 +57,7 @@ namespace s3d
 		SIV3D_ENGINE(Renderer)->init();
 		SIV3D_ENGINE(Renderer2D)->init();
 		SIV3D_ENGINE(ScreenCapture)->init();
+		SIV3D_ENGINE(Font)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}

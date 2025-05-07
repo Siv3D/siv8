@@ -36,6 +36,6 @@ namespace s3d
 		const uint8 maxMipLevels = ImageProcessing::CalculateMipmapLevel(size.x, size.y);
 
 		return U"({0}, {1}x{2}, {3}, Mips: {4}/{5}, RowPitch: {6}, HasDepth: {7})"_fmt(
-			TextureTypeStrings[FromEnum(type)],	size.x, size.y, format.name(), mipLevels, maxMipLevels, format.rowPitch(size.x), (hasDepth ? U"Yes" : U"No"));
+			TextureTypeStrings[FromEnum(type)],	size.x, size.y, format.name(), mipLevels, maxMipLevels, format.bytesPerRow(size.x), (hasDepth ? U"Yes" : U"No"));
 	}
 }

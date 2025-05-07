@@ -35,9 +35,6 @@ namespace s3d
 		Texture::IDType create(IReader&& reader, FilePathView pathHint, TextureDesc desc) override;
 
 		[[nodiscard]]
-		Texture::IDType create(const Image& image, TextureDesc desc) override;
-
-		[[nodiscard]]
 		Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) override;
 
 		[[nodiscard]]
@@ -47,10 +44,7 @@ namespace s3d
 		Texture::IDType create(const BCnData& bcnData) override;
 
 		[[nodiscard]]
-		Texture::IDType createDynamic(const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc) override;
-
-		[[nodiscard]]
-		Texture::IDType createDynamic(const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc) override;
+		Texture::IDType createDynamic(const Size& size, std::span<const Byte> data, const TextureFormat& format, TextureDesc desc) override;
 
 		void release(Texture::IDType handleID) override;
 
@@ -68,6 +62,16 @@ namespace s3d
 		
 		[[nodiscard]]
 		bool hasDepth(Texture::IDType handleID) override;
+
+		bool fill(Texture::IDType handleID, const ColorF& color, bool wait) override;
+
+		bool fill(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, bool wait) override;
+
+		bool fillRegion(Texture::IDType handleID, const ColorF& color, const Rect& rect) override;
+
+		bool fillRegion(Texture::IDType handleID, std::span<const Byte> src, uint32 srcBytesPerRow, const Rect& rect, bool wait) override;
+
+		void generateMips(Texture::IDType handleID) override;
 		
 		[[nodiscard]]
 		MTL::Texture* getTexture(Texture::IDType handleID);

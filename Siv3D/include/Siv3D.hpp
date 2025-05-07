@@ -669,8 +669,8 @@
 //// 統計 | Statistics
 //# include <Siv3D/Statistics.hpp>
 //
-//// 素数判定 | Primality test
-//# include <Siv3D/PrimeNumber.hpp>
+// 素数判定 | Primality test
+# include <Siv3D/IsPrime.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1610,6 +1610,22 @@
 
 // スクリーンキャプチャ | Screen capture
 # include <Siv3D/ScreenCapture.hpp> // ToDo
+
+
+
+//////////////////////////////////////////////////
+//
+//	フォント | Font
+//
+//////////////////////////////////////////////////
+
+# include <Siv3D/FontStyle.hpp>
+# include <Siv3D/FontMethod.hpp>
+# include <Siv3D/FontFile.hpp>
+# include <Siv3D/FontFaceProperties.hpp>
+# include <Siv3D/GlyphInfo.hpp>
+# include <Siv3D/ResolvedGlyph.hpp>
+# include <Siv3D/Font.hpp>
 
 
 

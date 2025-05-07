@@ -13,7 +13,6 @@
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
-# include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
 
 namespace s3d
@@ -92,39 +91,13 @@ namespace s3d
 
 		if (isBCn)
 		{
-			return create(bcnDecoder.decodeNative(reader, pathHint));
+			return create(bcnDecoder.decodeNative(reader, desc.sRGB, pathHint));
 		}
 		else
 		{
-			return create(Image{ std::move(reader) }, desc);
+			const Image image{ std::move(reader) };
+			return create(image.size(), std::as_bytes(std::span{ image }), (desc.sRGB ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm), desc);
 		}
-	}
-
-	Texture::IDType CTexture_Metal::create(const Image& image, const TextureDesc desc)
-	{
-		if (not image)
-		{
-			return Texture::IDType::Null();
-		}
-
-		std::unique_ptr<MetalTexture> texture;
-
-		if ((not desc.hasMipmap) || (image.size() == Size{ 1, 1 }))
-		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::NoMipmap{}, m_device, m_commandQueue, image, desc);
-		}
-		else
-		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::GenerateMipmap{}, m_device, m_commandQueue, image, desc);
-		}
-
-		if (not texture->isInitialized())
-		{
-			return Texture::IDType::Null();
-		}
-
-		const String info = texture->getDesc().toString();
-		return m_textures.add(std::move(texture), info);
 	}
 
 	Texture::IDType CTexture_Metal::create(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
@@ -199,7 +172,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_Metal::createDynamic(const Size& size, const void* pData, const uint32 stride, const TextureFormat& format, const TextureDesc desc)
+	Texture::IDType CTexture_Metal::createDynamic(const Size& size, const std::span<const Byte> data, const TextureFormat& format, const TextureDesc desc)
 	{
 		if ((size.x <= 0) || (size.y <= 0))
 		{
@@ -210,11 +183,11 @@ namespace s3d
 		
 		if ((not desc.hasMipmap) || (size == Size{ 1, 1 }))
 		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::NoMipmap{}, m_device, m_commandQueue, size, pData, stride, format, desc);
+			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::NoMipmap{}, m_device, m_commandQueue, size, data, format, desc);
 		}
 		else
 		{
-			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::GenerateMipmap{}, m_device, m_commandQueue, size, pData, stride, format, desc);
+			texture = std::make_unique<MetalTexture>(MetalTexture::Dynamic{}, MetalTexture::GenerateMipmap{}, m_device, m_commandQueue, size, data, format, desc);
 		}
 		
 		if (not texture->isInitialized())
@@ -224,23 +197,6 @@ namespace s3d
 			
 		const String info = texture->getDesc().toString();
 		return m_textures.add(std::move(texture), info);
-	}
-
-	Texture::IDType CTexture_Metal::createDynamic(const Size& size, const ColorF& color, const TextureFormat& format, const TextureDesc desc)
-	{
-		if ((size.x <= 0) || (size.y <= 0))
-		{
-			return Texture::IDType::Null();
-		}
-
-		const Array<Byte> initialData = GenerateInitialColorBuffer(size, color, format);
-
-		if (not initialData)
-		{
-			return Texture::IDType::Null();
-		}
-
-		return createDynamic(size, initialData.data(), static_cast<uint32>(initialData.size() / size.y), format, desc);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -284,7 +240,8 @@ namespace s3d
 
 	TextureDesc CTexture_Metal::getDesc(const Texture::IDType handleID)
 	{
-		return m_textures[handleID]->getDesc();
+		const auto& desc = m_textures[handleID]->getDesc();
+		return{ desc.hasMipmap, desc.sRGB, desc.isSDF };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -307,6 +264,49 @@ namespace s3d
 	bool CTexture_Metal::hasDepth(const Texture::IDType handleID)
 	{
 		return m_textures[handleID]->hasDepth();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fill
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CTexture_Metal::fill(const Texture::IDType handleID, const ColorF& color, const bool wait)
+	{
+		return m_textures[handleID]->fill(m_commandQueue, color, wait);
+	}
+
+	bool CTexture_Metal::fill(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const bool wait)
+	{
+		return m_textures[handleID]->fill(m_commandQueue, src, srcBytesPerRow, wait);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fillRegion
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CTexture_Metal::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect)
+	{
+		return(false);
+	}
+
+	bool CTexture_Metal::fillRegion(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
+	{
+		return(false);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	generateMips
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CTexture_Metal::generateMips(const Texture::IDType handleID)
+	{
+		return m_textures[handleID]->generateMips(m_commandQueue);
 	}
 
 	////////////////////////////////////////////////////////////////

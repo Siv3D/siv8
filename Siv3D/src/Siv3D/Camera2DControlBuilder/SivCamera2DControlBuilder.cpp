@@ -22,28 +22,28 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Camera2DControlBuilder::Camera2DControlBuilder(
-		const double _minScale,
-		const double _maxScale,
-		const double _scaleSmoothTime,
+		const double _minZoom,
+		const double _maxZoom,
+		const double _zoomSmoothTime,
 		const double _positionSmoothTime,
-		const double _wheelScaleFactor,
-		const double _grabSpeedFactor,
-		const double _controlScaleFactor,
-		const double _controlSpeedFactor,
+		const double _wheelZoomSpeed,
+		const double _mouseDragPanningSpeed,
+		const double _controlZoomSpeed,
+		const double _controlPanningSpeed,
 		std::function<bool()> _moveToUp,
 		std::function<bool()> _moveToRight,
 		std::function<bool()> _moveToDown,
 		std::function<bool()> _moveToLeft,
 		std::function<bool()> _zoomIn,
 		std::function<bool()> _zoomOut)
-		: m_minScale{ _minScale }
-		, m_maxScale{ _maxScale }
-		, m_scaleSmoothTime{ _scaleSmoothTime }
+		: m_minZoom{ _minZoom }
+		, m_maxZoom{ _maxZoom }
+		, m_zoomSmoothTime{ _zoomSmoothTime }
 		, m_positionSmoothTime{ _positionSmoothTime }
-		, m_wheelScaleFactor{ _wheelScaleFactor }
-		, m_grabSpeedFactor{ _grabSpeedFactor }
-		, m_controlScaleFactor{ _controlScaleFactor }
-		, m_controlSpeedFactor{ _controlSpeedFactor }
+		, m_wheelZoomSpeed{ _wheelZoomSpeed }
+		, m_mouseDragPanningSpeed{ _mouseDragPanningSpeed }
+		, m_controlZoomSpeed{ _controlZoomSpeed }
+		, m_controlPanningSpeed{ _controlPanningSpeed }
 		, m_moveToUp{ std::move(_moveToUp) }
 		, m_moveToRight{ std::move(_moveToRight) }
 		, m_moveToDown{ std::move(_moveToDown) }
@@ -53,56 +53,56 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	minScale
+	//	minZoom
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::minScale(const double _minScale) const noexcept
+	Camera2DControlBuilder Camera2DControlBuilder::minZoom(const double _minZoom) const noexcept
 	{
 		Camera2DControlBuilder result{ *this };
-		result.m_minScale = _minScale;
+		result.m_minZoom = _minZoom;
 		return result;
 	}
 
-	double Camera2DControlBuilder::minScale() const noexcept
+	double Camera2DControlBuilder::minZoom() const noexcept
 	{
-		return m_minScale;
+		return m_minZoom;
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	maxScale
+	//	maxZoom
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::maxScale(const double _maxScale) const noexcept
+	Camera2DControlBuilder Camera2DControlBuilder::maxZoom(const double _maxZoom) const noexcept
 	{
 		Camera2DControlBuilder result{ *this };
-		result.m_maxScale = _maxScale;
+		result.m_maxZoom = _maxZoom;
 		return result;
 	}
 
-	double Camera2DControlBuilder::maxScale() const noexcept
+	double Camera2DControlBuilder::maxZoom() const noexcept
 	{
-		return m_maxScale;
+		return m_maxZoom;
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	scaleSmoothTime
+	//	zoomSmoothTime
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::scaleSmoothTime(const double _scaleSmoothTime) const noexcept
+	Camera2DControlBuilder Camera2DControlBuilder::zoomSmoothTime(const double _zoomSmoothTime) const noexcept
 	{
 		Camera2DControlBuilder result{ *this };
-		result.m_scaleSmoothTime = _scaleSmoothTime;
+		result.m_zoomSmoothTime = _zoomSmoothTime;
 		return result;
 	}
 
-	double Camera2DControlBuilder::scaleSmoothTime() const noexcept
+	double Camera2DControlBuilder::zoomSmoothTime() const noexcept
 	{
-		return m_scaleSmoothTime;
+		return m_zoomSmoothTime;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -125,56 +125,56 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	wheelScaleFactor
+	//	wheelScaleSpeed
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::wheelScaleFactor(const double _wheelScaleFactor) const noexcept
+	Camera2DControlBuilder Camera2DControlBuilder::wheelZoomSpeed(const double _wheelZoomSpeed) const noexcept
 	{
 		Camera2DControlBuilder result{ *this };
-		result.m_wheelScaleFactor = _wheelScaleFactor;
+		result.m_wheelZoomSpeed = _wheelZoomSpeed;
 		return result;
 	}
 
-	double Camera2DControlBuilder::wheelScaleFactor() const noexcept
+	double Camera2DControlBuilder::wheelZoomSpeed() const noexcept
 	{
-		return m_wheelScaleFactor;
+		return m_wheelZoomSpeed;
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	grabSpeedFactor
+	//	mouseDragPanningSpeed
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::grabSpeedFactor(const double _grabSpeedFactor) const noexcept
+	Camera2DControlBuilder Camera2DControlBuilder::mouseDragPanningSpeed(const double _mouseDragPanningSpeed) const noexcept
 	{
 		Camera2DControlBuilder result{ *this };
-		result.m_grabSpeedFactor = _grabSpeedFactor;
+		result.m_mouseDragPanningSpeed = _mouseDragPanningSpeed;
 		return result;
 	}
 
-	double Camera2DControlBuilder::grabSpeedFactor() const noexcept
+	double Camera2DControlBuilder::mouseDragPanningSpeed() const noexcept
 	{
-		return m_grabSpeedFactor;
+		return m_mouseDragPanningSpeed;
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	controlScaleFactor
+	//	controlZoomSpeed
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::controlScaleFactor(const double _controlScaleFactor) const noexcept
+	Camera2DControlBuilder Camera2DControlBuilder::controlZoomSpeed(const double _controlZoomSpeed) const noexcept
 	{
 		Camera2DControlBuilder result{ *this };
-		result.m_controlScaleFactor = _controlScaleFactor;
+		result.m_controlZoomSpeed = _controlZoomSpeed;
 		return result;
 	}
 
-	double Camera2DControlBuilder::controlScaleFactor() const noexcept
+	double Camera2DControlBuilder::controlZoomSpeed() const noexcept
 	{
-		return m_controlScaleFactor;
+		return m_controlZoomSpeed;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -183,16 +183,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::controlSpeedFactor(const double _controlSpeedFactor) const noexcept
+	Camera2DControlBuilder Camera2DControlBuilder::controlPanningSpeed(const double _controlPanningSpeed) const noexcept
 	{
 		Camera2DControlBuilder result{ *this };
-		result.m_controlSpeedFactor = _controlSpeedFactor;
+		result.m_controlPanningSpeed = _controlPanningSpeed;
 		return result;
 	}
 
-	double Camera2DControlBuilder::controlSpeedFactor() const noexcept
+	double Camera2DControlBuilder::controlPanningSpeed() const noexcept
 	{
-		return m_controlSpeedFactor;
+		return m_controlPanningSpeed;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -367,11 +367,11 @@ namespace s3d
 
 		if (enabled)
 		{
-			result.m_wheelScaleFactor = 0.15;
+			result.m_wheelZoomSpeed = DefaultWheelZoomSpeed;
 		}
 		else
 		{
-			result.m_wheelScaleFactor = 0.0;
+			result.m_wheelZoomSpeed = NoWheelZoom;
 		}
 
 		return result;
@@ -379,21 +379,21 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	rightClick
+	//	mouseDragPanning
 	//
 	////////////////////////////////////////////////////////////////
 
-	Camera2DControlBuilder Camera2DControlBuilder::rightClick(const bool enabled) const
+	Camera2DControlBuilder Camera2DControlBuilder::mouseDragPanning(const bool enabled) const
 	{
 		Camera2DControlBuilder result{ *this };
 
 		if (enabled)
 		{
-			result.m_grabSpeedFactor = 4.0;
+			result.m_mouseDragPanningSpeed = DefaultMouseDragPanningSpeed;
 		}
 		else
 		{
-			result.m_grabSpeedFactor = 0.0;
+			result.m_mouseDragPanningSpeed = NoMouseDragPanning;
 		}
 
 		return result;
