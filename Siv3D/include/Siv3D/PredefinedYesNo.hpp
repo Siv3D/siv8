@@ -67,4 +67,7 @@ namespace s3d
 
 	/// @brief リガチャ（合字）を使うかどうかを指定 | Whether to use ligatures
 	using Ligature = YesNo<struct Ligature_tag>;
+
+	/// @brief ヒンティングを使うかどうかを指定 | Whether to use hinting
+	using Hinting = YesNo<struct Hinting_tag>;
 }

@@ -74,7 +74,7 @@ namespace s3d
 	{
 		assert(m_face == nullptr);
 
-		if (baseSize <= 0)
+		if (not InRange(baseSize, 1, 32767))
 		{
 			::FT_Done_Face(face);
 			return false;
@@ -144,7 +144,8 @@ namespace s3d
 			}
 		}
 
-		m_info.renderingMethod = (m_info.properties.isScalable ? fontMethod : FontMethod::Bitmap);
+		m_info.renderingMethod	= (m_info.properties.isScalable ? fontMethod : FontMethod::Bitmap);
+		m_info.hinting			= ((m_info.renderingMethod == FontMethod::Bitmap) ? Hinting::Yes : Hinting::No);
 
 		if (::FT_Set_Pixel_Sizes(face, 0, baseSize))
 		{	
@@ -180,12 +181,16 @@ namespace s3d
 		}
 
 		m_face					= face;
-		m_info.baseSize			= baseSize;
+		m_info.baseSize			= static_cast<int16>(baseSize);
 		m_info.style			= style;
 		m_info.ascender			= (m_face->size->metrics.ascender / 64.0f);
 		m_info.descender		= -(m_face->size->metrics.descender / 64.0f);
-		m_info.spaceXAdvance	= getXAdvance(U' ').value_or(m_info.baseSize);
-		m_info.spaceYAdvance	= getYAdvance(U' ').value_or(m_info.baseSize);
+
+		{
+			const GlyphIndex glyphIndex = getGlyphIndex(U' ');
+			m_info.spaceXAdvance = getXAdvanceFromGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
+			m_info.spaceYAdvance = getYAdvanceFromGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
+		}
 
 		return true;
 	}
@@ -254,46 +259,62 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<float> FontFace::getXAdvance(const char32 codePoint)
+	Optional<float> FontFace::getXAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const Hinting hinting)
 	{
-		const GlyphIndex glyphIndex = ::FT_Get_Char_Index(m_face, codePoint);
+		::FT_Int32 loadFlag = (hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
 
 		if (m_info.properties.hasColor)
 		{
-			if (::FT_Load_Glyph(m_face, glyphIndex, FT_LOAD_COLOR) == 0)
+			::FT_Fixed advance = 0;
+
+			if (::FT_Get_Advance(m_face, glyphIndex, (loadFlag | FT_LOAD_COLOR), &advance) == 0)
 			{
-				return (m_face->glyph->metrics.horiAdvance / 64.0f);
+				return (advance / 65536.0f);
 			}
 
 			// カラー読み込み失敗時はフォールバック
 		}
 
 		{
-			::FT_Int32 flag = FT_LOAD_NO_HINTING;
-
 			if (not((m_info.renderingMethod == FontMethod::Bitmap)
 				&& (m_info.style & FontStyle::Bitmap)))
 			{
-				flag |= FT_LOAD_NO_BITMAP;
+				loadFlag |= FT_LOAD_NO_BITMAP;
 			}
 
-			// ロード失敗時は none
-			if (::FT_Load_Glyph(m_face, glyphIndex, flag))
+			// スタイル合成が必要
+			if (m_info.style & (FontStyle::Bold | FontStyle::Italic))
 			{
+				// ロード失敗時は none
+				if (::FT_Load_Glyph(m_face, glyphIndex, loadFlag))
+				{
+					return none;
+				}
+
+				if (m_info.style & FontStyle::Bold)
+				{
+					::FT_GlyphSlot_Embolden(m_face->glyph);
+				}
+
+				if (m_info.style & FontStyle::Italic)
+				{
+					::FT_GlyphSlot_Oblique(m_face->glyph);
+				}
+
+				return (m_face->glyph->metrics.horiAdvance / 64.0f);
+			}
+			else
+			{
+				::FT_Fixed advance = 0;
+
+				if (::FT_Get_Advance(m_face, glyphIndex, loadFlag, &advance) == 0)
+				{
+					return (advance / 65536.0f);
+				}
+
+				// ロード失敗時は none
 				return none;
 			}
-
-			if (m_info.style & FontStyle::Bold)
-			{
-				::FT_GlyphSlot_Embolden(m_face->glyph);
-			}
-
-			if (m_info.style & FontStyle::Italic)
-			{
-				::FT_GlyphSlot_Oblique(m_face->glyph);
-			}
-
-			return (m_face->glyph->metrics.horiAdvance / 64.0f);
 		}
 	}
 
@@ -303,46 +324,64 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<float> FontFace::getYAdvance(const char32 codePoint)
+	Optional<float> FontFace::getYAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const Hinting hinting)
 	{
-		const GlyphIndex glyphIndex = ::FT_Get_Char_Index(m_face, codePoint);
+		const bool hasVertical = m_info.properties.hasVertical;
+
+		::FT_Int32 loadFlag = ((hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING) | (hasVertical ? FT_LOAD_VERTICAL_LAYOUT : 0));
 
 		if (m_info.properties.hasColor)
 		{
-			if (::FT_Load_Glyph(m_face, glyphIndex, (FT_LOAD_COLOR | FT_LOAD_VERTICAL_LAYOUT)) == 0)
+			::FT_Fixed advance = 0;
+
+			if (::FT_Get_Advance(m_face, glyphIndex, (loadFlag | FT_LOAD_COLOR), &advance) == 0)
 			{
-				return (m_face->glyph->metrics.vertAdvance / 64.0f);
+				return (advance / 65536.0f);
 			}
-			
+
 			// カラー読み込み失敗時はフォールバック
 		}
 
 		{
-			::FT_Int32 flags = (FT_LOAD_NO_HINTING | FT_LOAD_VERTICAL_LAYOUT);
-
 			if (not((m_info.renderingMethod == FontMethod::Bitmap)
 				&& (m_info.style & FontStyle::Bitmap)))
 			{
-				flags |= FT_LOAD_NO_BITMAP;
+				loadFlag |= FT_LOAD_NO_BITMAP;
 			}
 
-			// ロード失敗時は none
-			if (::FT_Load_Glyph(m_face, glyphIndex, flags))
+			// スタイル合成が必要
+			if (m_info.style & (FontStyle::Bold | FontStyle::Italic))
 			{
+				// ロード失敗時は none
+				if (::FT_Load_Glyph(m_face, glyphIndex, loadFlag))
+				{
+					return none;
+				}
+
+				if (m_info.style & FontStyle::Bold)
+				{
+					::FT_GlyphSlot_Embolden(m_face->glyph);
+				}
+
+				if (m_info.style & FontStyle::Italic)
+				{
+					::FT_GlyphSlot_Oblique(m_face->glyph);
+				}
+
+				return ((hasVertical ? m_face->glyph->metrics.vertAdvance : m_face->glyph->metrics.horiAdvance) / 64.0f);
+			}
+			else
+			{
+				::FT_Fixed advance = 0;
+
+				if (::FT_Get_Advance(m_face, glyphIndex, loadFlag, &advance) == 0)
+				{
+					return (advance / 65536.0f);
+				}
+
+				// ロード失敗時は none
 				return none;
 			}
-
-			if (m_info.style & FontStyle::Bold)
-			{
-				::FT_GlyphSlot_Embolden(m_face->glyph);
-			}
-
-			if (m_info.style & FontStyle::Italic)
-			{
-				::FT_GlyphSlot_Oblique(m_face->glyph);
-			}
-
-			return (m_face->glyph->metrics.vertAdvance / 64.0f);
 		}
 	}
 

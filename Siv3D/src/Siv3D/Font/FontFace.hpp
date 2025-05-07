@@ -31,9 +31,11 @@ namespace s3d
 	{
 		FontFaceProperties properties;
 
-		int32 baseSize = 16;
+		int16 baseSize = 16;
 
 		FontMethod renderingMethod = FontMethod::Bitmap;
+
+		Hinting hinting = Hinting::Yes;
 
 		FontStyle style = FontStyle::Normal;
 
@@ -69,10 +71,10 @@ namespace s3d
 		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, Ligature ligature) const;
 
 		[[nodiscard]]
-		Optional<float> getXAdvance(char32 codePoint);
+		Optional<float> getXAdvanceFromGlyphIndex(GlyphIndex glyphIndex, Hinting hinting);
 
 		[[nodiscard]]
-		Optional<float> getYAdvance(char32 codePoint);
+		Optional<float> getYAdvanceFromGlyphIndex(GlyphIndex glyphIndex, Hinting hinting);
 
 		[[nodiscard]]
 		GlyphIndex getGlyphIndex(char32 codePoint);

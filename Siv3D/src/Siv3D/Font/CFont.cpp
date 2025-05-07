@@ -232,4 +232,15 @@ namespace s3d
 	{
 		return m_fonts[handleID]->getGlyphNameByGlyphIndex(glyphIndex);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getXAdvanceFromGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	double CFont::getXAdvanceFromGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex)
+	{
+		return m_fonts[handleID]->getXAdvanceFromGlyphIndex(glyphIndex);
+	}
 }

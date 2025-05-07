@@ -56,7 +56,10 @@ namespace s3d
 	Font::Font() {}
 
 	Font::Font(const int32 baseSize, const FilePathView path)
-		: Font{ FontMethod::MSDF, baseSize, path, 0, U"", FontStyle::Normal } {}
+		: Font{ FontMethod::Bitmap, baseSize, path, 0, U"", FontStyle::Normal } {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path)
+		: Font{ fontMethod, baseSize, path, 0, U"", FontStyle::Normal } {}
 
 	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const size_t faceIndex, const StringView styleName, const FontStyle style)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(path, faceIndex, styleName, fontMethod, baseSize, style))) }
@@ -241,6 +244,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getGlyphName
+	//
+	////////////////////////////////////////////////////////////////
+
+	String Font::getGlyphName(const char32 codePoint) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
+		return getGlyphNameByGlyphIndex(glyphIndex);
+	}
+
+	String Font::getGlyphName(const StringView ch) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
+		return getGlyphNameByGlyphIndex(glyphIndex);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getGlyphNameByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
@@ -248,6 +269,35 @@ namespace s3d
 	String Font::getGlyphNameByGlyphIndex(const GlyphIndex glyphIndex) const
 	{
 		return SIV3D_ENGINE(Font)->getGlyphNameByGlyphIndex(m_handle->id(), glyphIndex);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getXAdvance
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Font::getXAdvance(const char32 codePoint) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
+		return getXAdvanceFromGlyphIndex(glyphIndex);
+	}
+
+	double Font::getXAdvance(const StringView ch) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
+		return getXAdvanceFromGlyphIndex(glyphIndex);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getXAdvanceFromGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Font::getXAdvanceFromGlyphIndex(const GlyphIndex glyphIndex) const
+	{
+		return SIV3D_ENGINE(Font)->getXAdvanceFromGlyphIndex(m_handle->id(), glyphIndex);
 	}
 
 	////////////////////////////////////////////////////////////////

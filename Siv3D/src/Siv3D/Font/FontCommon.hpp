@@ -26,4 +26,5 @@ extern "C"
 # include FT_MULTIPLE_MASTERS_H
 # include FT_SFNT_NAMES_H
 # include FT_TRUETYPE_IDS_H
+# include FT_ADVANCES_H
 }

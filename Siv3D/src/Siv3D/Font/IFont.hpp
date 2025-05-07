@@ -51,5 +51,8 @@ namespace s3d
 
 		[[nodiscard]]
 		virtual String getGlyphNameByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
+		
+		[[nodiscard]]
+		virtual double getXAdvanceFromGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
 	};
 }

@@ -130,4 +130,15 @@ namespace s3d
 	{
 		return m_face->getGlyphNameByGlyphIndex(glyphIndex);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getXAdvanceFromGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	double FontData::getXAdvanceFromGlyphIndex(const GlyphIndex glyphIndex)
+	{
+		return m_face->getXAdvanceFromGlyphIndex(glyphIndex, getInfo().hinting).value_or(0.0);
+	}
 }

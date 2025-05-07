@@ -49,6 +49,9 @@ namespace s3d
 		[[nodiscard]]
 		String getGlyphNameByGlyphIndex(GlyphIndex glyphIndex);
 
+		[[nodiscard]]
+		double getXAdvanceFromGlyphIndex(GlyphIndex glyphIndex);
+
 	private:
 
 		MemoryMappedFileView m_mappedFileView;

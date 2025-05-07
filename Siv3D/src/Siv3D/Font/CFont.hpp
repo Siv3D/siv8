@@ -40,11 +40,17 @@ namespace s3d
 
 		void setTabSize(Font::IDType handleID, int32 tabSize) override;
 
+		[[nodiscard]]
 		GlyphIndex getGlyphIndex(Font::IDType handleID, char32 codePoint) override;
 
+		[[nodiscard]]
 		GlyphIndex getGlyphIndex(Font::IDType handleID, StringView ch) override;
 
+		[[nodiscard]]
 		String getGlyphNameByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) override;
+
+		[[nodiscard]]
+		double getXAdvanceFromGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) override;
 
 	private:
 
