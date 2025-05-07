@@ -61,6 +61,9 @@ namespace s3d
 	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path)
 		: Font{ fontMethod, baseSize, path, 0, U"", FontStyle::Normal } {}
 
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const StringView styleName, const FontStyle style)
+		: Font{ fontMethod, baseSize, path, 0, styleName, style } {}
+
 	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const size_t faceIndex, const StringView styleName, const FontStyle style)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(path, faceIndex, styleName, fontMethod, baseSize, style))) }
 	{
@@ -117,6 +120,72 @@ namespace s3d
 	const FontFaceProperties& Font::properties() const
 	{
 		return SIV3D_ENGINE(Font)->getInfo(m_handle->id()).properties;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	familyName
+	//
+	////////////////////////////////////////////////////////////////
+
+	const String& Font::familyName() const
+	{
+		return properties().familyName;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	styleName
+	//
+	////////////////////////////////////////////////////////////////
+
+	const String& Font::styleName() const
+	{
+		return properties().styleName;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	postscriptName
+	//
+	////////////////////////////////////////////////////////////////
+
+	const String& Font::postscriptName() const
+	{
+		return properties().postscriptName;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	version
+	//
+	////////////////////////////////////////////////////////////////
+
+	const String& Font::version() const
+	{
+		return properties().version;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasColor
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Font::hasColor() const
+	{
+		return properties().hasColor;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasGlyphNames
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Font::hasGlyphNames() const
+	{
+		return properties().hasGlyphNames;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -207,7 +276,7 @@ namespace s3d
 
 	uint32 Font::num_glyphs() const
 	{
-		return SIV3D_ENGINE(Font)->getInfo(m_handle->id()).properties.numGlyphs;
+		return properties().numGlyphs;
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -128,6 +128,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PoleOfInaccessibility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\GlyphInfo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ResolvedGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Graphics2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IConstantBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CopyOption.hpp" />
