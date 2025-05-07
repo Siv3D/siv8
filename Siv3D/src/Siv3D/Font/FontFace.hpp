@@ -13,6 +13,7 @@
 # include <Siv3D/PredefinedYesNo.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FontStyle.hpp>
+# include <Siv3D/FontMethod.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
 # include "FontCommon.hpp"
 
@@ -25,6 +26,27 @@ namespace s3d
 		size_t count = 0;
 	};
 
+	struct FontFaceInfo
+	{
+		FontFaceProperties properties;
+
+		int32 baseSize = 16;
+
+		FontMethod renderingMethod = FontMethod::Bitmap;
+
+		FontStyle style = FontStyle::Normal;
+
+		int16 tabSize = 8;
+
+		float ascender = 0.0f;
+
+		float descender = 0.0f;
+
+		float spaceXAdvance = 0.0f;
+
+		float spaceYAdvance = 0.0f;
+	};
+
 	class FontFace
 	{
 	public:
@@ -35,19 +57,21 @@ namespace s3d
 		~FontFace();
 
 		[[nodiscard]]
-		bool init(::FT_Library library, ::FT_Face face, StringView styleName, int32 baseSize, FontStyle style);
+		bool init(::FT_Library library, ::FT_Face face, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style);
 
 		[[nodiscard]]
-		const FontFaceProperties& getProperties() const noexcept;
+		const FontFaceInfo& getInfo() const noexcept;
 
-		[[nodiscard]]
-		int32 getBaseSize() const noexcept;
-		
-		[[nodiscard]]
-		FontStyle getStyle() const noexcept;
+		void setTabSize(int32 tabSize) noexcept;
 
 		[[nodiscard]]
 		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, Ligature ligature) const;
+
+		[[nodiscard]]
+		Optional<float> getXAdvance(char32 codePoint);
+
+		[[nodiscard]]
+		Optional<float> getYAdvance(char32 codePoint);
 
 	private:
 
@@ -66,18 +90,6 @@ namespace s3d
 
 		std::unique_ptr<HarfBuzzObjects> m_hbObjects;
 
-		FontFaceProperties m_properties;
-
-		int32 m_baseSize = 16;
-
-		FontStyle m_style = FontStyle::Normal;
-
-		int16 m_tabSize = 8;
-
-		float m_ascender = 0.0f;
-
-		float m_descender = 0.0f;
-
-		float m_spaceWidth = 0.0f;
+		FontFaceInfo m_info;
 	};
 }

@@ -51,14 +51,14 @@ namespace s3d
 	{
 		m_hbObjects.reset();
 
-		if (m_face != nullptr)
+		if (m_face)
 		{
 			::FT_Done_Face(m_face);
 			m_face = nullptr;
 		}
 	}
 
-	bool FontFace::init(const ::FT_Library library, ::FT_Face face, const StringView styleName, int32 baseSize, const FontStyle style)
+	bool FontFace::init(const ::FT_Library library, ::FT_Face face, const StringView styleName, const FontMethod fontMethod, int32 baseSize, const FontStyle style)
 	{
 		assert(m_face == nullptr);
 
@@ -98,7 +98,7 @@ namespace s3d
 
 						if (properties.styleName == styleName)
 						{
-							m_properties = properties;
+							m_info.properties = properties;
 							found = true;
 							break;
 						}
@@ -123,18 +123,23 @@ namespace s3d
 					}
 
 					assert(0 < defaultStyleIndex);
-					m_properties = GetFontFaceProperties(face, mmVar->namedstyle[defaultStyleIndex - 1].coords);
+					m_info.properties = GetFontFaceProperties(face, mmVar->namedstyle[defaultStyleIndex - 1].coords);
 				}
 			}
 			else
 			{
-				m_properties = GetFontFaceProperties(face, nullptr);
+				m_info.properties = GetFontFaceProperties(face, nullptr);
 			}
 		}
 
-		// スケーリングできないフォント
+		m_info.renderingMethod = (m_info.properties.isScalable ? fontMethod : FontMethod::Bitmap);
+
 		if (::FT_Set_Pixel_Sizes(face, 0, baseSize))
-		{
+		{	
+			//
+			// スケーリングできないフォントの場合
+			//
+
 			if (face->num_fixed_sizes == 0)
 			{
 				::FT_Done_Face(face);
@@ -162,45 +167,25 @@ namespace s3d
 			}
 		}
 
-		// 半角空白の幅を取得
-		{
-			const HarfBuzzGlyphInfo glyphInfo = getHarfBuzzGlyphInfo(U" ", Ligature::Yes);
-
-			if (glyphInfo.count == 0)
-			{
-				::FT_Done_Face(face);
-				return false;
-			}
-
-			{
-				const GlyphIndex spaceGlyphIndex = glyphInfo.info[0].codepoint;
-
-				//m_spaceWidth = GetGlyphInfo(m_face, spaceGlyphIndex, m_property, method, 0).xAdvance;
-			}
-		}
-
-		m_face		= face;
-		m_baseSize	= baseSize;
-		m_style		= style;
-		m_ascender	= (m_face->size->metrics.ascender / 64.0f);
-		m_descender	= -(m_face->size->metrics.descender / 64.0f);
+		m_face					= face;
+		m_info.baseSize			= baseSize;
+		m_info.style			= style;
+		m_info.ascender			= (m_face->size->metrics.ascender / 64.0f);
+		m_info.descender		= -(m_face->size->metrics.descender / 64.0f);
+		m_info.spaceXAdvance	= getXAdvance(U' ').value_or(m_info.baseSize);
+		m_info.spaceYAdvance	= getYAdvance(U' ').value_or(m_info.baseSize);
 
 		return true;
 	}
 
-	const FontFaceProperties& FontFace::getProperties() const noexcept
+	const FontFaceInfo& FontFace::getInfo() const noexcept
 	{
-		return m_properties;
+		return m_info;
 	}
 
-	int32 FontFace::getBaseSize() const noexcept
+	void FontFace::setTabSize(const int32 tabSize) noexcept
 	{
-		return m_baseSize;
-	}
-
-	FontStyle FontFace::getStyle() const noexcept
-	{
-		return m_style;
+		m_info.tabSize = static_cast<int16>(Clamp(tabSize, 0, 32767));
 	}
 
 	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const Ligature ligature) const
@@ -231,6 +216,92 @@ namespace s3d
 			.info = glyphInfo,
 			.count = glyphCount
 		};
+	}
+
+	Optional<float> FontFace::getXAdvance(const char32 codePoint)
+	{
+		const GlyphIndex glyphIndex = ::FT_Get_Char_Index(m_face, codePoint);
+
+		if (m_info.properties.hasColor)
+		{
+			if (::FT_Load_Glyph(m_face, glyphIndex, FT_LOAD_COLOR) == 0)
+			{
+				return (m_face->glyph->metrics.horiAdvance / 64.0f);
+			}
+
+			// カラー読み込み失敗時はフォールバック
+		}
+
+		{
+			::FT_Int32 flag = FT_LOAD_NO_HINTING;
+
+			if (not((m_info.renderingMethod == FontMethod::Bitmap)
+				&& (m_info.style & FontStyle::Bitmap)))
+			{
+				flag |= FT_LOAD_NO_BITMAP;
+			}
+
+			// ロード失敗時は none
+			if (::FT_Load_Glyph(m_face, glyphIndex, flag))
+			{
+				return none;
+			}
+
+			if (m_info.style & FontStyle::Bold)
+			{
+				::FT_GlyphSlot_Embolden(m_face->glyph);
+			}
+
+			if (m_info.style & FontStyle::Italic)
+			{
+				::FT_GlyphSlot_Oblique(m_face->glyph);
+			}
+
+			return (m_face->glyph->metrics.horiAdvance / 64.0f);
+		}
+	}
+
+	Optional<float> FontFace::getYAdvance(const char32 codePoint)
+	{
+		const GlyphIndex glyphIndex = ::FT_Get_Char_Index(m_face, codePoint);
+
+		if (m_info.properties.hasColor)
+		{
+			if (::FT_Load_Glyph(m_face, glyphIndex, (FT_LOAD_COLOR | FT_LOAD_VERTICAL_LAYOUT)) == 0)
+			{
+				return (m_face->glyph->metrics.vertAdvance / 64.0f);
+			}
+			
+			// カラー読み込み失敗時はフォールバック
+		}
+
+		{
+			::FT_Int32 flags = (FT_LOAD_NO_HINTING | FT_LOAD_VERTICAL_LAYOUT);
+
+			if (not((m_info.renderingMethod == FontMethod::Bitmap)
+				&& (m_info.style & FontStyle::Bitmap)))
+			{
+				flags |= FT_LOAD_NO_BITMAP;
+			}
+
+			// ロード失敗時は none
+			if (::FT_Load_Glyph(m_face, glyphIndex, flags))
+			{
+				return none;
+			}
+
+			if (m_info.style & FontStyle::Bold)
+			{
+				::FT_GlyphSlot_Embolden(m_face->glyph);
+			}
+
+			if (m_info.style & FontStyle::Italic)
+			{
+				::FT_GlyphSlot_Oblique(m_face->glyph);
+			}
+
+			return (m_face->glyph->metrics.vertAdvance / 64.0f);
+		}
 	}
 
 	FontFace::HarfBuzzObjects::~HarfBuzzObjects()

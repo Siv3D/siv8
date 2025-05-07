@@ -36,15 +36,15 @@ namespace s3d
 		String toString() const;
 
 		[[nodiscard]]
-		const FontFaceProperties& getProperties() const noexcept;
+		const FontFaceInfo& getInfo() const noexcept;
+
+		void setTabSize(int32 tabSize) noexcept;
 
 	private:
 
 		MemoryMappedFileView m_mappedFileView;
 
 		std::unique_ptr<FontFace> m_face;
-
-		uint16 m_faceIndex = 0;
 
 		FontMethod m_renderingMethod = FontMethod::Bitmap;
 

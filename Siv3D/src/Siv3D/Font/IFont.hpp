@@ -17,6 +17,8 @@
 
 namespace s3d
 {
+	struct FontFaceInfo;
+
 	class SIV3D_NOVTABLE ISiv3DFont
 	{
 	public:
@@ -37,6 +39,8 @@ namespace s3d
 		virtual void release(Font::IDType handleID) = 0;
 
 		[[nodiscard]]
-		virtual const FontFaceProperties& getProperties(Font::IDType handleID) = 0;
+		virtual const FontFaceInfo& getInfo(Font::IDType handleID) = 0;
+
+		virtual void setTabSize(Font::IDType handleID, int32 tabSize) = 0;
 	};
 }

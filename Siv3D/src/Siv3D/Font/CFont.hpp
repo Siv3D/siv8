@@ -35,8 +35,11 @@ namespace s3d
 
 		void release(Font::IDType handleID) override;
 
-		const FontFaceProperties& getProperties(Font::IDType handleID) override;
-	
+		[[nodiscard]]
+		const FontFaceInfo& getInfo(Font::IDType handleID) override;
+
+		void setTabSize(Font::IDType handleID, int32 tabSize) override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;

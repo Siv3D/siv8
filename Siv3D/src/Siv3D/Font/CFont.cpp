@@ -186,12 +186,23 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getProperties
+	//	getInfo
 	//
 	////////////////////////////////////////////////////////////////
 
-	const FontFaceProperties& CFont::getProperties(const Font::IDType handleID)
+	const FontFaceInfo& CFont::getInfo(const Font::IDType handleID)
 	{
-		return m_fonts[handleID]->getProperties();
+		return m_fonts[handleID]->getInfo();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setTabSize
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CFont::setTabSize(const Font::IDType handleID, const int32 tabSize)
+	{
+		m_fonts[handleID]->setTabSize(tabSize);
 	}
 }
