@@ -63,6 +63,8 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CFont::~CFont()");
 
+		m_fallbackFonts.clear();
+
 		m_fonts.destroy();
 
 		m_freeType = nullptr;
@@ -181,7 +183,31 @@ namespace s3d
 
 	void CFont::release(const Font::IDType handleID)
 	{
+		for (const auto& fallbackFontID : m_fonts[handleID]->getFallbackFontIDs())
+		{
+			if (auto& fallbackFontEntry = m_fallbackFonts[fallbackFontID]; 
+				fallbackFontEntry)
+			{
+				fallbackFontEntry.pop_back();
+			}
+		}
+
 		m_fonts.erase(handleID);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addFallbackFont
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CFont::addFallbackFont(const Font::IDType handleID, const Font& font)
+	{
+		const Font::IDType fallbackFontID = font.id();
+		
+		m_fallbackFonts[fallbackFontID].push_back(font);
+		
+		m_fonts[handleID]->addFallbackFont(fallbackFontID);
 	}
 
 	////////////////////////////////////////////////////////////////

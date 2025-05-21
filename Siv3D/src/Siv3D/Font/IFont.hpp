@@ -38,6 +38,8 @@ namespace s3d
 
 		virtual void release(Font::IDType handleID) = 0;
 
+		virtual void addFallbackFont(Font::IDType handleID, const Font& font) = 0;
+
 		[[nodiscard]]
 		virtual const FontFaceInfo& getInfo(Font::IDType handleID) = 0;
 

@@ -11,6 +11,7 @@
 
 # pragma once
 # include "IFont.hpp"
+# include <Siv3D/HashMap.hpp>
 # include <Siv3D/Font.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
 # include "FontData.hpp"
@@ -35,6 +36,8 @@ namespace s3d
 
 		void release(Font::IDType handleID) override;
 
+		void addFallbackFont(Font::IDType handleID, const Font& font) override;
+
 		[[nodiscard]]
 		const FontFaceInfo& getInfo(Font::IDType handleID) override;
 
@@ -57,5 +60,7 @@ namespace s3d
 		FT_Library m_freeType = nullptr;
 
 		AssetHandleManager<Font::IDType, FontData> m_fonts{ "Font" };
+
+		HashMap<Font::IDType, Array<Font>> m_fallbackFonts;
 	};
 }

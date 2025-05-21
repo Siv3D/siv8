@@ -15,6 +15,7 @@
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
@@ -77,6 +78,31 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Font::~Font() {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Font::addFallback(const Font& font) const
+	{
+		if (not font)
+		{
+			LOG_FAIL("Font::addFallback(): Empty font");
+			return false;
+		}
+
+		if (font.id() == id())
+		{
+			LOG_FAIL(U"Font::addFallback(): Cannot add self as fallback");
+			return false;
+		}
+
+		SIV3D_ENGINE(Font)->addFallbackFont(m_handle->id(), font);
+
+		return true;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

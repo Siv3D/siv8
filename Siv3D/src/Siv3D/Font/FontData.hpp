@@ -35,6 +35,11 @@ namespace s3d
 		[[nodiscard]]
 		String toString() const;
 
+		void addFallbackFont(Font::IDType handleID);
+
+		[[nodiscard]]
+		const Array<Font::IDType>& getFallbackFontIDs() const noexcept;
+
 		[[nodiscard]]
 		const FontFaceInfo& getInfo() const noexcept;
 
@@ -57,6 +62,8 @@ namespace s3d
 		MemoryMappedFileView m_mappedFileView;
 
 		std::unique_ptr<FontFace> m_face;
+
+		Array<Font::IDType> m_fallbackFontIDs;
 
 		FontMethod m_renderingMethod = FontMethod::Bitmap;
 
