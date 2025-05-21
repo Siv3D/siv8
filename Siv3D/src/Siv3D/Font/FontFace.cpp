@@ -21,7 +21,7 @@ namespace s3d
 		static constexpr std::array<hb_feature_t, 5> NoLigatureFeatures{ {
 			{ HB_TAG('l','i','g','a'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 標準合字
 			{ HB_TAG('r','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 必須合字
-			{ HB_TAG('d','i','g','a'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 分音記号合字
+			{ HB_TAG('d','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 分音記号合字
 			{ HB_TAG('c','a','l','t'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト依存代替字形
 			{ HB_TAG('c','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト合字
 		} };

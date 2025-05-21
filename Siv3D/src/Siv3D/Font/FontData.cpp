@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include "FontData.hpp"
+# include <Siv3D/Font/IFont.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
@@ -173,16 +175,114 @@ namespace s3d
 	Array<ResolvedGlyph> FontData::getResolvedGlyphs(const StringView s, const EnableFallback enableFallback, const EnableLigatures enableLigatures)
 	{
 		const HarfBuzzGlyphInfo hbGlyphInfo = m_face->getHarfBuzzGlyphInfo(s, enableLigatures);
-
 		const size_t count = hbGlyphInfo.count;
 
 		if (enableFallback && m_fallbackFontIDs)
 		{
-			return{};
+			Array<ResolvedGlyph> result;
+
+			for (size_t i = 0; i < count;)
+			{
+				{
+					const auto& info = hbGlyphInfo.info[i];
+					const ResolvedGlyph resolvedGlyph{
+						.fontIndex	= 0,
+						.glyphIndex	= info.codepoint,
+						.pos		= info.cluster
+					};
+
+					if (resolvedGlyph.glyphIndex != GlyphIndexNotdef)
+					{
+						result.push_back(resolvedGlyph);
+						++i;
+						continue;
+					}
+				}
+
+				const uint32 pos = hbGlyphInfo.info[i].cluster;
+				size_t k = 0;
+
+				for (;;)
+				{
+					++k;
+
+					if ((count <= (i + k))
+						|| (hbGlyphInfo.info[(i + k)].cluster != pos))
+					{
+						break;
+					}
+				}
+
+				const size_t fallbackStringLength = [&]() -> size_t
+				{	
+					if (count <= (i + k))
+					{
+						return (s.size() - pos);
+					}
+					else
+					{
+						return (hbGlyphInfo.info[i + k].cluster - pos);
+					}
+				}();
+
+				bool fallbackDone = false;
+				
+				for (uint32 fallbackIndex = 1;
+					const auto& fallbackFontID : m_fallbackFontIDs)
+				{
+					const Array<ResolvedGlyph> resolvedGlyphs = SIV3D_ENGINE(Font)->getResolvedGlyphs(fallbackFontID, s.substr(pos, fallbackStringLength), EnableFallback::No, enableLigatures);
+
+					if (resolvedGlyphs.none([](const ResolvedGlyph& g) { return (g.glyphIndex == 0); }))
+					{
+						for (const auto& resolvedGlyph : resolvedGlyphs)
+						{
+							result << ResolvedGlyph{
+								.fontIndex	= fallbackIndex,
+								.glyphIndex	= resolvedGlyph.glyphIndex,
+								.pos		= pos
+							};
+						}
+
+						fallbackDone = true;
+						break;
+					}
+
+					++fallbackIndex;
+				}
+
+				if (not fallbackDone)
+				{
+					for (size_t m = 0; m < k; ++m)
+					{
+						const auto& info = hbGlyphInfo.info[i + m];
+						result << ResolvedGlyph{
+							.fontIndex	= 0,
+							.glyphIndex	= info.codepoint,
+							.pos		= info.cluster
+						};
+					}
+				}
+
+				i += k;
+			}
+
+			return result;
 		}
 		else
 		{
-			return{};
+			Array<ResolvedGlyph> result(count);
+
+			for (size_t i = 0; i < count; ++i)
+			{
+				const auto& info = hbGlyphInfo.info[i];
+				result[i] = {
+					.fontIndex	= 0,
+					.glyphIndex	= info.codepoint,
+					.pos		= info.cluster
+				};
+			}
+
+			return result;
 		}
 	}
 }
