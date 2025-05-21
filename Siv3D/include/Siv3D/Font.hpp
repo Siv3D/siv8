@@ -11,12 +11,14 @@
 
 # pragma once
 # include "Common.hpp"
+# include "Array.hpp"
 # include "AssetHandle.hpp"
 # include "FontMethod.hpp"
 # include "FontStyle.hpp"
 # include "GlyphIndex.hpp"
 # include "GlyphInfo.hpp"
 # include "ResolvedGlyph.hpp"
+# include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
@@ -351,6 +353,14 @@ namespace s3d
 		[[nodiscard]]
 		double getYAdvanceFromGlyphIndex(GlyphIndex glyphIndex) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	getResolvedGlyphs
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, EnableFallback enableFallback = EnableFallback::Yes, EnableLigatures enableLigatures = EnableLigatures::Yes) const;
 
 
 

@@ -145,7 +145,7 @@ namespace s3d
 		}
 
 		m_info.renderingMethod	= (m_info.properties.isScalable ? fontMethod : FontMethod::Bitmap);
-		m_info.hinting			= ((m_info.renderingMethod == FontMethod::Bitmap) ? Hinting::Yes : Hinting::No);
+		m_info.hinting			= ((m_info.renderingMethod == FontMethod::Bitmap) ? EnableHinting::Yes : EnableHinting::No);
 
 		if (::FT_Set_Pixel_Sizes(face, 0, baseSize))
 		{	
@@ -223,7 +223,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const Ligature ligature) const
+	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const EnableLigatures enableLigatures) const
 	{
 		const auto& hbObjects = *m_hbObjects;
 
@@ -235,7 +235,7 @@ namespace s3d
 		::hb_buffer_add_utf32(hbObjects.hbBuffer, reinterpret_cast<const uint32_t*>(s.data()), textLength, 0, textLength);
 		::hb_buffer_guess_segment_properties(hbObjects.hbBuffer);
 
-		if (ligature) // リガチャあり
+		if (enableLigatures) // リガチャあり
 		{
 			::hb_shape(hbObjects.hbFont, hbObjects.hbBuffer, nullptr, 0);
 		}
@@ -259,9 +259,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<float> FontFace::getXAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const Hinting hinting)
+	Optional<float> FontFace::getXAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
 	{
-		::FT_Int32 loadFlag = (hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
+		::FT_Int32 loadFlag = (enableHinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
 
 		if (m_info.properties.hasColor)
 		{
@@ -324,11 +324,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<float> FontFace::getYAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const Hinting hinting)
+	Optional<float> FontFace::getYAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
 	{
 		const bool hasVertical = m_info.properties.hasVertical;
 
-		::FT_Int32 loadFlag = ((hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING) | (hasVertical ? FT_LOAD_VERTICAL_LAYOUT : 0));
+		::FT_Int32 loadFlag = ((enableHinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING) | (hasVertical ? FT_LOAD_VERTICAL_LAYOUT : 0));
 
 		if (m_info.properties.hasColor)
 		{
@@ -409,7 +409,7 @@ namespace s3d
 		}
 		else
 		{
-			const HarfBuzzGlyphInfo glyphInfo = getHarfBuzzGlyphInfo(ch, Ligature::Yes);
+			const HarfBuzzGlyphInfo glyphInfo = getHarfBuzzGlyphInfo(ch, EnableLigatures::Yes);
 
 			if (glyphInfo.count != 1)
 			{

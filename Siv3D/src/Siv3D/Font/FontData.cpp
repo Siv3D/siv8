@@ -163,4 +163,26 @@ namespace s3d
 	{
 		return m_face->getXAdvanceFromGlyphIndex(glyphIndex, getInfo().hinting).value_or(0.0);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getResolvedGlyphs
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<ResolvedGlyph> FontData::getResolvedGlyphs(const StringView s, const EnableFallback enableFallback, const EnableLigatures enableLigatures)
+	{
+		const HarfBuzzGlyphInfo hbGlyphInfo = m_face->getHarfBuzzGlyphInfo(s, enableLigatures);
+
+		const size_t count = hbGlyphInfo.count;
+
+		if (enableFallback && m_fallbackFontIDs)
+		{
+			return{};
+		}
+		else
+		{
+			return{};
+		}
+	}
 }

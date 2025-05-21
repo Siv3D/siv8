@@ -35,7 +35,7 @@ namespace s3d
 
 		FontMethod renderingMethod = FontMethod::Bitmap;
 
-		Hinting hinting = Hinting::Yes;
+		EnableHinting hinting = EnableHinting::Yes;
 
 		FontStyle style = FontStyle::Normal;
 
@@ -68,13 +68,13 @@ namespace s3d
 		void setTabSize(int32 tabSize) noexcept;
 
 		[[nodiscard]]
-		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, Ligature ligature) const;
+		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, EnableLigatures enableLigatures) const;
 
 		[[nodiscard]]
-		Optional<float> getXAdvanceFromGlyphIndex(GlyphIndex glyphIndex, Hinting hinting);
+		Optional<float> getXAdvanceFromGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
 
 		[[nodiscard]]
-		Optional<float> getYAdvanceFromGlyphIndex(GlyphIndex glyphIndex, Hinting hinting);
+		Optional<float> getYAdvanceFromGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
 
 		[[nodiscard]]
 		GlyphIndex getGlyphIndex(char32 codePoint);

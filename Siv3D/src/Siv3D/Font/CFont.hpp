@@ -55,6 +55,9 @@ namespace s3d
 		[[nodiscard]]
 		double getXAdvanceFromGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) override;
 
+		[[nodiscard]]
+		Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, EnableFallback enableFallback, EnableLigatures enableLigatures) override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;

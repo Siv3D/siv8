@@ -269,4 +269,15 @@ namespace s3d
 	{
 		return m_fonts[handleID]->getXAdvanceFromGlyphIndex(glyphIndex);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getResolvedGlyphs
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<ResolvedGlyph> CFont::getResolvedGlyphs(const Font::IDType handleID, const StringView s, const EnableFallback enableFallback, const EnableLigatures enableLigatures)
+	{
+		return m_fonts[handleID]->getResolvedGlyphs(s, enableFallback, enableLigatures);
+	}
 }
