@@ -465,6 +465,68 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	renderOutline
+	//
+	////////////////////////////////////////////////////////////////
+
+	OutlineGlyph Font::renderOutline(const char32 codePoint, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return renderOutlineByGlyphIndex(glyphIndex, closeRing, readingDirection);
+	}
+
+	OutlineGlyph Font::renderOutline(const StringView ch, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return renderOutlineByGlyphIndex(glyphIndex, closeRing, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderOutline
+	//
+	////////////////////////////////////////////////////////////////
+
+	OutlineGlyph Font::renderOutlineByGlyphIndex(const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->renderOutlineByGlyphIndex(m_handle->id(), glyphIndex, closeRing, readingDirection);
+	}
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderBitmap
+	//
+	////////////////////////////////////////////////////////////////
+
+	BitmapGlyph Font::renderBitmap(const char32 codePoint, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return renderBitmapByGlyphIndex(glyphIndex, closeRing, readingDirection);
+	}
+
+	BitmapGlyph Font::renderBitmap(const StringView ch, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return renderBitmapByGlyphIndex(glyphIndex, closeRing, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderBitmapByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	BitmapGlyph Font::renderBitmapByGlyphIndex(const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->renderBitmapByGlyphIndex(m_handle->id(), glyphIndex, closeRing, readingDirection);
+	}
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	swap
 	//
 	////////////////////////////////////////////////////////////////

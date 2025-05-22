@@ -18,6 +18,8 @@
 # include "ReadingDirection.hpp"
 # include "GlyphIndex.hpp"
 # include "GlyphInfo.hpp"
+# include "OutlineGlyph.hpp"
+# include "BitmapGlyph.hpp"
 # include "ResolvedGlyph.hpp"
 # include "PredefinedYesNo.hpp"
 
@@ -405,6 +407,56 @@ namespace s3d
 		[[nodiscard]]
 		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderOutline
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		OutlineGlyph renderOutline(char32 codePoint, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		[[nodiscard]]
+		OutlineGlyph renderOutline(StringView ch, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderOutlineByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		OutlineGlyph renderOutlineByGlyphIndex(GlyphIndex glyphIndex, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderOutlines
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//Array<OutlineGlyph> renderOutlines(StringView s, CloseRing closeRing = CloseRing::No, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderBitmap
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BitmapGlyph renderBitmap(char32 codePoint, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		[[nodiscard]]
+		BitmapGlyph renderBitmap(StringView ch, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderBitmapByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BitmapGlyph renderBitmapByGlyphIndex(GlyphIndex glyphIndex, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 
 

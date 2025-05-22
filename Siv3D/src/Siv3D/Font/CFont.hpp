@@ -169,6 +169,24 @@ namespace s3d
 		[[nodiscard]]
 		GlyphInfo getGlyphInfoByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderOutlineByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		OutlineGlyph renderOutlineByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, CloseRing closeRing, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderBitmapByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BitmapGlyph renderBitmapByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, CloseRing closeRing, ReadingDirection readingDirection) override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;

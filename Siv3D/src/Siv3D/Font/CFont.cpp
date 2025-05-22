@@ -13,6 +13,7 @@
 # include <Siv3D/MemoryMappedFileView.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include "FontUtility.hpp"
+# include "GlyphRenderer/OutlineGlyphRenderer.hpp"
 
 namespace s3d
 {
@@ -319,5 +320,29 @@ namespace s3d
 	GlyphInfo CFont::getGlyphInfoByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		return m_fonts[handleID]->getGlyphInfoByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderOutlineByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	OutlineGlyph CFont::renderOutlineByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection)
+	{
+		const auto& font = m_fonts[handleID];
+		return RenderOutlineGlyph(font->getFace(), glyphIndex, closeRing, font->getInfo(), readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderBitmapByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	BitmapGlyph CFont::renderBitmapByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection)
+	{
+		const auto& font = m_fonts[handleID];
+		return{};// RenderBitmapGlyph(font->getFace(), glyphIndex, closeRing, font->getInfo(), readingDirection);
 	}
 }

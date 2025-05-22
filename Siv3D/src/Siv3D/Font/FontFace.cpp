@@ -23,7 +23,7 @@ namespace s3d
 			{ HB_TAG('r','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 必須合字
 			{ HB_TAG('d','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 分音記号合字
 			{ HB_TAG('c','a','l','t'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト依存代替字形
-			{ HB_TAG('c','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト合字
+			{ HB_TAG('c','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト
 		} };
 
 		[[nodiscard]]
@@ -145,7 +145,7 @@ namespace s3d
 		}
 
 		m_info.renderingMethod	= (m_info.properties.isScalable ? fontMethod : FontMethod::Bitmap);
-		m_info.hinting			= ((m_info.renderingMethod == FontMethod::Bitmap) ? EnableHinting::Yes : EnableHinting::No);
+		m_info.hinting			= ((m_info.renderingMethod == FontMethod::Bitmap) ? EnableHinting::No : EnableHinting::Yes);
 
 		if (::FT_Set_Pixel_Sizes(face, 0, baseSize))
 		{	

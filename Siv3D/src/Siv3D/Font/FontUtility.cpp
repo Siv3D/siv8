@@ -328,7 +328,9 @@ namespace s3d
 	{
 		::FT_Int32 loadFlag = (info.hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
 
-		if (readingDirection == ReadingDirection::TopToBottom)
+		const bool ttb = (readingDirection == ReadingDirection::TopToBottom);
+
+		if (ttb)
 		{
 			loadFlag |= FT_LOAD_VERTICAL_LAYOUT;
 		}
@@ -341,13 +343,13 @@ namespace s3d
 			{
 				.glyphIndex			= glyphIndex,
 				.bufferThickness	= bufferThickness,
-				.left				= (face->glyph->metrics.horiBearingX / 64.0f),
-				.top				= (face->glyph->metrics.horiBearingY / 64.0f),
+				.left				= ((ttb ? face->glyph->metrics.vertBearingX : face->glyph->metrics.horiBearingX) / 64.0f),
+				.top				= ((ttb ? face->glyph->metrics.vertBearingY : face->glyph->metrics.horiBearingY) / 64.0f),
 				.width				= (face->glyph->metrics.width / 64.0f),
 				.height				= (face->glyph->metrics.height / 64.0f),
 				.ascender			= info.ascender,
 				.descender			= info.descender,
-				.advance			= (face->glyph->metrics.horiAdvance / 64.0f),
+				.advance			= ((ttb ? face->glyph->metrics.vertAdvance : face->glyph->metrics.horiAdvance) / 64.0f),
 			};
 		}
 
@@ -375,13 +377,13 @@ namespace s3d
 		{
 			.glyphIndex			= glyphIndex,
 			.bufferThickness	= bufferThickness,
-			.left				= (face->glyph->metrics.horiBearingX / 64.0f),
-			.top				= (face->glyph->metrics.horiBearingY / 64.0f),
+			.left				= ((ttb ? face->glyph->metrics.vertBearingX : face->glyph->metrics.horiBearingX) / 64.0f),
+			.top				= ((ttb ? face->glyph->metrics.vertBearingY : face->glyph->metrics.horiBearingY) / 64.0f),
 			.width				= (face->glyph->metrics.width / 64.0f),
 			.height				= (face->glyph->metrics.height / 64.0f),
 			.ascender			= info.ascender,
 			.descender			= info.descender,
-			.advance			= (face->glyph->metrics.horiAdvance / 64.0f),
+			.advance			= ((ttb ? face->glyph->metrics.vertAdvance : face->glyph->metrics.horiAdvance) / 64.0f),
 		};
 
 		//if (info.renderingMethod == FontMethod::Bitmap)

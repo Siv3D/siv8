@@ -14,6 +14,7 @@
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
 # include "Array.hpp"
+# include "ArrayAlgorithm.hpp"
 # include "2DShapes.hpp"
 # include "PredefinedYesNo.hpp"
 # include "RangeFormatter.hpp"
@@ -934,9 +935,9 @@ namespace s3d
 //
 //		template <class Fty>
 //		LineString& remove_if(Fty f);
-//
-//		LineString& reverse();
-//
+
+		constexpr LineString& reverse();
+
 //		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
 //		/// @return 連続する線分の向きを反転した新しい LineString
 //		[[nodiscard]]
@@ -957,9 +958,9 @@ namespace s3d
 //
 //		[[nodiscard]]
 //		LineString slice(size_t index, size_t length) const;
-//
-//		LineString& unique_consecutive();
-//
+
+		constexpr LineString& unique_consecutive();
+
 //		[[nodiscard]]
 //		LineString uniqued_consecutive() const&;
 //
