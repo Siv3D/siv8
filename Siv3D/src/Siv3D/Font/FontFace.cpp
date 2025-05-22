@@ -188,8 +188,8 @@ namespace s3d
 
 		{
 			const GlyphIndex glyphIndex = getGlyphIndex(U' ');
-			m_info.spaceXAdvance = getXAdvanceFromGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
-			m_info.spaceYAdvance = getYAdvanceFromGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
+			m_info.spaceXAdvance = getXAdvanceByGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
+			m_info.spaceYAdvance = getYAdvanceByGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
 		}
 
 		return true;
@@ -255,11 +255,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getXAdvance
+	//	getXAdvanceByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<float> FontFace::getXAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
+	Optional<float> FontFace::getXAdvanceByGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
 	{
 		::FT_Int32 loadFlag = (enableHinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
 
@@ -267,7 +267,7 @@ namespace s3d
 		{
 			::FT_Fixed advance = 0;
 
-			if (::FT_Get_Advance(m_face, glyphIndex, (loadFlag | FT_LOAD_COLOR), &advance) == 0)
+			if (::FT_Get_Advance(m_face, glyphIndex, loadFlag, &advance) == 0)
 			{
 				return (advance / 65536.0f);
 			}
@@ -320,11 +320,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getYAdvance
+	//	getYAdvanceByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<float> FontFace::getYAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
+	Optional<float> FontFace::getYAdvanceByGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
 	{
 		const bool hasVertical = m_info.properties.hasVertical;
 
@@ -334,7 +334,7 @@ namespace s3d
 		{
 			::FT_Fixed advance = 0;
 
-			if (::FT_Get_Advance(m_face, glyphIndex, (loadFlag | FT_LOAD_COLOR), &advance) == 0)
+			if (::FT_Get_Advance(m_face, glyphIndex, loadFlag, &advance) == 0)
 			{
 				return (advance / 65536.0f);
 			}
@@ -436,6 +436,17 @@ namespace s3d
 		}
 
 		return Unicode::FromUTF8(glyphNameBuffer);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getFace
+	//
+	////////////////////////////////////////////////////////////////
+
+	::FT_Face FontFace::getFace() const noexcept
+	{
+		return m_face;
 	}
 
 	////////////////////////////////////////////////////////////////

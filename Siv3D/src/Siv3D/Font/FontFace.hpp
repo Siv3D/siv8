@@ -16,6 +16,7 @@
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
+# include "FontUtility.hpp"
 # include "FontCommon.hpp"
 
 namespace s3d
@@ -25,29 +26,6 @@ namespace s3d
 		const hb_glyph_info_t* info = nullptr;
 
 		size_t count = 0;
-	};
-
-	struct FontFaceInfo
-	{
-		FontFaceProperties properties;
-
-		int16 baseSize = 16;
-
-		FontMethod renderingMethod = FontMethod::Bitmap;
-
-		EnableHinting hinting = EnableHinting::Yes;
-
-		FontStyle style = FontStyle::Normal;
-
-		int16 tabSize = 8;
-
-		float ascender = 0.0f;
-
-		float descender = 0.0f;
-
-		float spaceXAdvance = 0.0f;
-
-		float spaceYAdvance = 0.0f;
 	};
 
 	class FontFace
@@ -71,10 +49,10 @@ namespace s3d
 		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, EnableLigatures enableLigatures) const;
 
 		[[nodiscard]]
-		Optional<float> getXAdvanceFromGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
+		Optional<float> getXAdvanceByGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
 
 		[[nodiscard]]
-		Optional<float> getYAdvanceFromGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
+		Optional<float> getYAdvanceByGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
 
 		[[nodiscard]]
 		GlyphIndex getGlyphIndex(char32 codePoint);
@@ -84,6 +62,9 @@ namespace s3d
 
 		[[nodiscard]]
 		String getGlyphNameByGlyphIndex(GlyphIndex glyphIndex);
+
+		[[nodiscard]]
+		::FT_Face getFace() const noexcept;
 
 	private:
 

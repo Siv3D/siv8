@@ -43,6 +43,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	GetFontFaceProperties
+	//
+	////////////////////////////////////////////////////////////////
+
 	[[nodiscard]]
 	FontFaceProperties GetFontFaceProperties(const ::FT_Face face, const FT_Fixed* namedStyleCoords)
 	{
@@ -150,5 +156,68 @@ namespace s3d
 		properties.hasGlyphNames	= FT_HAS_GLYPH_NAMES(face);
 
 		return properties;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	GetGlyphInfo
+	//
+	////////////////////////////////////////////////////////////////
+
+	GlyphInfo GetGlyphInfo(const ::FT_Face face, const GlyphIndex glyphIndex, const FontFaceInfo& info, const int16 bufferThickness)
+	{
+		::FT_Int32 loadFlag = (info.hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
+
+		if (info.properties.hasColor
+			&& (not ::FT_Load_Glyph(face, glyphIndex, loadFlag)))
+			// カラー読み込み失敗時はフォールバック
+		{
+			return GlyphInfo
+			{
+				.glyphIndex			= glyphIndex,
+				.bufferThickness	= bufferThickness,
+				.left				= (face->glyph->metrics.horiBearingX / 64.0f),
+				.top				= (face->glyph->metrics.horiBearingY / 64.0f),
+				.width				= (face->glyph->metrics.width / 64.0f),
+				.height				= (face->glyph->metrics.height / 64.0f),
+				.ascender			= info.ascender,
+				.descender			= info.descender,
+				.advance			= (face->glyph->metrics.horiAdvance / 64.0f),
+			};
+		}
+
+		if (not((info.renderingMethod == FontMethod::Bitmap)
+			&& (info.style & FontStyle::Bitmap)))
+		{
+			loadFlag |= FT_LOAD_NO_BITMAP;
+		}
+
+		if (::FT_Load_Glyph(face, glyphIndex, loadFlag))
+		{
+			return{};
+		}
+
+		if (info.style & FontStyle::Bold)
+		{
+			::FT_GlyphSlot_Embolden(face->glyph);
+		}
+
+		if (info.style & FontStyle::Italic)
+		{
+			::FT_GlyphSlot_Oblique(face->glyph);
+		}
+
+		return GlyphInfo
+		{
+			.glyphIndex			= glyphIndex,
+			.bufferThickness	= bufferThickness,
+			.left				= (face->glyph->metrics.horiBearingX / 64.0f),
+			.top				= (face->glyph->metrics.horiBearingY / 64.0f),
+			.width				= (face->glyph->metrics.width / 64.0f),
+			.height				= (face->glyph->metrics.height / 64.0f),
+			.ascender			= info.ascender,
+			.descender			= info.descender,
+			.advance			= (face->glyph->metrics.horiAdvance / 64.0f),
+		};
 	}
 }

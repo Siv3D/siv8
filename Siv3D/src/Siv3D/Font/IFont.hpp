@@ -55,9 +55,15 @@ namespace s3d
 		virtual String getGlyphNameByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
 		
 		[[nodiscard]]
-		virtual double getXAdvanceFromGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
+		virtual double getXAdvanceByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
+
+		[[nodiscard]]
+		virtual double getYAdvanceByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
 
 		[[nodiscard]]
 		virtual Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, EnableFallback enableFallback, EnableLigatures enableLigatures) = 0;
+
+		[[nodiscard]]
+		virtual GlyphInfo getGlyphInfoByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
 	};
 }

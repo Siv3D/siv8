@@ -110,12 +110,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getXAdvanceFromGlyphIndex
+		//	getXAdvanceByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		double getXAdvanceFromGlyphIndex(GlyphIndex glyphIndex);
+		double getXAdvanceByGlyphIndex(GlyphIndex glyphIndex);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getYAdvanceByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		double getYAdvanceByGlyphIndex(GlyphIndex glyphIndex);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -125,6 +134,15 @@ namespace s3d
 
 		[[nodiscard]]
 		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, EnableFallback enableFallback, EnableLigatures enableLigatures);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlyphInfoByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex) const;
 
 	private:
 

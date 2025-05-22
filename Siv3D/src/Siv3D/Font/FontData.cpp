@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "FontData.hpp"
+# include "FontUtility.hpp"
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -157,13 +158,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getXAdvanceFromGlyphIndex
+	//	getXAdvanceByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	double FontData::getXAdvanceFromGlyphIndex(const GlyphIndex glyphIndex)
+	double FontData::getXAdvanceByGlyphIndex(const GlyphIndex glyphIndex)
 	{
-		return m_face->getXAdvanceFromGlyphIndex(glyphIndex, getInfo().hinting).value_or(0.0);
+		return m_face->getXAdvanceByGlyphIndex(glyphIndex, getInfo().hinting).value_or(0.0);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getYAdvanceByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	double FontData::getYAdvanceByGlyphIndex(const GlyphIndex glyphIndex)
+	{
+		return m_face->getYAdvanceByGlyphIndex(glyphIndex, getInfo().hinting).value_or(0.0);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -284,5 +296,17 @@ namespace s3d
 
 			return result;
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphInfoByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	GlyphInfo FontData::getGlyphInfoByGlyphIndex(const GlyphIndex glyphIndex) const
+	{
+		const int16 bufferThickness = 0; // [Siv3D ToDo]
+		return GetGlyphInfo(m_face->getFace(), glyphIndex, m_face->getInfo(), bufferThickness);
 	}
 }

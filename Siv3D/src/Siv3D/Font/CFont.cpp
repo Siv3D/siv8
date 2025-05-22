@@ -261,13 +261,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getXAdvanceFromGlyphIndex
+	//	getXAdvanceByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	double CFont::getXAdvanceFromGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex)
+	double CFont::getXAdvanceByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex)
 	{
-		return m_fonts[handleID]->getXAdvanceFromGlyphIndex(glyphIndex);
+		return m_fonts[handleID]->getXAdvanceByGlyphIndex(glyphIndex);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getYAdvanceByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	double CFont::getYAdvanceByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex)
+	{
+		return m_fonts[handleID]->getYAdvanceByGlyphIndex(glyphIndex);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -279,5 +290,16 @@ namespace s3d
 	Array<ResolvedGlyph> CFont::getResolvedGlyphs(const Font::IDType handleID, const StringView s, const EnableFallback enableFallback, const EnableLigatures enableLigatures)
 	{
 		return m_fonts[handleID]->getResolvedGlyphs(s, enableFallback, enableLigatures);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphInfoByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	GlyphInfo CFont::getGlyphInfoByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex)
+	{
+		return m_fonts[handleID]->getGlyphInfoByGlyphIndex(glyphIndex);
 	}
 }

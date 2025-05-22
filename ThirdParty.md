@@ -17,7 +17,7 @@ Name | Version
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
 [fast_float](https://github.com/fastfloat/fast_float) | Version 8.0.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
-[FreeType](https://www.freetype.org/) | 2.13.2
+[FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
 [GLFW](https://github.com/glfw/glfw) | 3.4
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 11.2.0
