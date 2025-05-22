@@ -140,9 +140,9 @@ namespace s3d
 		return m_face->getGlyphIndex(codePoint);
 	}
 
-	GlyphIndex FontData::getGlyphIndex(const StringView ch)
+	GlyphIndex FontData::getGlyphIndex(const StringView ch, const ReadingDirection readingDirection)
 	{
-		return m_face->getGlyphIndex(ch);
+		return m_face->getGlyphIndex(ch, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -180,13 +180,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getYAdvance
+	//
+	////////////////////////////////////////////////////////////////
+
+	double FontData::getYAdvance(const StringView ch)
+	{
+		return m_face->getYAdvance(ch);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getResolvedGlyphs
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<ResolvedGlyph> FontData::getResolvedGlyphs(const StringView s, const EnableFallback enableFallback, const EnableLigatures enableLigatures)
+	Array<ResolvedGlyph> FontData::getResolvedGlyphs(const StringView s, const ReadingDirection readingDirection, const EnableFallback enableFallback, const EnableLigatures enableLigatures)
 	{
-		const HarfBuzzGlyphInfo hbGlyphInfo = m_face->getHarfBuzzGlyphInfo(s, enableLigatures);
+		const HarfBuzzGlyphInfo hbGlyphInfo = m_face->getHarfBuzzGlyphInfo(s, enableLigatures, readingDirection);
 		const size_t count = hbGlyphInfo.count;
 
 		if (enableFallback && m_fallbackFontIDs)
@@ -242,7 +253,7 @@ namespace s3d
 				for (uint32 fallbackIndex = 1;
 					const auto& fallbackFontID : m_fallbackFontIDs)
 				{
-					const Array<ResolvedGlyph> resolvedGlyphs = SIV3D_ENGINE(Font)->getResolvedGlyphs(fallbackFontID, s.substr(pos, fallbackStringLength), EnableFallback::No, enableLigatures);
+					const Array<ResolvedGlyph> resolvedGlyphs = SIV3D_ENGINE(Font)->getResolvedGlyphs(fallbackFontID, s.substr(pos, fallbackStringLength), readingDirection, EnableFallback::No, enableLigatures);
 
 					if (resolvedGlyphs.none([](const ResolvedGlyph& g) { return (g.glyphIndex == 0); }))
 					{
@@ -304,9 +315,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	GlyphInfo FontData::getGlyphInfoByGlyphIndex(const GlyphIndex glyphIndex) const
+	GlyphInfo FontData::getGlyphInfoByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
 	{
 		const int16 bufferThickness = 0; // [Siv3D ToDo]
-		return GetGlyphInfo(m_face->getFace(), glyphIndex, m_face->getInfo(), bufferThickness);
+		return GetGlyphInfo(m_face->getFace(), glyphIndex, m_face->getInfo(), bufferThickness, readingDirection);
 	}
 }

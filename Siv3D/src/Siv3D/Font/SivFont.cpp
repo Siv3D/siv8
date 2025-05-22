@@ -311,14 +311,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Font::hasGlyph(const char32 codePoint) const
+	bool Font::hasGlyph(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint) != GlyphIndexNotdef);
+		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection) != GlyphIndexNotdef);
 	}
 
-	bool Font::hasGlyph(const StringView ch) const
+	bool Font::hasGlyph(const StringView ch, const ReadingDirection readingDirection) const
 	{
-		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch) != GlyphIndexNotdef);
+		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection) != GlyphIndexNotdef);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -327,14 +327,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	GlyphIndex Font::getGlyphIndex(const char32 codePoint) const
+	GlyphIndex Font::getGlyphIndex(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
+		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
 	}
 
-	GlyphIndex Font::getGlyphIndex(const StringView ch) const
+	GlyphIndex Font::getGlyphIndex(const StringView ch, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
+		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -343,15 +343,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String Font::getGlyphName(const char32 codePoint) const
+	String Font::getGlyphName(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
 		return getGlyphNameByGlyphIndex(glyphIndex);
 	}
 
-	String Font::getGlyphName(const StringView ch) const
+	String Font::getGlyphName(const StringView ch, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
 		return getGlyphNameByGlyphIndex(glyphIndex);
 	}
 
@@ -372,15 +372,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Font::getXAdvance(const char32 codePoint) const
+	double Font::getXAdvance(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
 		return getXAdvanceByGlyphIndex(glyphIndex);
 	}
 
-	double Font::getXAdvance(const StringView ch) const
+	double Font::getXAdvance(const StringView ch, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
 		return getXAdvanceByGlyphIndex(glyphIndex);
 	}
 
@@ -403,14 +403,12 @@ namespace s3d
 
 	double Font::getYAdvance(const char32 codePoint) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
-		return getYAdvanceByGlyphIndex(glyphIndex);
+		return SIV3D_ENGINE(Font)->getYAdvance(m_handle->id(), StringView{ &codePoint, 1 });
 	}
 
 	double Font::getYAdvance(const StringView ch) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
-		return getYAdvanceByGlyphIndex(glyphIndex);
+		return SIV3D_ENGINE(Font)->getYAdvance(m_handle->id(), ch);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -431,9 +429,9 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	Array<ResolvedGlyph> Font::getResolvedGlyphs(const StringView s, const EnableFallback enableFallback, const EnableLigatures enableLigatures) const
+	Array<ResolvedGlyph> Font::getResolvedGlyphs(const StringView s, const ReadingDirection readingDirection, const EnableFallback enableFallback, const EnableLigatures enableLigatures) const
 	{
-		return SIV3D_ENGINE(Font)->getResolvedGlyphs(m_handle->id(), s, enableFallback, enableLigatures);
+		return SIV3D_ENGINE(Font)->getResolvedGlyphs(m_handle->id(), s, readingDirection, enableFallback, enableLigatures);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -442,16 +440,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	GlyphInfo Font::getGlyphInfo(const char32 codePoint) const
+	GlyphInfo Font::getGlyphInfo(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
-		return getGlyphInfoByGlyphIndex(glyphIndex);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return getGlyphInfoByGlyphIndex(glyphIndex, readingDirection);
 	}
 
-	GlyphInfo Font::getGlyphInfo(const StringView ch) const
+	GlyphInfo Font::getGlyphInfo(const StringView ch, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
-		return getGlyphInfoByGlyphIndex(glyphIndex);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return getGlyphInfoByGlyphIndex(glyphIndex, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -460,9 +458,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	GlyphInfo Font::getGlyphInfoByGlyphIndex(const GlyphIndex glyphIndex) const
+	GlyphInfo Font::getGlyphInfoByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->getGlyphInfoByGlyphIndex(m_handle->id(), glyphIndex);
+		return SIV3D_ENGINE(Font)->getGlyphInfoByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////

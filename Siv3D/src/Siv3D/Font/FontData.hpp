@@ -97,7 +97,7 @@ namespace s3d
 		GlyphIndex getGlyphIndex(char32 codePoint);
 
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(StringView ch);
+		GlyphIndex getGlyphIndex(StringView ch, ReadingDirection readingDirection);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -128,12 +128,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	getYAdvance
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		double getYAdvance(StringView ch);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	getResolvedGlyphs
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, EnableFallback enableFallback, EnableLigatures enableLigatures);
+		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, ReadingDirection readingDirection, EnableFallback enableFallback, EnableLigatures enableLigatures);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -142,7 +151,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex) const;
+		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex, const ReadingDirection readingDirection) const;
 
 	private:
 

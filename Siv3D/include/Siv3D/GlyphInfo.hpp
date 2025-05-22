@@ -38,5 +38,13 @@ namespace s3d
 
 		/// @brief 次のグリフへの移動量
 		float advance = 0.0f;
+
+		[[nodiscard]]
+		constexpr Vec2 getOffset(double scale = 1.0) const noexcept;
+
+		[[nodiscard]]
+		constexpr Vec2 getBase(double scale = 1.0) const noexcept;
 	};
 }
+
+# include "detail/GlyphInfo.ipp"

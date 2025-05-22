@@ -104,7 +104,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(Font::IDType handleID, char32 codePoint) override;
+		GlyphIndex getGlyphIndex(Font::IDType handleID, char32 codePoint, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -113,7 +113,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(Font::IDType handleID, StringView ch) override;
+		GlyphIndex getGlyphIndex(Font::IDType handleID, StringView ch, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -144,12 +144,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	getYAdvance
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		double getYAdvance(Font::IDType handleID, StringView ch) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	getResolvedGlyphs
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, EnableFallback enableFallback, EnableLigatures enableLigatures) override;
+		Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, ReadingDirection readingDirection, EnableFallback enableFallback, EnableLigatures enableLigatures) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -158,7 +167,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		GlyphInfo getGlyphInfoByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) override;
+		GlyphInfo getGlyphInfoByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) override;
 
 	private:
 

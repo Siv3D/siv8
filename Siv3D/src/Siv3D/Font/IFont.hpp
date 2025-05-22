@@ -46,10 +46,10 @@ namespace s3d
 		virtual void setTabSize(Font::IDType handleID, int32 tabSize) = 0;
 
 		[[nodiscard]]
-		virtual GlyphIndex getGlyphIndex(Font::IDType handleID, char32 codePoint) = 0;
+		virtual GlyphIndex getGlyphIndex(Font::IDType handleID, char32 codePoint, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
-		virtual GlyphIndex getGlyphIndex(Font::IDType handleID, StringView ch) = 0;
+		virtual GlyphIndex getGlyphIndex(Font::IDType handleID, StringView ch, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
 		virtual String getGlyphNameByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
@@ -61,9 +61,12 @@ namespace s3d
 		virtual double getYAdvanceByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
 
 		[[nodiscard]]
-		virtual Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, EnableFallback enableFallback, EnableLigatures enableLigatures) = 0;
+		virtual double getYAdvance(Font::IDType handleID, StringView ch) = 0;
 
 		[[nodiscard]]
-		virtual GlyphInfo getGlyphInfoByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
+		virtual Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, ReadingDirection readingDirection, EnableFallback enableFallback, EnableLigatures enableLigatures) = 0;
+
+		[[nodiscard]]
+		virtual GlyphInfo getGlyphInfoByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 	};
 }

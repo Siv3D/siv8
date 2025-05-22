@@ -223,12 +223,21 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const EnableLigatures enableLigatures) const
+	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
 	{
 		const auto& hbObjects = *m_hbObjects;
 
 		::hb_buffer_clear_contents(hbObjects.hbBuffer);
-		::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_LTR);
+		
+		if (readingDirection == ReadingDirection::LeftToRight)
+		{
+			::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_LTR);
+		}
+		else // ReadingDirection::TopToBottom
+		{
+			::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_TTB);
+		}
+
 		::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_COMMON);
 
 		const int32 textLength = static_cast<int32>(s.length());
@@ -326,62 +335,40 @@ namespace s3d
 
 	Optional<float> FontFace::getYAdvanceByGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
 	{
-		const bool hasVertical = m_info.properties.hasVertical;
+		const ::hb_position_t vAdvance = ::hb_font_get_glyph_v_advance(m_hbObjects->hbFont, glyphIndex);
+		return (-vAdvance / 64.0f);
+	}
 
-		::FT_Int32 loadFlag = ((enableHinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING) | (hasVertical ? FT_LOAD_VERTICAL_LAYOUT : 0));
+	////////////////////////////////////////////////////////////////
+	//
+	//	getYAdvance
+	//
+	////////////////////////////////////////////////////////////////
 
-		if (m_info.properties.hasColor)
+	float FontFace::getYAdvance(const StringView ch)
+	{
+		const auto& hbObjects = *m_hbObjects;
+
+		::hb_buffer_clear_contents(hbObjects.hbBuffer);
+		::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_TTB);
+		::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_COMMON);
+
+		const int32 textLength = static_cast<int32>(ch.length());
+		::hb_buffer_add_utf32(hbObjects.hbBuffer, reinterpret_cast<const uint32_t*>(ch.data()), textLength, 0, textLength);
+		::hb_buffer_guess_segment_properties(hbObjects.hbBuffer);
+
+		::hb_shape(hbObjects.hbFont, hbObjects.hbBuffer, nullptr, 0);
+
+		uint32 glyphCount = 0;
+		const hb_glyph_position_t* glyphPos = hb_buffer_get_glyph_positions(hbObjects.hbBuffer, &glyphCount);
+
+		if (glyphCount)
 		{
-			::FT_Fixed advance = 0;
-
-			if (::FT_Get_Advance(m_face, glyphIndex, loadFlag, &advance) == 0)
-			{
-				return (advance / 65536.0f);
-			}
-
-			// カラー読み込み失敗時はフォールバック
+			return (-glyphPos[0].y_advance / 64.0f);
 		}
-
+		else
 		{
-			if (not((m_info.renderingMethod == FontMethod::Bitmap)
-				&& (m_info.style & FontStyle::Bitmap)))
-			{
-				loadFlag |= FT_LOAD_NO_BITMAP;
-			}
-
-			// スタイル合成が必要
-			if (m_info.style & (FontStyle::Bold | FontStyle::Italic))
-			{
-				// ロード失敗時は none
-				if (::FT_Load_Glyph(m_face, glyphIndex, loadFlag))
-				{
-					return none;
-				}
-
-				if (m_info.style & FontStyle::Bold)
-				{
-					::FT_GlyphSlot_Embolden(m_face->glyph);
-				}
-
-				if (m_info.style & FontStyle::Italic)
-				{
-					::FT_GlyphSlot_Oblique(m_face->glyph);
-				}
-
-				return ((hasVertical ? m_face->glyph->metrics.vertAdvance : m_face->glyph->metrics.horiAdvance) / 64.0f);
-			}
-			else
-			{
-				::FT_Fixed advance = 0;
-
-				if (::FT_Get_Advance(m_face, glyphIndex, loadFlag, &advance) == 0)
-				{
-					return (advance / 65536.0f);
-				}
-
-				// ロード失敗時は none
-				return none;
-			}
+			return 0.0f;
 		}
 	}
 
@@ -396,20 +383,16 @@ namespace s3d
 		return ::FT_Get_Char_Index(m_face, codePoint);
 	}
 
-	GlyphIndex FontFace::getGlyphIndex(const StringView ch)
+	GlyphIndex FontFace::getGlyphIndex(const StringView ch, const ReadingDirection readingDirection)
 	{
 		if (const size_t length = ch.size();
 			length == 0)
 		{
 			return GlyphIndexNotdef;
 		}
-		else if (length == 1)
-		{
-			return getGlyphIndex(ch[0]);
-		}
 		else
 		{
-			const HarfBuzzGlyphInfo glyphInfo = getHarfBuzzGlyphInfo(ch, EnableLigatures::Yes);
+			const HarfBuzzGlyphInfo glyphInfo = getHarfBuzzGlyphInfo(ch, EnableLigatures::Yes, readingDirection);
 
 			if (glyphInfo.count != 1)
 			{

@@ -15,6 +15,7 @@
 # include "AssetHandle.hpp"
 # include "FontMethod.hpp"
 # include "FontStyle.hpp"
+# include "ReadingDirection.hpp"
 # include "GlyphIndex.hpp"
 # include "GlyphInfo.hpp"
 # include "ResolvedGlyph.hpp"
@@ -277,16 +278,18 @@ namespace s3d
 
 		/// @brief 指定した文字のグリフを持つかを返します。
 		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
 		/// @return グリフを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool hasGlyph(char32 codePoint) const;
+		bool hasGlyph(char32 codePoint, ReadingDirection readingDirection) const;
 
 		/// @brief 指定した文字のグリフを持つかを返します。
 		/// @param ch 文字
+		/// @param readingDirection テキストの方向
 		/// @remark char32 型の要素 1 つでは表現できない文字のための関数です。
 		/// @return グリフを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool hasGlyph(StringView ch) const;
+		bool hasGlyph(StringView ch, ReadingDirection readingDirection) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -296,16 +299,18 @@ namespace s3d
 
 		/// @brief 指定した文字の、このフォント内でのグリフインデックスを返します。
 		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
 		/// @return このフォント内でのグリフインデックス
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(char32 codePoint) const;
+		GlyphIndex getGlyphIndex(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		/// @brief 指定した文字の、このフォント内でのグリフインデックスを返します。
 		/// @param ch 文字
+		/// @param readingDirection テキストの方向
 		/// @remark char32 型の要素 1 つでは表現できない文字のための関数です。
 		/// @return このフォント内でのグリフインデックス
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(StringView ch) const;
+		GlyphIndex getGlyphIndex(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -314,10 +319,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		String getGlyphName(char32 codePoint) const;
+		String getGlyphName(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		[[nodiscard]]
-		String getGlyphName(StringView ch) const;
+		String getGlyphName(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -335,10 +340,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		double getXAdvance(char32 codePoint) const;
+		double getXAdvance(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		[[nodiscard]]
-		double getXAdvance(StringView ch) const;
+		double getXAdvance(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -377,7 +382,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, EnableFallback enableFallback = EnableFallback::Yes, EnableLigatures enableLigatures = EnableLigatures::Yes) const;
+		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, ReadingDirection readingDirection = ReadingDirection::LeftToRight, EnableFallback enableFallback = EnableFallback::Yes, EnableLigatures enableLigatures = EnableLigatures::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -386,10 +391,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		GlyphInfo getGlyphInfo(char32 codePoint) const;
+		GlyphInfo getGlyphInfo(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		[[nodiscard]]
-		GlyphInfo getGlyphInfo(StringView ch) const;
+		GlyphInfo getGlyphInfo(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -398,7 +403,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex) const;
+		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 
 

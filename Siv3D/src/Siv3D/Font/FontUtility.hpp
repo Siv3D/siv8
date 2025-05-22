@@ -14,6 +14,7 @@
 # include <Siv3D/GlyphInfo.hpp>
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/FontStyle.hpp>
+# include <Siv3D/ReadingDirection.hpp>
 # include "FontCommon.hpp"
 
 namespace s3d
@@ -57,5 +58,5 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	GlyphInfo GetGlyphInfo(::FT_Face face, GlyphIndex glyphIndex, const FontFaceInfo& info, int16 bufferThickness);
+	GlyphInfo GetGlyphInfo(::FT_Face face, GlyphIndex glyphIndex, const FontFaceInfo& info, int16 bufferThickness, ReadingDirection readingDirection);
 }

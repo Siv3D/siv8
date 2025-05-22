@@ -13,6 +13,7 @@
 # include <Siv3D/PredefinedYesNo.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FontStyle.hpp>
+# include <Siv3D/ReadingDirection.hpp>
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
@@ -46,7 +47,7 @@ namespace s3d
 		void setTabSize(int32 tabSize) noexcept;
 
 		[[nodiscard]]
-		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, EnableLigatures enableLigatures) const;
+		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, EnableLigatures enableLigatures, ReadingDirection readingDirection) const;
 
 		[[nodiscard]]
 		Optional<float> getXAdvanceByGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
@@ -55,10 +56,13 @@ namespace s3d
 		Optional<float> getYAdvanceByGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
 
 		[[nodiscard]]
+		float getYAdvance(StringView ch);
+
+		[[nodiscard]]
 		GlyphIndex getGlyphIndex(char32 codePoint);
 
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(StringView ch);
+		GlyphIndex getGlyphIndex(StringView ch, const ReadingDirection readingDirection);
 
 		[[nodiscard]]
 		String getGlyphNameByGlyphIndex(GlyphIndex glyphIndex);
