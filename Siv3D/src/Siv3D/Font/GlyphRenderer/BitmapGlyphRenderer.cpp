@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include "BitmapGlyphRenderer.hpp"
-# include <Siv3D/EngineLog.hpp>
 
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4244)
 # include <ThirdParty/skia/include/core/SkBitmap.h>
@@ -25,23 +24,7 @@ namespace s3d
 	{
 		static BitmapGlyph RenderBitmapGlyphCOLRv1(const ::FT_Face face, const GlyphIndex glyphIndex, const int32 baseSize, const FontFaceInfo& info, const ReadingDirection readingDirection, SkFont* skFont)
 		{
-			if (::FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT))
-			{
-				return{};
-			}
-
-			//Size size{ (face->glyph->metrics.width / 64), (face->glyph->metrics.height / 64) };
-			//Size bsize{ face->glyph->bitmap.width, face->glyph->bitmap.rows };
-			//Size bxSize{ (face->bbox.xMax - face->bbox.xMin), (face->bbox.yMax - face->bbox.yMin) };
-			//int32 height = face->height;
-			//int32 units_per_EM = face->units_per_EM;
-			//Point horiBearing{ (face->glyph->metrics.horiBearingX / 64), (face->glyph->metrics.horiBearingY / 64) };
-			//Point vertBearing{ (face->glyph->metrics.vertBearingX / 64), (face->glyph->metrics.vertBearingY / 64) };
-			//Point bitmapPos{ (face->glyph->bitmap_left), (face->glyph->bitmap_top) };
-			//int32 xAdvance = (face->glyph->metrics.horiAdvance / 64);
-
-			constexpr float ScalingFactor = (436.90667f / 512);
-			skFont->setSize(ScalingFactor * baseSize);
+			skFont->setSize(static_cast<SkScalar>(baseSize));
 
 			SkFontMetrics metrics;
 			skFont->getMetrics(&metrics);
@@ -49,25 +32,12 @@ namespace s3d
 			const SkGlyphID skGlyphIndex = static_cast<SkGlyphID>(glyphIndex);
 			SkRect bounds{};
 			const SkScalar textWidth = skFont->measureText(&skGlyphIndex, sizeof(skGlyphIndex), SkTextEncoding::kGlyphID, &bounds);
-
 			const auto blob = SkTextBlob::MakeFromText(&skGlyphIndex, sizeof(skGlyphIndex), *skFont, SkTextEncoding::kGlyphID);
-			
-			const Size imageSize{ static_cast<int32>(bounds.width()), static_cast<int32>(bounds.height()) };
-			
-			//LOG_TEST(U"fAscent: {}"_fmt(metrics.fAscent));
-			//LOG_TEST(U"fDescent: {}"_fmt(metrics.fDescent));
-			//LOG_TEST(U"fTop: {}"_fmt(metrics.fTop));
-			//LOG_TEST(U"fBottom: {}"_fmt(metrics.fBottom));
-			//LOG_TEST(U"fLeading: {}"_fmt(metrics.fLeading));
-			//LOG_TEST(U"fXMin: {}"_fmt(metrics.fXMin));
-			//LOG_TEST(U"fXMax: {}"_fmt(metrics.fXMax));
-			//LOG_TEST(U"textWidth: {}"_fmt(textWidth));
-			//LOG_TEST(U"bounds: ({}, {}, {}, {})"_fmt(bounds.left(), bounds.top(), bounds.width(), bounds.height()));
-			//LOG_TEST(U"advance: {}"_fmt((face->glyph->metrics.horiAdvance / 64.0f)));
 
+			const Size imageSize{ static_cast<int32>(bounds.width()), static_cast<int32>(bounds.height()) };
 			Image image;
 			
-			if ((0 < bounds.width()) && (0 < bounds.height()))
+			if ((0 < imageSize.x) && (0 < imageSize.y))
 			{
 				image.resize(imageSize, Color{ 0, 0, 0, 0 });
 
@@ -94,9 +64,19 @@ namespace s3d
 		
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
-				glyph.left		= ((textWidth - bounds.width()) / 2);
-				glyph.top		= -bounds.top();
-				glyph.advance	= textWidth;
+				if (::FT_Load_Glyph(face, glyphIndex, FT_LOAD_VERTICAL_LAYOUT))
+				{
+					return{};
+				}
+
+				glyph.left		= (face->glyph->metrics.vertBearingX / 64.0f);
+				glyph.top		= (face->glyph->metrics.vertBearingY / 64.0f);
+				glyph.advance	= (face->glyph->metrics.vertAdvance / 64.0f);
+
+				if (glyph.top == 0.0f)
+				{
+					glyph.top = ((glyph.advance - glyph.height) / 2.0f);
+				}
 			}
 			else
 			{
@@ -241,6 +221,12 @@ namespace s3d
 			glyph.left		= (face->glyph->metrics.vertBearingX / 64.0f);
 			glyph.top		= (face->glyph->metrics.vertBearingY / 64.0f);
 			glyph.advance	= (face->glyph->metrics.vertAdvance / 64.0f);
+
+			if ((glyph.left == 0.0f) && (glyph.top == 0.0f) && (glyph.advance == 0.0f))
+			{
+				glyph.left		= -(glyph.width / 2.0f);
+				glyph.advance	= glyph.height;
+			}
 		}
 		else
 		{

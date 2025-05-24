@@ -190,7 +190,7 @@ namespace s3d
 			for (const auto& axes : m_info.properties.variationAxes)
 			{
 				const std::string tag = axes.tag.toUTF8();
-				const float value = axes.value;
+				const float value = static_cast<float>(axes.value);
 
 				if (tag.size() == 4)
 				{
