@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "BitmapGlyphRenderer.hpp"
+# include <Siv3D/EngineLog.hpp>
 
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4244)
 # include <ThirdParty/skia/include/core/SkBitmap.h>
@@ -22,47 +23,61 @@ namespace s3d
 {
 	namespace
 	{
-		static Image RenderEmoji(const GlyphIndex emoji, const int32 size, SkFont* skFont)
+		static BitmapGlyph RenderBitmapGlyphCOLRv1(const ::FT_Face face, const GlyphIndex glyphIndex, const int32 baseSize, const FontFaceInfo& info, const ReadingDirection readingDirection, SkFont* skFont)
 		{
-			if (not skFont)
+			if (::FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT))
 			{
 				return{};
 			}
 
-			if (emoji == GlyphIndexNotdef)
+			//Size size{ (face->glyph->metrics.width / 64), (face->glyph->metrics.height / 64) };
+			//Size bsize{ face->glyph->bitmap.width, face->glyph->bitmap.rows };
+			//Size bxSize{ (face->bbox.xMax - face->bbox.xMin), (face->bbox.yMax - face->bbox.yMin) };
+			//int32 height = face->height;
+			//int32 units_per_EM = face->units_per_EM;
+			//Point horiBearing{ (face->glyph->metrics.horiBearingX / 64), (face->glyph->metrics.horiBearingY / 64) };
+			//Point vertBearing{ (face->glyph->metrics.vertBearingX / 64), (face->glyph->metrics.vertBearingY / 64) };
+			//Point bitmapPos{ (face->glyph->bitmap_left), (face->glyph->bitmap_top) };
+			//int32 xAdvance = (face->glyph->metrics.horiAdvance / 64);
+
+			constexpr float ScalingFactor = (436.90667f / 512);
+			skFont->setSize(ScalingFactor * baseSize);
+
+			SkFontMetrics metrics;
+			skFont->getMetrics(&metrics);
+			
+			const SkGlyphID skGlyphIndex = static_cast<SkGlyphID>(glyphIndex);
+			SkRect bounds{};
+			const SkScalar textWidth = skFont->measureText(&skGlyphIndex, sizeof(skGlyphIndex), SkTextEncoding::kGlyphID, &bounds);
+
+			const auto blob = SkTextBlob::MakeFromText(&skGlyphIndex, sizeof(skGlyphIndex), *skFont, SkTextEncoding::kGlyphID);
+			
+			const Size imageSize{ static_cast<int32>(bounds.width()), static_cast<int32>(bounds.height()) };
+			
+			//LOG_TEST(U"fAscent: {}"_fmt(metrics.fAscent));
+			//LOG_TEST(U"fDescent: {}"_fmt(metrics.fDescent));
+			//LOG_TEST(U"fTop: {}"_fmt(metrics.fTop));
+			//LOG_TEST(U"fBottom: {}"_fmt(metrics.fBottom));
+			//LOG_TEST(U"fLeading: {}"_fmt(metrics.fLeading));
+			//LOG_TEST(U"fXMin: {}"_fmt(metrics.fXMin));
+			//LOG_TEST(U"fXMax: {}"_fmt(metrics.fXMax));
+			//LOG_TEST(U"textWidth: {}"_fmt(textWidth));
+			//LOG_TEST(U"bounds: ({}, {}, {}, {})"_fmt(bounds.left(), bounds.top(), bounds.width(), bounds.height()));
+			//LOG_TEST(U"advance: {}"_fmt((face->glyph->metrics.horiAdvance / 64.0f)));
+
+			Image image;
+			
+			if ((0 < bounds.width()) && (0 < bounds.height()))
 			{
-				return{};
-			}
+				image.resize(imageSize, Color{ 0, 0, 0, 0 });
 
-			const SkGlyphID glyphIndex = static_cast<SkGlyphID>(emoji);
-
-			Image image{ size, Color{ 0, 0, 0, 0 } };
-			{
-				constexpr float ScalingFactor = (436.90667f / 512);
-				skFont->setSize(ScalingFactor * size);
-
-				auto canvas = SkCanvas::MakeRasterDirectN32(size, size, (uint32*)image.data(), static_cast<int32>(image.bytesPerRow()));
-
-				SkFontMetrics metrics;
-				skFont->getMetrics(&metrics);
-				const SkScalar textWidth = skFont->measureText(&glyphIndex, sizeof(glyphIndex), SkTextEncoding::kGlyphID);
-				const auto blob = SkTextBlob::MakeFromText(&glyphIndex, sizeof(glyphIndex), *skFont, SkTextEncoding::kGlyphID);
-				const SkScalar offsetX = ((size - textWidth) / 2);
-				const SkScalar offsetY = (size - metrics.fDescent);
-
-				canvas->drawTextBlob(blob.get(), offsetX, offsetY, SkPaint{});
+				const SkScalar offsetX = ((imageSize.x - textWidth) / 2);
+				auto canvas = SkCanvas::MakeRasterDirectN32(imageSize.x, imageSize.y, (uint32*)image.data(), static_cast<int32>(image.bytesPerRow()));
+				canvas->drawTextBlob(blob.get(), offsetX, -bounds.top(), SkPaint{});
 
 				SkPixmap map;
 				canvas->peekPixels(&map);
-			}
 
-			return image;
-		}
-
-		static BitmapGlyph RenderBitmapGlyphCOLRv1(const GlyphIndex glyphIndex, const int32 emojiSize, const FontFaceInfo& info, const ReadingDirection readingDirection, SkFont* skFont)
-		{
-			Image image = RenderEmoji(glyphIndex, emojiSize, skFont);
-			{
 			#if SK_PMCOLOR_BYTE_ORDER(B,G,R,A)
 
 				image.bgraToRGBA();
@@ -79,20 +94,17 @@ namespace s3d
 		
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
-				//glyph.left		= (face->glyph->metrics.vertBearingX / 64.0f);
-				//glyph.top		= (face->glyph->metrics.vertBearingY / 64.0f);
-				//glyph.advance	= (face->glyph->metrics.vertAdvance / 64.0f);
+				glyph.left		= ((textWidth - bounds.width()) / 2);
+				glyph.top		= -bounds.top();
+				glyph.advance	= textWidth;
 			}
 			else
 			{
-				//glyph.left		= (face->glyph->metrics.horiBearingX / 64.0f);
-				//glyph.top		= (face->glyph->metrics.horiBearingY / 64.0f);
-				//glyph.advance	= (face->glyph->metrics.horiAdvance / 64.0f);
+				glyph.left		= ((textWidth - bounds.width()) / 2);
+				glyph.top		= -bounds.top();
+				glyph.advance	= textWidth;
 			}
-			glyph.left		= 0.0f;
-			glyph.top		= info.ascender;
-			glyph.advance	= emojiSize;
-		
+
 			glyph.image			= std::move(image);
 			return glyph;
 		}
@@ -104,7 +116,7 @@ namespace s3d
 		{
 			if (info.properties.isCOLRv1)
 			{
-				return RenderBitmapGlyphCOLRv1(glyphIndex, info.baseSize, info, readingDirection, skFont);
+				return RenderBitmapGlyphCOLRv1(face, glyphIndex, info.baseSize, info, readingDirection, skFont);
 			}
 
 			if (::FT_Load_Glyph(face, glyphIndex, FT_LOAD_COLOR))

@@ -94,6 +94,8 @@ namespace s3d
 
 		struct COLRv1
 		{
+			Array<SkFontArguments::VariationPosition::Coordinate> variationCoordinates;
+
 			sk_sp<SkTypeface> skTypeface;
 
 			SkFont skFont;

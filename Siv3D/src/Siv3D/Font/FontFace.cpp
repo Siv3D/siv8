@@ -186,8 +186,30 @@ namespace s3d
 		{
 			m_colrv1 = std::make_unique<COLRv1>();
 			std::unique_ptr<SkStreamAsset> stream = SkMemoryStream::MakeDirect(memoryView.data, memoryView.size);
-			m_colrv1->skTypeface = SkTypeface_FreeType::MakeFromStream(std::move(stream), SkFontArguments{});
-			
+
+			for (const auto& axes : m_info.properties.variationAxes)
+			{
+				const std::string tag = axes.tag.toUTF8();
+				const float value = axes.value;
+
+				if (tag.size() == 4)
+				{
+					const uint32 tagValue = SkSetFourByteTag(tag[0], tag[1], tag[2], tag[3]);
+					m_colrv1->variationCoordinates.emplace_back(tagValue, value);
+				}
+			}
+
+			SkFontArguments fontArgs{};
+
+			if (m_colrv1->variationCoordinates)
+			{
+				SkFontArguments::VariationPosition variationPosition{};
+				variationPosition.coordinates = m_colrv1->variationCoordinates.data();
+				variationPosition.coordinateCount = static_cast<uint32_t>(m_colrv1->variationCoordinates.size());
+				fontArgs.setVariationDesignPosition(variationPosition);
+			}
+
+			m_colrv1->skTypeface = SkTypeface_FreeType::MakeFromStream(std::move(stream), fontArgs);		
 			m_colrv1->skFont.setTypeface(m_colrv1->skTypeface);
 		}
 
