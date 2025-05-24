@@ -17,8 +17,14 @@
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
+# include <Siv3D/MappedMemoryView.hpp>
 # include "FontUtility.hpp"
 # include "FontCommon.hpp"
+
+SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4244)
+# include <ThirdParty/skia/include/core/SkFont.h>
+# include <ThirdParty/skia/src/ports/SkTypeface_FreeType.h>
+SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
 {
@@ -39,7 +45,7 @@ namespace s3d
 		~FontFace();
 
 		[[nodiscard]]
-		bool init(::FT_Library library, ::FT_Face face, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style);
+		bool init(::FT_Library library, const MappedMemoryView& memoryView, ::FT_Face face, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style);
 
 		[[nodiscard]]
 		const FontFaceInfo& getInfo() const noexcept;
@@ -70,6 +76,9 @@ namespace s3d
 		[[nodiscard]]
 		::FT_Face getFace() const noexcept;
 
+		[[nodiscard]]
+		SkFont* getSkFont() const noexcept;
+
 	private:
 
 		struct HarfBuzzObjects
@@ -83,9 +92,18 @@ namespace s3d
 			bool init(::FT_Face face);
 		};
 
+		struct COLRv1
+		{
+			sk_sp<SkTypeface> skTypeface;
+
+			SkFont skFont;
+		};
+
 		::FT_Face m_face = nullptr;
 
 		std::unique_ptr<HarfBuzzObjects> m_hbObjects;
+
+		std::unique_ptr<COLRv1> m_colrv1;
 
 		FontFaceInfo m_info;
 	};

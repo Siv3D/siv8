@@ -52,7 +52,7 @@ namespace s3d
 
 		m_face = std::make_unique<FontFace>();
 
-		if (not m_face->init(library, baseFace, styleName, fontMethod, baseSize, style))
+		if (not m_face->init(library, view, baseFace, styleName, fontMethod, baseSize, style))
 		{
 			return;
 		}
@@ -116,6 +116,17 @@ namespace s3d
 	::FT_Face FontData::getFace() noexcept
 	{
 		return m_face->getFace();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSkFont
+	//
+	////////////////////////////////////////////////////////////////
+
+	SkFont* FontData::getSkFont() noexcept
+	{
+		return m_face->getSkFont();
 	}
 
 	////////////////////////////////////////////////////////////////

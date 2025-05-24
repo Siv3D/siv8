@@ -13,8 +13,10 @@
 # include <Siv3D/BitmapGlyph.hpp>
 # include "../FontUtility.hpp"
 
+class SkFont;
+
 namespace s3d
 {
 	[[nodiscard]]
-	BitmapGlyph RenderBitmapGlyph(::FT_Face face, GlyphIndex glyphIndex, const FontFaceInfo& info, ReadingDirection readingDirection);
+	BitmapGlyph RenderBitmapGlyph(::FT_Face face, GlyphIndex glyphIndex, const FontFaceInfo& info, ReadingDirection readingDirection, SkFont* skFont);
 }

@@ -344,6 +344,6 @@ namespace s3d
 	BitmapGlyph CFont::renderBitmapByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
-		return RenderBitmapGlyph(font->getFace(), glyphIndex, font->getInfo(), readingDirection);
+		return RenderBitmapGlyph(font->getFace(), glyphIndex, font->getInfo(), readingDirection, font->getSkFont());
 	}
 }

@@ -13,7 +13,8 @@
 # include "FontUtility.hpp"
 # include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/ScopeExit.hpp>
-# include <Siv3D/EngineLog.hpp>
+
+# include <ThirdParty/skia/include/core/SkStream.h>
 
 namespace s3d
 {
@@ -71,7 +72,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool FontFace::init(const ::FT_Library library, ::FT_Face face, const StringView styleName, const FontMethod fontMethod, int32 baseSize, const FontStyle style)
+	bool FontFace::init(const ::FT_Library library, const MappedMemoryView& memoryView, ::FT_Face face, const StringView styleName, const FontMethod fontMethod, int32 baseSize, const FontStyle style)
 	{
 		assert(m_face == nullptr);
 
@@ -179,6 +180,15 @@ namespace s3d
 				::FT_Done_Face(face);
 				return false;
 			}
+		}
+
+		if (m_info.properties.isCOLRv1)
+		{
+			m_colrv1 = std::make_unique<COLRv1>();
+			std::unique_ptr<SkStreamAsset> stream = SkMemoryStream::MakeDirect(memoryView.data, memoryView.size);
+			m_colrv1->skTypeface = SkTypeface_FreeType::MakeFromStream(std::move(stream), SkFontArguments{});
+			
+			m_colrv1->skFont.setTypeface(m_colrv1->skTypeface);
 		}
 
 		m_face					= face;
@@ -466,6 +476,24 @@ namespace s3d
 	::FT_Face FontFace::getFace() const noexcept
 	{
 		return m_face;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSkFont
+	//
+	////////////////////////////////////////////////////////////////
+
+	SkFont* FontFace::getSkFont() const noexcept
+	{
+		if (m_colrv1)
+		{
+			return &m_colrv1->skFont;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
