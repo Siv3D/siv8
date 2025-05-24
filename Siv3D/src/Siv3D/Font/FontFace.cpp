@@ -190,7 +190,7 @@ namespace s3d
 		{
 			const GlyphIndex glyphIndex = getGlyphIndex(U' ');
 			m_info.spaceXAdvance = getXAdvanceByGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
-			m_info.spaceYAdvance = getYAdvanceByGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
+			m_info.spaceYAdvance = getYAdvanceByGlyphIndex(glyphIndex).value_or(m_info.baseSize);
 		}
 
 		return true;
@@ -344,7 +344,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<float> FontFace::getYAdvanceByGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
+	Optional<float> FontFace::getYAdvanceByGlyphIndex(const GlyphIndex glyphIndex)
 	{
 		if (not m_face)
 		{

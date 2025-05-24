@@ -28,4 +28,5 @@ extern "C"
 # include FT_TRUETYPE_IDS_H
 # include FT_ADVANCES_H
 # include FT_OUTLINE_H
+# include FT_TRUETYPE_TABLES_H
 }

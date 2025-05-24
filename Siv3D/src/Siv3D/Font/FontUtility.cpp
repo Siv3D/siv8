@@ -46,6 +46,23 @@ namespace s3d
 			return{};
 		}
 
+		[[nodiscard]]
+		static bool IsCOLRv1(const ::FT_Face face)
+		{
+			// テーブルの先頭 4 バイト（version）を取得
+			::FT_Byte buffer[4]{};
+			::FT_ULong length = sizeof(buffer);
+			::FT_Error error = ::FT_Load_Sfnt_Table(face, FT_MAKE_TAG('C', 'O', 'L', 'R'), 0, buffer, &length);
+
+			if ((error != 0) || (length < 4))
+			{
+				return false;
+			}
+
+			const FT_UInt versionMajor = ((buffer[0] << 8) | buffer[1]);
+			return (versionMajor == 1);
+		}
+
 		//struct GlyphBBox
 		//{
 		//	double xMin = Math::Inf;
@@ -306,6 +323,7 @@ namespace s3d
 		}
 
 		properties.hasColor			= FT_HAS_COLOR(face);
+		properties.isCOLRv1			= (properties.hasColor && IsCOLRv1(face));
 		properties.isItalic			= ((face->style_flags & FT_STYLE_FLAG_ITALIC) != 0);
 		properties.isScalable		= FT_IS_SCALABLE(face);
 		properties.isVariable		= FT_HAS_MULTIPLE_MASTERS(face);

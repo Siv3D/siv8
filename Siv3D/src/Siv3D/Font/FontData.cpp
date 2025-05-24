@@ -186,7 +186,7 @@ namespace s3d
 
 	double FontData::getYAdvanceByGlyphIndex(const GlyphIndex glyphIndex)
 	{
-		return m_face->getYAdvanceByGlyphIndex(glyphIndex, getInfo().hinting).value_or(0.0);
+		return m_face->getYAdvanceByGlyphIndex(glyphIndex).value_or(0.0);
 	}
 
 	////////////////////////////////////////////////////////////////

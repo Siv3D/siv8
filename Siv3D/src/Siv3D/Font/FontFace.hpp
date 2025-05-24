@@ -53,7 +53,7 @@ namespace s3d
 		Optional<float> getXAdvanceByGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
 
 		[[nodiscard]]
-		Optional<float> getYAdvanceByGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
+		Optional<float> getYAdvanceByGlyphIndex(GlyphIndex glyphIndex);
 
 		[[nodiscard]]
 		float getYAdvance(StringView ch);
