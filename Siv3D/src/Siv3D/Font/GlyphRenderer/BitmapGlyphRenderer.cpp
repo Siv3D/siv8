@@ -116,17 +116,10 @@ namespace s3d
 
 			while (pSrc != pSrcEnd)
 			{
-				uint8 b = pSrc[0];
-				uint8 g = pSrc[1];
-				uint8 r = pSrc[2];
-				uint8 a = pSrc[3];
-				if (InRange<uint8>(a, 1, 254))
-				{
-					const float t = (255.0f / a);
-					r = static_cast<uint8>(r * t);
-					g = static_cast<uint8>(g * t);
-					b = static_cast<uint8>(b * t);
-				}
+				const uint8 b = pSrc[0];
+				const uint8 g = pSrc[1];
+				const uint8 r = pSrc[2];
+				const uint8 a = pSrc[3];
 				pDst->set(r, g, b, a);
 
 				pSrc += 4;
