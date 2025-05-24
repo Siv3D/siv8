@@ -227,7 +227,7 @@ namespace s3d
 		}
 	}
 
-	OutlineGlyph RenderOutlineGlyph(::FT_Face face, GlyphIndex glyphIndex, CloseRing closeRing, const FontFaceInfo& info, const ReadingDirection readingDirection)
+	OutlineGlyph RenderOutlineGlyph(const ::FT_Face face, const GlyphIndex glyphIndex, const CloseRing closeRing, const FontFaceInfo& info, const ReadingDirection readingDirection)
 	{
 		uint32 loadFlags = ((info.hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING) | FT_LOAD_NO_BITMAP);
 

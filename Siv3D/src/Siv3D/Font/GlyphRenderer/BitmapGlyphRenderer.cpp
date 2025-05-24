@@ -1,0 +1,160 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2025 Ryo Suzuki
+//	Copyright (c) 2016-2025 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# include "BitmapGlyphRenderer.hpp"
+
+namespace s3d
+{
+	BitmapGlyph RenderBitmapGlyph(const ::FT_Face face, const GlyphIndex glyphIndex, const FontFaceInfo& info, const ReadingDirection readingDirection)
+	{
+		if (info.properties.hasColor)
+		{
+			if (::FT_Load_Glyph(face, glyphIndex, FT_LOAD_COLOR))
+			{
+				return{};
+			}
+		}
+		else
+		{
+			uint32 loadFlags = FT_LOAD_NO_HINTING;
+
+			if (not(info.style & FontStyle::Bitmap))
+			{
+				loadFlags |= FT_LOAD_NO_BITMAP;
+			}
+
+			if (readingDirection == ReadingDirection::TopToBottom)
+			{
+				loadFlags |= FT_LOAD_VERTICAL_LAYOUT;
+			}
+
+			if (::FT_Load_Glyph(face, glyphIndex, loadFlags))
+			{
+				return{};
+			}
+
+			if (info.style & FontStyle::Bold)
+			{
+				::FT_GlyphSlot_Embolden(face->glyph);
+			}
+
+			if (info.style & FontStyle::Italic)
+			{
+				::FT_GlyphSlot_Oblique(face->glyph);
+			}
+		}
+
+		{
+			if (face->glyph->format == FT_GLYPH_FORMAT_BITMAP)
+			{
+				// do nothing
+			}
+			else
+			{
+				const FT_Render_Mode renderMode = ((info.style & FontStyle::Bitmap) ? FT_RENDER_MODE_MONO : FT_RENDER_MODE_NORMAL);
+
+				if (::FT_Render_Glyph(face->glyph, renderMode))
+				{
+					return{};
+				}
+			}
+		}
+
+		const uint32 bitmapWidth		= face->glyph->bitmap.width;
+		const uint32 bitmapHeight		= face->glyph->bitmap.rows;
+		const uint32 bitmapBytesPerRow	= face->glyph->bitmap.pitch;
+
+		Image image{ Size{ bitmapWidth, bitmapHeight }, Color{ 255 } };
+		const uint8* bitmapBuffer = face->glyph->bitmap.buffer;
+		Color* pDst = image.data();
+
+		if (face->glyph->bitmap.pixel_mode == FT_Pixel_Mode::FT_PIXEL_MODE_MONO)
+		{
+			const uint8* pSrcLine = bitmapBuffer;
+
+			for (uint32 y = 0; y < bitmapHeight; ++y)
+			{
+				for (uint32 x = 0; x < bitmapWidth; ++x)
+				{
+					const uint32 offsetI = (x / 8);
+					const uint32 offsetB = (7 - x % 8);
+					const uint8 a = (((pSrcLine[offsetI] >> offsetB) & 0x1) * 255);
+					pDst->r = pDst->g = pDst->b = pDst->a = a;
+					
+					++pDst;
+				}
+
+				pSrcLine += bitmapBytesPerRow;
+			}
+		}
+		else if (face->glyph->bitmap.pixel_mode == FT_Pixel_Mode::FT_PIXEL_MODE_GRAY)
+		{
+			const uint8* pSrc = bitmapBuffer;
+			const uint8* const pSrcEnd = (pSrc + (bitmapHeight * bitmapWidth));
+
+			while (pSrc != pSrcEnd)
+			{
+				const uint8 a = *pSrc;
+				pDst->r = pDst->g = pDst->b = pDst->a = a;
+
+				++pSrc;
+				++pDst;
+			}
+		}
+		else if (face->glyph->bitmap.pixel_mode == FT_Pixel_Mode::FT_PIXEL_MODE_BGRA)
+		{
+			const uint8* pSrc = bitmapBuffer;
+			const uint8* const pSrcEnd = (pSrc + ((bitmapHeight * bitmapWidth) * 4));
+
+			while (pSrc != pSrcEnd)
+			{
+				uint8 b = pSrc[0];
+				uint8 g = pSrc[1];
+				uint8 r = pSrc[2];
+				uint8 a = pSrc[3];
+				if (InRange<uint8>(a, 1, 254))
+				{
+					const float t = (255.0f / a);
+					r = static_cast<uint8>(r * t);
+					g = static_cast<uint8>(g * t);
+					b = static_cast<uint8>(b * t);
+				}
+				pDst->set(r, g, b, a);
+
+				pSrc += 4;
+				++pDst;
+			}
+		}
+
+		BitmapGlyph glyph;
+		glyph.glyphIndex	= glyphIndex;
+		glyph.width			= static_cast<float>(bitmapWidth);
+		glyph.height		= static_cast<float>(bitmapHeight);
+		glyph.ascender		= info.ascender;
+		glyph.descender		= info.descender;
+		
+		if (readingDirection == ReadingDirection::TopToBottom)
+		{
+			glyph.left		= (face->glyph->metrics.vertBearingX / 64.0f);
+			glyph.top		= (face->glyph->metrics.vertBearingY / 64.0f);
+			glyph.advance	= (face->glyph->metrics.vertAdvance / 64.0f);
+		}
+		else
+		{
+			glyph.left		= (face->glyph->metrics.horiBearingX / 64.0f);
+			glyph.top		= (face->glyph->metrics.horiBearingY / 64.0f);
+			glyph.advance	= (face->glyph->metrics.horiAdvance / 64.0f);
+		}
+		
+		glyph.image			= std::move(image);
+		return glyph;
+	}
+}

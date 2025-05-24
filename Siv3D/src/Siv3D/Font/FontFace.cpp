@@ -13,6 +13,7 @@
 # include "FontUtility.hpp"
 # include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/ScopeExit.hpp>
+# include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
@@ -225,10 +226,15 @@ namespace s3d
 
 	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
 	{
+		if (not m_face)
+		{
+			return{};
+		}
+
 		const auto& hbObjects = *m_hbObjects;
 
 		::hb_buffer_clear_contents(hbObjects.hbBuffer);
-		
+
 		if (readingDirection == ReadingDirection::LeftToRight)
 		{
 			::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_LTR);
@@ -270,6 +276,11 @@ namespace s3d
 
 	Optional<float> FontFace::getXAdvanceByGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
 	{
+		if (not m_face)
+		{
+			return none;
+		}
+
 		::FT_Int32 loadFlag = (enableHinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
 
 		if (m_info.properties.hasColor)
@@ -335,6 +346,11 @@ namespace s3d
 
 	Optional<float> FontFace::getYAdvanceByGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
 	{
+		if (not m_face)
+		{
+			return none;
+		}
+
 		const ::hb_position_t vAdvance = ::hb_font_get_glyph_v_advance(m_hbObjects->hbFont, glyphIndex);
 		return (-vAdvance / 64.0f);
 	}
@@ -347,6 +363,11 @@ namespace s3d
 
 	float FontFace::getYAdvance(const StringView ch)
 	{
+		if (not m_face)
+		{
+			return 0.0f;
+		}
+
 		const auto& hbObjects = *m_hbObjects;
 
 		::hb_buffer_clear_contents(hbObjects.hbBuffer);
@@ -380,11 +401,21 @@ namespace s3d
 
 	GlyphIndex FontFace::getGlyphIndex(const char32 codePoint)
 	{
+		if (not m_face)
+		{
+			return GlyphIndexNotdef;
+		}
+
 		return ::FT_Get_Char_Index(m_face, codePoint);
 	}
 
 	GlyphIndex FontFace::getGlyphIndex(const StringView ch, const ReadingDirection readingDirection)
 	{
+		if (not m_face)
+		{
+			return GlyphIndexNotdef;
+		}
+
 		if (const size_t length = ch.size();
 			length == 0)
 		{
@@ -411,6 +442,11 @@ namespace s3d
 
 	String FontFace::getGlyphNameByGlyphIndex(const GlyphIndex glyphIndex)
 	{
+		if (not m_face)
+		{
+			return{};
+		}
+
 		char glyphNameBuffer[256]{};
 
 		if (::FT_Get_Glyph_Name(m_face, glyphIndex, glyphNameBuffer, sizeof(glyphNameBuffer)) != 0)

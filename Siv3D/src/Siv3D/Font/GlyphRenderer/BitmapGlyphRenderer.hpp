@@ -10,11 +10,11 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/OutlineGlyph.hpp>
+# include <Siv3D/BitmapGlyph.hpp>
 # include "../FontUtility.hpp"
 
 namespace s3d
 {
 	[[nodiscard]]
-	OutlineGlyph RenderOutlineGlyph(::FT_Face face, GlyphIndex glyphIndex, CloseRing closeRing, const FontFaceInfo& info, ReadingDirection readingDirection);
+	BitmapGlyph RenderBitmapGlyph(::FT_Face face, GlyphIndex glyphIndex, const FontFaceInfo& info, ReadingDirection readingDirection);
 }

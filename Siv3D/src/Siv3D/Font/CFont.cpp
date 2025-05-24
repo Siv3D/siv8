@@ -14,6 +14,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include "FontUtility.hpp"
 # include "GlyphRenderer/OutlineGlyphRenderer.hpp"
+# include "GlyphRenderer/BitmapGlyphRenderer.hpp"
 
 namespace s3d
 {
@@ -340,9 +341,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	BitmapGlyph CFont::renderBitmapByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection)
+	BitmapGlyph CFont::renderBitmapByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
-		return{};// RenderBitmapGlyph(font->getFace(), glyphIndex, closeRing, font->getInfo(), readingDirection);
+		return RenderBitmapGlyph(font->getFace(), glyphIndex, font->getInfo(), readingDirection);
 	}
 }
