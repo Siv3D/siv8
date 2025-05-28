@@ -22,6 +22,7 @@ namespace s3d
 		{
 			U"LeftToRight",
 			U"TopToBottom",
+			U"RightToLeft",
 		};
 	}
 		

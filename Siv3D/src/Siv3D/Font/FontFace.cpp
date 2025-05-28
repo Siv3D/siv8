@@ -270,13 +270,18 @@ namespace s3d
 		if (readingDirection == ReadingDirection::LeftToRight)
 		{
 			::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_LTR);
+			::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_COMMON);
 		}
-		else // ReadingDirection::TopToBottom
+		else if (readingDirection == ReadingDirection::TopToBottom)
 		{
 			::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_TTB);
+			::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_HAN);
 		}
-
-		::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_COMMON);
+		else if (readingDirection == ReadingDirection::RightToLeft)
+		{
+			::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_RTL);
+			::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_ARABIC);
+		}
 
 		const int32 textLength = static_cast<int32>(s.length());
 		::hb_buffer_add_utf32(hbObjects.hbBuffer, reinterpret_cast<const uint32_t*>(s.data()), textLength, 0, textLength);

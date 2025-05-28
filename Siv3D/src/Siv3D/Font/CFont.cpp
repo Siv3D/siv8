@@ -246,7 +246,7 @@ namespace s3d
 		{
 			return m_fonts[handleID]->getGlyphIndex(codePoint);
 		}
-		else // readingDirection == ReadingDirection::TopToBottom)
+		else
 		{
 			return m_fonts[handleID]->getGlyphIndex(StringView{ &codePoint, 1 }, readingDirection);
 		}

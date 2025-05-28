@@ -27,6 +27,8 @@ namespace s3d
 		LeftToRight,
 		
 		TopToBottom,
+
+		RightToLeft,
 	};
 
 	void Formatter(FormatData& formatData, ReadingDirection value);
