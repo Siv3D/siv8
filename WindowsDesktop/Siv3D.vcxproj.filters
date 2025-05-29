@@ -1084,9 +1084,6 @@
     <Filter Include="src\Siv3D\FontStyle">
       <UniqueIdentifier>{129d9867-29d1-4bae-ae20-94b0eb6e388c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\FontFile">
-      <UniqueIdentifier>{9e3fd3f2-409a-43f9-ab33-813f7fcb1336}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D\ReadingDirection">
       <UniqueIdentifier>{27e2313f-471c-40c9-9997-78a820f973c3}</UniqueIdentifier>
     </Filter>
@@ -4269,9 +4266,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FontFaceProperties.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\FontFile.hpp">
-      <Filter>include\Siv3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\FontVariationAxis.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -6835,9 +6829,6 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\FontStyle\SivFontStyle.cpp">
       <Filter>src\Siv3D\FontStyle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\FontFile\SivFontFile.cpp">
-      <Filter>src\Siv3D\FontFile</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\SivFont.cpp">
       <Filter>src\Siv3D\Font</Filter>

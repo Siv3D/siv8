@@ -536,4 +536,14 @@ namespace s3d
 		m_handle.swap(other.m_handle);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	GetFaces
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<FontFaceProperties> Font::GetFaces(const FilePathView path)
+	{
+		return SIV3D_ENGINE(Font)->getFontFaces(path);
+	}
 }
