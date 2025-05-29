@@ -14,6 +14,7 @@
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "GlyphCache/BitmapGlyphCache.hpp"
+# include "GlyphCache/MSDFGlyphCache.hpp"
 # include "GlyphRenderer/BitmapGlyphRenderer.hpp"
 
 namespace s3d
@@ -68,12 +69,9 @@ namespace s3d
 		case FontMethod::Bitmap:
 			m_glyphCache = std::make_unique<BitmapGlyphCache>();
 			break;
-		//case FontMethod::SDF:
-		//	m_glyphCache = std::make_unique<SDFGlyphCache>();
-		//	break;
-		//case FontMethod::MSDF:
-		//	m_glyphCache = std::make_unique<MSDFGlyphCache>();
-		//	break;
+		case FontMethod::MSDF:
+			m_glyphCache = std::make_unique<MSDFGlyphCache>();
+			break;
 		}
 		m_initialized	= true;
 	}

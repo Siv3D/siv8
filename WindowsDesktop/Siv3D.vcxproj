@@ -668,6 +668,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\BitmapGlyphCache.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheCommon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\IGlyphCache.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\MSDFGlyphCache.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg_array.h" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg_basics.h" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg_config.h" />
@@ -1241,6 +1242,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\BitmapGlyphCache.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheCommon.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\MSDFGlyphCache.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\BitmapGlyphRenderer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\OutlineGlyphRenderer.cpp" />
