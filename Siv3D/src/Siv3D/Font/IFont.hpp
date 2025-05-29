@@ -18,6 +18,7 @@
 namespace s3d
 {
 	struct FontFaceInfo;
+	struct TextStyle;
 
 	class SIV3D_NOVTABLE ISiv3DFont
 	{
@@ -78,5 +79,7 @@ namespace s3d
 		virtual Array<double> getXAdvances(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) = 0;
 
 		virtual double xAdvanceFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, double fontSize) = 0;
+
+		virtual RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) = 0;
 	};
 }

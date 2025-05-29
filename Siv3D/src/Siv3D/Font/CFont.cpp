@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "CFont.hpp"
+# include <Siv3D/TextStyle.hpp>
 # include <Siv3D/MemoryMappedFileView.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include "FontUtility.hpp"
@@ -373,5 +374,41 @@ namespace s3d
 		{
 			return font->getGlyphCache().xAdvanceFallback(*font, resolvedGlyph, fontSize);
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF CFont::draw(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale)
+	{
+		const auto& font = m_fonts[handleID];
+		const bool hasColor = font->getInfo().properties.hasColor;
+
+		if (textStyle.type != TextStyle::Type::Default && (not hasColor))
+		{
+			//if (font->getMethod() == FontMethod::SDF)
+			//{
+			//	Graphics2D::SetSDFParameters(textStyle);
+			//}
+			//else
+			//{
+			//	Graphics2D::SetMSDFParameters(textStyle);
+			//}
+		}
+
+		if (textStyle.type == TextStyle::Type::CustomShader)
+		{
+			//return m_fonts[handleID]->getGlyphCache().draw(*font, s, clusters, false, pos, fontSize, textStyle, (hasColor ? ColorF{ 1.0, color.a } : color), lineHeightScale);
+		}
+		else
+		{
+			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
+			//return m_fonts[handleID]->getGlyphCache().draw(*font, s, clusters, false, pos, fontSize, textStyle, (hasColor ? ColorF{ 1.0, color.a } : color), lineHeightScale);
+		}
+
+		return{};
 	}
 }
