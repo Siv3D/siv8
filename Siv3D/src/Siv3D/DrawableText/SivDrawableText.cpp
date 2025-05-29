@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/DrawableText.hpp>
+# include <Siv3D/Font/IFont.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
@@ -26,9 +28,8 @@ namespace s3d
 		return getXAdvances(font.baseSize());
 	}
 
-	Array<double> DrawableText::getXAdvances(const double textSize) const
+	Array<double> DrawableText::getXAdvances(const double fontSize) const
 	{
-		return{};
-		//return SIV3D_ENGINE(Font)->getXAdvances(font.id(), text, clusters, size);
+		return SIV3D_ENGINE(Font)->getXAdvances(font.id(), text, resolvedGlyphs, fontSize);
 	}
 }

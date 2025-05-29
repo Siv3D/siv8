@@ -26,6 +26,7 @@
 namespace s3d
 {
 	struct FontFaceProperties;
+	struct DrawableText;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -471,12 +472,34 @@ namespace s3d
 		/// @param Font 別の Font
 		void swap(Font& other) noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ()
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief フォントを描画するために必要な DrawableText を、文字列から構築します。
+		/// @param text 文字列
+		/// @return DrawableText
+		[[nodiscard]]
+		DrawableText operator ()(const String& text) const;
 
+		/// @brief フォントを描画するために必要な DrawableText を、文字列から構築します。
+		/// @param text 文字列
+		/// @return DrawableText
+		[[nodiscard]]
+		DrawableText operator ()(String&& text) const;
 
+		/// @brief フォントを描画するために必要な DrawableText を、一連の引数を文字列に変換することで構築します。
+		/// @param ...args 文字列に変換する値
+		/// @return DrawableText
+		template <Concept::Formattable... Args>
+		[[nodiscard]]
+		DrawableText operator ()(const Args& ... args) const;
 
-
-
+		/// @brief Format できない値が Format() に渡されたときに発生するエラーです
+		template <class... Args>
+		DrawableText operator ()(const Args&...) = delete;
 
 
 

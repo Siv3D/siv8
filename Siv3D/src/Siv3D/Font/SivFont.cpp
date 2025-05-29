@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Font.hpp>
+# include <Siv3D/DrawableText.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Font/FontFace.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
@@ -535,6 +536,24 @@ namespace s3d
 	{
 		m_handle.swap(other.m_handle);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ()
+	//
+	////////////////////////////////////////////////////////////////
+
+	DrawableText Font::operator ()(const String& text) const
+	{
+		return{ *this, text };
+	}
+
+	DrawableText Font::operator ()(String&& text) const
+	{
+		return{ *this, std::move(text) };
+	}
+
+
 
 	////////////////////////////////////////////////////////////////
 	//

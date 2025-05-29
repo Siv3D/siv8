@@ -15,6 +15,7 @@
 # include "FontUtility.hpp"
 # include "GlyphRenderer/OutlineGlyphRenderer.hpp"
 # include "GlyphRenderer/BitmapGlyphRenderer.hpp"
+# include "GlyphCache/IGlyphCache.hpp"
 
 namespace s3d
 {
@@ -343,7 +344,34 @@ namespace s3d
 
 	BitmapGlyph CFont::renderBitmapByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
+		return m_fonts[handleID]->renderBitmapByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getXAdvances
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<double> CFont::getXAdvances(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const double fontSize)
+	{
 		const auto& font = m_fonts[handleID];
-		return RenderBitmapGlyph(font->getFace(), glyphIndex, font->getInfo(), readingDirection, font->getSkFont());
+		{
+			return font->getGlyphCache().getXAdvances(*font, s, resolvedGlyphs, fontSize);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	xAdvanceFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	double CFont::xAdvanceFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const double fontSize)
+	{
+		const auto& font = m_fonts[handleID];
+		{
+			return font->getGlyphCache().xAdvanceFallback(*font, resolvedGlyph, fontSize);
+		}
 	}
 }

@@ -1619,8 +1619,7 @@
 # include <Siv3D/OutlineGlyph.hpp>
 # include <Siv3D/BitmapGlyph.hpp>
 
-
-
+# include <Siv3D/DrawableText.hpp>
 
 
 # include <Siv3D/Pipe.hpp>

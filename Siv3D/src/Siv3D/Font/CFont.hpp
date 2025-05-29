@@ -187,6 +187,24 @@ namespace s3d
 		[[nodiscard]]
 		BitmapGlyph renderBitmapByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	getXAdvances
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Array<double> getXAdvances(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	xAdvanceFallback
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		double xAdvanceFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, double fontSize) override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;

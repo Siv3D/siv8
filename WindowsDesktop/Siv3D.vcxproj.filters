@@ -1096,6 +1096,9 @@
     <Filter Include="src\Siv3D\DrawableText">
       <UniqueIdentifier>{49ccd7cf-f8b6-477e-be6d-0a4add5a1357}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Font\GlyphCache">
+      <UniqueIdentifier>{fbdb89c9-f47e-48c9-a723-01986d5132fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4326,6 +4329,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\DrawableText.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\DrawableText.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\BitmapGlyphCache.hpp">
+      <Filter>src\Siv3D\Font\GlyphCache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\IGlyphCache.hpp">
+      <Filter>src\Siv3D\Font\GlyphCache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheCommon.hpp">
+      <Filter>src\Siv3D\Font\GlyphCache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Image\ImagePainting.hpp">
+      <Filter>src\Siv3D\Image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6859,6 +6877,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\DrawableText\SivDrawableText.cpp">
       <Filter>src\Siv3D\DrawableText</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\BitmapGlyphCache.cpp">
+      <Filter>src\Siv3D\Font\GlyphCache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheCommon.cpp">
+      <Filter>src\Siv3D\Font\GlyphCache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Image\ImagePainting.cpp">
+      <Filter>src\Siv3D\Image</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

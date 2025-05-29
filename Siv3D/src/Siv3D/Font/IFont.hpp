@@ -75,5 +75,8 @@ namespace s3d
 		[[nodiscard]]
 		virtual BitmapGlyph renderBitmapByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 
+		virtual Array<double> getXAdvances(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) = 0;
+
+		virtual double xAdvanceFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, double fontSize) = 0;
 	};
 }

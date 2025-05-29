@@ -38,6 +38,8 @@ namespace s3d
 		Array<double> getXAdvances() const;
 
 		[[nodiscard]]
-		Array<double> getXAdvances(double size) const;
+		Array<double> getXAdvances(double fontSize) const;
 	};
 }
+
+# include "detail/DrawableText.ipp"

@@ -13,6 +13,8 @@
 # include "FontUtility.hpp"
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include "GlyphCache/BitmapGlyphCache.hpp"
+# include "GlyphRenderer/BitmapGlyphRenderer.hpp"
 
 namespace s3d
 {
@@ -25,6 +27,8 @@ namespace s3d
 	FontData::FontData(Null)
 	{
 		m_face = std::make_unique<FontFace>();
+
+		m_glyphCache = std::make_unique<BitmapGlyphCache>();
 
 		m_initialized = true;
 	}
@@ -58,9 +62,29 @@ namespace s3d
 		}
 
 		m_renderingMethod = m_face->getInfo().renderingMethod;
-		
+
+		switch (m_renderingMethod)
+		{
+		case FontMethod::Bitmap:
+			m_glyphCache = std::make_unique<BitmapGlyphCache>();
+			break;
+		//case FontMethod::SDF:
+		//	m_glyphCache = std::make_unique<SDFGlyphCache>();
+		//	break;
+		//case FontMethod::MSDF:
+		//	m_glyphCache = std::make_unique<MSDFGlyphCache>();
+		//	break;
+		}
 		m_initialized	= true;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	FontData::~FontData() = default;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -109,6 +133,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getFallbackFontID
+	//
+	////////////////////////////////////////////////////////////////
+
+	Font::IDType FontData::getFallbackFontID(const size_t index) const noexcept
+	{
+		return m_fallbackFontIDs[index];
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getFace
 	//
 	////////////////////////////////////////////////////////////////
@@ -116,17 +151,6 @@ namespace s3d
 	::FT_Face FontData::getFace() noexcept
 	{
 		return m_face->getFace();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getSkFont
-	//
-	////////////////////////////////////////////////////////////////
-
-	SkFont* FontData::getSkFont() noexcept
-	{
-		return m_face->getSkFont();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -341,5 +365,28 @@ namespace s3d
 	{
 		const int16 bufferThickness = 0; // [Siv3D ToDo]
 		return GetGlyphInfo(m_face->getFace(), glyphIndex, m_face->getInfo(), bufferThickness, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphCache
+	//
+	////////////////////////////////////////////////////////////////
+
+	IGlyphCache& FontData::getGlyphCache() const
+	{
+		return *m_glyphCache;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderBitmapByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	[[nodiscard]]
+	BitmapGlyph FontData::renderBitmapByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	{
+		return RenderBitmapGlyph(m_face->getFace(), glyphIndex, m_face->getInfo(), readingDirection, m_face->getSkFont());
 	}
 }
