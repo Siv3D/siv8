@@ -105,6 +105,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex32.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Zip.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DrawableText.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatQuad.hpp" />
@@ -1205,6 +1206,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilStateBuilder\SivDepthStencilStateBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilState\SivDepthStencilState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DirectoryWatcher\SivDirectoryWatcher.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\DrawableText\SivDrawableText.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DynamicTexture\SivDynamicTexture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Ellipse\SivEllipse.cpp" />
