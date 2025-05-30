@@ -14,7 +14,7 @@
 # include <Siv3D/HashMap.hpp>
 # include <Siv3D/DynamicTexture.hpp>
 # include "IGlyphCache.hpp"
-# include "GlyphCacheCommon.hpp"
+# include "GlyphCacheManager.hpp"
 
 namespace s3d
 {

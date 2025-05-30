@@ -14,7 +14,6 @@
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "BitmapGlyphCache.hpp"
-#include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
