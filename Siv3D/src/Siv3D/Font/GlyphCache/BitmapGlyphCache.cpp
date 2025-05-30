@@ -9,9 +9,12 @@
 //
 //-----------------------------------------------
 
+# include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/Math.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "BitmapGlyphCache.hpp"
+#include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
@@ -24,6 +27,103 @@ namespace s3d
 	const Texture& BitmapGlyphCache::getTexture() noexcept
 	{
 		return m_glyphCacheManager.getTexture();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF BitmapGlyphCache::draw(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale)
+	{
+		constexpr ReadingDirection readingDirection = ReadingDirection::LeftToRight;
+
+		if (not prerender(font, resolvedGlyphs, true, readingDirection))
+		{
+			return{};
+		}
+
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+		
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double xMax = basePos.x;
+
+		int32 lineCount = 1;
+
+		for (const auto& resolvedGlyph : resolvedGlyphs)
+		{
+			// タブ, 空白, 制御文字
+			if (const char32 ch = s[resolvedGlyph.pos];
+				IsControl(ch))
+			{
+				if (ConsumeControlCharacter(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, lineHeightScale, info))
+				{
+					xMax = Max(xMax, penPos.x);
+					continue;
+				}
+			}
+
+			// フォールバックフォント
+			if (resolvedGlyph.fontIndex != 0)
+			{
+				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
+				RectF rect{};
+
+				if (useBasePos)
+				{
+					//rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFont(fallbackIndex).lock()->id(),
+					//	cluster, penPos, size, textStyle, color, lineHeightScale);
+				}
+				else
+				{
+					//rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFont(fallbackIndex).lock()->id(),
+					//	cluster, penPos.movedBy(0, prop.ascender * scale), size, textStyle, color, lineHeightScale);
+				}
+
+				penPos.x += rect.w;
+				xMax = Max(xMax, penPos.x);
+				continue;
+			}
+
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			{
+				const TextureRegion textureRegion	= m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);		
+				const Vec2 posOffset				= (useBasePos ? cache.info.getBase(scale) : cache.info.getOffset(scale));
+				const Vec2 drawPos					= (penPos + posOffset);
+
+				if (pixelPerfect)
+				{
+					textureRegion.draw(Math::Round(drawPos), color);
+				}
+				else
+				{
+					textureRegion.scaled(scale).draw(drawPos, color);
+				}
+			}
+
+			penPos.x += (cache.info.advance * scale);
+			xMax = Max(xMax, penPos.x);
+		}
+
+		const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
+		const double width = (xMax - basePos.x);
+		const double height = ((info.height() * scale * lineHeightScale) * lineCount);
+		return{ topLeft, width, height };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF BitmapGlyphCache::drawFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale)
+	{
+		return{};
 	}
 
 	////////////////////////////////////////////////////////////////

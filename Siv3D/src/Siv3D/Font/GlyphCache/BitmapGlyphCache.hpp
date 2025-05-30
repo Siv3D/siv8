@@ -27,6 +27,10 @@ namespace s3d
 		[[nodiscard]]
 		const Texture& getTexture() noexcept override;
 
+		RectF draw(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) override;
+
+		RectF drawFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, double lineHeightScale) override;
+
 		[[nodiscard]]
 		Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) override;
 	

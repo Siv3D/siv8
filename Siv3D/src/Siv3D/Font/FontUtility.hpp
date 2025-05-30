@@ -40,6 +40,12 @@ namespace s3d
 		float spaceXAdvance = 0.0f;
 
 		float spaceYAdvance = 0.0f;
+
+		[[nodiscard]]
+		constexpr float height() const noexcept
+		{
+			return (ascender + descender);
+		}
 	};
 
 	////////////////////////////////////////////////////////////////

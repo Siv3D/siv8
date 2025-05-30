@@ -410,16 +410,17 @@ namespace s3d
 			//}
 		}
 
+		const ColorF drawColor = (hasColor ? ColorF{ 1.0, color.a } : color);
+
 		if (textStyle.type == TextStyle::Type::CustomShader)
 		{
-			//return m_fonts[handleID]->getGlyphCache().draw(*font, s, clusters, false, pos, fontSize, textStyle, (hasColor ? ColorF{ 1.0, color.a } : color), lineHeightScale);
+			//return m_fonts[handleID]->getGlyphCache().draw(*font, s, clusters, false, pos, fontSize, textStyle, drawColor, lineHeightScale);
+			return{};
 		}
 		else
 		{
 			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
-			//return m_fonts[handleID]->getGlyphCache().draw(*font, s, clusters, false, pos, fontSize, textStyle, (hasColor ? ColorF{ 1.0, color.a } : color), lineHeightScale);
+			return m_fonts[handleID]->getGlyphCache().draw(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale);
 		}
-
-		return{};
 	}
 }

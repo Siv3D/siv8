@@ -26,10 +26,44 @@ namespace s3d
 		return(_unused);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF MSDFGlyphCache::draw(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale)
+	{
+		return{};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF MSDFGlyphCache::drawFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale)
+	{
+		return{};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getXAdvances
+	//
+	////////////////////////////////////////////////////////////////
+
 	Array<double> MSDFGlyphCache::getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const double fontSize)
 	{
 		return{};
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	xAdvanceFallback
+	//
+	////////////////////////////////////////////////////////////////
 
 	double MSDFGlyphCache::xAdvanceFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const double fontSize)
 	{

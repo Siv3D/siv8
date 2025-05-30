@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include "GlyphCacheCommon.hpp"
-#include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
@@ -32,6 +31,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	GetTabAdvance
+	//
+	////////////////////////////////////////////////////////////////
+
 	double GetTabAdvance(const double spaceWidth, const double scale, const double xBegin, const double currentX, const int32 tabSize)
 	{
 		// タブの基本幅（ピクセル）
@@ -48,6 +53,28 @@ namespace s3d
 
 		// 次のタブ位置までの距離を返す
 		return (nextX - currentX);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ConsumeControlCharacter
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool ConsumeControlCharacter(const char32 ch, Vec2& penPos, int32& lineCount, const Vec2& basePos, const double scale, const double lineHeightScale, const FontFaceInfo& info)
+	{
+		if (ch == U'\t')
+		{
+			penPos.x += GetTabAdvance(info.spaceXAdvance, scale, basePos.x, penPos.x, info.tabSize);
+		}
+		else if (ch == U'\n')
+		{
+			penPos.x = basePos.x;
+			penPos.y += (info.height() * scale * lineHeightScale);
+			++lineCount;
+		}
+		
+		return true;
 	}
 
 	bool GlyphCacheManager::cacheGlyph(FontData& font, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)

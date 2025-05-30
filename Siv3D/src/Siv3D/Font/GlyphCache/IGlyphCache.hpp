@@ -27,13 +27,13 @@ namespace s3d
 		[[nodiscard]]
 		virtual const Texture& getTexture() noexcept = 0;
 
-		//virtual RectF draw(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double size, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) = 0;
+		virtual RectF draw(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) = 0;
+
+		virtual RectF drawFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, double lineHeightScale) = 0;
 
 		//virtual bool fits(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double size, double lineHeightScale) = 0;
 
 		//virtual bool draw(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double size, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) = 0;
-
-		//virtual RectF drawFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double size, const ColorF& color, double lineHeightScale) = 0;
 
 		[[nodiscard]]
 		virtual Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) = 0;
