@@ -13,71 +13,90 @@
 
 namespace s3d
 {
-	double GetTabAdvance(const double spaceWidth, const double scale, const double baseX, const double currentX, const int32 tabSize)
+	namespace
 	{
-		const double maxTabWidth = (spaceWidth * scale * tabSize);
-		const int32 indentLevel = static_cast<int32>(((currentX + maxTabWidth) - baseX) / maxTabWidth);
-		double newX = (baseX + indentLevel * maxTabWidth);
-		// 戻り値が 0 になる場合は、浮動小数点数の誤差により indentLevel が 1 だけ小さく計算されている
-		if ((newX - currentX) == 0)
+		[[nodiscard]]
+		static constexpr Size CalculateInitialBitmapSize(const int32 fontBaseSize) noexcept
 		{
-			// indentLevel を 1 だけ増やして再計算
-			newX = (baseX + (indentLevel + 1) * maxTabWidth);
+			const int32 width =
+				(fontBaseSize <= 16) ? 512 :
+				(fontBaseSize <= 32) ? 768 :
+				(fontBaseSize <= 48) ? 1024 :
+				(fontBaseSize <= 64) ? 1536 :
+				(fontBaseSize <= 256) ? 2048 : 4096;
+			
+			const int32 height = (fontBaseSize <= 256) ? 256 : 512;
+
+			return{ width, height };
 		}
-		return (newX - currentX);
 	}
 
-	bool CacheGlyph(const FontData& font, const Image& image, const GlyphInfo& glyphInfo, BufferImage& buffer, HashMap<GlyphIndex, GlyphCache>& glyphTable)
+	double GetTabAdvance(const double spaceWidth, const double scale, const double xBegin, const double currentX, const int32 tabSize)
 	{
+		// タブの基本幅（ピクセル）
+		const double baseTabWidth = (spaceWidth * tabSize * scale);
+
+		// 現在何番目のタブ位置か
+		const int32 currentIndentLevel = ((currentX - xBegin) / baseTabWidth);
+
+		// 次のタブ位置は何番目か
+		const int32 nextIndentLevel = (currentIndentLevel + 1);
+
+		// 次のタブ位置の X 座標
+		const double nextX = (xBegin + (nextIndentLevel * baseTabWidth));
+
+		// 次のタブ位置までの距離を返す
+		return (nextX - currentX);
+	}
+
+	bool CacheGlyph(const FontData& font, const Image& glyphImage, const GlyphInfo& glyphInfo, BufferImage& buffer, HashMap<GlyphIndex, GlyphCache>& glyphTable)
+	{
+		// バッファ画像が作成されていない場合、作成する
 		if (not buffer.image)
 		{
-			const int32 fontSize = font.getInfo().baseSize;
-			const int32 baseWidth =
-				fontSize <= 16 ? 512 :
-				fontSize <= 32 ? 768 :
-				fontSize <= 48 ? 1024 :
-				fontSize <= 64 ? 1536 :
-				fontSize <= 256 ? 2048 : 4096;
-			const int32 baseHeight = (fontSize <= 256 ? 256 : 512);
-			buffer.image.resize(baseWidth, baseHeight, buffer.backgroundColor);
+			const Size initialBitmapSize = CalculateInitialBitmapSize(font.getInfo().baseSize);
+			buffer.image.resize(initialBitmapSize, BufferImage::BackgroundColor);
 		}
 
 		buffer.penPos.x += buffer.padding;
 
-		const int32 bitmapWidth = image.width();
-		const int32 bitmapHeight = image.height();
+		const int32 glyphWidth	= glyphImage.width();
+		const int32 glyphHeight	= glyphImage.height();
 
-		if (buffer.image.width() < (buffer.penPos.x + (bitmapWidth + buffer.padding)))
+		// 右に余白が足りない場合、次の行へ進む
+		if (buffer.image.width() < (buffer.penPos.x + (glyphWidth + buffer.padding)))
 		{
 			buffer.penPos.x = buffer.padding;
 			buffer.penPos.y += (buffer.currentMaxHeight + (buffer.padding * 2));
 			buffer.currentMaxHeight = 0;
 		}
 
-		if (buffer.image.height() < (buffer.penPos.y + (bitmapHeight + buffer.padding)))
+		// 下に余白が足りない場合、バッファ画像の高さを拡張する
+		if (buffer.image.height() < (buffer.penPos.y + (glyphHeight + buffer.padding)))
 		{
-			const int32 newHeight = ((buffer.penPos.y + (bitmapHeight + buffer.padding)) + 255) / 256 * 256;
+			const int32 newBitmapHeight = (((buffer.penPos.y + (glyphHeight + buffer.padding)) + 255) / 256 * 256);
 
-			if (BufferImage::MaxHeight < newHeight)
+			if (BufferImage::MaxHeight < newBitmapHeight)
 			{
 				return false;
 			}
 
-			buffer.image.resizeHeight(newHeight, buffer.backgroundColor);
+			buffer.image.resizeHeight(newBitmapHeight, BufferImage::BackgroundColor);
 		}
 
-		image.overwrite(buffer.image, buffer.penPos);
+		// キャッシュ画像にグリフ画像を書き込む
+		glyphImage.overwrite(buffer.image, buffer.penPos);
 
 		GlyphCache cache;
 		cache.info = glyphInfo;
-		cache.textureRegionLeft = static_cast<int16>(buffer.penPos.x);
-		cache.textureRegionTop = static_cast<int16>(buffer.penPos.y);
-		cache.textureRegionWidth = static_cast<int16>(bitmapWidth);
-		cache.textureRegionHeight = static_cast<int16>(bitmapHeight);
+		cache.textureRegionLeft		= static_cast<int16>(buffer.penPos.x);
+		cache.textureRegionTop		= static_cast<int16>(buffer.penPos.y);
+		cache.textureRegionWidth	= static_cast<int16>(glyphWidth);
+		cache.textureRegionHeight	= static_cast<int16>(glyphHeight);
 		glyphTable.emplace(glyphInfo.glyphIndex, cache);
 
-		buffer.currentMaxHeight = Max(buffer.currentMaxHeight, bitmapHeight);
-		buffer.penPos.x += (bitmapWidth + buffer.padding);
+		buffer.currentMaxHeight = Max(buffer.currentMaxHeight, glyphHeight);
+		buffer.penPos.x += (glyphWidth + buffer.padding);
 
 		return true;
 	}

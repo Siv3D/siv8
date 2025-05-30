@@ -36,9 +36,9 @@ namespace s3d
 	{
 		static constexpr int32 MaxHeight = 4096;
 
-		Image image;
+		static constexpr Color BackgroundColor{ 255, 0, 0, 0 };
 
-		Color backgroundColor{ 255, 0 };
+		Image image;
 
 		int32 bufferWidth = 2;
 
@@ -50,8 +50,8 @@ namespace s3d
 	};
 
 	[[nodiscard]]
-	double GetTabAdvance(double spaceWidth, double scale, double baseX, double currentX, int32 tabSize);
+	double GetTabAdvance(double spaceWidth, double scale, double xBegin, double currentX, int32 tabSize);
 
 	[[nodiscard]]
-	bool CacheGlyph(const FontData& font, const Image& image, const GlyphInfo& glyphInfo, BufferImage& buffer, HashMap<GlyphIndex, GlyphCache>& glyphTable);
+	bool CacheGlyph(const FontData& font, const Image& glyphImage, const GlyphInfo& glyphInfo, BufferImage& buffer, HashMap<GlyphIndex, GlyphCache>& glyphTable);
 }
