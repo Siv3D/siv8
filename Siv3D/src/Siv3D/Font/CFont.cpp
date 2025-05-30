@@ -188,6 +188,8 @@ namespace s3d
 			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"Black", fontMethod, baseSize, style);
 		case Typeface::ColorEmoji:
 			return create((fontFilePath + U"Noto-COLRv1.ttf"), 0, U"", FontMethod::Bitmap, baseSize, style);
+		case Typeface::Icon_MaterialDesign:
+			return create((fontFilePath + U"materialdesignicons-webfont.ttf"), 0, U"", fontMethod, baseSize, style);
 		default:
 			return Font::IDType::Null();
 		}

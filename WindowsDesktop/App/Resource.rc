@@ -87,10 +87,10 @@ Resource("engine/texture/box-shadow/8.png")
 //
 Resource("engine/font/MPLUS2.ttf.zstdcmp")
 Resource("engine/font/Noto-COLRv1.ttf.zstdcmp")
+Resource("engine/font/materialdesignicons-webfont.ttf.zstdcmp")
 //Resource(engine/font/noto-cjk/NotoSansCJK-Regular.ttc.zstdcmp)
 //Resource(engine/font/noto-cjk/NotoSansJP-Regular.otf.zstdcmp)
 //Resource(engine/font/noto-emoji/NotoEmoji-Regular.ttf.zstdcmp)
-//Resource(engine/font/materialdesignicons/materialdesignicons-webfont.ttf.zstdcmp)
 
 //
 //	Sound Font

@@ -65,7 +65,7 @@ namespace s3d
 		MPlus2_Black,
 
 		///// @brief マテリアルデザイン・アイコンフォント
-		//Icon_MaterialDesign,
+		Icon_MaterialDesign,
 
 		/// @brief 非常に細いサイズの M PLUS 2 フォント
 		Thin		= MPlus2_Thin,
