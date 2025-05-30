@@ -222,6 +222,14 @@ namespace s3d
 
 		RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawBaseFallback
+		//
+		////////////////////////////////////////////////////////////////
+
+		RectF drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;

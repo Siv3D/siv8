@@ -398,7 +398,7 @@ namespace s3d
 		const auto& font = m_fonts[handleID];
 		const bool hasColor = font->getInfo().properties.hasColor;
 
-		if (textStyle.type != TextStyle::Type::Default && (not hasColor))
+		if ((textStyle.type != TextStyle::Type::Default) && (not hasColor))
 		{
 			//if (font->getMethod() == FontMethod::SDF)
 			//{
@@ -414,13 +414,48 @@ namespace s3d
 
 		if (textStyle.type == TextStyle::Type::CustomShader)
 		{
-			//return m_fonts[handleID]->getGlyphCache().draw(*font, s, clusters, false, pos, fontSize, textStyle, drawColor, lineHeightScale);
-			return{};
+			return m_fonts[handleID]->getGlyphCache().draw(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale);
 		}
 		else
 		{
 			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
 			return m_fonts[handleID]->getGlyphCache().draw(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawBaseFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale)
+	{
+		const auto& font = m_fonts[handleID];
+		const bool hasColor = font->getInfo().properties.hasColor;
+
+		if ((textStyle.type != TextStyle::Type::Default) && (not hasColor))
+		{
+			//if (font->getMethod() == FontMethod::SDF)
+			//{
+			//	Graphics2D::SetSDFParameters(textStyle);
+			//}
+			//else
+			//{
+			//	Graphics2D::SetMSDFParameters(textStyle);
+			//}
+		}
+
+		const ColorF drawColor = (hasColor ? ColorF{ 1.0, color.a } : color);
+
+		if (textStyle.type == TextStyle::Type::CustomShader)
+		{
+			return m_fonts[handleID]->getGlyphCache().drawFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale);
+		}
+		else
+		{
+			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
+			return m_fonts[handleID]->getGlyphCache().drawFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale);
 		}
 	}
 }

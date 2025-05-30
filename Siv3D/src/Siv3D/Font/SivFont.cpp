@@ -57,8 +57,17 @@ namespace s3d
 
 	Font::Font() {}
 
-	Font::Font(const int32 baseSize, const FilePathView path)
-		: Font{ FontMethod::Bitmap, baseSize, path, 0, U"", FontStyle::Normal } {}
+	Font::Font(const int32 baseSize, const FilePathView path, const FontStyle style)
+		: Font{ FontMethod::Bitmap, baseSize, path, 0, U"", style } {}
+
+	Font::Font(const int32 baseSize, const FilePathView path, const size_t faceIndex, const FontStyle style)
+		: Font{ FontMethod::Bitmap, baseSize, path, faceIndex, U"", style } {}
+
+	Font::Font(const int32 baseSize, const FilePathView path, const StringView styleName, const FontStyle style)
+		: Font{ FontMethod::Bitmap, baseSize, path, 0, styleName, style } {}
+
+	Font::Font(const int32 baseSize, const FilePathView path, const size_t faceIndex, const StringView styleName, const FontStyle style)
+		: Font{ FontMethod::Bitmap, baseSize, path, faceIndex, styleName, style } {}
 
 	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path)
 		: Font{ fontMethod, baseSize, path, 0, U"", FontStyle::Normal } {}

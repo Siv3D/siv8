@@ -46,7 +46,7 @@ namespace s3d
 		const auto& info = font.getInfo();
 		const double scale = (fontSize / info.baseSize);
 		const bool pixelPerfect = (fontSize == info.baseSize);
-		
+
 		const Vec2 basePos{ pos };
 		Vec2 penPos{ basePos };
 		double xMax = basePos.x;
@@ -70,18 +70,15 @@ namespace s3d
 			if (resolvedGlyph.fontIndex != 0)
 			{
 				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
-				RectF rect{};
 
-				if (useBasePos)
+				Vec2 nextPos = penPos;
+
+				if (not useBasePos)
 				{
-					//rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFont(fallbackIndex).lock()->id(),
-					//	cluster, penPos, size, textStyle, color, lineHeightScale);
+					nextPos.y += (info.ascender * scale);
 				}
-				else
-				{
-					//rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFont(fallbackIndex).lock()->id(),
-					//	cluster, penPos.movedBy(0, prop.ascender * scale), size, textStyle, color, lineHeightScale);
-				}
+
+				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, lineHeightScale);
 
 				penPos.x += rect.w;
 				xMax = Max(xMax, penPos.x);
@@ -122,7 +119,48 @@ namespace s3d
 
 	RectF BitmapGlyphCache::drawFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale)
 	{
-		return{};
+		constexpr ReadingDirection readingDirection = ReadingDirection::LeftToRight;
+
+		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
+		{
+			return{};
+		}
+
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double xMax = basePos.x;
+
+		int32 lineCount = 1;
+
+		{
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			{
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+				const Vec2 posOffset = (useBasePos ? cache.info.getBase(scale) : cache.info.getOffset(scale));
+				const Vec2 drawPos = (penPos + posOffset);
+
+				if (pixelPerfect)
+				{
+					textureRegion.draw(Math::Round(drawPos), color);
+				}
+				else
+				{
+					textureRegion.scaled(scale).draw(drawPos, color);
+				}
+			}
+
+			penPos.x += (cache.info.advance * scale);
+			xMax = Max(xMax, penPos.x);
+		}
+
+		const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
+		const double width = (xMax - basePos.x);
+		const double height = ((info.height() * scale * lineHeightScale) * lineCount);
+		return{ topLeft, width, height };
 	}
 
 	////////////////////////////////////////////////////////////////
