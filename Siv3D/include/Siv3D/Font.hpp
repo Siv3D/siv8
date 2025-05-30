@@ -22,6 +22,7 @@
 # include "BitmapGlyph.hpp"
 # include "ResolvedGlyph.hpp"
 # include "PredefinedYesNo.hpp"
+# include "Typeface.hpp"
 
 namespace s3d
 {
@@ -62,7 +63,10 @@ namespace s3d
 		Font(int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
 
 		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, FilePathView path);
+		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
 
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
