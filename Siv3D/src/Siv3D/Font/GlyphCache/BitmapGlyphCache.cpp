@@ -15,10 +15,28 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	getTexture
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Texture& BitmapGlyphCache::getTexture() noexcept
+	{
+		return m_glyphCacheManager.getTexture();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getXAdvances
+	//
+	////////////////////////////////////////////////////////////////
 
 	Array<double> BitmapGlyphCache::getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const double fontSize)
 	{
-		if (not prerender(font, resolvedGlyphs, true, ReadingDirection::LeftToRight))
+		constexpr ReadingDirection readingDirection = ReadingDirection::LeftToRight;
+
+		if (not prerender(font, resolvedGlyphs, true, readingDirection))
 		{
 			return{};
 		}
@@ -56,8 +74,7 @@ namespace s3d
 
 			if (resolvedGlyph.fontIndex != 0)
 			{
-				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
-
+				const uint32 fallbackIndex = (resolvedGlyph.fontIndex - 1);
 				const double xAdvance = SIV3D_ENGINE(Font)->xAdvanceFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, fontSize);
 				xAdvances << xAdvance;
 				penPosX += xAdvance;
@@ -65,7 +82,7 @@ namespace s3d
 				continue;
 			}
 
-			const auto& cache = m_glyphTable.find(resolvedGlyph.glyphIndex)->second;
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
 			const double xAdvance = (cache.info.advance * scale);
 			xAdvances << xAdvance;
 			penPosX += xAdvance;
@@ -74,88 +91,49 @@ namespace s3d
 		return xAdvances;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	xAdvanceFallback
+	//
+	////////////////////////////////////////////////////////////////
+
 	double BitmapGlyphCache::xAdvanceFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const double fontSize)
 	{
-		if (not prerender(font, { resolvedGlyph }, false, ReadingDirection::LeftToRight))
+		constexpr ReadingDirection readingDirection = ReadingDirection::LeftToRight;
+
+		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
 		{
 			return 0.0;
 		}
 
 		const auto& info = font.getInfo();
 		const double scale = (fontSize / info.baseSize);
-		const auto& cache = m_glyphTable.find(resolvedGlyph.glyphIndex)->second;
+		const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
 		return (cache.info.advance * scale);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	prerender
+	//
+	////////////////////////////////////////////////////////////////
+
 	bool BitmapGlyphCache::prerender(FontData& font, const Array<ResolvedGlyph>& resolvedGlyphs, const bool isMainFont, const ReadingDirection readingDirection)
 	{
-		// Notdef グリフを最初に作成しておく
-		if (m_glyphTable.empty())
-		{
-			const BitmapGlyph bitmapGlyph = font.renderBitmapByGlyphIndex(GlyphIndexNotdef, readingDirection);
-
-			if (not CacheGlyph(font, bitmapGlyph.image, bitmapGlyph, m_buffer, m_glyphTable))
-			{
-				return false;
-			}
-
-			m_hasDirty = true;
-		}
-
 		for (const auto& resolvedGlyph : resolvedGlyphs)
 		{
+			// このフォントの担当外のグリフはスキップする
 			if (isMainFont && (resolvedGlyph.fontIndex != 0))
 			{
 				continue;
 			}
 
-			if (m_glyphTable.contains(resolvedGlyph.glyphIndex))
-			{
-				continue;
-			}
-
-			{
-				const BitmapGlyph bitmapGlyph = font.renderBitmapByGlyphIndex(resolvedGlyph.glyphIndex, readingDirection);
-
-				if (bitmapGlyph.glyphIndex == GlyphIndexNotdef)
-				{
-					continue;
-				}
-
-				if (not CacheGlyph(font, bitmapGlyph.image, bitmapGlyph, m_buffer, m_glyphTable))
-				{
-					return false;
-				}
-			}
-
-			m_hasDirty = true;
+			// 未キャッシュのグリフをキャッシュする
+			m_glyphCacheManager.cacheGlyph(font, resolvedGlyph.glyphIndex, readingDirection);
 		}
 
-		// texture content can be updated in a different thread
-		//if (System::GetRendererType() == EngineOption::Renderer::Direct3D11)
-		//{
-			updateTexture();
-		//}
+		m_glyphCacheManager.updateTexture();
 
 		return true;
-	}
-
-	void BitmapGlyphCache::updateTexture()
-	{
-		if (not m_hasDirty)
-		{
-			return;
-		}
-
-		if (m_texture.size() == m_buffer.image.size())
-		{
-			m_texture.fill(m_buffer.image);
-		}
-		else
-		{
-			m_texture = DynamicTexture{ m_buffer.image };
-		}
-
-		m_hasDirty = false;
 	}
 }

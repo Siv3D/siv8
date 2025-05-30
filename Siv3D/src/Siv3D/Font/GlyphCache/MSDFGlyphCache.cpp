@@ -15,6 +15,17 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	getTexture
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Texture& MSDFGlyphCache::getTexture() noexcept
+	{
+		return(_unused);
+	}
+
 	Array<double> MSDFGlyphCache::getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const double fontSize)
 	{
 		return{};

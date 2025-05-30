@@ -13,12 +13,42 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/GlyphInfo.hpp>
 # include <Siv3D/Image.hpp>
+# include <Siv3D/DynamicTexture.hpp>
 # include <Siv3D/HashMap.hpp>
 # include <Siv3D/Char.hpp>
 # include "../FontData.hpp"
 
 namespace s3d
 {
+	using InternalGlyphIndex = uint32;
+
+	inline constexpr InternalGlyphIndex VerticalGlyphFlag = (1u << 31);
+
+	[[nodiscard]]
+	constexpr InternalGlyphIndex AsBaseGlyphIndex(const InternalGlyphIndex glyphIndex) noexcept
+	{
+		return (glyphIndex & ~VerticalGlyphFlag);
+	}
+
+	[[nodiscard]]
+	constexpr InternalGlyphIndex AsVerticalGlyphIndex(const InternalGlyphIndex glyphIndex) noexcept
+	{
+		return (glyphIndex | VerticalGlyphFlag);
+	}
+
+	[[nodiscard]]
+	constexpr InternalGlyphIndex AsInternalGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) noexcept
+	{
+		if (readingDirection == ReadingDirection::TopToBottom)
+		{
+			return AsVerticalGlyphIndex(glyphIndex);
+		}
+		else
+		{
+			return glyphIndex;
+		}
+	}
+
 	struct GlyphCache
 	{
 		GlyphInfo info;
@@ -36,7 +66,7 @@ namespace s3d
 	{
 		static constexpr int32 MaxHeight = 4096;
 
-		static constexpr Color BackgroundColor{ 255, 0, 0, 0 };
+		static constexpr Color BackgroundColor{ 0, 0 };
 
 		Image image;
 
@@ -47,11 +77,56 @@ namespace s3d
 		Point penPos{ 0, padding };
 
 		int32 currentMaxHeight = 0;
+
+		bool isDirty = false;
+	};
+
+	class GlyphCacheManager
+	{
+	public:
+
+		const GlyphCache& get(GlyphIndex glyphIndex, ReadingDirection readingDirection) const
+		{
+			return m_glyphTable.find(AsInternalGlyphIndex(glyphIndex, readingDirection))->second;
+		}
+
+		bool isEmpty() const noexcept
+		{
+			return m_glyphTable.empty();
+		}
+
+		const Texture& getTexture() const noexcept
+		{
+			return m_texture;
+		}
+
+		bool cacheGlyph(FontData& font, GlyphIndex glyphIndex, ReadingDirection readingDirection);
+
+		void updateTexture();
+
+	private:
+
+		static constexpr int32 MaxHeight = 4096;
+
+		static constexpr Color BackgroundColor{ 0, 0 };
+
+		HashMap<InternalGlyphIndex, GlyphCache> m_glyphTable;
+
+		DynamicTexture m_texture;
+
+		Image m_image;
+
+		int32 m_bufferWidth = 2;
+
+		int32 m_padding = 1;
+
+		Point m_penPos{ 0, m_padding };
+
+		int32 m_currentMaxHeight = 0;
+
+		bool m_isDirty = false;
 	};
 
 	[[nodiscard]]
 	double GetTabAdvance(double spaceWidth, double scale, double xBegin, double currentX, int32 tabSize);
-
-	[[nodiscard]]
-	bool CacheGlyph(const FontData& font, const Image& glyphImage, const GlyphInfo& glyphInfo, BufferImage& buffer, HashMap<GlyphIndex, GlyphCache>& glyphTable);
 }

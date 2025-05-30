@@ -22,6 +22,9 @@ namespace s3d
 	{
 	public:
 
+		[[nodiscard]]
+		const Texture& getTexture() noexcept override;
+
 		MSDFGlyphCache() = default;
 
 		[[nodiscard]]
@@ -32,5 +35,6 @@ namespace s3d
 	
 	private:
 
+		Texture _unused;
 	};
 }

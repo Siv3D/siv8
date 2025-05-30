@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "GlyphCacheCommon.hpp"
+#include <Siv3D/EngineLog.hpp>
 
 namespace s3d
 {
@@ -37,7 +38,7 @@ namespace s3d
 		const double baseTabWidth = (spaceWidth * tabSize * scale);
 
 		// 現在何番目のタブ位置か
-		const int32 currentIndentLevel = ((currentX - xBegin) / baseTabWidth);
+		const int32 currentIndentLevel = static_cast<int32>((currentX - xBegin) / baseTabWidth);
 
 		// 次のタブ位置は何番目か
 		const int32 nextIndentLevel = (currentIndentLevel + 1);
@@ -49,55 +50,151 @@ namespace s3d
 		return (nextX - currentX);
 	}
 
-	bool CacheGlyph(const FontData& font, const Image& glyphImage, const GlyphInfo& glyphInfo, BufferImage& buffer, HashMap<GlyphIndex, GlyphCache>& glyphTable)
+	bool GlyphCacheManager::cacheGlyph(FontData& font, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		// バッファ画像が作成されていない場合、作成する
-		if (not buffer.image)
+		if (m_image.isEmpty())
 		{
 			const Size initialBitmapSize = CalculateInitialBitmapSize(font.getInfo().baseSize);
-			buffer.image.resize(initialBitmapSize, BufferImage::BackgroundColor);
+			m_image.resize(initialBitmapSize, BufferImage::BackgroundColor);
+			m_isDirty = true;
+			
+			// Notdef グリフをキャッシュする
+			cacheGlyph(font, GlyphIndexNotdef, ReadingDirection::LeftToRight);
+			//cacheGlyph(font, GlyphIndexNotdef, ReadingDirection::TopToBottom);
 		}
 
-		buffer.penPos.x += buffer.padding;
-
-		const int32 glyphWidth	= glyphImage.width();
-		const int32 glyphHeight	= glyphImage.height();
-
-		// 右に余白が足りない場合、次の行へ進む
-		if (buffer.image.width() < (buffer.penPos.x + (glyphWidth + buffer.padding)))
+		if (m_glyphTable.contains(glyphIndex))
 		{
-			buffer.penPos.x = buffer.padding;
-			buffer.penPos.y += (buffer.currentMaxHeight + (buffer.padding * 2));
-			buffer.currentMaxHeight = 0;
+			// すでにキャッシュされている場合
+			return true;
 		}
 
-		// 下に余白が足りない場合、バッファ画像の高さを拡張する
-		if (buffer.image.height() < (buffer.penPos.y + (glyphHeight + buffer.padding)))
-		{
-			const int32 newBitmapHeight = (((buffer.penPos.y + (glyphHeight + buffer.padding)) + 255) / 256 * 256);
+		const BitmapGlyph bitmapGlyph = font.renderBitmapByGlyphIndex(glyphIndex, readingDirection);
 
-			if (BufferImage::MaxHeight < newBitmapHeight)
+		// グリフのレンダリングに失敗した場合
+		if (bitmapGlyph.glyphIndex != glyphIndex)
+		{
+			return false;
+		}
+
+		const InternalGlyphIndex internalGlyphIndex = AsInternalGlyphIndex(glyphIndex, readingDirection);
+
+		if (internalGlyphIndex & VerticalGlyphFlag)
+		{
+			// 横書きグリフがすでにキャッシュされている場合
+			if (auto it = m_glyphTable.find(AsBaseGlyphIndex(internalGlyphIndex));
+				it != m_glyphTable.end())
 			{
-				return false;
+				const auto& horiCache = it->second;
+
+				// すでにキャッシュされているグリフと同サイズの場合、それを再利用する
+				if (Size{ horiCache.textureRegionWidth, horiCache.textureRegionHeight } == bitmapGlyph.image.size())
+				{
+					GlyphCache cache;
+					cache.info = bitmapGlyph;
+					cache.textureRegionLeft		= horiCache.textureRegionLeft;
+					cache.textureRegionTop		= horiCache.textureRegionTop;
+					cache.textureRegionWidth	= horiCache.textureRegionWidth;
+					cache.textureRegionHeight	= horiCache.textureRegionHeight;
+					m_glyphTable.emplace(internalGlyphIndex, cache);
+					return true;
+				}
+			}
+		}
+		else
+		{
+			// 縦書きグリフがすでにキャッシュされている場合
+			if (auto it = m_glyphTable.find(AsVerticalGlyphIndex(internalGlyphIndex));
+				it != m_glyphTable.end())
+			{
+				const auto& vertCache = it->second;
+
+				// すでにキャッシュされているグリフと同サイズの場合、それを再利用する
+				if (Size{ vertCache.textureRegionWidth, vertCache.textureRegionHeight } == bitmapGlyph.image.size())
+				{
+					GlyphCache cache;
+					cache.info = bitmapGlyph;
+					cache.textureRegionLeft		= vertCache.textureRegionLeft;
+					cache.textureRegionTop		= vertCache.textureRegionTop;
+					cache.textureRegionWidth	= vertCache.textureRegionWidth;
+					cache.textureRegionHeight	= vertCache.textureRegionHeight;
+					m_glyphTable.emplace(internalGlyphIndex, cache);
+					return true;
+				}
+			}
+		}
+
+		const int32 glyphWidth	= bitmapGlyph.image.width();
+		const int32 glyphHeight	= bitmapGlyph.image.height();
+
+		// キャッシュ画像の更新
+		{
+			m_penPos.x += m_padding;
+
+			// 右に余白が足りない場合、次の行へ進む
+			if (m_image.width() < (m_penPos.x + (glyphWidth + m_padding)))
+			{
+				m_penPos.x = m_padding;
+				m_penPos.y += (m_currentMaxHeight + (m_padding * 2));
+				m_currentMaxHeight = 0;
 			}
 
-			buffer.image.resizeHeight(newBitmapHeight, BufferImage::BackgroundColor);
+			// 下に余白が足りない場合、バッファ画像の高さを拡張する
+			if (m_image.height() < (m_penPos.y + (glyphHeight + m_padding)))
+			{
+				const int32 newBitmapHeight = (((m_penPos.y + (glyphHeight + m_padding)) + 255) / 256 * 256);
+
+				if (BufferImage::MaxHeight < newBitmapHeight)
+				{
+					return false;
+				}
+
+				m_image.resizeHeight(newBitmapHeight, BufferImage::BackgroundColor);
+				m_isDirty = true;
+			}
+
+			// キャッシュ画像にグリフ画像を書き込む
+			{
+				bitmapGlyph.image.overwrite(m_image, m_penPos);
+				m_isDirty = true;
+			}
+
+			m_currentMaxHeight = Max(m_currentMaxHeight, glyphHeight);
 		}
 
-		// キャッシュ画像にグリフ画像を書き込む
-		glyphImage.overwrite(buffer.image, buffer.penPos);
+		// キャッシュテーブルの更新
+		{
+			GlyphCache cache;
+			cache.info = bitmapGlyph;
+			cache.textureRegionLeft		= static_cast<int16>(m_penPos.x);
+			cache.textureRegionTop		= static_cast<int16>(m_penPos.y);
+			cache.textureRegionWidth	= static_cast<int16>(glyphWidth);
+			cache.textureRegionHeight	= static_cast<int16>(glyphHeight);
+			m_glyphTable.emplace(internalGlyphIndex, cache);
+		}
 
-		GlyphCache cache;
-		cache.info = glyphInfo;
-		cache.textureRegionLeft		= static_cast<int16>(buffer.penPos.x);
-		cache.textureRegionTop		= static_cast<int16>(buffer.penPos.y);
-		cache.textureRegionWidth	= static_cast<int16>(glyphWidth);
-		cache.textureRegionHeight	= static_cast<int16>(glyphHeight);
-		glyphTable.emplace(glyphInfo.glyphIndex, cache);
-
-		buffer.currentMaxHeight = Max(buffer.currentMaxHeight, glyphHeight);
-		buffer.penPos.x += (glyphWidth + buffer.padding);
+		m_penPos.x += (glyphWidth + m_padding);
 
 		return true;
+	}
+
+	void GlyphCacheManager::updateTexture()
+	{
+		if (not m_isDirty)
+		{
+			return;
+		}
+
+		if (m_texture.size() == m_image.size())
+		{
+			m_texture.fill(m_image);
+		}
+		else
+		{
+			m_texture = DynamicTexture{ m_image };
+		}
+
+		m_isDirty = false;
 	}
 }

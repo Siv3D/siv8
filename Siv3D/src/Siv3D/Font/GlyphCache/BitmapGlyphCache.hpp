@@ -23,6 +23,9 @@ namespace s3d
 	public:
 
 		BitmapGlyphCache() = default;
+		
+		[[nodiscard]]
+		const Texture& getTexture() noexcept override;
 
 		[[nodiscard]]
 		Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) override;
@@ -32,17 +35,9 @@ namespace s3d
 	
 	private:
 
-		HashMap<GlyphIndex, GlyphCache> m_glyphTable;
-
-		DynamicTexture m_texture;
-
-		bool m_hasDirty = false;
-
-		BufferImage m_buffer = {};
+		GlyphCacheManager m_glyphCacheManager;
 
 		[[nodiscard]]
 		bool prerender(FontData& font, const Array<ResolvedGlyph>& resolvedGlyphs, bool isMainFont, ReadingDirection readingDirection);
-		
-		void updateTexture();
 	};
 }

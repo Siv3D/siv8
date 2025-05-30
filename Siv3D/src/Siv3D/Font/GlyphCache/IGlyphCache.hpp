@@ -24,6 +24,9 @@ namespace s3d
 
 		virtual ~IGlyphCache() = default;
 
+		[[nodiscard]]
+		virtual const Texture& getTexture() noexcept = 0;
+
 		//virtual RectF draw(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double size, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) = 0;
 
 		//virtual bool fits(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double size, double lineHeightScale) = 0;
@@ -50,8 +53,6 @@ namespace s3d
 
 		virtual bool preload(const FontData& font, StringView s) = 0;
 
-		[[nodiscard]]
-		virtual const Texture& getTexture() noexcept = 0;
 
 		[[nodiscard]]
 		virtual TextureRegion getTextureRegion(const FontData& font, GlyphIndex glyphIndex) = 0;
