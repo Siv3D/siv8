@@ -51,6 +51,9 @@ namespace s3d
 		Font();
 
 		[[nodiscard]]
+		explicit Font(int32 baseSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
 		Font(int32 baseSize, FilePathView path, FontStyle style = FontStyle::Normal);
 
 		[[nodiscard]]
@@ -61,6 +64,9 @@ namespace s3d
 
 		[[nodiscard]]
 		Font(int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
 
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, FontStyle style = FontStyle::Normal);

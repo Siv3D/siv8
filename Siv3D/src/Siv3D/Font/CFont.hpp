@@ -60,6 +60,9 @@ namespace s3d
 		//	create
 		//
 		////////////////////////////////////////////////////////////////
+		
+		[[nodiscard]]
+		Font::IDType create(Typeface typeface, FontMethod fontMethod, int32 baseSize, FontStyle style) override;
 
 		[[nodiscard]]
 		Font::IDType create(FilePathView path, size_t faceIndex, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style) override;

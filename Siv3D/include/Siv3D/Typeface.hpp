@@ -37,8 +37,11 @@ namespace s3d
 		/// @brief カラー絵文字フォント
 		ColorEmoji,
 
-		/// @brief 細いサイズの M PLUS 2 フォント
+		/// @brief 非常に細いサイズの M PLUS 2 フォント
 		MPlus2_Thin,
+
+		/// @brief 細いサイズの M PLUS 2 フォント	
+		MPlus2_ExtraLight,
 
 		/// @brief やや細いサイズの M PLUS 2 フォント	
 		MPlus2_Light,
@@ -46,14 +49,17 @@ namespace s3d
 		/// @brief 通常サイズの M PLUS 2 フォント	
 		MPlus2_Regular,
 
-		/// @brief やや太いサイズの M PLUS 2 フォント	
+		/// @brief 少し太いサイズの M PLUS 2 フォント	
 		MPlus2_Medium,
+
+		/// @brief やや太いサイズの M PLUS 2 フォント	
+		MPlus2_SemiBold,
 
 		/// @brief 太いサイズの M PLUS 2 フォント
 		MPlus2_Bold,
 
 		/// @brief とても太いサイズの M PLUS 2 フォント
-		MPlus2_Heavy,
+		MPlus2_ExtraBold,
 
 		/// @brief 最も太いサイズの M PLUS 2 フォント	
 		MPlus2_Black,
@@ -61,8 +67,11 @@ namespace s3d
 		///// @brief マテリアルデザイン・アイコンフォント
 		//Icon_MaterialDesign,
 
-		/// @brief 細いサイズの M PLUS 2 フォント
+		/// @brief 非常に細いサイズの M PLUS 2 フォント
 		Thin		= MPlus2_Thin,
+
+		/// @brief 細いサイズの M PLUS 2 フォント	
+		ExtraLight	= MPlus2_ExtraLight,
 
 		/// @brief やや細いサイズの M PLUS 2 フォント
 		Light		= MPlus2_Light,
@@ -70,14 +79,17 @@ namespace s3d
 		/// @brief 通常サイズの M PLUS 2 フォント
 		Regular		= MPlus2_Regular,
 
-		/// @brief やや太いサイズの M PLUS 2 フォント
+		/// @brief 少し太いサイズの M PLUS 2 フォント
 		Medium		= MPlus2_Medium,
+
+		/// @brief やや太いサイズの M PLUS 2 フォント	
+		SemiBold	= MPlus2_SemiBold,
 
 		/// @brief 太いサイズの M PLUS 2 フォント
 		Bold		= MPlus2_Bold,
 
 		/// @brief とても太いサイズの M PLUS 2 フォント
-		Heavy		= MPlus2_Heavy,
+		Heavy		= MPlus2_ExtraBold,
 
 		/// @brief 最も太いサイズの M PLUS 2 フォント
 		Black		= MPlus2_Black,

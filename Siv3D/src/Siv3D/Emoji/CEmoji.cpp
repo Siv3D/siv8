@@ -104,7 +104,7 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CEmoji::init()");
 
-		const FilePath emojiFilePath = (CacheDirectory::Engine() + U"font/noto-emoji/Noto-COLRv1.ttf");
+		const FilePath emojiFilePath = (CacheDirectory::Engine() + U"font/Noto-COLRv1.ttf");
 
 		if (not FileSystem::Exists(emojiFilePath))
 		{

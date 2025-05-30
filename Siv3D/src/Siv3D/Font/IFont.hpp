@@ -35,6 +35,9 @@ namespace s3d
 		virtual Array<FontFaceProperties> getFontFaces(FilePathView path) const = 0;
 
 		[[nodiscard]]
+		virtual Font::IDType create(Typeface typeface, FontMethod fontMethod, int32 baseSize, FontStyle style) = 0;
+
+		[[nodiscard]]
 		virtual Font::IDType create(FilePathView path, size_t faceIndex, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style) = 0;
 
 		virtual void release(Font::IDType handleID) = 0;
