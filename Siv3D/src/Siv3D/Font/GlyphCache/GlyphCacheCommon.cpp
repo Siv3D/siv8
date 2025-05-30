@@ -74,7 +74,7 @@ namespace s3d
 		else if (ch == U'\n')
 		{
 			penPos.y = basePos.y;
-			penPos.x += (info.height() * scale * lineHeightScale);
+			penPos.x -= (info.height() * scale * lineHeightScale);
 			++lineCount;
 		}
 

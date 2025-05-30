@@ -217,13 +217,8 @@ namespace s3d
 			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
 			{
 				const TextureRegion textureRegion	= m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);		
-				
-				Vec2 posOffset{ 0,0 };
-				posOffset.x = cache.info.left;
-				posOffset.y = cache.info.top;
-				
-				//const Vec2 posOffset				= (useBasePos ? cache.info.getBase(scale) : cache.info.getOffset(scale));
-				const Vec2 drawPos					= (penPos + posOffset);
+				const Vec2 posOffset{ cache.info.left, cache.info.top };
+				const Vec2 drawPos = (penPos + posOffset);
 
 				if (pixelPerfect)
 				{
@@ -239,12 +234,12 @@ namespace s3d
 			yMax = Max(yMax, penPos.y);
 		}
 
-		return{};
 
-		//const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
-		//const double width = (xMax - basePos.x);
-		//const double height = ((info.height() * scale * lineHeightScale) * lineCount);
-		//return{ topLeft, width, height };
+		const double right = (basePos.x + (info.height() * scale * 0.5));
+		const double left = (right - (info.height() * scale * lineHeightScale * lineCount));
+		const double top = pos.y;
+		const double bottom = yMax;
+		return{ left, top, (right - left), (bottom - top) };
 	}
 
 	////////////////////////////////////////////////////////////////
