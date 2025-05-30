@@ -88,7 +88,9 @@ namespace s3d
 			cacheGlyph(font, GlyphIndexNotdef, ReadingDirection::TopToBottom);
 		}
 
-		if (m_glyphTable.contains(glyphIndex))
+		const InternalGlyphIndex internalGlyphIndex = AsInternalGlyphIndex(glyphIndex, readingDirection);
+
+		if (m_glyphTable.contains(internalGlyphIndex))
 		{
 			// すでにキャッシュされている場合
 			return true;
@@ -101,8 +103,6 @@ namespace s3d
 		{
 			return false;
 		}
-
-		const InternalGlyphIndex internalGlyphIndex = AsInternalGlyphIndex(glyphIndex, readingDirection);
 
 		if (internalGlyphIndex & VerticalGlyphFlag)
 		{

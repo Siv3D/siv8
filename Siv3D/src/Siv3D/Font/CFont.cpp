@@ -393,7 +393,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF CFont::draw(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale)
+	RectF CFont::draw(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const bool hasColor = font->getInfo().properties.hasColor;
@@ -414,12 +414,27 @@ namespace s3d
 
 		if (textStyle.type == TextStyle::Type::CustomShader)
 		{
-			return m_fonts[handleID]->getGlyphCache().draw(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale);
+			if (readingDirection == ReadingDirection::TopToBottom)
+			{
+				return m_fonts[handleID]->getGlyphCache().drawVertical(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale, readingDirection);
+			}
+			else
+			{
+				return m_fonts[handleID]->getGlyphCache().drawHorizontal(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale, readingDirection);
+			}
 		}
 		else
 		{
 			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
-			return m_fonts[handleID]->getGlyphCache().draw(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale);
+
+			if (readingDirection == ReadingDirection::TopToBottom)
+			{
+				return m_fonts[handleID]->getGlyphCache().drawVertical(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale, readingDirection);
+			}
+			else
+			{
+				return m_fonts[handleID]->getGlyphCache().drawHorizontal(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale, readingDirection);
+			}
 		}
 	}
 
@@ -429,7 +444,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale)
+	RectF CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const bool hasColor = font->getInfo().properties.hasColor;
@@ -450,12 +465,27 @@ namespace s3d
 
 		if (textStyle.type == TextStyle::Type::CustomShader)
 		{
-			return m_fonts[handleID]->getGlyphCache().drawFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale);
+			if (readingDirection == ReadingDirection::TopToBottom)
+			{
+				return m_fonts[handleID]->getGlyphCache().drawVerticalFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale, readingDirection);
+			}
+			else
+			{
+				return m_fonts[handleID]->getGlyphCache().drawHorizontalFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale, readingDirection);
+			}
 		}
 		else
 		{
 			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
-			return m_fonts[handleID]->getGlyphCache().drawFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale);
+
+			if (readingDirection == ReadingDirection::TopToBottom)
+			{
+				return m_fonts[handleID]->getGlyphCache().drawVerticalFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale, readingDirection);
+			}
+			else
+			{
+				return m_fonts[handleID]->getGlyphCache().drawHorizontalFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale, readingDirection);
+			}
 		}
 	}
 }

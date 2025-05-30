@@ -14,6 +14,7 @@
 # include "String.hpp"
 # include "Font.hpp"
 # include "Format.hpp"
+# include "ReadingDirection.hpp"
 
 namespace s3d
 {
@@ -27,14 +28,22 @@ namespace s3d
 
 		Array<ResolvedGlyph> resolvedGlyphs;
 
+		ReadingDirection readingDirection = ReadingDirection::LeftToRight;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
 		[[nodiscard]]
 		DrawableText() = default;
 
 		[[nodiscard]]
-		DrawableText(const Font& _font, const String& _text);
+		DrawableText(const Font& _font, const String& _text, ReadingDirection _readingDirection);
 
 		[[nodiscard]]
-		DrawableText(const Font& _font, String&& _text);
+		DrawableText(const Font& _font, String&& _text, ReadingDirection _readingDirection);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -155,7 +164,6 @@ namespace s3d
 		//RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
 		//bool draw(const TextStyle& textStyle, double size, const RectF& area, const ColorF& color = Palette::White) const;
-
 	};
 }
 

@@ -567,13 +567,24 @@ namespace s3d
 
 	DrawableText Font::operator ()(const String& text) const
 	{
-		return{ *this, text };
+		return{ *this, text, ReadingDirection::LeftToRight };
 	}
 
 	DrawableText Font::operator ()(String&& text) const
 	{
-		return{ *this, std::move(text) };
+		return{ *this, std::move(text), ReadingDirection::LeftToRight };
 	}
+
+	DrawableText Font::operator ()(const ReadingDirection readingDirection, const String& text) const
+	{
+		return{ *this, text, readingDirection };
+	}
+
+	DrawableText Font::operator ()(const ReadingDirection readingDirection, String&& text) const
+	{
+		return{ *this, std::move(text), readingDirection };
+	}
+
 
 
 

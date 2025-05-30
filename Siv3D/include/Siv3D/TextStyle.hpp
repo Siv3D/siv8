@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
+# include "ReadingDirection.hpp"
 
 namespace s3d
 {

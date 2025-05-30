@@ -523,6 +523,18 @@ namespace s3d
 		template <class... Args>
 		DrawableText operator ()(const Args&...) = delete;
 
+		[[nodiscard]]
+		DrawableText operator ()(ReadingDirection readingDirection, const String& text) const;
+
+		[[nodiscard]]
+		DrawableText operator ()(ReadingDirection readingDirection, String&& text) const;
+
+		template <Concept::Formattable... Args>
+		[[nodiscard]]
+		DrawableText operator ()(ReadingDirection readingDirection, const Args& ... args) const;
+
+		template <class... Args>
+		DrawableText operator ()(ReadingDirection readingDirection, const Args&...) = delete;
 
 
 

@@ -1362,7 +1362,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Random\SivRandom.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RasterizerStateBuilder\SivRasterizerStateBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RasterizerState\SivRasterizerState.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\ReadingDirection\SivReadingDirection.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RectanglePack\SivRectanglePack.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RectF\SivRectF.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Rect\SivRect.cpp" />

@@ -30,14 +30,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	draw
+	//	drawHorizontal
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF BitmapGlyphCache::draw(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale)
+	RectF BitmapGlyphCache::drawHorizontal(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
 	{
-		constexpr ReadingDirection readingDirection = ReadingDirection::LeftToRight;
-
 		if (not prerender(font, resolvedGlyphs, true, readingDirection))
 		{
 			return{};
@@ -59,7 +57,7 @@ namespace s3d
 			if (const char32 ch = s[resolvedGlyph.pos];
 				IsControl(ch))
 			{
-				if (ConsumeControlCharacter(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, lineHeightScale, info))
+				if (ConsumeControlCharacterHorizontal(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, lineHeightScale, info))
 				{
 					xMax = Max(xMax, penPos.x);
 					continue;
@@ -78,7 +76,7 @@ namespace s3d
 					nextPos.y += (info.ascender * scale);
 				}
 
-				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, lineHeightScale);
+				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, lineHeightScale, readingDirection);
 
 				penPos.x += rect.w;
 				xMax = Max(xMax, penPos.x);
@@ -113,14 +111,150 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	drawFallback
+	//	drawHorizontalFallback
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF BitmapGlyphCache::drawFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale)
+	RectF BitmapGlyphCache::drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
 	{
-		constexpr ReadingDirection readingDirection = ReadingDirection::LeftToRight;
+		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
+		{
+			return{};
+		}
 
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double xMax = basePos.x;
+
+		int32 lineCount = 1;
+
+		{
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			{
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+				const Vec2 posOffset = (useBasePos ? cache.info.getBase(scale) : cache.info.getOffset(scale));
+				const Vec2 drawPos = (penPos + posOffset);
+
+				if (pixelPerfect)
+				{
+					textureRegion.draw(Math::Round(drawPos), color);
+				}
+				else
+				{
+					textureRegion.scaled(scale).draw(drawPos, color);
+				}
+			}
+
+			penPos.x += (cache.info.advance * scale);
+			xMax = Max(xMax, penPos.x);
+		}
+
+		const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
+		const double width = (xMax - basePos.x);
+		const double height = ((info.height() * scale * lineHeightScale) * lineCount);
+		return{ topLeft, width, height };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawVertical
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF BitmapGlyphCache::drawVertical(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	{
+		if (not prerender(font, resolvedGlyphs, true, readingDirection))
+		{
+			return{};
+		}
+
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double yMax = basePos.y;
+
+		int32 lineCount = 1;
+
+		for (const auto& resolvedGlyph : resolvedGlyphs)
+		{
+			// タブ, 空白, 制御文字
+			if (const char32 ch = s[resolvedGlyph.pos];
+				IsControl(ch))
+			{
+				if (ConsumeControlCharacterVertical(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, lineHeightScale, info))
+				{
+					yMax = Max(yMax, penPos.y);
+					continue;
+				}
+			}
+
+			// フォールバックフォント
+			if (resolvedGlyph.fontIndex != 0)
+			{
+				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
+
+				Vec2 nextPos = penPos;
+
+				if (not useBasePos)
+				{
+					nextPos.y += (info.ascender * scale);
+				}
+
+				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, lineHeightScale, readingDirection);
+
+				penPos.y += rect.h;
+				yMax = Max(yMax, penPos.y);
+				continue;
+			}
+
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			{
+				const TextureRegion textureRegion	= m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);		
+				
+				Vec2 posOffset{ 0,0 };
+				posOffset.x = cache.info.left;
+				posOffset.y = cache.info.top;
+				
+				//const Vec2 posOffset				= (useBasePos ? cache.info.getBase(scale) : cache.info.getOffset(scale));
+				const Vec2 drawPos					= (penPos + posOffset);
+
+				if (pixelPerfect)
+				{
+					textureRegion.draw(Math::Round(drawPos), color);
+				}
+				else
+				{
+					textureRegion.scaled(scale).draw(drawPos, color);
+				}
+			}
+
+			penPos.y += (cache.info.advance * scale);
+			yMax = Max(yMax, penPos.y);
+		}
+
+		return{};
+
+		//const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
+		//const double width = (xMax - basePos.x);
+		//const double height = ((info.height() * scale * lineHeightScale) * lineCount);
+		//return{ topLeft, width, height };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawVerticalFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF BitmapGlyphCache::drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	{
 		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
 		{
 			return{};

@@ -28,22 +28,44 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	draw
+	//	drawHorizontal
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF MSDFGlyphCache::draw(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale)
+	RectF MSDFGlyphCache::drawHorizontal(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
 	{
 		return{};
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	drawFallback
+	//	drawHorizontalFallback
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF MSDFGlyphCache::drawFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale)
+	RectF MSDFGlyphCache::drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	{
+		return{};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawVertical
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF MSDFGlyphCache::drawVertical(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	{
+		return{};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawVerticalFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF MSDFGlyphCache::drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
 	{
 		return{};
 	}

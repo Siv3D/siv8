@@ -23,5 +23,8 @@ namespace s3d
 	double GetTabAdvance(double spaceWidth, double scale, double xBegin, double currentX, int32 tabSize);
 
 	[[nodiscard]]
-	bool ConsumeControlCharacter(char32 ch, Vec2& penPos, int32& lineCount, const Vec2& basePos, double scale, double lineHeightScale, const FontFaceInfo& info);
+	bool ConsumeControlCharacterHorizontal(char32 ch, Vec2& penPos, int32& lineCount, const Vec2& basePos, double scale, double lineHeightScale, const FontFaceInfo& info);
+
+	[[nodiscard]]
+	bool ConsumeControlCharacterVertical(char32 ch, Vec2& penPos, int32& lineCount, const Vec2& basePos, double scale, double lineHeightScale, const FontFaceInfo& info);
 }

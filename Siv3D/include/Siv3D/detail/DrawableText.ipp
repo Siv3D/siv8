@@ -16,6 +16,12 @@ namespace s3d
 	template <Concept::Formattable... Args>
 	DrawableText Font::operator ()(const Args& ... args) const
 	{
-		return DrawableText(*this, Format(args...));
+		return DrawableText{ *this, Format(args...), ReadingDirection::LeftToRight };
+	}
+
+	template <Concept::Formattable... Args>
+	DrawableText Font::operator ()(const ReadingDirection readingDirection, const Args& ... args) const
+	{
+		return DrawableText{ *this, Format(args...), readingDirection };
 	}
 }

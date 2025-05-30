@@ -16,13 +16,14 @@
 
 namespace s3d
 {
-	DrawableText::DrawableText(const Font& _font, const String& _text)
-		: DrawableText{ _font, String{ _text } } {}
+	DrawableText::DrawableText(const Font& _font, const String& _text, const ReadingDirection _readingDirection)
+		: DrawableText{ _font, String{ _text }, _readingDirection } {}
 
-	DrawableText::DrawableText(const Font& _font, String&& _text)
+	DrawableText::DrawableText(const Font& _font, String&& _text, const ReadingDirection _readingDirection)
 		: font{ _font }
 		, text{ std::move(_text) }
-		, resolvedGlyphs{ font.getResolvedGlyphs(text) } {}
+		, resolvedGlyphs{ font.getResolvedGlyphs(text, _readingDirection) }
+		, readingDirection{ _readingDirection } {}
 	
 	Array<double> DrawableText::getXAdvances() const
 	{
@@ -227,7 +228,7 @@ namespace s3d
 
 	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Vec2& pos, const ColorF& color) const
 	{
-		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, pos, size, textStyle, color, 1.0);
+		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, pos, size, textStyle, color, 1.0, readingDirection);
 	}
 
 	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topLeft_<Vec2> topLeft, const ColorF& color) const

@@ -39,11 +39,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ConsumeControlCharacter
+	//	ConsumeControlCharacterHorizontal
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool ConsumeControlCharacter(const char32 ch, Vec2& penPos, int32& lineCount, const Vec2& basePos, const double scale, const double lineHeightScale, const FontFaceInfo& info)
+	bool ConsumeControlCharacterHorizontal(const char32 ch, Vec2& penPos, int32& lineCount, const Vec2& basePos, const double scale, const double lineHeightScale, const FontFaceInfo& info)
 	{
 		if (ch == U'\t')
 		{
@@ -56,6 +56,28 @@ namespace s3d
 			++lineCount;
 		}
 		
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ConsumeControlCharacterVertical
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool ConsumeControlCharacterVertical(const char32 ch, Vec2& penPos, int32& lineCount, const Vec2& basePos, const double scale, const double lineHeightScale, const FontFaceInfo& info)
+	{
+		if (ch == U'\t')
+		{
+			penPos.y += GetTabAdvance(info.spaceYAdvance, scale, basePos.y, penPos.y, info.tabSize);
+		}
+		else if (ch == U'\n')
+		{
+			penPos.y = basePos.y;
+			penPos.x += (info.height() * scale * lineHeightScale);
+			++lineCount;
+		}
+
 		return true;
 	}
 }

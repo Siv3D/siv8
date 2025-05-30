@@ -220,7 +220,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) override;
+		RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -228,7 +228,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) override;
+		RectF drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale, ReadingDirection readingDirection) override;
 
 	private:
 

@@ -31,5 +31,5 @@ namespace s3d
 		RightToLeft,
 	};
 
-	void Formatter(FormatData& formatData, ReadingDirection value);
+	void Formatter(FormatData& formatData, ReadingDirection value) = delete;
 }
