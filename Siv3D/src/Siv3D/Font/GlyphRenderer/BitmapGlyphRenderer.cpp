@@ -230,8 +230,8 @@ namespace s3d
 		}
 		else
 		{
-			glyph.left		= (face->glyph->metrics.horiBearingX / 64.0f);
-			glyph.top		= (face->glyph->metrics.horiBearingY / 64.0f);
+			glyph.left		= static_cast<float>(face->glyph->bitmap_left);
+			glyph.top		= static_cast<float>(face->glyph->bitmap_top);
 			glyph.advance	= (face->glyph->metrics.horiAdvance / 64.0f);
 		}
 		

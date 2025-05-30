@@ -409,7 +409,7 @@ namespace s3d
 
 		::hb_buffer_clear_contents(hbObjects.hbBuffer);
 		::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_TTB);
-		::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_COMMON);
+		::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_HAN);
 
 		const int32 textLength = static_cast<int32>(ch.length());
 		::hb_buffer_add_utf32(hbObjects.hbBuffer, reinterpret_cast<const uint32_t*>(ch.data()), textLength, 0, textLength);
