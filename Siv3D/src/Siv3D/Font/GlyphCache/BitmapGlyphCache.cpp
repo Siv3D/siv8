@@ -201,12 +201,6 @@ namespace s3d
 				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
 
 				Vec2 nextPos = penPos;
-
-				if (not useBasePos)
-				{
-					nextPos.y += (info.ascender * scale);
-				}
-
 				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, lineHeightScale, readingDirection);
 
 				penPos.y += rect.h;
@@ -234,7 +228,6 @@ namespace s3d
 			yMax = Max(yMax, penPos.y);
 		}
 
-
 		const double right = (basePos.x + (info.height() * scale * 0.5));
 		const double left = (right - (info.height() * scale * lineHeightScale * lineCount));
 		const double top = pos.y;
@@ -261,7 +254,7 @@ namespace s3d
 
 		const Vec2 basePos{ pos };
 		Vec2 penPos{ basePos };
-		double xMax = basePos.x;
+		double yMax = basePos.y;
 
 		int32 lineCount = 1;
 
@@ -269,8 +262,8 @@ namespace s3d
 			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
 			{
 				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
-				const Vec2 posOffset = (useBasePos ? cache.info.getBase(scale) : cache.info.getOffset(scale));
-				const Vec2 drawPos = (penPos + posOffset);
+				const Vec2 posOffset{ cache.info.left, cache.info.top };
+				const Vec2 drawPos = (penPos + posOffset * scale);
 
 				if (pixelPerfect)
 				{
@@ -282,14 +275,15 @@ namespace s3d
 				}
 			}
 
-			penPos.x += (cache.info.advance * scale);
-			xMax = Max(xMax, penPos.x);
+			penPos.y += (cache.info.advance * scale);
+			yMax = Max(yMax, penPos.y);
 		}
 
-		const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
-		const double width = (xMax - basePos.x);
-		const double height = ((info.height() * scale * lineHeightScale) * lineCount);
-		return{ topLeft, width, height };
+		const double right = (basePos.x + (info.height() * scale * 0.5));
+		const double left = (right - (info.height() * scale * lineHeightScale * lineCount));
+		const double top = pos.y;
+		const double bottom = yMax;
+		return{ left, top, (right - left), (bottom - top) };
 	}
 
 	////////////////////////////////////////////////////////////////
