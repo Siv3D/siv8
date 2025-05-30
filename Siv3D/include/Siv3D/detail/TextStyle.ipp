@@ -15,7 +15,7 @@ namespace s3d
 {
 	constexpr TextStyle TextStyle::Default() noexcept
 	{
-		return TextStyle{};
+		return{};
 	}
 
 	constexpr TextStyle TextStyle::CustomShader() noexcept

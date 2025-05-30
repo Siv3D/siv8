@@ -27,13 +27,13 @@ namespace s3d
 		[[nodiscard]]
 		const Texture& getTexture() noexcept override;
 
-		RectF drawHorizontal(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale, ReadingDirection readingDirection) override;
+		RectF drawHorizontal(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
-		RectF drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, double lineHeightScale, ReadingDirection readingDirection) override;
+		RectF drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
-		RectF drawVertical(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale, ReadingDirection readingDirection) override;
+		RectF drawVertical(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
-		RectF drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, double lineHeightScale, ReadingDirection readingDirection) override;
+		RectF drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
 		[[nodiscard]]
 		Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) override;

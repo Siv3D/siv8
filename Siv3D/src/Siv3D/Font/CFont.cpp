@@ -427,7 +427,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF CFont::draw(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF CFont::draw(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const bool hasColor = font->getInfo().properties.hasColor;
@@ -450,11 +450,11 @@ namespace s3d
 		{
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
-				return m_fonts[handleID]->getGlyphCache().drawVertical(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().drawVertical(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, readingDirection);
 			}
 			else
 			{
-				return m_fonts[handleID]->getGlyphCache().drawHorizontal(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().drawHorizontal(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, readingDirection);
 			}
 		}
 		else
@@ -463,11 +463,11 @@ namespace s3d
 
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
-				return m_fonts[handleID]->getGlyphCache().drawVertical(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().drawVertical(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, readingDirection);
 			}
 			else
 			{
-				return m_fonts[handleID]->getGlyphCache().drawHorizontal(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, lineHeightScale, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().drawHorizontal(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, readingDirection);
 			}
 		}
 	}
@@ -478,7 +478,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const bool hasColor = font->getInfo().properties.hasColor;
@@ -501,11 +501,11 @@ namespace s3d
 		{
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
-				return m_fonts[handleID]->getGlyphCache().drawVerticalFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().drawVerticalFallback(*font, resolvedGlyph, true, pos, fontSize, textStyle, drawColor, readingDirection);
 			}
 			else
 			{
-				return m_fonts[handleID]->getGlyphCache().drawHorizontalFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().drawHorizontalFallback(*font, resolvedGlyph, true, pos, fontSize, textStyle, drawColor, readingDirection);
 			}
 		}
 		else
@@ -514,11 +514,11 @@ namespace s3d
 
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
-				return m_fonts[handleID]->getGlyphCache().drawVerticalFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().drawVerticalFallback(*font, resolvedGlyph, true, pos, fontSize, textStyle, drawColor, readingDirection);
 			}
 			else
 			{
-				return m_fonts[handleID]->getGlyphCache().drawHorizontalFallback(*font, resolvedGlyph, true, pos, fontSize, drawColor, lineHeightScale, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().drawHorizontalFallback(*font, resolvedGlyph, true, pos, fontSize, textStyle, drawColor, readingDirection);
 			}
 		}
 	}

@@ -11,6 +11,7 @@
 
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/Math.hpp>
+# include <Siv3D/TextStyle.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "BitmapGlyphCache.hpp"
@@ -34,7 +35,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF BitmapGlyphCache::drawHorizontal(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF BitmapGlyphCache::drawHorizontal(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, resolvedGlyphs, true, readingDirection))
 		{
@@ -57,7 +58,7 @@ namespace s3d
 			if (const char32 ch = s[resolvedGlyph.pos];
 				IsControl(ch))
 			{
-				if (ConsumeControlCharacterHorizontal(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, lineHeightScale, info))
+				if (ConsumeControlCharacterHorizontal(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, textStyle.lineSpacing, info))
 				{
 					xMax = Max(xMax, penPos.x);
 					continue;
@@ -76,7 +77,7 @@ namespace s3d
 					nextPos.y += (info.ascender * scale);
 				}
 
-				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, lineHeightScale, readingDirection);
+				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, readingDirection);
 
 				penPos.x += rect.w;
 				xMax = Max(xMax, penPos.x);
@@ -105,7 +106,7 @@ namespace s3d
 
 		const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
 		const double width = (xMax - basePos.x);
-		const double height = ((info.height() * scale * lineHeightScale) * lineCount);
+		const double height = ((info.height() * scale * textStyle.lineSpacing) * lineCount);
 		return{ topLeft, width, height };
 	}
 
@@ -115,7 +116,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF BitmapGlyphCache::drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF BitmapGlyphCache::drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
 		{
@@ -155,7 +156,7 @@ namespace s3d
 
 		const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
 		const double width = (xMax - basePos.x);
-		const double height = ((info.height() * scale * lineHeightScale) * lineCount);
+		const double height = ((info.height() * scale * textStyle.lineSpacing) * lineCount);
 		return{ topLeft, width, height };
 	}
 
@@ -165,7 +166,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF BitmapGlyphCache::drawVertical(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF BitmapGlyphCache::drawVertical(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, resolvedGlyphs, true, readingDirection))
 		{
@@ -188,7 +189,7 @@ namespace s3d
 			if (const char32 ch = s[resolvedGlyph.pos];
 				IsControl(ch))
 			{
-				if (ConsumeControlCharacterVertical(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, lineHeightScale, info))
+				if (ConsumeControlCharacterVertical(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, textStyle.lineSpacing, info))
 				{
 					yMax = Max(yMax, penPos.y);
 					continue;
@@ -201,7 +202,7 @@ namespace s3d
 				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
 
 				Vec2 nextPos = penPos;
-				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, lineHeightScale, readingDirection);
+				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, readingDirection);
 
 				penPos.y += rect.h;
 				yMax = Max(yMax, penPos.y);
@@ -229,7 +230,7 @@ namespace s3d
 		}
 
 		const double right = (basePos.x + (info.height() * scale * 0.5));
-		const double left = (right - (info.height() * scale * lineHeightScale * lineCount));
+		const double left = (right - (info.height() * scale * textStyle.lineSpacing * lineCount));
 		const double top = pos.y;
 		const double bottom = yMax;
 		return{ left, top, (right - left), (bottom - top) };
@@ -241,7 +242,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF BitmapGlyphCache::drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF BitmapGlyphCache::drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
 		{
@@ -280,7 +281,7 @@ namespace s3d
 		}
 
 		const double right = (basePos.x + (info.height() * scale * 0.5));
-		const double left = (right - (info.height() * scale * lineHeightScale * lineCount));
+		const double left = (right - (info.height() * scale * textStyle.lineSpacing * lineCount));
 		const double top = pos.y;
 		const double bottom = yMax;
 		return{ left, top, (right - left), (bottom - top) };

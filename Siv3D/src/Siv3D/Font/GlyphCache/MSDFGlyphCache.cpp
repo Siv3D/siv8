@@ -32,7 +32,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF MSDFGlyphCache::drawHorizontal(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF MSDFGlyphCache::drawHorizontal(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		return{};
 	}
@@ -43,7 +43,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF MSDFGlyphCache::drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF MSDFGlyphCache::drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		return{};
 	}
@@ -54,7 +54,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF MSDFGlyphCache::drawVertical(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF MSDFGlyphCache::drawVertical(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		return{};
 	}
@@ -65,7 +65,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF MSDFGlyphCache::drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const ColorF& color, const double lineHeightScale, const ReadingDirection readingDirection)
+	RectF MSDFGlyphCache::drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		return{};
 	}

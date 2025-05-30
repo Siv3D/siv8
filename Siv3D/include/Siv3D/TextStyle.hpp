@@ -20,11 +20,11 @@ namespace s3d
 	/// @brief テキストのスタイル
 	struct TextStyle
 	{
-		Float4 param = { 0.5f, 0.5f, 0.0f, 0.0f };
+		Float4 param{ 0.5f, 0.5f, 0.0f, 0.0f };
 
-		Float4 outlineColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+		Float4 outlineColor{ 0.0f, 0.0f, 0.0f, 1.0f };
 
-		Float4 shadowColor = { 0.0f, 0.0f, 0.0f, 0.5f };
+		Float4 shadowColor{ 0.0f, 0.0f, 0.0f, 0.5f };
 
 		enum class Type : uint8
 		{
@@ -34,6 +34,8 @@ namespace s3d
 			OutlineShadow,
 			CustomShader,
 		} type = Type::Default;
+
+		double lineSpacing = 1.0;
 
 		/// @brief デフォルトのスタイルを返します。
 		/// @return デフォルトのスタイル
