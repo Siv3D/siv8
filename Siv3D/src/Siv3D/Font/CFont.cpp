@@ -478,7 +478,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
+	std::pair<double, double> CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const bool hasColor = font->getInfo().properties.hasColor;

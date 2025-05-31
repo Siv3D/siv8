@@ -37,6 +37,8 @@ namespace s3d
 
 		double lineSpacing = 1.0;
 
+		double characterSpacing = 0.0;
+
 		/// @brief デフォルトのスタイルを返します。
 		/// @return デフォルトのスタイル
 		[[nodiscard]]

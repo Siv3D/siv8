@@ -29,11 +29,11 @@ namespace s3d
 
 		virtual RectF drawHorizontal(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
-		virtual RectF drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
+		virtual std::pair<double, double> drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
 		virtual RectF drawVertical(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
-		virtual RectF drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
+		virtual std::pair<double, double> drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
 		//virtual bool fits(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double size, double lineHeightScale) = 0;
 

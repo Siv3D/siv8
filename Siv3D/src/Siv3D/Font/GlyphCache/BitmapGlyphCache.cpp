@@ -49,6 +49,7 @@ namespace s3d
 		const Vec2 basePos{ pos };
 		Vec2 penPos{ basePos };
 		double xMax = basePos.x;
+		double advance = 0.0;
 
 		int32 lineCount = 1;
 
@@ -61,9 +62,12 @@ namespace s3d
 				if (ConsumeControlCharacterHorizontal(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, textStyle.lineSpacing, info))
 				{
 					xMax = Max(xMax, penPos.x);
+					advance = 0.0;
 					continue;
 				}
 			}
+
+			penPos.x += std::exchange(advance, 0.0);
 
 			// フォールバックフォント
 			if (resolvedGlyph.fontIndex != 0)
@@ -77,14 +81,16 @@ namespace s3d
 					nextPos.y += (info.ascender * scale);
 				}
 
-				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, readingDirection);
+				auto [w, adv] = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, readingDirection);
 
-				penPos.x += rect.w;
-				xMax = Max(xMax, penPos.x);
+				xMax = Max(xMax, (penPos.x + w));
+				advance = adv;
+				penPos.x += w;
 				continue;
 			}
 
 			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			double w = 0.0;
 			{
 				const TextureRegion textureRegion	= m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);		
 				const Vec2 posOffset				= (useBasePos ? cache.info.getBase(scale) : cache.info.getOffset(scale));
@@ -92,16 +98,19 @@ namespace s3d
 
 				if (pixelPerfect)
 				{
-					textureRegion.draw(Math::Round(drawPos), color);
+					w = textureRegion.draw(Math::Round(drawPos), color).w;
 				}
 				else
 				{
-					textureRegion.scaled(scale).draw(drawPos, color);
+					w = textureRegion.scaled(scale).draw(drawPos, color).w;
 				}
+
+				w += (posOffset.x * scale);
 			}
 
-			penPos.x += (cache.info.advance * scale);
-			xMax = Max(xMax, penPos.x);
+			xMax = Max(xMax, (penPos.x + w));
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - w);
+			penPos.x += w;
 		}
 
 		const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
@@ -116,7 +125,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF BitmapGlyphCache::drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
+	std::pair<double, double> BitmapGlyphCache::drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
 		{
@@ -129,9 +138,8 @@ namespace s3d
 
 		const Vec2 basePos{ pos };
 		Vec2 penPos{ basePos };
-		double xMax = basePos.x;
-
-		int32 lineCount = 1;
+		double advance = 0.0;
+		double w = 0.0;
 
 		{
 			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
@@ -142,22 +150,20 @@ namespace s3d
 
 				if (pixelPerfect)
 				{
-					textureRegion.draw(Math::Round(drawPos), color);
+					w = textureRegion.draw(Math::Round(drawPos), color).w;
 				}
 				else
 				{
-					textureRegion.scaled(scale).draw(drawPos, color);
+					w = textureRegion.scaled(scale).draw(drawPos, color).w;
 				}
+
+				w += (posOffset.x * scale);
 			}
 
-			penPos.x += (cache.info.advance * scale);
-			xMax = Max(xMax, penPos.x);
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - w);
 		}
 
-		const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
-		const double width = (xMax - basePos.x);
-		const double height = ((info.height() * scale * textStyle.lineSpacing) * lineCount);
-		return{ topLeft, width, height };
+		return{ w, advance };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -180,6 +186,7 @@ namespace s3d
 		const Vec2 basePos{ pos };
 		Vec2 penPos{ basePos };
 		double yMax = basePos.y;
+		double advance = 0.0;
 
 		int32 lineCount = 1;
 
@@ -192,9 +199,12 @@ namespace s3d
 				if (ConsumeControlCharacterVertical(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, textStyle.lineSpacing, info))
 				{
 					yMax = Max(yMax, penPos.y);
+					advance = 0.0;
 					continue;
 				}
 			}
+
+			penPos.y += std::exchange(advance, 0.0);
 
 			// フォールバックフォント
 			if (resolvedGlyph.fontIndex != 0)
@@ -202,14 +212,16 @@ namespace s3d
 				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
 
 				Vec2 nextPos = penPos;
-				const RectF rect = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, readingDirection);
+				auto [h, adv] = SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, readingDirection);
 
-				penPos.y += rect.h;
-				yMax = Max(yMax, penPos.y);
+				yMax = Max(yMax, (penPos.y + h));
+				advance = adv;
+				penPos.y += h;
 				continue;
 			}
 
 			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			double h = 0.0;
 			{
 				const TextureRegion textureRegion	= m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);		
 				const Vec2 posOffset{ cache.info.left, cache.info.top };
@@ -217,16 +229,19 @@ namespace s3d
 
 				if (pixelPerfect)
 				{
-					textureRegion.draw(Math::Round(drawPos), color);
+					h = textureRegion.draw(Math::Round(drawPos), color).h;
 				}
 				else
 				{
-					textureRegion.scaled(scale).draw(drawPos, color);
+					h = textureRegion.scaled(scale).draw(drawPos, color).h;
 				}
+
+				h += (posOffset.y * scale);
 			}
 
-			penPos.y += (cache.info.advance * scale);
-			yMax = Max(yMax, penPos.y);
+			yMax = Max(yMax, (penPos.y + h));
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - h);
+			penPos.y += h;
 		}
 
 		const double right = (basePos.x + (info.height() * scale * 0.5));
@@ -242,7 +257,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	RectF BitmapGlyphCache::drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
+	std::pair<double, double> BitmapGlyphCache::drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
 		{
@@ -255,9 +270,8 @@ namespace s3d
 
 		const Vec2 basePos{ pos };
 		Vec2 penPos{ basePos };
-		double yMax = basePos.y;
-
-		int32 lineCount = 1;
+		double advance = 0.0;
+		double h = 0.0;
 
 		{
 			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
@@ -268,23 +282,20 @@ namespace s3d
 
 				if (pixelPerfect)
 				{
-					textureRegion.draw(Math::Round(drawPos), color);
+					h = + textureRegion.draw(Math::Round(drawPos), color).h;
 				}
 				else
 				{
-					textureRegion.scaled(scale).draw(drawPos, color);
+					h = textureRegion.scaled(scale).draw(drawPos, color).h;
 				}
+
+				h += (posOffset.y * scale);
 			}
 
-			penPos.y += (cache.info.advance * scale);
-			yMax = Max(yMax, penPos.y);
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - h);
 		}
 
-		const double right = (basePos.x + (info.height() * scale * 0.5));
-		const double left = (right - (info.height() * scale * textStyle.lineSpacing * lineCount));
-		const double top = pos.y;
-		const double bottom = yMax;
-		return{ left, top, (right - left), (bottom - top) };
+		return{ h, advance };
 	}
 
 	////////////////////////////////////////////////////////////////
