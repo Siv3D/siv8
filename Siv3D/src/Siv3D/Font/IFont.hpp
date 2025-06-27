@@ -85,6 +85,8 @@ namespace s3d
 
 		virtual double xAdvanceFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, double fontSize) = 0;
 
+		virtual RectF region(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
+
 		virtual RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
 		virtual std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;

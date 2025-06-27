@@ -54,14 +54,120 @@ namespace s3d
 		[[nodiscard]]
 		Array<double> getXAdvances() const;
 
+		[[nodiscard]]
+		Array<double> getXAdvances(double fontSize) const;
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	getXAdvances
+		//	region
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テキストが描画される領域を返します。
+		/// @param x 描画する左上の X 座標
+		/// @param y 描画する左上の Y 座標
+		/// @return テキストが描画される領域
 		[[nodiscard]]
-		Array<double> getXAdvances(double fontSize) const;
+		RectF region(double x, double y) const;
+
+		/// @brief テキストが描画される領域を返します。
+		/// @param pos 描画する左上の座標
+		/// @return テキストが描画される領域
+		[[nodiscard]]
+		RectF region(Vec2 pos = Vec2{ 0, 0 }) const;
+
+		[[nodiscard]]
+		RectF region(Arg::topLeft_<Vec2> topLeft) const;
+
+		[[nodiscard]]
+		RectF region(Arg::topCenter_<Vec2> topCenter) const;
+
+		[[nodiscard]]
+		RectF region(Arg::topRight_<Vec2> topRight) const;
+
+		[[nodiscard]]
+		RectF region(Arg::rightCenter_<Vec2> rightCenter) const;
+
+		[[nodiscard]]
+		RectF region(Arg::bottomRight_<Vec2> bottomRight) const;
+
+		[[nodiscard]]
+		RectF region(Arg::bottomCenter_<Vec2> bottomCenter) const;
+
+		[[nodiscard]]
+		RectF region(Arg::bottomLeft_<Vec2> bottomLeft) const;
+
+		[[nodiscard]]
+		RectF region(Arg::leftCenter_<Vec2> leftCenter) const;
+
+		[[nodiscard]]
+		RectF region(Arg::center_<Vec2> center) const;
+
+		[[nodiscard]]
+		RectF region(double size, double x, double y) const;
+
+		[[nodiscard]]
+		RectF region(double size, Vec2 pos = Vec2{ 0, 0 }) const;
+
+		[[nodiscard]]
+		RectF region(double size, Arg::topLeft_<Vec2> topLeft) const;
+
+		[[nodiscard]]
+		RectF region(double size, Arg::topCenter_<Vec2> topCenter) const;
+
+		[[nodiscard]]
+		RectF region(double size, Arg::topRight_<Vec2> topRight) const;
+
+		[[nodiscard]]
+		RectF region(double size, Arg::rightCenter_<Vec2> rightCenter) const;
+
+		[[nodiscard]]
+		RectF region(double size, Arg::bottomRight_<Vec2> bottomRight) const;
+
+		[[nodiscard]]
+		RectF region(double size, Arg::bottomCenter_<Vec2> bottomCenter) const;
+
+		[[nodiscard]]
+		RectF region(double size, Arg::bottomLeft_<Vec2> bottomLeft) const;
+
+		[[nodiscard]]
+		RectF region(double size, Arg::leftCenter_<Vec2> leftCenter) const;
+
+		[[nodiscard]]
+		RectF region(double size, Arg::center_<Vec2> center) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, double x, double y) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Vec2 pos = Vec2{ 0, 0 }) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Arg::topLeft_<Vec2> topLeft) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Arg::topCenter_<Vec2> topCenter) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Arg::topRight_<Vec2> topRight) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Arg::rightCenter_<Vec2> rightCenter) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Arg::bottomRight_<Vec2> bottomRight) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Arg::bottomCenter_<Vec2> bottomCenter) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Arg::bottomLeft_<Vec2> bottomLeft) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Arg::leftCenter_<Vec2> leftCenter) const;
+
+		[[nodiscard]]
+		RectF region(const TextStyle& textStyle, double size, Arg::center_<Vec2> center) const;
 
 		////////////////////////////////////////////////////////////////
 		//

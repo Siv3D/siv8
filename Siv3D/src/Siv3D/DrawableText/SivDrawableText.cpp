@@ -24,7 +24,13 @@ namespace s3d
 		, text{ std::move(_text) }
 		, resolvedGlyphs{ font.getResolvedGlyphs(text, _readingDirection) }
 		, readingDirection{ _readingDirection } {}
-	
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getXAdvances
+	//
+	////////////////////////////////////////////////////////////////
+
 	Array<double> DrawableText::getXAdvances() const
 	{
 		return getXAdvances(font.baseSize());
@@ -34,6 +40,179 @@ namespace s3d
 	{
 		return SIV3D_ENGINE(Font)->getXAdvances(font.id(), text, resolvedGlyphs, fontSize);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	region
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF DrawableText::region(const double x, const double y) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), Vec2{ x, y });
+	}
+
+	RectF DrawableText::region(const Vec2 pos) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), pos);
+	}
+
+	RectF DrawableText::region(const double size, const double x, const double y) const
+	{
+		return region(TextStyle::Default(), size, Vec2{ x, y });
+	}
+
+	RectF DrawableText::region(const Arg::topLeft_<Vec2> topLeft) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), topLeft);
+	}
+
+	RectF DrawableText::region(const Arg::topCenter_<Vec2> topCenter) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), topCenter);
+	}
+
+	RectF DrawableText::region(const Arg::topRight_<Vec2> topRight) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), topRight);
+	}
+
+	RectF DrawableText::region(const Arg::rightCenter_<Vec2> rightCenter) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), rightCenter);
+	}
+
+	RectF DrawableText::region(const Arg::bottomRight_<Vec2> bottomRight) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), bottomRight);
+	}
+
+	RectF DrawableText::region(const Arg::bottomCenter_<Vec2> bottomCenter) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), bottomCenter);
+	}
+
+	RectF DrawableText::region(const Arg::bottomLeft_<Vec2> bottomLeft) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), bottomLeft);
+	}
+
+	RectF DrawableText::region(const Arg::leftCenter_<Vec2> leftCenter) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), leftCenter);
+	}
+
+	RectF DrawableText::region(const Arg::center_<Vec2> center) const
+	{
+		return region(TextStyle::Default(), font.baseSize(), center);
+	}
+
+	RectF DrawableText::region(const double size, const Vec2 pos) const
+	{
+		return region(TextStyle::Default(), size, pos);
+	}
+
+	RectF DrawableText::region(const double size, const Arg::topLeft_<Vec2> topLeft) const
+	{
+		return region(TextStyle::Default(), size, topLeft);
+	}
+
+	RectF DrawableText::region(const double size, const Arg::topCenter_<Vec2> topCenter) const
+	{
+		return region(TextStyle::Default(), size, topCenter);
+	}
+
+	RectF DrawableText::region(const double size, const Arg::topRight_<Vec2> topRight) const
+	{
+		return region(TextStyle::Default(), size, topRight);
+	}
+
+	RectF DrawableText::region(const double size, const Arg::rightCenter_<Vec2> rightCenter) const
+	{
+		return region(TextStyle::Default(), size, rightCenter);
+	}
+
+	RectF DrawableText::region(const double size, const Arg::bottomRight_<Vec2> bottomRight) const
+	{
+		return region(TextStyle::Default(), size, bottomRight);
+	}
+
+	RectF DrawableText::region(const double size, const Arg::bottomCenter_<Vec2> bottomCenter) const
+	{
+		return region(TextStyle::Default(), size, bottomCenter);
+	}
+
+	RectF DrawableText::region(const double size, const Arg::bottomLeft_<Vec2> bottomLeft) const
+	{
+		return region(TextStyle::Default(), size, bottomLeft);
+	}
+
+	RectF DrawableText::region(const double size, const Arg::leftCenter_<Vec2> leftCenter) const
+	{
+		return region(TextStyle::Default(), size, leftCenter);
+	}
+
+	//RectF DrawableText::region(const double size, const Arg::center_<Vec2> center) const
+	//{
+	//	return regionAt(TextStyle::Default(), size, *center);
+	//}
+
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Vec2 pos) const
+	{
+		return SIV3D_ENGINE(Font)->region(font.id(), text, resolvedGlyphs, pos, size, textStyle, readingDirection);
+	}
+
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::topLeft_<Vec2> topLeft) const
+	{
+		return region(textStyle, size, *topLeft);
+	}
+
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::topCenter_<Vec2> topCenter) const
+	{
+		const RectF textRegion = region(textStyle, size);
+		return textRegion.movedBy((topCenter->x - (textRegion.w * 0.5)), 0);
+	}
+
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::topRight_<Vec2> topRight) const
+	{
+		const RectF textRegion = region(textStyle, size);
+		return textRegion.movedBy((topRight->x - textRegion.w), 0);
+	}
+
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::rightCenter_<Vec2> rightCenter) const
+	{
+		const RectF textRegion = region(textStyle, size);
+		return textRegion.movedBy((rightCenter->x - textRegion.w), (rightCenter->y - (textRegion.h * 0.5)));
+	}
+
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::bottomRight_<Vec2> bottomRight) const
+	{
+		const RectF textRegion = region(textStyle, size);
+		return textRegion.movedBy((bottomRight->x - textRegion.w), (bottomRight->y - textRegion.h));
+	}
+
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::bottomCenter_<Vec2> bottomCenter) const
+	{
+		const RectF textRegion = region(textStyle, size);
+		return textRegion.movedBy((bottomCenter->x - (textRegion.w * 0.5)), (bottomCenter->y - textRegion.h));
+	}
+
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::bottomLeft_<Vec2> bottomLeft) const
+	{
+		const RectF textRegion = region(textStyle, size);
+		return textRegion.movedBy(bottomLeft->x, (bottomLeft->y - textRegion.h));
+	}
+
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::leftCenter_<Vec2> leftCenter) const
+	{
+		const RectF textRegion = region(textStyle, size);
+		return textRegion.movedBy(leftCenter->x, (leftCenter->y - (textRegion.h * 0.5)));
+	}
+
+	//RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center) const
+	//{
+	//	return regionAt(textStyle, size, *center);
+	//}
 
 	////////////////////////////////////////////////////////////////
 	//
