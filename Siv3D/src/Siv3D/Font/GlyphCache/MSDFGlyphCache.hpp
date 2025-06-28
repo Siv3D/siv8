@@ -22,22 +22,102 @@ namespace s3d
 	{
 	public:
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
 		MSDFGlyphCache() = default;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getTexture
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		const Texture& getTexture() noexcept override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	regionHorizontal
+		//
+		////////////////////////////////////////////////////////////////
+
+		RectF regionHorizontal(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawHorizontal
+		//
+		////////////////////////////////////////////////////////////////
+
 		RectF drawHorizontal(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
-		std::pair<double, double> drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		////////////////////////////////////////////////////////////////
+		//
+		//	regionHorizontalFallback
+		//
+		////////////////////////////////////////////////////////////////
+
+		std::pair<double, double> regionHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawHorizontalFallback
+		//
+		////////////////////////////////////////////////////////////////
+
+		std::pair<double, double> drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	regionVertical
+		//
+		////////////////////////////////////////////////////////////////
+
+		RectF regionVertical(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawVertical
+		//
+		////////////////////////////////////////////////////////////////
 
 		RectF drawVertical(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
-		std::pair<double, double> drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		////////////////////////////////////////////////////////////////
+		//
+		//	regionVerticalFallback
+		//
+		////////////////////////////////////////////////////////////////
+
+		std::pair<double, double> regionVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawVerticalFallback
+		//
+		////////////////////////////////////////////////////////////////
+
+		std::pair<double, double> drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getXAdvances
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) override;
-	
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	xAdvanceFallback
+		//
+		////////////////////////////////////////////////////////////////
+
 		[[nodiscard]]
 		double xAdvanceFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, double fontSize) override;
 	

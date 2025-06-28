@@ -429,7 +429,16 @@ namespace s3d
 
 	RectF CFont::region(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
 	{
-		return{};
+		const auto& font = m_fonts[handleID];
+
+		if (readingDirection == ReadingDirection::TopToBottom)
+		{
+			return m_fonts[handleID]->getGlyphCache().regionVertical(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, readingDirection);
+		}
+		else
+		{
+			return m_fonts[handleID]->getGlyphCache().regionHorizontal(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, readingDirection);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -480,6 +489,26 @@ namespace s3d
 			{
 				return m_fonts[handleID]->getGlyphCache().drawHorizontal(*font, s, resolvedGlyphs, false, pos, fontSize, textStyle, drawColor, readingDirection);
 			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	regionBaseFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::pair<double, double> CFont::regionBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	{
+		const auto& font = m_fonts[handleID];
+
+		if (readingDirection == ReadingDirection::TopToBottom)
+		{
+			return m_fonts[handleID]->getGlyphCache().regionVerticalFallback(*font, resolvedGlyph, true, pos, fontSize, textStyle, readingDirection);
+		}
+		else
+		{
+			return m_fonts[handleID]->getGlyphCache().regionHorizontalFallback(*font, resolvedGlyph, true, pos, fontSize, textStyle, readingDirection);
 		}
 	}
 

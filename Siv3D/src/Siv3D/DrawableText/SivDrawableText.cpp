@@ -102,10 +102,10 @@ namespace s3d
 		return region(TextStyle::Default(), font.baseSize(), leftCenter);
 	}
 
-	RectF DrawableText::region(const Arg::center_<Vec2> center) const
-	{
-		return region(TextStyle::Default(), font.baseSize(), center);
-	}
+	//RectF DrawableText::region(const Arg::center_<Vec2> center) const
+	//{
+	//	return region(TextStyle::Default(), font.baseSize(), center);
+	//}
 
 	RectF DrawableText::region(const double size, const Vec2 pos) const
 	{

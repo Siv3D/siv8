@@ -28,11 +28,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	regionHorizontal
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF MSDFGlyphCache::regionHorizontal(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	{
+		return{};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawHorizontal
 	//
 	////////////////////////////////////////////////////////////////
 
 	RectF MSDFGlyphCache::drawHorizontal(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
+	{
+		return{};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	regionHorizontalFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::pair<double, double> MSDFGlyphCache::regionHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
 	{
 		return{};
 	}
@@ -50,11 +72,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	regionVertical
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF MSDFGlyphCache::regionVertical(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	{
+		return{};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawVertical
 	//
 	////////////////////////////////////////////////////////////////
 
 	RectF MSDFGlyphCache::drawVertical(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
+	{
+		return{};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	regionVerticalFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::pair<double, double> MSDFGlyphCache::regionVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
 	{
 		return{};
 	}

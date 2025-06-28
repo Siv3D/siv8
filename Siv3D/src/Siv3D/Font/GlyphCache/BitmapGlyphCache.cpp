@@ -31,6 +31,96 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	regionHorizontal
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF BitmapGlyphCache::regionHorizontal(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	{
+		if (not prerender(font, resolvedGlyphs, true, readingDirection))
+		{
+			return RectF::Empty();
+		}
+
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double xMax = basePos.x;
+		double advance = 0.0;
+
+		int32 lineCount = 1;
+
+		for (const auto& resolvedGlyph : resolvedGlyphs)
+		{
+			// タブ, 空白, 制御文字
+			if (const char32 ch = s[resolvedGlyph.pos];
+				IsControl(ch))
+			{
+				if (ConsumeControlCharacterHorizontal(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, textStyle.lineSpacing, info))
+				{
+					xMax = Max(xMax, penPos.x);
+					advance = 0.0;
+					continue;
+				}
+			}
+
+			penPos.x += std::exchange(advance, 0.0);
+
+			// フォールバックフォント
+			if (resolvedGlyph.fontIndex != 0)
+			{
+				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
+
+				Vec2 nextPos = penPos;
+
+				if (not useBasePos)
+				{
+					nextPos.y += (info.ascender * scale);
+				}
+
+				auto [w, adv] = SIV3D_ENGINE(Font)->regionBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, readingDirection);
+
+				xMax = Max(xMax, (penPos.x + w));
+				advance = adv;
+				penPos.x += w;
+				continue;
+			}
+
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			double w = 0.0;
+			{
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+				const Vec2 posOffset = (useBasePos ? cache.info.getBase(scale) : cache.info.getOffset(scale));
+				const Vec2 drawPos = (penPos + posOffset);
+
+				if (pixelPerfect)
+				{
+					w = textureRegion.region(Math::Round(drawPos)).w;
+				}
+				else
+				{
+					w = textureRegion.scaled(scale).region(drawPos).w;
+				}
+
+				w += (posOffset.x * scale);
+			}
+
+			xMax = Max(xMax, (penPos.x + w));
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - w);
+			penPos.x += w;
+		}
+
+		const Vec2 topLeft = (useBasePos ? pos.movedBy(0, -info.ascender * scale) : pos);
+		const double width = (xMax - basePos.x);
+		const double height = ((info.height() * scale * textStyle.lineSpacing) * lineCount);
+		return{ topLeft, width, height };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawHorizontal
 	//
 	////////////////////////////////////////////////////////////////
@@ -121,6 +211,53 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	regionHorizontalFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::pair<double, double> BitmapGlyphCache::regionHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	{
+		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
+		{
+			return{};
+		}
+
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double advance = 0.0;
+		double w = 0.0;
+
+		{
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			{
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+				const Vec2 posOffset = (useBasePos ? cache.info.getBase(scale) : cache.info.getOffset(scale));
+				const Vec2 drawPos = (penPos + posOffset);
+
+				if (pixelPerfect)
+				{
+					w = textureRegion.region(Math::Round(drawPos)).w;
+				}
+				else
+				{
+					w = textureRegion.scaled(scale).region(drawPos).w;
+				}
+
+				w += (posOffset.x * scale);
+			}
+
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - w);
+		}
+
+		return{ w, advance };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawHorizontalFallback
 	//
 	////////////////////////////////////////////////////////////////
@@ -164,6 +301,91 @@ namespace s3d
 		}
 
 		return{ w, advance };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	regionVertical
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF BitmapGlyphCache::regionVertical(FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	{
+		if (not prerender(font, resolvedGlyphs, true, readingDirection))
+		{
+			return{};
+		}
+
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double yMax = basePos.y;
+		double advance = 0.0;
+
+		int32 lineCount = 1;
+
+		for (const auto& resolvedGlyph : resolvedGlyphs)
+		{
+			// タブ, 空白, 制御文字
+			if (const char32 ch = s[resolvedGlyph.pos];
+				IsControl(ch))
+			{
+				if (ConsumeControlCharacterVertical(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, textStyle.lineSpacing, info))
+				{
+					yMax = Max(yMax, penPos.y);
+					advance = 0.0;
+					continue;
+				}
+			}
+
+			penPos.y += std::exchange(advance, 0.0);
+
+			// フォールバックフォント
+			if (resolvedGlyph.fontIndex != 0)
+			{
+				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
+
+				Vec2 nextPos = penPos;
+				auto [h, adv] = SIV3D_ENGINE(Font)->regionBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, readingDirection);
+
+				yMax = Max(yMax, (penPos.y + h));
+				advance = adv;
+				penPos.y += h;
+				continue;
+			}
+
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			double h = 0.0;
+			{
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+				const Vec2 posOffset{ cache.info.left, cache.info.top };
+				const Vec2 drawPos = (penPos + posOffset);
+
+				if (pixelPerfect)
+				{
+					h = textureRegion.region(Math::Round(drawPos)).h;
+				}
+				else
+				{
+					h = textureRegion.scaled(scale).region(drawPos).h;
+				}
+
+				h += (posOffset.y * scale);
+			}
+
+			yMax = Max(yMax, (penPos.y + h));
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - h);
+			penPos.y += h;
+		}
+
+		const double right = (basePos.x + (info.height() * scale * 0.5));
+		const double left = (right - (info.height() * scale * textStyle.lineSpacing * lineCount));
+		const double top = pos.y;
+		const double bottom = yMax;
+		return{ left, top, (right - left), (bottom - top) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -249,6 +471,53 @@ namespace s3d
 		const double top = pos.y;
 		const double bottom = yMax;
 		return{ left, top, (right - left), (bottom - top) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	regionVerticalFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::pair<double, double> BitmapGlyphCache::regionVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	{
+		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
+		{
+			return{};
+		}
+
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double advance = 0.0;
+		double h = 0.0;
+
+		{
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			{
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+				const Vec2 posOffset{ cache.info.left, cache.info.top };
+				const Vec2 drawPos = (penPos + posOffset * scale);
+
+				if (pixelPerfect)
+				{
+					h = +textureRegion.region(Math::Round(drawPos)).h;
+				}
+				else
+				{
+					h = textureRegion.scaled(scale).region(drawPos).h;
+				}
+
+				h += (posOffset.y * scale);
+			}
+
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - h);
+		}
+
+		return{ h, advance };
 	}
 
 	////////////////////////////////////////////////////////////////
