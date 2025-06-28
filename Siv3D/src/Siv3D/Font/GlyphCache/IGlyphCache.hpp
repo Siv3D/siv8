@@ -22,49 +22,43 @@ namespace s3d
 	{
 	public:
 
+		enum class TextOperation
+		{
+			Draw,
+			Region,
+		};
+
 		virtual ~IGlyphCache() = default;
 
 		[[nodiscard]]
 		virtual const Texture& getTexture() noexcept = 0;
 
-		virtual RectF regionHorizontal(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
+		[[nodiscard]]
+		virtual RectF processHorizontal(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
-		virtual RectF drawHorizontal(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
+		[[nodiscard]]
+		virtual std::pair<double, double> processHorizontalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
-		virtual std::pair<double, double> regionHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
+		[[nodiscard]]
+		virtual RectF processVertical(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
-		virtual std::pair<double, double> drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
-
-		virtual RectF regionVertical(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
-
-		virtual RectF drawVertical(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
-
-		virtual std::pair<double, double> regionVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
-
-		virtual std::pair<double, double> drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
+		[[nodiscard]]
+		virtual std::pair<double, double> processVerticalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
 		//virtual bool fits(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double size, double lineHeightScale) = 0;
-
-		//virtual bool draw(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double size, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) = 0;
 
 		[[nodiscard]]
 		virtual Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) = 0;
 
 		[[nodiscard]]
 		virtual double xAdvanceFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, double fontSize) = 0;
+	
 		/*
-		[[nodiscard]]
-		virtual RectF region(const FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, const double size, double lineHeightScale) = 0;
-
-		[[nodiscard]]
-		virtual RectF regionFallback(const FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double size, double lineHeightScale) = 0;
-
 		virtual void setBufferWidth(int32 width) = 0;
 
 		virtual int32 getBufferWidth() const noexcept = 0;
 
 		virtual bool preload(const FontData& font, StringView s) = 0;
-
 
 		[[nodiscard]]
 		virtual TextureRegion getTextureRegion(const FontData& font, GlyphIndex glyphIndex) = 0;

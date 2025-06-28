@@ -41,67 +41,35 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	regionHorizontal
+		//	processHorizontal
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF regionHorizontal(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
+		RectF processHorizontal(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	drawHorizontal
+		//	processHorizontalFallback
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF drawHorizontal(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		std::pair<double, double> processHorizontalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	regionHorizontalFallback
+		//	processVertical
 		//
 		////////////////////////////////////////////////////////////////
 
-		std::pair<double, double> regionHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
+		RectF processVertical(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	drawHorizontalFallback
+		//	processVerticalFallback
 		//
 		////////////////////////////////////////////////////////////////
 
-		std::pair<double, double> drawHorizontalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	regionVertical
-		//
-		////////////////////////////////////////////////////////////////
-
-		RectF regionVertical(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	drawVertical
-		//
-		////////////////////////////////////////////////////////////////
-
-		RectF drawVertical(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	regionVerticalFallback
-		//
-		////////////////////////////////////////////////////////////////
-
-		std::pair<double, double> regionVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	drawVerticalFallback
-		//
-		////////////////////////////////////////////////////////////////
-
-		std::pair<double, double> drawVerticalFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		std::pair<double, double> processVerticalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
