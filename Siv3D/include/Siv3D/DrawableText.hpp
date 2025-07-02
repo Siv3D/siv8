@@ -171,6 +171,63 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	regionBase
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		RectF regionBase(double x, double y) const;
+
+		[[nodiscard]]
+		RectF regionBase(Vec2 pos = Vec2{ 0, 0 }) const;
+
+		[[nodiscard]]
+		RectF regionBase(Arg::left_<Vec2> left) const;
+
+		[[nodiscard]]
+		RectF regionBase(Arg::center_<Vec2> center) const;
+
+		[[nodiscard]]
+		RectF regionBase(Arg::right_<Vec2> right) const;
+
+		[[nodiscard]]
+		RectF regionBase(double size, double x, double y) const;
+
+		[[nodiscard]]
+		RectF regionBase(double size, Vec2 pos = Vec2{ 0, 0 }) const;
+
+		[[nodiscard]]
+		RectF regionBase(double size, Arg::left_<Vec2> left) const;
+
+		[[nodiscard]]
+		RectF regionBase(double size, Arg::center_<Vec2> center) const;
+
+		[[nodiscard]]
+		RectF regionBase(double size, Arg::right_<Vec2> right) const;
+
+		[[nodiscard]]
+		RectF regionBase(const TextStyle& textStyle, double size, double x, double y) const; 
+
+		[[nodiscard]]
+		RectF regionBase(const TextStyle& textStyle, double size, Vec2 pos = Vec2{ 0, 0 }) const;
+
+		[[nodiscard]]
+		RectF regionBase(const TextStyle& textStyle, double size, Arg::left_<Vec2> left) const;
+
+		[[nodiscard]]
+		RectF regionBase(const TextStyle& textStyle, double size, Arg::center_<Vec2> center) const;
+
+		[[nodiscard]]
+		RectF regionBase(const TextStyle& textStyle, double size, Arg::right_<Vec2> right) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	regionAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////

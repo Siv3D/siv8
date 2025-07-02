@@ -494,6 +494,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	regionBase
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF CFont::regionBase(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	{
+		const auto& font = m_fonts[handleID];
+
+		if (readingDirection == ReadingDirection::TopToBottom)
+		{
+			return m_fonts[handleID]->getGlyphCache().processVertical(IGlyphCache::TextOperation::Region, *font, s, resolvedGlyphs, true, pos, fontSize, textStyle, ColorF{}, readingDirection);
+		}
+		else
+		{
+			return m_fonts[handleID]->getGlyphCache().processHorizontal(IGlyphCache::TextOperation::Region, *font, s, resolvedGlyphs, true, pos, fontSize, textStyle, ColorF{}, readingDirection);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	regionBaseFallback
 	//
 	////////////////////////////////////////////////////////////////
