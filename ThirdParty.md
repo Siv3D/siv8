@@ -7,7 +7,7 @@ Name | Version
 [Abseil](https://github.com/abseil/abseil-cpp) | 20250512.1
 [bc7enc](https://github.com/richgel999/bc7enc_rdo) | 
 [CoreRT](https://github.com/dotnet/corert) | 
-[cpu_features](https://github.com/google/cpu_features) | 
+[cpu_features](https://github.com/google/cpu_features) | v0.10.1
 [DirectXMath](https://github.com/microsoft/DirectXMath) | October 2024
 [doctest](https://github.com/doctest/doctest) | v2.4.11
 [double-conversion](https://github.com/google/double-conversion) | v3.3.0
