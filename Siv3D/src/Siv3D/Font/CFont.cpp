@@ -13,8 +13,8 @@
 # include <Siv3D/TextStyle.hpp>
 # include <Siv3D/MemoryMappedFileView.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
-# include <Siv3D/CacheDirectory/CacheDirectory.hpp>
 # include "FontUtility.hpp"
+# include "TypefaceUtility.hpp"
 # include "GlyphRenderer/OutlineGlyphRenderer.hpp"
 # include "GlyphRenderer/BitmapGlyphRenderer.hpp"
 # include "GlyphCache/IGlyphCache.hpp"
@@ -164,35 +164,14 @@ namespace s3d
 
 	Font::IDType CFont::create(const Typeface typeface, const FontMethod fontMethod, const int32 baseSize, const FontStyle style)
 	{
-		const FilePath fontFilePath = (CacheDirectory::Engine() + U"font/");
+		const TypefaceInfo typefaceInfo = GetTypefaceInfo(typeface, fontMethod);
 
-		switch (typeface)
+		if (not typefaceInfo.path)
 		{
-		case Typeface::MPlus2_Thin:
-			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"Thin", fontMethod, baseSize, style);
-		case Typeface::MPlus2_ExtraLight:
-			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"ExtraLight", fontMethod, baseSize, style);
-		case Typeface::MPlus2_Light:
-			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"Light", fontMethod, baseSize, style);
-		case Typeface::MPlus2_Regular:
-			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"Regular", fontMethod, baseSize, style);
-		case Typeface::MPlus2_Medium:
-			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"Medium", fontMethod, baseSize, style);
-		case Typeface::MPlus2_SemiBold:
-			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"SemiBold", fontMethod, baseSize, style);
-		case Typeface::MPlus2_Bold:
-			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"Bold", fontMethod, baseSize, style);
-		case Typeface::MPlus2_ExtraBold:
-			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"ExtraBold", fontMethod, baseSize, style);
-		case Typeface::MPlus2_Black:
-			return create((fontFilePath + U"MPLUS2.ttf"), 0, U"Black", fontMethod, baseSize, style);
-		case Typeface::ColorEmoji:
-			return create((fontFilePath + U"Noto-COLRv1.ttf"), 0, U"", FontMethod::Bitmap, baseSize, style);
-		case Typeface::Icon_MaterialDesign:
-			return create((fontFilePath + U"materialdesignicons-webfont.ttf"), 0, U"", fontMethod, baseSize, style);
-		default:
 			return Font::IDType::Null();
 		}
+
+		return create(typefaceInfo.path, typefaceInfo.faceIndex, typefaceInfo.styleName, fontMethod, baseSize, style);
 	}
 
 	Font::IDType CFont::create(const FilePathView path, const size_t faceIndex, const StringView styleName, const FontMethod fontMethod, const int32 baseSize, const FontStyle style)

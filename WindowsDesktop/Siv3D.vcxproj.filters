@@ -4356,6 +4356,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Typeface.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.hpp">
+      <Filter>src\Siv3D\Font</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6901,6 +6904,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheManager.cpp">
       <Filter>src\Siv3D\Font\GlyphCache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.cpp">
+      <Filter>src\Siv3D\Font</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

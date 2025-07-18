@@ -16,7 +16,9 @@
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/FileSystem.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include "TypefaceUtility.hpp"
 
 namespace s3d
 {
@@ -609,5 +611,18 @@ namespace s3d
 	Array<FontFaceProperties> Font::GetFaces(const FilePathView path)
 	{
 		return SIV3D_ENGINE(Font)->getFontFaces(path);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsAvailable
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Font::IsAvailable(const Typeface typeface)
+	{
+		const FilePath fontFilePath = GetTypefaceInfo(typeface, FontMethod::Bitmap).path;
+
+		return FileSystem::Exists(fontFilePath);
 	}
 }

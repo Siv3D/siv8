@@ -571,6 +571,15 @@ namespace s3d
 
 		[[nodiscard]]
 		static Array<FontFaceProperties> GetFaces(FilePathView path);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsAvailable
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static bool IsAvailable(Typeface typeface);
 	};
 }
 
