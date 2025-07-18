@@ -66,8 +66,11 @@ namespace s3d
 	using GenerateMipmaps = YesNo<struct GenerateMipmaps_tag>;
 
 	/// @brief リガチャ（合字）を使うかどうかを指定 | Whether to use ligatures
-	using Ligature = YesNo<struct Ligature_tag>;
+	using EnableLigatures = YesNo<struct EnableLigatures_tag>;
+
+	/// @brief フォントのフォールバックを使うかどうかを指定 | Whether to use font fallback
+	using EnableFallback = YesNo<struct EnableFallback_tag>;
 
 	/// @brief ヒンティングを使うかどうかを指定 | Whether to use hinting
-	using Hinting = YesNo<struct Hinting_tag>;
+	using EnableHinting = YesNo<struct EnableHinting_tag>;
 }

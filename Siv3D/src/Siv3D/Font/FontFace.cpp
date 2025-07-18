@@ -14,6 +14,8 @@
 # include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/ScopeExit.hpp>
 
+# include <ThirdParty/skia/include/core/SkStream.h>
+
 namespace s3d
 {
 	namespace
@@ -21,9 +23,9 @@ namespace s3d
 		static constexpr std::array<hb_feature_t, 5> NoLigatureFeatures{ {
 			{ HB_TAG('l','i','g','a'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 標準合字
 			{ HB_TAG('r','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 必須合字
-			{ HB_TAG('d','i','g','a'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 分音記号合字
+			{ HB_TAG('d','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // 分音記号合字
 			{ HB_TAG('c','a','l','t'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト依存代替字形
-			{ HB_TAG('c','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト合字
+			{ HB_TAG('c','l','i','g'), 0, HB_FEATURE_GLOBAL_START, HB_FEATURE_GLOBAL_END }, // コンテキスト
 		} };
 
 		[[nodiscard]]
@@ -70,7 +72,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool FontFace::init(const ::FT_Library library, ::FT_Face face, const StringView styleName, const FontMethod fontMethod, int32 baseSize, const FontStyle style)
+	bool FontFace::init(const ::FT_Library library, const MappedMemoryView& memoryView, ::FT_Face face, const StringView styleName, const FontMethod fontMethod, int32 baseSize, const FontStyle style)
 	{
 		assert(m_face == nullptr);
 
@@ -145,7 +147,7 @@ namespace s3d
 		}
 
 		m_info.renderingMethod	= (m_info.properties.isScalable ? fontMethod : FontMethod::Bitmap);
-		m_info.hinting			= ((m_info.renderingMethod == FontMethod::Bitmap) ? Hinting::Yes : Hinting::No);
+		m_info.hinting			= ((m_info.renderingMethod == FontMethod::Bitmap) ? EnableHinting::No : EnableHinting::Yes);
 
 		if (::FT_Set_Pixel_Sizes(face, 0, baseSize))
 		{	
@@ -180,6 +182,37 @@ namespace s3d
 			}
 		}
 
+		if (m_info.properties.isCOLRv1)
+		{
+			m_colrv1 = std::make_unique<COLRv1>();
+			std::unique_ptr<SkStreamAsset> stream = SkMemoryStream::MakeDirect(memoryView.data, memoryView.size);
+
+			for (const auto& axes : m_info.properties.variationAxes)
+			{
+				const std::string tag = axes.tag.toUTF8();
+				const float value = static_cast<float>(axes.value);
+
+				if (tag.size() == 4)
+				{
+					const uint32 tagValue = SkSetFourByteTag(tag[0], tag[1], tag[2], tag[3]);
+					m_colrv1->variationCoordinates.emplace_back(tagValue, value);
+				}
+			}
+
+			SkFontArguments fontArgs{};
+
+			if (m_colrv1->variationCoordinates)
+			{
+				SkFontArguments::VariationPosition variationPosition{};
+				variationPosition.coordinates = m_colrv1->variationCoordinates.data();
+				variationPosition.coordinateCount = static_cast<uint32_t>(m_colrv1->variationCoordinates.size());
+				fontArgs.setVariationDesignPosition(variationPosition);
+			}
+
+			m_colrv1->skTypeface = SkTypeface_FreeType::MakeFromStream(std::move(stream), fontArgs);		
+			m_colrv1->skFont.setTypeface(m_colrv1->skTypeface);
+		}
+
 		m_face					= face;
 		m_info.baseSize			= static_cast<int16>(baseSize);
 		m_info.style			= style;
@@ -188,8 +221,8 @@ namespace s3d
 
 		{
 			const GlyphIndex glyphIndex = getGlyphIndex(U' ');
-			m_info.spaceXAdvance = getXAdvanceFromGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
-			m_info.spaceYAdvance = getYAdvanceFromGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
+			m_info.spaceXAdvance = getXAdvanceByGlyphIndex(glyphIndex, m_info.hinting).value_or(m_info.baseSize);
+			m_info.spaceYAdvance = getYAdvanceByGlyphIndex(glyphIndex).value_or(m_info.baseSize);
 		}
 
 		return true;
@@ -223,19 +256,38 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const Ligature ligature) const
+	HarfBuzzGlyphInfo FontFace::getHarfBuzzGlyphInfo(const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
 	{
+		if (not m_face)
+		{
+			return{};
+		}
+
 		const auto& hbObjects = *m_hbObjects;
 
 		::hb_buffer_clear_contents(hbObjects.hbBuffer);
-		::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_LTR);
-		::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_COMMON);
+
+		if (readingDirection == ReadingDirection::LeftToRight)
+		{
+			::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_LTR);
+			::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_COMMON);
+		}
+		else if (readingDirection == ReadingDirection::TopToBottom)
+		{
+			::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_TTB);
+			::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_HAN);
+		}
+		else if (readingDirection == ReadingDirection::RightToLeft)
+		{
+			::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_RTL);
+			::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_ARABIC);
+		}
 
 		const int32 textLength = static_cast<int32>(s.length());
 		::hb_buffer_add_utf32(hbObjects.hbBuffer, reinterpret_cast<const uint32_t*>(s.data()), textLength, 0, textLength);
 		::hb_buffer_guess_segment_properties(hbObjects.hbBuffer);
 
-		if (ligature) // リガチャあり
+		if (enableLigatures) // リガチャあり
 		{
 			::hb_shape(hbObjects.hbFont, hbObjects.hbBuffer, nullptr, 0);
 		}
@@ -255,19 +307,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getXAdvance
+	//	getXAdvanceByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<float> FontFace::getXAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const Hinting hinting)
+	Optional<float> FontFace::getXAdvanceByGlyphIndex(const GlyphIndex glyphIndex, const EnableHinting enableHinting)
 	{
-		::FT_Int32 loadFlag = (hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
+		if (not m_face)
+		{
+			return none;
+		}
+
+		::FT_Int32 loadFlag = (enableHinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
 
 		if (m_info.properties.hasColor)
 		{
 			::FT_Fixed advance = 0;
 
-			if (::FT_Get_Advance(m_face, glyphIndex, (loadFlag | FT_LOAD_COLOR), &advance) == 0)
+			if (::FT_Get_Advance(m_face, glyphIndex, loadFlag, &advance) == 0)
 			{
 				return (advance / 65536.0f);
 			}
@@ -320,68 +377,56 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getYAdvanceByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<float> FontFace::getYAdvanceByGlyphIndex(const GlyphIndex glyphIndex)
+	{
+		if (not m_face)
+		{
+			return none;
+		}
+
+		const ::hb_position_t vAdvance = ::hb_font_get_glyph_v_advance(m_hbObjects->hbFont, glyphIndex);
+		return (-vAdvance / 64.0f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getYAdvance
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<float> FontFace::getYAdvanceFromGlyphIndex(const GlyphIndex glyphIndex, const Hinting hinting)
+	float FontFace::getYAdvance(const StringView ch)
 	{
-		const bool hasVertical = m_info.properties.hasVertical;
-
-		::FT_Int32 loadFlag = ((hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING) | (hasVertical ? FT_LOAD_VERTICAL_LAYOUT : 0));
-
-		if (m_info.properties.hasColor)
+		if (not m_face)
 		{
-			::FT_Fixed advance = 0;
-
-			if (::FT_Get_Advance(m_face, glyphIndex, (loadFlag | FT_LOAD_COLOR), &advance) == 0)
-			{
-				return (advance / 65536.0f);
-			}
-
-			// カラー読み込み失敗時はフォールバック
+			return 0.0f;
 		}
 
+		const auto& hbObjects = *m_hbObjects;
+
+		::hb_buffer_clear_contents(hbObjects.hbBuffer);
+		::hb_buffer_set_direction(hbObjects.hbBuffer, HB_DIRECTION_TTB);
+		::hb_buffer_set_script(hbObjects.hbBuffer, HB_SCRIPT_HAN);
+
+		const int32 textLength = static_cast<int32>(ch.length());
+		::hb_buffer_add_utf32(hbObjects.hbBuffer, reinterpret_cast<const uint32_t*>(ch.data()), textLength, 0, textLength);
+		::hb_buffer_guess_segment_properties(hbObjects.hbBuffer);
+
+		::hb_shape(hbObjects.hbFont, hbObjects.hbBuffer, nullptr, 0);
+
+		uint32 glyphCount = 0;
+		const hb_glyph_position_t* glyphPos = hb_buffer_get_glyph_positions(hbObjects.hbBuffer, &glyphCount);
+
+		if (glyphCount)
 		{
-			if (not((m_info.renderingMethod == FontMethod::Bitmap)
-				&& (m_info.style & FontStyle::Bitmap)))
-			{
-				loadFlag |= FT_LOAD_NO_BITMAP;
-			}
-
-			// スタイル合成が必要
-			if (m_info.style & (FontStyle::Bold | FontStyle::Italic))
-			{
-				// ロード失敗時は none
-				if (::FT_Load_Glyph(m_face, glyphIndex, loadFlag))
-				{
-					return none;
-				}
-
-				if (m_info.style & FontStyle::Bold)
-				{
-					::FT_GlyphSlot_Embolden(m_face->glyph);
-				}
-
-				if (m_info.style & FontStyle::Italic)
-				{
-					::FT_GlyphSlot_Oblique(m_face->glyph);
-				}
-
-				return ((hasVertical ? m_face->glyph->metrics.vertAdvance : m_face->glyph->metrics.horiAdvance) / 64.0f);
-			}
-			else
-			{
-				::FT_Fixed advance = 0;
-
-				if (::FT_Get_Advance(m_face, glyphIndex, loadFlag, &advance) == 0)
-				{
-					return (advance / 65536.0f);
-				}
-
-				// ロード失敗時は none
-				return none;
-			}
+			return (-glyphPos[0].y_advance / 64.0f);
+		}
+		else
+		{
+			return 0.0f;
 		}
 	}
 
@@ -393,23 +438,29 @@ namespace s3d
 
 	GlyphIndex FontFace::getGlyphIndex(const char32 codePoint)
 	{
+		if (not m_face)
+		{
+			return GlyphIndexNotdef;
+		}
+
 		return ::FT_Get_Char_Index(m_face, codePoint);
 	}
 
-	GlyphIndex FontFace::getGlyphIndex(const StringView ch)
+	GlyphIndex FontFace::getGlyphIndex(const StringView ch, const ReadingDirection readingDirection)
 	{
+		if (not m_face)
+		{
+			return GlyphIndexNotdef;
+		}
+
 		if (const size_t length = ch.size();
 			length == 0)
 		{
 			return GlyphIndexNotdef;
 		}
-		else if (length == 1)
-		{
-			return getGlyphIndex(ch[0]);
-		}
 		else
 		{
-			const HarfBuzzGlyphInfo glyphInfo = getHarfBuzzGlyphInfo(ch, Ligature::Yes);
+			const HarfBuzzGlyphInfo glyphInfo = getHarfBuzzGlyphInfo(ch, EnableLigatures::Yes, readingDirection);
 
 			if (glyphInfo.count != 1)
 			{
@@ -428,6 +479,11 @@ namespace s3d
 
 	String FontFace::getGlyphNameByGlyphIndex(const GlyphIndex glyphIndex)
 	{
+		if (not m_face)
+		{
+			return{};
+		}
+
 		char glyphNameBuffer[256]{};
 
 		if (::FT_Get_Glyph_Name(m_face, glyphIndex, glyphNameBuffer, sizeof(glyphNameBuffer)) != 0)
@@ -436,6 +492,35 @@ namespace s3d
 		}
 
 		return Unicode::FromUTF8(glyphNameBuffer);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getFace
+	//
+	////////////////////////////////////////////////////////////////
+
+	::FT_Face FontFace::getFace() const noexcept
+	{
+		return m_face;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSkFont
+	//
+	////////////////////////////////////////////////////////////////
+
+	SkFont* FontFace::getSkFont() const noexcept
+	{
+		if (m_colrv1)
+		{
+			return &m_colrv1->skFont;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

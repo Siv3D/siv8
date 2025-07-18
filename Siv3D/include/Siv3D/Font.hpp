@@ -11,16 +11,23 @@
 
 # pragma once
 # include "Common.hpp"
+# include "Array.hpp"
 # include "AssetHandle.hpp"
 # include "FontMethod.hpp"
 # include "FontStyle.hpp"
+# include "ReadingDirection.hpp"
 # include "GlyphIndex.hpp"
 # include "GlyphInfo.hpp"
+# include "OutlineGlyph.hpp"
+# include "BitmapGlyph.hpp"
 # include "ResolvedGlyph.hpp"
+# include "PredefinedYesNo.hpp"
+# include "Typeface.hpp"
 
 namespace s3d
 {
 	struct FontFaceProperties;
+	struct DrawableText;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -44,10 +51,28 @@ namespace s3d
 		Font();
 
 		[[nodiscard]]
-		Font(int32 baseSize, FilePathView path);
+		explicit Font(int32 baseSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
 
 		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, FilePathView path);
+		Font(int32 baseSize, FilePathView path, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(int32 baseSize, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(int32 baseSize, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
 
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
@@ -63,7 +88,18 @@ namespace s3d
 
 		/// @brief デストラクタ
 		virtual ~Font();
-		
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addFallback
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief フォールバックフォントを追加します。
+		/// @param font フォールバックとして追加するフォント
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addFallback(const Font& font) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	baseSize
@@ -230,6 +266,23 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	getBufferThickness
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//int32 getBufferThickness() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setBufferThickness
+		//
+		////////////////////////////////////////////////////////////////
+
+		//const Font& setBufferThickness(int32 thickness) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	num_glyphs
 		//
 		////////////////////////////////////////////////////////////////
@@ -247,16 +300,18 @@ namespace s3d
 
 		/// @brief 指定した文字のグリフを持つかを返します。
 		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
 		/// @return グリフを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool hasGlyph(char32 codePoint) const;
+		bool hasGlyph(char32 codePoint, ReadingDirection readingDirection) const;
 
 		/// @brief 指定した文字のグリフを持つかを返します。
 		/// @param ch 文字
+		/// @param readingDirection テキストの方向
 		/// @remark char32 型の要素 1 つでは表現できない文字のための関数です。
 		/// @return グリフを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool hasGlyph(StringView ch) const;
+		bool hasGlyph(StringView ch, ReadingDirection readingDirection) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -266,16 +321,18 @@ namespace s3d
 
 		/// @brief 指定した文字の、このフォント内でのグリフインデックスを返します。
 		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
 		/// @return このフォント内でのグリフインデックス
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(char32 codePoint) const;
+		GlyphIndex getGlyphIndex(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		/// @brief 指定した文字の、このフォント内でのグリフインデックスを返します。
 		/// @param ch 文字
+		/// @param readingDirection テキストの方向
 		/// @remark char32 型の要素 1 つでは表現できない文字のための関数です。
 		/// @return このフォント内でのグリフインデックス
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(StringView ch) const;
+		GlyphIndex getGlyphIndex(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -284,10 +341,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		String getGlyphName(char32 codePoint) const;
+		String getGlyphName(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		[[nodiscard]]
-		String getGlyphName(StringView ch) const;
+		String getGlyphName(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -305,19 +362,19 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		double getXAdvance(char32 codePoint) const;
+		double getXAdvance(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		[[nodiscard]]
-		double getXAdvance(StringView ch) const;
+		double getXAdvance(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getXAdvanceFromGlyphIndex
+		//	getXAdvanceByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		double getXAdvanceFromGlyphIndex(GlyphIndex glyphIndex) const;
+		double getXAdvanceByGlyphIndex(GlyphIndex glyphIndex) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -333,14 +390,107 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getYAdvanceFromGlyphIndex
+		//	getYAdvanceByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		double getYAdvanceFromGlyphIndex(GlyphIndex glyphIndex) const;
+		double getYAdvanceByGlyphIndex(GlyphIndex glyphIndex) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getResolvedGlyphs
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, ReadingDirection readingDirection = ReadingDirection::LeftToRight, EnableFallback enableFallback = EnableFallback::Yes, EnableLigatures enableLigatures = EnableLigatures::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlyphInfo
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		GlyphInfo getGlyphInfo(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		[[nodiscard]]
+		GlyphInfo getGlyphInfo(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlyphInfoByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderOutline
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		OutlineGlyph renderOutline(char32 codePoint, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		[[nodiscard]]
+		OutlineGlyph renderOutline(StringView ch, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderOutlineByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		OutlineGlyph renderOutlineByGlyphIndex(GlyphIndex glyphIndex, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderOutlines
+		//
+		////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//Array<OutlineGlyph> renderOutlines(StringView s, CloseRing closeRing = CloseRing::No, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderBitmap
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BitmapGlyph renderBitmap(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		[[nodiscard]]
+		BitmapGlyph renderBitmap(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderBitmapByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		BitmapGlyph renderBitmapByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getTexture
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief フォントの内部でキャッシュされているテクスチャを返します。
+		/// @return フォントの内部でキャッシュされているテクスチャ
+		[[nodiscard]]
+		const Texture& getTexture() const;
 
 
 
@@ -354,13 +504,47 @@ namespace s3d
 		/// @param Font 別の Font
 		void swap(Font& other) noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator ()
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief フォントを描画するために必要な DrawableText を、文字列から構築します。
+		/// @param text 文字列
+		/// @return DrawableText
+		[[nodiscard]]
+		DrawableText operator ()(const String& text) const;
 
+		/// @brief フォントを描画するために必要な DrawableText を、文字列から構築します。
+		/// @param text 文字列
+		/// @return DrawableText
+		[[nodiscard]]
+		DrawableText operator ()(String&& text) const;
 
+		/// @brief フォントを描画するために必要な DrawableText を、一連の引数を文字列に変換することで構築します。
+		/// @param ...args 文字列に変換する値
+		/// @return DrawableText
+		template <Concept::Formattable... Args>
+		[[nodiscard]]
+		DrawableText operator ()(const Args& ... args) const;
 
+		/// @brief Format できない値が Format() に渡されたときに発生するエラーです
+		template <class... Args>
+		DrawableText operator ()(const Args&...) = delete;
 
+		[[nodiscard]]
+		DrawableText operator ()(ReadingDirection readingDirection, const String& text) const;
 
+		[[nodiscard]]
+		DrawableText operator ()(ReadingDirection readingDirection, String&& text) const;
 
+		template <Concept::Formattable... Args>
+		[[nodiscard]]
+		DrawableText operator ()(ReadingDirection readingDirection, const Args& ... args) const;
+
+		template <class... Args>
+		DrawableText operator ()(ReadingDirection readingDirection, const Args&...) = delete;
 
 
 
@@ -377,6 +561,25 @@ namespace s3d
 		{
 			lhs.swap(rhs);
 		}
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetFaces
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static Array<FontFaceProperties> GetFaces(FilePathView path);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IsAvailable
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		static bool IsAvailable(Typeface typeface);
 	};
 }
 

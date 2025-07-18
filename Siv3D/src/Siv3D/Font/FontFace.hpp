@@ -13,10 +13,18 @@
 # include <Siv3D/PredefinedYesNo.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FontStyle.hpp>
+# include <Siv3D/ReadingDirection.hpp>
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
+# include <Siv3D/MappedMemoryView.hpp>
+# include "FontUtility.hpp"
 # include "FontCommon.hpp"
+
+SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4244)
+# include <ThirdParty/skia/include/core/SkFont.h>
+# include <ThirdParty/skia/src/ports/SkTypeface_FreeType.h>
+SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
 {
@@ -25,29 +33,6 @@ namespace s3d
 		const hb_glyph_info_t* info = nullptr;
 
 		size_t count = 0;
-	};
-
-	struct FontFaceInfo
-	{
-		FontFaceProperties properties;
-
-		int16 baseSize = 16;
-
-		FontMethod renderingMethod = FontMethod::Bitmap;
-
-		Hinting hinting = Hinting::Yes;
-
-		FontStyle style = FontStyle::Normal;
-
-		int16 tabSize = 8;
-
-		float ascender = 0.0f;
-
-		float descender = 0.0f;
-
-		float spaceXAdvance = 0.0f;
-
-		float spaceYAdvance = 0.0f;
 	};
 
 	class FontFace
@@ -60,7 +45,7 @@ namespace s3d
 		~FontFace();
 
 		[[nodiscard]]
-		bool init(::FT_Library library, ::FT_Face face, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style);
+		bool init(::FT_Library library, const MappedMemoryView& memoryView, ::FT_Face face, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style);
 
 		[[nodiscard]]
 		const FontFaceInfo& getInfo() const noexcept;
@@ -68,22 +53,31 @@ namespace s3d
 		void setTabSize(int32 tabSize) noexcept;
 
 		[[nodiscard]]
-		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, Ligature ligature) const;
+		HarfBuzzGlyphInfo getHarfBuzzGlyphInfo(StringView s, EnableLigatures enableLigatures, ReadingDirection readingDirection) const;
 
 		[[nodiscard]]
-		Optional<float> getXAdvanceFromGlyphIndex(GlyphIndex glyphIndex, Hinting hinting);
+		Optional<float> getXAdvanceByGlyphIndex(GlyphIndex glyphIndex, EnableHinting enableHinting);
 
 		[[nodiscard]]
-		Optional<float> getYAdvanceFromGlyphIndex(GlyphIndex glyphIndex, Hinting hinting);
+		Optional<float> getYAdvanceByGlyphIndex(GlyphIndex glyphIndex);
+
+		[[nodiscard]]
+		float getYAdvance(StringView ch);
 
 		[[nodiscard]]
 		GlyphIndex getGlyphIndex(char32 codePoint);
 
 		[[nodiscard]]
-		GlyphIndex getGlyphIndex(StringView ch);
+		GlyphIndex getGlyphIndex(StringView ch, const ReadingDirection readingDirection);
 
 		[[nodiscard]]
 		String getGlyphNameByGlyphIndex(GlyphIndex glyphIndex);
+
+		[[nodiscard]]
+		::FT_Face getFace() const noexcept;
+
+		[[nodiscard]]
+		SkFont* getSkFont() const noexcept;
 
 	private:
 
@@ -98,9 +92,20 @@ namespace s3d
 			bool init(::FT_Face face);
 		};
 
+		struct COLRv1
+		{
+			Array<SkFontArguments::VariationPosition::Coordinate> variationCoordinates;
+
+			sk_sp<SkTypeface> skTypeface;
+
+			SkFont skFont;
+		};
+
 		::FT_Face m_face = nullptr;
 
 		std::unique_ptr<HarfBuzzObjects> m_hbObjects;
+
+		std::unique_ptr<COLRv1> m_colrv1;
 
 		FontFaceInfo m_info;
 	};

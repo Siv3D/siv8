@@ -10,11 +10,15 @@
 //-----------------------------------------------
 
 # include <Siv3D/Font.hpp>
+# include <Siv3D/DrawableText.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Font/FontFace.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/FileSystem.hpp>
+# include <Siv3D/EngineLog.hpp>
+# include "TypefaceUtility.hpp"
 
 namespace s3d
 {
@@ -55,11 +59,32 @@ namespace s3d
 
 	Font::Font() {}
 
-	Font::Font(const int32 baseSize, const FilePathView path)
-		: Font{ FontMethod::Bitmap, baseSize, path, 0, U"", FontStyle::Normal } {}
+	Font::Font(const int32 baseSize, const Typeface typeface, const FontStyle style)
+		: Font{ FontMethod::Bitmap, baseSize, typeface, style } {}
 
-	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path)
-		: Font{ fontMethod, baseSize, path, 0, U"", FontStyle::Normal } {}
+	Font::Font(const int32 baseSize, const FilePathView path, const FontStyle style)
+		: Font{ FontMethod::Bitmap, baseSize, path, 0, U"", style } {}
+
+	Font::Font(const int32 baseSize, const FilePathView path, const size_t faceIndex, const FontStyle style)
+		: Font{ FontMethod::Bitmap, baseSize, path, faceIndex, U"", style } {}
+
+	Font::Font(const int32 baseSize, const FilePathView path, const StringView styleName, const FontStyle style)
+		: Font{ FontMethod::Bitmap, baseSize, path, 0, styleName, style } {}
+
+	Font::Font(const int32 baseSize, const FilePathView path, const size_t faceIndex, const StringView styleName, const FontStyle style)
+		: Font{ FontMethod::Bitmap, baseSize, path, faceIndex, styleName, style } {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const Typeface typeface, const FontStyle style)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(typeface, fontMethod, baseSize, style))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const FontStyle style)
+		: Font{ fontMethod, baseSize, path, 0, U"", style } {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const size_t faceIndex, const FontStyle style)
+		: Font{ fontMethod, baseSize, path, faceIndex, U"", style } {}
 
 	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const StringView styleName, const FontStyle style)
 		: Font{ fontMethod, baseSize, path, 0, styleName, style } {}
@@ -77,6 +102,31 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Font::~Font() {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addFallback
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Font::addFallback(const Font& font) const
+	{
+		if (not font)
+		{
+			LOG_FAIL("Font::addFallback(): Empty font");
+			return false;
+		}
+
+		if (font.id() == id())
+		{
+			LOG_FAIL(U"Font::addFallback(): Cannot add self as fallback");
+			return false;
+		}
+
+		SIV3D_ENGINE(Font)->addFallbackFont(m_handle->id(), font);
+
+		return true;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -285,14 +335,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Font::hasGlyph(const char32 codePoint) const
+	bool Font::hasGlyph(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint) != GlyphIndexNotdef);
+		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection) != GlyphIndexNotdef);
 	}
 
-	bool Font::hasGlyph(const StringView ch) const
+	bool Font::hasGlyph(const StringView ch, const ReadingDirection readingDirection) const
 	{
-		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch) != GlyphIndexNotdef);
+		return (SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection) != GlyphIndexNotdef);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -301,14 +351,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	GlyphIndex Font::getGlyphIndex(const char32 codePoint) const
+	GlyphIndex Font::getGlyphIndex(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
+		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
 	}
 
-	GlyphIndex Font::getGlyphIndex(const StringView ch) const
+	GlyphIndex Font::getGlyphIndex(const StringView ch, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
+		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -317,15 +367,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String Font::getGlyphName(const char32 codePoint) const
+	String Font::getGlyphName(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
 		return getGlyphNameByGlyphIndex(glyphIndex);
 	}
 
-	String Font::getGlyphName(const StringView ch) const
+	String Font::getGlyphName(const StringView ch, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
 		return getGlyphNameByGlyphIndex(glyphIndex);
 	}
 
@@ -346,28 +396,171 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Font::getXAdvance(const char32 codePoint) const
+	double Font::getXAdvance(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint);
-		return getXAdvanceFromGlyphIndex(glyphIndex);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return getXAdvanceByGlyphIndex(glyphIndex);
 	}
 
-	double Font::getXAdvance(const StringView ch) const
+	double Font::getXAdvance(const StringView ch, const ReadingDirection readingDirection) const
 	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
-		return getXAdvanceFromGlyphIndex(glyphIndex);
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return getXAdvanceByGlyphIndex(glyphIndex);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getXAdvanceFromGlyphIndex
+	//	getXAdvanceByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Font::getXAdvanceFromGlyphIndex(const GlyphIndex glyphIndex) const
+	double Font::getXAdvanceByGlyphIndex(const GlyphIndex glyphIndex) const
 	{
-		return SIV3D_ENGINE(Font)->getXAdvanceFromGlyphIndex(m_handle->id(), glyphIndex);
+		return SIV3D_ENGINE(Font)->getXAdvanceByGlyphIndex(m_handle->id(), glyphIndex);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getYAdvance
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Font::getYAdvance(const char32 codePoint) const
+	{
+		return SIV3D_ENGINE(Font)->getYAdvance(m_handle->id(), StringView{ &codePoint, 1 });
+	}
+
+	double Font::getYAdvance(const StringView ch) const
+	{
+		return SIV3D_ENGINE(Font)->getYAdvance(m_handle->id(), ch);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getYAdvanceByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Font::getYAdvanceByGlyphIndex(const GlyphIndex glyphIndex) const
+	{
+		return SIV3D_ENGINE(Font)->getYAdvanceByGlyphIndex(m_handle->id(), glyphIndex);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getResolvedGlyphs
+	//
+	////////////////////////////////////////////////////////////////
+
+	[[nodiscard]]
+	Array<ResolvedGlyph> Font::getResolvedGlyphs(const StringView s, const ReadingDirection readingDirection, const EnableFallback enableFallback, const EnableLigatures enableLigatures) const
+	{
+		return SIV3D_ENGINE(Font)->getResolvedGlyphs(m_handle->id(), s, readingDirection, enableFallback, enableLigatures);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphInfo
+	//
+	////////////////////////////////////////////////////////////////
+
+	GlyphInfo Font::getGlyphInfo(const char32 codePoint, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return getGlyphInfoByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	GlyphInfo Font::getGlyphInfo(const StringView ch, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return getGlyphInfoByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphInfoByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	GlyphInfo Font::getGlyphInfoByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->getGlyphInfoByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderOutline
+	//
+	////////////////////////////////////////////////////////////////
+
+	OutlineGlyph Font::renderOutline(const char32 codePoint, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return renderOutlineByGlyphIndex(glyphIndex, closeRing, readingDirection);
+	}
+
+	OutlineGlyph Font::renderOutline(const StringView ch, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return renderOutlineByGlyphIndex(glyphIndex, closeRing, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderOutline
+	//
+	////////////////////////////////////////////////////////////////
+
+	OutlineGlyph Font::renderOutlineByGlyphIndex(const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->renderOutlineByGlyphIndex(m_handle->id(), glyphIndex, closeRing, readingDirection);
+	}
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderBitmap
+	//
+	////////////////////////////////////////////////////////////////
+
+	BitmapGlyph Font::renderBitmap(const char32 codePoint, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return renderBitmapByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	BitmapGlyph Font::renderBitmap(const StringView ch, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return renderBitmapByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderBitmapByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	BitmapGlyph Font::renderBitmapByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->renderBitmapByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
+	}
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getTexture
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Texture& Font::getTexture() const
+	{
+		return SIV3D_ENGINE(Font)->getTexture(m_handle->id());
+	}
+
+
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -380,4 +573,56 @@ namespace s3d
 		m_handle.swap(other.m_handle);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ()
+	//
+	////////////////////////////////////////////////////////////////
+
+	DrawableText Font::operator ()(const String& text) const
+	{
+		return{ *this, text, ReadingDirection::LeftToRight };
+	}
+
+	DrawableText Font::operator ()(String&& text) const
+	{
+		return{ *this, std::move(text), ReadingDirection::LeftToRight };
+	}
+
+	DrawableText Font::operator ()(const ReadingDirection readingDirection, const String& text) const
+	{
+		return{ *this, text, readingDirection };
+	}
+
+	DrawableText Font::operator ()(const ReadingDirection readingDirection, String&& text) const
+	{
+		return{ *this, std::move(text), readingDirection };
+	}
+
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	GetFaces
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<FontFaceProperties> Font::GetFaces(const FilePathView path)
+	{
+		return SIV3D_ENGINE(Font)->getFontFaces(path);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IsAvailable
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Font::IsAvailable(const Typeface typeface)
+	{
+		const FilePath fontFilePath = GetTypefaceInfo(typeface, FontMethod::Bitmap).path;
+
+		return FileSystem::Exists(fontFilePath);
+	}
 }

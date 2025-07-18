@@ -68,9 +68,11 @@ namespace s3d
 		};
 
 		/// @brief エンジンで使用するリソースの一覧
-		static constexpr std::array<EngineResourceDetail, 1> EngineResources
+		static constexpr std::array<EngineResourceDetail, 3> EngineResources
 		{{
-			{ U"font/", U"noto-emoji/Noto-COLRv1.ttf", false, true },
+			{ U"font/", U"Noto-COLRv1.ttf", false, true },
+			{ U"font/", U"MPLUS2.ttf", false, true },
+			{ U"font/", U"materialdesignicons-webfont.ttf", false, true },
 		}};
 	}
 
