@@ -581,4 +581,75 @@ namespace s3d
 			}
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fitsRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CFont::fitsRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	{
+		const auto& font = m_fonts[handleID];
+
+		//if (readingDirection == ReadingDirection::TopToBottom)
+		//{
+		//	return m_fonts[handleID]->getGlyphCache().processVerticalRect(IGlyphCache::TextOperation::Region, *font, s, resolvedGlyphs, rect, fontSize, textStyle, ColorF{}, readingDirection);
+		//}
+		//else
+		//{
+			return m_fonts[handleID]->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Region, *font, s, resolvedGlyphs, rect, fontSize, textStyle, ColorF{}, readingDirection);
+		//}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CFont::drawRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
+	{
+		const auto& font = m_fonts[handleID];
+		const bool hasColor = font->getInfo().properties.hasColor;
+
+		if ((textStyle.type != TextStyle::Type::Default) && (not hasColor))
+		{
+			//if (font->getMethod() == FontMethod::SDF)
+			//{
+			//	Graphics2D::SetSDFParameters(textStyle);
+			//}
+			//else
+			//{
+			//	Graphics2D::SetMSDFParameters(textStyle);
+			//}
+		}
+
+		const ColorF drawColor = (hasColor ? ColorF{ 1.0, color.a } : color);
+
+		if (textStyle.type == TextStyle::Type::CustomShader)
+		{
+			//if (readingDirection == ReadingDirection::TopToBottom)
+			//{
+			//	return m_fonts[handleID]->getGlyphCache().processVerticalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, drawColor, readingDirection);
+			//}
+			//else
+			//{
+				return m_fonts[handleID]->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, drawColor, readingDirection);
+			//}
+		}
+		else
+		{
+			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
+
+			//if (readingDirection == ReadingDirection::TopToBottom)
+			//{
+			//	return m_fonts[handleID]->getGlyphCache().processVertical(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, drawColor, readingDirection);
+			//}
+			//else
+			//{
+				return m_fonts[handleID]->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, drawColor, readingDirection);
+			//}
+		}
+	}
 }

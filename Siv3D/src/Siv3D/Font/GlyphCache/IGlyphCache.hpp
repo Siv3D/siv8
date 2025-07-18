@@ -45,7 +45,8 @@ namespace s3d
 		[[nodiscard]]
 		virtual std::pair<double, double> processVerticalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
-		//virtual bool fits(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double size, double lineHeightScale) = 0;
+		[[nodiscard]]
+		virtual bool processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
 		virtual Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) = 0;

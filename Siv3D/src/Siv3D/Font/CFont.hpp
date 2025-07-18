@@ -265,6 +265,22 @@ namespace s3d
 
 		std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	fitsRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;

@@ -296,7 +296,7 @@ namespace s3d
 
 		RectF draw(Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
-		//bool draw(const RectF& area, const ColorF& color = Palette::White) const;
+		bool draw(const RectF& area, const ColorF& color = Palette::White) const;
 
 		RectF draw(double size, double x, double y, const ColorF& color = Palette::White) const;
 
@@ -320,7 +320,7 @@ namespace s3d
 
 		RectF draw(double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
-		//bool draw(double size, const RectF& area, const ColorF& color = Palette::White) const;
+		bool draw(double size, const RectF& area, const ColorF& color = Palette::White) const;
 
 		RectF draw(const TextStyle& textStyle, double x, double y, const ColorF& color = Palette::White) const;
 
@@ -344,7 +344,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
-		//bool draw(const TextStyle& textStyle, const RectF& area, const ColorF& color = Palette::White) const;
+		bool draw(const TextStyle& textStyle, const RectF& area, const ColorF& color = Palette::White) const;
 
 		RectF draw(const TextStyle& textStyle, double size, double x, double y, const ColorF& color = Palette::White) const;
 
@@ -368,7 +368,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
-		//bool draw(const TextStyle& textStyle, double size, const RectF& area, const ColorF& color = Palette::White) const;
+		bool draw(const TextStyle& textStyle, double size, const RectF& area, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -470,6 +470,9 @@ namespace s3d
 
 		bool fits(double size, const RectF& area) const;
 
+		bool fits(const TextStyle& textStyle, const RectF& area) const;
+
+		bool fits(const TextStyle& textStyle, double size, const RectF& area) const;
 	};
 }
 

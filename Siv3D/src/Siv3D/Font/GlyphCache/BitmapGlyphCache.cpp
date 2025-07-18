@@ -310,6 +310,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	processHorizontalRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool BitmapGlyphCache::processHorizontalRect(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
+	{
+		return{};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getXAdvances
 	//
 	////////////////////////////////////////////////////////////////
