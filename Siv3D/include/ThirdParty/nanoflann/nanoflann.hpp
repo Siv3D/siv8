@@ -3,7 +3,7 @@
  *
  * Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
  * Copyright 2008-2009  David G. Lowe (lowe@cs.ubc.ca). All rights reserved.
- * Copyright 2011-2024  Jose Luis Blanco (joseluisblancoc@gmail.com).
+ * Copyright 2011-2025  Jose Luis Blanco (joseluisblancoc@gmail.com).
  *   All rights reserved.
  *
  * THE BSD LICENSE
@@ -61,7 +61,7 @@
 #include <vector>
 
 /** Library version: 0xMmP (M=Major,m=minor,P=patch) */
-#define NANOFLANN_VERSION 0x162
+#define NANOFLANN_VERSION 0x171
 
 // Avoid conflicting declaration of min/max macros in Windows headers
 #if !defined(NOMINMAX) && \
@@ -220,8 +220,6 @@ class KNNResultSet
         indices = indices_;
         dists   = dists_;
         count   = 0;
-        if (capacity)
-            dists[capacity - 1] = (std::numeric_limits<DistanceType>::max)();
     }
 
     CountType size() const { return count; }
@@ -268,7 +266,14 @@ class KNNResultSet
         return true;
     }
 
-    DistanceType worstDist() const { return dists[capacity - 1]; }
+    //! Returns the worst distance among found solutions if the search result is
+    //! full, or the maximum possible distance, if not full yet.
+    DistanceType worstDist() const
+    {
+        return (count < capacity || !count)
+                   ? std::numeric_limits<DistanceType>::max()
+                   : dists[count - 1];
+    }
 
     void sort()
     {
@@ -357,7 +362,13 @@ class RKNNResultSet
         return true;
     }
 
-    DistanceType worstDist() const { return dists[capacity - 1]; }
+    //! Returns the worst distance among found solutions if the search result is
+    //! full, or the maximum possible distance, if not full yet.
+    DistanceType worstDist() const
+    {
+        return (count < capacity || !count) ? maximumSearchDistanceSquared
+                                            : dists[count - 1];
+    }
 
     void sort()
     {
@@ -1690,7 +1701,7 @@ class KDTreeSingleIndexAdaptor
         // fixed or variable-sized container (depending on DIM)
         distance_vector_t dists;
         // Fill it with zeros.
-        auto zero = static_cast<decltype(result.worstDist())>(0);
+        auto zero = static_cast<typename RESULTSET::DistanceType>(0);
         assign(dists, (DIM > 0 ? DIM : Base::dim_), zero);
         DistanceType dist = this->computeInitialDistances(*this, vec, dists);
         searchLevel(result, vec, Base::root_node_, dist, dists, epsError);
