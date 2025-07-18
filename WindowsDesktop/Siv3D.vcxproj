@@ -1090,6 +1090,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\compress\zstd_ldm.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\compress\zstd_ldm_geartab.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\compress\zstd_opt.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\compress\zstd_preSplit.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\decompress\zstd_ddict.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\decompress\zstd_decompress_block.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\decompress\zstd_decompress_internal.h" />
@@ -3474,6 +3475,7 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\compress\zstd_lazy.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\compress\zstd_ldm.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\compress\zstd_opt.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\compress\zstd_preSplit.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\decompress\huf_decompress.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\decompress\zstd_ddict.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\decompress\zstd_decompress.c" />
