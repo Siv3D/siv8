@@ -226,6 +226,48 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		RectF regionAt(double x, double y) const;
+
+		[[nodiscard]]
+		RectF regionAt(Vec2 pos = Vec2{ 0, 0 }) const;
+
+		[[nodiscard]]
+		RectF regionAt(double size, double x, double y) const;
+
+		[[nodiscard]]
+		RectF regionAt(double size, Vec2 pos = Vec2{ 0, 0 }) const;
+
+		[[nodiscard]]
+		RectF regionAt(const TextStyle& textStyle, double size, double x, double y) const;
+
+		[[nodiscard]]
+		RectF regionAt(const TextStyle& textStyle, double size, Vec2 pos = Vec2{ 0, 0 }) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	regionBaseAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		RectF regionBaseAt(double x, double y) const;
+		
+		[[nodiscard]]
+		RectF regionBaseAt(Vec2 pos = Vec2{ 0, 0 }) const;
+		
+		[[nodiscard]]
+		RectF regionBaseAt(double size, double x, double y) const;
+		
+		[[nodiscard]]
+		RectF regionBaseAt(double size, Vec2 pos = Vec2{ 0, 0 }) const;
+		
+		[[nodiscard]]
+		RectF regionBaseAt(const TextStyle& textStyle, double size, double x, double y) const;
+		
+		[[nodiscard]]
+		RectF regionBaseAt(const TextStyle& textStyle, double size, Vec2 pos = Vec2{ 0, 0 }) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	draw
@@ -310,21 +352,21 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::topLeft_<Vec2> topLeft, const ColorF& color = Palette::White) const;
 
-		//RectF draw(const TextStyle& textStyle, double size, Arg::topCenter_<Vec2> topCenter, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::topCenter_<Vec2> topCenter, const ColorF& color = Palette::White) const;
 
-		//RectF draw(const TextStyle& textStyle, double size, Arg::topRight_<Vec2> topRight, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::topRight_<Vec2> topRight, const ColorF& color = Palette::White) const;
 
-		//RectF draw(const TextStyle& textStyle, double size, Arg::rightCenter_<Vec2> rightCenter, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::rightCenter_<Vec2> rightCenter, const ColorF& color = Palette::White) const;
 
-		//RectF draw(const TextStyle& textStyle, double size, Arg::bottomRight_<Vec2> bottomRight, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::bottomRight_<Vec2> bottomRight, const ColorF& color = Palette::White) const;
 
-		//RectF draw(const TextStyle& textStyle, double size, Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& color = Palette::White) const;
 
-		//RectF draw(const TextStyle& textStyle, double size, Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color = Palette::White) const;
 
-		//RectF draw(const TextStyle& textStyle, double size, Arg::leftCenter_<Vec2> leftCenter, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::leftCenter_<Vec2> leftCenter, const ColorF& color = Palette::White) const;
 
-		//RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
 		//bool draw(const TextStyle& textStyle, double size, const RectF& area, const ColorF& color = Palette::White) const;
 
@@ -373,6 +415,29 @@ namespace s3d
 		RectF drawBase(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
 		RectF drawBase(const TextStyle& textStyle, double size, Arg::right_<Vec2> right, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawBaseAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fits
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool fits(const RectF& area) const;
+
+		bool fits(double size, const RectF& area) const;
+
 	};
 }
 
