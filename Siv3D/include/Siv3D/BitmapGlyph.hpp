@@ -10,14 +10,15 @@
 //-----------------------------------------------
 
 # pragma once
-# include "Array.hpp"
-# include "FontFaceProperties.hpp"
+# include "Common.hpp"
+# include "Image.hpp"
+# include "GlyphInfo.hpp"
 
 namespace s3d
 {
-	namespace FontFile
+	struct BitmapGlyph : GlyphInfo
 	{
-		[[nodiscard]]
-		Array<FontFaceProperties> GetFontFaces(FilePathView path);
-	}
+		Image image;
+	};
 }
+

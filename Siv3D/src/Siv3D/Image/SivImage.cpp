@@ -13,6 +13,7 @@
 # include <Siv3D/Emoji.hpp>
 # include <Siv3D/ImageDecoder.hpp>
 # include <Siv3D/ImageEncoder.hpp>
+# include "ImagePainting.hpp"
 
 namespace s3d
 {
@@ -291,4 +292,42 @@ namespace s3d
 		return ImageEncoder::Save(*this, format, path);
 	}
 
+	
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Image::overwrite(Image& dst, const Point pos) const
+	{
+		if (this == &dst)
+		{
+			return;
+		}
+
+		const Image& src = *this;
+
+		const int32 dstXBegin = Max(pos.x, 0);
+		const int32 dstYBegin = Max(pos.y, 0);
+		const int32 dstXEnd = Min(pos.x + src.width(), dst.width());
+		const int32 dstYEnd = Min(pos.y + src.height(), dst.height());
+		const int32 writeWidth = ((dstXEnd - dstXBegin) > 0 ? (dstXEnd - dstXBegin) : 0);
+		const int32 writeHeight = ((dstYEnd - dstYBegin) > 0 ? (dstYEnd - dstYBegin) : 0);
+
+		if ((writeWidth * writeHeight) == 0)
+		{
+			return;
+		}
+
+		const int32 srcXBegin = Max(0, -pos.x);
+		const int32 srcYBegin = Max(0, -pos.y);
+		const Color* pSrc = &src[srcYBegin][srcXBegin];
+		Color* pDst = &dst[dstYBegin][dstXBegin];
+		const int32 srcWidth = src.width();
+		const int32 dstWidth = dst.width();
+
+		ImagePainting::Overwrite(pSrc, pDst, writeWidth, writeHeight, srcWidth, dstWidth);
+	}
 }

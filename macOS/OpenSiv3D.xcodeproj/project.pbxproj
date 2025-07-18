@@ -508,7 +508,6 @@
 		F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171092DCBBF0B000A22E6 /* FontUtility.cpp */; };
 		F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171062DCBBF0B000A22E6 /* FontFace.cpp */; };
 		F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171012DCBBF0B000A22E6 /* CFont.cpp */; };
-		F91171172DCBBF0B000A22E6 /* SivFontFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F911710D2DCBBF0B000A22E6 /* SivFontFile.cpp */; };
 		F91171182DCBBF0B000A22E6 /* FontFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171072DCBBF0B000A22E6 /* FontFactory.cpp */; };
 		F91171192DCBBF0B000A22E6 /* SivFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F911710B2DCBBF0B000A22E6 /* SivFont.cpp */; };
 		F911711A2DCBBF0B000A22E6 /* FontData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171042DCBBF0B000A22E6 /* FontData.cpp */; };
@@ -524,7 +523,6 @@
 		F911712B2DCBBF67000A22E6 /* FontStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91171252DCBBF67000A22E6 /* FontStyle.hpp */; };
 		F911712C2DCBBF67000A22E6 /* FontMethod.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91171242DCBBF67000A22E6 /* FontMethod.hpp */; };
 		F911712D2DCBBF67000A22E6 /* FontFaceProperties.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91171222DCBBF67000A22E6 /* FontFaceProperties.hpp */; };
-		F911712E2DCBBF67000A22E6 /* FontFile.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91171232DCBBF67000A22E6 /* FontFile.hpp */; };
 		F911712F2DCBBF67000A22E6 /* FontVariationAxis.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91171262DCBBF67000A22E6 /* FontVariationAxis.hpp */; };
 		F91171312DCBBF6F000A22E6 /* Font.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91171302DCBBF6F000A22E6 /* Font.hpp */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
@@ -547,6 +545,25 @@
 		F934BD9C2BFA59000003EAD5 /* SivEngineOption.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD972BFA59000003EAD5 /* SivEngineOption.cpp */; };
 		F934BD9D2BFA59000003EAD5 /* SivHLSL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F934BD992BFA59000003EAD5 /* SivHLSL.cpp */; };
 		F934BD9F2BFA59320003EAD5 /* HLSL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F934BD9E2BFA59320003EAD5 /* HLSL.hpp */; };
+		F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAC72E2A099E001B4D43 /* DrawableText.hpp */; };
+		F943AACB2E2A09BB001B4D43 /* SivDrawableText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */; };
+		F943AACD2E2A09E5001B4D43 /* DrawableText.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */; };
+		F943AAD82E2A0A14001B4D43 /* GlyphCacheCommon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAD02E2A0A14001B4D43 /* GlyphCacheCommon.hpp */; };
+		F943AAD92E2A0A14001B4D43 /* BitmapGlyphCache.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AACE2E2A0A14001B4D43 /* BitmapGlyphCache.hpp */; };
+		F943AADA2E2A0A14001B4D43 /* MSDFGlyphCache.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAD52E2A0A14001B4D43 /* MSDFGlyphCache.hpp */; };
+		F943AADB2E2A0A14001B4D43 /* GlyphCacheManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAD22E2A0A14001B4D43 /* GlyphCacheManager.hpp */; };
+		F943AADC2E2A0A14001B4D43 /* IGlyphCache.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAD42E2A0A14001B4D43 /* IGlyphCache.hpp */; };
+		F943AADD2E2A0A14001B4D43 /* GlyphCacheCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAD12E2A0A14001B4D43 /* GlyphCacheCommon.cpp */; };
+		F943AADE2E2A0A14001B4D43 /* GlyphCacheManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAD32E2A0A14001B4D43 /* GlyphCacheManager.cpp */; };
+		F943AADF2E2A0A14001B4D43 /* MSDFGlyphCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAD62E2A0A14001B4D43 /* MSDFGlyphCache.cpp */; };
+		F943AAE02E2A0A14001B4D43 /* BitmapGlyphCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AACF2E2A0A14001B4D43 /* BitmapGlyphCache.cpp */; };
+		F943AAE32E2A0A3F001B4D43 /* ImagePainting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAE22E2A0A3F001B4D43 /* ImagePainting.cpp */; };
+		F943AAE42E2A0A3F001B4D43 /* ImagePainting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE12E2A0A3F001B4D43 /* ImagePainting.hpp */; };
+		F943AAE62E2A0A5F001B4D43 /* TextStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */; };
+		F943AAE82E2A0A73001B4D43 /* TextStyle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */; };
+		F943AAEA2E2A0AB1001B4D43 /* Typeface.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */; };
+		F943AAED2E2A0B05001B4D43 /* TypefaceUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */; };
+		F943AAEE2E2A0B05001B4D43 /* TypefaceUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */; };
 		F944BAA52CEACE0700CC4D42 /* ConvexHull.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA42CEACE0700CC4D42 /* ConvexHull.hpp */; };
 		F944BAA72CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F944BAA62CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp */; };
 		F944BAAA2CEACF4300CC4D42 /* Pipe.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA92CEACF4300CC4D42 /* Pipe.hpp */; };
@@ -2324,6 +2341,21 @@
 		F9B7DA192D8C72C0002ABACE /* bc7decomp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9FE2D8C72C0002ABACE /* bc7decomp.cpp */; };
 		F9B7DA1B2D8C72DF002ABACE /* BCnData.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */; };
 		F9B7DA1D2D8C72F5002ABACE /* BCnData.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */; };
+		F9CD6A112DE226E800EFA782 /* ReadingDirection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A102DE226E800EFA782 /* ReadingDirection.hpp */; };
+		F9CD6A132DE2270000EFA782 /* GlyphInfo.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A122DE2270000EFA782 /* GlyphInfo.ipp */; };
+		F9CD6A192DE2274400EFA782 /* BitmapGlyph.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A172DE2274400EFA782 /* BitmapGlyph.hpp */; };
+		F9CD6A1A2DE2274400EFA782 /* OutlineGlyph.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A182DE2274400EFA782 /* OutlineGlyph.hpp */; };
+		F9CD6A282DE2276B00EFA782 /* OutlineGlyphRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9CD6A262DE2276B00EFA782 /* OutlineGlyphRenderer.cpp */; };
+		F9CD6A292DE2276B00EFA782 /* agg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9CD6A1B2DE2276B00EFA782 /* agg.cpp */; };
+		F9CD6A2A2DE2276B00EFA782 /* BitmapGlyphRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9CD6A242DE2276B00EFA782 /* BitmapGlyphRenderer.cpp */; };
+		F9CD6A2B2DE2276B00EFA782 /* agg_curves_impl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A202DE2276B00EFA782 /* agg_curves_impl.hpp */; };
+		F9CD6A2C2DE2276B00EFA782 /* agg_basics.h in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A1D2DE2276B00EFA782 /* agg_basics.h */; };
+		F9CD6A2D2DE2276B00EFA782 /* agg_math.h in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A212DE2276B00EFA782 /* agg_math.h */; };
+		F9CD6A2E2DE2276B00EFA782 /* agg_array.h in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A1C2DE2276B00EFA782 /* agg_array.h */; };
+		F9CD6A2F2DE2276B00EFA782 /* OutlineGlyphRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A252DE2276B00EFA782 /* OutlineGlyphRenderer.hpp */; };
+		F9CD6A302DE2276B00EFA782 /* agg_config.h in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A1E2DE2276B00EFA782 /* agg_config.h */; };
+		F9CD6A312DE2276B00EFA782 /* BitmapGlyphRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A232DE2276B00EFA782 /* BitmapGlyphRenderer.hpp */; };
+		F9CD6A322DE2276B00EFA782 /* agg_curves.h in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A1F2DE2276B00EFA782 /* agg_curves.h */; };
 		F9D41B5C2C4BCCDD00290998 /* IsClockwise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */; };
 		F9D41B5D2C4BCCDD00290998 /* IsClockwise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */; };
 		F9D41B5F2C4FCE4600290998 /* LineCap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5E2C4FCE4600290998 /* LineCap.hpp */; };
@@ -3077,11 +3109,9 @@
 		F91171092DCBBF0B000A22E6 /* FontUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FontUtility.cpp; sourceTree = "<group>"; };
 		F911710A2DCBBF0B000A22E6 /* IFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IFont.hpp; sourceTree = "<group>"; };
 		F911710B2DCBBF0B000A22E6 /* SivFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivFont.cpp; sourceTree = "<group>"; };
-		F911710D2DCBBF0B000A22E6 /* SivFontFile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivFontFile.cpp; sourceTree = "<group>"; };
 		F911710F2DCBBF0B000A22E6 /* SivFontMethod.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivFontMethod.cpp; sourceTree = "<group>"; };
 		F91171112DCBBF0B000A22E6 /* SivFontStyle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivFontStyle.cpp; sourceTree = "<group>"; };
 		F91171222DCBBF67000A22E6 /* FontFaceProperties.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontFaceProperties.hpp; sourceTree = "<group>"; };
-		F91171232DCBBF67000A22E6 /* FontFile.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontFile.hpp; sourceTree = "<group>"; };
 		F91171242DCBBF67000A22E6 /* FontMethod.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontMethod.hpp; sourceTree = "<group>"; };
 		F91171252DCBBF67000A22E6 /* FontStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontStyle.hpp; sourceTree = "<group>"; };
 		F91171262DCBBF67000A22E6 /* FontVariationAxis.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontVariationAxis.hpp; sourceTree = "<group>"; };
@@ -3108,6 +3138,25 @@
 		F934BD972BFA59000003EAD5 /* SivEngineOption.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEngineOption.cpp; sourceTree = "<group>"; };
 		F934BD992BFA59000003EAD5 /* SivHLSL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivHLSL.cpp; sourceTree = "<group>"; };
 		F934BD9E2BFA59320003EAD5 /* HLSL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HLSL.hpp; sourceTree = "<group>"; };
+		F943AAC72E2A099E001B4D43 /* DrawableText.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.hpp; sourceTree = "<group>"; };
+		F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDrawableText.cpp; sourceTree = "<group>"; };
+		F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.ipp; sourceTree = "<group>"; };
+		F943AACE2E2A0A14001B4D43 /* BitmapGlyphCache.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BitmapGlyphCache.hpp; sourceTree = "<group>"; };
+		F943AACF2E2A0A14001B4D43 /* BitmapGlyphCache.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BitmapGlyphCache.cpp; sourceTree = "<group>"; };
+		F943AAD02E2A0A14001B4D43 /* GlyphCacheCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GlyphCacheCommon.hpp; sourceTree = "<group>"; };
+		F943AAD12E2A0A14001B4D43 /* GlyphCacheCommon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GlyphCacheCommon.cpp; sourceTree = "<group>"; };
+		F943AAD22E2A0A14001B4D43 /* GlyphCacheManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GlyphCacheManager.hpp; sourceTree = "<group>"; };
+		F943AAD32E2A0A14001B4D43 /* GlyphCacheManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GlyphCacheManager.cpp; sourceTree = "<group>"; };
+		F943AAD42E2A0A14001B4D43 /* IGlyphCache.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IGlyphCache.hpp; sourceTree = "<group>"; };
+		F943AAD52E2A0A14001B4D43 /* MSDFGlyphCache.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MSDFGlyphCache.hpp; sourceTree = "<group>"; };
+		F943AAD62E2A0A14001B4D43 /* MSDFGlyphCache.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSDFGlyphCache.cpp; sourceTree = "<group>"; };
+		F943AAE12E2A0A3F001B4D43 /* ImagePainting.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImagePainting.hpp; sourceTree = "<group>"; };
+		F943AAE22E2A0A3F001B4D43 /* ImagePainting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePainting.cpp; sourceTree = "<group>"; };
+		F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextStyle.hpp; sourceTree = "<group>"; };
+		F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextStyle.ipp; sourceTree = "<group>"; };
+		F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Typeface.hpp; sourceTree = "<group>"; };
+		F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TypefaceUtility.hpp; sourceTree = "<group>"; };
+		F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TypefaceUtility.cpp; sourceTree = "<group>"; };
 		F944BAA42CEACE0700CC4D42 /* ConvexHull.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ConvexHull.hpp; sourceTree = "<group>"; };
 		F944BAA62CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_ConvexHull.cpp; sourceTree = "<group>"; };
 		F944BAA82CEACF4300CC4D42 /* ChildProcess.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcess.hpp; sourceTree = "<group>"; };
@@ -4923,6 +4972,21 @@
 		F9B7DA0A2D8C72C0002ABACE /* utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = utils.cpp; sourceTree = "<group>"; };
 		F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnData.hpp; sourceTree = "<group>"; };
 		F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnData.ipp; sourceTree = "<group>"; };
+		F9CD6A102DE226E800EFA782 /* ReadingDirection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ReadingDirection.hpp; sourceTree = "<group>"; };
+		F9CD6A122DE2270000EFA782 /* GlyphInfo.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GlyphInfo.ipp; sourceTree = "<group>"; };
+		F9CD6A172DE2274400EFA782 /* BitmapGlyph.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BitmapGlyph.hpp; sourceTree = "<group>"; };
+		F9CD6A182DE2274400EFA782 /* OutlineGlyph.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutlineGlyph.hpp; sourceTree = "<group>"; };
+		F9CD6A1B2DE2276B00EFA782 /* agg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = agg.cpp; sourceTree = "<group>"; };
+		F9CD6A1C2DE2276B00EFA782 /* agg_array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = agg_array.h; sourceTree = "<group>"; };
+		F9CD6A1D2DE2276B00EFA782 /* agg_basics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = agg_basics.h; sourceTree = "<group>"; };
+		F9CD6A1E2DE2276B00EFA782 /* agg_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = agg_config.h; sourceTree = "<group>"; };
+		F9CD6A1F2DE2276B00EFA782 /* agg_curves.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = agg_curves.h; sourceTree = "<group>"; };
+		F9CD6A202DE2276B00EFA782 /* agg_curves_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = agg_curves_impl.hpp; sourceTree = "<group>"; };
+		F9CD6A212DE2276B00EFA782 /* agg_math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = agg_math.h; sourceTree = "<group>"; };
+		F9CD6A232DE2276B00EFA782 /* BitmapGlyphRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BitmapGlyphRenderer.hpp; sourceTree = "<group>"; };
+		F9CD6A242DE2276B00EFA782 /* BitmapGlyphRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BitmapGlyphRenderer.cpp; sourceTree = "<group>"; };
+		F9CD6A252DE2276B00EFA782 /* OutlineGlyphRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutlineGlyphRenderer.hpp; sourceTree = "<group>"; };
+		F9CD6A262DE2276B00EFA782 /* OutlineGlyphRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutlineGlyphRenderer.cpp; sourceTree = "<group>"; };
 		F9D41B5A2C4BCCDC00290998 /* IsClockwise.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IsClockwise.hpp; sourceTree = "<group>"; };
 		F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IsClockwise.ipp; sourceTree = "<group>"; };
 		F9D41B5E2C4FCE4600290998 /* LineCap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineCap.hpp; sourceTree = "<group>"; };
@@ -5782,6 +5846,7 @@
 				F980C45F2C01B22900A86B68 /* DepthStencilStateBuilder.ipp */,
 				F9070B742B9F175000383E4D /* DiscreteDistribution.ipp */,
 				F9070B752B9F175000383E4D /* DisjointSet.ipp */,
+				F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */,
 				F9070B762B9F175000383E4D /* Duration.ipp */,
 				F9E7942D2C12B87A002615BA /* Easing.ipp */,
 				F98606122BEB760C006A4C0F /* Ellipse.ipp */,
@@ -5796,6 +5861,7 @@
 				F9070B7D2B9F175000383E4D /* FormatData.ipp */,
 				F98605FF2BE615B4006A4C0F /* FormatLiteralObject.ipp */,
 				F9070B7F2B9F175000383E4D /* FormatUtility.ipp */,
+				F9CD6A122DE2270000EFA782 /* GlyphInfo.ipp */,
 				F9E7947B2C248B03002615BA /* Graphics2D.ipp */,
 				F9528B1B2BADCC9900222F45 /* Grid.ipp */,
 				F9E5FC2E2BC15B060081A4F7 /* HalfFloat.ipp */,
@@ -5896,6 +5962,7 @@
 				F986F9C72BCA9D3E006A4C0F /* SVG.ipp */,
 				F9070BA32B9F175000383E4D /* TextEncoding.ipp */,
 				F9070BA42B9F175000383E4D /* TextReader.ipp */,
+				F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */,
 				F90DA04E2D1A91AB0003E1E8 /* Texture.ipp */,
 				F90DA04F2D1A91AB0003E1E8 /* TextureDesc.ipp */,
 				F90DA0502D1A91AB0003E1E8 /* TextureDescBuilder.ipp */,
@@ -5956,6 +6023,7 @@
 				F9070BC02B9F175000383E4D /* BigInt.hpp */,
 				F9070BC12B9F175000383E4D /* BinaryReader.hpp */,
 				F9070BC22B9F175000383E4D /* BinaryWriter.hpp */,
+				F9CD6A172DE2274400EFA782 /* BitmapGlyph.hpp */,
 				F980C4272C00D2B500A86B68 /* BlendFactor.hpp */,
 				F980C4242C00D2B500A86B68 /* BlendOperation.hpp */,
 				F980C4292C00D2B500A86B68 /* BlendState.hpp */,
@@ -6006,6 +6074,7 @@
 				F9070BD82B9F175000383E4D /* DisplayResolution.hpp */,
 				F9070BD92B9F175000383E4D /* Distribution.hpp */,
 				F9070BDA2B9F175000383E4D /* DLL.hpp */,
+				F943AAC72E2A099E001B4D43 /* DrawableText.hpp */,
 				F9070BDB2B9F175000383E4D /* Duration.hpp */,
 				F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */,
 				F9E794282C12B861002615BA /* Easing.hpp */,
@@ -6031,7 +6100,6 @@
 				F9712A302C254DBB0049CC26 /* FmtOptional.hpp */,
 				F91171302DCBBF6F000A22E6 /* Font.hpp */,
 				F91171222DCBBF67000A22E6 /* FontFaceProperties.hpp */,
-				F91171232DCBBF67000A22E6 /* FontFile.hpp */,
 				F91171242DCBBF67000A22E6 /* FontMethod.hpp */,
 				F91171252DCBBF67000A22E6 /* FontStyle.hpp */,
 				F91171262DCBBF67000A22E6 /* FontVariationAxis.hpp */,
@@ -6137,6 +6205,7 @@
 				F9D41CF82C9FD7F200290998 /* OffsetCircular.hpp */,
 				F9070C082B9F175000383E4D /* OpenMode.hpp */,
 				F9070C092B9F175000383E4D /* Optional.hpp */,
+				F9CD6A182DE2274400EFA782 /* OutlineGlyph.hpp */,
 				F9070C0C2B9F175000383E4D /* Palette.hpp */,
 				F9070C0D2B9F175000383E4D /* Parse.hpp */,
 				F9070C0E2B9F175000383E4D /* ParseBool.hpp */,
@@ -6174,6 +6243,7 @@
 				F97E6DB22D7A89CF0066E408 /* RangeFormatter.hpp */,
 				F980C4282C00D2B500A86B68 /* RasterizerState.hpp */,
 				F980C4582C01B20F00A86B68 /* RasterizerStateBuilder.hpp */,
+				F9CD6A102DE226E800EFA782 /* ReadingDirection.hpp */,
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
 				F95121FA2CB62DF400151291 /* RectanglePack.hpp */,
 				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
@@ -6215,6 +6285,7 @@
 				F9070C272B9F175000383E4D /* System.hpp */,
 				F9070C282B9F175000383E4D /* TextEncoding.hpp */,
 				F9070C292B9F175000383E4D /* TextReader.hpp */,
+				F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */,
 				F90DA0442D1A91850003E1E8 /* Texture.hpp */,
 				F980C4492C00E27800A86B68 /* TextureAddressMode.hpp */,
 				F9FD0D152D215DB300A584CE /* TexturedCircle.hpp */,
@@ -6236,6 +6307,7 @@
 				F951221A2CB8227E00151291 /* TriangleIndex.hpp */,
 				F951221D2CB8227E00151291 /* TriangleIndex32.hpp */,
 				F9070C2E2B9F175000383E4D /* TupleFormatter.hpp */,
+				F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */,
 				F9070C2F2B9F175000383E4D /* Types.hpp */,
 				F9070C302B9F175000383E4D /* Unicode.hpp */,
 				F9070C312B9F175000383E4D /* UnicodeConverter.hpp */,
@@ -6833,6 +6905,7 @@
 				F980C4682C01B4B500A86B68 /* DepthStencilState */,
 				F980C46C2C01B4B600A86B68 /* DepthStencilStateBuilder */,
 				F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */,
+				F943AACA2E2A09BB001B4D43 /* DrawableText */,
 				F9070D3B2B9F175E00383E4D /* Duration */,
 				F9B7D9F22D8C722A002ABACE /* DynamicTexture */,
 				F9D41CEF2C9AB1D500290998 /* Ellipse */,
@@ -6853,7 +6926,6 @@
 				F9070D522B9F175E00383E4D /* FloatToString */,
 				F9070D542B9F175E00383E4D /* FmtExtension */,
 				F911710C2DCBBF0B000A22E6 /* Font */,
-				F911710E2DCBBF0B000A22E6 /* FontFile */,
 				F91171102DCBBF0B000A22E6 /* FontMethod */,
 				F91171122DCBBF0B000A22E6 /* FontStyle */,
 				F9070D562B9F175E00383E4D /* Formatter */,
@@ -7290,28 +7362,24 @@
 		F911710C2DCBBF0B000A22E6 /* Font */ = {
 			isa = PBXGroup;
 			children = (
-				F91171002DCBBF0B000A22E6 /* CFont.hpp */,
 				F91171012DCBBF0B000A22E6 /* CFont.cpp */,
-				F91171022DCBBF0B000A22E6 /* FontCommon.hpp */,
-				F91171032DCBBF0B000A22E6 /* FontData.hpp */,
 				F91171042DCBBF0B000A22E6 /* FontData.cpp */,
-				F91171052DCBBF0B000A22E6 /* FontFace.hpp */,
 				F91171062DCBBF0B000A22E6 /* FontFace.cpp */,
 				F91171072DCBBF0B000A22E6 /* FontFactory.cpp */,
-				F91171082DCBBF0B000A22E6 /* FontUtility.hpp */,
 				F91171092DCBBF0B000A22E6 /* FontUtility.cpp */,
-				F911710A2DCBBF0B000A22E6 /* IFont.hpp */,
 				F911710B2DCBBF0B000A22E6 /* SivFont.cpp */,
+				F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */,
+				F91171002DCBBF0B000A22E6 /* CFont.hpp */,
+				F91171022DCBBF0B000A22E6 /* FontCommon.hpp */,
+				F91171032DCBBF0B000A22E6 /* FontData.hpp */,
+				F91171052DCBBF0B000A22E6 /* FontFace.hpp */,
+				F91171082DCBBF0B000A22E6 /* FontUtility.hpp */,
+				F911710A2DCBBF0B000A22E6 /* IFont.hpp */,
+				F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */,
+				F943AAD72E2A0A14001B4D43 /* GlyphCache */,
+				F9CD6A272DE2276B00EFA782 /* GlyphRenderer */,
 			);
 			path = Font;
-			sourceTree = "<group>";
-		};
-		F911710E2DCBBF0B000A22E6 /* FontFile */ = {
-			isa = PBXGroup;
-			children = (
-				F911710D2DCBBF0B000A22E6 /* SivFontFile.cpp */,
-			);
-			path = FontFile;
 			sourceTree = "<group>";
 		};
 		F91171102DCBBF0B000A22E6 /* FontMethod */ = {
@@ -7431,6 +7499,30 @@
 				F934BD992BFA59000003EAD5 /* SivHLSL.cpp */,
 			);
 			path = HLSL;
+			sourceTree = "<group>";
+		};
+		F943AACA2E2A09BB001B4D43 /* DrawableText */ = {
+			isa = PBXGroup;
+			children = (
+				F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */,
+			);
+			path = DrawableText;
+			sourceTree = "<group>";
+		};
+		F943AAD72E2A0A14001B4D43 /* GlyphCache */ = {
+			isa = PBXGroup;
+			children = (
+				F943AACE2E2A0A14001B4D43 /* BitmapGlyphCache.hpp */,
+				F943AACF2E2A0A14001B4D43 /* BitmapGlyphCache.cpp */,
+				F943AAD02E2A0A14001B4D43 /* GlyphCacheCommon.hpp */,
+				F943AAD12E2A0A14001B4D43 /* GlyphCacheCommon.cpp */,
+				F943AAD22E2A0A14001B4D43 /* GlyphCacheManager.hpp */,
+				F943AAD32E2A0A14001B4D43 /* GlyphCacheManager.cpp */,
+				F943AAD42E2A0A14001B4D43 /* IGlyphCache.hpp */,
+				F943AAD52E2A0A14001B4D43 /* MSDFGlyphCache.hpp */,
+				F943AAD62E2A0A14001B4D43 /* MSDFGlyphCache.cpp */,
+			);
+			path = GlyphCache;
 			sourceTree = "<group>";
 		};
 		F944BAAD2CEACF6C00CC4D42 /* ChildProcess */ = {
@@ -7559,6 +7651,8 @@
 		F9528B402BB69C8200222F45 /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				F943AAE12E2A0A3F001B4D43 /* ImagePainting.hpp */,
+				F943AAE22E2A0A3F001B4D43 /* ImagePainting.cpp */,
 				F986F9C92BCBEC36006A4C0F /* SivImage_SIMD.cpp */,
 				F9528B3F2BB69C8200222F45 /* SivImage.cpp */,
 			);
@@ -10421,6 +10515,32 @@
 			path = bc7enc_rdo;
 			sourceTree = "<group>";
 		};
+		F9CD6A222DE2276B00EFA782 /* agg */ = {
+			isa = PBXGroup;
+			children = (
+				F9CD6A1B2DE2276B00EFA782 /* agg.cpp */,
+				F9CD6A1C2DE2276B00EFA782 /* agg_array.h */,
+				F9CD6A1D2DE2276B00EFA782 /* agg_basics.h */,
+				F9CD6A1E2DE2276B00EFA782 /* agg_config.h */,
+				F9CD6A1F2DE2276B00EFA782 /* agg_curves.h */,
+				F9CD6A202DE2276B00EFA782 /* agg_curves_impl.hpp */,
+				F9CD6A212DE2276B00EFA782 /* agg_math.h */,
+			);
+			path = agg;
+			sourceTree = "<group>";
+		};
+		F9CD6A272DE2276B00EFA782 /* GlyphRenderer */ = {
+			isa = PBXGroup;
+			children = (
+				F9CD6A222DE2276B00EFA782 /* agg */,
+				F9CD6A232DE2276B00EFA782 /* BitmapGlyphRenderer.hpp */,
+				F9CD6A242DE2276B00EFA782 /* BitmapGlyphRenderer.cpp */,
+				F9CD6A252DE2276B00EFA782 /* OutlineGlyphRenderer.hpp */,
+				F9CD6A262DE2276B00EFA782 /* OutlineGlyphRenderer.cpp */,
+			);
+			path = GlyphRenderer;
+			sourceTree = "<group>";
+		};
 		F9D41B612C4FCE6300290998 /* LineCap */ = {
 			isa = PBXGroup;
 			children = (
@@ -11189,6 +11309,7 @@
 				F98600242BCFBB53006A4C0F /* SkMatrix.h in Headers */,
 				F98600412BCFBB53006A4C0F /* SkSpan.h in Headers */,
 				F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */,
+				F943AAE82E2A0A73001B4D43 /* TextStyle.ipp in Headers */,
 				F95122082CB62E4300151291 /* best_bin_finder.h in Headers */,
 				F986FA6F2BCFB53B006A4C0F /* t1types.h in Headers */,
 				F98605DB2BE50001006A4C0F /* InputState.hpp in Headers */,
@@ -11330,6 +11451,7 @@
 				F9070DF22B9F175E00383E4D /* TextWriterDetail.hpp in Headers */,
 				F98604872BCFBB54006A4C0F /* SkSLPool.h in Headers */,
 				F9ED45B52CC156EC006BA10F /* inverse.hpp in Headers */,
+				F9CD6A132DE2270000EFA782 /* GlyphInfo.ipp in Headers */,
 				F9070C5C2B9F175000383E4D /* HardwareRNG.ipp in Headers */,
 				F986056C2BDA329E006A4C0F /* Mat3x2.hpp in Headers */,
 				F9070C622B9F175000383E4D /* IntToString.ipp in Headers */,
@@ -11409,7 +11531,6 @@
 				F911712B2DCBBF67000A22E6 /* FontStyle.hpp in Headers */,
 				F911712C2DCBBF67000A22E6 /* FontMethod.hpp in Headers */,
 				F911712D2DCBBF67000A22E6 /* FontFaceProperties.hpp in Headers */,
-				F911712E2DCBBF67000A22E6 /* FontFile.hpp in Headers */,
 				F911712F2DCBBF67000A22E6 /* FontVariationAxis.hpp in Headers */,
 				F9070CF72B9F175100383E4D /* ScopeExit.hpp in Headers */,
 				F9E7942F2C12B87A002615BA /* Easing.ipp in Headers */,
@@ -11542,6 +11663,8 @@
 				F9070CB72B9F175000383E4D /* Error.hpp in Headers */,
 				F986028D2BCFBB54006A4C0F /* SkTraceEvent.h in Headers */,
 				F98603752BCFBB54006A4C0F /* SkOTTable_EBDT.h in Headers */,
+				F9CD6A192DE2274400EFA782 /* BitmapGlyph.hpp in Headers */,
+				F9CD6A1A2DE2274400EFA782 /* OutlineGlyph.hpp in Headers */,
 				F9528C672BC05B0200222F45 /* BMPEncoder.hpp in Headers */,
 				F986000B2BCFBB53006A4C0F /* SkColorType.h in Headers */,
 				F98600492BCFBB53006A4C0F /* SkTextureCompressionType.h in Headers */,
@@ -11626,6 +11749,7 @@
 				F986007E2BCFBB53006A4C0F /* SkNoncopyable.h in Headers */,
 				F9528B6A2BB7087700222F45 /* LicenseManager.hpp in Headers */,
 				F98602302BCFBB54006A4C0F /* SkQuadClipper.h in Headers */,
+				F943AAEE2E2A0B05001B4D43 /* TypefaceUtility.hpp in Headers */,
 				F98601642BCFBB53006A4C0F /* SkBlitBWMaskTemplate.h in Headers */,
 				F9D41CF92C9FD7F200290998 /* OffsetCircular.hpp in Headers */,
 				F9070CC62B9F175000383E4D /* HardwareRNG.hpp in Headers */,
@@ -11737,6 +11861,7 @@
 				F986FA762BCFB53B006A4C0F /* ftbitmap.h in Headers */,
 				F986005A2BCFBB53006A4C0F /* SkColorMatrix.h in Headers */,
 				F98600642BCFBB53006A4C0F /* SkPerlinNoiseShader.h in Headers */,
+				F943AACD2E2A09E5001B4D43 /* DrawableText.ipp in Headers */,
 				F9528C6D2BC05B1A00222F45 /* ImageDecoder.ipp in Headers */,
 				F9FD0BB22D1DA6CC00A584CE /* Mat3x3.ipp in Headers */,
 				F986029B2BCFBB54006A4C0F /* SkWriteBuffer.h in Headers */,
@@ -11771,6 +11896,14 @@
 				F9528BAB2BBE7CF300222F45 /* MemoryReader.hpp in Headers */,
 				F980C4662C01B22900A86B68 /* SamplerStateBuilder.ipp in Headers */,
 				F98602F72BCFBB54006A4C0F /* SkBlitRow_opts.h in Headers */,
+				F9CD6A2B2DE2276B00EFA782 /* agg_curves_impl.hpp in Headers */,
+				F9CD6A2C2DE2276B00EFA782 /* agg_basics.h in Headers */,
+				F9CD6A2D2DE2276B00EFA782 /* agg_math.h in Headers */,
+				F9CD6A2E2DE2276B00EFA782 /* agg_array.h in Headers */,
+				F9CD6A2F2DE2276B00EFA782 /* OutlineGlyphRenderer.hpp in Headers */,
+				F9CD6A302DE2276B00EFA782 /* agg_config.h in Headers */,
+				F9CD6A312DE2276B00EFA782 /* BitmapGlyphRenderer.hpp in Headers */,
+				F9CD6A322DE2276B00EFA782 /* agg_curves.h in Headers */,
 				F98602532BCFBB54006A4C0F /* SkRRectPriv.h in Headers */,
 				F986F9422BCA79B4006A4C0F /* Math.hpp in Headers */,
 				F986006E2BCFBB53006A4C0F /* SkAPI.h in Headers */,
@@ -11784,6 +11917,7 @@
 				F986F9B32BCA9D0A006A4C0F /* paintelement.h in Headers */,
 				F9070F352B9F252E00383E4D /* null_platform.h in Headers */,
 				F986FA4F2BCFB53B006A4C0F /* svpfr.h in Headers */,
+				F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */,
 				F98600342BCFBB53006A4C0F /* SkPoint.h in Headers */,
 				F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */,
 				F90706AB2B9DAEC900383E4D /* gaussian_distribution.h in Headers */,
@@ -11799,6 +11933,7 @@
 				F98604532BCFBB54006A4C0F /* SkSLTraceHook.h in Headers */,
 				F9070CBC2B9F175000383E4D /* FloatFormatter.hpp in Headers */,
 				F98600882BCFBB53006A4C0F /* SkThreadAnnotations.h in Headers */,
+				F943AAE42E2A0A3F001B4D43 /* ImagePainting.hpp in Headers */,
 				F986F89E2BC7FB74006A4C0F /* tinycolormap.hpp in Headers */,
 				F986FA942BCFB53B006A4C0F /* ftsnames.h in Headers */,
 				F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */,
@@ -12250,6 +12385,11 @@
 				F98604142BCFBB54006A4C0F /* SkSLFunctionDefinition.h in Headers */,
 				F986FA5B2BCFB53B006A4C0F /* cfftypes.h in Headers */,
 				F95122172CB62E6B00151291 /* Polygon.hpp in Headers */,
+				F943AAD82E2A0A14001B4D43 /* GlyphCacheCommon.hpp in Headers */,
+				F943AAD92E2A0A14001B4D43 /* BitmapGlyphCache.hpp in Headers */,
+				F943AADA2E2A0A14001B4D43 /* MSDFGlyphCache.hpp in Headers */,
+				F943AADB2E2A0A14001B4D43 /* GlyphCacheManager.hpp in Headers */,
+				F943AADC2E2A0A14001B4D43 /* IGlyphCache.hpp in Headers */,
 				F986FFF42BCFBB53006A4C0F /* SkPixmapUtils.h in Headers */,
 				F98602682BCFBB54006A4C0F /* SkScanPriv.h in Headers */,
 				F96F960D2C359F070033353E /* Intersect.ipp in Headers */,
@@ -12440,6 +12580,7 @@
 				F9070DE92B9F175E00383E4D /* ISystem.hpp in Headers */,
 				F986FA912BCFB53B006A4C0F /* ftpfr.h in Headers */,
 				F986F9AB2BCA9D0A006A4C0F /* layoutcontext.h in Headers */,
+				F943AAEA2E2A0AB1001B4D43 /* Typeface.hpp in Headers */,
 				F98604642BCFBB54006A4C0F /* GLSL.std.450.h in Headers */,
 				F986FFF72BCFBB53006A4C0F /* SkRawDecoder.h in Headers */,
 				F98603F72BCFBB54006A4C0F /* SkSLConstructorMatrixResize.h in Headers */,
@@ -12496,6 +12637,7 @@
 				F986FA832BCFB53B006A4C0F /* ftgzip.h in Headers */,
 				F90706922B9DAEC900383E4D /* policy_checks.h in Headers */,
 				F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */,
+				F943AAE62E2A0A5F001B4D43 /* TextStyle.hpp in Headers */,
 				F90706B32B9DAEC900383E4D /* EnumBitmask.hpp in Headers */,
 				F98603102BCFBB54006A4C0F /* SkOpContour.h in Headers */,
 				F98604342BCFBB54006A4C0F /* SkSLSetting.h in Headers */,
@@ -12524,6 +12666,7 @@
 				F9528B782BB708A700222F45 /* CLicenseManager.hpp in Headers */,
 				F9528C472BBF026F00222F45 /* zstd.h in Headers */,
 				F986025C2BCFBB54006A4C0F /* SkSamplingPriv.h in Headers */,
+				F9CD6A112DE226E800EFA782 /* ReadingDirection.hpp in Headers */,
 				F9070CAE2B9F175000383E4D /* Demangle.hpp in Headers */,
 				F98600962BCFBB53006A4C0F /* Slug.h in Headers */,
 				F98604662BCFBB54006A4C0F /* SkSLAnalysis.h in Headers */,
@@ -12866,6 +13009,7 @@
 				F9070DE62B9F175E00383E4D /* Levenshtein.cpp in Sources */,
 				F986047E2BCFBB54006A4C0F /* SkSLModuleLoader.cpp in Sources */,
 				F98603C82BCFBB54006A4C0F /* SkSLIsTrivialExpression.cpp in Sources */,
+				F943AAED2E2A0B05001B4D43 /* TypefaceUtility.cpp in Sources */,
 				F98602B72BCFBB54006A4C0F /* SkWorkingFormatColorFilter.cpp in Sources */,
 				F9E794852C2493FF002615BA /* ConstantBuffer_Metal.mm in Sources */,
 				F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */,
@@ -12983,6 +13127,7 @@
 				F9070DE22B9F175E00383E4D /* SivParseInt.cpp in Sources */,
 				F98601552BCFBB53006A4C0F /* SkBitmap.cpp in Sources */,
 				F9E5FCEB2BC59EB50081A4F7 /* SivJSONIterator.cpp in Sources */,
+				F943AACB2E2A09BB001B4D43 /* SivDrawableText.cpp in Sources */,
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
 				F98604552BCFBB54006A4C0F /* SkSLEliminateDeadFunctions.cpp in Sources */,
 				F98604132BCFBB54006A4C0F /* SkSLFunctionDefinition.cpp in Sources */,
@@ -13153,6 +13298,10 @@
 				F980C4562C00E2AE00A86B68 /* SivSamplerState.cpp in Sources */,
 				F98601972BCFBB53006A4C0F /* SkData.cpp in Sources */,
 				F986040F2BCFBB54006A4C0F /* SkSLFunctionCall.cpp in Sources */,
+				F943AADD2E2A0A14001B4D43 /* GlyphCacheCommon.cpp in Sources */,
+				F943AADE2E2A0A14001B4D43 /* GlyphCacheManager.cpp in Sources */,
+				F943AADF2E2A0A14001B4D43 /* MSDFGlyphCache.cpp in Sources */,
+				F943AAE02E2A0A14001B4D43 /* BitmapGlyphCache.cpp in Sources */,
 				F9D41CF02C9AB1D500290998 /* SivEllipse.cpp in Sources */,
 				F98602572BCFBB54006A4C0F /* SkRuntimeBlender.cpp in Sources */,
 				F98605192BCFF7DF006A4C0F /* SivEmoji.cpp in Sources */,
@@ -13160,6 +13309,7 @@
 				F986F8FD2BC8441F006A4C0F /* ascii.c in Sources */,
 				F9070E602B9F176B00383E4D /* SivFileSystem_macOS_Linux.cpp in Sources */,
 				F98603FF2BCFBB54006A4C0F /* SkSLDiscardStatement.cpp in Sources */,
+				F943AAE32E2A0A3F001B4D43 /* ImagePainting.cpp in Sources */,
 				F98605212BD0E2A3006A4C0F /* CEngineResource.cpp in Sources */,
 				F9528C2A2BBF026F00222F45 /* zstd_double_fast.c in Sources */,
 				F972030A2BEDF2FF000E21DD /* SceneFactory.cpp in Sources */,
@@ -13228,7 +13378,6 @@
 				F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */,
 				F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */,
 				F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */,
-				F91171172DCBBF0B000A22E6 /* SivFontFile.cpp in Sources */,
 				F91171182DCBBF0B000A22E6 /* FontFactory.cpp in Sources */,
 				F91171192DCBBF0B000A22E6 /* SivFont.cpp in Sources */,
 				F911711A2DCBBF0B000A22E6 /* FontData.cpp in Sources */,
@@ -13415,6 +13564,9 @@
 				F986024D2BCFBB54006A4C0F /* SkRegion_path.cpp in Sources */,
 				F986F92D2BC8441F006A4C0F /* unicode_fold1_key.c in Sources */,
 				F980C4432C00D31000A86B68 /* SivTriangleFillMode.cpp in Sources */,
+				F9CD6A282DE2276B00EFA782 /* OutlineGlyphRenderer.cpp in Sources */,
+				F9CD6A292DE2276B00EFA782 /* agg.cpp in Sources */,
+				F9CD6A2A2DE2276B00EFA782 /* BitmapGlyphRenderer.cpp in Sources */,
 				F98600E52BCFBB53006A4C0F /* SkSpinlock.cpp in Sources */,
 				F98602F12BCFBB54006A4C0F /* SkSurface_Raster.cpp in Sources */,
 				F9070EDA2B9F1C8900383E4D /* context.c in Sources */,

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -32,6 +32,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\BigInt.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BinaryReader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BinaryWriter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\BitmapGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BlendFactor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BlendOperation.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BlendState.hpp" />
@@ -70,9 +71,11 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Choice.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Circular.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConstantBuffer.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\DrawableText.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Easing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatQuad.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatRect.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\GlyphInfo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Graphics2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageProcessing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
@@ -96,6 +99,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewRandom.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDescBuilder.ipp" />
@@ -103,6 +107,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex32.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Zip.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DrawableText.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatQuad.hpp" />
@@ -111,7 +116,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Font.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontVariationAxis.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontFaceProperties.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\FontFile.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontMethod.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\BoundingRect.hpp" />
@@ -129,6 +133,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphInfo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ReadingDirection.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ResolvedGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Graphics2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IConstantBuffer.hpp" />
@@ -505,6 +511,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\System.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEncoding.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextReader.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Texture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureAddressMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TexturedCircle.hpp" />
@@ -527,6 +534,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TriangleIndex.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TriangleIndex32.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TupleFormatter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Typeface.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Types.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Unicode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UnicodeConverter.hpp" />
@@ -660,7 +668,21 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\FontData.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\FontFace.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\FontUtility.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\BitmapGlyphCache.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheCommon.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheManager.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\IGlyphCache.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphCache\MSDFGlyphCache.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg_array.h" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg_basics.h" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg_config.h" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg_curves.h" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg_curves_impl.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg_math.h" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\BitmapGlyphRenderer.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\OutlineGlyphRenderer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\IFont.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\IImageDecoder.hpp" />
@@ -668,6 +690,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageEncoder\IImageEncoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageFormat\BMP\BMPHeader.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageFormat\TGA\TGAHeader.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Image\ImagePainting.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Keyboard\FallbackNameList.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Keyboard\IKeyboard.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\CLicenseManager.hpp" />
@@ -1194,6 +1217,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilStateBuilder\SivDepthStencilStateBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilState\SivDepthStencilState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DirectoryWatcher\SivDirectoryWatcher.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\DrawableText\SivDrawableText.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DynamicTexture\SivDynamicTexture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Ellipse\SivEllipse.cpp" />
@@ -1214,7 +1238,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\SivFloatFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatToString\SivFloatToString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FmtExtension\SivFmtExtension.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\FontFile\SivFontFile.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FontMethod\SivFontMethod.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FontStyle\SivFontStyle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\CFont.cpp" />
@@ -1222,7 +1245,15 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontFace.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontUtility.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\BitmapGlyphCache.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheCommon.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\GlyphCacheManager.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphCache\MSDFGlyphCache.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\agg\agg.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\BitmapGlyphRenderer.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\OutlineGlyphRenderer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\SivFont.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FormatUtility\SivFormatUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_BoundingRect.cpp" />
@@ -1259,6 +1290,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\TGA\TGAEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImagePixelFormat\SivImagePixelFormat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageProcessing\SivImageProcessing.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Image\ImagePainting.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Image\SivImage_SIMD.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\INIItem\SivINIItem.cpp" />

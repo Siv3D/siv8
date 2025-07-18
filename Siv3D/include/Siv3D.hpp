@@ -1421,23 +1421,6 @@
 // 動的テクスチャ | Dynamic texture
 # include <Siv3D/DynamicTexture.hpp>
 
-////////////////////////////////////////////////////////////////
-//
-//	フォント | Font
-//
-////////////////////////////////////////////////////////////////
-
-// グリフインデックス | Glyph index
-# include <Siv3D/GlyphIndex.hpp>
-
-
-// 絵文字 | Emoji
-# include <Siv3D/Emoji.hpp>
-
-
-
-
-
 
 
 ////////////////////////////////////////////////////////////////
@@ -1619,17 +1602,25 @@
 //
 //////////////////////////////////////////////////
 
+// グリフインデックス | Glyph index
+# include <Siv3D/GlyphIndex.hpp>
+
+// 絵文字 | Emoji
+# include <Siv3D/Emoji.hpp>
+
 # include <Siv3D/FontStyle.hpp>
 # include <Siv3D/FontMethod.hpp>
-# include <Siv3D/FontFile.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
 # include <Siv3D/GlyphInfo.hpp>
 # include <Siv3D/ResolvedGlyph.hpp>
 # include <Siv3D/Font.hpp>
 
+# include <Siv3D/ReadingDirection.hpp>
+# include <Siv3D/OutlineGlyph.hpp>
+# include <Siv3D/BitmapGlyph.hpp>
 
-
-
+# include <Siv3D/DrawableText.hpp>
+# include <Siv3D/TextStyle.hpp>
 
 
 # include <Siv3D/Pipe.hpp>

@@ -9,17 +9,12 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/FontFile.hpp>
-# include <Siv3D/Font/IFont.hpp>
-# include <Siv3D/Engine/Siv3DEngine.hpp>
+# pragma once
+# include <Siv3D/OutlineGlyph.hpp>
+# include "../FontUtility.hpp"
 
 namespace s3d
 {
-	namespace FontFile
-	{
-		Array<FontFaceProperties> GetFontFaces(const FilePathView path)
-		{
-			return SIV3D_ENGINE(Font)->getFontFaces(path);
-		}
-	}
+	[[nodiscard]]
+	OutlineGlyph RenderOutlineGlyph(::FT_Face face, GlyphIndex glyphIndex, CloseRing closeRing, const FontFaceInfo& info, ReadingDirection readingDirection);
 }

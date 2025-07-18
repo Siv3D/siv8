@@ -36,6 +36,8 @@ namespace s3d
 
 		bool hasColor = false;
 
+		bool isCOLRv1 = false;
+
 		bool isBold = false;
 
 		bool isItalic = false;
