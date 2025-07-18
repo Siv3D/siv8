@@ -327,6 +327,52 @@ namespace s3d
 		//RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
 		//bool draw(const TextStyle& textStyle, double size, const RectF& area, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawBase
+		//
+		////////////////////////////////////////////////////////////////
+
+		RectF drawBase(double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(Arg::left_<Vec2> left, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(Arg::right_<Vec2> right, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(double size, double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(double size, const Vec2& pos, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(double size, Arg::left_<Vec2> left, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(double size, Arg::right_<Vec2> right, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, Arg::left_<Vec2> left, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, Arg::right_<Vec2> right, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, const Vec2& pos, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, Arg::left_<Vec2> left, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, Arg::right_<Vec2> right, const ColorF& color = Palette::White) const;
 	};
 }
 
