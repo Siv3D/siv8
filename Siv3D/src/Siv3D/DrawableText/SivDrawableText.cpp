@@ -432,10 +432,10 @@ namespace s3d
 		return draw(TextStyle::Default(), font.baseSize(), leftCenter, color);
 	}
 
-	//RectF DrawableText::draw(const Arg::center_<Vec2> center, const ColorF& color) const
-	//{
-	//	return draw(TextStyle::Default(), font.baseSize(), center, color);
-	//}
+	RectF DrawableText::draw(const Arg::center_<Vec2> center, const ColorF& color) const
+	{
+		return draw(TextStyle::Default(), font.baseSize(), center, color);
+	}
 
 	//bool DrawableText::draw(const RectF& area, const ColorF& color) const
 	//{
@@ -492,10 +492,10 @@ namespace s3d
 		return draw(TextStyle::Default(), size, leftCenter, color);
 	}
 
-	//RectF DrawableText::draw(const double size, const Arg::center_<Vec2> center, const ColorF& color) const
-	//{
-	//	return draw(TextStyle::Default(), size, center, color);
-	//}
+	RectF DrawableText::draw(const double size, const Arg::center_<Vec2> center, const ColorF& color) const
+	{
+		return draw(TextStyle::Default(), size, center, color);
+	}
 
 	//bool DrawableText::draw(const double size, const RectF& area, const ColorF& color) const
 	//{
@@ -552,10 +552,10 @@ namespace s3d
 		return draw(textStyle, font.baseSize(), leftCenter, color);
 	}
 
-	//RectF DrawableText::draw(const TextStyle& textStyle, const Arg::center_<Vec2> center, const ColorF& color) const
-	//{
-	//	return draw(textStyle, font.baseSize(), center, color);
-	//}
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::center_<Vec2> center, const ColorF& color) const
+	{
+		return draw(textStyle, font.baseSize(), center, color);
+	}
 
 	//bool DrawableText::draw(const TextStyle& textStyle, const RectF& area, const ColorF& color) const
 	//{
@@ -616,10 +616,10 @@ namespace s3d
 		return draw(textStyle, size, leftCenter->movedBy(0, (-0.5 * region(textStyle, size).h)), color);
 	}
 
-	//RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center, const ColorF& color) const
-	//{
-	//	return drawAt(textStyle, size, *center, color);
-	//}
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center, const ColorF& color) const
+	{
+		return drawAt(textStyle, size, *center, color);
+	}
 
 	//bool DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const ColorF& color) const
 	//{
@@ -730,5 +730,101 @@ namespace s3d
 	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Arg::right_<Vec2> right, const ColorF& color) const
 	{
 		return drawBase(textStyle, size, right->movedBy(-region(textStyle, size).w, 0), color);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF DrawableText::drawAt(const double x, const double y, const ColorF& color) const
+	{
+		return drawAt(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, color);
+	}
+
+	RectF DrawableText::drawAt(const Vec2& pos, const ColorF& color) const
+	{
+		return drawAt(TextStyle::Default(), font.baseSize(), pos, color);
+	}
+
+	RectF DrawableText::drawAt(const double size, const double x, const double y, const ColorF& color) const
+	{
+		return drawAt(TextStyle::Default(), size, Vec2{ x, y }, color);
+	}
+
+	RectF DrawableText::drawAt(const double size, const Vec2& pos, const ColorF& color) const
+	{
+		return drawAt(TextStyle::Default(), size, pos, color);
+	}
+
+	RectF DrawableText::drawAt(const TextStyle& textStyle, const double x, const double y, const ColorF& color) const
+	{
+		return drawAt(textStyle, font.baseSize(), Vec2{ x, y }, color);
+	}
+
+	RectF DrawableText::drawAt(const TextStyle& textStyle, const Vec2& pos, const ColorF& color) const
+	{
+		return drawAt(textStyle, font.baseSize(), pos, color);
+	}
+
+	RectF DrawableText::drawAt(const TextStyle& textStyle, const double size, const double x, const double y, const ColorF& color) const
+	{
+		return drawAt(textStyle, size, Vec2{ x, y }, color);
+	}
+
+	RectF DrawableText::drawAt(const TextStyle& textStyle, const double size, const Vec2& pos, const ColorF& color) const
+	{
+		const RectF textRegion = region(textStyle, size);
+		
+		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, (pos - textRegion.center()), size, textStyle, color, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawBaseAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF DrawableText::drawBaseAt(const double x, const double y, const ColorF& color) const
+	{
+		return drawBaseAt(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, color);
+	}
+
+	RectF DrawableText::drawBaseAt(const Vec2& pos, const ColorF& color) const
+	{
+		return drawBaseAt(TextStyle::Default(), font.baseSize(), pos, color);
+	}
+
+	RectF DrawableText::drawBaseAt(const double size, const double x, const double y, const ColorF& color) const
+	{
+		return drawBaseAt(TextStyle::Default(), size, Vec2{ x, y }, color);
+	}
+
+	RectF DrawableText::drawBaseAt(const double size, const Vec2& pos, const ColorF& color) const
+	{
+		return drawBaseAt(TextStyle::Default(), size, pos, color);
+	}
+
+	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double x, const double y, const ColorF& color) const
+	{
+		return drawBaseAt(textStyle, font.baseSize(), Vec2{ x, y }, color);
+	}
+
+	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const Vec2& pos, const ColorF& color) const
+	{
+		return drawBaseAt(textStyle, font.baseSize(), pos, color);
+	}
+
+	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double size, const double x, const double y, const ColorF& color) const
+	{
+		return drawBaseAt(textStyle, size, Vec2{ x, y }, color);
+	}
+
+	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double size, const Vec2& pos, const ColorF& color) const
+	{
+		const RectF textRegion = regionBase(textStyle, size);
+		
+		return SIV3D_ENGINE(Font)->drawBase(font.id(), text, resolvedGlyphs, Vec2{ (pos.x - (textRegion.w * 0.5)), pos.y }, size, textStyle, color, readingDirection);
 	}
 }

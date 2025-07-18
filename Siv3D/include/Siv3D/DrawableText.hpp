@@ -422,11 +422,43 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		RectF drawAt(double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawAt(const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
+		RectF drawAt(double size, double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawAt(double size, const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
+		RectF drawAt(const TextStyle& textStyle, double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawAt(const TextStyle& textStyle, const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
+		RectF drawAt(const TextStyle& textStyle, double size, double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawAt(const TextStyle& textStyle, double size, const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawBaseAt
 		//
 		////////////////////////////////////////////////////////////////
+
+		RectF drawBaseAt(double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawBaseAt(const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
+		RectF drawBaseAt(double size, double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawBaseAt(double size, const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
+		RectF drawBaseAt(const TextStyle& textStyle, double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawBaseAt(const TextStyle& textStyle, const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
+		RectF drawBaseAt(const TextStyle& textStyle, double size, double x, double y, const ColorF& color = Palette::White) const;
+
+		RectF drawBaseAt(const TextStyle& textStyle, double size, const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//
