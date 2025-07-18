@@ -27,12 +27,15 @@ Name | Version
 [libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
 [lunasvg](https://github.com/sammycage/lunasvg) | v2.4.1
+[Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
+[M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) | 
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [nanoflann](https://github.com/jlblancoc/nanoflann) | v1.7.1
+[Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.048
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [OpenCV](https://github.com/opencv/opencv) | 4.10.0
@@ -52,4 +55,4 @@ Name | Version
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
 [zlib](https://www.zlib.net/) | 1.3.1
-[Zstandard](https://github.com/facebook/zstd) | v1.5.6
+[Zstandard](https://github.com/facebook/zstd) | v1.5.7

@@ -4,6 +4,11 @@
 
 void Main()
 {
+	Compression::CompressFileToFile(U"materialdesignicons-webfont.ttf", U"materialdesignicons-webfont.ttf.zstdcmp", Compression::MaxLevel);
+	Compression::CompressFileToFile(U"MPLUS2.ttf", U"MPLUS2.ttf.zstdcmp", Compression::MaxLevel);
+	Compression::CompressFileToFile(U"Noto-COLRv1.ttf", U"Noto-COLRv1.ttf.zstdcmp", Compression::MaxLevel);
+
+
 	//RunTest();
 	Scene::SetBackground(ColorF{ 0.6, 0.8, 0.7 });
 	//Window::SetStyle(WindowStyle::Sizable);
