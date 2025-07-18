@@ -8,9 +8,9 @@ Name | Version
 [bc7enc](https://github.com/richgel999/bc7enc_rdo) | 
 [CoreRT](https://github.com/dotnet/corert) | 
 [cpu_features](https://github.com/google/cpu_features) | v0.10.1
-[DirectXMath](https://github.com/microsoft/DirectXMath) | October 2024
-[doctest](https://github.com/doctest/doctest) | v2.4.11
-[double-conversion](https://github.com/google/double-conversion) | v3.3.0
+[DirectXMath](https://github.com/microsoft/DirectXMath) | April 2025
+[doctest](https://github.com/doctest/doctest) | v2.4.12
+[double-conversion](https://github.com/google/double-conversion) | v3.3.1
 [Easing Equations](http://robertpenner.com/easing/) | 
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 

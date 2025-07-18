@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 // DirectXMath.h -- SIMD C++ Math library
 //
 // Copyright (c) Microsoft Corporation.
@@ -32,7 +32,9 @@
 #endif
 
 #ifndef XM_DEPRECATED
-#ifdef __GNUC__
+#if (__cplusplus >= 201402L)
+#define XM_DEPRECATED [[deprecated]]
+#elif defined(__GNUC__)
 #define XM_DEPRECATED __attribute__ ((deprecated))
 #else
 #define XM_DEPRECATED __declspec(deprecated("This is deprecated and will be removed in a future version."))
@@ -168,7 +170,7 @@
 #pragma warning(pop)
 #endif
 
-#if __cplusplus >= 201703L
+#if (__cplusplus >= 201703L)
 #define XM_ALIGNED_DATA(x) alignas(x)
 #define XM_ALIGNED_STRUCT(x) struct alignas(x)
 #elif defined(__GNUC__)
