@@ -35,47 +35,6 @@
 		F907030C2B9DAEB900383E4D /* Test_Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CC2B9DAEB900383E4D /* Test_Utility.cpp */; };
 		F907030D2B9DAEB900383E4D /* Test_Version.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CD2B9DAEB900383E4D /* Test_Version.cpp */; };
 		F907030E2B9DAEB900383E4D /* Test_YesNo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CE2B9DAEB900383E4D /* Test_YesNo.cpp */; };
-		F90706892B9DAEC900383E4D /* fast_type_id.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703E22B9DAEC900383E4D /* fast_type_id.h */; };
-		F907068A2B9DAEC900383E4D /* identity.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703E32B9DAEC900383E4D /* identity.h */; };
-		F907068B2B9DAEC900383E4D /* inline_variable.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703E42B9DAEC900383E4D /* inline_variable.h */; };
-		F907068C2B9DAEC900383E4D /* invoke.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703E52B9DAEC900383E4D /* invoke.h */; };
-		F907068D2B9DAEC900383E4D /* attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703E72B9DAEC900383E4D /* attributes.h */; };
-		F907068E2B9DAEC900383E4D /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703E82B9DAEC900383E4D /* config.h */; };
-		F907068F2B9DAEC900383E4D /* macros.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703E92B9DAEC900383E4D /* macros.h */; };
-		F90706902B9DAEC900383E4D /* optimization.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703EA2B9DAEC900383E4D /* optimization.h */; };
-		F90706912B9DAEC900383E4D /* options.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703EB2B9DAEC900383E4D /* options.h */; };
-		F90706922B9DAEC900383E4D /* policy_checks.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703EC2B9DAEC900383E4D /* policy_checks.h */; };
-		F90706932B9DAEC900383E4D /* port.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703ED2B9DAEC900383E4D /* port.h */; };
-		F90706942B9DAEC900383E4D /* any_invocable.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703EF2B9DAEC900383E4D /* any_invocable.h */; };
-		F90706952B9DAEC900383E4D /* function_ref.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703F02B9DAEC900383E4D /* function_ref.h */; };
-		F90706962B9DAEC900383E4D /* any_invocable.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703F22B9DAEC900383E4D /* any_invocable.h */; };
-		F90706972B9DAEC900383E4D /* function_ref.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703F32B9DAEC900383E4D /* function_ref.h */; };
-		F90706982B9DAEC900383E4D /* type_traits.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703F52B9DAEC900383E4D /* type_traits.h */; };
-		F90706992B9DAEC900383E4D /* bits.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703F72B9DAEC900383E4D /* bits.h */; };
-		F907069A2B9DAEC900383E4D /* bits.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703F92B9DAEC900383E4D /* bits.h */; };
-		F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */ = {isa = PBXBuildFile; fileRef = F90703FA2B9DAEC900383E4D /* int128_have_intrinsic.inc */; };
-		F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */ = {isa = PBXBuildFile; fileRef = F90703FB2B9DAEC900383E4D /* int128_no_intrinsic.inc */; };
-		F907069D2B9DAEC900383E4D /* int128.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703FC2B9DAEC900383E4D /* int128.h */; };
-		F907069E2B9DAEC900383E4D /* distribution_caller.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703FE2B9DAEC900383E4D /* distribution_caller.h */; };
-		F907069F2B9DAEC900383E4D /* fast_uniform_bits.h in Headers */ = {isa = PBXBuildFile; fileRef = F90703FF2B9DAEC900383E4D /* fast_uniform_bits.h */; };
-		F90706A02B9DAEC900383E4D /* fastmath.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704002B9DAEC900383E4D /* fastmath.h */; };
-		F90706A12B9DAEC900383E4D /* generate_real.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704012B9DAEC900383E4D /* generate_real.h */; };
-		F90706A22B9DAEC900383E4D /* iostream_state_saver.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704022B9DAEC900383E4D /* iostream_state_saver.h */; };
-		F90706A32B9DAEC900383E4D /* traits.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704032B9DAEC900383E4D /* traits.h */; };
-		F90706A42B9DAEC900383E4D /* uniform_helper.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704042B9DAEC900383E4D /* uniform_helper.h */; };
-		F90706A52B9DAEC900383E4D /* wide_multiply.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704052B9DAEC900383E4D /* wide_multiply.h */; };
-		F90706A62B9DAEC900383E4D /* bernoulli_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704072B9DAEC900383E4D /* bernoulli_distribution.h */; };
-		F90706A72B9DAEC900383E4D /* beta_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704082B9DAEC900383E4D /* beta_distribution.h */; };
-		F90706A82B9DAEC900383E4D /* discrete_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704092B9DAEC900383E4D /* discrete_distribution.h */; };
-		F90706A92B9DAEC900383E4D /* distributions.h in Headers */ = {isa = PBXBuildFile; fileRef = F907040A2B9DAEC900383E4D /* distributions.h */; };
-		F90706AA2B9DAEC900383E4D /* exponential_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F907040B2B9DAEC900383E4D /* exponential_distribution.h */; };
-		F90706AB2B9DAEC900383E4D /* gaussian_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F907040C2B9DAEC900383E4D /* gaussian_distribution.h */; };
-		F90706AC2B9DAEC900383E4D /* log_uniform_int_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F907040D2B9DAEC900383E4D /* log_uniform_int_distribution.h */; };
-		F90706AD2B9DAEC900383E4D /* poisson_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F907040E2B9DAEC900383E4D /* poisson_distribution.h */; };
-		F90706AE2B9DAEC900383E4D /* uniform_int_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F907040F2B9DAEC900383E4D /* uniform_int_distribution.h */; };
-		F90706AF2B9DAEC900383E4D /* uniform_real_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704102B9DAEC900383E4D /* uniform_real_distribution.h */; };
-		F90706B02B9DAEC900383E4D /* zipf_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704112B9DAEC900383E4D /* zipf_distribution.h */; };
-		F90706B12B9DAEC900383E4D /* utility.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704132B9DAEC900383E4D /* utility.h */; };
 		F90706B22B9DAEC900383E4D /* doctest.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704162B9DAEC900383E4D /* doctest.h */; };
 		F90706B32B9DAEC900383E4D /* EnumBitmask.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90704182B9DAEC900383E4D /* EnumBitmask.hpp */; };
 		F90706B42B9DAEC900383E4D /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = F907041B2B9DAEC900383E4D /* core.h */; };
@@ -564,6 +523,53 @@
 		F943AAEA2E2A0AB1001B4D43 /* Typeface.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */; };
 		F943AAED2E2A0B05001B4D43 /* TypefaceUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */; };
 		F943AAEE2E2A0B05001B4D43 /* TypefaceUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */; };
+		F943AB282E2A2E4F001B4D43 /* int128_have_intrinsic.inc in Sources */ = {isa = PBXBuildFile; fileRef = F943AB0B2E2A2E4F001B4D43 /* int128_have_intrinsic.inc */; };
+		F943AB292E2A2E4F001B4D43 /* int128_no_intrinsic.inc in Sources */ = {isa = PBXBuildFile; fileRef = F943AB0C2E2A2E4F001B4D43 /* int128_no_intrinsic.inc */; };
+		F943AB2A2E2A2E4F001B4D43 /* zipf_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB212E2A2E4F001B4D43 /* zipf_distribution.h */; };
+		F943AB2B2E2A2E4F001B4D43 /* unaligned_access.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF22E2A2E4F001B4D43 /* unaligned_access.h */; };
+		F943AB2C2E2A2E4F001B4D43 /* fast_type_id.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF72E2A2E4F001B4D43 /* fast_type_id.h */; };
+		F943AB2D2E2A2E4F001B4D43 /* bits.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB072E2A2E4F001B4D43 /* bits.h */; };
+		F943AB2E2E2A2E4F001B4D43 /* log_uniform_int_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB1D2E2A2E4F001B4D43 /* log_uniform_int_distribution.h */; };
+		F943AB2F2E2A2E4F001B4D43 /* distribution_caller.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB0E2E2A2E4F001B4D43 /* distribution_caller.h */; };
+		F943AB302E2A2E4F001B4D43 /* policy_checks.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAFC2E2A2E4F001B4D43 /* policy_checks.h */; };
+		F943AB312E2A2E4F001B4D43 /* nullability.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF92E2A2E4F001B4D43 /* nullability.h */; };
+		F943AB322E2A2E4F001B4D43 /* exponential_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB1B2E2A2E4F001B4D43 /* exponential_distribution.h */; };
+		F943AB332E2A2E4F001B4D43 /* optimization.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAFA2E2A2E4F001B4D43 /* optimization.h */; };
+		F943AB342E2A2E4F001B4D43 /* endian.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAEF2E2A2E4F001B4D43 /* endian.h */; };
+		F943AB352E2A2E4F001B4D43 /* int128.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB0A2E2A2E4F001B4D43 /* int128.h */; };
+		F943AB362E2A2E4F001B4D43 /* iostream_state_saver.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB122E2A2E4F001B4D43 /* iostream_state_saver.h */; };
+		F943AB372E2A2E4F001B4D43 /* any_invocable.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAFF2E2A2E4F001B4D43 /* any_invocable.h */; };
+		F943AB382E2A2E4F001B4D43 /* macros.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF82E2A2E4F001B4D43 /* macros.h */; };
+		F943AB392E2A2E4F001B4D43 /* fast_uniform_bits.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB0F2E2A2E4F001B4D43 /* fast_uniform_bits.h */; };
+		F943AB3A2E2A2E4F001B4D43 /* uniform_real_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB202E2A2E4F001B4D43 /* uniform_real_distribution.h */; };
+		F943AB3B2E2A2E4F001B4D43 /* beta_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB182E2A2E4F001B4D43 /* beta_distribution.h */; };
+		F943AB3C2E2A2E4F001B4D43 /* port.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAFD2E2A2E4F001B4D43 /* port.h */; };
+		F943AB3D2E2A2E4F001B4D43 /* discrete_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB192E2A2E4F001B4D43 /* discrete_distribution.h */; };
+		F943AB3E2E2A2E4F001B4D43 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF62E2A2E4F001B4D43 /* config.h */; };
+		F943AB3F2E2A2E4F001B4D43 /* distributions.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB1A2E2A2E4F001B4D43 /* distributions.h */; };
+		F943AB402E2A2E4F001B4D43 /* bits.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB092E2A2E4F001B4D43 /* bits.h */; };
+		F943AB412E2A2E4F001B4D43 /* function_ref.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB032E2A2E4F001B4D43 /* function_ref.h */; };
+		F943AB422E2A2E4F001B4D43 /* options.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAFB2E2A2E4F001B4D43 /* options.h */; };
+		F943AB432E2A2E4F001B4D43 /* bernoulli_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB172E2A2E4F001B4D43 /* bernoulli_distribution.h */; };
+		F943AB442E2A2E4F001B4D43 /* function_ref.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB002E2A2E4F001B4D43 /* function_ref.h */; };
+		F943AB452E2A2E4F001B4D43 /* uniform_helper.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB142E2A2E4F001B4D43 /* uniform_helper.h */; };
+		F943AB462E2A2E4F001B4D43 /* utility.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB252E2A2E4F001B4D43 /* utility.h */; };
+		F943AB472E2A2E4F001B4D43 /* type_traits.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB052E2A2E4F001B4D43 /* type_traits.h */; };
+		F943AB482E2A2E4F001B4D43 /* casts.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF52E2A2E4F001B4D43 /* casts.h */; };
+		F943AB492E2A2E4F001B4D43 /* identity.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF02E2A2E4F001B4D43 /* identity.h */; };
+		F943AB4A2E2A2E4F001B4D43 /* gaussian_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB1C2E2A2E4F001B4D43 /* gaussian_distribution.h */; };
+		F943AB4B2E2A2E4F001B4D43 /* attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF42E2A2E4F001B4D43 /* attributes.h */; };
+		F943AB4C2E2A2E4F001B4D43 /* any_invocable.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB022E2A2E4F001B4D43 /* any_invocable.h */; };
+		F943AB4D2E2A2E4F001B4D43 /* uniform_int_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB1F2E2A2E4F001B4D43 /* uniform_int_distribution.h */; };
+		F943AB4E2E2A2E4F001B4D43 /* wide_multiply.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB152E2A2E4F001B4D43 /* wide_multiply.h */; };
+		F943AB4F2E2A2E4F001B4D43 /* nullability_deprecated.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF12E2A2E4F001B4D43 /* nullability_deprecated.h */; };
+		F943AB502E2A2E4F001B4D43 /* compare.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB232E2A2E4F001B4D43 /* compare.h */; };
+		F943AB512E2A2E4F001B4D43 /* poisson_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB1E2E2A2E4F001B4D43 /* poisson_distribution.h */; };
+		F943AB522E2A2E4F001B4D43 /* generate_real.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB112E2A2E4F001B4D43 /* generate_real.h */; };
+		F943AB532E2A2E4F001B4D43 /* traits.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB132E2A2E4F001B4D43 /* traits.h */; };
+		F943AB542E2A2E4F001B4D43 /* fastmath.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB102E2A2E4F001B4D43 /* fastmath.h */; };
+		F943AB572E2A2E8F001B4D43 /* zstd_preSplit.c in Sources */ = {isa = PBXBuildFile; fileRef = F943AB562E2A2E8F001B4D43 /* zstd_preSplit.c */; };
+		F943AB582E2A2E8F001B4D43 /* zstd_preSplit.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB552E2A2E8F001B4D43 /* zstd_preSplit.h */; };
 		F944BAA52CEACE0700CC4D42 /* ConvexHull.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA42CEACE0700CC4D42 /* ConvexHull.hpp */; };
 		F944BAA72CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F944BAA62CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp */; };
 		F944BAAA2CEACF4300CC4D42 /* Pipe.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA92CEACF4300CC4D42 /* Pipe.hpp */; };
@@ -2373,7 +2379,6 @@
 		F9D41CE32C9972D800290998 /* SivGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41CE12C9972D800290998 /* SivGrid.cpp */; };
 		F9D41CE52C9972EC00290998 /* Choice.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41CE42C9972EC00290998 /* Choice.ipp */; };
 		F9D41CE72C99730500290998 /* Choice.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41CE62C99730500290998 /* Choice.hpp */; };
-		F9D41CEA2C997E8D00290998 /* compare.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D41CE82C997E8D00290998 /* compare.h */; };
 		F9D41CED2C9AB1BC00290998 /* rapidhash.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D41CEB2C9AB1BB00290998 /* rapidhash.h */; };
 		F9D41CF02C9AB1D500290998 /* SivEllipse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41CEE2C9AB1D500290998 /* SivEllipse.cpp */; };
 		F9D41CF32C9FCDC300290998 /* SivRoundRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41CF12C9FCDC300290998 /* SivRoundRect.cpp */; };
@@ -2627,47 +2632,6 @@
 		F90702CC2B9DAEB900383E4D /* Test_Utility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Utility.cpp; sourceTree = "<group>"; };
 		F90702CD2B9DAEB900383E4D /* Test_Version.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Version.cpp; sourceTree = "<group>"; };
 		F90702CE2B9DAEB900383E4D /* Test_YesNo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_YesNo.cpp; sourceTree = "<group>"; };
-		F90703E22B9DAEC900383E4D /* fast_type_id.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fast_type_id.h; sourceTree = "<group>"; };
-		F90703E32B9DAEC900383E4D /* identity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = identity.h; sourceTree = "<group>"; };
-		F90703E42B9DAEC900383E4D /* inline_variable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inline_variable.h; sourceTree = "<group>"; };
-		F90703E52B9DAEC900383E4D /* invoke.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = invoke.h; sourceTree = "<group>"; };
-		F90703E72B9DAEC900383E4D /* attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
-		F90703E82B9DAEC900383E4D /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
-		F90703E92B9DAEC900383E4D /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macros.h; sourceTree = "<group>"; };
-		F90703EA2B9DAEC900383E4D /* optimization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = optimization.h; sourceTree = "<group>"; };
-		F90703EB2B9DAEC900383E4D /* options.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = options.h; sourceTree = "<group>"; };
-		F90703EC2B9DAEC900383E4D /* policy_checks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = policy_checks.h; sourceTree = "<group>"; };
-		F90703ED2B9DAEC900383E4D /* port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
-		F90703EF2B9DAEC900383E4D /* any_invocable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = any_invocable.h; sourceTree = "<group>"; };
-		F90703F02B9DAEC900383E4D /* function_ref.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = function_ref.h; sourceTree = "<group>"; };
-		F90703F22B9DAEC900383E4D /* any_invocable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = any_invocable.h; sourceTree = "<group>"; };
-		F90703F32B9DAEC900383E4D /* function_ref.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = function_ref.h; sourceTree = "<group>"; };
-		F90703F52B9DAEC900383E4D /* type_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = type_traits.h; sourceTree = "<group>"; };
-		F90703F72B9DAEC900383E4D /* bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bits.h; sourceTree = "<group>"; };
-		F90703F92B9DAEC900383E4D /* bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bits.h; sourceTree = "<group>"; };
-		F90703FA2B9DAEC900383E4D /* int128_have_intrinsic.inc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = int128_have_intrinsic.inc; sourceTree = "<group>"; };
-		F90703FB2B9DAEC900383E4D /* int128_no_intrinsic.inc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = int128_no_intrinsic.inc; sourceTree = "<group>"; };
-		F90703FC2B9DAEC900383E4D /* int128.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = int128.h; sourceTree = "<group>"; };
-		F90703FE2B9DAEC900383E4D /* distribution_caller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = distribution_caller.h; sourceTree = "<group>"; };
-		F90703FF2B9DAEC900383E4D /* fast_uniform_bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fast_uniform_bits.h; sourceTree = "<group>"; };
-		F90704002B9DAEC900383E4D /* fastmath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fastmath.h; sourceTree = "<group>"; };
-		F90704012B9DAEC900383E4D /* generate_real.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = generate_real.h; sourceTree = "<group>"; };
-		F90704022B9DAEC900383E4D /* iostream_state_saver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iostream_state_saver.h; sourceTree = "<group>"; };
-		F90704032B9DAEC900383E4D /* traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = traits.h; sourceTree = "<group>"; };
-		F90704042B9DAEC900383E4D /* uniform_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniform_helper.h; sourceTree = "<group>"; };
-		F90704052B9DAEC900383E4D /* wide_multiply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wide_multiply.h; sourceTree = "<group>"; };
-		F90704072B9DAEC900383E4D /* bernoulli_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bernoulli_distribution.h; sourceTree = "<group>"; };
-		F90704082B9DAEC900383E4D /* beta_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = beta_distribution.h; sourceTree = "<group>"; };
-		F90704092B9DAEC900383E4D /* discrete_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = discrete_distribution.h; sourceTree = "<group>"; };
-		F907040A2B9DAEC900383E4D /* distributions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = distributions.h; sourceTree = "<group>"; };
-		F907040B2B9DAEC900383E4D /* exponential_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exponential_distribution.h; sourceTree = "<group>"; };
-		F907040C2B9DAEC900383E4D /* gaussian_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gaussian_distribution.h; sourceTree = "<group>"; };
-		F907040D2B9DAEC900383E4D /* log_uniform_int_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log_uniform_int_distribution.h; sourceTree = "<group>"; };
-		F907040E2B9DAEC900383E4D /* poisson_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = poisson_distribution.h; sourceTree = "<group>"; };
-		F907040F2B9DAEC900383E4D /* uniform_int_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniform_int_distribution.h; sourceTree = "<group>"; };
-		F90704102B9DAEC900383E4D /* uniform_real_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniform_real_distribution.h; sourceTree = "<group>"; };
-		F90704112B9DAEC900383E4D /* zipf_distribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zipf_distribution.h; sourceTree = "<group>"; };
-		F90704132B9DAEC900383E4D /* utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utility.h; sourceTree = "<group>"; };
 		F90704162B9DAEC900383E4D /* doctest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = doctest.h; sourceTree = "<group>"; };
 		F90704182B9DAEC900383E4D /* EnumBitmask.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EnumBitmask.hpp; sourceTree = "<group>"; };
 		F90704192B9DAEC900383E4D /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -3157,6 +3121,53 @@
 		F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Typeface.hpp; sourceTree = "<group>"; };
 		F943AAEB2E2A0B05001B4D43 /* TypefaceUtility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TypefaceUtility.hpp; sourceTree = "<group>"; };
 		F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TypefaceUtility.cpp; sourceTree = "<group>"; };
+		F943AAEF2E2A2E4F001B4D43 /* endian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = endian.h; sourceTree = "<group>"; };
+		F943AAF02E2A2E4F001B4D43 /* identity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = identity.h; sourceTree = "<group>"; };
+		F943AAF12E2A2E4F001B4D43 /* nullability_deprecated.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nullability_deprecated.h; sourceTree = "<group>"; };
+		F943AAF22E2A2E4F001B4D43 /* unaligned_access.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unaligned_access.h; sourceTree = "<group>"; };
+		F943AAF42E2A2E4F001B4D43 /* attributes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
+		F943AAF52E2A2E4F001B4D43 /* casts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = casts.h; sourceTree = "<group>"; };
+		F943AAF62E2A2E4F001B4D43 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		F943AAF72E2A2E4F001B4D43 /* fast_type_id.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fast_type_id.h; sourceTree = "<group>"; };
+		F943AAF82E2A2E4F001B4D43 /* macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = macros.h; sourceTree = "<group>"; };
+		F943AAF92E2A2E4F001B4D43 /* nullability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nullability.h; sourceTree = "<group>"; };
+		F943AAFA2E2A2E4F001B4D43 /* optimization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = optimization.h; sourceTree = "<group>"; };
+		F943AAFB2E2A2E4F001B4D43 /* options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = options.h; sourceTree = "<group>"; };
+		F943AAFC2E2A2E4F001B4D43 /* policy_checks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = policy_checks.h; sourceTree = "<group>"; };
+		F943AAFD2E2A2E4F001B4D43 /* port.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
+		F943AAFF2E2A2E4F001B4D43 /* any_invocable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = any_invocable.h; sourceTree = "<group>"; };
+		F943AB002E2A2E4F001B4D43 /* function_ref.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = function_ref.h; sourceTree = "<group>"; };
+		F943AB022E2A2E4F001B4D43 /* any_invocable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = any_invocable.h; sourceTree = "<group>"; };
+		F943AB032E2A2E4F001B4D43 /* function_ref.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = function_ref.h; sourceTree = "<group>"; };
+		F943AB052E2A2E4F001B4D43 /* type_traits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = type_traits.h; sourceTree = "<group>"; };
+		F943AB072E2A2E4F001B4D43 /* bits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bits.h; sourceTree = "<group>"; };
+		F943AB092E2A2E4F001B4D43 /* bits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bits.h; sourceTree = "<group>"; };
+		F943AB0A2E2A2E4F001B4D43 /* int128.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = int128.h; sourceTree = "<group>"; };
+		F943AB0B2E2A2E4F001B4D43 /* int128_have_intrinsic.inc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.pascal; path = int128_have_intrinsic.inc; sourceTree = "<group>"; };
+		F943AB0C2E2A2E4F001B4D43 /* int128_no_intrinsic.inc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.pascal; path = int128_no_intrinsic.inc; sourceTree = "<group>"; };
+		F943AB0E2E2A2E4F001B4D43 /* distribution_caller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = distribution_caller.h; sourceTree = "<group>"; };
+		F943AB0F2E2A2E4F001B4D43 /* fast_uniform_bits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fast_uniform_bits.h; sourceTree = "<group>"; };
+		F943AB102E2A2E4F001B4D43 /* fastmath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fastmath.h; sourceTree = "<group>"; };
+		F943AB112E2A2E4F001B4D43 /* generate_real.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generate_real.h; sourceTree = "<group>"; };
+		F943AB122E2A2E4F001B4D43 /* iostream_state_saver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iostream_state_saver.h; sourceTree = "<group>"; };
+		F943AB132E2A2E4F001B4D43 /* traits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = traits.h; sourceTree = "<group>"; };
+		F943AB142E2A2E4F001B4D43 /* uniform_helper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = uniform_helper.h; sourceTree = "<group>"; };
+		F943AB152E2A2E4F001B4D43 /* wide_multiply.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wide_multiply.h; sourceTree = "<group>"; };
+		F943AB172E2A2E4F001B4D43 /* bernoulli_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bernoulli_distribution.h; sourceTree = "<group>"; };
+		F943AB182E2A2E4F001B4D43 /* beta_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = beta_distribution.h; sourceTree = "<group>"; };
+		F943AB192E2A2E4F001B4D43 /* discrete_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = discrete_distribution.h; sourceTree = "<group>"; };
+		F943AB1A2E2A2E4F001B4D43 /* distributions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = distributions.h; sourceTree = "<group>"; };
+		F943AB1B2E2A2E4F001B4D43 /* exponential_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = exponential_distribution.h; sourceTree = "<group>"; };
+		F943AB1C2E2A2E4F001B4D43 /* gaussian_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gaussian_distribution.h; sourceTree = "<group>"; };
+		F943AB1D2E2A2E4F001B4D43 /* log_uniform_int_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = log_uniform_int_distribution.h; sourceTree = "<group>"; };
+		F943AB1E2E2A2E4F001B4D43 /* poisson_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = poisson_distribution.h; sourceTree = "<group>"; };
+		F943AB1F2E2A2E4F001B4D43 /* uniform_int_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = uniform_int_distribution.h; sourceTree = "<group>"; };
+		F943AB202E2A2E4F001B4D43 /* uniform_real_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = uniform_real_distribution.h; sourceTree = "<group>"; };
+		F943AB212E2A2E4F001B4D43 /* zipf_distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zipf_distribution.h; sourceTree = "<group>"; };
+		F943AB232E2A2E4F001B4D43 /* compare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = compare.h; sourceTree = "<group>"; };
+		F943AB252E2A2E4F001B4D43 /* utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utility.h; sourceTree = "<group>"; };
+		F943AB552E2A2E8F001B4D43 /* zstd_preSplit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zstd_preSplit.h; sourceTree = "<group>"; };
+		F943AB562E2A2E8F001B4D43 /* zstd_preSplit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = zstd_preSplit.c; sourceTree = "<group>"; };
 		F944BAA42CEACE0700CC4D42 /* ConvexHull.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ConvexHull.hpp; sourceTree = "<group>"; };
 		F944BAA62CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_ConvexHull.cpp; sourceTree = "<group>"; };
 		F944BAA82CEACF4300CC4D42 /* ChildProcess.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcess.hpp; sourceTree = "<group>"; };
@@ -5005,7 +5016,6 @@
 		F9D41CE12C9972D800290998 /* SivGrid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivGrid.cpp; sourceTree = "<group>"; };
 		F9D41CE42C9972EC00290998 /* Choice.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Choice.ipp; sourceTree = "<group>"; };
 		F9D41CE62C99730500290998 /* Choice.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Choice.hpp; sourceTree = "<group>"; };
-		F9D41CE82C997E8D00290998 /* compare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compare.h; sourceTree = "<group>"; };
 		F9D41CEB2C9AB1BB00290998 /* rapidhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rapidhash.h; sourceTree = "<group>"; };
 		F9D41CEE2C9AB1D500290998 /* SivEllipse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEllipse.cpp; sourceTree = "<group>"; };
 		F9D41CF12C9FCDC300290998 /* SivRoundRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRoundRect.cpp; sourceTree = "<group>"; };
@@ -5371,135 +5381,6 @@
 			path = ../Test;
 			sourceTree = "<group>";
 		};
-		F90703E62B9DAEC900383E4D /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				F90703E22B9DAEC900383E4D /* fast_type_id.h */,
-				F90703E32B9DAEC900383E4D /* identity.h */,
-				F90703E42B9DAEC900383E4D /* inline_variable.h */,
-				F90703E52B9DAEC900383E4D /* invoke.h */,
-			);
-			path = internal;
-			sourceTree = "<group>";
-		};
-		F90703EE2B9DAEC900383E4D /* base */ = {
-			isa = PBXGroup;
-			children = (
-				F90703E62B9DAEC900383E4D /* internal */,
-				F90703E72B9DAEC900383E4D /* attributes.h */,
-				F90703E82B9DAEC900383E4D /* config.h */,
-				F90703E92B9DAEC900383E4D /* macros.h */,
-				F90703EA2B9DAEC900383E4D /* optimization.h */,
-				F90703EB2B9DAEC900383E4D /* options.h */,
-				F90703EC2B9DAEC900383E4D /* policy_checks.h */,
-				F90703ED2B9DAEC900383E4D /* port.h */,
-			);
-			path = base;
-			sourceTree = "<group>";
-		};
-		F90703F12B9DAEC900383E4D /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				F90703EF2B9DAEC900383E4D /* any_invocable.h */,
-				F90703F02B9DAEC900383E4D /* function_ref.h */,
-			);
-			path = internal;
-			sourceTree = "<group>";
-		};
-		F90703F42B9DAEC900383E4D /* functional */ = {
-			isa = PBXGroup;
-			children = (
-				F90703F12B9DAEC900383E4D /* internal */,
-				F90703F22B9DAEC900383E4D /* any_invocable.h */,
-				F90703F32B9DAEC900383E4D /* function_ref.h */,
-			);
-			path = functional;
-			sourceTree = "<group>";
-		};
-		F90703F62B9DAEC900383E4D /* meta */ = {
-			isa = PBXGroup;
-			children = (
-				F90703F52B9DAEC900383E4D /* type_traits.h */,
-			);
-			path = meta;
-			sourceTree = "<group>";
-		};
-		F90703F82B9DAEC900383E4D /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				F90703F72B9DAEC900383E4D /* bits.h */,
-			);
-			path = internal;
-			sourceTree = "<group>";
-		};
-		F90703FD2B9DAEC900383E4D /* numeric */ = {
-			isa = PBXGroup;
-			children = (
-				F90703F82B9DAEC900383E4D /* internal */,
-				F90703F92B9DAEC900383E4D /* bits.h */,
-				F90703FA2B9DAEC900383E4D /* int128_have_intrinsic.inc */,
-				F90703FB2B9DAEC900383E4D /* int128_no_intrinsic.inc */,
-				F90703FC2B9DAEC900383E4D /* int128.h */,
-			);
-			path = numeric;
-			sourceTree = "<group>";
-		};
-		F90704062B9DAEC900383E4D /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				F90703FE2B9DAEC900383E4D /* distribution_caller.h */,
-				F90703FF2B9DAEC900383E4D /* fast_uniform_bits.h */,
-				F90704002B9DAEC900383E4D /* fastmath.h */,
-				F90704012B9DAEC900383E4D /* generate_real.h */,
-				F90704022B9DAEC900383E4D /* iostream_state_saver.h */,
-				F90704032B9DAEC900383E4D /* traits.h */,
-				F90704042B9DAEC900383E4D /* uniform_helper.h */,
-				F90704052B9DAEC900383E4D /* wide_multiply.h */,
-			);
-			path = internal;
-			sourceTree = "<group>";
-		};
-		F90704122B9DAEC900383E4D /* random */ = {
-			isa = PBXGroup;
-			children = (
-				F90704062B9DAEC900383E4D /* internal */,
-				F90704072B9DAEC900383E4D /* bernoulli_distribution.h */,
-				F90704082B9DAEC900383E4D /* beta_distribution.h */,
-				F90704092B9DAEC900383E4D /* discrete_distribution.h */,
-				F907040A2B9DAEC900383E4D /* distributions.h */,
-				F907040B2B9DAEC900383E4D /* exponential_distribution.h */,
-				F907040C2B9DAEC900383E4D /* gaussian_distribution.h */,
-				F907040D2B9DAEC900383E4D /* log_uniform_int_distribution.h */,
-				F907040E2B9DAEC900383E4D /* poisson_distribution.h */,
-				F907040F2B9DAEC900383E4D /* uniform_int_distribution.h */,
-				F90704102B9DAEC900383E4D /* uniform_real_distribution.h */,
-				F90704112B9DAEC900383E4D /* zipf_distribution.h */,
-			);
-			path = random;
-			sourceTree = "<group>";
-		};
-		F90704142B9DAEC900383E4D /* utility */ = {
-			isa = PBXGroup;
-			children = (
-				F90704132B9DAEC900383E4D /* utility.h */,
-			);
-			path = utility;
-			sourceTree = "<group>";
-		};
-		F90704152B9DAEC900383E4D /* absl */ = {
-			isa = PBXGroup;
-			children = (
-				F90703EE2B9DAEC900383E4D /* base */,
-				F90703F42B9DAEC900383E4D /* functional */,
-				F90703F62B9DAEC900383E4D /* meta */,
-				F90703FD2B9DAEC900383E4D /* numeric */,
-				F90704122B9DAEC900383E4D /* random */,
-				F9D41CE92C997E8D00290998 /* types */,
-				F90704142B9DAEC900383E4D /* utility */,
-			);
-			path = absl;
-			sourceTree = "<group>";
-		};
 		F90704172B9DAEC900383E4D /* doctest */ = {
 			isa = PBXGroup;
 			children = (
@@ -5587,7 +5468,7 @@
 		F90704CC2B9DAEC900383E4D /* ThirdParty */ = {
 			isa = PBXGroup;
 			children = (
-				F90704152B9DAEC900383E4D /* absl */,
+				F943AB272E2A2E4F001B4D43 /* absl */,
 				F9E5FC3B2BC15B260081A4F7 /* DirectXMath */,
 				F90704172B9DAEC900383E4D /* doctest */,
 				F907041A2B9DAEC900383E4D /* EnumBitmask */,
@@ -7525,6 +7406,146 @@
 			path = GlyphCache;
 			sourceTree = "<group>";
 		};
+		F943AAF32E2A2E4F001B4D43 /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				F943AAEF2E2A2E4F001B4D43 /* endian.h */,
+				F943AAF02E2A2E4F001B4D43 /* identity.h */,
+				F943AAF12E2A2E4F001B4D43 /* nullability_deprecated.h */,
+				F943AAF22E2A2E4F001B4D43 /* unaligned_access.h */,
+			);
+			path = internal;
+			sourceTree = "<group>";
+		};
+		F943AAFE2E2A2E4F001B4D43 /* base */ = {
+			isa = PBXGroup;
+			children = (
+				F943AAF32E2A2E4F001B4D43 /* internal */,
+				F943AAF42E2A2E4F001B4D43 /* attributes.h */,
+				F943AAF52E2A2E4F001B4D43 /* casts.h */,
+				F943AAF62E2A2E4F001B4D43 /* config.h */,
+				F943AAF72E2A2E4F001B4D43 /* fast_type_id.h */,
+				F943AAF82E2A2E4F001B4D43 /* macros.h */,
+				F943AAF92E2A2E4F001B4D43 /* nullability.h */,
+				F943AAFA2E2A2E4F001B4D43 /* optimization.h */,
+				F943AAFB2E2A2E4F001B4D43 /* options.h */,
+				F943AAFC2E2A2E4F001B4D43 /* policy_checks.h */,
+				F943AAFD2E2A2E4F001B4D43 /* port.h */,
+			);
+			path = base;
+			sourceTree = "<group>";
+		};
+		F943AB012E2A2E4F001B4D43 /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				F943AAFF2E2A2E4F001B4D43 /* any_invocable.h */,
+				F943AB002E2A2E4F001B4D43 /* function_ref.h */,
+			);
+			path = internal;
+			sourceTree = "<group>";
+		};
+		F943AB042E2A2E4F001B4D43 /* functional */ = {
+			isa = PBXGroup;
+			children = (
+				F943AB012E2A2E4F001B4D43 /* internal */,
+				F943AB022E2A2E4F001B4D43 /* any_invocable.h */,
+				F943AB032E2A2E4F001B4D43 /* function_ref.h */,
+			);
+			path = functional;
+			sourceTree = "<group>";
+		};
+		F943AB062E2A2E4F001B4D43 /* meta */ = {
+			isa = PBXGroup;
+			children = (
+				F943AB052E2A2E4F001B4D43 /* type_traits.h */,
+			);
+			path = meta;
+			sourceTree = "<group>";
+		};
+		F943AB082E2A2E4F001B4D43 /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				F943AB072E2A2E4F001B4D43 /* bits.h */,
+			);
+			path = internal;
+			sourceTree = "<group>";
+		};
+		F943AB0D2E2A2E4F001B4D43 /* numeric */ = {
+			isa = PBXGroup;
+			children = (
+				F943AB082E2A2E4F001B4D43 /* internal */,
+				F943AB092E2A2E4F001B4D43 /* bits.h */,
+				F943AB0A2E2A2E4F001B4D43 /* int128.h */,
+				F943AB0B2E2A2E4F001B4D43 /* int128_have_intrinsic.inc */,
+				F943AB0C2E2A2E4F001B4D43 /* int128_no_intrinsic.inc */,
+			);
+			path = numeric;
+			sourceTree = "<group>";
+		};
+		F943AB162E2A2E4F001B4D43 /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				F943AB0E2E2A2E4F001B4D43 /* distribution_caller.h */,
+				F943AB0F2E2A2E4F001B4D43 /* fast_uniform_bits.h */,
+				F943AB102E2A2E4F001B4D43 /* fastmath.h */,
+				F943AB112E2A2E4F001B4D43 /* generate_real.h */,
+				F943AB122E2A2E4F001B4D43 /* iostream_state_saver.h */,
+				F943AB132E2A2E4F001B4D43 /* traits.h */,
+				F943AB142E2A2E4F001B4D43 /* uniform_helper.h */,
+				F943AB152E2A2E4F001B4D43 /* wide_multiply.h */,
+			);
+			path = internal;
+			sourceTree = "<group>";
+		};
+		F943AB222E2A2E4F001B4D43 /* random */ = {
+			isa = PBXGroup;
+			children = (
+				F943AB162E2A2E4F001B4D43 /* internal */,
+				F943AB172E2A2E4F001B4D43 /* bernoulli_distribution.h */,
+				F943AB182E2A2E4F001B4D43 /* beta_distribution.h */,
+				F943AB192E2A2E4F001B4D43 /* discrete_distribution.h */,
+				F943AB1A2E2A2E4F001B4D43 /* distributions.h */,
+				F943AB1B2E2A2E4F001B4D43 /* exponential_distribution.h */,
+				F943AB1C2E2A2E4F001B4D43 /* gaussian_distribution.h */,
+				F943AB1D2E2A2E4F001B4D43 /* log_uniform_int_distribution.h */,
+				F943AB1E2E2A2E4F001B4D43 /* poisson_distribution.h */,
+				F943AB1F2E2A2E4F001B4D43 /* uniform_int_distribution.h */,
+				F943AB202E2A2E4F001B4D43 /* uniform_real_distribution.h */,
+				F943AB212E2A2E4F001B4D43 /* zipf_distribution.h */,
+			);
+			path = random;
+			sourceTree = "<group>";
+		};
+		F943AB242E2A2E4F001B4D43 /* types */ = {
+			isa = PBXGroup;
+			children = (
+				F943AB232E2A2E4F001B4D43 /* compare.h */,
+			);
+			path = types;
+			sourceTree = "<group>";
+		};
+		F943AB262E2A2E4F001B4D43 /* utility */ = {
+			isa = PBXGroup;
+			children = (
+				F943AB252E2A2E4F001B4D43 /* utility.h */,
+			);
+			path = utility;
+			sourceTree = "<group>";
+		};
+		F943AB272E2A2E4F001B4D43 /* absl */ = {
+			isa = PBXGroup;
+			children = (
+				F943AAFE2E2A2E4F001B4D43 /* base */,
+				F943AB042E2A2E4F001B4D43 /* functional */,
+				F943AB062E2A2E4F001B4D43 /* meta */,
+				F943AB0D2E2A2E4F001B4D43 /* numeric */,
+				F943AB222E2A2E4F001B4D43 /* random */,
+				F943AB242E2A2E4F001B4D43 /* types */,
+				F943AB262E2A2E4F001B4D43 /* utility */,
+			);
+			path = absl;
+			sourceTree = "<group>";
+		};
 		F944BAAD2CEACF6C00CC4D42 /* ChildProcess */ = {
 			isa = PBXGroup;
 			children = (
@@ -7789,32 +7810,34 @@
 		F9528BEE2BBF026F00222F45 /* compress */ = {
 			isa = PBXGroup;
 			children = (
-				F9528BD32BBF026F00222F45 /* clevels.h */,
 				F9528BD42BBF026F00222F45 /* fse_compress.c */,
 				F9528BD52BBF026F00222F45 /* hist.c */,
-				F9528BD62BBF026F00222F45 /* hist.h */,
 				F9528BD72BBF026F00222F45 /* huf_compress.c */,
-				F9528BD82BBF026F00222F45 /* zstd_compress_internal.h */,
 				F9528BD92BBF026F00222F45 /* zstd_compress_literals.c */,
-				F9528BDA2BBF026F00222F45 /* zstd_compress_literals.h */,
 				F9528BDB2BBF026F00222F45 /* zstd_compress_sequences.c */,
-				F9528BDC2BBF026F00222F45 /* zstd_compress_sequences.h */,
 				F9528BDD2BBF026F00222F45 /* zstd_compress_superblock.c */,
-				F9528BDE2BBF026F00222F45 /* zstd_compress_superblock.h */,
 				F9528BDF2BBF026F00222F45 /* zstd_compress.c */,
-				F9528BE02BBF026F00222F45 /* zstd_cwksp.h */,
 				F9528BE12BBF026F00222F45 /* zstd_double_fast.c */,
-				F9528BE22BBF026F00222F45 /* zstd_double_fast.h */,
 				F9528BE32BBF026F00222F45 /* zstd_fast.c */,
-				F9528BE42BBF026F00222F45 /* zstd_fast.h */,
 				F9528BE52BBF026F00222F45 /* zstd_lazy.c */,
+				F9528BE82BBF026F00222F45 /* zstd_ldm.c */,
+				F9528BEA2BBF026F00222F45 /* zstd_opt.c */,
+				F943AB562E2A2E8F001B4D43 /* zstd_preSplit.c */,
+				F9528BEC2BBF026F00222F45 /* zstdmt_compress.c */,
+				F9528BD32BBF026F00222F45 /* clevels.h */,
+				F9528BD62BBF026F00222F45 /* hist.h */,
+				F9528BD82BBF026F00222F45 /* zstd_compress_internal.h */,
+				F9528BDA2BBF026F00222F45 /* zstd_compress_literals.h */,
+				F9528BDC2BBF026F00222F45 /* zstd_compress_sequences.h */,
+				F9528BDE2BBF026F00222F45 /* zstd_compress_superblock.h */,
+				F9528BE02BBF026F00222F45 /* zstd_cwksp.h */,
+				F9528BE22BBF026F00222F45 /* zstd_double_fast.h */,
+				F9528BE42BBF026F00222F45 /* zstd_fast.h */,
 				F9528BE62BBF026F00222F45 /* zstd_lazy.h */,
 				F9528BE72BBF026F00222F45 /* zstd_ldm_geartab.h */,
-				F9528BE82BBF026F00222F45 /* zstd_ldm.c */,
 				F9528BE92BBF026F00222F45 /* zstd_ldm.h */,
-				F9528BEA2BBF026F00222F45 /* zstd_opt.c */,
 				F9528BEB2BBF026F00222F45 /* zstd_opt.h */,
-				F9528BEC2BBF026F00222F45 /* zstdmt_compress.c */,
+				F943AB552E2A2E8F001B4D43 /* zstd_preSplit.h */,
 				F9528BED2BBF026F00222F45 /* zstdmt_compress.h */,
 			);
 			path = compress;
@@ -10581,14 +10604,6 @@
 			path = Grid;
 			sourceTree = "<group>";
 		};
-		F9D41CE92C997E8D00290998 /* types */ = {
-			isa = PBXGroup;
-			children = (
-				F9D41CE82C997E8D00290998 /* compare.h */,
-			);
-			path = types;
-			sourceTree = "<group>";
-		};
 		F9D41CEC2C9AB1BB00290998 /* rapidhash */ = {
 			isa = PBXGroup;
 			children = (
@@ -11108,13 +11123,11 @@
 				F9E5FCE72BC59EA00081A4F7 /* JSONIterator.hpp in Headers */,
 				F97203162BF09DD9000E21DD /* EngineOption.hpp in Headers */,
 				F980C42D2C00D2B500A86B68 /* TriangleFillMode.hpp in Headers */,
-				F90706A72B9DAEC900383E4D /* beta_distribution.h in Headers */,
 				F986059A2BE3314D006A4C0F /* CCursorStyle.hpp in Headers */,
 				F986FA6E2BCFB53B006A4C0F /* svginterface.h in Headers */,
 				F986004F2BCFBB53006A4C0F /* SkUnPreMultiply.h in Headers */,
 				F986F8B22BC806DB006A4C0F /* exif.h in Headers */,
 				F98603812BCFBB54006A4C0F /* SkOTTable_maxp.h in Headers */,
-				F90706A82B9DAEC900383E4D /* discrete_distribution.h in Headers */,
 				F9070CCD2B9F175100383E4D /* Int128.hpp in Headers */,
 				F98600272BCFBB53006A4C0F /* SkOpenTypeSVGDecoder.h in Headers */,
 				F90706C02B9DAEC900383E4D /* phmap_utils.h in Headers */,
@@ -11125,7 +11138,6 @@
 				F9070C632B9F175000383E4D /* IReader.ipp in Headers */,
 				F986048E2BCFBB54006A4C0F /* SkSLString.h in Headers */,
 				F986FA6B2BCFB53B006A4C0F /* psaux.h in Headers */,
-				F90706A02B9DAEC900383E4D /* fastmath.h in Headers */,
 				F98603792BCFBB54006A4C0F /* SkOTTable_gasp.h in Headers */,
 				F98601AB2BCFBB53006A4C0F /* SkDrawShadowInfo.h in Headers */,
 				F9528B992BBC76EA00222F45 /* Step3D.ipp in Headers */,
@@ -11160,7 +11172,6 @@
 				F986061B2BEB7651006A4C0F /* RoundRect.hpp in Headers */,
 				F9070CE22B9F175100383E4D /* Optional.hpp in Headers */,
 				F9E794612C198133002615BA /* ListUtility.hpp in Headers */,
-				F90706932B9DAEC900383E4D /* port.h in Headers */,
 				F90F2BE52D9278A400CC89CA /* IsPrime.hpp in Headers */,
 				F9807D862BF6676100D9B590 /* AssetID.hpp in Headers */,
 				F98602FB2BCFBB54006A4C0F /* SkOpts_SetTarget.h in Headers */,
@@ -11170,12 +11181,10 @@
 				F98602242BCFBB54006A4C0F /* SkPictureRecord.h in Headers */,
 				F951220B2CB62E4300151291 /* finders_interface.h in Headers */,
 				F98602182BCFBB54006A4C0F /* SkPathPriv.h in Headers */,
-				F90706992B9DAEC900383E4D /* bits.h in Headers */,
 				F980C45B2C01B20F00A86B68 /* SamplerStateBuilder.hpp in Headers */,
 				F98600052BCFBB53006A4C0F /* SkClipOp.h in Headers */,
 				F9070C5B2B9F175000383E4D /* FormatUtility.ipp in Headers */,
 				F986007B2BCFBB53006A4C0F /* SkMalloc.h in Headers */,
-				F90706902B9DAEC900383E4D /* optimization.h in Headers */,
 				F98604682BCFBB54006A4C0F /* SkSLBuiltinTypes.h in Headers */,
 				F98603D62BCFBB54006A4C0F /* SkSLMetalCodeGenerator.h in Headers */,
 				F9807D7F2BF1229700D9B590 /* MetalInternalTexture2D.hpp in Headers */,
@@ -11200,7 +11209,6 @@
 				F986FA552BCFB53B006A4C0F /* svttcmap.h in Headers */,
 				F98606302BEBBBC7006A4C0F /* CProfiler.hpp in Headers */,
 				F9070C652B9F175000383E4D /* IWriter.ipp in Headers */,
-				F90706AA2B9DAEC900383E4D /* exponential_distribution.h in Headers */,
 				F98603912BCFBB54006A4C0F /* SkTTCFHeader.h in Headers */,
 				F98604292BCFBB54006A4C0F /* SkSLNop.h in Headers */,
 				F986FA722BCFB53B006A4C0F /* freetype.h in Headers */,
@@ -11245,7 +11253,6 @@
 				F9070C822B9F175000383E4D /* ThousandSeparate.ipp in Headers */,
 				F98605172BCFF7C2006A4C0F /* Emoji.hpp in Headers */,
 				F9070DB82B9F175E00383E4D /* IConsole.hpp in Headers */,
-				F90706B02B9DAEC900383E4D /* zipf_distribution.h in Headers */,
 				F9070D162B9F175100383E4D /* YesNo.hpp in Headers */,
 				F98600712BCFBB53006A4C0F /* SkContainers.h in Headers */,
 				F9ED45B12CC156EC006BA10F /* split_rings.hpp in Headers */,
@@ -11268,7 +11275,6 @@
 				F98600982BCFBB53006A4C0F /* SkEncodedInfo.h in Headers */,
 				F986F82D2BC7B00A006A4C0F /* INIItem.hpp in Headers */,
 				F9070CD62B9F175100383E4D /* LoggerBuffer.hpp in Headers */,
-				F90706AF2B9DAEC900383E4D /* uniform_real_distribution.h in Headers */,
 				F9F00A4A2CD299120097C165 /* PointsPerCircle.hpp in Headers */,
 				F9F00A4B2CD299120097C165 /* QualityFactor.hpp in Headers */,
 				F986001B2BCFBB53006A4C0F /* SkFontTypes.h in Headers */,
@@ -11300,7 +11306,6 @@
 				F9070C9F2B9F175000383E4D /* Char.hpp in Headers */,
 				F98600922BCFBB53006A4C0F /* GrVkSecondaryCBDrawContext.h in Headers */,
 				F9070CF92B9F175100383E4D /* Shuffle.hpp in Headers */,
-				F907069D2B9DAEC900383E4D /* int128.h in Headers */,
 				F9070D072B9F175100383E4D /* TupleFormatter.hpp in Headers */,
 				F9528B552BB6DC2C00222F45 /* MillisecClock.hpp in Headers */,
 				F9070CAA2B9F175000383E4D /* CPUInfo.hpp in Headers */,
@@ -11313,7 +11318,6 @@
 				F95122082CB62E4300151291 /* best_bin_finder.h in Headers */,
 				F986FA6F2BCFB53B006A4C0F /* t1types.h in Headers */,
 				F98605DB2BE50001006A4C0F /* InputState.hpp in Headers */,
-				F9D41CEA2C997E8D00290998 /* compare.h in Headers */,
 				F986FA9C2BCFB53B006A4C0F /* t1tables.h in Headers */,
 				F9E7942B2C12B861002615BA /* Easing.hpp in Headers */,
 				F98601C82BCFBB53006A4C0F /* SkGlyph.h in Headers */,
@@ -11326,6 +11330,7 @@
 				F98601742BCFBB53006A4C0F /* SkBlurMask.h in Headers */,
 				F98601722BCFBB53006A4C0F /* SkBlurEngine.h in Headers */,
 				F98600782BCFBB53006A4C0F /* SkFloatingPoint.h in Headers */,
+				F943AB582E2A2E8F001B4D43 /* zstd_preSplit.h in Headers */,
 				F98601C52BCFBB53006A4C0F /* SkGeometry.h in Headers */,
 				F9070CDE2B9F175100383E4D /* NonNull.hpp in Headers */,
 				F986FA672BCFB53B006A4C0F /* ftserv.h in Headers */,
@@ -11341,7 +11346,6 @@
 				F986F8AA2BC806A7006A4C0F /* Exif.hpp in Headers */,
 				F986004D2BCFBB53006A4C0F /* SkTypeface.h in Headers */,
 				F98600AA2BCFBB53006A4C0F /* SkNoDrawCanvas.h in Headers */,
-				F90706A52B9DAEC900383E4D /* wide_multiply.h in Headers */,
 				F9070B0A2B9DEB5900383E4D /* xxhash.h in Headers */,
 				F9070D012B9F175100383E4D /* TextEncoding.hpp in Headers */,
 				F98600202BCFBB53006A4C0F /* SkImageInfo.h in Headers */,
@@ -11421,7 +11425,6 @@
 				F9528B6F2BB7089A00222F45 /* CacheDirectory.hpp in Headers */,
 				F9070DEF2B9F175E00383E4D /* TextReaderDetail.hpp in Headers */,
 				F98601992BCFBB53006A4C0F /* SkDebugUtils.h in Headers */,
-				F90706A32B9DAEC900383E4D /* traits.h in Headers */,
 				F9070C592B9F175000383E4D /* FormatData.ipp in Headers */,
 				F98605FD2BE61586006A4C0F /* Quad.ipp in Headers */,
 				F986F8FF2BC8441F006A4C0F /* config.h in Headers */,
@@ -11432,7 +11435,6 @@
 				F90DA0552D1A91AB0003E1E8 /* TextureFormat.ipp in Headers */,
 				F9070E922B9F183100383E4D /* CSystem.hpp in Headers */,
 				F9528BB52BBF023600222F45 /* Compression.hpp in Headers */,
-				F90706982B9DAEC900383E4D /* type_traits.h in Headers */,
 				F9070D142B9F175100383E4D /* WindowState.hpp in Headers */,
 				F986052B2BD10459006A4C0F /* Circle.hpp in Headers */,
 				F9FD0D112D204FA000A584CE /* SampleBorderColor.hpp in Headers */,
@@ -11512,6 +11514,49 @@
 				F9528B5B2BB6DC6800222F45 /* MicrosecClock.ipp in Headers */,
 				F986F9BE2BCA9D0A006A4C0F /* styleelement.h in Headers */,
 				F986043B2BCFBB54006A4C0F /* SkSLSwitchStatement.h in Headers */,
+				F943AB2A2E2A2E4F001B4D43 /* zipf_distribution.h in Headers */,
+				F943AB2B2E2A2E4F001B4D43 /* unaligned_access.h in Headers */,
+				F943AB2C2E2A2E4F001B4D43 /* fast_type_id.h in Headers */,
+				F943AB2D2E2A2E4F001B4D43 /* bits.h in Headers */,
+				F943AB2E2E2A2E4F001B4D43 /* log_uniform_int_distribution.h in Headers */,
+				F943AB2F2E2A2E4F001B4D43 /* distribution_caller.h in Headers */,
+				F943AB302E2A2E4F001B4D43 /* policy_checks.h in Headers */,
+				F943AB312E2A2E4F001B4D43 /* nullability.h in Headers */,
+				F943AB322E2A2E4F001B4D43 /* exponential_distribution.h in Headers */,
+				F943AB332E2A2E4F001B4D43 /* optimization.h in Headers */,
+				F943AB342E2A2E4F001B4D43 /* endian.h in Headers */,
+				F943AB352E2A2E4F001B4D43 /* int128.h in Headers */,
+				F943AB362E2A2E4F001B4D43 /* iostream_state_saver.h in Headers */,
+				F943AB372E2A2E4F001B4D43 /* any_invocable.h in Headers */,
+				F943AB382E2A2E4F001B4D43 /* macros.h in Headers */,
+				F943AB392E2A2E4F001B4D43 /* fast_uniform_bits.h in Headers */,
+				F943AB3A2E2A2E4F001B4D43 /* uniform_real_distribution.h in Headers */,
+				F943AB3B2E2A2E4F001B4D43 /* beta_distribution.h in Headers */,
+				F943AB3C2E2A2E4F001B4D43 /* port.h in Headers */,
+				F943AB3D2E2A2E4F001B4D43 /* discrete_distribution.h in Headers */,
+				F943AB3E2E2A2E4F001B4D43 /* config.h in Headers */,
+				F943AB3F2E2A2E4F001B4D43 /* distributions.h in Headers */,
+				F943AB402E2A2E4F001B4D43 /* bits.h in Headers */,
+				F943AB412E2A2E4F001B4D43 /* function_ref.h in Headers */,
+				F943AB422E2A2E4F001B4D43 /* options.h in Headers */,
+				F943AB432E2A2E4F001B4D43 /* bernoulli_distribution.h in Headers */,
+				F943AB442E2A2E4F001B4D43 /* function_ref.h in Headers */,
+				F943AB452E2A2E4F001B4D43 /* uniform_helper.h in Headers */,
+				F943AB462E2A2E4F001B4D43 /* utility.h in Headers */,
+				F943AB472E2A2E4F001B4D43 /* type_traits.h in Headers */,
+				F943AB482E2A2E4F001B4D43 /* casts.h in Headers */,
+				F943AB492E2A2E4F001B4D43 /* identity.h in Headers */,
+				F943AB4A2E2A2E4F001B4D43 /* gaussian_distribution.h in Headers */,
+				F943AB4B2E2A2E4F001B4D43 /* attributes.h in Headers */,
+				F943AB4C2E2A2E4F001B4D43 /* any_invocable.h in Headers */,
+				F943AB4D2E2A2E4F001B4D43 /* uniform_int_distribution.h in Headers */,
+				F943AB4E2E2A2E4F001B4D43 /* wide_multiply.h in Headers */,
+				F943AB4F2E2A2E4F001B4D43 /* nullability_deprecated.h in Headers */,
+				F943AB502E2A2E4F001B4D43 /* compare.h in Headers */,
+				F943AB512E2A2E4F001B4D43 /* poisson_distribution.h in Headers */,
+				F943AB522E2A2E4F001B4D43 /* generate_real.h in Headers */,
+				F943AB532E2A2E4F001B4D43 /* traits.h in Headers */,
+				F943AB542E2A2E4F001B4D43 /* fastmath.h in Headers */,
 				F9B7D9F62D8C7269002ABACE /* BCnDecoder.hpp in Headers */,
 				F9B7D9F72D8C7269002ABACE /* BCnEncoder.hpp in Headers */,
 				F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */,
@@ -11539,7 +11584,6 @@
 				F97203232BF09E80000E21DD /* Metal.hpp in Headers */,
 				F9ED45B92CC156EC006BA10F /* parse.hpp in Headers */,
 				F90706C32B9DAEC900383E4D /* pcg_random.hpp in Headers */,
-				F90706952B9DAEC900383E4D /* function_ref.h in Headers */,
 				F98602272BCFBB54006A4C0F /* SkPixelRefPriv.h in Headers */,
 				F9070CF52B9F175100383E4D /* Rect.hpp in Headers */,
 				F986FFFB2BCFBB53006A4C0F /* SkAlphaType.h in Headers */,
@@ -11695,7 +11739,6 @@
 				F98606282BEBA1B5006A4C0F /* ExtensionFilter.hpp in Headers */,
 				F986021D2BCFBB54006A4C0F /* SkPictureData.h in Headers */,
 				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
-				F90706892B9DAEC900383E4D /* fast_type_id.h in Headers */,
 				F986FFEC2BCFBB53006A4C0F /* SkCodec.h in Headers */,
 				F98605BE2BE4B65B006A4C0F /* InputGroup.hpp in Headers */,
 				F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */,
@@ -11817,12 +11860,10 @@
 				F980C4A92C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp in Headers */,
 				F980C48E2C04B41300A86B68 /* ConstantBuffer.hpp in Headers */,
 				F9D41CFB2C9FD81F00290998 /* OffsetCircular.ipp in Headers */,
-				F907068F2B9DAEC900383E4D /* macros.h in Headers */,
 				F980C4972C04B43300A86B68 /* Vertex2D.ipp in Headers */,
 				F98601FE2BCFBB53006A4C0F /* SkMipmap.h in Headers */,
 				F9070E5B2B9F176B00383E4D /* BinaryWriterDetail.hpp in Headers */,
 				F98602FA2BCFBB54006A4C0F /* SkOpts_RestoreTarget.h in Headers */,
-				F90706962B9DAEC900383E4D /* any_invocable.h in Headers */,
 				F98605F02BE61564006A4C0F /* RandomVec2.hpp in Headers */,
 				F986044D2BCFBB54006A4C0F /* SkSLVariableReference.h in Headers */,
 				F986001F2BCFBB53006A4C0F /* SkImageGenerator.h in Headers */,
@@ -11875,8 +11916,6 @@
 				F986F9182BC8441F006A4C0F /* oniggnu.h in Headers */,
 				F9070CD12B9F175100383E4D /* ISteadyClock.hpp in Headers */,
 				F9ED45B32CC156EC006BA10F /* dissolve.hpp in Headers */,
-				F90706AD2B9DAEC900383E4D /* poisson_distribution.h in Headers */,
-				F90706942B9DAEC900383E4D /* any_invocable.h in Headers */,
 				F98602152BCFBB54006A4C0F /* SkPathMakers.h in Headers */,
 				F9070C962B9F175000383E4D /* AlignedAllocator.hpp in Headers */,
 				F9070CA52B9F175000383E4D /* CompilerVersion.hpp in Headers */,
@@ -11888,7 +11927,6 @@
 				F97203122BF09DA4000E21DD /* IRenderer.hpp in Headers */,
 				F9070C5D2B9F175000383E4D /* Hash.ipp in Headers */,
 				F986FA7E2BCFB53B006A4C0F /* fterrors.h in Headers */,
-				F90706912B9DAEC900383E4D /* options.h in Headers */,
 				F986024F2BCFBB54006A4C0F /* SkRegionPriv.h in Headers */,
 				F98600612BCFBB53006A4C0F /* SkImageFilters.h in Headers */,
 				F9070CF02B9F175100383E4D /* PredefinedNamedParameter.hpp in Headers */,
@@ -11910,7 +11948,6 @@
 				F9070D0A2B9F175100383E4D /* UnicodeConverter.hpp in Headers */,
 				F98601B52BCFBB53006A4C0F /* SkFDot6.h in Headers */,
 				F98604912BCFBB54006A4C0F /* SkSLUtil.h in Headers */,
-				F907069F2B9DAEC900383E4D /* fast_uniform_bits.h in Headers */,
 				F986FFEF2BCFBB53006A4C0F /* SkEncodedOrigin.h in Headers */,
 				F986FA4B2BCFB53B006A4C0F /* svkern.h in Headers */,
 				F9070C992B9F175000383E4D /* BigInt.hpp in Headers */,
@@ -11920,7 +11957,6 @@
 				F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */,
 				F98600342BCFBB53006A4C0F /* SkPoint.h in Headers */,
 				F97202FA2BEDF2D9000E21DD /* ResizeMode.hpp in Headers */,
-				F90706AB2B9DAEC900383E4D /* gaussian_distribution.h in Headers */,
 				F98604302BCFBB54006A4C0F /* SkSLProgram.h in Headers */,
 				F98605C12BE4B65B006A4C0F /* Keyboard.hpp in Headers */,
 				F98603FE2BCFBB54006A4C0F /* SkSLContinueStatement.h in Headers */,
@@ -11951,7 +11987,6 @@
 				F98605F82BE61586006A4C0F /* RandomVec2.ipp in Headers */,
 				F934BD9F2BFA59320003EAD5 /* HLSL.hpp in Headers */,
 				F986024C2BCFBB54006A4C0F /* SkRectPriv.h in Headers */,
-				F907068E2B9DAEC900383E4D /* config.h in Headers */,
 				F980C4952C04B43300A86B68 /* FloatRect.ipp in Headers */,
 				F986042C2BCFBB54006A4C0F /* SkSLPostfixExpression.h in Headers */,
 				F9E794492C1973FD002615BA /* ArrayRandom.hpp in Headers */,
@@ -12107,7 +12142,6 @@
 				F986F9D12BCFB514006A4C0F /* CEmoji.hpp in Headers */,
 				F98603082BCFBB54006A4C0F /* SkIntersections.h in Headers */,
 				F98605752BDA7DD2006A4C0F /* Cursor.ipp in Headers */,
-				F90706A22B9DAEC900383E4D /* iostream_state_saver.h in Headers */,
 				F9070B082B9DEB5900383E4D /* uuid.h in Headers */,
 				F9070C842B9F175000383E4D /* Unicode.ipp in Headers */,
 				F986022C2BCFBB54006A4C0F /* SkPointPriv.h in Headers */,
@@ -12128,7 +12162,6 @@
 				F9807D8A2BF6677600D9B590 /* MessageBoxStyle.hpp in Headers */,
 				F9070C762B9F175000383E4D /* Rect.ipp in Headers */,
 				F986037E2BCFBB54006A4C0F /* SkOTTable_loca.h in Headers */,
-				F90706A62B9DAEC900383E4D /* bernoulli_distribution.h in Headers */,
 				F9807D842BF6676100D9B590 /* AssetHandle.hpp in Headers */,
 				F986FA962BCFB53B006A4C0F /* ftsynth.h in Headers */,
 				F98600182BCFBB53006A4C0F /* SkFontMgr.h in Headers */,
@@ -12146,7 +12179,6 @@
 				F96F96062C359ED90033353E /* morton2D.h in Headers */,
 				F9ED45C52CC2B06D006BA10F /* CScreenCapture.hpp in Headers */,
 				F95122262CB8229400151291 /* TriangleIndex.ipp in Headers */,
-				F907069E2B9DAEC900383E4D /* distribution_caller.h in Headers */,
 				F986046A2BCFBB54006A4C0F /* SkSLCompiler.h in Headers */,
 				F98604232BCFBB54006A4C0F /* SkSLMethodReference.h in Headers */,
 				F986016B2BCFBB53006A4C0F /* SkBlitRow.h in Headers */,
@@ -12164,7 +12196,6 @@
 				F9D41B642C534D8900290998 /* LineType.hpp in Headers */,
 				F980C4642C01B22900A86B68 /* RasterizerStateBuilder.ipp in Headers */,
 				F986F9C62BCA9D25006A4C0F /* SVG.hpp in Headers */,
-				F90706AE2B9DAEC900383E4D /* uniform_int_distribution.h in Headers */,
 				F9070C6F2B9F175000383E4D /* Optional.ipp in Headers */,
 				F9712A572C289A6D0049CC26 /* Smooth.ipp in Headers */,
 				F98600352BCFBB53006A4C0F /* SkPoint3.h in Headers */,
@@ -12273,7 +12304,6 @@
 				F934BD712BF880330003EAD5 /* PixelShader.hpp in Headers */,
 				F95122142CB62E6B00151291 /* LineString.hpp in Headers */,
 				F96F96052C359ED90033353E /* morton2D_LUTs.h in Headers */,
-				F90706972B9DAEC900383E4D /* function_ref.h in Headers */,
 				F90706BB2B9DAEC900383E4D /* phmap_base.h in Headers */,
 				F98606002BE615B4006A4C0F /* FormatLiteralObject.ipp in Headers */,
 				F9E7943F2C158B8F002615BA /* Circular.hpp in Headers */,
@@ -12396,7 +12426,6 @@
 				F98601E42BCFBB53006A4C0F /* SkMask.h in Headers */,
 				F9070CD92B9F175100383E4D /* MathConstants.hpp in Headers */,
 				F986008C2BCFBB53006A4C0F /* SkTPin.h in Headers */,
-				F907068C2B9DAEC900383E4D /* invoke.h in Headers */,
 				F98604772BCFBB54006A4C0F /* SkSLIntrinsicList.h in Headers */,
 				F986037C2BCFBB54006A4C0F /* SkOTTable_hhea.h in Headers */,
 				F9070C6B2B9F175000383E4D /* MD5Value.ipp in Headers */,
@@ -12433,7 +12462,6 @@
 				F98601912BCFBB53006A4C0F /* SkCoreBlitters.h in Headers */,
 				F986FA6A2BCFB53B006A4C0F /* ftvalid.h in Headers */,
 				F9070C892B9F175000383E4D /* UUIDValue.ipp in Headers */,
-				F907068D2B9DAEC900383E4D /* attributes.h in Headers */,
 				F986F8332BC7B024006A4C0F /* INISection.ipp in Headers */,
 				F9070EE12B9F1C8900383E4D /* internal.h in Headers */,
 				F986FA522BCFB53B006A4C0F /* svpscmap.h in Headers */,
@@ -12471,11 +12499,9 @@
 				F9070C602B9F175000383E4D /* Int128.ipp in Headers */,
 				F9528B792BB708A700222F45 /* ILicenseManager.hpp in Headers */,
 				F986FA8B2BCFB53B006A4C0F /* ftmm.h in Headers */,
-				F907068A2B9DAEC900383E4D /* identity.h in Headers */,
 				F9070CD72B9F175100383E4D /* LogType.hpp in Headers */,
 				F9070C6D2B9F175000383E4D /* NonNull.ipp in Headers */,
 				F98603E02BCFBB54006A4C0F /* SkSLSPIRVtoHLSL.h in Headers */,
-				F90706AC2B9DAEC900383E4D /* log_uniform_int_distribution.h in Headers */,
 				F98600462BCFBB53006A4C0F /* SkSurfaceProps.h in Headers */,
 				F9528C252BBF026F00222F45 /* zstd_compress_sequences.h in Headers */,
 				F986F9442BCA79BB006A4C0F /* RectF.hpp in Headers */,
@@ -12490,7 +12516,6 @@
 				F907075B2B9DAEC900383E4D /* Siv3D.hpp in Headers */,
 				F98604262BCFBB54006A4C0F /* SkSLModifiers.h in Headers */,
 				F986057C2BDA7DFC006A4C0F /* CursorState.hpp in Headers */,
-				F907068B2B9DAEC900383E4D /* inline_variable.h in Headers */,
 				F986F9BA2BCA9D0A006A4C0F /* stopelement.h in Headers */,
 				F98600502BCFBB53006A4C0F /* SkVertices.h in Headers */,
 				F9ED45BB2CC156EC006BA10F /* remove_holes_if.hpp in Headers */,
@@ -12522,7 +12547,6 @@
 				F986002A2BCFBB53006A4C0F /* SkPath.h in Headers */,
 				F96F95E12C2B0F270033353E /* FloatQuad.hpp in Headers */,
 				F98601932BCFBB53006A4C0F /* SkCpu.h in Headers */,
-				F907069A2B9DAEC900383E4D /* bits.h in Headers */,
 				F986003B2BCFBB53006A4C0F /* SkRSXform.h in Headers */,
 				F9528B9A2BBC76EA00222F45 /* Point3D.ipp in Headers */,
 				F9070CA62B9F175000383E4D /* Concepts.hpp in Headers */,
@@ -12598,7 +12622,6 @@
 				F980C44B2C00E27800A86B68 /* TextureAddressMode.hpp in Headers */,
 				F907075A2B9DAEC900383E4D /* XoshiroCpp.hpp in Headers */,
 				F98605682BD203D4006A4C0F /* muParserToken.h in Headers */,
-				F90706B12B9DAEC900383E4D /* utility.h in Headers */,
 				F9E5FC402BC15B260081A4F7 /* sal.h in Headers */,
 				F98601F32BCFBB53006A4C0F /* SkMatrixUtils.h in Headers */,
 				F986053E2BD2039F006A4C0F /* MathParser.hpp in Headers */,
@@ -12628,14 +12651,12 @@
 				F986FA892BCFB53B006A4C0F /* ftlzw.h in Headers */,
 				F9528BAC2BBE7CF300222F45 /* MemoryWriter.hpp in Headers */,
 				F98605A52BE4887C006A4C0F /* IRegExp.hpp in Headers */,
-				F90706A92B9DAEC900383E4D /* distributions.h in Headers */,
 				F98605C62BE4B680006A4C0F /* InputGroup.ipp in Headers */,
 				F986FA5A2BCFB53B006A4C0F /* cffotypes.h in Headers */,
 				F986027B2BCFBB54006A4C0F /* SkStroke.h in Headers */,
 				F9070CFD2B9F175100383E4D /* Stopwatch.hpp in Headers */,
 				F9528C502BBFEC4D00222F45 /* MappedMemoryView.ipp in Headers */,
 				F986FA832BCFB53B006A4C0F /* ftgzip.h in Headers */,
-				F90706922B9DAEC900383E4D /* policy_checks.h in Headers */,
 				F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */,
 				F943AAE62E2A0A5F001B4D43 /* TextStyle.hpp in Headers */,
 				F90706B32B9DAEC900383E4D /* EnumBitmask.hpp in Headers */,
@@ -12680,7 +12701,6 @@
 				F90706BC2B9DAEC900383E4D /* phmap_bits.h in Headers */,
 				F986F9AF2BCA9D0A006A4C0F /* markerelement.h in Headers */,
 				F98603FB2BCFBB54006A4C0F /* SkSLConstructorSplat.h in Headers */,
-				F90706A12B9DAEC900383E4D /* generate_real.h in Headers */,
 				F9ED45B72CC156EC006BA10F /* offset_appender.hpp in Headers */,
 				F98600652BCFBB53006A4C0F /* SkRuntimeEffect.h in Headers */,
 				F986FA502BCFB53B006A4C0F /* svpostnm.h in Headers */,
@@ -12708,7 +12728,6 @@
 				F986025A2BCFBB54006A4C0F /* SkRuntimeEffectPriv.h in Headers */,
 				F986025F2BCFBB54006A4C0F /* SkScalerContext.h in Headers */,
 				F986009F2BCFBB53006A4C0F /* SkPathRef.h in Headers */,
-				F90706A42B9DAEC900383E4D /* uniform_helper.h in Headers */,
 				F90DA06B2D1A934E0003E1E8 /* MetalTexture.hpp in Headers */,
 				F90DA06C2D1A934E0003E1E8 /* MetalTexture2DDesc.hpp in Headers */,
 				F90DA06D2D1A934E0003E1E8 /* CTexture_Metal.hpp in Headers */,
@@ -12993,6 +13012,7 @@
 				F9070F042B9F1C8900383E4D /* window.c in Sources */,
 				F98603222BCFBB54006A4C0F /* SkPathOpsDebug.cpp in Sources */,
 				F986016F2BCFBB53006A4C0F /* SkBlitter_Sprite.cpp in Sources */,
+				F943AB572E2A2E8F001B4D43 /* zstd_preSplit.c in Sources */,
 				F98602A02BCFBB54006A4C0F /* SkYUVAInfo.cpp in Sources */,
 				F9070EE52B9F1C8900383E4D /* monitor.c in Sources */,
 				F9070DE82B9F175E00383E4D /* SivStringView.cpp in Sources */,
@@ -13066,6 +13086,8 @@
 				F98604822BCFBB54006A4C0F /* SkSLOutputStream.cpp in Sources */,
 				F986055F2BD203D4006A4C0F /* muParserCallback.cpp in Sources */,
 				F9528C562BC02A3100222F45 /* MemoryMappedFileDetail.cpp in Sources */,
+				F943AB282E2A2E4F001B4D43 /* int128_have_intrinsic.inc in Sources */,
+				F943AB292E2A2E4F001B4D43 /* int128_no_intrinsic.inc in Sources */,
 				F986053C2BD104B4006A4C0F /* SivImagePixelFormat.cpp in Sources */,
 				F98602202BCFBB54006A4C0F /* SkPicturePlayback.cpp in Sources */,
 				F98602642BCFBB54006A4C0F /* SkScan_Hairline.cpp in Sources */,
@@ -13433,7 +13455,6 @@
 				F9070DDD2B9F175E00383E4D /* SivOptional.cpp in Sources */,
 				F98605452BD203BC006A4C0F /* SivMathParser.cpp in Sources */,
 				F9E7947F2C248B29002615BA /* SivGraphics2D.cpp in Sources */,
-				F907069B2B9DAEC900383E4D /* int128_have_intrinsic.inc in Sources */,
 				F986061E2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp in Sources */,
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
@@ -13628,7 +13649,6 @@
 				F9E7945D2C19743A002615BA /* SivStopwatch.cpp in Sources */,
 				F986060D2BE71918006A4C0F /* SivUserInfo_macOS.mm in Sources */,
 				F986021C2BCFBB54006A4C0F /* SkPictureData.cpp in Sources */,
-				F907069C2B9DAEC900383E4D /* int128_no_intrinsic.inc in Sources */,
 				F986022F2BCFBB54006A4C0F /* SkQuadClipper.cpp in Sources */,
 				F98601FA2BCFBB53006A4C0F /* SkMesh.cpp in Sources */,
 				F980C4742C01B4B600A86B68 /* SivBlendStateBuilder.cpp in Sources */,
