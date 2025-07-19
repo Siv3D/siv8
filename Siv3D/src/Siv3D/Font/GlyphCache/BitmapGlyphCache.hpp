@@ -77,7 +77,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		bool processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//

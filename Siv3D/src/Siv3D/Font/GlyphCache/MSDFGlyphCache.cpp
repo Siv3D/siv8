@@ -76,7 +76,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MSDFGlyphCache::processHorizontalRect(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& pos, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
+	bool MSDFGlyphCache::processHorizontalRect(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, const double fontSize, const TextStyle& textStyle, const ColorF& color, const ReadingDirection readingDirection)
 	{
 		return{};
 	}
