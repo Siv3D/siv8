@@ -11,6 +11,7 @@
 
 # include <Siv3D/Font.hpp>
 # include <Siv3D/DrawableText.hpp>
+# include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Font/FontFace.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
@@ -625,4 +626,23 @@ namespace s3d
 
 		return FileSystem::Exists(fontFilePath);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	StandardDrawFunc
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Font::StandardDrawFunc(const TextureRegion& textureRegion, const Vec2& pos, [[maybe_unused]] const double top, [[maybe_unused]] const double bottom, const bool isColorGlyph, const ColorF& color)
+	{
+		if (isColorGlyph)
+		{
+			textureRegion.draw(pos, ColorF{ 1.0, color.a });
+		}
+		else
+		{
+			textureRegion.draw(pos, color);
+		}
+	}
 }
+

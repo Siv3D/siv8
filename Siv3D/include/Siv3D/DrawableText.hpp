@@ -370,6 +370,102 @@ namespace s3d
 
 		bool draw(const TextStyle& textStyle, double size, const RectF& area, const ColorF& color = Palette::White) const;
 
+		RectF draw(double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF draw(Arg::topLeft_<Vec2> topLeft, Font::DrawFunc drawFunc) const;
+
+		RectF draw(Arg::topCenter_<Vec2> topCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(Arg::topRight_<Vec2> topRight, Font::DrawFunc drawFunc) const;
+
+		RectF draw(Arg::rightCenter_<Vec2> rightCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(Arg::bottomRight_<Vec2> bottomRight, Font::DrawFunc drawFunc) const;
+
+		RectF draw(Arg::bottomCenter_<Vec2> bottomCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(Arg::bottomLeft_<Vec2> bottomLeft, Font::DrawFunc drawFunc) const;
+
+		RectF draw(Arg::leftCenter_<Vec2> leftCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(Arg::center_<Vec2> center, Font::DrawFunc drawFunc) const;
+
+		bool draw(const RectF& area, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, Arg::topLeft_<Vec2> topLeft, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, Arg::topCenter_<Vec2> topCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, Arg::topRight_<Vec2> topRight, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, Arg::rightCenter_<Vec2> rightCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, Arg::bottomRight_<Vec2> bottomRight, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, Arg::bottomCenter_<Vec2> bottomCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, Arg::bottomLeft_<Vec2> bottomLeft, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, Arg::leftCenter_<Vec2> leftCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(double size, Arg::center_<Vec2> center, Font::DrawFunc drawFunc) const;
+
+		bool draw(double size, const RectF& area, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, Arg::topLeft_<Vec2> topLeft, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, Arg::topCenter_<Vec2> topCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, Arg::topRight_<Vec2> topRight, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, Arg::rightCenter_<Vec2> rightCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, Arg::bottomRight_<Vec2> bottomRight, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, Arg::bottomCenter_<Vec2> bottomCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, Arg::bottomLeft_<Vec2> bottomLeft, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, Arg::leftCenter_<Vec2> leftCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, Arg::center_<Vec2> center, Font::DrawFunc drawFunc) const;
+
+		bool draw(const TextStyle& textStyle, const RectF& area, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, Arg::topLeft_<Vec2> topLeft, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, Arg::topCenter_<Vec2> topCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, Arg::topRight_<Vec2> topRight, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, Arg::rightCenter_<Vec2> rightCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, Arg::bottomRight_<Vec2> bottomRight, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, Arg::bottomCenter_<Vec2> bottomCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, Arg::bottomLeft_<Vec2> bottomLeft, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, Arg::leftCenter_<Vec2> leftCenter, Font::DrawFunc drawFunc) const;
+
+		RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, Font::DrawFunc drawFunc) const;
+
+		bool draw(const TextStyle& textStyle, double size, const RectF& area, Font::DrawFunc drawFunc) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawBase
@@ -416,6 +512,46 @@ namespace s3d
 
 		RectF drawBase(const TextStyle& textStyle, double size, Arg::right_<Vec2> right, const ColorF& color = Palette::White) const;
 
+		RectF drawBase(double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(Arg::left_<Vec2> left, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(Arg::center_<Vec2> center, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(Arg::right_<Vec2> right, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(double size, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(double size, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(double size, Arg::left_<Vec2> left, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(double size, Arg::center_<Vec2> center, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(double size, Arg::right_<Vec2> right, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, Arg::left_<Vec2> left, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, Arg::center_<Vec2> center, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, Arg::right_<Vec2> right, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, Arg::left_<Vec2> left, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, Font::DrawFunc drawFunc) const;
+
+		RectF drawBase(const TextStyle& textStyle, double size, Arg::right_<Vec2> right, Font::DrawFunc drawFunc) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawAt
@@ -438,6 +574,22 @@ namespace s3d
 
 		RectF drawAt(const TextStyle& textStyle, double size, const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
 
+		RectF drawAt(double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawAt(const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawAt(double size, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawAt(double size, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawAt(const TextStyle& textStyle, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawAt(const TextStyle& textStyle, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawAt(const TextStyle& textStyle, double size, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawAt(const TextStyle& textStyle, double size, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawBaseAt
@@ -459,6 +611,22 @@ namespace s3d
 		RectF drawBaseAt(const TextStyle& textStyle, double size, double x, double y, const ColorF& color = Palette::White) const;
 
 		RectF drawBaseAt(const TextStyle& textStyle, double size, const Vec2& pos = Vec2{ 0, 0 }, const ColorF& color = Palette::White) const;
+
+		RectF drawBaseAt(double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawBaseAt(const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawBaseAt(double size, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawBaseAt(double size, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawBaseAt(const TextStyle& textStyle, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawBaseAt(const TextStyle& textStyle, const Vec2& pos, Font::DrawFunc drawFunc) const;
+
+		RectF drawBaseAt(const TextStyle& textStyle, double size, double x, double y, Font::DrawFunc drawFunc) const;
+
+		RectF drawBaseAt(const TextStyle& textStyle, double size, const Vec2& pos, Font::DrawFunc drawFunc) const;
 
 		////////////////////////////////////////////////////////////////
 		//

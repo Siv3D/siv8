@@ -41,6 +41,8 @@ namespace s3d
 	{
 	public:
 
+		using DrawFunc = FunctionRef<void(const TextureRegion& textureRegion, const Vec2& pos, double top, double bottom, bool isColorGlyph)>;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(constructor)
@@ -581,6 +583,14 @@ namespace s3d
 
 		[[nodiscard]]
 		static bool IsAvailable(Typeface typeface);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	StandardDrawFunc
+		//
+		////////////////////////////////////////////////////////////////
+
+		static void StandardDrawFunc(const TextureRegion& textureRegion, const Vec2& pos, double top, double bottom, bool isColorGlyph, const ColorF& color);
 	};
 }
 
