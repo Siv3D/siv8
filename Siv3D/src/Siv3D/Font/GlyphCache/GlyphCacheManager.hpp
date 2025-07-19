@@ -36,6 +36,13 @@ namespace s3d
 		int16 textureRegionHeight = 0;
 	};
 
+	struct PenPosInfo
+	{
+		Float2 penPos;
+
+		Float2 drawPos;
+	};
+
 	class GlyphCacheManager
 	{
 	public:

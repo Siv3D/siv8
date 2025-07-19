@@ -329,13 +329,12 @@ namespace s3d
 			}
 		}
 
-		const bool isDraw = (textOperation == TextOperation::Draw);
 		const auto& info = font.getInfo();
 		const double scale = (fontSize / info.baseSize);
 		const bool pixelPerfect = (fontSize == info.baseSize);
 
 		const Vec2 areaBottomRight = area.br();
-		const double dotXAdvance = (m_glyphCacheManager.get(periodGlyph.glyphIndex, readingDirection).info.advance);
+		const double periodXAdvance = (m_glyphCacheManager.get(periodGlyph.glyphIndex, readingDirection).info.advance);
 
 		const double lineHeight = (info.height() * scale * textStyle.lineSpacing);
 		const int32 maxLines = Max(static_cast<int32>(area.h / (lineHeight ? lineHeight : 1)), 1);
@@ -345,7 +344,8 @@ namespace s3d
 		bool isOverflow = false;
 		
 		// 各グリフの描画位置を先に求める
-		Array<Vec2> penPositions;
+		Array<PenPosInfo> penPositions;
+		Array<Vec2> periodPositions;
 		{
 			Vec2 penPos{ basePos };
 			double advance = 0.0;
@@ -366,25 +366,26 @@ namespace s3d
 						{
 							penPos.x = basePos.x;
 							penPos.y += lineHeight;
+							const double w = GetTabAdvance(info.spaceXAdvance, scale, basePos.x, penPos.x, info.tabSize);
 							
-							if (maxLines < ++lineCount)
+							if ((maxLines < ++lineCount) || (areaBottomRight.x < (penPos.x + w)))
 							{
 								isOverflow = true;
 								break;
 							}
 
-							penPositions << penPos;
-							penPos.x += GetTabAdvance(info.spaceXAdvance, scale, basePos.x, penPos.x, info.tabSize);
+							penPositions.emplace_back(penPos, penPos);
+							penPos.x += w;
 						}
 						else
 						{
-							penPositions << penPos;
+							penPositions.emplace_back(penPos, penPos);
 							penPos.x += tabAdvance;
 						}
 					}
 					else if (ch == U'\n')
 					{
-						penPositions << penPos;
+						penPositions.emplace_back(penPos, penPos);
 						penPos.x = basePos.x;
 						penPos.y += lineHeight;
 
@@ -396,7 +397,7 @@ namespace s3d
 					}
 					else
 					{
-						penPositions << penPos;
+						penPositions.emplace_back(penPos, penPos);
 					}
 
 					advance = 0.0;
@@ -409,7 +410,7 @@ namespace s3d
 				if (resolvedGlyph.fontIndex != 0)
 				{
 					const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
-					const Vec2 nextPos = (penPos + Vec2{ 0, (info.ascender * scale) });
+					Vec2 nextPos = (penPos + Vec2{ 0, (info.ascender * scale) });
 
 					auto [w, adv] = SIV3D_ENGINE(Font)->regionBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, readingDirection);
 
@@ -417,16 +418,17 @@ namespace s3d
 					{
 						penPos.x = basePos.x;
 						penPos.y += lineHeight;
+						nextPos = (penPos + Vec2{ 0, (info.ascender * scale) });
 						advance = 0.0;
 
-						if (maxLines < ++lineCount)
+						if ((maxLines < ++lineCount) || (areaBottomRight.x < (penPos.x + w)))
 						{
 							isOverflow = true;
 							break;
 						}
 					}
 
-					penPositions << penPos;
+					penPositions.emplace_back(penPos, nextPos);
 
 					advance = adv;
 					penPos.x += w;
@@ -452,7 +454,7 @@ namespace s3d
 							penPos.y += lineHeight;
 							advance = 0.0;
 
-							if (maxLines < ++lineCount)
+							if ((maxLines < ++lineCount) || (areaBottomRight.x < (penPos.x + w)))
 							{
 								isOverflow = true;
 								break;
@@ -475,7 +477,7 @@ namespace s3d
 							penPos.y += lineHeight;
 							advance = 0.0;
 
-							if (maxLines < ++lineCount)
+							if ((maxLines < ++lineCount) || (areaBottomRight.x < (penPos.x + w)))
 							{
 								isOverflow = true;
 								break;
@@ -487,25 +489,76 @@ namespace s3d
 						}
 					}
 
-					penPositions << drawPos;
+					penPositions.emplace_back(penPos, drawPos);
 				}
 
 				advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - w);
 				penPos.x += w;
 			}
-		}
 
-		// ... グリフの追加
-		if (isOverflow)
-		{
+			if (textOperation == TextOperation::Region)
+			{
+				return (not isOverflow);
+			}
 
+			// ... グリフの追加
+			if (isOverflow)
+			{
+				penPos = basePos;
+
+				while (penPositions)
+				{
+					penPos = penPositions.back().penPos;
+
+					penPositions.pop_back();
+
+					if (not penPositions)
+					{
+						break;
+					}
+
+					if ((penPositions.back().penPos.x + periodXAdvance * 3) <= areaBottomRight.x)
+					{
+						break;
+					}
+				}
+
+				const auto& cache = m_glyphCacheManager.get(periodGlyph.glyphIndex, readingDirection);
+				const Vec2 posOffset = cache.info.getOffset(scale);
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+
+				for (int32 i = 0; i < 3; ++i)
+				{
+					double w = 0.0;
+					{
+						Vec2 drawPos = (penPos + posOffset);
+
+						if (pixelPerfect)
+						{
+							drawPos = Math::Round(drawPos);
+							w = textureRegion.region(drawPos).w;
+							w += (posOffset.x * scale);
+						}
+						else
+						{
+							w = textureRegion.scaled(scale).region(drawPos).w;
+							w += (posOffset.x * scale);
+						}
+
+						periodPositions << drawPos;
+					}
+
+					advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - w);
+					penPos.x += w;
+				}
+			}
 		}
 
 		{
 			for (size_t i = 0; i < penPositions.size(); ++i)
 			{
 				const ResolvedGlyph& resolvedGlyph = resolvedGlyphs[i];
-				const Vec2 penPos = penPositions[i];
+				const PenPosInfo& penPosInfo = penPositions[i];
 
 				if (const char32 ch = s[resolvedGlyph.pos];
 					IsControl(ch))
@@ -516,8 +569,7 @@ namespace s3d
 				if (resolvedGlyph.fontIndex != 0)
 				{
 					const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
-					const Vec2 nextPos = (penPos + Vec2{ 0, (info.ascender * scale) });
-					SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, color, readingDirection);
+					SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, penPosInfo.drawPos, fontSize, textStyle, color, readingDirection);
 				}
 				else
 				{
@@ -526,12 +578,28 @@ namespace s3d
 
 					if (pixelPerfect)
 					{
-						textureRegion.draw(penPos, color).w ;
+						textureRegion.draw(penPosInfo.drawPos, color).w ;
 					}
 					else
 					{
-						textureRegion.scaled(scale).draw(penPos, color).w ;
+						textureRegion.scaled(scale).draw(penPosInfo.drawPos, color).w ;
 					}
+				}
+			}
+
+			for (const auto& periodPosition : periodPositions)
+			{
+				const auto& cache = m_glyphCacheManager.get(periodGlyph.glyphIndex, readingDirection);
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+				const Vec2 penPos = periodPosition;
+
+				if (pixelPerfect)
+				{
+					textureRegion.draw(penPos, color).w ;
+				}
+				else
+				{
+					textureRegion.scaled(scale).draw(penPos, color).w ;
 				}
 			}
 		}
