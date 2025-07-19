@@ -16,6 +16,7 @@
 # include "GlyphCache/BitmapGlyphCache.hpp"
 # include "GlyphCache/MSDFGlyphCache.hpp"
 # include "GlyphRenderer/BitmapGlyphRenderer.hpp"
+# include "GlyphRenderer/MSDFGlyphRenderer.hpp"
 
 namespace s3d
 {
@@ -382,9 +383,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	[[nodiscard]]
 	BitmapGlyph FontData::renderBitmapByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		return RenderBitmapGlyph(m_face->getFace(), glyphIndex, m_face->getInfo(), readingDirection, m_face->getSkFont());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderMSDFByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+	
+	MSDFGlyph FontData::renderMSDFByGlyphIndex(const GlyphIndex glyphIndex, const int32 buffer, const ReadingDirection readingDirection)
+	{
+		return RenderMSDFGlyph(m_face->getFace(), glyphIndex, m_face->getInfo(), buffer, readingDirection);
 	}
 }

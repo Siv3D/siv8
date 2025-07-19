@@ -9,15 +9,12 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include "Common.hpp"
-# include "Image.hpp"
-# include "GlyphInfo.hpp"
+# include "MSDFGlyphRenderer.hpp"
 
 namespace s3d
 {
-	struct BitmapGlyph : GlyphInfo
+	MSDFGlyph RenderMSDFGlyph(const ::FT_Face face, const GlyphIndex glyphIndex, const FontFaceInfo& info, const int32 buffer, const ReadingDirection readingDirection)
 	{
-		Image image;
-	};
+		return{};
+	}
 }

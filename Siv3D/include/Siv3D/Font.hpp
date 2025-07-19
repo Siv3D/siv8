@@ -20,6 +20,7 @@
 # include "GlyphInfo.hpp"
 # include "OutlineGlyph.hpp"
 # include "BitmapGlyph.hpp"
+# include "MSDFGlyph.hpp"
 # include "ResolvedGlyph.hpp"
 # include "PredefinedYesNo.hpp"
 # include "Typeface.hpp"

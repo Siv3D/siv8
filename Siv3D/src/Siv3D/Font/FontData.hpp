@@ -178,7 +178,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex, const ReadingDirection readingDirection) const;
+		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -197,6 +197,15 @@ namespace s3d
 
 		[[nodiscard]]
 		BitmapGlyph renderBitmapByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderMSDFByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MSDFGlyph renderMSDFByGlyphIndex(GlyphIndex glyphIndex, int32 buffer, ReadingDirection readingDirection);
 
 	private:
 

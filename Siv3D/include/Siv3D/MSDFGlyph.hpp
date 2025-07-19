@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	struct BitmapGlyph : GlyphInfo
+	struct MSDFGlyph : GlyphInfo
 	{
 		Image image;
 	};
