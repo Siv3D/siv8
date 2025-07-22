@@ -16,14 +16,20 @@ namespace s3d
 {
 	namespace TextEffect
 	{
+		/// @brief 鏡文字テキスト描画エフェクト
 		class Mirror : public BasicTextEffect
 		{
 		public:
 
 			Mirror() = default;
 
+			/// @brief コンストラクタ
+			/// @param color 描画時に使用する色
 			explicit constexpr Mirror(const ColorF& color) noexcept;
 
+			/// @brief コンストラクタ
+			/// @param miror 鏡文字にするかどうか
+			/// @param color 描画時に使用する色
 			explicit constexpr Mirror(bool miror, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const Vec2& pos, const int32, double, double, bool) const override;

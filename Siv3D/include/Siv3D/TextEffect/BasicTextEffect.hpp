@@ -16,12 +16,15 @@ namespace s3d
 {
 	namespace TextEffect
 	{
+		/// @brief デフォルトのテキスト描画エフェクト
 		class BasicTextEffect : public ITextEffect
 		{
 		public:
 
 			BasicTextEffect() = default;
 
+			/// @brief コンストラクタ
+			/// @param color 描画時に使用する色
 			explicit constexpr BasicTextEffect(const ColorF& color) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const override;

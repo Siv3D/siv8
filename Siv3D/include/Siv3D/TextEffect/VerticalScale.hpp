@@ -16,14 +16,22 @@ namespace s3d
 {
 	namespace TextEffect
 	{
+		/// @brief 垂直方向に拡大縮小するテキスト描画エフェクト
 		class VerticalScale : public BasicTextEffect
 		{
 		public:
 
 			VerticalScale() = default;
 
+			/// @brief コンストラクタ
+			/// @param scale 拡大縮小の倍率
+			/// @param color 描画時に使用する色
 			constexpr VerticalScale(double scale, const ColorF& color = Palette::White) noexcept;
 
+			/// @brief コンストラクタ
+			/// @param scale 拡大縮小の倍率
+			/// @param center 拡大縮小の中心位置 (0.0 から 1.0 の範囲)
+			/// @param color 描画時に使用する色
 			constexpr VerticalScale(double scale, double center, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const override;

@@ -16,12 +16,18 @@ namespace s3d
 {
 	namespace TextEffect
 	{
+		/// @brief 垂直方向にグラデーションするテキスト描画エフェクト
 		class VerticalGradient : public ITextEffect
 		{
 		public:
 
 			VerticalGradient() = default;
 
+			/// @brief コンストラクタ
+			/// @param startColor グラデーションの開始色
+			/// @param endColor グラデーションの終了色
+			/// @param startOffset グラデーションの開始位置のオフセット (0.0 から 1.0 の範囲)
+			/// @param endOffset グラデーションの終了位置のオフセット (0.0 から 1.0 の範囲)
 			constexpr VerticalGradient(const ColorF& startColor, const ColorF& endColor, double startOffset = 0.0, double endOffset = 1.0) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const override;

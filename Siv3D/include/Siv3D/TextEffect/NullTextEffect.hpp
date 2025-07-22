@@ -16,6 +16,7 @@ namespace s3d
 {
 	namespace TextEffect
 	{
+		/// @brief 何もしないテキスト描画エフェクト
 		class NullTextEffect : public ITextEffect
 		{
 		public:
