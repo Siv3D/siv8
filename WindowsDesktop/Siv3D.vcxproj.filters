@@ -1096,6 +1096,12 @@
     <Filter Include="src\Siv3D\Font\GlyphCache">
       <UniqueIdentifier>{fbdb89c9-f47e-48c9-a723-01986d5132fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\BasicGlyphRenderer">
+      <UniqueIdentifier>{a761aae2-f7ce-4aef-96ae-276a05512278}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\GradientGlyphRenderer">
+      <UniqueIdentifier>{76ce9736-7739-4826-a8ef-0ab482e13965}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4368,6 +4374,24 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\MSDFGlyphRenderer.hpp">
       <Filter>src\Siv3D\Font\GlyphRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\IGlyphRenderer.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BasicGlyphRenderer.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BasicGlyphRenderer.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NullGlyphRenderer.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\GradientGlyphRenderer.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\GradientGlyphRenderer.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6922,6 +6946,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\MSDFGlyphRenderer.cpp">
       <Filter>src\Siv3D\Font\GlyphRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BasicGlyphRenderer\SivBasicGlyphRenderer.cpp">
+      <Filter>src\Siv3D\BasicGlyphRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\GradientGlyphRenderer\SivGradientGlyphRenderer.cpp">
+      <Filter>src\Siv3D\GradientGlyphRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

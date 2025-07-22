@@ -626,23 +626,5 @@ namespace s3d
 
 		return FileSystem::Exists(fontFilePath);
 	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	StandardDrawFunc
-	//
-	////////////////////////////////////////////////////////////////
-
-	void Font::StandardDrawFunc(const TextureRegion& textureRegion, const Vec2& pos, [[maybe_unused]] const double top, [[maybe_unused]] const double bottom, const bool isColorGlyph, const ColorF& color)
-	{
-		if (isColorGlyph)
-		{
-			textureRegion.draw(pos, ColorF{ 1.0, color.a });
-		}
-		else
-		{
-			textureRegion.draw(pos, color);
-		}
-	}
 }
 

@@ -1622,6 +1622,11 @@
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/TextStyle.hpp>
 
+# include <Siv3D/IGlyphRenderer.hpp>
+# include <Siv3D/NullGlyphRenderer.hpp>
+# include <Siv3D/BasicGlyphRenderer.hpp>
+# include <Siv3D/GradientGlyphRenderer.hpp>
+
 
 # include <Siv3D/Pipe.hpp>
 

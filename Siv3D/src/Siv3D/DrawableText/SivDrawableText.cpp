@@ -11,6 +11,7 @@
 
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/TextStyle.hpp>
+# include <Siv3D/BasicGlyphRenderer.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -569,9 +570,7 @@ namespace s3d
 
 	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Vec2& pos, const ColorF& color) const
 	{
-		const auto drawFunc = [&](const TextureRegion& textureRegion, const Vec2& pos, double top, double bottom, bool isColorGlyph) { Font::StandardDrawFunc(textureRegion, pos, top, bottom, isColorGlyph, color); };
-
-		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, pos, size, textStyle, drawFunc, readingDirection);
+		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, pos, size, textStyle, BasicGlyphRenderer{ color }, readingDirection);
 	}
 
 	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topLeft_<Vec2> topLeft, const ColorF& color) const
@@ -625,253 +624,251 @@ namespace s3d
 
 	bool DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const ColorF& color) const
 	{
-		const auto drawFunc = [&](const TextureRegion& textureRegion, const Vec2& pos, double top, double bottom, bool isColorGlyph) { Font::StandardDrawFunc(textureRegion, pos, top, bottom, isColorGlyph, color); };
-
-		return SIV3D_ENGINE(Font)->drawRect(font.id(), text, resolvedGlyphs, area, size, textStyle, drawFunc, readingDirection);
+		return SIV3D_ENGINE(Font)->drawRect(font.id(), text, resolvedGlyphs, area, size, textStyle, BasicGlyphRenderer{ color }, readingDirection);
 	}
 
-	RectF DrawableText::draw(const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), pos, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), pos, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Arg::topLeft_<Vec2> topLeft, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Arg::topLeft_<Vec2> topLeft, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), topLeft, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), topLeft, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Arg::topCenter_<Vec2> topCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Arg::topCenter_<Vec2> topCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), topCenter, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), topCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Arg::topRight_<Vec2> topRight, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Arg::topRight_<Vec2> topRight, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), topRight, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), topRight, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Arg::rightCenter_<Vec2> rightCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Arg::rightCenter_<Vec2> rightCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), rightCenter, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), rightCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Arg::bottomRight_<Vec2> bottomRight, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Arg::bottomRight_<Vec2> bottomRight, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), bottomRight, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), bottomRight, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Arg::bottomCenter_<Vec2> bottomCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Arg::bottomCenter_<Vec2> bottomCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), bottomCenter, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), bottomCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Arg::bottomLeft_<Vec2> bottomLeft, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Arg::bottomLeft_<Vec2> bottomLeft, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), bottomLeft, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), bottomLeft, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Arg::leftCenter_<Vec2> leftCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Arg::leftCenter_<Vec2> leftCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), leftCenter, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), leftCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const Arg::center_<Vec2> center, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const Arg::center_<Vec2> center, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), center, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), center, glyphRenderer);
 	}
 
-	bool DrawableText::draw(const RectF& area, const Font::DrawFunc drawFunc) const
+	bool DrawableText::draw(const RectF& area, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), area, drawFunc);
+		return draw(TextStyle::Default(), font.baseSize(), area, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, Vec2{ x, y }, drawFunc);
+		return draw(TextStyle::Default(), size, Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, pos, drawFunc);
+		return draw(TextStyle::Default(), size, pos, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::topLeft_<Vec2> topLeft, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Arg::topLeft_<Vec2> topLeft, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, topLeft, drawFunc);
+		return draw(TextStyle::Default(), size, topLeft, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::topCenter_<Vec2> topCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Arg::topCenter_<Vec2> topCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, topCenter, drawFunc);
+		return draw(TextStyle::Default(), size, topCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::topRight_<Vec2> topRight, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Arg::topRight_<Vec2> topRight, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, topRight, drawFunc);
+		return draw(TextStyle::Default(), size, topRight, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::rightCenter_<Vec2> rightCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Arg::rightCenter_<Vec2> rightCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, rightCenter, drawFunc);
+		return draw(TextStyle::Default(), size, rightCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::bottomRight_<Vec2> bottomRight, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Arg::bottomRight_<Vec2> bottomRight, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, bottomRight, drawFunc);
+		return draw(TextStyle::Default(), size, bottomRight, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::bottomCenter_<Vec2> bottomCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Arg::bottomCenter_<Vec2> bottomCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, bottomCenter, drawFunc);
+		return draw(TextStyle::Default(), size, bottomCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::bottomLeft_<Vec2> bottomLeft, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Arg::bottomLeft_<Vec2> bottomLeft, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, bottomLeft, drawFunc);
+		return draw(TextStyle::Default(), size, bottomLeft, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::leftCenter_<Vec2> leftCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Arg::leftCenter_<Vec2> leftCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, leftCenter, drawFunc);
+		return draw(TextStyle::Default(), size, leftCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::center_<Vec2> center, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const double size, const Arg::center_<Vec2> center, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, center, drawFunc);
+		return draw(TextStyle::Default(), size, center, glyphRenderer);
 	}
 
-	bool DrawableText::draw(const double size, const RectF& area, const Font::DrawFunc drawFunc) const
+	bool DrawableText::draw(const double size, const RectF& area, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(TextStyle::Default(), size, area, drawFunc);
+		return draw(TextStyle::Default(), size, area, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), Vec2{ x, y }, drawFunc);
+		return draw(textStyle, font.baseSize(), Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), pos, drawFunc);
+		return draw(textStyle, font.baseSize(), pos, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topLeft_<Vec2> topLeft, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topLeft_<Vec2> topLeft, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), topLeft, drawFunc);
+		return draw(textStyle, font.baseSize(), topLeft, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topCenter_<Vec2> topCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topCenter_<Vec2> topCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), topCenter, drawFunc);
+		return draw(textStyle, font.baseSize(), topCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topRight_<Vec2> topRight, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topRight_<Vec2> topRight, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), topRight, drawFunc);
+		return draw(textStyle, font.baseSize(), topRight, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::rightCenter_<Vec2> rightCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::rightCenter_<Vec2> rightCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), rightCenter, drawFunc);
+		return draw(textStyle, font.baseSize(), rightCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomRight_<Vec2> bottomRight, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomRight_<Vec2> bottomRight, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), bottomRight, drawFunc);
+		return draw(textStyle, font.baseSize(), bottomRight, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomCenter_<Vec2> bottomCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomCenter_<Vec2> bottomCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), bottomCenter, drawFunc);
+		return draw(textStyle, font.baseSize(), bottomCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomLeft_<Vec2> bottomLeft, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomLeft_<Vec2> bottomLeft, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), bottomLeft, drawFunc);
+		return draw(textStyle, font.baseSize(), bottomLeft, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::leftCenter_<Vec2> leftCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::leftCenter_<Vec2> leftCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), leftCenter, drawFunc);
+		return draw(textStyle, font.baseSize(), leftCenter, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::center_<Vec2> center, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::center_<Vec2> center, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), center, drawFunc);
+		return draw(textStyle, font.baseSize(), center, glyphRenderer);
 	}
 
-	bool DrawableText::draw(const TextStyle& textStyle, const RectF& area, const Font::DrawFunc drawFunc) const
+	bool DrawableText::draw(const TextStyle& textStyle, const RectF& area, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, font.baseSize(), area, drawFunc);
+		return draw(textStyle, font.baseSize(), area, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, size, Vec2{ x, y }, drawFunc);
+		return draw(textStyle, size, Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, pos, size, textStyle, drawFunc, readingDirection);
+		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, pos, size, textStyle, glyphRenderer, readingDirection);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topLeft_<Vec2> topLeft, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topLeft_<Vec2> topLeft, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, size, *topLeft, drawFunc);
+		return draw(textStyle, size, *topLeft, glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topCenter_<Vec2> topCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topCenter_<Vec2> topCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, size, topCenter->movedBy((-0.5 * region(textStyle, size).w), 0), drawFunc);
+		return draw(textStyle, size, topCenter->movedBy((-0.5 * region(textStyle, size).w), 0), glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topRight_<Vec2> topRight, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topRight_<Vec2> topRight, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, size, topRight->movedBy(-region(textStyle, size).w, 0), drawFunc);
+		return draw(textStyle, size, topRight->movedBy(-region(textStyle, size).w, 0), glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::rightCenter_<Vec2> rightCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::rightCenter_<Vec2> rightCenter, const IGlyphRenderer& glyphRenderer) const
 	{
 		const RectF textRegion = region(textStyle, size);
 
-		return draw(textStyle, size, rightCenter->movedBy(-textRegion.w, (-0.5 * textRegion.h)), drawFunc);
+		return draw(textStyle, size, rightCenter->movedBy(-textRegion.w, (-0.5 * textRegion.h)), glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomRight_<Vec2> bottomRight, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomRight_<Vec2> bottomRight, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, size, bottomRight->movedBy(-region(textStyle, size).size), drawFunc);
+		return draw(textStyle, size, bottomRight->movedBy(-region(textStyle, size).size), glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomCenter_<Vec2> bottomCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomCenter_<Vec2> bottomCenter, const IGlyphRenderer& glyphRenderer) const
 	{
 		const RectF textRegion = region(textStyle, size);
 
-		return draw(textStyle, size, bottomCenter->movedBy((-0.5 * textRegion.w), -textRegion.h), drawFunc);
+		return draw(textStyle, size, bottomCenter->movedBy((-0.5 * textRegion.w), -textRegion.h), glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomLeft_<Vec2> bottomLeft, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomLeft_<Vec2> bottomLeft, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, size, bottomLeft->movedBy(0, -region(textStyle, size).h), drawFunc);
+		return draw(textStyle, size, bottomLeft->movedBy(0, -region(textStyle, size).h), glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::leftCenter_<Vec2> leftCenter, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::leftCenter_<Vec2> leftCenter, const IGlyphRenderer& glyphRenderer) const
 	{
-		return draw(textStyle, size, leftCenter->movedBy(0, (-0.5 * region(textStyle, size).h)), drawFunc);
+		return draw(textStyle, size, leftCenter->movedBy(0, (-0.5 * region(textStyle, size).h)), glyphRenderer);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawAt(textStyle, size, *center, drawFunc);
+		return drawAt(textStyle, size, *center, glyphRenderer);
 	}
 
-	bool DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const Font::DrawFunc drawFunc) const
+	bool DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const IGlyphRenderer& glyphRenderer) const
 	{
-		return SIV3D_ENGINE(Font)->drawRect(font.id(), text, resolvedGlyphs, area, size, textStyle, drawFunc, readingDirection);
+		return SIV3D_ENGINE(Font)->drawRect(font.id(), text, resolvedGlyphs, area, size, textStyle, glyphRenderer, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -962,9 +959,7 @@ namespace s3d
 
 	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Vec2& pos, const ColorF& color) const
 	{
-		const auto drawFunc = [&](const TextureRegion& textureRegion, const Vec2& pos, double top, double bottom, bool isColorGlyph) { Font::StandardDrawFunc(textureRegion, pos, top, bottom, isColorGlyph, color); };
-
-		return SIV3D_ENGINE(Font)->drawBase(font.id(), text, resolvedGlyphs, pos, size, textStyle, drawFunc, readingDirection);
+		return SIV3D_ENGINE(Font)->drawBase(font.id(), text, resolvedGlyphs, pos, size, textStyle, BasicGlyphRenderer{ color }, readingDirection);
 	}
 
 	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Arg::left_<Vec2> left, const ColorF& color) const
@@ -982,104 +977,104 @@ namespace s3d
 		return drawBase(textStyle, size, right->movedBy(-region(textStyle, size).w, 0), color);
 	}
 
-	RectF DrawableText::drawBase(const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, drawFunc);
+		return drawBase(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), font.baseSize(), pos, drawFunc);
+		return drawBase(TextStyle::Default(), font.baseSize(), pos, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const Arg::left_<Vec2> left, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const Arg::left_<Vec2> left, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), font.baseSize(), left, drawFunc);
+		return drawBase(TextStyle::Default(), font.baseSize(), left, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const Arg::center_<Vec2> center, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const Arg::center_<Vec2> center, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), font.baseSize(), center, drawFunc);
+		return drawBase(TextStyle::Default(), font.baseSize(), center, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const Arg::right_<Vec2> right, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const Arg::right_<Vec2> right, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), font.baseSize(), right, drawFunc);
+		return drawBase(TextStyle::Default(), font.baseSize(), right, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const double size, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const double size, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), size, Vec2{ x, y }, drawFunc);
+		return drawBase(TextStyle::Default(), size, Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const double size, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const double size, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), size, pos, drawFunc);
+		return drawBase(TextStyle::Default(), size, pos, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const double size, const Arg::left_<Vec2> left, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const double size, const Arg::left_<Vec2> left, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), size, left, drawFunc);
+		return drawBase(TextStyle::Default(), size, left, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const double size, const Arg::center_<Vec2> center, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const double size, const Arg::center_<Vec2> center, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), size, center, drawFunc);
+		return drawBase(TextStyle::Default(), size, center, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const double size, const Arg::right_<Vec2> right, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const double size, const Arg::right_<Vec2> right, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(TextStyle::Default(), size, right, drawFunc);
+		return drawBase(TextStyle::Default(), size, right, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(textStyle, font.baseSize(), Vec2{ x, y }, drawFunc);
+		return drawBase(textStyle, font.baseSize(), Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(textStyle, font.baseSize(), pos, drawFunc);
+		return drawBase(textStyle, font.baseSize(), pos, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const Arg::left_<Vec2> left, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const Arg::left_<Vec2> left, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(textStyle, font.baseSize(), left, drawFunc);
+		return drawBase(textStyle, font.baseSize(), left, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const Arg::center_<Vec2> center, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const Arg::center_<Vec2> center, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(textStyle, font.baseSize(), center, drawFunc);
+		return drawBase(textStyle, font.baseSize(), center, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const Arg::right_<Vec2> right, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const Arg::right_<Vec2> right, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(textStyle, font.baseSize(), right, drawFunc);
+		return drawBase(textStyle, font.baseSize(), right, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(textStyle, size, Vec2{ x, y }, drawFunc);
+		return drawBase(textStyle, size, Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return SIV3D_ENGINE(Font)->drawBase(font.id(), text, resolvedGlyphs, pos, size, textStyle, drawFunc, readingDirection);
+		return SIV3D_ENGINE(Font)->drawBase(font.id(), text, resolvedGlyphs, pos, size, textStyle, glyphRenderer, readingDirection);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Arg::left_<Vec2> left, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Arg::left_<Vec2> left, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(textStyle, size, *left, drawFunc);
+		return drawBase(textStyle, size, *left, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(textStyle, size, center->movedBy((-0.5 * region(textStyle, size).w), 0), drawFunc);
+		return drawBase(textStyle, size, center->movedBy((-0.5 * region(textStyle, size).w), 0), glyphRenderer);
 	}
 
-	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Arg::right_<Vec2> right, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBase(const TextStyle& textStyle, const double size, const Arg::right_<Vec2> right, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBase(textStyle, size, right->movedBy(-region(textStyle, size).w, 0), drawFunc);
+		return drawBase(textStyle, size, right->movedBy(-region(textStyle, size).w, 0), glyphRenderer);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1126,51 +1121,50 @@ namespace s3d
 	RectF DrawableText::drawAt(const TextStyle& textStyle, const double size, const Vec2& pos, const ColorF& color) const
 	{
 		const RectF textRegion = region(textStyle, size);
-		const auto drawFunc = [&](const TextureRegion& textureRegion, const Vec2& pos, double top, double bottom, bool isColorGlyph) { Font::StandardDrawFunc(textureRegion, pos, top, bottom, isColorGlyph, color); };
 
-		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, (pos - textRegion.center()), size, textStyle, drawFunc, readingDirection);
+		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, (pos - textRegion.center()), size, textStyle, BasicGlyphRenderer{ color }, readingDirection);
 	}
 
-	RectF DrawableText::drawAt(const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawAt(const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawAt(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, drawFunc);
+		return drawAt(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawAt(const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawAt(const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawAt(TextStyle::Default(), font.baseSize(), pos, drawFunc);
+		return drawAt(TextStyle::Default(), font.baseSize(), pos, glyphRenderer);
 	}
 
-	RectF DrawableText::drawAt(const double size, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawAt(const double size, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawAt(TextStyle::Default(), size, Vec2{ x, y }, drawFunc);
+		return drawAt(TextStyle::Default(), size, Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawAt(const double size, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawAt(const double size, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawAt(TextStyle::Default(), size, pos, drawFunc);
+		return drawAt(TextStyle::Default(), size, pos, glyphRenderer);
 	}
 
-	RectF DrawableText::drawAt(const TextStyle& textStyle, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawAt(const TextStyle& textStyle, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawAt(textStyle, font.baseSize(), Vec2{ x, y }, drawFunc);
+		return drawAt(textStyle, font.baseSize(), Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawAt(const TextStyle& textStyle, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawAt(const TextStyle& textStyle, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawAt(textStyle, font.baseSize(), pos, drawFunc);
+		return drawAt(textStyle, font.baseSize(), pos, glyphRenderer);
 	}
 
-	RectF DrawableText::drawAt(const TextStyle& textStyle, const double size, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawAt(const TextStyle& textStyle, const double size, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawAt(textStyle, size, Vec2{ x, y }, drawFunc);
+		return drawAt(textStyle, size, Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawAt(const TextStyle& textStyle, const double size, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawAt(const TextStyle& textStyle, const double size, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
 		const RectF textRegion = region(textStyle, size);
 
-		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, (pos - textRegion.center()), size, textStyle, drawFunc, readingDirection);
+		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, (pos - textRegion.center()), size, textStyle, glyphRenderer, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1217,51 +1211,50 @@ namespace s3d
 	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double size, const Vec2& pos, const ColorF& color) const
 	{
 		const RectF textRegion = regionBase(textStyle, size);
-		const auto drawFunc = [&](const TextureRegion& textureRegion, const Vec2& pos, double top, double bottom, bool isColorGlyph) { Font::StandardDrawFunc(textureRegion, pos, top, bottom, isColorGlyph, color); };
-		
-		return SIV3D_ENGINE(Font)->drawBase(font.id(), text, resolvedGlyphs, Vec2{ (pos.x - (textRegion.w * 0.5)), pos.y }, size, textStyle, drawFunc, readingDirection);
+
+		return SIV3D_ENGINE(Font)->drawBase(font.id(), text, resolvedGlyphs, Vec2{ (pos.x - (textRegion.w * 0.5)), pos.y }, size, textStyle, BasicGlyphRenderer{ color }, readingDirection);
 	}
 
-	RectF DrawableText::drawBaseAt(const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBaseAt(const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBaseAt(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, drawFunc);
+		return drawBaseAt(TextStyle::Default(), font.baseSize(), Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBaseAt(const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBaseAt(const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBaseAt(TextStyle::Default(), font.baseSize(), pos, drawFunc);
+		return drawBaseAt(TextStyle::Default(), font.baseSize(), pos, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBaseAt(const double size, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBaseAt(const double size, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBaseAt(TextStyle::Default(), size, Vec2{ x, y }, drawFunc);
+		return drawBaseAt(TextStyle::Default(), size, Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBaseAt(const double size, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBaseAt(const double size, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBaseAt(TextStyle::Default(), size, pos, drawFunc);
+		return drawBaseAt(TextStyle::Default(), size, pos, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBaseAt(textStyle, font.baseSize(), Vec2{ x, y }, drawFunc);
+		return drawBaseAt(textStyle, font.baseSize(), Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBaseAt(textStyle, font.baseSize(), pos, drawFunc);
+		return drawBaseAt(textStyle, font.baseSize(), pos, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double size, const double x, const double y, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double size, const double x, const double y, const IGlyphRenderer& glyphRenderer) const
 	{
-		return drawBaseAt(textStyle, size, Vec2{ x, y }, drawFunc);
+		return drawBaseAt(textStyle, size, Vec2{ x, y }, glyphRenderer);
 	}
 
-	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double size, const Vec2& pos, const Font::DrawFunc drawFunc) const
+	RectF DrawableText::drawBaseAt(const TextStyle& textStyle, const double size, const Vec2& pos, const IGlyphRenderer& glyphRenderer) const
 	{
 		const RectF textRegion = regionBase(textStyle, size);
 
-		return SIV3D_ENGINE(Font)->drawBase(font.id(), text, resolvedGlyphs, Vec2{ (pos.x - (textRegion.w * 0.5)), pos.y }, size, textStyle, drawFunc, readingDirection);
+		return SIV3D_ENGINE(Font)->drawBase(font.id(), text, resolvedGlyphs, Vec2{ (pos.x - (textRegion.w * 0.5)), pos.y }, size, textStyle, glyphRenderer, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////

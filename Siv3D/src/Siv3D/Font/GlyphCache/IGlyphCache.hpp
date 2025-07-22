@@ -18,6 +18,8 @@
 
 namespace s3d
 {
+	struct IGlyphRenderer;
+
 	class IGlyphCache
 	{
 	public:
@@ -34,19 +36,19 @@ namespace s3d
 		virtual const Texture& getTexture() noexcept = 0;
 
 		[[nodiscard]]
-		virtual RectF processHorizontal(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, Font::DrawFunc drawFunc, bool isColorGlyph, ReadingDirection readingDirection) = 0;
+		virtual RectF processHorizontal(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, bool isColorGlyph, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
-		virtual std::pair<double, double> processHorizontalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, Font::DrawFunc drawFunc, bool isColorGlyph, ReadingDirection readingDirection) = 0;
+		virtual std::pair<double, double> processHorizontalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, bool isColorGlyph, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
-		virtual RectF processVertical(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, Font::DrawFunc drawFunc, bool isColorGlyph, ReadingDirection readingDirection) = 0;
+		virtual RectF processVertical(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, bool isColorGlyph, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
-		virtual std::pair<double, double> processVerticalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, Font::DrawFunc drawFunc, bool isColorGlyph, ReadingDirection readingDirection) = 0;
+		virtual std::pair<double, double> processVerticalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, bool isColorGlyph, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
-		virtual bool processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& pos, double fontSize, const TextStyle& textStyle, Font::DrawFunc drawFunc, bool isColorGlyph, ReadingDirection readingDirection) = 0;
+		virtual bool processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& pos, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, bool isColorGlyph, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
 		virtual Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) = 0;
