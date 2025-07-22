@@ -17,16 +17,16 @@ namespace s3d
 	{
 		void VerticalGradient::draw(const TextureRegion& textureRegion, const Vec2& pos, [[maybe_unused]] const int32 index, const double top, const double bottom, const bool isColorGlyph) const
 		{
-			const ColorF c0 = (isColorGlyph ? ColorF{ 1.0, startColor.a } : startColor);
-			const ColorF c1 = (isColorGlyph ? ColorF{ 1.0, endColor.a } : endColor);
+			const ColorF c0 = (isColorGlyph ? ColorF{ 1.0, m_startColor.a } : m_startColor);
+			const ColorF c1 = (isColorGlyph ? ColorF{ 1.0, m_endColor.a } : m_endColor);
 
 			const double textureWidth = textureRegion.size.x;
 			const double textureHeight = textureRegion.size.y;
 			const double textureStartY = pos.y;
 			const double textureEndY = (pos.y + textureHeight);
 
-			const double gradientStartY = Math::Lerp(top, bottom, startOffset);
-			const double gradientEndY = Math::Lerp(top, bottom, endOffset);
+			const double gradientStartY = Math::Lerp(top, bottom, m_startOffset);
+			const double gradientEndY = Math::Lerp(top, bottom, m_endOffset);
 
 			const double textureTopHeight = Clamp((gradientStartY - textureStartY), 0.0, textureHeight);
 			const double textureBottomHeight = Clamp((textureEndY - gradientEndY), 0.0, textureHeight);
