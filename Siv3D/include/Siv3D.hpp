@@ -1626,6 +1626,12 @@
 # include <Siv3D/TextEffect/NullTextEffect.hpp>
 # include <Siv3D/TextEffect/BasicTextEffect.hpp>
 # include <Siv3D/TextEffect/VerticalGradient.hpp>
+# include <Siv3D/TextEffect/HorizontalGradient.hpp>
+# include <Siv3D/TextEffect/HorizontalGradientHSV.hpp>
+# include <Siv3D/TextEffect/QuadWarp.hpp>
+# include <Siv3D/TextEffect/Mirror.hpp>
+# include <Siv3D/TextEffect/VerticalScale.hpp>
+# include <Siv3D/TextEffect/Reflection.hpp>
 
 
 # include <Siv3D/Pipe.hpp>
