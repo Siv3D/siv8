@@ -10,14 +10,17 @@
 //-----------------------------------------------
 
 # pragma once
-# include "IGlyphRenderer.hpp"
+# include "../ITextEffect.hpp"
 
 namespace s3d
 {
-	class NullGlyphRenderer : public IGlyphRenderer
+	namespace TextEffect
 	{
-	public:
+		class NullTextEffect : public ITextEffect
+		{
+		public:
 
-		constexpr void draw(const TextureRegion&, const Vec2&, int32, double, double, bool) const override {}
-	};
+			constexpr void draw(const TextureRegion&, const Vec2&, int32, double, double, bool) const override {}
+		};
+	}
 }

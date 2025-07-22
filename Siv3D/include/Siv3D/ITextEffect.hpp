@@ -14,9 +14,9 @@
 
 namespace s3d
 {
-	struct IGlyphRenderer
+	struct ITextEffect
 	{
-		virtual ~IGlyphRenderer() = default;
+		virtual ~ITextEffect() = default;
 
 		virtual void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const = 0;
 	};

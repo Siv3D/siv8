@@ -231,7 +231,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, ReadingDirection readingDirection) override;
+		RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -247,7 +247,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF drawBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, ReadingDirection readingDirection) override;
+		RectF drawBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -263,7 +263,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, ReadingDirection readingDirection) override;
+		std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -279,7 +279,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, ReadingDirection readingDirection) override;
+		bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
 
 	private:
 

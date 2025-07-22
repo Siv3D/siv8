@@ -13,6 +13,9 @@
 
 namespace s3d
 {
-	constexpr BasicGlyphRenderer::BasicGlyphRenderer(const ColorF& _color) noexcept
-		: color{ _color } {}
+	namespace TextEffect
+	{
+		constexpr VerticalGradient::VerticalGradient(const ColorF& _startColor, const ColorF& _endColor, const double _startOffset, const double _endOffset) noexcept
+			: startColor{ _startColor }, endColor{ _endColor }, startOffset{ _startOffset }, endOffset{ _endOffset } {}
+	}
 }

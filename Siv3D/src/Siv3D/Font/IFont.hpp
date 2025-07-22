@@ -19,7 +19,7 @@ namespace s3d
 {
 	struct FontFaceInfo;
 	struct TextStyle;
-	struct IGlyphRenderer;
+	struct ITextEffect;
 
 	class SIV3D_NOVTABLE ISiv3DFont
 	{
@@ -88,18 +88,18 @@ namespace s3d
 
 		virtual RectF region(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 
-		virtual RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, ReadingDirection readingDirection) = 0;
+		virtual RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
 
 		virtual RectF regionBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 
-		virtual RectF drawBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, ReadingDirection readingDirection) = 0;
+		virtual RectF drawBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
 
 		virtual std::pair<double, double> regionBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 
-		virtual std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, ReadingDirection readingDirection) = 0;
+		virtual std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
 
 		virtual bool fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 
-		virtual bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const IGlyphRenderer& glyphRenderer, ReadingDirection readingDirection) = 0;
+		virtual bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
 	};
 }

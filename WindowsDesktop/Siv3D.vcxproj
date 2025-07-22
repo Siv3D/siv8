@@ -25,7 +25,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AsyncTask.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Base64Value.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BasicCamera2D.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\BasicGlyphRenderer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BCnData.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Bezier2.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Bezier3.hpp" />
@@ -68,7 +67,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayParallel.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BasicCamera2D.ipp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BasicGlyphRenderer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BCnData.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Choice.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Circular.ipp" />
@@ -78,7 +76,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatQuad.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatRect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GlyphInfo.ipp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\GradientGlyphRenderer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Graphics2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageProcessing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
@@ -136,10 +133,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphInfo.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\GradientGlyphRenderer.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\IGlyphRenderer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\NullGlyphRenderer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ReadingDirection.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ResolvedGlyph.hpp" />
@@ -516,6 +511,11 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\StringViewRandom.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SVG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\System.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\BasicTextEffect.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\BasicTextEffect.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\NullTextEffect.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\VerticalGradient.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\VerticalGradient.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEncoding.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextReader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextStyle.hpp" />
@@ -1182,7 +1182,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\AssetMonitorFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\CAssetMonitor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Base64Value\SivBase64Value.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\BasicGlyphRenderer\SivBasicGlyphRenderer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigFloat\SivBigFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigInt\SivBigInt.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigNumMath\SivBigNumMath.cpp" />
@@ -1273,7 +1272,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_IsClockwise.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_PoleOfInaccessibility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SmallestEnclosingCircle.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\GradientGlyphRenderer\SivGradientGlyphRenderer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics2D\SivGraphics2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics\SivGraphics.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Grid\SivGrid.cpp" />
@@ -1415,6 +1413,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SivSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SystemFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_BasicTextEffect.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_VerticalGradient.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEncoding\SivTextEncoding.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\SivTextReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.cpp" />
