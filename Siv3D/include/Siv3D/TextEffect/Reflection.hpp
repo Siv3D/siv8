@@ -20,6 +20,8 @@ namespace s3d
 		{
 		public:
 
+			Reflection() = default;
+
 			explicit constexpr Reflection(double start = 0.5, double startAlpha = 0.5, double offsetScaleY = 0.0, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const override;

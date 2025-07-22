@@ -20,13 +20,19 @@ namespace s3d
 		{
 		public:
 
-			constexpr VerticalScale(const double scale, const ColorF& color = Palette::White) noexcept;
+			VerticalScale() = default;
+
+			constexpr VerticalScale(double scale, const ColorF& color = Palette::White) noexcept;
+
+			constexpr VerticalScale(double scale, double center, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const override;
 
 		private:
 
 			double m_scale = 1.0;
+
+			double m_center = 0.5;
 		};
 	}
 }

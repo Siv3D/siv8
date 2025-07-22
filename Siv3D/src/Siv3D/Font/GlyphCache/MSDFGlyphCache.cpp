@@ -43,7 +43,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::pair<double, double> MSDFGlyphCache::processHorizontalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const bool isColorGlyph, const ReadingDirection readingDirection)
+	std::pair<double, double> MSDFGlyphCache::processHorizontalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
 		return{};
 	}
@@ -65,7 +65,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::pair<double, double> MSDFGlyphCache::processVerticalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const bool isColorGlyph, const ReadingDirection readingDirection)
+	std::pair<double, double> MSDFGlyphCache::processVerticalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
 		return{};
 	}

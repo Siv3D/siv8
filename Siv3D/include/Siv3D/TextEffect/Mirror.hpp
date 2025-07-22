@@ -20,9 +20,19 @@ namespace s3d
 		{
 		public:
 
-			using BasicTextEffect::BasicTextEffect;
+			Mirror() = default;
 
-			void draw(const TextureRegion& textureRegion, const Vec2& pos, const int32, const double, const double, const bool) const override;
+			explicit constexpr Mirror(const ColorF& color) noexcept;
+
+			explicit constexpr Mirror(bool miror, const ColorF& color = Palette::White) noexcept;
+
+			void draw(const TextureRegion& textureRegion, const Vec2& pos, const int32, double, double, bool) const override;
+
+		private:
+
+			bool m_mirror = true;
 		};
 	}
 }
+
+# include "Mirror.ipp"

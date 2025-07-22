@@ -23,7 +23,7 @@ namespace s3d
 			const double textureHeight = textureRegion.size.y;
 			const double textureStartY = pos.y;
 			const double textureEndY = (pos.y + textureHeight);
-			const double centerY = Math::Lerp(top, bottom, 0.6);
+			const double centerY = Math::Lerp(top, bottom, m_center);
 
 			const double compressedY0 = Math::Lerp(centerY, textureStartY, m_scale);
 			const double compressedY1 = Math::Lerp(centerY, textureEndY, m_scale);

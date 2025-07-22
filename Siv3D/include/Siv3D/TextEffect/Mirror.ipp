@@ -15,10 +15,10 @@ namespace s3d
 {
 	namespace TextEffect
 	{
-		constexpr VerticalScale::VerticalScale(const double scale, const ColorF& color) noexcept
-			: VerticalScale{ scale, 0.5, color } {}
+		constexpr Mirror::Mirror(const ColorF& color) noexcept
+			: Mirror{ true, color } {}
 
-		constexpr VerticalScale::VerticalScale(const double scale, const double center, const ColorF& color) noexcept
-			: BasicTextEffect{ color }, m_scale{ scale }, m_center{ center } {}
+		constexpr Mirror::Mirror(const bool miror, const ColorF& color) noexcept
+			: BasicTextEffect{ color }, m_mirror{ miror } {}
 	}
 }

@@ -523,11 +523,11 @@ namespace s3d
 
 		if (readingDirection == ReadingDirection::TopToBottom)
 		{
-			return m_fonts[handleID]->getGlyphCache().processVerticalFallback(IGlyphCache::TextOperation::Region, *font, resolvedGlyph, true, pos, fontSize, textStyle, TextEffect::NullTextEffect{}, false, readingDirection);
+			return m_fonts[handleID]->getGlyphCache().processVerticalFallback(IGlyphCache::TextOperation::Region, *font, resolvedGlyph, true, pos, fontSize, textStyle, TextEffect::NullTextEffect{}, -1, false, readingDirection);
 		}
 		else
 		{
-			return m_fonts[handleID]->getGlyphCache().processHorizontalFallback(IGlyphCache::TextOperation::Region, *font, resolvedGlyph, true, pos, fontSize, textStyle, TextEffect::NullTextEffect{}, false, readingDirection);
+			return m_fonts[handleID]->getGlyphCache().processHorizontalFallback(IGlyphCache::TextOperation::Region, *font, resolvedGlyph, true, pos, fontSize, textStyle, TextEffect::NullTextEffect{}, -1, false, readingDirection);
 		}
 	}
 
@@ -537,7 +537,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::pair<double, double> CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const ReadingDirection readingDirection)
+	std::pair<double, double> CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const bool isColorGlyph = font->getInfo().properties.hasColor;
@@ -558,11 +558,11 @@ namespace s3d
 		{
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
-				return m_fonts[handleID]->getGlyphCache().processVerticalFallback(IGlyphCache::TextOperation::Draw, *font, resolvedGlyph, true, pos, fontSize, textStyle, textEffect, isColorGlyph, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().processVerticalFallback(IGlyphCache::TextOperation::Draw, *font, resolvedGlyph, true, pos, fontSize, textStyle, textEffect, index, isColorGlyph, readingDirection);
 			}
 			else
 			{
-				return m_fonts[handleID]->getGlyphCache().processHorizontalFallback(IGlyphCache::TextOperation::Draw, *font, resolvedGlyph, true, pos, fontSize, textStyle, textEffect, isColorGlyph, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().processHorizontalFallback(IGlyphCache::TextOperation::Draw, *font, resolvedGlyph, true, pos, fontSize, textStyle, textEffect, index, isColorGlyph, readingDirection);
 			}
 		}
 		else
@@ -571,11 +571,11 @@ namespace s3d
 
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
-				return m_fonts[handleID]->getGlyphCache().processVerticalFallback(IGlyphCache::TextOperation::Draw, *font, resolvedGlyph, true, pos, fontSize, textStyle, textEffect, isColorGlyph, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().processVerticalFallback(IGlyphCache::TextOperation::Draw, *font, resolvedGlyph, true, pos, fontSize, textStyle, textEffect, index, isColorGlyph, readingDirection);
 			}
 			else
 			{
-				return m_fonts[handleID]->getGlyphCache().processHorizontalFallback(IGlyphCache::TextOperation::Draw, *font, resolvedGlyph, true, pos, fontSize, textStyle, textEffect, isColorGlyph, readingDirection);
+				return m_fonts[handleID]->getGlyphCache().processHorizontalFallback(IGlyphCache::TextOperation::Draw, *font, resolvedGlyph, true, pos, fontSize, textStyle, textEffect, index, isColorGlyph, readingDirection);
 			}
 		}
 	}

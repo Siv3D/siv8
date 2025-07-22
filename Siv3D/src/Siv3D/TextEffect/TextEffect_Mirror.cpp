@@ -19,7 +19,7 @@ namespace s3d
 		{
 			const ColorF color = (isColorGlyph ? ColorF{ 1.0, m_color.a } : m_color);
 
-			textureRegion.mirrored().draw(pos, color);
+			textureRegion.mirrored(m_mirror).draw(pos, color);
 		}
 	}
 }

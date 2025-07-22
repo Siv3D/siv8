@@ -22,7 +22,7 @@ namespace s3d
 
 			BasicTextEffect() = default;
 
-			explicit constexpr BasicTextEffect(const ColorF& _color) noexcept;
+			explicit constexpr BasicTextEffect(const ColorF& color) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const override;
 

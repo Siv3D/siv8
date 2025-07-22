@@ -518,6 +518,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\HorizontalGradientHSV.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\HorizontalGradientHSV.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\Mirror.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\Mirror.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\NullTextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\QuadWarp.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\QuadWarp.ipp" />
