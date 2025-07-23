@@ -41,10 +41,16 @@ namespace s3d
 		DrawableText() = default;
 
 		[[nodiscard]]
-		DrawableText(const Font& _font, const String& _text, ReadingDirection _readingDirection);
+		DrawableText(const Font& _font, const String& _text, EnableLigatures enableLigatures = EnableLigatures::Yes);
 
 		[[nodiscard]]
-		DrawableText(const Font& _font, String&& _text, ReadingDirection _readingDirection);
+		DrawableText(const Font& _font, String&& _text, EnableLigatures enableLigatures = EnableLigatures::Yes);
+
+		[[nodiscard]]
+		DrawableText(const Font& _font, const String& _text, ReadingDirection _readingDirection, EnableLigatures enableLigatures = EnableLigatures::Yes);
+
+		[[nodiscard]]
+		DrawableText(const Font& _font, String&& _text, ReadingDirection _readingDirection, EnableLigatures enableLigatures = EnableLigatures::Yes);
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -17,13 +17,19 @@
 
 namespace s3d
 {
-	DrawableText::DrawableText(const Font& _font, const String& _text, const ReadingDirection _readingDirection)
-		: DrawableText{ _font, String{ _text }, _readingDirection } {}
+	DrawableText::DrawableText(const Font& _font, const String& _text, const EnableLigatures enableLigatures)
+		: DrawableText{ _font, String{ _text }, ReadingDirection::LeftToRight, enableLigatures } {}
 
-	DrawableText::DrawableText(const Font& _font, String&& _text, const ReadingDirection _readingDirection)
+	DrawableText::DrawableText(const Font& _font, String&& _text, const EnableLigatures enableLigatures)
+		: DrawableText{ _font, std::move(_text), ReadingDirection::LeftToRight, enableLigatures } {}
+
+	DrawableText::DrawableText(const Font& _font, const String& _text, const ReadingDirection _readingDirection, const EnableLigatures enableLigatures)
+		: DrawableText{ _font, String{ _text }, _readingDirection, enableLigatures } {}
+
+	DrawableText::DrawableText(const Font& _font, String&& _text, const ReadingDirection _readingDirection, const EnableLigatures enableLigatures)
 		: font{ _font }
 		, text{ std::move(_text) }
-		, resolvedGlyphs{ font.getResolvedGlyphs(text, _readingDirection) }
+		, resolvedGlyphs{ font.getResolvedGlyphs(text, _readingDirection, EnableFallback::Yes, enableLigatures) }
 		, readingDirection{ _readingDirection } {}
 
 	////////////////////////////////////////////////////////////////
