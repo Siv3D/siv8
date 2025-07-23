@@ -9,17 +9,17 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/TextEffect/Mirror.hpp>
+# include <Siv3D/TextEffect/FlipX.hpp>
 
 namespace s3d
 {
 	namespace TextEffect
 	{
-		void Mirror::draw(const TextureRegion& textureRegion, const Vec2& pos, const int32, const double, const double, const bool isColorGlyph) const
+		void FlipX::draw(const TextureRegion& textureRegion, const Vec2& pos, const int32, const double, const double, const bool isColorGlyph) const
 		{
 			const ColorF color = (isColorGlyph ? ColorF{ 1.0, m_color.a } : m_color);
 
-			textureRegion.mirrored(m_mirror).draw(pos, color);
+			textureRegion.mirrored(m_flipX).draw(pos, color);
 		}
 	}
 }

@@ -517,8 +517,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\HorizontalGradient.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\HorizontalGradientHSV.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\HorizontalGradientHSV.ipp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\Mirror.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\Mirror.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\FlipX.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\FlipX.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\NullTextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\QuadWarp.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\QuadWarp.ipp" />
@@ -1428,7 +1428,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_BasicTextEffect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_HorizontalGradient.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_HorizontalGradientHSV.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_Mirror.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_FlipX.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_QuadWarp.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_Reflection.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_VerticalGradient.cpp" />

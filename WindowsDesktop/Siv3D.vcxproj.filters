@@ -4410,7 +4410,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\QuadWarp.ipp">
       <Filter>include\Siv3D\TextEffect</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\Mirror.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\FlipX.hpp">
       <Filter>include\Siv3D\TextEffect</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\VerticalScale.hpp">
@@ -4425,7 +4425,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\Reflection.ipp">
       <Filter>include\Siv3D\TextEffect</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\Mirror.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\FlipX.ipp">
       <Filter>include\Siv3D\TextEffect</Filter>
     </ClInclude>
   </ItemGroup>
@@ -6998,7 +6998,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_QuadWarp.cpp">
       <Filter>src\Siv3D\TextEffect</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_Mirror.cpp">
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_FlipX.cpp">
       <Filter>src\Siv3D\TextEffect</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_VerticalScale.cpp">

@@ -15,10 +15,10 @@ namespace s3d
 {
 	namespace TextEffect
 	{
-		constexpr Mirror::Mirror(const ColorF& color) noexcept
-			: Mirror{ true, color } {}
+		constexpr FlipX::FlipX(const ColorF& color) noexcept
+			: FlipX{ true, color } {}
 
-		constexpr Mirror::Mirror(const bool miror, const ColorF& color) noexcept
-			: BasicTextEffect{ color }, m_mirror{ miror } {}
+		constexpr FlipX::FlipX(const bool flipX, const ColorF& color) noexcept
+			: BasicTextEffect{ color }, m_flipX{ flipX } {}
 	}
 }

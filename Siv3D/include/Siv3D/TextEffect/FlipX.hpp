@@ -17,28 +17,28 @@ namespace s3d
 	namespace TextEffect
 	{
 		/// @brief 鏡文字テキスト描画エフェクト
-		class Mirror : public BasicTextEffect
+		class FlipX : public BasicTextEffect
 		{
 		public:
 
-			Mirror() = default;
+			FlipX() = default;
 
 			/// @brief コンストラクタ
 			/// @param color 描画時に使用する色
-			explicit constexpr Mirror(const ColorF& color) noexcept;
+			explicit constexpr FlipX(const ColorF& color) noexcept;
 
 			/// @brief コンストラクタ
-			/// @param miror 鏡文字にするかどうか
+			/// @param flipX 鏡文字にするかどうか
 			/// @param color 描画時に使用する色
-			explicit constexpr Mirror(bool miror, const ColorF& color = Palette::White) noexcept;
+			explicit constexpr FlipX(bool flipX, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const Vec2& pos, const int32, double, double, bool) const override;
 
 		private:
 
-			bool m_mirror = true;
+			bool m_flipX = true;
 		};
 	}
 }
 
-# include "Mirror.ipp"
+# include "FlipX.ipp"

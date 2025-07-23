@@ -1629,7 +1629,7 @@
 # include <Siv3D/TextEffect/HorizontalGradient.hpp>
 # include <Siv3D/TextEffect/HorizontalGradientHSV.hpp>
 # include <Siv3D/TextEffect/QuadWarp.hpp>
-# include <Siv3D/TextEffect/Mirror.hpp>
+# include <Siv3D/TextEffect/FlipX.hpp>
 # include <Siv3D/TextEffect/VerticalScale.hpp>
 # include <Siv3D/TextEffect/Reflection.hpp>
 
