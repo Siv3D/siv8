@@ -467,14 +467,10 @@ namespace s3d
 
 		if ((textStyle.type != TextStyle::Type::Default) && (not isColorFont))
 		{
-			//if (font->getMethod() == FontMethod::SDF)
-			//{
-			//	Graphics2D::SetSDFParameters(textStyle);
-			//}
-			//else
-			//{
-			//	Graphics2D::SetMSDFParameters(textStyle);
-			//}
+			if (font->getInfo().renderingMethod == FontMethod::MSDF)
+			{
+				//Graphics2D::SetMSDFParameters(textStyle);
+			}
 		}
 
 		if (textStyle.type == TextStyle::Type::CustomShader)
@@ -577,14 +573,10 @@ namespace s3d
 
 		if ((textStyle.type != TextStyle::Type::Default) && (not isColorGlyph))
 		{
-			//if (font->getMethod() == FontMethod::SDF)
-			//{
-			//	Graphics2D::SetSDFParameters(textStyle);
-			//}
-			//else
-			//{
-			//	Graphics2D::SetMSDFParameters(textStyle);
-			//}
+			if (font->getInfo().renderingMethod == FontMethod::MSDF)
+			{
+				//Graphics2D::SetMSDFParameters(textStyle);
+			}
 		}
 
 		if (textStyle.type == TextStyle::Type::CustomShader)
@@ -646,14 +638,10 @@ namespace s3d
 
 		if ((textStyle.type != TextStyle::Type::Default) && (not isColorFont))
 		{
-			//if (font->getMethod() == FontMethod::SDF)
-			//{
-			//	Graphics2D::SetSDFParameters(textStyle);
-			//}
-			//else
-			//{
-			//	Graphics2D::SetMSDFParameters(textStyle);
-			//}
+			if (font->getInfo().renderingMethod == FontMethod::MSDF)
+			{
+				//Graphics2D::SetMSDFParameters(textStyle);
+			}
 		}
 
 		if (textStyle.type == TextStyle::Type::CustomShader)

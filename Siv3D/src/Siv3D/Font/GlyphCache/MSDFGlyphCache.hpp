@@ -118,6 +118,7 @@ namespace s3d
 
 		GlyphCacheManager m_glyphCacheManager{ DefaultBufferThickness };
 
-		Texture _unused;
+		[[nodiscard]]
+		bool prerender(FontData& font, const Array<ResolvedGlyph>& resolvedGlyphs, bool isMainFont, ReadingDirection readingDirection);
 	};
 }

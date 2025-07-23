@@ -61,9 +61,13 @@ namespace s3d
 
 		const Texture& getTexture() const noexcept;
 
-		bool cacheGlyph(FontData& font, GlyphIndex glyphIndex, ReadingDirection readingDirection);
+		bool cacheBitmapGlyph(FontData& font, GlyphIndex glyphIndex, ReadingDirection readingDirection);
+
+		bool cacheMSDFGlyph(FontData& font, GlyphIndex glyphIndex, ReadingDirection readingDirection);
 
 		void updateTexture();
+
+		Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize, ReadingDirection readingDirection);
 
 	private:
 
@@ -86,5 +90,7 @@ namespace s3d
 		int32 m_currentMaxHeight = 0;
 
 		bool m_isDirty = false;
+
+		bool cacheGlyph(InternalGlyphIndex internalGlyphIndex, const Image& glyphImage, const GlyphInfo& glyphInfo);
 	};
 }
