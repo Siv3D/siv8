@@ -22,7 +22,8 @@ namespace s3d
 
 			Quad quad = RectF{ glyphContext.pos, textureRegion.size }.asQuad();
 
-			quad.p1.y -= (textureRegion.size.x * m_scaleOffset);
+			quad.p0.y -= (textureRegion.size.x * m_leftOffset);
+			quad.p1.y -= (textureRegion.size.x * m_rightOffset);
 			
 			textureRegion.drawQuadWarp(quad, color);
 		}

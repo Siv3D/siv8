@@ -15,7 +15,7 @@ namespace s3d
 {
 	namespace TextEffect
 	{
-		constexpr QuadWarp::QuadWarp(const double scaleOffset, const ColorF& color) noexcept
-			: BasicTextEffect{ color }, m_scaleOffset{ scaleOffset } {}
+		constexpr QuadWarp::QuadWarp(const double leftOffset, const double rightOffset, const ColorF& color) noexcept
+			: BasicTextEffect{ color }, m_leftOffset{ leftOffset }, m_rightOffset{ rightOffset } {}
 	}
 }

@@ -24,15 +24,18 @@ namespace s3d
 			QuadWarp() = default;
 
 			/// @brief コンストラクタ
-			/// @param scaleOffset ワープ効果のスケール値
+			/// @param leftOffset 左側のオフセット
+			/// @param rightOffset 右側のオフセット
 			/// @param color 描画時に使用する色
-			constexpr QuadWarp(double scaleOffset, const ColorF& color = Palette::White) noexcept;
+			constexpr QuadWarp(double leftOffset, double rightOffset, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;
 
 		private:
 
-			double m_scaleOffset = 0.0;
+			double m_leftOffset = 0.0;
+
+			double m_rightOffset = 0.0;
 		};
 	}
 }
