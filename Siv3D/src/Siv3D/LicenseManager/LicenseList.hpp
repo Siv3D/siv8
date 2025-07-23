@@ -663,6 +663,12 @@ BSD_2_LICENSE
 },
 
 {
+R"-(msdfgen)-",
+R"-(Copyright (c) 2014 - 2025 Viktor Chlumsky)-",
+MIT_LICENSE
+},
+
+{
 R"-(nanobench)-",
 R"-(Copyright (c) 2019-2023 Martin Leitner-Ankerl)-",
 MIT_LICENSE

@@ -858,10 +858,10 @@ struct SK_API SkRect {
         @param src  integer SkRect
     */
     void set(const SkIRect& src) {
-        fLeft   = src.fLeft;
-        fTop    = src.fTop;
-        fRight  = src.fRight;
-        fBottom = src.fBottom;
+        fLeft   = static_cast<float>(src.fLeft);
+        fTop    = static_cast<float>(src.fTop);
+        fRight  = static_cast<float>(src.fRight);
+        fBottom = static_cast<float>(src.fBottom);
     }
 
     /** Sets SkRect to (left, top, right, bottom).

@@ -31,7 +31,8 @@ Name | Version
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
-[M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) | 
+[M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
+[msdfgen](https://github.com/Chlumsky/msdfgen) | 
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [nanoflann](https://github.com/jlblancoc/nanoflann) | v1.7.1
