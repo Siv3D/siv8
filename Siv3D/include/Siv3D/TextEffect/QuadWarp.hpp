@@ -21,12 +21,14 @@ namespace s3d
 		{
 		public:
 
+			[[nodiscard]]
 			QuadWarp() = default;
 
 			/// @brief コンストラクタ
 			/// @param leftOffset 左側のオフセット
 			/// @param rightOffset 右側のオフセット
 			/// @param color 描画時に使用する色
+			[[nodiscard]]
 			constexpr QuadWarp(double leftOffset, double rightOffset, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;

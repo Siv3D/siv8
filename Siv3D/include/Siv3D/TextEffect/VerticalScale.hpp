@@ -21,17 +21,20 @@ namespace s3d
 		{
 		public:
 
+			[[nodiscard]]
 			VerticalScale() = default;
 
 			/// @brief コンストラクタ
 			/// @param scale 拡大縮小の倍率
 			/// @param color 描画時に使用する色
+			[[nodiscard]]
 			constexpr VerticalScale(double scale, const ColorF& color = Palette::White) noexcept;
 
 			/// @brief コンストラクタ
 			/// @param scale 拡大縮小の倍率
 			/// @param center 拡大縮小の中心位置 (0.0 から 1.0 の範囲)
 			/// @param color 描画時に使用する色
+			[[nodiscard]]
 			constexpr VerticalScale(double scale, double center, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;

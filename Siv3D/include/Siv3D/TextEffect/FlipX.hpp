@@ -21,15 +21,18 @@ namespace s3d
 		{
 		public:
 
+			[[nodiscard]]
 			FlipX() = default;
 
 			/// @brief コンストラクタ
 			/// @param color 描画時に使用する色
+			[[nodiscard]]
 			explicit constexpr FlipX(const ColorF& color) noexcept;
 
 			/// @brief コンストラクタ
 			/// @param flipX 鏡文字にするかどうか
 			/// @param color 描画時に使用する色
+			[[nodiscard]]
 			explicit constexpr FlipX(bool flipX, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;

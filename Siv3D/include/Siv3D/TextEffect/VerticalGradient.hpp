@@ -21,6 +21,7 @@ namespace s3d
 		{
 		public:
 
+			[[nodiscard]]
 			VerticalGradient() = default;
 
 			/// @brief コンストラクタ
@@ -28,6 +29,7 @@ namespace s3d
 			/// @param endColor グラデーションの終了色
 			/// @param startOffset グラデーションの開始位置のオフセット (0.0 から 1.0 の範囲)
 			/// @param endOffset グラデーションの終了位置のオフセット (0.0 から 1.0 の範囲)
+			[[nodiscard]]
 			constexpr VerticalGradient(const ColorF& startColor, const ColorF& endColor, double startOffset = 0.0, double endOffset = 1.0) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;

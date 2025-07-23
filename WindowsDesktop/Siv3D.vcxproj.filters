@@ -1111,6 +1111,9 @@
     <Filter Include="src\ThirdParty\msdfgen\ext">
       <UniqueIdentifier>{d3da9145-207f-43e1-bd47-59e3eafc7ea8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ScopedCustomShader2D">
+      <UniqueIdentifier>{626b7e2e-9fc2-44e7-b809-aeca34cdce74}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4548,6 +4551,12 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\ext\resolve-shape-geometry.h">
       <Filter>src\ThirdParty\msdfgen\ext</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\FontShader.hpp">
+      <Filter>src\Siv3D\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScopedCustomShader2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7186,6 +7195,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\msdfgen\ext\resolve-shape-geometry.cpp">
       <Filter>src\ThirdParty\msdfgen\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScopedCustomShader2D\SivScopedCustomShader2D.cpp">
+      <Filter>src\Siv3D\ScopedCustomShader2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

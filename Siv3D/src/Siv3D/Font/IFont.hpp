@@ -14,12 +14,13 @@
 # include <Siv3D/Array.hpp>
 # include <Siv3D/Font.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
+# include <Siv3D/TextStyle.hpp>
 
 namespace s3d
 {
 	struct FontFaceInfo;
-	struct TextStyle;
 	struct ITextEffect;
+	class PixelShader;
 
 	class SIV3D_NOVTABLE ISiv3DFont
 	{
@@ -109,5 +110,7 @@ namespace s3d
 		virtual bool fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 
 		virtual bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
+
+		virtual const PixelShader& getFontShader(FontMethod method, TextStyle::Type type) const = 0;
 	};
 }

@@ -36,9 +36,9 @@ cbuffer PSConstants2D : register(b0)
 {
 	float4 g_patternBackgroundColorMul;
 	float4 g_colorAdd;
-	//float4 g_sdfParam;
-	//float4 g_sdfOutlineColor;
-	//float4 g_sdfShadowColor;
+	float4 g_sdfParam;
+	float4 g_sdfOutlineColor;
+	float4 g_sdfShadowColor;
 	//float4 g_internal;
 }
 
@@ -80,6 +80,11 @@ float4 s3d_patternBackgroundColor()
 float2 s3d_patternTransform(float2 uv)
 {
 	return (g_patternUVTransform._13_14 + (uv.x * g_patternUVTransform._11_12) + (uv.y * g_patternUVTransform._21_22));
+}
+
+float s3d_median(float r, float g, float b)
+{
+	return max(min(r, g), min(max(r, g), b));
 }
 
 PSInput VS_Shape(VSInput input)
@@ -311,4 +316,23 @@ float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
 	const float4 background = s3d_patternBackgroundColor();
 
 	return lerp(background, primary, c);
+}
+
+float4 PS_MSDFFont(PSInput input) : SV_TARGET
+{
+	float2 size;
+	g_texture0.GetDimensions(size.x, size.y);
+	const float pxRange = 4.0;
+	const float2 msdfUnit = (pxRange / size);
+
+	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
+	const float d = s3d_median(s.r, s.g, s.b);
+
+	const float td = (d - 0.5);
+	const float textAlpha = saturate(td * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5);
+
+	float4 vertexColor = input.color;
+	const float4 textureColor = float4(textAlpha, textAlpha, textAlpha, textAlpha);
+	vertexColor *= textureColor;
+	return (vertexColor + (g_colorAdd * vertexColor.a));
 }

@@ -130,6 +130,11 @@ namespace s3d
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
 		}
 
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/msdffont.ps", ShaderStage::Pixel, U"PS_MSDFFont"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
 	# endif
 
 		{
@@ -159,6 +164,7 @@ namespace s3d
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_checker.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_triangle.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_hex_grid.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont.ps" };
 
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

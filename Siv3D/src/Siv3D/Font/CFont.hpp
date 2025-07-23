@@ -15,6 +15,7 @@
 # include <Siv3D/Font.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
 # include "FontData.hpp"
+# include "FontShader.hpp"
 
 namespace s3d
 {
@@ -297,6 +298,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
 		bool fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
@@ -307,6 +309,15 @@ namespace s3d
 
 		bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	getFontShader
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		const PixelShader& getFontShader(FontMethod method, TextStyle::Type type) const override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;
@@ -315,6 +326,6 @@ namespace s3d
 
 		HashMap<Font::IDType, Array<Font>> m_fallbackFonts;
 
-		static void NullDrawFunc(const TextureRegion&, const Vec2&, double, double, bool) {}
+		std::unique_ptr<FontShader> m_shader;
 	};
 }

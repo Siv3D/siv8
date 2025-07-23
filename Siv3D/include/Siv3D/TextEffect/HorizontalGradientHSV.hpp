@@ -21,6 +21,7 @@ namespace s3d
 		{
 		public:
 
+			[[nodiscard]]
 			HorizontalGradientHSV() = default;
 
 			/// @brief コンストラクタ
@@ -28,6 +29,7 @@ namespace s3d
 			/// @param endColor グラデーションの終了色
 			/// @param startX グラデーション開始位置の X 座標（ピクセル）
 			/// @param endX グラデーション終了位置の X 座標（ピクセル）
+			[[nodiscard]]
 			constexpr HorizontalGradientHSV(const HSV& startColor, const HSV& endColor, double startX, double endX) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;

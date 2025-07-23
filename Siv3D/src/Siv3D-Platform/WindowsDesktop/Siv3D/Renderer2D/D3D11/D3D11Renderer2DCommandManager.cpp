@@ -71,7 +71,7 @@ namespace s3d
 
 			m_buffer.scissorRects	= { m_buffer.scissorRects.back() };
 			m_buffer.viewports		= { m_buffer.viewports.back() };
-			//m_sdfParams = { m_sdfParams.back() };
+			m_buffer.sdfParameters	= { m_buffer.sdfParameters.back() };
 			//m_internalPSConstants = { m_internalPSConstants.back() };
 			//m_RTs = { m_RTs.back() };
 
@@ -84,9 +84,9 @@ namespace s3d
 
 		// clear reserves
 		{
-			//m_reservedVSs.clear();
-			//m_reservedPSs.clear();
 			m_reserved.textures.clear();
+			m_reserved.vertexShaders.clear();
+			m_reserved.pixelShaders.clear();
 		}
 
 		// Begin a new frame
@@ -132,8 +132,8 @@ namespace s3d
 			m_commands.emplace_back(D3D11Renderer2DCommandType::Viewport, 0);
 			m_current.viewport = m_buffer.viewports.front();
 
-			//m_commands.emplace_back(D3D11Renderer2DCommandType::SDFParams, 0);
-			//m_currentSDFParams = m_sdfParams.front();
+			m_commands.emplace_back(D3D11Renderer2DCommandType::SDFParams, 0);
+			m_current.sdfParameter = m_buffer.sdfParameters.front();
 
 			//m_commands.emplace_back(D3D11Renderer2DCommandType::InternalPSConstants, 0);
 			//m_currentInternalPSConstants = m_internalPSConstants.front();
@@ -263,11 +263,11 @@ namespace s3d
 			m_buffer.viewports.push_back(m_current.viewport);
 		}
 
-		//if (m_changes.has(D3D11Renderer2DCommandType::SDFParams))
-		//{
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::SDFParams, static_cast<uint32>(m_sdfParams.size()));
-		//	m_sdfParams.push_back(m_currentSDFParams);
-		//}
+		if (m_stateTracker.has(D3D11Renderer2DCommandType::SDFParams))
+		{
+			m_commands.emplace_back(D3D11Renderer2DCommandType::SDFParams, static_cast<uint32>(m_buffer.sdfParameters.size()));
+			m_buffer.sdfParameters.push_back(m_current.sdfParameter);
+		}
 
 		//if (m_changes.has(D3D11Renderer2DCommandType::InternalPSConstants))
 		//{
@@ -799,7 +799,48 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pushEngineVS, getVS
+	//	pushSDFParameters, getSDFParameters, getCurrentSDFParameters
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11Renderer2DCommandManager::pushSDFParameters(const std::array<Float4, 3>& state)
+	{
+		constexpr auto Command = D3D11Renderer2DCommandType::SDFParams;
+		auto& current = m_current.sdfParameter;
+		auto& buffer = m_buffer.sdfParameters;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (state != current)
+			{
+				current = state;
+				m_stateTracker.set(Command);
+			}
+		}
+		else
+		{
+			if (state == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = state;
+		}
+	}
+
+	const std::array<Float4, 3>& D3D11Renderer2DCommandManager::getSDFParameters(const uint32 index) const
+	{
+		return m_buffer.sdfParameters[index];
+	}
+	
+	const std::array<Float4, 3>& D3D11Renderer2DCommandManager::getCurrentSDFParameters() const
+	{
+		return m_current.sdfParameter;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pushEngineVS, pushCustomVS, getVS
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -828,6 +869,34 @@ namespace s3d
 		}
 	}
 
+	void D3D11Renderer2DCommandManager::pushCustomVS(const VertexShader& vs)
+	{
+		const auto id = vs.id();
+		constexpr auto Command = D3D11Renderer2DCommandType::SetVS;
+		auto& current = m_current.vertexShader;
+		auto& buffer = m_buffer.vertexShaders;
+
+		if (not m_stateTracker.has(Command))
+		{
+			if (id != current)
+			{
+				current = id;
+				m_stateTracker.set(Command);
+				m_reserved.vertexShaders.try_emplace(id, vs);
+			}
+		}
+		else
+		{
+			if (id == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+
+			current = id;
+			m_reserved.vertexShaders.try_emplace(id, vs);
+		}
+	}
+
 	VertexShader::IDType D3D11Renderer2DCommandManager::getVS(const uint32 index) const
 	{
 		return m_buffer.vertexShaders[index];
@@ -835,7 +904,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pushEnginePS, getPS
+	//	pushEnginePS, pushCustomPS, getPS
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -861,6 +930,33 @@ namespace s3d
 			}
 
 			current = id;
+		}
+	}
+
+	void D3D11Renderer2DCommandManager::pushCustomPS(const PixelShader& ps)
+	{
+		const auto id = ps.id();
+		constexpr auto Command = D3D11Renderer2DCommandType::SetPS;
+		auto& current = m_current.pixelShader;
+		auto& buffer = m_buffer.pixelShaders;
+		
+		if (not m_stateTracker.has(Command))
+		{
+			if (id != current)
+			{
+				current = id;
+				m_stateTracker.set(Command);
+				m_reserved.pixelShaders.try_emplace(id, ps);
+			}
+		}
+		else
+		{
+			if (id == buffer.back())
+			{
+				m_stateTracker.clear(Command);
+			}
+			current = id;
+			m_reserved.pixelShaders.try_emplace(id, ps);
 		}
 	}
 

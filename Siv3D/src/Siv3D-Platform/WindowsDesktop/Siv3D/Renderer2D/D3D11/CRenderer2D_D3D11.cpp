@@ -1147,15 +1147,8 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), quad, uv, color))
 		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsQuadWarp);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psQuadWarp);
-			}
+			m_commandManager.pushEngineVS(m_engineShader.vsQuadWarp);
+			m_commandManager.pushEnginePS(m_engineShader.psQuadWarp);
 
 			const std::array<Float4, 3> quadWarpParams =
 			{
@@ -1392,6 +1385,13 @@ namespace s3d
 					LOG_COMMAND(fmt::format("Viewport[{}] ({}, {}, {}, {})", command.index, vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height));
 					break;
 				}
+			case D3D11Renderer2DCommandType::SDFParams:
+				{
+					const auto& sdfParameter = m_commandManager.getSDFParameters(command.index);
+					m_psConstants->setSDFParameters(sdfParameter);
+					LOG_COMMAND(fmt::format("SDFParams[{}]", command.index));
+					break;
+				}
 			case D3D11Renderer2DCommandType::SetVS:
 				{
 					const auto vsID = m_commandManager.getVS(command.index);
@@ -1618,6 +1618,65 @@ namespace s3d
 	void CRenderer2D_D3D11::setViewport(const Optional<Rect>& viewport)
 	{
 		m_commandManager.pushViewport(viewport);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setSDFParameters
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::setSDFParameters(const std::array<Float4, 3>& params)
+	{
+		m_commandManager.pushSDFParameters(params);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCustomVS, setCustomVS
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<VertexShader> CRenderer2D_D3D11::getCustomVS() const
+	{
+		return m_currentCustomShader.vs;
+	}
+
+	void CRenderer2D_D3D11::setCustomVS(const Optional<VertexShader>& vs)
+	{
+		if (vs && (not vs->isEmpty()))
+		{
+			m_currentCustomShader.vs = *vs;
+			m_commandManager.pushCustomVS(*vs);
+		}
+		else
+		{
+			m_currentCustomShader.vs.reset();
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCustomPS, setCustomPS
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<PixelShader> CRenderer2D_D3D11::getCustomPS() const
+	{
+		return m_currentCustomShader.ps;
+	}
+
+	void CRenderer2D_D3D11::setCustomPS(const Optional<PixelShader>& ps)
+	{
+		if (ps && (not ps->isEmpty()))
+		{
+			m_currentCustomShader.ps = *ps;
+			m_commandManager.pushCustomPS(*ps);
+		}
+		else
+		{
+			m_currentCustomShader.ps.reset();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

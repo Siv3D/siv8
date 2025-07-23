@@ -17,6 +17,8 @@
 # include "RasterizerState.hpp"
 # include "SamplerState.hpp"
 # include "ShaderStage.hpp"
+# include "VertexShader.hpp"
+# include "PixelShader.hpp"
 
 namespace s3d
 {
@@ -130,6 +132,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	GetCustomVertexShader
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 現在適用されているカスタム頂点シェーダを返します。
+		/// @return 現在適用されているカスタム頂点シェーダ。デフォルトの場合は none
+		[[nodiscard]]
+		Optional<VertexShader> GetCustomVertexShader();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetCustomPixelShader
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 現在適用されているカスタムピクセルシェーダを返します。
+		/// @return 現在適用されているカスタムピクセルシェーダ。デフォルトの場合は none
+		[[nodiscard]]
+		Optional<PixelShader> GetCustomPixelShader();
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	GetLocalTransform
 		//
 		////////////////////////////////////////////////////////////////
@@ -172,6 +196,19 @@ namespace s3d
 		/// @return 現在のレンダーターゲットのサイズ（ピクセル）
 		[[nodiscard]]
 		Size GetRenderTargetSize() noexcept;
+
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetMSDFParameters
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief MSDF 描画用のパラメータを設定します。
+		/// @param textStyle テキストスタイル
+		void SetMSDFParameters(const TextStyle& textStyle);
+
 	}
 }
 

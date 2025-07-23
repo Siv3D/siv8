@@ -21,6 +21,7 @@ namespace s3d
 		{
 		public:
 
+			[[nodiscard]]
 			Reflection() = default;
 
 			/// @brief コンストラクタ
@@ -28,6 +29,7 @@ namespace s3d
 			/// @param startAlpha 反射の開始位置のアルファ値（0.0 から 1.0 の範囲）
 			/// @param offsetScaleY 反射位置を調整する Y オフセットのスケール値（倍率）
 			/// @param color 描画時に使用する色
+			[[nodiscard]]
 			explicit constexpr Reflection(double start = 0.5, double startAlpha = 0.5, double offsetScaleY = 0.0, const ColorF& color = Palette::White) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;

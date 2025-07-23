@@ -12,6 +12,7 @@
 # include <Siv3D/Graphics2D.hpp>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/Error.hpp>
+# include <Siv3D/TextStyle.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -152,6 +153,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	GetCustomVertexShader
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<VertexShader> GetCustomVertexShader()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getCustomVS();
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetCustomPixelShader
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<PixelShader> GetCustomPixelShader()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getCustomPS();
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	GetLocalTransform
 		//
 		////////////////////////////////////////////////////////////////
@@ -200,6 +223,17 @@ namespace s3d
 			{
 				return Scene::Size();
 			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetMSDFParameters
+		//
+		////////////////////////////////////////////////////////////////
+
+		void SetMSDFParameters(const TextStyle& textStyle)
+		{
+			Internal::SetSDFParameters({ textStyle.param, textStyle.outlineColor, textStyle.shadowColor });
 		}
 
 		namespace Internal
@@ -264,6 +298,21 @@ namespace s3d
 			void SetViewport(const Optional<Rect>& viewport)
 			{
 				SIV3D_ENGINE(Renderer2D)->setViewport(viewport);
+			}
+
+			void SetSDFParameters(const std::array<Float4, 3>& params)
+			{
+				SIV3D_ENGINE(Renderer2D)->setSDFParameters(params);
+			}
+
+			void SetCustomVertexShader(const Optional<VertexShader>& vs)
+			{
+				SIV3D_ENGINE(Renderer2D)->setCustomVS(vs);
+			}
+
+			void SetCustomPixelShader(const Optional<PixelShader>& ps)
+			{
+				SIV3D_ENGINE(Renderer2D)->setCustomPS(ps);
 			}
 
 			void SetLocalTransform(const Mat3x2& transform)

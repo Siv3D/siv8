@@ -11,9 +11,13 @@
 
 # include "CFont.hpp"
 # include <Siv3D/TextStyle.hpp>
+# include <Siv3D/Graphics2D.hpp>
+# include <Siv3D/ScopedCustomShader2D.hpp>
 # include <Siv3D/TextEffect/NullTextEffect.hpp>
 # include <Siv3D/MemoryMappedFileView.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
+# include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "FontUtility.hpp"
 # include "TypefaceUtility.hpp"
 # include "GlyphRenderer/OutlineGlyphRenderer.hpp"
@@ -103,6 +107,13 @@ namespace s3d
 
 			// 管理に登録
 			m_fonts.setNullData(std::move(nullFont));
+		}
+
+		// フォント用シェーダ
+		{
+			m_shader = std::make_unique<FontShader>();
+			m_shader->bitmapFont	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D);
+			m_shader->msdfFont		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FontMSDF);
 		}
 	}
 
@@ -469,7 +480,7 @@ namespace s3d
 		{
 			if (font->getInfo().renderingMethod == FontMethod::MSDF)
 			{
-				//Graphics2D::SetMSDFParameters(textStyle);
+				Graphics2D::SetMSDFParameters(textStyle);
 			}
 		}
 
@@ -486,7 +497,7 @@ namespace s3d
 		}
 		else
 		{
-			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
+			const ScopedCustomShader2D ps{ m_shader->getFontShader(font->getInfo().renderingMethod, textStyle.type) };
 
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
@@ -575,7 +586,7 @@ namespace s3d
 		{
 			if (font->getInfo().renderingMethod == FontMethod::MSDF)
 			{
-				//Graphics2D::SetMSDFParameters(textStyle);
+				Graphics2D::SetMSDFParameters(textStyle);
 			}
 		}
 
@@ -592,7 +603,7 @@ namespace s3d
 		}
 		else
 		{
-			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
+			const ScopedCustomShader2D ps{ m_shader->getFontShader(font->getInfo().renderingMethod, textStyle.type) };
 
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
@@ -640,7 +651,7 @@ namespace s3d
 		{
 			if (font->getInfo().renderingMethod == FontMethod::MSDF)
 			{
-				//Graphics2D::SetMSDFParameters(textStyle);
+				Graphics2D::SetMSDFParameters(textStyle);
 			}
 		}
 
@@ -657,7 +668,7 @@ namespace s3d
 		}
 		else
 		{
-			//ScopedCustomShader2D ps{ m_shader->getFontShader(font->getMethod(), textStyle.type, hasColor) };
+			const ScopedCustomShader2D ps{ m_shader->getFontShader(font->getInfo().renderingMethod, textStyle.type) };
 
 			//if (readingDirection == ReadingDirection::TopToBottom)
 			//{
@@ -668,5 +679,16 @@ namespace s3d
 				return m_fonts[handleID]->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, textEffect, isColorFont, readingDirection);
 			//}
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getFontShader
+	//
+	////////////////////////////////////////////////////////////////
+
+	const PixelShader& CFont::getFontShader(const FontMethod method, const TextStyle::Type type) const
+	{
+		return m_shader->getFontShader(method, type);
 	}
 }

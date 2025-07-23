@@ -21,10 +21,12 @@ namespace s3d
 		{
 		public:
 
+			[[nodiscard]]
 			BasicTextEffect() = default;
 
 			/// @brief コンストラクタ
 			/// @param color 描画時に使用する色
+			[[nodiscard]]
 			explicit constexpr BasicTextEffect(const ColorF& color) noexcept;
 
 			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;

@@ -40,6 +40,7 @@ namespace s3d
 		PatternChecker,
 		PatternTriangle,
 		PatternHexGrid,
+		FontMSDF,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader
