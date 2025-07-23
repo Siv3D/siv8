@@ -14,6 +14,7 @@
 # include <Siv3D/Indexed.hpp>
 # include <Siv3D/TextStyle.hpp>
 # include <Siv3D/ITextEffect.hpp>
+# include <Siv3D/GlyphContext.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "BitmapGlyphCache.hpp"
@@ -56,6 +57,7 @@ namespace s3d
 		double advance = 0.0;
 
 		int32 lineCount = 1;
+		const int32 totalGlyphCount = static_cast<int32>(resolvedGlyphs.size());
 
 		for (const auto& [index, resolvedGlyph] : Indexed(resolvedGlyphs))
 		{
@@ -85,7 +87,7 @@ namespace s3d
 					nextPos.y += (info.ascender * scale);
 				}
 
-				auto [w, adv] = (isDraw ? SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, textEffect, index, readingDirection)
+				auto [w, adv] = (isDraw ? SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, textEffect, index, totalGlyphCount, readingDirection)
 					: SIV3D_ENGINE(Font)->regionBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, readingDirection));
 
 				xMax = Max(xMax, (penPos.x + w));
@@ -109,7 +111,7 @@ namespace s3d
 
 					if (isDraw)
 					{
-						textEffect.draw(textureRegion, drawPosRounded, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion, GlyphContext{ drawPosRounded, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 
 					w = textureRegion.region(drawPosRounded).w;
@@ -118,7 +120,7 @@ namespace s3d
 				{
 					if (isDraw)
 					{
-						textEffect.draw(textureRegion.scaled(scale), drawPos, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion.scaled(scale), GlyphContext{ drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 
 					w = textureRegion.scaled(scale).region(drawPos).w;
@@ -144,7 +146,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::pair<double, double> BitmapGlyphCache::processHorizontalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const bool isColorGlyph, const ReadingDirection readingDirection)
+	std::pair<double, double> BitmapGlyphCache::processHorizontalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const int32 totalGlyphCount, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
 		{
@@ -176,7 +178,7 @@ namespace s3d
 
 					if (isDraw)
 					{
-						textEffect.draw(textureRegion, drawPosRounded, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion, GlyphContext{ drawPosRounded, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 
 					w = textureRegion.region(drawPosRounded).w;
@@ -185,7 +187,7 @@ namespace s3d
 				{
 					if (isDraw)
 					{
-						textEffect.draw(textureRegion.scaled(scale), drawPos, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion.scaled(scale), GlyphContext{ drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 
 					w = textureRegion.scaled(scale).region(drawPos).w;
@@ -224,6 +226,7 @@ namespace s3d
 		double advance = 0.0;
 
 		int32 lineCount = 1;
+		const int32 totalGlyphCount = static_cast<int32>(resolvedGlyphs.size());
 
 		for (const auto& [index, resolvedGlyph] : Indexed(resolvedGlyphs))
 		{
@@ -247,7 +250,7 @@ namespace s3d
 				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
 
 				Vec2 nextPos = penPos;
-				auto [h, adv] = (isDraw? SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, textEffect, index, readingDirection)
+				auto [h, adv] = (isDraw? SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, textEffect, index, totalGlyphCount, readingDirection)
 					: SIV3D_ENGINE(Font)->regionBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, readingDirection));
 
 				yMax = Max(yMax, (penPos.y + h));
@@ -271,7 +274,7 @@ namespace s3d
 					
 					if (isDraw)
 					{
-						textEffect.draw(textureRegion, drawPosRounded, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion, GlyphContext{ drawPosRounded, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 
 					h = textureRegion.region(drawPosRounded).h;
@@ -280,7 +283,7 @@ namespace s3d
 				{
 					if (isDraw)
 					{
-						textEffect.draw(textureRegion.scaled(scale), drawPos, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion.scaled(scale), GlyphContext{ drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 
 					h = textureRegion.scaled(scale).region(drawPos).h;
@@ -307,7 +310,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::pair<double, double> BitmapGlyphCache::processVerticalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const bool isColorGlyph, const ReadingDirection readingDirection)
+	std::pair<double, double> BitmapGlyphCache::processVerticalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const int32 totalGlyphCount, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
 		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
 		{
@@ -339,7 +342,7 @@ namespace s3d
 					
 					if (isDraw)
 					{
-						textEffect.draw(textureRegion, drawPosRounded, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion, GlyphContext{ drawPosRounded, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 					
 					h = textureRegion.region(drawPosRounded).h;
@@ -348,7 +351,7 @@ namespace s3d
 				{
 					if (isDraw)
 					{
-						textEffect.draw(textureRegion.scaled(scale), drawPos, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion.scaled(scale), GlyphContext{ drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 
 					h = textureRegion.scaled(scale).region(drawPos).h;
@@ -612,6 +615,7 @@ namespace s3d
 		{
 			const double baseLineHeight = (info.height() * scale);
 			int32 index = 0;
+			const int32 totalGlyphCount = static_cast<int32>(resolvedGlyphs.size() + periodPositions.size());
 
 			for (size_t i = 0; i < penPositions.size(); ++i)
 			{
@@ -628,7 +632,7 @@ namespace s3d
 				if (resolvedGlyph.fontIndex != 0)
 				{
 					const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
-					SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, penPosInfo.drawPos, fontSize, textStyle, textEffect, index, readingDirection);
+					SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, penPosInfo.drawPos, fontSize, textStyle, textEffect, index, totalGlyphCount, readingDirection);
 				}
 				else
 				{
@@ -639,11 +643,11 @@ namespace s3d
 
 					if (pixelPerfect)
 					{
-						textEffect.draw(textureRegion, penPosInfo.drawPos, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion, GlyphContext{ penPosInfo.drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 					else
 					{
-						textEffect.draw(textureRegion.scaled(scale), penPosInfo.drawPos, index, top, bottom, isColorGlyph);
+						textEffect.draw(textureRegion.scaled(scale), GlyphContext{ penPosInfo.drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 					}
 				}
 
@@ -660,11 +664,11 @@ namespace s3d
 
 				if (pixelPerfect)
 				{
-					textEffect.draw(textureRegion, Math::Round(drawPos), index, top, bottom, isColorGlyph);
+					textEffect.draw(textureRegion, GlyphContext{ Math::Round(drawPos), index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 				}
 				else
 				{
-					textEffect.draw(textureRegion.scaled(scale), drawPos, index, top, bottom, isColorGlyph);
+					textEffect.draw(textureRegion.scaled(scale), GlyphContext{ drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
 				}
 
 				++index;

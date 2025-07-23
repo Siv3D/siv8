@@ -9,18 +9,19 @@
 //
 //-----------------------------------------------
 
+# include <Siv3D/GlyphContext.hpp>
 # include <Siv3D/TextEffect/Reflection.hpp>
 
 namespace s3d
 {
 	namespace TextEffect
 	{
-		void Reflection::draw(const TextureRegion& textureRegion, const Vec2& pos, const int32, const double top, const double bottom, const bool isColorGlyph) const
+		void Reflection::draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const
 		{
-			const ColorF color = (isColorGlyph ? ColorF{ 1.0, m_color.a } : m_color);
-			textureRegion.draw(pos, color);
+			const ColorF color = (glyphContext.isColorGlyph ? ColorF{ 1.0, m_color.a } : m_color);
+			textureRegion.draw(glyphContext.pos, color);
 			textureRegion.flipped()(0, 0, textureRegion.size.x, (textureRegion.size.y * m_start))
-				.draw(Vec2{ pos.x, (bottom + (bottom - top) * m_offsetScaleY) }, Arg::top(color, (color.a * m_startAlpha)), Arg::bottom(color, 0.0));
+				.draw(Vec2{ glyphContext.pos.x, (glyphContext.bottom + (glyphContext.bottom - glyphContext.top) * m_offsetScaleY) }, Arg::top(color, (color.a * m_startAlpha)), Arg::bottom(color, 0.0));
 		}
 	}
 }

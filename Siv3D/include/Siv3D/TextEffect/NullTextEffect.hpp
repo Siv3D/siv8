@@ -21,7 +21,7 @@ namespace s3d
 		{
 		public:
 
-			constexpr void draw(const TextureRegion&, const Vec2&, int32, double, double, bool) const override {}
+			constexpr void draw(const TextureRegion&, const GlyphContext&) const override {}
 		};
 	}
 }

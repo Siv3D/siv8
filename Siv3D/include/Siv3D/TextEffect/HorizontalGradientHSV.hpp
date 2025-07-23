@@ -30,7 +30,7 @@ namespace s3d
 			/// @param endX グラデーション終了位置の X 座標（ピクセル）
 			constexpr HorizontalGradientHSV(const HSV& startColor, const HSV& endColor, double startX, double endX) noexcept;
 
-			void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const override;
+			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;
 
 		private:
 

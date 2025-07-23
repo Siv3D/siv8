@@ -30,7 +30,7 @@ namespace s3d
 			/// @param endOffset グラデーションの終了位置のオフセット (0.0 から 1.0 の範囲)
 			constexpr VerticalGradient(const ColorF& startColor, const ColorF& endColor, double startOffset = 0.0, double endOffset = 1.0) noexcept;
 
-			void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const override;
+			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;
 
 		private:
 

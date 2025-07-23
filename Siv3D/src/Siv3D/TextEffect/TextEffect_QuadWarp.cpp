@@ -9,17 +9,18 @@
 //
 //-----------------------------------------------
 
+# include <Siv3D/GlyphContext.hpp>
 # include <Siv3D/TextEffect/QuadWarp.hpp>
 
 namespace s3d
 {
 	namespace TextEffect
 	{
-		void QuadWarp::draw(const TextureRegion& textureRegion, const Vec2& pos, const int32, const double, const double, const bool isColorGlyph) const
+		void QuadWarp::draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const
 		{
-			const ColorF color = (isColorGlyph ? ColorF{ 1.0, m_color.a } : m_color);
+			const ColorF color = (glyphContext.isColorGlyph ? ColorF{ 1.0, m_color.a } : m_color);
 
-			Quad quad = RectF{ pos, textureRegion.size }.asQuad();
+			Quad quad = RectF{ glyphContext.pos, textureRegion.size }.asQuad();
 
 			quad.p1.y -= (textureRegion.size.x * m_scaleOffset);
 			

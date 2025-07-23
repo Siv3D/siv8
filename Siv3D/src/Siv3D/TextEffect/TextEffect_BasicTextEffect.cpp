@@ -9,17 +9,18 @@
 //
 //-----------------------------------------------
 
+# include <Siv3D/GlyphContext.hpp>
 # include <Siv3D/TextEffect/BasicTextEffect.hpp>
 
 namespace s3d
 {
 	namespace TextEffect
 	{
-		void BasicTextEffect::draw(const TextureRegion& textureRegion, const Vec2& pos, [[maybe_unused]] const int32 index, [[maybe_unused]] const double top, [[maybe_unused]] const double bottom, const bool isColorGlyph) const
+		void BasicTextEffect::draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const
 		{
-			const ColorF color = (isColorGlyph ? ColorF{ 1.0, m_color.a } : m_color);
+			const ColorF color = (glyphContext.isColorGlyph ? ColorF{ 1.0, m_color.a } : m_color);
 
-			textureRegion.draw(pos, color);
+			textureRegion.draw(glyphContext.pos, color);
 		}
 	}
 }

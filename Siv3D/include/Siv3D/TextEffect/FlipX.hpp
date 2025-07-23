@@ -32,7 +32,7 @@ namespace s3d
 			/// @param color 描画時に使用する色
 			explicit constexpr FlipX(bool flipX, const ColorF& color = Palette::White) noexcept;
 
-			void draw(const TextureRegion& textureRegion, const Vec2& pos, const int32, double, double, bool) const override;
+			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;
 
 		private:
 

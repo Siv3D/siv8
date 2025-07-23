@@ -28,7 +28,7 @@ namespace s3d
 			/// @param color 描画時に使用する色
 			constexpr QuadWarp(double scaleOffset, const ColorF& color = Palette::White) noexcept;
 
-			void draw(const TextureRegion& textureRegion, const Vec2& pos, int32 index, double top, double bottom, bool isColorGlyph) const override;
+			void draw(const TextureRegion& textureRegion, const GlyphContext& glyphContext) const override;
 
 		private:
 
