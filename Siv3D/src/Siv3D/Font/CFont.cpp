@@ -108,7 +108,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getFontFileInfo
+	//	getFontFaces
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -252,6 +252,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	setBufferThickness
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CFont::setBufferThickness(const Font::IDType handleID, const int32 thickness)
+	{
+		m_fonts[handleID]->getGlyphCache().setBufferThickness(thickness);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBufferThickness
+	//
+	////////////////////////////////////////////////////////////////
+
+	int32 CFont::getBufferThickness(const Font::IDType handleID)
+	{
+		return m_fonts[handleID]->getGlyphCache().getBufferThickness();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
@@ -360,6 +382,17 @@ namespace s3d
 	BitmapGlyph CFont::renderBitmapByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		return m_fonts[handleID]->renderBitmapByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderMSDFByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	MSDFGlyph CFont::renderMSDFByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	{
+		return m_fonts[handleID]->renderMSDFByGlyphIndex(glyphIndex, getBufferThickness(handleID), readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////

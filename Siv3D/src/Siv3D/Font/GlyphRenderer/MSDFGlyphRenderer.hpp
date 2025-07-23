@@ -16,5 +16,5 @@
 namespace s3d
 {
 	[[nodiscard]]
-	MSDFGlyph RenderMSDFGlyph(::FT_Face face, GlyphIndex glyphIndex, const FontFaceInfo& info, int32 buffer, ReadingDirection readingDirection);
+	MSDFGlyph RenderMSDFGlyph(::FT_Face face, GlyphIndex glyphIndex, const FontFaceInfo& info, int32 bufferThickness, ReadingDirection readingDirection);
 }

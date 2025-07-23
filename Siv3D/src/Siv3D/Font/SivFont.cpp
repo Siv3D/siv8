@@ -321,6 +321,29 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getBufferThickness
+	//
+	////////////////////////////////////////////////////////////////
+
+	int32 Font::getBufferThickness() const
+	{
+		return SIV3D_ENGINE(Font)->getBufferThickness(m_handle->id());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setBufferThickness
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Font& Font::setBufferThickness(const int32 thickness) const
+	{
+		SIV3D_ENGINE(Font)->setBufferThickness(m_handle->id(), thickness);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	num_glyphs
 	//
 	////////////////////////////////////////////////////////////////
@@ -548,6 +571,34 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->renderBitmapByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderMSDF
+	//
+	////////////////////////////////////////////////////////////////
+
+	MSDFGlyph Font::renderMSDF(const char32 codePoint, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return renderMSDFByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	MSDFGlyph Font::renderMSDF(const StringView ch, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return renderMSDFByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderMSDFByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	MSDFGlyph Font::renderMSDFByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->renderMSDFByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
+	}
 
 
 	////////////////////////////////////////////////////////////////

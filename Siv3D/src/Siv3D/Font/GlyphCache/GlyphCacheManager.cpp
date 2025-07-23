@@ -59,6 +59,19 @@ namespace s3d
 		}
 	}
 
+	GlyphCacheManager::GlyphCacheManager(const int32 bufferThickness)
+		: m_bufferThickness{ Max(0, bufferThickness) } {}
+
+	void GlyphCacheManager::setBufferThickness(const int32 bufferThickness) noexcept
+	{
+		m_bufferThickness = Max(0, bufferThickness);
+	}
+
+	int32 GlyphCacheManager::getBufferThickness() const noexcept
+	{
+		return m_bufferThickness;
+	}
+
 	const GlyphCache& GlyphCacheManager::get(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
 	{
 		return m_glyphTable.find(AsInternalGlyphIndex(glyphIndex, readingDirection))->second;

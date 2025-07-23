@@ -394,8 +394,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 	
-	MSDFGlyph FontData::renderMSDFByGlyphIndex(const GlyphIndex glyphIndex, const int32 buffer, const ReadingDirection readingDirection)
+	MSDFGlyph FontData::renderMSDFByGlyphIndex(const GlyphIndex glyphIndex, const int32 bufferThickness, const ReadingDirection readingDirection)
 	{
-		return RenderMSDFGlyph(m_face->getFace(), glyphIndex, m_face->getInfo(), buffer, readingDirection);
+		return RenderMSDFGlyph(m_face->getFace(), glyphIndex, m_face->getInfo(), bufferThickness, readingDirection);
 	}
 }

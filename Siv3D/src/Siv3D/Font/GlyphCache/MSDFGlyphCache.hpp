@@ -11,10 +11,8 @@
 
 # pragma once
 # include <Siv3D/Font.hpp>
-# include <Siv3D/HashMap.hpp>
-# include <Siv3D/DynamicTexture.hpp>
 # include "IGlyphCache.hpp"
-# include "GlyphCacheCommon.hpp"
+# include "GlyphCacheManager.hpp"
 
 namespace s3d
 {
@@ -96,8 +94,29 @@ namespace s3d
 
 		[[nodiscard]]
 		double xAdvanceFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, double fontSize) override;
-	
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setBufferThickness
+		//
+		////////////////////////////////////////////////////////////////
+
+		void setBufferThickness(int32 thickness) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getBufferThickness
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		int32 getBufferThickness() const noexcept override;
+
 	private:
+
+		static constexpr int32 DefaultBufferThickness = 2;
+
+		GlyphCacheManager m_glyphCacheManager{ DefaultBufferThickness };
 
 		Texture _unused;
 	};

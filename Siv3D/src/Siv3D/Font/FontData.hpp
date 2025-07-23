@@ -205,7 +205,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		MSDFGlyph renderMSDFByGlyphIndex(GlyphIndex glyphIndex, int32 buffer, ReadingDirection readingDirection);
+		MSDFGlyph renderMSDFByGlyphIndex(GlyphIndex glyphIndex, int32 bufferThickness, ReadingDirection readingDirection);
 
 	private:
 

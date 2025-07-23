@@ -271,8 +271,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//int32 getBufferThickness() const;
+		[[nodiscard]]
+		int32 getBufferThickness() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -280,7 +280,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Font& setBufferThickness(int32 thickness) const;
+		const Font& setBufferThickness(int32 thickness) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -478,6 +478,28 @@ namespace s3d
 
 		[[nodiscard]]
 		BitmapGlyph renderBitmapByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderMSDF
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MSDFGlyph renderMSDF(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		[[nodiscard]]
+		MSDFGlyph renderMSDF(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderMSDFByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MSDFGlyph renderMSDFByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
 
 
 

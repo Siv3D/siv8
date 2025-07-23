@@ -56,11 +56,11 @@ namespace s3d
 		[[nodiscard]]
 		virtual double xAdvanceFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, double fontSize) = 0;
 	
+		virtual void setBufferThickness(int32 thickness) = 0;
+
+		virtual int32 getBufferThickness() const noexcept = 0;
+
 		/*
-		virtual void setBufferWidth(int32 width) = 0;
-
-		virtual int32 getBufferWidth() const noexcept = 0;
-
 		virtual bool preload(const FontData& font, StringView s) = 0;
 
 		[[nodiscard]]

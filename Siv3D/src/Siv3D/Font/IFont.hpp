@@ -50,6 +50,11 @@ namespace s3d
 
 		virtual void setTabSize(Font::IDType handleID, int32 tabSize) = 0;
 
+		virtual void setBufferThickness(Font::IDType handleID, int32 thickness) = 0;
+
+		[[nodiscard]]
+		virtual int32 getBufferThickness(Font::IDType handleID) = 0;
+
 		[[nodiscard]]
 		virtual GlyphIndex getGlyphIndex(Font::IDType handleID, char32 codePoint, ReadingDirection readingDirection) = 0;
 
@@ -79,6 +84,9 @@ namespace s3d
 
 		[[nodiscard]]
 		virtual BitmapGlyph renderBitmapByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
+
+		[[nodiscard]]
+		virtual MSDFGlyph renderMSDFByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 
 		virtual const Texture& getTexture(Font::IDType handleID) = 0;
 

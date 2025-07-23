@@ -47,6 +47,14 @@ namespace s3d
 	{
 	public:
 
+		GlyphCacheManager() = default;
+
+		explicit GlyphCacheManager(int32 bufferThickness);
+
+		void setBufferThickness(int32 bufferThickness) noexcept;
+
+		int32 getBufferThickness() const noexcept;
+
 		const GlyphCache& get(GlyphIndex glyphIndex, ReadingDirection readingDirection) const;
 
 		bool isEmpty() const noexcept;
@@ -69,7 +77,7 @@ namespace s3d
 
 		Image m_image;
 
-		int32 m_bufferWidth = 2;
+		int32 m_bufferThickness = 2;
 
 		int32 m_padding = 1;
 
