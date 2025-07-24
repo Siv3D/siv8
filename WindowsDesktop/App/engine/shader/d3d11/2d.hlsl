@@ -331,8 +331,29 @@ float4 PS_MSDFFont(PSInput input) : SV_TARGET
 	const float td = (d - 0.5);
 	const float textAlpha = saturate(td * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5);
 
-	float4 vertexColor = input.color;
-	const float4 textureColor = float4(textAlpha, textAlpha, textAlpha, textAlpha);
-	vertexColor *= textureColor;
-	return (vertexColor + (g_colorAdd * vertexColor.a));
+	const float4 textureColor = (input.color * textAlpha);
+	return (textureColor + (g_colorAdd * textureColor.a));
+}
+
+float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
+{
+	float2 size;
+	g_texture0.GetDimensions(size.x, size.y);
+	const float pxRange = 4.0;
+	const float2 msdfUnit = (pxRange / size);
+
+	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
+	const float d = s3d_median(s.r, s.g, s.b);
+
+	const float od = (d - g_sdfParam.y);
+	const float thickAlpha = saturate(od * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5);
+
+	const float td = (d - g_sdfParam.x);
+	const float textAlpha = saturate(td * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5);
+
+	const float blend = textAlpha;
+	float4 textureColor = lerp(g_sdfOutlineColor, input.color, blend);
+	textureColor *= thickAlpha;
+	
+	return (textureColor + (g_colorAdd * textureColor.a));
 }

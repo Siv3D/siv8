@@ -112,8 +112,9 @@ namespace s3d
 		// フォント用シェーダ
 		{
 			m_shader = std::make_unique<FontShader>();
-			m_shader->bitmapFont	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D);
-			m_shader->msdfFont		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FontMSDF);
+			m_shader->bitmapFont		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D);
+			m_shader->msdfFont			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FontMSDF);
+			m_shader->msdfFontOutline	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FontMSDF_Outline);
 		}
 	}
 

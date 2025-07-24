@@ -36,7 +36,7 @@ namespace s3d
 		style.type = Type::Outline;
 		style.param.x = static_cast<float>(0.5 + inner);
 		style.param.y = static_cast<float>(0.5 - outer);
-		style.outlineColor = color.toFloat4();
+		style.outlineColor = ColorF::PremultiplyAlpha(color).toFloat4();
 		return style;
 	}
 
@@ -46,7 +46,7 @@ namespace s3d
 		style.type = Type::Shadow;
 		style.param.z = static_cast<float>(offset.x);
 		style.param.w = static_cast<float>(offset.y);
-		style.shadowColor = color.toFloat4();
+		style.shadowColor = ColorF::PremultiplyAlpha(color).toFloat4();
 		return style;
 	}
 
@@ -63,8 +63,8 @@ namespace s3d
 		style.param.y = static_cast<float>(0.5 - outer);
 		style.param.z = static_cast<float>(offset.x);
 		style.param.w = static_cast<float>(offset.y);
-		style.outlineColor = outlineColor.toFloat4();
-		style.shadowColor = shadowColor.toFloat4();
+		style.outlineColor = ColorF::PremultiplyAlpha(outlineColor).toFloat4();
+		style.shadowColor = ColorF::PremultiplyAlpha(shadowColor).toFloat4();
 		return style;
 	}
 }

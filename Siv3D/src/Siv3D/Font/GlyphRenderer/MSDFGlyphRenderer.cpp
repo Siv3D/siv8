@@ -226,7 +226,7 @@ namespace s3d
 		msdfgen::MSDFGeneratorConfig generatorConfig;
 		generatorConfig.overlapSupport = false;
 		generatorConfig.errorCorrection.mode = msdfgen::ErrorCorrectionConfig::EDGE_PRIORITY;
-		generatorConfig.errorCorrection.distanceCheckMode = msdfgen::ErrorCorrectionConfig::CHECK_DISTANCE_AT_EDGE;
+		generatorConfig.errorCorrection.distanceCheckMode = msdfgen::ErrorCorrectionConfig::ALWAYS_CHECK_DISTANCE;
 
 		msdfgen::Bitmap<float, 4> bitmap{ (width + (2 * bufferThickness)), (height + (2 * bufferThickness)) };
 		msdfgen::generateMTSDF(bitmap, shape, projection, 4.0, generatorConfig);
