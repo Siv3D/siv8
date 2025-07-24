@@ -322,7 +322,7 @@ float4 PS_MSDFFont(PSInput input) : SV_TARGET
 {
 	float2 size;
 	g_texture0.GetDimensions(size.x, size.y);
-	const float pxRange = 4.0;
+	const float pxRange = 16.0;
 	const float2 msdfUnit = (pxRange / size);
 
 	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
@@ -339,7 +339,7 @@ float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 {
 	float2 size;
 	g_texture0.GetDimensions(size.x, size.y);
-	const float pxRange = 4.0;
+	const float pxRange = 16.0;
 	const float2 msdfUnit = (pxRange / size);
 
 	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
