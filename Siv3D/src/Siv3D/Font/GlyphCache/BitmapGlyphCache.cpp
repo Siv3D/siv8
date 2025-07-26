@@ -126,7 +126,7 @@ namespace s3d
 					w = textureRegion.scaled(scale).region(drawPos).w;
 				}
 
-				w += (posOffset.x * scale);
+				w += posOffset.x;
 			}
 
 			xMax = Max(xMax, (penPos.x + w));
@@ -193,7 +193,7 @@ namespace s3d
 					w = textureRegion.scaled(scale).region(drawPos).w;
 				}
 
-				w += (posOffset.x * scale);
+				w += posOffset.x;
 			}
 
 			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - w);
@@ -504,7 +504,7 @@ namespace s3d
 					{
 						drawPos = Math::Round(drawPos);
 						w = textureRegion.region(drawPos).w;
-						w += (posOffset.x * scale);
+						w += posOffset.x;
 
 						if (areaBottomRight.x < (penPos.x + w))
 						{
@@ -521,13 +521,13 @@ namespace s3d
 							drawPos = (penPos + posOffset);
 							drawPos = Math::Round(drawPos);
 							w = textureRegion.region(drawPos).w;
-							w += (posOffset.x * scale);
+							w += posOffset.x;
 						}
 					}
 					else
 					{
 						w = textureRegion.scaled(scale).region(drawPos).w;
-						w += (posOffset.x * scale);
+						w += posOffset.x;
 
 						if (areaBottomRight.x < (penPos.x + w))
 						{
@@ -543,7 +543,7 @@ namespace s3d
 							
 							drawPos = (penPos + posOffset);
 							w = textureRegion.scaled(scale).region(drawPos).w;
-							w += (posOffset.x * scale);
+							w += posOffset.x;
 						}
 					}
 
@@ -595,12 +595,12 @@ namespace s3d
 						{
 							drawPos = Math::Round(drawPos);
 							w = textureRegion.region(drawPos).w;
-							w += (posOffset.x * scale);
+							w += posOffset.x;
 						}
 						else
 						{
 							w = textureRegion.scaled(scale).region(drawPos).w;
-							w += (posOffset.x * scale);
+							w += posOffset.x;
 						}
 
 						periodPositions.emplace_back(penPos, drawPos);

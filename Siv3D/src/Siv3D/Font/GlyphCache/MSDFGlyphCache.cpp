@@ -123,7 +123,7 @@ namespace s3d
 					w = textureRegion.scaled(scale).region(drawPos).w;
 				}
 
-				w += (posOffset.x * scale);
+				w += posOffset.x;
 			}
 
 			xMax = Max(xMax, (penPos.x + w));
@@ -188,7 +188,7 @@ namespace s3d
 					w = textureRegion.scaled(scale).region(drawPos).w;
 				}
 
-				w += (posOffset.x * scale);
+				w += posOffset.x;
 			}
 
 			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - w);
