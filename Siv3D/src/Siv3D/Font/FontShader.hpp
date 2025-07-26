@@ -24,6 +24,8 @@ namespace s3d
 
 		PixelShader msdfFontOutline;
 
+		PixelShader msdfGlow;
+
 		[[nodiscard]]
 		const PixelShader& getFontShader(const FontMethod method, const TextStyle::Type type) noexcept
 		{
@@ -36,6 +38,10 @@ namespace s3d
 				if (type == TextStyle::Type::Outline)
 				{
 					return msdfFontOutline;
+				}
+				else if (type == TextStyle::Type::Glow)
+				{
+					return msdfGlow;
 				}
 				else
 				{

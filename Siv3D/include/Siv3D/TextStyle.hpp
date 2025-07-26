@@ -32,6 +32,7 @@ namespace s3d
 			Outline,
 			Shadow,
 			OutlineShadow,
+			Glow,
 			CustomShader,
 		} type = Type::Default;
 
@@ -89,6 +90,9 @@ namespace s3d
 		/// @return 輪郭とシャドウ付きのスタイル
 		[[nodiscard]]
 		static constexpr TextStyle OutlineShadow(double inner, double outer, const ColorF& outlineColor, const Vec2& offset, const ColorF& shadowColor) noexcept;
+	
+		[[nodiscard]]
+		static constexpr TextStyle Glow(double p) noexcept;
 	};
 }
 

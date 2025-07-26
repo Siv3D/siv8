@@ -67,4 +67,12 @@ namespace s3d
 		style.shadowColor = ColorF::PremultiplyAlpha(shadowColor).toFloat4();
 		return style;
 	}
+
+	constexpr TextStyle TextStyle::Glow(const double p) noexcept
+	{
+		TextStyle style;
+		style.type = Type::Glow;
+		style.param.x = static_cast<float>(p);
+		return style;
+	}
 }

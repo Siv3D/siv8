@@ -42,6 +42,7 @@ namespace s3d
 		PatternHexGrid,
 		FontMSDF,
 		FontMSDF_Outline,
+		FontMSDF_Glow,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

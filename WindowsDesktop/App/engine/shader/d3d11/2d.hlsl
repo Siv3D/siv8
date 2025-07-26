@@ -87,6 +87,8 @@ float s3d_median(float r, float g, float b)
 	return max(min(r, g), min(max(r, g), b));
 }
 
+static const float MSDF_PixelRange = 16.0;
+
 PSInput VS_Shape(VSInput input)
 {
 	PSInput result;
@@ -322,8 +324,7 @@ float4 PS_MSDFFont(PSInput input) : SV_TARGET
 {
 	float2 size;
 	g_texture0.GetDimensions(size.x, size.y);
-	const float pxRange = 16.0;
-	const float2 msdfUnit = (pxRange / size);
+	const float2 msdfUnit = (MSDF_PixelRange / size);
 
 	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
 	const float d = s3d_median(s.r, s.g, s.b);
@@ -339,8 +340,7 @@ float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 {
 	float2 size;
 	g_texture0.GetDimensions(size.x, size.y);
-	const float pxRange = 16.0;
-	const float2 msdfUnit = (pxRange / size);
+	const float2 msdfUnit = (MSDF_PixelRange / size);
 
 	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
 	const float d = s3d_median(s.r, s.g, s.b);
@@ -355,5 +355,17 @@ float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 	float4 textureColor = lerp(g_sdfOutlineColor, input.color, blend);
 	textureColor *= thickAlpha;
 	
+	return (textureColor + (g_colorAdd * textureColor.a));
+}
+
+float4 PS_MSDFFont_Glow(PSInput input) : SV_TARGET
+{
+	float2 size;
+	g_texture0.GetDimensions(size.x, size.y);
+	const float2 msdfUnit = (MSDF_PixelRange / size);
+
+	const float d = saturate(g_texture0.Sample(g_sampler0, input.uv).a * 2.0);
+	const float pd = pow(abs(d), g_sdfParam.x);
+	const float4 textureColor = float4(input.color.rgb * pd, (input.color.a * pd));
 	return (textureColor + (g_colorAdd * textureColor.a));
 }

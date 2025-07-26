@@ -115,6 +115,7 @@ namespace s3d
 			m_shader->bitmapFont		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D);
 			m_shader->msdfFont			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FontMSDF);
 			m_shader->msdfFontOutline	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FontMSDF_Outline);
+			m_shader->msdfGlow			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FontMSDF_Glow);
 		}
 	}
 
