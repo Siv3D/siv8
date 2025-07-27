@@ -638,6 +638,12 @@ MIT_LICENSE
 },
 
 {
+R"-(M+ FONTS)-",
+R"-(Copyright 2021 The M+ FONTS Project Authors (https://github.com/coz-m/MPLUS_FONTS))-",
+R"-(M+ FONTS are licensed under the SIL Open Font License, Version 1.1.)-",
+},
+
+{
 R"-(Metal-cpp)-",
 R"-(Copyright (c) 2024 Apple Inc.)-",
 APACHE_2_LICENSE
@@ -680,6 +686,18 @@ R"-(Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
 Copyright 2008-2009  David G. Lowe (lowe@cs.ubc.ca). All rights reserved.
 Copyright 2011-2025  Jose Luis Blanco (joseluisblancoc@gmail.com). All rights reserved.)-",
 BSD_2_LICENSE
+},
+
+{
+R"-(Noto CJK fonts)-",
+R"-()-",
+R"-(Noto CJK fonts are licensed under the SIL Open Font License, Version 1.1.)-",
+},
+
+{
+R"-(Noto Emoji)-",
+R"-()-",
+R"-(Noto Emoji is licensed under the SIL Open Font License, Version 1.1.)-",
 },
 
 {

@@ -37,6 +37,7 @@ Name | Version
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [nanoflann](https://github.com/jlblancoc/nanoflann) | v1.7.1
 [Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.048
+[Noto Sans CJK](https://github.com/notofonts/noto-cjk) | Version 2.004
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [OpenCV](https://github.com/opencv/opencv) | 4.10.0
