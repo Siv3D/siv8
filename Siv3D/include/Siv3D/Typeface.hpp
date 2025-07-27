@@ -16,23 +16,20 @@ namespace s3d
 {
 	enum class Typeface : uint8
 	{
-		///// @brief 日本向けの　CJK フォント
-		//CJK_Regular_JP,
+		/// @brief 日本向けの　CJK フォント
+		CJK_Regular_JP,
 
-		///// @brief 韓国向けの CJK フォント
-		//CJK_Regular_KR,
+		/// @brief 韓国向けの CJK フォント
+		CJK_Regular_KR,
 
-		///// @brief 中国向けの CJK フォント
-		//CJK_Regular_SC,
+		/// @brief 中国向けの CJK フォント
+		CJK_Regular_SC,
 
-		///// @brief 台湾向けの CJK フォント
-		//CJK_Regular_TC,
+		/// @brief 台湾向けの CJK フォント
+		CJK_Regular_TC,
 
-		///// @brief 香港向けの CJK フォント
-		//CJK_Regular_HK,
-
-		///// @brief モノクロ絵文字フォント
-		//MonochromeEmoji,
+		/// @brief 香港向けの CJK フォント
+		CJK_Regular_HK,
 
 		/// @brief カラー絵文字フォント
 		ColorEmoji,

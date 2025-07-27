@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/CacheDirectory/CacheDirectory.hpp>
+# include <Siv3D/FileSystem.hpp>
 # include "TypefaceUtility.hpp"
 
 namespace s3d
@@ -20,6 +21,30 @@ namespace s3d
 
 		switch (typeface)
 		{
+		case Typeface::CJK_Regular_JP:
+		case Typeface::CJK_Regular_KR:
+		case Typeface::CJK_Regular_SC:
+		case Typeface::CJK_Regular_TC:
+		case Typeface::CJK_Regular_HK:
+			{
+				if (const FilePath pathCJK = (fontFilePath + U"NotoSansCJK-Medium.ttc"); FileSystem::Exists(pathCJK))
+				{
+					const uint32 index = (FromEnum(typeface) - FromEnum(Typeface::CJK_Regular_JP));
+					return{ pathCJK, index, U"", fontMethod };
+				}
+
+				if (const FilePath pathJP = (fontFilePath + U"NotoSansJP-Medium.otf"); FileSystem::Exists(pathJP))
+				{
+					return{ pathJP, 0, U"", fontMethod };
+				}
+
+				if (const FilePath pathMin = (fontFilePath + U"siv3d-min.otf"); FileSystem::Exists(pathMin))
+				{
+					return{ pathMin, 0, U"", fontMethod };
+				}
+
+				break;
+			}
 		case Typeface::ColorEmoji:
 			return{ (fontFilePath + U"Noto-COLRv1.ttf"), 0, U"", FontMethod::Bitmap };
 		case Typeface::MPlus2_Thin:
@@ -42,8 +67,8 @@ namespace s3d
 			return{ (fontFilePath + U"MPLUS2.ttf"), 0, U"Black", fontMethod };
 		case Typeface::Icon_MaterialDesign:
 			return{ (fontFilePath + U"materialdesignicons-webfont.ttf"), 0, U"", fontMethod };
-		default:
-			return{ U"", 0, U"", FontMethod::Bitmap };
 		}
+
+		return{ U"", 0, U"", FontMethod::Bitmap };
 	}
 }

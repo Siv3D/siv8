@@ -81,6 +81,21 @@ namespace s3d
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
 
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(destructor)

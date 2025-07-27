@@ -96,6 +96,29 @@ namespace s3d
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const Typeface typeface, const FontStyle style)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(typeface, fontMethod, baseSize, style))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+		setBufferThickness(bufferThickness);
+	}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const FilePathView path, const FontStyle style)
+		: Font{ fontMethod, baseSize, bufferThickness, path, 0, U"", style } {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const FilePathView path, const size_t faceIndex, const FontStyle style)
+		: Font{ fontMethod, baseSize, bufferThickness, path, faceIndex, U"", style } {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const FilePathView path, const StringView styleName, const FontStyle style)
+		: Font{ fontMethod, baseSize, bufferThickness, path, 0, styleName, style } {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const FilePathView path, const size_t faceIndex, const StringView styleName, const FontStyle style)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(path, faceIndex, styleName, fontMethod, baseSize, style))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+		setBufferThickness(bufferThickness);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
