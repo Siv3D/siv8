@@ -70,9 +70,14 @@ namespace s3d
 
 	constexpr TextStyle TextStyle::Glow(const double p) noexcept
 	{
+		if (p == 0.0)
+		{
+			return Default();
+		}
+
 		TextStyle style;
 		style.type = Type::Glow;
-		style.param.x = static_cast<float>(p);
+		style.param.x = static_cast<float>(1.0 / p);
 		return style;
 	}
 }
