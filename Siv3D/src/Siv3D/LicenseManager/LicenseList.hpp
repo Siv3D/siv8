@@ -465,6 +465,12 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.)-"
 },
 
 {
+R"-(JSON for Modern C++)-",
+R"-(Copyright (c) 2013-2025 Niels Lohmann)-",
+MIT_LICENSE
+},
+
+{
 R"-(levenshtein-sse)-",
 R"-(Copyright (c) 2016 Anna Henningsen <sqrt@entless.org>)-",
 MIT_LICENSE
