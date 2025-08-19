@@ -543,13 +543,37 @@ namespace s3d
 		const auto& font = m_fonts[handleID];
 		const bool isColorFont = font->getInfo().properties.hasColor;
 
-		if (readingDirection == ReadingDirection::TopToBottom)
+		if ((textStyle.type != TextStyle::Type::Default) && (not isColorFont))
 		{
-			return m_fonts[handleID]->getGlyphCache().processVertical(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, true, pos, fontSize, textStyle, textEffect, isColorFont, readingDirection);
+			if (font->getInfo().renderingMethod == FontMethod::MSDF)
+			{
+				Graphics2D::SetMSDFParameters(textStyle);
+			}
+		}
+
+		if (textStyle.type == TextStyle::Type::CustomShader)
+		{
+			if (readingDirection == ReadingDirection::TopToBottom)
+			{
+				return m_fonts[handleID]->getGlyphCache().processVertical(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, true, pos, fontSize, textStyle, textEffect, isColorFont, readingDirection);
+			}
+			else
+			{
+				return m_fonts[handleID]->getGlyphCache().processHorizontal(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, true, pos, fontSize, textStyle, textEffect, isColorFont, readingDirection);
+			}
 		}
 		else
 		{
-			return m_fonts[handleID]->getGlyphCache().processHorizontal(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, true, pos, fontSize, textStyle, textEffect, isColorFont, readingDirection);
+			const ScopedCustomShader2D ps{ m_shader->getFontShader(font->getInfo().renderingMethod, textStyle.type) };
+
+			if (readingDirection == ReadingDirection::TopToBottom)
+			{
+				return m_fonts[handleID]->getGlyphCache().processVertical(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, true, pos, fontSize, textStyle, textEffect, isColorFont, readingDirection);
+			}
+			else
+			{
+				return m_fonts[handleID]->getGlyphCache().processHorizontal(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, true, pos, fontSize, textStyle, textEffect, isColorFont, readingDirection);
+			}
 		}
 	}
 
