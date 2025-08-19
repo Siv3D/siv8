@@ -83,10 +83,16 @@ namespace s3d
 		const Optional<Rect>& getViewport(uint32 index) const;
 		const Optional<Rect>& getCurrentViewport() const;
 
+		void pushSDFParameters(const std::array<Float4, 3>& state);
+		const std::array<Float4, 3>& getSDFParameters(uint32 index) const;
+		const std::array<Float4, 3>& getCurrentSDFParameters() const;
+
 		void pushEngineVS(VertexShader::IDType id);
+		void pushCustomVS(const VertexShader& vs);
 		VertexShader::IDType getVS(uint32 index) const;
 
 		void pushEnginePS(PixelShader::IDType id);
+		void pushCustomPS(const PixelShader& ps);
 		PixelShader::IDType getPS(uint32 index) const;
 
 		void pushLocalTransform(const Mat3x2& local);
@@ -139,6 +145,8 @@ namespace s3d
 
 			Array<Optional<Rect>> viewports			= { none };
 
+			Array<std::array<Float4, 3>> sdfParameters	= { { Float4{ 0.5f, 0.5f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 1.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.5f } } };
+
 			Array<VertexShader::IDType> vertexShaders;
 
 			Array<PixelShader::IDType> pixelShaders;
@@ -175,6 +183,8 @@ namespace s3d
 
 			Optional<Rect> viewport				= none;
 
+			std::array<Float4, 3> sdfParameter	= { Float4{ 0.5f, 0.5f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 1.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.5f } };
+
 			VertexShader::IDType vertexShader	= VertexShader::IDType::Invalid();
 			
 			PixelShader::IDType pixelShader		= PixelShader::IDType::Invalid();
@@ -196,6 +206,10 @@ namespace s3d
 		struct Reserved
 		{
 			HashMap<Texture::IDType, Texture> textures;
+
+			HashMap<VertexShader::IDType, VertexShader> vertexShaders;
+
+			HashMap<PixelShader::IDType, PixelShader> pixelShaders;
 
 		} m_reserved;
 

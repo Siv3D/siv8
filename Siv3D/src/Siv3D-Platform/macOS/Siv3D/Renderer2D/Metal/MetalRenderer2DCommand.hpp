@@ -72,7 +72,7 @@ namespace s3d
 
 		Viewport,
 
-		//SDFParams,
+		SDFParams,
 
 		//InternalPSConstants,
 
