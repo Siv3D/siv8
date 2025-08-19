@@ -1,5 +1,6 @@
 #include <metal_stdlib>
 using namespace metal;
+constant float MSDF_PixelRange = 16.0;
 
 struct VSInput
 {
@@ -25,6 +26,9 @@ struct PSConstants2D
 {
 	float4 g_patternBackgroundColorMul;
 	float4 g_colorAdd;
+	float4 g_sdfParam;
+	float4 g_sdfOutlineColor;
+	float4 g_sdfShadowColor;
 };
 
 struct PSEffectConstants2D
@@ -71,6 +75,11 @@ float2 s3d_patternTransform(float2 uv, float2x4 t)
 	const float2 t_11_12 = float2(t[0][0], t[0][1]);
 	const float2 t_21_22 = float2(t[1][0], t[1][1]);
 	return (t_13_14 + (uv.x * t_11_12) + (uv.y * t_21_22));
+}
+
+float s3d_median(float r, float g, float b)
+{
+	return max(min(r, g), min(max(r, g), b));
 }
 
 vertex
@@ -144,13 +153,13 @@ fragment
 float4 PS_LineDash(	PSInput in [[stage_in]],
 					constant PSConstants2D* c0 [[buffer(0)]])
 {
-    float4 result = in.color;
+	float4 result = in.color;
 
-    const float u = (0.25 * (in.uv.x - 1.0));
-    const float w = fwidth(u);
-    const float distance = abs(2.0 * fract(u) - 1.0);
-    const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
-    result *= alpha;
+	const float u = (0.25 * (in.uv.x - 1.0));
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * fract(u) - 1.0);
+	const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
+	result *= alpha;
 
 	return s3d_shapeColor(result, c0);
 }
@@ -159,13 +168,13 @@ fragment
 float4 PS_LineLongDash(	PSInput in [[stage_in]],
 						constant PSConstants2D* c0 [[buffer(0)]])
 {
-    float4 result = in.color;
+	float4 result = in.color;
 
-    const float u = (0.1 * (in.uv.x - 1.0));
-    const float w = fwidth(u);
-    const float distance = abs(2.0 * fract(u) - 1.0);
-    const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
-    result *= alpha;
+	const float u = (0.1 * (in.uv.x - 1.0));
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * fract(u) - 1.0);
+	const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
+	result *= alpha;
 
 	return s3d_shapeColor(result, c0);
 }
@@ -174,16 +183,16 @@ fragment
 float4 PS_LineDashDot(	PSInput in [[stage_in]],
 						constant PSConstants2D* c0 [[buffer(0)]])
 {
-    float4 result = in.color;
+	float4 result = in.color;
 
-    const float u = (0.1 * (in.uv.x - 1.0));
-    const float u2 = u + 0.5;
-    const float w = fwidth(u);
-    const float distance = abs(2.0 * fract(u) - 1.0);
-    const float distance2 = abs(2.0 * fract(u2) - 1.0);
-    const float alpha1 = smoothstep((0.4 - w), (0.4 + w), distance);
-    const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
-    result *= max(alpha1, alpha2);
+	const float u = (0.1 * (in.uv.x - 1.0));
+	const float u2 = u + 0.5;
+	const float w = fwidth(u);
+	const float distance = abs(2.0 * fract(u) - 1.0);
+	const float distance2 = abs(2.0 * fract(u2) - 1.0);
+	const float alpha1 = smoothstep((0.4 - w), (0.4 + w), distance);
+	const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
+	result *= max(alpha1, alpha2);
 
 	return s3d_shapeColor(result, c0);
 }
@@ -192,13 +201,13 @@ fragment
 float4 PS_LineRoundDot(	PSInput in [[stage_in]],
 						constant PSConstants2D* c0 [[buffer(0)]])
 {
-    float4 result = in.color;
+	float4 result = in.color;
 
-    const float2 uv = ((in.uv + float2(0.5, 0.0)) * float2(0.5, 1));
-    const float w = fwidth(uv.y);
-    const float distance = length(float2(4.0, 2.0) * fract(uv) - float2(2.0, 1.0));
-    const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
-    result *= alpha;
+	const float2 uv = ((in.uv + float2(0.5, 0.0)) * float2(0.5, 1));
+	const float w = fwidth(uv.y);
+	const float distance = length(float2(4.0, 2.0) * fract(uv) - float2(2.0, 1.0));
+	const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
+	result *= alpha;
 
 	return s3d_shapeColor(result, c0);
 }
@@ -347,4 +356,63 @@ float4 PS_PatternHexGrid(	PSInput in [[stage_in]],
 	const float4 background = s3d_patternBackgroundColor(c1->g_patternBackgroundColor, c0);
 	
 	return mix(background, primary, t);
+}
+
+fragment
+float4 PS_MSDFFont( PSInput in [[stage_in]],
+					constant PSConstants2D* c0 [[buffer(0)]],
+					texture2d<float> texture0 [[texture(0)]],
+					sampler sampler0 [[sampler(0)]])
+{
+	float2 size = float2(texture0.get_width(), texture0.get_height());
+	const float2 msdfUnit = (MSDF_PixelRange / size);
+
+	const float3 s = texture0.sample(sampler0, in.uv).rgb;
+	const float d = s3d_median(s.r, s.g, s.b);
+
+	const float td = (d - 0.5);
+	const float textAlpha = saturate(td * dot(msdfUnit, 0.5 / fwidth(in.uv)) + 0.5);
+
+	const float4 textureColor = (in.color * textAlpha);
+	return (textureColor + (c0->g_colorAdd * textureColor.a));
+}
+
+fragment
+float4 PS_MSDFFont_Outline( PSInput in [[stage_in]],
+							constant PSConstants2D* c0 [[buffer(0)]],
+							texture2d<float> texture0 [[texture(0)]],
+							sampler sampler0 [[sampler(0)]])
+{
+	float2 size = float2(texture0.get_width(), texture0.get_height());
+	const float2 msdfUnit = (MSDF_PixelRange / size);
+
+	const float3 s = texture0.sample(sampler0, in.uv).rgb;
+	const float d = s3d_median(s.r, s.g, s.b);
+
+	const float od = (d - c0->g_sdfParam.y);
+	const float thickAlpha = saturate(od * dot(msdfUnit, 0.5 / fwidth(in.uv)) + 0.5);
+
+	const float td = (d - c0->g_sdfParam.x);
+	const float textAlpha = saturate(td * dot(msdfUnit, 0.5 / fwidth(in.uv)) + 0.5);
+
+	const float blend = textAlpha;
+	float4 textureColor = mix(c0->g_sdfOutlineColor, in.color, blend);
+	textureColor *= thickAlpha;
+
+	return (textureColor + (c0->g_colorAdd * textureColor.a));
+}
+
+fragment
+float4 PS_MSDFFont_Glow( PSInput in [[stage_in]],
+						 constant PSConstants2D* c0 [[buffer(0)]],
+						 texture2d<float> texture0 [[texture(0)]],
+						 sampler sampler0 [[sampler(0)]])
+{
+	float2 size = float2(texture0.get_width(), texture0.get_height());
+	const float2 msdfUnit = (MSDF_PixelRange / size);
+
+	const float d = saturate(texture0.sample(sampler0, in.uv).a * 2.0);
+	const float pd = pow(fabs(d), c0->g_sdfParam.x);
+	const float4 textureColor = float4(in.color.rgb * pd, (in.color.a * pd));
+	return (textureColor + (c0->g_colorAdd * textureColor.a));
 }
