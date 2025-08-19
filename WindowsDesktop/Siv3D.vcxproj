@@ -90,6 +90,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PointsPerCircle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Polygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IsPrime_impl.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Print.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PrintBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\QualityFactor.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectanglePack.ipp" />
@@ -137,6 +139,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Print.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PrintBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ReadingDirection.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ResolvedGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Graphics2D.hpp" />
@@ -727,6 +731,8 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Print\CPrint.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Print\IPrint.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\IProfiler.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.hpp" />
@@ -1418,6 +1424,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\SivPolygon.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Print\CPrint.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Print\PrintFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Print\SivPrint.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\ProfilerFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\SivProfiler.cpp" />

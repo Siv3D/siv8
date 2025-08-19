@@ -1634,6 +1634,11 @@
 # include <Siv3D/TextEffect/Reflection.hpp>
 
 
+
+# include <Siv3D/Print.hpp>
+# include <Siv3D/PrintBuffer.hpp>
+
+
 # include <Siv3D/Pipe.hpp>
 
 

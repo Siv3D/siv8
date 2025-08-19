@@ -18,7 +18,7 @@ namespace s3d
 {
 	namespace detail
 	{
-		struct LoggerBuffer
+		struct PrintBuffer
 		{
 			std::unique_ptr<FormatData> formatData;
 
@@ -28,17 +28,17 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
-			LoggerBuffer();
+			PrintBuffer();
 
-			LoggerBuffer(LoggerBuffer&& other) noexcept;
+			PrintBuffer(PrintBuffer&& other) noexcept;
 
-			explicit LoggerBuffer(const char32* s);
+			explicit PrintBuffer(const char32* s);
 
-			explicit LoggerBuffer(StringView s);
+			explicit PrintBuffer(StringView s);
 
-			explicit LoggerBuffer(const String& s);
+			explicit PrintBuffer(const String& s);
 
-			explicit LoggerBuffer(String&& s);
+			explicit PrintBuffer(String&& s);
 
 			////////////////////////////////////////////////////////////////
 			//
@@ -46,7 +46,7 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
-			~LoggerBuffer();
+			~PrintBuffer();
 
 			////////////////////////////////////////////////////////////////
 			//
@@ -54,18 +54,18 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
-			LoggerBuffer& operator <<(const char32* s);
+			PrintBuffer& operator <<(const char32* s);
 
-			LoggerBuffer& operator <<(StringView s);
+			PrintBuffer& operator <<(StringView s);
 
-			LoggerBuffer& operator <<(const String& s);
+			PrintBuffer& operator <<(const String& s);
 
-			LoggerBuffer& operator <<(const Concept::Formattable auto& value);
+			PrintBuffer& operator <<(const Concept::Formattable auto& value);
 
 			template <class Type>
-			LoggerBuffer& operator <<(const Type& value) = delete;
+			PrintBuffer& operator <<(const Type& value) = delete;
 		};
 	}
 }
 
-# include "detail/LoggerBuffer.ipp"
+# include "detail/PrintBuffer.ipp"
