@@ -205,7 +205,96 @@ namespace s3d
 
 	RectF MSDFGlyphCache::processVertical(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
-		return{};
+		if (not prerender(font, resolvedGlyphs, true, readingDirection))
+		{
+			return{};
+		}
+
+		const bool isDraw = (textOperation == TextOperation::Draw);
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double yMax = basePos.y;
+		double advance = 0.0;
+
+		int32 lineCount = 1;
+		const int32 totalGlyphCount = static_cast<int32>(resolvedGlyphs.size());
+
+		for (const auto& [index, resolvedGlyph] : Indexed(resolvedGlyphs))
+		{
+			// タブ, 空白, 制御文字
+			if (const char32 ch = s[resolvedGlyph.pos];
+				IsControl(ch))
+			{
+				if (ConsumeControlCharacterVertical(s[resolvedGlyph.pos], penPos, lineCount, basePos, scale, textStyle.lineSpacing, info))
+				{
+					yMax = Max(yMax, penPos.y);
+					advance = 0.0;
+					continue;
+				}
+			}
+
+			penPos.y += std::exchange(advance, 0.0);
+
+			// フォールバックフォント
+			if (resolvedGlyph.fontIndex != 0)
+			{
+				const size_t fallbackIndex = (resolvedGlyph.fontIndex - 1);
+
+				Vec2 nextPos = penPos;
+				auto [h, adv] = (isDraw ? SIV3D_ENGINE(Font)->drawBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, textEffect, index, totalGlyphCount, readingDirection)
+					: SIV3D_ENGINE(Font)->regionBaseFallback(font.getFallbackFontID(fallbackIndex), resolvedGlyph, nextPos, fontSize, textStyle, readingDirection));
+
+				yMax = Max(yMax, (penPos.y + h));
+				advance = adv;
+				penPos.y += h;
+				continue;
+			}
+
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			double h = 0.0;
+			{
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+				const Vec2 posOffset{ cache.info.left, cache.info.top };
+				const Vec2 drawPos = (penPos + posOffset);
+				const double top = penPos.y;
+				const double bottom = (top + ((cache.info.top + textureRegion.size.y) * scale));
+
+				if (pixelPerfect)
+				{
+					if (isDraw)
+					{
+						textEffect.draw(textureRegion, GlyphContext{ drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
+					}
+
+					h = textureRegion.region(drawPos).h;
+				}
+				else
+				{
+					if (isDraw)
+					{
+						textEffect.draw(textureRegion.scaled(scale), GlyphContext{ drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
+					}
+
+					h = textureRegion.scaled(scale).region(drawPos).h;
+				}
+
+				h += (posOffset.y * scale);
+			}
+
+			yMax = Max(yMax, (penPos.y + h));
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - h);
+			penPos.y += h;
+		}
+
+		const double right = (basePos.x + (info.height() * scale * 0.5));
+		const double left = (right - (info.height() * scale * textStyle.lineSpacing * lineCount));
+		const double top = pos.y;
+		const double bottom = yMax;
+		return{ left, top, (right - left), (bottom - top) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -216,7 +305,56 @@ namespace s3d
 
 	std::pair<double, double> MSDFGlyphCache::processVerticalFallback(const TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, const bool useBasePos, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const int32 totalGlyphCount, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
-		return{};
+		if (not prerender(font, { resolvedGlyph }, false, readingDirection))
+		{
+			return{};
+		}
+
+		const bool isDraw = (textOperation == TextOperation::Draw);
+		const auto& info = font.getInfo();
+		const double scale = (fontSize / info.baseSize);
+		const bool pixelPerfect = (fontSize == info.baseSize);
+
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		double advance = 0.0;
+		double h = 0.0;
+
+		{
+			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			{
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+				const Vec2 posOffset{ cache.info.left, cache.info.top };
+				const Vec2 drawPos = (penPos + posOffset * scale);
+				const double top = penPos.y;
+				const double bottom = (top + ((cache.info.top + textureRegion.size.y) * scale));
+
+				if (pixelPerfect)
+				{
+					if (isDraw)
+					{
+						textEffect.draw(textureRegion, GlyphContext{ drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
+					}
+
+					h = textureRegion.region(drawPos).h;
+				}
+				else
+				{
+					if (isDraw)
+					{
+						textEffect.draw(textureRegion.scaled(scale), GlyphContext{ drawPos, index, totalGlyphCount, top, bottom, readingDirection, isColorGlyph });
+					}
+
+					h = textureRegion.scaled(scale).region(drawPos).h;
+				}
+
+				h += (posOffset.y * scale);
+			}
+
+			advance = (Max((cache.info.advance * scale + textStyle.characterSpacing), 0.0) - h);
+		}
+
+		return{ h, advance };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -227,6 +365,7 @@ namespace s3d
 
 	bool MSDFGlyphCache::processHorizontalRect(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
+		// [Siv3D ToDo]
 		return{};
 	}
 
