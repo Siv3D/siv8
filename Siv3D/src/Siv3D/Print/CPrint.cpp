@@ -13,6 +13,10 @@
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/Format.hpp>
 # include <Siv3D/FormatUtility.hpp>
+# include <Siv3D/ScopedCustomShader2D.hpp>
+# include <Siv3D/TextStyle.hpp>
+# include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -53,6 +57,8 @@ namespace s3d
 		{
 			m_font->textFont.addFallback(Font{ 18, Typeface::ColorEmoji });
 		}
+
+		m_font->ps = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::FontPrint);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -96,6 +102,10 @@ namespace s3d
 
 	void CPrint::draw()
 	{
-		m_font->textFont(String{ U"Print テスト 🚀🐢🐥" }).draw(Vec2{ 10, 10 });
+		//{
+		//	const ScopedCustomShader2D shader{ m_font->ps };
+		//	
+		//	m_font->textFont(U"Print テスト 12,345 漢字 🚀🐢 Print テスト 12,345 漢字 🚀🐢 Print テスト 12,345 漢字 🚀🐢").draw(TextStyle::CustomTextFontShader(), Vec2{ 10, 10 });
+		//}
 	}
 }

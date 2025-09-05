@@ -18,10 +18,17 @@ namespace s3d
 		return{};
 	}
 
-	constexpr TextStyle TextStyle::CustomShader() noexcept
+	constexpr TextStyle TextStyle::CustomTextFontShader() noexcept
 	{
 		TextStyle style;
-		style.type = Type::CustomShader;
+		style.type = Type::CustomTextFontShader;
+		return style;
+	}
+
+	constexpr TextStyle TextStyle::CustomColorFontShader() noexcept
+	{
+		TextStyle style;
+		style.type = Type::CustomColorFontShader;
 		return style;
 	}
 

@@ -43,6 +43,7 @@ namespace s3d
 		FontMSDF,
 		FontMSDF_Outline,
 		FontMSDF_Glow,
+		FontPrint,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

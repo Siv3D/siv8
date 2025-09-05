@@ -369,3 +369,36 @@ float4 PS_MSDFFont_Glow(PSInput input) : SV_TARGET
 	const float4 textureColor = float4(input.color.rgb * pd, (input.color.a * pd));
 	return (textureColor + (g_colorAdd * textureColor.a));
 }
+
+float4 PS_MSDFFont_Print(PSInput input) : SV_TARGET
+{
+	float2 size;
+	g_texture0.GetDimensions(size.x, size.y);
+	const float2 msdfUnit = (MSDF_PixelRange / size);
+
+	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
+	const float d = s3d_median(s.r, s.g, s.b);
+
+	// 輪郭の太さ
+	const float outlineDistance = 0.04;
+	const float outlineThreshold = (0.5 - outlineDistance);
+
+	// テキスト本体
+	const float textAlpha = sqrt(saturate((d - 0.5) * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5));
+
+	// 輪郭を含んだテキスト全体のアルファ
+	const float outlineAlpha = sqrt(saturate((d - outlineThreshold) * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5));
+
+	// 影
+	const float2 shadowOffset = float2(0.625, 0.625) / size;
+	const float3 s2 = g_texture0.Sample(g_sampler0, input.uv - shadowOffset).rgb;
+	const float d2 = s3d_median(s2.r, s2.g, s2.b);
+	const float shadowAlpha = sqrt(saturate((d2 - outlineThreshold) * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5));
+
+	float3 color = lerp(float3(0.0, 0.0, 0.0), float3(1.0, 1.0, 1.0), textAlpha);
+	const float hollowShadowAlpha = saturate(shadowAlpha * (1.0 - outlineAlpha));
+	color = lerp(color, float3(0.0, 0.0, 0.0), hollowShadowAlpha);
+
+	const float finalAlpha = saturate(outlineAlpha + hollowShadowAlpha);
+	return float4(color, finalAlpha);
+}

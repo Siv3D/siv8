@@ -67,6 +67,7 @@ namespace s3d
 			m_pixelShaders << MSL{ U"PS_MSDFFont" };
 			m_pixelShaders << MSL{ U"PS_MSDFFont_Outline" };
 			m_pixelShaders << MSL{ U"PS_MSDFFont_Glow" };
+			m_pixelShaders << MSL{ U"PS_MSDFFont" };
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{
