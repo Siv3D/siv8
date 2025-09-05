@@ -37,9 +37,8 @@ cbuffer PSConstants2D : register(b0)
 	float4 g_patternBackgroundColorMul;
 	float4 g_colorAdd;
 	float4 g_sdfParam;
-	float4 g_sdfOutlineColor;
-	float4 g_sdfShadowColor;
-	//float4 g_internal;
+	float4 g_sdfOutlineColorPMA;
+	float4 g_sdfShadowColorPMA;
 }
 
 cbuffer PSEffectConstants2D : register(b1)
@@ -352,10 +351,64 @@ float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 	const float textAlpha = saturate(td * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5);
 
 	const float blend = textAlpha;
-	float4 textureColor = lerp(g_sdfOutlineColor, input.color, blend);
+	float4 textureColor = lerp(g_sdfOutlineColorPMA, input.color, blend);
 	textureColor *= thickAlpha;
 	
 	return (textureColor + (g_colorAdd * textureColor.a));
+}
+
+float4 PS_MSDFFont_Shadow(PSInput input) : SV_TARGET
+{
+	float2 size;
+	g_texture0.GetDimensions(size.x, size.y);
+	const float2 msdfUnit = (MSDF_PixelRange / size);
+
+	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
+	const float d = s3d_median(s.r, s.g, s.b);
+	const float textAlpha = saturate((d - 0.5) * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5);
+
+	const float2 shadowOffset = (g_sdfParam.zw / size);
+	const float3 s2 = g_texture0.Sample(g_sampler0, input.uv - shadowOffset).rgb;
+	const float d2 = s3d_median(s2.r, s2.g, s2.b);
+	const float shadowAlpha = saturate((d2 - 0.5) * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5);
+
+	const float sBase = shadowAlpha * (1.0 - textAlpha);
+
+	const float4 textPMA = input.color * textAlpha;
+	const float4 shadowPMA = g_sdfShadowColorPMA * sBase;
+
+	const float4 color = textPMA + shadowPMA;
+	return (color + (g_colorAdd * color.a));
+}
+
+float4 PS_MSDFFont_OutlineShadow(PSInput input) : SV_TARGET
+{
+	float2 size;
+	g_texture0.GetDimensions(size.x, size.y);
+	const float2 msdfUnit = (MSDF_PixelRange / size);
+	const float2 screenPixelRange = 0.5 / fwidth(input.uv);
+
+	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
+	const float d = s3d_median(s.r, s.g, s.b);
+	const float outlineAlpha = saturate((d - g_sdfParam.y) * dot(msdfUnit, screenPixelRange) + 0.5);
+	const float textAlpha = saturate((d - g_sdfParam.x) * dot(msdfUnit, screenPixelRange) + 0.5);
+
+	const float2 shadowOffset = (g_sdfParam.zw / size);
+	const float3 s2 = g_texture0.Sample(g_sampler0, input.uv - shadowOffset).rgb;
+	const float d2 = s3d_median(s2.r, s2.g, s2.b);
+	const float shadowAlpha = saturate((d2 - g_sdfParam.y) * dot(msdfUnit, screenPixelRange) + 0.5);
+
+	const float4 textPMA = input.color * textAlpha;
+
+	const float outlineCoverage = saturate(outlineAlpha - textAlpha);
+	const float4 outlinePMA = g_sdfOutlineColorPMA * outlineCoverage;
+
+	const float shadowCoverage = saturate(shadowAlpha * (1.0 - outlineAlpha));
+	const float4 shadowPMA = g_sdfShadowColorPMA * shadowCoverage;
+
+	const float4 finalColor = textPMA + outlinePMA + shadowPMA;
+
+	return (finalColor + (g_colorAdd * finalColor.a));
 }
 
 float4 PS_MSDFFont_Glow(PSInput input) : SV_TARGET
@@ -379,17 +432,13 @@ float4 PS_MSDFFont_Print(PSInput input) : SV_TARGET
 	const float3 s = g_texture0.Sample(g_sampler0, input.uv).rgb;
 	const float d = s3d_median(s.r, s.g, s.b);
 
-	// 輪郭の太さ
 	const float outlineDistance = 0.04;
 	const float outlineThreshold = (0.5 - outlineDistance);
 
-	// テキスト本体
 	const float textAlpha = sqrt(saturate((d - 0.5) * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5));
 
-	// 輪郭を含んだテキスト全体のアルファ
 	const float outlineAlpha = sqrt(saturate((d - outlineThreshold) * dot(msdfUnit, 0.5 / fwidth(input.uv)) + 0.5));
 
-	// 影
 	const float2 shadowOffset = float2(0.625, 0.625) / size;
 	const float3 s2 = g_texture0.Sample(g_sampler0, input.uv - shadowOffset).rgb;
 	const float d2 = s3d_median(s2.r, s2.g, s2.b);

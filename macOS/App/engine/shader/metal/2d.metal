@@ -27,8 +27,8 @@ struct PSConstants2D
 	float4 g_patternBackgroundColorMul;
 	float4 g_colorAdd;
 	float4 g_sdfParam;
-	float4 g_sdfOutlineColor;
-	float4 g_sdfShadowColor;
+	float4 g_sdfOutlineColorPMA;
+	float4 g_sdfShadowColorPMA;
 };
 
 struct PSEffectConstants2D
@@ -396,7 +396,7 @@ float4 PS_MSDFFont_Outline( PSInput in [[stage_in]],
 	const float textAlpha = saturate(td * dot(msdfUnit, 0.5 / fwidth(in.uv)) + 0.5);
 
 	const float blend = textAlpha;
-	float4 textureColor = mix(c0->g_sdfOutlineColor, in.color, blend);
+	float4 textureColor = mix(c0->g_sdfOutlineColorPMA, in.color, blend);
 	textureColor *= thickAlpha;
 
 	return (textureColor + (c0->g_colorAdd * textureColor.a));

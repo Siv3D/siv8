@@ -31,17 +31,17 @@ namespace s3d
 
 		Float4 sdfParam{ 0.5f, 0.5f, 0.0f, 0.0f };
 
-		Float4 sdfOuterColor{ 0.0f, 0.0f, 0.0f, 1.0f };
+		Float4 sdfOuterColorPMA{ 0.0f, 0.0f, 0.0f, 1.0f };
 
-		Float4 sdfShadowColor{ 0.0f, 0.0f, 0.0f, 0.5f };
+		Float4 sdfShadowColorPMA{ 0.0f, 0.0f, 0.0f, 0.5f };
 
 		//Float4 internal{ 0.0f, 0.0f, 0.0f, 0.0f };
 
 		void setSDFParameters(const std::array<Float4, 3>& params)
 		{
 			sdfParam			= params[0];
-			sdfOuterColor		= params[1];
-			sdfShadowColor		= params[2];
+			sdfOuterColorPMA	= params[1];
+			sdfShadowColorPMA	= params[2];
 		}
 	};
 

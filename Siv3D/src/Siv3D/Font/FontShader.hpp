@@ -24,6 +24,10 @@ namespace s3d
 
 		PixelShader msdfFontOutline;
 
+		PixelShader msdfFontShadow;
+
+		PixelShader msdfFontOutlineShadow;
+
 		PixelShader msdfGlow;
 
 		[[nodiscard]]
@@ -39,6 +43,14 @@ namespace s3d
 				{
 					return msdfFontOutline;
 				}
+				else if (type == TextStyle::Type::Shadow)
+				{
+					return msdfFontShadow;
+				}
+				else if (type == TextStyle::Type::OutlineShadow)
+				{
+					return msdfFontOutlineShadow;
+				}
 				else if (type == TextStyle::Type::Glow)
 				{
 					return msdfGlow;
@@ -48,17 +60,6 @@ namespace s3d
 					return msdfFont;
 				}
 			}
-
-			//if (isColorGlyph)
-			//{
-			//	return shaders[1];
-			//}
-			//else if (method == FontMethod::Bitmap)
-			//{
-			//	return shaders[0];
-			//}
-
-			//return shaders[2 + (FromEnum(method) - 1) * 4 + FromEnum(type)];
 		}
 	};
 }

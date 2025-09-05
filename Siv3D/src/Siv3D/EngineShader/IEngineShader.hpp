@@ -42,6 +42,8 @@ namespace s3d
 		PatternHexGrid,
 		FontMSDF,
 		FontMSDF_Outline,
+		FontMSDF_Shadow,
+		FontMSDF_OutlineShadow,
 		FontMSDF_Glow,
 		FontPrint,
 	};

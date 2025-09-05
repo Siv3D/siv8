@@ -38,7 +38,7 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CEngineShader_D3D11::init()");
 
 		// エンジンシェーダを再コンパイルする場合、0 を 1 に変更する
-	# if 0
+	# if 1
 
 		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/fullscreen_triangle.hlsl", U"engine/shader/d3d11/fullscreen_triangle.vs", ShaderStage::Vertex, U"VS"))
 		{
@@ -140,6 +140,16 @@ namespace s3d
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
 		}
 
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/msdffont_shadow.ps", ShaderStage::Pixel, U"PS_MSDFFont_Shadow"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/msdffont_outline_shadow.ps", ShaderStage::Pixel, U"PS_MSDFFont_OutlineShadow"))
+		{
+			throw InternalEngineError{ U"Failed to compile a engine shader" };
+		}
+
 		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/msdffont_glow.ps", ShaderStage::Pixel, U"PS_MSDFFont_Glow"))
 		{
 			throw InternalEngineError{ U"Failed to compile a engine shader" };
@@ -181,6 +191,8 @@ namespace s3d
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_hex_grid.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_outline.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_shadow.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_outline_shadow.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_glow.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_print.ps" };
 

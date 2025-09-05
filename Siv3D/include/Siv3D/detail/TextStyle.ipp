@@ -15,14 +15,16 @@ namespace s3d
 {
 	constexpr Float4 TextStyle::getShaderParams(const int32 fontBaseSize) const noexcept
 	{
+		static constexpr float BaseFontSize = 64.0f;
+		const float scale = (fontBaseSize / BaseFontSize);
+		
 		if (type == Type::Glow)
 		{
-			return{ glow, 0.0f, 0.0f, 0.0f };
+			return{ (1.0f / (glow * scale)), 0.0f, 0.0f, 0.0f };
 		}
 		else
 		{
-			const float scale = (fontBaseSize / 64.0f);
-			return{ (0.5 + scale * innerThickness), (0.5 - scale * outerThickness), shadowOffset };
+			return{ (0.5 + scale * innerThickness), (0.5 - scale * outerThickness), (shadowOffset * scale) };
 		}
 	}
 
@@ -86,6 +88,16 @@ namespace s3d
 		return style;
 	}
 
+	constexpr TextStyle TextStyle::OutlineShadow(const double p, const Vec2& offset, const ColorF& outlineColor, const ColorF& shadowColor) noexcept
+	{
+		return OutlineShadow((p * 0.5), (p * 0.5), outlineColor, offset, shadowColor);
+	}
+
+	constexpr TextStyle TextStyle::OutlineShadow(const double inner, const double outer, const Vec2& offset, const ColorF& outlineColor, const ColorF& shadowColor) noexcept
+	{
+		return OutlineShadow(inner, outer, outlineColor, offset, shadowColor);
+	}
+
 	constexpr TextStyle TextStyle::Glow(const double p) noexcept
 	{
 		if (p == 0.0)
@@ -95,7 +107,7 @@ namespace s3d
 
 		TextStyle style;
 		style.type = Type::Glow;
-		style.glow = static_cast<float>(1.0 / p);
+		style.glow = static_cast<float>(p);
 		return style;
 	}
 }
