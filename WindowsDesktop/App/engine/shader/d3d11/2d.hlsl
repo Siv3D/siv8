@@ -49,22 +49,22 @@ cbuffer PSEffectConstants2D : register(b1)
 	float4 g_quadWarpUVTransform;
 }
 
-float4 s3d_positionTransform(float2 pos, float2x4 t)
+inline float4 s3d_positionTransform(const float2 pos, const float2x4 t)
 {
 	return float4((t._13_14 + (pos.x * t._11_12) + (pos.y * t._21_22)), t._23_24);
 }
 
-float4 s3d_premultiplyAlpha(float4 color)
+inline float4 s3d_premultiplyAlpha(const float4 color)
 {
 	return float4((color.rgb * color.a), color.a);
 }
 
-float4 s3d_shapeColor(float4 vertexColorPMA)
+inline float4 s3d_shapeColor(const float4 vertexColorPMA)
 {
 	return (vertexColorPMA + (g_colorAdd * vertexColorPMA.a));
 }
 
-float4 s3d_textureColor(float4 vertexColorPMA, float4 textureColorPMA)
+inline float4 s3d_textureColor(float4 vertexColorPMA, const float4 textureColorPMA)
 {
 	vertexColorPMA *= textureColorPMA;
 	return (vertexColorPMA + (g_colorAdd * vertexColorPMA.a));
@@ -191,20 +191,51 @@ float4 PS_LineRoundDot(PSInput input) : SV_TARGET
 //
 ////////////////////////////////////////////////////////////////
 	
-float4 s3d_patternBackgroundColor()
+inline float4 Pattern_BackgroundColor()
 {
 	const float4 colorPMA = s3d_premultiplyAlpha(g_patternBackgroundColor * g_patternBackgroundColorMul);
 	return (colorPMA + (g_colorAdd * colorPMA.a));
 }
 
-float2 s3d_patternTransform(float2 uv)
+inline float2 Pattern_UVTransform(const float2 uv)
 {
 	return (g_patternUVTransform._13_14 + (uv.x * g_patternUVTransform._11_12) + (uv.y * g_patternUVTransform._21_22));
 }
 
+inline float2 Pattern_Integral(float2 v)
+{
+	v /= 2.0;
+	return (floor(v) + max((2.0 * frac(v) - 1.0), 0.0));
+}
+
+inline float Pattern_CheckersFiltered(const float2 p, const float2 hv)
+{
+	const float2 fw = fwidth(p);
+	const float w = max(fw.x, fw.y);
+	float2 i = (Pattern_Integral(p + 0.5 * w) - Pattern_Integral(p - 0.5 * w));
+	i *= hv;
+	i /= w;
+	return (i.x + i.y - 2.0 * i.x * i.y);
+}
+
+inline float2 Pattern_Skew(const float2 v)
+{
+	const float2x2 transform = float2x2(1.0, (1.0 / tan(3.1415926535 / 3.0)), 0.0, (1.0 / sin(3.1415926535 / 3.0)));
+	return mul(transform, v);
+}
+
+inline float Pattern_Hex(const float2 p)
+{
+	const float2 HEX = float2(1, 1.73205081);
+	const float4 t = (floor(float4(p, p - float2(0.5, 1)) / HEX.xyxy) + float4(0.5, 0.5, 0.5, 0.5));
+	const float4 h = float4((p - t.xy * HEX), (p - (t.zw + float2(0.5, 0.5)) * HEX));
+	const float2 hex = abs((dot(h.xy, h.xy) < dot(h.zw, h.zw)) ? h.xy : h.zw);
+	return max(dot(hex, (HEX * 0.5)), hex.x);
+}
+
 float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 {
-	const float2 uv = s3d_patternTransform(input.position.xy);
+	const float2 uv = Pattern_UVTransform(input.position.xy);
 	const float2 repeat = (2.0 * frac(uv) - 1.0);
 	const float value = length(repeat);
 	const float fw = (length(float2(ddx(value), ddy(value))) * 0.70710678118);
@@ -213,14 +244,14 @@ float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 	const float c = smoothstep((radiusScale - fw), (radiusScale + fw), value);
 
 	const float4 primary = s3d_shapeColor(input.colorPMA);
-	const float4 background = s3d_patternBackgroundColor();
+	const float4 background = Pattern_BackgroundColor();
 
 	return lerp(primary, background, c);
 }
 
 float4 PS_PatternStripe(PSInput input) : SV_TARGET
 {
-	const float u = s3d_patternTransform(input.position.xy).x;
+	const float u = Pattern_UVTransform(input.position.xy).x;
 	const float fw = fwidth(u);
 	const float repeat = (2.0 * frac(u) - 1.0);
 	const float value = abs(repeat);
@@ -229,14 +260,14 @@ float4 PS_PatternStripe(PSInput input) : SV_TARGET
 	const float c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 
 	const float4 primary = s3d_shapeColor(input.colorPMA);
-	const float4 background = s3d_patternBackgroundColor();
+	const float4 background = Pattern_BackgroundColor();
 
 	return lerp(primary, background, c);
 }
 
 float4 PS_PatternGrid(PSInput input) : SV_TARGET
 {
-	const float2 uv = s3d_patternTransform(input.position.xy);
+	const float2 uv = Pattern_UVTransform(input.position.xy);
 	const float2 fw = fwidth(uv);
 	const float2 repeat = (2.0 * frac(uv) - 1.0);
 	const float2 value = abs(repeat);
@@ -246,53 +277,31 @@ float4 PS_PatternGrid(PSInput input) : SV_TARGET
 	const float c2 = min(c.x, c.y);
 
 	const float4 primary = s3d_shapeColor(input.colorPMA);
-	const float4 background = s3d_patternBackgroundColor();
+	const float4 background = Pattern_BackgroundColor();
 
 	return lerp(primary, background, c2);
 }
 
-float2 Integral(float2 v)
-{
-	v /= 2.0;
-	return (floor(v) + max((2.0 * frac(v) - 1.0), 0.0));
-}
-
-float CheckersFiltered(float2 p, float2 hv)
-{
-	const float2 fw = fwidth(p);
-	const float w = max(fw.x, fw.y);
-	float2 i = (Integral(p + 0.5 * w) - Integral(p - 0.5 * w));
-	i *= hv;
-	i /= w;
-	return (i.x + i.y - 2.0 * i.x * i.y);
-}
-
 float4 PS_PatternChecker(PSInput input) : SV_TARGET
 {
-	const float2 uv = s3d_patternTransform(input.position.xy);
-	const float c = CheckersFiltered(uv, g_patternUVTransform[1].zw);
+	const float2 uv = Pattern_UVTransform(input.position.xy);
+	const float c = Pattern_CheckersFiltered(uv, g_patternUVTransform[1].zw);
 
 	const float4 primary = s3d_shapeColor(input.colorPMA);
-	const float4 background = s3d_patternBackgroundColor();
+	const float4 background = Pattern_BackgroundColor();
 
 	return lerp(primary, background, c);
 }
 
-float2 Skew(float2 v)
-{
-	const float2x2 transform = float2x2(1.0, (1.0 / tan(3.1415926535 / 3.0)), 0.0, (1.0 / sin(3.1415926535 / 3.0)));
-	return mul(transform, v);
-}
-
 float4 PS_PatternTriangle(PSInput input) : SV_TARGET
 {
-	const float2 uv = s3d_patternTransform(input.position.xy);
+	const float2 uv = Pattern_UVTransform(input.position.xy);
 	const float2 fw = (fwidth(uv) * 0.25);
 
-	const float2 s1 = Skew(uv + float2(-fw.x, -fw.y));
-	const float2 s2 = Skew(uv + float2(fw.x, fw.y));
-	const float2 s3 = Skew(uv + float2(-fw.x, fw.y));
-	const float2 s4 = Skew(uv + float2(fw.x, -fw.y));
+	const float2 s1 = Pattern_Skew(uv + float2(-fw.x, -fw.y));
+	const float2 s2 = Pattern_Skew(uv + float2(fw.x, fw.y));
+	const float2 s3 = Pattern_Skew(uv + float2(-fw.x, fw.y));
+	const float2 s4 = Pattern_Skew(uv + float2(fw.x, -fw.y));
 
 	const float4 f1 = frac(float4(s1, s2));
 	const float4 f2 = frac(float4(s3, s4));
@@ -300,32 +309,23 @@ float4 PS_PatternTriangle(PSInput input) : SV_TARGET
 	const float c = dot(ss, 0.25);
 
 	const float4 primary = s3d_shapeColor(input.colorPMA);
-	const float4 background = s3d_patternBackgroundColor();
+	const float4 background = Pattern_BackgroundColor();
 
 	return lerp(primary, background, c);
 }
 
-float Hex(float2 p)
-{
-	const float2 HEX = float2(1, 1.73205081);
-	const float4 t = (floor(float4(p, p - float2(0.5, 1)) / HEX.xyxy) + float4(0.5, 0.5, 0.5, 0.5));
-	const float4 h = float4((p - t.xy * HEX), (p - (t.zw + float2(0.5, 0.5)) * HEX));
-	const float2 hex = abs((dot(h.xy, h.xy) < dot(h.zw, h.zw)) ? h.xy : h.zw);
-	return max(dot(hex, (HEX * 0.5)), hex.x);
-}
-
 float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
 {
-	const float2 uv = s3d_patternTransform(input.position.xy);
+	const float2 uv = Pattern_UVTransform(input.position.xy);
 	const float2 fw = fwidth(uv);
 	const float w = (max(fw.x, fw.y) * 0.5);
 
 	const float thicknessScale = (g_patternUVTransform[1].z * (1 + 2 * w));
-	const float h = Hex(uv);
+	const float h = Pattern_Hex(uv);
 	const float c = smoothstep((thicknessScale - w), (thicknessScale + w), h);
 
 	const float4 primary = s3d_shapeColor(input.colorPMA);
-	const float4 background = s3d_patternBackgroundColor();
+	const float4 background = Pattern_BackgroundColor();
 
 	return lerp(background, primary, c);
 }
@@ -337,6 +337,7 @@ float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
 ////////////////////////////////////////////////////////////////
 
 static const float MSDF_PixelRange = 16.0;
+static const float MSDF_TextThreshold = 0.5;
 
 struct MSDFState
 {
@@ -345,7 +346,7 @@ struct MSDFState
 	float scale;
 };
 
-MSDFState GetMSDFState(const float2 uv)
+inline MSDFState MSDF_Init(const float2 uv)
 {
 	MSDFState st;
 	g_texture0.GetDimensions(st.textureSize.x, st.textureSize.y);
@@ -354,83 +355,92 @@ MSDFState GetMSDFState(const float2 uv)
 	const float2 msdfUnit = (MSDF_PixelRange * st.invTextureSize);
 	const float2 screenPixelRange = (0.5 / fwidth(uv));
 	st.scale = dot(msdfUnit, screenPixelRange);
+
 	return st;
 }
 
-float Median(const float r, const float g, const float b)
+inline float MSDF_Median(const float r, const float g, const float b)
 {
 	return max(min(r, g), min(max(r, g), b));
 }
 
-float SampleMSDFDistance(const float2 uv)
+inline float MSDF_Median(const float3 rgb)
 {
-	const float3 s = g_texture0.Sample(g_sampler0, uv).rgb;
-	return Median(s.r, s.g, s.b);
+	return MSDF_Median(rgb.r, rgb.g, rgb.b);
+}
+
+inline float MSDF_SampleDistance(const float2 uv)
+{
+	return MSDF_Median(g_texture0.Sample(g_sampler0, uv).rgb);
+}
+
+inline float MSDF_Coverage(const float d, const float threshold, const float scale)
+{
+	return saturate((d - threshold) * scale + 0.5);
+}
+
+inline float MSDF_AlphaAt(const float2 uv, const float threshold, const MSDFState st)
+{
+	return MSDF_Coverage(MSDF_SampleDistance(uv), threshold, st.scale);
+}
+
+inline float4 MSDF_PremulAdd(const float4 colorPMA)
+{
+	return (colorPMA + (g_colorAdd * colorPMA.a));
 }
 
 float4 PS_MSDFFont(PSInput input) : SV_TARGET
 {
-	const MSDFState st = GetMSDFState(input.uv);
-	const float d = SampleMSDFDistance(input.uv);
-
-	const float td = (d - 0.5);
-	const float textAlpha = saturate(td * st.scale + 0.5);
-
-	const float4 textureColorPMA = (input.colorPMA * textAlpha);
-	return (textureColorPMA + (g_colorAdd * textureColorPMA.a));
+	const MSDFState st = MSDF_Init(input.uv);
+	
+	const float textAlpha = MSDF_AlphaAt(input.uv, MSDF_TextThreshold, st);
+	
+	const float4 textPMA = (input.colorPMA * textAlpha);
+	return MSDF_PremulAdd(textPMA);
 }
 
 float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 {
-	const MSDFState st = GetMSDFState(input.uv);
-	const float d = SampleMSDFDistance(input.uv);
-
-	const float od = (d - g_sdfParam.y);
-	const float thickAlpha = saturate(od * st.scale + 0.5);
-
-	const float td = (d - g_sdfParam.x);
-	const float textAlpha = saturate(td * st.scale + 0.5);
+	const MSDFState st = MSDF_Init(input.uv);
+	const float d = MSDF_SampleDistance(input.uv);
+	
+	const float outlineAlpha = MSDF_Coverage(d, g_sdfParam.y, st.scale);
+	const float textAlpha = MSDF_Coverage(d, g_sdfParam.x, st.scale);
 
 	const float blend = textAlpha;
-	float4 textureColorPMA = lerp(g_sdfOutlineColorPMA, input.colorPMA, blend);
-	textureColorPMA *= thickAlpha;
+	float4 colorPMA = lerp(g_sdfOutlineColorPMA, input.colorPMA, blend);
+	colorPMA *= outlineAlpha;
 	
-	return (textureColorPMA + (g_colorAdd * textureColorPMA.a));
+	return MSDF_PremulAdd(colorPMA);
 }
 
 float4 PS_MSDFFont_Shadow(PSInput input) : SV_TARGET
 {
-	const MSDFState st = GetMSDFState(input.uv);
-	const float d = SampleMSDFDistance(input.uv);
+	const MSDFState st = MSDF_Init(input.uv);
+
+	const float textAlpha = MSDF_AlphaAt(input.uv, MSDF_TextThreshold, st);
 	
-	const float textAlpha = saturate((d - 0.5) * st.scale + 0.5);
-
 	const float2 shadowOffset = (g_sdfParam.zw * st.invTextureSize);
-	const float3 s2 = g_texture0.Sample(g_sampler0, input.uv - shadowOffset).rgb;
-	const float d2 = Median(s2.r, s2.g, s2.b);
-	const float shadowAlpha = saturate((d2 - 0.5) * st.scale + 0.5);
+	const float shadowAlpha = MSDF_AlphaAt((input.uv - shadowOffset), MSDF_TextThreshold, st);
 
-	const float sBase = shadowAlpha * (1.0 - textAlpha);
-
+	const float sBase = (shadowAlpha * (1.0 - textAlpha));
 	const float4 textPMA = (input.colorPMA * textAlpha);
 	const float4 shadowPMA = (g_sdfShadowColorPMA * sBase);
 
 	const float4 finalPMA = (textPMA + shadowPMA);
-	return (finalPMA + (g_colorAdd * finalPMA.a));
+	return MSDF_PremulAdd(finalPMA);
 }
 
 float4 PS_MSDFFont_OutlineShadow(PSInput input) : SV_TARGET
 {
-	const MSDFState st = GetMSDFState(input.uv);
-	const float d = SampleMSDFDistance(input.uv);
-	
-	const float outlineAlpha = saturate((d - g_sdfParam.y) * st.scale + 0.5);
-	const float textAlpha = saturate((d - g_sdfParam.x) * st.scale + 0.5);
+	const MSDFState st = MSDF_Init(input.uv);
+	const float d = MSDF_SampleDistance(input.uv);
+
+	const float outlineAlpha = MSDF_Coverage(d, g_sdfParam.y, st.scale);
+	const float textAlpha = MSDF_Coverage(d, g_sdfParam.x, st.scale);
 
 	const float2 shadowOffset = (g_sdfParam.zw * st.invTextureSize);
-	const float3 s2 = g_texture0.Sample(g_sampler0, input.uv - shadowOffset).rgb;
-	const float d2 = Median(s2.r, s2.g, s2.b);
-	const float shadowAlpha = saturate((d2 - g_sdfParam.y) * st.scale + 0.5);
+	const float shadowAlpha = MSDF_AlphaAt((input.uv - shadowOffset), g_sdfParam.y, st);
 
 	const float4 textPMA = (input.colorPMA * textAlpha);
 
@@ -441,7 +451,7 @@ float4 PS_MSDFFont_OutlineShadow(PSInput input) : SV_TARGET
 	const float4 shadowPMA = g_sdfShadowColorPMA * shadowCoverage;
 
 	const float4 finalPMA = (textPMA + outlinePMA + shadowPMA);
-	return (finalPMA + (g_colorAdd * finalPMA.a));
+	return MSDF_PremulAdd(finalPMA);
 }
 
 float4 PS_MSDFFont_Glow(PSInput input) : SV_TARGET
@@ -450,24 +460,22 @@ float4 PS_MSDFFont_Glow(PSInput input) : SV_TARGET
 	const float pd = pow(abs(d), g_sdfParam.x);
 
 	const float4 finalPMA = float4((input.colorPMA.rgb * pd), (input.colorPMA.a * pd));
-	return (finalPMA + (g_colorAdd * finalPMA.a));
+	return MSDF_PremulAdd(finalPMA);
 }
 
 float4 PS_MSDFFont_Print(PSInput input) : SV_TARGET
 {
-	const MSDFState st = GetMSDFState(input.uv);
-	const float d = SampleMSDFDistance(input.uv);
+	const MSDFState st = MSDF_Init(input.uv);
+	const float d = MSDF_SampleDistance(input.uv);
 
 	const float outlineDistance = 0.04;
-	const float outlineThreshold = (0.5 - outlineDistance);
+	const float outlineThreshold = (MSDF_TextThreshold - outlineDistance);
 
 	const float textAlpha = sqrt(saturate((d - 0.5) * st.scale + 0.5));
-
 	const float outlineAlpha = sqrt(saturate((d - outlineThreshold) * st.scale + 0.5));
 
 	const float2 shadowOffset = (float2(0.625, 0.625) * st.invTextureSize);
-	const float3 s2 = g_texture0.Sample(g_sampler0, input.uv - shadowOffset).rgb;
-	const float d2 = Median(s2.r, s2.g, s2.b);
+	const float d2 = MSDF_SampleDistance(input.uv - shadowOffset);
 	const float shadowAlpha = sqrt(saturate((d2 - outlineThreshold) * st.scale + 0.5));
 
 	float3 color = lerp(float3(0.0, 0.0, 0.0), float3(1.0, 1.0, 1.0), textAlpha);
