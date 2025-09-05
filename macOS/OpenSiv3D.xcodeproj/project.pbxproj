@@ -2420,6 +2420,19 @@
 		F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABB2BCFBB53006A4C0F /* SkBBHFactory.h */; };
 		F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABC2BCFBB53006A4C0F /* SkBitmap.h */; };
 		F986FFFF2BCFBB53006A4C0F /* SkBlender.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABD2BCFBB53006A4C0F /* SkBlender.h */; };
+		F9AEA4F82E6B3E27003734E7 /* Print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F62E6B3E27003734E7 /* Print.hpp */; };
+		F9AEA4F92E6B3E27003734E7 /* PrintBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */; };
+		F9AEA4FC2E6B3E48003734E7 /* Print.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4FA2E6B3E48003734E7 /* Print.ipp */; };
+		F9AEA4FD2E6B3E48003734E7 /* PrintBuffer.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4FB2E6B3E48003734E7 /* PrintBuffer.ipp */; };
+		F9AEA5092E6B3E72003734E7 /* CPrint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4FE2E6B3E71003734E7 /* CPrint.hpp */; };
+		F9AEA50A2E6B3E72003734E7 /* IPrint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA5002E6B3E71003734E7 /* IPrint.hpp */; };
+		F9AEA50B2E6B3E72003734E7 /* PrintFont.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA5022E6B3E71003734E7 /* PrintFont.hpp */; };
+		F9AEA50C2E6B3E72003734E7 /* SivPrintBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AEA5052E6B3E71003734E7 /* SivPrintBuffer.cpp */; };
+		F9AEA50D2E6B3E72003734E7 /* CPrint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AEA4FF2E6B3E71003734E7 /* CPrint.cpp */; };
+		F9AEA50E2E6B3E72003734E7 /* SivShaderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AEA5072E6B3E71003734E7 /* SivShaderGroup.cpp */; };
+		F9AEA50F2E6B3E72003734E7 /* SivPrint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AEA5032E6B3E71003734E7 /* SivPrint.cpp */; };
+		F9AEA5102E6B3E72003734E7 /* PrintFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AEA5012E6B3E71003734E7 /* PrintFactory.cpp */; };
+		F9AEA5122E6B3E92003734E7 /* ShaderGroup.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */; };
 		F9B7D9EC2D8C71ED002ABACE /* DynamicTexture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */; };
 		F9B7D9EF2D8C7215002ABACE /* TextureUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */; };
 		F9B7D9F02D8C7215002ABACE /* TextureUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */; };
@@ -3337,8 +3350,8 @@
 		F943AB072E2A2E4F001B4D43 /* bits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bits.h; sourceTree = "<group>"; };
 		F943AB092E2A2E4F001B4D43 /* bits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bits.h; sourceTree = "<group>"; };
 		F943AB0A2E2A2E4F001B4D43 /* int128.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = int128.h; sourceTree = "<group>"; };
-		F943AB0B2E2A2E4F001B4D43 /* int128_have_intrinsic.inc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.pascal; path = int128_have_intrinsic.inc; sourceTree = "<group>"; };
-		F943AB0C2E2A2E4F001B4D43 /* int128_no_intrinsic.inc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.pascal; path = int128_no_intrinsic.inc; sourceTree = "<group>"; };
+		F943AB0B2E2A2E4F001B4D43 /* int128_have_intrinsic.inc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = int128_have_intrinsic.inc; sourceTree = "<group>"; };
+		F943AB0C2E2A2E4F001B4D43 /* int128_no_intrinsic.inc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = int128_no_intrinsic.inc; sourceTree = "<group>"; };
 		F943AB0E2E2A2E4F001B4D43 /* distribution_caller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = distribution_caller.h; sourceTree = "<group>"; };
 		F943AB0F2E2A2E4F001B4D43 /* fast_uniform_bits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fast_uniform_bits.h; sourceTree = "<group>"; };
 		F943AB102E2A2E4F001B4D43 /* fastmath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fastmath.h; sourceTree = "<group>"; };
@@ -5153,6 +5166,19 @@
 		F986FFDA2BCFBB53006A4C0F /* SkPatchUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkPatchUtils.cpp; sourceTree = "<group>"; };
 		F986FFE22BCFBB53006A4C0F /* SkShadowUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkShadowUtils.cpp; sourceTree = "<group>"; };
 		F986FFE52BCFBB53006A4C0F /* SkTextUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkTextUtils.cpp; sourceTree = "<group>"; };
+		F9AEA4F62E6B3E27003734E7 /* Print.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.hpp; sourceTree = "<group>"; };
+		F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PrintBuffer.hpp; sourceTree = "<group>"; };
+		F9AEA4FA2E6B3E48003734E7 /* Print.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.ipp; sourceTree = "<group>"; };
+		F9AEA4FB2E6B3E48003734E7 /* PrintBuffer.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PrintBuffer.ipp; sourceTree = "<group>"; };
+		F9AEA4FE2E6B3E71003734E7 /* CPrint.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CPrint.hpp; sourceTree = "<group>"; };
+		F9AEA4FF2E6B3E71003734E7 /* CPrint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPrint.cpp; sourceTree = "<group>"; };
+		F9AEA5002E6B3E71003734E7 /* IPrint.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IPrint.hpp; sourceTree = "<group>"; };
+		F9AEA5012E6B3E71003734E7 /* PrintFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PrintFactory.cpp; sourceTree = "<group>"; };
+		F9AEA5022E6B3E71003734E7 /* PrintFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PrintFont.hpp; sourceTree = "<group>"; };
+		F9AEA5032E6B3E71003734E7 /* SivPrint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPrint.cpp; sourceTree = "<group>"; };
+		F9AEA5052E6B3E71003734E7 /* SivPrintBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPrintBuffer.cpp; sourceTree = "<group>"; };
+		F9AEA5072E6B3E71003734E7 /* SivShaderGroup.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivShaderGroup.cpp; sourceTree = "<group>"; };
+		F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ShaderGroup.hpp; sourceTree = "<group>"; };
 		F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DynamicTexture.hpp; sourceTree = "<group>"; };
 		F9B7D9ED2D8C7215002ABACE /* TextureUtility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureUtility.hpp; sourceTree = "<group>"; };
 		F9B7D9EE2D8C7215002ABACE /* TextureUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TextureUtility.cpp; sourceTree = "<group>"; };
@@ -6001,6 +6027,8 @@
 				F9528B982BBC76EA00222F45 /* Point3D.ipp */,
 				F9F00A4C2CD2993F0097C165 /* PointsPerCircle.ipp */,
 				F95122432CB8234200151291 /* Polygon.ipp */,
+				F9AEA4FA2E6B3E48003734E7 /* Print.ipp */,
+				F9AEA4FB2E6B3E48003734E7 /* PrintBuffer.ipp */,
 				F98605F62BE61586006A4C0F /* Quad.ipp */,
 				F9F00A4D2CD2993F0097C165 /* QualityFactor.ipp */,
 				F9070B982B9F175000383E4D /* Random.ipp */,
@@ -6305,6 +6333,8 @@
 				F951221C2CB8227E00151291 /* PolygonFailureType.hpp */,
 				F9070C172B9F175000383E4D /* PredefinedNamedParameter.hpp */,
 				F9070C182B9F175000383E4D /* PredefinedYesNo.hpp */,
+				F9AEA4F62E6B3E27003734E7 /* Print.hpp */,
+				F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */,
 				F9070C192B9F175000383E4D /* PRNG.hpp */,
 				F9528B7E2BB71F9900222F45 /* Profiler.hpp */,
 				F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */,
@@ -6343,6 +6373,7 @@
 				F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */,
+				F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */,
 				F934BD702BF880330003EAD5 /* ShaderStage.hpp */,
 				F951221B2CB8227E00151291 /* Shape2D.hpp */,
 				F9070C202B9F175000383E4D /* Shuffle.hpp */,
@@ -7079,6 +7110,8 @@
 				F9528B9C2BBC771000222F45 /* Point3D */,
 				F95122522CB8239800151291 /* Polygon */,
 				F95122292CB822BE00151291 /* PolygonFailureType */,
+				F9AEA5042E6B3E71003734E7 /* Print */,
+				F9AEA5062E6B3E71003734E7 /* PrintBuffer */,
 				F986062E2BEBBBC7006A4C0F /* Profiler */,
 				F96F95E52C2B0F640033353E /* Quad */,
 				F9F00A512CD2995D0097C165 /* QualityFactor */,
@@ -7105,6 +7138,7 @@
 				F9712A352C25501C0049CC26 /* ScopedViewport2D */,
 				F9ED45C32CC2B06D006BA10F /* ScreenCapture */,
 				F934BD802BF880A10003EAD5 /* Shader */,
+				F9AEA5082E6B3E71003734E7 /* ShaderGroup */,
 				F9F00A462CD298E60097C165 /* Shape2D */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F9E7945A2C19743A002615BA /* Stopwatch */,
@@ -10837,6 +10871,35 @@
 			path = skia;
 			sourceTree = "<group>";
 		};
+		F9AEA5042E6B3E71003734E7 /* Print */ = {
+			isa = PBXGroup;
+			children = (
+				F9AEA4FE2E6B3E71003734E7 /* CPrint.hpp */,
+				F9AEA4FF2E6B3E71003734E7 /* CPrint.cpp */,
+				F9AEA5002E6B3E71003734E7 /* IPrint.hpp */,
+				F9AEA5012E6B3E71003734E7 /* PrintFactory.cpp */,
+				F9AEA5022E6B3E71003734E7 /* PrintFont.hpp */,
+				F9AEA5032E6B3E71003734E7 /* SivPrint.cpp */,
+			);
+			path = Print;
+			sourceTree = "<group>";
+		};
+		F9AEA5062E6B3E71003734E7 /* PrintBuffer */ = {
+			isa = PBXGroup;
+			children = (
+				F9AEA5052E6B3E71003734E7 /* SivPrintBuffer.cpp */,
+			);
+			path = PrintBuffer;
+			sourceTree = "<group>";
+		};
+		F9AEA5082E6B3E71003734E7 /* ShaderGroup */ = {
+			isa = PBXGroup;
+			children = (
+				F9AEA5072E6B3E71003734E7 /* SivShaderGroup.cpp */,
+			);
+			path = ShaderGroup;
+			sourceTree = "<group>";
+		};
 		F9B7D9F22D8C722A002ABACE /* DynamicTexture */ = {
 			isa = PBXGroup;
 			children = (
@@ -11547,6 +11610,8 @@
 				F98600972BCFBB53006A4C0F /* SkColorData.h in Headers */,
 				F986028B2BCFBB54006A4C0F /* SkTHash.h in Headers */,
 				F986FA552BCFB53B006A4C0F /* svttcmap.h in Headers */,
+				F9AEA4F82E6B3E27003734E7 /* Print.hpp in Headers */,
+				F9AEA4F92E6B3E27003734E7 /* PrintBuffer.hpp in Headers */,
 				F98606302BEBBBC7006A4C0F /* CProfiler.hpp in Headers */,
 				F9070C652B9F175000383E4D /* IWriter.ipp in Headers */,
 				F98603912BCFBB54006A4C0F /* SkTTCFHeader.h in Headers */,
@@ -12070,6 +12135,7 @@
 				F980C4772C01BA5600A86B68 /* DepthStencilState.ipp in Headers */,
 				F980C45C2C01B20F00A86B68 /* RasterizerStateBuilder.hpp in Headers */,
 				F986F9A92BCA9D0A006A4C0F /* graphicselement.h in Headers */,
+				F9AEA5122E6B3E92003734E7 /* ShaderGroup.hpp in Headers */,
 				F9E7944B2C1973FD002615BA /* Periodic.hpp in Headers */,
 				F9F00A842CE06CD50097C165 /* WebBrowser.hpp in Headers */,
 				F98605C72BE4B680006A4C0F /* Input.ipp in Headers */,
@@ -12755,6 +12821,8 @@
 				F9F00A542CD299910097C165 /* PoleOfInaccessibility.hpp in Headers */,
 				F9070CCA2B9F175100383E4D /* HeterogeneousLookupHelper.hpp in Headers */,
 				F986FA682BCFB53B006A4C0F /* ftstream.h in Headers */,
+				F9AEA4FC2E6B3E48003734E7 /* Print.ipp in Headers */,
+				F9AEA4FD2E6B3E48003734E7 /* PrintBuffer.ipp in Headers */,
 				F9712A2C2C252EEA0049CC26 /* ScopedScissorRect2D.hpp in Headers */,
 				F986FA4E2BCFB53B006A4C0F /* svotval.h in Headers */,
 				F98601BC2BCFBB53006A4C0F /* SkFontMetricsPriv.h in Headers */,
@@ -12815,6 +12883,9 @@
 				F9070C6B2B9F175000383E4D /* MD5Value.ipp in Headers */,
 				F98601B12BCFBB53006A4C0F /* SkEdgeClipper.h in Headers */,
 				F986FA8D2BCFB53B006A4C0F /* ftmoderr.h in Headers */,
+				F9AEA5092E6B3E72003734E7 /* CPrint.hpp in Headers */,
+				F9AEA50A2E6B3E72003734E7 /* IPrint.hpp in Headers */,
+				F9AEA50B2E6B3E72003734E7 /* PrintFont.hpp in Headers */,
 				F986002C2BCFBB53006A4C0F /* SkPathEffect.h in Headers */,
 				F986000F2BCFBB53006A4C0F /* SkData.h in Headers */,
 				F986FFF62BCFBB53006A4C0F /* SkPngDecoder.h in Headers */,
@@ -13556,6 +13627,11 @@
 				F9070DE32B9F175E00383E4D /* SivPoint.cpp in Sources */,
 				F98601DE2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.cpp in Sources */,
 				F9528C832BC05B5B00222F45 /* BMPDecoder.cpp in Sources */,
+				F9AEA50C2E6B3E72003734E7 /* SivPrintBuffer.cpp in Sources */,
+				F9AEA50D2E6B3E72003734E7 /* CPrint.cpp in Sources */,
+				F9AEA50E2E6B3E72003734E7 /* SivShaderGroup.cpp in Sources */,
+				F9AEA50F2E6B3E72003734E7 /* SivPrint.cpp in Sources */,
+				F9AEA5102E6B3E72003734E7 /* PrintFactory.cpp in Sources */,
 				F9070DD12B9F175E00383E4D /* SivFormatUtility.cpp in Sources */,
 				F9807D9A2BF667C300D9B590 /* SivMessageBox.cpp in Sources */,
 				F98605A82BE4887C006A4C0F /* RegExpFactory.cpp in Sources */,
