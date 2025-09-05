@@ -569,7 +569,7 @@ namespace s3d
 
 		/// @brief Format できない値が Format() に渡されたときに発生するエラーです
 		template <class... Args>
-		DrawableText operator ()(const Args&...) = delete;
+		DrawableText operator ()(const Args&...) const = delete;
 
 		[[nodiscard]]
 		DrawableText operator ()(ReadingDirection readingDirection, const String& text) const;
@@ -582,7 +582,7 @@ namespace s3d
 		DrawableText operator ()(ReadingDirection readingDirection, const Args& ... args) const;
 
 		template <class... Args>
-		DrawableText operator ()(ReadingDirection readingDirection, const Args&...) = delete;
+		DrawableText operator ()(ReadingDirection readingDirection, const Args&...) const = delete;
 
 
 

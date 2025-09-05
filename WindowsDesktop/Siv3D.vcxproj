@@ -733,6 +733,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\CPrint.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\IPrint.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Print\PrintFont.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\IProfiler.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.hpp" />

@@ -11,6 +11,7 @@
 
 # pragma once
 # include "IPrint.hpp"
+# include "PrintFont.hpp"
 
 namespace s3d
 {
@@ -18,7 +19,22 @@ namespace s3d
 	{
 	public:
 
+		CPrint();
+
+		~CPrint() override;
+
+		void init() override;
+
+		void write(StringView s) override;
+
+		void writeln(StringView s) override;
+
+		void clear() override;
+
+		void draw() override;
+
 	private:
 
+		std::unique_ptr<PrintFont> m_font;
 	};
 }
