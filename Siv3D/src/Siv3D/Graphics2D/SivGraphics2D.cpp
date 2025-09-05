@@ -231,9 +231,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void SetMSDFParameters(const TextStyle& textStyle)
+		void SetMSDFParameters(const TextStyle& textStyle, const int32 fontBaseSize)
 		{
-			Internal::SetSDFParameters({ textStyle.param, textStyle.outlineColor, textStyle.shadowColor });
+			Internal::SetSDFParameters({ textStyle.getShaderParams(fontBaseSize), textStyle.outlineColor, textStyle.shadowColor});
 		}
 
 		namespace Internal

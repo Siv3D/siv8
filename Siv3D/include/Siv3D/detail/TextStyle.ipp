@@ -13,6 +13,19 @@
 
 namespace s3d
 {
+	constexpr Float4 TextStyle::getShaderParams(const int32 fontBaseSize) const noexcept
+	{
+		if (type == Type::Glow)
+		{
+			return{ glow, 0.0f, 0.0f, 0.0f };
+		}
+		else
+		{
+			const float scale = (fontBaseSize / 64.0f);
+			return{ (0.5 + scale * innerThickness), (0.5 - scale * outerThickness), shadowOffset };
+		}
+	}
+
 	constexpr TextStyle TextStyle::Default() noexcept
 	{
 		return{};
@@ -41,8 +54,8 @@ namespace s3d
 	{
 		TextStyle style;
 		style.type = Type::Outline;
-		style.param.x = static_cast<float>(0.5 + inner);
-		style.param.y = static_cast<float>(0.5 - outer);
+		style.innerThickness = static_cast<float>(inner);
+		style.outerThickness = static_cast<float>(outer);
 		style.outlineColor = ColorF::PremultiplyAlpha(color).toFloat4();
 		return style;
 	}
@@ -51,8 +64,7 @@ namespace s3d
 	{
 		TextStyle style;
 		style.type = Type::Shadow;
-		style.param.z = static_cast<float>(offset.x);
-		style.param.w = static_cast<float>(offset.y);
+		style.shadowOffset = offset;
 		style.shadowColor = ColorF::PremultiplyAlpha(color).toFloat4();
 		return style;
 	}
@@ -66,10 +78,9 @@ namespace s3d
 	{
 		TextStyle style;
 		style.type = Type::OutlineShadow;
-		style.param.x = static_cast<float>(0.5 + inner);
-		style.param.y = static_cast<float>(0.5 - outer);
-		style.param.z = static_cast<float>(offset.x);
-		style.param.w = static_cast<float>(offset.y);
+		style.innerThickness = static_cast<float>(inner);
+		style.outerThickness = static_cast<float>(outer);
+		style.shadowOffset = offset;
 		style.outlineColor = ColorF::PremultiplyAlpha(outlineColor).toFloat4();
 		style.shadowColor = ColorF::PremultiplyAlpha(shadowColor).toFloat4();
 		return style;
@@ -84,7 +95,7 @@ namespace s3d
 
 		TextStyle style;
 		style.type = Type::Glow;
-		style.param.x = static_cast<float>(1.0 / p);
+		style.glow = static_cast<float>(1.0 / p);
 		return style;
 	}
 }

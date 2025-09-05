@@ -489,13 +489,14 @@ namespace s3d
 	RectF CFont::draw(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
-		const bool isColorFont = font->getInfo().properties.hasColor;
+		const auto& fontInfo = font->getInfo();
+		const bool isColorFont = fontInfo.properties.hasColor;
 
 		if ((textStyle.type != TextStyle::Type::Default) && (not isColorFont))
 		{
-			if (font->getInfo().renderingMethod == FontMethod::MSDF)
+			if (fontInfo.renderingMethod == FontMethod::MSDF)
 			{
-				Graphics2D::SetMSDFParameters(textStyle);
+				Graphics2D::SetMSDFParameters(textStyle, fontInfo.baseSize);
 			}
 		}
 
@@ -512,7 +513,7 @@ namespace s3d
 		}
 		else
 		{
-			const ScopedCustomShader2D ps{ m_shader->getFontShader(font->getInfo().renderingMethod, textStyle.type) };
+			const ScopedCustomShader2D ps{ m_shader->getFontShader(fontInfo.renderingMethod, textStyle.type) };
 
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
@@ -554,13 +555,14 @@ namespace s3d
 	RectF CFont::drawBase(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
-		const bool isColorFont = font->getInfo().properties.hasColor;
+		const auto& fontInfo = font->getInfo();
+		const bool isColorFont = fontInfo.properties.hasColor;
 
 		if ((textStyle.type != TextStyle::Type::Default) && (not isColorFont))
 		{
-			if (font->getInfo().renderingMethod == FontMethod::MSDF)
+			if (fontInfo.renderingMethod == FontMethod::MSDF)
 			{
-				Graphics2D::SetMSDFParameters(textStyle);
+				Graphics2D::SetMSDFParameters(textStyle, fontInfo.baseSize);
 			}
 		}
 
@@ -577,7 +579,7 @@ namespace s3d
 		}
 		else
 		{
-			const ScopedCustomShader2D ps{ m_shader->getFontShader(font->getInfo().renderingMethod, textStyle.type) };
+			const ScopedCustomShader2D ps{ m_shader->getFontShader(fontInfo.renderingMethod, textStyle.type) };
 
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
@@ -619,13 +621,14 @@ namespace s3d
 	std::pair<double, double> CFont::drawBaseFallback(const Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const int32 index, const int32 totalGlyphCount, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
-		const bool isColorFont = font->getInfo().properties.hasColor;
+		const auto& fontInfo = font->getInfo();
+		const bool isColorFont = fontInfo.properties.hasColor;
 
 		if ((textStyle.type != TextStyle::Type::Default) && (not isColorFont))
 		{
-			if (font->getInfo().renderingMethod == FontMethod::MSDF)
+			if (fontInfo.renderingMethod == FontMethod::MSDF)
 			{
-				Graphics2D::SetMSDFParameters(textStyle);
+				Graphics2D::SetMSDFParameters(textStyle, fontInfo.baseSize);
 			}
 		}
 
@@ -642,7 +645,7 @@ namespace s3d
 		}
 		else
 		{
-			const ScopedCustomShader2D ps{ m_shader->getFontShader(font->getInfo().renderingMethod, textStyle.type) };
+			const ScopedCustomShader2D ps{ m_shader->getFontShader(fontInfo.renderingMethod, textStyle.type) };
 
 			if (readingDirection == ReadingDirection::TopToBottom)
 			{
@@ -684,13 +687,14 @@ namespace s3d
 	bool CFont::drawRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
-		const bool isColorFont = font->getInfo().properties.hasColor;
+		const auto& fontInfo = font->getInfo();
+		const bool isColorFont = fontInfo.properties.hasColor;
 
 		if ((textStyle.type != TextStyle::Type::Default) && (not isColorFont))
 		{
-			if (font->getInfo().renderingMethod == FontMethod::MSDF)
+			if (fontInfo.renderingMethod == FontMethod::MSDF)
 			{
-				Graphics2D::SetMSDFParameters(textStyle);
+				Graphics2D::SetMSDFParameters(textStyle, fontInfo.baseSize);
 			}
 		}
 
@@ -707,7 +711,7 @@ namespace s3d
 		}
 		else
 		{
-			const ScopedCustomShader2D ps{ m_shader->getFontShader(font->getInfo().renderingMethod, textStyle.type) };
+			const ScopedCustomShader2D ps{ m_shader->getFontShader(fontInfo.renderingMethod, textStyle.type) };
 
 			//if (readingDirection == ReadingDirection::TopToBottom)
 			//{

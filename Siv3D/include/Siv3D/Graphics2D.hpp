@@ -207,7 +207,8 @@ namespace s3d
 
 		/// @brief MSDF 描画用のパラメータを設定します。
 		/// @param textStyle テキストスタイル
-		void SetMSDFParameters(const TextStyle& textStyle);
+		/// @param fontBaseSize フォントの基本サイズ
+		void SetMSDFParameters(const TextStyle& textStyle, int32 fontBaseSize);
 
 	}
 }

@@ -20,11 +20,17 @@ namespace s3d
 	/// @brief テキストのスタイル
 	struct TextStyle
 	{
-		Float4 param{ 0.5f, 0.5f, 0.0f, 0.0f };
+		float innerThickness = 0.0f;
+
+		float outerThickness = 0.0f;
+
+		Float2 shadowOffset{ 0.0f, 0.0f };
 
 		Float4 outlineColor{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 		Float4 shadowColor{ 0.0f, 0.0f, 0.0f, 0.5f };
+
+		float glow = 0.0f;
 
 		enum class Type : uint8
 		{
@@ -40,6 +46,9 @@ namespace s3d
 		double lineSpacing = 1.0;
 
 		double characterSpacing = 0.0;
+
+		[[nodiscard]]
+		constexpr Float4 getShaderParams(int32 fontBaseSize) const noexcept;
 
 		/// @brief デフォルトのスタイルを返します。
 		/// @return デフォルトのスタイル
