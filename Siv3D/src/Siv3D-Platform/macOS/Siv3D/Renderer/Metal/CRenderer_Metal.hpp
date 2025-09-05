@@ -32,7 +32,11 @@ namespace s3d
 
 		~CRenderer_Metal() override;
 
+		[[nodiscard]]
 		StringView getName() const override;
+
+		[[nodiscard]]
+		EngineOption::Renderer getRendererType() const noexcept override;
 
 		void init() override;
 
@@ -42,30 +46,37 @@ namespace s3d
 
 		bool present() override;
 
+		[[nodiscard]]
 		SceneStyle& getSceneStyle() noexcept override;
 
 		void setSceneResizeMode(ResizeMode resizeMode) override;
 
+		[[nodiscard]]
 		ResizeMode getSceneResizeMode() const noexcept override;
 
 		void resizeSceneBuffer(Size size) override;
 
+		[[nodiscard]]
 		const Size& getSceneBufferSize() const noexcept override;
 
+		[[nodiscard]]
 		std::pair<double, RectF> getLetterboxComposition() const noexcept override;
 
 		void updateSceneSize() override;
 
 		void setVSyncEnabled(bool enabled) override;
 
+		[[nodiscard]]
 		bool isVSyncEnabled() const override;
 
 		void setLowLatencyMode(bool enabled) override;
 
+		[[nodiscard]]
 		bool isLowLatencyMode() const override;
 	
 		void captureScreenshot() override;
 
+		[[nodiscard]]
 		const Image& getScreenCapture() const override;
 		
 		void updateSceneBufferSize();

@@ -11,31 +11,21 @@
 
 # pragma once
 # include "Common.hpp"
-# include "String.hpp"
-# include "Result.hpp"
-# include "ShaderStage.hpp"
+# include "Optional.hpp"
+# include "HLSL.hpp"
+# include "MSL.hpp"
 
 namespace s3d
 {
-	class VertexShader;
-	class PixelShader;
-	class ShaderGroup;
-	struct HLSL;
-
 	////////////////////////////////////////////////////////////////
 	//
-	//	MSL
+	//	ShaderGroup
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief MSL (Metal Shading Language) ファイル
-	struct MSL
+	class ShaderGroup
 	{
-		/// @brief MSL ファイルのパス
-		FilePath path;
-
-		/// @brief エントリーポイント
-		String entryPoint;
+	public:
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -43,19 +33,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief エントリーポイントで MSL を指定します。
-		/// @param _entryPoint エントリーポイント
 		[[nodiscard]]
-		explicit MSL(String _entryPoint);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	operator |
-		//
-		////////////////////////////////////////////////////////////////
+		ShaderGroup() = default;
 
 		[[nodiscard]]
-		ShaderGroup operator |(const HLSL& hlsl) const;
+		ShaderGroup(const Optional<HLSL>& hlsl, const Optional<MSL>& msl);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -63,7 +45,6 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief MSL から頂点シェーダを作成します。
 		[[nodiscard]]
 		operator VertexShader() const;
 
@@ -73,8 +54,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief MSL からピクセルシェーダを作成します。
 		[[nodiscard]]
 		operator PixelShader() const;
+
+	private:
+
+		Optional<HLSL> m_hlsl;
+		
+		Optional<MSL>  m_msl;
 	};
 }

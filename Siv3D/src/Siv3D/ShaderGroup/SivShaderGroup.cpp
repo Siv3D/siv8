@@ -9,10 +9,10 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/HLSL.hpp>
+# include <Siv3D/ShaderGroup.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
-# include <Siv3D/ShaderGroup.hpp>
+# include <Siv3D/System.hpp>
 
 namespace s3d
 {
@@ -22,26 +22,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HLSL::HLSL(FilePath _path)
-		: path{ std::move(_path) } {}
-
-	HLSL::HLSL(FilePath _path, String _entryPoint)
-		: path{ std::move(_path) }
-		, entryPoint{ std::move(_entryPoint) } {}
-
-	HLSL::HLSL(const Blob& bytecode)
-		: bytecode{ bytecode } {}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	operator |
-	//
-	////////////////////////////////////////////////////////////////
-
-	ShaderGroup HLSL::operator |(const MSL& msl) const
-	{
-		return{ *this, msl };
-	}
+	ShaderGroup::ShaderGroup(const Optional<HLSL>& hlsl, const Optional<MSL>& msl)
+		: m_hlsl{ hlsl }
+		, m_msl{ msl } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -49,16 +32,21 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HLSL::operator VertexShader() const
+	ShaderGroup::operator VertexShader() const
 	{
-		if (entryPoint)
+		if (const EngineOption::Renderer renderer = System::GetRendererType();
+			renderer == EngineOption::Renderer::Direct3D11)
 		{
-			return VertexShader::HLSL(path, entryPoint);
+			assert(m_hlsl);
+			return *m_hlsl;
 		}
-		else
+		else if (renderer == EngineOption::Renderer::Metal)
 		{
-			return VertexShader::HLSL(path);
+			assert(m_msl);
+			return *m_msl;
 		}
+
+		return{};
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -67,15 +55,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HLSL::operator PixelShader() const
+	ShaderGroup::operator PixelShader() const
 	{
-		if (entryPoint)
+		if (const EngineOption::Renderer renderer = System::GetRendererType();
+			renderer == EngineOption::Renderer::Direct3D11)
 		{
-			return PixelShader::HLSL(path, entryPoint);
+			assert(m_hlsl);
+			return *m_hlsl;
 		}
-		else
+		else if (renderer == EngineOption::Renderer::Metal)
 		{
-			return PixelShader::HLSL(path);
+			assert(m_msl);
+			return *m_msl;
 		}
+
+		return{};
 	}
 }

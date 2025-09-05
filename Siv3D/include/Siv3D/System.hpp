@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "Duration.hpp"
+# include "EngineOption.hpp"
 
 namespace s3d
 {
@@ -133,7 +134,7 @@ namespace s3d
 
 		/// @brief レンダラーの設定を返します。
 		/// @return レンダラーの設定
-		//[[nodiscard]]
-		//EngineOption::Renderer GetRendererType();
+		[[nodiscard]]
+		EngineOption::Renderer GetRendererType();
 	}
 }

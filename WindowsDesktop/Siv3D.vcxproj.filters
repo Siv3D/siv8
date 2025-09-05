@@ -1120,6 +1120,9 @@
     <Filter Include="src\Siv3D\PrintBuffer">
       <UniqueIdentifier>{d63775f2-a20a-4dc0-b067-fbb429e2f4da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ShaderGroup">
+      <UniqueIdentifier>{b1538f8d-823b-4738-a742-0ca44c975072}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4584,6 +4587,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\PrintFont.hpp">
       <Filter>src\Siv3D\Print</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ShaderGroup.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7237,6 +7243,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\PrintBuffer\SivPrintBuffer.cpp">
       <Filter>src\Siv3D\PrintBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ShaderGroup\SivShaderGroup.cpp">
+      <Filter>src\Siv3D\ShaderGroup</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1438,6 +1438,8 @@
 // MSL (Metal Shading Language) | MSL (Metal Shading Language)
 # include <Siv3D/MSL.hpp> // ToDo
 
+# include <Siv3D/ShaderGroup.hpp>
+
 // シェーダステージ | Shader stage
 # include <Siv3D/ShaderStage.hpp>
 
@@ -1449,9 +1451,6 @@
 
 // ピクセルシェーダ | Pixel/Fragment shader
 # include <Siv3D/PixelShader.hpp>
-
-//// シェーダユーティリティ | Shader utilities
-//# include <Siv3D/ShaderCommon.hpp>
 
 // 定数バッファインタフェース | Constant buffer interface
 # include <Siv3D/IConstantBuffer.hpp>
