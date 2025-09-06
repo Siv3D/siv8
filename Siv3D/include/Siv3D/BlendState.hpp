@@ -253,6 +253,7 @@ namespace s3d
 	};
 
 	static_assert(sizeof(BlendState) == sizeof(BlendState::storage_type));
+	static_assert(std::has_unique_object_representations_v<BlendState>);
 }
 
 ////////////////////////////////////////////////////////////////

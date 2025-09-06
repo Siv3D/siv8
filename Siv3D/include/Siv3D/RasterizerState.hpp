@@ -28,11 +28,11 @@ namespace s3d
 	/// @brief ラスタライザーステート
 	struct RasterizerState
 	{
-		TriangleFillMode triangleFillMode	: 2 = TriangleFillMode::Solid;
+		TriangleFillMode triangleFillMode		= TriangleFillMode::Solid;
 
-		CullMode cullMode					: 2 = CullMode::Back;
+		CullMode cullMode						= CullMode::Back;
 
-		bool antialiasedLine3D				: 4 = false;
+		uint16 antialiasedLine3D				= 0;
 
 		int32 depthBias							= 0;
 
@@ -128,6 +128,7 @@ namespace s3d
 	};
 
 	static_assert(sizeof(RasterizerState) == sizeof(RasterizerState::storage_type));
+	static_assert(std::has_unique_object_representations_v<RasterizerState>);
 }
 
 ////////////////////////////////////////////////////////////////

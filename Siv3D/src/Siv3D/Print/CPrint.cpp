@@ -13,6 +13,7 @@
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/Format.hpp>
 # include <Siv3D/FormatUtility.hpp>
+# include <Siv3D/ScopedRenderStates2D.hpp>
 # include <Siv3D/ScopedCustomShader2D.hpp>
 # include <Siv3D/TextStyle.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
@@ -21,6 +22,43 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		constexpr size_t CalculateMaxLines(const int32 sceneHeight, const int32 fontHeight) noexcept
+		{
+			const int32 regionHeight = Max((sceneHeight - 20), 1);
+			return ((regionHeight + fontHeight - 1) / fontHeight);
+		}
+
+		[[nodiscard]]
+		constexpr int32 CalculateMaxWidth(const int32 sceneWidth) noexcept
+		{
+			return Max((sceneWidth - 20), 40);
+		}
+
+		[[nodiscard]]
+		static size_t CountLines(const DrawableText& drawableText, const int32 maxWidth)
+		{
+			const Array<double> xAdvances = drawableText.getXAdvances();
+			size_t result = 1;
+			double xPos = 0.0;
+
+			for (double xAdvance : xAdvances)
+			{
+				if (maxWidth < (xPos + xAdvance))
+				{
+					++result;
+					xPos = 0.0;
+				}
+
+				xPos += xAdvance;
+			}
+
+			return result;
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -69,7 +107,17 @@ namespace s3d
 
 	void CPrint::write(const StringView s)
 	{
+		if (Array<String> lines = s.split(U'\n'))
+		{
+			std::lock_guard lock{ m_mutex };
 
+			m_lines.back().append(lines[0]);
+
+			for (size_t i = 1; i < lines.size(); ++i)
+			{
+				m_lines.push_back(std::move(lines[i]));
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -80,7 +128,20 @@ namespace s3d
 
 	void CPrint::writeln(const StringView s)
 	{
+		if (Array<String> lines = s.split(U'\n'))
+		{
+			std::lock_guard lock{ m_mutex };
 
+			m_lines.back().append(lines[0]);
+
+			for (size_t i = 1; i < lines.size(); ++i)
+			{
+				m_lines.push_back(std::move(lines[i]));
+			}
+
+			// 最後に改行を追加
+			m_lines.emplace_back();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -91,7 +152,10 @@ namespace s3d
 
 	void CPrint::clear()
 	{
+		std::lock_guard lock{ m_mutex };
 
+		m_lines = { U"" };
+		m_reachedMaxLines = false;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -102,10 +166,79 @@ namespace s3d
 
 	void CPrint::draw()
 	{
-		//{
-		//	const ScopedCustomShader2D shader{ m_font->ps };
-		//	
-		//	m_font->textFont(U"Print テスト 12,345 漢字 🚀🐢 Print テスト 12,345 漢字 🚀🐢 Print テスト 12,345 漢字 🚀🐢").draw(TextStyle::CustomTextFontShader(), Vec2{ 10, 10 });
-		//}
+		std::lock_guard lock{ m_mutex };
+
+		// Print する内容が無い場合は何もしない
+		if ((m_lines.size() == 1) && m_lines.front().isEmpty())
+		{
+			return;
+		}
+
+		const Font& font = m_font->textFont;
+		const double fontHeight = font.height();
+
+		const size_t maxLineCount = CalculateMaxLines(Scene::Height(), static_cast<int32>(fontHeight));
+
+		// 超過メッセージの削除
+		if (maxLineCount < m_lines.size())
+		{
+			m_lines.pop_front_N(m_lines.size() - maxLineCount);
+			m_reachedMaxLines = true;
+		}
+
+		// 各メッセージの行数計算
+		const int32 maxWidth = CalculateMaxWidth(Scene::Width());
+		Array<DrawableText> drawableTexts;
+		Array<size_t> lineCounts;
+		{
+			size_t totalLineCount = 0;
+
+			for (auto it = m_lines.rbegin(); it != m_lines.rend(); ++it)
+			{
+				DrawableText drawableText = m_font->textFont(*it);
+				const size_t lineCount = CountLines(drawableText, maxWidth);
+
+				if (maxLineCount < (totalLineCount + lineCount))
+				{
+					m_reachedMaxLines = true;
+
+					// 超過するメッセージの削除
+					m_lines.pop_front_N(m_lines.size() - drawableTexts.size());
+					break;
+				}
+				
+				drawableTexts.push_front(std::move(drawableText));
+				lineCounts.push_front(lineCount);
+
+				totalLineCount += lineCount;
+			}
+		}
+
+		// 描画
+		{
+			const int32 overflowOffsetY = (m_reachedMaxLines ? (static_cast<int32>(fontHeight / 2) + TextPadding) : 0);
+			const Point basePos{ TextStartPos.x, (TextStartPos.y - overflowOffsetY) };
+		
+			// レンダーステートはデフォルトに戻す
+			const ScopedRenderStates2D rb{ BlendState::Default2D, RasterizerState::Default2D, SamplerState::Default2D };
+			const ScopedCustomShader2D shader{ m_font->ps };
+
+			size_t lineOffset = 0;
+
+			for (size_t i = 0; i < m_lines.size(); ++i)
+			{
+				const size_t lineCount = lineCounts[i];
+				const DrawableText& drawableText = drawableTexts[i];
+
+				if (drawableText.text)
+				{
+					const Point pos{ basePos.x, (basePos.y + static_cast<int32>(lineOffset * fontHeight)) };
+					const RectF area{ pos, maxWidth, 65536 };
+					drawableText.draw(TextStyle::CustomTextFontShader(), area);
+				}
+
+				lineOffset += lineCount;
+			}
+		}
 	}
 }

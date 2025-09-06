@@ -35,6 +35,20 @@ namespace s3d
 
 	private:
 
+		static constexpr int32 TextPadding = 10;
+
+		static constexpr Point TextStartPos{ TextPadding , TextPadding };
+
 		std::unique_ptr<PrintFont> m_font;
+
+		////////////////////////////////////////////////////////////////
+		//
+		std::mutex m_mutex;
+
+		Array<String> m_lines = { U"" };
+
+		bool m_reachedMaxLines = false;
+		//
+		////////////////////////////////////////////////////////////////
 	};
 }

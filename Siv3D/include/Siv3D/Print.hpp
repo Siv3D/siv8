@@ -24,15 +24,28 @@ namespace s3d
 		{
 			////////////////////////////////////////////////////////////////
 			//
-			//	writeln
+			//	write
 			//
 			////////////////////////////////////////////////////////////////
 
-			void writeln(const char* s) const;
+			void write(const char32_t* s) const;
 
-			void writeln(std::string_view s) const;
+			void write(StringView s) const;
 
-			void writeln(const std::string& s) const;
+			void write(const String& s) const;
+
+			template <Concept::Formattable... Args>
+			void write(const Args&... args) const;
+
+			// Format できない値を Print.write() に渡すとコンパイルエラーになります。
+			template <class... Args>
+			void write(const Args&... args) const = delete;
+
+			////////////////////////////////////////////////////////////////
+			//
+			//	writeln
+			//
+			////////////////////////////////////////////////////////////////
 
 			void writeln(const char32* s) const;
 
