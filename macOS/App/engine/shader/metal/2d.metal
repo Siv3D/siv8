@@ -399,14 +399,9 @@ inline MSDFState MSDF_Init(texture2d<float> texture, float2 uv)
 	return st;
 }
 
-inline float MSDF_Median(const float r, const float g, const float b)
-{
-	return max(min(r, g), min(max(r, g), b));
-}
-
 inline float MSDF_Median(const float3 rgb)
 {
-	return MSDF_Median(rgb.r, rgb.g, rgb.b);
+	return median3(rgb.r, rgb.g, rgb.b);
 }
 
 inline float MSDF_SampleDistance(const texture2d<float> texture, const sampler sampler, const float2 uv)
