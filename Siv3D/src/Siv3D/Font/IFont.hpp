@@ -14,11 +14,13 @@
 # include <Siv3D/Array.hpp>
 # include <Siv3D/Font.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
+# include <Siv3D/TextStyle.hpp>
 
 namespace s3d
 {
 	struct FontFaceInfo;
-	struct TextStyle;
+	struct ITextEffect;
+	class PixelShader;
 
 	class SIV3D_NOVTABLE ISiv3DFont
 	{
@@ -48,6 +50,11 @@ namespace s3d
 		virtual const FontFaceInfo& getInfo(Font::IDType handleID) = 0;
 
 		virtual void setTabSize(Font::IDType handleID, int32 tabSize) = 0;
+
+		virtual void setBufferThickness(Font::IDType handleID, int32 thickness) = 0;
+
+		[[nodiscard]]
+		virtual int32 getBufferThickness(Font::IDType handleID) = 0;
 
 		[[nodiscard]]
 		virtual GlyphIndex getGlyphIndex(Font::IDType handleID, char32 codePoint, ReadingDirection readingDirection) = 0;
@@ -79,6 +86,9 @@ namespace s3d
 		[[nodiscard]]
 		virtual BitmapGlyph renderBitmapByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 
+		[[nodiscard]]
+		virtual MSDFGlyph renderMSDFByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
+
 		virtual const Texture& getTexture(Font::IDType handleID) = 0;
 
 		virtual Array<double> getXAdvances(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) = 0;
@@ -87,14 +97,20 @@ namespace s3d
 
 		virtual RectF region(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 
-		virtual RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
+		virtual RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
 
 		virtual RectF regionBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 
-		virtual RectF drawBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
+		virtual RectF drawBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
 
 		virtual std::pair<double, double> regionBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 
-		virtual std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) = 0;
+		virtual std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, int32 index, int32 totalGlyphCount, ReadingDirection readingDirection) = 0;
+
+		virtual bool fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
+
+		virtual bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
+
+		virtual const PixelShader& getFontShader(FontMethod method, TextStyle::Type type) const = 0;
 	};
 }

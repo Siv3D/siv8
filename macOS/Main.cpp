@@ -14,6 +14,8 @@ void Main()
 	const Font font{ 40, Typeface::Bold };
 	font.addFallback(Font{ 40, Typeface::ColorEmoji });
 
+	Print << U"Hello, Siv3D! 🐥";
+
 	while (System::Update())
 	{
 		const double t = Scene::Time();

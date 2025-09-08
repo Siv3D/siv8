@@ -1438,6 +1438,8 @@
 // MSL (Metal Shading Language) | MSL (Metal Shading Language)
 # include <Siv3D/MSL.hpp> // ToDo
 
+# include <Siv3D/ShaderGroup.hpp>
+
 // シェーダステージ | Shader stage
 # include <Siv3D/ShaderStage.hpp>
 
@@ -1450,18 +1452,15 @@
 // ピクセルシェーダ | Pixel/Fragment shader
 # include <Siv3D/PixelShader.hpp>
 
-//// シェーダユーティリティ | Shader utilities
-//# include <Siv3D/ShaderCommon.hpp>
-
 // 定数バッファインタフェース | Constant buffer interface
 # include <Siv3D/IConstantBuffer.hpp>
 
 // 定数バッファ | Constant buffer
 # include <Siv3D/ConstantBuffer.hpp>
 
-//// 2D シェーダスコープ | 2D shader scope
-//# include <Siv3D/ScopedCustomShader2D.hpp>
-//
+// 2D シェーダスコープ | 2D shader scope
+# include <Siv3D/ScopedCustomShader2D.hpp>
+
 //// 3D シェーダスコープ | 3D shader scope
 //# include <Siv3D/ScopedCustomShader3D.hpp>
 
@@ -1621,6 +1620,22 @@
 
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/TextStyle.hpp>
+
+# include <Siv3D/ITextEffect.hpp>
+# include <Siv3D/TextEffect/NullTextEffect.hpp>
+# include <Siv3D/TextEffect/BasicTextEffect.hpp>
+# include <Siv3D/TextEffect/VerticalGradient.hpp>
+# include <Siv3D/TextEffect/HorizontalGradient.hpp>
+# include <Siv3D/TextEffect/HorizontalGradientHSV.hpp>
+# include <Siv3D/TextEffect/QuadWarp.hpp>
+# include <Siv3D/TextEffect/FlipX.hpp>
+# include <Siv3D/TextEffect/VerticalScale.hpp>
+# include <Siv3D/TextEffect/Reflection.hpp>
+
+
+
+# include <Siv3D/Print.hpp>
+# include <Siv3D/PrintBuffer.hpp>
 
 
 # include <Siv3D/Pipe.hpp>

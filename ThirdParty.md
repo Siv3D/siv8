@@ -4,35 +4,41 @@ To view the license information, press the <kbd>F1</kbd> key while the Siv3D app
 
 Name | Version
 --- | ---
-[Abseil](https://github.com/abseil/abseil-cpp) | 20240722.0
+[Abseil](https://github.com/abseil/abseil-cpp) | 20250512.1
 [bc7enc](https://github.com/richgel999/bc7enc_rdo) | 
 [CoreRT](https://github.com/dotnet/corert) | 
-[cpu_features](https://github.com/google/cpu_features) | 
-[DirectXMath](https://github.com/microsoft/DirectXMath) | October 2024
-[doctest](https://github.com/doctest/doctest) | v2.4.11
-[double-conversion](https://github.com/google/double-conversion) | v3.3.0
+[cpu_features](https://github.com/google/cpu_features) | v0.10.1
+[DirectXMath](https://github.com/microsoft/DirectXMath) | April 2025
+[doctest](https://github.com/doctest/doctest) | v2.4.12
+[double-conversion](https://github.com/google/double-conversion) | v3.3.1
 [Easing Equations](http://robertpenner.com/easing/) | 
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 8.0.0
+[fast_float](https://github.com/fastfloat/fast_float) | Version 8.0.2
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
 [GLFW](https://github.com/glfw/glfw) | 3.4
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 11.2.0
+[JSON for Modern C++](https://github.com/nlohmann/json) | v3.12.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [libcpprime](https://github.com/Rac75116/libcpprime) | ver 1.2.11
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
 [libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
 [lunasvg](https://github.com/sammycage/lunasvg) | v2.4.1
+[Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
+[M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
+[msdfgen](https://github.com/Chlumsky/msdfgen) | 
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
-[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.6.2
+[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.7.1
+[Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.048
+[Noto Sans CJK](https://github.com/notofonts/noto-cjk) | Version 2.004
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [OpenCV](https://github.com/opencv/opencv) | 4.10.0
@@ -41,9 +47,9 @@ Name | Version
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 6.3.1
+[simdutf](https://github.com/simdutf/simdutf) | Version 7.3.3
 [skia](https://github.com/google/skia) |
-[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.13
+[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.14
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
@@ -52,4 +58,4 @@ Name | Version
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
 [zlib](https://www.zlib.net/) | 1.3.1
-[Zstandard](https://github.com/facebook/zstd) | v1.5.6
+[Zstandard](https://github.com/facebook/zstd) | v1.5.7

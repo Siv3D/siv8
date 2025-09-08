@@ -21,4 +21,3 @@ namespace s3d
 		Image image;
 	};
 }
-

@@ -12,6 +12,7 @@
 # include <Siv3D/HLSL.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
+# include <Siv3D/ShaderGroup.hpp>
 
 namespace s3d
 {
@@ -30,6 +31,17 @@ namespace s3d
 
 	HLSL::HLSL(const Blob& bytecode)
 		: bytecode{ bytecode } {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator |
+	//
+	////////////////////////////////////////////////////////////////
+
+	ShaderGroup HLSL::operator |(const MSL& msl) const
+	{
+		return{ *this, msl };
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

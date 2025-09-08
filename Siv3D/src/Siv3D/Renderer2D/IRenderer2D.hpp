@@ -16,6 +16,8 @@
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/TriangleIndex.hpp>
 # include <Siv3D/Texture.hpp>
+# include <Siv3D/VertexShader.hpp>
+# include <Siv3D/PixelShader.hpp>
 # include "ColorFillDirection.hpp"
 
 namespace s3d
@@ -173,6 +175,18 @@ namespace s3d
 		virtual Optional<Rect> getViewport() const = 0;
 
 		virtual void setViewport(const Optional<Rect>& viewport) = 0;
+
+
+		virtual void setSDFParameters(const std::array<Float4, 3>& params) = 0;
+
+		virtual Optional<VertexShader> getCustomVS() const = 0;
+
+		virtual void setCustomVS(const Optional<VertexShader>& vs) = 0;
+
+		virtual Optional<PixelShader> getCustomPS() const = 0;
+
+		virtual void setCustomPS(const Optional<PixelShader>& ps) = 0;
+
 
 		virtual const Mat3x2& getLocalTransform() const = 0;
 

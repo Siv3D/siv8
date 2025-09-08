@@ -650,6 +650,33 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	operator ()
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		TextureRegion operator ()(double x, double y, double _size) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(double x, double y, double w, double h) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(const Vec2& xy, double w, double h) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(double x, double y, const SizeF& _size) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(const Vec2& xy, double _size) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(const Vec2& xy, const SizeF& _size) const;
+
+		[[nodiscard]]
+		TextureRegion operator ()(const RectF& rect) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	rotated
 		//
 		////////////////////////////////////////////////////////////////

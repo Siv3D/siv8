@@ -20,11 +20,17 @@ namespace s3d
 	/// @brief テキストのスタイル
 	struct TextStyle
 	{
-		Float4 param{ 0.5f, 0.5f, 0.0f, 0.0f };
+		float innerThickness = 0.0f;
+
+		float outerThickness = 0.0f;
+
+		Float2 shadowOffset{ 0.0f, 0.0f };
 
 		Float4 outlineColor{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 		Float4 shadowColor{ 0.0f, 0.0f, 0.0f, 0.5f };
+
+		float glow = 0.0f;
 
 		enum class Type : uint8
 		{
@@ -32,29 +38,39 @@ namespace s3d
 			Outline,
 			Shadow,
 			OutlineShadow,
-			CustomShader,
+			Glow,
+			CustomTextFontShader,
+			CustomColorFontShader,
 		} type = Type::Default;
 
 		double lineSpacing = 1.0;
 
 		double characterSpacing = 0.0;
 
+		[[nodiscard]]
+		constexpr Float4 getShaderParams(int32 fontBaseSize) const noexcept;
+
 		/// @brief デフォルトのスタイルを返します。
 		/// @return デフォルトのスタイル
 		[[nodiscard]]
 		static constexpr TextStyle Default() noexcept;
 
-		/// @brief カスタムシェーダ用のスタイルを返します。
-		/// @return カスタムシェーダ用のスタイル
+		/// @brief カスタムテキストフォントシェーダ用のスタイルを返します。
+		/// @return カスタムテキストフォントシェーダ用のスタイル
 		[[nodiscard]]
-		static constexpr TextStyle CustomShader() noexcept;
+		static constexpr TextStyle CustomTextFontShader() noexcept;
+
+		/// @brief カスタムカラーフォントシェーダ用のスタイルを返します。
+		/// @return カスタムカラーフォントシェーダ用のスタイル
+		[[nodiscard]]
+		static constexpr TextStyle CustomColorFontShader() noexcept;
 
 		/// @brief 輪郭付きのスタイルを返します。
 		/// @param p 輪郭の太さを示すパラメータ
 		/// @param color 輪郭の色
 		/// @return 輪郭付きのスタイル
 		[[nodiscard]]
-		static constexpr TextStyle Outline(double p, const ColorF& color) noexcept;
+		static constexpr TextStyle Outline(double p, const ColorF& color = Palette::Black) noexcept;
 
 		/// @brief 輪郭付きのスタイルを返します。
 		/// @param inner 内側の輪郭の太さを示すパラメータ
@@ -62,14 +78,14 @@ namespace s3d
 		/// @param color 輪郭の色
 		/// @return 輪郭付きのスタイル
 		[[nodiscard]]
-		static constexpr TextStyle Outline(double inner, double outer, const ColorF& color) noexcept;
+		static constexpr TextStyle Outline(double inner, double outer, const ColorF& color = Palette::Black) noexcept;
 
 		/// @brief シャドウ付きのスタイルを返します。
 		/// @param offset シャドウのオフセットを示すパラメータ
 		/// @param color シャドウの色
 		/// @return シャドウ付きのスタイル
 		[[nodiscard]]
-		static constexpr TextStyle Shadow(const Vec2& offset, const ColorF& color) noexcept;
+		static constexpr TextStyle Shadow(const Vec2& offset, const ColorF& color = Palette::Black) noexcept;
 
 		/// @brief 輪郭とシャドウ付きのスタイルを返します。
 		/// @param p 輪郭の太さを示すパラメータ
@@ -89,6 +105,31 @@ namespace s3d
 		/// @return 輪郭とシャドウ付きのスタイル
 		[[nodiscard]]
 		static constexpr TextStyle OutlineShadow(double inner, double outer, const ColorF& outlineColor, const Vec2& offset, const ColorF& shadowColor) noexcept;
+		
+		/// @brief 輪郭とシャドウ付きのスタイルを返します。
+		/// @param p 輪郭の太さを示すパラメータ
+		/// @param offset シャドウのオフセットを示すパラメータ
+		/// @param outlineColor 輪郭の色
+		/// @param shadowColor シャドウの色
+		/// @return 輪郭とシャドウ付きのスタイル
+		[[nodiscard]]
+		static constexpr TextStyle OutlineShadow(double p, const Vec2& offset, const ColorF& outlineColor = Palette::Black, const ColorF& shadowColor = Palette::Black) noexcept;
+
+		/// @brief 輪郭とシャドウ付きのスタイルを返します。
+		/// @param inner 内側の輪郭の太さを示すパラメータ
+		///	@param outer 外側の輪郭の太さを示すパラメータ
+		/// @param offset シャドウのオフセットを示すパラメータ
+		/// @param outlineColor 輪郭の色
+		/// @param shadowColor シャドウの色
+		/// @return 輪郭とシャドウ付きのスタイル
+		[[nodiscard]]
+		static constexpr TextStyle OutlineShadow(double inner, double outer, const Vec2& offset, const ColorF& outlineColor = Palette::Black, const ColorF& shadowColor = Palette::Black) noexcept;
+
+		/// @brief グロー付きのスタイルを返します。
+		/// @param p グローの大きさを示すパラメータ
+		/// @return グロー付きのスタイル
+		[[nodiscard]]
+		static constexpr TextStyle Glow(double p) noexcept;
 	};
 }
 

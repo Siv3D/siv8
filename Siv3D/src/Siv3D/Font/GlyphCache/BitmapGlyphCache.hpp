@@ -11,8 +11,6 @@
 
 # pragma once
 # include <Siv3D/Font.hpp>
-# include <Siv3D/HashMap.hpp>
-# include <Siv3D/DynamicTexture.hpp>
 # include "IGlyphCache.hpp"
 # include "GlyphCacheManager.hpp"
 
@@ -45,7 +43,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF processHorizontal(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		RectF processHorizontal(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, bool isColorGlyph, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -53,7 +51,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		std::pair<double, double> processHorizontalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		std::pair<double, double> processHorizontalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, int32 index, int32 totalGlyphCount, bool isColorGlyph, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -61,7 +59,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF processVertical(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		RectF processVertical(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, bool isColorGlyph, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -69,7 +67,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		std::pair<double, double> processVerticalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		std::pair<double, double> processVerticalFallback(TextOperation textOperation, FontData& font, const ResolvedGlyph& resolvedGlyph, bool useBasePos, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, int32 index, int32 totalGlyphCount, bool isColorGlyph, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	processHorizontalRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, bool isColorGlyph, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -88,10 +94,29 @@ namespace s3d
 
 		[[nodiscard]]
 		double xAdvanceFallback(FontData& font, const ResolvedGlyph& resolvedGlyph, double fontSize) override;
-	
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setBufferThickness
+		//
+		////////////////////////////////////////////////////////////////
+
+		void setBufferThickness(int32 thickness) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getBufferThickness
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		int32 getBufferThickness() const noexcept override;
+
 	private:
 
-		GlyphCacheManager m_glyphCacheManager;
+		static constexpr int32 DefaultBufferThickness = 0;
+
+		GlyphCacheManager m_glyphCacheManager{ DefaultBufferThickness };
 
 		[[nodiscard]]
 		bool prerender(FontData& font, const Array<ResolvedGlyph>& resolvedGlyphs, bool isMainFont, ReadingDirection readingDirection);

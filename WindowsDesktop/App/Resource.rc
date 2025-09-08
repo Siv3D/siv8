@@ -60,12 +60,12 @@ DefineResource(100, ICON, icon.ico)
 //Resource(engine/shader/glsl/gaussian_blur_9.frag)
 //Resource(engine/shader/glsl/apply_srgb_curve.frag)
 //Resource(engine/shader/glsl/sky.frag)
+
 //
-////
-////	Fonts
-////
-//Resource(engine/font/min/siv3d-min.woff)
+//	Fonts
 //
+Resource("engine/font/siv3d-min.otf.zstdcmp")
+
 //
 //	Box-shadow Textures
 //
@@ -76,11 +76,19 @@ Resource("engine/texture/box-shadow/32.png")
 Resource("engine/texture/box-shadow/16.png")
 Resource("engine/texture/box-shadow/8.png")
 
-////////////////////////////////////////////////////////
-////
-////	Siv3D Engine Optional Resources (Can be removed if not required)
-////
-////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+//
+//	Siv3D Engine: Optional Resources
+//
+//////////////////////////////////////////////////////
+
+//
+// If you do not use these files in your application, you can comment them out.
+// Commented out resources will not be included in the executable file, reducing its size.
+//
+// これらのファイルは、アプリケーションで使用しない場合、コメントアウトできます。
+// コメントアウトされたリソースは実行ファイルには同梱されず、実行ファイルのサイズを削減できます。
+//
 
 //
 //	Fonts
@@ -88,13 +96,13 @@ Resource("engine/texture/box-shadow/8.png")
 Resource("engine/font/MPLUS2.ttf.zstdcmp")
 Resource("engine/font/Noto-COLRv1.ttf.zstdcmp")
 Resource("engine/font/materialdesignicons-webfont.ttf.zstdcmp")
-//Resource(engine/font/noto-cjk/NotoSansCJK-Regular.ttc.zstdcmp)
-//Resource(engine/font/noto-cjk/NotoSansJP-Regular.otf.zstdcmp)
+Resource("engine/font/NotoSansCJK-Medium.ttc.zstdcmp")
+Resource("engine/font/NotoSansJP-Medium.otf.zstdcmp")
 
 //
 //	Sound Font
 //
-//Resource(engine/soundfont/GMGSx.sf2.zstdcmp)
+//Resource("engine/soundfont/GMGSx.sf2.zstdcmp")
 
 //////////////////////////////////////////////////////
 //

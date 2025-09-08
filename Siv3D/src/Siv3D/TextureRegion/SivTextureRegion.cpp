@@ -657,6 +657,61 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	operator ()
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextureRegion TextureRegion::operator ()(const double x, const double y, const double _size) const
+	{
+		return operator ()(x, y, _size, _size);
+	}
+
+	TextureRegion TextureRegion::operator ()(const double x, const double y, const double w, const double h) const
+	{
+		const float u0 = (static_cast<float>(x) / size.x);
+		const float v0 = (static_cast<float>(y) / size.y);
+		const float u1 = (static_cast<float>(x + w) / size.x);
+		const float v1 = (static_cast<float>(y + h) / size.y);
+
+		const float left	= Math::Lerp(uvRect.left, uvRect.right, u0);
+		const float right	= Math::Lerp(uvRect.left, uvRect.right, u1);
+		const float top		= Math::Lerp(uvRect.top, uvRect.bottom, v0);
+		const float bottom	= Math::Lerp(uvRect.top, uvRect.bottom, v1);
+
+		return{
+			texture,
+			left, top, right, bottom,
+			w, h
+		};
+	}
+
+	TextureRegion TextureRegion::operator ()(const Vec2& xy, const double w, const double h) const
+	{
+		return operator ()(xy.x, xy.y, w, h);
+	}
+
+	TextureRegion TextureRegion::operator ()(const double x, const double y, const SizeF& _size) const
+	{
+		return operator ()(x, y, _size.x, _size.y);
+	}
+
+	TextureRegion TextureRegion::operator ()(const Vec2& xy, const double _size) const
+	{
+		return operator ()(xy.x, xy.y, _size, _size);
+	}
+
+	TextureRegion TextureRegion::operator ()(const Vec2& xy, const SizeF& _size) const
+	{
+		return operator ()(xy.x, xy.y, _size.x, _size.y);
+	}
+
+	TextureRegion TextureRegion::operator ()(const RectF& rect) const
+	{
+		return operator ()(rect.pos.x, rect.pos.y, rect.size.x, rect.size.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	rotated
 	//
 	////////////////////////////////////////////////////////////////

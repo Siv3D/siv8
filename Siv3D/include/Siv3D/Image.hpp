@@ -701,7 +701,7 @@ namespace s3d
 
 	private:
 
-		Size m_size;
+		Size m_size{ 0, 0 };
 
 		base_type m_pixels;
 

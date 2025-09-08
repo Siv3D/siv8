@@ -12,6 +12,7 @@
 # include <Siv3D/MSL.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
+# include <Siv3D/ShaderGroup.hpp>
 
 namespace s3d
 {
@@ -23,6 +24,17 @@ namespace s3d
 
 	MSL::MSL(String _entryPoint)
 		: entryPoint{ std::move(_entryPoint) } {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator |
+	//
+	////////////////////////////////////////////////////////////////
+
+	ShaderGroup MSL::operator |(const HLSL& hlsl) const
+	{
+		return{ hlsl, *this };
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -69,4 +69,3 @@ namespace s3d
 }
 
 # include "detail/LoggerBuffer.ipp"
-

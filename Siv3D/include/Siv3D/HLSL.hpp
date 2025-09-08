@@ -21,6 +21,8 @@ namespace s3d
 {
 	class VertexShader;
 	class PixelShader;
+	class ShaderGroup;
+	struct MSL;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -90,11 +92,14 @@ namespace s3d
 		[[nodiscard]]
 		explicit HLSL(const Blob& bytecode);
 
-		//[[nodiscard]]
-		//ShaderGroup operator |(const GLSL& glsl) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator |
+		//
+		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//ShaderGroup operator |(const MSL& msl) const;
+		[[nodiscard]]
+		ShaderGroup operator |(const MSL& msl) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -11,6 +11,7 @@
 
 # include <Siv3D/Font.hpp>
 # include <Siv3D/DrawableText.hpp>
+# include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Font/FontFace.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
@@ -93,6 +94,29 @@ namespace s3d
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(path, faceIndex, styleName, fontMethod, baseSize, style))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const Typeface typeface, const FontStyle style)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(typeface, fontMethod, baseSize, style))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+		setBufferThickness(bufferThickness);
+	}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const FilePathView path, const FontStyle style)
+		: Font{ fontMethod, baseSize, bufferThickness, path, 0, U"", style } {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const FilePathView path, const size_t faceIndex, const FontStyle style)
+		: Font{ fontMethod, baseSize, bufferThickness, path, faceIndex, U"", style } {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const FilePathView path, const StringView styleName, const FontStyle style)
+		: Font{ fontMethod, baseSize, bufferThickness, path, 0, styleName, style } {}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const FilePathView path, const size_t faceIndex, const StringView styleName, const FontStyle style)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(path, faceIndex, styleName, fontMethod, baseSize, style))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+		setBufferThickness(bufferThickness);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -315,6 +339,29 @@ namespace s3d
 	const Font& Font::setTabSize(const int32 tabSize) const
 	{
 		SIV3D_ENGINE(Font)->setTabSize(m_handle->id(), tabSize);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBufferThickness
+	//
+	////////////////////////////////////////////////////////////////
+
+	int32 Font::getBufferThickness() const
+	{
+		return SIV3D_ENGINE(Font)->getBufferThickness(m_handle->id());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setBufferThickness
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Font& Font::setBufferThickness(const int32 thickness) const
+	{
+		SIV3D_ENGINE(Font)->setBufferThickness(m_handle->id(), thickness);
 		return *this;
 	}
 
@@ -547,6 +594,34 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->renderBitmapByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderMSDF
+	//
+	////////////////////////////////////////////////////////////////
+
+	MSDFGlyph Font::renderMSDF(const char32 codePoint, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return renderMSDFByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	MSDFGlyph Font::renderMSDF(const StringView ch, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return renderMSDFByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderMSDFByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	MSDFGlyph Font::renderMSDFByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->renderMSDFByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
+	}
 
 
 	////////////////////////////////////////////////////////////////
@@ -626,3 +701,4 @@ namespace s3d
 		return FileSystem::Exists(fontFilePath);
 	}
 }
+

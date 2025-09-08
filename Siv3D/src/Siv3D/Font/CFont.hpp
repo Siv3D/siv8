@@ -15,6 +15,7 @@
 # include <Siv3D/Font.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
 # include "FontData.hpp"
+# include "FontShader.hpp"
 
 namespace s3d
 {
@@ -99,6 +100,23 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		void setTabSize(Font::IDType handleID, int32 tabSize) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setBufferThickness
+		//
+		////////////////////////////////////////////////////////////////
+
+		void setBufferThickness(Font::IDType handleID, int32 thickness) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getBufferThickness
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		int32 getBufferThickness(Font::IDType handleID) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -192,6 +210,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	renderMSDFByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MSDFGlyph renderMSDFByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	getTexture
 		//
 		////////////////////////////////////////////////////////////////
@@ -231,7 +258,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		RectF draw(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -247,7 +274,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		RectF drawBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		RectF drawBase(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -263,7 +290,33 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, ReadingDirection readingDirection) override;
+		std::pair<double, double> drawBaseFallback(Font::IDType handleID, const ResolvedGlyph& resolvedGlyph, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, int32 index, int32 totalGlyphCount, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fitsRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getFontShader
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		const PixelShader& getFontShader(FontMethod method, TextStyle::Type type) const override;
 
 	private:
 
@@ -272,5 +325,7 @@ namespace s3d
 		AssetHandleManager<Font::IDType, FontData> m_fonts{ "Font" };
 
 		HashMap<Font::IDType, Array<Font>> m_fallbackFonts;
+
+		std::unique_ptr<FontShader> m_shader;
 	};
 }

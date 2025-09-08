@@ -15,6 +15,8 @@ void Main()
 	const Font font{ 40, Typeface::Bold };
 	font.addFallback(Font{ 40, Typeface::ColorEmoji });
 
+	Print << U"Hello, Siv3D! 🐥";
+
 	while (System::Update())
 	{
 		const double t = Scene::Time();
@@ -34,7 +36,7 @@ void Main()
 		emoji.scaled(1.0 + Periodic::Sine1_1(4s) * 0.2).drawAt(360, 440);
 
 		font(U"Hello, Siv3D!\nあいうえお🐥").draw(Vec2{ 520, 40 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
-		font(U"Siv3D v0.8").drawBase(Vec2{ 520, 240 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
+		font(U"Siv3D v0.8").drawBase(Vec2{ 520, 240 }, TextEffect::VerticalGradient{ ColorF{ 0.8, 0.9, 1.0 }, ColorF{ 0.0, 0.8, 0.4 }, 0.5, 0.9 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
 		font(ReadingDirection::TopToBottom, U"縦書き、文章。").draw(Vec2{ 520, 280 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
 
 		Circle{ Cursor::Pos(), 100 }.draw(ColorF{ 1.0, 0.0, 0.0, 0.5 });

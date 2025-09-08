@@ -1,0 +1,65 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2025 Ryo Suzuki
+//	Copyright (c) 2016-2025 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+# include <Siv3D/PixelShader.hpp>
+# include <Siv3D/FontMethod.hpp>
+# include <Siv3D/TextStyle.hpp>
+
+namespace s3d
+{
+	struct FontShader
+	{
+		PixelShader bitmapFont;
+
+		PixelShader msdfFont;
+
+		PixelShader msdfFontOutline;
+
+		PixelShader msdfFontShadow;
+
+		PixelShader msdfFontOutlineShadow;
+
+		PixelShader msdfGlow;
+
+		[[nodiscard]]
+		const PixelShader& getFontShader(const FontMethod method, const TextStyle::Type type) noexcept
+		{
+			if (method == FontMethod::Bitmap)
+			{
+				return bitmapFont;
+			}
+			else
+			{
+				if (type == TextStyle::Type::Outline)
+				{
+					return msdfFontOutline;
+				}
+				else if (type == TextStyle::Type::Shadow)
+				{
+					return msdfFontShadow;
+				}
+				else if (type == TextStyle::Type::OutlineShadow)
+				{
+					return msdfFontOutlineShadow;
+				}
+				else if (type == TextStyle::Type::Glow)
+				{
+					return msdfGlow;
+				}
+				else
+				{
+					return msdfFont;
+				}
+			}
+		}
+	};
+}

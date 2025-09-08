@@ -182,7 +182,7 @@ namespace s3d
 
 	# if SIV3D_INTRINSIC(SSE)
 
-		static void BGRAtoRGBA_SSE3(Color* pixels, const size_t num_pixels)
+		static void BGRAtoRGBA_SSSE3(Color* pixels, const size_t num_pixels)
 		{
 			const size_t loopCount = (((num_pixels + 7) / 8) * 2);
 			const __m128i mask = ::_mm_set_epi8(15, 12, 13, 14, 11, 8, 9, 10, 7, 4, 5, 6, 3, 0, 1, 2);
@@ -297,7 +297,7 @@ namespace s3d
 			}
 			else
 			{
-				return BGRAtoRGBA_SSE3(m_pixels.data(), m_pixels.size());
+				return BGRAtoRGBA_SSSE3(m_pixels.data(), m_pixels.size());
 			}
 		}
 

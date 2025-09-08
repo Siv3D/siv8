@@ -36,9 +36,24 @@ namespace s3d
 		int16 textureRegionHeight = 0;
 	};
 
+	struct PenPosInfo
+	{
+		Float2 penPos;
+
+		Float2 drawPos;
+	};
+
 	class GlyphCacheManager
 	{
 	public:
+
+		GlyphCacheManager() = default;
+
+		explicit GlyphCacheManager(int32 bufferThickness);
+
+		void setBufferThickness(int32 bufferThickness) noexcept;
+
+		int32 getBufferThickness() const noexcept;
 
 		const GlyphCache& get(GlyphIndex glyphIndex, ReadingDirection readingDirection) const;
 
@@ -46,9 +61,13 @@ namespace s3d
 
 		const Texture& getTexture() const noexcept;
 
-		bool cacheGlyph(FontData& font, GlyphIndex glyphIndex, ReadingDirection readingDirection);
+		bool cacheBitmapGlyph(FontData& font, GlyphIndex glyphIndex, ReadingDirection readingDirection);
+
+		bool cacheMSDFGlyph(FontData& font, GlyphIndex glyphIndex, ReadingDirection readingDirection);
 
 		void updateTexture();
+
+		Array<double> getXAdvances(FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize, ReadingDirection readingDirection);
 
 	private:
 
@@ -62,7 +81,7 @@ namespace s3d
 
 		Image m_image;
 
-		int32 m_bufferWidth = 2;
+		int32 m_bufferThickness = 2;
 
 		int32 m_padding = 1;
 
@@ -71,5 +90,7 @@ namespace s3d
 		int32 m_currentMaxHeight = 0;
 
 		bool m_isDirty = false;
+
+		bool cacheGlyph(InternalGlyphIndex internalGlyphIndex, const Image& glyphImage, const GlyphInfo& glyphInfo);
 	};
 }

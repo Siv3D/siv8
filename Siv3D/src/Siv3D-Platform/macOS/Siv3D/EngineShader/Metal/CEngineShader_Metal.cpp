@@ -64,6 +64,12 @@ namespace s3d
 			m_pixelShaders << MSL{ U"PS_PatternChecker" };
 			m_pixelShaders << MSL{ U"PS_PatternTriangle" };
 			m_pixelShaders << MSL{ U"PS_PatternHexGrid" };
+			m_pixelShaders << MSL{ U"PS_MSDFFont" };
+			m_pixelShaders << MSL{ U"PS_MSDFFont_Outline" };
+			m_pixelShaders << MSL{ U"PS_MSDFFont_Shadow" };
+			m_pixelShaders << MSL{ U"PS_MSDFFont_OutlineShadow" };
+			m_pixelShaders << MSL{ U"PS_MSDFFont_Glow" };
+			m_pixelShaders << MSL{ U"PS_MSDFFont_Print" };
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

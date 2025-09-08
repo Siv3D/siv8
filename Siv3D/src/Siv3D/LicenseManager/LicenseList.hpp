@@ -465,6 +465,12 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.)-"
 },
 
 {
+R"-(JSON for Modern C++)-",
+R"-(Copyright (c) 2013-2025 Niels Lohmann)-",
+MIT_LICENSE
+},
+
+{
 R"-(levenshtein-sse)-",
 R"-(Copyright (c) 2016 Anna Henningsen <sqrt@entless.org>)-",
 MIT_LICENSE
@@ -638,6 +644,12 @@ MIT_LICENSE
 },
 
 {
+R"-(M+ FONTS)-",
+R"-(Copyright 2021 The M+ FONTS Project Authors (https://github.com/coz-m/MPLUS_FONTS))-",
+R"-(M+ FONTS are licensed under the SIL Open Font License, Version 1.1.)-",
+},
+
+{
 R"-(Metal-cpp)-",
 R"-(Copyright (c) 2024 Apple Inc.)-",
 APACHE_2_LICENSE
@@ -663,6 +675,12 @@ BSD_2_LICENSE
 },
 
 {
+R"-(msdfgen)-",
+R"-(Copyright (c) 2014 - 2025 Viktor Chlumsky)-",
+MIT_LICENSE
+},
+
+{
 R"-(nanobench)-",
 R"-(Copyright (c) 2019-2023 Martin Leitner-Ankerl)-",
 MIT_LICENSE
@@ -672,8 +690,20 @@ MIT_LICENSE
 R"-(nanoflann)-",
 R"-(Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
 Copyright 2008-2009  David G. Lowe (lowe@cs.ubc.ca). All rights reserved.
-Copyright 2011 Jose L. Blanco (joseluisblancoc@gmail.com). All rights reserved.)-",
+Copyright 2011-2025  Jose Luis Blanco (joseluisblancoc@gmail.com). All rights reserved.)-",
 BSD_2_LICENSE
+},
+
+{
+R"-(Noto CJK fonts)-",
+R"-()-",
+R"-(Noto CJK fonts are licensed under the SIL Open Font License, Version 1.1.)-",
+},
+
+{
+R"-(Noto Emoji)-",
+R"-()-",
+R"-(Noto Emoji is licensed under the SIL Open Font License, Version 1.1.)-",
 },
 
 {

@@ -17,40 +17,17 @@ namespace s3d
 	/// @brief エンジンの設定
 	struct EngineOption
 	{
-		///// @brief レンダラー
-		//enum class Renderer : uint8
-		//{
-		//	/// @brief デフォルト
-		//	PlatformDefault = 0,
+		/// @brief レンダラー
+		enum class Renderer : uint8
+		{
+			/// @brief Direct3D 11
+			/// @remark 対応: Windows
+			Direct3D11 = 1,
 
-		//	/// @brief 非グラフィックスモード
-		//	/// @remark 対応: Windows / macOS / Linux
-		//	Headless = 1,
-
-		//	/// @brief OpenGL 4.3
-		//	/// @remark 対応: Windows / Linux
-		//	OpenGL = 2,
-
-		//	/// @brief Direc3D 11
-		//	/// @remark 対応: Windows
-		//	Direct3D11 = 3,
-
-		//	/// @brief Metal
-		//	/// @remark 対応: macOS
-		//	Metal = 4,
-
-		//	/// @brief OpenGL ES 3.0
-		//	/// @remark 対応: Linux / Web
-		//	OpenGLES = 5,
-
-		//	/// @brief WebGL
-		//	/// @remark 対応: Linux / Web
-		//	WebGL2 = OpenGLES,
-
-		//	/// @brief WebGPU
-		//	/// @remark 対応: Web
-		//	WebGPU = 6,
-		//};
+			/// @brief Metal
+			/// @remark 対応: macOS
+			Metal = 2,
+		};
 
 		/// @brief Direct3D 11 ドライバーの種類 (Windows 版)
 		enum class D3D11Driver : uint8

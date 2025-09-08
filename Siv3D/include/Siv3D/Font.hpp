@@ -20,6 +20,7 @@
 # include "GlyphInfo.hpp"
 # include "OutlineGlyph.hpp"
 # include "BitmapGlyph.hpp"
+# include "MSDFGlyph.hpp"
 # include "ResolvedGlyph.hpp"
 # include "PredefinedYesNo.hpp"
 # include "Typeface.hpp"
@@ -79,6 +80,21 @@ namespace s3d
 
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
+
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -270,8 +286,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//int32 getBufferThickness() const;
+		[[nodiscard]]
+		int32 getBufferThickness() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -279,7 +295,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Font& setBufferThickness(int32 thickness) const;
+		const Font& setBufferThickness(int32 thickness) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -478,6 +494,28 @@ namespace s3d
 		[[nodiscard]]
 		BitmapGlyph renderBitmapByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderMSDF
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MSDFGlyph renderMSDF(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		[[nodiscard]]
+		MSDFGlyph renderMSDF(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderMSDFByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MSDFGlyph renderMSDFByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+
 
 
 
@@ -531,7 +569,7 @@ namespace s3d
 
 		/// @brief Format できない値が Format() に渡されたときに発生するエラーです
 		template <class... Args>
-		DrawableText operator ()(const Args&...) = delete;
+		DrawableText operator ()(const Args&...) const = delete;
 
 		[[nodiscard]]
 		DrawableText operator ()(ReadingDirection readingDirection, const String& text) const;
@@ -544,7 +582,7 @@ namespace s3d
 		DrawableText operator ()(ReadingDirection readingDirection, const Args& ... args) const;
 
 		template <class... Args>
-		DrawableText operator ()(ReadingDirection readingDirection, const Args&...) = delete;
+		DrawableText operator ()(ReadingDirection readingDirection, const Args&...) const = delete;
 
 
 
