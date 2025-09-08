@@ -27,14 +27,14 @@ namespace s3d
 		[[nodiscard]]
 		constexpr size_t CalculateMaxLines(const int32 sceneHeight, const int32 fontHeight) noexcept
 		{
-			const int32 regionHeight = Max((sceneHeight - 20), 1);
+			const int32 regionHeight = Max((sceneHeight - (CPrint::TextPadding * 2)), 1);
 			return ((regionHeight + fontHeight - 1) / fontHeight);
 		}
 
 		[[nodiscard]]
 		constexpr int32 CalculateMaxWidth(const int32 sceneWidth) noexcept
 		{
-			return Max((sceneWidth - 20), 40);
+			return Max((sceneWidth - (CPrint::TextPadding * 2)), 40);
 		}
 
 		[[nodiscard]]
@@ -111,7 +111,15 @@ namespace s3d
 		{
 			std::lock_guard lock{ m_mutex };
 
-			m_lines.back().append(lines[0]);
+			if (m_newLine)
+			{
+				m_lines.push_back(std::move(lines[0]));
+				m_newLine = false;
+			}
+			else
+			{
+				m_lines.back().append(lines[0]);
+			}
 
 			for (size_t i = 1; i < lines.size(); ++i)
 			{
@@ -132,15 +140,22 @@ namespace s3d
 		{
 			std::lock_guard lock{ m_mutex };
 
-			m_lines.back().append(lines[0]);
+			if (m_newLine)
+			{
+				m_lines.push_back(std::move(lines[0]));
+				m_newLine = false;
+			}
+			else
+			{
+				m_lines.back().append(lines[0]);
+			}
 
 			for (size_t i = 1; i < lines.size(); ++i)
 			{
 				m_lines.push_back(std::move(lines[i]));
 			}
 
-			// 最後に改行を追加
-			m_lines.emplace_back();
+			m_newLine = true;
 		}
 	}
 
@@ -154,8 +169,10 @@ namespace s3d
 	{
 		std::lock_guard lock{ m_mutex };
 
-		m_lines = { U"" };
-		m_reachedMaxLines = false;
+		m_lines.clear();
+		m_newLine = true;
+		m_overflowLevel = 0;
+		m_overflowAnimation = 0.0;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -169,21 +186,21 @@ namespace s3d
 		std::lock_guard lock{ m_mutex };
 
 		// Print する内容が無い場合は何もしない
-		if ((m_lines.size() == 1) && m_lines.front().isEmpty())
+		if (m_lines.isEmpty())
 		{
 			return;
 		}
 
 		const Font& font = m_font->textFont;
 		const double fontHeight = font.height();
-
 		const size_t maxLineCount = CalculateMaxLines(Scene::Height(), static_cast<int32>(fontHeight));
 
 		// 超過メッセージの削除
 		if (maxLineCount < m_lines.size())
 		{
 			m_lines.pop_front_N(m_lines.size() - maxLineCount);
-			m_reachedMaxLines = true;
+			m_overflowLevel = 1;
+			m_overflowAnimation = 1.0;
 		}
 
 		// 各メッセージの行数計算
@@ -198,12 +215,20 @@ namespace s3d
 				DrawableText drawableText = m_font->textFont(*it);
 				const size_t lineCount = CountLines(drawableText, maxWidth);
 
+				if (maxLineCount == (totalLineCount + lineCount + 1))
+				{
+					m_overflowLevel = 1;
+				}
+				else if (maxLineCount == (totalLineCount + lineCount))
+				{
+					m_overflowLevel = 2;
+				}
 				if (maxLineCount < (totalLineCount + lineCount))
 				{
-					m_reachedMaxLines = true;
-
 					// 超過するメッセージの削除
 					m_lines.pop_front_N(m_lines.size() - drawableTexts.size());
+					m_overflowLevel = 1;
+					m_overflowAnimation = 1.0;
 					break;
 				}
 				
@@ -216,8 +241,9 @@ namespace s3d
 
 		// 描画
 		{
-			const int32 overflowOffsetY = (m_reachedMaxLines ? (static_cast<int32>(fontHeight / 2) + TextPadding) : 0);
-			const Point basePos{ TextStartPos.x, (TextStartPos.y - overflowOffsetY) };
+			m_overflowAnimation = Math::MoveTowards(m_overflowAnimation, m_overflowLevel, (Scene::DeltaTime() * 15));
+			const double overflowOffsetY = (m_overflowAnimation ? (m_overflowAnimation * fontHeight) : 0);
+			const Vec2 basePos{ TextStartPos.x, (TextStartPos.y - overflowOffsetY) };
 		
 			// レンダーステートはデフォルトに戻す
 			const ScopedRenderStates2D rb{ BlendState::Default2D, RasterizerState::Default2D, SamplerState::Default2D };
@@ -232,7 +258,7 @@ namespace s3d
 
 				if (drawableText.text)
 				{
-					const Point pos{ basePos.x, (basePos.y + static_cast<int32>(lineOffset * fontHeight)) };
+					const Vec2 pos{ basePos.x, (basePos.y + (lineOffset * fontHeight)) };
 					const RectF area{ pos, maxWidth, 65536 };
 					drawableText.draw(TextStyle::CustomTextFontShader(), area);
 				}

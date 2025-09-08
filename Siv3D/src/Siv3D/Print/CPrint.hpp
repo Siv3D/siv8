@@ -19,6 +19,8 @@ namespace s3d
 	{
 	public:
 
+		static constexpr int32 TextPadding = 12;
+
 		CPrint();
 
 		~CPrint() override;
@@ -35,8 +37,6 @@ namespace s3d
 
 	private:
 
-		static constexpr int32 TextPadding = 10;
-
 		static constexpr Point TextStartPos{ TextPadding , TextPadding };
 
 		std::unique_ptr<PrintFont> m_font;
@@ -45,9 +45,13 @@ namespace s3d
 		//
 		std::mutex m_mutex;
 
-		Array<String> m_lines = { U"" };
+		Array<String> m_lines;
 
-		bool m_reachedMaxLines = false;
+		bool m_newLine = true;
+
+		int32 m_overflowLevel = 0;
+
+		double m_overflowAnimation = 0.0;
 		//
 		////////////////////////////////////////////////////////////////
 	};
