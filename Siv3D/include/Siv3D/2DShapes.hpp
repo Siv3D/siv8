@@ -20,6 +20,7 @@
 # include "Triangle.hpp"
 # include "Quad.hpp"
 # include "RoundRect.hpp"
+# include "SuperEllipse.hpp"
 # include "Geometry2D/Intersect.hpp"
 # include "Geometry2D/IsClockwise.hpp"
 # include "detail/Circular.ipp"
@@ -32,3 +33,4 @@
 # include "detail/Triangle.ipp"
 # include "detail/Quad.ipp"
 # include "detail/RoundRect.ipp"
+# include "detail/SuperEllipse.ipp"

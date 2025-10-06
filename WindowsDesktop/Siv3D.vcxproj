@@ -102,6 +102,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewRandom.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SuperEllipse.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp" />
@@ -516,6 +517,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\StringView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringViewAlgorithm.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringViewRandom.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SuperEllipse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SVG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\System.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\BasicTextEffect.hpp" />

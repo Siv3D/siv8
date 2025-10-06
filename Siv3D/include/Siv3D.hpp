@@ -859,6 +859,8 @@
 // 角丸長方形 | Rounded rectangle
 # include <Siv3D/RoundRect.hpp> // ToDo
 
+# include <Siv3D/SuperEllipse.hpp> // ToDo
+
 // 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
 # include <Siv3D/LineString.hpp> // ToDo
 
