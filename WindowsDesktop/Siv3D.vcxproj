@@ -1476,6 +1476,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView_SIMD.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\Levenshtein.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SuperEllipse\SivSuperEllipse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SVG\SivSVG.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SivSystem.cpp" />

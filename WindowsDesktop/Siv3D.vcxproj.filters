@@ -1123,6 +1123,9 @@
     <Filter Include="src\Siv3D\ShaderGroup">
       <UniqueIdentifier>{b1538f8d-823b-4738-a742-0ca44c975072}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\SuperEllipse">
+      <UniqueIdentifier>{87bb09d4-c0e4-41d6-a5f1-48d020e7f9bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -7252,6 +7255,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ShaderGroup\SivShaderGroup.cpp">
       <Filter>src\Siv3D\ShaderGroup</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SuperEllipse\SivSuperEllipse.cpp">
+      <Filter>src\Siv3D\SuperEllipse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

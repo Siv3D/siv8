@@ -151,4 +151,269 @@ namespace s3d
 		return{ center, axes, _n };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setPos
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse& SuperEllipse::setPos(const value_type _x, const value_type _y) noexcept
+	{
+		center.set(_x, _y);
+		return *this;
+	}
+
+	constexpr SuperEllipse& SuperEllipse::setPos(const position_type _center) noexcept
+	{
+		center = _center;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setCenter
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse& SuperEllipse::setCenter(const value_type _x, const value_type _y) noexcept
+	{
+		center.set(_x, _y);
+		return *this;
+	}
+
+	constexpr SuperEllipse& SuperEllipse::setCenter(const position_type _center) noexcept
+	{
+		center = _center;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setA
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse& SuperEllipse::setA(const value_type _a) noexcept
+	{
+		axes.x = _a;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setB
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse& SuperEllipse::setB(const value_type _b) noexcept
+	{
+		axes.y = _b;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setAxes
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse& SuperEllipse::setAxes(const value_type _a, const value_type _b) noexcept
+	{
+		axes.set(_a, _b);
+		return *this;
+	}
+
+	constexpr SuperEllipse& SuperEllipse::setAxes(const size_type _axes) noexcept
+	{
+		axes = _axes;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setN
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse& SuperEllipse::setN(const value_type _n) noexcept
+	{
+		n = _n;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	set
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse& SuperEllipse::set(const value_type _x, const value_type _y, const value_type _a, const value_type _b, const value_type _n) noexcept
+	{
+		center.set(_x, _y);
+		axes.set(_a, _b);
+		n = _n;
+		return *this;
+	}
+
+	constexpr SuperEllipse& SuperEllipse::set(const position_type& _center, const value_type _a, const value_type _b, const value_type _n) noexcept
+	{
+		center = _center;
+		axes.set(_a, _b);
+		n = _n;
+		return *this;
+	}
+
+	constexpr SuperEllipse& SuperEllipse::set(const value_type _x, const value_type _y, const size_type& _axes, const value_type _n) noexcept
+	{
+		center.set(_x, _y);
+		axes = _axes;
+		n = _n;
+		return *this;
+	}
+
+	constexpr SuperEllipse& SuperEllipse::set(const position_type& _center, const size_type& _axes, const value_type _n) noexcept
+	{
+		center = _center;
+		axes = _axes;
+		n = _n;
+		return *this;
+	}
+
+	constexpr SuperEllipse& SuperEllipse::set(const SuperEllipse& ellipse) noexcept
+	{
+		center = ellipse.center;
+		axes = ellipse.axes;
+		n = ellipse.n;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	movedBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse SuperEllipse::movedBy(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ center.movedBy(_x, _y), axes, n };
+	}
+
+	constexpr SuperEllipse SuperEllipse::movedBy(const position_type v) const noexcept
+	{
+		return{ center.movedBy(v), axes, n };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	moveBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse& SuperEllipse::moveBy(const value_type _x, const value_type _y) noexcept
+	{
+		center.moveBy(_x, _y);
+		return *this;
+	}
+
+	constexpr SuperEllipse& SuperEllipse::moveBy(const position_type v) noexcept
+	{
+		center.moveBy(v);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stretched
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse SuperEllipse::stretched(const value_type size) const noexcept
+	{
+		return{ center, (axes.x + size), (axes.y + size), n };
+	}
+
+	constexpr SuperEllipse SuperEllipse::stretched(const double _x, const double _y) const noexcept
+	{
+		return{ center, (axes.x + _x), (axes.y + _y), n };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaled
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse SuperEllipse::scaled(const double s) const noexcept
+	{
+		return{ center, (axes.x * s), (axes.y * s), n };
+	}
+
+	constexpr SuperEllipse SuperEllipse::scaled(const double sx, const double sy) const noexcept
+	{
+		return{ center, (axes.x * sx), (axes.y * sy), n };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	top, right, bottom, left
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse::position_type SuperEllipse::top() const noexcept
+	{
+		return{ center.x, (center.y - axes.y) };
+	}
+
+	constexpr SuperEllipse::position_type SuperEllipse::right() const noexcept
+	{
+		return{ (center.x + axes.x), center.y };
+	}
+
+	constexpr SuperEllipse::position_type SuperEllipse::bottom() const noexcept
+	{
+		return{ center.x, (center.y + axes.y) };
+	}
+
+	constexpr SuperEllipse::position_type SuperEllipse::left() const noexcept
+	{
+		return{ (center.x - axes.x), center.y };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	horizontalDiameter, verticalDiameter
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line SuperEllipse::horizontalDiameter() const noexcept
+	{
+		return{ left(), right() };
+	}
+
+	constexpr Line SuperEllipse::verticalDiameter() const noexcept
+	{
+		return{ top(), bottom() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	boundingCircle
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Circle SuperEllipse::boundingCircle() const noexcept
+	{
+		return{ center, Max(axes.x, axes.y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	boundingRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF SuperEllipse::boundingRect() const noexcept
+	{
+		return{ (center.x - axes.x), (center.y - axes.y), (axes.x * 2), (axes.y * 2) };
+	}
 }

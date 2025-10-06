@@ -31,7 +31,7 @@ namespace s3d
 	{
 		const double s = std::sin(angle);
 		const double c = std::cos(angle);
-		return{ ((s * a) + x), ((-c * b) + y) };
+		return{ ((s * axes.x) + center.x), ((-c * axes.y) + center.y) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ namespace s3d
 
 	Array<Vec2> Ellipse::outer(const PointsPerCircle& pointsPerCircle) const
 	{
-		if ((a == 0.0) || (b == 0.0))
+		if ((axes.x == 0.0) || (axes.y == 0.0))
 		{
 			return{};
 		}
@@ -59,7 +59,7 @@ namespace s3d
 			{
 				const auto [s, c] = FastMath::SinCos(i * d);
 
-				(pPos++)->moveBy((s * a), (-c * b));
+				(pPos++)->moveBy((s * axes.x), (-c * axes.y));
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace s3d
 
 	Array<Vec2> Ellipse::outer(const QualityFactor& qualityFactor) const
 	{
-		const double r = Max(Abs(a), Abs(b));
+		const double r = Max(Abs(axes.x), Abs(axes.y));
 
 		return outer(qualityFactor.toPointsPerCircle(r));
 	}
@@ -81,7 +81,7 @@ namespace s3d
 
 	Polygon Ellipse::asPolygon(const PointsPerCircle& pointsPerCircle) const
 	{
-		if ((a == 0.0) || (b == 0.0))
+		if ((axes.x == 0.0) || (axes.y == 0.0))
 		{
 			return{};
 		}
@@ -108,7 +108,7 @@ namespace s3d
 
 	Polygon Ellipse::asPolygon(const QualityFactor& qualityFactor) const
 	{
-		const double r = Max(Abs(a), Abs(b));
+		const double r = Max(Abs(axes.x), Abs(axes.y));
 
 		return asPolygon(qualityFactor.toPointsPerCircle(r));
 	}
@@ -178,8 +178,8 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
 			center,
-			Abs(static_cast<float>(a)),
-			Abs(static_cast<float>(b)),
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
 			color0,
 			color0,
 			ColorFillDirection::InOut
@@ -192,8 +192,8 @@ namespace s3d
 	{
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
 			center,
-			Abs(static_cast<float>(a)),
-			Abs(static_cast<float>(b)),
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
 			innerColor.toFloat4(),
 			outerColor.toFloat4(),
 			ColorFillDirection::InOut
@@ -206,8 +206,8 @@ namespace s3d
 	{
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
 			center,
-			Abs(static_cast<float>(a)),
-			Abs(static_cast<float>(b)),
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
 			topColor->toFloat4(),
 			bottomColor->toFloat4(),
 			ColorFillDirection::TopBottom
@@ -220,8 +220,8 @@ namespace s3d
 	{
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
 			center,
-			Abs(static_cast<float>(a)),
-			Abs(static_cast<float>(b)),
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
 			leftColor->toFloat4(),
 			rightColor->toFloat4(),
 			ColorFillDirection::LeftRight
@@ -234,8 +234,8 @@ namespace s3d
 	{
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
 			center,
-			Abs(static_cast<float>(a)),
-			Abs(static_cast<float>(b)),
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
 			pattern
 		);
 
@@ -264,8 +264,8 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
-			static_cast<float>(Abs(a) - innerThickness),
-			static_cast<float>(Abs(b) - innerThickness),
+			static_cast<float>(Abs(axes.x) - innerThickness),
+			static_cast<float>(Abs(axes.y) - innerThickness),
 			static_cast<float>(innerThickness + outerThickness),
 			color0,
 			color0
@@ -278,8 +278,8 @@ namespace s3d
 	{
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
-			static_cast<float>(Abs(a) - innerThickness),
-			static_cast<float>(Abs(b) - innerThickness),
+			static_cast<float>(Abs(axes.x) - innerThickness),
+			static_cast<float>(Abs(axes.y) - innerThickness),
 			static_cast<float>(innerThickness + outerThickness),
 			innerColor.toFloat4(),
 			outerColor.toFloat4()
@@ -297,8 +297,8 @@ namespace s3d
 	{
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
-			static_cast<float>(Abs(a) - innerThickness),
-			static_cast<float>(Abs(b) - innerThickness),
+			static_cast<float>(Abs(axes.x) - innerThickness),
+			static_cast<float>(Abs(axes.y) - innerThickness),
 			static_cast<float>(innerThickness + outerThickness),
 			pattern
 		);
@@ -315,13 +315,13 @@ namespace s3d
 	void Formatter(FormatData& formatData, const Ellipse& value)
 	{
 		formatData.string.push_back(U'(');
-		detail::AppendFloat(formatData.string, value.x);
+		detail::AppendFloat(formatData.string, value.center.x);
 		formatData.string.append(U", "_sv);
-		detail::AppendFloat(formatData.string, value.y);
+		detail::AppendFloat(formatData.string, value.center.y);
 		formatData.string.append(U", "_sv);
-		detail::AppendFloat(formatData.string, value.a);
+		detail::AppendFloat(formatData.string, value.axes.x);
 		formatData.string.append(U", "_sv);
-		detail::AppendFloat(formatData.string, value.b);
+		detail::AppendFloat(formatData.string, value.axes.y);
 		formatData.string.push_back(U')');
 	}
 }
@@ -336,13 +336,13 @@ fmt::format_context::iterator fmt::formatter<s3d::Ellipse>::format(const s3d::El
 {
 	if (tag.empty())
 	{
-		return fmt::format_to(ctx.out(), "({}, {}, {}, {})", value.x, value.y, value.a, value.b);
+		return fmt::format_to(ctx.out(), "({}, {}, {}, {})", value.center.x, value.center.y, value.axes.x, value.axes.y);
 	}
 	else
 	{
 		const std::string format
 			= ("({:" + tag + "}, {:" + tag + "}, {:" + tag + "}, {:" + tag + "})");
-		return fmt::vformat_to(ctx.out(), format, fmt::make_format_args(value.x, value.y, value.a, value.b));
+		return fmt::vformat_to(ctx.out(), format, fmt::make_format_args(value.center.x, value.center.y, value.axes.x, value.axes.y));
 	}
 }
 
@@ -355,12 +355,12 @@ s3d::BufferContext::iterator fmt::formatter<s3d::Ellipse, s3d::char32>::format(c
 {
 	if (tag.empty())
 	{
-		return format_to(ctx.out(), U"({}, {}, {}, {})", value.x, value.y, value.a, value.b);
+		return format_to(ctx.out(), U"({}, {}, {}, {})", value.center.x, value.center.y, value.axes.x, value.axes.y);
 	}
 	else
 	{
 		const std::u32string format
 			= (U"({:" + tag + U"}, {:" + tag + U"}), {:" + tag + U"}, {:" + tag + U"})");
-		return format_to(ctx.out(), format, value.x, value.y, value.a, value.b);
+		return format_to(ctx.out(), format, value.center.x, value.center.y, value.axes.x, value.axes.y);
 	}
 }

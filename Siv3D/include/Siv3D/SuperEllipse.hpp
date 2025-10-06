@@ -478,7 +478,7 @@ namespace s3d
 		/// @brief スーパー楕円の面積を返します。
 		/// @return スーパー楕円の面積
 		[[nodiscard]]
-		constexpr value_type area() const noexcept;
+		value_type area() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
