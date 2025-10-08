@@ -782,14 +782,14 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::row(const size_type y) noexcept
+	constexpr std::span<typename Grid<Type, Allocator>::value_type> Grid<Type, Allocator>::row(const size_type y) noexcept
 	{
 		assert(y < static_cast<size_type>(m_size.y));
 		return std::span((m_container.data() + (y * m_size.x)), m_size.x);
 	}
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::row(const size_type y) const noexcept
+	constexpr std::span<const typename Grid<Type, Allocator>::value_type> Grid<Type, Allocator>::row(const size_type y) const noexcept
 	{
 		assert(y < static_cast<size_type>(m_size.y));
 		return std::span((m_container.data() + (y * m_size.x)), m_size.x);

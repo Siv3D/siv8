@@ -207,6 +207,46 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	row
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline std::span<Color> Image::row(const size_t y) noexcept
+	{
+		assert(y < static_cast<size_t>(m_size.y));
+		return std::span((m_pixels.data() + (y * m_size.x)), m_size.x);
+	}
+
+	inline std::span<const Color> Image::row(const size_t y) const noexcept
+	{
+		assert(y < static_cast<size_t>(m_size.y));
+		return std::span((m_pixels.data() + (y * m_size.x)), m_size.x);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	column
+	//
+	////////////////////////////////////////////////////////////////
+
+# if defined(__cpp_lib_ranges_stride)
+
+	inline auto Image::column(const size_t x) noexcept
+	{
+		assert(x < static_cast<size_t>(m_size.x));
+		return (m_pixels | std::views::drop(x) | std::views::stride(m_size.x));
+	}
+
+	inline auto Image::column(const size_t x) const noexcept
+	{
+		assert(x < static_cast<size_t>(m_size.x));
+		return (m_pixels | std::views::drop(x) | std::views::stride(m_size.x));
+	}
+
+# endif
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	cloned
 	//
 	////////////////////////////////////////////////////////////////
