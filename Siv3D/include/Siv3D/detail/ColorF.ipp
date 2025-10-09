@@ -480,7 +480,7 @@ namespace s3d
 
 	inline uint64 ColorF::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -24,36 +24,36 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
-		//	Hash
+		//	BitwiseHash
 		//
 		////////////////////////////////////////////////////////////////
 
-		uint64 Hash(const void* data, const size_t size) noexcept
+		uint64 BitwiseHash(const void* data, const size_t size) noexcept
 		{
 			return ::rapidhash_internal(data, size, DefaultSeed, rapid_secret);
 		}
 
-		uint64 Hash(const void* data, const size_t size, const uint64 seed) noexcept
+		uint64 BitwiseHash(const void* data, const size_t size, const uint64 seed) noexcept
 		{
 			return ::rapidhash_internal(data, size, seed, rapid_secret);
 		}
 
-		uint64 Hash(const void* data, const size_t size, const uint64 seed, const Secret& secret) noexcept
+		uint64 BitwiseHash(const void* data, const size_t size, const uint64 seed, const Secret& secret) noexcept
 		{
 			return ::rapidhash_internal(data, size, seed, secret);
 		}
 
-		uint64 Hash(const std::span<const Byte> data) noexcept
+		uint64 BitwiseHash(const std::span<const Byte> data) noexcept
 		{
 			return ::rapidhash_internal(data.data(), data.size_bytes(), DefaultSeed, rapid_secret);
 		}
 
-		uint64 Hash(const std::span<const Byte> data, const uint64 seed) noexcept
+		uint64 BitwiseHash(const std::span<const Byte> data, const uint64 seed) noexcept
 		{
 			return ::rapidhash_internal(data.data(), data.size_bytes(), seed, rapid_secret);
 		}
 
-		uint64 Hash(const std::span<const Byte> data, const uint64 seed, const Secret& secret) noexcept
+		uint64 BitwiseHash(const std::span<const Byte> data, const uint64 seed, const Secret& secret) noexcept
 		{
 			return ::rapidhash_internal(data.data(), data.size_bytes(), seed, secret);
 		}
@@ -63,36 +63,36 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
-		//	Hash
+		//	BitwiseHash
 		//
 		////////////////////////////////////////////////////////////////
 
-		uint64 Hash(const void* data, const size_t size) noexcept
+		uint64 BitwiseHash(const void* data, const size_t size) noexcept
 		{
 			return SIV3D_XXH3_64bits(data, size);
 		}
 
-		uint64 Hash(const void* data, const size_t size, const uint64 seed) noexcept
+		uint64 BitwiseHash(const void* data, const size_t size, const uint64 seed) noexcept
 		{
 			return SIV3D_XXH3_64bits_withSeed(data, size, seed);
 		}
 
-		uint64 Hash(const void* data, const size_t size, const uint64 seed, const Secret& secret) noexcept
+		uint64 BitwiseHash(const void* data, const size_t size, const uint64 seed, const Secret& secret) noexcept
 		{
 			return SIV3D_XXH3_64bits_withSecretandSeed(data, size, secret, sizeof(secret), seed);
 		}
 
-		uint64 Hash(const std::span<const Byte> data) noexcept
+		uint64 BitwiseHash(const std::span<const Byte> data) noexcept
 		{
 			return SIV3D_XXH3_64bits(data.data(), data.size_bytes());
 		}
 
-		uint64 Hash(const std::span<const Byte> data, const uint64 seed) noexcept
+		uint64 BitwiseHash(const std::span<const Byte> data, const uint64 seed) noexcept
 		{
 			return SIV3D_XXH3_64bits_withSeed(data.data(), data.size_bytes(), seed);
 		}
 
-		uint64 Hash(const std::span<const Byte> data, const uint64 seed, const Secret& secret) noexcept
+		uint64 BitwiseHash(const std::span<const Byte> data, const uint64 seed, const Secret& secret) noexcept
 		{
 			return SIV3D_XXH3_64bits_withSecretandSeed(data.data(), data.size_bytes(), secret, sizeof(secret), seed);
 		}

@@ -35,7 +35,7 @@ namespace s3d
 
 	inline uint64 Mat3x3::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

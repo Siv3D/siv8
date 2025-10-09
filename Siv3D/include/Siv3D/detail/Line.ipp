@@ -595,7 +595,7 @@ namespace s3d
 
 	inline uint64 Line::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -17,27 +17,49 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
+		//	BitwiseHash
+		//
+		////////////////////////////////////////////////////////////////
+
+		inline uint64 BitwiseHash(const Concept::TriviallyCopyable auto& data) noexcept
+		{
+			return BitwiseHash(std::addressof(data), sizeof(data));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Hash
 		//
 		////////////////////////////////////////////////////////////////
 
-		inline uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept
+		inline uint64 Hash(const Concept::TriviallyHashable auto& data) noexcept
 		{
-			return Hash(std::addressof(data), sizeof(data));
+			return BitwiseHash(std::addressof(data), sizeof(data));
 		}
 	}
 
 	inline namespace xxHash3
-	{		
+	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	BitwiseHash
+		//
+		////////////////////////////////////////////////////////////////
+
+		inline uint64 BitwiseHash(const Concept::TriviallyCopyable auto& data) noexcept
+		{
+			return BitwiseHash(std::addressof(data), sizeof(data));
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Hash
 		//
 		////////////////////////////////////////////////////////////////
 
-		inline uint64 Hash(const Concept::TriviallyCopyable auto& data) noexcept
+		inline uint64 Hash(const Concept::TriviallyHashable auto& data) noexcept
 		{
-			return Hash(std::addressof(data), sizeof(data));
+			return BitwiseHash(std::addressof(data), sizeof(data));
 		}
 	}
 }

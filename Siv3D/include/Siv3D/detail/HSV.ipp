@@ -252,7 +252,7 @@ namespace s3d
 
 	inline uint64 HSV::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -748,7 +748,7 @@ namespace s3d
 
 	inline uint64 LineString::hash() const noexcept
 	{
-		return Hash(m_points.data(), m_points.size_bytes());
+		return BitwiseHash(m_points.data(), m_points.size_bytes());
 	}
 
 

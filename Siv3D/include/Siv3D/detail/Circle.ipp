@@ -473,7 +473,7 @@ namespace s3d
 
 	inline uint64 Circle::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

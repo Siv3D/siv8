@@ -643,7 +643,7 @@ namespace s3d
 
 	inline uint64 StringView::hash() const noexcept
 	{
-		return Hash(m_view.data(), (m_view.size() * sizeof(StringView::value_type)));
+		return BitwiseHash(m_view.data(), (m_view.size() * sizeof(StringView::value_type)));
 	}
 
 	////////////////////////////////////////////////////////////////

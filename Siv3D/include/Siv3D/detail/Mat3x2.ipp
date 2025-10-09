@@ -222,7 +222,7 @@ namespace s3d
 
 	inline uint64 Mat3x2::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

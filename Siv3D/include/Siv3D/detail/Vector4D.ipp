@@ -904,7 +904,7 @@ namespace s3d
 	template <Concept::FloatingPoint Float>
 	uint64 Vector4D<Float>::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

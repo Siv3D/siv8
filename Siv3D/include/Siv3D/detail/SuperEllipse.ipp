@@ -416,4 +416,15 @@ namespace s3d
 	{
 		return{ (center.x - axes.x), (center.y - axes.y), (axes.x * 2), (axes.y * 2) };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	lerp
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse SuperEllipse::lerp(const SuperEllipse& other, const double f) const noexcept
+	{
+		return{ center.lerp(other.center, f), axes.lerp(other.axes, f), (n + (other.n - n) * f) };
+	}
 }

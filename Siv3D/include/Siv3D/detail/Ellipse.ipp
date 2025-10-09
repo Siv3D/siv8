@@ -488,7 +488,7 @@ namespace s3d
 
 	inline uint64 Ellipse::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

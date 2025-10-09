@@ -527,7 +527,7 @@ namespace s3d
 
 	inline uint64 Triangle::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

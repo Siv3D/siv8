@@ -1313,7 +1313,7 @@ namespace s3d
 
 	inline uint64 String::hash() const noexcept
 	{
-		return Hash(m_string.data(), (m_string.size() * sizeof(String::value_type)));
+		return BitwiseHash(m_string.data(), (m_string.size() * sizeof(String::value_type)));
 	}
 
 	////////////////////////////////////////////////////////////////

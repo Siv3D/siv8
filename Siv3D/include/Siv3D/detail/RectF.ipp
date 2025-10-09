@@ -1086,7 +1086,7 @@ namespace s3d
 
 	inline uint64 RectF::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
