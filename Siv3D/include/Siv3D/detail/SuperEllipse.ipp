@@ -427,4 +427,15 @@ namespace s3d
 	{
 		return{ center.lerp(other.center, f), axes.lerp(other.axes, f), (n + (other.n - n) * f) };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hash
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline uint64 SuperEllipse::hash() const noexcept
+	{
+		return BitwiseHash(*this);
+	}
 }

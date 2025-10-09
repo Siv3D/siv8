@@ -11,6 +11,10 @@
 
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/FormatData.hpp>
+# include <Siv3D/FloatFormatter.hpp>
+# include <Siv3D/Cursor.hpp>
+# include <Siv3D/Mouse.hpp>
 
 namespace s3d
 {
@@ -187,4 +191,116 @@ namespace s3d
 		return asPolygon(qualityFactor.toPointsPerCircle(r));
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	leftClicked, leftPressed, leftReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool SuperEllipse::leftClicked() const noexcept
+	{
+		return (MouseL.down() && mouseOver());
+	}
+
+	bool SuperEllipse::leftPressed() const noexcept
+	{
+		return (MouseL.pressed() && mouseOver());
+	}
+
+	bool SuperEllipse::leftReleased() const noexcept
+	{
+		return (MouseL.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rightClicked, rightPressed, rightReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool SuperEllipse::rightClicked() const noexcept
+	{
+		return (MouseR.down() && mouseOver());
+	}
+
+	bool SuperEllipse::rightPressed() const noexcept
+	{
+		return (MouseR.pressed() && mouseOver());
+	}
+
+	bool SuperEllipse::rightReleased() const noexcept
+	{
+		return (MouseR.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mouseOver
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool SuperEllipse::mouseOver() const noexcept
+	{
+		return Geometry2D::Intersect(Cursor::PosF(), *this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const SuperEllipse& value)
+	{
+		formatData.string.push_back(U'(');
+		detail::AppendFloat(formatData.string, value.center.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.center.y);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.axes.x);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.axes.y);
+		formatData.string.append(U", "_sv);
+		detail::AppendFloat(formatData.string, value.n);
+		formatData.string.push_back(U')');
+	}
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+fmt::format_context::iterator fmt::formatter<s3d::SuperEllipse>::format(const s3d::SuperEllipse& value, fmt::format_context& ctx)
+{
+	if (tag.empty())
+	{
+		return fmt::format_to(ctx.out(), "({}, {}, {}, {}, {})", value.center.x, value.center.y, value.axes.x, value.axes.y, value.n);
+	}
+	else
+	{
+		const std::string format
+			= ("({:" + tag + "}, {:" + tag + "}, {:" + tag + "}, {:" + tag + "}, {:" + tag + "})");
+		return fmt::vformat_to(ctx.out(), format, fmt::make_format_args(value.center.x, value.center.y, value.axes.x, value.axes.y, value.n));
+	}
+}
+
+s3d::ParseContext::iterator fmt::formatter<s3d::SuperEllipse, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::SuperEllipse, s3d::char32>::format(const s3d::SuperEllipse& value, s3d::BufferContext& ctx)
+{
+	if (tag.empty())
+	{
+		return format_to(ctx.out(), U"({}, {}, {}, {}, {})", value.center.x, value.center.y, value.axes.x, value.axes.y, value.n);
+	}
+	else
+	{
+		const std::u32string format
+			= (U"({:" + tag + U"}, {:" + tag + U"}), {:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"})");
+		return format_to(ctx.out(), format, value.center.x, value.center.y, value.axes.x, value.axes.y, value.n);
+	}
 }

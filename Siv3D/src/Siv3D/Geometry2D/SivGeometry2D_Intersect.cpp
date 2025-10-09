@@ -222,6 +222,11 @@ namespace s3d
 			return Intersect(Vec2{ a }, b);
 		}
 
+		bool Intersect(const Point& a, const SuperEllipse& b) noexcept
+		{
+			return Intersect(Vec2{ a }, b);
+		}
+
 		bool Intersect(const Point& a, const Polygon& b) noexcept
 		{
 			return b.intersects(Vec2{ a });
@@ -236,6 +241,33 @@ namespace s3d
 		bool Intersect(const Vec2& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
+		}
+
+		bool Intersect(const Vec2& a, const SuperEllipse& b) noexcept
+		{
+			const double ax = Abs(b.axes.x);
+			const double by = Abs(b.axes.y);
+
+			if ((ax == 0.0) || (by == 0.0))
+			{
+				return false;
+			}
+
+			if (b.n <= 0.0)
+			{
+				return false;
+			}
+
+			const double dx = Abs((a.x - b.center.x) / ax);
+			const double dy = Abs((a.y - b.center.y) / by);
+
+			if ((1.0 < dx) && (1.0 < dy))
+			{
+				return false;
+			}
+
+			const double v = (std::pow(dx, b.n) + std::pow(dy, b.n));
+			return (v <= 1.0);
 		}
 
 		bool Intersect(const Vec2& a, const Polygon& b) noexcept

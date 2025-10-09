@@ -567,5 +567,291 @@ namespace s3d
 		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersects
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と交差しているかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差している場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool intersects(const Shape2DType& other) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	intersetsAt
+		////
+		//////////////////////////////////////////////////////////////////
+
+		////template <class Shape2DType>
+		////[[nodiscard]]
+		////Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	contains
+		////
+		//////////////////////////////////////////////////////////////////
+
+		////template <class Shape2DType>
+		////[[nodiscard]]
+		////bool contains(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	leftClicked, leftPressed, leftReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief スーパー楕円が現在のフレームで左クリックされ始めたかを返します。
+		/// @return スーパー楕円が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
+
+		/// @brief スーパー楕円が左クリックされているかを返します。
+		/// @return スーパー楕円が左クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
+
+		/// @brief 現在のフレームでスーパー楕円への左クリックが離されたかを返します。
+		/// @return 現在のフレームでスーパー楕円への左クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rightClicked, rightPressed, rightReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief スーパー楕円が現在のフレームで右クリックされ始めたかを返します。
+		/// @return スーパー楕円が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
+
+		/// @brief スーパー楕円が右クリックされているかを返します。
+		/// @return スーパー楕円が右クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
+
+		/// @brief 現在のフレームでスーパー楕円への右クリックが離されたかを返します。
+		/// @return 現在のフレームでスーパー楕円への右クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mouseOver
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief スーパー楕円上にマウスカーソルがあるかを返します。
+		/// @return スーパー楕円上にマウスカーソルがある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	paint
+		////
+		//////////////////////////////////////////////////////////////////
+
+		////const Ellipse& paint(Image& dst, const Color& color) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	overwrite
+		////
+		//////////////////////////////////////////////////////////////////
+
+		////const Ellipse& overwrite(Image& dst, const Color& color) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	draw
+		////
+		//////////////////////////////////////////////////////////////////
+
+		///// @brief スーパー楕円を描きます。
+		///// @param color スーパー楕円の色
+		///// @return *this
+		//const SuperEllipse& draw(const ColorF& color = Palette::White) const;
+
+		///// @brief スーパー楕円を描きます。
+		///// @param innerColor スーパー楕円の内側の色
+		///// @param outerColor スーパー楕円の外側の色
+		///// @return *this
+		//const SuperEllipse& draw(const ColorF& innerColor, const ColorF& outerColor) const;
+
+		///// @brief スーパー楕円を描きます。
+		///// @param topColor スーパー楕円の上側の色
+		///// @param bottomColor スーパー楕円の下側の色
+		///// @return *this
+		//const SuperEllipse& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		///// @brief 円を描きます。
+		///// @param leftColor スーパー楕円の左側の色
+		///// @param rightColor スーパー楕円の右側の色
+		///// @return *this
+		//const SuperEllipse& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+
+		///// @brief スーパー楕円を描きます。
+		///// @param pattern 塗りつぶしパターン
+		///// @return *this
+		//const SuperEllipse& draw(const PatternParameters& pattern) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	drawFrame
+		////
+		//////////////////////////////////////////////////////////////////
+
+		///// @brief スーパー楕円の枠を描きます
+		///// @param thickness 枠の太さ（ピクセル）
+		///// @param color 枠の色
+		///// @return *this
+		//const SuperEllipse& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		///// @brief スーパー楕円の枠を描きます
+		///// @param thickness 枠の太さ（ピクセル）
+		///// @param innerColor 内側部分の枠の色
+		///// @param outerColor 外側部分の枠の色
+		///// @return *this
+		//const SuperEllipse& drawFrame(double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		///// @brief スーパー楕円の枠を描きます。
+		///// @param innerThickness 基準のスーパー楕円から内側方向への枠の太さ（ピクセル）
+		///// @param outerThickness 基準のスーパー楕円から外側方向への枠の太さ（ピクセル）
+		///// @param color 枠の色
+		///// @return *this
+		//const SuperEllipse& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+
+		///// @brief スーパー楕円の枠を描きます。
+		///// @param innerThickness 基準のスーパー楕円から内側方向への枠の太さ（ピクセル）
+		///// @param outerThickness 基準のスーパー楕円から外側方向への枠の太さ（ピクセル）
+		///// @param innerColor 内側部分の枠の色
+		///// @param outerColor 外側部分の枠の色
+		///// @return *this
+		//const SuperEllipse& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		///// @brief スーパー楕円の枠を描きます。
+		///// @param thickness 枠の太さ（ピクセル）
+		///// @param pattern 塗りつぶしパターン
+		///// @return *this
+		//const SuperEllipse& drawFrame(double thickness, const PatternParameters& pattern) const;
+
+		///// @brief スーパー楕円の枠を描きます。
+		///// @param innerThickness 基準のスーパー楕円から内側方向への枠の太さ（ピクセル）
+		///// @param outerThickness 基準のスーパー楕円から外側方向への枠の太さ（ピクセル）
+		///// @param pattern 塗りつぶしパターン
+		///// @return *this
+		//const SuperEllipse& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator <<
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 出力ストリームに SuperEllipse の内容を出力します。
+		/// @tparam CharType 出力ストリームの文字型
+		/// @param output 出力ストリーム
+		/// @param value SuperEllipse
+		/// @return 出力ストリーム
+		template <class CharType>
+		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const SuperEllipse& value)
+		{
+			return output << CharType('(')
+				<< value.x << CharType(',') << CharType(' ')
+				<< value.y << CharType(',') << CharType(' ')
+				<< value.a << CharType(',') << CharType(' ')
+				<< value.b << CharType(')') << CharType(',')
+				<< value.n << CharType(')');
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 入力ストリームから SuperEllipse の内容を読み込みます。
+		/// @tparam CharType 入力ストリームの文字型
+		/// @param input 入力ストリーム
+		/// @param value SuperEllipse の格納先
+		/// @return 入力ストリーム
+		template <class CharType>
+		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, SuperEllipse& value)
+		{
+			CharType unused;
+			return input >> unused
+				>> value.x >> unused
+				>> value.y >> unused
+				>> value.a >> unused
+				>> value.b >> unused
+				>> value.n >> unused;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Formatter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief SuperEllipse を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value SuperEllipse
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
+		friend void Formatter(FormatData& formatData, const SuperEllipse& value);
 	};
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::SuperEllipse>
+{
+	std::string tag;
+
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+	}
+
+	format_context::iterator format(const s3d::SuperEllipse& value, format_context& ctx);
+};
+
+template <>
+struct fmt::formatter<s3d::SuperEllipse, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::SuperEllipse& value, s3d::BufferContext& ctx);
+};
+
+////////////////////////////////////////////////////////////////
+//
+//	std::hash
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct std::hash<s3d::SuperEllipse>
+{
+	[[nodiscard]]
+	size_t operator ()(const s3d::SuperEllipse& value) const noexcept
+	{
+		return value.hash();
+	}
+};
