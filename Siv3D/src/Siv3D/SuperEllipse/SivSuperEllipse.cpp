@@ -100,6 +100,11 @@ namespace s3d
 			return{};
 		}
 
+		if (n == 1.0)
+		{
+			return{ top(), right(), bottom(), left() };
+		}
+
 		const uint32 count = (pointsPerCircle.value() * ((n < 1.0) ? 2u : 1u));
 
 		Array<Vec2> vertices(count, center);
