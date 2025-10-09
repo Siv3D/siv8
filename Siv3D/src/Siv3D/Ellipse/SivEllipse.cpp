@@ -174,6 +174,11 @@ namespace s3d
 
 	const Ellipse& Ellipse::draw(const ColorF& color) const
 	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
 		const Float4 color0 = color.toFloat4();
 
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
@@ -190,6 +195,11 @@ namespace s3d
 
 	const Ellipse& Ellipse::draw(const ColorF& innerColor, const ColorF& outerColor) const
 	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
 			center,
 			Abs(static_cast<float>(axes.x)),
@@ -204,6 +214,11 @@ namespace s3d
 
 	const Ellipse& Ellipse::draw(const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
 	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
 			center,
 			Abs(static_cast<float>(axes.x)),
@@ -218,6 +233,11 @@ namespace s3d
 
 	const Ellipse& Ellipse::draw(const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
 	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
 			center,
 			Abs(static_cast<float>(axes.x)),
@@ -232,6 +252,11 @@ namespace s3d
 
 	const Ellipse& Ellipse::draw(const PatternParameters& pattern) const
 	{
+		if ((axes.x == 0.0) || (axes.y == 0.0))
+		{
+			return *this;
+		}
+
 		SIV3D_ENGINE(Renderer2D)->addEllipse(
 			center,
 			Abs(static_cast<float>(axes.x)),
@@ -260,13 +285,20 @@ namespace s3d
 
 	const Ellipse& Ellipse::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color) const
 	{
+		const float thickness = static_cast<float>(innerThickness + outerThickness);
+
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (thickness <= 0.0))
+		{
+			return *this;
+		}
+
 		const Float4 color0 = color.toFloat4();
 
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
 			static_cast<float>(Abs(axes.x) - innerThickness),
 			static_cast<float>(Abs(axes.y) - innerThickness),
-			static_cast<float>(innerThickness + outerThickness),
+			thickness,
 			color0,
 			color0
 		);
@@ -276,11 +308,18 @@ namespace s3d
 
 	const Ellipse& Ellipse::drawFrame(const double innerThickness, const double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const
 	{
+		const float thickness = static_cast<float>(innerThickness + outerThickness);
+
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (thickness <= 0.0))
+		{
+			return *this;
+		}
+
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
 			static_cast<float>(Abs(axes.x) - innerThickness),
 			static_cast<float>(Abs(axes.y) - innerThickness),
-			static_cast<float>(innerThickness + outerThickness),
+			thickness,
 			innerColor.toFloat4(),
 			outerColor.toFloat4()
 		);
@@ -295,11 +334,18 @@ namespace s3d
 
 	const Ellipse& Ellipse::drawFrame(const double innerThickness, const double outerThickness, const PatternParameters& pattern) const
 	{
+		const float thickness = static_cast<float>(innerThickness + outerThickness);
+
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (thickness <= 0.0))
+		{
+			return *this;
+		}
+
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
 			static_cast<float>(Abs(axes.x) - innerThickness),
 			static_cast<float>(Abs(axes.y) - innerThickness),
-			static_cast<float>(innerThickness + outerThickness),
+			thickness,
 			pattern
 		);
 

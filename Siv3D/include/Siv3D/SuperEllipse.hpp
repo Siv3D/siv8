@@ -671,86 +671,57 @@ namespace s3d
 
 		////const Ellipse& overwrite(Image& dst, const Color& color) const;
 
-		//////////////////////////////////////////////////////////////////
-		////
-		////	draw
-		////
-		//////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
 
-		///// @brief スーパー楕円を描きます。
-		///// @param color スーパー楕円の色
-		///// @return *this
-		//const SuperEllipse& draw(const ColorF& color = Palette::White) const;
+		/// @brief スーパー楕円を描きます。
+		/// @param color スーパー楕円の色
+		/// @return *this
+		const SuperEllipse& draw(const ColorF& color = Palette::White) const;
 
-		///// @brief スーパー楕円を描きます。
-		///// @param innerColor スーパー楕円の内側の色
-		///// @param outerColor スーパー楕円の外側の色
-		///// @return *this
-		//const SuperEllipse& draw(const ColorF& innerColor, const ColorF& outerColor) const;
+		/// @brief スーパー楕円を描きます。
+		/// @param innerColor スーパー楕円の内側の色
+		/// @param outerColor スーパー楕円の外側の色
+		/// @return *this
+		const SuperEllipse& draw(const ColorF& innerColor, const ColorF& outerColor) const;
 
-		///// @brief スーパー楕円を描きます。
-		///// @param topColor スーパー楕円の上側の色
-		///// @param bottomColor スーパー楕円の下側の色
-		///// @return *this
-		//const SuperEllipse& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+		/// @brief スーパー楕円を描きます。
+		/// @param topColor スーパー楕円の上側の色
+		/// @param bottomColor スーパー楕円の下側の色
+		/// @return *this
+		const SuperEllipse& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
-		///// @brief 円を描きます。
-		///// @param leftColor スーパー楕円の左側の色
-		///// @param rightColor スーパー楕円の右側の色
-		///// @return *this
-		//const SuperEllipse& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+		/// @brief スーパー楕円を描きます。
+		/// @param leftColor スーパー楕円の左側の色
+		/// @param rightColor スーパー楕円の右側の色
+		/// @return *this
+		const SuperEllipse& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
-		///// @brief スーパー楕円を描きます。
-		///// @param pattern 塗りつぶしパターン
-		///// @return *this
-		//const SuperEllipse& draw(const PatternParameters& pattern) const;
+		/// @brief スーパー楕円を描きます。
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const SuperEllipse& draw(const PatternParameters& pattern) const;
 
-		//////////////////////////////////////////////////////////////////
-		////
-		////	drawFrame
-		////
-		//////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawFrame
+		//
+		////////////////////////////////////////////////////////////////
 
-		///// @brief スーパー楕円の枠を描きます
-		///// @param thickness 枠の太さ（ピクセル）
-		///// @param color 枠の色
-		///// @return *this
-		//const SuperEllipse& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
+		/// @brief スーパー楕円の枠を描画します。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const SuperEllipse& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		///// @brief スーパー楕円の枠を描きます
-		///// @param thickness 枠の太さ（ピクセル）
-		///// @param innerColor 内側部分の枠の色
-		///// @param outerColor 外側部分の枠の色
-		///// @return *this
-		//const SuperEllipse& drawFrame(double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
-
-		///// @brief スーパー楕円の枠を描きます。
-		///// @param innerThickness 基準のスーパー楕円から内側方向への枠の太さ（ピクセル）
-		///// @param outerThickness 基準のスーパー楕円から外側方向への枠の太さ（ピクセル）
-		///// @param color 枠の色
-		///// @return *this
-		//const SuperEllipse& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
-
-		///// @brief スーパー楕円の枠を描きます。
-		///// @param innerThickness 基準のスーパー楕円から内側方向への枠の太さ（ピクセル）
-		///// @param outerThickness 基準のスーパー楕円から外側方向への枠の太さ（ピクセル）
-		///// @param innerColor 内側部分の枠の色
-		///// @param outerColor 外側部分の枠の色
-		///// @return *this
-		//const SuperEllipse& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
-
-		///// @brief スーパー楕円の枠を描きます。
-		///// @param thickness 枠の太さ（ピクセル）
-		///// @param pattern 塗りつぶしパターン
-		///// @return *this
-		//const SuperEllipse& drawFrame(double thickness, const PatternParameters& pattern) const;
-
-		///// @brief スーパー楕円の枠を描きます。
-		///// @param innerThickness 基準のスーパー楕円から内側方向への枠の太さ（ピクセル）
-		///// @param outerThickness 基準のスーパー楕円から外側方向への枠の太さ（ピクセル）
-		///// @param pattern 塗りつぶしパターン
-		///// @return *this
-		//const SuperEllipse& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+		/// @brief スーパー楕円の枠を描画します。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const SuperEllipse& drawFrame(double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

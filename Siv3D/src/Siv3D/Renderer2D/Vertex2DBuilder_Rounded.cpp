@@ -2126,6 +2126,117 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildSuperEllipse
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildSuperEllipse(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float n, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			const float majorAxis = Max(a, b);
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(majorAxis * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType FullQuality = (Quality * 4);
+			const Vertex2D::IndexType VertexCount = (FullQuality + 1);
+			const Vertex2D::IndexType IndexCount = (FullQuality * 3);
+			
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+			pVertex[0].pos.set(centerX, centerY);
+
+			const Float4 colorDiff = (color1 - color0);
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			Vertex2D* pDst0 = &pVertex[1];
+			Vertex2D* pDst1 = (pDst0 + Quality);
+			Vertex2D* pDst2 = (pDst1 + Quality);
+			Vertex2D* pDst3 = (pDst2 + Quality);
+
+			const float p = (2.0f / n);
+			const auto SignedPow = [p](float v) -> float
+			{
+				return std::copysign(std::pow(Abs(v), p), v);
+			};
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float cp = SignedPow(cs->x);
+				const float sp = SignedPow(cs->y);
+
+				const float ax_cp = (a * cp);
+				const float ax_sp = (a * sp);
+				const float by_sp = (b * sp);
+				const float by_cp = (b * cp);
+
+				if (colorType == ColorFillDirection::InOut)
+				{
+					pDst0->set((centerX + ax_cp), (centerY + by_sp), color1);
+					pDst1->set((centerX - ax_sp), (centerY + by_cp), color1);
+					pDst2->set((centerX - ax_cp), (centerY - by_sp), color1);
+					pDst3->set((centerX + ax_sp), (centerY - by_cp), color1);
+				}
+				else if (colorType == ColorFillDirection::TopBottom)
+				{
+					const Float4 c0 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c1 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c2 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c3 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
+
+					pDst0->set((centerX + ax_cp), (centerY + by_sp), c0);
+					pDst1->set((centerX - ax_sp), (centerY + by_cp), c1);
+					pDst2->set((centerX - ax_cp), (centerY - by_sp), c2);
+					pDst3->set((centerX + ax_sp), (centerY - by_cp), c3);
+				}
+				else
+				{
+					const Float4 c0 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c1 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c2 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c3 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
+
+					pDst0->set((centerX + ax_cp), (centerY + by_sp), c0);
+					pDst1->set((centerX - ax_sp), (centerY + by_cp), c1);
+					pDst2->set((centerX - ax_cp), (centerY - by_sp), c2);
+					pDst3->set((centerX + ax_sp), (centerY - by_cp), c3);
+				}
+
+				++pDst0; ++pDst1; ++pDst2; ++pDst3;
+			}
+
+			// 中心の色
+			if (colorType == ColorFillDirection::InOut)
+			{
+				pVertex->color = color0;
+			}
+			else
+			{
+				pVertex->color = color0.getMidpoint(color1);
+			}
+
+			{
+				for (Vertex2D::IndexType i = 0; i < (FullQuality - 1); ++i)
+				{
+					*pIndex++ = indexOffset;
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = indexOffset + (i + 2);
+				}
+
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + FullQuality);
+				*pIndex++ = (indexOffset + 1);
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildRoundRect
 		//
 		////////////////////////////////////////////////////////////////

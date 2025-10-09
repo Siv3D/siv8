@@ -10,11 +10,14 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/LineCap.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
@@ -242,6 +245,146 @@ namespace s3d
 	bool SuperEllipse::mouseOver() const noexcept
 	{
 		return Geometry2D::Intersect(Cursor::PosF(), *this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::draw(const ColorF& color) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (n <= 0.0))
+		{
+			return *this;
+		}
+
+		const Float4 color0 = color.toFloat4();
+
+		SIV3D_ENGINE(Renderer2D)->addSuperEllipse(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(n),
+			color0,
+			color0,
+			ColorFillDirection::InOut
+		);
+
+		return *this;
+	}
+
+	const SuperEllipse& SuperEllipse::draw(const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (n <= 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addSuperEllipse(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(n),
+			innerColor.toFloat4(),
+			outerColor.toFloat4(),
+			ColorFillDirection::InOut
+		);
+
+		return *this;
+	}
+
+	const SuperEllipse& SuperEllipse::draw(const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (n <= 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addSuperEllipse(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(n),
+			topColor->toFloat4(),
+			bottomColor->toFloat4(),
+			ColorFillDirection::TopBottom
+		);
+
+		return *this;
+	}
+
+	const SuperEllipse& SuperEllipse::draw(const Arg::left_<ColorF> leftColor, const Arg::right_<ColorF> rightColor) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (n <= 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addSuperEllipse(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(n),
+			leftColor->toFloat4(),
+			rightColor->toFloat4(),
+			ColorFillDirection::LeftRight
+		);
+
+		return *this;
+	}
+
+	const SuperEllipse& SuperEllipse::draw(const PatternParameters& pattern) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (n <= 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addSuperEllipse(
+			center,
+			Abs(static_cast<float>(axes.x)),
+			Abs(static_cast<float>(axes.y)),
+			static_cast<float>(n),
+			pattern
+		);
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const SuperEllipse& SuperEllipse::drawFrame(const double thickness, const ColorF& color) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (n <= 0.0) || (thickness <= 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+			outer(QualityFactor{ 0.5 }), none,
+			Abs(static_cast<float>(thickness)), false,
+			CloseRing::Yes,
+			color.toFloat4());
+	}
+
+	const SuperEllipse& SuperEllipse::drawFrame(const double thickness, const PatternParameters& pattern) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (n <= 0.0) || (thickness <= 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
+			outer(QualityFactor{ 0.5 }), none,
+			Abs(static_cast<float>(thickness)), false,
+			CloseRing::Yes,
+			pattern);
 	}
 
 	////////////////////////////////////////////////////////////////

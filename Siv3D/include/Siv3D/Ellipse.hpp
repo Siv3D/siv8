@@ -775,7 +775,7 @@ namespace s3d
 		/// @return *this
 		const Ellipse& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
-		/// @brief 円を描きます。
+		/// @brief 楕円を描きます。
 		/// @param leftColor 楕円の左側の色
 		/// @param rightColor 楕円の右側の色
 		/// @return *this
