@@ -2149,6 +2149,10 @@ namespace s3d
 			pVertex[0].pos.set(centerX, centerY);
 
 			const Float4 colorDiff = (color1 - color0);
+			const float minX = (centerX - a);
+			const float minY = (centerY - b);
+			const float invW = (1.0f / (2.0f * a));
+			const float invH = (1.0f / (2.0f * b));
 
 			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
 
@@ -2183,27 +2187,37 @@ namespace s3d
 				}
 				else if (colorType == ColorFillDirection::TopBottom)
 				{
-					const Float4 c0 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
+					const float y0 = centerY + by_sp;
+					const float y1 = centerY + by_cp;
+					const float y2 = centerY - by_sp;
+					const float y3 = centerY - by_cp;
 
-					pDst0->set((centerX + ax_cp), (centerY + by_sp), c0);
-					pDst1->set((centerX - ax_sp), (centerY + by_cp), c1);
-					pDst2->set((centerX - ax_cp), (centerY - by_sp), c2);
-					pDst3->set((centerX + ax_sp), (centerY - by_cp), c3);
+					const Float4 c0 = color0 + ((y0 - minY) * invH) * colorDiff;
+					const Float4 c1 = color0 + ((y1 - minY) * invH) * colorDiff;
+					const Float4 c2 = color0 + ((y2 - minY) * invH) * colorDiff;
+					const Float4 c3 = color0 + ((y3 - minY) * invH) * colorDiff;
+
+					pDst0->set((centerX + ax_cp), y0, c0);
+					pDst1->set((centerX - ax_sp), y1, c1);
+					pDst2->set((centerX - ax_cp), y2, c2);
+					pDst3->set((centerX + ax_sp), y3, c3);
 				}
 				else
 				{
-					const Float4 c0 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
+					const float x0 = centerX + ax_cp;
+					const float x1 = centerX - ax_sp;
+					const float x2 = centerX - ax_cp;
+					const float x3 = centerX + ax_sp;
 
-					pDst0->set((centerX + ax_cp), (centerY + by_sp), c0);
-					pDst1->set((centerX - ax_sp), (centerY + by_cp), c1);
-					pDst2->set((centerX - ax_cp), (centerY - by_sp), c2);
-					pDst3->set((centerX + ax_sp), (centerY - by_cp), c3);
+					const Float4 c0 = color0 + ((x0 - minX) * invW) * colorDiff;
+					const Float4 c1 = color0 + ((x1 - minX) * invW) * colorDiff;
+					const Float4 c2 = color0 + ((x2 - minX) * invW) * colorDiff;
+					const Float4 c3 = color0 + ((x3 - minX) * invW) * colorDiff;
+
+					pDst0->set(x0, (centerY + by_sp), c0);
+					pDst1->set(x1, (centerY + by_cp), c1);
+					pDst2->set(x2, (centerY - by_sp), c2);
+					pDst3->set(x3, (centerY - by_cp), c3);
 				}
 
 				++pDst0; ++pDst1; ++pDst2; ++pDst3;

@@ -100,7 +100,7 @@ namespace s3d
 			return{};
 		}
 
-		const uint32 count = pointsPerCircle.value();
+		const uint32 count = (pointsPerCircle.value() * ((n < 1.0) ? 2u : 1u));
 
 		Array<Vec2> vertices(count, center);
 		{
@@ -366,11 +366,15 @@ namespace s3d
 			return *this;
 		}
 
+		const double r = (Max(Abs(axes.x), Abs(axes.y)) + Abs(thickness * 0.5));
+
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			outer(QualityFactor{ 0.5 }), none,
+			outer(QualityFactor{ 0.5 }.toPointsPerCircle(r)), none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			color.toFloat4());
+
+		return *this;
 	}
 
 	const SuperEllipse& SuperEllipse::drawFrame(const double thickness, const PatternParameters& pattern) const
@@ -380,11 +384,15 @@ namespace s3d
 			return *this;
 		}
 
+		const double r = (Max(Abs(axes.x), Abs(axes.y)) + Abs(thickness * 0.5));
+
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			outer(QualityFactor{ 0.5 }), none,
+			outer(QualityFactor{ 0.5 }.toPointsPerCircle(r)), none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			pattern);
+
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
