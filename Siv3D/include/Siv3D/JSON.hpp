@@ -47,7 +47,7 @@ namespace s3d
 	{
 	public:
 
-		using json_base			= nlohmann::json;
+		using json_base			= nlohmann::ordered_json;
 
 		using iterator			= JSONIterator;
 
@@ -1016,24 +1016,24 @@ namespace nlohmann
 	template <size_t N>
 	struct adl_serializer<s3d::char32[N]>
 	{
-		static void to_json(json& j, const s3d::char32(&value)[N])
+		static void to_json(s3d::JSON::json_base& j, const s3d::char32(&value)[N])
 		{
-			j = json(s3d::Unicode::ToUTF8(value));
+			j = s3d::JSON::json_base(s3d::Unicode::ToUTF8(value));
 		}
 	};
 
 	template <>
 	struct adl_serializer<s3d::StringView>
 	{
-		static void to_json(json& j, const s3d::StringView& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::StringView& value);
 	};
 
 	template <>
 	struct adl_serializer<s3d::String>
 	{
-		static void to_json(json& j, const s3d::String& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::String& value);
 
-		static void from_json(const json& j, s3d::String& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::String& value);
 	};
 }
 

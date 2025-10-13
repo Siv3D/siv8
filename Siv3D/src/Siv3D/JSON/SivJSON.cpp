@@ -23,13 +23,13 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static constexpr nlohmann::json::value_t ToValueType(const JSONValueType valueType) noexcept
+		static constexpr JSON::json_base::value_t ToValueType(const JSONValueType valueType) noexcept
 		{
-			return static_cast<nlohmann::json::value_t>(valueType);
+			return static_cast<JSON::json_base::value_t>(valueType);
 		}
 
 		[[nodiscard]]
-		static constexpr JSONValueType ToJSONValueType(const nlohmann::json::value_t valueType) noexcept
+		static constexpr JSONValueType ToJSONValueType(const JSON::json_base::value_t valueType) noexcept
 		{
 			return static_cast<JSONValueType>(valueType);
 		}
@@ -148,7 +148,7 @@ namespace s3d
 	}
 
 	JSON::JSON(const Array<JSON>& arr)
-		: m_json(nlohmann::json::array())
+		: m_json(JSON::json_base::array())
 	{
 		auto& json = std::get<json_base>(m_json);
 
@@ -520,7 +520,7 @@ namespace s3d
 			ThrowNotBinary();
 		}
 
-		const auto& binary = getConstRef().get<nlohmann::json::binary_t>();
+		const auto& binary = getConstRef().get<JSON::json_base::binary_t>();
 
 		return Blob{ binary.data(), binary.size() };
 	}
@@ -857,7 +857,7 @@ namespace s3d
 	Blob JSON::toBSON() const
 	{
 		std::vector<uint8> result;
-		nlohmann::json::to_bson(getConstRef(), result);
+		JSON::json_base::to_bson(getConstRef(), result);
 		return Blob{ result.data(), result.size() };
 	}
 
@@ -870,7 +870,7 @@ namespace s3d
 	Blob JSON::toCBOR() const
 	{
 		std::vector<uint8> result;
-		nlohmann::json::to_cbor(getConstRef(), result);
+		JSON::json_base::to_cbor(getConstRef(), result);
 		return Blob{ result.data(), result.size() };
 	}
 
@@ -883,7 +883,7 @@ namespace s3d
 	Blob JSON::toMessagePack() const
 	{
 		std::vector<uint8> result;
-		nlohmann::json::to_msgpack(getConstRef(), result);
+		JSON::json_base::to_msgpack(getConstRef(), result);
 		return Blob{ result.data(), result.size() };
 	}
 
@@ -961,9 +961,9 @@ namespace s3d
 
 		try
 		{
-			json.m_json = nlohmann::json::parse(s, nullptr, allowExceptions.getBool(), true);
+			json.m_json = JSON::json_base::parse(s, nullptr, allowExceptions.getBool(), true);
 		}
-		catch (const nlohmann::json::parse_error& e)
+		catch (const JSON::json_base::parse_error& e)
 		{
 			throw Error{ fmt::format("JSON::Parse(): {}", e.what()) };
 		}
@@ -988,7 +988,7 @@ namespace s3d
 
 		try
 		{
-			json.m_json = nlohmann::json::from_bson(bson.begin(), bson.end(), true, allowExceptions.getBool());
+			json.m_json = JSON::json_base::from_bson(bson.begin(), bson.end(), true, allowExceptions.getBool());
 		}
 		catch (const std::exception& e)
 		{
@@ -1010,7 +1010,7 @@ namespace s3d
 
 		try
 		{
-			json.m_json = nlohmann::json::from_cbor(cbor.begin(), cbor.end(), true, allowExceptions.getBool());
+			json.m_json = JSON::json_base::from_cbor(cbor.begin(), cbor.end(), true, allowExceptions.getBool());
 		}
 		catch (const std::exception& e)
 		{
@@ -1032,7 +1032,7 @@ namespace s3d
 
 		try
 		{
-			json.m_json = nlohmann::json::from_msgpack(msgpack.begin(), msgpack.end(), true, allowExceptions.getBool());
+			json.m_json = JSON::json_base::from_msgpack(msgpack.begin(), msgpack.end(), true, allowExceptions.getBool());
 		}
 		catch (const std::exception& e)
 		{
@@ -1163,17 +1163,17 @@ namespace s3d
 
 namespace nlohmann
 {
-	void adl_serializer<s3d::StringView>::to_json(json& j, const s3d::StringView& value)
+	void adl_serializer<s3d::StringView>::to_json(s3d::JSON::json_base& j, const s3d::StringView& value)
 	{
 		j = s3d::Unicode::ToUTF8(value);
 	}
 
-	void adl_serializer<s3d::String>::to_json(json& j, const s3d::String& value)
+	void adl_serializer<s3d::String>::to_json(s3d::JSON::json_base& j, const s3d::String& value)
 	{
 		j = s3d::Unicode::ToUTF8(value);
 	}
 
-	void adl_serializer<s3d::String>::from_json(const json& j, s3d::String& value)
+	void adl_serializer<s3d::String>::from_json(const s3d::JSON::json_base& j, s3d::String& value)
 	{
 		if (j.is_string())
 		{

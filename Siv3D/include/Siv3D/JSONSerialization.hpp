@@ -26,8 +26,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Point>
 	{
-		static void to_json(json& j, const s3d::Point& value);
-		static void from_json(const json& j, s3d::Point& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Point& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Point& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -39,8 +39,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Float2>
 	{
-		static void to_json(json& j, const s3d::Float2& value);
-		static void from_json(const json& j, s3d::Float2& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Float2& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Float2& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -52,8 +52,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Vec2>
 	{
-		static void to_json(json& j, const s3d::Vec2& value);
-		static void from_json(const json& j, s3d::Vec2& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Vec2& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Vec2& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -65,8 +65,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Float3>
 	{
-		static void to_json(json& j, const s3d::Float3& value);
-		static void from_json(const json& j, s3d::Float3& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Float3& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Float3& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -78,8 +78,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Vec3>
 	{
-		static void to_json(json& j, const s3d::Vec3& value);
-		static void from_json(const json& j, s3d::Vec3& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Vec3& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Vec3& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -91,8 +91,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Float4>
 	{
-		static void to_json(json& j, const s3d::Float4& value);
-		static void from_json(const json& j, s3d::Float4& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Float4& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Float4& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -104,8 +104,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Vec4>
 	{
-		static void to_json(json& j, const s3d::Vec4& value);
-		static void from_json(const json& j, s3d::Vec4& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Vec4& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Vec4& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -117,8 +117,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Color>
 	{
-		static void to_json(json& j, const s3d::Color& value);
-		static void from_json(const json& j, s3d::Color& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Color& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Color& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -130,8 +130,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::ColorF>
 	{
-		static void to_json(json& j, const s3d::ColorF& value);
-		static void from_json(const json& j, s3d::ColorF& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::ColorF& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::ColorF& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -143,8 +143,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::HSV>
 	{
-		static void to_json(json& j, const s3d::HSV& value);
-		static void from_json(const json& j, s3d::HSV& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::HSV& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::HSV& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -156,8 +156,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Line>
 	{
-		static void to_json(json& j, const s3d::Line& value);
-		static void from_json(const json& j, s3d::Line& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Line& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Line& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -169,8 +169,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Rect>
 	{
-		static void to_json(json& j, const s3d::Rect& value);
-		static void from_json(const json& j, s3d::Rect& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Rect& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Rect& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -182,8 +182,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::RectF>
 	{
-		static void to_json(json& j, const s3d::RectF& value);
-		static void from_json(const json& j, s3d::RectF& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::RectF& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::RectF& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -195,8 +195,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Circle>
 	{
-		static void to_json(json& j, const s3d::Circle& value);
-		static void from_json(const json& j, s3d::Circle& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Circle& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Circle& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -208,8 +208,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Ellipse>
 	{
-		static void to_json(json& j, const s3d::Ellipse& value);
-		static void from_json(const json& j, s3d::Ellipse& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Ellipse& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Ellipse& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -221,8 +221,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::SuperEllipse>
 	{
-		static void to_json(json& j, const s3d::SuperEllipse& value);
-		static void from_json(const json& j, s3d::SuperEllipse& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::SuperEllipse& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::SuperEllipse& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -234,8 +234,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Triangle>
 	{
-		static void to_json(json& j, const s3d::Triangle& value);
-		static void from_json(const json& j, s3d::Triangle& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Triangle& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Triangle& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -247,8 +247,8 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::Quad>
 	{
-		static void to_json(json& j, const s3d::Quad& value);
-		static void from_json(const json& j, s3d::Quad& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::Quad& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::Quad& value);
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -260,7 +260,7 @@ namespace nlohmann
 	template <>
 	struct adl_serializer<s3d::RoundRect>
 	{
-		static void to_json(json& j, const s3d::RoundRect& value);
-		static void from_json(const json& j, s3d::RoundRect& value);
+		static void to_json(s3d::JSON::json_base& j, const s3d::RoundRect& value);
+		static void from_json(const s3d::JSON::json_base& j, s3d::RoundRect& value);
 	};
 }

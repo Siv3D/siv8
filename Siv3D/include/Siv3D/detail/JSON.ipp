@@ -142,7 +142,7 @@ namespace s3d
 		requires std::constructible_from<JSON::json_base, const Type&>
 	JSON ToJSON(const Type& value)
 	{
-		return JSON(nlohmann::json(value));
+		return JSON(JSON::json_base(value));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ namespace s3d
 		{
 			return json.base().template get<Type>();
 		}
-		catch (const nlohmann::json::exception&)
+		catch (const JSON::json_base::exception&)
 		{
 			detail::ThrowJSONGetError(typeid(Type).name(), json.formatUTF8Minified());
 		}
@@ -189,7 +189,7 @@ namespace s3d
 		{
 			return json.base().template get<Type>();
 		}
-		catch (const nlohmann::json::exception&)
+		catch (const JSON::json_base::exception&)
 		{
 			return none;
 		}
