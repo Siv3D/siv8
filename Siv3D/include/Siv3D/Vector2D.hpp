@@ -419,6 +419,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 現在の座標からオフセットした座標を返します。
+		/// @param _x X 方向のオフセット量
+		/// @param _y Y 方向のオフセット量
+		/// @return オフセットした座標
+		[[nodiscard]]
+		constexpr Vector2D withOffset(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 現在の座標からオフセットした座標を返します。
+		/// @param v オフセット量
+		/// @return オフセットした座標
+		[[nodiscard]]
+		constexpr Vector2D withOffset(Vector2D v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 方向にオフセットした座標を返します。
+		/// @param _x X 方向のオフセット量
+		/// @return オフセットした座標
+		[[nodiscard]]
+		constexpr Vector2D withOffsetX(value_type _x) const noexcept;
+
+		/// @brief Y 方向にオフセットした座標を返します。
+		/// @param _y Y 方向のオフセット量
+		/// @return オフセットした座標
+		[[nodiscard]]
+		constexpr Vector2D withOffsetY(value_type _y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	clamp, clamped
 		//
 		////////////////////////////////////////////////////////////////

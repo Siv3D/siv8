@@ -423,6 +423,56 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point Point::withOffset(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ (x + _x), (y + _y) };
+	}
+
+	constexpr Point Point::withOffset(const Point p) const noexcept
+	{
+		return{ (x + p.x), (y + p.y) };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::withOffset(const Vector2D<Float> v) const noexcept
+	{
+		return{ (x + v.x), (y + v.y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Point Point::withOffsetX(const Concept::Integral auto _x) const noexcept
+	{
+		return{ (x + _x), y };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::withOffsetX(const Float _x) const noexcept
+	{
+		return{ (x + _x), static_cast<Float>(y) };
+	}
+
+	constexpr Point Point::withOffsetY(const Concept::Integral auto _y) const noexcept
+	{
+		return{ x, (y + _y) };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Point::withOffsetY(const Float _y) const noexcept
+	{
+		return{ static_cast<Float>(x), (y + _y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	horizontalAspectRatio
 	//
 	////////////////////////////////////////////////////////////////
