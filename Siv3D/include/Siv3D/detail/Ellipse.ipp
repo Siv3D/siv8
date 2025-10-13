@@ -339,6 +339,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Ellipse Ellipse::withOffset(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ center.withOffset(_x, _y), axes };
+	}
+
+	constexpr Ellipse Ellipse::withOffset(const position_type v) const noexcept
+	{
+		return{ center.withOffset(v), axes };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Ellipse Ellipse::withOffsetX(const value_type _x) const noexcept
+	{
+		return{ center.withOffsetX(_x), axes };
+	}
+
+	constexpr Ellipse Ellipse::withOffsetY(const value_type _y) const noexcept
+	{
+		return{ center.withOffsetY(_y), axes };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	stretched
 	//
 	////////////////////////////////////////////////////////////////

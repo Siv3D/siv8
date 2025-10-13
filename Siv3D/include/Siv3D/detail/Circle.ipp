@@ -349,6 +349,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Circle Circle::withOffset(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ center.withOffset(_x, _y), r };
+	}
+
+	constexpr Circle Circle::withOffset(const position_type v) const noexcept
+	{
+		return{ center.withOffset(v), r };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Circle Circle::withOffsetX(const value_type _x) const noexcept
+	{
+		return{ (center.x + _x), center.y, r };
+	}
+
+	constexpr Circle Circle::withOffsetY(const value_type _y) const noexcept
+	{
+		return{ center.x, (center.y + _y), r };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	stretched
 	//
 	////////////////////////////////////////////////////////////////

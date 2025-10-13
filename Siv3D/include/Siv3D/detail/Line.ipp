@@ -272,20 +272,52 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Line::withOffset(const value_type x, const value_type y) const noexcept
+	{
+		return{ start.withOffset(x, y), end.withOffset(x, y) };
+	}
+
+	constexpr Line Line::withOffset(const vector_type v) const noexcept
+	{
+		return{ start.withOffset(v), end.withOffset(v) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Line::withOffsetX(const value_type x) const noexcept
+	{
+		return{ start.withOffsetX(x), end.withOffsetX(x) };
+	}
+
+	constexpr Line Line::withOffsetY(const value_type y) const noexcept
+	{
+		return{ start.withOffsetY(y), end.withOffsetY(y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	stretched
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Line Line::stretched(const value_type extentionBothSides) const noexcept
+	inline Line Line::stretched(const value_type extensionBothSides) const noexcept
 	{
-		const vector_type v = vector().withLength(extentionBothSides);
+		const vector_type v = vector().withLength(extensionBothSides);
 		return{ (start - v), (end + v) };
 	}
 
-	inline Line Line::stretched(const value_type extentionStart, const value_type extentionEnd) const noexcept
+	inline Line Line::stretched(const value_type extensionStart, const value_type extensionEnd) const noexcept
 	{
 		const vector_type v = normalizedVector();
-		return{ (start - v * extentionStart), (end + v * extentionEnd) };
+		return{ (start - v * extensionStart), (end + v * extensionEnd) };
 	}
 
 	////////////////////////////////////////////////////////////////

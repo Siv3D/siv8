@@ -336,6 +336,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 座標をオフセットした新しい三角形を返します。
+		/// @param x X 軸方向のオフセット量
+		/// @param y Y 軸方向のオフセット量
+		/// @return オフセットした新しい三角形
+		[[nodiscard]]
+		constexpr Triangle withOffset(value_type x, value_type y) const noexcept;
+
+		/// @brief 座標をオフセットした新しい三角形を返します。
+		/// @param v オフセット量
+		/// @return オフセットした新しい三角形
+		[[nodiscard]]
+		constexpr Triangle withOffset(position_type v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 軸方向にオフセットした新しい三角形を返します。
+		/// @param x オフセット量
+		/// @return オフセットした新しい三角形
+		[[nodiscard]]
+		constexpr Triangle withOffsetX(value_type x) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい三角形を返します。
+		/// @param y オフセット量
+		/// @return オフセットした新しい三角形
+		[[nodiscard]]
+		constexpr Triangle withOffsetY(value_type y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	stretched
 		//
 		////////////////////////////////////////////////////////////////

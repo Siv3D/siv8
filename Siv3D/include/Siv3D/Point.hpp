@@ -375,23 +375,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在の座標からオフセットした座標を返します。
-		/// @param _x X 方向のオフセット量
-		/// @param _y Y 方向のオフセット量
-		/// @return 現在の座標からオフセットした座標
+		/// @brief オフセットした座標を返します。
+		/// @param _x X 軸方向のオフセット量
+		/// @param _y Y 軸方向のオフセット量
+		/// @return オフセットした座標
 		[[nodiscard]]
 		constexpr Point withOffset(value_type _x, value_type _y) const noexcept;
 
-		/// @brief 現在の座標からオフセットした座標を返します。
+		/// @brief オフセットした座標を返します。
 		/// @param p オフセット量
-		/// @return 現在の座標からオフセットした座標
+		/// @return オフセットした座標
 		[[nodiscard]]
 		constexpr Point withOffset(Point p) const noexcept;
 
-		/// @brief 現在の座標からオフセットした座標を返します。
+		/// @brief オフセットした座標を返します。
 		/// @tparam Float オフセット量を表す二次元ベクトルの要素の型
 		/// @param v オフセット量
-		/// @return 現在の座標からオフセットした座標
+		/// @return オフセットした座標
 		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
 		constexpr Vector2D<Float> withOffset(Vector2D<Float> v) const noexcept;
@@ -402,30 +402,30 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在の座標から X 方向にオフセットした座標を返します。
-		/// @param _x X 方向のオフセット量
-		/// @return 現在の座標から X 方向にオフセットした座標
+		/// @brief X 軸方向にオフセットした座標を返します。
+		/// @param _x オフセット量
+		/// @return オフセットした座標
 		[[nodiscard]]
 		constexpr Point withOffsetX(Concept::Integral auto _x) const noexcept;
 
-		/// @brief 現在の座標から X 方向にオフセットした座標を返します。
+		/// @brief X 軸方向にオフセットした座標を返します。
 		/// @tparam Float オフセット量の型
-		/// @param v X 方向のオフセット量
-		/// @return 現在の座標から X 方向にオフセットした座標
+		/// @param v オフセット量
+		/// @return オフセットした座標
 		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
 		constexpr Vector2D<Float> withOffsetX(Float v) const noexcept;
 
-		/// @brief 現在の座標から Y 方向にオフセットした座標を返します。
-		/// @param _y Y 方向のオフセット量
-		/// @return 現在の座標から Y 方向にオフセットした座標
+		/// @brief Y 軸方向にオフセットした座標を返します。
+		/// @param _y オフセット量
+		/// @return オフセットした座標
 		[[nodiscard]]
 		constexpr Point withOffsetY(Concept::Integral auto _y) const noexcept;
 
-		/// @brief 現在の座標から Y 方向にオフセットした座標を返します。
+		/// @brief Y 軸方向にオフセットした座標を返します。
 		/// @tparam Float オフセット量の型
-		/// @param y Y 方向のオフセット量
-		/// @return 現在の座標から Y 方向にオフセットした座標
+		/// @param y オフセット量
+		/// @return オフセットした座標
 		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
 		constexpr Vector2D<Float> withOffsetY(Float y) const noexcept;

@@ -555,6 +555,54 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withOffset(const value_type _x, const value_type _y, const value_type _z, const value_type _w) const noexcept
+	{
+		return{ (x + _x), (y + _y), (z + _z), (w + _w) };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withOffset(const Vector4D v) const noexcept
+	{
+		return{ (x + v.x), (y + v.y), (z + v.z), (w + v.w) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY, withOffsetZ, withOffsetW
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withOffsetX(const value_type _x) const noexcept
+	{
+		return{ (x + _x), y, z, w };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withOffsetY(const value_type _y) const noexcept
+	{
+		return{ x, (y + _y), z, w };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withOffsetZ(const value_type _z) const noexcept
+	{
+		return{ x, y, (z + _z), w };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector4D<Float> Vector4D<Float>::withOffsetW(const value_type _w) const noexcept
+	{
+		return{ x, y, z, (w + _w) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	dot
 	//
 	////////////////////////////////////////////////////////////////

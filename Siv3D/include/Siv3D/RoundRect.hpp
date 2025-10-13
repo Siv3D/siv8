@@ -466,6 +466,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 座標をオフセットした新しい角丸長方形を返します。
+		/// @param _x X 軸方向のオフセット量
+		/// @param _y Y 軸方向のオフセット量
+		/// @return 新しい角丸長方形
+		[[nodiscard]]
+		constexpr RoundRect withOffset(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 座標をオフセットした新しい角丸長方形を返します。
+		/// @param v オフセット量
+		/// @return 新しい角丸長方形
+		[[nodiscard]]
+		constexpr RoundRect withOffset(size_type v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 軸方向にオフセットした新しい角丸長方形を返します。
+		/// @param _x X 軸方向のオフセット量
+		/// @return 新しい角丸長方形
+		[[nodiscard]]
+		constexpr RoundRect withOffsetX(value_type _x) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい角丸長方形を返します。
+		/// @param _y Y 軸方向のオフセット量
+		/// @return 新しい角丸長方形
+		[[nodiscard]]
+		constexpr RoundRect withOffsetY(value_type _y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	stretched
 		//
 		////////////////////////////////////////////////////////////////

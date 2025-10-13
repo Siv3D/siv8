@@ -548,6 +548,58 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::withOffset(const Concept::Integral auto _x, const Concept::Integral auto _y) const noexcept
+	{
+		return{ (pos + Point{ _x, _y }), size };
+	}
+
+	constexpr RectF Rect::withOffset(const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y) const noexcept
+	{
+		return{ (pos + Vec2{ _x, _y }), size };
+	}
+
+	constexpr Rect Rect::withOffset(const size_type v) const noexcept
+	{
+		return{ (pos + v), size };
+	}
+
+	constexpr RectF Rect::withOffset(const Vec2 v) const noexcept
+	{
+		return{ (pos + v), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::withOffsetX(const Concept::Integral auto _x) const noexcept
+	{
+		return{ (pos.x + static_cast<value_type>(_x)), pos.y, size };
+	}
+
+	constexpr RectF Rect::withOffsetX(const Concept::FloatingPoint auto _x) const noexcept
+	{
+		return{ (pos.x + static_cast<RectF::value_type>(_x)), pos.y, size };
+	}
+
+	constexpr Rect Rect::withOffsetY(const Concept::Integral auto _y) const noexcept
+	{
+		return{ pos.x, (pos.y + static_cast<value_type>(_y)), size };
+	}
+
+	constexpr RectF Rect::withOffsetY(const Concept::FloatingPoint auto _y) const noexcept
+	{
+		return{ pos.x, (pos.y + static_cast<RectF::value_type>(_y)), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	stretched
 	//
 	////////////////////////////////////////////////////////////////

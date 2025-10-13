@@ -492,6 +492,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::withOffset(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ pos.withOffset(_x, _y), size };
+	}
+
+	constexpr RectF RectF::withOffset(const size_type v) const noexcept
+	{
+		return{ pos.withOffset(v), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF RectF::withOffsetX(const value_type _x) const noexcept
+	{
+		return{ (pos.x + _x), pos.y, size };
+	}
+
+	constexpr RectF RectF::withOffsetY(const value_type _y) const noexcept
+	{
+		return{ pos.x, (pos.y + _y), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	stretched
 	//
 	////////////////////////////////////////////////////////////////

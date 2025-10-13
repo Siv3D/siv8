@@ -335,6 +335,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RoundRect RoundRect::withOffset(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ rect.withOffset(_x, _y), r };
+	}
+
+	constexpr RoundRect RoundRect::withOffset(const size_type v) const noexcept
+	{
+		return{ rect.withOffset(v), r };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RoundRect RoundRect::withOffsetX(const value_type _x) const noexcept
+	{
+		return{ rect.withOffsetX(_x), r };
+	}
+
+	constexpr RoundRect RoundRect::withOffsetY(const value_type _y) const noexcept
+	{
+		return{ rect.withOffsetY(_y), r };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	stretched
 	//
 	////////////////////////////////////////////////////////////////

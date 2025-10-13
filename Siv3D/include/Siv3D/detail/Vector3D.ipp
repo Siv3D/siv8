@@ -462,6 +462,48 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector3D<Float>::withOffset(const value_type _x, const value_type _y, const value_type _z) const noexcept
+	{
+		return{ (x + _x), (y + _y), (z + _z) };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector3D<Float>::withOffset(const Vector3D v) const noexcept
+	{
+		return{ (x + v.x), (y + v.y), (z + v.z) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY, withOffsetZ
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector3D<Float>::withOffsetX(const value_type _x) const noexcept
+	{
+		return{ (x + _x), y, z };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector3D<Float>::withOffsetY(const value_type _y) const noexcept
+	{
+		return{ x, (y + _y), z };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector3D<Float> Vector3D<Float>::withOffsetZ(const value_type _z) const noexcept
+	{
+		return{ x, y, (z + _z) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	clamp, clamped
 	//
 	////////////////////////////////////////////////////////////////

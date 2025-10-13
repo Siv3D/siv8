@@ -834,6 +834,68 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 座標をオフセットした新しい長方形を返します。
+		/// @param _x X 軸方向のオフセット量
+		/// @param _y Y 軸方向のオフセット量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr Rect withOffset(Concept::Integral auto _x, Concept::Integral auto _y) const noexcept;
+
+		/// @brief 座標をオフセットした新しい長方形を返します。
+		/// @param _x X 軸方向のオフセット量
+		///	@param _y Y 軸方向のオフセット量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF withOffset(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y) const noexcept;
+
+		/// @brief 座標をオフセットした新しい長方形を返します。
+		/// @param v オフセット量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr Rect withOffset(size_type v) const noexcept;
+
+		/// @brief 座標をオフセットした新しい長方形を返します。
+		/// @param v オフセット量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF withOffset(Vec2 v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 軸方向にオフセットした新しい長方形を返します。
+		/// @param _x オフセット量
+		/// @return オフセットした新しい長方形
+		[[nodiscard]]
+		constexpr Rect withOffsetX(Concept::Integral auto _x) const noexcept;
+
+		/// @brief X 軸方向にオフセットした新しい長方形を返します。
+		/// @param _x オフセット量
+		/// @return オフセットした新しい長方形
+		[[nodiscard]]
+		constexpr RectF withOffsetX(Concept::FloatingPoint auto _x) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい長方形を返します。
+		/// @param _y オフセット量
+		/// @return オフセットした新しい長方形
+		[[nodiscard]]
+		constexpr Rect withOffsetY(Concept::Integral auto _y) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい長方形を返します。
+		/// @param _y オフセット量
+		/// @return オフセットした新しい長方形
+		[[nodiscard]]
+		constexpr RectF withOffsetY(Concept::FloatingPoint auto _y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	stretched
 		//
 		////////////////////////////////////////////////////////////////

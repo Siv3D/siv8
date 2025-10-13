@@ -323,6 +323,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse SuperEllipse::withOffset(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ center.withOffset(_x, _y), axes, n };
+	}
+
+	constexpr SuperEllipse SuperEllipse::withOffset(const position_type v) const noexcept
+	{
+		return{ center.withOffset(v), axes, n };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr SuperEllipse SuperEllipse::withOffsetX(const value_type _x) const noexcept
+	{
+		return{ center.withOffsetX(_x), axes, n };
+	}
+
+	constexpr SuperEllipse SuperEllipse::withOffsetY(const value_type _y) const noexcept
+	{
+		return{ center.withOffsetY(_y), axes, n };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	stretched
 	//
 	////////////////////////////////////////////////////////////////

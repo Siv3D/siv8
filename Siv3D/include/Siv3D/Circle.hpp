@@ -479,6 +479,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 中心座標をオフセットした新しい円を返します。
+		/// @param _x X 軸方向のオフセット量
+		///	@param _y Y 軸方向のオフセット量
+		/// @return 新しい円
+		[[nodiscard]]
+		constexpr Circle withOffset(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 中心座標をオフセットした新しい円を返します。
+		/// @param v オフセット量
+		/// @return 新しい円
+		[[nodiscard]]
+		constexpr Circle withOffset(position_type v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 軸方向にオフセットした新しい円を返します。
+		/// @param _x オフセット量
+		/// @return 新しい円
+		[[nodiscard]]
+		constexpr Circle withOffsetX(value_type _x) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい円を返します。
+		/// @param _y オフセット量
+		/// @return 新しい円
+		[[nodiscard]]
+		constexpr Circle withOffsetY(value_type _y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	stretched
 		//
 		////////////////////////////////////////////////////////////////

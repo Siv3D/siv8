@@ -219,6 +219,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::withOffset(const value_type x, const value_type y) const noexcept
+	{
+		return{ p0.withOffset(x, y), p1.withOffset(x, y), p2.withOffset(x, y) };
+	}
+
+	constexpr Triangle Triangle::withOffset(const position_type v) const noexcept
+	{
+		return{ p0.withOffset(v), p1.withOffset(v), p2.withOffset(v) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::withOffsetX(const value_type x) const noexcept
+	{
+		return{ p0.withOffsetX(x), p1.withOffsetX(x), p2.withOffsetX(x) };
+	}
+
+	constexpr Triangle Triangle::withOffsetY(const value_type y) const noexcept
+	{
+		return{ p0.withOffsetY(y), p1.withOffsetY(y), p2.withOffsetY(y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	scaledFromOrigin
 	//
 	////////////////////////////////////////////////////////////////
