@@ -11,6 +11,8 @@
 
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/FormatData.hpp>
+# include <Siv3D/JSON.hpp>
+# include <Siv3D/Error.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Cursor.hpp>
@@ -141,6 +143,24 @@ namespace s3d
 		*(p++) = U')';
 
 		formatData.string.append(buffer, (p - buffer));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ToJSON, FromJSON
+	//
+	////////////////////////////////////////////////////////////////
+
+	void ToJSON(JSON& json, const Point& value)
+	{
+		json = { { "x", value.x },{ "y", value.y } };
+	}
+
+	void FromJSON(const JSON& json, Point& value)
+	{
+		//auto& base = json.base();
+		//base.at("x").get_to(value.x);
+		//base.at("y").get_to(value.y);
 	}
 }
 

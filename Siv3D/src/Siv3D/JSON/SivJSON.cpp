@@ -103,6 +103,9 @@ namespace s3d
 	JSON::JSON(const std::string_view value)
 		: m_json(value) {}
 
+	JSON::JSON(std::string value)
+		: m_json(std::move(value)) {}
+
 	JSON::JSON(const char32* value)
 		: m_json(String{ value }) {}
 

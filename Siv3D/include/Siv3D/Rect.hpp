@@ -18,7 +18,6 @@
 namespace s3d
 {
 	struct RectF;
-	struct FormatData;
 	struct PatternParameters;
 	enum class LineType : uint8;
 	class Texture;

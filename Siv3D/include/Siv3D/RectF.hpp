@@ -17,7 +17,6 @@
 
 namespace s3d
 {
-	struct FormatData;
 	struct PatternParameters;
 	enum class LineType : uint8;
 
