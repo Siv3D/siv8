@@ -1078,16 +1078,6 @@ namespace s3d
 		/// @param value Point
 		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const Point& value);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	ToJSON, FromJSON
-		//
-		////////////////////////////////////////////////////////////////
-
-		friend void ToJSON(JSON& json, const Point& value);
-
-		friend void FromJSON(const JSON& json, Point& value);
 	};
 
 	using Size = Point;

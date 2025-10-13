@@ -144,24 +144,6 @@ namespace s3d
 
 		formatData.string.append(buffer, (p - buffer));
 	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	ToJSON, FromJSON
-	//
-	////////////////////////////////////////////////////////////////
-
-	void ToJSON(JSON& json, const Point& value)
-	{
-		json = { { "x", value.x },{ "y", value.y } };
-	}
-
-	void FromJSON(const JSON& json, Point& value)
-	{
-		//auto& base = json.base();
-		//base.at("x").get_to(value.x);
-		//base.at("y").get_to(value.y);
-	}
 }
 
 ////////////////////////////////////////////////////////////////

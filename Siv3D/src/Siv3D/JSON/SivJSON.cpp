@@ -81,7 +81,14 @@ namespace s3d
 	{
 		void ThrowJSONGetError(const char* type, const std::string_view s)
 		{
-			throw Error{ fmt::format("JSON::get<{}>(\"{}\") failed", DemangleUTF8(type), s) };
+			if (s.size() <= 64)
+			{
+				throw Error{ fmt::format("JSON::get<{}>(\"{}\") failed", DemangleUTF8(type), s) };
+			}
+			else
+			{
+				throw Error{ fmt::format("JSON::get<{}>(\"{}\"...) failed", DemangleUTF8(type), s.substr(0, 64)) };
+			}
 		}
 	}
 
@@ -831,6 +838,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	base
+	//
+	////////////////////////////////////////////////////////////////
+
+	[[nodiscard]]
+	const JSON::json_base& JSON::base() const
+	{
+		return getConstRef();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	toBSON
 	//
 	////////////////////////////////////////////////////////////////
@@ -1144,12 +1163,17 @@ namespace s3d
 
 namespace nlohmann
 {
-	void adl_serializer<s3d::String>::to_json(s3d::JSON::json_base& j, const s3d::String& value)
+	void adl_serializer<s3d::StringView>::to_json(json& j, const s3d::StringView& value)
 	{
 		j = s3d::Unicode::ToUTF8(value);
 	}
 
-	void adl_serializer<s3d::String>::from_json(const s3d::JSON::json_base& j, s3d::String& value)
+	void adl_serializer<s3d::String>::to_json(json& j, const s3d::String& value)
+	{
+		j = s3d::Unicode::ToUTF8(value);
+	}
+
+	void adl_serializer<s3d::String>::from_json(const json& j, s3d::String& value)
 	{
 		if (j.is_string())
 		{

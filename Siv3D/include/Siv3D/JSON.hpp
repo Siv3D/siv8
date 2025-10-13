@@ -15,6 +15,7 @@
 # include "Array.hpp"
 # include "String.hpp"
 # include "Blob.hpp"
+# include "Error.hpp"
 # include "Optional.hpp"
 # include "IntToString.hpp"
 # include "JSONValueType.hpp"
@@ -35,16 +36,6 @@ namespace s3d
 		std::is_constructible_v<JSON, Type>
 		&& (not std::is_same_v<std::decay_t<Type>, JSON>)
 		&& (not std::is_same_v<std::decay_t<Type>, JSONValueType>);
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	ToJSON
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type>
-	[[nodiscard]]
-	JSON ToJSON(const Type& value);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -730,6 +721,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	base
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		const json_base& base() const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	toBSON
 		//
 		////////////////////////////////////////////////////////////////
@@ -943,6 +943,47 @@ namespace s3d
 		const json_base& getConstRef() const;
 	};
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	ToJSON
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+		requires std::constructible_from<JSON::json_base, const Type&>
+	[[nodiscard]]
+	JSON ToJSON(const Type& value);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromJSON
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	[[nodiscard]]
+	Type FromJSON(const JSON& json);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromJSONOr
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	[[nodiscard]]
+	Type FromJSONOr(const JSON& json, Type&& defaultValue);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromJSONOpt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	[[nodiscard]]
+	Optional<Type> FromJSONOpt(const JSON& json);
+
 	inline namespace Literals
 	{
 		inline namespace JSONLiterals
@@ -972,12 +1013,27 @@ namespace s3d
 
 namespace nlohmann
 {
+	template <size_t N>
+	struct adl_serializer<s3d::char32[N]>
+	{
+		static void to_json(json& j, const s3d::char32(&value)[N])
+		{
+			j = json(s3d::Unicode::ToUTF8(value));
+		}
+	};
+
+	template <>
+	struct adl_serializer<s3d::StringView>
+	{
+		static void to_json(json& j, const s3d::StringView& value);
+	};
+
 	template <>
 	struct adl_serializer<s3d::String>
 	{
-		static void to_json(s3d::JSON::json_base& j, const s3d::String& value);
+		static void to_json(json& j, const s3d::String& value);
 
-		static void from_json(const s3d::JSON::json_base& j, s3d::String& value);
+		static void from_json(const json& j, s3d::String& value);
 	};
 }
 

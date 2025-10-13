@@ -537,6 +537,8 @@
 //// JSON データの検証 | JSON validation
 //# include <Siv3D/JSONValidator.hpp>
 
+# include <Siv3D/JSONSerialization.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	INI ファイル | INI File

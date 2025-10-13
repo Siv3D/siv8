@@ -1126,6 +1126,9 @@
     <Filter Include="src\Siv3D\SuperEllipse">
       <UniqueIdentifier>{87bb09d4-c0e4-41d6-a5f1-48d020e7f9bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\JSONSerialization">
+      <UniqueIdentifier>{ee2010a9-609e-42b9-8744-21efa7883a94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4599,6 +4602,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SuperEllipse.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7258,6 +7264,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\SuperEllipse\SivSuperEllipse.cpp">
       <Filter>src\Siv3D\SuperEllipse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\JSONSerialization\SivJSONSerialization.cpp">
+      <Filter>src\Siv3D\JSONSerialization</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
