@@ -99,73 +99,19 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	JSON::JSON(const std::nullptr_t)
-		: m_json(nullptr) {}
+		: m_json(std::in_place_type<JSON::json_base>, nullptr) {}
 
 	JSON::JSON(const JSONValueType valueType)
-		: m_json(ToValueType(valueType)) {}
+		: m_json(std::in_place_type<JSON::json_base>, ToValueType(valueType)) {}
 
-	JSON::JSON(const char* value)
-		: m_json(value) {}
-
-	JSON::JSON(const std::string_view value)
-		: m_json(value) {}
-
-	JSON::JSON(std::string value)
-		: m_json(std::move(value)) {}
-
-	JSON::JSON(const char32* value)
-		: m_json(String{ value }) {}
-
-	JSON::JSON(const StringView value)
-		: m_json(String{ value }) {}
-
-	JSON::JSON(const String& value)
-		: m_json(value) {}
-
-	JSON::JSON(const bool value)
-		: m_json(value) {}
-
-	JSON::JSON(const std::initializer_list<std::pair<std::string, JSON>>& list)
-		: m_json()
-	{
-		auto& json = std::get<json_base>(m_json);
-
-		for (const auto& element : list)
-		{
-			json[element.first] = element.second.getConstRef();
-		}
-	}
-
-	JSON::JSON(const std::initializer_list<std::pair<String, JSON>>& list)
-		: m_json()
-	{
-		auto& json = std::get<json_base>(m_json);
-
-		for (const auto& element : list)
-		{
-			json[Unicode::ToUTF8(element.first)] = element.second.getConstRef();
-		}
-	}
-
-	JSON::JSON(const Array<JSON>& arr)
-		: m_json(JSON::json_base::array())
-	{
-		auto& json = std::get<json_base>(m_json);
-
-		for (const auto& v : arr)
-		{
-			json.push_back(v.getConstRef());
-		}
-	}
+	JSON::JSON(JSON::json_base::initializer_list_t init, const bool typeDeduction, const JSONValueType manualType)
+		: m_json(std::in_place_type<JSON::json_base>, init, typeDeduction, ToValueType(manualType)) {}
 
 	JSON::JSON(std::reference_wrapper<json_base> json)
 		: m_json(json) {}
 
 	JSON::JSON(std::reference_wrapper<const json_base> json)
 		: m_json(json) {}
-
-	JSON::JSON(json_base&& json)
-		: m_json(std::move(json)) {}
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -25,26 +25,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON::JSON(const Concept::SignedIntegral auto value)
-		: m_json(value) {}
-
-	JSON::JSON(const Concept::UnsignedIntegral auto value)
-		: m_json(value) {}
-
-	JSON::JSON(const Concept::FloatingPoint auto value)
-		: m_json(value) {}
+	template <class Type>
+		requires std::constructible_from<JSON::json_base, Type>
+	JSON::JSON(Type&& value)
+		: m_json(std::forward<Type>(value)) {}
 
 	template <class Iterator>
 	JSON::JSON(Iterator first, Iterator last)
 		: m_json(first, last) {}
-
-	template <JSONCompatibleType Type>
-	JSON::JSON(const Array<Type>& arr)
-		: m_json(arr.map([](auto&& v) { return json_base(v); })) {}
-
-	template <JSONCompatibleType Type>
-	JSON::JSON(const std::initializer_list<Type>& list)
-		: m_json(list) {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -139,10 +127,10 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-		requires std::constructible_from<JSON::json_base, const Type&>
-	JSON ToJSON(const Type& value)
+		requires std::constructible_from<JSON::json_base, Type>
+	JSON ToJSON(Type&& value)
 	{
-		return JSON(JSON::json_base(value));
+		return JSON(std::forward<Type>(value));
 	}
 
 	////////////////////////////////////////////////////////////////

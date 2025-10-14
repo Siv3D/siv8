@@ -31,12 +31,6 @@ namespace s3d
 	class JSONConstIterator;
 	class JSONPointer;
 
-	template <class Type>
-	concept JSONCompatibleType =
-		std::is_constructible_v<JSON, Type>
-		&& (not std::is_same_v<std::decay_t<Type>, JSON>)
-		&& (not std::is_same_v<std::decay_t<Type>, JSONValueType>);
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	JSON
@@ -65,68 +59,28 @@ namespace s3d
 		[[nodiscard]]
 		explicit JSON(JSONValueType valueType);
 
+		template <class Type>
+			requires std::constructible_from<JSON::json_base, Type>
 		[[nodiscard]]
-		JSON(const char* value);
-
+		JSON(Type&& value);
+		
 		[[nodiscard]]
-		JSON(std::string_view value);
-
-		[[nodiscard]]
-		JSON(std::string value);
-
-		[[nodiscard]]
-		JSON(const char32* value);
-
-		[[nodiscard]]
-		JSON(StringView value);
-
-		[[nodiscard]]
-		JSON(const String& value);
-
-		[[nodiscard]]
-		JSON(bool value);
-
-		[[nodiscard]]
-		JSON(Concept::SignedIntegral auto value);
-
-		[[nodiscard]]
-		JSON(Concept::UnsignedIntegral auto value);
-
-		[[nodiscard]]
-		JSON(Concept::FloatingPoint auto value);
+		JSON(JSON::json_base::initializer_list_t init, bool typeDeduction = true, JSONValueType manualType = JSONValueType::Array);
 
 		template <class Iterator>
 		[[nodiscard]]
 		JSON(Iterator first, Iterator last);
 
 		[[nodiscard]]
-		JSON(const std::initializer_list<std::pair<std::string, JSON>>& list);
-
-		[[nodiscard]]
-		JSON(const std::initializer_list<std::pair<String, JSON>>& list);
-
-		[[nodiscard]]
-		JSON(const Array<JSON>& array);
-
-		template <JSONCompatibleType Type>
-		[[nodiscard]]
-		JSON(const Array<Type>& arr);
-
-		template <JSONCompatibleType Type>
-		[[nodiscard]]
-		JSON(const std::initializer_list<Type>& list);
-	
-		[[nodiscard]]
 		explicit JSON(std::reference_wrapper<json_base> json);
-		
+
 		[[nodiscard]]
 		explicit JSON(std::reference_wrapper<const json_base> json);
-
+		
 		[[nodiscard]]
-		explicit JSON(json_base&& json);
-
 		JSON(const JSON& other) = default;
 
+		[[nodiscard]]
 		JSON(JSON&& other) = default;
 
 		////////////////////////////////////////////////////////////////
@@ -950,9 +904,9 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-		requires std::constructible_from<JSON::json_base, const Type&>
+		requires std::constructible_from<JSON::json_base, Type>
 	[[nodiscard]]
-	JSON ToJSON(const Type& value);
+	JSON ToJSON(Type&& value);
 
 	////////////////////////////////////////////////////////////////
 	//
