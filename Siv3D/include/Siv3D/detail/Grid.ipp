@@ -2269,8 +2269,7 @@ namespace s3d
 
 		for (int32 y = 0; y < m_size.y; ++y)
 		{
-			using std::swap;
-			swap(m_container[aBase], m_container[bBase]);
+			std::ranges::swap(m_container[aBase], m_container[bBase]);
 			aBase += m_size.x;
 			bBase += m_size.x;
 		}

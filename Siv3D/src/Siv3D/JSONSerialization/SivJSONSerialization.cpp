@@ -10,9 +10,331 @@
 //-----------------------------------------------
 
 # include <Siv3D/JSONSerialization.hpp>
-# include <Siv3D/PointVector.hpp>
-# include <Siv3D/ColorHSV.hpp>
-# include <Siv3D/2DShapes.hpp>
+
+
+////////////////////////////////////////////////////////////////
+//
+//	int128
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::int128>::to_json(s3d::JSON::json_base& j, const s3d::int128& value)
+{
+	j = { { "high", absl::Int128High64(value) }, { "low", absl::Uint128Low64(value) } };
+}
+
+void JSONSerializer<s3d::int128>::from_json(const s3d::JSON::json_base& j, s3d::int128& value)
+{
+	const s3d::int64 high = j.at("high").get<s3d::int64>();
+	const s3d::uint64 low = j.at("low").get<s3d::uint64>();
+	value = s3d::MakeInt128(high, low);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	uint128
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::uint128>::to_json(s3d::JSON::json_base& j, const s3d::uint128& value)
+{
+	j = { { "high", absl::Uint128High64(value) }, { "low", absl::Uint128Low64(value) } };
+}
+
+void JSONSerializer<s3d::uint128>::from_json(const s3d::JSON::json_base& j, s3d::uint128& value)
+{
+	const s3d::uint64 high = j.at("high").get<s3d::uint64>();
+	const s3d::uint64 low = j.at("low").get<s3d::uint64>();
+	value = s3d::MakeUint128(high, low);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	BigInt
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::BigInt>::to_json(s3d::JSON::json_base& j, const s3d::BigInt& value)
+{
+	j = value.to_string();
+}
+
+void JSONSerializer<s3d::BigInt>::from_json(const s3d::JSON::json_base& j, s3d::BigInt& value)
+{
+	value = s3d::BigInt{ j.get<std::string_view>() };
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	BigFloat
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::BigFloat>::to_json(s3d::JSON::json_base& j, const s3d::BigFloat& value)
+{
+	j = value.to_string();
+}
+
+void JSONSerializer<s3d::BigFloat>::from_json(const s3d::JSON::json_base& j, s3d::BigFloat& value)
+{
+	value = s3d::BigFloat{ j.get<std::string_view>() };
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	HalfFloat
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::HalfFloat>::to_json(s3d::JSON::json_base& j, const s3d::HalfFloat& value)
+{
+	j = static_cast<float>(value);
+}
+
+void JSONSerializer<s3d::HalfFloat>::from_json(const s3d::JSON::json_base& j, s3d::HalfFloat& value)
+{
+	value = j.get<float>();
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Date
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Date>::to_json(s3d::JSON::json_base& j, const s3d::Date& value)
+{
+	j = { { "year", value.year }, { "month", value.month }, { "day", value.day } };
+}
+
+void JSONSerializer<s3d::Date>::from_json(const s3d::JSON::json_base& j, s3d::Date& value)
+{
+	j.at("year").get_to(value.year);
+	j.at("month").get_to(value.month);
+	j.at("day").get_to(value.day);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	DateTime
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::DateTime>::to_json(s3d::JSON::json_base& j, const s3d::DateTime& value)
+{
+	j = { { "year", value.year },
+		  { "month", value.month },
+		  { "day", value.day },
+		  { "hour", value.hour },
+		  { "minute", value.minute },
+		  { "second", value.second },
+		  { "milliseconds", value.milliseconds } };
+}
+
+void JSONSerializer<s3d::DateTime>::from_json(const s3d::JSON::json_base& j, s3d::DateTime& value)
+{
+	j.at("year").get_to(value.year);
+	j.at("month").get_to(value.month);
+	j.at("day").get_to(value.day);
+	j.at("hour").get_to(value.hour);
+	j.at("minute").get_to(value.minute);
+	j.at("second").get_to(value.second);
+	j.at("milliseconds").get_to(value.milliseconds);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	MD5Value
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::MD5Value>::to_json(s3d::JSON::json_base& j, const s3d::MD5Value& value)
+{
+	j = value.to_string();
+}
+
+void JSONSerializer<s3d::MD5Value>::from_json(const s3d::JSON::json_base& j, s3d::MD5Value& value)
+{
+	if (const auto md5 = s3d::MD5Value::Parse(j.get<std::string_view>()))
+	{
+		value = *md5;
+		return;
+	}
+	else
+	{
+		throw s3d::JSON::json_base::parse_error::create(101, 0, "Invalid MD5 string", nullptr);
+	}
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Mat3x2
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Mat3x2>::to_json(s3d::JSON::json_base& j, const s3d::Mat3x2& value)
+{
+	j = { { "_11", value._11 }, { "_12", value._12 },
+		  { "_21", value._21 }, { "_22", value._22 },
+		  { "_31", value._31 }, { "_32", value._32 } };
+}
+
+void JSONSerializer<s3d::Mat3x2>::from_json(const s3d::JSON::json_base& j, s3d::Mat3x2& value)
+{
+	j.at("_11").get_to(value._11);
+	j.at("_12").get_to(value._12);
+	j.at("_21").get_to(value._21);
+	j.at("_22").get_to(value._22);
+	j.at("_31").get_to(value._31);
+	j.at("_32").get_to(value._32);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Mat3x3
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Mat3x3>::to_json(s3d::JSON::json_base& j, const s3d::Mat3x3& value)
+{
+	j = { { "_11", value._11 }, { "_12", value._12 }, { "_13", value._13 },
+		  { "_21", value._21 }, { "_22", value._22 }, { "_23", value._23 },
+		  { "_31", value._31 }, { "_32", value._32 }, { "_33", value._33 } };
+}
+
+void JSONSerializer<s3d::Mat3x3>::from_json(const s3d::JSON::json_base& j, s3d::Mat3x3& value)
+{
+	j.at("_11").get_to(value._11);
+	j.at("_12").get_to(value._12);
+	j.at("_13").get_to(value._13);
+	j.at("_21").get_to(value._21);
+	j.at("_22").get_to(value._22);
+	j.at("_23").get_to(value._23);
+	j.at("_31").get_to(value._31);
+	j.at("_32").get_to(value._32);
+	j.at("_33").get_to(value._33);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	LineString
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::LineString>::to_json(s3d::JSON::json_base& j, const s3d::LineString& value)
+{
+	j = value.asArray();
+}
+
+void JSONSerializer<s3d::LineString>::from_json(const s3d::JSON::json_base& j, s3d::LineString& value)
+{
+	value = s3d::LineString{ j.get<s3d::Array<s3d::Vec2>>() };
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Polygon
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Polygon>::to_json(s3d::JSON::json_base& j, const s3d::Polygon& value)
+{
+	j = { { "outer", value.outer() },
+		  { "inners", value.inners() },
+		  { "vertices", value.vertices() },
+		  { "indices", value.indices() },
+		  { "boundingRect", value.boundingRect() }
+	};
+}
+
+void JSONSerializer<s3d::Polygon>::from_json(const s3d::JSON::json_base& j, s3d::Polygon& value)
+{
+	s3d::Array<s3d::Vec2> outer = j.at("outer").get<s3d::Array<s3d::Vec2>>();
+	s3d::Array<s3d::Array<s3d::Vec2>> inners = j.at("inners").get<s3d::Array<s3d::Array<s3d::Vec2>>>();
+	s3d::Array<s3d::Float2> vertices = j.at("vertices").get<s3d::Array<s3d::Float2>>();
+	s3d::Array<s3d::TriangleIndex> indices = j.at("indices").get<s3d::Array<s3d::TriangleIndex>>();
+	s3d::RectF boundingRect = j.at("boundingRect").get<s3d::RectF>();
+
+	value = s3d::Polygon{ outer, std::move(inners), std::move(vertices), std::move(indices), boundingRect, s3d::SkipValidation::Yes };
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	MultiPolygon
+//
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+//
+//	Bezier2
+//
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+//
+//	Bezier3
+//
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+//
+//	TriangleIndex
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::TriangleIndex>::to_json(s3d::JSON::json_base& j, const s3d::TriangleIndex& value)
+{
+	j = { { "i0", value.i0 }, { "i1", value.i1 }, { "i2", value.i2 } };
+}
+
+void JSONSerializer<s3d::TriangleIndex>::from_json(const s3d::JSON::json_base& j, s3d::TriangleIndex& value)
+{
+	j.at("i0").get_to(value.i0);
+	j.at("i1").get_to(value.i1);
+	j.at("i2").get_to(value.i2);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	TriangleIndex32
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::TriangleIndex32>::to_json(s3d::JSON::json_base& j, const s3d::TriangleIndex32& value)
+{
+	j = { { "i0", value.i0 }, { "i1", value.i1 }, { "i2", value.i2 } };
+}
+
+void JSONSerializer<s3d::TriangleIndex32>::from_json(const s3d::JSON::json_base& j, s3d::TriangleIndex32& value)
+{
+	j.at("i0").get_to(value.i0);
+	j.at("i1").get_to(value.i1);
+	j.at("i2").get_to(value.i2);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Shape2D
+//
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+//
+//	UUIDValue
+//
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+//
+//	Input
+//
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+//
+//	InputGroup
+//
+////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////
 //
