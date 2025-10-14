@@ -12,7 +12,7 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/FormatUtility.hpp>
 # include <Siv3D/EngineLog.hpp>
-# include "BinaryReaderDetail.hpp"
+# include "BinaryFileReaderDetail.hpp"
 
 namespace s3d
 {
