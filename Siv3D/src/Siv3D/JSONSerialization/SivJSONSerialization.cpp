@@ -14,356 +14,353 @@
 # include <Siv3D/ColorHSV.hpp>
 # include <Siv3D/2DShapes.hpp>
 
-namespace nlohmann
+////////////////////////////////////////////////////////////////
+//
+//	Point
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Point>::to_json(s3d::JSON::json_base& j, const s3d::Point& value)
 {
-	////////////////////////////////////////////////////////////////
-	//
-	//	Point
-	//
-	////////////////////////////////////////////////////////////////
+	j = { { "x", value.x }, { "y", value.y } };
+}
 
-	void adl_serializer<s3d::Point>::to_json(s3d::JSON::json_base& j, const s3d::Point& value)
-	{
-		j = { { "x", value.x }, { "y", value.y } };
-	}
+void JSONSerializer<s3d::Point>::from_json(const s3d::JSON::json_base& j, s3d::Point& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+}
 
-	void adl_serializer<s3d::Point>::from_json(const s3d::JSON::json_base& j, s3d::Point& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Float2
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Float2
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Float2>::to_json(s3d::JSON::json_base& j, const s3d::Float2& value)
+{
+	j = { { "x", value.x }, { "y", value.y } };
+}
 
-	void adl_serializer<s3d::Float2>::to_json(s3d::JSON::json_base& j, const s3d::Float2& value)
-	{
-		j = { { "x", value.x }, { "y", value.y } };
-	}
+void JSONSerializer<s3d::Float2>::from_json(const s3d::JSON::json_base& j, s3d::Float2& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+}
 
-	void adl_serializer<s3d::Float2>::from_json(const s3d::JSON::json_base& j, s3d::Float2& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Vec2
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Vec2
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Vec2>::to_json(s3d::JSON::json_base& j, const s3d::Vec2& value)
+{
+	j = { { "x", value.x }, { "y", value.y } };
+}
 
-	void adl_serializer<s3d::Vec2>::to_json(s3d::JSON::json_base& j, const s3d::Vec2& value)
-	{
-		j = { { "x", value.x }, { "y", value.y } };
-	}
+void JSONSerializer<s3d::Vec2>::from_json(const s3d::JSON::json_base& j, s3d::Vec2& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+}
 
-	void adl_serializer<s3d::Vec2>::from_json(const s3d::JSON::json_base& j, s3d::Vec2& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Float3
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Float3
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Float3>::to_json(s3d::JSON::json_base& j, const s3d::Float3& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "z", value.z } };
+}
 
-	void adl_serializer<s3d::Float3>::to_json(s3d::JSON::json_base& j, const s3d::Float3& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "z", value.z } };
-	}
+void JSONSerializer<s3d::Float3>::from_json(const s3d::JSON::json_base& j, s3d::Float3& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("z").get_to(value.z);
+}
 
-	void adl_serializer<s3d::Float3>::from_json(const s3d::JSON::json_base& j, s3d::Float3& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("z").get_to(value.z);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Vec3
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Vec3
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Vec3>::to_json(s3d::JSON::json_base& j, const s3d::Vec3& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "z", value.z } };
+}
 
-	void adl_serializer<s3d::Vec3>::to_json(s3d::JSON::json_base& j, const s3d::Vec3& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "z", value.z } };
-	}
+void JSONSerializer<s3d::Vec3>::from_json(const s3d::JSON::json_base& j, s3d::Vec3& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("z").get_to(value.z);
+}
 
-	void adl_serializer<s3d::Vec3>::from_json(const s3d::JSON::json_base& j, s3d::Vec3& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("z").get_to(value.z);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Float4
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Float4
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Float4>::to_json(s3d::JSON::json_base& j, const s3d::Float4& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "z", value.z }, { "w", value.w } };
+}
 
-	void adl_serializer<s3d::Float4>::to_json(s3d::JSON::json_base& j, const s3d::Float4& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "z", value.z }, { "w", value.w } };
-	}
+void JSONSerializer<s3d::Float4>::from_json(const s3d::JSON::json_base& j, s3d::Float4& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("z").get_to(value.z);
+	j.at("w").get_to(value.w);
+}
 
-	void adl_serializer<s3d::Float4>::from_json(const s3d::JSON::json_base& j, s3d::Float4& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("z").get_to(value.z);
-		j.at("w").get_to(value.w);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Vec4
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Vec4
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Vec4>::to_json(s3d::JSON::json_base& j, const s3d::Vec4& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "z", value.z }, { "w", value.w } };
+}
 
-	void adl_serializer<s3d::Vec4>::to_json(s3d::JSON::json_base& j, const s3d::Vec4& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "z", value.z }, { "w", value.w } };
-	}
+void JSONSerializer<s3d::Vec4>::from_json(const s3d::JSON::json_base& j, s3d::Vec4& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("z").get_to(value.z);
+	j.at("w").get_to(value.w);
+}
 
-	void adl_serializer<s3d::Vec4>::from_json(const s3d::JSON::json_base& j, s3d::Vec4& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("z").get_to(value.z);
-		j.at("w").get_to(value.w);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Color
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Color
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Color>::to_json(s3d::JSON::json_base& j, const s3d::Color& value)
+{
+	j = { { "r", value.r }, { "g", value.g }, { "b", value.b }, { "a", value.a } };
+}
 
-	void adl_serializer<s3d::Color>::to_json(s3d::JSON::json_base& j, const s3d::Color& value)
-	{
-		j = { { "r", value.r }, { "g", value.g }, { "b", value.b }, { "a", value.a } };
-	}
+void JSONSerializer<s3d::Color>::from_json(const s3d::JSON::json_base& j, s3d::Color& value)
+{
+	j.at("r").get_to(value.r);
+	j.at("g").get_to(value.g);
+	j.at("b").get_to(value.b);
+	j.at("a").get_to(value.a);
+}
 
-	void adl_serializer<s3d::Color>::from_json(const s3d::JSON::json_base& j, s3d::Color& value)
-	{
-		j.at("r").get_to(value.r);
-		j.at("g").get_to(value.g);
-		j.at("b").get_to(value.b);
-		j.at("a").get_to(value.a);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	ColorF
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	ColorF
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::ColorF>::to_json(s3d::JSON::json_base& j, const s3d::ColorF& value)
+{
+	j = { { "r", value.r }, { "g", value.g }, { "b", value.b }, { "a", value.a } };
+}
 
-	void adl_serializer<s3d::ColorF>::to_json(s3d::JSON::json_base& j, const s3d::ColorF& value)
-	{
-		j = { { "r", value.r }, { "g", value.g }, { "b", value.b }, { "a", value.a } };
-	}
+void JSONSerializer<s3d::ColorF>::from_json(const s3d::JSON::json_base& j, s3d::ColorF& value)
+{
+	j.at("r").get_to(value.r);
+	j.at("g").get_to(value.g);
+	j.at("b").get_to(value.b);
+	j.at("a").get_to(value.a);
+}
 
-	void adl_serializer<s3d::ColorF>::from_json(const s3d::JSON::json_base& j, s3d::ColorF& value)
-	{
-		j.at("r").get_to(value.r);
-		j.at("g").get_to(value.g);
-		j.at("b").get_to(value.b);
-		j.at("a").get_to(value.a);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	HSV
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	HSV
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::HSV>::to_json(s3d::JSON::json_base& j, const s3d::HSV& value)
+{
+	j = { { "h", value.h }, { "s", value.s }, { "v", value.v }, { "a", value.a } };
+}
 
-	void adl_serializer<s3d::HSV>::to_json(s3d::JSON::json_base& j, const s3d::HSV& value)
-	{
-		j = { { "h", value.h }, { "s", value.s }, { "v", value.v }, { "a", value.a } };
-	}
+void JSONSerializer<s3d::HSV>::from_json(const s3d::JSON::json_base& j, s3d::HSV& value)
+{
+	j.at("h").get_to(value.h);
+	j.at("s").get_to(value.s);
+	j.at("v").get_to(value.v);
+	j.at("a").get_to(value.a);
+}
 
-	void adl_serializer<s3d::HSV>::from_json(const s3d::JSON::json_base& j, s3d::HSV& value)
-	{
-		j.at("h").get_to(value.h);
-		j.at("s").get_to(value.s);
-		j.at("v").get_to(value.v);
-		j.at("a").get_to(value.a);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Line
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Line
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Line>::to_json(s3d::JSON::json_base& j, const s3d::Line& value)
+{
+	j = { { "start", value.start }, { "end", value.end } };
+}
 
-	void adl_serializer<s3d::Line>::to_json(s3d::JSON::json_base& j, const s3d::Line& value)
-	{
-		j = { { "start", value.start }, { "end", value.end } };
-	}
+void JSONSerializer<s3d::Line>::from_json(const s3d::JSON::json_base& j, s3d::Line& value)
+{
+	j.at("start").get_to(value.start);
+	j.at("end").get_to(value.end);
+}
 
-	void adl_serializer<s3d::Line>::from_json(const s3d::JSON::json_base& j, s3d::Line& value)
-	{
-		j.at("start").get_to(value.start);
-		j.at("end").get_to(value.end);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Rect
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Rect
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Rect>::to_json(s3d::JSON::json_base& j, const s3d::Rect& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "w", value.w }, { "h", value.h } };
+}
 
-	void adl_serializer<s3d::Rect>::to_json(s3d::JSON::json_base& j, const s3d::Rect& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "w", value.w }, { "h", value.h } };
-	}
+void JSONSerializer<s3d::Rect>::from_json(const s3d::JSON::json_base& j, s3d::Rect& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("w").get_to(value.w);
+	j.at("h").get_to(value.h);
+}
 
-	void adl_serializer<s3d::Rect>::from_json(const s3d::JSON::json_base& j, s3d::Rect& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("w").get_to(value.w);
-		j.at("h").get_to(value.h);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	RectF
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	RectF
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::RectF>::to_json(s3d::JSON::json_base& j, const s3d::RectF& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "w", value.w }, { "h", value.h } };
+}
 
-	void adl_serializer<s3d::RectF>::to_json(s3d::JSON::json_base& j, const s3d::RectF& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "w", value.w }, { "h", value.h } };
-	}
+void JSONSerializer<s3d::RectF>::from_json(const s3d::JSON::json_base& j, s3d::RectF& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("w").get_to(value.w);
+	j.at("h").get_to(value.h);
+}
 
-	void adl_serializer<s3d::RectF>::from_json(const s3d::JSON::json_base& j, s3d::RectF& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("w").get_to(value.w);
-		j.at("h").get_to(value.h);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Circle
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Circle
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Circle>::to_json(s3d::JSON::json_base& j, const s3d::Circle& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "r", value.r } };
+}
 
-	void adl_serializer<s3d::Circle>::to_json(s3d::JSON::json_base& j, const s3d::Circle& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "r", value.r } };
-	}
+void JSONSerializer<s3d::Circle>::from_json(const s3d::JSON::json_base& j, s3d::Circle& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("r").get_to(value.r);
+}
 
-	void adl_serializer<s3d::Circle>::from_json(const s3d::JSON::json_base& j, s3d::Circle& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("r").get_to(value.r);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Ellipse
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Ellipse
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Ellipse>::to_json(s3d::JSON::json_base& j, const s3d::Ellipse& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "a", value.a }, { "b", value.b } };
+}
 
-	void adl_serializer<s3d::Ellipse>::to_json(s3d::JSON::json_base& j, const s3d::Ellipse& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "a", value.a }, { "b", value.b } };
-	}
+void JSONSerializer<s3d::Ellipse>::from_json(const s3d::JSON::json_base& j, s3d::Ellipse& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("a").get_to(value.a);
+	j.at("b").get_to(value.b);
+}
 
-	void adl_serializer<s3d::Ellipse>::from_json(const s3d::JSON::json_base& j, s3d::Ellipse& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("a").get_to(value.a);
-		j.at("b").get_to(value.b);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	SuperEllipse
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	SuperEllipse
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::SuperEllipse>::to_json(s3d::JSON::json_base& j, const s3d::SuperEllipse& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "a", value.a }, { "b", value.b }, { "n", value.n } };
+}
 
-	void adl_serializer<s3d::SuperEllipse>::to_json(s3d::JSON::json_base& j, const s3d::SuperEllipse& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "a", value.a }, { "b", value.b }, { "n", value.n } };
-	}
+void JSONSerializer<s3d::SuperEllipse>::from_json(const s3d::JSON::json_base& j, s3d::SuperEllipse& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("a").get_to(value.a);
+	j.at("b").get_to(value.b);
+	j.at("n").get_to(value.n);
+}
 
-	void adl_serializer<s3d::SuperEllipse>::from_json(const s3d::JSON::json_base& j, s3d::SuperEllipse& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("a").get_to(value.a);
-		j.at("b").get_to(value.b);
-		j.at("n").get_to(value.n);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Triangle
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Triangle
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Triangle>::to_json(s3d::JSON::json_base& j, const s3d::Triangle& value)
+{
+	j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 } };
+}
 
-	void adl_serializer<s3d::Triangle>::to_json(s3d::JSON::json_base& j, const s3d::Triangle& value)
-	{
-		j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 } };
-	}
+void JSONSerializer<s3d::Triangle>::from_json(const s3d::JSON::json_base& j, s3d::Triangle& value)
+{
+	j.at("p0").get_to(value.p0);
+	j.at("p1").get_to(value.p1);
+	j.at("p2").get_to(value.p2);
+}
 
-	void adl_serializer<s3d::Triangle>::from_json(const s3d::JSON::json_base& j, s3d::Triangle& value)
-	{
-		j.at("p0").get_to(value.p0);
-		j.at("p1").get_to(value.p1);
-		j.at("p2").get_to(value.p2);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	Quad
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Quad
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::Quad>::to_json(s3d::JSON::json_base& j, const s3d::Quad& value)
+{
+	j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 }, { "p3", value.p3 } };
+}
 
-	void adl_serializer<s3d::Quad>::to_json(s3d::JSON::json_base& j, const s3d::Quad& value)
-	{
-		j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 }, { "p3", value.p3 } };
-	}
+void JSONSerializer<s3d::Quad>::from_json(const s3d::JSON::json_base& j, s3d::Quad& value)
+{
+	j.at("p0").get_to(value.p0);
+	j.at("p1").get_to(value.p1);
+	j.at("p2").get_to(value.p2);
+	j.at("p3").get_to(value.p3);
+}
 
-	void adl_serializer<s3d::Quad>::from_json(const s3d::JSON::json_base& j, s3d::Quad& value)
-	{
-		j.at("p0").get_to(value.p0);
-		j.at("p1").get_to(value.p1);
-		j.at("p2").get_to(value.p2);
-		j.at("p3").get_to(value.p3);
-	}
+////////////////////////////////////////////////////////////////
+//
+//	RoundRect
+//
+////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	RoundRect
-	//
-	////////////////////////////////////////////////////////////////
+void JSONSerializer<s3d::RoundRect>::to_json(s3d::JSON::json_base& j, const s3d::RoundRect& value)
+{
+	j = { { "x", value.x }, { "y", value.y }, { "w", value.w }, { "h", value.h }, { "r", value.r } };
+}
 
-	void adl_serializer<s3d::RoundRect>::to_json(s3d::JSON::json_base& j, const s3d::RoundRect& value)
-	{
-		j = { { "x", value.x }, { "y", value.y }, { "w", value.w }, { "h", value.h }, { "r", value.r } };
-	}
-
-	void adl_serializer<s3d::RoundRect>::from_json(const s3d::JSON::json_base& j, s3d::RoundRect& value)
-	{
-		j.at("x").get_to(value.x);
-		j.at("y").get_to(value.y);
-		j.at("w").get_to(value.w);
-		j.at("h").get_to(value.h);
-		j.at("r").get_to(value.r);
-	}
+void JSONSerializer<s3d::RoundRect>::from_json(const s3d::JSON::json_base& j, s3d::RoundRect& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+	j.at("w").get_to(value.w);
+	j.at("h").get_to(value.h);
+	j.at("r").get_to(value.r);
 }

@@ -938,14 +938,6 @@ namespace s3d
 	[[nodiscard]]
 	Optional<Type> FromJSONOpt(const JSON& json);
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	JSONSerializer
-	//
-	////////////////////////////////////////////////////////////////
-
-	# define JSONSerializer nlohmann::adl_serializer 
-
 	inline namespace Literals
 	{
 		inline namespace JSONLiterals
@@ -973,30 +965,35 @@ namespace s3d
 	}
 }
 
-namespace nlohmann
+////////////////////////////////////////////////////////////////
+//
+//	JSONSerializer
+//
+////////////////////////////////////////////////////////////////
+
+# define JSONSerializer nlohmann::adl_serializer 
+
+template <size_t N>
+struct JSONSerializer<s3d::char32[N]>
 {
-	template <size_t N>
-	struct adl_serializer<s3d::char32[N]>
+	static void to_json(s3d::JSON::json_base& j, const s3d::char32(&value)[N])
 	{
-		static void to_json(s3d::JSON::json_base& j, const s3d::char32(&value)[N])
-		{
-			j = s3d::JSON::json_base(s3d::Unicode::ToUTF8(value));
-		}
-	};
+		j = s3d::JSON::json_base(s3d::Unicode::ToUTF8(value));
+	}
+};
 
-	template <>
-	struct adl_serializer<s3d::StringView>
-	{
-		static void to_json(s3d::JSON::json_base& j, const s3d::StringView& value);
-	};
+template <>
+struct JSONSerializer<s3d::StringView>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::StringView& value);
+};
 
-	template <>
-	struct adl_serializer<s3d::String>
-	{
-		static void to_json(s3d::JSON::json_base& j, const s3d::String& value);
+template <>
+struct JSONSerializer<s3d::String>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::String& value);
 
-		static void from_json(const s3d::JSON::json_base& j, s3d::String& value);
-	};
-}
+	static void from_json(const s3d::JSON::json_base& j, s3d::String& value);
+};
 
 # include "detail/JSON.ipp"

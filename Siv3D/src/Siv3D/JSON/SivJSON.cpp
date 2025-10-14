@@ -1107,27 +1107,17 @@ namespace s3d
 	}
 }
 
-namespace nlohmann
+void JSONSerializer<s3d::StringView>::to_json(s3d::JSON::json_base& j, const s3d::StringView& value)
 {
-	void adl_serializer<s3d::StringView>::to_json(s3d::JSON::json_base& j, const s3d::StringView& value)
-	{
-		j = s3d::Unicode::ToUTF8(value);
-	}
+	j = s3d::Unicode::ToUTF8(value);
+}
 
-	void adl_serializer<s3d::String>::to_json(s3d::JSON::json_base& j, const s3d::String& value)
-	{
-		j = s3d::Unicode::ToUTF8(value);
-	}
+void JSONSerializer<s3d::String>::to_json(s3d::JSON::json_base& j, const s3d::String& value)
+{
+	j = s3d::Unicode::ToUTF8(value);
+}
 
-	void adl_serializer<s3d::String>::from_json(const s3d::JSON::json_base& j, s3d::String& value)
-	{
-		if (j.is_string())
-		{
-			value = s3d::Unicode::FromUTF8(j.get<std::string>());
-		}
-		else
-		{
-			value.clear();
-		}
-	}
+void JSONSerializer<s3d::String>::from_json(const s3d::JSON::json_base& j, s3d::String& value)
+{
+	value = s3d::Unicode::FromUTF8(j.get<std::string>());
 }
