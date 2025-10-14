@@ -33,7 +33,7 @@ namespace s3d
 
 		bool IsResourcePath(const FilePathView path) noexcept
 		{
-			return path.starts_with(U'/');
+			return path.starts_with(Platform::Windows::ResourcePathPrefix);
 		}
 
 		////////////////////////////////////////////////////////////////

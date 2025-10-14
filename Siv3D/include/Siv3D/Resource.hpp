@@ -58,6 +58,8 @@ namespace s3d
 
 	namespace Platform::Windows
 	{
+		inline constexpr char32 ResourcePathPrefix = U':';
+
 		/// @brief リソースパスをリソース名に変換します（内部関数）
 		/// @param resourcePath リソースパス
 		/// @return リソース名
