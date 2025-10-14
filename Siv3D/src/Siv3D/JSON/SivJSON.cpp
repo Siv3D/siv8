@@ -750,7 +750,7 @@ namespace s3d
 
 	bool JSON::save(const FilePathView path, const char32 indent, const size_t spaceCount, const EnsureAscii ensureAscii) const
 	{
-		TextWriter writer{ path };
+		TextFileWriter writer{ path };
 
 		if (not writer)
 		{
@@ -770,7 +770,7 @@ namespace s3d
 
 	bool JSON::saveMinified(const FilePathView path, const EnsureAscii ensureAscii) const
 	{
-		TextWriter writer{ path };
+		TextFileWriter writer{ path };
 
 		if (not writer)
 		{
@@ -863,7 +863,7 @@ namespace s3d
 
 	JSON JSON::Load(const FilePathView path, const AllowExceptions allowExceptions)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 
 		if (not reader)
 		{
@@ -880,7 +880,7 @@ namespace s3d
 
 	JSON JSON::Load(std::unique_ptr<IReader>&& reader, const AllowExceptions allowExceptions)
 	{
-		TextReader textReader{ std::move(reader) };
+		TextFileReader textReader{ std::move(reader) };
 
 		if (not textReader)
 		{

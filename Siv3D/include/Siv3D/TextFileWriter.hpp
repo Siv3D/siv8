@@ -19,31 +19,31 @@
 
 namespace s3d
 {
-	class TextWriter;
+	class TextFileWriter;
 
 	namespace detail
 	{
 		/// @brief テキストファイル書き込みバッファ
-		class TextWriterBuffer
+		class TextFileWriterBuffer
 		{
 		public:
 
 			std::unique_ptr<FormatData> formatData;
 
-			TextWriterBuffer(TextWriter& writer);
+			TextFileWriterBuffer(TextFileWriter& writer);
 
-			TextWriterBuffer(TextWriterBuffer&& other) noexcept;
+			TextFileWriterBuffer(TextFileWriterBuffer&& other) noexcept;
 
-			~TextWriterBuffer();
+			~TextFileWriterBuffer();
 
 			/// @brief テキストファイル書き込みバッファにデータを書き込みます。
 			/// @param value 書き込むデータ
 			/// @return *this
-			TextWriterBuffer& operator <<(const Concept::Formattable auto& value);
+			TextFileWriterBuffer& operator <<(const Concept::Formattable auto& value);
 
 		private:
 
-			TextWriter& m_writer;
+			TextFileWriter& m_writer;
 
 			bool m_isLast = false;
 		};
@@ -51,12 +51,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	TextWriter
+	//	TextFileWriter
 	//
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 書き込み用テキストファイル
-	class TextWriter
+	class TextFileWriter
 	{
 	public:
 
@@ -68,20 +68,20 @@ namespace s3d
 
 		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
-		TextWriter();
+		TextFileWriter();
 
 		/// @brief テキストファイルをオープンします。
 		/// @param path ファイルパス
 		/// @param encoding テキストのエンコーディング形式
 		[[nodiscard]]
-		TextWriter(FilePathView path, TextEncoding encoding);
+		TextFileWriter(FilePathView path, TextEncoding encoding);
 
 		/// @brief テキストファイルをオープンします。
 		/// @param path ファイルパス
 		/// @param openMode ファイルのオープンモード
 		/// @param encoding テキストのエンコーディング形式
 		[[nodiscard]]
-		explicit TextWriter(FilePathView path, OpenMode openMode = OpenMode::Trunc, TextEncoding encoding = TextEncoding::UTF8_WITH_BOM);
+		explicit TextFileWriter(FilePathView path, OpenMode openMode = OpenMode::Trunc, TextEncoding encoding = TextEncoding::UTF8_WITH_BOM);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -232,7 +232,7 @@ namespace s3d
 		/// @brief データを文字列に変換してファイルに書き込み、一連の `<<` が終わったあとに改行します。
 		/// @param value 書き込むデータ
 		/// @return 続いて `<<` できるオブジェクト
-		detail::TextWriterBuffer operator <<(const Concept::Formattable auto& value);
+		detail::TextFileWriterBuffer operator <<(const Concept::Formattable auto& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -258,9 +258,9 @@ namespace s3d
 
 	private:
 
-		class TextWriterDetail;
+		class TextFileWriterDetail;
 
-		std::shared_ptr<TextWriterDetail> pImpl;
+		std::shared_ptr<TextFileWriterDetail> pImpl;
 	};
 }
 

@@ -485,7 +485,7 @@ namespace s3d
 
 	bool INI::save(const FilePathView path) const
 	{
-		TextWriter writer{ path };
+		TextFileWriter writer{ path };
 
 		if (not writer)
 		{
@@ -505,7 +505,7 @@ namespace s3d
 
 	INI INI::Load(const FilePathView path)
 	{
-		TextReader textReader{ path };
+		TextFileReader textReader{ path };
 
 		if (not textReader)
 		{
@@ -517,7 +517,7 @@ namespace s3d
 
 	INI INI::Load(std::unique_ptr<IReader>&& reader)
 	{
-		TextReader textReader{ std::move(reader) };
+		TextFileReader textReader{ std::move(reader) };
 
 		if (not textReader)
 		{

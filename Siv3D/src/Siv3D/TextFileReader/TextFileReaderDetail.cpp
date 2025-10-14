@@ -72,7 +72,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextReader::TextReaderDetail::~TextReaderDetail()
+	TextFileReader::TextFileReaderDetail::~TextFileReaderDetail()
 	{
 		close();
 	}
@@ -83,7 +83,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::TextReaderDetail::open(const FilePathView path, const Optional<TextEncoding>& encoding)
+	bool TextFileReader::TextFileReaderDetail::open(const FilePathView path, const Optional<TextEncoding>& encoding)
 	{
 		if (m_info.isOpen)
 		{
@@ -114,7 +114,7 @@ namespace s3d
 		return true;
 	}
 
-	bool TextReader::TextReaderDetail::open(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
+	bool TextFileReader::TextFileReaderDetail::open(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
 	{
 		if (m_info.isOpen)
 		{
@@ -154,7 +154,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextReader::TextReaderDetail::close()
+	void TextFileReader::TextFileReaderDetail::close()
 	{
 		if (not m_info.isOpen)
 		{
@@ -172,7 +172,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::TextReaderDetail::isOpen() const noexcept
+	bool TextFileReader::TextFileReaderDetail::isOpen() const noexcept
 	{
 		return m_info.isOpen;
 	}
@@ -183,7 +183,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::TextReaderDetail::readChar(char32& ch)
+	bool TextFileReader::TextFileReaderDetail::readChar(char32& ch)
 	{
 		ch = U'\0';
 
@@ -219,7 +219,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::TextReaderDetail::readLine(std::string& line)
+	bool TextFileReader::TextFileReaderDetail::readLine(std::string& line)
 	{
 		line.clear();
 
@@ -239,7 +239,7 @@ namespace s3d
 		}
 	}
 
-	bool TextReader::TextReaderDetail::readLine(String& line)
+	bool TextFileReader::TextFileReaderDetail::readLine(String& line)
 	{
 		line.clear();
 
@@ -280,7 +280,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::TextReaderDetail::readLines(Array<std::string>& lines)
+	bool TextFileReader::TextFileReaderDetail::readLines(Array<std::string>& lines)
 	{
 		lines.clear();
 
@@ -307,7 +307,7 @@ namespace s3d
 		}
 	}
 
-	bool TextReader::TextReaderDetail::readLines(Array<String>& lines)
+	bool TextFileReader::TextFileReaderDetail::readLines(Array<String>& lines)
 	{
 		lines.clear();
 
@@ -373,7 +373,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::TextReaderDetail::readAll(std::string& s)
+	bool TextFileReader::TextFileReaderDetail::readAll(std::string& s)
 	{
 		s.clear();
 
@@ -393,7 +393,7 @@ namespace s3d
 		}
 	}
 
-	bool TextReader::TextReaderDetail::readAll(String& s)
+	bool TextFileReader::TextFileReaderDetail::readAll(String& s)
 	{
 		s.clear();
 
@@ -450,7 +450,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextEncoding TextReader::TextReaderDetail::encoding() const noexcept
+	TextEncoding TextFileReader::TextFileReaderDetail::encoding() const noexcept
 	{
 		return m_info.encoding;
 	}
@@ -461,7 +461,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const FilePath& TextReader::TextReaderDetail::path() const noexcept
+	const FilePath& TextFileReader::TextFileReaderDetail::path() const noexcept
 	{
 		return m_info.fullPath;
 	}
@@ -472,7 +472,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::TextReaderDetail::readCodePoint(char32& codePoint)
+	bool TextFileReader::TextFileReaderDetail::readCodePoint(char32& codePoint)
 	{
 		switch (m_info.encoding)
 		{
@@ -485,7 +485,7 @@ namespace s3d
 		}
 	}
 
-	bool TextReader::TextReaderDetail::readCodePointUTF8(char32& codePoint)
+	bool TextFileReader::TextFileReaderDetail::readCodePointUTF8(char32& codePoint)
 	{
 		uint8 cx;
 
@@ -538,7 +538,7 @@ namespace s3d
 		return false;
 	}
 
-	bool TextReader::TextReaderDetail::readCodePointUTF16LE(char32& codePoint)
+	bool TextFileReader::TextFileReaderDetail::readCodePointUTF16LE(char32& codePoint)
 	{
 		uint16 c0 = 0, c1 = 0;
 
@@ -564,7 +564,7 @@ namespace s3d
 		return true;
 	}
 
-	bool TextReader::TextReaderDetail::readCodePointUTF16BE(char32& codePoint)
+	bool TextFileReader::TextFileReaderDetail::readCodePointUTF16BE(char32& codePoint)
 	{
 		uint16 c0 = 0, c1 = 0;
 
@@ -594,17 +594,17 @@ namespace s3d
 		return true;
 	}
 
-	bool TextReader::TextReaderDetail::readByte(uint8& c)
+	bool TextFileReader::TextFileReaderDetail::readByte(uint8& c)
 	{
 		return m_reader->read(c);
 	}
 
-	bool TextReader::TextReaderDetail::readTwoBytes(uint16& c)
+	bool TextFileReader::TextFileReaderDetail::readTwoBytes(uint16& c)
 	{
 		return m_reader->read(c);
 	}
 
-	bool TextReader::TextReaderDetail::readLineUTF8(std::string& line)
+	bool TextFileReader::TextFileReaderDetail::readLineUTF8(std::string& line)
 	{
 		bool eof = true;
 
@@ -632,7 +632,7 @@ namespace s3d
 		return (not eof);
 	}
 
-	bool TextReader::TextReaderDetail::readLineUTF16LE(std::string& line)
+	bool TextFileReader::TextFileReaderDetail::readLineUTF16LE(std::string& line)
 	{
 		// [Siv3D ToDo] バッファを使わないようにする
 		std::u16string line16;
@@ -680,7 +680,7 @@ namespace s3d
 		return (not eof);
 	}
 
-	bool TextReader::TextReaderDetail::readLineUTF16BE(std::string& line)
+	bool TextFileReader::TextFileReaderDetail::readLineUTF16BE(std::string& line)
 	{
 		// [Siv3D ToDo] バッファを使わないようにする
 		std::u16string line16;
@@ -732,7 +732,7 @@ namespace s3d
 		return (not eof);
 	}
 
-	bool TextReader::TextReaderDetail::readLinesUTF16LE(Array<std::string>& lines)
+	bool TextFileReader::TextFileReaderDetail::readLinesUTF16LE(Array<std::string>& lines)
 	{
 		std::u16string line16;
 
@@ -783,7 +783,7 @@ namespace s3d
 		return (not eof);
 	}
 
-	bool TextReader::TextReaderDetail::readLinesUTF16BE(Array<std::string>& lines)
+	bool TextFileReader::TextFileReaderDetail::readLinesUTF16BE(Array<std::string>& lines)
 	{
 		std::u16string line16;
 
@@ -838,7 +838,7 @@ namespace s3d
 		return (not eof);
 	}
 
-	bool TextReader::TextReaderDetail::readAllUTF8(std::string& s)
+	bool TextFileReader::TextFileReaderDetail::readAllUTF8(std::string& s)
 	{
 		const int64 readSize = (m_reader->size() - m_reader->getPos());
 
@@ -856,7 +856,7 @@ namespace s3d
 		return (0 < readBytes);
 	}
 
-	bool TextReader::TextReaderDetail::readAllUTF16LE(std::string& s)
+	bool TextFileReader::TextFileReaderDetail::readAllUTF16LE(std::string& s)
 	{
 		std::u16string line;
 
@@ -908,7 +908,7 @@ namespace s3d
 		return (not eof);
 	}
 
-	bool TextReader::TextReaderDetail::readAllUTF16BE(std::string& s)
+	bool TextFileReader::TextFileReaderDetail::readAllUTF16BE(std::string& s)
 	{
 		std::u16string line;
 

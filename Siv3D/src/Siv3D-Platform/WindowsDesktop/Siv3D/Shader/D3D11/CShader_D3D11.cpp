@@ -54,7 +54,7 @@ namespace s3d
 		{
 			LOG_DEBUG(fmt::format("CompileHLSLFromFile(path = {}, stage = {}, entryPoint = {}, flags = {:#X})", path, ToTargetName(stage), entryPoint, flags));
 
-			TextReader reader{ path };
+			TextFileReader reader{ path };
 
 			if (not reader)
 			{

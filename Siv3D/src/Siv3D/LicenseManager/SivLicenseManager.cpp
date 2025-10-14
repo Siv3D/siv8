@@ -160,7 +160,7 @@ R"-(<br>
 			const FilePath path = (CacheDirectory::Apps(applicationName) + U"Licenses.html");
 
 			{
-				TextWriter writer{ path };
+				TextFileWriter writer{ path };
 				writer.writeUTF8(Header);
 
 				for (const auto& license : SIV3D_ENGINE(LicenseManager)->enumLicenses())

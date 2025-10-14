@@ -15,7 +15,7 @@ namespace s3d
 {
 	namespace detail
 	{
-		TextWriterBuffer& TextWriterBuffer::operator <<(const Concept::Formattable auto& value)
+		TextFileWriterBuffer& TextFileWriterBuffer::operator <<(const Concept::Formattable auto& value)
 		{
 			Formatter(*formatData, value);
 
@@ -29,7 +29,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::write(const Concept::Formattable auto& ... args)
+	void TextFileWriter::write(const Concept::Formattable auto& ... args)
 	{
 		write(Format(args...));
 	}
@@ -40,7 +40,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::writeln(const Concept::Formattable auto& ... args)
+	void TextFileWriter::writeln(const Concept::Formattable auto& ... args)
 	{
 		writeln(Format(args...));
 	}
@@ -51,9 +51,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	detail::TextWriterBuffer TextWriter::operator <<(const Concept::Formattable auto& value)
+	detail::TextFileWriterBuffer TextFileWriter::operator <<(const Concept::Formattable auto& value)
 	{
-		detail::TextWriterBuffer buffer{ *this };
+		detail::TextFileWriterBuffer buffer{ *this };
 
 		Formatter(*(buffer.formatData), value);
 

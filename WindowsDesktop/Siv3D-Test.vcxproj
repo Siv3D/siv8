@@ -17,8 +17,8 @@
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
     <ClCompile Include="..\Test\Test_Base64Value.cpp" />
-    <ClCompile Include="..\Test\Test_BinaryReader.cpp" />
-    <ClCompile Include="..\Test\Test_BinaryWriter.cpp" />
+    <ClCompile Include="..\Test\Test_BinaryFileReader.cpp" />
+    <ClCompile Include="..\Test\Test_BinaryFileWriter.cpp" />
     <ClCompile Include="..\Test\Test_Byte.cpp" />
     <ClCompile Include="..\Test\Test_Color.cpp" />
     <ClCompile Include="..\Test\Test_ColorF.cpp" />
@@ -43,7 +43,7 @@
     <ClCompile Include="..\Test\Test_Step.cpp" />
     <ClCompile Include="..\Test\Test_String.cpp" />
     <ClCompile Include="..\Test\Test_StringView.cpp" />
-    <ClCompile Include="..\Test\Test_TextReader.cpp" />
+    <ClCompile Include="..\Test\Test_TextFileReader.cpp" />
     <ClCompile Include="..\Test\Test_TupleFormatter.cpp" />
     <ClCompile Include="..\Test\Test_Types.cpp" />
     <ClCompile Include="..\Test\Test_Unicode.cpp" />

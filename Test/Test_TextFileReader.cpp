@@ -11,23 +11,23 @@
 
 # include "Siv3DTest.hpp"
 
-TEST_CASE("TextReader.encoding")
+TEST_CASE("TextFileReader.encoding")
 {
-	REQUIRE(TextReader{}.encoding() == TextEncoding::UTF8_NO_BOM);
-	REQUIRE(TextReader{ U"../../Test/data/text/nonexist.txt" }.encoding() == TextEncoding::UTF8_NO_BOM);
+	REQUIRE(TextFileReader{}.encoding() == TextEncoding::UTF8_NO_BOM);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/nonexist.txt" }.encoding() == TextEncoding::UTF8_NO_BOM);
 
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8_empty.txt" }.encoding() == TextEncoding::UTF8_NO_BOM);
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8bom_empty.txt" }.encoding() == TextEncoding::UTF8_WITH_BOM);
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16le_empty.txt" }.encoding() == TextEncoding::UTF16LE);
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16be_empty.txt" }.encoding() == TextEncoding::UTF16BE);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8_empty.txt" }.encoding() == TextEncoding::UTF8_NO_BOM);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8bom_empty.txt" }.encoding() == TextEncoding::UTF8_WITH_BOM);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16le_empty.txt" }.encoding() == TextEncoding::UTF16LE);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16be_empty.txt" }.encoding() == TextEncoding::UTF16BE);
 
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8_a.txt" }.encoding() == TextEncoding::UTF8_NO_BOM);
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8bom_a.txt" }.encoding() == TextEncoding::UTF8_WITH_BOM);
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16le_a.txt" }.encoding() == TextEncoding::UTF16LE);
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16be_a.txt" }.encoding() == TextEncoding::UTF16BE);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8_a.txt" }.encoding() == TextEncoding::UTF8_NO_BOM);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8bom_a.txt" }.encoding() == TextEncoding::UTF8_WITH_BOM);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16le_a.txt" }.encoding() == TextEncoding::UTF16LE);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16be_a.txt" }.encoding() == TextEncoding::UTF16BE);
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(reader.encoding() == TextEncoding::UTF8_NO_BOM);
 		REQUIRE(reader.open(U"../../Test/data/text/utf8bom_a.txt"));
 		REQUIRE(reader.encoding() == TextEncoding::UTF8_WITH_BOM);
@@ -36,23 +36,23 @@ TEST_CASE("TextReader.encoding")
 	}
 }
 
-TEST_CASE("TextReader.path")
+TEST_CASE("TextFileReader.path")
 {
-	REQUIRE(TextReader{}.encoding() == TextEncoding::UTF8_NO_BOM);
-	REQUIRE(TextReader{ U"../../Test/data/text/nonexist.txt" }.path().isEmpty());
+	REQUIRE(TextFileReader{}.encoding() == TextEncoding::UTF8_NO_BOM);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/nonexist.txt" }.path().isEmpty());
 
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8_empty.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf8_empty.txt"));
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8bom_empty.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf8bom_empty.txt"));
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16le_empty.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf16le_empty.txt"));
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16be_empty.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf16be_empty.txt"));
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8_empty.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf8_empty.txt"));
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8bom_empty.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf8bom_empty.txt"));
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16le_empty.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf16le_empty.txt"));
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16be_empty.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf16be_empty.txt"));
 
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8_a.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf8_a.txt"));
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8bom_a.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf8bom_a.txt"));
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16le_a.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf16le_a.txt"));
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16be_a.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf16be_a.txt"));
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8_a.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf8_a.txt"));
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8bom_a.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf8bom_a.txt"));
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16le_a.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf16le_a.txt"));
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16be_a.txt" }.path() == FileSystem::FullPath(U"../../Test/data/text/utf16be_a.txt"));
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(reader.path().isEmpty());
 		REQUIRE(reader.open(U"../../Test/data/text/utf8bom_a.txt"));
 		REQUIRE(reader.path() == FileSystem::FullPath(U"../../Test/data/text/utf8bom_a.txt"));
@@ -61,23 +61,23 @@ TEST_CASE("TextReader.path")
 	}
 }
 
-TEST_CASE("TextReader.isOpen")
+TEST_CASE("TextFileReader.isOpen")
 {
-	REQUIRE(TextReader{}.isOpen() == false);
-	REQUIRE(TextReader{ U"../../Test/data/text/nonexist.txt" }.isOpen() == false);
+	REQUIRE(TextFileReader{}.isOpen() == false);
+	REQUIRE(TextFileReader{ U"../../Test/data/text/nonexist.txt" }.isOpen() == false);
 
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8_empty.txt" }.isOpen());
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8bom_empty.txt" }.isOpen());
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16le_empty.txt" }.isOpen());
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16be_empty.txt" }.isOpen());
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8_empty.txt" }.isOpen());
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8bom_empty.txt" }.isOpen());
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16le_empty.txt" }.isOpen());
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16be_empty.txt" }.isOpen());
 
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8_a.txt" }.isOpen());
-	REQUIRE(TextReader{ U"../../Test/data/text/utf8bom_a.txt" }.isOpen());
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16le_a.txt" }.isOpen());
-	REQUIRE(TextReader{ U"../../Test/data/text/utf16be_a.txt" }.isOpen());
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8_a.txt" }.isOpen());
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf8bom_a.txt" }.isOpen());
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16le_a.txt" }.isOpen());
+	REQUIRE(TextFileReader{ U"../../Test/data/text/utf16be_a.txt" }.isOpen());
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(not reader.isOpen());
 		REQUIRE(reader.open(U"../../Test/data/text/utf8bom_a.txt"));
 		REQUIRE(reader.isOpen());
@@ -86,30 +86,30 @@ TEST_CASE("TextReader.isOpen")
 	}
 }
 
-TEST_CASE("TextReader.operator bool")
+TEST_CASE("TextFileReader.operator bool")
 {
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(not reader);
 	}
 
 	{
-		TextReader reader{ U"../../Test/data/text/nonexist.txt" };
+		TextFileReader reader{ U"../../Test/data/text/nonexist.txt" };
 		REQUIRE(not reader);
 	}
 
 	{
-		TextReader reader{ U"../../Test/data/text/utf8_empty.txt" };
+		TextFileReader reader{ U"../../Test/data/text/utf8_empty.txt" };
 		REQUIRE(reader);
 	}
 
 	{
-		TextReader reader{ U"../../Test/data/text/utf16be_a.txt" };
+		TextFileReader reader{ U"../../Test/data/text/utf16be_a.txt" };
 		REQUIRE(reader);
 	}
 	
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(not reader);
 		REQUIRE(reader.open(U"../../Test/data/text/utf8bom_a.txt"));
 		REQUIRE(reader);
@@ -118,24 +118,24 @@ TEST_CASE("TextReader.operator bool")
 	}
 }
 
-TEST_CASE("TextReader.default")
+TEST_CASE("TextFileReader.default")
 {
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
 	}
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readChar() == none);
 	}
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(reader.readLines().isEmpty());
 		REQUIRE(reader.readLines().isEmpty());
 		REQUIRE(reader.readChar() == none);
@@ -143,7 +143,7 @@ TEST_CASE("TextReader.default")
 	}
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(reader.readAll().isEmpty());
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
@@ -151,24 +151,24 @@ TEST_CASE("TextReader.default")
 	}
 }
 
-TEST_CASE("TextReader.nonexist")
+TEST_CASE("TextFileReader.nonexist")
 {
 	{
-		TextReader reader{ U"../../Test/data/text/nonexist.txt" };
+		TextFileReader reader{ U"../../Test/data/text/nonexist.txt" };
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
 	}
 
 	{
-		TextReader reader{ U"../../Test/data/text/nonexist.txt" };
+		TextFileReader reader{ U"../../Test/data/text/nonexist.txt" };
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readChar() == none);
 	}
 
 	{
-		TextReader reader{ U"../../Test/data/text/nonexist.txt" };
+		TextFileReader reader{ U"../../Test/data/text/nonexist.txt" };
 		REQUIRE(reader.readLines().isEmpty());
 		REQUIRE(reader.readLines().isEmpty());
 		REQUIRE(reader.readChar() == none);
@@ -176,7 +176,7 @@ TEST_CASE("TextReader.nonexist")
 	}
 
 	{
-		TextReader reader{ U"../../Test/data/text/nonexist.txt" };
+		TextFileReader reader{ U"../../Test/data/text/nonexist.txt" };
 		REQUIRE(reader.readAll().isEmpty());
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
@@ -184,10 +184,10 @@ TEST_CASE("TextReader.nonexist")
 	}
 }
 
-TEST_CASE("TextReader.reopen_nonexist")
+TEST_CASE("TextFileReader.reopen_nonexist")
 {
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(not reader.open(U"../../Test/data/text/nonexist.txt"));
 		REQUIRE(reader.isOpen() == false);
 		REQUIRE(not reader);
@@ -197,7 +197,7 @@ TEST_CASE("TextReader.reopen_nonexist")
 	}
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(not reader.open(U"../../Test/data/text/nonexist.txt"));
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readChar() == none);
@@ -205,7 +205,7 @@ TEST_CASE("TextReader.reopen_nonexist")
 	}
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(not reader.open(U"../../Test/data/text/nonexist.txt"));
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readLine() == none);
@@ -213,7 +213,7 @@ TEST_CASE("TextReader.reopen_nonexist")
 	}
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(not reader.open(U"../../Test/data/text/nonexist.txt"));
 		REQUIRE(reader.readLines().isEmpty());
 		REQUIRE(reader.readLines().isEmpty());
@@ -222,7 +222,7 @@ TEST_CASE("TextReader.reopen_nonexist")
 	}
 
 	{
-		TextReader reader;
+		TextFileReader reader;
 		REQUIRE(not reader.open(U"../../Test/data/text/nonexist.txt"));
 		REQUIRE(reader.readAll().isEmpty());
 		REQUIRE(reader.readChar() == none);
@@ -231,7 +231,7 @@ TEST_CASE("TextReader.reopen_nonexist")
 	}
 }
 
-TEST_CASE("TextReader.empty")
+TEST_CASE("TextFileReader.empty")
 {
 	constexpr std::array TestTextFiles
 	{
@@ -243,7 +243,7 @@ TEST_CASE("TextReader.empty")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
@@ -251,7 +251,7 @@ TEST_CASE("TextReader.empty")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readChar() == none);
@@ -259,7 +259,7 @@ TEST_CASE("TextReader.empty")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLines().isEmpty());
 		REQUIRE(reader.readLines().isEmpty());
 		REQUIRE(reader.readChar() == none);
@@ -268,7 +268,7 @@ TEST_CASE("TextReader.empty")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readAll().isEmpty());
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
@@ -277,7 +277,7 @@ TEST_CASE("TextReader.empty")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		char32 ch = U'?';
 		REQUIRE(reader.readChar(ch) == false);
 		REQUIRE(ch == U'\0');
@@ -287,7 +287,7 @@ TEST_CASE("TextReader.empty")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		String line = U"???";
 		REQUIRE(reader.readLine(line) == false);
 		REQUIRE(line.isEmpty());
@@ -296,7 +296,7 @@ TEST_CASE("TextReader.empty")
 	}
 }
 
-TEST_CASE("TextReader.a")
+TEST_CASE("TextFileReader.a")
 {
 	constexpr std::array TestTextFiles
 	{
@@ -310,21 +310,21 @@ TEST_CASE("TextReader.a")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readAll() == U"a");
 		REQUIRE(reader.readAll() == String{});
 	}
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLines() == targetTextLines);
 		REQUIRE(reader.readLines().isEmpty());
 	}
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readChar() == U'a');
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
@@ -332,7 +332,7 @@ TEST_CASE("TextReader.a")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLine() == U"a");
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readChar() == none);
@@ -340,7 +340,7 @@ TEST_CASE("TextReader.a")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		char32 ch = U'?';
 		REQUIRE(reader.readChar(ch) == true);
 		REQUIRE(ch == U'a');
@@ -350,7 +350,7 @@ TEST_CASE("TextReader.a")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		String line = U"???";
 		REQUIRE(reader.readLine(line) == true);
 		REQUIRE(line == U"a");
@@ -359,7 +359,7 @@ TEST_CASE("TextReader.a")
 	}
 }
 
-TEST_CASE("TextReader.aCRLF")
+TEST_CASE("TextFileReader.aCRLF")
 {
 	constexpr std::array TestTextFiles
 	{
@@ -373,21 +373,21 @@ TEST_CASE("TextReader.aCRLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readAll() == U"a\n");
 		REQUIRE(reader.readAll() == String{});
 	}
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLines() == targetTextLines);
 		REQUIRE(reader.readLines().isEmpty());
 	}
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readChar() == U'a');
 		REQUIRE(reader.readChar() == U'\n');
 		REQUIRE(reader.readLine() == none);
@@ -395,7 +395,7 @@ TEST_CASE("TextReader.aCRLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLine() == U"a");
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readChar() == none);
@@ -403,7 +403,7 @@ TEST_CASE("TextReader.aCRLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		char32 ch = U'?';
 		REQUIRE(reader.readChar(ch) == true);
 		REQUIRE(ch == U'a');
@@ -415,7 +415,7 @@ TEST_CASE("TextReader.aCRLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		String line = U"???";
 		REQUIRE(reader.readLine(line) == true);
 		REQUIRE(line == U"a");
@@ -424,7 +424,7 @@ TEST_CASE("TextReader.aCRLF")
 	}
 }
 
-TEST_CASE("TextReader.aLF")
+TEST_CASE("TextFileReader.aLF")
 {
 	constexpr std::array TestTextFiles
 	{
@@ -438,21 +438,21 @@ TEST_CASE("TextReader.aLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readAll() == U"a\n");
 		REQUIRE(reader.readAll() == String{});
 	}
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLines() == targetTextLines);
 		REQUIRE(reader.readLines().isEmpty());
 	}
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readChar() == U'a');
 		REQUIRE(reader.readChar() == U'\n');
 		REQUIRE(reader.readLine() == none);
@@ -460,7 +460,7 @@ TEST_CASE("TextReader.aLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLine() == U"a");
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readChar() == none);
@@ -468,7 +468,7 @@ TEST_CASE("TextReader.aLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		char32 ch = U'?';
 		REQUIRE(reader.readChar(ch) == true);
 		REQUIRE(ch == U'a');
@@ -480,7 +480,7 @@ TEST_CASE("TextReader.aLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		String line = U"???";
 		REQUIRE(reader.readLine(line) == true);
 		REQUIRE(line == U"a");
@@ -489,7 +489,7 @@ TEST_CASE("TextReader.aLF")
 	}
 }
 
-TEST_CASE("TextReader.あ")
+TEST_CASE("TextFileReader.あ")
 {
 	constexpr std::array TestTextFiles
 	{
@@ -501,14 +501,14 @@ TEST_CASE("TextReader.あ")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readAll() == U"あ");
 		REQUIRE(reader.readAll() == String{});
 	}
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readChar() == U'あ');
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
@@ -516,7 +516,7 @@ TEST_CASE("TextReader.あ")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLine() == U"あ");
 		REQUIRE(reader.readLine() == none);
 		REQUIRE(reader.readChar() == none);
@@ -524,7 +524,7 @@ TEST_CASE("TextReader.あ")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		char32 ch = U'?';
 		REQUIRE(reader.readChar(ch) == true);
 		REQUIRE(ch == U'あ');
@@ -534,7 +534,7 @@ TEST_CASE("TextReader.あ")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		String line = U"???";
 		REQUIRE(reader.readLine(line) == true);
 		REQUIRE(line == U"あ");
@@ -543,7 +543,7 @@ TEST_CASE("TextReader.あ")
 	}
 }
 
-TEST_CASE("TextReader.shortCRLF")
+TEST_CASE("TextFileReader.shortCRLF")
 {
 	constexpr std::array TestTextFiles
 	{
@@ -558,7 +558,7 @@ TEST_CASE("TextReader.shortCRLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.isOpen());
 		REQUIRE(reader.readAll() == short1);
 		REQUIRE(reader.readAll() == String{});
@@ -569,7 +569,7 @@ TEST_CASE("TextReader.shortCRLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 
 		for (const auto& c : short1)
 		{
@@ -581,7 +581,7 @@ TEST_CASE("TextReader.shortCRLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 
 		REQUIRE(reader.readChar() == U'\n');
 		REQUIRE(reader.readLine() == U"");
@@ -604,13 +604,13 @@ TEST_CASE("TextReader.shortCRLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLines() == short1Lines);
 	}
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readAll() == short1);
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
@@ -619,7 +619,7 @@ TEST_CASE("TextReader.shortCRLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		std::ignore = reader.readChar();
 		std::ignore = reader.readLine();
 		std::ignore = reader.readChar();
@@ -627,7 +627,7 @@ TEST_CASE("TextReader.shortCRLF")
 	}
 }
 
-TEST_CASE("TextReader.shortLF")
+TEST_CASE("TextFileReader.shortLF")
 {
 	constexpr std::array TestTextFiles
 	{
@@ -642,7 +642,7 @@ TEST_CASE("TextReader.shortLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.isOpen());
 		REQUIRE(reader.readAll() == targetText);
 		REQUIRE(reader.readAll() == String{});
@@ -653,7 +653,7 @@ TEST_CASE("TextReader.shortLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 
 		for (const auto& c : targetText)
 		{
@@ -665,7 +665,7 @@ TEST_CASE("TextReader.shortLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 
 		REQUIRE(reader.readChar() == U'\n');
 		REQUIRE(reader.readLine() == U"");
@@ -688,13 +688,13 @@ TEST_CASE("TextReader.shortLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readLines() == short1Lines);
 	}
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		REQUIRE(reader.readAll() == targetText);
 		REQUIRE(reader.readChar() == none);
 		REQUIRE(reader.readLine() == none);
@@ -703,7 +703,7 @@ TEST_CASE("TextReader.shortLF")
 
 	for (const auto& path : TestTextFiles)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 		std::ignore = reader.readChar();
 		std::ignore = reader.readLine();
 		std::ignore = reader.readChar();
@@ -711,9 +711,9 @@ TEST_CASE("TextReader.shortLF")
 	}
 }
 
-TEST_CASE("TextReader.longCRLF")
+TEST_CASE("TextFileReader.longCRLF")
 {
-	const String targetText = TextReader{ U"../../Test/data/text/utf8_longCRLF.txt" }.readAll();
+	const String targetText = TextFileReader{ U"../../Test/data/text/utf8_longCRLF.txt" }.readAll();
 	const Array<String> targetTextLines = targetText.split(U'\n');
 	const Array<String> targetTextLines_(targetTextLines.begin(), (targetTextLines.end() - 1));
 	const std::string targetTextUTF8 = targetText.toUTF8();
@@ -735,40 +735,40 @@ TEST_CASE("TextReader.longCRLF")
 	for (const auto& path : TestTextFiles)
 	{
 		{
-			REQUIRE(TextReader{ path }.readAll() == targetText);
+			REQUIRE(TextFileReader{ path }.readAll() == targetText);
 		}
 
 		{
 			String s;
-			REQUIRE(TextReader{ path }.readAll(s));
+			REQUIRE(TextFileReader{ path }.readAll(s));
 			REQUIRE(s == targetText);
 		}
 
 		{
 			std::string s;
-			REQUIRE(TextReader{ path }.readAll(s));
+			REQUIRE(TextFileReader{ path }.readAll(s));
 			REQUIRE(s == targetTextUTF8);
 		}
 
 		{
-			REQUIRE(TextReader{ path }.readLines() == targetTextLines);
+			REQUIRE(TextFileReader{ path }.readLines() == targetTextLines);
 		}
 
 		{
 			Array<String> lines;
-			REQUIRE(TextReader{ path }.readLines(lines));
+			REQUIRE(TextFileReader{ path }.readLines(lines));
 			REQUIRE(lines == targetTextLines);
 		}
 
 		{
 			Array<std::string> lines;
-			REQUIRE(TextReader{ path }.readLines(lines));
+			REQUIRE(TextFileReader{ path }.readLines(lines));
 			const bool eq = (lines == targetTextLinesUTF8);
 			REQUIRE(eq);
 		}
 
 		{
-			TextReader reader{ path };
+			TextFileReader reader{ path };
 			Array<String> lines;
 			while (auto line = reader.readLine())
 			{
@@ -778,7 +778,7 @@ TEST_CASE("TextReader.longCRLF")
 		}
 
 		{
-			TextReader reader{ path };
+			TextFileReader reader{ path };
 			Array<String> lines;
 			String line;
 			while (reader.readLine(line))
@@ -789,7 +789,7 @@ TEST_CASE("TextReader.longCRLF")
 		}
 
 		{
-			TextReader reader{ path };
+			TextFileReader reader{ path };
 			Array<std::string> lines;
 			std::string line;
 			while (reader.readLine(line))
@@ -801,7 +801,7 @@ TEST_CASE("TextReader.longCRLF")
 		}
 
 		{
-			TextReader reader{ path };
+			TextFileReader reader{ path };
 			String s;
 			while (auto ch = reader.readChar())
 			{
@@ -811,7 +811,7 @@ TEST_CASE("TextReader.longCRLF")
 		}
 
 		{
-			TextReader reader{ path };
+			TextFileReader reader{ path };
 			String s;
 			char32 ch;
 			while (reader.readChar(ch))
@@ -823,9 +823,9 @@ TEST_CASE("TextReader.longCRLF")
 	}
 }
 
-TEST_CASE("TextReader.longLF")
+TEST_CASE("TextFileReader.longLF")
 {
-	const String targetText = TextReader{ U"../../Test/data/text/utf8_longLF.txt" }.readAll();
+	const String targetText = TextFileReader{ U"../../Test/data/text/utf8_longLF.txt" }.readAll();
 
 	{
 		REQUIRE(targetText.starts_with(U"{{転送"));
@@ -833,23 +833,23 @@ TEST_CASE("TextReader.longLF")
 	}
 
 	{
-		REQUIRE(TextReader{ U"../../Test/data/text/utf8bom_longLF.txt" }.readAll() == targetText);
-		REQUIRE(TextReader{ U"../../Test/data/text/utf16le_longLF.txt" }.readAll() == targetText);
-		REQUIRE(TextReader{ U"../../Test/data/text/utf16be_longLF.txt" }.readAll() == targetText);
+		REQUIRE(TextFileReader{ U"../../Test/data/text/utf8bom_longLF.txt" }.readAll() == targetText);
+		REQUIRE(TextFileReader{ U"../../Test/data/text/utf16le_longLF.txt" }.readAll() == targetText);
+		REQUIRE(TextFileReader{ U"../../Test/data/text/utf16be_longLF.txt" }.readAll() == targetText);
 	}
 }
 
 # if SIV3D_RUN_BENCHMARK
 
-TEST_CASE("TextReader.benchmark")
+TEST_CASE("TextFileReader.benchmark")
 {
 	const ScopedLogSilencer logSilencer;
 
 	{
 		{
-			Bench{}.title("TextReader utf8").run("readAll(std::string&)", [&]()
+			Bench{}.title("TextFileReader utf8").run("readAll(std::string&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 					std::string s;
 					reader.readAll(s);
 					doNotOptimizeAway(s);
@@ -857,9 +857,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readAll(String&)", [&]()
+			Bench{}.title("TextFileReader utf8").run("readAll(String&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 					String s;
 					reader.readAll(s);
 					doNotOptimizeAway(s);
@@ -867,18 +867,18 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readAll()", [&]()
+			Bench{}.title("TextFileReader utf8").run("readAll()", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 					auto s = reader.readAll();
 					doNotOptimizeAway(s);
 				});
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readLines(Array<std::string>&)", [&]()
+			Bench{}.title("TextFileReader utf8").run("readLines(Array<std::string>&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 					Array<std::string> lines;
 					reader.readLines(lines);
 					doNotOptimizeAway(lines);
@@ -886,9 +886,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readLines(Array<String>&)", [&]()
+			Bench{}.title("TextFileReader utf8").run("readLines(Array<String>&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 					Array<String> lines;
 					reader.readLines(lines);
 					doNotOptimizeAway(lines);
@@ -896,18 +896,18 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readLines()", [&]()
+			Bench{}.title("TextFileReader utf8").run("readLines()", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 					auto lines = reader.readLines();
 					doNotOptimizeAway(lines);
 				});
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readLine(std::string&)", [&]()
+			Bench{}.title("TextFileReader utf8").run("readLine(std::string&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 
 					std::string line;
 					while (reader.readLine(line))
@@ -918,9 +918,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readLine(String&)", [&]()
+			Bench{}.title("TextFileReader utf8").run("readLine(String&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 
 					String line;
 					while (reader.readLine(line))
@@ -931,9 +931,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readLine()", [&]()
+			Bench{}.title("TextFileReader utf8").run("readLine()", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 
 					String line;
 					while (reader.readLine(line))
@@ -944,9 +944,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readChar(char32&)", [&]()
+			Bench{}.title("TextFileReader utf8").run("readChar(char32&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 
 					char32 ch;
 					while (reader.readChar(ch))
@@ -957,9 +957,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf8").run("readChar()", [&]()
+			Bench{}.title("TextFileReader utf8").run("readChar()", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf8_longCRLF.txt" };
 
 					while (auto ch = reader.readChar())
 					{
@@ -971,9 +971,9 @@ TEST_CASE("TextReader.benchmark")
 
 	{
 		{
-			Bench{}.title("TextReader utf16le").run("readAll(std::string&)", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readAll(std::string&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 					std::string s;
 					reader.readAll(s);
 					doNotOptimizeAway(s);
@@ -981,9 +981,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readAll(String&)", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readAll(String&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 					String s;
 					reader.readAll(s);
 					doNotOptimizeAway(s);
@@ -991,18 +991,18 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readAll()", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readAll()", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 					auto s = reader.readAll();
 					doNotOptimizeAway(s);
 				});
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readLines(Array<std::string>&)", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readLines(Array<std::string>&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 					Array<std::string> lines;
 					reader.readLines(lines);
 					doNotOptimizeAway(lines);
@@ -1010,9 +1010,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readLines(Array<String>&)", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readLines(Array<String>&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 					Array<String> lines;
 					reader.readLines(lines);
 					doNotOptimizeAway(lines);
@@ -1020,18 +1020,18 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readLines()", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readLines()", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 					auto lines = reader.readLines();
 					doNotOptimizeAway(lines);
 				});
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readLine(std::string&)", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readLine(std::string&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 
 					std::string line;
 					while (reader.readLine(line))
@@ -1042,9 +1042,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readLine(String&)", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readLine(String&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 
 					String line;
 					while (reader.readLine(line))
@@ -1055,9 +1055,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readLine()", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readLine()", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 
 					String line;
 					while (reader.readLine(line))
@@ -1068,9 +1068,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readChar(char32&)", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readChar(char32&)", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 
 					char32 ch;
 					while (reader.readChar(ch))
@@ -1081,9 +1081,9 @@ TEST_CASE("TextReader.benchmark")
 		}
 
 		{
-			Bench{}.title("TextReader utf16le").run("readChar()", [&]()
+			Bench{}.title("TextFileReader utf16le").run("readChar()", [&]()
 				{
-					TextReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
+					TextFileReader reader{ U"../../Test/data/text/utf16le_longCRLF.txt" };
 
 					while (auto ch = reader.readChar())
 					{

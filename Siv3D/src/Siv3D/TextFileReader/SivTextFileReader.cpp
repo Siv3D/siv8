@@ -20,17 +20,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextReader::TextReader()
-		: pImpl{ std::make_shared<TextReaderDetail>() } {}
+	TextFileReader::TextFileReader()
+		: pImpl{ std::make_shared<TextFileReaderDetail>() } {}
 
-	TextReader::TextReader(const FilePathView path, const Optional<TextEncoding>& encoding)
-		: TextReader{}
+	TextFileReader::TextFileReader(const FilePathView path, const Optional<TextEncoding>& encoding)
+		: TextFileReader{}
 	{
 		open(path, encoding);
 	}
 
-	TextReader::TextReader(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
-		: TextReader{}
+	TextFileReader::TextFileReader(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
+		: TextFileReader{}
 	{
 		open(std::move(reader), encoding);
 	}
@@ -41,12 +41,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::open(const FilePathView path, const Optional<TextEncoding>& encoding)
+	bool TextFileReader::open(const FilePathView path, const Optional<TextEncoding>& encoding)
 	{
 		return pImpl->open(path, encoding);
 	}
 
-	bool TextReader::open(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
+	bool TextFileReader::open(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
 	{
 		return pImpl->open(std::move(reader), encoding);
 	}
@@ -57,7 +57,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextReader::close()
+	void TextFileReader::close()
 	{
 		pImpl->close();
 	}
@@ -68,7 +68,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::isOpen() const noexcept
+	bool TextFileReader::isOpen() const noexcept
 	{
 		return pImpl->isOpen();
 	}
@@ -79,7 +79,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextReader::operator bool() const noexcept
+	TextFileReader::operator bool() const noexcept
 	{
 		return pImpl->isOpen();
 	}
@@ -90,7 +90,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<char32> TextReader::readChar()
+	Optional<char32> TextFileReader::readChar()
 	{
 		char32 ch;
 
@@ -110,7 +110,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<String> TextReader::readLine()
+	Optional<String> TextFileReader::readLine()
 	{
 		String line;
 
@@ -130,7 +130,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<String> TextReader::readLines()
+	Array<String> TextFileReader::readLines()
 	{
 		Array<String> lines;
 
@@ -145,7 +145,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String TextReader::readAll()
+	String TextFileReader::readAll()
 	{
 		String s;
 		
@@ -160,7 +160,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::string TextReader::readAllUTF8()
+	std::string TextFileReader::readAllUTF8()
 	{
 		std::string s;
 
@@ -175,7 +175,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::readChar(char32& ch)
+	bool TextFileReader::readChar(char32& ch)
 	{
 		return pImpl->readChar(ch);
 	}
@@ -186,12 +186,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::readLine(std::string& line)
+	bool TextFileReader::readLine(std::string& line)
 	{
 		return pImpl->readLine(line);
 	}
 
-	bool TextReader::readLine(String& line)
+	bool TextFileReader::readLine(String& line)
 	{
 		return pImpl->readLine(line);
 	}
@@ -202,12 +202,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::readLines(Array<std::string>& lines)
+	bool TextFileReader::readLines(Array<std::string>& lines)
 	{
 		return pImpl->readLines(lines);
 	}
 
-	bool TextReader::readLines(Array<String>& lines)
+	bool TextFileReader::readLines(Array<String>& lines)
 	{
 		return pImpl->readLines(lines);
 	}
@@ -218,12 +218,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextReader::readAll(std::string& s)
+	bool TextFileReader::readAll(std::string& s)
 	{
 		return pImpl->readAll(s);
 	}
 
-	bool TextReader::readAll(String& s)
+	bool TextFileReader::readAll(String& s)
 	{
 		return pImpl->readAll(s);
 	}
@@ -234,7 +234,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextEncoding TextReader::encoding() const noexcept
+	TextEncoding TextFileReader::encoding() const noexcept
 	{
 		return pImpl->encoding();
 	}
@@ -245,7 +245,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const FilePath& TextReader::path() const noexcept
+	const FilePath& TextFileReader::path() const noexcept
 	{
 		return pImpl->path();
 	}

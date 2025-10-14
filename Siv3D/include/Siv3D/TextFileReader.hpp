@@ -22,12 +22,12 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	TextReader
+	//	TextFileReader
 	//
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 読み込み用テキストファイル
-	class TextReader
+	class TextFileReader
 	{
 	public:
 
@@ -39,13 +39,13 @@ namespace s3d
 
 		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
-		TextReader();
+		TextFileReader();
 
 		/// @brief テキストファイルをオープンします。
 		/// @param path ファイルパス
 		/// @param encoding テキストのエンコーディング形式
 		[[nodiscard]]
-		explicit TextReader(FilePathView path, const Optional<TextEncoding>& encoding = unspecified);
+		explicit TextFileReader(FilePathView path, const Optional<TextEncoding>& encoding = unspecified);
 
 		/// @brief テキストファイルを IReader 経由でオープンします。
 		/// @tparam Reader IReader オブジェクトの型
@@ -54,13 +54,13 @@ namespace s3d
 		template <class Reader>
 			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
 		[[nodiscard]]
-		explicit TextReader(Reader&& reader, const Optional<TextEncoding>& encoding = unspecified);
+		explicit TextFileReader(Reader&& reader, const Optional<TextEncoding>& encoding = unspecified);
 
 		/// @brief テキストファイルを IReader 経由でオープンします。
 		/// @param reader IReader オブジェクト
 		/// @param encoding テキストのエンコーディング形式
 		[[nodiscard]]
-		explicit TextReader(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding = unspecified);
+		explicit TextFileReader(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding = unspecified);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -261,9 +261,9 @@ namespace s3d
 
 	private:
 
-		class TextReaderDetail;
+		class TextFileReaderDetail;
 
-		std::shared_ptr<TextReaderDetail> pImpl;
+		std::shared_ptr<TextFileReaderDetail> pImpl;
 	};
 }
 

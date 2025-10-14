@@ -14,13 +14,13 @@
 
 namespace s3d
 {
-	class TextReader::TextReaderDetail
+	class TextFileReader::TextFileReaderDetail
 	{
 	public:
 
-		TextReaderDetail() = default;
+		TextFileReaderDetail() = default;
 
-		~TextReaderDetail();
+		~TextFileReaderDetail();
 
 		[[nodiscard]]
 		bool open(FilePathView path, const Optional<TextEncoding>& encoding);

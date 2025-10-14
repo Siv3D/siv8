@@ -15,13 +15,13 @@
 
 namespace s3d
 {
-	class TextWriter::TextWriterDetail
+	class TextFileWriter::TextFileWriterDetail
 	{
 	public:
 
-		TextWriterDetail() = default;
+		TextFileWriterDetail() = default;
 
-		~TextWriterDetail();
+		~TextFileWriterDetail();
 
 		bool open(FilePathView path, OpenMode openMode, TextEncoding encoding);
 

@@ -85,16 +85,10 @@
     <ClCompile Include="..\Test\Test_PRNG.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Test\Test_TextReader.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
     <ClCompile Include="..\Test\Test_Color.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_ColorF.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Test\Test_BinaryWriter.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_String.cpp">
@@ -124,7 +118,13 @@
     <ClCompile Include="..\Test\Test_Grid.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Test\Test_BinaryReader.cpp">
+    <ClCompile Include="..\Test\Test_BinaryFileReader.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_BinaryFileWriter.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TextFileReader.cpp">
       <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>

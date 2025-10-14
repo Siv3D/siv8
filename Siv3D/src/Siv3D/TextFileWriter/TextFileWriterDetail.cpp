@@ -23,7 +23,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextWriter::TextWriterDetail::~TextWriterDetail()
+	TextFileWriter::TextFileWriterDetail::~TextFileWriterDetail()
 	{
 		close();
 	}
@@ -34,7 +34,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextWriter::TextWriterDetail::open(const FilePathView path, const OpenMode openMode, const TextEncoding encoding)
+	bool TextFileWriter::TextFileWriterDetail::open(const FilePathView path, const OpenMode openMode, const TextEncoding encoding)
 	{
 		close();
 
@@ -87,7 +87,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::TextWriterDetail::close()
+	void TextFileWriter::TextFileWriterDetail::close()
 	{
 		m_binaryWriter.close();
 
@@ -100,7 +100,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextWriter::TextWriterDetail::isOpen() const noexcept
+	bool TextFileWriter::TextFileWriterDetail::isOpen() const noexcept
 	{
 		return m_binaryWriter.isOpen();
 	}
@@ -111,7 +111,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::TextWriterDetail::clear()
+	void TextFileWriter::TextFileWriterDetail::clear()
 	{
 		if (not isOpen())
 		{
@@ -129,7 +129,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::TextWriterDetail::write(const StringView s)
+	void TextFileWriter::TextFileWriterDetail::write(const StringView s)
 	{
 		switch (m_encoding)
 		{
@@ -222,7 +222,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::TextWriterDetail::writeNewLine()
+	void TextFileWriter::TextFileWriterDetail::writeNewLine()
 	{
 		switch (m_encoding)
 		{
@@ -251,7 +251,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::TextWriterDetail::writeUTF8(const std::string_view s)
+	void TextFileWriter::TextFileWriterDetail::writeUTF8(const std::string_view s)
 	{
 		switch (m_encoding)
 		{
@@ -325,7 +325,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextEncoding TextWriter::TextWriterDetail::encoding() const noexcept
+	TextEncoding TextFileWriter::TextFileWriterDetail::encoding() const noexcept
 	{
 		return m_encoding;
 	}
@@ -336,7 +336,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const FilePath& TextWriter::TextWriterDetail::path() const noexcept
+	const FilePath& TextFileWriter::TextFileWriterDetail::path() const noexcept
 	{
 		return m_binaryWriter.path();
 	}

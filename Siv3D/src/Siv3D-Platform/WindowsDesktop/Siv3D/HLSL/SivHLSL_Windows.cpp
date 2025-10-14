@@ -85,7 +85,7 @@ namespace s3d
 		{
 			if (CShader_D3D11* const pShader = static_cast<CShader_D3D11*>(Siv3DEngine::Get<ISiv3DShader>()))
 			{
-				TextReader reader{ hlslFilePath };
+				TextFileReader reader{ hlslFilePath };
 
 				if (not reader)
 				{

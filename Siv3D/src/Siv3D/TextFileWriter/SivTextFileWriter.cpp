@@ -16,12 +16,12 @@ namespace s3d
 {
 	namespace detail
 	{
-		TextWriterBuffer::TextWriterBuffer(TextWriter& writer)
+		TextFileWriterBuffer::TextFileWriterBuffer(TextFileWriter& writer)
 			: formatData{ std::make_unique<FormatData>() }
 			, m_writer{ writer }
 			, m_isLast{ true } {}
 
-		TextWriterBuffer::TextWriterBuffer(TextWriterBuffer&& other) noexcept
+		TextFileWriterBuffer::TextFileWriterBuffer(TextFileWriterBuffer&& other) noexcept
 			: formatData{ std::move(other.formatData) }
 			, m_writer{ other.m_writer }
 			, m_isLast{ true }
@@ -29,7 +29,7 @@ namespace s3d
 			other.m_isLast = false;
 		}
 
-		TextWriterBuffer::~TextWriterBuffer()
+		TextFileWriterBuffer::~TextFileWriterBuffer()
 		{
 			if (m_isLast)
 			{
@@ -44,17 +44,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextWriter::TextWriter()
-		: pImpl{ std::make_shared<TextWriterDetail>() } {}
+	TextFileWriter::TextFileWriter()
+		: pImpl{ std::make_shared<TextFileWriterDetail>() } {}
 
-	TextWriter::TextWriter(const FilePathView path, const TextEncoding encoding)
-		: TextWriter{}
+	TextFileWriter::TextFileWriter(const FilePathView path, const TextEncoding encoding)
+		: TextFileWriter{}
 	{
 		open(path, OpenMode::Trunc, encoding);
 	}
 
-	TextWriter::TextWriter(const FilePathView path, const OpenMode openMode, const TextEncoding encoding)
-		: TextWriter{}
+	TextFileWriter::TextFileWriter(const FilePathView path, const OpenMode openMode, const TextEncoding encoding)
+		: TextFileWriter{}
 	{
 		open(path, openMode, encoding);
 	}
@@ -65,12 +65,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextWriter::open(const FilePathView path, const TextEncoding encoding)
+	bool TextFileWriter::open(const FilePathView path, const TextEncoding encoding)
 	{
 		return open(path, OpenMode::Trunc, encoding);
 	}
 
-	bool TextWriter::open(const FilePathView path, const OpenMode openMode, const TextEncoding encoding)
+	bool TextFileWriter::open(const FilePathView path, const OpenMode openMode, const TextEncoding encoding)
 	{
 		return pImpl->open(path, openMode, encoding);
 	}
@@ -81,7 +81,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::close()
+	void TextFileWriter::close()
 	{
 		pImpl->close();
 	}
@@ -92,7 +92,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextWriter::isOpen() const noexcept
+	bool TextFileWriter::isOpen() const noexcept
 	{
 		return pImpl->isOpen();
 	}
@@ -103,7 +103,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextWriter::operator bool() const noexcept
+	TextFileWriter::operator bool() const noexcept
 	{
 		return pImpl->isOpen();
 	}
@@ -114,7 +114,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::clear()
+	void TextFileWriter::clear()
 	{
 		pImpl->clear();
 	}
@@ -125,22 +125,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::write(const char32 ch)
+	void TextFileWriter::write(const char32 ch)
 	{
 		pImpl->write(StringView(&ch, 1));
 	}
 
-	void TextWriter::write(const char32* s)
+	void TextFileWriter::write(const char32* s)
 	{
 		pImpl->write(StringView(s));
 	}
 
-	void TextWriter::write(const String& s)
+	void TextFileWriter::write(const String& s)
 	{
 		pImpl->write(StringView(s));
 	}
 
-	void TextWriter::write(const StringView s)
+	void TextFileWriter::write(const StringView s)
 	{
 		pImpl->write(s);
 	}
@@ -151,22 +151,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::writeln(const char32 ch)
+	void TextFileWriter::writeln(const char32 ch)
 	{
 		writeln(StringView(&ch, 1));
 	}
 
-	void TextWriter::writeln(const char32* s)
+	void TextFileWriter::writeln(const char32* s)
 	{
 		writeln(StringView(s));
 	}
 
-	void TextWriter::writeln(const String& s)
+	void TextFileWriter::writeln(const String& s)
 	{
 		writeln(StringView(s));
 	}
 
-	void TextWriter::writeln(const StringView s)
+	void TextFileWriter::writeln(const StringView s)
 	{
 		pImpl->write(s);
 
@@ -179,7 +179,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::writeUTF8(const std::string_view s)
+	void TextFileWriter::writeUTF8(const std::string_view s)
 	{
 		pImpl->writeUTF8(s);
 	}
@@ -190,7 +190,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void TextWriter::writelnUTF8(const std::string_view s)
+	void TextFileWriter::writelnUTF8(const std::string_view s)
 	{
 		pImpl->writeUTF8(s);
 
@@ -203,7 +203,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextEncoding TextWriter::encoding() const noexcept
+	TextEncoding TextFileWriter::encoding() const noexcept
 	{
 		return pImpl->encoding();
 	}
@@ -214,7 +214,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const FilePath& TextWriter::path() const noexcept
+	const FilePath& TextFileWriter::path() const noexcept
 	{
 		return pImpl->path();
 	}
