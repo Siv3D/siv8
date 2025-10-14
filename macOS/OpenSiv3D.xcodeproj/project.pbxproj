@@ -10,6 +10,11 @@
 		2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7F74E1CA7F43D00495647 /* Main.cpp */; };
 		2C8588EC1F929277000DA815 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2C8588EB1F929277000DA815 /* icon.icns */; };
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
+		F902E0D02E9E5E49002C6B92 /* SuperEllipse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */; };
+		F902E0D22E9E5E5E002C6B92 /* SuperEllipse.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */; };
+		F902E0D52E9E5E9C002C6B92 /* SivSuperEllipse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902E0D32E9E5E9C002C6B92 /* SivSuperEllipse.cpp */; };
+		F902E0D82E9E5ECD002C6B92 /* SivJSONSerialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902E0D62E9E5ECD002C6B92 /* SivJSONSerialization.cpp */; };
+		F902E0DA2E9E5EDE002C6B92 /* JSONSerialization.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0D92E9E5EDE002C6B92 /* JSONSerialization.hpp */; };
 		F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */; };
 		F90702F62B9DAEB900383E4D /* Test_Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B62B9DAEB900383E4D /* Test_Array.cpp */; };
 		F90702F72B9DAEB900383E4D /* Test_BinaryWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B72B9DAEB900383E4D /* Test_BinaryWriter.cpp */; };
@@ -2716,6 +2721,11 @@
 		2C8588EB1F929277000DA815 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		2CA7F73D1CA7F3B100495647 /* libSiv3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3D.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
+		F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.hpp; sourceTree = "<group>"; };
+		F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.ipp; sourceTree = "<group>"; };
+		F902E0D32E9E5E9C002C6B92 /* SivSuperEllipse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSuperEllipse.cpp; sourceTree = "<group>"; };
+		F902E0D62E9E5ECD002C6B92 /* SivJSONSerialization.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivJSONSerialization.cpp; sourceTree = "<group>"; };
+		F902E0D92E9E5EDE002C6B92 /* JSONSerialization.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JSONSerialization.hpp; sourceTree = "<group>"; };
 		F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DTest.cpp; sourceTree = "<group>"; };
 		F90702B52B9DAEB900383E4D /* Siv3DTest.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTest.hpp; sourceTree = "<group>"; };
 		F90702B62B9DAEB900383E4D /* Test_Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Array.cpp; sourceTree = "<group>"; };
@@ -5555,6 +5565,22 @@
 			path = ../Siv3D;
 			sourceTree = "<group>";
 		};
+		F902E0D42E9E5E9C002C6B92 /* SuperEllipse */ = {
+			isa = PBXGroup;
+			children = (
+				F902E0D32E9E5E9C002C6B92 /* SivSuperEllipse.cpp */,
+			);
+			path = SuperEllipse;
+			sourceTree = "<group>";
+		};
+		F902E0D72E9E5ECD002C6B92 /* JSONSerialization */ = {
+			isa = PBXGroup;
+			children = (
+				F902E0D62E9E5ECD002C6B92 /* SivJSONSerialization.cpp */,
+			);
+			path = JSONSerialization;
+			sourceTree = "<group>";
+		};
 		F90702CF2B9DAEB900383E4D /* Test */ = {
 			isa = PBXGroup;
 			children = (
@@ -6063,6 +6089,7 @@
 				F9070BA22B9F175000383E4D /* StringView.ipp */,
 				F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */,
 				F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */,
+				F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */,
 				F986F9C72BCA9D3E006A4C0F /* SVG.ipp */,
 				F9070BA32B9F175000383E4D /* TextEncoding.ipp */,
 				F9070BA42B9F175000383E4D /* TextReader.ipp */,
@@ -6260,6 +6287,7 @@
 				F9E5FCD02BC3AD400081A4F7 /* JSON.hpp */,
 				F9E5FCE52BC59EA00081A4F7 /* JSONIterator.hpp */,
 				F9E5FCE62BC59EA00081A4F7 /* JSONPointer.hpp */,
+				F902E0D92E9E5EDE002C6B92 /* JSONSerialization.hpp */,
 				F9E5FCD12BC3AD400081A4F7 /* JSONValueType.hpp */,
 				F9070BFA2B9F175000383E4D /* KahanSummation.hpp */,
 				F96F95E92C359E390033353E /* KDTree.hpp */,
@@ -6391,6 +6419,7 @@
 				F9070C262B9F175000383E4D /* StringView.hpp */,
 				F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */,
 				F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */,
+				F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */,
 				F986F9C52BCA9D25006A4C0F /* SVG.hpp */,
 				F9070C272B9F175000383E4D /* System.hpp */,
 				F9070C282B9F175000383E4D /* TextEncoding.hpp */,
@@ -7072,6 +7101,7 @@
 				F95122482CB8237900151291 /* JoinStyle */,
 				F9E5FCD92BC3AD820081A4F7 /* JSON */,
 				F9E5FCEA2BC59EB50081A4F7 /* JSONIterator */,
+				F902E0D72E9E5ECD002C6B92 /* JSONSerialization */,
 				F9E5FCD72BC3AD820081A4F7 /* JSONValueType */,
 				F98605D62BE4BE80006A4C0F /* Keyboard */,
 				F9528B762BB708A700222F45 /* LicenseManager */,
@@ -7144,6 +7174,7 @@
 				F9E7945A2C19743A002615BA /* Stopwatch */,
 				F9070D812B9F175E00383E4D /* String */,
 				F9070D832B9F175E00383E4D /* StringView */,
+				F902E0D42E9E5E9C002C6B92 /* SuperEllipse */,
 				F986F94B2BCA9CD7006A4C0F /* SVG */,
 				F9070D872B9F175E00383E4D /* System */,
 				F933AD262E54A30E005624D7 /* TextEffect */,
@@ -11555,6 +11586,7 @@
 				F9070CA12B9F175000383E4D /* ColorF.hpp in Headers */,
 				F9D41CE52C9972EC00290998 /* Choice.ipp in Headers */,
 				F986FA7A2BCFB53B006A4C0F /* ftcid.h in Headers */,
+				F902E0DA2E9E5EDE002C6B92 /* JSONSerialization.hpp in Headers */,
 				F98600A92BCFBB53006A4C0F /* SkEventTracer.h in Headers */,
 				F98602562BCFBB54006A4C0F /* SkRTree.h in Headers */,
 				F934BD812BF880A10003EAD5 /* IShader.hpp in Headers */,
@@ -12042,6 +12074,7 @@
 				F9766B772C29C75F00DE4107 /* Camera2DControl.hpp in Headers */,
 				F9766B782C29C75F00DE4107 /* BasicCamera2D.hpp in Headers */,
 				F9E5FC3C2BC15B260081A4F7 /* DirectXCollision.h in Headers */,
+				F902E0D02E9E5E49002C6B92 /* SuperEllipse.hpp in Headers */,
 				F9070CC72B9F175000383E4D /* Hash.hpp in Headers */,
 				F98600832BCFBB53006A4C0F /* SkSpan_impl.h in Headers */,
 				F90DA05B2D1A91D90003E1E8 /* ITexture.hpp in Headers */,
@@ -12899,6 +12932,7 @@
 				F9070E902B9F183100383E4D /* CWindow.hpp in Headers */,
 				F986FA4D2BCFB53B006A4C0F /* svmm.h in Headers */,
 				F986FA4A2BCFB53B006A4C0F /* svgxval.h in Headers */,
+				F902E0D22E9E5E5E002C6B92 /* SuperEllipse.ipp in Headers */,
 				F980C48F2C04B41300A86B68 /* FloatRect.hpp in Headers */,
 				F9070C492B9F175000383E4D /* Char.ipp in Headers */,
 				F986031B2BCFBB54006A4C0F /* SkPathOpsCommon.h in Headers */,
@@ -13542,6 +13576,7 @@
 				F9070DEA2B9F175E00383E4D /* SivSystem.cpp in Sources */,
 				F934BD882BF881110003EAD5 /* CShader_Metal.mm in Sources */,
 				F98605E62BE50038006A4C0F /* SivInputState.cpp in Sources */,
+				F902E0D52E9E5E9C002C6B92 /* SivSuperEllipse.cpp in Sources */,
 				F98603EA2BCFBB54006A4C0F /* SkSLConstructor.cpp in Sources */,
 				F98603FA2BCFBB54006A4C0F /* SkSLConstructorSplat.cpp in Sources */,
 				F98603982BCFBB54006A4C0F /* SkRadialGradient.cpp in Sources */,
@@ -13719,6 +13754,7 @@
 				F9712A402C2572DF0049CC26 /* SivScopedColorMul2D.cpp in Sources */,
 				F986044A2BCFBB54006A4C0F /* SkSLVariable.cpp in Sources */,
 				F9070DCC2B9F175E00383E4D /* SivFileSystem.cpp in Sources */,
+				F902E0D82E9E5ECD002C6B92 /* SivJSONSerialization.cpp in Sources */,
 				F986015C2BCFBB53006A4C0F /* SkBitmapProcState_opts.cpp in Sources */,
 				F9070DBB2B9F175E00383E4D /* SivCPUInfo.cpp in Sources */,
 				F98604D42BCFBB54006A4C0F /* SkDashPath.cpp in Sources */,
