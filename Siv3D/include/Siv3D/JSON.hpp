@@ -938,6 +938,14 @@ namespace s3d
 	[[nodiscard]]
 	Optional<Type> FromJSONOpt(const JSON& json);
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	JSONSerializer
+	//
+	////////////////////////////////////////////////////////////////
+
+	# define JSONSerializer nlohmann::adl_serializer 
+
 	inline namespace Literals
 	{
 		inline namespace JSONLiterals
