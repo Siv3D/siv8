@@ -85,7 +85,7 @@ namespace s3d
 
 	bool PNGEncoder::save(const Image& image, const FilePathView path, const PNGFilter filter) const
 	{
-		BinaryWriter writer{ path };
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{
@@ -97,7 +97,7 @@ namespace s3d
 
 	bool PNGEncoder::save(const Grid<uint16>& image, const FilePathView path, const PNGFilter filter) const
 	{
-		BinaryWriter writer{ path };
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{

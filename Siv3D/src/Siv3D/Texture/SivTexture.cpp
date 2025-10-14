@@ -79,7 +79,7 @@ namespace s3d
 	}
 
 	Texture::Texture(const FilePathView path, const TextureDesc desc)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(BinaryReader{ path }, path, desc))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(BinaryFileReader{ path }, path, desc))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}

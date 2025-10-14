@@ -53,7 +53,7 @@ namespace s3d
 				}
 			}
 
-			BinaryReader reader{ adapterCacheFilePath };
+			BinaryFileReader reader{ adapterCacheFilePath };
 
 			if (not reader)
 			{
@@ -95,7 +95,7 @@ namespace s3d
 				.featureLevel	= adapter.featureLevel,
 			};
 
-			BinaryWriter writer{ adapterCacheFilePath };
+			BinaryFileWriter writer{ adapterCacheFilePath };
 			writer.write(cacheData);
 
 			const std::string adapterName = Unicode::ToUTF8(adapter.name);

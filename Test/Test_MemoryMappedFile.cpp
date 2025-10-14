@@ -96,7 +96,7 @@ TEST_CASE("MemoryMappedFile")
 			}
 		}
 
-		BinaryReader reader{ U"../../Test/output/mmf/text.txt" };
+		BinaryFileReader reader{ U"../../Test/output/mmf/text.txt" };
 		std::string buffer(100, '\0');
 		
 		reader.read(buffer.data(), 100);

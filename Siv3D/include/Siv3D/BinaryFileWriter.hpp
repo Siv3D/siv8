@@ -23,12 +23,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	BinaryWriter
+	//	BinaryFileWriter
 	//
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 書き込み用バイナリファイル
-	class BinaryWriter : public IWriter
+	class BinaryFileWriter : public IWriter
 	{
 	public:
 
@@ -40,13 +40,13 @@ namespace s3d
 
 		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
-		BinaryWriter();
+		BinaryFileWriter();
 
 		/// @brief ファイルを開きます。
 		/// @param path ファイルパス
 		/// @param openMode オープンモード (`OpenMode` の組み合わせ）
 		[[nodiscard]]
-		explicit BinaryWriter(FilePathView path, OpenMode openMode = OpenMode::Trunc);
+		explicit BinaryFileWriter(FilePathView path, OpenMode openMode = OpenMode::Trunc);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -185,9 +185,9 @@ namespace s3d
 
 	private:
 
-		class BinaryWriterDetail;
+		class BinaryFileWriterDetail;
 
-		std::shared_ptr<BinaryWriterDetail> pImpl;
+		std::shared_ptr<BinaryFileWriterDetail> pImpl;
 	};
 }
 

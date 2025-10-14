@@ -90,7 +90,7 @@ namespace s3d
 			close();
 		}
 
-		std::unique_ptr<IReader> tmpReader = std::make_unique<BinaryReader>(path);
+		std::unique_ptr<IReader> tmpReader = std::make_unique<BinaryFileReader>(path);
 
 		if (not tmpReader->isOpen())
 		{

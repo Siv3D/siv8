@@ -44,7 +44,7 @@ namespace s3d
 
 	bool SVG::load(const FilePathView path)
 	{
-		BinaryReader binaryReader{ path };
+		BinaryFileReader binaryReader{ path };
 
 		if (not binaryReader)
 		{

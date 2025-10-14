@@ -26,7 +26,7 @@ namespace s3d
 
 		Optional<ImageInfo> GetImageInfo(const FilePathView path, const ImageFormat imageFormat)
 		{
-			BinaryReader reader{ path };
+			BinaryFileReader reader{ path };
 
 			if (not reader)
 			{
@@ -49,7 +49,7 @@ namespace s3d
 
 		Image Decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
 		{
-			BinaryReader reader{ path };
+			BinaryFileReader reader{ path };
 
 			if (not reader)
 			{
@@ -72,7 +72,7 @@ namespace s3d
 
 		Grid<uint16> DecodeGray16(const FilePathView path, const ImageFormat imageFormat)
 		{
-			BinaryReader reader{ path };
+			BinaryFileReader reader{ path };
 
 			if (not reader)
 			{

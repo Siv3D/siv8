@@ -484,7 +484,7 @@ namespace s3d
 
 	BCnData BCnDecoder::decodeNative(const FilePathView path, const bool sRGB) const
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 
 		if (not reader)
 		{

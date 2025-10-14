@@ -42,7 +42,7 @@ namespace s3d
 
 	bool Blob::createFromFile(const FilePathView path)
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 
 		if (not reader)
 		{
@@ -62,7 +62,7 @@ namespace s3d
 
 	bool Blob::save(const FilePathView path) const
 	{
-		BinaryWriter writer{ path };
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{

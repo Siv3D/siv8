@@ -20,7 +20,7 @@ namespace s3d
 		[[noreturn]]
 		static void ThrowWriteSrcError()
 		{
-			throw Error{ "BinaryWriter::write(): A non-null source pointer is required when writeSize is greater than 0." };
+			throw Error{ "BinaryFileWriter::write(): A non-null source pointer is required when writeSize is greater than 0." };
 		}
 	}
 
@@ -30,11 +30,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	BinaryWriter::BinaryWriter()
-		: pImpl{ std::make_shared<BinaryWriterDetail>() } {}
+	BinaryFileWriter::BinaryFileWriter()
+		: pImpl{ std::make_shared<BinaryFileWriterDetail>() } {}
 
-	BinaryWriter::BinaryWriter(const FilePathView path, const OpenMode openMode)
-		: BinaryWriter{}
+	BinaryFileWriter::BinaryFileWriter(const FilePathView path, const OpenMode openMode)
+		: BinaryFileWriter{}
 	{
 		open(path, openMode);
 	}
@@ -45,7 +45,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryWriter::open(const FilePathView path, const OpenMode openMode)
+	bool BinaryFileWriter::open(const FilePathView path, const OpenMode openMode)
 	{
 		return pImpl->open(path, openMode);
 	}
@@ -56,7 +56,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void BinaryWriter::close()
+	void BinaryFileWriter::close()
 	{
 		pImpl->close();
 	}
@@ -67,7 +67,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryWriter::isOpen() const noexcept
+	bool BinaryFileWriter::isOpen() const noexcept
 	{
 		return pImpl->isOpen();
 	}
@@ -78,7 +78,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	BinaryWriter::operator bool() const noexcept
+	BinaryFileWriter::operator bool() const noexcept
 	{
 		return pImpl->isOpen();
 	}
@@ -89,7 +89,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void BinaryWriter::flush()
+	void BinaryFileWriter::flush()
 	{
 		pImpl->flush();
 	}
@@ -100,7 +100,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void BinaryWriter::clear()
+	void BinaryFileWriter::clear()
 	{
 		pImpl->clear();
 	}
@@ -111,7 +111,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryWriter::size() const
+	int64 BinaryFileWriter::size() const
 	{
 		return pImpl->size();
 	}
@@ -122,7 +122,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryWriter::getPos() const
+	int64 BinaryFileWriter::getPos() const
 	{
 		return pImpl->getPos();
 	}
@@ -133,7 +133,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryWriter::setPos(const int64 pos)
+	bool BinaryFileWriter::setPos(const int64 pos)
 	{
 		if (not InRange<int64>(pos, 0, pImpl->size()))
 		{
@@ -149,7 +149,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryWriter::seekToEnd()
+	int64 BinaryFileWriter::seekToEnd()
 	{
 		return pImpl->setPos(pImpl->size());
 	}
@@ -160,7 +160,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryWriter::write(const void* src, const int64 writeSize)
+	int64 BinaryFileWriter::write(const void* src, const int64 writeSize)
 	{
 		if (writeSize <= 0)
 		{
@@ -181,7 +181,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const FilePath& BinaryWriter::path() const noexcept
+	const FilePath& BinaryFileWriter::path() const noexcept
 	{
 		return pImpl->path();
 	}

@@ -23,7 +23,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	BinaryReader::BinaryReaderDetail::~BinaryReaderDetail()
+	BinaryFileReader::BinaryFileReaderDetail::~BinaryFileReaderDetail()
 	{
 		close();
 	}
@@ -34,9 +34,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryReader::BinaryReaderDetail::open(const FilePathView path)
+	bool BinaryFileReader::BinaryFileReaderDetail::open(const FilePathView path)
 	{
-		LOG_DEBUG(fmt::format("BinaryReader::BinaryReaderDetail::open(\"{0}\")", path));
+		LOG_DEBUG(fmt::format("BinaryFileReader::BinaryFileReaderDetail::open(\"{0}\")", path));
 
 		close();
 
@@ -54,7 +54,7 @@ namespace s3d
 
 			if (not hrs)
 			{
-				LOG_FAIL(fmt::format("❌ BinaryReader: Failed to open resource \"{0}\"", path));
+				LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to open resource \"{0}\"", path));
 				return false;
 			}
 
@@ -62,7 +62,7 @@ namespace s3d
 
 			if (not pResource)
 			{
-				LOG_FAIL(fmt::format("❌ BinaryReader: Failed to load resource \"{0}\"", path));
+				LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to load resource \"{0}\"", path));
 				return false;
 			}
 
@@ -79,7 +79,7 @@ namespace s3d
 				.isOpen = true,
 			};
 
-			LOG_INFO(fmt::format("📤 BinaryReader: Opened resource \"{0}\" size: {1}", m_info.fullPath, FormatDataSize(m_info.fileSize)));
+			LOG_INFO(fmt::format("📤 BinaryFileReader: Opened resource \"{0}\" size: {1}", m_info.fullPath, FormatDataSize(m_info.fileSize)));
 		}
 		else
 		{
@@ -90,7 +90,7 @@ namespace s3d
 
 				if (not m_file.file)
 				{
-					LOG_FAIL(fmt::format("❌ BinaryReader: Failed to open file `{0}`", path));
+					LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to open file `{0}`", path));
 					return false;
 				}
 			}
@@ -102,7 +102,7 @@ namespace s3d
 				.isOpen = true,
 			};
 
-			LOG_INFO(fmt::format("📤 BinaryReader: File `{0}` opened (size: {1})", m_info.fullPath, FormatDataSize(m_info.fileSize)));
+			LOG_INFO(fmt::format("📤 BinaryFileReader: File `{0}` opened (size: {1})", m_info.fullPath, FormatDataSize(m_info.fileSize)));
 		}
 
 		return true;
@@ -114,7 +114,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void BinaryReader::BinaryReaderDetail::close()
+	void BinaryFileReader::BinaryFileReaderDetail::close()
 	{
 		if (not m_info.isOpen)
 		{
@@ -124,13 +124,13 @@ namespace s3d
 		if (isResource())
 		{
 			m_resource = {};
-			LOG_INFO(fmt::format("📥 BinaryReader: Resource `{0}` closed", m_info.fullPath));
+			LOG_INFO(fmt::format("📥 BinaryFileReader: Resource `{0}` closed", m_info.fullPath));
 		}
 		else
 		{
 			m_file.file.close();
 			m_file.readPos = 0;
-			LOG_INFO(fmt::format("📥 BinaryReader: File `{0}` closed", m_info.fullPath));
+			LOG_INFO(fmt::format("📥 BinaryFileReader: File `{0}` closed", m_info.fullPath));
 		}
 
 		m_info = {};
@@ -142,7 +142,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryReader::BinaryReaderDetail::isOpen() const noexcept
+	bool BinaryFileReader::BinaryFileReaderDetail::isOpen() const noexcept
 	{
 		return m_info.isOpen;
 	}
@@ -153,7 +153,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryReader::BinaryReaderDetail::size() const noexcept
+	int64 BinaryFileReader::BinaryFileReaderDetail::size() const noexcept
 	{
 		return m_info.fileSize;
 	}
@@ -164,7 +164,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryReader::BinaryReaderDetail::setPos(const int64 pos)
+	int64 BinaryFileReader::BinaryFileReaderDetail::setPos(const int64 pos)
 	{
 		if (not m_info.isOpen)
 		{
@@ -190,7 +190,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryReader::BinaryReaderDetail::skip(const int64 offset)
+	int64 BinaryFileReader::BinaryFileReaderDetail::skip(const int64 offset)
 	{
 		if (not m_info.isOpen)
 		{
@@ -216,7 +216,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryReader::BinaryReaderDetail::getPos()
+	int64 BinaryFileReader::BinaryFileReaderDetail::getPos()
 	{
 		return (isResource() ? m_resource.readPos : m_file.readPos);
 	}
@@ -227,7 +227,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryReader::BinaryReaderDetail::read(const NonNull<void*> dst, const int64 readSize)
+	int64 BinaryFileReader::BinaryFileReaderDetail::read(const NonNull<void*> dst, const int64 readSize)
 	{
 		if (isResource())
 		{
@@ -239,7 +239,7 @@ namespace s3d
 		}
 	}
 
-	int64 BinaryReader::BinaryReaderDetail::read(const NonNull<void*> dst, const int64 pos, const int64 readSize)
+	int64 BinaryFileReader::BinaryFileReaderDetail::read(const NonNull<void*> dst, const int64 pos, const int64 readSize)
 	{
 		if (isResource())
 		{
@@ -262,7 +262,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryReader::BinaryReaderDetail::lookahead(const NonNull<void*> dst, const int64 readSize)
+	int64 BinaryFileReader::BinaryFileReaderDetail::lookahead(const NonNull<void*> dst, const int64 readSize)
 	{
 		if (isResource())
 		{
@@ -274,7 +274,7 @@ namespace s3d
 		}
 	}
 
-	int64 BinaryReader::BinaryReaderDetail::lookahead(const NonNull<void*> dst, const int64 pos, const int64 readSize)
+	int64 BinaryFileReader::BinaryFileReaderDetail::lookahead(const NonNull<void*> dst, const int64 pos, const int64 readSize)
 	{
 		if (isResource())
 		{
@@ -304,7 +304,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const FilePath& BinaryReader::BinaryReaderDetail::path() const noexcept
+	const FilePath& BinaryFileReader::BinaryFileReaderDetail::path() const noexcept
 	{
 		return m_info.fullPath;
 	}
@@ -315,7 +315,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryReader::BinaryReaderDetail::isResource() const noexcept
+	bool BinaryFileReader::BinaryFileReaderDetail::isResource() const noexcept
 	{
 		return (m_resource.pointer != nullptr);
 	}
@@ -326,21 +326,21 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryReader::BinaryReaderDetail::Resource::read(NonNull<void*> dst, const int64 pos, const int64 readSize, const int64 fileSize)
+	int64 BinaryFileReader::BinaryFileReaderDetail::Resource::read(NonNull<void*> dst, const int64 pos, const int64 readSize, const int64 fileSize)
 	{
 		const int64 readBytes = lookahead(dst, pos, readSize, fileSize);
 		readPos = (pos + readBytes);
 		return readBytes;
 	}
 
-	int64 BinaryReader::BinaryReaderDetail::Resource::lookahead(NonNull<void*> dst, const int64 pos, const int64 readSize, const int64 fileSize)
+	int64 BinaryFileReader::BinaryFileReaderDetail::Resource::lookahead(NonNull<void*> dst, const int64 pos, const int64 readSize, const int64 fileSize)
 	{
 		const int64 readBytes = Clamp<int64>(readSize, 0, (fileSize - pos));
 		std::memcpy(dst.get(), (pointer + pos), static_cast<size_t>(readBytes));
 		return readBytes;
 	}
 
-	int64 BinaryReader::BinaryReaderDetail::File::read(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
+	int64 BinaryFileReader::BinaryFileReaderDetail::File::read(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
 	{
 		const int64 readBytes = Clamp<int64>(readSize, 0, (fileSize - readPos));
 
@@ -358,7 +358,7 @@ namespace s3d
 				return readBytes;
 			}
 
-			LOG_FAIL(fmt::format("❌ BinaryReader `{0}`: read() failed", fullPath));
+			LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath));
 			return 0;
 		}
 
@@ -366,7 +366,7 @@ namespace s3d
 		return readBytes;
 	}
 
-	int64 BinaryReader::BinaryReaderDetail::File::lookahead(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
+	int64 BinaryFileReader::BinaryFileReaderDetail::File::lookahead(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
 	{
 		const int64 previousReadPos = readPos;
 		const int64 readBytes = read(dst, readSize, fileSize, fullPath);

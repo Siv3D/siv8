@@ -19,7 +19,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr bool BinaryReader::supportsLookahead() const noexcept
+	constexpr bool BinaryFileReader::supportsLookahead() const noexcept
 	{
 		return true;
 	}
@@ -30,7 +30,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryReader::read(Concept::TriviallyCopyable auto& dst)
+	bool BinaryFileReader::read(Concept::TriviallyCopyable auto& dst)
 	{
 		return (read(std::addressof(dst), sizeof(dst)) == sizeof(dst));
 	}
@@ -41,7 +41,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryReader::lookahead(Concept::TriviallyCopyable auto& dst) const
+	bool BinaryFileReader::lookahead(Concept::TriviallyCopyable auto& dst) const
 	{
 		return (lookahead(std::addressof(dst), sizeof(dst)) == sizeof(dst));
 	}

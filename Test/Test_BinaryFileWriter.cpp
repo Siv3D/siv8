@@ -11,13 +11,13 @@
 
 # include "Siv3DTest.hpp"
 
-TEST_CASE("BinaryWriter.constructor")
+TEST_CASE("BinaryFileWriter.constructor")
 {
 	{
 		const FilePath path{ U"../../Test/output/binarywriter/test.bin" };
 		CHECK(not FileSystem::Exists(path));
 		{
-			BinaryWriter writer{ path };
+			BinaryFileWriter writer{ path };
 			CHECK(writer.isOpen());
 		}
 		CHECK(FileSystem::Exists(path));
@@ -28,7 +28,7 @@ TEST_CASE("BinaryWriter.constructor")
 		const FilePath path{ U"../../Test/output/binarywriter/.test" };
 		CHECK(not FileSystem::Exists(path));
 		{
-			BinaryWriter writer{ path };
+			BinaryFileWriter writer{ path };
 			CHECK(writer.isOpen());
 		}
 		CHECK(FileSystem::Exists(path));
@@ -39,20 +39,20 @@ TEST_CASE("BinaryWriter.constructor")
 		const FilePath path{ U"../../Test/output/binarywriter/test/" };
 		CHECK(not FileSystem::Exists(path));
 		{
-			BinaryWriter writer{ path };
+			BinaryFileWriter writer{ path };
 			CHECK(not writer.isOpen());
 		}
 		CHECK(not FileSystem::Exists(path));
 	}
 }
 
-TEST_CASE("BinaryWriter.open")
+TEST_CASE("BinaryFileWriter.open")
 {
 	{
 		const FilePath path{ U"../../Test/output/binarywriter/test.bin" };
 		CHECK(not FileSystem::Exists(path));
 		{
-			BinaryWriter writer;
+			BinaryFileWriter writer;
 			CHECK(writer.open(path));
 			CHECK(writer.isOpen());
 		}
@@ -64,7 +64,7 @@ TEST_CASE("BinaryWriter.open")
 		const FilePath path{ U"../../Test/output/binarywriter/.test" };
 		CHECK(not FileSystem::Exists(path));
 		{
-			BinaryWriter writer;
+			BinaryFileWriter writer;
 			CHECK(writer.open(path));
 			CHECK(writer.isOpen());
 		}
@@ -76,7 +76,7 @@ TEST_CASE("BinaryWriter.open")
 		const FilePath path{ U"../../Test/output/binarywriter/test/" };
 		CHECK(not FileSystem::Exists(path));
 		{
-			BinaryWriter writer;
+			BinaryFileWriter writer;
 			CHECK(not writer.open(path));
 			CHECK(not writer.isOpen());
 		}

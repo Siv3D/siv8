@@ -63,7 +63,7 @@ namespace s3d
 
 	bool JPEGEncoder::save(const Image& image, const FilePathView path) const
 	{
-		BinaryWriter writer{ path };
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{
@@ -75,7 +75,7 @@ namespace s3d
 
 	bool JPEGEncoder::save(const Image& image, const FilePathView path, const int32 quality) const
 	{
-		BinaryWriter writer{ path };
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{

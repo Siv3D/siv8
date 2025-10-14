@@ -42,7 +42,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	BinaryWriter::BinaryWriterDetail::~BinaryWriterDetail()
+	BinaryFileWriter::BinaryFileWriterDetail::~BinaryFileWriterDetail()
 	{
 		close();
 	}
@@ -53,21 +53,21 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryWriter::BinaryWriterDetail::open(const FilePathView path, const OpenMode openMode)
+	bool BinaryFileWriter::BinaryFileWriterDetail::open(const FilePathView path, const OpenMode openMode)
 	{
-		LOG_DEBUG(fmt::format("BinaryWriter::BinaryWriterDetail::open(\"{0}\", {1})", path, FromEnum(openMode)));
+		LOG_DEBUG(fmt::format("BinaryFileWriter::BinaryFileWriterDetail::open(\"{0}\", {1})", path, FromEnum(openMode)));
 
 		close();
 
 		if (not path)
 		{
-			LOG_FAIL("❌ BinaryWriter: path is empty");
+			LOG_FAIL("❌ BinaryFileWriter: path is empty");
 			return false;
 		}
 
 		if (FileSystem::IsResourcePath(path))
 		{
-			LOG_FAIL("❌ BinaryWriter: path is a resource path");
+			LOG_FAIL("❌ BinaryFileWriter: path is a resource path");
 			return false;
 		}
 
@@ -76,7 +76,7 @@ namespace s3d
 
 		if (parentDirectory && (not FileSystem::Exists(parentDirectory)) && (not FileSystem::CreateDirectories(parentDirectory)))
 		{
-			LOG_FAIL(fmt::format("❌ BinaryWriter: Failed to create parent directories \"{0}\"", parentDirectory));
+			LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to create parent directories \"{0}\"", parentDirectory));
 			return false;
 		}
 
@@ -86,7 +86,7 @@ namespace s3d
 
 			if (handle == INVALID_HANDLE_VALUE)
 			{
-				LOG_FAIL(fmt::format("❌ BinaryWriter: Failed to open the file `{0}`. {1}", path, Platform::Windows::GetLastErrorMessage()));
+				LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to open the file `{0}`. {1}", path, Platform::Windows::GetLastErrorMessage()));
 				return false;
 			}
 
@@ -107,7 +107,7 @@ namespace s3d
 				.isOpen = true,
 			};
 
-			LOG_INFO(fmt::format("📤 BinaryWriter: File `{0}` opened", m_info.fullPath));
+			LOG_INFO(fmt::format("📤 BinaryFileWriter: File `{0}` opened", m_info.fullPath));
 		}
 
 		return true;
@@ -119,7 +119,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void BinaryWriter::BinaryWriterDetail::close()
+	void BinaryFileWriter::BinaryFileWriterDetail::close()
 	{
 		if (not m_info.isOpen)
 		{
@@ -132,7 +132,7 @@ namespace s3d
 
 		m_file.close();
 
-		LOG_INFO(fmt::format("📥 BinaryWriter: File `{0}` closed", m_info.fullPath));
+		LOG_INFO(fmt::format("📥 BinaryFileWriter: File `{0}` closed", m_info.fullPath));
 
 		m_info = {};
 	}
@@ -143,7 +143,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryWriter::BinaryWriterDetail::isOpen() const noexcept
+	bool BinaryFileWriter::BinaryFileWriterDetail::isOpen() const noexcept
 	{
 		return m_info.isOpen;
 	}
@@ -154,7 +154,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void BinaryWriter::BinaryWriterDetail::flush()
+	void BinaryFileWriter::BinaryFileWriterDetail::flush()
 	{
 		if (m_buffer.writePos == 0)
 		{
@@ -173,7 +173,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void BinaryWriter::BinaryWriterDetail::clear()
+	void BinaryFileWriter::BinaryFileWriterDetail::clear()
 	{
 		if (not m_info.isOpen)
 		{
@@ -193,7 +193,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryWriter::BinaryWriterDetail::size()
+	int64 BinaryFileWriter::BinaryFileWriterDetail::size()
 	{
 		if (not m_info.isOpen)
 		{
@@ -212,7 +212,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryWriter::BinaryWriterDetail::setPos(const int64 clampedPos)
+	int64 BinaryFileWriter::BinaryFileWriterDetail::setPos(const int64 clampedPos)
 	{
 		if (not m_info.isOpen)
 		{
@@ -234,7 +234,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryWriter::BinaryWriterDetail::getPos()
+	int64 BinaryFileWriter::BinaryFileWriterDetail::getPos()
 	{
 		if (not m_info.isOpen) [[unlikely]]
 		{
@@ -254,7 +254,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryWriter::BinaryWriterDetail::write(const NonNull<const void*> src, const size_t writeSize)
+	int64 BinaryFileWriter::BinaryFileWriterDetail::write(const NonNull<const void*> src, const size_t writeSize)
 	{
 		if (not m_info.isOpen)
 		{
@@ -280,7 +280,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const FilePath& BinaryWriter::BinaryWriterDetail::path() const noexcept
+	const FilePath& BinaryFileWriter::BinaryFileWriterDetail::path() const noexcept
 	{
 		return m_info.fullPath;
 	}
@@ -291,7 +291,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryWriter::BinaryWriterDetail::fillBuffer(const NonNull<const void*> src, const size_t writeSize)
+	int64 BinaryFileWriter::BinaryFileWriterDetail::fillBuffer(const NonNull<const void*> src, const size_t writeSize)
 	{
 		if (not m_buffer.data)
 		{
@@ -305,13 +305,13 @@ namespace s3d
 		return writeSize;
 	}
 
-	void BinaryWriter::BinaryWriterDetail::File::close()
+	void BinaryFileWriter::BinaryFileWriterDetail::File::close()
 	{
 		::CloseHandle(handle);
 		handle = INVALID_HANDLE_VALUE;
 	}
 
-	size_t BinaryWriter::BinaryWriterDetail::Buffer::available() const noexcept
+	size_t BinaryFileWriter::BinaryFileWriterDetail::Buffer::available() const noexcept
 	{
 		return (BufferSize - writePos);
 	}

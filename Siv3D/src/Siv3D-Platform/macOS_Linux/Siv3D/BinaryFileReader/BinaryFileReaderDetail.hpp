@@ -18,14 +18,14 @@
 
 namespace s3d
 {
-	class BinaryReader::BinaryReaderDetail
+	class BinaryFileReader::BinaryFileReaderDetail
 	{
 	public:
 
 		[[nodiscard]]
-		BinaryReaderDetail() = default;
+		BinaryFileReaderDetail() = default;
 
-		~BinaryReaderDetail();
+		~BinaryFileReaderDetail();
 
 		[[nodiscard]]
 		bool open(FilePathView path);

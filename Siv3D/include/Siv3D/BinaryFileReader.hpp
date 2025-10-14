@@ -24,12 +24,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	BinaryReader
+	//	BinaryFileReader
 	//
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 読み込み用バイナリファイル
-	class BinaryReader : public IReader
+	class BinaryFileReader : public IReader
 	{
 	public:
 
@@ -41,12 +41,12 @@ namespace s3d
 
 		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
-		BinaryReader();
+		BinaryFileReader();
 
 		/// @brief ファイルを開きます。
 		/// @param path ファイルパス
 		[[nodiscard]]
-		explicit BinaryReader(FilePathView path);
+		explicit BinaryFileReader(FilePathView path);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -251,9 +251,9 @@ namespace s3d
 
 	private:
 
-		class BinaryReaderDetail;
+		class BinaryFileReaderDetail;
 
-		std::shared_ptr<BinaryReaderDetail> pImpl;
+		std::shared_ptr<BinaryFileReaderDetail> pImpl;
 	};
 }
 

@@ -46,7 +46,7 @@ namespace s3d
 
 	private:
 
-		BinaryWriter m_binaryWriter;
+		BinaryFileWriter m_binaryWriter;
 
 		TextEncoding m_encoding = TextEncoding::Default;
 	};

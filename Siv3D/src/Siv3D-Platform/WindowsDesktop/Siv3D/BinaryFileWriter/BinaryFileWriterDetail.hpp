@@ -18,13 +18,13 @@
 
 namespace s3d
 {
-	class BinaryWriter::BinaryWriterDetail
+	class BinaryFileWriter::BinaryFileWriterDetail
 	{
 	public:
 
-		BinaryWriterDetail() = default;
+		BinaryFileWriterDetail() = default;
 
-		~BinaryWriterDetail();
+		~BinaryFileWriterDetail();
 
 		bool open(FilePathView path, OpenMode openMode);
 

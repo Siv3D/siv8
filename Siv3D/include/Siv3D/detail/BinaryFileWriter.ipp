@@ -19,7 +19,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryWriter::write(const Concept::TriviallyCopyable auto& src)
+	bool BinaryFileWriter::write(const Concept::TriviallyCopyable auto& src)
 	{
 		return (write(std::addressof(src), sizeof(src)) == sizeof(src));
 	}

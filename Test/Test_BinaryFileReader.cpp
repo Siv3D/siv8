@@ -11,14 +11,14 @@
 
 # include "Siv3DTest.hpp"
 
-TEST_CASE("BinaryReader")
+TEST_CASE("BinaryFileReader")
 {
 	constexpr int64 FileSize = (32768 * sizeof(uint32));
 	const FilePath path{ U"../../Test/output/binaryreader/test.bin" };
 	{
 		CHECK(not FileSystem::Exists(path));
 		{
-			BinaryWriter writer{ path };
+			BinaryFileWriter writer{ path };
 			CHECK(writer.isOpen());
 
 			for (uint32 i = 0; i < (FileSize / sizeof(uint32)); ++i)
@@ -29,7 +29,7 @@ TEST_CASE("BinaryReader")
 	}
 
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 		CHECK(reader.isOpen());
 		CHECK(reader.size() == FileSize);
 

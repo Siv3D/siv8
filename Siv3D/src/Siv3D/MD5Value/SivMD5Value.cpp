@@ -118,7 +118,7 @@ namespace s3d
 
 	MD5Value MD5Value::FromFile(const FilePathView path)
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 
 		if (not reader.isOpen())
 		{
