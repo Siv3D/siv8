@@ -11,7 +11,6 @@
 
 # include <Siv3D/JSONSerialization.hpp>
 
-
 ////////////////////////////////////////////////////////////////
 //
 //	int128
@@ -20,7 +19,8 @@
 
 void JSONSerializer<s3d::int128>::to_json(s3d::JSON::json_base& j, const s3d::int128& value)
 {
-	j = { { "high", absl::Int128High64(value) }, { "low", absl::Uint128Low64(value) } };
+	j = { { "high", absl::Int128High64(value) },
+		  { "low", absl::Uint128Low64(value) } };
 }
 
 void JSONSerializer<s3d::int128>::from_json(const s3d::JSON::json_base& j, s3d::int128& value)
@@ -38,7 +38,8 @@ void JSONSerializer<s3d::int128>::from_json(const s3d::JSON::json_base& j, s3d::
 
 void JSONSerializer<s3d::uint128>::to_json(s3d::JSON::json_base& j, const s3d::uint128& value)
 {
-	j = { { "high", absl::Uint128High64(value) }, { "low", absl::Uint128Low64(value) } };
+	j = { { "high", absl::Uint128High64(value) },
+		  { "low", absl::Uint128Low64(value) } };
 }
 
 void JSONSerializer<s3d::uint128>::from_json(const s3d::JSON::json_base& j, s3d::uint128& value)
@@ -104,7 +105,9 @@ void JSONSerializer<s3d::HalfFloat>::from_json(const s3d::JSON::json_base& j, s3
 
 void JSONSerializer<s3d::Date>::to_json(s3d::JSON::json_base& j, const s3d::Date& value)
 {
-	j = { { "year", value.year }, { "month", value.month }, { "day", value.day } };
+	j = { { "year", value.year },
+		  { "month", value.month },
+		  { "day", value.day } };
 }
 
 void JSONSerializer<s3d::Date>::from_json(const s3d::JSON::json_base& j, s3d::Date& value)
@@ -264,6 +267,16 @@ void JSONSerializer<s3d::Polygon>::from_json(const s3d::JSON::json_base& j, s3d:
 //
 ////////////////////////////////////////////////////////////////
 
+//void JSONSerializer<s3d::MultiPolygon>::to_json(s3d::JSON::json_base& j, const s3d::MultiPolygon& value)
+//{
+//	j = value.asArray();
+//}
+//
+//void JSONSerializer<s3d::MultiPolygon>::from_json(const s3d::JSON::json_base& j, s3d::MultiPolygon& value)
+//{
+//	value = s3d::MultiPolygon{ j.get<s3d::Array<s3d::Polygon>>() };
+//}
+
 ////////////////////////////////////////////////////////////////
 //
 //	Bezier2
@@ -284,7 +297,9 @@ void JSONSerializer<s3d::Polygon>::from_json(const s3d::JSON::json_base& j, s3d:
 
 void JSONSerializer<s3d::TriangleIndex>::to_json(s3d::JSON::json_base& j, const s3d::TriangleIndex& value)
 {
-	j = { { "i0", value.i0 }, { "i1", value.i1 }, { "i2", value.i2 } };
+	j = { { "i0", value.i0 },
+		  { "i1", value.i1 },
+		  { "i2", value.i2 } };
 }
 
 void JSONSerializer<s3d::TriangleIndex>::from_json(const s3d::JSON::json_base& j, s3d::TriangleIndex& value)
@@ -302,7 +317,9 @@ void JSONSerializer<s3d::TriangleIndex>::from_json(const s3d::JSON::json_base& j
 
 void JSONSerializer<s3d::TriangleIndex32>::to_json(s3d::JSON::json_base& j, const s3d::TriangleIndex32& value)
 {
-	j = { { "i0", value.i0 }, { "i1", value.i1 }, { "i2", value.i2 } };
+	j = { { "i0", value.i0 },
+		  { "i1", value.i1 },
+		  { "i2", value.i2 } };
 }
 
 void JSONSerializer<s3d::TriangleIndex32>::from_json(const s3d::JSON::json_base& j, s3d::TriangleIndex32& value)
@@ -318,11 +335,42 @@ void JSONSerializer<s3d::TriangleIndex32>::from_json(const s3d::JSON::json_base&
 //
 ////////////////////////////////////////////////////////////////
 
+void JSONSerializer<s3d::Shape2D>::to_json(s3d::JSON::json_base& j, const s3d::Shape2D& value)
+{
+	j = { { "vertices", value.vertices() },
+		  { "indices", value.indices() } };
+}
+
+void JSONSerializer<s3d::Shape2D>::from_json(const s3d::JSON::json_base& j, s3d::Shape2D& value)
+{
+	s3d::Array<s3d::Float2> vertices = j.at("vertices").get<s3d::Array<s3d::Float2>>();
+	s3d::Array<s3d::TriangleIndex> indices = j.at("indices").get<s3d::Array<s3d::TriangleIndex>>();
+	value = s3d::Shape2D{ std::move(vertices), std::move(indices) };
+}
+
 ////////////////////////////////////////////////////////////////
 //
 //	UUIDValue
 //
 ////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::UUIDValue>::to_json(s3d::JSON::json_base& j, const s3d::UUIDValue& value)
+{
+	j = value.to_string();
+}
+
+void JSONSerializer<s3d::UUIDValue>::from_json(const s3d::JSON::json_base& j, s3d::UUIDValue& value)
+{
+	if (const auto uuid = s3d::UUIDValue::Parse(j.get<std::string_view>()))
+	{
+		value = *uuid;
+		return;
+	}
+	else
+	{
+		throw s3d::JSON::json_base::parse_error::create(101, 0, "Invalid UUID string", nullptr);
+	}
+}
 
 ////////////////////////////////////////////////////////////////
 //
@@ -330,11 +378,58 @@ void JSONSerializer<s3d::TriangleIndex32>::from_json(const s3d::JSON::json_base&
 //
 ////////////////////////////////////////////////////////////////
 
+void JSONSerializer<s3d::Input>::to_json(s3d::JSON::json_base& j, const s3d::Input& value)
+{
+	j = { { "deviceType", s3d::FromEnum(value.deviceType()) },
+		  { "code", value.code() },
+		  { "playerIndex", value.playerIndex() } };
+}
+
+void JSONSerializer<s3d::Input>::from_json(const s3d::JSON::json_base& j, s3d::Input& value)
+{
+	const s3d::InputDeviceType deviceType = s3d::ToEnum<s3d::InputDeviceType>(j.at("deviceType").get<s3d::uint8>());
+	const s3d::uint8 code = j.at("code").get<s3d::uint8>();
+	const s3d::uint8 playerIndex = j.at("playerIndex").get<s3d::uint8>();
+	value = s3d::Input{ deviceType, code, playerIndex };
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	InputCombination
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::InputCombination>::to_json(s3d::JSON::json_base& j, const s3d::InputCombination& value)
+{
+	j = { { "input1", value.input1() },
+		  { "input2", value.input2() } };
+}
+
+void JSONSerializer<s3d::InputCombination>::from_json(const s3d::JSON::json_base& j, s3d::InputCombination& value)
+{
+	const s3d::Input input1 = j.at("input1").get<s3d::Input>();
+	const s3d::Input input2 = j.at("input2").get<s3d::Input>();
+	value = s3d::InputCombination{ input1, input2 };
+}
+
 ////////////////////////////////////////////////////////////////
 //
 //	InputGroup
 //
 ////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::InputGroup>::to_json(s3d::JSON::json_base& j, const s3d::InputGroup& value)
+{
+	j = { { "inputs", value.inputs() },
+		  { "inputCombinations", value.inputCombinations() } };
+}
+
+void JSONSerializer<s3d::InputGroup>::from_json(const s3d::JSON::json_base& j, s3d::InputGroup& value)
+{
+	s3d::Array<s3d::Input> inputs = j.at("inputs").get<s3d::Array<s3d::Input>>();
+	s3d::Array<s3d::InputCombination> inputCombinations = j.at("inputCombinations").get<s3d::Array<s3d::InputCombination>>();
+	value = s3d::InputGroup{ std::move(inputs), std::move(inputCombinations) };
+}
 
 ////////////////////////////////////////////////////////////////
 //

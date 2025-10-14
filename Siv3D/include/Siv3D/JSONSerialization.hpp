@@ -30,6 +30,9 @@
 # include "MultiPolygon.hpp"
 # include "TriangleIndex.hpp"
 # include "TriangleIndex32.hpp"
+# include "Shape2D.hpp"
+# include "UUIDValue.hpp"
+# include "InputGroups.hpp"
 
 ////////////////////////////////////////////////////////////////
 //
@@ -193,6 +196,13 @@ struct JSONSerializer<s3d::Polygon>
 //
 ////////////////////////////////////////////////////////////////
 
+//template <>
+//struct JSONSerializer<s3d::MultiPolygon>
+//{
+//	static void to_json(s3d::JSON::json_base& j, const s3d::MultiPolygon& value);
+//	static void from_json(const s3d::JSON::json_base& j, s3d::MultiPolygon& value);
+//};
+
 ////////////////////////////////////////////////////////////////
 //
 //	Bezier2
@@ -237,11 +247,25 @@ struct JSONSerializer<s3d::TriangleIndex32>
 //
 ////////////////////////////////////////////////////////////////
 
+template <>
+struct JSONSerializer<s3d::Shape2D>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::Shape2D& value);
+	static void from_json(const s3d::JSON::json_base& j, s3d::Shape2D& value);
+};
+
 ////////////////////////////////////////////////////////////////
 //
 //	UUIDValue
 //
 ////////////////////////////////////////////////////////////////
+
+template <>
+struct JSONSerializer<s3d::UUIDValue>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::UUIDValue& value);
+	static void from_json(const s3d::JSON::json_base& j, s3d::UUIDValue& value);
+};
 
 ////////////////////////////////////////////////////////////////
 //
@@ -249,11 +273,38 @@ struct JSONSerializer<s3d::TriangleIndex32>
 //
 ////////////////////////////////////////////////////////////////
 
+template <>
+struct JSONSerializer<s3d::Input>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::Input& value);
+	static void from_json(const s3d::JSON::json_base& j, s3d::Input& value);
+};
+
+////////////////////////////////////////////////////////////////
+//
+//	InputCombination
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct JSONSerializer<s3d::InputCombination>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::InputCombination& value);
+	static void from_json(const s3d::JSON::json_base& j, s3d::InputCombination& value);
+};
+
 ////////////////////////////////////////////////////////////////
 //
 //	InputGroup
 //
 ////////////////////////////////////////////////////////////////
+
+template <>
+struct JSONSerializer<s3d::InputGroup>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::InputGroup& value);
+	static void from_json(const s3d::JSON::json_base& j, s3d::InputGroup& value);
+};
 
 ////////////////////////////////////////////////////////////////
 //
