@@ -39,21 +39,6 @@ namespace s3d
 	[[nodiscard]]
 	FilePath Resource(FilePathView path);
 
-	///// @brief 
-	///// @param resourceOption 
-	//void SetResourceOption(ResourceOption resourceOption);
-
-	///// @brief 
-	///// @return 
-	//[[nodiscard]]
-	//ResourceOption GetResourceOption() noexcept;
-
-	///// @brief 
-	///// @param path 
-	///// @return 
-	//[[nodiscard]]
-	//inline FilePath FileOrResource(FilePathView path);
-
 # if SIV3D_PLATFORM(WINDOWS)
 
 	namespace Platform::Windows

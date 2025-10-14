@@ -421,11 +421,8 @@
 // ファイルとディレクトリ | Files and directories
 # include <Siv3D/FileSystem.hpp>
 
-//// リソースファイルの設定 | Resource file option
-//# include <Siv3D/ResourceOption.hpp>
-
 // リソースファイルの管理 | Resource files
-# include <Siv3D/Resource.hpp> // ToDo
+# include <Siv3D/Resource.hpp>
 
 // ファイル操作のイベント | File action
 # include <Siv3D/FileAction.hpp>
