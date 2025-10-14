@@ -37,7 +37,7 @@
 		F902E1082E9E71B7002C6B92 /* BinaryFileWriterDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902E1032E9E71B7002C6B92 /* BinaryFileWriterDetail.cpp */; };
 		F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */; };
 		F90702F62B9DAEB900383E4D /* Test_Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B62B9DAEB900383E4D /* Test_Array.cpp */; };
-		F90702F72B9DAEB900383E4D /* Test_BinaryWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B72B9DAEB900383E4D /* Test_BinaryWriter.cpp */; };
+		F90702F72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */; };
 		F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B82B9DAEB900383E4D /* Test_Byte.cpp */; };
 		F90702F92B9DAEB900383E4D /* Test_Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B92B9DAEB900383E4D /* Test_Color.cpp */; };
 		F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */; };
@@ -53,7 +53,7 @@
 		F90703042B9DAEB900383E4D /* Test_PRNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */; };
 		F90703062B9DAEB900383E4D /* Test_Step.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702C62B9DAEB900383E4D /* Test_Step.cpp */; };
 		F90703072B9DAEB900383E4D /* Test_StringView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702C72B9DAEB900383E4D /* Test_StringView.cpp */; };
-		F90703082B9DAEB900383E4D /* Test_TextReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702C82B9DAEB900383E4D /* Test_TextReader.cpp */; };
+		F90703082B9DAEB900383E4D /* Test_TextFileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702C82B9DAEB900383E4D /* Test_TextFileReader.cpp */; };
 		F90703092B9DAEB900383E4D /* Test_TupleFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702C92B9DAEB900383E4D /* Test_TupleFormatter.cpp */; };
 		F907030A2B9DAEB900383E4D /* Test_Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CA2B9DAEB900383E4D /* Test_Types.cpp */; };
 		F907030B2B9DAEB900383E4D /* Test_Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CB2B9DAEB900383E4D /* Test_Unicode.cpp */; };
@@ -462,7 +462,7 @@
 		F90DA06F2D1A934E0003E1E8 /* CTexture_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0632D1A934E0003E1E8 /* CTexture_Metal.mm */; };
 		F90DA0702D1A934E0003E1E8 /* MetalTexture2DDesc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0672D1A934E0003E1E8 /* MetalTexture2DDesc.cpp */; };
 		F90DA0712D1A934E0003E1E8 /* TextureFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90DA0692D1A934E0003E1E8 /* TextureFactory.mm */; };
-		F90F2BE02D91749500CC89CA /* Test_BinaryReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F2BDF2D91749500CC89CA /* Test_BinaryReader.cpp */; };
+		F90F2BE02D91749500CC89CA /* Test_BinaryFileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F2BDF2D91749500CC89CA /* Test_BinaryFileReader.cpp */; };
 		F90F2BE32D91861F00CC89CA /* SivImageProcessing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F2BE12D91861F00CC89CA /* SivImageProcessing.cpp */; };
 		F90F2BE52D9278A400CC89CA /* IsPrime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE42D9278A400CC89CA /* IsPrime.hpp */; };
 		F90F2BE72D9278BB00CC89CA /* IsPrime_impl.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */; };
@@ -2749,7 +2749,7 @@
 		F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DTest.cpp; sourceTree = "<group>"; };
 		F90702B52B9DAEB900383E4D /* Siv3DTest.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTest.hpp; sourceTree = "<group>"; };
 		F90702B62B9DAEB900383E4D /* Test_Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Array.cpp; sourceTree = "<group>"; };
-		F90702B72B9DAEB900383E4D /* Test_BinaryWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BinaryWriter.cpp; sourceTree = "<group>"; };
+		F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BinaryFileWriter.cpp; sourceTree = "<group>"; };
 		F90702B82B9DAEB900383E4D /* Test_Byte.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Byte.cpp; sourceTree = "<group>"; };
 		F90702B92B9DAEB900383E4D /* Test_Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Color.cpp; sourceTree = "<group>"; };
 		F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ColorF.cpp; sourceTree = "<group>"; };
@@ -2765,7 +2765,7 @@
 		F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_PRNG.cpp; sourceTree = "<group>"; };
 		F90702C62B9DAEB900383E4D /* Test_Step.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Step.cpp; sourceTree = "<group>"; };
 		F90702C72B9DAEB900383E4D /* Test_StringView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_StringView.cpp; sourceTree = "<group>"; };
-		F90702C82B9DAEB900383E4D /* Test_TextReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextReader.cpp; sourceTree = "<group>"; };
+		F90702C82B9DAEB900383E4D /* Test_TextFileReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextFileReader.cpp; sourceTree = "<group>"; };
 		F90702C92B9DAEB900383E4D /* Test_TupleFormatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TupleFormatter.cpp; sourceTree = "<group>"; };
 		F90702CA2B9DAEB900383E4D /* Test_Types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Types.cpp; sourceTree = "<group>"; };
 		F90702CB2B9DAEB900383E4D /* Test_Unicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Unicode.cpp; sourceTree = "<group>"; };
@@ -3175,7 +3175,7 @@
 		F90DA0662D1A934E0003E1E8 /* MetalTexture2DDesc.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalTexture2DDesc.hpp; sourceTree = "<group>"; };
 		F90DA0672D1A934E0003E1E8 /* MetalTexture2DDesc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MetalTexture2DDesc.cpp; sourceTree = "<group>"; };
 		F90DA0692D1A934E0003E1E8 /* TextureFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TextureFactory.mm; sourceTree = "<group>"; };
-		F90F2BDF2D91749500CC89CA /* Test_BinaryReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BinaryReader.cpp; sourceTree = "<group>"; };
+		F90F2BDF2D91749500CC89CA /* Test_BinaryFileReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BinaryFileReader.cpp; sourceTree = "<group>"; };
 		F90F2BE12D91861F00CC89CA /* SivImageProcessing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivImageProcessing.cpp; sourceTree = "<group>"; };
 		F90F2BE42D9278A400CC89CA /* IsPrime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrime.hpp; sourceTree = "<group>"; };
 		F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrime_impl.ipp; sourceTree = "<group>"; };
@@ -5641,8 +5641,8 @@
 				F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */,
 				F90702B62B9DAEB900383E4D /* Test_Array.cpp */,
 				F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */,
-				F90F2BDF2D91749500CC89CA /* Test_BinaryReader.cpp */,
-				F90702B72B9DAEB900383E4D /* Test_BinaryWriter.cpp */,
+				F90F2BDF2D91749500CC89CA /* Test_BinaryFileReader.cpp */,
+				F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */,
 				F90702B82B9DAEB900383E4D /* Test_Byte.cpp */,
 				F90702B92B9DAEB900383E4D /* Test_Color.cpp */,
 				F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */,
@@ -5667,7 +5667,7 @@
 				F90702C62B9DAEB900383E4D /* Test_Step.cpp */,
 				F9528B152BAC58A300222F45 /* Test_String.cpp */,
 				F90702C72B9DAEB900383E4D /* Test_StringView.cpp */,
-				F90702C82B9DAEB900383E4D /* Test_TextReader.cpp */,
+				F90702C82B9DAEB900383E4D /* Test_TextFileReader.cpp */,
 				F90702C92B9DAEB900383E4D /* Test_TupleFormatter.cpp */,
 				F90702CA2B9DAEB900383E4D /* Test_Types.cpp */,
 				F90702CB2B9DAEB900383E4D /* Test_Unicode.cpp */,
@@ -13395,7 +13395,7 @@
 				F97E6DB92D7B3B9A0066E408 /* Test_Grid.cpp in Sources */,
 				F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */,
 				F9528B162BAC58A300222F45 /* Test_String.cpp in Sources */,
-				F90F2BE02D91749500CC89CA /* Test_BinaryReader.cpp in Sources */,
+				F90F2BE02D91749500CC89CA /* Test_BinaryFileReader.cpp in Sources */,
 				2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */,
 				F907030B2B9DAEB900383E4D /* Test_Unicode.cpp in Sources */,
 				F9528B382BB05D0600222F45 /* Test_Base64Value.cpp in Sources */,
@@ -13405,7 +13405,7 @@
 				F907030C2B9DAEB900383E4D /* Test_Utility.cpp in Sources */,
 				F90703032B9DAEB900383E4D /* Test_Platform.cpp in Sources */,
 				F9528C492BBF028E00222F45 /* Test_Compression.cpp in Sources */,
-				F90703082B9DAEB900383E4D /* Test_TextReader.cpp in Sources */,
+				F90703082B9DAEB900383E4D /* Test_TextFileReader.cpp in Sources */,
 				F90702FF2B9DAEB900383E4D /* Test_Hash.cpp in Sources */,
 				F90702FE2B9DAEB900383E4D /* Test_FunctionRef.cpp in Sources */,
 				F90703002B9DAEB900383E4D /* Test_Indexed.cpp in Sources */,
@@ -13423,7 +13423,7 @@
 				F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */,
 				F90703012B9DAEB900383E4D /* Test_Memory.cpp in Sources */,
 				F907030A2B9DAEB900383E4D /* Test_Types.cpp in Sources */,
-				F90702F72B9DAEB900383E4D /* Test_BinaryWriter.cpp in Sources */,
+				F90702F72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp in Sources */,
 				F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */,
 				F9528C522BC029E800222F45 /* Test_MemoryMappedFile.cpp in Sources */,
 			);
