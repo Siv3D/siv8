@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/ImageDecoder.hpp>
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include "IImageDecoder.hpp"
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 

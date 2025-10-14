@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/HLSL.hpp>
-# include <Siv3D/TextReader.hpp>
+# include <Siv3D/TextFileReader.hpp>
 # include <Siv3D/Shader/D3D11/CShader_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 

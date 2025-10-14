@@ -235,12 +235,6 @@
     <Filter Include="src\Siv3D\Blob">
       <UniqueIdentifier>{4623a469-f205-40f4-8b96-d03582369b8b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\BinaryReader">
-      <UniqueIdentifier>{7f174ca0-8b97-4a64-b528-f1b0447cf6a9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader">
-      <UniqueIdentifier>{a170c802-5d4b-4df2-871f-f594d399892b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D\EngineLog">
       <UniqueIdentifier>{f1e0c1ee-6714-40c8-9836-aa24140f0c6b}</UniqueIdentifier>
     </Filter>
@@ -274,9 +268,6 @@
     <Filter Include="src\Siv3D\TextEncoding">
       <UniqueIdentifier>{80c3600e-a37e-40d8-9c34-e9c94d4a8a33}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\TextReader">
-      <UniqueIdentifier>{a9fabb2d-e26b-459f-99f2-9bdbff3e5059}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D\UnicodeConverter">
       <UniqueIdentifier>{c7448ffa-ca0e-41e6-b46d-35f97fc4aa19}</UniqueIdentifier>
     </Filter>
@@ -298,17 +289,8 @@
     <Filter Include="src\Siv3D\HSV">
       <UniqueIdentifier>{509503ee-44a4-435f-bd4c-040a16a9d229}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\BinaryWriter">
-      <UniqueIdentifier>{6b7d8c4b-d443-433d-b037-53226dd0bf2b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter">
-      <UniqueIdentifier>{00531a58-d7b7-4289-8d4b-e0db8c6e1366}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows">
       <UniqueIdentifier>{b010b876-7831-4db2-94c5-ea1ea74e1849}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Siv3D\TextWriter">
-      <UniqueIdentifier>{d443395f-63e6-4b25-80a2-6d39edf237f7}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL">
       <UniqueIdentifier>{8fb860c2-ed4a-4e03-8636-dc12bcfb5a28}</UniqueIdentifier>
@@ -1129,6 +1111,24 @@
     <Filter Include="src\Siv3D\JSONSerialization">
       <UniqueIdentifier>{ee2010a9-609e-42b9-8744-21efa7883a94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\BinaryFileReader">
+      <UniqueIdentifier>{7f174ca0-8b97-4a64-b528-f1b0447cf6a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\BinaryFileWriter">
+      <UniqueIdentifier>{6b7d8c4b-d443-433d-b037-53226dd0bf2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader">
+      <UniqueIdentifier>{a170c802-5d4b-4df2-871f-f594d399892b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter">
+      <UniqueIdentifier>{00531a58-d7b7-4289-8d4b-e0db8c6e1366}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TextFileReader">
+      <UniqueIdentifier>{a9fabb2d-e26b-459f-99f2-9bdbff3e5059}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TextFileWriter">
+      <UniqueIdentifier>{d443395f-63e6-4b25-80a2-6d39edf237f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1722,10 +1722,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Blob.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryReader.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryFileReader.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryWriter.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryFileWriter.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp">
@@ -1740,11 +1740,8 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\RFC1321\RFC1321.hpp">
       <Filter>src\ThirdParty\RFC1321</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryReader.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryFileReader.ipp">
       <Filter>include\Siv3D\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader\BinaryReaderDetail.hpp">
-      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AlignedAllocator.ipp">
       <Filter>include\Siv3D\detail</Filter>
@@ -1806,11 +1803,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextEncoding.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\TextReader.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextFileReader.hpp">
       <Filter>include\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.hpp">
-      <Filter>src\Siv3D\TextReader</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\UnicodeConverter.hpp">
       <Filter>include\Siv3D</Filter>
@@ -1824,7 +1818,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\miniutf\miniutf.hpp">
       <Filter>src\ThirdParty\miniutf</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextReader.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextFileReader.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\HSV.hpp">
@@ -1857,20 +1851,14 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Vector4D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryWriter.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryFileWriter.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.hpp">
-      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\TextWriter.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextFileWriter.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextWriter.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextFileWriter.ipp">
       <Filter>include\Siv3D\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.hpp">
-      <Filter>src\Siv3D\TextWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Window.hpp">
       <Filter>include\Siv3D</Filter>
@@ -4605,6 +4593,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter\BinaryFileWriterDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader\BinaryFileReaderDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\TextFileWriter\TextFileWriterDetail.hpp">
+      <Filter>src\Siv3D\TextFileWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\TextFileReader\TextFileReaderDetail.hpp">
+      <Filter>src\Siv3D\TextFileReader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -4778,12 +4778,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Blob\SivBlob.cpp">
       <Filter>src\Siv3D\Blob</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryReader\SivBinaryReader.cpp">
-      <Filter>src\Siv3D\BinaryReader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader\BinaryReaderDetail.cpp">
-      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\EngineLog\SivEngineLog.cpp">
       <Filter>src\Siv3D\EngineLog</Filter>
     </ClCompile>
@@ -4823,12 +4817,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEncoding\SivTextEncoding.cpp">
       <Filter>src\Siv3D\TextEncoding</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\SivTextReader.cpp">
-      <Filter>src\Siv3D\TextReader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.cpp">
-      <Filter>src\Siv3D\TextReader</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\UnicodeConverter\SivUnicodeConverter.cpp">
       <Filter>src\Siv3D\UnicodeConverter</Filter>
     </ClCompile>
@@ -4850,20 +4838,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\HSV\SivHSV.cpp">
       <Filter>src\Siv3D\HSV</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryWriter\SivBinaryWriter.cpp">
-      <Filter>src\Siv3D\BinaryWriter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.cpp">
-      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows\SivWindows.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\SivTextWriter.cpp">
-      <Filter>src\Siv3D\TextWriter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.cpp">
-      <Filter>src\Siv3D\TextWriter</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL\SivDLL.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL</Filter>
@@ -7267,6 +7243,30 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\JSONSerialization\SivJSONSerialization.cpp">
       <Filter>src\Siv3D\JSONSerialization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryFileWriter\SivBinaryFileWriter.cpp">
+      <Filter>src\Siv3D\BinaryFileWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryFileReader\SivBinaryFileReader.cpp">
+      <Filter>src\Siv3D\BinaryFileReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter\BinaryFileWriterDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader\BinaryFileReaderDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextFileWriter\SivTextFileWriter.cpp">
+      <Filter>src\Siv3D\TextFileWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextFileWriter\TextFileWriterDetail.cpp">
+      <Filter>src\Siv3D\TextFileWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextFileReader\SivTextFileReader.cpp">
+      <Filter>src\Siv3D\TextFileReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextFileReader\TextFileReaderDetail.cpp">
+      <Filter>src\Siv3D\TextFileReader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -257,4 +257,4 @@ namespace s3d
 	};
 }
 
-# include "detail/BinaryReader.ipp"
+# include "detail/BinaryFileReader.ipp"

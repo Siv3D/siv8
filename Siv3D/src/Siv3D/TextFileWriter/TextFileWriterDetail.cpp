@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------
 
-# include "TextWriterDetail.hpp"
+# include "TextFileWriterDetail.hpp"
 # include <Siv3D/Endian.hpp>
 # include <Siv3D/Array.hpp>
 # include <Siv3D/Unicode.hpp>

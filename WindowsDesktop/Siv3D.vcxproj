@@ -30,8 +30,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Bezier3.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BigFloat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BigInt.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryReader.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryWriter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryFileReader.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\BinaryFileWriter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BitmapGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BlendFactor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BlendOperation.hpp" />
@@ -169,8 +169,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Base64Value.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BigFloat.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BigInt.ipp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryReader.ipp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryWriter.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryFileReader.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\BinaryFileWriter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BlendState.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BlendStateBuilder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Blob.ipp" />
@@ -275,8 +275,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringView.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SVG.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextEncoding.ipp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextReader.ipp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextWriter.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextFileReader.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextFileWriter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ThousandSeparate.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Timer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Triangle.ipp" />
@@ -539,7 +539,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\VerticalScale.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\VerticalScale.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEncoding.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\TextReader.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextFileReader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Texture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureAddressMode.hpp" />
@@ -552,7 +552,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TexturePixelFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureRegion.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\TextWriter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextFileWriter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ThousandSeparate.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Threading.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Time.hpp" />
@@ -620,8 +620,8 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_random.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_uint128.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\Xoshiro-cpp\XoshiroCpp.hpp" />
-    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader\BinaryReaderDetail.hpp" />
-    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader\BinaryFileReaderDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter\BinaryFileWriterDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess\ChildProcessDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11\ConstantBuffer_D3D11.hpp" />
@@ -760,10 +760,10 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Shader\IShader.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
-    <ClInclude Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\TextFileReader\TextFileReaderDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\TextFileWriter\TextFileWriterDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\ITexture.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp" />
-    <ClInclude Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UnicodeConverter\UnicodeUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.hpp" />
@@ -1171,8 +1171,8 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\zstd_errors.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryReader\BinaryReaderDetail.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryWriter\BinaryWriterDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader\BinaryFileReaderDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter\BinaryFileWriterDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess\ChildProcessDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\ConstantBufferFactory.cpp" />
@@ -1247,8 +1247,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\BigFloat\SivBigFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigInt\SivBigInt.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigNumMath\SivBigNumMath.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryReader\SivBinaryReader.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryWriter\SivBinaryWriter.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryFileReader\SivBinaryFileReader.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\BinaryFileWriter\SivBinaryFileWriter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BlendFactor\SivBlendFactor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BlendOperation\SivBlendOperation.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BlendStateBuilder\SivBlendStateBuilder.cpp" />
@@ -1492,8 +1492,10 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_VerticalGradient.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_VerticalScale.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEncoding\SivTextEncoding.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\SivTextReader.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextReader\TextReaderDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextFileReader\SivTextFileReader.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextFileReader\TextFileReaderDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextFileWriter\SivTextFileWriter.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextFileWriter\TextFileWriterDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextureAddressMode\SivTextureAddressMode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TexturedCircle\SivTexturedCircle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TexturedQuad\SivTexturedQuad.cpp" />
@@ -1503,8 +1505,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TextureRegion\SivTextureRegion.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Texture\SivTexture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\SivTextWriter.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\TextWriter\TextWriterDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ThousandSeparate\SivThousandSeparate.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Threading\SivThreading.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Timer\SivTimer.cpp" />

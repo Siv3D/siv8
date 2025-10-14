@@ -267,4 +267,4 @@ namespace s3d
 	};
 }
 
-# include "detail/TextReader.ipp"
+# include "detail/TextFileReader.ipp"

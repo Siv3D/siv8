@@ -9,8 +9,8 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/TextWriter.hpp>
-# include "TextWriterDetail.hpp"
+# include <Siv3D/TextFileWriter.hpp>
+# include "TextFileWriterDetail.hpp"
 
 namespace s3d
 {

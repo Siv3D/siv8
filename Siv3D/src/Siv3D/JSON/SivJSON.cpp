@@ -15,8 +15,8 @@
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/Demangle.hpp>
 # include <Siv3D/Error.hpp>
-# include <Siv3D/TextWriter.hpp>
-# include <Siv3D/TextReader.hpp>
+# include <Siv3D/TextFileWriter.hpp>
+# include <Siv3D/TextFileReader.hpp>
 
 namespace s3d
 {

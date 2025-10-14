@@ -9,8 +9,8 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/BinaryWriter.hpp>
-# include <Siv3D/BinaryWriter/BinaryWriterDetail.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
+# include <Siv3D/BinaryFileWriter/BinaryFileWriterDetail.hpp>
 # include <Siv3D/Error.hpp>
 
 namespace s3d

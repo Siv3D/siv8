@@ -461,10 +461,10 @@
 # include <Siv3D/OpenMode.hpp>
 
 // 読み込み専用バイナリファイル | Binary file reader
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 
 // 書き込み専用バイナリファイル | Binary file writer
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 
 // アーカイブファイルからの読み込み | Archived file reader
 //# include <Siv3D/ArchivedFileReader.hpp>
@@ -512,10 +512,10 @@
 # include <Siv3D/TextEncoding.hpp>
 
 // 読み込み専用テキストファイル | Text file reader
-# include <Siv3D/TextReader.hpp>
+# include <Siv3D/TextFileReader.hpp>
 
 // 書き込み専用テキストファイル | Text file writer
-# include <Siv3D/TextWriter.hpp>
+# include <Siv3D/TextFileWriter.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

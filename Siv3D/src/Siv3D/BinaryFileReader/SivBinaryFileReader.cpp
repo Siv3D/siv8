@@ -9,11 +9,11 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/FormatLiteral.hpp>
-# include <Siv3D/BinaryReader/BinaryReaderDetail.hpp>
+# include <Siv3D/BinaryFileReader/BinaryFileReaderDetail.hpp>
 
 namespace s3d
 {

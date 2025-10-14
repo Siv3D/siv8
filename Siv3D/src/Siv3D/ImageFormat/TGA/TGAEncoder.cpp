@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/ImageFormat/TGAEncoder.hpp>
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "TGAHeader.hpp"
 

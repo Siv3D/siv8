@@ -191,4 +191,4 @@ namespace s3d
 	};
 }
 
-# include "detail/BinaryWriter.ipp"
+# include "detail/BinaryFileWriter.ipp"

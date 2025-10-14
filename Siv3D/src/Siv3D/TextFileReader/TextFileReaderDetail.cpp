@@ -9,8 +9,8 @@
 //
 //-----------------------------------------------
 
-# include "TextReaderDetail.hpp"
-# include <Siv3D/BinaryReader.hpp>
+# include "TextFileReaderDetail.hpp"
+# include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Endian.hpp>
 # include <Siv3D/UnicodeConverter.hpp>

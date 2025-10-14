@@ -15,7 +15,7 @@
 # include <Siv3D/TexturedRoundRect.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/FloatQuad.hpp>
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>

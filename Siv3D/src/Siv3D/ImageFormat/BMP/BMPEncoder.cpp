@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/ImageFormat/BMPEncoder.hpp>
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "BMPHeader.hpp"
 

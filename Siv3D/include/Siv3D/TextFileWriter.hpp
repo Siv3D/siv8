@@ -264,4 +264,4 @@ namespace s3d
 	};
 }
 
-# include "detail/TextWriter.ipp"
+# include "detail/TextFileWriter.ipp"

@@ -11,7 +11,7 @@
 
 # include <Siv3D/LicenseManager.hpp>
 # include <Siv3D/FileSystem.hpp>
-# include <Siv3D/TextWriter.hpp>
+# include <Siv3D/TextFileWriter.hpp>
 # include <Siv3D/System.hpp>
 # include <Siv3D/LicenseManager/ILicenseManager.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>

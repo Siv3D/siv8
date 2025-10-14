@@ -15,8 +15,8 @@
 # include <Siv3D/CacheDirectory/CacheDirectory.hpp>
 # include <Siv3D/FormatUtility.hpp>
 # include <Siv3D/FileSystem.hpp>
-# include <Siv3D/BinaryReader.hpp>
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 

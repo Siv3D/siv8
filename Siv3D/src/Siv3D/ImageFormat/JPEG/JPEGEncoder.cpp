@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/ImageFormat/JPEGEncoder.hpp>
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 # include <Siv3D/EngineLog.hpp>
 # if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS) | SIV3D_PLATFORM(WEB)
 #	include <ThirdParty-prebuilt/libjpeg-turbo/turbojpeg.h>

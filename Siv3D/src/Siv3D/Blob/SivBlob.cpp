@@ -12,8 +12,8 @@
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/MD5Value.hpp>
 # include <Siv3D/Base64Value.hpp>
-# include <Siv3D/BinaryReader.hpp>
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 
 namespace s3d
 {		
