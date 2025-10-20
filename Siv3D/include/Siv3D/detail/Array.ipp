@@ -1189,6 +1189,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	indexOf
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Optional<size_t> Array<Type, Allocator>::indexOf(const value_type& value) const noexcept
+	{
+		if (const auto it = std::ranges::find(m_container, value); 
+			it != m_container.end())
+		{
+			return std::ranges::distance(m_container.begin(), it);
+		}
+		else
+		{
+			return s3d::none;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	isSorted
 	//
 	////////////////////////////////////////////////////////////////

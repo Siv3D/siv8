@@ -15,6 +15,7 @@
 # include <vector>
 # include <version>
 # include "String.hpp"
+# include "Optional.hpp"
 # include "Unicode.hpp"
 # include "Format.hpp"
 # include "Utility.hpp"
@@ -1205,6 +1206,18 @@ namespace s3d
 		/// @return 分割したグループ
 		[[nodiscard]]
 		constexpr Array<Array<value_type>> in_groups(size_type group) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	indexOf
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい最初の要素のインデックスを返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい最初の要素のインデックス。見つからなかった場合は none
+		[[nodiscard]]
+		constexpr Optional<size_t> indexOf(const value_type& value) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
