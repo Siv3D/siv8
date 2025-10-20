@@ -318,7 +318,12 @@ namespace s3d
 		return *this;
 	}
 
-	const Rect& Rect::draw(const ColorF(&colors)[4]) const
+	const Rect& Rect::draw(const std::array<ColorF, 4>& colors) const
+	{
+		return draw(std::span<const ColorF, 4>{ colors });
+	}
+
+	const Rect& Rect::draw(const std::span<const ColorF, 4> colors) const
 	{
 		const Float4 colorsF[4] = { colors[0].toFloat4(), colors[1].toFloat4(), colors[2].toFloat4(), colors[3].toFloat4() };
 		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) }, colorsF);

@@ -63,7 +63,7 @@ namespace s3d
 			}
 		}
 
-		bool CompileHLSLFromSource(const FilePathView source, const FilePathView outputPath, const ShaderStage shaderStage, const StringView entryPoint, const HLSL::CompileOption option)
+		bool CompileHLSLFromSource(const StringView source, const FilePathView outputPath, const ShaderStage shaderStage, const StringView entryPoint, const HLSL::CompileOption option)
 		{
 			if (const auto result = CompileHLSLFromSource(source, shaderStage, entryPoint, option))
 			{

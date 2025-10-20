@@ -120,6 +120,14 @@ namespace s3d
 		/// @brief HLSL からピクセルシェーダを作成します。
 		[[nodiscard]]
 		operator PixelShader() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromSource
+		//
+		////////////////////////////////////////////////////////////////
+
+		//static HLSL FromSource(std::string_view source, StringView entryPoint = U"main");
 	};
 
 	DEFINE_BITMASK_OPERATORS(HLSL::CompileOption);

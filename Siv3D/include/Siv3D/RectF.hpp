@@ -1630,7 +1630,13 @@ namespace s3d
 		/// @param colors 左上、右上、右下、左下の各頂点の色
 		/// @remark 描画時には 2 つの三角形に分割されるため、斜め方向のグラデーションは方向によってグラデーションのかかり方が変わります。上下、左右方向のグラデーションには影響しません。
 		/// @return *this
-		const RectF& draw(const ColorF(&colors)[4]) const;
+		const RectF& draw(const std::array<ColorF, 4>& colors) const;
+
+		/// @brief 長方形を描きます。
+		/// @param colors 左上、右上、右下、左下の各頂点の色
+		/// @remark 描画時には 2 つの三角形に分割されるため、斜め方向のグラデーションは方向によってグラデーションのかかり方が変わります。上下、左右方向のグラデーションには影響しません。
+		/// @return *this
+		const RectF& draw(std::span<const ColorF, 4> colors) const;
 
 		/// @brief 長方形を描きます。
 		/// @param topColor 長方形の上側の色

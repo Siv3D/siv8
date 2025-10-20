@@ -9,7 +9,6 @@
 //
 //-----------------------------------------------
 
-# include <chrono>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/Time.hpp>
 
