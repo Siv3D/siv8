@@ -93,6 +93,13 @@ namespace s3d
 		[[nodiscard]]
 		static PixelShader HLSL(const Blob& bytecode);
 
+		/// @brief HLSL ソースコードからピクセルシェーダを作成します。
+		/// @param source HLSL ソースコード
+		/// @param entryPoint エントリーポイント
+		/// @return ピクセルシェーダ
+		[[nodiscard]]
+		static PixelShader HLSL(const std::string& source, StringView entryPoint);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	MSL
@@ -112,5 +119,8 @@ namespace s3d
 
 		[[nodiscard]]
 		explicit PixelShader(const Blob& bytecode);
+
+		[[nodiscard]]
+		PixelShader(const std::string& source, StringView entryPoint);
 	};
 }

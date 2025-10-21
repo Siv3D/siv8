@@ -102,6 +102,13 @@ namespace s3d
 		[[nodiscard]]
 		static VertexShader HLSL(const Blob& bytecode);
 
+		/// @brief HLSL ソースコードから頂点シェーダを作成します。
+		/// @param source HLSL ソースコード
+		/// @param entryPoint エントリーポイント
+		/// @return 頂点シェーダ
+		[[nodiscard]]
+		static VertexShader HLSL(const std::string& source, StringView entryPoint);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	MSL
@@ -128,5 +135,8 @@ namespace s3d
 
 		[[nodiscard]]
 		explicit VertexShader(const Blob& bytecode);
+		
+		[[nodiscard]]
+		VertexShader(const std::string& source, StringView entryPoint);
 	};
 }

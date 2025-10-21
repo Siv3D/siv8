@@ -115,7 +115,7 @@ namespace s3d
 		return m_vertexShaders.add(std::move(vertexShader));
 	}
 
-	VertexShader::IDType CShader_Metal::createVSFromSource(const StringView source, StringView entryPoint)
+	VertexShader::IDType CShader_Metal::createVSFromSource(const std::string& source, StringView entryPoint)
 	{
 		return(VertexShader::IDType::Null());
 	}
@@ -143,7 +143,7 @@ namespace s3d
 		return m_pixelShaders.add(std::move(pixelShader));
 	}
 
-	PixelShader::IDType CShader_Metal::createPSFromSource(const StringView source, StringView entryPoint)
+	PixelShader::IDType CShader_Metal::createPSFromSource(const std::string& source, StringView entryPoint)
 	{
 		return(PixelShader::IDType::Null());
 	}
