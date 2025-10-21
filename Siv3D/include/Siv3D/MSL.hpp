@@ -29,19 +29,19 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief MSL (Metal Shading Language) ファイル
-	struct MSL
+	class MSL
 	{
-		/// @brief MSL ファイルのパス
-		FilePath path;
-
-		/// @brief エントリーポイント
-		String entryPoint;
+	public:
 
 		////////////////////////////////////////////////////////////////
 		//
 		//	(constructor)
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief デフォルトコンストラクタ
+		[[nodiscard]]
+		MSL() = default;
 
 		/// @brief エントリーポイントで MSL を指定します。
 		/// @param _entryPoint エントリーポイント
@@ -76,5 +76,13 @@ namespace s3d
 		/// @brief MSL からピクセルシェーダを作成します。
 		[[nodiscard]]
 		operator PixelShader() const;
+
+	private:
+
+		/// @brief MSL ファイルのパス
+		FilePath m_path;
+
+		/// @brief エントリーポイント
+		String m_entryPoint;
 	};
 }

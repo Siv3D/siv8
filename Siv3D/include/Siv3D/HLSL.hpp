@@ -22,7 +22,7 @@ namespace s3d
 	class VertexShader;
 	class PixelShader;
 	class ShaderGroup;
-	struct MSL;
+	class MSL;
 
 	////////////////////////////////////////////////////////////////
 	//

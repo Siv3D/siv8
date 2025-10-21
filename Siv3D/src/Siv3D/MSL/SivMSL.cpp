@@ -23,7 +23,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	MSL::MSL(String _entryPoint)
-		: entryPoint{ std::move(_entryPoint) } {}
+		: m_entryPoint{ std::move(_entryPoint) } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -44,13 +44,13 @@ namespace s3d
 
 	MSL::operator VertexShader() const
 	{
-		if (path)
+		if (m_path)
 		{
-			return VertexShader::MSL(path, entryPoint);
+			return VertexShader::MSL(m_path, m_entryPoint);
 		}
 		else
 		{
-			return VertexShader::MSL(entryPoint);
+			return VertexShader::MSL(m_entryPoint);
 		}
 	}
 
@@ -62,13 +62,13 @@ namespace s3d
 
 	MSL::operator PixelShader() const
 	{
-		if (path)
+		if (m_path)
 		{
-			return PixelShader::MSL(path, entryPoint);
+			return PixelShader::MSL(m_path, m_entryPoint);
 		}
 		else
 		{
-			return PixelShader::MSL(entryPoint);
+			return PixelShader::MSL(m_entryPoint);
 		}
 	}
 }

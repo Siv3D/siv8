@@ -55,15 +55,17 @@ namespace s3d
 
 		if (not m_source.empty())
 		{
+		# if SIV3D_PLATFORM(WINDOWS)
+
 			if (auto result = Platform::Windows::CompileHLSLFromSource(m_source, ShaderStage::Vertex,
 				(m_entryPoint ? m_entryPoint : U"VS")))
 			{
 				return VertexShader::HLSL(*result);
 			}
-			else
-			{
-				return{};
-			}
+
+		# endif
+
+			return{};
 		}
 
 		if (m_entryPoint)
@@ -91,15 +93,17 @@ namespace s3d
 
 		if (not m_source.empty())
 		{
-			if (auto result = Platform::Windows::CompileHLSLFromSource(m_source, ShaderStage::Pixel
-				, (m_entryPoint ? m_entryPoint : U"PS")))
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			if (auto result = Platform::Windows::CompileHLSLFromSource(m_source, ShaderStage::Pixel,
+				(m_entryPoint ? m_entryPoint : U"PS")))
 			{
 				return PixelShader::HLSL(*result);
 			}
-			else
-			{
-				return{};
-			}
+
+		# endif
+			
+			return{};
 		}
 
 		if (m_entryPoint)
