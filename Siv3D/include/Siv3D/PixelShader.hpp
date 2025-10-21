@@ -111,6 +111,13 @@ namespace s3d
 
 		[[nodiscard]]
 		static PixelShader MSL(FilePathView path, StringView entryPoint);
+		
+		/// @brief MSL ソースコードからピクセルシェーダを作成します。
+		/// @param source MSL ソースコード
+		/// @param entryPoint エントリーポイント
+		/// @return ピクセルシェーダ
+		[[nodiscard]]
+		static PixelShader MSL(const std::string& source, StringView entryPoint);
 
 	private:
 

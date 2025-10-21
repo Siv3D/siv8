@@ -77,6 +77,20 @@ namespace s3d
 		[[nodiscard]]
 		operator PixelShader() const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromSource
+		//
+		////////////////////////////////////////////////////////////////
+
+		static MSL FromSource(std::string source);
+
+		static MSL FromSource(std::string source, StringView entryPoint);
+
+		static MSL FromSource(StringView source);
+
+		static MSL FromSource(StringView source, StringView entryPoint);
+
 	private:
 
 		/// @brief MSL ファイルのパス
@@ -84,5 +98,8 @@ namespace s3d
 
 		/// @brief エントリーポイント
 		String m_entryPoint;
+
+		/// @brief MSL ソースコード
+		std::string m_source;
 	};
 }
