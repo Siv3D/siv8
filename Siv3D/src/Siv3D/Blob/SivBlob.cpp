@@ -31,7 +31,12 @@ namespace s3d
 	Blob::Blob(IReader& reader)
 		: m_data(reader.size())
 	{
-		reader.read(m_data.data(), m_data.size_bytes());
+		const int64 readSize = reader.read(m_data.data(), m_data.size_bytes());
+
+		if (m_data.size() != static_cast<size_type>(readSize))
+		{
+			m_data.clear();
+		}
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -51,7 +56,15 @@ namespace s3d
 
 		m_data.resize(reader.size());
 
-		return (static_cast<int64>(m_data.size_bytes()) == reader.read(m_data.data(), m_data.size_bytes()));
+		const int64 readSize = reader.read(m_data.data(), m_data.size_bytes());
+
+		if (m_data.size() != static_cast<size_type>(readSize))
+		{
+			m_data.clear();
+			return false;
+		}
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
