@@ -20,7 +20,7 @@ namespace s3d
 	class VertexShader;
 	class PixelShader;
 	class ShaderGroup;
-	struct HLSL;
+	class HLSL;
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -30,9 +30,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief HLSL ファイル
-	struct HLSL
+	/// @brief HLSL シェーダ
+	class HLSL
 	{
+	public:
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	CompileOption
@@ -61,20 +63,15 @@ namespace s3d
 			Default					= (OptimizationLevel3 | WarningsAreErrors),
 		};
 
-		/// @brief HLSL ファイルのパス
-		FilePath path;
-
-		/// @brief エントリーポイント
-		String entryPoint;
-
-		/// @brief バイトコード
-		Blob bytecode;
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	(constructor)
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief デフォルトコンストラクタ
+		[[nodiscard]]
+		HLSL() = default;
 
 		/// @brief ファイルパスで HLSL を指定します。
 		/// @param _path HLSL ファイルのパス
@@ -86,11 +83,6 @@ namespace s3d
 		/// @param _entryPoint エントリーポイント
 		[[nodiscard]]
 		HLSL(FilePath _path, String _entryPoint);
-
-		/// @brief バイトコードで HLSL を指定します。
-		/// @param bytecode HLSL バイトコード
-		[[nodiscard]]
-		explicit HLSL(const Blob& bytecode);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -127,7 +119,35 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//static HLSL FromSource(std::string_view source, StringView entryPoint = U"main");
+		static HLSL FromSource(std::string source);
+
+		static HLSL FromSource(std::string source, StringView entryPoint);
+
+		static HLSL FromSource(StringView source);
+
+		static HLSL FromSource(StringView source, StringView entryPoint);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromBytecode
+		//
+		////////////////////////////////////////////////////////////////
+
+		static HLSL FromBytecode(Blob bytecode);
+
+	private:
+
+		/// @brief HLSL ファイルのパス
+		FilePath m_path;
+
+		/// @brief エントリーポイント
+		String m_entryPoint;
+
+		/// @brief HLSL ソースコード
+		std::string m_source;
+
+		/// @brief バイトコード
+		Blob m_bytecode;
 	};
 
 	DEFINE_BITMASK_OPERATORS(HLSL::CompileOption);

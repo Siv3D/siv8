@@ -85,7 +85,7 @@ namespace s3d
 		/// @param entryPoint エントリーポイント
 		/// @return ピクセルシェーダ
 		[[nodiscard]]
-		static PixelShader HLSL(FilePathView path, StringView entryPoint = U"PS");
+		static PixelShader HLSL(FilePathView path, StringView entryPoint);
 
 		/// @brief HLSL バイトコードからピクセルシェーダを作成します。
 		/// @param bytecode HLSL バイトコード

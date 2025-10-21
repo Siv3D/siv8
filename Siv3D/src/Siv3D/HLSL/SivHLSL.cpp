@@ -23,14 +23,11 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	HLSL::HLSL(FilePath _path)
-		: path{ std::move(_path) } {}
+		: m_path{ std::move(_path) } {}
 
 	HLSL::HLSL(FilePath _path, String _entryPoint)
-		: path{ std::move(_path) }
-		, entryPoint{ std::move(_entryPoint) } {}
-
-	HLSL::HLSL(const Blob& bytecode)
-		: bytecode{ bytecode } {}
+		: m_path{ std::move(_path) }
+		, m_entryPoint{ std::move(_entryPoint) } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -51,13 +48,31 @@ namespace s3d
 
 	HLSL::operator VertexShader() const
 	{
-		if (entryPoint)
+		if (m_bytecode)
 		{
-			return VertexShader::HLSL(path, entryPoint);
+			return VertexShader::HLSL(m_bytecode);
+		}
+
+		if (not m_source.empty())
+		{
+			if (auto result = Platform::Windows::CompileHLSLFromSource(m_source, ShaderStage::Vertex,
+				(m_entryPoint ? m_entryPoint : U"VS")))
+			{
+				return VertexShader::HLSL(*result);
+			}
+			else
+			{
+				return{};
+			}
+		}
+
+		if (m_entryPoint)
+		{
+			return VertexShader::HLSL(m_path, m_entryPoint);
 		}
 		else
 		{
-			return VertexShader::HLSL(path);
+			return VertexShader::HLSL(m_path, U"VS");
 		}
 	}
 
@@ -69,13 +84,73 @@ namespace s3d
 
 	HLSL::operator PixelShader() const
 	{
-		if (entryPoint)
+		if (m_bytecode)
 		{
-			return PixelShader::HLSL(path, entryPoint);
+			return PixelShader::HLSL(m_bytecode);
+		}
+
+		if (not m_source.empty())
+		{
+			if (auto result = Platform::Windows::CompileHLSLFromSource(m_source, ShaderStage::Pixel
+				, (m_entryPoint ? m_entryPoint : U"PS")))
+			{
+				return PixelShader::HLSL(*result);
+			}
+			else
+			{
+				return{};
+			}
+		}
+
+		if (m_entryPoint)
+		{
+			return PixelShader::HLSL(m_path, m_entryPoint);
 		}
 		else
 		{
-			return PixelShader::HLSL(path);
+			return PixelShader::HLSL(m_path, U"PS");
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromSource
+	//
+	////////////////////////////////////////////////////////////////
+
+	HLSL HLSL::FromSource(std::string source)
+	{
+		return FromSource(std::move(source), {});
+	}
+
+	HLSL HLSL::FromSource(std::string source, const StringView entryPoint)
+	{
+		HLSL hlsl{};
+		hlsl.m_source = std::move(source);
+		hlsl.m_entryPoint = entryPoint;
+		return hlsl;
+	}
+
+	HLSL HLSL::FromSource(const StringView source)
+	{
+		return FromSource(source.toUTF8(), {});
+	}
+
+	HLSL HLSL::FromSource(const StringView source, const StringView entryPoint)
+	{
+		return FromSource(source.toUTF8(), entryPoint);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromBytecode
+	//
+	////////////////////////////////////////////////////////////////
+
+	HLSL HLSL::FromBytecode(Blob bytecode)
+	{
+		HLSL hlsl{};
+		hlsl.m_bytecode = std::move(bytecode);
+		return hlsl;
 	}
 }

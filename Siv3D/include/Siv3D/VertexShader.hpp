@@ -94,7 +94,7 @@ namespace s3d
 		/// @param entryPoint エントリーポイント
 		/// @return 頂点シェーダ
 		[[nodiscard]]
-		static VertexShader HLSL(FilePathView path, StringView entryPoint = U"VS");
+		static VertexShader HLSL(FilePathView path, StringView entryPoint);
 
 		/// @brief HLSL バイトコードから頂点シェーダを作成します。
 		/// @param bytecode HLSL バイトコード
