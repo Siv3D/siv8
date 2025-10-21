@@ -11,6 +11,7 @@
 
 # include "CShader_Metal.hpp"
 # include <Siv3D/ShaderStage.hpp>
+# include <Siv3D/TextFileReader.hpp>
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -99,10 +100,23 @@ namespace s3d
 
 	VertexShader::IDType CShader_Metal::createVSFromFile(const FilePathView path, StringView entryPoint)
 	{
-		// [Siv3D ToDo] ファイルからの読み込みは今後実装
 		if (path)
 		{
-			return VertexShader::IDType::Null();
+			TextFileReader reader{ path };
+			
+			if (not reader)
+			{
+				return VertexShader::IDType::Null();
+			}
+			
+			std::string source;
+			
+			if (not reader.readAll(source))
+			{
+				return VertexShader::IDType::Null();
+			}
+			
+			return createVSFromSource(source, entryPoint);
 		}
 
 		auto vertexShader = std::make_unique<MetalVertexShader>(m_defaultLibrary.get(), Unicode::ToUTF8(entryPoint));
@@ -134,10 +148,23 @@ namespace s3d
 
 	PixelShader::IDType CShader_Metal::createPSFromFile(const FilePathView path, StringView entryPoint)
 	{
-		// [Siv3D ToDo] ファイルからの読み込みは今後実装
 		if (path)
 		{
-			return PixelShader::IDType::Null();
+			TextFileReader reader{ path };
+			
+			if (not reader)
+			{
+				return PixelShader::IDType::Null();
+			}
+			
+			std::string source;
+			
+			if (not reader.readAll(source))
+			{
+				return PixelShader::IDType::Null();
+			}
+			
+			return createPSFromSource(source, entryPoint);
 		}
 
 		auto pixelShader = std::make_unique<MetalPixelShader>(m_defaultLibrary.get(), Unicode::ToUTF8(entryPoint));
