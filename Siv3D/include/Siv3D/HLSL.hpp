@@ -74,15 +74,15 @@ namespace s3d
 		HLSL() = default;
 
 		/// @brief ファイルパスで HLSL を指定します。
-		/// @param _path HLSL ファイルのパス
+		/// @param path HLSL ファイルのパス
 		[[nodiscard]]
-		explicit HLSL(FilePath _path);
+		explicit HLSL(FilePath path);
 
 		/// @brief ファイルパスとエントリーポイントで HLSL を指定します。
-		/// @param _path HLSL ファイルのパス
-		/// @param _entryPoint エントリーポイント
+		/// @param path HLSL ファイルのパス
+		/// @param entryPoint エントリーポイント
 		[[nodiscard]]
-		HLSL(FilePath _path, String _entryPoint);
+		HLSL(FilePath path, String entryPoint);
 
 		////////////////////////////////////////////////////////////////
 		//

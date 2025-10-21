@@ -44,9 +44,15 @@ namespace s3d
 		MSL() = default;
 
 		/// @brief エントリーポイントで MSL を指定します。
-		/// @param _entryPoint エントリーポイント
+		/// @param entryPoint エントリーポイント
 		[[nodiscard]]
-		explicit MSL(String _entryPoint);
+		explicit MSL(String entryPoint);
+
+		/// @brief ファイルパスとエントリーポイントで MSL を指定します。
+		/// @param path MSL ファイルのパス
+		/// @param entryPoint エントリーポイント
+		[[nodiscard]]
+		MSL(FilePath path, String entryPoint);
 
 		////////////////////////////////////////////////////////////////
 		//

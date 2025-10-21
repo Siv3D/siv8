@@ -22,12 +22,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	HLSL::HLSL(FilePath _path)
-		: m_path{ std::move(_path) } {}
+	HLSL::HLSL(FilePath path)
+		: m_path{ std::move(path) } {}
 
-	HLSL::HLSL(FilePath _path, String _entryPoint)
-		: m_path{ std::move(_path) }
-		, m_entryPoint{ std::move(_entryPoint) } {}
+	HLSL::HLSL(FilePath path, String entryPoint)
+		: m_path{ std::move(path) }
+		, m_entryPoint{ std::move(entryPoint) } {}
 
 	////////////////////////////////////////////////////////////////
 	//

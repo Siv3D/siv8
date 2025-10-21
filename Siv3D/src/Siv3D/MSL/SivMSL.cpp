@@ -22,8 +22,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MSL::MSL(String _entryPoint)
-		: m_entryPoint{ std::move(_entryPoint) } {}
+	MSL::MSL(String entryPoint)
+		: m_entryPoint{ std::move(entryPoint) } {}
+
+	MSL::MSL(FilePath path, String entryPoint)
+		: m_path{ std::move(path) }
+		, m_entryPoint{ std::move(entryPoint) } {}
 
 	////////////////////////////////////////////////////////////////
 	//
