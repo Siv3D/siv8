@@ -117,7 +117,14 @@ namespace s3d
 
 	VertexShader::IDType CShader_Metal::createVSFromSource(const std::string& source, StringView entryPoint)
 	{
-		return(VertexShader::IDType::Null());
+		auto vertexShader = std::make_unique<MetalVertexShader>(m_device, source, Unicode::ToUTF8(entryPoint));
+
+		if (not vertexShader->isInitialized())
+		{
+			return VertexShader::IDType::Null();
+		}
+
+		return m_vertexShaders.add(std::move(vertexShader));
 	}
 
 	VertexShader::IDType CShader_Metal::createVSFromBytecode(const Blob& bytecode)
@@ -145,7 +152,14 @@ namespace s3d
 
 	PixelShader::IDType CShader_Metal::createPSFromSource(const std::string& source, StringView entryPoint)
 	{
-		return(PixelShader::IDType::Null());
+		auto pixelShader = std::make_unique<MetalPixelShader>(m_device, source, Unicode::ToUTF8(entryPoint));
+
+		if (not pixelShader->isInitialized())
+		{
+			return PixelShader::IDType::Null();
+		}
+			
+		return m_pixelShaders.add(std::move(pixelShader));
 	}
 
 	PixelShader::IDType CShader_Metal::createPSFromBytecode(const Blob& bytecode)

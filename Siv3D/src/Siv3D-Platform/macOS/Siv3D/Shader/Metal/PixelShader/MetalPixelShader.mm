@@ -36,6 +36,28 @@ namespace s3d
 		m_initialized = true;
 	}
 
+	MetalPixelShader::MetalPixelShader(MTL::Device* device, const std::string& source, const std::string& entryPoint)
+	{
+		NS::Error* error = nullptr;
+		NS::SharedPtr<MTL::Library> library = NS::TransferPtr(device->newLibrary(NS::String::string(source.c_str(), NS::ASCIIStringEncoding), &error));
+		
+		if (not library)
+		{
+			LOG_FAIL(fmt::format("MetalPixelShader: Failed to create a library for pixel shader `{}`. {}", entryPoint, error->localizedDescription()->utf8String()));
+			return;
+		}
+		
+		m_shader = NS::TransferPtr(library->newFunction(NS::String::string(entryPoint.c_str(), NS::ASCIIStringEncoding)));
+		
+		if (not m_shader)
+		{
+			LOG_FAIL(fmt::format("MetalPixelShader: Failed to create a pixel shader `{}`", entryPoint));
+			return;
+		}
+		
+		m_initialized = true;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	isInitialized
@@ -56,16 +78,5 @@ namespace s3d
 	MTL::Function* MetalPixelShader::getShader() const
 	{
 		return m_shader.get();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getBytecode
-	//
-	////////////////////////////////////////////////////////////////
-
-	const Blob& MetalPixelShader::getBytecode() const noexcept
-	{
-		return m_bytecode;
 	}
 }
