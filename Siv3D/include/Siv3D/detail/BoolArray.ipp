@@ -413,10 +413,9 @@ namespace s3d
 		/// @param count 要素数
 		/// @param value 要素の値
 		/// @return *this
-		constexpr Array& assign(size_type count, value_type value) SIV3D_LIFETIMEBOUND
+		constexpr void assign(size_type count, value_type value) SIV3D_LIFETIMEBOUND
 		{
 			m_container.assign(count, value);
-			return *this;
 		}
 
 		/// @brief イテレータが指す範囲の要素から配列を作成します。
@@ -425,19 +424,17 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
 		template <class Iterator>
-		constexpr Array& assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
+		constexpr void assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			m_container.assign(first, last);
-			return *this;
 		}
 
 		/// @brief リストから配列を作成します。
 		/// @param list リスト
 		/// @return *this
-		constexpr Array& assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND
+		constexpr void assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND
 		{
 			m_container.assign(list);
-			return *this;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -451,7 +448,7 @@ namespace s3d
 		/// @param range 範囲
 		/// @return *this
 		template <Concept::ContainerCompatibleRange<bool> Range>
-		constexpr Array& assign_range(Range&& range) SIV3D_LIFETIMEBOUND
+		constexpr void assign_range(Range&& range) SIV3D_LIFETIMEBOUND
 		{
 		# if __cpp_lib_containers_ranges >= 202202L
 			m_container.assign_range(std::forward<Range>(range));
@@ -459,7 +456,6 @@ namespace s3d
 			auto common_range = std::views::common(std::forward<Range>(range));
 			m_container.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
 		# endif
-			return *this;
 		}
 
 		////////////////////////////////////////////////////////////////

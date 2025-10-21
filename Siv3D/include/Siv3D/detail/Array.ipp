@@ -158,25 +158,22 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign(const size_type count, const value_type& value)
+	constexpr void Array<Type, Allocator>::assign(const size_type count, const value_type& value)
 	{
 		m_container.assign(count, value);
-		return *this;
 	}
 
 	template <class Type, class Allocator>
 	template <class Iterator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign(Iterator first, Iterator last)
+	constexpr void Array<Type, Allocator>::assign(Iterator first, Iterator last)
 	{
 		m_container.assign(first, last);
-		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign(const std::initializer_list<value_type> list)
+	constexpr void Array<Type, Allocator>::assign(const std::initializer_list<value_type> list)
 	{
 		m_container.assign(list);
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -187,7 +184,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <Concept::ContainerCompatibleRange<Type> Range>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign_range(Range&& range)
+	constexpr void Array<Type, Allocator>::assign_range(Range&& range)
 	{
 	# if __cpp_lib_containers_ranges >= 202202L
 		m_container.assign_range(std::forward<Range>(range));
@@ -195,7 +192,6 @@ namespace s3d
 		auto common_range = std::views::common(std::forward<Range>(range));
 		m_container.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
 	# endif
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
