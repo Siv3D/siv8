@@ -25,7 +25,7 @@ namespace s3d
 
 	MetalVertexShader::MetalVertexShader(MTL::Library* library, const std::string& name)
 	{
-		m_shader = NS::TransferPtr(library->newFunction(NS::String::string(name.c_str(), NS::ASCIIStringEncoding)));
+		m_shader = NS::TransferPtr(library->newFunction(NS::String::string(name.c_str(), NS::UTF8StringEncoding)));
 
 		if (not m_shader)
 		{
@@ -39,7 +39,8 @@ namespace s3d
 	MetalVertexShader::MetalVertexShader(MTL::Device* device, const std::string& source, const std::string& entryPoint)
 	{
 		NS::Error* error = nullptr;
-		NS::SharedPtr<MTL::Library> library = NS::TransferPtr(device->newLibrary(NS::String::string(source.c_str(), NS::ASCIIStringEncoding), &error));
+		NS::SharedPtr<MTL::CompileOptions> opts = NS::TransferPtr(MTL::CompileOptions::alloc()->init());
+		NS::SharedPtr<MTL::Library> library = NS::TransferPtr(device->newLibrary(NS::String::string(source.c_str(), NS::UTF8StringEncoding), opts.get(), &error));
 		
 		if (not library)
 		{
@@ -47,7 +48,7 @@ namespace s3d
 			return;
 		}
 		
-		m_shader = NS::TransferPtr(library->newFunction(NS::String::string(entryPoint.c_str(), NS::ASCIIStringEncoding)));
+		m_shader = NS::TransferPtr(library->newFunction(NS::String::string(entryPoint.c_str(), NS::UTF8StringEncoding)));
 		
 		if (not m_shader)
 		{

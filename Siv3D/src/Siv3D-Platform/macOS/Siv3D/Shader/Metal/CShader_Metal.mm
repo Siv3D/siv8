@@ -127,7 +127,7 @@ namespace s3d
 		return m_vertexShaders.add(std::move(vertexShader));
 	}
 
-	VertexShader::IDType CShader_Metal::createVSFromBytecode(const Blob& bytecode)
+	VertexShader::IDType CShader_Metal::createVSFromBytecode(const Blob&)
 	{
 		return(VertexShader::IDType::Null());
 	}
@@ -162,7 +162,7 @@ namespace s3d
 		return m_pixelShaders.add(std::move(pixelShader));
 	}
 
-	PixelShader::IDType CShader_Metal::createPSFromBytecode(const Blob& bytecode)
+	PixelShader::IDType CShader_Metal::createPSFromBytecode(const Blob&)
 	{
 		return(PixelShader::IDType::Null());
 	}
