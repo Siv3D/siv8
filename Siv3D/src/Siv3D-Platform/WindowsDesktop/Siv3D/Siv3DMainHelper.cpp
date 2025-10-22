@@ -181,7 +181,7 @@ namespace s3d
 			return;
 		}
 
-		if (const FilePath workingDirectory = FileSystem::ParentPath(FileSystem::ModulePath()))
+		if (const FilePath workingDirectory = FileSystem::GetExecutableDirectory())
 		{
 			FileSystem::ChangeCurrentDirectory(workingDirectory);
 		}

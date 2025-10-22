@@ -170,7 +170,7 @@ namespace s3d
 	
 		FilePathCache::FilePathCache()
 		{
-			initialDirectory = []() -> FilePath
+			launchDirectory = []() -> FilePath
 			{
 				char path_str[4096];
 				uint32_t bufferSize = sizeof(path_str);
@@ -182,11 +182,11 @@ namespace s3d
 
 				const String path = Unicode::FromUTF8(path_str);
 
-				FilePath modulePath = ParentPath(path, 2);
+				FilePath executablePath = ParentPath(path, 2);
 
-				if (modulePath.ends_with(U'/'))
+				if (executablePath.ends_with(U'/'))
 				{
-					modulePath.pop_back();
+					executablePath.pop_back();
 				}
 				
 				FilePath initialPath = ParentPath(path, 3);
@@ -196,7 +196,7 @@ namespace s3d
 				return initialPath;
 			}();
 			
-			modulePath = []() -> FilePath
+			executablePath = []() -> FilePath
 			{
 				char path_str[4096];
 				uint32_t bufferSize = sizeof(path_str);
@@ -208,15 +208,17 @@ namespace s3d
 
 				const String path = Unicode::FromUTF8(path_str);
 
-				FilePath modulePath = ParentPath(path, 2);
+				FilePath executablePath = ParentPath(path, 2);
 
-				if (modulePath.ends_with(U'/'))
+				if (executablePath.ends_with(U'/'))
 				{
-					modulePath.pop_back();
+					executablePath.pop_back();
 				}
 
-				return modulePath;
+				return executablePath;
 			}();
+
+			executableDirectory = ParentPath(executablePath);
 			
 			specialFolderPaths = []()
 			{
@@ -230,9 +232,9 @@ namespace s3d
 				return specialFolderPaths;
 			}();
 			
-			resourceFilePaths = [modulePath = modulePath]()
+			resourceFilePaths = [executablePath = executablePath]()
 			{
-				const FilePath resourcePath = (modulePath + U"/Contents/Resources/");
+				const FilePath resourcePath = (executablePath + U"/Contents/Resources/");
 
 				Array<FilePath> paths = FileSystem::DirectoryContents(resourcePath, Recursive::Yes);
 
@@ -282,7 +284,7 @@ namespace s3d
 
 		bool IsResourcePath(const FilePathView path) noexcept
 		{
-			const FilePath resourceDirectory = (FileSystem::ModulePath() + U"/Contents/Resources/");
+			const FilePath resourceDirectory = (FileSystem::GetExecutablePath() + U"/Contents/Resources/");
 			return FullPath(path).starts_with(resourceDirectory);
 		}
 		
@@ -409,24 +411,35 @@ namespace s3d
 	
 		////////////////////////////////////////////////////////////////
 		//
-		//	InitialDirectory
+		//	GetLaunchDirectory
 		//
 		////////////////////////////////////////////////////////////////
 	
-		const FilePath& InitialDirectory() noexcept
+		const FilePath& GetLaunchDirectory() noexcept
 		{
-			return detail::init::g_filePathCache.initialDirectory;
+			return detail::init::g_filePathCache.launchDirectory;
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	ModulePath
+		//	GetExecutablePath
 		//
 		////////////////////////////////////////////////////////////////
 
-		const FilePath& ModulePath() noexcept
+		const FilePath& GetExecutablePath() noexcept
 		{
-			return detail::init::g_filePathCache.modulePath;
+			return detail::init::g_filePathCache.executablePath;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetExecutableDirectory
+		//
+		////////////////////////////////////////////////////////////////
+
+		const FilePath& GetExecutableDirectory() noexcept
+		{
+			return detail::init::g_filePathCache.executableDirectory;
 		}
 
 		////////////////////////////////////////////////////////////////

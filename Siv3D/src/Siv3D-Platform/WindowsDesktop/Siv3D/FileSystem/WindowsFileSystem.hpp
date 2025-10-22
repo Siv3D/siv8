@@ -44,10 +44,13 @@ namespace s3d
 			static constexpr size_t SpecialFolderCount = 12;
 
 			/// @brief 起動ディレクトリ
-			FilePath initialDirectory;
+			FilePath launchDirectory;
 
 			/// @brief 実行ファイルのパス
-			FilePath modulePath;
+			FilePath executablePath;
+
+			/// @brief 実行ファイルのディレクトリ
+			FilePath executableDirectory;
 
 			/// @brief 特殊フォルダのパス
 			std::array<FilePath, SpecialFolderCount> specialFolderPaths;

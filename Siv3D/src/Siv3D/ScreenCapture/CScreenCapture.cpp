@@ -82,7 +82,7 @@ namespace s3d
 
 	# else
 
-		m_screenshotSaveDirectory = (FileSystem::InitialDirectory() + U"Screenshot/");
+		m_screenshotSaveDirectory = (FileSystem::GetExecutableDirectory() + U"Screenshot/");
 
 	# endif
 

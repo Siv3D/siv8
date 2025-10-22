@@ -25,7 +25,7 @@ namespace s3d
 
 	CLicenseManager::CLicenseManager()
 		: m_licenses(std::begin(detail::licenses), std::end(detail::licenses))
-		, m_applicationName{ FileSystem::BaseName(FileSystem::ModulePath()) } {}
+		, m_applicationName{ FileSystem::BaseName(FileSystem::GetExecutablePath()) } {}
 
 	////////////////////////////////////////////////////////////////
 	//

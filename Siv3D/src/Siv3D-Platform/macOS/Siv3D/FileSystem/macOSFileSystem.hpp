@@ -19,10 +19,13 @@ namespace s3d
 		struct FilePathCache
 		{
 			/// @brief 起動ディレクトリ
-			FilePath initialDirectory;
+			FilePath launchDirectory;
 			
 			/// @brief 実行ファイルのパス
-			FilePath modulePath;
+			FilePath executablePath;
+
+			/// @brief 実行ファイルのディレクトリ
+			FilePath executableDirectory;
 			
 			/// @brief 特殊フォルダのパス
 			std::array<FilePath, 12> specialFolderPaths;

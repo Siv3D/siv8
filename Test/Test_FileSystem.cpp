@@ -267,10 +267,11 @@ TEST_CASE("FileSystem::ChangeCurrentDirectory")
 TEST_CASE("FileSystem Misc")
 {
 	Console << U"FileSystem";
-	Console << U"| CreationTime(ModulePath()):\t" << FileSystem::CreationTime(FileSystem::ModulePath());
-	Console << U"| WriteTime(ModulePath()):\t" << FileSystem::WriteTime(FileSystem::ModulePath());
-	Console << U"| AccessTime(ModulePath()):\t" << FileSystem::AccessTime(FileSystem::ModulePath());
-	Console << U"| InitialDirectory:\t" << FileSystem::InitialDirectory();
-	Console << U"| ModulePath:\t" << FileSystem::ModulePath();
-	Console << U"| CurrentDirectory:\t" << FileSystem::CurrentDirectory();
+	Console << U"| CreationTime(GetExecutablePath()):\t" << FileSystem::CreationTime(FileSystem::GetExecutablePath());
+	Console << U"| WriteTime(GetExecutablePath()):\t" << FileSystem::WriteTime(FileSystem::GetExecutablePath());
+	Console << U"| AccessTime(GetExecutablePath()):\t" << FileSystem::AccessTime(FileSystem::GetExecutablePath());
+	Console << U"| GetLaunchDirectory():\t" << FileSystem::GetLaunchDirectory();
+	Console << U"| ExecutablePath():\t" << FileSystem::GetExecutablePath();
+	Console << U"| ExecutableDirectory():\t" << FileSystem::GetExecutableDirectory();
+	Console << U"| CurrentDirectory():\t" << FileSystem::CurrentDirectory();
 }

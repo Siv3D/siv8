@@ -27,7 +27,7 @@ namespace s3d
 
 	FilePath Resource(const FilePathView path)
 	{
-		const FilePath resourceDirectory = (FileSystem::ModulePath() + U"/Contents/Resources/");
+		const FilePath resourceDirectory = (FileSystem::GetExecutablePath() + U"/Contents/Resources/");
 
 		return (resourceDirectory + path);
 	}

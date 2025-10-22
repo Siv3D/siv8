@@ -32,9 +32,9 @@ namespace s3d
 		}
 
 		FilePathCache::FilePathCache()
-			: initialDirectory{ FileSystem::CurrentDirectory() }
+			: launchDirectory{ FileSystem::CurrentDirectory() }
 		{
-			modulePath = []() -> FilePath
+			executablePath = []() -> FilePath
 			{
 				wchar_t result[1024];
 				const DWORD length = ::GetModuleFileNameW(nullptr, result, _countof(result));
@@ -46,6 +46,8 @@ namespace s3d
 
 				return Unicode::FromWstring(NormalizePath(std::wstring(result, length), PathType::File));
 			}();
+
+			executableDirectory = FileSystem::ParentPath(executablePath);
 
 			specialFolderPaths = []()
 			{
