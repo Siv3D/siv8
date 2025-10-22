@@ -1129,6 +1129,12 @@
     <Filter Include="src\Siv3D\TextFileWriter">
       <UniqueIdentifier>{d443395f-63e6-4b25-80a2-6d39edf237f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\GUI">
+      <UniqueIdentifier>{8df504c1-0a0e-409f-93e7-1e8fbe887005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\SimpleGUI">
+      <UniqueIdentifier>{e494f8c7-87c3-4900-91e9-ebdd0262128b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4605,6 +4611,15 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\TextFileReader\TextFileReaderDetail.hpp">
       <Filter>src\Siv3D\TextFileReader</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\GUI\CGUI.hpp">
+      <Filter>src\Siv3D\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\GUI\IGUI.hpp">
+      <Filter>src\Siv3D\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7267,6 +7282,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\TextFileReader\TextFileReaderDetail.cpp">
       <Filter>src\Siv3D\TextFileReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\GUI\CGUI.cpp">
+      <Filter>src\Siv3D\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\GUI\GUIFactory.cpp">
+      <Filter>src\Siv3D\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleGUI.cpp">
+      <Filter>src\Siv3D\SimpleGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

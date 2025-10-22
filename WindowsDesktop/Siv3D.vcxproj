@@ -506,6 +506,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Shuffle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SIMD.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SIMDMath.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Smooth.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SpecialFolder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step.hpp" />
@@ -715,6 +716,8 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\IFont.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\GUI\CGUI.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\GUI\IGUI.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\IImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageEncoder\CImageEncoder.hpp" />
@@ -1337,6 +1340,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics2D\SivGraphics2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics\SivGraphics.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Grid\SivGrid.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\GUI\CGUI.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\GUI\GUIFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HalfFloat\SivHalfFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Hash\SivHash.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HLSL\SivHLSL.cpp" />
@@ -1473,6 +1478,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ShaderGroup\SivShaderGroup.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Shape2D\Shape2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleGUI.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView_SIMD.cpp" />
