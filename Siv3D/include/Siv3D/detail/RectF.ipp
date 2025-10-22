@@ -13,6 +13,36 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		[[nodiscard]]
+		constexpr RectF::position_type FromAnchor(const Anchor anchor, const RectF::value_type x, const RectF::value_type y, const RectF::value_type w, const RectF::value_type h) noexcept
+		{
+			RectF::value_type posX = x;
+			RectF::value_type posY = y;
+
+			if (anchor.isCenter())
+			{
+				posX -= (w / 2);
+			}
+			else if (anchor.isRight())
+			{
+				posX -= w;
+			}
+
+			if (anchor.isMiddle())
+			{
+				posY -= (h / 2);
+			}
+			else if (anchor.isBottom())
+			{
+				posY -= h;
+			}
+
+			return{ posX, posY };
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -248,6 +278,52 @@ namespace s3d
 	constexpr RectF::RectF(const Arg::middleLeft_<position_type> middleLeft, const size_type _size) noexcept
 		: pos{ middleLeft->x, (middleLeft->y - _size.y / 2) }
 		, size{ _size.x, _size.y } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const value_type _x, const value_type _y, const value_type _size) noexcept
+		: RectF{ anchor, _x, _y, _size, _size } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const value_type _x, const value_type _y, const Concept::Arithmetic auto _size) noexcept
+		: RectF{ anchor, _x, _y, static_cast<value_type>(_size), static_cast<value_type>(_size) } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const value_type _x, const value_type _y, const value_type _w, const value_type _h) noexcept
+		: pos{ detail::FromAnchor(anchor, _x, _y, _w, _h) }
+		, size{ _w, _h } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const value_type _x, const value_type _y, const Concept::Arithmetic auto _w, const Concept::Arithmetic auto _h) noexcept
+		: RectF{ anchor, _x, _y, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const value_type _x, const value_type _y, const size_type _size) noexcept
+		: RectF{ anchor, _x, _y, _size.x, _size.y } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y, const value_type _size) noexcept
+		: RectF{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), _size, _size } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y, const Concept::Arithmetic auto _size) noexcept
+		: RectF{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), static_cast<value_type>(_size), static_cast<value_type>(_size) } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y, const value_type _w, const value_type _h) noexcept
+		: RectF{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), _w, _h } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y, const Concept::Arithmetic auto _w, const Concept::Arithmetic auto _h) noexcept
+		: RectF{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y, const size_type _size) noexcept
+		: RectF{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), _size.x, _size.y } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const position_type _pos, const value_type _size) noexcept
+		: RectF{ anchor, _pos.x, _pos.y, _size, _size } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const position_type _pos, const Concept::Arithmetic auto _size) noexcept
+		: RectF{ anchor, _pos.x, _pos.y, static_cast<value_type>(_size), static_cast<value_type>(_size) } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const position_type _pos, const value_type _w, const value_type _h) noexcept
+		: RectF{ anchor, _pos.x, _pos.y, _w, _h } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const position_type _pos, const Concept::Arithmetic auto _w, const Concept::Arithmetic auto _h) noexcept
+		: RectF{ anchor, _pos.x, _pos.y, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+
+	constexpr RectF::RectF(const Anchor anchor, const position_type _pos, const size_type _size) noexcept
+		: RectF{ anchor, _pos.x, _pos.y, _size.x, _size.y } {}
 
 	////////////////////////////////////////////////////////////////
 	//

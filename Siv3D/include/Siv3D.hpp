@@ -780,6 +780,8 @@
 //
 ////////////////////////////////////////////////////////////////
 
+# include <Siv3D/Anchor.hpp>
+
 // ベクトル | Vectors
 # include <Siv3D/PointVector.hpp>
 
@@ -1633,7 +1635,7 @@
 # include <Siv3D/TextEffect/VerticalScale.hpp>
 # include <Siv3D/TextEffect/Reflection.hpp>
 
-
+# include <Siv3D/SimpleGUI.hpp>
 
 # include <Siv3D/Print.hpp>
 # include <Siv3D/PrintBuffer.hpp>

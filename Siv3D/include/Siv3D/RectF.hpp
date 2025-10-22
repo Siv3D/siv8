@@ -490,6 +490,51 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RectF(Arg::middleLeft_<position_type> middleLeft, size_type _size) noexcept;
 
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, value_type _x, value_type _y, value_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, value_type _x, value_type _y, Concept::Arithmetic auto _size) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, value_type _x, value_type _y, value_type _w, value_type _h) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, value_type _x, value_type _y, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, value_type _x, value_type _y, size_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, value_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, Concept::Arithmetic auto _size) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, value_type _w, value_type _h) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, size_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, position_type _pos, value_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, position_type _pos, Concept::Arithmetic auto _size) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, position_type _pos, value_type _w, value_type _h) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, position_type _pos, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
+
+		[[nodiscard]]
+		constexpr RectF(Anchor anchor, position_type _pos, size_type _size) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator ==

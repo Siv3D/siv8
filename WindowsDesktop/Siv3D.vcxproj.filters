@@ -1135,6 +1135,9 @@
     <Filter Include="src\Siv3D\SimpleGUI">
       <UniqueIdentifier>{e494f8c7-87c3-4900-91e9-ebdd0262128b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Anchor">
+      <UniqueIdentifier>{4c4fd7ad-baf2-43a6-a1e4-eb2ecff2b83f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4620,6 +4623,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Anchor.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Anchor.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7291,6 +7300,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleGUI.cpp">
       <Filter>src\Siv3D\SimpleGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Anchor\SivAnchor.cpp">
+      <Filter>src\Siv3D\Anchor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

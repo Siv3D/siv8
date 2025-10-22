@@ -489,6 +489,51 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Rect(Arg::middleLeft_<position_type> middleLeft, size_type _size) noexcept;
 
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, value_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, Concept::Integral auto _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, value_type _w, value_type _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, size_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, value_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, Concept::Integral auto _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, value_type _w, value_type _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, size_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, value_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, Concept::Integral auto _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, value_type _w, value_type _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, size_type _size) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator ==

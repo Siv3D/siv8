@@ -13,6 +13,36 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		[[nodiscard]]
+		constexpr Rect::position_type FromAnchor(const Anchor anchor, const Rect::value_type x, const Rect::value_type y, const Rect::value_type w, const Rect::value_type h) noexcept
+		{
+			Rect::value_type posX = x;
+			Rect::value_type posY = y;
+			
+			if (anchor.isCenter())
+			{
+				posX -= (w / 2);
+			}
+			else if (anchor.isRight())
+			{
+				posX -= w;
+			}
+			
+			if (anchor.isMiddle())
+			{
+				posY -= (h / 2);
+			}
+			else if (anchor.isBottom())
+			{
+				posY -= h;
+			}
+			
+			return{ posX, posY };
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -244,6 +274,52 @@ namespace s3d
 	constexpr Rect::Rect(const Arg::middleLeft_<position_type> middleLeft, const size_type _size) noexcept
 		: pos{ middleLeft->x, (middleLeft->y - _size.y / 2) }
 		, size{ _size.x, _size.y } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const value_type _size) noexcept
+		: Rect{ anchor, _x, _y, _size, _size } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const Concept::Integral auto _size) noexcept
+		: Rect{ anchor, _x, _y, static_cast<value_type>(_size), static_cast<value_type>(_size) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const value_type _w, const value_type _h) noexcept
+		: pos{ detail::FromAnchor(anchor, _x, _y, _w, _h) }
+		, size{ _w, _h } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
+		: Rect{ anchor, _x, _y, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const size_type _size) noexcept
+		: Rect{ anchor, _x, _y, _size.x, _size.y } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const value_type _size) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), _size, _size } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const Concept::Integral auto _size) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), static_cast<value_type>(_size), static_cast<value_type>(_size) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const value_type _w, const value_type _h) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), _w, _h } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const size_type _size) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), _size.x, _size.y } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const value_type _size) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, _size, _size } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const Concept::Integral auto _size) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, static_cast<value_type>(_size), static_cast<value_type>(_size) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const value_type _w, const value_type _h) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, _w, _h } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const size_type _size) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, _size.x, _size.y } {}
 
 	////////////////////////////////////////////////////////////////
 	//

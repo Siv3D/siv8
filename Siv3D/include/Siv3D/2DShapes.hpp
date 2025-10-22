@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Anchor.hpp"
 # include "Circular.hpp"
 # include "OffsetCircular.hpp"
 # include "Line.hpp"
