@@ -25,8 +25,8 @@ namespace s3d::Arg
 	SIV3D_NAMED_PARAMETER(bottomRight);			// Rect, RectF, Circle
 	SIV3D_NAMED_PARAMETER(topCenter);			// Rect, RectF, Circle
 	SIV3D_NAMED_PARAMETER(bottomCenter);		// Rect, RectF, Circle
-	SIV3D_NAMED_PARAMETER(leftCenter);			// Rect, RectF, Circle
-	SIV3D_NAMED_PARAMETER(rightCenter);			// Rect, RectF, Circle
+	SIV3D_NAMED_PARAMETER(middleLeft);			// Rect, RectF, Circle
+	SIV3D_NAMED_PARAMETER(middleRight);			// Rect, RectF, Circle
 	SIV3D_NAMED_PARAMETER(top);					// Rect, RectF
 	SIV3D_NAMED_PARAMETER(bottom);				// Rect, RectF
 	SIV3D_NAMED_PARAMETER(left);				// Rect, RectF

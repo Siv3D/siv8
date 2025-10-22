@@ -159,16 +159,16 @@ namespace s3d
 		constexpr Circle(Arg::topRight_<position_type> _topRight, Concept::Arithmetic auto _r) noexcept;
 
 		/// @brief 円を作成します。
-		/// @param _rightCenter 円に外接する正方形の右辺の中心座標
+		/// @param _middleRight 円に外接する正方形の右辺の中心座標
 		/// @param _r 半径
 		[[nodiscard]]
-		constexpr Circle(Arg::rightCenter_<position_type> _rightCenter, size_type _r) noexcept;
+		constexpr Circle(Arg::middleRight_<position_type> _middleRight, size_type _r) noexcept;
 
 		/// @brief 円を作成します。
-		/// @param _rightCenter 円に外接する正方形の右辺の中心座標
+		/// @param _middleRight 円に外接する正方形の右辺の中心座標
 		/// @param _r 半径
 		[[nodiscard]]
-		constexpr Circle(Arg::rightCenter_<position_type> _rightCenter, Concept::Arithmetic auto _r) noexcept;
+		constexpr Circle(Arg::middleRight_<position_type> _middleRight, Concept::Arithmetic auto _r) noexcept;
 
 		/// @brief 円を作成します。
 		/// @param _bottomRight 円に外接する正方形の右下座標
@@ -207,16 +207,16 @@ namespace s3d
 		constexpr Circle(Arg::bottomLeft_<position_type> _bottomLeft, Concept::Arithmetic auto _r) noexcept;
 
 		/// @brief 円を作成します。
-		/// @param _leftCenter 円に外接する正方形の左辺の中心座標
+		/// @param _middleLeft 円に外接する正方形の左辺の中心座標
 		/// @param _r 半径
 		[[nodiscard]]
-		constexpr Circle(Arg::leftCenter_<position_type> _leftCenter, size_type _r) noexcept;
+		constexpr Circle(Arg::middleLeft_<position_type> _middleLeft, size_type _r) noexcept;
 
 		/// @brief 円を作成します。
-		/// @param _leftCenter 円に外接する正方形の左辺の中心座標
+		/// @param _middleLeft 円に外接する正方形の左辺の中心座標
 		/// @param _r 半径
 		[[nodiscard]]
-		constexpr Circle(Arg::leftCenter_<position_type> _leftCenter, Concept::Arithmetic auto _r) noexcept;
+		constexpr Circle(Arg::middleLeft_<position_type> _middleLeft, Concept::Arithmetic auto _r) noexcept;
 
 		/// @brief 指定した 2 点を通る円を作成します。
 		/// @param p0 点
@@ -407,10 +407,10 @@ namespace s3d
 		constexpr Circle& set(Arg::topRight_<position_type> topRight, size_type _r) noexcept;
 
 		/// @brief 円の中心座標と半径を変更します。
-		/// @param rightCenter 円に外接する正方形の右辺の中心座標
+		/// @param middleRight 円に外接する正方形の右辺の中心座標
 		/// @param _r 新しい半径
 		/// @return *this
-		constexpr Circle& set(Arg::rightCenter_<position_type> rightCenter, size_type _r) noexcept;
+		constexpr Circle& set(Arg::middleRight_<position_type> middleRight, size_type _r) noexcept;
 
 		/// @brief 円の中心座標と半径を変更します。
 		/// @param bottomRight 円に外接する正方形の右下座標
@@ -431,10 +431,10 @@ namespace s3d
 		constexpr Circle& set(Arg::bottomLeft_<position_type> bottomLeft, size_type _r) noexcept;
 
 		/// @brief 円の中心座標と半径を変更します。
-		/// @param leftCenter 円に外接する正方形の左辺の中心座標
+		/// @param middleLeft 円に外接する正方形の左辺の中心座標
 		/// @param _r 新しい半径
 		/// @return *this
-		constexpr Circle& set(Arg::leftCenter_<position_type> leftCenter, size_type _r) noexcept;
+		constexpr Circle& set(Arg::middleLeft_<position_type> middleLeft, size_type _r) noexcept;
 
 		/// @brief 円を変更します。
 		/// @param circle 新しい円

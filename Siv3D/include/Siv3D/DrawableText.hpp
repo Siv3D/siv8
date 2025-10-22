@@ -93,7 +93,7 @@ namespace s3d
 		RectF region(Arg::topRight_<Vec2> topRight) const;
 
 		[[nodiscard]]
-		RectF region(Arg::rightCenter_<Vec2> rightCenter) const;
+		RectF region(Arg::middleRight_<Vec2> middleRight) const;
 
 		[[nodiscard]]
 		RectF region(Arg::bottomRight_<Vec2> bottomRight) const;
@@ -105,7 +105,7 @@ namespace s3d
 		RectF region(Arg::bottomLeft_<Vec2> bottomLeft) const;
 
 		[[nodiscard]]
-		RectF region(Arg::leftCenter_<Vec2> leftCenter) const;
+		RectF region(Arg::middleLeft_<Vec2> middleLeft) const;
 
 		[[nodiscard]]
 		RectF region(Arg::center_<Vec2> center) const;
@@ -126,7 +126,7 @@ namespace s3d
 		RectF region(double size, Arg::topRight_<Vec2> topRight) const;
 
 		[[nodiscard]]
-		RectF region(double size, Arg::rightCenter_<Vec2> rightCenter) const;
+		RectF region(double size, Arg::middleRight_<Vec2> middleRight) const;
 
 		[[nodiscard]]
 		RectF region(double size, Arg::bottomRight_<Vec2> bottomRight) const;
@@ -138,7 +138,7 @@ namespace s3d
 		RectF region(double size, Arg::bottomLeft_<Vec2> bottomLeft) const;
 
 		[[nodiscard]]
-		RectF region(double size, Arg::leftCenter_<Vec2> leftCenter) const;
+		RectF region(double size, Arg::middleLeft_<Vec2> middleLeft) const;
 
 		[[nodiscard]]
 		RectF region(double size, Arg::center_<Vec2> center) const;
@@ -159,7 +159,7 @@ namespace s3d
 		RectF region(const TextStyle& textStyle, double size, Arg::topRight_<Vec2> topRight) const;
 
 		[[nodiscard]]
-		RectF region(const TextStyle& textStyle, double size, Arg::rightCenter_<Vec2> rightCenter) const;
+		RectF region(const TextStyle& textStyle, double size, Arg::middleRight_<Vec2> middleRight) const;
 
 		[[nodiscard]]
 		RectF region(const TextStyle& textStyle, double size, Arg::bottomRight_<Vec2> bottomRight) const;
@@ -171,7 +171,7 @@ namespace s3d
 		RectF region(const TextStyle& textStyle, double size, Arg::bottomLeft_<Vec2> bottomLeft) const;
 
 		[[nodiscard]]
-		RectF region(const TextStyle& textStyle, double size, Arg::leftCenter_<Vec2> leftCenter) const;
+		RectF region(const TextStyle& textStyle, double size, Arg::middleLeft_<Vec2> middleLeft) const;
 
 		[[nodiscard]]
 		RectF region(const TextStyle& textStyle, double size, Arg::center_<Vec2> center) const;
@@ -291,7 +291,7 @@ namespace s3d
 
 		RectF draw(Arg::topRight_<Vec2> topRight, const ColorF& color = Palette::White) const;
 
-		RectF draw(Arg::rightCenter_<Vec2> rightCenter, const ColorF& color = Palette::White) const;
+		RectF draw(Arg::middleRight_<Vec2> middleRight, const ColorF& color = Palette::White) const;
 
 		RectF draw(Arg::bottomRight_<Vec2> bottomRight, const ColorF& color = Palette::White) const;
 
@@ -299,7 +299,7 @@ namespace s3d
 
 		RectF draw(Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color = Palette::White) const;
 
-		RectF draw(Arg::leftCenter_<Vec2> leftCenter, const ColorF& color = Palette::White) const;
+		RectF draw(Arg::middleLeft_<Vec2> middleLeft, const ColorF& color = Palette::White) const;
 
 		RectF draw(Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
@@ -315,7 +315,7 @@ namespace s3d
 
 		RectF draw(double size, Arg::topRight_<Vec2> topRight, const ColorF& color = Palette::White) const;
 
-		RectF draw(double size, Arg::rightCenter_<Vec2> rightCenter, const ColorF& color = Palette::White) const;
+		RectF draw(double size, Arg::middleRight_<Vec2> middleRight, const ColorF& color = Palette::White) const;
 
 		RectF draw(double size, Arg::bottomRight_<Vec2> bottomRight, const ColorF& color = Palette::White) const;
 
@@ -323,7 +323,7 @@ namespace s3d
 
 		RectF draw(double size, Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color = Palette::White) const;
 
-		RectF draw(double size, Arg::leftCenter_<Vec2> leftCenter, const ColorF& color = Palette::White) const;
+		RectF draw(double size, Arg::middleLeft_<Vec2> middleLeft, const ColorF& color = Palette::White) const;
 
 		RectF draw(double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
@@ -339,7 +339,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, Arg::topRight_<Vec2> topRight, const ColorF& color = Palette::White) const;
 
-		RectF draw(const TextStyle& textStyle, Arg::rightCenter_<Vec2> rightCenter, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, Arg::middleRight_<Vec2> middleRight, const ColorF& color = Palette::White) const;
 
 		RectF draw(const TextStyle& textStyle, Arg::bottomRight_<Vec2> bottomRight, const ColorF& color = Palette::White) const;
 
@@ -347,7 +347,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color = Palette::White) const;
 
-		RectF draw(const TextStyle& textStyle, Arg::leftCenter_<Vec2> leftCenter, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, Arg::middleLeft_<Vec2> middleLeft, const ColorF& color = Palette::White) const;
 
 		RectF draw(const TextStyle& textStyle, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
@@ -363,7 +363,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::topRight_<Vec2> topRight, const ColorF& color = Palette::White) const;
 
-		RectF draw(const TextStyle& textStyle, double size, Arg::rightCenter_<Vec2> rightCenter, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::middleRight_<Vec2> middleRight, const ColorF& color = Palette::White) const;
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::bottomRight_<Vec2> bottomRight, const ColorF& color = Palette::White) const;
 
@@ -371,7 +371,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color = Palette::White) const;
 
-		RectF draw(const TextStyle& textStyle, double size, Arg::leftCenter_<Vec2> leftCenter, const ColorF& color = Palette::White) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::middleLeft_<Vec2> middleLeft, const ColorF& color = Palette::White) const;
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
@@ -387,7 +387,7 @@ namespace s3d
 
 		RectF draw(Arg::topRight_<Vec2> topRight, const ITextEffect& textEffect) const;
 
-		RectF draw(Arg::rightCenter_<Vec2> rightCenter, const ITextEffect& textEffect) const;
+		RectF draw(Arg::middleRight_<Vec2> middleRight, const ITextEffect& textEffect) const;
 
 		RectF draw(Arg::bottomRight_<Vec2> bottomRight, const ITextEffect& textEffect) const;
 
@@ -395,7 +395,7 @@ namespace s3d
 
 		RectF draw(Arg::bottomLeft_<Vec2> bottomLeft, const ITextEffect& textEffect) const;
 
-		RectF draw(Arg::leftCenter_<Vec2> leftCenter, const ITextEffect& textEffect) const;
+		RectF draw(Arg::middleLeft_<Vec2> middleLeft, const ITextEffect& textEffect) const;
 
 		RectF draw(Arg::center_<Vec2> center, const ITextEffect& textEffect) const;
 
@@ -411,7 +411,7 @@ namespace s3d
 
 		RectF draw(double size, Arg::topRight_<Vec2> topRight, const ITextEffect& textEffect) const;
 
-		RectF draw(double size, Arg::rightCenter_<Vec2> rightCenter, const ITextEffect& textEffect) const;
+		RectF draw(double size, Arg::middleRight_<Vec2> middleRight, const ITextEffect& textEffect) const;
 
 		RectF draw(double size, Arg::bottomRight_<Vec2> bottomRight, const ITextEffect& textEffect) const;
 
@@ -419,7 +419,7 @@ namespace s3d
 
 		RectF draw(double size, Arg::bottomLeft_<Vec2> bottomLeft, const ITextEffect& textEffect) const;
 
-		RectF draw(double size, Arg::leftCenter_<Vec2> leftCenter, const ITextEffect& textEffect) const;
+		RectF draw(double size, Arg::middleLeft_<Vec2> middleLeft, const ITextEffect& textEffect) const;
 
 		RectF draw(double size, Arg::center_<Vec2> center, const ITextEffect& textEffect) const;
 
@@ -435,7 +435,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, Arg::topRight_<Vec2> topRight, const ITextEffect& textEffect) const;
 
-		RectF draw(const TextStyle& textStyle, Arg::rightCenter_<Vec2> rightCenter, const ITextEffect& textEffect) const;
+		RectF draw(const TextStyle& textStyle, Arg::middleRight_<Vec2> middleRight, const ITextEffect& textEffect) const;
 
 		RectF draw(const TextStyle& textStyle, Arg::bottomRight_<Vec2> bottomRight, const ITextEffect& textEffect) const;
 
@@ -443,7 +443,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, Arg::bottomLeft_<Vec2> bottomLeft, const ITextEffect& textEffect) const;
 
-		RectF draw(const TextStyle& textStyle, Arg::leftCenter_<Vec2> leftCenter, const ITextEffect& textEffect) const;
+		RectF draw(const TextStyle& textStyle, Arg::middleLeft_<Vec2> middleLeft, const ITextEffect& textEffect) const;
 
 		RectF draw(const TextStyle& textStyle, Arg::center_<Vec2> center, const ITextEffect& textEffect) const;
 
@@ -459,7 +459,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::topRight_<Vec2> topRight, const ITextEffect& textEffect) const;
 
-		RectF draw(const TextStyle& textStyle, double size, Arg::rightCenter_<Vec2> rightCenter, const ITextEffect& textEffect) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::middleRight_<Vec2> middleRight, const ITextEffect& textEffect) const;
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::bottomRight_<Vec2> bottomRight, const ITextEffect& textEffect) const;
 
@@ -467,7 +467,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::bottomLeft_<Vec2> bottomLeft, const ITextEffect& textEffect) const;
 
-		RectF draw(const TextStyle& textStyle, double size, Arg::leftCenter_<Vec2> leftCenter, const ITextEffect& textEffect) const;
+		RectF draw(const TextStyle& textStyle, double size, Arg::middleLeft_<Vec2> middleLeft, const ITextEffect& textEffect) const;
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ITextEffect& textEffect) const;
 

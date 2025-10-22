@@ -75,12 +75,12 @@ namespace s3d
 		: center{ (_topRight->x - static_cast<value_type>(_r)), (_topRight->y + static_cast<value_type>(_r)) }
 		, r{ static_cast<size_type>(_r) } {}
 
-	constexpr Circle::Circle(const Arg::rightCenter_<position_type> _rightCenter, const size_type _r) noexcept
-		: center{ (_rightCenter->x - _r), _rightCenter->y }
+	constexpr Circle::Circle(const Arg::middleRight_<position_type> _middleRight, const size_type _r) noexcept
+		: center{ (_middleRight->x - _r), _middleRight->y }
 		, r{ _r } {}
 
-	constexpr Circle::Circle(const Arg::rightCenter_<position_type> _rightCenter, const Concept::Arithmetic auto _r) noexcept
-		: center{ (_rightCenter->x - static_cast<value_type>(_r)), _rightCenter->y }
+	constexpr Circle::Circle(const Arg::middleRight_<position_type> _middleRight, const Concept::Arithmetic auto _r) noexcept
+		: center{ (_middleRight->x - static_cast<value_type>(_r)), _middleRight->y }
 		, r{ static_cast<size_type>(_r) } {}
 
 	constexpr Circle::Circle(const Arg::bottomRight_<position_type> _bottomRight, const size_type _r) noexcept
@@ -107,12 +107,12 @@ namespace s3d
 		: center{ (_bottomLeft->x + static_cast<value_type>(_r)), (_bottomLeft->y - static_cast<value_type>(_r)) }
 		, r{ static_cast<size_type>(_r) } {}
 
-	constexpr Circle::Circle(const Arg::leftCenter_<position_type> _leftCenter, const size_type _r) noexcept
-		: center{ (_leftCenter->x + _r), _leftCenter->y }
+	constexpr Circle::Circle(const Arg::middleLeft_<position_type> _middleLeft, const size_type _r) noexcept
+		: center{ (_middleLeft->x + _r), _middleLeft->y }
 		, r{ _r } {}
 
-	constexpr Circle::Circle(const Arg::leftCenter_<position_type> _leftCenter, const Concept::Arithmetic auto _r) noexcept
-		: center{ (_leftCenter->x + static_cast<value_type>(_r)), _leftCenter->y }
+	constexpr Circle::Circle(const Arg::middleLeft_<position_type> _middleLeft, const Concept::Arithmetic auto _r) noexcept
+		: center{ (_middleLeft->x + static_cast<value_type>(_r)), _middleLeft->y }
 		, r{ static_cast<size_type>(_r) } {}
 
 	inline Circle::Circle(const position_type p0, const position_type p1) noexcept
@@ -271,9 +271,9 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr Circle& Circle::set(const Arg::rightCenter_<position_type> rightCenter, const size_type _r) noexcept
+	constexpr Circle& Circle::set(const Arg::middleRight_<position_type> middleRight, const size_type _r) noexcept
 	{
-		center.set((rightCenter->x - _r), rightCenter->y);
+		center.set((middleRight->x - _r), middleRight->y);
 		r = _r;
 		return *this;
 	}
@@ -299,9 +299,9 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr Circle& Circle::set(const Arg::leftCenter_<position_type> leftCenter, const size_type _r) noexcept
+	constexpr Circle& Circle::set(const Arg::middleLeft_<position_type> middleLeft, const size_type _r) noexcept
 	{
-		center.set((leftCenter->x + _r), leftCenter->y);
+		center.set((middleLeft->x + _r), middleLeft->y);
 		r = _r;
 		return *this;
 	}

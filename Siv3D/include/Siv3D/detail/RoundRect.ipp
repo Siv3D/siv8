@@ -617,7 +617,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	topCenter, rightCenter, bottomCenter, leftCenter
+	//	topCenter, middleRight, bottomCenter, middleLeft
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -626,9 +626,9 @@ namespace s3d
 		return rect.topCenter();
 	}
 
-	constexpr Vec2 RoundRect::rightCenter() const noexcept
+	constexpr Vec2 RoundRect::middleRight() const noexcept
 	{
-		return rect.rightCenter();
+		return rect.middleRight();
 	}
 
 	constexpr Vec2 RoundRect::bottomCenter() const noexcept
@@ -636,9 +636,9 @@ namespace s3d
 		return rect.bottomCenter();
 	}
 
-	constexpr Vec2 RoundRect::leftCenter() const noexcept
+	constexpr Vec2 RoundRect::middleLeft() const noexcept
 	{
-		return rect.leftCenter();
+		return rect.middleLeft();
 	}
 
 	////////////////////////////////////////////////////////////////

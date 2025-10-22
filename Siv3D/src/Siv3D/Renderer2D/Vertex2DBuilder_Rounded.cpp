@@ -1478,7 +1478,7 @@ namespace s3d
 			{
 				if (startCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::leftCenter = start, halfThickness, thickness }.rotatedAt(start, startAngle);
+					const Quad quad = RectF{ Arg::middleLeft = start, halfThickness, thickness }.rotatedAt(start, startAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, colorStart);
 				}
@@ -1492,7 +1492,7 @@ namespace s3d
 			{
 				if (endCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::rightCenter = end, halfThickness, thickness }.rotatedAt(end, endAngle);
+					const Quad quad = RectF{ Arg::middleRight = end, halfThickness, thickness }.rotatedAt(end, endAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, colorEnd);
 				}
@@ -1522,7 +1522,7 @@ namespace s3d
 			{
 				if (startCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::leftCenter = start, halfThickness, thickness }.rotatedAt(start, startAngle);
+					const Quad quad = RectF{ Arg::middleLeft = start, halfThickness, thickness }.rotatedAt(start, startAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, { c1, c0, c0, c1 });
 				}
@@ -1536,7 +1536,7 @@ namespace s3d
 			{
 				if (endCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::rightCenter = end, halfThickness, thickness }.rotatedAt(end, endAngle);
+					const Quad quad = RectF{ Arg::middleRight = end, halfThickness, thickness }.rotatedAt(end, endAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, { c2, c3, c3, c2 });
 				}
@@ -2270,8 +2270,8 @@ namespace s3d
 				return 0;
 			}
 
-			const float leftCenterX		= (rect.left + r);
-			const float rightCenterX	= (rect.right - r);
+			const float middleLeftX		= (rect.left + r);
+			const float middleRightX	= (rect.right - r);
 			const float topCenterY		= (rect.top + r);
 			const float bottomCenterY	= (rect.bottom - r);
 
@@ -2288,10 +2288,10 @@ namespace s3d
 				const float x = (cs->x * r);
 				const float y = (cs->y * r);
 
-				pDst0->set((rightCenterX + x), (topCenterY + y), color);
-				pDst1->set((rightCenterX - y), (bottomCenterY + x), color);
-				pDst2->set((leftCenterX - x), (bottomCenterY - y), color);
-				pDst3->set((leftCenterX + y), (topCenterY - x), color);
+				pDst0->set((middleRightX + x), (topCenterY + y), color);
+				pDst1->set((middleRightX - y), (bottomCenterY + x), color);
+				pDst2->set((middleLeftX - x), (bottomCenterY - y), color);
+				pDst3->set((middleLeftX + y), (topCenterY - x), color);
 
 				++pDst0;
 				++pDst1;
@@ -2304,10 +2304,10 @@ namespace s3d
 				const float x = (pCS->x * r);
 				const float y = (pCS->y * r);
 
-				pDst0->set((rightCenterX - y), (topCenterY + x), color);
-				pDst1->set((rightCenterX - x), (bottomCenterY - y), color);
-				pDst2->set((leftCenterX + y), (bottomCenterY - x), color);
-				pDst3->set((leftCenterX + x), (topCenterY + y), color);
+				pDst0->set((middleRightX - y), (topCenterY + x), color);
+				pDst1->set((middleRightX - x), (bottomCenterY - y), color);
+				pDst2->set((middleLeftX + y), (bottomCenterY - x), color);
+				pDst3->set((middleLeftX + x), (topCenterY + y), color);
 
 				++pDst0;
 				++pDst1;
@@ -2317,10 +2317,10 @@ namespace s3d
 
 			// Fan の中心の頂点
 			{
-				(pDst3++)->set(rightCenterX, topCenterY, color);
-				(pDst3++)->set(rightCenterX, bottomCenterY, color);
-				(pDst3++)->set(leftCenterX, bottomCenterY, color);
-				(pDst3++)->set(leftCenterX, topCenterY, color);
+				(pDst3++)->set(middleRightX, topCenterY, color);
+				(pDst3++)->set(middleRightX, bottomCenterY, color);
+				(pDst3++)->set(middleLeftX, bottomCenterY, color);
+				(pDst3++)->set(middleLeftX, topCenterY, color);
 			}
 
 			const Vertex2D::IndexType trFanStartIndex	= indexOffset;
@@ -2425,8 +2425,8 @@ namespace s3d
 				return 0;
 			}
 
-			const float leftCenterX		= (rect.left + r);
-			const float rightCenterX	= (rect.right - r);
+			const float middleLeftX		= (rect.left + r);
+			const float middleRightX	= (rect.right - r);
 			const float topCenterY		= (rect.top + r);
 			const float bottomCenterY	= (rect.bottom - r);
 
@@ -2454,10 +2454,10 @@ namespace s3d
 					const Float4 c2 = (color0 + (colorROffset + (-cs->y * colorRScale)) * colorDiff);
 					const Float4 c3 = (color0 + ((-cs->x + 1.0f) * colorRScale) * colorDiff);
 
-					pDst0->set((rightCenterX + x), (topCenterY + y), c0);
-					pDst1->set((rightCenterX - y), (bottomCenterY + x), c1);
-					pDst2->set((leftCenterX - x), (bottomCenterY - y), c2);
-					pDst3->set((leftCenterX + y), (topCenterY - x), c3);
+					pDst0->set((middleRightX + x), (topCenterY + y), c0);
+					pDst1->set((middleRightX - y), (bottomCenterY + x), c1);
+					pDst2->set((middleLeftX - x), (bottomCenterY - y), c2);
+					pDst3->set((middleLeftX + y), (topCenterY - x), c3);
 				}
 				else // ColorFillDirection::LeftRight
 				{
@@ -2466,10 +2466,10 @@ namespace s3d
 					const Float4 c2 = (color0 + ((-cs->x + 1.0f) * colorRScale) * colorDiff);
 					const Float4 c3 = (color0 + ((cs->y + 1.0f) * colorRScale) * colorDiff);
 
-					pDst0->set((rightCenterX + x), (topCenterY + y), c0);
-					pDst1->set((rightCenterX - y), (bottomCenterY + x), c1);
-					pDst2->set((leftCenterX - x), (bottomCenterY - y), c2);
-					pDst3->set((leftCenterX + y), (topCenterY - x), c3);
+					pDst0->set((middleRightX + x), (topCenterY + y), c0);
+					pDst1->set((middleRightX - y), (bottomCenterY + x), c1);
+					pDst2->set((middleLeftX - x), (bottomCenterY - y), c2);
+					pDst3->set((middleLeftX + y), (topCenterY - x), c3);
 				}
 
 				++pDst0;
@@ -2490,10 +2490,10 @@ namespace s3d
 					const Float4 c2 = (color0 + (1.0 - colorRScale) * colorDiff);
 					const Float4 c3 = color0;
 
-					pDst0->set((rightCenterX - y), (topCenterY + x), c0);
-					pDst1->set((rightCenterX - x), (bottomCenterY - y), c1);
-					pDst2->set((leftCenterX + y), (bottomCenterY - x), c2);
-					pDst3->set((leftCenterX + x), (topCenterY + y), c3);
+					pDst0->set((middleRightX - y), (topCenterY + x), c0);
+					pDst1->set((middleRightX - x), (bottomCenterY - y), c1);
+					pDst2->set((middleLeftX + y), (bottomCenterY - x), c2);
+					pDst3->set((middleLeftX + x), (topCenterY + y), c3);
 				}
 				else // ColorFillDirection::LeftRight
 				{
@@ -2502,10 +2502,10 @@ namespace s3d
 					const Float4 c2 = color0;
 					const Float4 c3 = (color0 + colorRScale * colorDiff);
 
-					pDst0->set((rightCenterX - y), (topCenterY + x), c0);
-					pDst1->set((rightCenterX - x), (bottomCenterY - y), c1);
-					pDst2->set((leftCenterX + y), (bottomCenterY - x), c2);
-					pDst3->set((leftCenterX + x), (topCenterY + y), c3);
+					pDst0->set((middleRightX - y), (topCenterY + x), c0);
+					pDst1->set((middleRightX - x), (bottomCenterY - y), c1);
+					pDst2->set((middleLeftX + y), (bottomCenterY - x), c2);
+					pDst3->set((middleLeftX + x), (topCenterY + y), c3);
 				}
 
 				++pDst0;
@@ -2521,20 +2521,20 @@ namespace s3d
 					const Float4 c0 = (color0 + colorRScale * colorDiff);
 					const Float4 c1 = (color0 + (1.0 - colorRScale) * colorDiff);
 
-					(pDst3++)->set(rightCenterX, topCenterY, c0);
-					(pDst3++)->set(rightCenterX, bottomCenterY, c1);
-					(pDst3++)->set(leftCenterX, bottomCenterY, c1);
-					(pDst3++)->set(leftCenterX, topCenterY, c0);
+					(pDst3++)->set(middleRightX, topCenterY, c0);
+					(pDst3++)->set(middleRightX, bottomCenterY, c1);
+					(pDst3++)->set(middleLeftX, bottomCenterY, c1);
+					(pDst3++)->set(middleLeftX, topCenterY, c0);
 				}
 				else // ColorFillDirection::LeftRight
 				{
 					const Float4 c0 = (color0 + (1.0 - colorRScale) * colorDiff);
 					const Float4 c1 = (color0 + colorRScale * colorDiff);
 
-					(pDst3++)->set(rightCenterX, topCenterY, c0);
-					(pDst3++)->set(rightCenterX, bottomCenterY, c0);
-					(pDst3++)->set(leftCenterX, bottomCenterY, c1);
-					(pDst3++)->set(leftCenterX, topCenterY, c1);
+					(pDst3++)->set(middleRightX, topCenterY, c0);
+					(pDst3++)->set(middleRightX, bottomCenterY, c0);
+					(pDst3++)->set(middleLeftX, bottomCenterY, c1);
+					(pDst3++)->set(middleLeftX, topCenterY, c1);
 				}
 			}
 
@@ -3214,8 +3214,8 @@ namespace s3d
 				return 0;
 			}
 
-			const float leftCenterX		= (rect.left + r);
-			const float rightCenterX	= (rect.right - r);
+			const float middleLeftX		= (rect.left + r);
+			const float middleRightX	= (rect.right - r);
 			const float topCenterY		= (rect.top + r);
 			const float bottomCenterY	= (rect.bottom - r);
 
@@ -3232,10 +3232,10 @@ namespace s3d
 				const float x = (cs->x * r);
 				const float y = (cs->y * r);
 
-				pDst0->set((rightCenterX + x), (topCenterY + y), color);
-				pDst1->set((rightCenterX - y), (bottomCenterY + x), color);
-				pDst2->set((leftCenterX - x), (bottomCenterY - y), color);
-				pDst3->set((leftCenterX + y), (topCenterY - x), color);
+				pDst0->set((middleRightX + x), (topCenterY + y), color);
+				pDst1->set((middleRightX - y), (bottomCenterY + x), color);
+				pDst2->set((middleLeftX - x), (bottomCenterY - y), color);
+				pDst3->set((middleLeftX + y), (topCenterY - x), color);
 
 				++pDst0;
 				++pDst1;
@@ -3248,10 +3248,10 @@ namespace s3d
 				const float x = (pCS->x * r);
 				const float y = (pCS->y * r);
 
-				pDst0->set((rightCenterX - y), (topCenterY + x), color);
-				pDst1->set((rightCenterX - x), (bottomCenterY - y), color);
-				pDst2->set((leftCenterX + y), (bottomCenterY - x), color);
-				pDst3->set((leftCenterX + x), (topCenterY + y), color);
+				pDst0->set((middleRightX - y), (topCenterY + x), color);
+				pDst1->set((middleRightX - x), (bottomCenterY - y), color);
+				pDst2->set((middleLeftX + y), (bottomCenterY - x), color);
+				pDst3->set((middleLeftX + x), (topCenterY + y), color);
 
 				++pDst0;
 				++pDst1;
@@ -3261,10 +3261,10 @@ namespace s3d
 
 			// Fan の中心の頂点
 			{
-				(pDst3++)->set(rightCenterX, topCenterY, color);
-				(pDst3++)->set(rightCenterX, bottomCenterY, color);
-				(pDst3++)->set(leftCenterX, bottomCenterY, color);
-				(pDst3++)->set(leftCenterX, topCenterY, color);
+				(pDst3++)->set(middleRightX, topCenterY, color);
+				(pDst3++)->set(middleRightX, bottomCenterY, color);
+				(pDst3++)->set(middleLeftX, bottomCenterY, color);
+				(pDst3++)->set(middleLeftX, topCenterY, color);
 			}
 
 			// UV 座標を設定する

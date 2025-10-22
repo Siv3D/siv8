@@ -772,7 +772,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	topCenter, rightCenter, bottomCenter, leftCenter
+		//	topCenter, middleRight, bottomCenter, middleLeft
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -784,7 +784,7 @@ namespace s3d
 		/// @brief 基本の長方形の右辺の中心座標を返します。
 		/// @return 基本の長方形の右辺の中心座標
 		[[nodiscard]]
-		constexpr Vec2 rightCenter() const noexcept;
+		constexpr Vec2 middleRight() const noexcept;
 
 		/// @brief 基本の長方形の下辺の中心座標を返します。
 		/// @return 基本の長方形の下辺の中心座標
@@ -794,7 +794,7 @@ namespace s3d
 		/// @brief 基本の長方形の左辺の中心座標を返します。
 		/// @return 基本の長方形の左辺の中心座標
 		[[nodiscard]]
-		constexpr Vec2 leftCenter() const noexcept;
+		constexpr Vec2 middleLeft() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

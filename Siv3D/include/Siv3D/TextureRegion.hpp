@@ -370,62 +370,62 @@ namespace s3d
 		RectF draw(Arg::bottomCenter_<Vec2> bottomCenter, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		/// @brief 指定した位置に部分テクスチャを描画します。
-		/// @param leftCenter 部分テクスチャの左辺の中心を配置する座標
+		/// @param middleLeft 部分テクスチャの左辺の中心を配置する座標
 		/// @param diffuse 描画時に乗算する色
 		/// @return 部分テクスチャが描画された領域
-		RectF draw(Arg::leftCenter_<Vec2> leftCenter, const ColorF& diffuse = Palette::White) const;
+		RectF draw(Arg::middleLeft_<Vec2> middleLeft, const ColorF& diffuse = Palette::White) const;
 
 		/// @brief 指定した位置に部分テクスチャを描画します。
-		/// @param leftCenter 部分テクスチャの左辺の中心を配置する座標
+		/// @param middleLeft 部分テクスチャの左辺の中心を配置する座標
 		/// @param topLeftColor 描画時に左上の頂点に乗算する色
 		/// @param topRightColor 描画時に右上の頂点に乗算する色
 		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
 		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
 		/// @return 部分テクスチャが描画された領域
-		RectF draw(Arg::leftCenter_<Vec2> leftCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+		RectF draw(Arg::middleLeft_<Vec2> middleLeft, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
 
 		/// @brief 指定した位置に部分テクスチャを描画します。
-		/// @param leftCenter 部分テクスチャの左辺の中心を配置する座標
+		/// @param middleLeft 部分テクスチャの左辺の中心を配置する座標
 		/// @param topColor 描画時に上側の頂点に乗算する色
 		/// @param bottomColor 描画時に下側の頂点に乗算する色
 		/// @return 部分テクスチャが描画された領域
-		RectF draw(Arg::leftCenter_<Vec2> leftCenter, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+		RectF draw(Arg::middleLeft_<Vec2> middleLeft, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		/// @brief 指定した位置に部分テクスチャを描画します。
-		/// @param leftCenter 部分テクスチャの左辺の中心を配置する座標
+		/// @param middleLeft 部分テクスチャの左辺の中心を配置する座標
 		/// @param leftColor 描画時に左側の頂点に乗算する色
 		/// @param rightColor 描画時に右側の頂点に乗算する色
 		/// @return 部分テクスチャが描画された領域
-		RectF draw(Arg::leftCenter_<Vec2> leftCenter, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+		RectF draw(Arg::middleLeft_<Vec2> middleLeft, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		/// @brief 指定した位置に部分テクスチャを描画します。
-		/// @param rightCenter 部分テクスチャの右辺の中心を配置する座標
+		/// @param middleRight 部分テクスチャの右辺の中心を配置する座標
 		/// @param diffuse 描画時に乗算する色
 		/// @return 部分テクスチャが描画された領域
-		RectF draw(Arg::rightCenter_<Vec2>rightCenter, const ColorF& diffuse = Palette::White) const;
+		RectF draw(Arg::middleRight_<Vec2>middleRight, const ColorF& diffuse = Palette::White) const;
 
 		/// @brief 指定した位置に部分テクスチャを描画します。
-		/// @param rightCenter 部分テクスチャの右辺の中心を配置する座標
+		/// @param middleRight 部分テクスチャの右辺の中心を配置する座標
 		/// @param topLeftColor 描画時に左上の頂点に乗算する色
 		/// @param topRightColor 描画時に右上の頂点に乗算する色
 		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
 		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
 		/// @return 部分テクスチャが描画された領域
-		RectF draw(Arg::rightCenter_<Vec2>rightCenter, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
+		RectF draw(Arg::middleRight_<Vec2>middleRight, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
 
 		/// @brief 指定した位置に部分テクスチャを描画します。
-		/// @param rightCenter 部分テクスチャの右辺の中心を配置する座標
+		/// @param middleRight 部分テクスチャの右辺の中心を配置する座標
 		/// @param topColor 描画時に上側の頂点に乗算する色
 		/// @param bottomColor 描画時に下側の頂点に乗算する色
 		/// @return 部分テクスチャが描画された領域
-		RectF draw(Arg::rightCenter_<Vec2>rightCenter, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+		RectF draw(Arg::middleRight_<Vec2>middleRight, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		/// @brief 指定した位置に部分テクスチャを描画します。
-		/// @param rightCenter 部分テクスチャの右辺の中心を配置する座標
+		/// @param middleRight 部分テクスチャの右辺の中心を配置する座標
 		/// @param leftColor 描画時に左側の頂点に乗算する色
 		/// @param rightColor 描画時に右側の頂点に乗算する色
 		/// @return 部分テクスチャが描画された領域
-		RectF draw(Arg::rightCenter_<Vec2>rightCenter, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
+		RectF draw(Arg::middleRight_<Vec2>middleRight, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
 		/// @brief 指定した位置を中心に部分テクスチャを描画します。
 		/// @param center 部分テクスチャの中心を配置する座標
