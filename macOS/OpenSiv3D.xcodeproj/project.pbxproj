@@ -35,6 +35,12 @@
 		F902E1062E9E71B7002C6B92 /* BinaryFileWriterDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E1022E9E71B7002C6B92 /* BinaryFileWriterDetail.hpp */; };
 		F902E1072E9E71B7002C6B92 /* BinaryFileReaderDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902E1002E9E71B7002C6B92 /* BinaryFileReaderDetail.cpp */; };
 		F902E1082E9E71B7002C6B92 /* BinaryFileWriterDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902E1032E9E71B7002C6B92 /* BinaryFileWriterDetail.cpp */; };
+		F902E10A2EA8B368002C6B92 /* SimpleGUI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E1092EA8B368002C6B92 /* SimpleGUI.hpp */; };
+		F902E1102EA8B391002C6B92 /* IGUI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E10E2EA8B391002C6B92 /* IGUI.hpp */; };
+		F902E1112EA8B391002C6B92 /* CGUI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E10B2EA8B391002C6B92 /* CGUI.hpp */; };
+		F902E1122EA8B391002C6B92 /* GUIFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902E10D2EA8B391002C6B92 /* GUIFactory.cpp */; };
+		F902E1132EA8B391002C6B92 /* CGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902E10C2EA8B391002C6B92 /* CGUI.cpp */; };
+		F902E1162EA8B39D002C6B92 /* SivSimpleGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902E1142EA8B39D002C6B92 /* SivSimpleGUI.cpp */; };
 		F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */; };
 		F90702F62B9DAEB900383E4D /* Test_Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B62B9DAEB900383E4D /* Test_Array.cpp */; };
 		F90702F72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */; };
@@ -2746,6 +2752,12 @@
 		F902E1002E9E71B7002C6B92 /* BinaryFileReaderDetail.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryFileReaderDetail.cpp; sourceTree = "<group>"; };
 		F902E1022E9E71B7002C6B92 /* BinaryFileWriterDetail.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BinaryFileWriterDetail.hpp; sourceTree = "<group>"; };
 		F902E1032E9E71B7002C6B92 /* BinaryFileWriterDetail.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryFileWriterDetail.cpp; sourceTree = "<group>"; };
+		F902E1092EA8B368002C6B92 /* SimpleGUI.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUI.hpp; sourceTree = "<group>"; };
+		F902E10B2EA8B391002C6B92 /* CGUI.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CGUI.hpp; sourceTree = "<group>"; };
+		F902E10C2EA8B391002C6B92 /* CGUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CGUI.cpp; sourceTree = "<group>"; };
+		F902E10D2EA8B391002C6B92 /* GUIFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GUIFactory.cpp; sourceTree = "<group>"; };
+		F902E10E2EA8B391002C6B92 /* IGUI.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IGUI.hpp; sourceTree = "<group>"; };
+		F902E1142EA8B39D002C6B92 /* SivSimpleGUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimpleGUI.cpp; sourceTree = "<group>"; };
 		F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DTest.cpp; sourceTree = "<group>"; };
 		F90702B52B9DAEB900383E4D /* Siv3DTest.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTest.hpp; sourceTree = "<group>"; };
 		F90702B62B9DAEB900383E4D /* Test_Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Array.cpp; sourceTree = "<group>"; };
@@ -5635,6 +5647,25 @@
 			path = BinaryFileWriter;
 			sourceTree = "<group>";
 		};
+		F902E10F2EA8B391002C6B92 /* GUI */ = {
+			isa = PBXGroup;
+			children = (
+				F902E10B2EA8B391002C6B92 /* CGUI.hpp */,
+				F902E10C2EA8B391002C6B92 /* CGUI.cpp */,
+				F902E10D2EA8B391002C6B92 /* GUIFactory.cpp */,
+				F902E10E2EA8B391002C6B92 /* IGUI.hpp */,
+			);
+			path = GUI;
+			sourceTree = "<group>";
+		};
+		F902E1152EA8B39D002C6B92 /* SimpleGUI */ = {
+			isa = PBXGroup;
+			children = (
+				F902E1142EA8B39D002C6B92 /* SivSimpleGUI.cpp */,
+			);
+			path = SimpleGUI;
+			sourceTree = "<group>";
+		};
 		F90702CF2B9DAEB900383E4D /* Test */ = {
 			isa = PBXGroup;
 			children = (
@@ -6461,6 +6492,7 @@
 				F9070C202B9F175000383E4D /* Shuffle.hpp */,
 				F9070C212B9F175000383E4D /* SIMD.hpp */,
 				F9E5FC2B2BC15AEE0081A4F7 /* SIMDMath.hpp */,
+				F902E1092EA8B368002C6B92 /* SimpleGUI.hpp */,
 				F9712A542C289A5C0049CC26 /* Smooth.hpp */,
 				F9070C222B9F175000383E4D /* SpecialFolder.hpp */,
 				F9070C232B9F175000383E4D /* Step.hpp */,
@@ -7093,6 +7125,7 @@
 				F934BD962BFA59000003EAD5 /* Graphics */,
 				F9E7947E2C248B29002615BA /* Graphics2D */,
 				F9D41CE22C9972D800290998 /* Grid */,
+				F902E10F2EA8B391002C6B92 /* GUI */,
 				F9E5FC422BC19B110081A4F7 /* HalfFloat */,
 				F9070D5A2B9F175E00383E4D /* Hash */,
 				F934BD9A2BFA59000003EAD5 /* HLSL */,
@@ -7189,6 +7222,7 @@
 				F9AEA5082E6B3E71003734E7 /* ShaderGroup */,
 				F9F00A462CD298E60097C165 /* Shape2D */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
+				F902E1152EA8B39D002C6B92 /* SimpleGUI */,
 				F9E7945A2C19743A002615BA /* Stopwatch */,
 				F9070D812B9F175E00383E4D /* String */,
 				F9070D832B9F175E00383E4D /* StringView */,
@@ -13079,6 +13113,7 @@
 				F90706C42B9DAEC900383E4D /* pcg_uint128.hpp in Headers */,
 				F986004A2BCFBB53006A4C0F /* SkTiledImageUtils.h in Headers */,
 				F986008A2BCFBB53006A4C0F /* SkTLogic.h in Headers */,
+				F902E10A2EA8B368002C6B92 /* SimpleGUI.hpp in Headers */,
 				F9070C672B9F175000383E4D /* Logger.ipp in Headers */,
 				F986F9192BC8441F006A4C0F /* oniguruma.h in Headers */,
 				F98601BA2BCFBB53006A4C0F /* SkFontDescriptor.h in Headers */,
@@ -13186,6 +13221,8 @@
 				F9528C1C2BBF026F00222F45 /* clevels.h in Headers */,
 				F98604222BCFBB54006A4C0F /* SkSLLiteral.h in Headers */,
 				F9528B542BB6DC2C00222F45 /* MicrosecClock.hpp in Headers */,
+				F902E1102EA8B391002C6B92 /* IGUI.hpp in Headers */,
+				F902E1112EA8B391002C6B92 /* CGUI.hpp in Headers */,
 				F951220D2CB62E4300151291 /* rect_structs.h in Headers */,
 				F9070C482B9F175000383E4D /* Byte.ipp in Headers */,
 				F9528C0C2BBF026F00222F45 /* error_private.h in Headers */,
@@ -13626,6 +13663,8 @@
 				F98602752BCFBB54006A4C0F /* SkStrikeSpec.cpp in Sources */,
 				F98604822BCFBB54006A4C0F /* SkSLOutputStream.cpp in Sources */,
 				F986055F2BD203D4006A4C0F /* muParserCallback.cpp in Sources */,
+				F902E1122EA8B391002C6B92 /* GUIFactory.cpp in Sources */,
+				F902E1132EA8B391002C6B92 /* CGUI.cpp in Sources */,
 				F9528C562BC02A3100222F45 /* MemoryMappedFileDetail.cpp in Sources */,
 				F943AB282E2A2E4F001B4D43 /* int128_have_intrinsic.inc in Sources */,
 				F943AB292E2A2E4F001B4D43 /* int128_no_intrinsic.inc in Sources */,
@@ -13865,6 +13904,7 @@
 				F9FD0D142D204FBE00A584CE /* SivSampleBorderColor.cpp in Sources */,
 				F98601C22BCFBB53006A4C0F /* SkGaussFilter.cpp in Sources */,
 				F980C4562C00E2AE00A86B68 /* SivSamplerState.cpp in Sources */,
+				F902E1162EA8B39D002C6B92 /* SivSimpleGUI.cpp in Sources */,
 				F98601972BCFBB53006A4C0F /* SkData.cpp in Sources */,
 				F986040F2BCFBB54006A4C0F /* SkSLFunctionCall.cpp in Sources */,
 				F943AADD2E2A0A14001B4D43 /* GlyphCacheCommon.cpp in Sources */,

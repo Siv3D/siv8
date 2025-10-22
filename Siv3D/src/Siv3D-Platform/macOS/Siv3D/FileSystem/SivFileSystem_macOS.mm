@@ -218,7 +218,7 @@ namespace s3d
 				return executablePath;
 			}();
 
-			executableDirectory = ParentPath(executablePath);
+			executableDirectory = ParentPath(executablePath, 1);
 			
 			specialFolderPaths = []()
 			{
