@@ -385,7 +385,13 @@ namespace s3d
 
 	constexpr bool Triangle::hasArea() const noexcept
 	{
-		return (0.0 < area());
+		const double v0x = (p0.x - p2.x);
+		const double v0y = (p0.y - p2.y);
+		const double v1x = (p1.x - p2.x);
+		const double v1y = (p1.y - p2.y);
+		const double c = (v0x * v1y - v1x * v0y);
+		const double errorBound = ((Abs(v0x) * Abs(v1y) + Abs(v1x) * Abs(v0y)) * std::numeric_limits<double>::epsilon() * 2.0);
+		return (Abs(c) <= errorBound);
 	}
 
 	////////////////////////////////////////////////////////////////
