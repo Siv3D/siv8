@@ -226,5 +226,15 @@ namespace s3d
 		{
 			{ a += b } -> std::convertible_to<Type>;
 		};
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ExactlyBool
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief bool 型と同一である型のコンセプト | Exactly bool type concept
+		template <class T>
+		concept ExactlyBool = std::same_as<std::remove_cvref_t<T>, bool>;
 	}
 }

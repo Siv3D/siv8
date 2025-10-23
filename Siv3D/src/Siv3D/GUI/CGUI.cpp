@@ -44,7 +44,7 @@ namespace s3d
 
 		if (Font::IsAvailable(Typeface::ColorEmoji))
 		{
-			m_defaultFont->addFallback(Font{ FontMethod::MSDF, 20, Typeface::ColorEmoji });
+			m_defaultFont->addFallback(Font{ 24, Typeface::ColorEmoji });
 		}
 	}
 
