@@ -1564,6 +1564,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	reverseView
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::reverseView()
+	{
+		return std::views::reverse(m_container);
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::reverseView() const
+	{
+		return std::views::reverse(m_container);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	rotate, rotated
 	//
 	////////////////////////////////////////////////////////////////

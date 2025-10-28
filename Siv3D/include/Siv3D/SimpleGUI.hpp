@@ -18,6 +18,8 @@ namespace s3d
 
 	namespace SimpleGUI
 	{
+		inline constexpr double DefaultFontSize = 20;
+
 		/// @brief SimpleGUI のデフォルトフォントを取得します。
 		/// @remark ベースが CJK_Regular で、利用可能であれば Icon_MaterialDesign, ColorEmoji がフォールバックとして追加されています。
 		/// @return デフォルトフォント
