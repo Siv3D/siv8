@@ -31,11 +31,11 @@ namespace s3d
 		[[nodiscard]]
 		virtual RectF region() const = 0;
 
+		virtual bool update() = 0;
+
 		virtual void draw() const = 0;
 
 		virtual void drawOverlay() const;
-
-		virtual bool update() = 0;
 
 		template <class Self>
 		constexpr Self& setPos(this Self& self, const Vec2& pos) noexcept;

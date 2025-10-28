@@ -60,8 +60,23 @@ namespace s3d
 			clearDirty();
 		}
 
-		const double width = m_width.value_or(m_cache.textWidth + (style[Theme::Constant::HorizontalPadding] * 2));
+		const double width = m_width.value_or(m_cache.textWidth + (style[Theme::Constant::ButtonTextHorizontalPadding] * 2));
 		return{ getAnchor(), getPos(), width, style[Theme::Constant::ButtonHeight] };
+	}
+
+	bool SimpleButton::update()
+	{
+		const RectF rect = region();
+
+		m_state.hovered = ((not Cursor::IsCaptured()) && isVisible() && isEnabled() && rect.mouseOver());
+		m_state.pressed = (m_state.hovered && Cursor::OnClientRect() && MouseL.pressed());
+
+		if (m_state.hovered)
+		{
+			Cursor::SetCapture(true);
+		}
+
+		return (m_state.pressed && MouseL.down());
 	}
 
 	void SimpleButton::draw() const
@@ -109,21 +124,6 @@ namespace s3d
 		{
 			Cursor::RequestStyle(CursorStyle::Hand);
 		}
-	}
-
-	bool SimpleButton::update()
-	{
-		const RectF rect = region();
-
-		m_state.hovered = ((not Cursor::IsCaptured()) && isVisible() && isEnabled() && rect.mouseOver());
-		m_state.pressed = (m_state.hovered && Cursor::OnClientRect() && MouseL.pressed());
-
-		if (m_state.hovered)
-		{
-			Cursor::SetCapture(true);
-		}
-
-		return (m_state.pressed && MouseL.down());
 	}
 
 	bool SimpleButton::isHovered() const noexcept

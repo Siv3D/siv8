@@ -50,11 +50,11 @@ namespace s3d
 		[[nodiscard]]
 		RectF region() const override;
 
-		void draw() const override;
-
 		/// @brief 状態を更新します。
 		/// @return このフレームでボタンが押下された場合 true, それ以外は false
 		bool update() override;
+
+		void draw() const override;
 
 		[[nodiscard]]
 		bool isHovered() const noexcept;

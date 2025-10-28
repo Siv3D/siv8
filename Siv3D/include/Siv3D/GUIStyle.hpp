@@ -36,13 +36,19 @@ namespace s3d
 			Color{ 5 },				// TextPressedColor
 		};
 
-		std::array<double, 5> constants
+		std::array<double, 10> constants
 		{
 			20.0,	// FontSize
-			20.0,	// HorizontalPadding
+			20.0,	// ButtonTextHorizontalPadding
 			36.0,	// ButtonHeight
 			4.6,	// ButtonRadius
 			1.0,	// BorderInnerThickness
+
+			8.0,	// CheckBoxCheckmarkPaddingLeft
+			24.0,	// CheckBoxCheckmarkSize
+			8.0,	// CheckBoxCheckmarkPaddingRight
+			8.0,	// CheckBoxLabelPaddingRight
+			36.0,	// CheckBoxLabelHeight
 		};
 
 		[[nodiscard]]

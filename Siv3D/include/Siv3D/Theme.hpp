@@ -60,10 +60,16 @@ namespace s3d
 		enum class Constant
 		{
 			FontSize,
-			HorizontalPadding,
+			ButtonTextHorizontalPadding,
 			ButtonHeight,
 			ButtonRadius,
 			BorderInnerThickness,
+
+			CheckBoxCheckmarkPaddingLeft,
+			CheckBoxCheckmarkSize,
+			CheckBoxCheckmarkPaddingRight,
+			CheckBoxLabelPaddingRight,
+			CheckBoxLabelHeight,
 		};
 
 		[[nodiscard]]
