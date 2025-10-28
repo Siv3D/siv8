@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/SimpleGUI.hpp>
+# include <Siv3D/SimpleGUI/SimpleButton.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -20,6 +21,34 @@ namespace s3d
 		const Font& GetFont() noexcept
 		{
 			return SIV3D_ENGINE(GUI)->getDefaultFont();
+		}
+
+		bool Button(const StringView text, const Vec2& pos, const Theme theme)
+		{
+			return Button(text, pos, Anchor::TopLeft, unspecified, true, theme);
+		}
+
+		bool Button(const StringView text, const Vec2& pos, const Optional<double>& width, const Theme theme)
+		{
+			return Button(text, pos, Anchor::TopLeft, width, true, theme);
+		}
+
+		bool Button(const StringView text, const Vec2& pos, const Optional<double>& width, const bool enabled, const Theme theme)
+		{
+			return Button(text, pos, Anchor::TopLeft, width, enabled, theme);
+		}
+
+		bool Button(const StringView text, const Vec2& pos, const Anchor anchor, const Theme theme)
+		{
+			return Button(text, pos, anchor, unspecified, true, theme);
+		}
+
+		bool Button(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const bool enabled, const Theme theme)
+		{
+			SimpleButton button{ text, pos, anchor, width, enabled, theme };
+			const bool result = button.update();
+			button.draw();
+			return result;
 		}
 	}
 }

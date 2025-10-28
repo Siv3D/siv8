@@ -1138,6 +1138,12 @@
     <Filter Include="src\Siv3D\Anchor">
       <UniqueIdentifier>{4c4fd7ad-baf2-43a6-a1e4-eb2ecff2b83f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Theme">
+      <UniqueIdentifier>{39dfee67-6eb0-4765-8f2a-3df0f86d0b32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Siv3D\SimpleGUI">
+      <UniqueIdentifier>{d6c7622b-6b14-4c89-af26-325ec50bbd88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4629,6 +4635,27 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Anchor.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Theme.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\GUIStyle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIStyle.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Theme.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\ISimpleGUIElement.hpp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\ISimpleGUIElement.ipp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleButton.hpp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7303,6 +7330,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Anchor\SivAnchor.cpp">
       <Filter>src\Siv3D\Anchor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Theme\SivTheme.cpp">
+      <Filter>src\Siv3D\Theme</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleButton.cpp">
+      <Filter>src\Siv3D\SimpleGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

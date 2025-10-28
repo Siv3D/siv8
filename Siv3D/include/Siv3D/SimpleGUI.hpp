@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
+# include "SimpleGUI/ISimpleGUIElement.hpp"
 
 namespace s3d
 {
@@ -25,5 +26,27 @@ namespace s3d
 		/// @return デフォルトフォント
 		[[nodiscard]]
 		const Font& GetFont() noexcept;
+
+
+		[[nodiscard]]
+		bool Button(StringView text, const Vec2& pos, Theme theme = Theme::Light);
+
+		/// @brief 誤用防止用コンストラクタ（= delete）
+		bool Button(StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light) = delete;
+
+		[[nodiscard]]
+		bool Button(StringView text, const Vec2& pos, const Optional<double>& width, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		bool Button(StringView text, const Vec2& pos, const Optional<double>& width, bool enabled, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		bool Button(StringView text, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		bool Button(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width = unspecified, bool enabled = true, Theme theme = Theme::Light);
+
+		/// @brief 誤用防止用コンストラクタ（= delete）
+		bool Button(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light) = delete;
 	}
 }

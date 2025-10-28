@@ -61,4 +61,10 @@ namespace s3d
 	{
 		return *m_defaultFont;
 	}
+
+
+	const GUIStyle& CGUI::getStyle(const Theme& theme) const noexcept
+	{
+		return m_styles[theme.getID()];
+	}
 }

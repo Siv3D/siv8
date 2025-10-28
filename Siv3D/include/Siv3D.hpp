@@ -1635,7 +1635,10 @@
 # include <Siv3D/TextEffect/VerticalScale.hpp>
 # include <Siv3D/TextEffect/Reflection.hpp>
 
+# include <Siv3D/Theme.hpp>
+# include <Siv3D/GUIStyle.hpp>
 # include <Siv3D/SimpleGUI.hpp>
+# include <Siv3D/SimpleGUI/SimpleButton.hpp>
 
 # include <Siv3D/Print.hpp>
 # include <Siv3D/PrintBuffer.hpp>

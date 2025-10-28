@@ -79,6 +79,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatRect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GlyphInfo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Graphics2D.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageProcessing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\KDTree.ipp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDescBuilder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureFormat.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Theme.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex32.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Zip.ipp" />
@@ -140,6 +142,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphContext.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphInfo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\GUIStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
@@ -509,6 +512,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SIMD.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SIMDMath.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\ISimpleGUIElement.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\ISimpleGUIElement.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleButton.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Smooth.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SpecialFolder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step.hpp" />
@@ -556,6 +562,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TexturePixelFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureRegion.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextFileWriter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Theme.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ThousandSeparate.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Threading.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Time.hpp" />
@@ -1481,6 +1488,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ShaderGroup\SivShaderGroup.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Shape2D\Shape2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleButton.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleGUI.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
@@ -1514,6 +1522,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TextureRegion\SivTextureRegion.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Texture\SivTexture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Theme\SivTheme.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ThousandSeparate\SivThousandSeparate.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Threading\SivThreading.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Timer\SivTimer.cpp" />
