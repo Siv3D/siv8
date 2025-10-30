@@ -44,30 +44,61 @@ namespace s3d
 		enum class Color
 		{
 			ButtonColor,
-			DisabledButtonColor,
-			HoverButtonColor,
-			PressedButtonColor,
+			ButtonColorDisabled,
+			ButtonColorHover,
+			ButtonColorPressed,
+			
 			BorderColor,
-			DisabledBorderColor,
-			HoverBorderColor,
-			PressedBorderColor,
+			BorderColorDisabled,
+			BorderColorHover,
+			BorderColorPressed,
+
 			TextColor,
-			TextDisabledColor,
-			TextHoverColor,
-			TextPressedColor,
+			TextColorDisabled,
+			TextColorHover,
+			TextColorPressed,
+
+			BackgroundColor,
+			BackgroundColorDisabled,
+			BackgroundColorHover,
+			BackgroundColorPressed,
+
+			ContainerColor,
+			ContainerColorDisabled,
+			ContainerColorHover,
+			ContainerColorPressed,
+
+			InnerShadowColor,
+			InnerShadowColorDisabled,
+			InnerShadowColorHover,
+			InnerShadowColorPressed,
+
+			FillColor,
+			FillColorDisabled,
+			FillColorHover,
+			FillColorPressed,
+
+			IndicatorColor,
+			IndicatorColorDisabled,
+			IndicatorColorHover,
+			IndicatorColorPressed,
 		};
 
 		enum class Constant
 		{
 			FontSize,
+
 			ButtonTextHorizontalPadding,
 			ButtonHeight,
 			ButtonRadius,
 			BorderInnerThickness,
 
-			CheckBoxCheckmarkPaddingLeft,
-			CheckBoxCheckmarkSize,
-			CheckBoxCheckmarkPaddingRight,
+			InnerShadowThickness,
+
+			CheckBoxPaddingLeft,
+			CheckBoxSize,
+			CheckBoxPaddingRight,
+			CheckBoxRadius,
 			CheckBoxLabelPaddingRight,
 			CheckBoxLabelHeight,
 		};

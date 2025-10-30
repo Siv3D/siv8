@@ -4656,6 +4656,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleButton.hpp">
       <Filter>include\Siv3D\SimpleGUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleCheckBox.hpp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7335,6 +7338,9 @@
       <Filter>src\Siv3D\Theme</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleButton.cpp">
+      <Filter>src\Siv3D\SimpleGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleCheckBox.cpp">
       <Filter>src\Siv3D\SimpleGUI</Filter>
     </ClCompile>
   </ItemGroup>

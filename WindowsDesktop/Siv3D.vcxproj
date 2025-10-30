@@ -515,6 +515,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\ISimpleGUIElement.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\ISimpleGUIElement.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleButton.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleCheckBox.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Smooth.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SpecialFolder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step.hpp" />
@@ -1489,6 +1490,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Shape2D\Shape2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleButton.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleCheckBox.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleGUI.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
