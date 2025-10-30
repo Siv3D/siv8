@@ -18,7 +18,7 @@ namespace s3d
 {
 	struct GUIStyle
 	{
-		std::array<Color, 32> colors
+		std::array<Color, 34> colors
 		{
 			Color{ 255 },			// ButtonColor
 			Color{ 235 },			// ButtonColorDisabled
@@ -32,8 +32,8 @@ namespace s3d
 
 			Color{ 26 },			// TextColor
 			Color{ 153 },			// TextColorDisabled
-			Color{ 15 },			// TextColorHover
-			Color{ 5 },				// TextColorPressed
+			Color{ 26 },			// TextColorHover
+			Color{ 26 },			// TextColorPressed
 
 			Color{ 255 },			// BackgroundColor
 			Color{ 255 },			// BackgroundColorDisabled
@@ -59,15 +59,18 @@ namespace s3d
 			Color{ 255 },			// IndicatorColorDisabled
 			Color{ 255 },			// IndicatorColorHover
 			Color{ 255 },			// IndicatorColorPressed
+
+			Color{ 15 },			// TooltipBackgroundColor
+			Color{ 255 },			// TooltipTextColor
 		};
 
-		std::array<double, 12> constants
+		std::array<double, 16> constants
 		{
 			20.0,	// FontSize
 
 			20.0,	// ButtonTextHorizontalPadding
 			36.0,	// ButtonHeight
-			4.6,	// ButtonRadius
+			4.6,	// ButtonCornerRadius
 			1.0,	// BorderInnerThickness
 
 			1.2,	// InnerShadowThickness
@@ -78,6 +81,11 @@ namespace s3d
 			3.2,	// CheckBoxBoxRadius
 			8.0,	// CheckBoxLabelPaddingRight
 			36.0,	// CheckBoxLabelHeight
+
+			13.0,	// TooltipFontSize
+			12.0,	// TooltipTextHorizontalPadding
+			4.0,	// TooltipTextVerticalPadding
+			4.6,	// TooltipCornerRadius
 		};
 
 		[[nodiscard]]

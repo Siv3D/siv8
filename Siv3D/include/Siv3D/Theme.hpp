@@ -82,6 +82,9 @@ namespace s3d
 			IndicatorColorDisabled,
 			IndicatorColorHover,
 			IndicatorColorPressed,
+
+			TooltipBackgroundColor,
+			TooltipTextColor,
 		};
 
 		enum class Constant
@@ -90,7 +93,7 @@ namespace s3d
 
 			ButtonTextHorizontalPadding,
 			ButtonHeight,
-			ButtonRadius,
+			ButtonCornerRadius,
 			BorderInnerThickness,
 
 			InnerShadowThickness,
@@ -101,6 +104,11 @@ namespace s3d
 			CheckBoxRadius,
 			CheckBoxLabelPaddingRight,
 			CheckBoxLabelHeight,
+
+			TooltipFontSize,
+			TooltipTextHorizontalPadding,
+			TooltipTextVerticalPadding,
+			TooltipCornerRadius,
 		};
 
 		[[nodiscard]]

@@ -91,7 +91,7 @@ namespace s3d
 
 		// ボタン描画
 		{
-			const RoundRect roundRect = rect.rounded(style[Theme::Constant::ButtonRadius]);
+			const RoundRect roundRect = rect.rounded(style[Theme::Constant::ButtonCornerRadius]);
 
 			// ボタン本体描画
 			{
