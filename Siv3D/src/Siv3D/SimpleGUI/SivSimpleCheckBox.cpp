@@ -118,8 +118,10 @@ namespace s3d
 		const double boxSize = style[Theme::Constant::CheckBoxSize];
 
 		// 背景描画
+		if (const ColorF backgroundColor = style.getBackgroundColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+			(0.0 < backgroundColor.a))
 		{
-			rect.draw(style.getBackgroundColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed));
+			rect.draw(backgroundColor);
 		}
 
 		// ボックス描画
