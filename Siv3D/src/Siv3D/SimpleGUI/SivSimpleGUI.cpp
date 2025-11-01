@@ -44,6 +44,11 @@ namespace s3d
 			return Button(text, pos, anchor, unspecified, true, theme);
 		}
 
+		bool Button(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const Theme theme)
+		{
+			return Button(text, pos, anchor, width, true, theme);
+		}
+
 		bool Button(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const bool enabled, const Theme theme)
 		{
 			SimpleButton button{ text, pos, anchor, width, enabled, theme };
@@ -71,6 +76,11 @@ namespace s3d
 		bool CheckBox(bool& checked, const StringView text, const Vec2& pos, const Anchor anchor, const Theme theme)
 		{
 			return CheckBox(checked, text, pos, anchor, unspecified, true, theme);
+		}
+
+		bool CheckBox(bool& checked, const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const Theme theme)
+		{
+			return CheckBox(checked, text, pos, anchor, width, true, theme);
 		}
 
 		bool CheckBox(bool& checked, const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const bool enabled, const Theme theme)

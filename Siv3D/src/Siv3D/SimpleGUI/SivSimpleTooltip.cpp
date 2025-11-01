@@ -46,6 +46,9 @@ namespace s3d
 	SimpleTooltip::SimpleTooltip(const StringView text, const Vec2& pos, const Anchor anchor, Theme theme)
 		: SimpleTooltip(text, pos, anchor, unspecified, true, theme) {}
 
+	SimpleTooltip::SimpleTooltip(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, Theme theme)
+		: SimpleTooltip(text, pos, anchor, width, true, theme) {}
+
 	SimpleTooltip::SimpleTooltip(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const bool enabled, const Theme theme)
 		: ISimpleGUIElement{ pos, anchor, enabled, theme }
 		, m_drawableTexts{ CreateDrawableTexts(text, SimpleGUI::GetFont()) }

@@ -40,6 +40,9 @@ namespace s3d
 	SimpleCheckBox::SimpleCheckBox(const bool checked, const StringView text, const Vec2& pos, const Anchor anchor, const Theme theme)
 		: SimpleCheckBox{ checked, text, pos, anchor, unspecified, true, theme } {}
 
+	SimpleCheckBox::SimpleCheckBox(const bool checked, const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const Theme theme)
+		: SimpleCheckBox{ checked, text, pos, anchor, width, true, theme } {}
+
 	SimpleCheckBox::SimpleCheckBox(const bool checked, const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const bool enabled, const Theme theme)
 		: ISimpleGUIElement{ pos, anchor, enabled, theme }
 		, m_drawableText{ SimpleGUI::GetFont()(text) }

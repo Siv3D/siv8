@@ -25,9 +25,6 @@ namespace s3d
 		[[nodiscard]]
 		SimpleTooltip(StringView text, const Vec2& pos, Theme theme = Theme::Light);
 
-		/// @brief 誤用防止用コンストラクタ（= delete）
-		SimpleTooltip(StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light) = delete;
-
 		[[nodiscard]]
 		SimpleTooltip(StringView text, const Vec2& pos, const Optional<double>& width, Theme theme = Theme::Light);
 
@@ -38,7 +35,13 @@ namespace s3d
 		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
 		[[nodiscard]]
-		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width = unspecified, bool enabled = true, Theme theme = Theme::Light);
+		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, bool enabled, Theme theme = Theme::Light);
+
+		/// @brief 誤用防止用コンストラクタ（= delete）
+		SimpleTooltip(StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light) = delete;
 
 		/// @brief 誤用防止用コンストラクタ（= delete）
 		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light) = delete;

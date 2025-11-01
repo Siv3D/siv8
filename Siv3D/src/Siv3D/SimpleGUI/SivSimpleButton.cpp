@@ -30,6 +30,9 @@ namespace s3d
 	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Anchor anchor, const Theme theme)
 		: SimpleButton{ text, pos, anchor, unspecified, true, theme } {}
 
+	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const Theme theme)
+		: SimpleButton{ text, pos, anchor, width, true, theme } {}
+
 	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const bool enabled, const Theme theme)
 		: ISimpleGUIElement{ pos, anchor, enabled, theme }
 		, m_drawableText{ SimpleGUI::GetFont()(text) }
