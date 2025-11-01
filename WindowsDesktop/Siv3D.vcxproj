@@ -100,6 +100,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectanglePack.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Shape2D.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SimpleGUI.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
@@ -517,6 +518,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleButton.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleCheckBox.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleDismissibleTooltip.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleProgressBar.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleProgressBar.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleTooltip.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Smooth.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SpecialFolder.hpp" />
@@ -1492,6 +1495,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ShaderGroup\SivShaderGroup.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Shape2D\Shape2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SimpleProgressBar.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleButton.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleCheckBox.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleDismissibleTooltip.cpp" />

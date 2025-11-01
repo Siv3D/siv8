@@ -12,6 +12,7 @@
 # include <Siv3D/SimpleGUI.hpp>
 # include <Siv3D/SimpleGUI/SimpleButton.hpp>
 # include <Siv3D/SimpleGUI/SimpleCheckBox.hpp>
+# include <Siv3D/SimpleGUI/SimpleProgressBar.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -19,10 +20,22 @@ namespace s3d
 {
 	namespace SimpleGUI
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetFont
+		//
+		////////////////////////////////////////////////////////////////
+
 		const Font& GetFont() noexcept
 		{
 			return SIV3D_ENGINE(GUI)->getDefaultFont();
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Button
+		//
+		////////////////////////////////////////////////////////////////
 
 		bool Button(const StringView text, const Vec2& pos, const Theme theme)
 		{
@@ -57,6 +70,11 @@ namespace s3d
 			return result;
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	CheckBox
+		//
+		////////////////////////////////////////////////////////////////
 
 		bool CheckBox(bool& checked, const StringView text, const Vec2& pos, const Theme theme)
 		{
@@ -90,6 +108,32 @@ namespace s3d
 			checked = checkBox.isChecked();
 			checkBox.draw();
 			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ProgressBar
+		//
+		////////////////////////////////////////////////////////////////
+
+		void ProgressBar(const double progress, const Vec2& pos, const Theme theme)
+		{
+			return ProgressBar(progress, pos, Anchor::TopLeft, SimpleProgressBar::DefaultWidth, theme);
+		}
+
+		void ProgressBar(const double progress, const Vec2& pos, const double width, const Theme theme)
+		{
+			return ProgressBar(progress, pos, Anchor::TopLeft, width, theme);
+		}
+
+		void ProgressBar(const double progress, const Vec2& pos, const Anchor anchor, const Theme theme)
+		{
+			return ProgressBar(progress, pos, anchor, SimpleProgressBar::DefaultWidth, theme);
+		}
+
+		void ProgressBar(const double progress, const Vec2& pos, const Anchor anchor, const double width, const Theme theme)
+		{
+			SimpleProgressBar{ progress, pos, anchor, width, theme }.draw();
 		}
 	}
 }

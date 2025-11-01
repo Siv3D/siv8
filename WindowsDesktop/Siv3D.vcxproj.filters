@@ -4665,6 +4665,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleTooltip.hpp">
       <Filter>include\Siv3D\SimpleGUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleProgressBar.hpp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleProgressBar.ipp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SimpleGUI.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7357,6 +7366,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Misc.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SimpleProgressBar.cpp">
+      <Filter>src\Siv3D\SimpleGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

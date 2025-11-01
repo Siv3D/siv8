@@ -27,13 +27,14 @@ namespace s3d
 
 		static constexpr Predefined Light{ 0 };
 		static constexpr Predefined Dark{ 1 };
-		static constexpr Predefined Warm{ 2 };
-		static constexpr Predefined Ocean{ 3 };
-		static constexpr Predefined Forest{ 4 };
-		static constexpr Predefined Sunset{ 5 };
-		static constexpr Predefined Lavender{ 6 };
-		static constexpr Predefined LightCompact{ 7 };
-		static constexpr Predefined LightLarge{ 8 };
+		static constexpr Predefined Transparent{ 2 };
+		static constexpr Predefined Warm{ 3 };
+		static constexpr Predefined Ocean{ 4 };
+		static constexpr Predefined Forest{ 5 };
+		static constexpr Predefined Sunset{ 6 };
+		static constexpr Predefined Lavender{ 7 };
+		static constexpr Predefined LightCompact{ 8 };
+		static constexpr Predefined LightLarge{ 9 };
 
 		[[nodiscard]]
 		Theme() = default;

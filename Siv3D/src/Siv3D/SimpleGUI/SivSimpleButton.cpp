@@ -11,7 +11,6 @@
 
 # include <Siv3D/SimpleGUI.hpp>
 # include <Siv3D/GUIStyle.hpp>
-# include <Siv3D/Cursor.hpp>
 # include <Siv3D/CursorStyle.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/SimpleGUI/SimpleButton.hpp>
