@@ -1640,6 +1640,8 @@
 # include <Siv3D/SimpleGUI.hpp>
 # include <Siv3D/SimpleGUI/SimpleButton.hpp>
 # include <Siv3D/SimpleGUI/SimpleCheckBox.hpp>
+# include <Siv3D/SimpleGUI/SimpleTooltip.hpp>
+# include <Siv3D/SimpleGUI/SimpleDismissibleTooltip.hpp>
 
 # include <Siv3D/Print.hpp>
 # include <Siv3D/PrintBuffer.hpp>
