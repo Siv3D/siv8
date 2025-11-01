@@ -56,15 +56,25 @@ namespace s3d
 
 	SimpleTooltip& SimpleTooltip::setText(const StringView text)
 	{
+		if (m_text == text)
+		{
+			return *this;
+		}
+
 		m_drawableTexts = CreateDrawableTexts(text, SimpleGUI::GetFont());
+		m_text = text;
 		setDirty();
 		return *this;
 	}
 
 	SimpleTooltip& SimpleTooltip::setWidth(const Optional<double>& width)
 	{
-		m_width = width;
-		setDirty();
+		if (const auto oldWidth = std::exchange(m_width, width);
+			oldWidth != m_width)
+		{
+			setDirty();
+		}
+
 		return *this;
 	}
 

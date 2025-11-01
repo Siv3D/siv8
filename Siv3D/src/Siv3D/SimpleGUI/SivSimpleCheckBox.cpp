@@ -51,12 +51,22 @@ namespace s3d
 
 	SimpleCheckBox& SimpleCheckBox::setChecked(const bool checked)
 	{
-		m_state.checked = checked;
+		if (const auto oldChecked = std::exchange(m_state.checked, checked);
+			oldChecked != checked)
+		{
+			setDirty();
+		}
+
 		return *this;
 	}
 
 	SimpleCheckBox& SimpleCheckBox::setText(const StringView text)
 	{
+		if (text == m_drawableText.text)
+		{
+			return *this;
+		}
+
 		m_drawableText = SimpleGUI::GetFont()(text);
 		setDirty();
 		return *this;
@@ -64,8 +74,12 @@ namespace s3d
 
 	SimpleCheckBox& SimpleCheckBox::setWidth(const Optional<double>& width)
 	{
-		m_width = width;
-		setDirty();
+		if (const auto oldWidth = std::exchange(m_width, width);
+			oldWidth != width)
+		{
+			setDirty();
+		}
+
 		return *this;
 	}
 

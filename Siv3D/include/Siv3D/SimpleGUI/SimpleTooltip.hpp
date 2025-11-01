@@ -68,6 +68,8 @@ namespace s3d
 
 		Array<DrawableText> m_drawableTexts;
 
+		String m_text;
+
 		Optional<double> m_width;
 
 		mutable struct Cache

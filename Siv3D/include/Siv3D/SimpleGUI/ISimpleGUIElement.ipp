@@ -112,8 +112,12 @@ namespace s3d
 	template <class Self>
 	constexpr Self& ISimpleGUIElement::setTheme(this Self& self, const Theme theme) noexcept
 	{
-		self.m_theme = theme;
-		self.m_isDirty = true;
+		if (const auto oldTheme = std::exchange(self.m_theme, theme);
+			oldTheme != theme)
+		{
+			self.m_isDirty = true;
+		}
+
 		return self;
 	}
 

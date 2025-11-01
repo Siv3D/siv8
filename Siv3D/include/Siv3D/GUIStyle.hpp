@@ -71,7 +71,7 @@ namespace s3d
 			Color{ 255 },			// TooltipTextColorPressed
 		};
 
-		std::array<double, 18> constants
+		std::array<double, 23> constants
 		{
 			20.0,	// FontSize
 
@@ -95,6 +95,12 @@ namespace s3d
 			5.6,	// TooltipCornerRadius
 			10.0,	// TooltipArrowHeight
 			24.0,	// TooltipArrowOffset
+
+			10.0,	// ProgressBarHeight
+			5.0,	// ProgressBarCornerRadius
+			8.0,	// ProgressBarPaddingLeft
+			8.0,	// ProgressBarPaddingRight
+			13.0,	// ProgressBarVerticalPadding
 		};
 
 		[[nodiscard]]

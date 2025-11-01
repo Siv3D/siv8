@@ -40,6 +40,11 @@ namespace s3d
 
 	SimpleButton& SimpleButton::setText(const StringView text)
 	{
+		if (text == m_drawableText.text)
+		{
+			return *this;
+		}
+
 		m_drawableText = SimpleGUI::GetFont()(text);
 		setDirty();
 		return *this;
@@ -47,8 +52,12 @@ namespace s3d
 
 	SimpleButton& SimpleButton::setWidth(const Optional<double>& width)
 	{
-		m_width = width;
-		setDirty();
+		if (const auto oldWidth = std::exchange(m_width, width);
+			oldWidth != width)
+		{
+			setDirty();
+		}
+
 		return *this;
 	}
 

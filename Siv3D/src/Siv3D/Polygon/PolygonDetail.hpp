@@ -15,6 +15,11 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		Polygon ToPolygon(const CwOpenPolygon& polygon);
+	}
+
 	class Polygon::PolygonDetail
 	{
 	public:
@@ -98,6 +103,13 @@ namespace s3d
 		const RectF& boundingRect() const noexcept;
 
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	getBoostPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		const CwOpenPolygon& getBoostPolygon() const noexcept;
 
 
 

@@ -118,6 +118,12 @@ namespace s3d
 			TooltipCornerRadius,
 			TooltipArrowHeight,
 			TooltipArrowOffset,
+
+			ProgressBarHeight,
+			ProgressBarCornerRadius,
+			ProgressBarPaddingLeft,
+			ProgressBarPaddingRight,
+			ProgressBarVerticalPadding,
 		};
 
 		[[nodiscard]]

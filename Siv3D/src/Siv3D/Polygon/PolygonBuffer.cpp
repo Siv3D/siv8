@@ -10,42 +10,11 @@
 //-----------------------------------------------
 
 # include "PolygonBuffer.hpp"
+# include "PolygonDetail.hpp"
 # include "GeometryCommon.hpp"
 
 namespace s3d
 {
-	namespace
-	{
-		[[nodiscard]]
-		static Polygon ToPolygon(const CwOpenPolygon& polygon)
-		{
-			std::span<const Vec2> outer = polygon.outer();
-
-			if ((2 < outer.size()) && (outer.front() == outer.back()))
-			{
-				outer = outer.subspan(0, (outer.size() - 1));
-			}
-
-			const auto& inners = polygon.inners();
-
-			Array<Array<Vec2>> holes(inners.size());
-
-			for (size_t i = 0; i < holes.size(); ++i)
-			{
-				std::span<const Vec2> inner = inners[i];
-
-				if ((2 < inner.size()) && (inner.front() == inner.back()))
-				{
-					inner = inner.subspan(0, (inner.size() - 1));
-				}
-
-				holes[i].assign(inner.rbegin(), inner.rend());
-			}
-
-			return Polygon{ outer, std::move(holes), SkipValidation::Yes };
-		}
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	CalculateLineRoundBuffer
@@ -75,7 +44,7 @@ namespace s3d
 			return{};
 		}
 
-		return ToPolygon(multiPolygon.front());
+		return detail::ToPolygon(multiPolygon.front());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -122,7 +91,7 @@ namespace s3d
 			return{};
 		}
 
-		return ToPolygon(multiPolygon.front());
+		return detail::ToPolygon(multiPolygon.front());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -149,7 +118,7 @@ namespace s3d
 			return{};
 		}
 
-		return ToPolygon(multiPolygon.front());
+		return detail::ToPolygon(multiPolygon.front());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -176,7 +145,7 @@ namespace s3d
 			return{};
 		}
 
-		return ToPolygon(multiPolygon.front());
+		return detail::ToPolygon(multiPolygon.front());
 	}
 
 	////////////////////////////////////////////////////////////////
