@@ -43,27 +43,23 @@ namespace s3d
 		/// @brief 誤用防止用コンストラクタ（= delete）
 		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light) = delete;
 
-		SimpleCheckBox& setChecked(bool checked);
+		virtual ~SimpleCheckBox() override = default;
 
-		SimpleCheckBox& setText(StringView text);
+		virtual SimpleCheckBox& setChecked(bool checked);
 
-		SimpleCheckBox& setWidth(const Optional<double>& width);
+		virtual SimpleCheckBox& setText(StringView text);
 
-		[[nodiscard]]
-		RectF region() const override;
-
-		bool update() override;
-
-		void draw() const override;
+		virtual SimpleCheckBox& setWidth(const Optional<double>& width);
 
 		[[nodiscard]]
-		bool isHovered() const noexcept;
+		virtual RectF region() const override;
+
+		virtual bool update() override;
+
+		virtual void draw() const override;
 
 		[[nodiscard]]
-		bool isPressed() const noexcept;
-
-		[[nodiscard]]
-		bool isChecked() const noexcept;
+		virtual bool isChecked() const noexcept;
 
 	private:
 
@@ -73,8 +69,6 @@ namespace s3d
 
 		struct State
 		{
-			bool hovered = false;
-			bool pressed = false;
 			bool checked = false;
 		} m_state;
 

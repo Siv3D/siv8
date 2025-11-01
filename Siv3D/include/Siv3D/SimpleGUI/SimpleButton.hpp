@@ -43,36 +43,26 @@ namespace s3d
 		/// @brief 誤用防止用コンストラクタ（= delete）
 		SimpleButton(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light) = delete;
 
-		SimpleButton& setText(StringView text);
+		virtual ~SimpleButton() override = default;
 
-		SimpleButton& setWidth(const Optional<double>& width);
+		virtual SimpleButton& setText(StringView text);
+
+		virtual SimpleButton& setWidth(const Optional<double>& width);
 
 		[[nodiscard]]
-		RectF region() const override;
+		virtual RectF region() const override;
 
 		/// @brief 状態を更新します。
 		/// @return このフレームでボタンが押下された場合 true, それ以外は false
-		bool update() override;
+		virtual bool update() override;
 
-		void draw() const override;
-
-		[[nodiscard]]
-		bool isHovered() const noexcept;
-
-		[[nodiscard]]
-		bool isPressed() const noexcept;
+		virtual void draw() const override;
 
 	private:
 
 		DrawableText m_drawableText;
 
 		Optional<double> m_width;
-
-		struct State
-		{
-			bool hovered = false;
-			bool pressed = false;
-		} m_state;
 
 		mutable struct Cache
 		{

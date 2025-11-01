@@ -54,7 +54,7 @@ namespace s3d
 		constexpr bool isTop() const noexcept;
 
 		[[nodiscard]]
-		constexpr bool isMiddle() const noexcept;
+		constexpr bool isVMiddle() const noexcept;
 
 		[[nodiscard]]
 		constexpr bool isBottom() const noexcept;
@@ -63,7 +63,7 @@ namespace s3d
 		constexpr bool isLeft() const noexcept;
 
 		[[nodiscard]]
-		constexpr bool isCenter() const noexcept;
+		constexpr bool isHCenter() const noexcept;
 
 		[[nodiscard]]
 		constexpr bool isRight() const noexcept;

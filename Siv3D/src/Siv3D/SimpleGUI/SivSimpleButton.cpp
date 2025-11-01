@@ -67,16 +67,14 @@ namespace s3d
 	bool SimpleButton::update()
 	{
 		const RectF rect = region();
+		const MouseState oldMouseState = m_mouseState;
 
-		m_state.hovered = ((not Cursor::IsCaptured()) && isVisible() && isEnabled() && rect.mouseOver());
-		m_state.pressed = (m_state.hovered && Cursor::OnClientRect() && MouseL.pressed());
+		m_mouseState.hovered = ((not Cursor::IsCaptured()) && isVisible() && isEnabled() && rect.mouseOver());
+		m_mouseState.pressed = (m_mouseState.hovered && Cursor::OnClientRect() && MouseL.pressed());
 
-		if (m_state.hovered)
-		{
-			Cursor::SetCapture(true);
-		}
+		updateMouseEvent(oldMouseState, m_mouseState);
 
-		return (m_state.pressed && MouseL.down());
+		return (m_mouseState.pressed && MouseL.down());
 	}
 
 	void SimpleButton::draw() const
@@ -95,13 +93,13 @@ namespace s3d
 
 			// ボタン本体描画
 			{
-				const ColorF buttonColor = style.getButtonColor(isEnabled(), m_state.hovered, m_state.pressed);
+				const ColorF buttonColor = style.getButtonColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 				roundRect.draw(buttonColor);
 			}
 
 			// ボタン枠線描画
 			{
-				const ColorF borderColor = style.getBorderColor(isEnabled(), m_state.hovered, m_state.pressed);
+				const ColorF borderColor = style.getBorderColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 				roundRect.drawFrame(style[Theme::Constant::BorderInnerThickness], 0, borderColor);
 			}
 		}
@@ -114,25 +112,15 @@ namespace s3d
 			const double fontYOffset = scale;
 			const Vec2 textPos{ (rect.x + (rect.w - m_cache.textWidth) / 2.0), (rect.centerY() - font.height() * scale / 2.0 - fontYOffset) };
 			{
-				const ColorF textColor = style.getTextColor(isEnabled(), m_state.hovered, m_state.pressed);
+				const ColorF textColor = style.getTextColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 				m_drawableText.draw(fontSize, textPos, textColor);
 			}
 		}
 
 		// カーソル変更
-		if (m_state.hovered)
+		if (m_mouseState.hovered)
 		{
 			Cursor::RequestStyle(CursorStyle::Hand);
 		}
-	}
-
-	bool SimpleButton::isHovered() const noexcept
-	{
-		return m_state.hovered;
-	}
-
-	bool SimpleButton::isPressed() const noexcept
-	{
-		return m_state.pressed;
 	}
 }

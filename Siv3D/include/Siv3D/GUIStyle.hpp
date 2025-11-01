@@ -18,7 +18,7 @@ namespace s3d
 {
 	struct GUIStyle
 	{
-		std::array<Color, 34> colors
+		std::array<Color, 40> colors
 		{
 			Color{ 255 },			// ButtonColor
 			Color{ 235 },			// ButtonColorDisabled
@@ -60,11 +60,18 @@ namespace s3d
 			Color{ 255 },			// IndicatorColorHover
 			Color{ 255 },			// IndicatorColorPressed
 
-			Color{ 15 },			// TooltipBackgroundColor
+			Color{ 15 },			// TooltipColor
+			Color{ 80 },			// TooltipColorDisabled
+			Color{ 32 },			// TooltipColorHover
+			Color{ 40 },			// TooltipColorPressed
+
 			Color{ 255 },			// TooltipTextColor
+			Color{ 171 },			// TooltipTextColorDisabled
+			Color{ 255 },			// TooltipTextColorHover
+			Color{ 255 },			// TooltipTextColorPressed
 		};
 
-		std::array<double, 16> constants
+		std::array<double, 18> constants
 		{
 			20.0,	// FontSize
 
@@ -84,8 +91,10 @@ namespace s3d
 
 			13.0,	// TooltipFontSize
 			12.0,	// TooltipTextHorizontalPadding
-			4.0,	// TooltipTextVerticalPadding
-			4.6,	// TooltipCornerRadius
+			6.0,	// TooltipTextVerticalPadding
+			5.6,	// TooltipCornerRadius
+			10.0,	// TooltipArrowHeight
+			24.0,	// TooltipArrowOffset
 		};
 
 		[[nodiscard]]
@@ -117,6 +126,12 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr ColorF getIndicatorColor(bool enabled, bool hovered, bool pressed) const noexcept;
+
+		[[nodiscard]] 
+		constexpr ColorF getTooltipColor(bool enabled, bool hovered, bool pressed) const noexcept; 
+
+		[[nodiscard]] 
+		constexpr ColorF getTooltipTextColor(bool enabled, bool hovered, bool pressed) const noexcept;
 	};
 }
 

@@ -616,50 +616,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	split_at
+	//	splitAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::pair<StringView, StringView> StringView::split_at(const size_type pos) const
+	std::pair<StringView, StringView> StringView::splitAt(const size_type pos) const SIV3D_LIFETIMEBOUND
 	{
 		return{ substr(0, pos), substr(pos) };
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	split_lines
+	//	splitLines
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<String, std::allocator<String>> StringView::split_lines() const
+	Array<StringView> StringView::splitLines() const SIV3D_LIFETIMEBOUND
 	{
-		if (m_view.empty())
-		{
-			return{};
-		}
-
-		Array<String> result(1);
-
-		const value_type* pSrc = m_view.data();
-		const value_type* const pSrcEnd = (pSrc + m_view.size());
-		String* currentLine = &result.back();
-
-		while (pSrc != pSrcEnd)
-		{
-			if (*pSrc == U'\n')
-			{
-				result.emplace_back();
-				currentLine = &result.back();
-			}
-			else if (*pSrc != U'\r')
-			{
-				currentLine->push_back(*pSrc);
-			}
-
-			++pSrc;
-		}
-
-		return result;
+		return splitView(U'\n');
 	}
 
 	////////////////////////////////////////////////////////////////

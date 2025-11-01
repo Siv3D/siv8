@@ -87,14 +87,15 @@ namespace s3d
 
 	bool SimpleCheckBox::update()
 	{
-		const bool previousChecked = m_state.checked;
 		const RectF rect = region();
+		const MouseState oldMouseState = m_mouseState;
+		const bool previousChecked = m_state.checked;
 
-		m_state.hovered = ((not Cursor::IsCaptured()) && isVisible() && isEnabled() && rect.mouseOver());
-		m_state.pressed = (m_state.hovered && Cursor::OnClientRect() && MouseL.pressed());
-		m_state.checked ^= (m_state.pressed && MouseL.down());
+		m_mouseState.hovered = ((not Cursor::IsCaptured()) && isVisible() && isEnabled() && rect.mouseOver());
+		m_mouseState.pressed = (m_mouseState.hovered && Cursor::OnClientRect() && MouseL.pressed());
+		m_state.checked ^= (m_mouseState.pressed && MouseL.down());
 
-		if (m_state.hovered)
+		if (m_mouseState.hovered)
 		{
 			Cursor::SetCapture(true);
 		}
@@ -115,7 +116,7 @@ namespace s3d
 
 		// 背景描画
 		{
-			rect.draw(style.getBackgroundColor(isEnabled(), m_state.hovered, m_state.pressed));
+			rect.draw(style.getBackgroundColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed));
 		}
 
 		// ボックス描画
@@ -129,18 +130,18 @@ namespace s3d
 
 				if (m_state.checked)
 				{
-					const ColorF fillColor = style.getFillColor(isEnabled(), m_state.hovered, m_state.pressed);
+					const ColorF fillColor = style.getFillColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 					box.draw(fillColor);
 				}
 				else
 				{
-					const ColorF innerShadowColor = style.getInnerShadowColor(isEnabled(), m_state.hovered, m_state.pressed);
+					const ColorF innerShadowColor = style.getInnerShadowColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 					box.draw(innerShadowColor);
 
 					const double innerShadowThickness = style[Theme::Constant::InnerShadowThickness];
 					const double innerRadius = (((box.w - innerShadowThickness) / box.w) * box.r);
 					const RoundRect innerRect = box.stretched(-innerShadowThickness).withR(innerRadius);
-					const ColorF containerColor = style.getContainerColor(isEnabled(), m_state.hovered, m_state.pressed);
+					const ColorF containerColor = style.getContainerColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 					innerRect.draw(containerColor);
 				}
 			}
@@ -148,7 +149,7 @@ namespace s3d
 			// チェックマーク描画
 			if (m_state.checked)
 			{
-				const ColorF indicatorColor = style.getIndicatorColor(isEnabled(), m_state.hovered, m_state.pressed);
+				const ColorF indicatorColor = style.getIndicatorColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 				DrawCheck(boxSize, boxRect.center(), indicatorColor);
 			}
 		}
@@ -163,26 +164,16 @@ namespace s3d
 					+ boxSize + style[Theme::Constant::CheckBoxPaddingRight]),
 				(rect.centerY() - font.height() * scale / 2.0 - fontYOffset) };
 			{
-				const ColorF textColor = style.getTextColor(isEnabled(), m_state.hovered, m_state.pressed);
+				const ColorF textColor = style.getTextColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 				m_drawableText.draw(fontSize, textPos, textColor);
 			}
 		}
 
 		// カーソル変更
-		if (m_state.hovered)
+		if (m_mouseState.hovered)
 		{
 			Cursor::RequestStyle(CursorStyle::Hand);
 		}
-	}
-
-	bool SimpleCheckBox::isHovered() const noexcept
-	{
-		return m_state.hovered;
-	}
-
-	bool SimpleCheckBox::isPressed() const noexcept
-	{
-		return m_state.pressed;
 	}
 
 	bool SimpleCheckBox::isChecked() const noexcept

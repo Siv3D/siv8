@@ -14,6 +14,7 @@
 # include "../PointVector.hpp"
 # include "../Anchor.hpp"
 # include "../Theme.hpp"
+# include "../Cursor.hpp"
 # include "../2DShapes.hpp"
 
 namespace s3d
@@ -28,7 +29,6 @@ namespace s3d
 
 		virtual ~ISimpleGUIElement() = default;
 
-		[[nodiscard]]
 		virtual RectF region() const = 0;
 
 		virtual bool update() = 0;
@@ -36,6 +36,22 @@ namespace s3d
 		virtual void draw() const = 0;
 
 		virtual void drawOverlay() const;
+
+		virtual void show();
+
+		virtual void hide();
+
+		virtual bool isHovered() const noexcept;
+
+		virtual bool isPressed() const noexcept;
+
+		virtual void onMouseEnter();
+
+		virtual void onMouseLeave();
+
+		virtual void onMouseDown();
+
+		virtual void onMouseUp();
 
 		template <class Self>
 		constexpr Self& setPos(this Self& self, const Vec2& pos) noexcept;
@@ -91,6 +107,16 @@ namespace s3d
 		mutable bool m_isDirty = true;
 
 		Theme m_theme = Theme::Light;
+
+	protected:
+
+		struct MouseState
+		{
+			bool hovered = false;
+			bool pressed = false;
+		} m_mouseState;
+
+		void updateMouseEvent(const MouseState& oldState, const MouseState& newState);
 	};
 }
 

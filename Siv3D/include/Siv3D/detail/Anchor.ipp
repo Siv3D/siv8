@@ -65,7 +65,7 @@ namespace s3d
 		return ((m_value & VTop) != 0);
 	}
 
-	constexpr bool Anchor::isMiddle() const noexcept
+	constexpr bool Anchor::isVMiddle() const noexcept
 	{
 		return ((m_value & VMiddle) != 0);
 	}
@@ -80,7 +80,7 @@ namespace s3d
 		return ((m_value & HLeft) != 0);
 	}
 
-	constexpr bool Anchor::isCenter() const noexcept
+	constexpr bool Anchor::isHCenter() const noexcept
 	{
 		return ((m_value & HCenter) != 0);
 	}

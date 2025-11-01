@@ -47,7 +47,7 @@ namespace s3d
 			ButtonColorDisabled,
 			ButtonColorHover,
 			ButtonColorPressed,
-			
+
 			BorderColor,
 			BorderColorDisabled,
 			BorderColorHover,
@@ -83,8 +83,15 @@ namespace s3d
 			IndicatorColorHover,
 			IndicatorColorPressed,
 
-			TooltipBackgroundColor,
+			TooltipColor,
+			TooltipColorDisabled,
+			TooltipColorHover,
+			TooltipColorPressed,
+
 			TooltipTextColor,
+			TooltipTextColorDisabled,
+			TooltipTextColorHover,
+			TooltipTextColorPressed,
 		};
 
 		enum class Constant
@@ -109,6 +116,8 @@ namespace s3d
 			TooltipTextHorizontalPadding,
 			TooltipTextVerticalPadding,
 			TooltipCornerRadius,
+			TooltipArrowHeight,
+			TooltipArrowOffset,
 		};
 
 		[[nodiscard]]

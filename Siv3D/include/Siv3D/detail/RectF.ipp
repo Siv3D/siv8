@@ -21,7 +21,7 @@ namespace s3d
 			RectF::value_type posX = x;
 			RectF::value_type posY = y;
 
-			if (anchor.isCenter())
+			if (anchor.isHCenter())
 			{
 				posX -= (w / 2);
 			}
@@ -30,7 +30,7 @@ namespace s3d
 				posX -= w;
 			}
 
-			if (anchor.isMiddle())
+			if (anchor.isVMiddle())
 			{
 				posY -= (h / 2);
 			}

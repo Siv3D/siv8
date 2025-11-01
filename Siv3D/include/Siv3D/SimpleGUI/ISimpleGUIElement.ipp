@@ -21,6 +21,46 @@ namespace s3d
 
 	inline void ISimpleGUIElement::drawOverlay() const {}
 
+	inline void ISimpleGUIElement::show()
+	{
+		setVisible(true);
+	}
+
+	inline void ISimpleGUIElement::hide()
+	{
+		setVisible(false);
+	}
+
+	inline bool ISimpleGUIElement::isHovered() const noexcept
+	{
+		return m_mouseState.hovered;
+	}
+
+	inline bool ISimpleGUIElement::isPressed() const noexcept
+	{
+		return m_mouseState.pressed;
+	}
+
+	inline void ISimpleGUIElement::onMouseEnter()
+	{
+
+	}
+
+	inline void ISimpleGUIElement::onMouseLeave()
+	{
+
+	}
+
+	inline void ISimpleGUIElement::onMouseDown()
+	{
+
+	}
+
+	inline void ISimpleGUIElement::onMouseUp()
+	{
+
+	}
+
 	template <class Self>
 	constexpr Self& ISimpleGUIElement::setPos(this Self& self, const Vec2& pos) noexcept
 	{
@@ -99,5 +139,37 @@ namespace s3d
 	constexpr bool ISimpleGUIElement::isDirty() const noexcept
 	{
 		return m_isDirty;
+	}
+
+	inline void ISimpleGUIElement::updateMouseEvent(const MouseState& oldState, const MouseState& newState)
+	{
+		if (m_mouseState.hovered)
+		{
+			Cursor::SetCapture(true);
+		}
+
+		if (oldState.hovered != newState.hovered)
+		{
+			if (newState.hovered)
+			{
+				onMouseEnter();
+			}
+			else
+			{
+				onMouseLeave();
+			}
+		}
+
+		if (oldState.pressed != newState.pressed)
+		{
+			if (newState.pressed)
+			{
+				onMouseDown();
+			}
+			else
+			{
+				onMouseUp();
+			}
+		}
 	}
 }

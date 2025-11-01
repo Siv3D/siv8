@@ -701,24 +701,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	split_at
+	//	splitAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::pair<String, String> String::split_at(const size_type pos) const
+	std::pair<String, String> String::splitAt(const size_type pos) const
 	{
 		return{ substr(0, pos), substr(pos) };
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	split_lines
+	//	splitLines
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<String, std::allocator<String>> String::split_lines() const
+	Array<StringView, std::allocator<StringView>> String::splitLines() const SIV3D_LIFETIMEBOUND
 	{
-		return StringView{ m_string }.split_lines();
+		return StringView{ m_string }.splitLines();
 	}
 
 	////////////////////////////////////////////////////////////////

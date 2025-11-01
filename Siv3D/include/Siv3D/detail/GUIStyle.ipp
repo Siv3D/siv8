@@ -192,4 +192,46 @@ namespace s3d
 			return colors[FromEnum(Theme::Color::IndicatorColor)];
 		}
 	}
+
+	[[nodiscard]]
+	constexpr ColorF GUIStyle::getTooltipColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	{
+		if (not enabled)
+		{
+			return colors[FromEnum(Theme::Color::TooltipColorDisabled)];
+		}
+		else if (pressed)
+		{
+			return colors[FromEnum(Theme::Color::TooltipColorPressed)];
+		}
+		else if (hovered)
+		{
+			return colors[FromEnum(Theme::Color::TooltipColorHover)];
+		}
+		else
+		{
+			return colors[FromEnum(Theme::Color::TooltipColor)];
+		}
+	}
+
+	[[nodiscard]]
+	constexpr ColorF GUIStyle::getTooltipTextColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	{
+		if (not enabled)
+		{
+			return colors[FromEnum(Theme::Color::TooltipTextColorDisabled)];
+		}
+		else if (pressed)
+		{
+			return colors[FromEnum(Theme::Color::TooltipTextColorPressed)];
+		}
+		else if (hovered)
+		{
+			return colors[FromEnum(Theme::Color::TooltipTextColorHover)];
+		}
+		else
+		{
+			return colors[FromEnum(Theme::Color::TooltipTextColor)];
+		}
+	}
 }
