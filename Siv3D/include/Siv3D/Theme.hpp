@@ -10,11 +10,13 @@
 //-----------------------------------------------
 
 # pragma once
+# include <bit>
 # include "Common.hpp"
 
 namespace s3d
 {
-	struct GUIStyle;
+	struct GUIColorStyle;
+	struct GUIShapeStyle;
 
 	class Theme
 	{
@@ -22,19 +24,20 @@ namespace s3d
 
 		struct Predefined
 		{
-			uint8 themeID = 0;
+			uint8 colorID : 5 = 0;
+			uint8 shapeID : 3 = 0;
 		};
 
-		static constexpr Predefined Light{ 0 };
-		static constexpr Predefined Dark{ 1 };
-		static constexpr Predefined Transparent{ 2 };
-		static constexpr Predefined Warm{ 3 };
-		static constexpr Predefined Ocean{ 4 };
-		static constexpr Predefined Forest{ 5 };
-		static constexpr Predefined Sunset{ 6 };
-		static constexpr Predefined Lavender{ 7 };
-		static constexpr Predefined LightCompact{ 8 };
-		static constexpr Predefined LightLarge{ 9 };
+		static constexpr Predefined Light{ 0, 0 };
+		static constexpr Predefined Dark{ 1, 0 };
+		static constexpr Predefined Transparent{ 2, 0 };
+		static constexpr Predefined Warm{ 3, 0 };
+		static constexpr Predefined Ocean{ 4, 0 };
+		static constexpr Predefined Forest{ 5, 0 };
+		static constexpr Predefined Sunset{ 6, 0 };
+		static constexpr Predefined Lavender{ 7, 0 };
+		static constexpr Predefined LightCompact{ 0, 1 };
+		static constexpr Predefined LightLarge{ 0, 2 };
 
 		[[nodiscard]]
 		Theme() = default;
@@ -128,14 +131,22 @@ namespace s3d
 		};
 
 		[[nodiscard]]
-		constexpr uint8 getID() const noexcept;
+		constexpr uint8 getColorID() const noexcept;
 
 		[[nodiscard]]
-		const GUIStyle& getStyle() const noexcept;
+		constexpr uint8 getShapeID() const noexcept;
+
+		[[nodiscard]]
+		const GUIColorStyle& getColorStyle() const noexcept;
+
+		[[nodiscard]]
+		const GUIShapeStyle& getShapeStyle() const noexcept;
 
 	private:
 
-		uint8 m_themeID = 0;
+		uint8 m_colorID : 5 = 0;
+
+		uint8 m_shapeID : 3 = 0;
 	};
 }
 

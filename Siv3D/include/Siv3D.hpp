@@ -1636,7 +1636,8 @@
 # include <Siv3D/TextEffect/Reflection.hpp>
 
 # include <Siv3D/Theme.hpp>
-# include <Siv3D/GUIStyle.hpp>
+# include <Siv3D/GUIColorStyle.hpp>
+# include <Siv3D/GUIShapeStyle.hpp>
 # include <Siv3D/SimpleGUI.hpp>
 # include <Siv3D/SimpleGUI/SimpleButton.hpp>
 # include <Siv3D/SimpleGUI/SimpleCheckBox.hpp>

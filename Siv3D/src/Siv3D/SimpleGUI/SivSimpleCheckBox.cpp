@@ -10,7 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/SimpleGUI.hpp>
-# include <Siv3D/GUIStyle.hpp>
+# include <Siv3D/GUIColorStyle.hpp>
+# include <Siv3D/GUIShapeStyle.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/CursorStyle.hpp>
 # include <Siv3D/Mouse.hpp>
@@ -85,21 +86,21 @@ namespace s3d
 
 	RectF SimpleCheckBox::region() const
 	{
-		const GUIStyle& style = getTheme().getStyle();
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
 
 		if (isDirty())
 		{
-			const double fontSize = style[Theme::Constant::FontSize];
+			const double fontSize = shapeStyle[Theme::Constant::FontSize];
 			m_cache.textWidth = m_drawableText.region(fontSize).w;
 			clearDirty();
 		}
 
-		const double boxWidth = (style[Theme::Constant::CheckBoxPaddingLeft]
-			+ style[Theme::Constant::CheckBoxSize] + style[Theme::Constant::CheckBoxPaddingRight]);
-		const double textWidth = (m_cache.textWidth + style[Theme::Constant::CheckBoxLabelPaddingRight]);
+		const double boxWidth = (shapeStyle[Theme::Constant::CheckBoxPaddingLeft]
+			+ shapeStyle[Theme::Constant::CheckBoxSize] + shapeStyle[Theme::Constant::CheckBoxPaddingRight]);
+		const double textWidth = (m_cache.textWidth + shapeStyle[Theme::Constant::CheckBoxLabelPaddingRight]);
 		const double width = m_width.value_or(boxWidth + textWidth);
 
-		return{ getAnchor(), getPos(), width, style[Theme::Constant::CheckBoxLabelHeight] };
+		return{ getAnchor(), getPos(), width, shapeStyle[Theme::Constant::CheckBoxLabelHeight] };
 	}
 
 	bool SimpleCheckBox::update()
@@ -127,12 +128,13 @@ namespace s3d
 			return;
 		}
 
-		const GUIStyle& style = getTheme().getStyle();
+		const GUIColorStyle& colorStyle = getTheme().getColorStyle();
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
 		const RectF rect = region();
-		const double boxSize = style[Theme::Constant::CheckBoxSize];
+		const double boxSize = shapeStyle[Theme::Constant::CheckBoxSize];
 
 		// 背景描画
-		if (const ColorF backgroundColor = style.getBackgroundColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+		if (const ColorF backgroundColor = colorStyle.getBackgroundColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 			(0.0 < backgroundColor.a))
 		{
 			rect.draw(backgroundColor);
@@ -140,27 +142,27 @@ namespace s3d
 
 		// ボックス描画
 		{
-			const Vec2 boxPos{ rect.x + style[Theme::Constant::CheckBoxPaddingLeft], (rect.y + (rect.h - boxSize) / 2.0) };
+			const Vec2 boxPos{ rect.x + shapeStyle[Theme::Constant::CheckBoxPaddingLeft], (rect.y + (rect.h - boxSize) / 2.0) };
 			const RectF boxRect{ boxPos, boxSize };
 
 			// ボックス描画
 			{
-				const RoundRect box = boxRect.rounded(style[Theme::Constant::CheckBoxRadius]);
+				const RoundRect box = boxRect.rounded(shapeStyle[Theme::Constant::CheckBoxRadius]);
 
 				if (m_state.checked)
 				{
-					const ColorF fillColor = style.getFillColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+					const ColorF fillColor = colorStyle.getFillColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 					box.draw(fillColor);
 				}
 				else
 				{
-					const ColorF innerShadowColor = style.getInnerShadowColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+					const ColorF innerShadowColor = colorStyle.getInnerShadowColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 					box.draw(innerShadowColor);
 
-					const double innerShadowThickness = style[Theme::Constant::InnerShadowThickness];
+					const double innerShadowThickness = shapeStyle[Theme::Constant::InnerShadowThickness];
 					const double innerRadius = (((box.w - innerShadowThickness) / box.w) * box.r);
 					const RoundRect innerRect = box.stretched(-innerShadowThickness).withR(innerRadius);
-					const ColorF containerColor = style.getContainerColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+					const ColorF containerColor = colorStyle.getContainerColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 					innerRect.draw(containerColor);
 				}
 			}
@@ -168,7 +170,7 @@ namespace s3d
 			// チェックマーク描画
 			if (m_state.checked)
 			{
-				const ColorF indicatorColor = style.getIndicatorColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+				const ColorF indicatorColor = colorStyle.getIndicatorColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 				DrawCheck(boxSize, boxRect.center(), indicatorColor);
 			}
 		}
@@ -176,14 +178,14 @@ namespace s3d
 		// テキスト描画
 		{
 			const Font& font = SimpleGUI::GetFont();
-			const double fontSize = style[Theme::Constant::FontSize];
+			const double fontSize = shapeStyle[Theme::Constant::FontSize];
 			const double scale = (fontSize / SimpleGUI::DefaultFontSize);
 			const double fontYOffset = scale;
-			const Vec2 textPos{ (rect.x + style[Theme::Constant::CheckBoxPaddingLeft]
-					+ boxSize + style[Theme::Constant::CheckBoxPaddingRight]),
+			const Vec2 textPos{ (rect.x + shapeStyle[Theme::Constant::CheckBoxPaddingLeft]
+					+ boxSize + shapeStyle[Theme::Constant::CheckBoxPaddingRight]),
 				(rect.centerY() - font.height() * scale / 2.0 - fontYOffset) };
 			{
-				const ColorF textColor = style.getTextColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+				const ColorF textColor = colorStyle.getTextColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 				m_drawableText.draw(fontSize, textPos, textColor);
 			}
 		}

@@ -9,7 +9,8 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/GUIStyle.hpp>
+# include <Siv3D/GUIColorStyle.hpp>
+# include <Siv3D/GUIShapeStyle.hpp>
 # include <Siv3D/Geometry2D/Misc.hpp>
 # include <Siv3D/SimpleGUI/SimpleProgressBar.hpp>
 
@@ -53,8 +54,8 @@ namespace s3d
 
 	RectF SimpleProgressBar::region() const
 	{
-		const GUIStyle& style = getTheme().getStyle();
-		const double height = (style[Theme::Constant::ProgressBarHeight] + style[Theme::Constant::ProgressBarVerticalPadding] * 2.0);
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
+		const double height = (shapeStyle[Theme::Constant::ProgressBarHeight] + shapeStyle[Theme::Constant::ProgressBarVerticalPadding] * 2.0);
 		const RectF backgroundRect{ getAnchor(), getPos(), m_width, height };
 
 		if (isDirty())
@@ -65,9 +66,9 @@ namespace s3d
 			}
 			else
 			{
-				const double barWidth = Max(1.0, (m_width - style[Theme::Constant::ProgressBarPaddingLeft] - style[Theme::Constant::ProgressBarPaddingRight]));
-				const RectF barRect{ 0, 0, barWidth, style[Theme::Constant::ProgressBarHeight] };
-				const double cornerRadius = Min(style[Theme::Constant::ProgressBarCornerRadius], (barRect.h / 2.0));
+				const double barWidth = Max(1.0, (m_width - shapeStyle[Theme::Constant::ProgressBarPaddingLeft] - shapeStyle[Theme::Constant::ProgressBarPaddingRight]));
+				const RectF barRect{ 0, 0, barWidth, shapeStyle[Theme::Constant::ProgressBarHeight] };
+				const double cornerRadius = Min(shapeStyle[Theme::Constant::ProgressBarCornerRadius], (barRect.h / 2.0));
 				const RoundRect roundRect{ barRect, cornerRadius };
 				const RectF progressRect = barRect.withW(barRect.w * m_state.progress);
 
@@ -99,11 +100,12 @@ namespace s3d
 			return;
 		}
 
-		const GUIStyle& style = getTheme().getStyle();
+		const GUIColorStyle& colorStyle = getTheme().getColorStyle();
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
 		const RectF backgroundRect = region();
 
 		// 背景描画
-		if (const ColorF backgroundColor = style.getBackgroundColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+		if (const ColorF backgroundColor = colorStyle.getBackgroundColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 			(0.0 < backgroundColor.a))
 		{
 			backgroundRect.draw(backgroundColor);
@@ -111,26 +113,26 @@ namespace s3d
 
 		// プログレスバー描画
 		{
-			const double barWidth = Max(1.0, (m_width - style[Theme::Constant::ProgressBarPaddingLeft] - style[Theme::Constant::ProgressBarPaddingRight]));
+			const double barWidth = Max(1.0, (m_width - shapeStyle[Theme::Constant::ProgressBarPaddingLeft] - shapeStyle[Theme::Constant::ProgressBarPaddingRight]));
 			const RectF barRect{
-					(backgroundRect.x + style[Theme::Constant::ProgressBarPaddingLeft]),
-					backgroundRect.y + style[Theme::Constant::ProgressBarVerticalPadding],
+					(backgroundRect.x + shapeStyle[Theme::Constant::ProgressBarPaddingLeft]),
+					backgroundRect.y + shapeStyle[Theme::Constant::ProgressBarVerticalPadding],
 					barWidth,
-					style[Theme::Constant::ProgressBarHeight]
+					shapeStyle[Theme::Constant::ProgressBarHeight]
 			};
-			const double cornerRadius = Min(style[Theme::Constant::ProgressBarCornerRadius], (barRect.h / 2.0));
+			const double cornerRadius = Min(shapeStyle[Theme::Constant::ProgressBarCornerRadius], (barRect.h / 2.0));
 			const RoundRect box{ barRect, cornerRadius };
 
-			const ColorF innerShadowColor = style.getInnerShadowColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+			const ColorF innerShadowColor = colorStyle.getInnerShadowColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 			box.draw(innerShadowColor);
 
-			const double innerShadowThickness = style[Theme::Constant::InnerShadowThickness];
+			const double innerShadowThickness = shapeStyle[Theme::Constant::InnerShadowThickness];
 			const double innerRadius = (((box.w - innerShadowThickness) / box.w) * box.r);
 			const RoundRect innerRect = box.stretched(-innerShadowThickness).withR(innerRadius);
-			const ColorF containerColor = style.getContainerColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+			const ColorF containerColor = colorStyle.getContainerColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 			innerRect.draw(containerColor);
 
-			const ColorF fillColor = style.getFillColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+			const ColorF fillColor = colorStyle.getFillColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 			m_cache.bar.draw(barRect.pos, fillColor);
 		}
 	}

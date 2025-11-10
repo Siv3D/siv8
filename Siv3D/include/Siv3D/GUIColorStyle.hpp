@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	struct GUIStyle
+	struct GUIColorStyle
 	{
 		std::array<Color, 40> colors
 		{
@@ -71,43 +71,8 @@ namespace s3d
 			Color{ 255 },			// TooltipTextColorPressed
 		};
 
-		std::array<double, 23> constants
-		{
-			20.0,	// FontSize
-
-			20.0,	// ButtonTextHorizontalPadding
-			36.0,	// ButtonHeight
-			4.6,	// ButtonCornerRadius
-			1.0,	// BorderInnerThickness
-
-			1.2,	// InnerShadowThickness
-
-			8.0,	// CheckBoxBoxPaddingLeft
-			24.0,	// CheckBoxBoxSize
-			8.0,	// CheckBoxBoxPaddingRight
-			3.2,	// CheckBoxBoxRadius
-			8.0,	// CheckBoxLabelPaddingRight
-			36.0,	// CheckBoxLabelHeight
-
-			13.0,	// TooltipFontSize
-			12.0,	// TooltipTextHorizontalPadding
-			6.0,	// TooltipTextVerticalPadding
-			5.6,	// TooltipCornerRadius
-			10.0,	// TooltipArrowHeight
-			24.0,	// TooltipArrowOffset
-
-			10.0,	// ProgressBarHeight
-			5.0,	// ProgressBarCornerRadius
-			8.0,	// ProgressBarPaddingLeft
-			8.0,	// ProgressBarPaddingRight
-			13.0,	// ProgressBarVerticalPadding
-		};
-
 		[[nodiscard]]
 		constexpr ColorF operator[](Theme::Color color) const noexcept;
-
-		[[nodiscard]]
-		constexpr double operator[](Theme::Constant constant) const noexcept;
 
 		[[nodiscard]]
 		constexpr ColorF getButtonColor(bool enabled, bool hovered, bool pressed) const noexcept;
@@ -141,5 +106,4 @@ namespace s3d
 	};
 }
 
-# include "detail/GUIStyle.ipp"
-
+# include "detail/GUIColorStyle.ipp"

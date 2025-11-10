@@ -13,17 +13,8 @@
 
 namespace s3d
 {
-	constexpr Theme::Theme(const Predefined predefined) noexcept
-		: m_colorID{ predefined.colorID }
-		, m_shapeID{ predefined.shapeID } {}
-
-	constexpr uint8 Theme::getColorID() const noexcept
+	constexpr double GUIShapeStyle::operator[](const Theme::Constant constant) const noexcept
 	{
-		return m_colorID;
-	}
-
-	constexpr uint8 Theme::getShapeID() const noexcept
-	{
-		return m_shapeID;
+		return constants[FromEnum(constant)];
 	}
 }

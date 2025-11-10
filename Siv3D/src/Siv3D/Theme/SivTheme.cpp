@@ -15,8 +15,14 @@
 
 namespace s3d
 {
-	const GUIStyle& Theme::getStyle() const noexcept
+	const GUIColorStyle& Theme::getColorStyle() const noexcept
 	{
-		return SIV3D_ENGINE(GUI)->getStyle(*this);
+		return SIV3D_ENGINE(GUI)->getColorStyle(*this);
 	}
+
+	const GUIShapeStyle& Theme::getShapeStyle() const noexcept
+	{
+		return SIV3D_ENGINE(GUI)->getShapeStyle(*this);
+	}
+
 }

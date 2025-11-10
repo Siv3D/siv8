@@ -51,7 +51,7 @@ namespace s3d
 		}
 
 		// Transparent
-		m_styles[Theme::Light.themeID].colors =
+		m_colorStyles[Theme::Light.colorID].colors =
 		{
 			Color{ 255 },			// ButtonColor
 			Color{ 235 },			// ButtonColorDisabled
@@ -105,7 +105,7 @@ namespace s3d
 		};
 
 		// Dark
-		m_styles[Theme::Dark.themeID].colors =
+		m_colorStyles[Theme::Dark.colorID].colors =
 		{
 			Color{ 51 },			// ButtonColor
 			Color{ 38 },			// ButtonColorDisabled
@@ -159,7 +159,7 @@ namespace s3d
 		};
 
 		// Transparent
-		m_styles[Theme::Transparent.themeID].colors =
+		m_colorStyles[Theme::Transparent.colorID].colors =
 		{
 			Color{ 255 },			// ButtonColor
 			Color{ 235 },			// ButtonColorDisabled
@@ -224,9 +224,13 @@ namespace s3d
 		return *m_defaultFont;
 	}
 
-
-	const GUIStyle& CGUI::getStyle(const Theme& theme) const noexcept
+	const GUIColorStyle& CGUI::getColorStyle(const Theme& theme) const noexcept
 	{
-		return m_styles[theme.getID()];
+		return m_colorStyles[theme.getColorID()];
+	}
+
+	const GUIShapeStyle& CGUI::getShapeStyle(const Theme& theme) const noexcept
+	{
+		return m_shapeStyles[theme.getShapeID()];
 	}
 }

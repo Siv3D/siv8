@@ -10,7 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/SimpleGUI.hpp>
-# include <Siv3D/GUIStyle.hpp>
+# include <Siv3D/GUIColorStyle.hpp>
+# include <Siv3D/GUIShapeStyle.hpp>
 # include <Siv3D/CursorStyle.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/SimpleGUI/SimpleButton.hpp>
@@ -62,17 +63,17 @@ namespace s3d
 
 	RectF SimpleButton::region() const
 	{
-		const GUIStyle& style = getTheme().getStyle();
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
 
 		if (isDirty())
 		{
-			const double fontSize = style[Theme::Constant::FontSize];
+			const double fontSize = shapeStyle[Theme::Constant::FontSize];
 			m_cache.textWidth = m_drawableText.region(fontSize).w;
 			clearDirty();
 		}
 
-		const double width = m_width.value_or(m_cache.textWidth + (style[Theme::Constant::ButtonTextHorizontalPadding] * 2));
-		return{ getAnchor(), getPos(), width, style[Theme::Constant::ButtonHeight] };
+		const double width = m_width.value_or(m_cache.textWidth + (shapeStyle[Theme::Constant::ButtonTextHorizontalPadding] * 2));
+		return{ getAnchor(), getPos(), width, shapeStyle[Theme::Constant::ButtonHeight] };
 	}
 
 	bool SimpleButton::update()
@@ -95,35 +96,36 @@ namespace s3d
 			return;
 		}
 
-		const GUIStyle& style = getTheme().getStyle();
+		const GUIColorStyle& colorStyle = getTheme().getColorStyle();
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
 		const RectF rect = region();
 
 		// ボタン描画
 		{
-			const RoundRect roundRect = rect.rounded(style[Theme::Constant::ButtonCornerRadius]);
+			const RoundRect roundRect = rect.rounded(shapeStyle[Theme::Constant::ButtonCornerRadius]);
 
 			// ボタン本体描画
 			{
-				const ColorF buttonColor = style.getButtonColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+				const ColorF buttonColor = colorStyle.getButtonColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 				roundRect.draw(buttonColor);
 			}
 
 			// ボタン枠線描画
 			{
-				const ColorF borderColor = style.getBorderColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
-				roundRect.drawFrame(style[Theme::Constant::BorderInnerThickness], 0, borderColor);
+				const ColorF borderColor = colorStyle.getBorderColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+				roundRect.drawFrame(shapeStyle[Theme::Constant::BorderInnerThickness], 0, borderColor);
 			}
 		}
 
 		// テキスト描画
 		{
 			const Font& font = SimpleGUI::GetFont();
-			const double fontSize = style[Theme::Constant::FontSize];
+			const double fontSize = shapeStyle[Theme::Constant::FontSize];
 			const double scale = (fontSize / SimpleGUI::DefaultFontSize);
 			const double fontYOffset = scale;
 			const Vec2 textPos{ (rect.x + (rect.w - m_cache.textWidth) / 2.0), (rect.centerY() - font.height() * scale / 2.0 - fontYOffset) };
 			{
-				const ColorF textColor = style.getTextColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+				const ColorF textColor = colorStyle.getTextColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 				m_drawableText.draw(fontSize, textPos, textColor);
 			}
 		}

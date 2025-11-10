@@ -15,7 +15,8 @@
 namespace s3d
 {
 	class Font;
-	struct GUIStyle;
+	struct GUIColorStyle;
+	struct GUIShapeStyle;
 	class Theme;
 
 	class SIV3D_NOVTABLE ISiv3DGUI
@@ -31,6 +32,8 @@ namespace s3d
 
 		virtual const Font& getDefaultFont() const noexcept = 0;
 
-		virtual const GUIStyle& getStyle(const Theme& theme) const noexcept = 0;
+		virtual const GUIColorStyle& getColorStyle(const Theme& theme) const noexcept = 0;
+
+		virtual const GUIShapeStyle& getShapeStyle(const Theme& theme) const noexcept = 0;
 	};
 }

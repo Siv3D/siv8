@@ -10,7 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/SimpleGUI.hpp>
-# include <Siv3D/GUIStyle.hpp>
+# include <Siv3D/GUIColorStyle.hpp>
+# include <Siv3D/GUIShapeStyle.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/CursorStyle.hpp>
 # include <Siv3D/Mouse.hpp>
@@ -85,8 +86,8 @@ namespace s3d
 
 	RectF SimpleTooltip::regionOverlay() const
 	{
-		const GUIStyle& style = getTheme().getStyle();
-		const double fontSize = style[Theme::Constant::TooltipFontSize];
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
+		const double fontSize = shapeStyle[Theme::Constant::TooltipFontSize];
 
 		if (isDirty())
 		{
@@ -101,12 +102,12 @@ namespace s3d
 		}
 
 		const Anchor anchor = getAnchor();
-		const double baseWidth = m_width.value_or(m_cache.textWidth + (style[Theme::Constant::TooltipTextHorizontalPadding] * 2));
-		const double baseHeight = Math::Ceil(SimpleGUI::GetFont().height(fontSize) * Max<size_t>(1, m_drawableTexts.size())) + (style[Theme::Constant::TooltipTextVerticalPadding] * 2);
+		const double baseWidth = m_width.value_or(m_cache.textWidth + (shapeStyle[Theme::Constant::TooltipTextHorizontalPadding] * 2));
+		const double baseHeight = Math::Ceil(SimpleGUI::GetFont().height(fontSize) * Max<size_t>(1, m_drawableTexts.size())) + (shapeStyle[Theme::Constant::TooltipTextVerticalPadding] * 2);
 		RectF baseRect{ anchor, getPos(), baseWidth, baseHeight };
 
-		const double offset = Min(style[Theme::Constant::TooltipArrowOffset], (baseWidth * 0.4));
-		const double arrowHeight = style[Theme::Constant::TooltipArrowHeight];
+		const double offset = Min(shapeStyle[Theme::Constant::TooltipArrowOffset], (baseWidth * 0.4));
+		const double arrowHeight = shapeStyle[Theme::Constant::TooltipArrowHeight];
 
 		// X 方向のオフセット調整
 		if ((anchor == Anchor::TopLeft) || (anchor == Anchor::BottomLeft))
@@ -161,22 +162,23 @@ namespace s3d
 			return;
 		}
 
-		const GUIStyle& style = getTheme().getStyle();
+		const GUIColorStyle& colorStyle = getTheme().getColorStyle();
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
 		const RectF rect = regionOverlay();
 
 		// 吹き出し描画
 		{
-			const ColorF tooltipColor = style.getTooltipColor(isEnabled(), isHovered(), isPressed());
+			const ColorF tooltipColor = colorStyle.getTooltipColor(isEnabled(), isHovered(), isPressed());
 
 			// 背景描画
 			{
-				rect.rounded(style[Theme::Constant::TooltipCornerRadius]).draw(tooltipColor);
+				rect.rounded(shapeStyle[Theme::Constant::TooltipCornerRadius]).draw(tooltipColor);
 			}
 
 			// 矢印描画
 			if (const Anchor anchor = getAnchor(); (anchor != Anchor::Center))
 			{
-				const double triangleHeight = style[Theme::Constant::TooltipArrowHeight];
+				const double triangleHeight = shapeStyle[Theme::Constant::TooltipArrowHeight];
 				const double triangleBaseHalfWidth = (triangleHeight * Math::Constants::Sqrt3 / 3.0);
 
 				Triangle triangle{ getPos(), Vec2{ 0, 0 }, Vec2{ 0, 0 } };
@@ -209,14 +211,14 @@ namespace s3d
 		// テキスト描画
 		{
 			const Font& font = SimpleGUI::GetFont();
-			const double fontSize = style[Theme::Constant::TooltipFontSize];
+			const double fontSize = shapeStyle[Theme::Constant::TooltipFontSize];
 			const double scale = (fontSize / SimpleGUI::DefaultFontSize);
 			const double fontYOffset = scale;
 
-			const Vec2 textBasePos{ (rect.x + style[Theme::Constant::TooltipTextHorizontalPadding]),
-				(rect.y + style[Theme::Constant::TooltipTextVerticalPadding] - fontYOffset) };
+			const Vec2 textBasePos{ (rect.x + shapeStyle[Theme::Constant::TooltipTextHorizontalPadding]),
+				(rect.y + shapeStyle[Theme::Constant::TooltipTextVerticalPadding] - fontYOffset) };
 			{
-				const ColorF textColor = style.getTooltipTextColor(isEnabled(), isHovered(), isPressed());
+				const ColorF textColor = colorStyle.getTooltipTextColor(isEnabled(), isHovered(), isPressed());
 
 				for (size_t i = 0; i < m_drawableTexts.size(); ++i)
 				{

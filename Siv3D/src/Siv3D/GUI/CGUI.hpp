@@ -11,7 +11,8 @@
 
 # pragma once
 # include <Siv3D/Font.hpp>
-# include <Siv3D/GUIStyle.hpp>
+# include <Siv3D/GUIColorStyle.hpp>
+# include <Siv3D/GUIShapeStyle.hpp>
 # include "IGUI.hpp"
 
 namespace s3d
@@ -26,12 +27,16 @@ namespace s3d
 
 		const Font& getDefaultFont() const noexcept override;
 
-		const GUIStyle& getStyle(const Theme& theme) const noexcept override;
+		const GUIColorStyle& getColorStyle(const Theme& theme) const noexcept override;
+
+		const GUIShapeStyle& getShapeStyle(const Theme& theme) const noexcept override;
 
 	private:
 
 		std::unique_ptr<Font> m_defaultFont;
 
-		std::array<GUIStyle, 128> m_styles;
+		std::array<GUIColorStyle, 32> m_colorStyles;
+
+		std::array<GUIShapeStyle, 8> m_shapeStyles;
 	};
 }

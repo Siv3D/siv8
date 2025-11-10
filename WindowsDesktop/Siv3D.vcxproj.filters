@@ -4638,10 +4638,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Theme.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\GUIStyle.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\GUIColorStyle.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIStyle.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIColorStyle.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Theme.ipp">
@@ -4672,6 +4672,12 @@
       <Filter>include\Siv3D\SimpleGUI</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SimpleGUI.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\GUIShapeStyle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIShapeStyle.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
   </ItemGroup>

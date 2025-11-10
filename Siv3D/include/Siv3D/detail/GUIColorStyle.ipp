@@ -13,20 +13,12 @@
 
 namespace s3d
 {
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::operator[](const Theme::Color color) const noexcept
+	constexpr ColorF GUIColorStyle::operator[](const Theme::Color color) const noexcept
 	{
 		return colors[FromEnum(color)];
 	}
 
-	[[nodiscard]]
-	constexpr double GUIStyle::operator[](const Theme::Constant constant) const noexcept
-	{
-		return constants[FromEnum(constant)];
-	}
-
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getButtonColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getButtonColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
@@ -46,8 +38,7 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getBorderColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getBorderColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
@@ -67,8 +58,7 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getTextColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getTextColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
@@ -88,8 +78,7 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getBackgroundColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getBackgroundColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
@@ -109,8 +98,7 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getContainerColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getContainerColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
@@ -130,8 +118,7 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getInnerShadowColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getInnerShadowColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
@@ -151,8 +138,7 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getFillColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getFillColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
@@ -172,8 +158,7 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getIndicatorColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getIndicatorColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
@@ -193,8 +178,7 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getTooltipColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getTooltipColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
@@ -214,8 +198,7 @@ namespace s3d
 		}
 	}
 
-	[[nodiscard]]
-	constexpr ColorF GUIStyle::getTooltipTextColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
+	constexpr ColorF GUIColorStyle::getTooltipTextColor(const bool enabled, const bool hovered, const bool pressed) const noexcept
 	{
 		if (not enabled)
 		{
