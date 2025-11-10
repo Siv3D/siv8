@@ -197,16 +197,10 @@ namespace s3d
 					knob.drawShadow(Vec2{ 0, 1.0 }, 4.5, 0.5, shadowColor, false);
 				}
 
-				// ノブの枠線
+				// ノブの内側
 				{
-					const ColorF borderColor = colorStyle.getBorderColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
-					knob.draw(borderColor);
-				}
-
-				{
-					const double midRadius = Max(0.0, (knob.r - shapeStyle[Theme::Constant::InnerShadowThickness]));
 					const ColorF knobColor = HSV{ m_state.hue, 1.0, 0.96 };
-					knob.withR(midRadius).draw(knobColor);
+					knob.draw(knobColor);
 
 					if (not isEnabled())
 					{
@@ -214,10 +208,17 @@ namespace s3d
 					}
 
 					{
-						const double smallRadius = Max(0.0, midRadius - shapeStyle[Theme::Constant::InnerShadowThickness] - shapeStyle[Theme::Constant::ColorSliderKnobFrameThickness]);
+						const double smallRadius = Max(0.0, knob.r - shapeStyle[Theme::Constant::BorderInnerThickness]
+							- shapeStyle[Theme::Constant::InnerShadowThickness] - shapeStyle[Theme::Constant::ColorSliderKnobFrameThickness]);
 						const ColorF buttonColor = colorStyle.getButtonColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
 						knob.withR(smallRadius).draw(buttonColor);
 					}
+				}
+
+				// ノブの枠線
+				{
+					const ColorF borderColor = colorStyle.getBorderColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+					knob.drawFrame(shapeStyle[Theme::Constant::BorderInnerThickness], 0, borderColor);
 				}
 			}
 
