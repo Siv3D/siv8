@@ -16,6 +16,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleProgressBar::SimpleProgressBar(const double progress, const Vec2& pos, const Theme theme)
 		: SimpleProgressBar{ progress, pos, Anchor::TopLeft, DefaultWidth, theme } {}
 
@@ -30,6 +36,12 @@ namespace s3d
 		, m_width{ width }
 		, m_state{ .progress = Clamp(progress, 0.0, 1.0) } {}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setWidth, getWidth
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleProgressBar& SimpleProgressBar::setWidth(const double width)
 	{
 		if (const auto oldWidth = std::exchange(m_width, width);
@@ -41,6 +53,17 @@ namespace s3d
 		return *this;
 	}
 
+	double SimpleProgressBar::getWidth() const
+	{
+		return m_width;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setProgress, getProgress
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleProgressBar& SimpleProgressBar::setProgress(const double progress)
 	{
 		if (const auto oldProgress = std::exchange(m_state.progress, Clamp(progress, 0.0, 1.0));
@@ -51,6 +74,17 @@ namespace s3d
 
 		return *this;
 	}
+
+	double SimpleProgressBar::getProgress() const
+	{
+		return m_state.progress;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	region
+	//
+	////////////////////////////////////////////////////////////////
 
 	RectF SimpleProgressBar::region() const
 	{
@@ -88,10 +122,22 @@ namespace s3d
 		return{ getAnchor(), getPos(), backgroundRect.size };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	update
+	//
+	////////////////////////////////////////////////////////////////
+
 	bool SimpleProgressBar::update()
 	{
 		return false;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
 
 	void SimpleProgressBar::draw() const
 	{

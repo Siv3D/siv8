@@ -3372,5 +3372,171 @@ namespace s3d
 
 			return IndexCount;
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildCircleShadowNoFill
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCircleShadowNoFill(const BufferCreatorFunc& bufferCreator, const Circle& circle, float blur, const Float4& color, float scale)
+		{
+			// ベースとなる円の半径, ぼかしの半分
+			const float r = static_cast<float>(circle.r);
+			const float halfBlur = (blur * 0.5f);
+
+			// 影の開始半径, 終了半径
+			const float rInner = (r - halfBlur);
+			const float rOuter = (r + halfBlur);
+
+			// 円の品質
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(rOuter * scale);
+			const Vertex2D::IndexType FullQuality = (Quality * 4);
+			const Vertex2D::IndexType VertexCount = (FullQuality * 2);
+			const Vertex2D::IndexType IndexCount = (FullQuality * 6);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = static_cast<float>(circle.x);
+			const float centerY = static_cast<float>(circle.y);
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			Vertex2D* pDst0 = &pVertex[0];
+			Vertex2D* pDst1 = (pDst0 + Quality * 2);
+			Vertex2D* pDst2 = (pDst0 + Quality * 4);
+			Vertex2D* pDst3 = (pDst0 + Quality * 6);
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float ox = (cs->x * rOuter);
+				const float ix = (cs->x * rInner);
+				const float oy = (cs->y * rOuter);
+				const float iy = (cs->y * rInner);
+
+				(pDst0++)->set((centerX + ox), (centerY + oy), 0.0f, 0.5f, color);
+				(pDst0++)->set((centerX + ix), (centerY + iy), 0.5f, 0.5f, color);
+
+				(pDst1++)->set((centerX - oy), (centerY + ox), 0.0f, 0.5f, color);
+				(pDst1++)->set((centerX - iy), (centerY + ix), 0.5f, 0.5f, color);
+
+				(pDst2++)->set((centerX - ox), (centerY - oy), 0.0f, 0.5f, color);
+				(pDst2++)->set((centerX - ix), (centerY - iy), 0.5f, 0.5f, color);
+
+				(pDst3++)->set((centerX + oy), (centerY - ox), 0.0f, 0.5f, color);
+				(pDst3++)->set((centerX + iy), (centerY - ix), 0.5f, 0.5f, color);
+			}
+
+			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+			{
+				for (Vertex2D::IndexType k = 0; k < 6; ++k)
+				{
+					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
+				}
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildCircleShadow
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCircleShadow(const BufferCreatorFunc& bufferCreator, const Circle& circle, const float blur, const Float4& color, const float scale, const bool fill)
+		{
+			if (not fill)
+			{
+				return BuildCircleShadowNoFill(bufferCreator, circle, blur, color, scale);
+			}
+
+			// ベースとなる円の半径, ぼかしの半分
+			const float r = static_cast<float>(circle.r);
+			const float halfBlur = (blur * 0.5f);
+
+			// 影の開始半径, 終了半径
+			const float rInner = (r - halfBlur);
+			const float rOuter = (r + halfBlur);
+
+			// 円の品質
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(rOuter * scale);
+			const Vertex2D::IndexType FullQuality = (Quality * 4);
+			const Vertex2D::IndexType VertexCount = (FullQuality * 2 + 1); // 中心頂点を追加
+			const Vertex2D::IndexType IndexCount = (FullQuality * 6 + FullQuality * 3); // 外側のリング + 内側の三角形
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = static_cast<float>(circle.x);
+			const float centerY = static_cast<float>(circle.y);
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			// 中心頂点を最初に配置
+			pVertex[0].set(centerX, centerY, 0.5f, 0.5f, color);
+
+			Vertex2D* pDst0 = &pVertex[1];
+			Vertex2D* pDst1 = (pDst0 + Quality * 2);
+			Vertex2D* pDst2 = (pDst0 + Quality * 4);
+			Vertex2D* pDst3 = (pDst0 + Quality * 6);
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float ox = (cs->x * rOuter);
+				const float ix = (cs->x * rInner);
+				const float oy = (cs->y * rOuter);
+				const float iy = (cs->y * rInner);
+
+				(pDst0++)->set((centerX + ox), (centerY + oy), 0.0f, 0.5f, color);
+				(pDst0++)->set((centerX + ix), (centerY + iy), 0.5f, 0.5f, color);
+
+				(pDst1++)->set((centerX - oy), (centerY + ox), 0.0f, 0.5f, color);
+				(pDst1++)->set((centerX - iy), (centerY + ix), 0.5f, 0.5f, color);
+
+				(pDst2++)->set((centerX - ox), (centerY - oy), 0.0f, 0.5f, color);
+				(pDst2++)->set((centerX - ix), (centerY - iy), 0.5f, 0.5f, color);
+
+				(pDst3++)->set((centerX + oy), (centerY - ox), 0.0f, 0.5f, color);
+				(pDst3++)->set((centerX + iy), (centerY - ix), 0.5f, 0.5f, color);
+			}
+
+			{
+				const Vertex2D::IndexType ringStartIndex = (indexOffset + 1);
+
+				// 外側のリングのインデックス
+				for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+				{
+					for (Vertex2D::IndexType k = 0; k < 6; ++k)
+					{
+						*pIndex++ = (ringStartIndex + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
+					}
+				}
+
+				// 内円を中心頂点で埋めるインデックス
+				{
+					const Vertex2D::IndexType centerIndex = indexOffset; // 中心頂点のインデックス
+
+					for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+					{
+						const Vertex2D::IndexType innerCurrent = (ringStartIndex + i * 2 + 1); // 内円の現在の頂点
+						const Vertex2D::IndexType innerNext = (ringStartIndex + ((i * 2 + 3) % (FullQuality * 2))); // 内円の次の頂点
+
+						*pIndex++ = centerIndex;
+						*pIndex++ = innerCurrent;
+						*pIndex++ = innerNext;
+					}
+				}
+			}
+
+			return IndexCount;
+		}
 	}
 }

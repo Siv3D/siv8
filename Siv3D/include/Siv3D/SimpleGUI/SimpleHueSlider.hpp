@@ -16,11 +16,11 @@
 
 namespace s3d
 {
-	class SimpleProgressBar : public ISimpleGUIElement
+	class SimpleHueSlider : public ISimpleGUIElement
 	{
 	public:
 
-		static constexpr double DefaultWidth = 116.0;
+		static constexpr double DefaultWidth = 156.0;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -29,31 +29,33 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		SimpleProgressBar() = default;
+		SimpleHueSlider() = default;
 
 		[[nodiscard]]
-		SimpleProgressBar(double progress, const Vec2& pos, Theme theme = Theme::Light);
+		SimpleHueSlider(double hue, const Vec2& pos, Theme theme = Theme::Light);
 
 		[[nodiscard]]
-		SimpleProgressBar(double progress, const Vec2& pos, double width, Theme theme = Theme::Light);
+		SimpleHueSlider(double hue, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light)
+			: SimpleHueSlider{ hue, pos, DefaultWidth, param, theme } {}
 
 		[[nodiscard]]
-		SimpleProgressBar(double progress, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
+		SimpleHueSlider(double hue, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light)
+			: SimpleHueSlider{ hue, pos, anchor, DefaultWidth, param, theme } {}
 
 		[[nodiscard]]
-		SimpleProgressBar(double progress, const Vec2& pos, Anchor anchor, double width, Theme theme = Theme::Light);
+		SimpleHueSlider(double hue, const Vec2& pos, double width, Theme theme = Theme::Light);
 
 		[[nodiscard]]
-		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Theme theme = Theme::Light);
+		SimpleHueSlider(double hue, const Vec2& pos, double width, bool enabled, Theme theme = Theme::Light);
 
 		[[nodiscard]]
-		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, double width, Theme theme = Theme::Light);
+		SimpleHueSlider(double hue, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
 		[[nodiscard]]
-		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
+		SimpleHueSlider(double hue, const Vec2& pos, Anchor anchor, double width, Theme theme = Theme::Light);
 
 		[[nodiscard]]
-		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, double width, Theme theme = Theme::Light);
+		SimpleHueSlider(double hue, const Vec2& pos, Anchor anchor, double width, bool enabled, Theme theme = Theme::Light);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -61,7 +63,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual ~SimpleProgressBar() override = default;
+		virtual ~SimpleHueSlider() override = default;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -69,23 +71,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual SimpleProgressBar& setWidth(double width);
+		virtual SimpleHueSlider& setWidth(double width);
 
 		[[nodiscard]]
 		virtual double getWidth() const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	setProgress, getProgress
+		//	setHue, getHue
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual SimpleProgressBar& setProgress(double progress);
-
-		SimpleProgressBar& setProgress(Concept::Arithmetic auto current, Concept::Arithmetic auto total);
+		virtual SimpleHueSlider& setHue(double hue);
 
 		[[nodiscard]]
-		virtual double getProgress() const;
+		virtual double getHue() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -118,14 +118,7 @@ namespace s3d
 
 		struct State
 		{
-			double progress = 0.0;
+			double hue = 0.0;
 		} m_state;
-
-		mutable struct Cache
-		{
-			Polygon bar;
-		} m_cache;
 	};
 }
-
-# include "SimpleProgressBar.ipp"

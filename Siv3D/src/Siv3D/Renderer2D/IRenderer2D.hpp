@@ -130,7 +130,6 @@ namespace s3d
 		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, std::span<const ColorF> colors) = 0;
 
 
-
 		virtual void addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color) = 0;
 
 		virtual void addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4& color) = 0;
@@ -138,6 +137,13 @@ namespace s3d
 		virtual void addTexturedQuad(const Texture& texture, const FloatQuad& quad, const FloatRect& uv, const Float4(&colors)[4]) = 0;
 
 		virtual void addTexturedRoundRect(const Texture& texture, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color) = 0;
+
+
+		virtual void addRectShadow(const FloatRect& rect, float blur, const Float4& color, bool fill) = 0;
+
+		virtual void addCircleShadow(const Circle& circle, float blur, const Float4& color, bool fill) = 0;
+
+		virtual void addRoundRectShadow(const RoundRect& roundRect, float blur, const Float4& color, bool fill) = 0;
 
 
 		virtual void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color) = 0;
@@ -201,5 +207,9 @@ namespace s3d
 		virtual void setCameraTransform(const Mat3x2& matrix) = 0;
 
 		virtual float getMaxScaling() const noexcept = 0;
+
+
+
+		virtual const Texture& getShadowTexture() const noexcept = 0;
 	};
 }

@@ -18,7 +18,7 @@ namespace s3d
 {
 	struct GUIColorStyle
 	{
-		std::array<Color, 40> colors
+		std::array<Color, 41> colors
 		{
 			Color{ 255 },			// ButtonColor
 			Color{ 235 },			// ButtonColorDisabled
@@ -69,6 +69,8 @@ namespace s3d
 			Color{ 171 },			// TooltipTextColorDisabled
 			Color{ 255 },			// TooltipTextColorHover
 			Color{ 255 },			// TooltipTextColorPressed
+
+			Color{ 224, 179 },		// ColorSliderOverlayDisabled
 		};
 
 		[[nodiscard]]

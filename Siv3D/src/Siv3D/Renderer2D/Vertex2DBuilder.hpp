@@ -116,5 +116,8 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildTexturedRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildCircleShadow(const BufferCreatorFunc& bufferCreator, const Circle& circle, float blur, const Float4& color, float scale, bool fill);
 	}
 }

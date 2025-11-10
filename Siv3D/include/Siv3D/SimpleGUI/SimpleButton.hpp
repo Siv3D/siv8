@@ -40,11 +40,13 @@ namespace s3d
 		[[nodiscard]]
 		SimpleButton(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, bool enabled, Theme theme = Theme::Light);
 
-		/// @brief 誤用防止用コンストラクタ（= delete）
-		SimpleButton(StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light) = delete;
+		[[nodiscard]]
+		SimpleButton(StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light)
+			: SimpleButton{ text, pos, unspecified, param, theme } {}
 
-		/// @brief 誤用防止用コンストラクタ（= delete）
-		SimpleButton(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light) = delete;
+		[[nodiscard]]
+		SimpleButton(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light)
+			: SimpleButton{ text, pos, anchor, unspecified, param, theme } {}
 
 		virtual ~SimpleButton() override = default;
 

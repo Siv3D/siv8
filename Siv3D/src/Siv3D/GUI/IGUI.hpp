@@ -15,6 +15,7 @@
 namespace s3d
 {
 	class Font;
+	class Texture;
 	struct GUIColorStyle;
 	struct GUIShapeStyle;
 	class Theme;
@@ -31,6 +32,8 @@ namespace s3d
 		virtual void init() = 0;
 
 		virtual const Font& getDefaultFont() const noexcept = 0;
+
+		virtual const Texture& getHueTexture() const noexcept = 0;
 
 		virtual const GUIColorStyle& getColorStyle(const Theme& theme) const noexcept = 0;
 

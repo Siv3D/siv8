@@ -36,8 +36,24 @@ namespace s3d
 		static constexpr Predefined Forest{ 5, 0 };
 		static constexpr Predefined Sunset{ 6, 0 };
 		static constexpr Predefined Lavender{ 7, 0 };
+
 		static constexpr Predefined LightCompact{ 0, 1 };
+		static constexpr Predefined DarkCompact{ 1, 1 };
+		static constexpr Predefined TransparentCompact{ 2, 1 };
+		static constexpr Predefined WarmCompact{ 3, 1 };
+		static constexpr Predefined OceanCompact{ 4, 1 };
+		static constexpr Predefined ForestCompact{ 5, 1 };
+		static constexpr Predefined SunsetCompact{ 6, 1 };
+		static constexpr Predefined LavenderCompact{ 7, 1 };
+
 		static constexpr Predefined LightLarge{ 0, 2 };
+		static constexpr Predefined DarkLarge{ 1, 2 };
+		static constexpr Predefined TransparentLarge{ 2, 2 };
+		static constexpr Predefined WarmLarge{ 3, 2 };
+		static constexpr Predefined OceanLarge{ 4, 2 };
+		static constexpr Predefined ForestLarge{ 5, 2 };
+		static constexpr Predefined SunsetLarge{ 6, 2 };
+		static constexpr Predefined LavenderLarge{ 7, 2 };
 
 		[[nodiscard]]
 		Theme() = default;
@@ -96,6 +112,8 @@ namespace s3d
 			TooltipTextColorDisabled,
 			TooltipTextColorHover,
 			TooltipTextColorPressed,
+
+			ColorSliderOverlayDisabled,
 		};
 
 		enum class Constant
@@ -128,6 +146,14 @@ namespace s3d
 			ProgressBarPaddingLeft,
 			ProgressBarPaddingRight,
 			ProgressBarVerticalPadding,
+
+			ColorSliderBarHeight,
+			ColorSliderBarCornerRadius,
+			ColorSliderBarPaddingLeft,
+			ColorSliderBarPaddingRight,
+			ColorSliderBarVerticalPadding,
+			ColorSliderKnobRadius,
+			ColorSliderKnobFrameThickness,
 		};
 
 		[[nodiscard]]

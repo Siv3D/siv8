@@ -1132,8 +1132,9 @@ namespace s3d
 		/// @param blur ぼかしの大きさ（ピクセル）
 		/// @param spread 影の膨張（ピクセル）
 		/// @param color 影の色
+		/// @param fill 塗りつぶすかどうか
 		/// @return *this
-		//const Circle& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }) const;
+		const Circle& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
 
 		////////////////////////////////////////////////////////////////
 		//

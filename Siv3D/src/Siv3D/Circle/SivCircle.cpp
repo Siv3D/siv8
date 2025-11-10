@@ -14,6 +14,7 @@
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Cursor.hpp>
@@ -656,6 +657,39 @@ namespace s3d
 			static_cast<float>(angle),
 			pattern
 		);
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawShadow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::drawShadow(const Vec2& offset, const double blur, const double spread, const ColorF& color, const bool fill) const
+	{
+		const Circle baseCircle{ (center + offset), (Abs(static_cast<float>(r)) + spread) };
+
+		if (blur <= 0.0)
+		{
+			baseCircle.draw(color);
+			return *this;
+		}
+
+		const Float4 colorFloat4 = color.toFloat4();
+
+		// 非ぼかし部分がない場合は直接描画へ
+		if (((r + spread) * 2.0) <= blur)
+		{
+			SIV3D_ENGINE(Renderer2D)->addTexturedQuad(SIV3D_ENGINE(Renderer2D)->getShadowTexture(),
+				FloatQuad{ baseCircle.stretched(blur * 0.5).boundingRect().asQuad() }, FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f }, colorFloat4);
+		}
+		else
+		{
+			const double blurClamped = Min(blur, (baseCircle.r * 2.0));
+			SIV3D_ENGINE(Renderer2D)->addCircleShadow(baseCircle, static_cast<float>(blurClamped), colorFloat4, fill);
+		}
 
 		return *this;
 	}

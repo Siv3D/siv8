@@ -36,18 +36,32 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CGUI::init()");
 
-		constexpr int32 baseFontSize = static_cast<int32>(SimpleGUI::DefaultFontSize);
-
-		m_defaultFont = std::make_unique<Font>(FontMethod::MSDF, baseFontSize, Typeface::CJK_Regular_JP);
-
-		if (Font::IsAvailable(Typeface::Icon_MaterialDesign))
 		{
-			m_defaultFont->addFallback(Font{ FontMethod::MSDF, baseFontSize, Typeface::Icon_MaterialDesign});
+			constexpr int32 baseFontSize = static_cast<int32>(SimpleGUI::DefaultFontSize);
+
+			m_defaultFont = std::make_unique<Font>(FontMethod::MSDF, baseFontSize, Typeface::CJK_Regular_JP);
+
+			if (Font::IsAvailable(Typeface::Icon_MaterialDesign))
+			{
+				m_defaultFont->addFallback(Font{ FontMethod::MSDF, baseFontSize, Typeface::Icon_MaterialDesign });
+			}
+
+			if (Font::IsAvailable(Typeface::ColorEmoji))
+			{
+				m_defaultFont->addFallback(Font{ 24, Typeface::ColorEmoji });
+			}
 		}
 
-		if (Font::IsAvailable(Typeface::ColorEmoji))
 		{
-			m_defaultFont->addFallback(Font{ 24, Typeface::ColorEmoji });
+			Image hueImage{ 256, 1 };
+			Color* pDst = hueImage.data();
+
+			for (int32 x = 0; x < 256; ++x)
+			{
+				*pDst++ = HueToColor(static_cast<double>(x) / 255.0 * 360.0);
+			}
+
+			m_hueTexture = std::make_unique<Texture>(hueImage);
 		}
 
 		// Transparent
@@ -102,6 +116,8 @@ namespace s3d
 			Color{ 171 },			// TooltipTextColorDisabled
 			Color{ 255 },			// TooltipTextColorHover
 			Color{ 255 },			// TooltipTextColorPressed
+
+			Color{ 224, 179 },		// ColorSliderOverlayDisabled
 		};
 
 		// Dark
@@ -156,6 +172,8 @@ namespace s3d
 			Color{ 77 },			// TooltipTextColorDisabled
 			Color{ 26 },			// TooltipTextColorHover
 			Color{ 26 },			// TooltipTextColorPressed
+
+			Color{ 64, 179 },		// ColorSliderOverlayDisabled
 		};
 
 		// Transparent
@@ -210,6 +228,8 @@ namespace s3d
 			Color{ 171 },			// TooltipTextColorDisabled
 			Color{ 255 },			// TooltipTextColorHover
 			Color{ 255 },			// TooltipTextColorPressed
+
+			Color{ 224, 179 },		// ColorSliderOverlayDisabled
 		};
 	}
 
@@ -222,6 +242,11 @@ namespace s3d
 	const Font& CGUI::getDefaultFont() const noexcept
 	{
 		return *m_defaultFont;
+	}
+
+	const Texture& CGUI::getHueTexture() const noexcept
+	{
+		return *m_hueTexture;
 	}
 
 	const GUIColorStyle& CGUI::getColorStyle(const Theme& theme) const noexcept

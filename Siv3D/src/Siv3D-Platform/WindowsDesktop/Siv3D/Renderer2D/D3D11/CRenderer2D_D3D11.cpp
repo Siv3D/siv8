@@ -12,6 +12,7 @@
 # include "CRenderer2D_D3D11.hpp"
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/ScopeExit.hpp>
+# include <Siv3D/Resource.hpp>
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Mat3x3.hpp>
 # include <Siv3D/LineStyle.hpp>
@@ -152,6 +153,27 @@ namespace s3d
 		m_engineShader.psPatternChecker		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternChecker).id();
 		m_engineShader.psPatternTriangle	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTriangle).id();
 		m_engineShader.psPatternHexGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHexGrid).id();
+
+		// シャドウ画像を作成
+		{
+			const Image boxShadowImage{ Resource(U"engine/texture/box-shadow/256.png") };
+
+			const Array<Image> boxShadowImageMips =
+			{
+				Image{ Resource(U"engine/texture/box-shadow/128.png") },
+				Image{ Resource(U"engine/texture/box-shadow/64.png") },
+				Image{ Resource(U"engine/texture/box-shadow/32.png") },
+				Image{ Resource(U"engine/texture/box-shadow/16.png") },
+				Image{ Resource(U"engine/texture/box-shadow/8.png") },
+			};
+
+			m_shadowTexture = std::make_unique<Texture>(boxShadowImage, boxShadowImageMips);
+
+			if (m_shadowTexture->isEmpty())
+			{
+				throw InternalEngineError{ "Failed to create a box-shadow texture" };
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1183,6 +1205,53 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addRectShadow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addRectShadow(const FloatRect& rect, const float blur, const Float4& color, const bool fill)
+	{
+
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleShadow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleShadow(const Circle& circle, const float blur, const Float4& color, const bool fill)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleShadow(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), circle, blur, color, getMaxScaling(), fill))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+
+			m_commandManager.pushPSTexture(0, getShadowTexture());
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addRoundRectShadow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addRoundRectShadow(const RoundRect& roundRect, const float blur, const Float4& color, const bool fill)
+	{
+
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addQuadWarp
 	//
 	////////////////////////////////////////////////////////////////
@@ -1764,6 +1833,17 @@ namespace s3d
 	float CRenderer2D_D3D11::getMaxScaling() const noexcept
 	{
 		return m_commandManager.getCurrentMaxScaling();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getShadowTexture
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Texture& CRenderer2D_D3D11::getShadowTexture() const noexcept
+	{
+		return *m_shadowTexture;
 	}
 
 	////////////////////////////////////////////////////////////////

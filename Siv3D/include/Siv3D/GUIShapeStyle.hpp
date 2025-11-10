@@ -18,7 +18,7 @@ namespace s3d
 {
 	struct GUIShapeStyle
 	{
-		std::array<double, 23> constants
+		std::array<double, 30> constants
 		{
 			20.0,	// FontSize
 
@@ -48,6 +48,14 @@ namespace s3d
 			8.0,	// ProgressBarPaddingLeft
 			8.0,	// ProgressBarPaddingRight
 			13.0,	// ProgressBarVerticalPadding
+
+			8.0,	// ColorSliderBarHeight
+			4.0,	// ColorSliderBarCornerRadius
+			18.0,	// ColorSliderBarPaddingLeft
+			18.0,	// ColorSliderBarPaddingRight
+			14.0,	// ColorSliderBarVerticalPadding
+			11.2,	// ColorSliderKnobRadius
+			2.6,	// ColorSliderKnobFrameThickness
 		};
 
 		[[nodiscard]]
