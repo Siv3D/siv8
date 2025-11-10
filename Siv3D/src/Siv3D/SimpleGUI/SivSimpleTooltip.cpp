@@ -35,6 +35,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleTooltip::SimpleTooltip(const StringView text, const Vec2& pos, const Theme theme)
 		: SimpleTooltip(text, pos, Anchor::TopLeft, unspecified, true, theme) {}
 
@@ -55,6 +61,12 @@ namespace s3d
 		, m_drawableTexts{ CreateDrawableTexts(text, SimpleGUI::GetFont()) }
 		, m_width{ width } {}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setText, getText
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleTooltip& SimpleTooltip::setText(const StringView text)
 	{
 		if (m_text == text)
@@ -68,6 +80,17 @@ namespace s3d
 		return *this;
 	}
 
+	const String& SimpleTooltip::getText() const noexcept
+	{
+		return m_text;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setWidth, getWidth
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleTooltip& SimpleTooltip::setWidth(const Optional<double>& width)
 	{
 		if (const auto oldWidth = std::exchange(m_width, width);
@@ -78,6 +101,17 @@ namespace s3d
 
 		return *this;
 	}
+
+	const Optional<double>& SimpleTooltip::getWidth() const
+	{
+		return m_width;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	region, regionOverlay
+	//
+	////////////////////////////////////////////////////////////////
 
 	RectF SimpleTooltip::region() const
 	{
@@ -140,6 +174,12 @@ namespace s3d
 		return baseRect;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	update
+	//
+	////////////////////////////////////////////////////////////////
+
 	bool SimpleTooltip::update()
 	{
 		const RectF rect = regionOverlay();
@@ -152,6 +192,12 @@ namespace s3d
 
 		return (m_mouseState.pressed && MouseL.down());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw, drawOverlay
+	//
+	////////////////////////////////////////////////////////////////
 
 	void SimpleTooltip::draw() const {}
 

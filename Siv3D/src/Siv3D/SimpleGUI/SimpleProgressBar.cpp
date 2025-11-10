@@ -23,16 +23,22 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	SimpleProgressBar::SimpleProgressBar(const double progress, const Vec2& pos, const Theme theme)
-		: SimpleProgressBar{ progress, pos, Anchor::TopLeft, DefaultWidth, theme } {}
+		: SimpleProgressBar{ progress, pos, DefaultWidth, theme } {}
 
 	SimpleProgressBar::SimpleProgressBar(const double progress, const Vec2& pos, const double width, const Theme theme)
-		: SimpleProgressBar{ progress, pos, Anchor::TopLeft, width,  theme } {}
+		: SimpleProgressBar{ progress, pos, Anchor::TopLeft, width, theme } {}
+
+	SimpleProgressBar::SimpleProgressBar(const double progress, const Vec2& pos, const double width, const bool enabled, const Theme theme)
+		: SimpleProgressBar{ progress, pos, Anchor::TopLeft, width, enabled, theme } {}
 
 	SimpleProgressBar::SimpleProgressBar(const double progress, const Vec2& pos, const Anchor anchor, const Theme theme)
 		: SimpleProgressBar{ progress, pos, anchor, DefaultWidth, theme } {}
 
 	SimpleProgressBar::SimpleProgressBar(const double progress, const Vec2& pos, const Anchor anchor, const double width, const Theme theme)
-		: ISimpleGUIElement{ pos, anchor, true, theme }
+		: SimpleProgressBar{ progress, pos, anchor, width, true, theme } {}
+
+	SimpleProgressBar::SimpleProgressBar(const double progress, const Vec2& pos, const Anchor anchor, const double width, bool enabled, const Theme theme)
+		: ISimpleGUIElement{ pos, anchor, enabled, theme }
 		, m_width{ width }
 		, m_state{ .progress = Clamp(progress, 0.0, 1.0) } {}
 

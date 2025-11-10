@@ -518,12 +518,16 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\ISimpleGUIElement.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\ISimpleGUIElement.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleButton.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleButton.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleCheckBox.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleCheckBox.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleDismissibleTooltip.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleHueSlider.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleHueSlider.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleProgressBar.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleProgressBar.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleTooltip.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleTooltip.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Smooth.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SpecialFolder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step.hpp" />

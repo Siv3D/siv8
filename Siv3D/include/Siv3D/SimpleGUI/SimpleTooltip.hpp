@@ -15,15 +15,30 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	SimpleTooltip
+	//
+	////////////////////////////////////////////////////////////////
+
 	class SimpleTooltip : public ISimpleGUIElement
 	{
 	public:
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		SimpleTooltip() = default;
 
 		[[nodiscard]]
 		SimpleTooltip(StringView text, const Vec2& pos, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		SimpleTooltip(StringView text, const Vec2& pos, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleTooltip(StringView text, const Vec2& pos, const Optional<double>& width, Theme theme = Theme::Light);
@@ -35,22 +50,49 @@ namespace s3d
 		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
 		[[nodiscard]]
+		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
+		[[nodiscard]]
 		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, bool enabled, Theme theme = Theme::Light);
 
-		/// @brief 誤用防止用コンストラクタ（= delete）
-		SimpleTooltip(StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light) = delete;
-
-		/// @brief 誤用防止用コンストラクタ（= delete）
-		SimpleTooltip(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light) = delete;
+		////////////////////////////////////////////////////////////////
+		//
+		//	(destructor)
+		//
+		////////////////////////////////////////////////////////////////
 
 		virtual ~SimpleTooltip() override = default;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	setText, getText
+		//
+		////////////////////////////////////////////////////////////////
+
 		virtual SimpleTooltip& setText(StringView text);
 
+		[[nodiscard]]
+		virtual const String& getText() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setWidth, getWidth
+		//
+		////////////////////////////////////////////////////////////////
+
 		virtual SimpleTooltip& setWidth(const Optional<double>& width);
+
+		[[nodiscard]]
+		virtual const Optional<double>& getWidth() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	region, regionOverlay
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		virtual RectF region() const override;
@@ -58,13 +100,25 @@ namespace s3d
 		[[nodiscard]]
 		virtual RectF regionOverlay() const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	update
+		//
+		////////////////////////////////////////////////////////////////
+
 		virtual bool update() override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw, drawOverlay
+		//
+		////////////////////////////////////////////////////////////////
 
 		virtual void draw() const override;
 
 		virtual void drawOverlay() const override;
 
-	private:
+	protected:
 
 		Array<DrawableText> m_drawableTexts;
 
@@ -78,3 +132,5 @@ namespace s3d
 		} m_cache;
 	};
 }
+
+# include "SimpleTooltip.ipp"

@@ -123,10 +123,7 @@ namespace s3d
 			m_state.hue = (((mouseX - barX) / barWidth) * 360.0);
 		}
 
-		if (m_mouseState.hovered)
-		{
-			Cursor::SetCapture(true);
-		}
+		updateMouseEvent(oldMouseState, m_mouseState);
 
 		return (previousHue != m_state.hue);
 	}
@@ -187,31 +184,40 @@ namespace s3d
 
 			// ノブ描画
 			{
-				const double knobX = barRect.x + (barRect.w * (m_state.hue / 360.0));
 				const Circle knob{
-					knobX,
+					(barRect.x + (barRect.w * (m_state.hue / 360.0))),
 					(barRect.y + (barRect.h / 2.0) - 0.75),
 					shapeStyle[Theme::Constant::ColorSliderKnobRadius]
 				};
 
-				const bool darkBackground = (backgroundColor.grayscale() < 0.5);
-				const ColorF shadowColor = HSV{ m_state.hue, (darkBackground ? 0.4 : 1.0), (darkBackground ? 0.5 : 0.1), 0.5 };
-				knob.drawShadow(Vec2{ 0, 1.0 }, 4.5, 0.5, shadowColor, false);
-				knob.draw(innerShadowColor);
-
-				const double midRadius = Max(0.0, (knob.r - shapeStyle[Theme::Constant::InnerShadowThickness]));
-				const ColorF knobColor = HSV{ m_state.hue, 1.0, 0.96 };
-				knob.withR(midRadius).draw(knobColor);
-				
-				if (not isEnabled())
+				// ノブの影
 				{
-					knob.draw(disableOverlayColor);
+					const bool darkBackground = (backgroundColor.grayscale() < 0.5);
+					const ColorF shadowColor = HSV{ m_state.hue, (darkBackground ? 0.4 : 1.0), (darkBackground ? 0.5 : 0.1), 0.5 };
+					knob.drawShadow(Vec2{ 0, 1.0 }, 4.5, 0.5, shadowColor, false);
+				}
+
+				// ノブの枠線
+				{
+					const ColorF borderColor = colorStyle.getBorderColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+					knob.draw(borderColor);
 				}
 
 				{
-					const double smallRadius = Max(0.0, midRadius - shapeStyle[Theme::Constant::InnerShadowThickness] - shapeStyle[Theme::Constant::ColorSliderKnobFrameThickness]);
-					const ColorF buttonColor = colorStyle.getButtonColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
-					knob.withR(smallRadius).draw(buttonColor);
+					const double midRadius = Max(0.0, (knob.r - shapeStyle[Theme::Constant::InnerShadowThickness]));
+					const ColorF knobColor = HSV{ m_state.hue, 1.0, 0.96 };
+					knob.withR(midRadius).draw(knobColor);
+
+					if (not isEnabled())
+					{
+						knob.draw(disableOverlayColor);
+					}
+
+					{
+						const double smallRadius = Max(0.0, midRadius - shapeStyle[Theme::Constant::InnerShadowThickness] - shapeStyle[Theme::Constant::ColorSliderKnobFrameThickness]);
+						const ColorF buttonColor = colorStyle.getButtonColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+						knob.withR(smallRadius).draw(buttonColor);
+					}
 				}
 			}
 

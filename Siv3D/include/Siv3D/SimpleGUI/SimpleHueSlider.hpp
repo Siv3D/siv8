@@ -35,12 +35,7 @@ namespace s3d
 		SimpleHueSlider(double hue, const Vec2& pos, Theme theme = Theme::Light);
 
 		[[nodiscard]]
-		SimpleHueSlider(double hue, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light)
-			: SimpleHueSlider{ hue, pos, DefaultWidth, param, theme } {}
-
-		[[nodiscard]]
-		SimpleHueSlider(double hue, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light)
-			: SimpleHueSlider{ hue, pos, anchor, DefaultWidth, param, theme } {}
+		SimpleHueSlider(double hue, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleHueSlider(double hue, const Vec2& pos, double width, Theme theme = Theme::Light);
@@ -50,6 +45,9 @@ namespace s3d
 
 		[[nodiscard]]
 		SimpleHueSlider(double hue, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		SimpleHueSlider(double hue, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleHueSlider(double hue, const Vec2& pos, Anchor anchor, double width, Theme theme = Theme::Light);
@@ -122,3 +120,5 @@ namespace s3d
 		} m_state;
 	};
 }
+
+# include "SimpleHueSlider.ipp"

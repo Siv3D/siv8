@@ -29,6 +29,12 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleCheckBox::SimpleCheckBox(const bool checked, const StringView text, const Vec2& pos, const Theme theme)
 		: SimpleCheckBox{ checked, text, pos, Anchor::TopLeft, unspecified, true, theme } {}
 
@@ -50,6 +56,12 @@ namespace s3d
 		, m_width{ width }
 		, m_state{ .checked = checked } {}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setChecked, isChecked
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleCheckBox& SimpleCheckBox::setChecked(const bool checked)
 	{
 		if (const auto oldChecked = std::exchange(m_state.checked, checked);
@@ -60,6 +72,17 @@ namespace s3d
 
 		return *this;
 	}
+
+	bool SimpleCheckBox::isChecked() const noexcept
+	{
+		return m_state.checked;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setText, getText
+	//
+	////////////////////////////////////////////////////////////////
 
 	SimpleCheckBox& SimpleCheckBox::setText(const StringView text)
 	{
@@ -73,6 +96,17 @@ namespace s3d
 		return *this;
 	}
 
+	const String& SimpleCheckBox::getText() const noexcept
+	{
+		return m_drawableText.text;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setWidth, getWidth
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleCheckBox& SimpleCheckBox::setWidth(const Optional<double>& width)
 	{
 		if (const auto oldWidth = std::exchange(m_width, width);
@@ -83,6 +117,17 @@ namespace s3d
 
 		return *this;
 	}
+
+	const Optional<double>& SimpleCheckBox::getWidth() const
+	{
+		return m_width;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	region
+	//
+	////////////////////////////////////////////////////////////////
 
 	RectF SimpleCheckBox::region() const
 	{
@@ -103,6 +148,12 @@ namespace s3d
 		return{ getAnchor(), getPos(), width, shapeStyle[Theme::Constant::CheckBoxLabelHeight] };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	update
+	//
+	////////////////////////////////////////////////////////////////
+
 	bool SimpleCheckBox::update()
 	{
 		const RectF rect = region();
@@ -113,13 +164,16 @@ namespace s3d
 		m_mouseState.pressed = (m_mouseState.hovered && Cursor::OnClientRect() && MouseL.pressed());
 		m_state.checked ^= (m_mouseState.pressed && MouseL.down());
 
-		if (m_mouseState.hovered)
-		{
-			Cursor::SetCapture(true);
-		}
+		updateMouseEvent(oldMouseState, m_mouseState);
 
 		return (previousChecked != m_state.checked);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
 
 	void SimpleCheckBox::draw() const 
 	{
@@ -195,10 +249,5 @@ namespace s3d
 		{
 			Cursor::RequestStyle(CursorStyle::Hand);
 		}
-	}
-
-	bool SimpleCheckBox::isChecked() const noexcept
-	{
-		return m_state.checked;
 	}
 }

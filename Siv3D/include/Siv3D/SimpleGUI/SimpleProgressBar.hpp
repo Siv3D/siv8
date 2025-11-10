@@ -16,6 +16,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	SimpleProgressBar
+	//
+	////////////////////////////////////////////////////////////////
+
 	class SimpleProgressBar : public ISimpleGUIElement
 	{
 	public:
@@ -35,25 +41,49 @@ namespace s3d
 		SimpleProgressBar(double progress, const Vec2& pos, Theme theme = Theme::Light);
 
 		[[nodiscard]]
+		SimpleProgressBar(double progress, const Vec2& pos, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
+		[[nodiscard]]
 		SimpleProgressBar(double progress, const Vec2& pos, double width, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		SimpleProgressBar(double progress, const Vec2& pos, double width, bool enabled, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleProgressBar(double progress, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
 		[[nodiscard]]
+		SimpleProgressBar(double progress, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
+		[[nodiscard]]
 		SimpleProgressBar(double progress, const Vec2& pos, Anchor anchor, double width, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		SimpleProgressBar(double progress, const Vec2& pos, Anchor anchor, double width, bool enabled, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Theme theme = Theme::Light);
 
 		[[nodiscard]]
+		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
+		[[nodiscard]]
 		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, double width, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, double width, bool enabled, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
 		[[nodiscard]]
+		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
+		[[nodiscard]]
 		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, double width, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		SimpleProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, double width, bool enabled, Theme theme = Theme::Light);
 
 		////////////////////////////////////////////////////////////////
 		//

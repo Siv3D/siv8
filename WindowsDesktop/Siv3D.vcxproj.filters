@@ -4683,6 +4683,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleHueSlider.hpp">
       <Filter>include\Siv3D\SimpleGUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleButton.ipp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleCheckBox.ipp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleTooltip.ipp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleHueSlider.ipp">
+      <Filter>include\Siv3D\SimpleGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">

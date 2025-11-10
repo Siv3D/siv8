@@ -15,15 +15,30 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	SimpleButton
+	//
+	////////////////////////////////////////////////////////////////
+
 	class SimpleButton : public ISimpleGUIElement
 	{
 	public:
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		SimpleButton() = default;
 
 		[[nodiscard]]
 		SimpleButton(StringView text, const Vec2& pos, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		SimpleButton(StringView text, const Vec2& pos, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleButton(StringView text, const Vec2& pos, const Optional<double>& width, Theme theme = Theme::Light);
@@ -35,35 +50,72 @@ namespace s3d
 		SimpleButton(StringView text, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
 		[[nodiscard]]
+		SimpleButton(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
+		[[nodiscard]]
 		SimpleButton(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleButton(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, bool enabled, Theme theme = Theme::Light);
 
-		[[nodiscard]]
-		SimpleButton(StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light)
-			: SimpleButton{ text, pos, unspecified, param, theme } {}
-
-		[[nodiscard]]
-		SimpleButton(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light)
-			: SimpleButton{ text, pos, anchor, unspecified, param, theme } {}
+		////////////////////////////////////////////////////////////////
+		//
+		//	(destructor)
+		//
+		////////////////////////////////////////////////////////////////
 
 		virtual ~SimpleButton() override = default;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	setText, getText
+		//
+		////////////////////////////////////////////////////////////////
+
 		virtual SimpleButton& setText(StringView text);
+
+		[[nodiscard]]
+		virtual const String& getText() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setWidth, getWidth
+		//
+		////////////////////////////////////////////////////////////////
 
 		virtual SimpleButton& setWidth(const Optional<double>& width);
 
 		[[nodiscard]]
+		virtual const Optional<double>& getWidth() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	region
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
 		virtual RectF region() const override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	update
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 状態を更新します。
 		/// @return このフレームでボタンが押下された場合 true, それ以外は false
 		virtual bool update() override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
+
 		virtual void draw() const override;
 
-	private:
+	protected:
 
 		DrawableText m_drawableText;
 
@@ -75,3 +127,5 @@ namespace s3d
 		} m_cache;
 	};
 }
+
+# include "SimpleButton.ipp"

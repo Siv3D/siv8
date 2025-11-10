@@ -18,6 +18,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Theme theme)
 		: SimpleButton{ text, pos, Anchor::TopLeft, unspecified, true, theme } {}
 
@@ -38,6 +44,12 @@ namespace s3d
 		, m_drawableText{ SimpleGUI::GetFont()(text) }
 		, m_width{ width } {}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setText, getText
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleButton& SimpleButton::setText(const StringView text)
 	{
 		if (text == m_drawableText.text)
@@ -50,6 +62,17 @@ namespace s3d
 		return *this;
 	}
 
+	const String& SimpleButton::getText() const noexcept
+	{
+		return m_drawableText.text;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setWidth, getWidth
+	//
+	////////////////////////////////////////////////////////////////
+
 	SimpleButton& SimpleButton::setWidth(const Optional<double>& width)
 	{
 		if (const auto oldWidth = std::exchange(m_width, width);
@@ -60,6 +83,17 @@ namespace s3d
 
 		return *this;
 	}
+
+	const Optional<double>& SimpleButton::getWidth() const
+	{
+		return m_width;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	region
+	//
+	////////////////////////////////////////////////////////////////
 
 	RectF SimpleButton::region() const
 	{
@@ -76,6 +110,12 @@ namespace s3d
 		return{ getAnchor(), getPos(), width, shapeStyle[Theme::Constant::ButtonHeight] };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	update
+	//
+	////////////////////////////////////////////////////////////////
+
 	bool SimpleButton::update()
 	{
 		const RectF rect = region();
@@ -88,6 +128,12 @@ namespace s3d
 
 		return (m_mouseState.pressed && MouseL.down());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
 
 	void SimpleButton::draw() const
 	{

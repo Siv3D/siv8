@@ -15,15 +15,30 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	SimpleCheckBox
+	//
+	////////////////////////////////////////////////////////////////
+
 	class SimpleCheckBox : public ISimpleGUIElement
 	{
 	public:
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		SimpleCheckBox() = default;
 
 		[[nodiscard]]
 		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, Theme theme = Theme::Light);
+
+		[[nodiscard]]
+		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, const Optional<double>& width, Theme theme = Theme::Light);
@@ -35,36 +50,81 @@ namespace s3d
 		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
 		[[nodiscard]]
+		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+		
+		[[nodiscard]]
 		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, bool enabled, Theme theme = Theme::Light);
 
-		/// @brief 誤用防止用コンストラクタ（= delete）
-		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light) = delete;
-
-		/// @brief 誤用防止用コンストラクタ（= delete）
-		SimpleCheckBox(bool checked, StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light) = delete;
+		////////////////////////////////////////////////////////////////
+		//
+		//	(destructor)
+		//
+		////////////////////////////////////////////////////////////////
 
 		virtual ~SimpleCheckBox() override = default;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	setChecked, isChecked
+		//
+		////////////////////////////////////////////////////////////////
+
 		virtual SimpleCheckBox& setChecked(bool checked);
-
-		virtual SimpleCheckBox& setText(StringView text);
-
-		virtual SimpleCheckBox& setWidth(const Optional<double>& width);
-
-		[[nodiscard]]
-		virtual RectF region() const override;
-
-		virtual bool update() override;
-
-		virtual void draw() const override;
 
 		[[nodiscard]]
 		virtual bool isChecked() const noexcept;
 
-	private:
+		////////////////////////////////////////////////////////////////
+		//
+		//	setText, getText
+		//
+		////////////////////////////////////////////////////////////////
+
+		virtual SimpleCheckBox& setText(StringView text);
+
+		[[nodiscard]]
+		virtual const String& getText() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setWidth, getWidth
+		//
+		////////////////////////////////////////////////////////////////
+
+		virtual SimpleCheckBox& setWidth(const Optional<double>& width);
+
+		[[nodiscard]]
+		virtual const Optional<double>& getWidth() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	region
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		virtual RectF region() const override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	update
+		//
+		////////////////////////////////////////////////////////////////
+
+		virtual bool update() override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
+
+		virtual void draw() const override;
+
+	protected:
 
 		DrawableText m_drawableText;
 
@@ -81,3 +141,5 @@ namespace s3d
 		} m_cache;
 	};
 }
+
+# include "SimpleCheckBox.ipp"
