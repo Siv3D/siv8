@@ -1153,7 +1153,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	substrView
+		//	subview
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1162,10 +1162,10 @@ namespace s3d
 		/// @param count 取得する文字数。末尾までの場合 npos
 		/// @return 部分文字列へのビュー
 		[[nodiscard]]
-		constexpr StringView substrView(size_type offset = 0, size_type count = npos) const& SIV3D_LIFETIMEBOUND;
+		constexpr StringView subview(size_type offset = 0, size_type count = npos) const& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr StringView substrView(size_type offset = 0, size_type count = npos)&& SIV3D_LIFETIMEBOUND = delete;
+		constexpr StringView subview(size_type offset = 0, size_type count = npos)&& SIV3D_LIFETIMEBOUND = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
