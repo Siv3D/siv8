@@ -14,6 +14,7 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/SpecialFolder.hpp>
 # include <Siv3D/Image.hpp>
+# include <Siv3D/UserInfo.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -82,7 +83,14 @@ namespace s3d
 
 	# else
 
-		m_screenshotSaveDirectory = (FileSystem::InitialDirectory() + U"Screenshot/");
+		if (System::IsRunningInVisualStudio())
+		{
+			m_screenshotSaveDirectory = (FileSystem::GetLaunchDirectory() + U"Screenshot/");
+		}
+		else
+		{
+			m_screenshotSaveDirectory = (FileSystem::GetExecutableDirectory() + U"Screenshot/");
+		}
 
 	# endif
 

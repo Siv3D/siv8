@@ -151,9 +151,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief r 成分のみを変更した自身のコピーを返します。
+		/// @brief r 成分のみを変更した新しい円座標を返します。
 		/// @param _r r 成分
-		/// @return r 成分を変更したコピー
+		/// @return 新しい円座標
 		[[nodiscard]]
 		constexpr OffsetCircularBase withR(value_type _r) const noexcept;
 
@@ -163,9 +163,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief theta 成分のみを変更した自身のコピーを返します。
+		/// @brief theta 成分のみを変更した新しい円座標を返します。
 		/// @param _theta theta 成分
-		/// @return theta 成分を変更したコピー
+		/// @return 新しい円座標
 		[[nodiscard]]
 		constexpr OffsetCircularBase withTheta(value_type _theta) const noexcept;
 
@@ -180,6 +180,30 @@ namespace s3d
 		/// @return 成分（r と theta）を変更したコピー
 		[[nodiscard]]
 		constexpr OffsetCircularBase withTarget(position_type target) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetR
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief r 成分をオフセットした新しい円座標を返します。
+		/// @param _r オフセット量
+		/// @return 新しい円座標
+		[[nodiscard]]
+		constexpr OffsetCircularBase withOffsetR(value_type _r) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetTheta
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief theta 成分をオフセットした新しい円座標を返します。
+		/// @param _theta オフセット量
+		/// @return 新しい円座標
+		[[nodiscard]]
+		constexpr OffsetCircularBase withOffsetTheta(value_type _theta) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

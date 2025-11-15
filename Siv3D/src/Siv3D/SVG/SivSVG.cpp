@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/SVG.hpp>
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include "SVGDetail.hpp"
 
 namespace s3d
@@ -44,7 +44,7 @@ namespace s3d
 
 	bool SVG::load(const FilePathView path)
 	{
-		BinaryReader binaryReader{ path };
+		BinaryFileReader binaryReader{ path };
 
 		if (not binaryReader)
 		{

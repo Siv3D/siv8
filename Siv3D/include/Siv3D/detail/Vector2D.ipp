@@ -447,6 +447,42 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::withOffset(const value_type _x, const value_type _y) const noexcept
+	{
+		return{ (x + _x), (y + _y) };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::withOffset(const Vector2D v) const noexcept
+	{
+		return{ (x + v.x), (y + v.y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::withOffsetX(const value_type _x) const noexcept
+	{
+		return{ (x + _x), y };
+	}
+
+	template <Concept::FloatingPoint Float>
+	constexpr Vector2D<Float> Vector2D<Float>::withOffsetY(const value_type _y) const noexcept
+	{
+		return{ x, (y + _y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	dot
 	//
 	////////////////////////////////////////////////////////////////
@@ -1020,7 +1056,7 @@ namespace s3d
 	template <Concept::FloatingPoint Float>
 	uint64 Vector2D<Float>::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

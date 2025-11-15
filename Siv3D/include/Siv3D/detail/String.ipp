@@ -1288,7 +1288,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr StringView String::substrView(size_type offset, size_type count) const&
+	constexpr StringView String::subview(size_type offset, size_type count) const&
 	{
 		const size_t strSize = m_string.size();
 
@@ -1313,7 +1313,7 @@ namespace s3d
 
 	inline uint64 String::hash() const noexcept
 	{
-		return Hash(m_string.data(), (m_string.size() * sizeof(String::value_type)));
+		return BitwiseHash(m_string.data(), (m_string.size() * sizeof(String::value_type)));
 	}
 
 	////////////////////////////////////////////////////////////////

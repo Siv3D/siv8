@@ -1,0 +1,185 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2025 Ryo Suzuki
+//	Copyright (c) 2016-2025 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# include <Siv3D/SimpleGUI.hpp>
+# include <Siv3D/GUIColorStyle.hpp>
+# include <Siv3D/GUIShapeStyle.hpp>
+# include <Siv3D/CursorStyle.hpp>
+# include <Siv3D/Mouse.hpp>
+# include <Siv3D/SimpleGUI/SimpleButton.hpp>
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Theme theme)
+		: SimpleButton{ text, pos, Anchor::TopLeft, unspecified, true, theme } {}
+
+	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Optional<double>& width, const Theme theme)
+		: SimpleButton{ text, pos, Anchor::TopLeft, width, true, theme } {}
+
+	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Optional<double>& width, const bool enabled, const Theme theme)
+		: SimpleButton{ text, pos, Anchor::TopLeft, width, enabled, theme } {}
+
+	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Anchor anchor, const Theme theme)
+		: SimpleButton{ text, pos, anchor, unspecified, true, theme } {}
+
+	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const Theme theme)
+		: SimpleButton{ text, pos, anchor, width, true, theme } {}
+
+	SimpleButton::SimpleButton(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const bool enabled, const Theme theme)
+		: ISimpleGUIElement{ pos, anchor, enabled, theme }
+		, m_drawableText{ SimpleGUI::GetFont()(text) }
+		, m_width{ width } {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setText, getText
+	//
+	////////////////////////////////////////////////////////////////
+
+	SimpleButton& SimpleButton::setText(const StringView text)
+	{
+		if (text == m_drawableText.text)
+		{
+			return *this;
+		}
+
+		m_drawableText = SimpleGUI::GetFont()(text);
+		setDirty();
+		return *this;
+	}
+
+	const String& SimpleButton::getText() const noexcept
+	{
+		return m_drawableText.text;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setWidth, getWidth
+	//
+	////////////////////////////////////////////////////////////////
+
+	SimpleButton& SimpleButton::setWidth(const Optional<double>& width)
+	{
+		if (const auto oldWidth = std::exchange(m_width, width);
+			oldWidth != width)
+		{
+			setDirty();
+		}
+
+		return *this;
+	}
+
+	const Optional<double>& SimpleButton::getWidth() const
+	{
+		return m_width;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	region
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF SimpleButton::region() const
+	{
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
+
+		if (isDirty())
+		{
+			const double fontSize = shapeStyle[Theme::Constant::FontSize];
+			m_cache.textWidth = m_drawableText.region(fontSize).w;
+			clearDirty();
+		}
+
+		const double width = m_width.value_or(m_cache.textWidth + (shapeStyle[Theme::Constant::ButtonTextHorizontalPadding] * 2));
+		return{ getAnchor(), getPos(), width, shapeStyle[Theme::Constant::ButtonHeight] };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	update
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool SimpleButton::update()
+	{
+		const RectF rect = region();
+		const MouseState oldMouseState = m_mouseState;
+
+		m_mouseState.hovered = ((not Cursor::IsCaptured()) && isVisible() && isEnabled() && rect.mouseOver());
+		m_mouseState.pressed = (m_mouseState.hovered && Cursor::OnClientRect() && MouseL.pressed());
+
+		updateMouseEvent(oldMouseState, m_mouseState);
+
+		return (m_mouseState.pressed && MouseL.down());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
+
+	void SimpleButton::draw() const
+	{
+		if (not isVisible())
+		{
+			return;
+		}
+
+		const GUIColorStyle& colorStyle = getTheme().getColorStyle();
+		const GUIShapeStyle& shapeStyle = getTheme().getShapeStyle();
+		const RectF rect = region();
+
+		// ボタン描画
+		{
+			const RoundRect roundRect = rect.rounded(shapeStyle[Theme::Constant::ButtonCornerRadius]);
+
+			// ボタン本体描画
+			{
+				const ColorF buttonColor = colorStyle.getButtonColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+				roundRect.draw(buttonColor);
+			}
+
+			// ボタン枠線描画
+			{
+				const ColorF borderColor = colorStyle.getBorderColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+				roundRect.drawFrame(shapeStyle[Theme::Constant::BorderInnerThickness], 0, borderColor);
+			}
+		}
+
+		// テキスト描画
+		{
+			const Font& font = SimpleGUI::GetFont();
+			const double fontSize = shapeStyle[Theme::Constant::FontSize];
+			const double scale = (fontSize / SimpleGUI::DefaultFontSize);
+			const double fontYOffset = scale;
+			const Vec2 textPos{ (rect.x + (rect.w - m_cache.textWidth) / 2.0), (rect.centerY() - font.height() * scale / 2.0 - fontYOffset) };
+			{
+				const ColorF textColor = colorStyle.getTextColor(isEnabled(), m_mouseState.hovered, m_mouseState.pressed);
+				m_drawableText.draw(fontSize, textPos, textColor);
+			}
+		}
+
+		// カーソル変更
+		if (m_mouseState.hovered)
+		{
+			Cursor::RequestStyle(CursorStyle::Hand);
+		}
+	}
+}

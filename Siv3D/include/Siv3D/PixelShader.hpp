@@ -85,13 +85,20 @@ namespace s3d
 		/// @param entryPoint エントリーポイント
 		/// @return ピクセルシェーダ
 		[[nodiscard]]
-		static PixelShader HLSL(FilePathView path, StringView entryPoint = U"PS");
+		static PixelShader HLSL(FilePathView path, StringView entryPoint);
 
 		/// @brief HLSL バイトコードからピクセルシェーダを作成します。
 		/// @param bytecode HLSL バイトコード
 		/// @return ピクセルシェーダ
 		[[nodiscard]]
 		static PixelShader HLSL(const Blob& bytecode);
+
+		/// @brief HLSL ソースコードからピクセルシェーダを作成します。
+		/// @param source HLSL ソースコード
+		/// @param entryPoint エントリーポイント
+		/// @return ピクセルシェーダ
+		[[nodiscard]]
+		static PixelShader HLSL(const std::string& source, StringView entryPoint);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -104,6 +111,13 @@ namespace s3d
 
 		[[nodiscard]]
 		static PixelShader MSL(FilePathView path, StringView entryPoint);
+		
+		/// @brief MSL ソースコードからピクセルシェーダを作成します。
+		/// @param source MSL ソースコード
+		/// @param entryPoint エントリーポイント
+		/// @return ピクセルシェーダ
+		[[nodiscard]]
+		static PixelShader MSL(const std::string& source, StringView entryPoint);
 
 	private:
 
@@ -112,5 +126,8 @@ namespace s3d
 
 		[[nodiscard]]
 		explicit PixelShader(const Blob& bytecode);
+
+		[[nodiscard]]
+		PixelShader(const std::string& source, StringView entryPoint);
 	};
 }

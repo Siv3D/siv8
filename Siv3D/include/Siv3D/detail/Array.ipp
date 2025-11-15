@@ -158,25 +158,22 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign(const size_type count, const value_type& value)
+	constexpr void Array<Type, Allocator>::assign(const size_type count, const value_type& value)
 	{
 		m_container.assign(count, value);
-		return *this;
 	}
 
 	template <class Type, class Allocator>
 	template <class Iterator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign(Iterator first, Iterator last)
+	constexpr void Array<Type, Allocator>::assign(Iterator first, Iterator last)
 	{
 		m_container.assign(first, last);
-		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign(const std::initializer_list<value_type> list)
+	constexpr void Array<Type, Allocator>::assign(const std::initializer_list<value_type> list)
 	{
 		m_container.assign(list);
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -187,7 +184,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <Concept::ContainerCompatibleRange<Type> Range>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::assign_range(Range&& range)
+	constexpr void Array<Type, Allocator>::assign_range(Range&& range)
 	{
 	# if __cpp_lib_containers_ranges >= 202202L
 		m_container.assign_range(std::forward<Range>(range));
@@ -195,7 +192,6 @@ namespace s3d
 		auto common_range = std::views::common(std::forward<Range>(range));
 		m_container.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
 	# endif
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1189,6 +1185,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	indexOf
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Optional<size_t> Array<Type, Allocator>::indexOf(const value_type& value) const noexcept
+	{
+		if (const auto it = std::ranges::find(m_container, value); 
+			it != m_container.end())
+		{
+			return std::ranges::distance(m_container.begin(), it);
+		}
+		else
+		{
+			return s3d::none;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	isSorted
 	//
 	////////////////////////////////////////////////////////////////
@@ -1544,6 +1560,24 @@ namespace s3d
 	constexpr void Array<Type, Allocator>::reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>
 	{
 		std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverseView
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::reverseView()
+	{
+		return std::views::reverse(m_container);
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::reverseView() const
+	{
+		return std::views::reverse(m_container);
 	}
 
 	////////////////////////////////////////////////////////////////

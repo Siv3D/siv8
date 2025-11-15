@@ -22,7 +22,7 @@ namespace s3d
 	class VertexShader;
 	class PixelShader;
 	class ShaderGroup;
-	struct MSL;
+	class MSL;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -30,9 +30,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief HLSL ファイル
-	struct HLSL
+	/// @brief HLSL シェーダ
+	class HLSL
 	{
+	public:
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	CompileOption
@@ -61,36 +63,26 @@ namespace s3d
 			Default					= (OptimizationLevel3 | WarningsAreErrors),
 		};
 
-		/// @brief HLSL ファイルのパス
-		FilePath path;
-
-		/// @brief エントリーポイント
-		String entryPoint;
-
-		/// @brief バイトコード
-		Blob bytecode;
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	(constructor)
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ファイルパスで HLSL を指定します。
-		/// @param _path HLSL ファイルのパス
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
-		explicit HLSL(FilePath _path);
+		HLSL() = default;
+
+		/// @brief ファイルパスで HLSL を指定します。
+		/// @param path HLSL ファイルのパス
+		[[nodiscard]]
+		explicit HLSL(FilePath path);
 
 		/// @brief ファイルパスとエントリーポイントで HLSL を指定します。
-		/// @param _path HLSL ファイルのパス
-		/// @param _entryPoint エントリーポイント
+		/// @param path HLSL ファイルのパス
+		/// @param entryPoint エントリーポイント
 		[[nodiscard]]
-		HLSL(FilePath _path, String _entryPoint);
-
-		/// @brief バイトコードで HLSL を指定します。
-		/// @param bytecode HLSL バイトコード
-		[[nodiscard]]
-		explicit HLSL(const Blob& bytecode);
+		HLSL(FilePath path, String entryPoint);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -120,6 +112,42 @@ namespace s3d
 		/// @brief HLSL からピクセルシェーダを作成します。
 		[[nodiscard]]
 		operator PixelShader() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromSource
+		//
+		////////////////////////////////////////////////////////////////
+
+		static HLSL FromSource(std::string source);
+
+		static HLSL FromSource(std::string source, StringView entryPoint);
+
+		static HLSL FromSource(StringView source);
+
+		static HLSL FromSource(StringView source, StringView entryPoint);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromBytecode
+		//
+		////////////////////////////////////////////////////////////////
+
+		static HLSL FromBytecode(Blob bytecode);
+
+	private:
+
+		/// @brief HLSL ファイルのパス
+		FilePath m_path;
+
+		/// @brief エントリーポイント
+		String m_entryPoint;
+
+		/// @brief HLSL ソースコード
+		std::string m_source;
+
+		/// @brief バイトコード
+		Blob m_bytecode;
 	};
 
 	DEFINE_BITMASK_OPERATORS(HLSL::CompileOption);

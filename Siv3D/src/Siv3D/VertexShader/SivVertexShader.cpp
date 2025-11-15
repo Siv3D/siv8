@@ -67,6 +67,12 @@ namespace s3d
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
+	VertexShader::VertexShader(const std::string& source, const StringView entryPoint)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromSource(source, entryPoint))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -123,6 +129,16 @@ namespace s3d
 		return VertexShader{ bytecode };
 	}
 
+	VertexShader VertexShader::HLSL(const std::string& source, const StringView entryPoint)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
+		//{
+		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//}
+
+		return VertexShader{ source, entryPoint };
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	MSL
@@ -147,5 +163,15 @@ namespace s3d
 		//}
 
 		return VertexShader{ path, entryPoint };
+	}
+
+	VertexShader VertexShader::MSL(const std::string& source, const StringView entryPoint)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
+		//{
+		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//}
+
+		return VertexShader{ source, entryPoint };
 	}
 }

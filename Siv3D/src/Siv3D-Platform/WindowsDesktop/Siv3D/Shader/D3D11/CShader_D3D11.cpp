@@ -11,7 +11,7 @@
 
 # include "CShader_D3D11.hpp"
 # include <Siv3D/ShaderStage.hpp>
-# include <Siv3D/TextReader.hpp>
+# include <Siv3D/TextFileReader.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/ConstantBuffer/D3D11/ConstantBuffer_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -54,7 +54,7 @@ namespace s3d
 		{
 			LOG_DEBUG(fmt::format("CompileHLSLFromFile(path = {}, stage = {}, entryPoint = {}, flags = {:#X})", path, ToTargetName(stage), entryPoint, flags));
 
-			TextReader reader{ path };
+			TextFileReader reader{ path };
 
 			if (not reader)
 			{
@@ -174,9 +174,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	VertexShader::IDType CShader_D3D11::createVSFromSource(const StringView source, StringView entryPoint)
+	VertexShader::IDType CShader_D3D11::createVSFromSource(const std::string& source, const StringView entryPoint)
 	{
-		return(VertexShader::IDType::Null());
+		if (auto result = Platform::Windows::CompileHLSLFromSource(source, ShaderStage::Vertex, entryPoint))
+		{
+			return createVS(std::move(*result));
+		}
+		else
+		{
+			return VertexShader::IDType::Null();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -230,9 +237,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	PixelShader::IDType CShader_D3D11::createPSFromSource(const StringView source, StringView entryPoint)
+	PixelShader::IDType CShader_D3D11::createPSFromSource(const std::string& source, const StringView entryPoint)
 	{
-		return(PixelShader::IDType::Null());
+		if (auto result = Platform::Windows::CompileHLSLFromSource(source, ShaderStage::Pixel, entryPoint))
+		{
+			return createPS(std::move(*result));
+		}
+		else
+		{
+			return PixelShader::IDType::Null();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

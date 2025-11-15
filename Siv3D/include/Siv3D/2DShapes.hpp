@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Anchor.hpp"
 # include "Circular.hpp"
 # include "OffsetCircular.hpp"
 # include "Line.hpp"
@@ -17,6 +18,7 @@
 # include "RectF.hpp"
 # include "Circle.hpp"
 # include "Ellipse.hpp"
+# include "SuperEllipse.hpp"
 # include "Triangle.hpp"
 # include "Quad.hpp"
 # include "RoundRect.hpp"
@@ -29,6 +31,7 @@
 # include "detail/RectF.ipp"
 # include "detail/Circle.ipp"
 # include "detail/Ellipse.ipp"
+# include "detail/SuperEllipse.ipp"
 # include "detail/Triangle.ipp"
 # include "detail/Quad.ipp"
 # include "detail/RoundRect.ipp"

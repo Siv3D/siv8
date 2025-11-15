@@ -478,7 +478,7 @@ namespace s3d
 
 	inline uint64 Quad::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

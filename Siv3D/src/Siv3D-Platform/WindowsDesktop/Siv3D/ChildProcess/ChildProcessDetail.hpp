@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/ChildProcess.hpp>
+# include <Siv3D/Windows/Windows.hpp>
 # include <boost/process/child.hpp>
 
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4244)

@@ -12,7 +12,7 @@
 # include <Siv3D/MD5Value.hpp>
 # include <Siv3D/Byte.hpp>
 # include <Siv3D/Blob.hpp>
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include <ThirdParty/RFC1321/RFC1321.hpp>
 
 namespace s3d
@@ -118,7 +118,7 @@ namespace s3d
 
 	MD5Value MD5Value::FromFile(const FilePathView path)
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 
 		if (not reader.isOpen())
 		{

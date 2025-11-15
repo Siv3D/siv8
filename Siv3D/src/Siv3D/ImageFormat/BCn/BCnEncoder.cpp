@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/ImageFormat/BCnEncoder.hpp>
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 # include <Siv3D/MemoryWriter.hpp>
 # include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -371,7 +371,7 @@ namespace s3d
 
 	bool BCnEncoder::save(const Image& image, const FilePathView path) const
 	{
-		BinaryWriter writer{ path };
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{

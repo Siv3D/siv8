@@ -36,6 +36,9 @@ namespace s3d
 		[[nodiscard]]
 		InputGroup() = default;
 
+		[[nodiscard]]
+		InputGroup(const Array<Input>& inputs, const Array<InputCombination>& inputCombinations);
+
 		template <class ...Args>
 		[[nodiscard]]
 		InputGroup(const Args&... args);

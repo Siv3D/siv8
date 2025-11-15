@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/ImageFormat/PNGEncoder.hpp>
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 # include <Siv3D/EngineLog.hpp>
 # if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS) | SIV3D_PLATFORM(WEB)
 #	include <ThirdParty-prebuilt/libpng/png.h>
@@ -85,7 +85,7 @@ namespace s3d
 
 	bool PNGEncoder::save(const Image& image, const FilePathView path, const PNGFilter filter) const
 	{
-		BinaryWriter writer{ path };
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{
@@ -97,7 +97,7 @@ namespace s3d
 
 	bool PNGEncoder::save(const Grid<uint16>& image, const FilePathView path, const PNGFilter filter) const
 	{
-		BinaryWriter writer{ path };
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{

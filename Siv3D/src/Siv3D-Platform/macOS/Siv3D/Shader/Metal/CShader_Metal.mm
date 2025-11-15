@@ -11,6 +11,7 @@
 
 # include "CShader_Metal.hpp"
 # include <Siv3D/ShaderStage.hpp>
+# include <Siv3D/TextFileReader.hpp>
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -99,10 +100,23 @@ namespace s3d
 
 	VertexShader::IDType CShader_Metal::createVSFromFile(const FilePathView path, StringView entryPoint)
 	{
-		// [Siv3D ToDo] ファイルからの読み込みは今後実装
 		if (path)
 		{
-			return VertexShader::IDType::Null();
+			TextFileReader reader{ path };
+			
+			if (not reader)
+			{
+				return VertexShader::IDType::Null();
+			}
+			
+			std::string source;
+			
+			if (not reader.readAll(source))
+			{
+				return VertexShader::IDType::Null();
+			}
+			
+			return createVSFromSource(source, entryPoint);
 		}
 
 		auto vertexShader = std::make_unique<MetalVertexShader>(m_defaultLibrary.get(), Unicode::ToUTF8(entryPoint));
@@ -115,22 +129,42 @@ namespace s3d
 		return m_vertexShaders.add(std::move(vertexShader));
 	}
 
-	VertexShader::IDType CShader_Metal::createVSFromSource(const StringView source, StringView entryPoint)
+	VertexShader::IDType CShader_Metal::createVSFromSource(const std::string& source, StringView entryPoint)
 	{
-		return(VertexShader::IDType::Null());
+		auto vertexShader = std::make_unique<MetalVertexShader>(m_device, source, Unicode::ToUTF8(entryPoint));
+
+		if (not vertexShader->isInitialized())
+		{
+			return VertexShader::IDType::Null();
+		}
+
+		return m_vertexShaders.add(std::move(vertexShader));
 	}
 
-	VertexShader::IDType CShader_Metal::createVSFromBytecode(const Blob& bytecode)
+	VertexShader::IDType CShader_Metal::createVSFromBytecode(const Blob&)
 	{
 		return(VertexShader::IDType::Null());
 	}
 
 	PixelShader::IDType CShader_Metal::createPSFromFile(const FilePathView path, StringView entryPoint)
 	{
-		// [Siv3D ToDo] ファイルからの読み込みは今後実装
 		if (path)
 		{
-			return PixelShader::IDType::Null();
+			TextFileReader reader{ path };
+			
+			if (not reader)
+			{
+				return PixelShader::IDType::Null();
+			}
+			
+			std::string source;
+			
+			if (not reader.readAll(source))
+			{
+				return PixelShader::IDType::Null();
+			}
+			
+			return createPSFromSource(source, entryPoint);
 		}
 
 		auto pixelShader = std::make_unique<MetalPixelShader>(m_defaultLibrary.get(), Unicode::ToUTF8(entryPoint));
@@ -143,12 +177,19 @@ namespace s3d
 		return m_pixelShaders.add(std::move(pixelShader));
 	}
 
-	PixelShader::IDType CShader_Metal::createPSFromSource(const StringView source, StringView entryPoint)
+	PixelShader::IDType CShader_Metal::createPSFromSource(const std::string& source, StringView entryPoint)
 	{
-		return(PixelShader::IDType::Null());
+		auto pixelShader = std::make_unique<MetalPixelShader>(m_device, source, Unicode::ToUTF8(entryPoint));
+
+		if (not pixelShader->isInitialized())
+		{
+			return PixelShader::IDType::Null();
+		}
+			
+		return m_pixelShaders.add(std::move(pixelShader));
 	}
 
-	PixelShader::IDType CShader_Metal::createPSFromBytecode(const Blob& bytecode)
+	PixelShader::IDType CShader_Metal::createPSFromBytecode(const Blob&)
 	{
 		return(PixelShader::IDType::Null());
 	}

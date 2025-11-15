@@ -466,6 +466,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 座標をオフセットした新しい角丸長方形を返します。
+		/// @param _x X 軸方向のオフセット量
+		/// @param _y Y 軸方向のオフセット量
+		/// @return 新しい角丸長方形
+		[[nodiscard]]
+		constexpr RoundRect withOffset(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 座標をオフセットした新しい角丸長方形を返します。
+		/// @param v オフセット量
+		/// @return 新しい角丸長方形
+		[[nodiscard]]
+		constexpr RoundRect withOffset(size_type v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 軸方向にオフセットした新しい角丸長方形を返します。
+		/// @param _x X 軸方向のオフセット量
+		/// @return 新しい角丸長方形
+		[[nodiscard]]
+		constexpr RoundRect withOffsetX(value_type _x) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい角丸長方形を返します。
+		/// @param _y Y 軸方向のオフセット量
+		/// @return 新しい角丸長方形
+		[[nodiscard]]
+		constexpr RoundRect withOffsetY(value_type _y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	stretched
 		//
 		////////////////////////////////////////////////////////////////
@@ -735,7 +772,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	topCenter, rightCenter, bottomCenter, leftCenter
+		//	topCenter, middleRight, bottomCenter, middleLeft
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -747,7 +784,7 @@ namespace s3d
 		/// @brief 基本の長方形の右辺の中心座標を返します。
 		/// @return 基本の長方形の右辺の中心座標
 		[[nodiscard]]
-		constexpr Vec2 rightCenter() const noexcept;
+		constexpr Vec2 middleRight() const noexcept;
 
 		/// @brief 基本の長方形の下辺の中心座標を返します。
 		/// @return 基本の長方形の下辺の中心座標
@@ -757,7 +794,7 @@ namespace s3d
 		/// @brief 基本の長方形の左辺の中心座標を返します。
 		/// @return 基本の長方形の左辺の中心座標
 		[[nodiscard]]
-		constexpr Vec2 leftCenter() const noexcept;
+		constexpr Vec2 middleLeft() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

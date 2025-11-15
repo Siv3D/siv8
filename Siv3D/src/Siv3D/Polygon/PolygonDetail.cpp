@@ -105,35 +105,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Polygon ToPolygon(const CwOpenPolygon& polygon)
-		{
-			std::span<const Vec2> outer = polygon.outer();
-
-			if ((2 < outer.size()) && (outer.front() == outer.back()))
-			{
-				outer = outer.subspan(0, (outer.size() - 1));
-			}
-
-			const auto& inners = polygon.inners();
-
-			Array<Array<Vec2>> holes(inners.size());
-
-			for (size_t i = 0; i < holes.size(); ++i)
-			{
-				std::span<const Vec2> inner = inners[i];
-
-				if ((2 < inner.size()) && (inner.front() == inner.back()))
-				{
-					inner = inner.subspan(0, (inner.size() - 1));
-				}
-
-				holes[i].assign(inner.rbegin(), inner.rend());
-			}
-
-			return Polygon{ outer, std::move(holes), SkipValidation::Yes};
-		}
-
-		[[nodiscard]]
 		static size_t GetVertexCount(const Array<Array<Vec2>>& holes) noexcept
 		{
 			size_t count = 0;
@@ -200,6 +171,37 @@ namespace s3d
 		static constexpr double TriangleArea2x(const Float2& p0, const Float2& p1, const Float2& p2) noexcept
 		{
 			return Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y));
+		}
+	}
+
+	namespace detail
+	{
+		Polygon ToPolygon(const CwOpenPolygon& polygon)
+		{
+			std::span<const Vec2> outer = polygon.outer();
+
+			if ((2 < outer.size()) && (outer.front() == outer.back()))
+			{
+				outer = outer.subspan(0, (outer.size() - 1));
+			}
+
+			const auto& inners = polygon.inners();
+
+			Array<Array<Vec2>> holes(inners.size());
+
+			for (size_t i = 0; i < holes.size(); ++i)
+			{
+				std::span<const Vec2> inner = inners[i];
+
+				if ((2 < inner.size()) && (inner.front() == inner.back()))
+				{
+					inner = inner.subspan(0, (inner.size() - 1));
+				}
+
+				holes[i].assign(inner.rbegin(), inner.rend());
+			}
+
+			return Polygon{ outer, std::move(holes), SkipValidation::Yes };
 		}
 	}
 
@@ -384,6 +386,16 @@ namespace s3d
 		return m_boundingRect;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBoostPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	const CwOpenPolygon& Polygon::PolygonDetail::getBoostPolygon() const noexcept
+	{
+		return m_polygon;
+	}
 
 
 	////////////////////////////////////////////////////////////////
@@ -512,7 +524,7 @@ namespace s3d
 			return{};
 		}
 
-		return ToPolygon(multiPolygon.front());
+		return detail::ToPolygon(multiPolygon.front());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -537,7 +549,7 @@ namespace s3d
 			return{};
 		}
 
-		return ToPolygon(multiPolygon.front());
+		return detail::ToPolygon(multiPolygon.front());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -561,7 +573,7 @@ namespace s3d
 			return{};
 		}
 
-		return ToPolygon(result);
+		return detail::ToPolygon(result);
 	}
 
 	////////////////////////////////////////////////////////////////

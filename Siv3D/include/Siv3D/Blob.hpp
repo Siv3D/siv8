@@ -36,6 +36,7 @@ namespace s3d
 		using const_iterator			= base_type::const_iterator;
 		using reverse_iterator			= base_type::reverse_iterator;
 		using const_reverse_iterator	= base_type::const_reverse_iterator;
+		using size_type					= base_type::size_type;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -58,12 +59,12 @@ namespace s3d
 		/// @brief 指定したサイズのバイナリデータを作成します。
 		/// @param sizeBytes バイナリデータのサイズ（バイト）
 		[[nodiscard]]
-		explicit constexpr Blob(size_t sizeBytes);
+		explicit constexpr Blob(size_type sizeBytes);
 
 		/// @brief 空のバイナリデータを作成します。
 		/// @param reserveSizeBytes reserve するサイズ（バイト）
 		[[nodiscard]]
-		explicit constexpr Blob(Arg::reserve_<size_t> reserveSizeBytes);
+		explicit constexpr Blob(Arg::reserve_<size_type> reserveSizeBytes);
 
 		/// @brief ファイルの中身をコピーしたバイナリデータを作成します。
 		/// @param path ファイルパス
@@ -79,7 +80,12 @@ namespace s3d
 		/// @param src コピーするデータの先頭ポインタ
 		/// @param sizeBytes コピーするデータのサイズ（バイト）
 		[[nodiscard]]
-		Blob(const void* src, size_t sizeBytes);
+		Blob(const void* src, size_type sizeBytes);
+
+		/// @brief バイナリデータをコピーして作成します。
+		/// @param data コピーするデータ
+		[[nodiscard]]
+		explicit Blob(std::span<const Byte> data);
 
 		/// @brief バイナリデータをコピーして作成します。
 		/// @param data コピーするデータ
@@ -119,30 +125,39 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	createFrom
+		//	assign
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 他の Blob からデータをコピーします。
 		/// @param other コピー元の Blob
-		constexpr void createFrom(const Blob& other);
+		constexpr void assign(const Blob& other);
 
 		/// @brief 他の Blob からデータをムーブします。
 		/// @param other ムーブ元の Blob
-		constexpr void createFrom(Blob&& other);
+		constexpr void assign(Blob&& other);
 
 		/// @brief メモリ上のデータをコピーします。
 		/// @param src コピーするデータの先頭ポインタ
 		/// @param sizeBytes コピーするデータのサイズ（バイト）
-		void createFrom(const void* src, size_t sizeBytes);
+		void assign(const void* src, size_type sizeBytes);
 
 		/// @brief バイナリデータをコピーします。
 		/// @param data コピーするデータ
-		constexpr void createFrom(const Array<Byte>& data);
+		constexpr void assign(const Array<Byte>& data);
 
 		/// @brief バイナリデータをムーブしてバイナリデータを作成します。
 		/// @param data ムーブするデータ
-		constexpr void createFrom(Array<Byte>&& data);
+		constexpr void assign(Array<Byte>&& data);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	assignRange
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <Concept::ContainerCompatibleRange<Byte> Range>
+		constexpr void assign_range(Range&& range);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -165,13 +180,13 @@ namespace s3d
 		/// @param index インデックス
 		/// @return 指定したインデックスにあるバイナリ値の参照
 		[[nodiscard]]
-		constexpr const Byte& operator [](size_t index) const;
+		constexpr const Byte& operator [](size_type index) const;
 
 		/// @brief 指定したインデックスにあるバイナリ値の参照を返します。
 		/// @param index インデックス
 		/// @return 指定したインデックスにあるバイナリ値の参照
 		[[nodiscard]]
-		constexpr Byte& operator [](size_t index);
+		constexpr Byte& operator [](size_type index);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -199,30 +214,6 @@ namespace s3d
 		/// @return バイナリデータを格納する配列
 		[[nodiscard]]
 		constexpr const Array<Byte>& asArray() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	view
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief バイナリデータ全体を参照するビューを返します。
-		/// @return バイナリデータ全体を参照するビュー
-		[[nodiscard]]
-		constexpr std::span<const Byte> view() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	subView
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief バイナリデータの一部を参照するビューを返します。
-		/// @param offset 範囲の先頭のオフセット（バイト）
-		/// @param count 範囲のサイズ（バイト）
-		/// @return バイナリデータの一部を参照するビュー
-		[[nodiscard]]
-		constexpr std::span<const Byte> subView(size_t offset, size_t count) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -312,7 +303,7 @@ namespace s3d
 
 		/// @brief sizeBytes バイトまでの要素をメモリの再確保無しで格納できるよう、必要に応じてメモリを再確保します。
 		/// @param sizeBytes メモリを確保するバイト数
-		constexpr void reserve(size_t sizeBytes);
+		constexpr void reserve(size_type sizeBytes);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -322,7 +313,17 @@ namespace s3d
 
 		/// @brief バイナリデータのサイズを sizeBytes バイトに変更します。
 		/// @param sizeBytes 新しいバイナリデータのサイズ（バイト）
-		constexpr void resize(size_t sizeBytes);
+		constexpr void resize(size_type sizeBytes);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	swap
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 他の Blob と要素を入れ替えます。
+		/// @param other 入れ替える配列
+		constexpr void swap(Blob& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -464,7 +465,7 @@ namespace s3d
 		/// @brief 末尾にバイナリデータを追加します。
 		/// @param src 追加するデータの先頭ポインタ
 		/// @param sizeBytes 追加するデータのサイズ
-		void append(const void* src, size_t sizeBytes);
+		void append(const void* src, size_type sizeBytes);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -488,14 +489,14 @@ namespace s3d
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<Byte> subspan(size_t pos, size_t count) noexcept;
+		constexpr std::span<Byte> subspan(size_type pos, size_type count) noexcept;
 
 		/// @brief バイナリデータの部分配列を指す span を返します。
 		/// @param pos 部分配列の開始位置
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<const Byte> subspan(size_t pos, size_t count) const noexcept;
+		constexpr std::span<const Byte> subspan(size_type pos, size_type count) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -546,6 +547,20 @@ namespace s3d
 		/// @return 2 つのバイナリデータが等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const Blob& lhs, const Blob& rhs) = default;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	swap
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2 つの Blob を入れ替えます。
+		/// @param lhs 一方の Blob
+		/// @param rhs もう一方の Blob
+		friend constexpr void swap(Blob& lhs, Blob& rhs) noexcept
+		{
+			lhs.swap(rhs);
+		}
 
 	private:
 

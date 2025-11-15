@@ -240,6 +240,12 @@ namespace s3d
 		[[nodiscard]]
 		double height() const;
 
+		/// @brief 指定したフォントサイズでテキストを描画するときのフォントの高さ（ピクセル）を返します。
+		/// @param size フォントサイズ
+		/// @return フォントの高さ（ピクセル）
+		[[nodiscard]]
+		double height(double size) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	spaceXAdvance

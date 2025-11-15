@@ -1,0 +1,252 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2025 Ryo Suzuki
+//	Copyright (c) 2016-2025 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# include <Siv3D/TextFileReader.hpp>
+# include "TextFileReaderDetail.hpp"
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextFileReader::TextFileReader()
+		: pImpl{ std::make_shared<TextFileReaderDetail>() } {}
+
+	TextFileReader::TextFileReader(const FilePathView path, const Optional<TextEncoding>& encoding)
+		: TextFileReader{}
+	{
+		open(path, encoding);
+	}
+
+	TextFileReader::TextFileReader(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
+		: TextFileReader{}
+	{
+		open(std::move(reader), encoding);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	open
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool TextFileReader::open(const FilePathView path, const Optional<TextEncoding>& encoding)
+	{
+		return pImpl->open(path, encoding);
+	}
+
+	bool TextFileReader::open(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
+	{
+		return pImpl->open(std::move(reader), encoding);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	close
+	//
+	////////////////////////////////////////////////////////////////
+
+	void TextFileReader::close()
+	{
+		pImpl->close();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isOpen
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool TextFileReader::isOpen() const noexcept
+	{
+		return pImpl->isOpen();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator bool
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextFileReader::operator bool() const noexcept
+	{
+		return pImpl->isOpen();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readChar
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<char32> TextFileReader::readChar()
+	{
+		char32 ch;
+
+		if (pImpl->readChar(ch))
+		{
+			return ch;
+		}
+		else
+		{
+			return none;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readLine
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<String> TextFileReader::readLine()
+	{
+		String line;
+
+		if (pImpl->readLine(line))
+		{
+			return line;
+		}
+		else
+		{
+			return none;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readLines
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<String> TextFileReader::readLines()
+	{
+		Array<String> lines;
+
+		pImpl->readLines(lines);
+
+		return lines;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readAll
+	//
+	////////////////////////////////////////////////////////////////
+
+	String TextFileReader::readAll()
+	{
+		String s;
+		
+		pImpl->readAll(s);
+		
+		return s;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readAllUTF8
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::string TextFileReader::readAllUTF8()
+	{
+		std::string s;
+
+		pImpl->readAll(s);
+
+		return s;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readChar
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool TextFileReader::readChar(char32& ch)
+	{
+		return pImpl->readChar(ch);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readLine
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool TextFileReader::readLine(std::string& line)
+	{
+		return pImpl->readLine(line);
+	}
+
+	bool TextFileReader::readLine(String& line)
+	{
+		return pImpl->readLine(line);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readLines
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool TextFileReader::readLines(Array<std::string>& lines)
+	{
+		return pImpl->readLines(lines);
+	}
+
+	bool TextFileReader::readLines(Array<String>& lines)
+	{
+		return pImpl->readLines(lines);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readAll
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool TextFileReader::readAll(std::string& s)
+	{
+		return pImpl->readAll(s);
+	}
+
+	bool TextFileReader::readAll(String& s)
+	{
+		return pImpl->readAll(s);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	encoding
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextEncoding TextFileReader::encoding() const noexcept
+	{
+		return pImpl->encoding();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	path
+	//
+	////////////////////////////////////////////////////////////////
+
+	const FilePath& TextFileReader::path() const noexcept
+	{
+		return pImpl->path();
+	}
+}

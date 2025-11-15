@@ -15,6 +15,7 @@
 # include "Array.hpp"
 # include "String.hpp"
 # include "Blob.hpp"
+# include "Error.hpp"
 # include "Optional.hpp"
 # include "IntToString.hpp"
 # include "JSONValueType.hpp"
@@ -30,12 +31,6 @@ namespace s3d
 	class JSONConstIterator;
 	class JSONPointer;
 
-	template <class Type>
-	concept JSONCompatibleType =
-		std::is_constructible_v<JSON, Type>
-		&& (not std::is_same_v<std::decay_t<Type>, JSON>)
-		&& (not std::is_same_v<std::decay_t<Type>, JSONValueType>);
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	JSON
@@ -46,7 +41,7 @@ namespace s3d
 	{
 	public:
 
-		using json_base			= nlohmann::json;
+		using json_base			= nlohmann::ordered_json;
 
 		using iterator			= JSONIterator;
 
@@ -64,65 +59,28 @@ namespace s3d
 		[[nodiscard]]
 		explicit JSON(JSONValueType valueType);
 
+		template <class Type>
+			requires std::constructible_from<JSON::json_base, Type>
 		[[nodiscard]]
-		JSON(const char* value);
-
+		JSON(Type&& value);
+		
 		[[nodiscard]]
-		JSON(std::string_view value);
-
-		[[nodiscard]]
-		JSON(const char32* value);
-
-		[[nodiscard]]
-		JSON(StringView value);
-
-		[[nodiscard]]
-		JSON(const String& value);
-
-		[[nodiscard]]
-		JSON(bool value);
-
-		[[nodiscard]]
-		JSON(Concept::SignedIntegral auto value);
-
-		[[nodiscard]]
-		JSON(Concept::UnsignedIntegral auto value);
-
-		[[nodiscard]]
-		JSON(Concept::FloatingPoint auto value);
+		JSON(JSON::json_base::initializer_list_t init, bool typeDeduction = true, JSONValueType manualType = JSONValueType::Array);
 
 		template <class Iterator>
 		[[nodiscard]]
 		JSON(Iterator first, Iterator last);
 
 		[[nodiscard]]
-		JSON(const std::initializer_list<std::pair<std::string, JSON>>& list);
-
-		[[nodiscard]]
-		JSON(const std::initializer_list<std::pair<String, JSON>>& list);
-
-		[[nodiscard]]
-		JSON(const Array<JSON>& array);
-
-		template <JSONCompatibleType Type>
-		[[nodiscard]]
-		JSON(const Array<Type>& arr);
-
-		template <JSONCompatibleType Type>
-		[[nodiscard]]
-		JSON(const std::initializer_list<Type>& list);
-	
-		[[nodiscard]]
 		explicit JSON(std::reference_wrapper<json_base> json);
-		
+
 		[[nodiscard]]
 		explicit JSON(std::reference_wrapper<const json_base> json);
-
+		
 		[[nodiscard]]
-		explicit JSON(json_base&& json);
-
 		JSON(const JSON& other) = default;
 
+		[[nodiscard]]
 		JSON(JSON&& other) = default;
 
 		////////////////////////////////////////////////////////////////
@@ -717,6 +675,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	base
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		const json_base& base() const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	toBSON
 		//
 		////////////////////////////////////////////////////////////////
@@ -930,6 +897,47 @@ namespace s3d
 		const json_base& getConstRef() const;
 	};
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	ToJSON
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+		requires std::constructible_from<JSON::json_base, Type>
+	[[nodiscard]]
+	JSON ToJSON(Type&& value);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromJSON
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	[[nodiscard]]
+	Type FromJSON(const JSON& json);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromJSONOr
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	[[nodiscard]]
+	Type FromJSONOr(const JSON& json, Type&& defaultValue);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromJSONOpt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	[[nodiscard]]
+	Optional<Type> FromJSONOpt(const JSON& json);
+
 	inline namespace Literals
 	{
 		inline namespace JSONLiterals
@@ -957,15 +965,35 @@ namespace s3d
 	}
 }
 
-namespace nlohmann
-{
-	template <>
-	struct adl_serializer<s3d::String>
-	{
-		static void to_json(s3d::JSON::json_base& j, const s3d::String& value);
+////////////////////////////////////////////////////////////////
+//
+//	JSONSerializer
+//
+////////////////////////////////////////////////////////////////
 
-		static void from_json(const s3d::JSON::json_base& j, s3d::String& value);
-	};
-}
+# define JSONSerializer nlohmann::adl_serializer 
+
+template <size_t N>
+struct JSONSerializer<s3d::char32[N]>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::char32(&value)[N])
+	{
+		j = s3d::JSON::json_base(s3d::Unicode::ToUTF8(value));
+	}
+};
+
+template <>
+struct JSONSerializer<s3d::StringView>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::StringView& value);
+};
+
+template <>
+struct JSONSerializer<s3d::String>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::String& value);
+
+	static void from_json(const s3d::JSON::json_base& j, s3d::String& value);
+};
 
 # include "detail/JSON.ipp"

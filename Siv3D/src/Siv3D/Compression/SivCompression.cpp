@@ -10,8 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/Compression.hpp>
-# include <Siv3D/BinaryReader.hpp>
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 # include <ThirdParty/zstd/zstd.h>
 
 namespace s3d
@@ -128,7 +128,7 @@ namespace s3d
 			dst.clear();
 
 			// ファイルのオープン
-			BinaryReader reader{ inputPath };
+			BinaryFileReader reader{ inputPath };
 			{
 				if (not reader)
 				{
@@ -200,7 +200,7 @@ namespace s3d
 		bool CompressToFile(const void* data, const size_t size, const FilePathView outputPath, const int32 compressionLevel, const int32 nThreads)
 		{
 			// ファイルのオープン
-			BinaryWriter writer{ outputPath };
+			BinaryFileWriter writer{ outputPath };
 			{
 				if (not writer)
 				{
@@ -281,7 +281,7 @@ namespace s3d
 		bool CompressFileToFile(const FilePathView inputPath, const FilePathView outputPath, const int32 compressionLevel, const int32 nThreads)
 		{
 			// 入力ファイルのオープン
-			BinaryReader reader{ inputPath };
+			BinaryFileReader reader{ inputPath };
 			{
 				if (not reader)
 				{
@@ -290,7 +290,7 @@ namespace s3d
 			}
 
 			// 出力ファイルのオープン
-			BinaryWriter writer{ outputPath };
+			BinaryFileWriter writer{ outputPath };
 			{
 				if (not writer)
 				{
@@ -447,7 +447,7 @@ namespace s3d
 		bool DecompressFile(const FilePathView path, Blob& dst)
 		{
 			// ファイルのオープン
-			BinaryReader reader{ path };
+			BinaryFileReader reader{ path };
 			{
 				if (not reader)
 				{
@@ -504,7 +504,7 @@ namespace s3d
 		bool DecompressToFile(const void* data, const size_t size, const FilePathView outputPath)
 		{
 			// ファイルのオープン
-			BinaryWriter writer{ outputPath };
+			BinaryFileWriter writer{ outputPath };
 			{
 				if (not writer)
 				{
@@ -569,7 +569,7 @@ namespace s3d
 		bool DecompressFileToFile(const FilePathView inputPath, const FilePathView outputPath)
 		{
 			// 入力ファイルのオープン
-			BinaryReader reader{ inputPath };
+			BinaryFileReader reader{ inputPath };
 			{
 				if (not reader)
 				{
@@ -578,7 +578,7 @@ namespace s3d
 			}
 
 			// 出力ファイルのオープン
-			BinaryWriter writer{ outputPath };
+			BinaryFileWriter writer{ outputPath };
 			{
 				if (not writer)
 				{

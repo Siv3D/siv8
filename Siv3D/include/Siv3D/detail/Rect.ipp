@@ -13,6 +13,36 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		[[nodiscard]]
+		constexpr Rect::position_type FromAnchor(const Anchor anchor, const Rect::value_type x, const Rect::value_type y, const Rect::value_type w, const Rect::value_type h) noexcept
+		{
+			Rect::value_type posX = x;
+			Rect::value_type posY = y;
+			
+			if (anchor.isHCenter())
+			{
+				posX -= (w / 2);
+			}
+			else if (anchor.isRight())
+			{
+				posX -= w;
+			}
+			
+			if (anchor.isVMiddle())
+			{
+				posY -= (h / 2);
+			}
+			else if (anchor.isBottom())
+			{
+				posY -= h;
+			}
+			
+			return{ posX, posY };
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -155,22 +185,22 @@ namespace s3d
 		: pos{ (topRight->x - _size.x), topRight->y }
 		, size{ _size.x, _size.y } {}
 
-	constexpr Rect::Rect(const Arg::rightCenter_<position_type> rightCenter, const value_type _size) noexcept
-		: pos{ (rightCenter->x - _size), (rightCenter->y - _size / 2) }
+	constexpr Rect::Rect(const Arg::middleRight_<position_type> middleRight, const value_type _size) noexcept
+		: pos{ (middleRight->x - _size), (middleRight->y - _size / 2) }
 		, size{ _size, _size } {}
 
-	constexpr Rect::Rect(const Arg::rightCenter_<position_type> rightCenter, const Concept::Integral auto _size) noexcept
-		: Rect{ rightCenter, static_cast<value_type>(_size) } {}
+	constexpr Rect::Rect(const Arg::middleRight_<position_type> middleRight, const Concept::Integral auto _size) noexcept
+		: Rect{ middleRight, static_cast<value_type>(_size) } {}
 
-	constexpr Rect::Rect(const Arg::rightCenter_<position_type> rightCenter, const value_type _w, const value_type _h) noexcept
-		: pos{ (rightCenter->x - _w), (rightCenter->y - _h / 2) }
+	constexpr Rect::Rect(const Arg::middleRight_<position_type> middleRight, const value_type _w, const value_type _h) noexcept
+		: pos{ (middleRight->x - _w), (middleRight->y - _h / 2) }
 		, size{ _w, _h } {}
 
-	constexpr Rect::Rect(const Arg::rightCenter_<position_type> rightCenter, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
-		: Rect{ rightCenter, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+	constexpr Rect::Rect(const Arg::middleRight_<position_type> middleRight, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
+		: Rect{ middleRight, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
 
-	constexpr Rect::Rect(const Arg::rightCenter_<position_type> rightCenter, const size_type _size) noexcept
-		: pos{ (rightCenter->x - _size.x), (rightCenter->y - _size.y / 2) }
+	constexpr Rect::Rect(const Arg::middleRight_<position_type> middleRight, const size_type _size) noexcept
+		: pos{ (middleRight->x - _size.x), (middleRight->y - _size.y / 2) }
 		, size{ _size.x, _size.y } {}
 
 	constexpr Rect::Rect(const Arg::bottomRight_<position_type> bottomRight, const value_type _size) noexcept
@@ -227,23 +257,69 @@ namespace s3d
 		: pos{ bottomLeft->x, (bottomLeft->y - _size.y) }
 		, size{ _size.x, _size.y } {}
 
-	constexpr Rect::Rect(const Arg::leftCenter_<position_type> leftCenter, const value_type _size) noexcept
-		: pos{ leftCenter->x, (leftCenter->y - _size / 2) }
+	constexpr Rect::Rect(const Arg::middleLeft_<position_type> middleLeft, const value_type _size) noexcept
+		: pos{ middleLeft->x, (middleLeft->y - _size / 2) }
 		, size{ _size, _size } {}
 
-	constexpr Rect::Rect(const Arg::leftCenter_<position_type> leftCenter, const Concept::Integral auto _size) noexcept
-		: Rect{ leftCenter, static_cast<value_type>(_size) } {}
+	constexpr Rect::Rect(const Arg::middleLeft_<position_type> middleLeft, const Concept::Integral auto _size) noexcept
+		: Rect{ middleLeft, static_cast<value_type>(_size) } {}
 
-	constexpr Rect::Rect(const Arg::leftCenter_<position_type> leftCenter, const value_type _w, const value_type _h) noexcept
-		: pos{ leftCenter->x, (leftCenter->y - _h / 2) }
+	constexpr Rect::Rect(const Arg::middleLeft_<position_type> middleLeft, const value_type _w, const value_type _h) noexcept
+		: pos{ middleLeft->x, (middleLeft->y - _h / 2) }
 		, size{ _w, _h } {}
 
-	constexpr Rect::Rect(const Arg::leftCenter_<position_type> leftCenter, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
-		: Rect{ leftCenter, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+	constexpr Rect::Rect(const Arg::middleLeft_<position_type> middleLeft, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
+		: Rect{ middleLeft, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
 
-	constexpr Rect::Rect(const Arg::leftCenter_<position_type> leftCenter, const size_type _size) noexcept
-		: pos{ leftCenter->x, (leftCenter->y - _size.y / 2) }
+	constexpr Rect::Rect(const Arg::middleLeft_<position_type> middleLeft, const size_type _size) noexcept
+		: pos{ middleLeft->x, (middleLeft->y - _size.y / 2) }
 		, size{ _size.x, _size.y } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const value_type _size) noexcept
+		: Rect{ anchor, _x, _y, _size, _size } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const Concept::Integral auto _size) noexcept
+		: Rect{ anchor, _x, _y, static_cast<value_type>(_size), static_cast<value_type>(_size) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const value_type _w, const value_type _h) noexcept
+		: pos{ detail::FromAnchor(anchor, _x, _y, _w, _h) }
+		, size{ _w, _h } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
+		: Rect{ anchor, _x, _y, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const value_type _x, const value_type _y, const size_type _size) noexcept
+		: Rect{ anchor, _x, _y, _size.x, _size.y } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const value_type _size) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), _size, _size } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const Concept::Integral auto _size) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), static_cast<value_type>(_size), static_cast<value_type>(_size) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const value_type _w, const value_type _h) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), _w, _h } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const Concept::Integral auto _x, const Concept::Integral auto _y, const size_type _size) noexcept
+		: Rect{ anchor, static_cast<value_type>(_x), static_cast<value_type>(_y), _size.x, _size.y } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const value_type _size) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, _size, _size } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const Concept::Integral auto _size) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, static_cast<value_type>(_size), static_cast<value_type>(_size) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const value_type _w, const value_type _h) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, _w, _h } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const Concept::Integral auto _w, const Concept::Integral auto _h) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, static_cast<value_type>(_w), static_cast<value_type>(_h) } {}
+
+	constexpr Rect::Rect(const Anchor anchor, const position_type _pos, const size_type _size) noexcept
+		: Rect{ anchor, _pos.x, _pos.y, _size.x, _size.y } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -548,6 +624,58 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::withOffset(const Concept::Integral auto _x, const Concept::Integral auto _y) const noexcept
+	{
+		return{ (pos + Point{ _x, _y }), size };
+	}
+
+	constexpr RectF Rect::withOffset(const Concept::Arithmetic auto _x, const Concept::Arithmetic auto _y) const noexcept
+	{
+		return{ (pos + Vec2{ _x, _y }), size };
+	}
+
+	constexpr Rect Rect::withOffset(const size_type v) const noexcept
+	{
+		return{ (pos + v), size };
+	}
+
+	constexpr RectF Rect::withOffset(const Vec2 v) const noexcept
+	{
+		return{ (pos + v), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect Rect::withOffsetX(const Concept::Integral auto _x) const noexcept
+	{
+		return{ (pos.x + static_cast<value_type>(_x)), pos.y, size };
+	}
+
+	constexpr RectF Rect::withOffsetX(const Concept::FloatingPoint auto _x) const noexcept
+	{
+		return{ (pos.x + static_cast<RectF::value_type>(_x)), pos.y, size };
+	}
+
+	constexpr Rect Rect::withOffsetY(const Concept::Integral auto _y) const noexcept
+	{
+		return{ pos.x, (pos.y + static_cast<value_type>(_y)), size };
+	}
+
+	constexpr RectF Rect::withOffsetY(const Concept::FloatingPoint auto _y) const noexcept
+	{
+		return{ pos.x, (pos.y + static_cast<RectF::value_type>(_y)), size };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	stretched
 	//
 	////////////////////////////////////////////////////////////////
@@ -806,7 +934,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	topCenter, rightCenter, bottomCenter, leftCenter
+	//	topCenter, middleRight, bottomCenter, middleLeft
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -815,7 +943,7 @@ namespace s3d
 		return{ (pos.x + size.x * 0.5), pos.y };
 	}
 
-	constexpr Vec2 Rect::rightCenter() const noexcept
+	constexpr Vec2 Rect::middleRight() const noexcept
 	{
 		return{ (pos.x + size.x), (pos.y + size.y * 0.5) };
 	}
@@ -825,7 +953,7 @@ namespace s3d
 		return{ (pos.x + size.x * 0.5), (pos.y + size.y) };
 	}
 
-	constexpr Vec2 Rect::leftCenter() const noexcept
+	constexpr Vec2 Rect::middleLeft() const noexcept
 	{
 		return{ pos.x, (pos.y + size.y * 0.5) };
 	}

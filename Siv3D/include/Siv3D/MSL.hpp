@@ -20,7 +20,7 @@ namespace s3d
 	class VertexShader;
 	class PixelShader;
 	class ShaderGroup;
-	struct HLSL;
+	class HLSL;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -29,13 +29,9 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief MSL (Metal Shading Language) ファイル
-	struct MSL
+	class MSL
 	{
-		/// @brief MSL ファイルのパス
-		FilePath path;
-
-		/// @brief エントリーポイント
-		String entryPoint;
+	public:
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -43,10 +39,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief エントリーポイントで MSL を指定します。
-		/// @param _entryPoint エントリーポイント
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
-		explicit MSL(String _entryPoint);
+		MSL() = default;
+
+		/// @brief エントリーポイントで MSL を指定します。
+		/// @param entryPoint エントリーポイント
+		[[nodiscard]]
+		explicit MSL(String entryPoint);
+
+		/// @brief ファイルパスとエントリーポイントで MSL を指定します。
+		/// @param path MSL ファイルのパス
+		/// @param entryPoint エントリーポイント
+		[[nodiscard]]
+		MSL(FilePath path, String entryPoint);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -76,5 +82,30 @@ namespace s3d
 		/// @brief MSL からピクセルシェーダを作成します。
 		[[nodiscard]]
 		operator PixelShader() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromSource
+		//
+		////////////////////////////////////////////////////////////////
+
+		static MSL FromSource(std::string source);
+
+		static MSL FromSource(std::string source, StringView entryPoint);
+
+		static MSL FromSource(StringView source);
+
+		static MSL FromSource(StringView source, StringView entryPoint);
+
+	private:
+
+		/// @brief MSL ファイルのパス
+		FilePath m_path;
+
+		/// @brief エントリーポイント
+		String m_entryPoint;
+
+		/// @brief MSL ソースコード
+		std::string m_source;
 	};
 }

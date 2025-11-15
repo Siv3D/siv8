@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/HLSL.hpp>
-# include <Siv3D/TextReader.hpp>
+# include <Siv3D/TextFileReader.hpp>
 # include <Siv3D/Shader/D3D11/CShader_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -63,7 +63,7 @@ namespace s3d
 			}
 		}
 
-		bool CompileHLSLFromSource(const FilePathView source, const FilePathView outputPath, const ShaderStage shaderStage, const StringView entryPoint, const HLSL::CompileOption option)
+		bool CompileHLSLFromSource(const StringView source, const FilePathView outputPath, const ShaderStage shaderStage, const StringView entryPoint, const HLSL::CompileOption option)
 		{
 			if (const auto result = CompileHLSLFromSource(source, shaderStage, entryPoint, option))
 			{
@@ -85,7 +85,7 @@ namespace s3d
 		{
 			if (CShader_D3D11* const pShader = static_cast<CShader_D3D11*>(Siv3DEngine::Get<ISiv3DShader>()))
 			{
-				TextReader reader{ hlslFilePath };
+				TextFileReader reader{ hlslFilePath };
 
 				if (not reader)
 				{

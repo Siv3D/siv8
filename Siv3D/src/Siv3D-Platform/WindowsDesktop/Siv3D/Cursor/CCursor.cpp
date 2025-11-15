@@ -141,6 +141,8 @@ namespace s3d
 			const Vec2 clientPos = m_transform.allInv.transformPoint(rawClientPos);
 			m_state.update(screenPos, rawClientPos, clientPos);
 		}
+
+		m_captured = false;
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -25,26 +25,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON::JSON(const Concept::SignedIntegral auto value)
-		: m_json(value) {}
-
-	JSON::JSON(const Concept::UnsignedIntegral auto value)
-		: m_json(value) {}
-
-	JSON::JSON(const Concept::FloatingPoint auto value)
-		: m_json(value) {}
+	template <class Type>
+		requires std::constructible_from<JSON::json_base, Type>
+	JSON::JSON(Type&& value)
+		: m_json(std::forward<Type>(value)) {}
 
 	template <class Iterator>
 	JSON::JSON(Iterator first, Iterator last)
 		: m_json(first, last) {}
-
-	template <JSONCompatibleType Type>
-	JSON::JSON(const Array<Type>& arr)
-		: m_json(arr.map([](auto&& v) { return json_base(v); })) {}
-
-	template <JSONCompatibleType Type>
-	JSON::JSON(const std::initializer_list<Type>& list)
-		: m_json(list) {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -84,14 +72,7 @@ namespace s3d
 	template <class Type>
 	Type JSON::get() const
 	{
-		if (const auto opt = getOpt<Type>())
-		{
-			return *opt;
-		}
-		else
-		{
-			detail::ThrowJSONGetError(typeid(Type).name(), formatUTF8Minified());
-		}
+		return FromJSON<Type>(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -108,7 +89,7 @@ namespace s3d
 	template <class Type, class U>
 	Type JSON::getOr(U&& defaultValue) const
 	{
-		return getOpt<Type>().value_or(std::forward<U>(defaultValue));
+		return FromJSONOr<Type>(*this, std::forward<U>(defaultValue));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -123,37 +104,7 @@ namespace s3d
 	template <class Type>
 	Optional<Type> JSON::getOpt() const
 	{
-		if constexpr (std::is_same_v<Type, String>)
-		{
-			if (not isString())
-			{
-				return none;
-			}
-
-			return Unicode::FromUTF8(getConstRef().get<std::string>());
-		}
-		else if constexpr (std::is_same_v<Type, std::string>)
-		{
-			if (not isString())
-			{
-				return none;
-			}
-
-			return getConstRef().get<std::string>();
-		}
-		else if constexpr (std::is_arithmetic_v<Type>)
-		{
-			return getConstRef().get<Type>();
-		}
-		else
-		{
-			if (not isString())
-			{
-				return none;
-			}
-
-			return ParseOpt<Type>(getConstRef().get<std::string>());
-		}
+		return FromJSONOpt<Type>(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -167,6 +118,69 @@ namespace s3d
 	JSON JSON::Load(Reader&& reader, const AllowExceptions allowExceptions)
 	{
 		return Load(std::make_unique<Reader>(std::move(reader)), allowExceptions);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ToJSON
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+		requires std::constructible_from<JSON::json_base, Type>
+	JSON ToJSON(Type&& value)
+	{
+		return JSON(std::forward<Type>(value));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromJSON
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	Type FromJSON(const JSON& json)
+	{
+		try
+		{
+			return json.base().template get<Type>();
+		}
+		catch (const JSON::json_base::exception&)
+		{
+			detail::ThrowJSONGetError(typeid(Type).name(), json.formatUTF8Minified());
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromJSONOr
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	Type FromJSONOr(const JSON& json, Type&& defaultValue)
+	{
+		return FromJSONOpt<Type>(json).value_or(std::forward<Type>(defaultValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromJSONOpt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	Optional<Type> FromJSONOpt(const JSON& json)
+	{
+		try
+		{
+			return json.base().template get<Type>();
+		}
+		catch (const JSON::json_base::exception&)
+		{
+			return none;
+		}
 	}
 }
 

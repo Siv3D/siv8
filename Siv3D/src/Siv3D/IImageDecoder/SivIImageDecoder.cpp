@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/IImageDecoder.hpp>
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 
 namespace s3d
 {
@@ -22,7 +22,7 @@ namespace s3d
 
 	Optional<ImageInfo> IImageDecoder::getImageInfo(const FilePathView path) const
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 
 		if (not reader)
 		{
@@ -40,7 +40,7 @@ namespace s3d
 
 	Image IImageDecoder::decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha) const
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 
 		if (not reader)
 		{
@@ -58,7 +58,7 @@ namespace s3d
 
 	Grid<uint16> IImageDecoder::decodeGray16(const FilePathView path) const
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 
 		if (not reader)
 		{

@@ -15,21 +15,21 @@
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/Demangle.hpp>
 # include <Siv3D/Error.hpp>
-# include <Siv3D/TextWriter.hpp>
-# include <Siv3D/TextReader.hpp>
+# include <Siv3D/TextFileWriter.hpp>
+# include <Siv3D/TextFileReader.hpp>
 
 namespace s3d
 {
 	namespace
 	{
 		[[nodiscard]]
-		static constexpr nlohmann::json::value_t ToValueType(const JSONValueType valueType) noexcept
+		static constexpr JSON::json_base::value_t ToValueType(const JSONValueType valueType) noexcept
 		{
-			return static_cast<nlohmann::json::value_t>(valueType);
+			return static_cast<JSON::json_base::value_t>(valueType);
 		}
 
 		[[nodiscard]]
-		static constexpr JSONValueType ToJSONValueType(const nlohmann::json::value_t valueType) noexcept
+		static constexpr JSONValueType ToJSONValueType(const JSON::json_base::value_t valueType) noexcept
 		{
 			return static_cast<JSONValueType>(valueType);
 		}
@@ -81,7 +81,14 @@ namespace s3d
 	{
 		void ThrowJSONGetError(const char* type, const std::string_view s)
 		{
-			throw Error{ fmt::format("JSON::get<{}>(\"{}\") failed", DemangleUTF8(type), s) };
+			if (s.size() <= 64)
+			{
+				throw Error{ fmt::format("JSON::get<{}>(\"{}\") failed", DemangleUTF8(type), s) };
+			}
+			else
+			{
+				throw Error{ fmt::format("JSON::get<{}>(\"{}\"...) failed", DemangleUTF8(type), s.substr(0, 64)) };
+			}
 		}
 	}
 
@@ -92,70 +99,19 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	JSON::JSON(const std::nullptr_t)
-		: m_json(nullptr) {}
+		: m_json(std::in_place_type<JSON::json_base>, nullptr) {}
 
 	JSON::JSON(const JSONValueType valueType)
-		: m_json(ToValueType(valueType)) {}
+		: m_json(std::in_place_type<JSON::json_base>, ToValueType(valueType)) {}
 
-	JSON::JSON(const char* value)
-		: m_json(value) {}
-
-	JSON::JSON(const std::string_view value)
-		: m_json(value) {}
-
-	JSON::JSON(const char32* value)
-		: m_json(String{ value }) {}
-
-	JSON::JSON(const StringView value)
-		: m_json(String{ value }) {}
-
-	JSON::JSON(const String& value)
-		: m_json(value) {}
-
-	JSON::JSON(const bool value)
-		: m_json(value) {}
-
-	JSON::JSON(const std::initializer_list<std::pair<std::string, JSON>>& list)
-		: m_json()
-	{
-		auto& json = std::get<json_base>(m_json);
-
-		for (const auto& element : list)
-		{
-			json[element.first] = element.second.getConstRef();
-		}
-	}
-
-	JSON::JSON(const std::initializer_list<std::pair<String, JSON>>& list)
-		: m_json()
-	{
-		auto& json = std::get<json_base>(m_json);
-
-		for (const auto& element : list)
-		{
-			json[Unicode::ToUTF8(element.first)] = element.second.getConstRef();
-		}
-	}
-
-	JSON::JSON(const Array<JSON>& arr)
-		: m_json(nlohmann::json::array())
-	{
-		auto& json = std::get<json_base>(m_json);
-
-		for (const auto& v : arr)
-		{
-			json.push_back(v.getConstRef());
-		}
-	}
+	JSON::JSON(JSON::json_base::initializer_list_t init, const bool typeDeduction, const JSONValueType manualType)
+		: m_json(std::in_place_type<JSON::json_base>, init, typeDeduction, ToValueType(manualType)) {}
 
 	JSON::JSON(std::reference_wrapper<json_base> json)
 		: m_json(json) {}
 
 	JSON::JSON(std::reference_wrapper<const json_base> json)
 		: m_json(json) {}
-
-	JSON::JSON(json_base&& json)
-		: m_json(std::move(json)) {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -510,7 +466,7 @@ namespace s3d
 			ThrowNotBinary();
 		}
 
-		const auto& binary = getConstRef().get<nlohmann::json::binary_t>();
+		const auto& binary = getConstRef().get<JSON::json_base::binary_t>();
 
 		return Blob{ binary.data(), binary.size() };
 	}
@@ -794,7 +750,7 @@ namespace s3d
 
 	bool JSON::save(const FilePathView path, const char32 indent, const size_t spaceCount, const EnsureAscii ensureAscii) const
 	{
-		TextWriter writer{ path };
+		TextFileWriter writer{ path };
 
 		if (not writer)
 		{
@@ -814,7 +770,7 @@ namespace s3d
 
 	bool JSON::saveMinified(const FilePathView path, const EnsureAscii ensureAscii) const
 	{
-		TextWriter writer{ path };
+		TextFileWriter writer{ path };
 
 		if (not writer)
 		{
@@ -828,6 +784,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	base
+	//
+	////////////////////////////////////////////////////////////////
+
+	[[nodiscard]]
+	const JSON::json_base& JSON::base() const
+	{
+		return getConstRef();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	toBSON
 	//
 	////////////////////////////////////////////////////////////////
@@ -835,7 +803,7 @@ namespace s3d
 	Blob JSON::toBSON() const
 	{
 		std::vector<uint8> result;
-		nlohmann::json::to_bson(getConstRef(), result);
+		JSON::json_base::to_bson(getConstRef(), result);
 		return Blob{ result.data(), result.size() };
 	}
 
@@ -848,7 +816,7 @@ namespace s3d
 	Blob JSON::toCBOR() const
 	{
 		std::vector<uint8> result;
-		nlohmann::json::to_cbor(getConstRef(), result);
+		JSON::json_base::to_cbor(getConstRef(), result);
 		return Blob{ result.data(), result.size() };
 	}
 
@@ -861,7 +829,7 @@ namespace s3d
 	Blob JSON::toMessagePack() const
 	{
 		std::vector<uint8> result;
-		nlohmann::json::to_msgpack(getConstRef(), result);
+		JSON::json_base::to_msgpack(getConstRef(), result);
 		return Blob{ result.data(), result.size() };
 	}
 
@@ -895,7 +863,7 @@ namespace s3d
 
 	JSON JSON::Load(const FilePathView path, const AllowExceptions allowExceptions)
 	{
-		TextReader reader{ path };
+		TextFileReader reader{ path };
 
 		if (not reader)
 		{
@@ -912,7 +880,7 @@ namespace s3d
 
 	JSON JSON::Load(std::unique_ptr<IReader>&& reader, const AllowExceptions allowExceptions)
 	{
-		TextReader textReader{ std::move(reader) };
+		TextFileReader textReader{ std::move(reader) };
 
 		if (not textReader)
 		{
@@ -939,9 +907,9 @@ namespace s3d
 
 		try
 		{
-			json.m_json = nlohmann::json::parse(s, nullptr, allowExceptions.getBool(), true);
+			json.m_json = JSON::json_base::parse(s, nullptr, allowExceptions.getBool(), true);
 		}
-		catch (const nlohmann::json::parse_error& e)
+		catch (const JSON::json_base::parse_error& e)
 		{
 			throw Error{ fmt::format("JSON::Parse(): {}", e.what()) };
 		}
@@ -966,7 +934,7 @@ namespace s3d
 
 		try
 		{
-			json.m_json = nlohmann::json::from_bson(bson.begin(), bson.end(), true, allowExceptions.getBool());
+			json.m_json = JSON::json_base::from_bson(bson.begin(), bson.end(), true, allowExceptions.getBool());
 		}
 		catch (const std::exception& e)
 		{
@@ -988,7 +956,7 @@ namespace s3d
 
 		try
 		{
-			json.m_json = nlohmann::json::from_cbor(cbor.begin(), cbor.end(), true, allowExceptions.getBool());
+			json.m_json = JSON::json_base::from_cbor(cbor.begin(), cbor.end(), true, allowExceptions.getBool());
 		}
 		catch (const std::exception& e)
 		{
@@ -1010,7 +978,7 @@ namespace s3d
 
 		try
 		{
-			json.m_json = nlohmann::json::from_msgpack(msgpack.begin(), msgpack.end(), true, allowExceptions.getBool());
+			json.m_json = JSON::json_base::from_msgpack(msgpack.begin(), msgpack.end(), true, allowExceptions.getBool());
 		}
 		catch (const std::exception& e)
 		{
@@ -1139,22 +1107,17 @@ namespace s3d
 	}
 }
 
-namespace nlohmann
+void JSONSerializer<s3d::StringView>::to_json(s3d::JSON::json_base& j, const s3d::StringView& value)
 {
-	void adl_serializer<s3d::String>::to_json(s3d::JSON::json_base& j, const s3d::String& value)
-	{
-		j = s3d::Unicode::ToUTF8(value);
-	}
+	j = s3d::Unicode::ToUTF8(value);
+}
 
-	void adl_serializer<s3d::String>::from_json(const s3d::JSON::json_base& j, s3d::String& value)
-	{
-		if (j.is_string())
-		{
-			value = s3d::Unicode::FromUTF8(j.get<std::string>());
-		}
-		else
-		{
-			value.clear();
-		}
-	}
+void JSONSerializer<s3d::String>::to_json(s3d::JSON::json_base& j, const s3d::String& value)
+{
+	j = s3d::Unicode::ToUTF8(value);
+}
+
+void JSONSerializer<s3d::String>::from_json(const s3d::JSON::json_base& j, s3d::String& value)
+{
+	value = s3d::Unicode::FromUTF8(j.get<std::string>());
 }

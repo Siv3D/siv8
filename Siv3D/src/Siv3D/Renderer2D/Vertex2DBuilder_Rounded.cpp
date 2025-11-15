@@ -1478,7 +1478,7 @@ namespace s3d
 			{
 				if (startCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::leftCenter = start, halfThickness, thickness }.rotatedAt(start, startAngle);
+					const Quad quad = RectF{ Arg::middleLeft = start, halfThickness, thickness }.rotatedAt(start, startAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, colorStart);
 				}
@@ -1492,7 +1492,7 @@ namespace s3d
 			{
 				if (endCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::rightCenter = end, halfThickness, thickness }.rotatedAt(end, endAngle);
+					const Quad quad = RectF{ Arg::middleRight = end, halfThickness, thickness }.rotatedAt(end, endAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, colorEnd);
 				}
@@ -1522,7 +1522,7 @@ namespace s3d
 			{
 				if (startCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::leftCenter = start, halfThickness, thickness }.rotatedAt(start, startAngle);
+					const Quad quad = RectF{ Arg::middleLeft = start, halfThickness, thickness }.rotatedAt(start, startAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, { c1, c0, c0, c1 });
 				}
@@ -1536,7 +1536,7 @@ namespace s3d
 			{
 				if (endCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::rightCenter = end, halfThickness, thickness }.rotatedAt(end, endAngle);
+					const Quad quad = RectF{ Arg::middleRight = end, halfThickness, thickness }.rotatedAt(end, endAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, { c2, c3, c3, c2 });
 				}
@@ -2126,6 +2126,131 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildSuperEllipse
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildSuperEllipse(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float n, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
+		{
+			const float majorAxis = Max(a, b);
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(majorAxis * scale); // 円周の 1/4 に相当する品質
+			const Vertex2D::IndexType FullQuality = (Quality * 4);
+			const Vertex2D::IndexType VertexCount = (FullQuality + 1);
+			const Vertex2D::IndexType IndexCount = (FullQuality * 3);
+			
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+			pVertex[0].pos.set(centerX, centerY);
+
+			const Float4 colorDiff = (color1 - color0);
+			const float minX = (centerX - a);
+			const float minY = (centerY - b);
+			const float invW = (1.0f / (2.0f * a));
+			const float invH = (1.0f / (2.0f * b));
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			Vertex2D* pDst0 = &pVertex[1];
+			Vertex2D* pDst1 = (pDst0 + Quality);
+			Vertex2D* pDst2 = (pDst1 + Quality);
+			Vertex2D* pDst3 = (pDst2 + Quality);
+
+			const float p = (2.0f / n);
+			const auto SignedPow = [p](float v) -> float
+			{
+				return std::copysign(std::pow(Abs(v), p), v);
+			};
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float cp = SignedPow(cs->x);
+				const float sp = SignedPow(cs->y);
+
+				const float ax_cp = (a * cp);
+				const float ax_sp = (a * sp);
+				const float by_sp = (b * sp);
+				const float by_cp = (b * cp);
+
+				if (colorType == ColorFillDirection::InOut)
+				{
+					pDst0->set((centerX + ax_cp), (centerY + by_sp), color1);
+					pDst1->set((centerX - ax_sp), (centerY + by_cp), color1);
+					pDst2->set((centerX - ax_cp), (centerY - by_sp), color1);
+					pDst3->set((centerX + ax_sp), (centerY - by_cp), color1);
+				}
+				else if (colorType == ColorFillDirection::TopBottom)
+				{
+					const float y0 = centerY + by_sp;
+					const float y1 = centerY + by_cp;
+					const float y2 = centerY - by_sp;
+					const float y3 = centerY - by_cp;
+
+					const Float4 c0 = color0 + ((y0 - minY) * invH) * colorDiff;
+					const Float4 c1 = color0 + ((y1 - minY) * invH) * colorDiff;
+					const Float4 c2 = color0 + ((y2 - minY) * invH) * colorDiff;
+					const Float4 c3 = color0 + ((y3 - minY) * invH) * colorDiff;
+
+					pDst0->set((centerX + ax_cp), y0, c0);
+					pDst1->set((centerX - ax_sp), y1, c1);
+					pDst2->set((centerX - ax_cp), y2, c2);
+					pDst3->set((centerX + ax_sp), y3, c3);
+				}
+				else
+				{
+					const float x0 = centerX + ax_cp;
+					const float x1 = centerX - ax_sp;
+					const float x2 = centerX - ax_cp;
+					const float x3 = centerX + ax_sp;
+
+					const Float4 c0 = color0 + ((x0 - minX) * invW) * colorDiff;
+					const Float4 c1 = color0 + ((x1 - minX) * invW) * colorDiff;
+					const Float4 c2 = color0 + ((x2 - minX) * invW) * colorDiff;
+					const Float4 c3 = color0 + ((x3 - minX) * invW) * colorDiff;
+
+					pDst0->set(x0, (centerY + by_sp), c0);
+					pDst1->set(x1, (centerY + by_cp), c1);
+					pDst2->set(x2, (centerY - by_sp), c2);
+					pDst3->set(x3, (centerY - by_cp), c3);
+				}
+
+				++pDst0; ++pDst1; ++pDst2; ++pDst3;
+			}
+
+			// 中心の色
+			if (colorType == ColorFillDirection::InOut)
+			{
+				pVertex->color = color0;
+			}
+			else
+			{
+				pVertex->color = color0.getMidpoint(color1);
+			}
+
+			{
+				for (Vertex2D::IndexType i = 0; i < (FullQuality - 1); ++i)
+				{
+					*pIndex++ = indexOffset;
+					*pIndex++ = indexOffset + (i + 1);
+					*pIndex++ = indexOffset + (i + 2);
+				}
+
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + FullQuality);
+				*pIndex++ = (indexOffset + 1);
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildRoundRect
 		//
 		////////////////////////////////////////////////////////////////
@@ -2145,8 +2270,8 @@ namespace s3d
 				return 0;
 			}
 
-			const float leftCenterX		= (rect.left + r);
-			const float rightCenterX	= (rect.right - r);
+			const float middleLeftX		= (rect.left + r);
+			const float middleRightX	= (rect.right - r);
 			const float topCenterY		= (rect.top + r);
 			const float bottomCenterY	= (rect.bottom - r);
 
@@ -2163,10 +2288,10 @@ namespace s3d
 				const float x = (cs->x * r);
 				const float y = (cs->y * r);
 
-				pDst0->set((rightCenterX + x), (topCenterY + y), color);
-				pDst1->set((rightCenterX - y), (bottomCenterY + x), color);
-				pDst2->set((leftCenterX - x), (bottomCenterY - y), color);
-				pDst3->set((leftCenterX + y), (topCenterY - x), color);
+				pDst0->set((middleRightX + x), (topCenterY + y), color);
+				pDst1->set((middleRightX - y), (bottomCenterY + x), color);
+				pDst2->set((middleLeftX - x), (bottomCenterY - y), color);
+				pDst3->set((middleLeftX + y), (topCenterY - x), color);
 
 				++pDst0;
 				++pDst1;
@@ -2179,10 +2304,10 @@ namespace s3d
 				const float x = (pCS->x * r);
 				const float y = (pCS->y * r);
 
-				pDst0->set((rightCenterX - y), (topCenterY + x), color);
-				pDst1->set((rightCenterX - x), (bottomCenterY - y), color);
-				pDst2->set((leftCenterX + y), (bottomCenterY - x), color);
-				pDst3->set((leftCenterX + x), (topCenterY + y), color);
+				pDst0->set((middleRightX - y), (topCenterY + x), color);
+				pDst1->set((middleRightX - x), (bottomCenterY - y), color);
+				pDst2->set((middleLeftX + y), (bottomCenterY - x), color);
+				pDst3->set((middleLeftX + x), (topCenterY + y), color);
 
 				++pDst0;
 				++pDst1;
@@ -2192,10 +2317,10 @@ namespace s3d
 
 			// Fan の中心の頂点
 			{
-				(pDst3++)->set(rightCenterX, topCenterY, color);
-				(pDst3++)->set(rightCenterX, bottomCenterY, color);
-				(pDst3++)->set(leftCenterX, bottomCenterY, color);
-				(pDst3++)->set(leftCenterX, topCenterY, color);
+				(pDst3++)->set(middleRightX, topCenterY, color);
+				(pDst3++)->set(middleRightX, bottomCenterY, color);
+				(pDst3++)->set(middleLeftX, bottomCenterY, color);
+				(pDst3++)->set(middleLeftX, topCenterY, color);
 			}
 
 			const Vertex2D::IndexType trFanStartIndex	= indexOffset;
@@ -2300,8 +2425,8 @@ namespace s3d
 				return 0;
 			}
 
-			const float leftCenterX		= (rect.left + r);
-			const float rightCenterX	= (rect.right - r);
+			const float middleLeftX		= (rect.left + r);
+			const float middleRightX	= (rect.right - r);
 			const float topCenterY		= (rect.top + r);
 			const float bottomCenterY	= (rect.bottom - r);
 
@@ -2329,10 +2454,10 @@ namespace s3d
 					const Float4 c2 = (color0 + (colorROffset + (-cs->y * colorRScale)) * colorDiff);
 					const Float4 c3 = (color0 + ((-cs->x + 1.0f) * colorRScale) * colorDiff);
 
-					pDst0->set((rightCenterX + x), (topCenterY + y), c0);
-					pDst1->set((rightCenterX - y), (bottomCenterY + x), c1);
-					pDst2->set((leftCenterX - x), (bottomCenterY - y), c2);
-					pDst3->set((leftCenterX + y), (topCenterY - x), c3);
+					pDst0->set((middleRightX + x), (topCenterY + y), c0);
+					pDst1->set((middleRightX - y), (bottomCenterY + x), c1);
+					pDst2->set((middleLeftX - x), (bottomCenterY - y), c2);
+					pDst3->set((middleLeftX + y), (topCenterY - x), c3);
 				}
 				else // ColorFillDirection::LeftRight
 				{
@@ -2341,10 +2466,10 @@ namespace s3d
 					const Float4 c2 = (color0 + ((-cs->x + 1.0f) * colorRScale) * colorDiff);
 					const Float4 c3 = (color0 + ((cs->y + 1.0f) * colorRScale) * colorDiff);
 
-					pDst0->set((rightCenterX + x), (topCenterY + y), c0);
-					pDst1->set((rightCenterX - y), (bottomCenterY + x), c1);
-					pDst2->set((leftCenterX - x), (bottomCenterY - y), c2);
-					pDst3->set((leftCenterX + y), (topCenterY - x), c3);
+					pDst0->set((middleRightX + x), (topCenterY + y), c0);
+					pDst1->set((middleRightX - y), (bottomCenterY + x), c1);
+					pDst2->set((middleLeftX - x), (bottomCenterY - y), c2);
+					pDst3->set((middleLeftX + y), (topCenterY - x), c3);
 				}
 
 				++pDst0;
@@ -2365,10 +2490,10 @@ namespace s3d
 					const Float4 c2 = (color0 + (1.0 - colorRScale) * colorDiff);
 					const Float4 c3 = color0;
 
-					pDst0->set((rightCenterX - y), (topCenterY + x), c0);
-					pDst1->set((rightCenterX - x), (bottomCenterY - y), c1);
-					pDst2->set((leftCenterX + y), (bottomCenterY - x), c2);
-					pDst3->set((leftCenterX + x), (topCenterY + y), c3);
+					pDst0->set((middleRightX - y), (topCenterY + x), c0);
+					pDst1->set((middleRightX - x), (bottomCenterY - y), c1);
+					pDst2->set((middleLeftX + y), (bottomCenterY - x), c2);
+					pDst3->set((middleLeftX + x), (topCenterY + y), c3);
 				}
 				else // ColorFillDirection::LeftRight
 				{
@@ -2377,10 +2502,10 @@ namespace s3d
 					const Float4 c2 = color0;
 					const Float4 c3 = (color0 + colorRScale * colorDiff);
 
-					pDst0->set((rightCenterX - y), (topCenterY + x), c0);
-					pDst1->set((rightCenterX - x), (bottomCenterY - y), c1);
-					pDst2->set((leftCenterX + y), (bottomCenterY - x), c2);
-					pDst3->set((leftCenterX + x), (topCenterY + y), c3);
+					pDst0->set((middleRightX - y), (topCenterY + x), c0);
+					pDst1->set((middleRightX - x), (bottomCenterY - y), c1);
+					pDst2->set((middleLeftX + y), (bottomCenterY - x), c2);
+					pDst3->set((middleLeftX + x), (topCenterY + y), c3);
 				}
 
 				++pDst0;
@@ -2396,20 +2521,20 @@ namespace s3d
 					const Float4 c0 = (color0 + colorRScale * colorDiff);
 					const Float4 c1 = (color0 + (1.0 - colorRScale) * colorDiff);
 
-					(pDst3++)->set(rightCenterX, topCenterY, c0);
-					(pDst3++)->set(rightCenterX, bottomCenterY, c1);
-					(pDst3++)->set(leftCenterX, bottomCenterY, c1);
-					(pDst3++)->set(leftCenterX, topCenterY, c0);
+					(pDst3++)->set(middleRightX, topCenterY, c0);
+					(pDst3++)->set(middleRightX, bottomCenterY, c1);
+					(pDst3++)->set(middleLeftX, bottomCenterY, c1);
+					(pDst3++)->set(middleLeftX, topCenterY, c0);
 				}
 				else // ColorFillDirection::LeftRight
 				{
 					const Float4 c0 = (color0 + (1.0 - colorRScale) * colorDiff);
 					const Float4 c1 = (color0 + colorRScale * colorDiff);
 
-					(pDst3++)->set(rightCenterX, topCenterY, c0);
-					(pDst3++)->set(rightCenterX, bottomCenterY, c0);
-					(pDst3++)->set(leftCenterX, bottomCenterY, c1);
-					(pDst3++)->set(leftCenterX, topCenterY, c1);
+					(pDst3++)->set(middleRightX, topCenterY, c0);
+					(pDst3++)->set(middleRightX, bottomCenterY, c0);
+					(pDst3++)->set(middleLeftX, bottomCenterY, c1);
+					(pDst3++)->set(middleLeftX, topCenterY, c1);
 				}
 			}
 
@@ -3089,8 +3214,8 @@ namespace s3d
 				return 0;
 			}
 
-			const float leftCenterX		= (rect.left + r);
-			const float rightCenterX	= (rect.right - r);
+			const float middleLeftX		= (rect.left + r);
+			const float middleRightX	= (rect.right - r);
 			const float topCenterY		= (rect.top + r);
 			const float bottomCenterY	= (rect.bottom - r);
 
@@ -3107,10 +3232,10 @@ namespace s3d
 				const float x = (cs->x * r);
 				const float y = (cs->y * r);
 
-				pDst0->set((rightCenterX + x), (topCenterY + y), color);
-				pDst1->set((rightCenterX - y), (bottomCenterY + x), color);
-				pDst2->set((leftCenterX - x), (bottomCenterY - y), color);
-				pDst3->set((leftCenterX + y), (topCenterY - x), color);
+				pDst0->set((middleRightX + x), (topCenterY + y), color);
+				pDst1->set((middleRightX - y), (bottomCenterY + x), color);
+				pDst2->set((middleLeftX - x), (bottomCenterY - y), color);
+				pDst3->set((middleLeftX + y), (topCenterY - x), color);
 
 				++pDst0;
 				++pDst1;
@@ -3123,10 +3248,10 @@ namespace s3d
 				const float x = (pCS->x * r);
 				const float y = (pCS->y * r);
 
-				pDst0->set((rightCenterX - y), (topCenterY + x), color);
-				pDst1->set((rightCenterX - x), (bottomCenterY - y), color);
-				pDst2->set((leftCenterX + y), (bottomCenterY - x), color);
-				pDst3->set((leftCenterX + x), (topCenterY + y), color);
+				pDst0->set((middleRightX - y), (topCenterY + x), color);
+				pDst1->set((middleRightX - x), (bottomCenterY - y), color);
+				pDst2->set((middleLeftX + y), (bottomCenterY - x), color);
+				pDst3->set((middleLeftX + x), (topCenterY + y), color);
 
 				++pDst0;
 				++pDst1;
@@ -3136,10 +3261,10 @@ namespace s3d
 
 			// Fan の中心の頂点
 			{
-				(pDst3++)->set(rightCenterX, topCenterY, color);
-				(pDst3++)->set(rightCenterX, bottomCenterY, color);
-				(pDst3++)->set(leftCenterX, bottomCenterY, color);
-				(pDst3++)->set(leftCenterX, topCenterY, color);
+				(pDst3++)->set(middleRightX, topCenterY, color);
+				(pDst3++)->set(middleRightX, bottomCenterY, color);
+				(pDst3++)->set(middleLeftX, bottomCenterY, color);
+				(pDst3++)->set(middleLeftX, topCenterY, color);
 			}
 
 			// UV 座標を設定する
@@ -3242,6 +3367,172 @@ namespace s3d
 					*pIndex++ = blFanStartIndex;
 					*pIndex++ = brCenterIndex;
 					*pIndex++ = brFanEndIndex;
+				}
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildCircleShadowNoFill
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCircleShadowNoFill(const BufferCreatorFunc& bufferCreator, const Circle& circle, float blur, const Float4& color, float scale)
+		{
+			// ベースとなる円の半径, ぼかしの半分
+			const float r = static_cast<float>(circle.r);
+			const float halfBlur = (blur * 0.5f);
+
+			// 影の開始半径, 終了半径
+			const float rInner = (r - halfBlur);
+			const float rOuter = (r + halfBlur);
+
+			// 円の品質
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(rOuter * scale);
+			const Vertex2D::IndexType FullQuality = (Quality * 4);
+			const Vertex2D::IndexType VertexCount = (FullQuality * 2);
+			const Vertex2D::IndexType IndexCount = (FullQuality * 6);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = static_cast<float>(circle.x);
+			const float centerY = static_cast<float>(circle.y);
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			Vertex2D* pDst0 = &pVertex[0];
+			Vertex2D* pDst1 = (pDst0 + Quality * 2);
+			Vertex2D* pDst2 = (pDst0 + Quality * 4);
+			Vertex2D* pDst3 = (pDst0 + Quality * 6);
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float ox = (cs->x * rOuter);
+				const float ix = (cs->x * rInner);
+				const float oy = (cs->y * rOuter);
+				const float iy = (cs->y * rInner);
+
+				(pDst0++)->set((centerX + ox), (centerY + oy), 0.0f, 0.5f, color);
+				(pDst0++)->set((centerX + ix), (centerY + iy), 0.5f, 0.5f, color);
+
+				(pDst1++)->set((centerX - oy), (centerY + ox), 0.0f, 0.5f, color);
+				(pDst1++)->set((centerX - iy), (centerY + ix), 0.5f, 0.5f, color);
+
+				(pDst2++)->set((centerX - ox), (centerY - oy), 0.0f, 0.5f, color);
+				(pDst2++)->set((centerX - ix), (centerY - iy), 0.5f, 0.5f, color);
+
+				(pDst3++)->set((centerX + oy), (centerY - ox), 0.0f, 0.5f, color);
+				(pDst3++)->set((centerX + iy), (centerY - ix), 0.5f, 0.5f, color);
+			}
+
+			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+			{
+				for (Vertex2D::IndexType k = 0; k < 6; ++k)
+				{
+					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
+				}
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildCircleShadow
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCircleShadow(const BufferCreatorFunc& bufferCreator, const Circle& circle, const float blur, const Float4& color, const float scale, const bool fill)
+		{
+			if (not fill)
+			{
+				return BuildCircleShadowNoFill(bufferCreator, circle, blur, color, scale);
+			}
+
+			// ベースとなる円の半径, ぼかしの半分
+			const float r = static_cast<float>(circle.r);
+			const float halfBlur = (blur * 0.5f);
+
+			// 影の開始半径, 終了半径
+			const float rInner = (r - halfBlur);
+			const float rOuter = (r + halfBlur);
+
+			// 円の品質
+			const Vertex2D::IndexType Quality = CalculateCircleQuality(rOuter * scale);
+			const Vertex2D::IndexType FullQuality = (Quality * 4);
+			const Vertex2D::IndexType VertexCount = (FullQuality * 2 + 1); // 中心頂点を追加
+			const Vertex2D::IndexType IndexCount = (FullQuality * 6 + FullQuality * 3); // 外側のリング + 内側の三角形
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = static_cast<float>(circle.x);
+			const float centerY = static_cast<float>(circle.y);
+
+			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+
+			// 中心頂点を最初に配置
+			pVertex[0].set(centerX, centerY, 0.5f, 0.5f, color);
+
+			Vertex2D* pDst0 = &pVertex[1];
+			Vertex2D* pDst1 = (pDst0 + Quality * 2);
+			Vertex2D* pDst2 = (pDst0 + Quality * 4);
+			Vertex2D* pDst3 = (pDst0 + Quality * 6);
+
+			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+			{
+				const Float2* cs = (pCS + i);
+				const float ox = (cs->x * rOuter);
+				const float ix = (cs->x * rInner);
+				const float oy = (cs->y * rOuter);
+				const float iy = (cs->y * rInner);
+
+				(pDst0++)->set((centerX + ox), (centerY + oy), 0.0f, 0.5f, color);
+				(pDst0++)->set((centerX + ix), (centerY + iy), 0.5f, 0.5f, color);
+
+				(pDst1++)->set((centerX - oy), (centerY + ox), 0.0f, 0.5f, color);
+				(pDst1++)->set((centerX - iy), (centerY + ix), 0.5f, 0.5f, color);
+
+				(pDst2++)->set((centerX - ox), (centerY - oy), 0.0f, 0.5f, color);
+				(pDst2++)->set((centerX - ix), (centerY - iy), 0.5f, 0.5f, color);
+
+				(pDst3++)->set((centerX + oy), (centerY - ox), 0.0f, 0.5f, color);
+				(pDst3++)->set((centerX + iy), (centerY - ix), 0.5f, 0.5f, color);
+			}
+
+			{
+				const Vertex2D::IndexType ringStartIndex = (indexOffset + 1);
+
+				// 外側のリングのインデックス
+				for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+				{
+					for (Vertex2D::IndexType k = 0; k < 6; ++k)
+					{
+						*pIndex++ = (ringStartIndex + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
+					}
+				}
+
+				// 内円を中心頂点で埋めるインデックス
+				{
+					const Vertex2D::IndexType centerIndex = indexOffset; // 中心頂点のインデックス
+
+					for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
+					{
+						const Vertex2D::IndexType innerCurrent = (ringStartIndex + i * 2 + 1); // 内円の現在の頂点
+						const Vertex2D::IndexType innerNext = (ringStartIndex + ((i * 2 + 3) % (FullQuality * 2))); // 内円の次の頂点
+
+						*pIndex++ = centerIndex;
+						*pIndex++ = innerCurrent;
+						*pIndex++ = innerNext;
+					}
 				}
 			}
 

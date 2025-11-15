@@ -18,7 +18,6 @@
 namespace s3d
 {
 	struct RectF;
-	struct FormatData;
 	struct PatternParameters;
 	enum class LineType : uint8;
 	class Texture;
@@ -331,36 +330,36 @@ namespace s3d
 		constexpr Rect(Arg::topRight_<position_type> topRight, size_type _size) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param middleRight 長方形の右辺の中心座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::rightCenter_<position_type> rightCenter, value_type _size) noexcept;
+		constexpr Rect(Arg::middleRight_<position_type> middleRight, value_type _size) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param middleRight 長方形の右辺の中心座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::rightCenter_<position_type> rightCenter, Concept::Integral auto _size) noexcept;
+		constexpr Rect(Arg::middleRight_<position_type> middleRight, Concept::Integral auto _size) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param middleRight 長方形の右辺の中心座標
 		/// @param _w 長方形の幅
 		/// @param _h 長方形の高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::rightCenter_<position_type> rightCenter, value_type _w, value_type _h) noexcept;
+		constexpr Rect(Arg::middleRight_<position_type> middleRight, value_type _w, value_type _h) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param middleRight 長方形の右辺の中心座標
 		/// @param _w 長方形の幅
 		/// @param _h 長方形の高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::rightCenter_<position_type> rightCenter, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
+		constexpr Rect(Arg::middleRight_<position_type> middleRight, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param rightCenter 長方形の右辺の中心座標
+		/// @param middleRight 長方形の右辺の中心座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::rightCenter_<position_type> rightCenter, size_type _size) noexcept;
+		constexpr Rect(Arg::middleRight_<position_type> middleRight, size_type _size) noexcept;
 
 		/// @brief 長方形を作成します。
 		/// @param bottomRight 長方形の右下の点の座標
@@ -459,36 +458,81 @@ namespace s3d
 		constexpr Rect(Arg::bottomLeft_<position_type> bottomLeft, size_type _size) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param middleLeft 長方形の左辺の中心座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::leftCenter_<position_type> leftCenter, value_type _size) noexcept;
+		constexpr Rect(Arg::middleLeft_<position_type> middleLeft, value_type _size) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param middleLeft 長方形の左辺の中心座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::leftCenter_<position_type> leftCenter, Concept::Integral auto _size) noexcept;
+		constexpr Rect(Arg::middleLeft_<position_type> middleLeft, Concept::Integral auto _size) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param middleLeft 長方形の左辺の中心座標
 		/// @param _w 長方形の幅
 		/// @param _h 長方形の高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::leftCenter_<position_type> leftCenter, value_type _w, value_type _h) noexcept;
+		constexpr Rect(Arg::middleLeft_<position_type> middleLeft, value_type _w, value_type _h) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param middleLeft 長方形の左辺の中心座標
 		/// @param _w 長方形の幅
 		/// @param _h 長方形の高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::leftCenter_<position_type> leftCenter, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
+		constexpr Rect(Arg::middleLeft_<position_type> middleLeft, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
 
 		/// @brief 長方形を作成します。
-		/// @param leftCenter 長方形の左辺の中心座標
+		/// @param middleLeft 長方形の左辺の中心座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
-		constexpr Rect(Arg::leftCenter_<position_type> leftCenter, size_type _size) noexcept;
+		constexpr Rect(Arg::middleLeft_<position_type> middleLeft, size_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, value_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, Concept::Integral auto _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, value_type _w, value_type _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, value_type _x, value_type _y, size_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, value_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, Concept::Integral auto _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, value_type _w, value_type _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, size_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, value_type _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, Concept::Integral auto _size) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, value_type _w, value_type _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
+
+		[[nodiscard]]
+		constexpr Rect(Anchor anchor, position_type _pos, size_type _size) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -834,6 +878,68 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 座標をオフセットした新しい長方形を返します。
+		/// @param _x X 軸方向のオフセット量
+		/// @param _y Y 軸方向のオフセット量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr Rect withOffset(Concept::Integral auto _x, Concept::Integral auto _y) const noexcept;
+
+		/// @brief 座標をオフセットした新しい長方形を返します。
+		/// @param _x X 軸方向のオフセット量
+		///	@param _y Y 軸方向のオフセット量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF withOffset(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y) const noexcept;
+
+		/// @brief 座標をオフセットした新しい長方形を返します。
+		/// @param v オフセット量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr Rect withOffset(size_type v) const noexcept;
+
+		/// @brief 座標をオフセットした新しい長方形を返します。
+		/// @param v オフセット量
+		/// @return 新しい長方形
+		[[nodiscard]]
+		constexpr RectF withOffset(Vec2 v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 軸方向にオフセットした新しい長方形を返します。
+		/// @param _x オフセット量
+		/// @return オフセットした新しい長方形
+		[[nodiscard]]
+		constexpr Rect withOffsetX(Concept::Integral auto _x) const noexcept;
+
+		/// @brief X 軸方向にオフセットした新しい長方形を返します。
+		/// @param _x オフセット量
+		/// @return オフセットした新しい長方形
+		[[nodiscard]]
+		constexpr RectF withOffsetX(Concept::FloatingPoint auto _x) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい長方形を返します。
+		/// @param _y オフセット量
+		/// @return オフセットした新しい長方形
+		[[nodiscard]]
+		constexpr Rect withOffsetY(Concept::Integral auto _y) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい長方形を返します。
+		/// @param _y オフセット量
+		/// @return オフセットした新しい長方形
+		[[nodiscard]]
+		constexpr RectF withOffsetY(Concept::FloatingPoint auto _y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	stretched
 		//
 		////////////////////////////////////////////////////////////////
@@ -1132,7 +1238,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	topCenter, rightCenter, bottomCenter, leftCenter
+		//	topCenter, middleRight, bottomCenter, middleLeft
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1144,7 +1250,7 @@ namespace s3d
 		/// @brief 長方形の右辺の中心座標を返します。
 		/// @return 長方形の右辺の中心座標
 		[[nodiscard]]
-		constexpr Vec2 rightCenter() const noexcept;
+		constexpr Vec2 middleRight() const noexcept;
 
 		/// @brief 長方形の下辺の中心座標を返します。
 		/// @return 長方形の下辺の中心座標
@@ -1154,7 +1260,7 @@ namespace s3d
 		/// @brief 長方形の左辺の中心座標を返します。
 		/// @return 長方形の左辺の中心座標
 		[[nodiscard]]
-		constexpr Vec2 leftCenter() const noexcept;
+		constexpr Vec2 middleLeft() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1774,7 +1880,13 @@ namespace s3d
 		/// @param colors 左上、右上、右下、左下の各頂点の色
 		/// @remark 描画時には 2 つの三角形に分割されるため、斜め方向のグラデーションは方向によってグラデーションのかかり方が変わります。上下、左右方向のグラデーションには影響しません。
 		/// @return *this
-		const Rect& draw(const ColorF(&colors)[4]) const;
+		const Rect& draw(const std::array<ColorF, 4>& colors) const;
+
+		/// @brief 長方形を描きます。
+		/// @param colors 左上、右上、右下、左下の各頂点の色
+		/// @remark 描画時には 2 つの三角形に分割されるため、斜め方向のグラデーションは方向によってグラデーションのかかり方が変わります。上下、左右方向のグラデーションには影響しません。
+		/// @return *this
+		const Rect& draw(std::span<const ColorF, 4> colors) const;
 
 		/// @brief 長方形を描きます。
 		/// @param topColor 長方形の上側の色

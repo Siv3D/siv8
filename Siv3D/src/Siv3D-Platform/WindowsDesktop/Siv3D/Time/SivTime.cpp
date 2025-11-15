@@ -9,7 +9,6 @@
 //
 //-----------------------------------------------
 
-# include <ctime>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/Time.hpp>
 
@@ -169,9 +168,22 @@ namespace s3d
 
 		int32 UTCOffsetMinutes() noexcept
 		{
-			long timeZone;
-			::_get_timezone(&timeZone);
-			return (-timeZone / 60);
+			TIME_ZONE_INFORMATION tzi{};
+
+			const DWORD timeZoneID = ::GetTimeZoneInformation(&tzi);
+
+			LONG biasMinutes = tzi.Bias;
+
+			if (timeZoneID == TIME_ZONE_ID_DAYLIGHT)
+			{
+				biasMinutes += tzi.DaylightBias;
+			}
+			else if (timeZoneID == TIME_ZONE_ID_STANDARD)
+			{
+				biasMinutes += tzi.StandardBias;
+			}
+
+			return static_cast<int32>(-biasMinutes);
 		}
 	}
 }

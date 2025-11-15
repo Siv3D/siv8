@@ -319,6 +319,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	clear
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形を空にします。
+		void clear();
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addHole
 		//
 		////////////////////////////////////////////////////////////////
@@ -711,18 +720,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形の外周を LineString で返します。
-		///// @param closeRing 始点と終点を一致させる場合は `CloseRing::Yes`, それ以外の場合は `CloseRing::No`
-		///// @return 多角形の外周
-		//[[nodiscard]]
-		//LineString outline(CloseRing closeRing = CloseRing::No) const;
+		/// @brief 多角形の外周を LineString で返します。
+		/// @param closeRing 始点と終点を一致させる場合は `CloseRing::Yes`, それ以外の場合は `CloseRing::No`
+		/// @return 多角形の外周
+		[[nodiscard]]
+		LineString outline(CloseRing closeRing = CloseRing::No) const;
 
-		///// @brief 多角形の外周の一部を LineString で返します。
-		///// @param distanceFromOrigin 取得の開始位置（Polygon 外周の最初の頂点からの距離）
-		///// @param length 取得する LineString の長さ
-		///// @return 取得した多角形の外周の一部
-		//[[nodiscard]]
-		//LineString outline(double distanceFromOrigin, double length) const;
+		/// @brief 多角形の外周の一部を LineString で返します。
+		/// @param distanceFromOrigin 取得の開始位置（Polygon 外周の最初の頂点からの距離）
+		/// @param length 取得する LineString の長さ
+		/// @return 取得した多角形の外周の一部
+		[[nodiscard]]
+		LineString outline(double distanceFromOrigin, double length) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1039,6 +1048,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	_detail
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		const PolygonDetail* _detail() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Validate
 		//
 		////////////////////////////////////////////////////////////////
@@ -1075,15 +1093,6 @@ namespace s3d
 		/// @return 頂点配列から生成した多角形のうち、最も面積の大きい多角形
 		[[nodiscard]]
 		static Polygon CorrectOne(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	_detail
-		//
-		////////////////////////////////////////////////////////////////
-
-		//[[nodiscard]]
-		//const PolygonDetail* _detail() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

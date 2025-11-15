@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -32,17 +32,15 @@ namespace s3d
 		MetalPixelShader(MTL::Library* library, const std::string& name);
 
 		[[nodiscard]]
+		MetalPixelShader(MTL::Device* device, const std::string& source, const std::string& entryPoint);
+
+		[[nodiscard]]
 		bool isInitialized() const noexcept;
 
 		[[nodiscard]]
 		MTL::Function* getShader() const;
 
-		[[nodiscard]]
-		const Blob& getBytecode() const noexcept;
-
 	private:
-
-		Blob m_bytecode;
 
 		NS::SharedPtr<MTL::Function> m_shader;
 

@@ -17,8 +17,6 @@
 
 namespace s3d
 {
-	struct FormatData;
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	Vector3D
@@ -456,6 +454,50 @@ namespace s3d
 		/// @param v 移動量
 		/// @return *this
 		constexpr Vector3D& moveBy(Vector3D v) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief オフセットしたベクトルを返します。
+		/// @param _x X 成分のオフセット量
+		/// @param _y Y 成分のオフセット量
+		/// @param _z Z 成分のオフセット量
+		/// @return オフセットした新しいベクトル
+		[[nodiscard]]
+		constexpr Vector3D withOffset(value_type _x, value_type _y, value_type _z) const noexcept;
+
+		/// @brief オフセットしたベクトルを返します。
+		/// @param v オフセット量
+		/// @return オフセットした新しいベクトル
+		[[nodiscard]]
+		constexpr Vector3D withOffset(Vector3D v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY, withOffsetZ
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 成分をオフセットした新しいベクトルを返します。
+		/// @param _x オフセット量
+		/// @return オフセットした新しいベクトル
+		[[nodiscard]]
+		constexpr Vector3D withOffsetX(value_type _x) const noexcept;
+
+		/// @brief Y 成分をオフセットした新しいベクトルを返します。
+		/// @param _y オフセット量
+		///	@return オフセットした新しいベクトル
+		[[nodiscard]]
+		constexpr Vector3D withOffsetY(value_type _y) const noexcept;
+
+		/// @brief Z 成分をオフセットした新しいベクトルを返します。
+		/// @param _z オフセット量
+		/// @return オフセットした新しいベクトル
+		[[nodiscard]]
+		constexpr Vector3D withOffsetZ(value_type _z) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

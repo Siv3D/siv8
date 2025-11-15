@@ -23,7 +23,6 @@
 
 namespace s3d
 {
-	struct FormatData;
 	class Image;
 	struct Color;
 
@@ -354,7 +353,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	movedBy
+		//	moveBy
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -368,6 +367,67 @@ namespace s3d
 		/// @param p 移動量
 		/// @return *this
 		constexpr Point& moveBy(Point p) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief オフセットした座標を返します。
+		/// @param _x X 軸方向のオフセット量
+		/// @param _y Y 軸方向のオフセット量
+		/// @return オフセットした座標
+		[[nodiscard]]
+		constexpr Point withOffset(value_type _x, value_type _y) const noexcept;
+
+		/// @brief オフセットした座標を返します。
+		/// @param p オフセット量
+		/// @return オフセットした座標
+		[[nodiscard]]
+		constexpr Point withOffset(Point p) const noexcept;
+
+		/// @brief オフセットした座標を返します。
+		/// @tparam Float オフセット量を表す二次元ベクトルの要素の型
+		/// @param v オフセット量
+		/// @return オフセットした座標
+		template <Concept::FloatingPoint Float>
+		[[nodiscard]]
+		constexpr Vector2D<Float> withOffset(Vector2D<Float> v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 軸方向にオフセットした座標を返します。
+		/// @param _x オフセット量
+		/// @return オフセットした座標
+		[[nodiscard]]
+		constexpr Point withOffsetX(Concept::Integral auto _x) const noexcept;
+
+		/// @brief X 軸方向にオフセットした座標を返します。
+		/// @tparam Float オフセット量の型
+		/// @param v オフセット量
+		/// @return オフセットした座標
+		template <Concept::FloatingPoint Float>
+		[[nodiscard]]
+		constexpr Vector2D<Float> withOffsetX(Float v) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした座標を返します。
+		/// @param _y オフセット量
+		/// @return オフセットした座標
+		[[nodiscard]]
+		constexpr Point withOffsetY(Concept::Integral auto _y) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした座標を返します。
+		/// @tparam Float オフセット量の型
+		/// @param y オフセット量
+		/// @return オフセットした座標
+		template <Concept::FloatingPoint Float>
+		[[nodiscard]]
+		constexpr Vector2D<Float> withOffsetY(Float y) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

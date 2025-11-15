@@ -12,8 +12,8 @@
 # include <Siv3D/Blob.hpp>
 # include <Siv3D/MD5Value.hpp>
 # include <Siv3D/Base64Value.hpp>
-# include <Siv3D/BinaryReader.hpp>
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 
 namespace s3d
 {		
@@ -31,7 +31,12 @@ namespace s3d
 	Blob::Blob(IReader& reader)
 		: m_data(reader.size())
 	{
-		reader.read(m_data.data(), m_data.size_bytes());
+		const int64 readSize = reader.read(m_data.data(), m_data.size_bytes());
+
+		if (m_data.size() != static_cast<size_type>(readSize))
+		{
+			m_data.clear();
+		}
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -42,7 +47,7 @@ namespace s3d
 
 	bool Blob::createFromFile(const FilePathView path)
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 
 		if (not reader)
 		{
@@ -51,7 +56,15 @@ namespace s3d
 
 		m_data.resize(reader.size());
 
-		return (static_cast<int64>(m_data.size_bytes()) == reader.read(m_data.data(), m_data.size_bytes()));
+		const int64 readSize = reader.read(m_data.data(), m_data.size_bytes());
+
+		if (m_data.size() != static_cast<size_type>(readSize))
+		{
+			m_data.clear();
+			return false;
+		}
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -62,7 +75,7 @@ namespace s3d
 
 	bool Blob::save(const FilePathView path) const
 	{
-		BinaryWriter writer{ path };
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{

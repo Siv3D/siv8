@@ -421,11 +421,8 @@
 // ファイルとディレクトリ | Files and directories
 # include <Siv3D/FileSystem.hpp>
 
-//// リソースファイルの設定 | Resource file option
-//# include <Siv3D/ResourceOption.hpp>
-
 // リソースファイルの管理 | Resource files
-# include <Siv3D/Resource.hpp> // ToDo
+# include <Siv3D/Resource.hpp>
 
 // ファイル操作のイベント | File action
 # include <Siv3D/FileAction.hpp>
@@ -464,10 +461,10 @@
 # include <Siv3D/OpenMode.hpp>
 
 // 読み込み専用バイナリファイル | Binary file reader
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 
 // 書き込み専用バイナリファイル | Binary file writer
-# include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
 
 // アーカイブファイルからの読み込み | Archived file reader
 //# include <Siv3D/ArchivedFileReader.hpp>
@@ -515,10 +512,10 @@
 # include <Siv3D/TextEncoding.hpp>
 
 // 読み込み専用テキストファイル | Text file reader
-# include <Siv3D/TextReader.hpp>
+# include <Siv3D/TextFileReader.hpp>
 
 // 書き込み専用テキストファイル | Text file writer
-# include <Siv3D/TextWriter.hpp>
+# include <Siv3D/TextFileWriter.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -536,6 +533,8 @@
 
 //// JSON データの検証 | JSON validation
 //# include <Siv3D/JSONValidator.hpp>
+
+# include <Siv3D/JSONSerialization.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -781,6 +780,8 @@
 //
 ////////////////////////////////////////////////////////////////
 
+# include <Siv3D/Anchor.hpp>
+
 // ベクトル | Vectors
 # include <Siv3D/PointVector.hpp>
 
@@ -858,6 +859,8 @@
 
 // 角丸長方形 | Rounded rectangle
 # include <Siv3D/RoundRect.hpp> // ToDo
+
+# include <Siv3D/SuperEllipse.hpp> // ToDo
 
 // 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
 # include <Siv3D/LineString.hpp> // ToDo
@@ -1632,7 +1635,16 @@
 # include <Siv3D/TextEffect/VerticalScale.hpp>
 # include <Siv3D/TextEffect/Reflection.hpp>
 
-
+# include <Siv3D/Theme.hpp>
+# include <Siv3D/GUIColorStyle.hpp>
+# include <Siv3D/GUIShapeStyle.hpp>
+# include <Siv3D/SimpleGUI.hpp>
+# include <Siv3D/SimpleGUI/SimpleButton.hpp>
+# include <Siv3D/SimpleGUI/SimpleCheckBox.hpp>
+# include <Siv3D/SimpleGUI/SimpleTooltip.hpp>
+# include <Siv3D/SimpleGUI/SimpleDismissibleTooltip.hpp>
+# include <Siv3D/SimpleGUI/SimpleProgressBar.hpp>
+# include <Siv3D/SimpleGUI/SimpleHueSlider.hpp>
 
 # include <Siv3D/Print.hpp>
 # include <Siv3D/PrintBuffer.hpp>

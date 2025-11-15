@@ -19,14 +19,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Blob::Blob(const size_t sizeBytes)
+	constexpr Blob::Blob(const size_type sizeBytes)
 		: m_data(sizeBytes) {}
 
-	constexpr Blob::Blob(const Arg::reserve_<size_t> reserveSizeBytes)
+	constexpr Blob::Blob(const Arg::reserve_<size_type> reserveSizeBytes)
 		: m_data(reserveSizeBytes) {}
 
-	inline Blob::Blob(const void* src, const size_t sizeBytes)
+	inline Blob::Blob(const void* src, const size_type sizeBytes)
 		: m_data(static_cast<const Byte*>(src), (static_cast<const Byte*>(src) + sizeBytes)) {}
+
+	inline Blob::Blob(const std::span<const Byte> data)
+		: m_data(data.begin(), data.end()) {}
 
 	constexpr Blob::Blob(const Array<Byte>& data)
 		: m_data{ data } {}
@@ -66,33 +69,50 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	createFrom
+	//	assign
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr void Blob::createFrom(const Blob& other)
+	constexpr void Blob::assign(const Blob& other)
 	{
 		m_data = other.m_data;
 	}
 
-	constexpr void Blob::createFrom(Blob&& other)
+	constexpr void Blob::assign(Blob&& other)
 	{
 		m_data = std::move(other.m_data);
 	}
 
-	inline void Blob::createFrom(const void* src, const size_t sizeBytes)
+	inline void Blob::assign(const void* src, const size_type sizeBytes)
 	{
 		m_data.assign(static_cast<const Byte*>(src), (static_cast<const Byte*>(src) + sizeBytes));
 	}
 
-	constexpr void Blob::createFrom(const Array<Byte>& data)
+	constexpr void Blob::assign(const Array<Byte>& data)
 	{
 		m_data = data;
 	}
 
-	constexpr void Blob::createFrom(Array<Byte>&& data)
+	constexpr void Blob::assign(Array<Byte>&& data)
 	{
 		m_data = std::move(data);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	assignRange
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::ContainerCompatibleRange<Byte> Range>
+	constexpr void Blob::assign_range(Range&& range)
+	{
+	# if __cpp_lib_containers_ranges >= 202202L
+		m_data.assign_range(std::forward<Range>(range));
+	# else
+		auto common_range = std::views::common(std::forward<Range>(range));
+		m_data.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
+	# endif
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -101,12 +121,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr const Byte& Blob::operator[](const size_t index) const
+	constexpr const Byte& Blob::operator[](const size_type index) const
 	{
 		return m_data[index];
 	}
 
-	constexpr Byte& Blob::operator[](const size_t index)
+	constexpr Byte& Blob::operator[](const size_type index)
 	{
 		return m_data[index];
 	}
@@ -136,40 +156,6 @@ namespace s3d
 	constexpr const Array<Byte>& Blob::asArray() const noexcept
 	{
 		return m_data;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	view
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr std::span<const Byte> Blob::view() const noexcept
-	{
-		return m_data;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	subView
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr std::span<const Byte> Blob::subView(size_t offset, size_t count) const
-	{
-		const size_t blobSize = m_data.size();
-
-		if (blobSize < offset)
-		{
-			offset = blobSize;
-		}
-
-		if (blobSize < (offset + count))
-		{
-			count = (blobSize - offset);
-		}
-
-		return std::span<const Byte>((m_data.data() + offset), count);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -255,7 +241,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr void Blob::reserve(const size_t sizeBytes)
+	constexpr void Blob::reserve(const size_type sizeBytes)
 	{
 		m_data.reserve(sizeBytes);
 	}
@@ -266,9 +252,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr void Blob::resize(const size_t sizeBytes)
+	constexpr void Blob::resize(const size_type sizeBytes)
 	{
 		m_data.resize(sizeBytes, Byte{ 0 });
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	swap
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr void Blob::swap(Blob& other) noexcept
+	{
+		m_data.swap(other.m_data);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -421,7 +418,7 @@ namespace s3d
 		m_data.append(other.m_data);
 	}
 
-	inline void Blob::append(const void* src, const size_t sizeBytes)
+	inline void Blob::append(const void* src, const size_type sizeBytes)
 	{
 		m_data.insert(m_data.end(), static_cast<const Byte*>(src), (static_cast<const Byte*>(src) + sizeBytes));
 	}
@@ -449,12 +446,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr std::span<Byte> Blob::subspan(const size_t pos, const size_t count) noexcept
+	constexpr std::span<Byte> Blob::subspan(const size_type pos, const size_type count) noexcept
 	{
 		return m_data.subspan(pos, count);
 	}
 
-	constexpr std::span<const Byte> Blob::subspan(const size_t pos, const size_t count) const noexcept
+	constexpr std::span<const Byte> Blob::subspan(const size_type pos, const size_type count) const noexcept
 	{
 		return m_data.subspan(pos, count);
 	}

@@ -1153,7 +1153,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	substrView
+		//	subview
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1162,10 +1162,10 @@ namespace s3d
 		/// @param count 取得する文字数。末尾までの場合 npos
 		/// @return 部分文字列へのビュー
 		[[nodiscard]]
-		constexpr StringView substrView(size_type offset = 0, size_type count = npos) const& SIV3D_LIFETIMEBOUND;
+		constexpr StringView subview(size_type offset = 0, size_type count = npos) const& SIV3D_LIFETIMEBOUND;
 
 		[[nodiscard]]
-		constexpr StringView substrView(size_type offset = 0, size_type count = npos)&& SIV3D_LIFETIMEBOUND = delete;
+		constexpr StringView subview(size_type offset = 0, size_type count = npos)&& SIV3D_LIFETIMEBOUND = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2319,7 +2319,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	split_at
+		//	splitAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -2328,18 +2328,18 @@ namespace s3d
 		/// @remark pos が文字列の長さ以上の場合 `{ *this, U"" }` を返します。
 		/// @return 分割された文字列
 		[[nodiscard]]
-		std::pair<String, String> split_at(size_type pos) const;
+		std::pair<String, String> splitAt(size_type pos) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	split_lines
+		//	splitLines
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 文字列を行ごとに分割します。
 		/// @return 分割された文字列
 		[[nodiscard]]
-		Array<String, std::allocator<String>> split_lines() const;
+		Array<StringView, std::allocator<StringView>> splitLines() const SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//

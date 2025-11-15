@@ -11,7 +11,7 @@
 
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
 # include <Siv3D/IReader.hpp>
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <ThirdParty/bc7enc_rdo/rdo_bc_encoder.h>
 
@@ -484,7 +484,7 @@ namespace s3d
 
 	BCnData BCnDecoder::decodeNative(const FilePathView path, const bool sRGB) const
 	{
-		BinaryReader reader{ path };
+		BinaryFileReader reader{ path };
 
 		if (not reader)
 		{

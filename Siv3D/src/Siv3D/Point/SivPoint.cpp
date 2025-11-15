@@ -11,6 +11,8 @@
 
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/FormatData.hpp>
+# include <Siv3D/JSON.hpp>
+# include <Siv3D/Error.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Cursor.hpp>

@@ -184,6 +184,8 @@ namespace s3d
 
 		if (m_info.properties.isCOLRv1)
 		{
+			m_info.renderingMethod = FontMethod::Bitmap;
+
 			m_colrv1 = std::make_unique<COLRv1>();
 			std::unique_ptr<SkStreamAsset> stream = SkMemoryStream::MakeDirect(memoryView.data, memoryView.size);
 

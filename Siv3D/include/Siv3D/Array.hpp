@@ -15,6 +15,7 @@
 # include <vector>
 # include <version>
 # include "String.hpp"
+# include "Optional.hpp"
 # include "Unicode.hpp"
 # include "Format.hpp"
 # include "Utility.hpp"
@@ -270,7 +271,7 @@ namespace s3d
 		/// @param count 要素数
 		/// @param value 要素の値
 		/// @return *this
-		constexpr Array& assign(size_type count, const value_type& value) SIV3D_LIFETIMEBOUND;
+		constexpr void assign(size_type count, const value_type& value) SIV3D_LIFETIMEBOUND;
 
 		/// @brief イテレータが指す範囲の要素から配列を作成します。
 		/// @tparam Iterator イテレータ
@@ -278,12 +279,12 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
 		template <class Iterator>
-		constexpr Array& assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
+		constexpr void assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief リストから配列を作成します。
 		/// @param list リスト
 		/// @return *this
-		constexpr Array& assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
+		constexpr void assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -296,7 +297,7 @@ namespace s3d
 		/// @param range 範囲
 		/// @return *this
 		template <Concept::ContainerCompatibleRange<Type> Range>
-		constexpr Array& assign_range(Range&& range) SIV3D_LIFETIMEBOUND;
+		constexpr void assign_range(Range&& range) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1208,6 +1209,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	indexOf
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい最初の要素のインデックスを返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい最初の要素のインデックス。見つからなかった場合は none
+		[[nodiscard]]
+		constexpr Optional<size_t> indexOf(const value_type& value) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	isSorted
 		//
 		////////////////////////////////////////////////////////////////
@@ -1500,6 +1513,16 @@ namespace s3d
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
 		template <class Fty>
 		constexpr void reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverseView
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr auto reverseView();
+
+		constexpr auto reverseView() const;
 
 		////////////////////////////////////////////////////////////////
 		//

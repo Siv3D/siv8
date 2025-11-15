@@ -33,7 +33,7 @@ namespace s3d
 
 		bool IsResourcePath(const FilePathView path) noexcept
 		{
-			return path.starts_with(U'/');
+			return path.starts_with(Platform::Windows::ResourcePathPrefix);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -275,7 +275,7 @@ namespace s3d
 
 			if (IsResourcePath(path))
 			{
-				return CreationTime(ModulePath());
+				return CreationTime(GetExecutablePath());
 			}
 
 			if (const auto fad = detail::GetFileAttributeData(Unicode::ToWstring(path)))
@@ -303,7 +303,7 @@ namespace s3d
 
 			if (IsResourcePath(path))
 			{
-				return WriteTime(ModulePath());
+				return WriteTime(GetExecutablePath());
 			}
 
 			if (const auto fad = detail::GetFileAttributeData(Unicode::ToWstring(path)))
@@ -331,7 +331,7 @@ namespace s3d
 
 			if (IsResourcePath(path))
 			{
-				return AccessTime(ModulePath());
+				return AccessTime(GetExecutablePath());
 			}
 
 			if (const auto fad = detail::GetFileAttributeData(Unicode::ToWstring(path)))
@@ -405,24 +405,35 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	InitialDirectory
+		//	GetLaunchDirectory
 		//
 		////////////////////////////////////////////////////////////////
 
-		const FilePath& InitialDirectory() noexcept
+		const FilePath& GetLaunchDirectory() noexcept
 		{
-			return detail::init::g_filePathCache.initialDirectory;
+			return detail::init::g_filePathCache.launchDirectory;
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	ModulePath
+		//	GetExecutablePath
 		//
 		////////////////////////////////////////////////////////////////
 
-		const FilePath& ModulePath() noexcept
+		const FilePath& GetExecutablePath() noexcept
 		{
-			return detail::init::g_filePathCache.modulePath;
+			return detail::init::g_filePathCache.executablePath;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetExecutableDirectory
+		//
+		////////////////////////////////////////////////////////////////
+
+		const FilePath& GetExecutableDirectory() noexcept
+		{
+			return detail::init::g_filePathCache.executableDirectory;
 		}
 
 		////////////////////////////////////////////////////////////////

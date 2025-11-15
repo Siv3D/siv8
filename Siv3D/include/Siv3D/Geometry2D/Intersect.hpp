@@ -68,6 +68,9 @@ namespace s3d
 		bool Intersect(const Point& a, const RoundRect& b) noexcept;
 
 		[[nodiscard]]
+		bool Intersect(const Point& a, const SuperEllipse& b) noexcept;
+
+		[[nodiscard]]
 		bool Intersect(const Point& a, const Polygon& b) noexcept;
 
 		//[[nodiscard]]
@@ -117,6 +120,9 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersect(const Vec2& a, const RoundRect& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Vec2& a, const SuperEllipse& b) noexcept;
 
 		[[nodiscard]]
 		bool Intersect(const Vec2& a, const Polygon& b) noexcept;

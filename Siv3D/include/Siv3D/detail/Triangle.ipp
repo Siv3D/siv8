@@ -219,6 +219,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::withOffset(const value_type x, const value_type y) const noexcept
+	{
+		return{ p0.withOffset(x, y), p1.withOffset(x, y), p2.withOffset(x, y) };
+	}
+
+	constexpr Triangle Triangle::withOffset(const position_type v) const noexcept
+	{
+		return{ p0.withOffset(v), p1.withOffset(v), p2.withOffset(v) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::withOffsetX(const value_type x) const noexcept
+	{
+		return{ p0.withOffsetX(x), p1.withOffsetX(x), p2.withOffsetX(x) };
+	}
+
+	constexpr Triangle Triangle::withOffsetY(const value_type y) const noexcept
+	{
+		return{ p0.withOffsetY(y), p1.withOffsetY(y), p2.withOffsetY(y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	scaledFromOrigin
 	//
 	////////////////////////////////////////////////////////////////
@@ -353,7 +385,13 @@ namespace s3d
 
 	constexpr bool Triangle::hasArea() const noexcept
 	{
-		return (0.0 < area());
+		const double v0x = (p0.x - p2.x);
+		const double v0y = (p0.y - p2.y);
+		const double v1x = (p1.x - p2.x);
+		const double v1y = (p1.y - p2.y);
+		const double c = (v0x * v1y - v1x * v0y);
+		const double errorBound = ((Abs(v0x) * Abs(v1y) + Abs(v1x) * Abs(v0y)) * std::numeric_limits<double>::epsilon() * 2.0);
+		return (Abs(c) <= errorBound);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -527,7 +565,7 @@ namespace s3d
 
 	inline uint64 Triangle::hash() const noexcept
 	{
-		return Hash(*this);
+		return BitwiseHash(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -94,13 +94,20 @@ namespace s3d
 		/// @param entryPoint エントリーポイント
 		/// @return 頂点シェーダ
 		[[nodiscard]]
-		static VertexShader HLSL(FilePathView path, StringView entryPoint = U"VS");
+		static VertexShader HLSL(FilePathView path, StringView entryPoint);
 
 		/// @brief HLSL バイトコードから頂点シェーダを作成します。
 		/// @param bytecode HLSL バイトコード
 		/// @return 頂点シェーダ
 		[[nodiscard]]
 		static VertexShader HLSL(const Blob& bytecode);
+
+		/// @brief HLSL ソースコードから頂点シェーダを作成します。
+		/// @param source HLSL ソースコード
+		/// @param entryPoint エントリーポイント
+		/// @return 頂点シェーダ
+		[[nodiscard]]
+		static VertexShader HLSL(const std::string& source, StringView entryPoint);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -121,6 +128,13 @@ namespace s3d
 		[[nodiscard]]
 		static VertexShader MSL(FilePathView path, StringView entryPoint);
 
+		/// @brief MSL ソースコードから頂点シェーダを作成します。
+		/// @param source MSL ソースコード
+		/// @param entryPoint エントリーポイント
+		/// @return 頂点シェーダ
+		[[nodiscard]]
+		static VertexShader MSL(const std::string& source, StringView entryPoint);
+
 	private:
 
 		[[nodiscard]]
@@ -128,5 +142,8 @@ namespace s3d
 
 		[[nodiscard]]
 		explicit VertexShader(const Blob& bytecode);
+		
+		[[nodiscard]]
+		VertexShader(const std::string& source, StringView entryPoint);
 	};
 }

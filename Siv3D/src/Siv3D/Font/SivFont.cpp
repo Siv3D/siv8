@@ -297,6 +297,14 @@ namespace s3d
 		return h;
 	}
 
+	double Font::height(double size) const
+	{
+		const auto& info = SIV3D_ENGINE(Font)->getInfo(m_handle->id());
+		const double h = (info.ascender + info.descender);
+		const double scale = (size / info.baseSize);
+		return (h * scale);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	spaceXAdvance

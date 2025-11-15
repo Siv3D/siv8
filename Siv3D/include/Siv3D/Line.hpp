@@ -380,22 +380,59 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 座標をオフセットした新しい線分を返します。
+		/// @param x X 軸方向のオフセット量
+		/// @param y Y 軸方向のオフセット量
+		/// @return 新しい線分
+		[[nodiscard]]
+		constexpr Line withOffset(value_type x, value_type y) const noexcept;
+
+		/// @brief 座標をオフセットした新しい線分を返します。
+		/// @param v オフセット量
+		///	@return 新しい線分
+		[[nodiscard]]
+		constexpr Line withOffset(vector_type v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 軸方向にオフセットした新しい線分を返します。
+		/// @param x オフセット量
+		/// @return 新しい線分
+		[[nodiscard]]
+		constexpr Line withOffsetX(value_type x) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい線分を返します。
+		/// @param y オフセット量
+		/// @return 新しい線分
+		[[nodiscard]]
+		constexpr Line withOffsetY(value_type y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	stretched
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 線分を伸縮した新しい線分を返します。
-		/// @param extentionBothSides 両側に伸縮する量（合わせて、この 2 倍の長さが追加されます）
+		/// @param extensionBothSides 両側に伸縮する量（合わせて、この 2 倍の長さが追加されます）
 		/// @return 線分を伸縮した新しい線分
 		[[nodiscard]]
-		Line stretched(value_type extentionBothSides) const noexcept;
+		Line stretched(value_type extensionBothSides) const noexcept;
 
 		/// @brief 線分を伸縮した新しい線分を返します。
-		/// @param extentionStart 始点側に伸縮する量
-		/// @param extentionEnd 終点側に伸縮する量
+		/// @param extensionStart 始点側に伸縮する量
+		/// @param extensionEnd 終点側に伸縮する量
 		/// @return 線分を伸縮した新しい線分
 		[[nodiscard]]
-		Line stretched(value_type extentionStart, value_type extentionEnd) const noexcept;
+		Line stretched(value_type extensionStart, value_type extensionEnd) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

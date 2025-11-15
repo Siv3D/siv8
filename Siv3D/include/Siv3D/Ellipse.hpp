@@ -458,6 +458,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 中心座標をオフセットした新しい楕円を返します。
+		/// @param _x X 軸方向のオフセット量
+		///	@param _y Y 軸方向のオフセット量
+		/// @return 新しい楕円
+		[[nodiscard]]
+		constexpr Ellipse withOffset(value_type _x, value_type _y) const noexcept;
+
+		/// @brief 中心座標をオフセットした新しい楕円を返します。
+		/// @param v オフセット量
+		/// @return 新しい楕円
+		[[nodiscard]]
+		constexpr Ellipse withOffset(position_type v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief X 軸方向にオフセットした新しい楕円を返します。
+		/// @param _x オフセット量
+		/// @return 新しい楕円
+		[[nodiscard]]
+		constexpr Ellipse withOffsetX(value_type _x) const noexcept;
+
+		/// @brief Y 軸方向にオフセットした新しい楕円を返します。
+		/// @param _y オフセット量
+		/// @return 新しい楕円
+		[[nodiscard]]
+		constexpr Ellipse withOffsetY(value_type _y) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	stretched
 		//
 		////////////////////////////////////////////////////////////////
@@ -582,6 +619,18 @@ namespace s3d
 		/// @return 楕円に外接する長方形
 		[[nodiscard]]
 		constexpr RectF boundingRect() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getPointByAngle
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円周上の点をラジアン (12 時方向が 0, 3 時方向が π/2, 6 時方向が π) で取得します。
+		/// @param angle 方向（ラジアン）
+		/// @return 円周上の点
+		[[nodiscard]]
+		position_type getPointByAngle(double angle) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -763,7 +812,7 @@ namespace s3d
 		/// @return *this
 		const Ellipse& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
-		/// @brief 円を描きます。
+		/// @brief 楕円を描きます。
 		/// @param leftColor 楕円の左側の色
 		/// @param rightColor 楕円の右側の色
 		/// @return *this

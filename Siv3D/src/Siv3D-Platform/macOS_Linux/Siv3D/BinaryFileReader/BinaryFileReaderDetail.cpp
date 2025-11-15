@@ -1,0 +1,188 @@
+//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2025 Ryo Suzuki
+//	Copyright (c) 2016-2025 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# include <Siv3D/FileSystem.hpp>
+# include <Siv3D/FormatUtility.hpp>
+# include <Siv3D/EngineLog.hpp>
+# include "BinaryFileReaderDetail.hpp"
+
+namespace s3d
+{
+	BinaryFileReader::BinaryFileReaderDetail::~BinaryFileReaderDetail()
+	{
+		close();
+	}
+
+	bool BinaryFileReader::BinaryFileReaderDetail::open(const FilePathView path)
+	{
+		LOG_DEBUG(fmt::format("BinaryFileReader::BinaryFileReaderDetail::open(\"{0}\")", path));
+
+		close();
+
+		{
+			// ファイルのオープン
+			{
+				m_file.file.open(path.toWstr(), std::ios_base::binary);
+				m_file.readPos = 0;
+
+				if (not m_file.file) [[unlikely]]
+					{
+						LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to open file `{0}`", path));
+						return false;
+					}
+			}
+
+			m_info =
+			{
+				.fullPath = FileSystem::FullPath(path),
+				.fileSize = static_cast<int64>(FileSystem::FileSize(path)),
+				.isOpen = true,
+			};
+
+			LOG_INFO(fmt::format("📤 BinaryFileReader: File `{0}` opened (size: {1})", m_info.fullPath, FormatDataSize(m_info.fileSize)));
+		}
+
+		return true;
+	}
+
+
+	void BinaryFileReader::BinaryFileReaderDetail::close()
+	{
+		if (not m_info.isOpen)
+		{
+			return;
+		}
+
+		{
+			m_file.file.close();
+			m_file.readPos = 0;
+			LOG_INFO(fmt::format("📥 BinaryFileReader: File `{0}` closed", m_info.fullPath));
+		}
+
+		m_info = {};
+	}
+
+	bool BinaryFileReader::BinaryFileReaderDetail::isOpen() const noexcept
+	{
+		return m_info.isOpen;
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::size() const noexcept
+	{
+		return m_info.fileSize;
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::setPos(const int64 pos)
+	{
+		if (not m_info.isOpen)
+		{
+			return 0;
+		}
+
+		const int64 clampedPos = Clamp<int64>(pos, 0, m_info.fileSize);
+		m_file.file.seekg(clampedPos);
+		return (m_file.readPos = clampedPos);
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::skip(const int64 offset)
+	{
+		if (not m_info.isOpen)
+		{
+			return 0;
+		}
+
+		const int64 clampedPos = Clamp<int64>((getPos() + offset), 0, m_info.fileSize);
+		m_file.file.seekg(clampedPos);
+		return (m_file.readPos = clampedPos);
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::getPos()
+	{
+		return m_file.readPos;
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::read(const NonNull<void*> dst, const int64 readSize)
+	{
+		return m_file.read(dst, readSize, m_info.fileSize, m_info.fullPath);
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::read(const NonNull<void*> dst, const int64 pos, const int64 readSize)
+	{
+		if (pos != setPos(pos))
+		{
+			return 0;
+		}
+
+		return m_file.read(dst, readSize, m_info.fileSize, m_info.fullPath);
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::lookahead(const NonNull<void*> dst, const int64 readSize)
+	{
+		return m_file.lookahead(dst, readSize, m_info.fileSize, m_info.fullPath);
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::lookahead(const NonNull<void*> dst, const int64 pos, const int64 readSize)
+	{
+		const auto previousPos = getPos();
+
+		if (pos != setPos(pos))
+		{
+			setPos(previousPos);
+			return 0;
+		}
+
+		const int64 readBytes = m_file.lookahead(dst, readSize, m_info.fileSize, m_info.fullPath);
+
+		setPos(previousPos);
+
+		return readBytes;
+	}
+
+	const FilePath& BinaryFileReader::BinaryFileReaderDetail::path() const noexcept
+	{
+		return m_info.fullPath;
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::File::read(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
+	{
+		const int64 readBytes = Clamp<int64>(readSize, 0, (fileSize - readPos));
+
+		if (readBytes == 0)
+		{
+			return 0;
+		}
+
+		if (not file.read(static_cast<char*>(dst.get()), readBytes))
+		{
+			readPos = file.tellg();
+
+			if (file.eof())
+			{
+				return readBytes;
+			}
+
+			LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath));
+			return 0;
+		}
+
+		readPos += readBytes;
+		return readBytes;
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::File::lookahead(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
+	{
+		const int64 previousReadPos = readPos;
+		const int64 readBytes = read(dst, readSize, fileSize, fullPath);
+		readPos = previousReadPos;
+		file.seekg(previousReadPos);
+		return readBytes;
+	}
+}

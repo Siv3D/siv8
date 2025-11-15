@@ -11,7 +11,7 @@
 
 # include <array>
 # include <Siv3D/TextEncoding.hpp>
-# include <Siv3D/BinaryReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/FormatData.hpp>
 
 namespace s3d
@@ -79,7 +79,7 @@ namespace s3d
 
 		TextEncoding GetTextEncoding(const FilePathView path)
 		{
-			return GetTextEncoding(BinaryReader{ path });
+			return GetTextEncoding(BinaryFileReader{ path });
 		}
 	}
 }

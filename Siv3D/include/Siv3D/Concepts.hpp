@@ -140,6 +140,17 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	TriviallyHashable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief トリビアルハッシュ可能型のコンセプト | Trivially hashable type concept
+		/// @tparam Type 型 | Type
+		template <class Type>
+		concept TriviallyHashable = (TriviallyCopyable<Type> && std::has_unique_object_representations_v<Type>);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	UniformRandomBitGenerator
 		//
 		////////////////////////////////////////////////////////////////
@@ -215,5 +226,15 @@ namespace s3d
 		{
 			{ a += b } -> std::convertible_to<Type>;
 		};
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ExactlyBool
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief bool 型と同一である型のコンセプト | Exactly bool type concept
+		template <class T>
+		concept ExactlyBool = std::same_as<std::remove_cvref_t<T>, bool>;
 	}
 }

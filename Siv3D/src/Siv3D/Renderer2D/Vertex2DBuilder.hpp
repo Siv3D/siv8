@@ -70,6 +70,9 @@ namespace s3d
 		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor, float scale);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildSuperEllipse(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, float n, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildQuad(const BufferCreatorFunc& bufferCreator, const FloatQuad& quad, const Float4 color);
 
 		[[nodiscard]]
@@ -113,5 +116,8 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildTexturedRoundRect(const BufferCreatorFunc& bufferCreator, const FloatRect& rect, float w, float h, float r, const FloatRect& uvRect, const Float4& color, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildCircleShadow(const BufferCreatorFunc& bufferCreator, const Circle& circle, float blur, const Float4& color, float scale, bool fill);
 	}
 }

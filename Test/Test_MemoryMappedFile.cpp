@@ -30,7 +30,7 @@ TEST_CASE("MemoryMappedFile")
 	const std::string testData = CreateTestData();
 	
 	{
-		TextWriter writer{ U"../../Test/output/mmf/text.txt", TextEncoding::UTF8_NO_BOM };
+		TextFileWriter writer{ U"../../Test/output/mmf/text.txt", TextEncoding::UTF8_NO_BOM };
 		writer.writeUTF8(testData);
 	}
 
@@ -96,7 +96,7 @@ TEST_CASE("MemoryMappedFile")
 			}
 		}
 
-		BinaryReader reader{ U"../../Test/output/mmf/text.txt" };
+		BinaryFileReader reader{ U"../../Test/output/mmf/text.txt" };
 		std::string buffer(100, '\0');
 		
 		reader.read(buffer.data(), 100);

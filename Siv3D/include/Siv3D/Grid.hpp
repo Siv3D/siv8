@@ -570,13 +570,13 @@ namespace s3d
 		/// @param y 行のインデックス
 		/// @return 指定した行の要素にアクセスするビュー
 		[[nodiscard]]
-		constexpr auto row(size_type y) noexcept;
+		constexpr std::span<value_type> row(size_type y) noexcept;
 
 		/// @brief 指定した行の要素にアクセスするビューを返します。
 		/// @param y 行のインデックス
 		/// @return 指定した行の要素にアクセスするビュー
 		[[nodiscard]]
-		constexpr auto row(size_type y) const noexcept;
+		constexpr std::span<const value_type> row(size_type y) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

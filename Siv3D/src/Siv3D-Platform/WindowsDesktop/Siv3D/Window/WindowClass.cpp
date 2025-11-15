@@ -20,7 +20,7 @@ namespace s3d
 	void WindowClass::registerClass(const HMODULE moduleHandle)
 	{
 		// WindowClass の名前を生成
-		name = FileSystem::ModulePath().toWstr();
+		name = FileSystem::GetExecutablePath().toWstr();
 
 		const WNDCLASSEX windowClass
 		{

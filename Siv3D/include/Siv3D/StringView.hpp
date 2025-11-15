@@ -1283,7 +1283,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	split_at
+		//	splitAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1292,18 +1292,18 @@ namespace s3d
 		/// @remark pos が文字列の長さ以上の場合 `{ *this, U"" }` を返します。
 		/// @return 分割された文字列
 		[[nodiscard]]
-		std::pair<StringView, StringView> split_at(size_type pos) const;
+		std::pair<StringView, StringView> splitAt(size_type pos) const SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	split_lines
+		//	splitLines
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 文字列を行ごとに分割します。
 		/// @return 分割された文字列
 		[[nodiscard]]
-		Array<String, std::allocator<String>> split_lines() const;
+		Array<StringView, std::allocator<StringView>> splitLines() const SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//

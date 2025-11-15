@@ -68,7 +68,7 @@ namespace s3d
 				
 				const std::wstring_view pathView{ static_cast<const wchar_t*>(pData), (dataSize / sizeof(wchar_t)) };
 
-				paths.push_back(L'/' + Unicode::FromWstring(pathView));
+				paths.push_back(Platform::Windows::ResourcePathPrefix + Unicode::FromWstring(pathView));
 			}
 
 			paths.sort();
@@ -95,12 +95,12 @@ namespace s3d
 
 	FilePath Resource(const FilePathView path)
 	{
-		if (path.starts_with(U'/'))
+		if (path.starts_with(Platform::Windows::ResourcePathPrefix))
 		{
 			return FilePath{ path };
 		}
 
-		return (U'/' + path);
+		return (Platform::Windows::ResourcePathPrefix + path);
 	}
 
 	namespace Platform::Windows
@@ -113,7 +113,7 @@ namespace s3d
 
 		std::wstring ToResourceName(const FilePathView resourcePath)
 		{
-			if (not resourcePath.starts_with(U'/'))
+			if (not resourcePath.starts_with(Platform::Windows::ResourcePathPrefix))
 			{
 				return{};
 			}

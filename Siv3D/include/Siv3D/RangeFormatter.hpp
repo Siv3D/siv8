@@ -26,7 +26,9 @@ namespace s3d
 	{
 		template <class Range>
 		concept FormattableRange = std::ranges::input_range<Range>
-			&& Formattable<std::ranges::range_reference_t<const Range>>;
+			&& Formattable<std::ranges::range_reference_t<const Range>>
+			&& (not std::same_as<std::remove_cvref_t<Range>, std::string>)
+			&& (not std::same_as<std::remove_cvref_t<Range>, std::string_view>);
 	}
 
 	////////////////////////////////////////////////////////////////

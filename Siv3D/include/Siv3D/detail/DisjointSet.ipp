@@ -143,8 +143,7 @@ namespace s3d
 		// union by size
 		if (-m_parentsOrSize[i] < -m_parentsOrSize[k])
 		{
-			using std::swap;
-			swap(i, k);
+			std::ranges::swap(i, k);
 		}
 
 		m_parentsOrSize[i] += m_parentsOrSize[k];
