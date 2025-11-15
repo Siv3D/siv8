@@ -1079,6 +1079,35 @@
 		F980C4A92C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4A62C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp */; };
 		F980C4AA2C0F6D2C00A86B68 /* MetalRenderPipelineState.mm in Sources */ = {isa = PBXBuildFile; fileRef = F980C4A72C0F6D2C00A86B68 /* MetalRenderPipelineState.mm */; };
 		F980C4AC2C0F6DFB00A86B68 /* PipelineStateDesc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F980C4AB2C0F6DFB00A86B68 /* PipelineStateDesc.hpp */; };
+		F981118F2EC8C5D800C50DD1 /* Anchor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F981118E2EC8C5D800C50DD1 /* Anchor.hpp */; };
+		F98111912EC8C5E900C50DD1 /* Anchor.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98111902EC8C5E900C50DD1 /* Anchor.ipp */; };
+		F98111942EC8C60200C50DD1 /* SivAnchor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111922EC8C60200C50DD1 /* SivAnchor.cpp */; };
+		F98111962EC8C63200C50DD1 /* SivGeometry2D_Misc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111952EC8C63200C50DD1 /* SivGeometry2D_Misc.cpp */; };
+		F98111992EC8C68700C50DD1 /* GUIColorStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111972EC8C68700C50DD1 /* GUIColorStyle.hpp */; };
+		F981119A2EC8C68700C50DD1 /* GUIShapeStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111982EC8C68700C50DD1 /* GUIShapeStyle.hpp */; };
+		F981119C2EC8C6C400C50DD1 /* Theme.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F981119B2EC8C6C400C50DD1 /* Theme.hpp */; };
+		F98111AB2EC8C6CA00C50DD1 /* SimpleCheckBox.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A12EC8C6CA00C50DD1 /* SimpleCheckBox.hpp */; };
+		F98111AC2EC8C6CA00C50DD1 /* SimpleDismissibleTooltip.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A32EC8C6CA00C50DD1 /* SimpleDismissibleTooltip.hpp */; };
+		F98111AD2EC8C6CA00C50DD1 /* SimpleButton.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F981119F2EC8C6CA00C50DD1 /* SimpleButton.hpp */; };
+		F98111AE2EC8C6CA00C50DD1 /* SimpleTooltip.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A82EC8C6CA00C50DD1 /* SimpleTooltip.hpp */; };
+		F98111AF2EC8C6CA00C50DD1 /* SimpleButton.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A02EC8C6CA00C50DD1 /* SimpleButton.ipp */; };
+		F98111B02EC8C6CA00C50DD1 /* SimpleProgressBar.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A72EC8C6CA00C50DD1 /* SimpleProgressBar.ipp */; };
+		F98111B12EC8C6CA00C50DD1 /* SimpleProgressBar.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A62EC8C6CA00C50DD1 /* SimpleProgressBar.hpp */; };
+		F98111B22EC8C6CA00C50DD1 /* ISimpleGUIElement.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F981119E2EC8C6CA00C50DD1 /* ISimpleGUIElement.ipp */; };
+		F98111B32EC8C6CA00C50DD1 /* SimpleHueSlider.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A52EC8C6CA00C50DD1 /* SimpleHueSlider.ipp */; };
+		F98111B42EC8C6CA00C50DD1 /* ISimpleGUIElement.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F981119D2EC8C6CA00C50DD1 /* ISimpleGUIElement.hpp */; };
+		F98111B52EC8C6CA00C50DD1 /* SimpleHueSlider.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A42EC8C6CA00C50DD1 /* SimpleHueSlider.hpp */; };
+		F98111B62EC8C6CA00C50DD1 /* SimpleTooltip.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A92EC8C6CA00C50DD1 /* SimpleTooltip.ipp */; };
+		F98111B72EC8C6CA00C50DD1 /* SimpleCheckBox.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98111A22EC8C6CA00C50DD1 /* SimpleCheckBox.ipp */; };
+		F98111B92EC8C70600C50DD1 /* Theme.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98111B82EC8C70600C50DD1 /* Theme.ipp */; };
+		F98111BB2EC8C71A00C50DD1 /* SimpleGUI.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98111BA2EC8C71A00C50DD1 /* SimpleGUI.ipp */; };
+		F98111BE2EC8C75300C50DD1 /* SivTheme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111BC2EC8C75300C50DD1 /* SivTheme.cpp */; };
+		F98111C52EC8C77100C50DD1 /* SivSimpleDismissibleTooltip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111C32EC8C77100C50DD1 /* SivSimpleDismissibleTooltip.cpp */; };
+		F98111C62EC8C77100C50DD1 /* SivSimpleTooltip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111C42EC8C77100C50DD1 /* SivSimpleTooltip.cpp */; };
+		F98111C72EC8C77100C50DD1 /* SimpleHueSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111BF2EC8C77100C50DD1 /* SimpleHueSlider.cpp */; };
+		F98111C82EC8C77100C50DD1 /* SimpleProgressBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111C02EC8C77100C50DD1 /* SimpleProgressBar.cpp */; };
+		F98111C92EC8C77100C50DD1 /* SivSimpleButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111C12EC8C77100C50DD1 /* SivSimpleButton.cpp */; };
+		F98111CA2EC8C77100C50DD1 /* SivSimpleCheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111C22EC8C77100C50DD1 /* SivSimpleCheckBox.cpp */; };
 		F981F6DB2D1BDF9B009F6627 /* MetalSamplerState.mm in Sources */ = {isa = PBXBuildFile; fileRef = F981F6D92D1BDF9B009F6627 /* MetalSamplerState.mm */; };
 		F981F6DC2D1BDF9B009F6627 /* MetalSamplerState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F981F6D82D1BDF9B009F6627 /* MetalSamplerState.hpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
@@ -3825,6 +3854,35 @@
 		F980C4A62C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalRenderPipelineState.hpp; sourceTree = "<group>"; };
 		F980C4A72C0F6D2C00A86B68 /* MetalRenderPipelineState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalRenderPipelineState.mm; sourceTree = "<group>"; };
 		F980C4AB2C0F6DFB00A86B68 /* PipelineStateDesc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PipelineStateDesc.hpp; sourceTree = "<group>"; };
+		F981118E2EC8C5D800C50DD1 /* Anchor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Anchor.hpp; sourceTree = "<group>"; };
+		F98111902EC8C5E900C50DD1 /* Anchor.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Anchor.ipp; sourceTree = "<group>"; };
+		F98111922EC8C60200C50DD1 /* SivAnchor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnchor.cpp; sourceTree = "<group>"; };
+		F98111952EC8C63200C50DD1 /* SivGeometry2D_Misc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_Misc.cpp; sourceTree = "<group>"; };
+		F98111972EC8C68700C50DD1 /* GUIColorStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GUIColorStyle.hpp; sourceTree = "<group>"; };
+		F98111982EC8C68700C50DD1 /* GUIShapeStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GUIShapeStyle.hpp; sourceTree = "<group>"; };
+		F981119B2EC8C6C400C50DD1 /* Theme.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Theme.hpp; sourceTree = "<group>"; };
+		F981119D2EC8C6CA00C50DD1 /* ISimpleGUIElement.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ISimpleGUIElement.hpp; sourceTree = "<group>"; };
+		F981119E2EC8C6CA00C50DD1 /* ISimpleGUIElement.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ISimpleGUIElement.ipp; sourceTree = "<group>"; };
+		F981119F2EC8C6CA00C50DD1 /* SimpleButton.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleButton.hpp; sourceTree = "<group>"; };
+		F98111A02EC8C6CA00C50DD1 /* SimpleButton.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleButton.ipp; sourceTree = "<group>"; };
+		F98111A12EC8C6CA00C50DD1 /* SimpleCheckBox.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleCheckBox.hpp; sourceTree = "<group>"; };
+		F98111A22EC8C6CA00C50DD1 /* SimpleCheckBox.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleCheckBox.ipp; sourceTree = "<group>"; };
+		F98111A32EC8C6CA00C50DD1 /* SimpleDismissibleTooltip.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleDismissibleTooltip.hpp; sourceTree = "<group>"; };
+		F98111A42EC8C6CA00C50DD1 /* SimpleHueSlider.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleHueSlider.hpp; sourceTree = "<group>"; };
+		F98111A52EC8C6CA00C50DD1 /* SimpleHueSlider.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleHueSlider.ipp; sourceTree = "<group>"; };
+		F98111A62EC8C6CA00C50DD1 /* SimpleProgressBar.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleProgressBar.hpp; sourceTree = "<group>"; };
+		F98111A72EC8C6CA00C50DD1 /* SimpleProgressBar.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleProgressBar.ipp; sourceTree = "<group>"; };
+		F98111A82EC8C6CA00C50DD1 /* SimpleTooltip.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleTooltip.hpp; sourceTree = "<group>"; };
+		F98111A92EC8C6CA00C50DD1 /* SimpleTooltip.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleTooltip.ipp; sourceTree = "<group>"; };
+		F98111B82EC8C70600C50DD1 /* Theme.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Theme.ipp; sourceTree = "<group>"; };
+		F98111BA2EC8C71A00C50DD1 /* SimpleGUI.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUI.ipp; sourceTree = "<group>"; };
+		F98111BC2EC8C75300C50DD1 /* SivTheme.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTheme.cpp; sourceTree = "<group>"; };
+		F98111BF2EC8C77100C50DD1 /* SimpleHueSlider.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleHueSlider.cpp; sourceTree = "<group>"; };
+		F98111C02EC8C77100C50DD1 /* SimpleProgressBar.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleProgressBar.cpp; sourceTree = "<group>"; };
+		F98111C12EC8C77100C50DD1 /* SivSimpleButton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimpleButton.cpp; sourceTree = "<group>"; };
+		F98111C22EC8C77100C50DD1 /* SivSimpleCheckBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimpleCheckBox.cpp; sourceTree = "<group>"; };
+		F98111C32EC8C77100C50DD1 /* SivSimpleDismissibleTooltip.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimpleDismissibleTooltip.cpp; sourceTree = "<group>"; };
+		F98111C42EC8C77100C50DD1 /* SivSimpleTooltip.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimpleTooltip.cpp; sourceTree = "<group>"; };
 		F981F6D82D1BDF9B009F6627 /* MetalSamplerState.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalSamplerState.hpp; sourceTree = "<group>"; };
 		F981F6D92D1BDF9B009F6627 /* MetalSamplerState.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalSamplerState.mm; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
@@ -5661,7 +5719,13 @@
 		F902E1152EA8B39D002C6B92 /* SimpleGUI */ = {
 			isa = PBXGroup;
 			children = (
+				F98111BF2EC8C77100C50DD1 /* SimpleHueSlider.cpp */,
+				F98111C02EC8C77100C50DD1 /* SimpleProgressBar.cpp */,
+				F98111C12EC8C77100C50DD1 /* SivSimpleButton.cpp */,
+				F98111C22EC8C77100C50DD1 /* SivSimpleCheckBox.cpp */,
+				F98111C32EC8C77100C50DD1 /* SivSimpleDismissibleTooltip.cpp */,
 				F902E1142EA8B39D002C6B92 /* SivSimpleGUI.cpp */,
+				F98111C42EC8C77100C50DD1 /* SivSimpleTooltip.cpp */,
 			);
 			path = SimpleGUI;
 			sourceTree = "<group>";
@@ -6022,6 +6086,7 @@
 			isa = PBXGroup;
 			children = (
 				F9070B642B9F175000383E4D /* AlignedAllocator.ipp */,
+				F98111902EC8C5E900C50DD1 /* Anchor.ipp */,
 				F9070B652B9F175000383E4D /* Array.ipp */,
 				F9E7946B2C19B6F2002615BA /* ArrayAlgorithm.ipp */,
 				F9E7944D2C197417002615BA /* ArrayParallel.ipp */,
@@ -6163,6 +6228,7 @@
 				F9070B9C2B9F175000383E4D /* ScopeExit.ipp */,
 				F95122242CB8229400151291 /* Shape2D.ipp */,
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
+				F98111BA2EC8C71A00C50DD1 /* SimpleGUI.ipp */,
 				F9712A562C289A6D0049CC26 /* Smooth.ipp */,
 				F9070B9F2B9F175000383E4D /* Step.ipp */,
 				F9528B852BBC5D4B00222F45 /* Step2D.ipp */,
@@ -6184,6 +6250,7 @@
 				F90DA04F2D1A91AB0003E1E8 /* TextureDesc.ipp */,
 				F90DA0502D1A91AB0003E1E8 /* TextureDescBuilder.ipp */,
 				F90DA0512D1A91AB0003E1E8 /* TextureFormat.ipp */,
+				F98111B82EC8C70600C50DD1 /* Theme.ipp */,
 				F9070BA62B9F175000383E4D /* ThousandSeparate.ipp */,
 				F9528BA02BBD6F8800222F45 /* Timer.ipp */,
 				F98605F72BE61586006A4C0F /* Triangle.ipp */,
@@ -6222,6 +6289,7 @@
 				F9070BBB2B9F175000383E4D /* 2DShapes.hpp */,
 				F9070BBC2B9F175000383E4D /* 2DShapesFwd.hpp */,
 				F9070BBD2B9F175000383E4D /* AlignedAllocator.hpp */,
+				F981118E2EC8C5D800C50DD1 /* Anchor.hpp */,
 				F9070BBE2B9F175000383E4D /* Array.hpp */,
 				F9E794642C19B6D6002615BA /* ArrayAlgorithm.hpp */,
 				F9E794462C1973FC002615BA /* ArrayParallel.hpp */,
@@ -6332,6 +6400,8 @@
 				F97203132BF09DD9000E21DD /* Graphics.hpp */,
 				F9E794792C248AEE002615BA /* Graphics2D.hpp */,
 				F9528B192BADCC7C00222F45 /* Grid.hpp */,
+				F98111972EC8C68700C50DD1 /* GUIColorStyle.hpp */,
+				F98111982EC8C68700C50DD1 /* GUIShapeStyle.hpp */,
 				F9E5FC2A2BC15AEE0081A4F7 /* HalfFloat.hpp */,
 				F9070BED2B9F175000383E4D /* HardwareRNG.hpp */,
 				F9070BEE2B9F175000383E4D /* Hash.hpp */,
@@ -6523,6 +6593,7 @@
 				F90DA0472D1A91850003E1E8 /* TextureFormat.hpp */,
 				F90DA0482D1A91850003E1E8 /* TexturePixelFormat.hpp */,
 				F9FD0B302D1D315D00A584CE /* TextureRegion.hpp */,
+				F981119B2EC8C6C400C50DD1 /* Theme.hpp */,
 				F9070C2B2B9F175000383E4D /* ThousandSeparate.hpp */,
 				F9070C2C2B9F175000383E4D /* Threading.hpp */,
 				F9070C2D2B9F175000383E4D /* Time.hpp */,
@@ -6559,6 +6630,7 @@
 				F96F960B2C359F070033353E /* Geometry2D */,
 				F9528C5E2BC05B0200222F45 /* ImageFormat */,
 				F9D41B812C56057700290998 /* Pattern */,
+				F98111AA2EC8C6CA00C50DD1 /* SimpleGUI */,
 				F933AD0C2E54A2E7005624D7 /* TextEffect */,
 			);
 			path = Siv3D;
@@ -7052,6 +7124,7 @@
 		F9070DAC2B9F175E00383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
+				F98111932EC8C60200C50DD1 /* Anchor */,
 				F9E794712C19B720002615BA /* Array */,
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
 				F9FD0D282D21693100A584CE /* AssetMonitor */,
@@ -7241,6 +7314,7 @@
 				F97203062BEDF2FF000E21DD /* TextureFilter */,
 				F90DA05A2D1A91D90003E1E8 /* TextureFormat */,
 				F9FD0B2E2D1D314A00A584CE /* TextureRegion */,
+				F98111BD2EC8C75300C50DD1 /* Theme */,
 				F9070D932B9F175E00383E4D /* ThousandSeparate */,
 				F9070D952B9F175E00383E4D /* Threading */,
 				F9E794562C19743A002615BA /* Timer */,
@@ -8510,6 +8584,7 @@
 		F96F960F2C3712DC0033353E /* Geometry2D */ = {
 			isa = PBXGroup;
 			children = (
+				F98111952EC8C63200C50DD1 /* SivGeometry2D_Misc.cpp */,
 				F95122412CB8232300151291 /* SivGeometry2D_BoundingRect.cpp */,
 				F944BAA62CEACE2500CC4D42 /* SivGeometry2D_ConvexHull.cpp */,
 				F96F960E2C3712DC0033353E /* SivGeometry2D_Intersect.cpp */,
@@ -8958,6 +9033,42 @@
 				F980C4A72C0F6D2C00A86B68 /* MetalRenderPipelineState.mm */,
 			);
 			path = RenderPipelineState;
+			sourceTree = "<group>";
+		};
+		F98111932EC8C60200C50DD1 /* Anchor */ = {
+			isa = PBXGroup;
+			children = (
+				F98111922EC8C60200C50DD1 /* SivAnchor.cpp */,
+			);
+			path = Anchor;
+			sourceTree = "<group>";
+		};
+		F98111AA2EC8C6CA00C50DD1 /* SimpleGUI */ = {
+			isa = PBXGroup;
+			children = (
+				F981119D2EC8C6CA00C50DD1 /* ISimpleGUIElement.hpp */,
+				F981119E2EC8C6CA00C50DD1 /* ISimpleGUIElement.ipp */,
+				F981119F2EC8C6CA00C50DD1 /* SimpleButton.hpp */,
+				F98111A02EC8C6CA00C50DD1 /* SimpleButton.ipp */,
+				F98111A12EC8C6CA00C50DD1 /* SimpleCheckBox.hpp */,
+				F98111A22EC8C6CA00C50DD1 /* SimpleCheckBox.ipp */,
+				F98111A32EC8C6CA00C50DD1 /* SimpleDismissibleTooltip.hpp */,
+				F98111A42EC8C6CA00C50DD1 /* SimpleHueSlider.hpp */,
+				F98111A52EC8C6CA00C50DD1 /* SimpleHueSlider.ipp */,
+				F98111A62EC8C6CA00C50DD1 /* SimpleProgressBar.hpp */,
+				F98111A72EC8C6CA00C50DD1 /* SimpleProgressBar.ipp */,
+				F98111A82EC8C6CA00C50DD1 /* SimpleTooltip.hpp */,
+				F98111A92EC8C6CA00C50DD1 /* SimpleTooltip.ipp */,
+			);
+			path = SimpleGUI;
+			sourceTree = "<group>";
+		};
+		F98111BD2EC8C75300C50DD1 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				F98111BC2EC8C75300C50DD1 /* SivTheme.cpp */,
+			);
+			path = Theme;
 			sourceTree = "<group>";
 		};
 		F981F6DA2D1BDF9B009F6627 /* SamplerState */ = {
@@ -12054,6 +12165,7 @@
 				F986041C2BCFBB54006A4C0F /* SkSLInterfaceBlock.h in Headers */,
 				F97203232BF09E80000E21DD /* Metal.hpp in Headers */,
 				F9ED45B92CC156EC006BA10F /* parse.hpp in Headers */,
+				F981119C2EC8C6C400C50DD1 /* Theme.hpp in Headers */,
 				F90706C32B9DAEC900383E4D /* pcg_random.hpp in Headers */,
 				F98602272BCFBB54006A4C0F /* SkPixelRefPriv.h in Headers */,
 				F9070CF52B9F175100383E4D /* Rect.hpp in Headers */,
@@ -12619,6 +12731,7 @@
 				F933AD7F2E54A375005624D7 /* Shape.h in Headers */,
 				F933AD802E54A375005624D7 /* EdgeHolder.h in Headers */,
 				F933AD812E54A375005624D7 /* equation-solver.h in Headers */,
+				F98111BB2EC8C71A00C50DD1 /* SimpleGUI.ipp in Headers */,
 				F933AD822E54A375005624D7 /* ShapeDistanceFinder.h in Headers */,
 				F933AD832E54A375005624D7 /* bitmap-interpolation.hpp in Headers */,
 				F933AD842E54A375005624D7 /* render-sdf.h in Headers */,
@@ -12643,6 +12756,7 @@
 				F933AD972E54A375005624D7 /* generator-config.h in Headers */,
 				F933AD982E54A375005624D7 /* shape-description.h in Headers */,
 				F933AD992E54A375005624D7 /* convergent-curve-ordering.h in Headers */,
+				F981118F2EC8C5D800C50DD1 /* Anchor.hpp in Headers */,
 				F933AD9A2E54A375005624D7 /* ShapeDistanceFinder.hpp in Headers */,
 				F933AD9B2E54A375005624D7 /* save-bmp.h in Headers */,
 				F933AD9C2E54A375005624D7 /* save-rgba.h in Headers */,
@@ -12681,6 +12795,7 @@
 				F9807D842BF6676100D9B590 /* AssetHandle.hpp in Headers */,
 				F986FA962BCFB53B006A4C0F /* ftsynth.h in Headers */,
 				F98600182BCFBB53006A4C0F /* SkFontMgr.h in Headers */,
+				F98111B92EC8C70600C50DD1 /* Theme.ipp in Headers */,
 				F986008F2BCFBB53006A4C0F /* GrDeferredDisplayListRecorder.h in Headers */,
 				F9528CA02BC1208B00222F45 /* pngconf.h in Headers */,
 				F986005C2BCFBB53006A4C0F /* SkCornerPathEffect.h in Headers */,
@@ -12716,6 +12831,19 @@
 				F9712A572C289A6D0049CC26 /* Smooth.ipp in Headers */,
 				F98600352BCFBB53006A4C0F /* SkPoint3.h in Headers */,
 				F98605822BDA7E32006A4C0F /* CCursor.hpp in Headers */,
+				F98111AB2EC8C6CA00C50DD1 /* SimpleCheckBox.hpp in Headers */,
+				F98111AC2EC8C6CA00C50DD1 /* SimpleDismissibleTooltip.hpp in Headers */,
+				F98111AD2EC8C6CA00C50DD1 /* SimpleButton.hpp in Headers */,
+				F98111AE2EC8C6CA00C50DD1 /* SimpleTooltip.hpp in Headers */,
+				F98111AF2EC8C6CA00C50DD1 /* SimpleButton.ipp in Headers */,
+				F98111B02EC8C6CA00C50DD1 /* SimpleProgressBar.ipp in Headers */,
+				F98111B12EC8C6CA00C50DD1 /* SimpleProgressBar.hpp in Headers */,
+				F98111B22EC8C6CA00C50DD1 /* ISimpleGUIElement.ipp in Headers */,
+				F98111B32EC8C6CA00C50DD1 /* SimpleHueSlider.ipp in Headers */,
+				F98111B42EC8C6CA00C50DD1 /* ISimpleGUIElement.hpp in Headers */,
+				F98111B52EC8C6CA00C50DD1 /* SimpleHueSlider.hpp in Headers */,
+				F98111B62EC8C6CA00C50DD1 /* SimpleTooltip.ipp in Headers */,
+				F98111B72EC8C6CA00C50DD1 /* SimpleCheckBox.ipp in Headers */,
 				F98600372BCFBB53006A4C0F /* SkRect.h in Headers */,
 				F951221F2CB8227F00151291 /* Shape2D.hpp in Headers */,
 				F9070C562B9F175000383E4D /* FloatFormatter.ipp in Headers */,
@@ -12787,6 +12915,8 @@
 				F9ED45AF2CC156EC006BA10F /* dissolve_traverse.hpp in Headers */,
 				F90706B62B9DAEC900383E4D /* xchar.h in Headers */,
 				F97E6DBF2D7B3BEA0066E408 /* HashMap.hpp in Headers */,
+				F98111992EC8C68700C50DD1 /* GUIColorStyle.hpp in Headers */,
+				F981119A2EC8C68700C50DD1 /* GUIShapeStyle.hpp in Headers */,
 				F98603092BCFBB54006A4C0F /* SkLineParameters.h in Headers */,
 				F986004E2BCFBB53006A4C0F /* SkTypes.h in Headers */,
 				F9070C4F2B9F175000383E4D /* DateTime.ipp in Headers */,
@@ -13042,6 +13172,7 @@
 				F986F9BA2BCA9D0A006A4C0F /* stopelement.h in Headers */,
 				F98600502BCFBB53006A4C0F /* SkVertices.h in Headers */,
 				F9ED45BB2CC156EC006BA10F /* remove_holes_if.hpp in Headers */,
+				F98111912EC8C5E900C50DD1 /* Anchor.ipp in Headers */,
 				F98605C52BE4B680006A4C0F /* InputCombination.ipp in Headers */,
 				F986FA582BCFB53B006A4C0F /* svwinfnt.h in Headers */,
 				F986FFEA2BCFBB53006A4C0F /* SkAvifDecoder.h in Headers */,
@@ -13510,6 +13641,7 @@
 				F98603CE2BCFBB54006A4C0F /* SkSLSwitchCaseContainsExit.cpp in Sources */,
 				F986F9AA2BCA9D0A006A4C0F /* layoutcontext.cpp in Sources */,
 				F98601A22BCFBB53006A4C0F /* SkDraw_text.cpp in Sources */,
+				F98111BE2EC8C75300C50DD1 /* SivTheme.cpp in Sources */,
 				F986F8B12BC806DB006A4C0F /* exif.cpp in Sources */,
 				F9070F312B9F252E00383E4D /* osmesa_context.c in Sources */,
 				F933AD9F2E54A375005624D7 /* Scanline.cpp in Sources */,
@@ -13662,6 +13794,7 @@
 				F98603DB2BCFBB54006A4C0F /* SkSLRasterPipelineCodeGenerator.cpp in Sources */,
 				F98602752BCFBB54006A4C0F /* SkStrikeSpec.cpp in Sources */,
 				F98604822BCFBB54006A4C0F /* SkSLOutputStream.cpp in Sources */,
+				F98111962EC8C63200C50DD1 /* SivGeometry2D_Misc.cpp in Sources */,
 				F986055F2BD203D4006A4C0F /* muParserCallback.cpp in Sources */,
 				F902E1122EA8B391002C6B92 /* GUIFactory.cpp in Sources */,
 				F902E1132EA8B391002C6B92 /* CGUI.cpp in Sources */,
@@ -13933,6 +14066,12 @@
 				F98603D92BCFBB54006A4C0F /* SkSLRasterPipelineBuilder.cpp in Sources */,
 				F98604562BCFBB54006A4C0F /* SkSLEliminateDeadGlobalVariables.cpp in Sources */,
 				F98601562BCFBB53006A4C0F /* SkBitmapCache.cpp in Sources */,
+				F98111C52EC8C77100C50DD1 /* SivSimpleDismissibleTooltip.cpp in Sources */,
+				F98111C62EC8C77100C50DD1 /* SivSimpleTooltip.cpp in Sources */,
+				F98111C72EC8C77100C50DD1 /* SimpleHueSlider.cpp in Sources */,
+				F98111C82EC8C77100C50DD1 /* SimpleProgressBar.cpp in Sources */,
+				F98111C92EC8C77100C50DD1 /* SivSimpleButton.cpp in Sources */,
+				F98111CA2EC8C77100C50DD1 /* SivSimpleCheckBox.cpp in Sources */,
 				F9D41B622C4FCE6400290998 /* SivLineCap.cpp in Sources */,
 				F98604442BCFBB54006A4C0F /* SkSLType.cpp in Sources */,
 				F98601752BCFBB53006A4C0F /* SkBlurMaskFilterImpl.cpp in Sources */,
@@ -14167,6 +14306,7 @@
 				F9070EF52B9F1C8900383E4D /* posix_time.c in Sources */,
 				F9070DD52B9F175E00383E4D /* SivIntFormatter.cpp in Sources */,
 				F986026D2BCFBB54006A4C0F /* SkSpriteBlitter_ARGB32.cpp in Sources */,
+				F98111942EC8C60200C50DD1 /* SivAnchor.cpp in Sources */,
 				F98603942BCFBB54006A4C0F /* SkGradientBaseShader.cpp in Sources */,
 				F986030C2BCFBB54006A4C0F /* SkOpBuilder.cpp in Sources */,
 				F98605652BD203D4006A4C0F /* muParserInt.cpp in Sources */,
