@@ -13,6 +13,7 @@
 //# include <Siv3D/Polygon.hpp>
 //# include <Siv3D/LineString.hpp>
 //# include <Siv3D/OpenCV_Bridge.hpp>
+# include <Siv3D/SIMD.hpp>
 # include "ImagePainting.hpp"
 //# include "ShapePainting.hpp"
 
