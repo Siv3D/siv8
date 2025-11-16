@@ -270,20 +270,17 @@ namespace s3d
 		/// @brief 指定した個数の要素からなる配列を作成します。
 		/// @param count 要素数
 		/// @param value 要素の値
-		/// @return *this
 		constexpr void assign(size_type count, const value_type& value) SIV3D_LIFETIMEBOUND;
 
 		/// @brief イテレータが指す範囲の要素から配列を作成します。
 		/// @tparam Iterator イテレータ
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
-		/// @return *this
 		template <class Iterator>
 		constexpr void assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief リストから配列を作成します。
 		/// @param list リスト
-		/// @return *this
 		constexpr void assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
@@ -295,7 +292,6 @@ namespace s3d
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
-		/// @return *this
 		template <Concept::ContainerCompatibleRange<Type> Range>
 		constexpr void assign_range(Range&& range) SIV3D_LIFETIMEBOUND;
 
@@ -723,9 +719,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した位置に範囲の要素を挿入します。
-		/// @param pos 挿入する位置
 		/// @tparam Range 範囲の型
+		/// @param pos 挿入する位置
 		/// @param range 範囲
+		/// @return 挿入された要素の先頭を指すイテレータ
 		template <Concept::ContainerCompatibleRange<Type> Range>
 		constexpr iterator insert_range(const_iterator pos, Range&& range);
 
@@ -1520,8 +1517,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の逆順ビューを返します。
+		/// @return 配列の逆順ビュー
 		constexpr auto reverseView();
 
+		/// @brief 配列の逆順ビューを返します。
+		/// @return 配列の逆順ビュー
 		constexpr auto reverseView() const;
 
 		////////////////////////////////////////////////////////////////
