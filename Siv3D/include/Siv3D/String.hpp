@@ -2857,6 +2857,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 二つの文字列が等しいかを判定します。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の文字列
+		/// @return 二つの文字列が等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const String& lhs, const String& rhs) noexcept
 		{
@@ -2877,9 +2881,17 @@ namespace s3d
 			}
 		}
 
+		/// @brief 二つの文字列を三方比較します。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の文字列
+		/// @return 比較結果
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const String&, const String&) noexcept = default;
 
+		/// @brief 文字列と C スタイル文字列が等しいかを判定します。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の C スタイル文字列
+		/// @return 二つの文字列が等しい場合 true, それ以外の場合は false
 		[[nodiscard]]
 		friend constexpr bool operator ==(const String& lhs, const value_type* rhs) noexcept
 		{
@@ -2900,6 +2912,10 @@ namespace s3d
 			}
 		}
 
+		/// @brief 文字列と C スタイル文字列を三方比較します。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の C スタイル文字列
+		/// @return 比較結果
 		[[nodiscard]]
 		friend constexpr auto operator <=>(const String& lhs, const value_type* rhs) noexcept
 		{
@@ -2912,6 +2928,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 二つの文字列の内容を交換します。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の文字列
 		friend constexpr void swap(String& lhs, String& rhs) noexcept
 		{
 			lhs.swap(rhs);
@@ -2923,78 +2942,130 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 二つの文字列を連結した新しい文字列を返します。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の文字列
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const String& lhs, const String& rhs)
 		{
 			return String(lhs.m_string + rhs.m_string);
 		}
 
+		/// @brief 文字列と C スタイル文字列を連結した新しい文字列を返します。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の C スタイル文字列
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const String& lhs, const value_type* rhs)
 		{
 			return String(lhs.m_string + rhs);
 		}
 
+		/// @brief 文字列と文字を連結した新しい文字列を返します。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の文字
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const String& lhs, const value_type rhs)
 		{
 			return String(lhs.m_string + rhs);
 		}
 
+		/// @brief C スタイル文字列と文字列を連結した新しい文字列を返します。
+		/// @param lhs 左側の C スタイル文字列
+		/// @param rhs 右側の文字列
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const value_type* lhs, const String& rhs)
 		{
 			return String(lhs + rhs.m_string);
 		}
 
+		/// @brief 文字と文字列を連結した新しい文字列を返します。
+		/// @param lhs 左側の文字
+		/// @param rhs 右側の文字列
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const value_type lhs, const String& rhs)
 		{
 			return String(lhs + rhs.m_string);
 		}
 
+		/// @brief 二つの文字列を連結した新しい文字列を返します（ムーブ版）。
+		/// @param lhs 左側の文字列（ムーブ）
+		/// @param rhs 右側の文字列（ムーブ）
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(String&& lhs, String&& rhs)
 		{
 			return String(std::move(lhs.m_string) + std::move(rhs.m_string));
 		}
 
+		/// @brief 文字列と文字列を連結した新しい文字列を返します（左辺ムーブ版）。
+		/// @param lhs 左側の文字列（ムーブ）
+		/// @param rhs 右側の文字列
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(String&& lhs, const String& rhs)
 		{
 			return String(std::move(lhs.m_string) + rhs.m_string);
 		}
 
+		/// @brief 文字列と C スタイル文字列を連結した新しい文字列を返します（左辺ムーブ版）。
+		/// @param lhs 左側の文字列（ムーブ）
+		/// @param rhs 右側の C スタイル文字列
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(String&& lhs, const value_type* rhs)
 		{
 			return String(std::move(lhs.m_string) + rhs);
 		}
 
+		/// @brief 文字列と文字を連結した新しい文字列を返します（左辺ムーブ版）。
+		/// @param lhs 左側の文字列（ムーブ）
+		/// @param rhs 右側の文字
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(String&& lhs, const value_type rhs)
 		{
 			return String(std::move(lhs.m_string) + rhs);
 		}
 
+		/// @brief 文字列と文字列を連結した新しい文字列を返します（右辺ムーブ版）。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の文字列（ムーブ）
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const String& lhs, String&& rhs)
 		{
 			return String(lhs.m_string + std::move(rhs.m_string));
 		}
 
+		/// @brief C スタイル文字列と文字列を連結した新しい文字列を返します（右辺ムーブ版）。
+		/// @param lhs 左側の C スタイル文字列
+		/// @param rhs 右側の文字列（ムーブ）
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const value_type* lhs, String&& rhs)
 		{
 			return String(lhs + std::move(rhs.m_string));
 		}
 
+		/// @brief 文字と文字列を連結した新しい文字列を返します（右辺ムーブ版）。
+		/// @param lhs 左側の文字
+		/// @param rhs 右側の文字列（ムーブ）
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const value_type lhs, String&& rhs)
 		{
 			return String(lhs + std::move(rhs.m_string));
 		}
 
+		/// @brief 文字列と StringView を連結した新しい文字列を返します。
+		/// @param lhs 左側の文字列
+		/// @param rhs 右側の StringView
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const String& lhs, const StringView rhs)
 		{
@@ -3004,6 +3075,10 @@ namespace s3d
 			return s;
 		}
 
+		/// @brief StringView と文字列を連結した新しい文字列を返します。
+		/// @param lhs 左側の StringView
+		/// @param rhs 右側の文字列
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const StringView lhs, const String& rhs)
 		{
@@ -3013,6 +3088,10 @@ namespace s3d
 			return s;
 		}
 
+		/// @brief 文字列と StringView を連結した新しい文字列を返します（左辺ムーブ版）。
+		/// @param lhs 左側の文字列（ムーブ）
+		/// @param rhs 右側の StringView
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(String&& lhs, const StringView rhs)
 		{
@@ -3020,6 +3099,10 @@ namespace s3d
 			return std::move(lhs);
 		}
 
+		/// @brief StringView と文字列を連結した新しい文字列を返します（右辺ムーブ版）。
+		/// @param lhs 左側の StringView
+		/// @param rhs 右側の文字列（ムーブ）
+		/// @return 連結された新しい文字列
 		[[nodiscard]]
 		friend constexpr String operator +(const StringView lhs, String&& rhs)
 		{
@@ -3033,10 +3116,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列を出力ストリームに出力します。
+		/// @param output 出力ストリーム
+		/// @param value 出力する文字列
+		/// @return 出力ストリーム
 		friend std::ostream& operator <<(std::ostream& output, const String& value);
 
+		/// @brief 文字列を出力ストリームに出力します。
+		/// @param output ワイド文字出力ストリーム
+		/// @param value 出力する文字列
+		/// @return 出力ストリーム
 		friend std::wostream& operator <<(std::wostream& output, const String& value);
 
+		/// @brief 文字列を出力ストリームに出力します。
+		/// @param output char32 出力ストリーム
+		/// @param value 出力する文字列
+		/// @return 出力ストリーム
 		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const String& value);
 
 		////////////////////////////////////////////////////////////////
@@ -3045,8 +3140,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 入力ストリームから文字列を読み込みます。
+		/// @param input 入力ストリーム
+		/// @param value 読み込み先の文字列
+		/// @return 入力ストリーム
 		friend std::istream& operator >>(std::istream& input, String& value);
 
+		/// @brief 入力ストリームから文字列を読み込みます。
+		/// @param input ワイド文字入力ストリーム
+		/// @param value 読み込み先の文字列
+		/// @return 入力ストリーム
 		friend std::wistream& operator >>(std::wistream& input, String& value);
 
 		////////////////////////////////////////////////////////////////
@@ -3055,6 +3158,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列をフォーマットします。
+		/// @param formatData フォーマットデータ
+		/// @param s フォーマットする文字列
 		friend void Formatter(FormatData& formatData, const String& s);
 
 	private:
@@ -3081,6 +3187,11 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
+			/// @brief 文字列リテラルから String オブジェクトを作成します。
+			/// @param s 文字列リテラル
+			/// @param length 文字列の長さ
+			/// @return String オブジェクト
+			/// @remark 使用例: auto str = U"Hello"_s;
 			[[nodiscard]]
 			constexpr String operator ""_s(const char32_t* s, size_t length);
 		}
@@ -3092,6 +3203,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief ファイルパスを表す文字列型
 	using FilePath = String;
 }
 
