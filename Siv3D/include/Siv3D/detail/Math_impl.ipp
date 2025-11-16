@@ -115,7 +115,7 @@ namespace s3d
 					return{ std::fmod(x.x, y.x), std::fmod(x.y, y.y), std::fmod(x.z, y.z), std::fmod(x.w, y.w) };
 				}
 
-				/// @brief 値の剰余を返します。
+				/// @brief 剰余を返します。
 				/// @param x 被除数
 				/// @param y 除数
 				/// @return x を y で割った剰余
@@ -131,7 +131,7 @@ namespace s3d
 
 			struct Fraction_impl
 			{
-				/// @brief 値の小数部を返します。
+				/// @brief 小数部を返します。
 				/// @param x 入力値
 				/// @return x の小数部
 				[[nodiscard]]
@@ -140,7 +140,7 @@ namespace s3d
 					return (x - std::floor(x));
 				}
 
-				/// @brief 値の小数部を返します。
+				/// @brief 小数部を返します。
 				/// @param x 入力値
 				/// @return x の小数部
 				[[nodiscard]]
@@ -203,7 +203,7 @@ namespace s3d
 					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)), (v.z - std::floor(v.z)), (v.w - std::floor(v.w)) };
 				}
 
-				/// @brief 値の小数部を抽出します。
+				/// @brief 小数部を返します。
 				/// @param x 入力値
 				/// @return x の小数部
 				[[nodiscard]]
@@ -497,7 +497,7 @@ namespace s3d
 					return{ std::log(v.x), std::log(v.y), std::log(v.z), std::log(v.w) };
 				}
 
-				/// @brief 値の自然対数を返します。
+				/// @brief 自然対数を返します。
 				/// @param x 入力値
 				/// @return ln(x)
 				[[nodiscard]]
@@ -800,13 +800,17 @@ namespace s3d
 
 			struct Pow_impl
 			{
+				/// @brief べき乗を返します。
+				/// @param x 底
+				/// @param exp 指数
+				/// @return x^exp
 				[[nodiscard]]
 				auto operator ()(const Concept::Arithmetic auto x, const Concept::Arithmetic auto exp) const noexcept
 				{
 					return std::pow(x, exp);
 				}
 
-				/// @brief ベクトルの各成分にべき乗演算を適用します。
+				/// @brief ベクトルの各成分ごとのべき乗を返します。
 				/// @param v ベクトル
 				/// @param exp 指数
 				/// @return 各成分について v^exp を適用したベクトル
@@ -816,7 +820,7 @@ namespace s3d
 					return{ std::pow(v.x, exp), std::pow(v.y, exp) };
 				}
 
-				/// @brief ベクトルの各成分にべき乗演算を適用します。
+				/// @brief ベクトルの各成分ごとのべき乗を返します。
 				/// @param v ベクトル
 				/// @param exp 指数
 				/// @return 各成分について v^exp を適用したベクトル
@@ -826,7 +830,7 @@ namespace s3d
 					return{ std::pow(v.x, exp), std::pow(v.y, exp) };
 				}
 
-				/// @brief ベクトルの各成分にべき乗演算を適用します。
+				/// @brief ベクトルの各成分ごとのべき乗を返します。
 				/// @param v ベクトル
 				/// @param exp 指数
 				/// @return 各成分について v^exp を適用したベクトル
@@ -836,7 +840,7 @@ namespace s3d
 					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp) };
 				}
 
-				/// @brief ベクトルの各成分にべき乗演算を適用します。
+				/// @brief ベクトルの各成分ごとのべき乗を返します。
 				/// @param v ベクトル
 				/// @param exp 指数
 				/// @return 各成分について v^exp を適用したベクトル
@@ -846,7 +850,7 @@ namespace s3d
 					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp) };
 				}
 
-				/// @brief ベクトルの各成分にべき乗演算を適用します。
+				/// @brief ベクトルの各成分ごとのべき乗を返します。
 				/// @param v ベクトル
 				/// @param exp 指数
 				/// @return 各成分について v^exp を適用したベクトル
@@ -856,7 +860,7 @@ namespace s3d
 					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp), std::pow(v.w, exp) };
 				}
 
-				/// @brief ベクトルの各成分にべき乗演算を適用します。
+				/// @brief ベクトルの各成分ごとのべき乗を返します。
 				/// @param v ベクトル
 				/// @param exp 指数
 				/// @return 各成分について v^exp を適用したベクトル
@@ -866,14 +870,14 @@ namespace s3d
 					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp), std::pow(v.w, exp) };
 				}
 
-				/// @brief 値のべき乗演算の結果を返します。
+				/// @brief べき乗を返します。
 				/// @param x 底
 				/// @param exp 指数
 				/// @return x^exp
 				[[nodiscard]]
 				BigInt operator ()(const BigInt& x, uint32 exp) const;
 
-				/// @brief 値のべき乗演算の結果を返します。
+				/// @brief べき乗を返します。
 				/// @param x 底
 				/// @param exp 指数
 				/// @return x^exp
@@ -889,7 +893,7 @@ namespace s3d
 
 			struct Sign_impl
 			{
-				/// @brief 値の符号を返します。
+				/// @brief 符号を返します。
 				/// @param x 入力値
 				/// @return x の符号 (-1, 0, 1)
 				[[nodiscard]]
@@ -963,13 +967,13 @@ namespace s3d
 					return{ operator ()(v.x), operator ()(v.y), operator ()(v.z), operator ()(v.w) };
 				}
 
-				/// @brief 値の符号を返します。
+				/// @brief 符号を返します。
 				/// @param x 入力値
 				/// @return x の符号 (-1, 0, 1)
 				[[nodiscard]]
 				int32 operator ()(const BigInt& x) const;
 
-				/// @brief 値の符号を返します。
+				/// @brief 符号を返します。
 				/// @param x 入力値
 				/// @return x の符号 (-1, 0, 1)
 				[[nodiscard]]
@@ -1427,7 +1431,7 @@ namespace s3d
 
 			struct Square_impl
 			{
-				/// @brief 値の二乗を返します。
+				/// @brief 二乗を返します。
 				/// @param x 入力値
 				/// @return x²
 				[[nodiscard]]
@@ -1436,7 +1440,7 @@ namespace s3d
 					return (x * x);
 				}
 
-				/// @brief 値の二乗を返します。
+				/// @brief 二乗を返します。
 				/// @param x 入力値
 				/// @return x²
 				[[nodiscard]]
@@ -1445,7 +1449,7 @@ namespace s3d
 					return (x * x);
 				}
 
-				/// @brief 値の二乗を返します。
+				/// @brief 二乗を返します。
 				/// @param x 入力値
 				/// @return x²
 				[[nodiscard]]
@@ -1508,9 +1512,15 @@ namespace s3d
 					return{ (v.x * v.x), (v.y * v.y), (v.z * v.z), (v.w * v.w) };
 				}
 
+				/// @brief 二乗を返します。
+				/// @param x 入力値
+				/// @return x²
 				[[nodiscard]]
 				BigInt operator ()(const BigInt& x) const;
 
+				/// @brief 二乗を返します。
+				/// @param x 入力値
+				/// @return x²
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -1523,7 +1533,7 @@ namespace s3d
 
 			struct Exp_impl
 			{
-				/// @brief 整数の指数関数を返します。
+				/// @brief 値の指数関数を返します。
 				/// @param x 入力値
 				/// @return e^x
 				[[nodiscard]]
@@ -1604,9 +1614,15 @@ namespace s3d
 					return{ std::exp(v.x), std::exp(v.y), std::exp(v.z), std::exp(v.w) };
 				}
 
+				/// @brief 値の指数関数を返します。
+				/// @param x 入力値
+				/// @return e^x
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
-
+				
+				/// @brief 値の指数関数を返します。
+				/// @param x 入力値
+				/// @return e^x
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -1619,7 +1635,7 @@ namespace s3d
 
 			struct Exp2_impl
 			{
-				/// @brief 整数の2のべき乗を返します。
+				/// @brief 整数の 2 のべき乗を返します。
 				/// @param x 入力値
 				/// @return 2^x
 				[[nodiscard]]
@@ -1628,7 +1644,7 @@ namespace s3d
 					return std::exp2(static_cast<double>(x));
 				}
 
-				/// @brief 値の2のべき乗を返します。
+				/// @brief 値の 2 のべき乗を返します。
 				/// @param x 入力値
 				/// @return 2^x
 				[[nodiscard]]
@@ -1637,7 +1653,7 @@ namespace s3d
 					return std::exp2(x);
 				}
 
-				/// @brief 値の2のべき乗を返します。
+				/// @brief 値の 2 のべき乗を返します。
 				/// @param x 入力値
 				/// @return 2^x
 				[[nodiscard]]
@@ -1646,7 +1662,7 @@ namespace s3d
 					return std::exp2(x);
 				}
 
-				/// @brief ベクトルの各成分に2のべき乗を適用します。
+				/// @brief ベクトルの各成分に 2 のべき乗を適用します。
 				/// @param v ベクトル
 				/// @return 各成分について 2^v を適用したベクトル
 				[[nodiscard]]
@@ -1655,7 +1671,7 @@ namespace s3d
 					return{ std::exp2(v.x), std::exp2(v.y) };
 				}
 
-				/// @brief ベクトルの各成分に2のべき乗を適用します。
+				/// @brief ベクトルの各成分に 2 のべき乗を適用します。
 				/// @param v ベクトル
 				/// @return 各成分について 2^v を適用したベクトル
 				[[nodiscard]]
@@ -1664,7 +1680,7 @@ namespace s3d
 					return{ std::exp2(v.x), std::exp2(v.y) };
 				}
 
-				/// @brief ベクトルの各成分に2のべき乗を適用します。
+				/// @brief ベクトルの各成分に 2 のべき乗を適用します。
 				/// @param v ベクトル
 				/// @return 各成分について 2^v を適用したベクトル
 				[[nodiscard]]
@@ -1673,7 +1689,7 @@ namespace s3d
 					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z) };
 				}
 
-				/// @brief ベクトルの各成分に2のべき乗を適用します。
+				/// @brief ベクトルの各成分に 2 のべき乗を適用します。
 				/// @param v ベクトル
 				/// @return 各成分について 2^v を適用したベクトル
 				[[nodiscard]]
@@ -1682,7 +1698,7 @@ namespace s3d
 					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z) };
 				}
 
-				/// @brief ベクトルの各成分に2のべき乗を適用します。
+				/// @brief ベクトルの各成分に 2 のべき乗を適用します。
 				/// @param v ベクトル
 				/// @return 各成分について 2^v を適用したベクトル
 				[[nodiscard]]
@@ -1691,7 +1707,7 @@ namespace s3d
 					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z), std::exp2(v.w) };
 				}
 
-				/// @brief ベクトルの各成分に2のべき乗を適用します。
+				/// @brief ベクトルの各成分に 2 のべき乗を適用します。
 				/// @param v ベクトル
 				/// @return 各成分について 2^v を適用したベクトル
 				[[nodiscard]]
@@ -1700,9 +1716,15 @@ namespace s3d
 					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z), std::exp2(v.w) };
 				}
 
+				/// @brief 値の 2 のべき乗を返します。
+				/// @param x 
+				/// @return 2^x
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 値の 2 のべき乗を返します。
+				/// @param x
+				/// @return 2^x
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -1715,7 +1737,7 @@ namespace s3d
 
 			struct Rsqrt_impl
 			{
-				/// @brief 整数の逆平方根を返します。
+				/// @brief 逆平方根を返します。
 				/// @param x 入力値
 				/// @return 1/√x
 				[[nodiscard]]
@@ -1724,7 +1746,7 @@ namespace s3d
 					return (1.0 / std::sqrt(static_cast<double>(x)));
 				}
 
-				/// @brief 値の逆平方根を返します。
+				/// @brief 逆平方根を返します。
 				/// @param x 入力値
 				/// @return 1/√x
 				[[nodiscard]]
@@ -1733,7 +1755,7 @@ namespace s3d
 					return (1.0f / std::sqrt(x));
 				}
 
-				/// @brief 値の逆平方根を返します。
+				/// @brief 逆平方根を返します。
 				/// @param x 入力値
 				/// @return 1/√x
 				[[nodiscard]]
@@ -1796,9 +1818,15 @@ namespace s3d
 					return{ (1.0 / std::sqrt(v.x)), (1.0 / std::sqrt(v.y)), (1.0 / std::sqrt(v.z)), (1.0 / std::sqrt(v.w)) };
 				}
 
+				/// @brief 逆平方根を返します。
+				/// @param x 入力値
+				/// @return 1/√x
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 逆平方根を返します。
+				/// @param x 入力値
+				/// @return 1/√x
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -1811,7 +1839,7 @@ namespace s3d
 
 			struct Sqrt_impl
 			{
-				/// @brief 整数の平方根を返します。
+				/// @brief 平方根を返します。
 				/// @param x 入力値
 				/// @return √x
 				[[nodiscard]]
@@ -1820,7 +1848,7 @@ namespace s3d
 					return std::sqrt(static_cast<double>(x));
 				}
 
-				/// @brief 値の平方根を返します。
+				/// @brief 平方根を返します。
 				/// @param x 入力値
 				/// @return √x
 				[[nodiscard]]
@@ -1829,7 +1857,7 @@ namespace s3d
 					return std::sqrt(x);
 				}
 
-				/// @brief 値の平方根を返します。
+				/// @brief 平方根を返します。
 				/// @param x 入力値
 				/// @return √x
 				[[nodiscard]]
@@ -1892,9 +1920,15 @@ namespace s3d
 					return{ std::sqrt(v.x), std::sqrt(v.y), std::sqrt(v.z), std::sqrt(v.w) };
 				}
 
+				/// @brief 平方根を返します。
+				/// @param x 入力値
+				/// @return √x
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 平方根を返します。
+				/// @param x 入力値
+				/// @return √x
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -1927,7 +1961,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に天井関数（切り上げ）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以上の最小の整数で構成されたベクトル
+				/// @return 各成分について最小の整数に切り上げたベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
@@ -1936,7 +1970,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に天井関数（切り上げ）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以上の最小の整数で構成されたベクトル
+				/// @return 各成分について最小の整数に切り上げたベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
@@ -1945,7 +1979,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に天井関数（切り上げ）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以上の最小の整数で構成されたベクトル
+				/// @return 各成分について最小の整数に切り上げたベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
@@ -1954,7 +1988,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に天井関数（切り上げ）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以上の最小の整数で構成されたベクトル
+				/// @return 各成分について最小の整数に切り上げたベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
@@ -1963,7 +1997,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に天井関数（切り上げ）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以上の最小の整数で構成されたベクトル
+				/// @return 各成分について最小の整数に切り上げたベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
@@ -1972,13 +2006,16 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に天井関数（切り上げ）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以上の最小の整数で構成されたベクトル
+				/// @return 各成分について最小の整数に切り上げたベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return{ std::ceil(v.x), std::ceil(v.y), std::ceil(v.z), std::ceil(v.w) };
 				}
 
+				/// @brief 値の天井関数（切り上げ）を返します。
+				/// @param x 入力値
+				/// @return x 以上の最小の整数
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -2011,7 +2048,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に床関数（切り捨て）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以下の最大の整数で構成されたベクトル
+				/// @return 各成分について最大の整数に切り捨てたベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
@@ -2020,7 +2057,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に床関数（切り捨て）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以下の最大の整数で構成されたベクトル
+				/// @return 各成分について最大の整数に切り捨てたベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
@@ -2029,7 +2066,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に床関数（切り捨て）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以下の最大の整数で構成されたベクトル
+				/// @return 各成分について最大の整数に切り捨てたベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
@@ -2038,7 +2075,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に床関数（切り捨て）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以下の最大の整数で構成されたベクトル
+				/// @return 各成分について最大の整数に切り捨てたベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
@@ -2047,7 +2084,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に床関数（切り捨て）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以下の最大の整数で構成されたベクトル
+				/// @return 各成分について最大の整数に切り捨てたベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
@@ -2056,13 +2093,16 @@ namespace s3d
 
 				/// @brief ベクトルの各成分に床関数（切り捨て）を適用した結果を返します。
 				/// @param v ベクトル
-				/// @return 各成分以下の最大の整数で構成されたベクトル
+				/// @return 各成分について最大の整数に切り捨てたベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return{ std::floor(v.x), std::floor(v.y), std::floor(v.z), std::floor(v.w) };
 				}
 
+				/// @brief 値の床関数（切り捨て）を返します。
+				/// @param x 入力値
+				/// @return x 以下の最大の整数
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -2075,7 +2115,7 @@ namespace s3d
 
 			struct Round_impl
 			{
-				/// @brief 値を四捨五入した値を返します。
+				/// @brief 四捨五入した値を返します。
 				/// @param x 入力値
 				/// @return x に最も近い整数
 				[[nodiscard]]
@@ -2084,7 +2124,7 @@ namespace s3d
 					return std::round(x);
 				}
 
-				/// @brief 値を四捨五入した値を返します。
+				/// @brief 四捨五入した値を返します。
 				/// @param x 入力値
 				/// @return x に最も近い整数
 				[[nodiscard]]
@@ -2095,7 +2135,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を四捨五入した値を返します。
 				/// @param v ベクトル
-				/// @return 各成分に最も近い整数で構成されたベクトル
+				/// @return 各成分について四捨五入したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
@@ -2104,7 +2144,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を四捨五入した値を返します。
 				/// @param v ベクトル
-				/// @return 各成分に最も近い整数で構成されたベクトル
+				/// @return 各成分について四捨五入したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
@@ -2113,7 +2153,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を四捨五入した値を返します。
 				/// @param v ベクトル
-				/// @return 各成分に最も近い整数で構成されたベクトル
+				/// @return 各成分について四捨五入したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
@@ -2122,7 +2162,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を四捨五入した値を返します。
 				/// @param v ベクトル
-				/// @return 各成分に最も近い整数で構成されたベクトル
+				/// @return 各成分について四捨五入したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
@@ -2131,7 +2171,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を四捨五入した値を返します。
 				/// @param v ベクトル
-				/// @return 各成分に最も近い整数で構成されたベクトル
+				/// @return 各成分について四捨五入したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
@@ -2140,13 +2180,16 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を四捨五入した値を返します。
 				/// @param v ベクトル
-				/// @return 各成分に最も近い整数で構成されたベクトル
+				/// @return 各成分について四捨五入したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return{ std::round(v.x), std::round(v.y), std::round(v.z), std::round(v.w) };
 				}
 
+				/// @brief 四捨五入した値を返します。
+				/// @param x 入力値
+				/// @return x に最も近い整数
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -2159,7 +2202,7 @@ namespace s3d
 
 			struct Trunc_impl
 			{
-				/// @brief 値の小数部を切り捨てた値を返します。
+				/// @brief 小数部を切り捨てた値を返します。
 				/// @param x 入力値
 				/// @return x の整数部
 				[[nodiscard]]
@@ -2168,7 +2211,7 @@ namespace s3d
 					return std::trunc(x);
 				}
 
-				/// @brief 値の小数部を切り捨てた値を返します。
+				/// @brief 小数部を切り捨てた値を返します。
 				/// @param x 入力値
 				/// @return x の整数部
 				[[nodiscard]]
@@ -2231,6 +2274,9 @@ namespace s3d
 					return{ std::trunc(v.x), std::trunc(v.y), std::trunc(v.z), std::trunc(v.w) };
 				}
 
+				/// @brief 小数部を切り捨てた値を返します。
+				/// @param x 入力値
+				/// @return x の整数部
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -2244,8 +2290,8 @@ namespace s3d
 			struct Max_impl
 			{
 				/// @brief 値の最大値を返します。
-				/// @param a 最初の値
-				/// @param b 2番目の値
+				/// @param a 一方の値
+				/// @param b もう一方の値
 				/// @return a と b のうち大きい方の値
 				[[nodiscard]]
 				constexpr float operator ()(const float a, const float b) const noexcept
@@ -2254,8 +2300,8 @@ namespace s3d
 				}
 
 				/// @brief 値の最大値を返します。
-				/// @param a 最初の値
-				/// @param b 2番目の値
+				/// @param a 一方の値
+				/// @param b もう一方の値
 				/// @return a と b のうち大きい方の値
 				[[nodiscard]]
 				constexpr double operator ()(const double a, const double b) const noexcept
@@ -2263,7 +2309,7 @@ namespace s3d
 					return s3d::Max(a, b);
 				}
 
-				/// @brief ベクトルの各成分の最大値を返します。
+				/// @brief ベクトルの成分ごとに最大値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最大値で構成されたベクトル
@@ -2273,7 +2319,7 @@ namespace s3d
 					return{ s3d::Max(a.x, b.x), s3d::Max(a.y, b.y) };
 				}
 
-				/// @brief ベクトルの各成分の最大値を返します。
+				/// @brief ベクトルの成分ごとに最大値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最大値で構成されたベクトル
@@ -2283,7 +2329,7 @@ namespace s3d
 					return{ s3d::Max(a.x, b.x), s3d::Max(a.y, b.y) };
 				}
 
-				/// @brief ベクトルの各成分の最大値を返します。
+				/// @brief ベクトルの成分ごとに最大値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最大値で構成されたベクトル
@@ -2293,7 +2339,7 @@ namespace s3d
 					return{ s3d::Max(a.x, b.x), s3d::Max(a.y, b.y) };
 				}
 
-				/// @brief ベクトルの各成分の最大値を返します。
+				/// @brief ベクトルの成分ごとに最大値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最大値で構成されたベクトル
@@ -2303,7 +2349,7 @@ namespace s3d
 					return{ s3d::Max(a.x, b.x), s3d::Max(a.y, b.y), s3d::Max(a.z, b.z) };
 				}
 
-				/// @brief ベクトルの各成分の最大値を返します。
+				/// @brief ベクトルの成分ごとに最大値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最大値で構成されたベクトル
@@ -2313,7 +2359,7 @@ namespace s3d
 					return{ s3d::Max(a.x, b.x), s3d::Max(a.y, b.y), s3d::Max(a.z, b.z) };
 				}
 
-				/// @brief ベクトルの各成分の最大値を返します。
+				/// @brief ベクトルの成分ごとに最大値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最大値で構成されたベクトル
@@ -2323,7 +2369,7 @@ namespace s3d
 					return{ s3d::Max(a.x, b.x), s3d::Max(a.y, b.y), s3d::Max(a.z, b.z), s3d::Max(a.w, b.w) };
 				}
 
-				/// @brief ベクトルの各成分の最大値を返します。
+				/// @brief ベクトルの成分ごとに最大値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最大値で構成されたベクトル
@@ -2333,9 +2379,17 @@ namespace s3d
 					return{ s3d::Max(a.x, b.x), s3d::Max(a.y, b.y), s3d::Max(a.z, b.z), s3d::Max(a.w, b.w) };
 				}
 
+				/// @brief 値の最大値を返します。
+				/// @param x 一方の値
+				/// @param y もう一方の値
+				/// @return x と y のうち大きい方の値
 				[[nodiscard]]
 				const BigInt& operator ()(const BigInt& x, const BigInt& y) const;
 
+				/// @brief 値の最大値を返します。
+				/// @param x 一方の値
+				/// @param y もう一方の値
+				/// @return x と y のうち大きい方の値
 				[[nodiscard]]
 				const BigFloat& operator ()(const BigFloat& x, const BigFloat& y) const;
 			};
@@ -2349,8 +2403,8 @@ namespace s3d
 			struct Min_impl
 			{
 				/// @brief 値の最小値を返します。
-				/// @param a 最初の値
-				/// @param b 2番目の値
+				/// @param a 一方の値
+				/// @param b もう一方の値
 				/// @return a と b のうち小さい方の値
 				[[nodiscard]]
 				constexpr float operator ()(const float a, const float b) const noexcept
@@ -2359,8 +2413,8 @@ namespace s3d
 				}
 
 				/// @brief 値の最小値を返します。
-				/// @param a 最初の値
-				/// @param b 2番目の値
+				/// @param a 一方の値
+				/// @param b もう一方の値
 				/// @return a と b のうち小さい方の値
 				[[nodiscard]]
 				constexpr double operator ()(const double a, const double b) const noexcept
@@ -2368,7 +2422,7 @@ namespace s3d
 					return s3d::Min(a, b);
 				}
 
-				/// @brief ベクトルの各成分の最小値を返します。
+				/// @brief ベクトルの成分ごとの最小値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最小値で構成されたベクトル
@@ -2378,7 +2432,7 @@ namespace s3d
 					return{ s3d::Min(a.x, b.x), s3d::Min(a.y, b.y) };
 				}
 
-				/// @brief ベクトルの各成分の最小値を返します。
+				/// @brief ベクトルの成分ごとの最小値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最小値で構成されたベクトル
@@ -2388,7 +2442,7 @@ namespace s3d
 					return{ s3d::Min(a.x, b.x), s3d::Min(a.y, b.y) };
 				}
 
-				/// @brief ベクトルの各成分の最小値を返します。
+				/// @brief ベクトルの成分ごとの最小値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最小値で構成されたベクトル
@@ -2398,7 +2452,7 @@ namespace s3d
 					return{ s3d::Min(a.x, b.x), s3d::Min(a.y, b.y) };
 				}
 
-				/// @brief ベクトルの各成分の最小値を返します。
+				/// @brief ベクトルの成分ごとの最小値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最小値で構成されたベクトル
@@ -2408,7 +2462,7 @@ namespace s3d
 					return{ s3d::Min(a.x, b.x), s3d::Min(a.y, b.y), s3d::Min(a.z, b.z) };
 				}
 
-				/// @brief ベクトルの各成分の最小値を返します。
+				/// @brief ベクトルの成分ごとの最小値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最小値で構成されたベクトル
@@ -2418,7 +2472,7 @@ namespace s3d
 					return{ s3d::Min(a.x, b.x), s3d::Min(a.y, b.y), s3d::Min(a.z, b.z) };
 				}
 
-				/// @brief ベクトルの各成分の最小値を返します。
+				/// @brief ベクトルの成分ごとの最小値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最小値で構成されたベクトル
@@ -2428,7 +2482,7 @@ namespace s3d
 					return{ s3d::Min(a.x, b.x), s3d::Min(a.y, b.y), s3d::Min(a.z, b.z), s3d::Min(a.w, b.w) };
 				}
 
-				/// @brief ベクトルの各成分の最小値を返します。
+				/// @brief ベクトルの成分ごとの最小値を返します。
 				/// @param a 第 1 のベクトル
 				/// @param b 第 2 のベクトル
 				/// @return 各成分の最小値で構成されたベクトル
@@ -2438,9 +2492,17 @@ namespace s3d
 					return{ s3d::Min(a.x, b.x), s3d::Min(a.y, b.y), s3d::Min(a.z, b.z), s3d::Min(a.w, b.w) };
 				}
 
+				/// @brief 値の最小値を返します。
+				/// @param x 一方の値
+				/// @param y もう一方の値
+				/// @return x と y のうち小さい方の値
 				[[nodiscard]]
 				const BigInt& operator ()(const BigInt& x, const BigInt& y) const;
 
+				/// @brief 値の最小値を返します。
+				/// @param x 一方の値
+				/// @param y もう一方の値
+				/// @return x と y のうち小さい方の値
 				[[nodiscard]]
 				const BigFloat& operator ()(const BigFloat& x, const BigFloat& y) const;
 			};
@@ -2629,9 +2691,19 @@ namespace s3d
 					return{ s3d::Clamp(value.x, min.x, max.x), s3d::Clamp(value.y, min.y, max.y), s3d::Clamp(value.z, min.z, max.z), s3d::Clamp(value.w, min.w, max.w) };
 				}
 
+				/// @brief 値をクランプします。
+				/// @param x 入力値
+				/// @param min 最小値
+				/// @param max 最大値
+				/// @return min 以上 max 以下にクランプされた値
 				[[nodiscard]]
 				const BigInt& operator ()(const BigInt& x, const BigInt& min, const BigInt& max) const;
 
+				/// @brief 値をクランプします。
+				/// @param x 入力値
+				/// @param min 最小値
+				/// @param max 最大値
+				/// @return min 以上 max 以下にクランプされた値
 				[[nodiscard]]
 				const BigFloat& operator ()(const BigFloat& x, const BigFloat& min, const BigFloat& max) const;
 			};
@@ -2646,7 +2718,7 @@ namespace s3d
 			{
 				/// @brief 値を [0, 1] の範囲にクランプします。
 				/// @param x 入力値
-				/// @return 0.0以上1.0以下にクランプされた値
+				/// @return 0.0 以上 1.0 以下にクランプされた値
 				[[nodiscard]]
 				constexpr float operator ()(const float x) const noexcept
 				{
@@ -2655,7 +2727,7 @@ namespace s3d
 
 				/// @brief 値を [0, 1] の範囲にクランプします。
 				/// @param x 入力値
-				/// @return 0.0以上1.0以下にクランプされた値
+				/// @return 0.0 以上 1.0 以下にクランプされた値
 				[[nodiscard]]
 				constexpr double operator ()(const double x) const noexcept
 				{
@@ -2664,7 +2736,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を [0, 1] の範囲にクランプします。
 				/// @param v ベクトル
-				/// @return 各成分が0.0以上1.0以下にクランプされたベクトル
+				/// @return 各成分が 0.0 以上 1.0 以下にクランプされたベクトル
 				[[nodiscard]]
 				constexpr Float2 operator ()(const Float2 v) const noexcept
 				{
@@ -2673,7 +2745,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を [0, 1] の範囲にクランプします。
 				/// @param v ベクトル
-				/// @return 各成分が0.0以上1.0以下にクランプされたベクトル
+				/// @return 各成分が 0.0 以上 1.0 以下にクランプされたベクトル
 				[[nodiscard]]
 				constexpr Vec2 operator ()(const Vec2 v) const noexcept
 				{
@@ -2682,7 +2754,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を [0, 1] の範囲にクランプします。
 				/// @param v ベクトル
-				/// @return 各成分が0.0以上1.0以下にクランプされたベクトル
+				/// @return 各成分が 0.0 以上 1.0 以下にクランプされたベクトル
 				[[nodiscard]]
 				constexpr Float3 operator ()(const Float3 v) const noexcept
 				{
@@ -2691,7 +2763,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を [0, 1] の範囲にクランプします。
 				/// @param v ベクトル
-				/// @return 各成分が0.0以上1.0以下にクランプされたベクトル
+				/// @return 各成分が 0.0 以上 1.0 以下にクランプされたベクトル
 				[[nodiscard]]
 				constexpr Vec3 operator ()(const Vec3 v) const noexcept
 				{
@@ -2700,7 +2772,7 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を [0, 1] の範囲にクランプします。
 				/// @param v ベクトル
-				/// @return 各成分が0.0以上1.0以下にクランプされたベクトル
+				/// @return 各成分が 0.0 以上 1.0 以下にクランプされたベクトル
 				[[nodiscard]]
 				constexpr Float4 operator ()(const Float4 v) const noexcept
 				{
@@ -2709,13 +2781,16 @@ namespace s3d
 
 				/// @brief ベクトルの各成分を [0, 1] の範囲にクランプします。
 				/// @param v ベクトル
-				/// @return 各成分が0.0以上1.0以下にクランプされたベクトル
+				/// @return 各成分が 0.0 以上 1.0 以下にクランプされたベクトル
 				[[nodiscard]]
 				constexpr Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return{ s3d::Clamp(v.x, 0.0, 1.0), s3d::Clamp(v.y, 0.0, 1.0), s3d::Clamp(v.z, 0.0, 1.0), s3d::Clamp(v.w, 0.0, 1.0) };
 				}
 
+				/// @brief 値を [0, 1] の範囲にクランプします。
+				/// @param x 入力値
+				/// @return 0.0 以上 1.0 以下にクランプされた値
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -2728,7 +2803,7 @@ namespace s3d
 
 			struct Acos_impl
 			{
-				/// @brief 整数の逆余弦を返します。
+				/// @brief 逆余弦を返します。
 				/// @param x 入力値
 				/// @return 逆余弦値（ラジアン）
 				[[nodiscard]]
@@ -2737,7 +2812,7 @@ namespace s3d
 					return std::acos(static_cast<double>(x));
 				}
 
-				/// @brief 値の逆余弦を返します。
+				/// @brief 逆余弦を返します。
 				/// @param x 入力値
 				/// @return 逆余弦値（ラジアン）
 				[[nodiscard]]
@@ -2746,7 +2821,7 @@ namespace s3d
 					return std::acos(x);
 				}
 
-				/// @brief 値の逆余弦を返します。
+				/// @brief 逆余弦を返します。
 				/// @param x 入力値
 				/// @return 逆余弦値（ラジアン）
 				[[nodiscard]]
@@ -2809,9 +2884,15 @@ namespace s3d
 					return{ std::acos(v.x), std::acos(v.y), std::acos(v.z), std::acos(v.w) };
 				}
 
+				/// @brief 逆余弦を返します。
+				/// @param x 入力値
+				/// @return 逆余弦値（ラジアン）
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 逆余弦を返します。
+				/// @param x 入力値
+				/// @return 逆余弦値（ラジアン）
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -2824,7 +2905,7 @@ namespace s3d
 
 			struct Asin_impl
 			{
-				/// @brief 整数の逆正弦を返します。
+				/// @brief 逆正弦を返します。
 				/// @param x 入力値
 				/// @return 逆正弦値（ラジアン）
 				[[nodiscard]]
@@ -2833,7 +2914,7 @@ namespace s3d
 					return std::asin(static_cast<double>(x));
 				}
 
-				/// @brief 値の逆正弦を返します。
+				/// @brief 逆正弦を返します。
 				/// @param x 入力値
 				/// @return 逆正弦値（ラジアン）
 				[[nodiscard]]
@@ -2842,7 +2923,7 @@ namespace s3d
 					return std::asin(x);
 				}
 
-				/// @brief 値の逆正弦を返します。
+				/// @brief 逆正弦を返します。
 				/// @param x 入力値
 				/// @return 逆正弦値（ラジアン）
 				[[nodiscard]]
@@ -2905,9 +2986,15 @@ namespace s3d
 					return{ std::asin(v.x), std::asin(v.y), std::asin(v.z), std::asin(v.w) };
 				}
 
+				/// @brief 逆正弦を返します。
+				/// @param x 入力値
+				/// @return 逆正弦値（ラジアン）
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 逆正弦を返します。
+				/// @param x 入力値
+				/// @return 逆正弦値（ラジアン）
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -2920,7 +3007,7 @@ namespace s3d
 
 			struct Atan_impl
 			{
-				/// @brief 整数の逆正切を返します。
+				/// @brief 逆正切を返します。
 				/// @param x 入力値
 				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
@@ -2929,7 +3016,7 @@ namespace s3d
 					return std::atan(static_cast<double>(x));
 				}
 
-				/// @brief 値の逆正切を返します。
+				/// @brief 逆正切を返します。
 				/// @param x 入力値
 				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
@@ -2938,7 +3025,7 @@ namespace s3d
 					return std::atan(x);
 				}
 
-				/// @brief 値の逆正切を返します。
+				/// @brief 逆正切を返します。
 				/// @param x 入力値
 				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
@@ -3001,9 +3088,15 @@ namespace s3d
 					return{ std::atan(v.x), std::atan(v.y), std::atan(v.z), std::atan(v.w) };
 				}
 
+				/// @brief 逆正切を返します。
+				/// @param x 入力値
+				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 逆正切を返します。
+				/// @param x 入力値
+				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -3017,8 +3110,8 @@ namespace s3d
 			struct Atan2_impl
 			{
 				/// @brief Atan2 の結果を返します。
-				/// @param y y座標値
-				/// @param x x座標値
+				/// @param y y 座標値
+				/// @param x x 座標値
 				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
 				double operator ()(const Concept::Integral auto y, const Concept::Integral auto x) const noexcept
@@ -3032,8 +3125,8 @@ namespace s3d
 				}
 
 				/// @brief Atan2 の結果を返します。
-				/// @param y y座標値
-				/// @param x x座標値
+				/// @param y y 座標値
+				/// @param x x 座標値
 				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
 				float operator ()(const float y, const float x) const noexcept
@@ -3047,8 +3140,8 @@ namespace s3d
 				}
 
 				/// @brief Atan2 の結果を返します。
-				/// @param y y座標値
-				/// @param x x座標値
+				/// @param y y 座標値
+				/// @param x x 座標値
 				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
 				double operator ()(const double y, const double x) const noexcept
@@ -3062,8 +3155,8 @@ namespace s3d
 				}
 
 				/// @brief ベクトルの各成分ごとの Atan2 の結果を返します。
-				/// @param y y座標ベクトル
-				/// @param x x座標ベクトル
+				/// @param y y 座標ベクトル
+				/// @param x x 座標ベクトル
 				/// @return 各成分の逆正切値（ラジアン）
 				[[nodiscard]]
 				Float2 operator ()(const Float2 y, const Float2 x) const noexcept
@@ -3072,8 +3165,8 @@ namespace s3d
 				}
 
 				/// @brief ベクトルの各成分ごとの Atan2 の結果を返します。
-				/// @param y y座標ベクトル
-				/// @param x x座標ベクトル
+				/// @param y y 座標ベクトル
+				/// @param x x 座標ベクトル
 				/// @return 各成分の逆正切値（ラジアン）
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 y, const Vec2 x) const noexcept
@@ -3082,8 +3175,8 @@ namespace s3d
 				}
 
 				/// @brief ベクトルの各成分ごとの Atan2 の結果を返します。
-				/// @param y y座標ベクトル
-				/// @param x x座標ベクトル
+				/// @param y y 座標ベクトル
+				/// @param x x 座標ベクトル
 				/// @return 各成分の逆正切値（ラジアン）
 				[[nodiscard]]
 				Float3 operator ()(const Float3 y, const Float3 x) const noexcept
@@ -3092,8 +3185,8 @@ namespace s3d
 				}
 
 				/// @brief ベクトルの各成分ごとの Atan2 の結果を返します。
-				/// @param y y座標ベクトル
-				/// @param x x座標ベクトル
+				/// @param y y 座標ベクトル
+				/// @param x x 座標ベクトル
 				/// @return 各成分の逆正切値（ラジアン）
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 y, const Vec3 x) const noexcept
@@ -3102,8 +3195,8 @@ namespace s3d
 				}
 
 				/// @brief ベクトルの各成分ごとの Atan2 の結果を返します。
-				/// @param y y座標ベクトル
-				/// @param x x座標ベクトル
+				/// @param y y 座標ベクトル
+				/// @param x x 座標ベクトル
 				/// @return 各成分の逆正切値（ラジアン）
 				[[nodiscard]]
 				Float4 operator ()(const Float4 y, const Float4 x) const noexcept
@@ -3112,8 +3205,8 @@ namespace s3d
 				}
 
 				/// @brief ベクトルの各成分ごとの Atan2 の結果を返します。
-				/// @param y y座標ベクトル
-				/// @param x x座標ベクトル
+				/// @param y y 座標ベクトル
+				/// @param x x 座標ベクトル
 				/// @return 各成分の逆正切値（ラジアン）
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 y, const Vec4 x) const noexcept
@@ -3121,9 +3214,17 @@ namespace s3d
 					return{ operator()(y.x, x.x), operator()(y.y, x.y), operator()(y.z, x.z), operator()(y.w, x.w) };
 				}
 
+				/// @brief Atan2 の結果を返します。
+				/// @param y y 座標値
+				/// @param x x 座標値
+				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& y, const BigInt& x) const;
 
+				/// @brief Atan2 の結果を返します。
+				/// @param y y 座標値
+				/// @param x x 座標値
+				/// @return 逆正切値（ラジアン）
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& y, const BigFloat& x) const;
 			};
@@ -3136,7 +3237,7 @@ namespace s3d
 
 			struct Cos_impl
 			{
-				/// @brief 整数の余弦を返します。
+				/// @brief 余弦を返します。
 				/// @param x 入力値（ラジアン）
 				/// @return 余弦値
 				[[nodiscard]]
@@ -3145,7 +3246,7 @@ namespace s3d
 					return std::cos(static_cast<double>(x));
 				}
 
-				/// @brief 値の余弦を返します。
+				/// @brief 余弦を返します。
 				/// @param x 入力値（ラジアン）
 				/// @return 余弦値
 				[[nodiscard]]
@@ -3154,7 +3255,7 @@ namespace s3d
 					return std::cos(x);
 				}
 
-				/// @brief 値の余弦を返します。
+				/// @brief 余弦を返します。
 				/// @param x 入力値（ラジアン）
 				/// @return 余弦値
 				[[nodiscard]]
@@ -3217,9 +3318,15 @@ namespace s3d
 					return{ std::cos(v.x), std::cos(v.y), std::cos(v.z), std::cos(v.w) };
 				}
 
+				/// @brief 余弦を返します。
+				/// @param x 入力値（ラジアン）
+				/// @return 余弦値
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 余弦を返します。
+				/// @param x 入力値（ラジアン）
+				/// @return 余弦値
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -3232,7 +3339,7 @@ namespace s3d
 
 			struct Cosh_impl
 			{
-				/// @brief 整数の双曲線余弦を返します。
+				/// @brief 双曲線余弦を返します。
 				/// @param x 入力値
 				/// @return 双曲線余弦値
 				[[nodiscard]]
@@ -3241,7 +3348,7 @@ namespace s3d
 					return std::cosh(static_cast<double>(x));
 				}
 
-				/// @brief 値の双曲線余弦を返します。
+				/// @brief 双曲線余弦を返します。
 				/// @param x 入力値
 				/// @return 双曲線余弦値
 				[[nodiscard]]
@@ -3250,7 +3357,7 @@ namespace s3d
 					return std::cosh(x);
 				}
 
-				/// @brief 値の双曲線余弦を返します。
+				/// @brief 双曲線余弦を返します。
 				/// @param x 入力値
 				/// @return 双曲線余弦値
 				[[nodiscard]]
@@ -3313,9 +3420,15 @@ namespace s3d
 					return{ std::cosh(v.x), std::cosh(v.y), std::cosh(v.z), std::cosh(v.w) };
 				}
 
+				/// @brief 双曲線余弦を返します。
+				/// @param x 入力値
+				/// @return 双曲線余弦値
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 双曲線余弦を返します。
+				/// @param x 入力値
+				/// @return 双曲線余弦値
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -3328,7 +3441,7 @@ namespace s3d
 
 			struct Sin_impl
 			{
-				/// @brief 整数の正弦を返します。
+				/// @brief 正弦を返します。
 				/// @param x 入力値（ラジアン）
 				/// @return 正弦値
 				[[nodiscard]]
@@ -3337,7 +3450,7 @@ namespace s3d
 					return std::sin(static_cast<double>(x));
 				}
 
-				/// @brief 値の正弦を返します。
+				/// @brief 正弦を返します。
 				/// @param x 入力値（ラジアン）
 				/// @return 正弦値
 				[[nodiscard]]
@@ -3346,7 +3459,7 @@ namespace s3d
 					return std::sin(x);
 				}
 
-				/// @brief 値の正弦を返します。
+				/// @brief 正弦を返します。
 				/// @param x 入力値（ラジアン）
 				/// @return 正弦値
 				[[nodiscard]]
@@ -3409,9 +3522,15 @@ namespace s3d
 					return{ std::sin(v.x), std::sin(v.y), std::sin(v.z), std::sin(v.w) };
 				}
 
+				/// @brief 正弦を返します。
+				/// @param x 入力値（ラジアン）
+				/// @return 正弦値
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 正弦を返します。
+				/// @param x 入力値（ラジアン）
+				/// @return 正弦値
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -3424,7 +3543,7 @@ namespace s3d
 
 			struct Sinh_impl
 			{
-				/// @brief 整数の双曲線正弦を返します。
+				/// @brief 双曲線正弦を返します。
 				/// @param x 入力値
 				/// @return 双曲線正弦値
 				[[nodiscard]]
@@ -3433,7 +3552,7 @@ namespace s3d
 					return std::sinh(static_cast<double>(x));
 				}
 
-				/// @brief 値の双曲線正弦を返します。
+				/// @brief 双曲線正弦を返します。
 				/// @param x 入力値
 				/// @return 双曲線正弦値
 				[[nodiscard]]
@@ -3442,7 +3561,7 @@ namespace s3d
 					return std::sinh(x);
 				}
 
-				/// @brief 値の双曲線正弦を返します。
+				/// @brief 双曲線正弦を返します。
 				/// @param x 入力値
 				/// @return 双曲線正弦値
 				[[nodiscard]]
@@ -3505,9 +3624,15 @@ namespace s3d
 					return{ std::sinh(v.x), std::sinh(v.y), std::sinh(v.z), std::sinh(v.w) };
 				}
 
+				/// @brief 双曲線正弦を返します。
+				/// @param x 入力値
+				/// @return 双曲線正弦値
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 双曲線正弦を返します。
+				/// @param x 入力値
+				/// @return 双曲線正弦値
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -3520,7 +3645,7 @@ namespace s3d
 
 			struct Tan_impl
 			{
-				/// @brief 整数の正切を返します。
+				/// @brief 正切を返します。
 				/// @param x 入力値（ラジアン）
 				/// @return 正切値
 				[[nodiscard]]
@@ -3529,7 +3654,7 @@ namespace s3d
 					return std::tan(static_cast<double>(x));
 				}
 
-				/// @brief 値の正切を返します。
+				/// @brief 正切を返します。
 				/// @param x 入力値（ラジアン）
 				/// @return 正切値
 				[[nodiscard]]
@@ -3538,7 +3663,7 @@ namespace s3d
 					return std::tan(x);
 				}
 
-				/// @brief 値の正切を返します。
+				/// @brief 正切を返します。
 				/// @param x 入力値（ラジアン）
 				/// @return 正切値
 				[[nodiscard]]
@@ -3601,9 +3726,15 @@ namespace s3d
 					return{ std::tan(v.x), std::tan(v.y), std::tan(v.z), std::tan(v.w) };
 				}
 
+				/// @brief 正切を返します。
+				/// @param x 入力値（ラジアン）
+				/// @return 正切値
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 正切を返します。
+				/// @param x 入力値（ラジアン）
+				/// @return 正切値
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -3616,7 +3747,7 @@ namespace s3d
 
 			struct Tanh_impl
 			{
-				/// @brief 整数の双曲線正切を返します。
+				/// @brief 双曲線正切を返します。
 				/// @param x 入力値
 				/// @return 双曲線正切値
 				[[nodiscard]]
@@ -3625,7 +3756,7 @@ namespace s3d
 					return std::tanh(static_cast<double>(x));
 				}
 
-				/// @brief 値の双曲線正切を返します。
+				/// @brief 双曲線正切を返します。
 				/// @param x 入力値
 				/// @return 双曲線正切値
 				[[nodiscard]]
@@ -3634,7 +3765,7 @@ namespace s3d
 					return std::tanh(x);
 				}
 
-				/// @brief 値の双曲線正切を返します。
+				/// @brief 双曲線正切を返します。
 				/// @param x 入力値
 				/// @return 双曲線正切値
 				[[nodiscard]]
@@ -3697,9 +3828,15 @@ namespace s3d
 					return{ std::tanh(v.x), std::tanh(v.y), std::tanh(v.z), std::tanh(v.w) };
 				}
 
+				/// @brief 双曲線正切を返します。
+				/// @param x 入力値
+				/// @return 双曲線正切値
 				[[nodiscard]]
 				BigFloat operator ()(const BigInt& x) const;
 
+				/// @brief 双曲線正切を返します。
+				/// @param x 入力値
+				/// @return 双曲線正切値
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -3930,6 +4067,9 @@ namespace s3d
 
 			struct Normalize_impl
 			{
+				/// @brief 正規化した値を返します。
+				/// @param x 入力値
+				/// @return 正規化値（0 の場合は 0, それ以外は 1）
 				[[nodiscard]]
 				constexpr float operator ()(const float x) const noexcept
 				{
@@ -3941,6 +4081,9 @@ namespace s3d
 					return 1.0f;
 				}
 
+				/// @brief 正規化した値を返します。
+				/// @param x 入力値
+				/// @return 正規化値（0 の場合は 0, それ以外は 1）
 				[[nodiscard]]
 				constexpr double operator ()(const double x) const noexcept
 				{
@@ -3952,48 +4095,72 @@ namespace s3d
 					return 1.0;
 				}
 
+				/// @brief 正規化したベクトルを返します。
+				/// @param v 入力ベクトル
+				/// @return 正規化したベクトル。ゼロベクトルの場合はゼロベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Point v) const noexcept
 				{
 					return Vec2{ v }.normalized();
 				}
 
+				/// @brief 正規化したベクトルを返します。
+				/// @param v 入力ベクトル
+				/// @return 正規化したベクトル。ゼロベクトルの場合はゼロベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return v.normalized();
 				}
 
+				/// @brief 正規化したベクトルを返します。
+				/// @param v 入力ベクトル
+				/// @return 正規化したベクトル。ゼロベクトルの場合はゼロベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return v.normalized();
 				}
 
+				/// @brief 正規化したベクトルを返します。
+				/// @param v 入力ベクトル
+				/// @return 正規化したベクトル。ゼロベクトルの場合はゼロベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return v.normalized();
 				}
 
+				/// @brief 正規化したベクトルを返します。
+				/// @param v 入力ベクトル
+				/// @return 正規化したベクトル。ゼロベクトルの場合はゼロベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return v.normalized();
 				}
 
+				/// @brief 正規化したベクトルを返します。
+				/// @param v 入力ベクトル
+				/// @return 正規化したベクトル。ゼロベクトルの場合はゼロベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return v.normalized();
 				}
 
+				/// @brief 正規化したベクトルを返します。
+				/// @param v 入力ベクトル
+				/// @return 正規化したベクトル。ゼロベクトルの場合はゼロベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return v.normalized();
 				}
 
+				/// @brief 正規化した値を返します。
+				/// @param x 入力値
+				/// @return 正規化値（0 の場合は 0, それ以外は 1）
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
