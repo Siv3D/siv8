@@ -1620,6 +1620,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 二次元配列を出力ストリームに出力します。
+		/// @tparam CharType 文字型
+		/// @param output 出力ストリーム
+		/// @param value 出力する二次元配列
+		/// @return 出力ストリーム
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Grid& value)
 		{
