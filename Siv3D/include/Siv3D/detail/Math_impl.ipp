@@ -806,36 +806,60 @@ namespace s3d
 					return std::pow(x, exp);
 				}
 
+				/// @brief 2次元ベクトルの各要素にべき乗演算を適用します。
+				/// @param v ベクトル
+				/// @param exp 指数
+				/// @return 各要素について v^exp を適用したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v, const Concept::Arithmetic auto exp) const noexcept
 				{
 					return{ std::pow(v.x, exp), std::pow(v.y, exp) };
 				}
 
+				/// @brief 2次元ベクトルの各要素にべき乗演算を適用します。
+				/// @param v ベクトル
+				/// @param exp 指数
+				/// @return 各要素について v^exp を適用したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v, const Concept::Arithmetic auto exp) const noexcept
 				{
 					return{ std::pow(v.x, exp), std::pow(v.y, exp) };
 				}
 
+				/// @brief 3次元ベクトルの各要素にべき乗演算を適用します。
+				/// @param v ベクトル
+				/// @param exp 指数
+				/// @return 各要素について v^exp を適用したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v, const Concept::Arithmetic auto exp) const noexcept
 				{
 					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp) };
 				}
 
+				/// @brief 3次元ベクトルの各要素にべき乗演算を適用します。
+				/// @param v ベクトル
+				/// @param exp 指数
+				/// @return 各要素について v^exp を適用したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v, const Concept::Arithmetic auto exp) const noexcept
 				{
 					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp) };
 				}
 
+				/// @brief 4次元ベクトルの各要素にべき乗演算を適用します。
+				/// @param v ベクトル
+				/// @param exp 指数
+				/// @return 各要素について v^exp を適用したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v, const Concept::Arithmetic auto exp) const noexcept
 				{
 					return{ std::pow(v.x, exp), std::pow(v.y, exp), std::pow(v.z, exp), std::pow(v.w, exp) };
 				}
 
+				/// @brief 4次元ベクトルの各要素にべき乗演算を適用します。
+				/// @param v ベクトル
+				/// @param exp 指数
+				/// @return 各要素について v^exp を適用したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v, const Concept::Arithmetic auto exp) const noexcept
 				{
@@ -1412,48 +1436,72 @@ namespace s3d
 					return (x * x);
 				}
 
+				/// @brief 単精度浮動小数点数の二乗を返します。
+				/// @param x 入力値
+				/// @return x²
 				[[nodiscard]]
 				constexpr float operator ()(const float x) const noexcept
 				{
 					return (x * x);
 				}
 
+				/// @brief 倍精度浮動小数点数の二乗を返します。
+				/// @param x 入力値
+				/// @return x²
 				[[nodiscard]]
 				constexpr double operator ()(const double x) const noexcept
 				{
 					return (x * x);
 				}
 
+				/// @brief 2次元ベクトルの各要素の二乗を返します。
+				/// @param v ベクトル
+				/// @return 各要素の二乗
 				[[nodiscard]]
 				constexpr Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ (v.x * v.x), (v.y * v.y) };
 				}
 
+				/// @brief 2次元ベクトルの各要素の二乗を返します。
+				/// @param v ベクトル
+				/// @return 各要素の二乗
 				[[nodiscard]]
 				constexpr Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ (v.x * v.x), (v.y * v.y) };
 				}
 
+				/// @brief 3次元ベクトルの各要素の二乗を返します。
+				/// @param v ベクトル
+				/// @return 各要素の二乗
 				[[nodiscard]]
 				constexpr Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ (v.x * v.x), (v.y * v.y), (v.z * v.z) };
 				}
 
+				/// @brief 3次元ベクトルの各要素の二乗を返します。
+				/// @param v ベクトル
+				/// @return 各要素の二乗
 				[[nodiscard]]
 				constexpr Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ (v.x * v.x), (v.y * v.y), (v.z * v.z) };
 				}
 
+				/// @brief 4次元ベクトルの各要素の二乗を返します。
+				/// @param v ベクトル
+				/// @return 各要素の二乗
 				[[nodiscard]]
 				constexpr Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ (v.x * v.x), (v.y * v.y), (v.z * v.z), (v.w * v.w) };
 				}
 
+				/// @brief 4次元ベクトルの各要素の二乗を返します。
+				/// @param v ベクトル
+				/// @return 各要素の二乗
 				[[nodiscard]]
 				constexpr Vec4 operator ()(const Vec4 v) const noexcept
 				{
@@ -1475,54 +1523,81 @@ namespace s3d
 
 			struct Exp_impl
 			{
+				/// @brief 整数の指数関数を計算します。
+				/// @param x 入力値
+				/// @return e^x
 				[[nodiscard]]
 				double operator ()(const Concept::Integral auto x) const noexcept
 				{
 					return std::exp(static_cast<double>(x));
 				}
 
+				/// @brief 単精度浮動小数点数の指数関数を計算します。
+				/// @param x 入力値
+				/// @return e^x
 				[[nodiscard]]
 				float operator ()(const float x) const noexcept
 				{
 					return std::exp(x);
 				}
 
+				/// @brief 倍精度浮動小数点数の指数関数を計算します。
+				/// @param x 入力値
+				/// @return e^x
 				[[nodiscard]]
 				double operator ()(const double x) const noexcept
 				{
 					return std::exp(x);
 				}
 
+				/// @brief 2次元ベクトルの各要素に指数関数を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について e^v を適用したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ std::exp(v.x), std::exp(v.y) };
 				}
 
+				/// @brief 2次元ベクトルの各要素に指数関数を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について e^v を適用したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ std::exp(v.x), std::exp(v.y) };
 				}
 
+				/// @brief 3次元ベクトルの各要素に指数関数を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について e^v を適用したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ std::exp(v.x), std::exp(v.y), std::exp(v.z) };
 				}
 
+				/// @brief 3次元ベクトルの各要素に指数関数を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について e^v を適用したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ std::exp(v.x), std::exp(v.y), std::exp(v.z) };
 				}
 
+				/// @brief 4次元ベクトルの各要素に指数関数を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について e^v を適用したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ std::exp(v.x), std::exp(v.y), std::exp(v.z), std::exp(v.w) };
 				}
 
+				/// @brief 4次元ベクトルの各要素に指数関数を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について e^v を適用したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
@@ -1544,54 +1619,81 @@ namespace s3d
 
 			struct Exp2_impl
 			{
+				/// @brief 整数の2のべき乗を計算します。
+				/// @param x 入力値
+				/// @return 2^x
 				[[nodiscard]]
 				double operator ()(const Concept::Integral auto x) const noexcept
 				{
 					return std::exp2(static_cast<double>(x));
 				}
 
+				/// @brief 単精度浮動小数点数の2のべき乗を計算します。
+				/// @param x 入力値
+				/// @return 2^x
 				[[nodiscard]]
 				float operator ()(const float x) const noexcept
 				{
 					return std::exp2(x);
 				}
 
+				/// @brief 倍精度浮動小数点数の2のべき乗を計算します。
+				/// @param x 入力値
+				/// @return 2^x
 				[[nodiscard]]
 				double operator ()(const double x) const noexcept
 				{
 					return std::exp2(x);
 				}
 
+				/// @brief 2次元ベクトルの各要素に2のべき乗を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 2^v を適用したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ std::exp2(v.x), std::exp2(v.y) };
 				}
 
+				/// @brief 2次元ベクトルの各要素に2のべき乗を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 2^v を適用したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ std::exp2(v.x), std::exp2(v.y) };
 				}
 
+				/// @brief 3次元ベクトルの各要素に2のべき乗を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 2^v を適用したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z) };
 				}
 
+				/// @brief 3次元ベクトルの各要素に2のべき乗を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 2^v を適用したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z) };
 				}
 
+				/// @brief 4次元ベクトルの各要素に2のべき乗を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 2^v を適用したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ std::exp2(v.x), std::exp2(v.y), std::exp2(v.z), std::exp2(v.w) };
 				}
 
+				/// @brief 4次元ベクトルの各要素に2のべき乗を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 2^v を適用したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
@@ -1613,54 +1715,81 @@ namespace s3d
 
 			struct Rsqrt_impl
 			{
+				/// @brief 整数の逆平方根を計算します。
+				/// @param x 入力値
+				/// @return 1/√x
 				[[nodiscard]]
 				double operator ()(const Concept::Integral auto x) const noexcept
 				{
 					return (1.0 / std::sqrt(static_cast<double>(x)));
 				}
 
+				/// @brief 単精度浮動小数点数の逆平方根を計算します。
+				/// @param x 入力値
+				/// @return 1/√x
 				[[nodiscard]]
 				float operator ()(const float x) const noexcept
 				{
 					return (1.0f / std::sqrt(x));
 				}
 
+				/// @brief 倍精度浮動小数点数の逆平方根を計算します。
+				/// @param x 入力値
+				/// @return 1/√x
 				[[nodiscard]]
 				double operator ()(const double x) const noexcept
 				{
 					return (1.0 / std::sqrt(x));
 				}
 
+				/// @brief 2次元ベクトルの各要素に逆平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 1/√v を適用したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ (1.0f / std::sqrt(v.x)), (1.0f / std::sqrt(v.y)) };
 				}
 
+				/// @brief 2次元ベクトルの各要素に逆平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 1/√v を適用したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ (1.0 / std::sqrt(v.x)), (1.0 / std::sqrt(v.y)) };
 				}
 
+				/// @brief 3次元ベクトルの各要素に逆平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 1/√v を適用したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ (1.0f / std::sqrt(v.x)), (1.0f / std::sqrt(v.y)), (1.0f / std::sqrt(v.z)) };
 				}
 
+				/// @brief 3次元ベクトルの各要素に逆平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 1/√v を適用したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ (1.0 / std::sqrt(v.x)), (1.0 / std::sqrt(v.y)), (1.0 / std::sqrt(v.z)) };
 				}
 
+				/// @brief 4次元ベクトルの各要素に逆平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 1/√v を適用したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ (1.0f / std::sqrt(v.x)), (1.0f / std::sqrt(v.y)), (1.0f / std::sqrt(v.z)), (1.0f / std::sqrt(v.w)) };
 				}
 
+				/// @brief 4次元ベクトルの各要素に逆平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について 1/√v を適用したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
@@ -1682,54 +1811,81 @@ namespace s3d
 
 			struct Sqrt_impl
 			{
+				/// @brief 整数の平方根を計算します。
+				/// @param x 入力値
+				/// @return √x
 				[[nodiscard]]
 				double operator ()(const Concept::Integral auto x) const noexcept
 				{
 					return std::sqrt(static_cast<double>(x));
 				}
 
+				/// @brief 単精度浮動小数点数の平方根を計算します。
+				/// @param x 入力値
+				/// @return √x
 				[[nodiscard]]
 				float operator ()(const float x) const noexcept
 				{
 					return std::sqrt(x);
 				}
 
+				/// @brief 倍精度浮動小数点数の平方根を計算します。
+				/// @param x 入力値
+				/// @return √x
 				[[nodiscard]]
 				double operator ()(const double x) const noexcept
 				{
 					return std::sqrt(x);
 				}
 
+				/// @brief 2次元ベクトルの各要素に平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について √v を適用したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ std::sqrt(v.x), std::sqrt(v.y) };
 				}
 
+				/// @brief 2次元ベクトルの各要素に平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について √v を適用したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ std::sqrt(v.x), std::sqrt(v.y) };
 				}
 
+				/// @brief 3次元ベクトルの各要素に平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について √v を適用したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ std::sqrt(v.x), std::sqrt(v.y), std::sqrt(v.z) };
 				}
 
+				/// @brief 3次元ベクトルの各要素に平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について √v を適用したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ std::sqrt(v.x), std::sqrt(v.y), std::sqrt(v.z) };
 				}
 
+				/// @brief 4次元ベクトルの各要素に平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について √v を適用したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ std::sqrt(v.x), std::sqrt(v.y), std::sqrt(v.z), std::sqrt(v.w) };
 				}
 
+				/// @brief 4次元ベクトルの各要素に平方根を適用します。
+				/// @param v ベクトル
+				/// @return 各要素について √v を適用したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
