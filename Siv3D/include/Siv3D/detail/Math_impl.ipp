@@ -4173,6 +4173,11 @@ namespace s3d
 
 			struct Smoothstep_impl
 			{
+				/// @brief 2 つの値の間をエルミート補間した値を返します。
+				/// @param min 範囲の最小値
+				/// @param max 範囲の最大値
+				/// @param t 補間パラメータ
+				/// @return 補間値
 				[[nodiscard]]
 				constexpr float operator ()(const float min, const float max, float t) const noexcept
 				{
@@ -4190,6 +4195,11 @@ namespace s3d
 					return (t * t * (3.0f - 2.0f * t));
 				}
 
+				/// @brief 2 つの値の間をエルミート補間した値を返します。
+				/// @param min 範囲の最小値
+				/// @param max 範囲の最大値
+				/// @param t 補間パラメータ
+				/// @return 補間値
 				[[nodiscard]]
 				constexpr double operator ()(const double min, const double max, double t) const noexcept
 				{
@@ -4207,6 +4217,9 @@ namespace s3d
 					return (t * t * (3.0 - 2.0 * t));
 				}
 
+				/// @brief 0.0 から 1.0 の間をエルミート補間した値を返します。
+				/// @param x 補間パラメータ
+				/// @return 補間値
 				[[nodiscard]]
 				constexpr float operator ()(const float x) const noexcept
 				{
@@ -4222,6 +4235,9 @@ namespace s3d
 					return (x * x * (3.0f - 2.0f * x));
 				}
 
+				/// @brief 0.0 から 1.0 の間をエルミート補間した値を返します。
+				/// @param x 補間パラメータ
+				/// @return 補間値
 				[[nodiscard]]
 				constexpr double operator ()(const double x) const noexcept
 				{
@@ -4237,81 +4253,137 @@ namespace s3d
 					return (x * x * (3.0 - 2.0 * x));
 				}
 
+				/// @brief ベクトルの各成分について、2 つの値の間をエルミート補間したベクトルを返します。
+				/// @param min 範囲の最小値
+				/// @param max 範囲の最大値
+				/// @param t 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 min, const Float2 max, const Float2 t) const noexcept
 				{
 					return{ operator ()(min.x, max.x, t.x), operator ()(min.y, max.y, t.y) };
 				}
 
+				/// @brief ベクトルの各成分について、2 つの値の間をエルミート補間したベクトルを返します。
+				/// @param min 範囲の最小値
+				/// @param max 範囲の最大値
+				/// @param t 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 min, const Vec2 max, const Vec2 t) const noexcept
 				{
 					return{ operator ()(min.x, max.x, t.x), operator ()(min.y, max.y, t.y) };
 				}
 
+				/// @brief ベクトルの各成分について、0.0 から 1.0 の間をエルミート補間したベクトルを返します。
+				/// @param v 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ operator ()(v.x), operator ()(v.y) };
 				}
 
+				/// @brief ベクトルの各成分について、0.0 から 1.0 の間をエルミート補間したベクトルを返します。
+				/// @param v 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ operator ()(v.x), operator ()(v.y) };
 				}
 
+				/// @brief ベクトルの各成分について、2 つの値の間をエルミート補間したベクトルを返します。
+				/// @param min 範囲の最小値
+				/// @param max 範囲の最大値
+				/// @param t 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 min, const Float3 max, const Float3 t) const noexcept
 				{
 					return{ operator ()(min.x, max.x, t.x), operator ()(min.y, max.y, t.y), operator ()(min.z, max.z, t.z) };
 				}
 
+				/// @brief ベクトルの各成分について、2 つの値の間をエルミート補間したベクトルを返します。
+				/// @param min 範囲の最小値
+				/// @param max 範囲の最大値
+				/// @param t 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 min, const Vec3 max, const Vec3 t) const noexcept
 				{
 					return{ operator ()(min.x, max.x, t.x), operator ()(min.y, max.y, t.y), operator ()(min.z, max.z, t.z) };
 				}
 
+				/// @brief ベクトルの各成分について、0.0 から 1.0 の間をエルミート補間したベクトルを返します。
+				/// @param v 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ operator ()(v.x), operator ()(v.y), operator ()(v.z) };
 				}
 
+				/// @brief ベクトルの各成分について、0.0 から 1.0 の間をエルミート補間したベクトルを返します。
+				/// @param v 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ operator ()(v.x), operator ()(v.y), operator ()(v.z) };
 				}
 
+				/// @brief ベクトルの各成分について、2 つの値の間をエルミート補間したベクトルを返します。
+				/// @param min 範囲の最小値
+				/// @param max 範囲の最大値
+				/// @param t 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 min, const Float4 max, const Float4 t) const noexcept
 				{
 					return{ operator ()(min.x, max.x, t.x), operator ()(min.y, max.y, t.y), operator ()(min.z, max.z, t.z), operator ()(min.w, max.w, t.w) };
 				}
 
+				/// @brief ベクトルの各成分について、2 つの値の間をエルミート補間したベクトルを返します。
+				/// @param min 範囲の最小値
+				/// @param max 範囲の最大値
+				/// @param t 補間パラメータ
+				/// @return 補間ベクトルs
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 min, const Vec4 max, const Vec4 t) const noexcept
 				{
 					return{ operator ()(min.x, max.x, t.x), operator ()(min.y, max.y, t.y), operator ()(min.z, max.z, t.z), operator ()(min.w, max.w, t.w) };
 				}
 
+				/// @brief ベクトルの各成分について、0.0 から 1.0 の間をエルミート補間したベクトルを返します。
+				/// @param v 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ operator ()(v.x), operator ()(v.y), operator ()(v.z), operator ()(v.w) };
 				}
 
+				/// @brief ベクトルの各成分について、0.0 から 1.0 の間をエルミート補間したベクトルを返します。
+				/// @param v 補間パラメータ
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return{ operator ()(v.x), operator ()(v.y), operator ()(v.z), operator ()(v.w) };
 				}
 
+				/// @brief 2 つの値の間をエルミート補間した値を返します。
+				/// @param min 範囲の最小値
+				/// @param max 範囲の最大値
+				/// @param t 補間パラメータ
+				/// @return 補間値
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& min, const BigFloat& max, const BigFloat& t) const;
 
+				/// @brief 0.0 から 1.0 の間をエルミート補間した値を返します。
+				/// @param x 補間パラメータ
+				/// @return 補間値
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -4324,6 +4396,11 @@ namespace s3d
 
 			struct ClampAngle_impl
 			{
+				/// @brief 角度を 2π 周期で正規化し、[min, max] の範囲にクランプした角度を返します。
+				/// @param angle 角度（ラジアン）
+				/// @param min 最小角度（ラジアン）
+				/// @param max 最大角度（ラジアン）
+				/// @return 正規化・クランプ後の角度
 				[[nodiscard]]
 				double operator ()(const Concept::Arithmetic auto angle, const Concept::Arithmetic auto min, const Concept::Arithmetic auto max) const noexcept
 				{
@@ -4333,7 +4410,12 @@ namespace s3d
 					
 					return Clamp(angle, (min + floor), (max + floor));
 				}
-
+				
+				/// @brief 角度を 2π 周期で正規化し、[min, max] の範囲にクランプした角度を返します。
+				/// @param angle 角度（ラジアン）
+				/// @param min 最小角度（ラジアン）
+				/// @param max 最大角度（ラジアン）
+				/// @return 正規化・クランプ後の角度
 				[[nodiscard]]
 				float operator ()(const float angle, const float min, const float max) const noexcept
 				{
@@ -4344,6 +4426,11 @@ namespace s3d
 					return Clamp(angle, (min + floor), (max + floor));
 				}
 
+				/// @brief 角度を 2π 周期で正規化し、[min, max] の範囲にクランプした角度を返します。
+				/// @param angle 角度（ラジアン）
+				/// @param min 最小角度（ラジアン）
+				/// @param max 最大角度（ラジアン）
+				/// @return 正規化・クランプ後の角度
 				[[nodiscard]]
 				double operator ()(const double angle, const double min, const double max) const noexcept
 				{
@@ -4363,6 +4450,10 @@ namespace s3d
 
 			struct NormalizeAngle_impl
 			{
+				/// @brief 指定した中心角度から ±π の範囲に収まるように角度を正規化して返します。
+				/// @param radian_ 角度（ラジアン）
+				/// @param center 中心角度（ラジアン）
+				/// @return 正規化後の角度（ラジアン）
 				[[nodiscard]]
 				double operator ()(const Concept::Arithmetic auto radian_, double center = Pi) const noexcept
 				{
@@ -4375,7 +4466,11 @@ namespace s3d
 
 					return (radian - (Pi - center));
 				}
-
+				
+				/// @brief 指定した中心角度から ±π の範囲に収まるように角度を正規化して返します。
+				/// @param radian_ 角度（ラジアン）
+				/// @param center 中心角度（ラジアン）
+				/// @return 正規化後の角度（ラジアン）
 				[[nodiscard]]
 				float operator ()(const float radian_, float center = PiF) const noexcept
 				{
@@ -4389,6 +4484,10 @@ namespace s3d
 					return (radian - (PiF - center));
 				}
 
+				/// @brief 指定した中心角度から ±π の範囲に収まるように角度を正規化して返します。
+				/// @param radian_ 角度（ラジアン）
+				/// @param center 中心角度（ラジアン）
+				/// @return 正規化後の角度（ラジアン）
 				[[nodiscard]]
 				double operator ()(const double radian_, double center = Pi) const noexcept
 				{
@@ -4411,12 +4510,20 @@ namespace s3d
 
 			struct GCD_impl
 			{
+				/// @brief 最大公約数を返します。
+				/// @param a 一方の整数
+				/// @param b もう一方の整数
+				/// @return 最大公約数
 				[[nodiscard]]
 				constexpr auto operator ()(const Concept::Integral auto a, const Concept::Integral auto b) const noexcept
 				{
 					return std::gcd(a, b);
 				}
 
+				/// @brief 最大公約数を返します。
+				/// @param a 一方の整数
+				/// @param b もう一方の整数
+				/// @return 最大公約数
 				[[nodiscard]]
 				BigInt operator ()(const BigInt& a, const BigInt& b) const;
 			};
@@ -4429,12 +4536,20 @@ namespace s3d
 
 			struct LCM_impl
 			{
+				/// @brief 最小公倍数を返します。
+				/// @param a 一方の整数
+				/// @param b もう一方の整数
+				/// @return 最小公倍数
 				[[nodiscard]]
 				constexpr auto operator ()(const Concept::Integral auto a, const Concept::Integral auto b) const noexcept
 				{
 					return std::lcm(a, b);
 				}
 
+				/// @brief 最小公倍数を返します。
+				/// @param a 一方の整数
+				/// @param b もう一方の整数
+				/// @return 最小公倍数
 				[[nodiscard]]
 				BigInt operator ()(const BigInt& a, const BigInt& b) const;
 			};
