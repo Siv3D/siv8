@@ -25,60 +25,100 @@ namespace s3d
 			
 			struct Fmod_impl
 			{
+				/// @brief 浮動小数点剩余演算を実行します。
+				/// @param x 被除数
+				/// @param y 除数
+				/// @return x を y で割った剰余
 				[[nodiscard]]
 				double operator ()(const Concept::Arithmetic auto x, const Concept::Arithmetic auto y) const noexcept
 				{
 					return std::fmod(static_cast<double>(x), static_cast<double>(y));
 				}
 
+				/// @brief 浮動小数点剩余演算を実行します。
+				/// @param x 被除数
+				/// @param y 除数
+				/// @return x を y で割った剰余
 				[[nodiscard]]
 				float operator ()(const float x, const float y) const noexcept
 				{
 					return std::fmod(x, y);
 				}
 
+				/// @brief 浮動小数点剩余演算を実行します。
+				/// @param x 被除数
+				/// @param y 除数
+				/// @return x を y で割った剰余
 				[[nodiscard]]
 				double operator ()(const double x, const double y) const noexcept
 				{
 					return std::fmod(x, y);
 				}
 
+				/// @brief 浮動小数点剩余演算を要素ごとに実行します。
+				/// @param x 被除数ベクトル
+				/// @param y 除数ベクトル
+				/// @return 各要素について x を y で割った剰余
 				[[nodiscard]]
 				Float2 operator ()(const Float2 x, const Float2 y) const noexcept
 				{
 					return{ std::fmod(x.x, y.x), std::fmod(x.y, y.y) };
 				}
 
+				/// @brief 浮動小数点剩余演算を要素ごとに実行します。
+				/// @param x 被除数ベクトル
+				/// @param y 除数ベクトル
+				/// @return 各要素について x を y で割った剰余
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 x, const Vec2 y) const noexcept
 				{
 					return{ std::fmod(x.x, y.x), std::fmod(x.y, y.y) };
 				}
 
+				/// @brief 浮動小数点剩余演算を要素ごとに実行します。
+				/// @param x 被除数ベクトル
+				/// @param y 除数ベクトル
+				/// @return 各要素について x を y で割った剰余
 				[[nodiscard]]
 				Float3 operator ()(const Float3 x, const Float3 y) const noexcept
 				{
 					return{ std::fmod(x.x, y.x), std::fmod(x.y, y.y), std::fmod(x.z, y.z) };
 				}
 
+				/// @brief 浮動小数点剩余演算を要素ごとに実行します。
+				/// @param x 被除数ベクトル
+				/// @param y 除数ベクトル
+				/// @return 各要素について x を y で割った剰余
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 x, const Vec3 y) const noexcept
 				{
 					return{ std::fmod(x.x, y.x), std::fmod(x.y, y.y), std::fmod(x.z, y.z) };
 				}
 
+				/// @brief 浮動小数点剩余演算を要素ごとに実行します。
+				/// @param x 被除数ベクトル
+				/// @param y 除数ベクトル
+				/// @return 各要素について x を y で割った剰余
 				[[nodiscard]]
 				Float4 operator ()(const Float4 x, const Float4 y) const noexcept
 				{
 					return{ std::fmod(x.x, y.x), std::fmod(x.y, y.y), std::fmod(x.z, y.z), std::fmod(x.w, y.w) };
 				}
 
+				/// @brief 浮動小数点剩余演算を要素ごとに実行します。
+				/// @param x 被除数ベクトル
+				/// @param y 除数ベクトル
+				/// @return 各要素について x を y で割った剰余
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 x, const Vec4 y) const noexcept
 				{
 					return{ std::fmod(x.x, y.x), std::fmod(x.y, y.y), std::fmod(x.z, y.z), std::fmod(x.w, y.w) };
 				}
 
+				/// @brief 浮動小数点剩余演算を実行します。
+				/// @param x 被除数
+				/// @param y 除数
+				/// @return x を y で割った剰余
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x, const BigFloat& y) const;
 			};
@@ -91,54 +131,81 @@ namespace s3d
 
 			struct Fraction_impl
 			{
+				/// @brief 値の小数部を抽出します。
+				/// @param x 入力値
+				/// @return x の小数部
 				[[nodiscard]]
 				float operator ()(const float x) const noexcept
 				{
 					return (x - std::floor(x));
 				}
 
+				/// @brief 値の小数部を抽出します。
+				/// @param x 入力値
+				/// @return x の小数部
 				[[nodiscard]]
 				double operator ()(const double x) const noexcept
 				{
 					return (x - std::floor(x));
 				}
 
+				/// @brief ベクトルの各要素の小数部を抽出します。
+				/// @param v 入力ベクトル
+				/// @return 各要素の小数部
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)) };
 				}
 
+				/// @brief ベクトルの各要素の小数部を抽出します。
+				/// @param v 入力ベクトル
+				/// @return 各要素の小数部
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)) };
 				}
 
+				/// @brief ベクトルの各要素の小数部を抽出します。
+				/// @param v 入力ベクトル
+				/// @return 各要素の小数部
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)), (v.z - std::floor(v.z)) };
 				}
 
+				/// @brief ベクトルの各要素の小数部を抽出します。
+				/// @param v 入力ベクトル
+				/// @return 各要素の小数部
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)), (v.z - std::floor(v.z)) };
 				}
 
+				/// @brief ベクトルの各要素の小数部を抽出します。
+				/// @param v 入力ベクトル
+				/// @return 各要素の小数部
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)), (v.z - std::floor(v.z)), (v.w - std::floor(v.w)) };
 				}
 
+				/// @brief ベクトルの各要素の小数部を抽出します。
+				/// @param v 入力ベクトル
+				/// @return 各要素の小数部
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return{ (v.x - std::floor(v.x)), (v.y - std::floor(v.y)), (v.z - std::floor(v.z)), (v.w - std::floor(v.w)) };
 				}
 
+				/// @brief 値の小数部を抽出します。
+				/// @param x 入力値
+				/// @return x の小数部
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -151,6 +218,10 @@ namespace s3d
 
 			struct Frexp_impl
 			{
+				/// @brief 浮動小数点値を仮数と指数部に分解します。
+				/// @param x 入力値
+				/// @param exp 指数部を格納する参照
+				/// @return 仮数部 (0.5 以上 1.0 未満)
 				[[nodiscard]]
 				float operator ()(const float x, float& exp) const noexcept
 				{
@@ -160,6 +231,10 @@ namespace s3d
 					return t;
 				}
 
+				/// @brief 浮動小数点値を仮数と指数部に分解します。
+				/// @param x 入力値
+				/// @param exp 指数部を格納する参照
+				/// @return 仮数部 (0.5 以上 1.0 未満)
 				[[nodiscard]]
 				double operator ()(const double x, double& exp) const noexcept
 				{
@@ -169,42 +244,70 @@ namespace s3d
 					return t;
 				}
 
+				/// @brief ベクトルの各要素を仮数と指数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param exp 指数部を格納するベクトルの参照
+				/// @return 仮数部ベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v, Float2& exp) const noexcept
 				{
 					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y) };
 				}
 
+				/// @brief ベクトルの各要素を仮数と指数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param exp 指数部を格納するベクトルの参照
+				/// @return 仮数部ベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v, Vec2& exp) const noexcept
 				{
 					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y) };
 				}
 
+				/// @brief ベクトルの各要素を仮数と指数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param exp 指数部を格納するベクトルの参照
+				/// @return 仮数部ベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v, Float3& exp) const noexcept
 				{
 					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y), operator ()(v.z, exp.z) };
 				}
 
+				/// @brief ベクトルの各要素を仮数と指数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param exp 指数部を格納するベクトルの参照
+				/// @return 仮数部ベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v, Vec3& exp) const noexcept
 				{
 					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y), operator ()(v.z, exp.z) };
 				}
 
+				/// @brief ベクトルの各要素を仮数と指数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param exp 指数部を格納するベクトルの参照
+				/// @return 仮数部ベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v, Float4& exp) const noexcept
 				{
 					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y), operator ()(v.z, exp.z), operator ()(v.w, exp.w) };
 				}
 
+				/// @brief ベクトルの各要素を仮数と指数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param exp 指数部を格納するベクトルの参照
+				/// @return 仮数部ベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v, Vec4& exp) const noexcept
 				{
 					return{ operator ()(v.x, exp.x), operator ()(v.y, exp.y), operator ()(v.z, exp.z), operator ()(v.w, exp.w) };
 				}
 
+				/// @brief 高精度浮動小数点値を仮数と指数部に分解します。
+				/// @param x 入力値
+				/// @param exp 指数部を格納する参照
+				/// @return 仮数部
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x, int32& exp) const;
 			};
@@ -217,54 +320,90 @@ namespace s3d
 
 			struct Ldexp_impl
 			{
+				/// @brief 仮数と指数から浮動小数点値を構成します。
+				/// @param x 仮数
+				/// @param exp 指数
+				/// @return x * 2^exp
 				[[nodiscard]]
 				float operator ()(const float x, const float exp) const noexcept
 				{
 					return (x * std::exp2(exp));
 				}
 
+				/// @brief 仮数と指数から浮動小数点値を構成します。
+				/// @param x 仮数
+				/// @param exp 指数
+				/// @return x * 2^exp
 				[[nodiscard]]
 				double operator ()(const double x, const double exp) const noexcept
 				{
 					return (x * std::exp2(exp));
 				}
 
+				/// @brief ベクトルの各要素に対して仮数と指数から値を構成します。
+				/// @param v 仮数ベクトル
+				/// @param exp 指数ベクトル
+				/// @return 各要素に対して v * 2^exp を適用したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v, const Float2 exp) const noexcept
 				{
 					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)) };
 				}
 
+				/// @brief ベクトルの各要素に対して仮数と指数から値を構成します。
+				/// @param v 仮数ベクトル
+				/// @param exp 指数ベクトル
+				/// @return 各要素に対して v * 2^exp を適用したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v, const Vec2 exp) const noexcept
 				{
 					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)) };
 				}
 
+				/// @brief ベクトルの各要素に対して仮数と指数から値を構成します。
+				/// @param v 仮数ベクトル
+				/// @param exp 指数ベクトル
+				/// @return 各要素に対して v * 2^exp を適用したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v, const Float3 exp) const noexcept
 				{
 					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)), (v.z * std::exp2(exp.z)) };
 				}
 
+				/// @brief ベクトルの各要素に対して仮数と指数から値を構成します。
+				/// @param v 仮数ベクトル
+				/// @param exp 指数ベクトル
+				/// @return 各要素に対して v * 2^exp を適用したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v, const Vec3 exp) const noexcept
 				{
 					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)), (v.z * std::exp2(exp.z)) };
 				}
 
+				/// @brief ベクトルの各要素に対して仮数と指数から値を構成します。
+				/// @param v 仮数ベクトル
+				/// @param exp 指数ベクトル
+				/// @return 各要素に対して v * 2^exp を適用したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v, const Float4 exp) const noexcept
 				{
 					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)), (v.z * std::exp2(exp.z)), (v.w * std::exp2(exp.w)) };
 				}
 
+				/// @brief ベクトルの各要素に対して仮数と指数から値を構成します。
+				/// @param v 仮数ベクトル
+				/// @param exp 指数ベクトル
+				/// @return 各要素に対して v * 2^exp を適用したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v, const Vec4 exp) const noexcept
 				{
 					return{ (v.x * std::exp2(exp.x)), (v.y * std::exp2(exp.y)), (v.z * std::exp2(exp.z)), (v.w * std::exp2(exp.w)) };
 				}
 
+				/// @brief 高精度浮動小数点値で仮数と指数から値を構成します。
+				/// @param x 仮数
+				/// @param exp 指数
+				/// @return x * 2^exp
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x, const BigFloat& exp) const;
 			};
@@ -277,60 +416,90 @@ namespace s3d
 
 			struct Log_impl
 			{
+				/// @brief 整数値の自然対数を計算します。
+				/// @param x 入力値
+				/// @return ln(x)
 				[[nodiscard]]
 				double operator ()(const Concept::Integral auto x) const noexcept
 				{
 					return std::log(static_cast<double>(x));
 				}
 
+				/// @brief 浮動小数点値の自然対数を計算します。
+				/// @param x 入力値
+				/// @return ln(x)
 				[[nodiscard]]
 				float operator ()(const float x) const noexcept
 				{
 					return std::log(x);
 				}
 
+				/// @brief 浮動小数点値の自然対数を計算します。
+				/// @param x 入力値
+				/// @return ln(x)
 				[[nodiscard]]
 				double operator ()(const double x) const noexcept
 				{
 					return std::log(x);
 				}
 
+				/// @brief ベクトルの各要素の自然対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して ln(v) を適用したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ std::log(v.x), std::log(v.y) };
 				}
 
+				/// @brief ベクトルの各要素の自然対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して ln(v) を適用したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ std::log(v.x), std::log(v.y) };
 				}
 
+				/// @brief ベクトルの各要素の自然対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して ln(v) を適用したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ std::log(v.x), std::log(v.y), std::log(v.z) };
 				}
 
+				/// @brief ベクトルの各要素の自然対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して ln(v) を適用したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ std::log(v.x), std::log(v.y), std::log(v.z) };
 				}
 
+				/// @brief ベクトルの各要素の自然対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して ln(v) を適用したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ std::log(v.x), std::log(v.y), std::log(v.z), std::log(v.w) };
 				}
 
+				/// @brief ベクトルの各要素の自然対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して ln(v) を適用したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return{ std::log(v.x), std::log(v.y), std::log(v.z), std::log(v.w) };
 				}
 
+				/// @brief 高精度浮動小数点値の自然対数を計算します。
+				/// @param x 入力値
+				/// @return ln(x)
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -343,60 +512,90 @@ namespace s3d
 
 			struct Log2_impl
 			{
+				/// @brief 整数値の2を底とする対数を計算します。
+				/// @param x 入力値
+				/// @return log2(x)
 				[[nodiscard]]
 				double operator ()(const Concept::Integral auto x) const noexcept
 				{
 					return std::log2(static_cast<double>(x));
 				}
 
+				/// @brief 浮動小数点値の2を底とする対数を計算します。
+				/// @param x 入力値
+				/// @return log2(x)
 				[[nodiscard]]
 				float operator ()(const float x) const noexcept
 				{
 					return std::log2(x);
 				}
 
+				/// @brief 浮動小数点値の2を底とする対数を計算します。
+				/// @param x 入力値
+				/// @return log2(x)
 				[[nodiscard]]
 				double operator ()(const double x) const noexcept
 				{
 					return std::log2(x);
 				}
 
+				/// @brief ベクトルの各要素の2を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log2(v) を適用したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ std::log2(v.x), std::log2(v.y) };
 				}
 
+				/// @brief ベクトルの各要素の2を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log2(v) を適用したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ std::log2(v.x), std::log2(v.y) };
 				}
 
+				/// @brief ベクトルの各要素の2を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log2(v) を適用したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ std::log2(v.x), std::log2(v.y), std::log2(v.z) };
 				}
 
+				/// @brief ベクトルの各要素の2を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log2(v) を適用したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ std::log2(v.x), std::log2(v.y), std::log2(v.z) };
 				}
 
+				/// @brief ベクトルの各要素の2を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log2(v) を適用したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ std::log2(v.x), std::log2(v.y), std::log2(v.z), std::log2(v.w) };
 				}
 
+				/// @brief ベクトルの各要素の2を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log2(v) を適用したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return{ std::log2(v.x), std::log2(v.y), std::log2(v.z), std::log2(v.w) };
 				}
 
+				/// @brief 高精度浮動小数点値の2を底とする対数を計算します。
+				/// @param x 入力値
+				/// @return log2(x)
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -409,60 +608,90 @@ namespace s3d
 
 			struct Log10_impl
 			{
+				/// @brief 整数値の10を底とする対数を計算します。
+				/// @param x 入力値
+				/// @return log10(x)
 				[[nodiscard]]
 				double operator ()(const Concept::Integral auto x) const noexcept
 				{
 					return std::log10(static_cast<double>(x));
 				}
 
+				/// @brief 浮動小数点値の10を底とする対数を計算します。
+				/// @param x 入力値
+				/// @return log10(x)
 				[[nodiscard]]
 				float operator ()(const float x) const noexcept
 				{
 					return std::log10(x);
 				}
 
+				/// @brief 浮動小数点値の10を底とする対数を計算します。
+				/// @param x 入力値
+				/// @return log10(x)
 				[[nodiscard]]
 				double operator ()(const double x) const noexcept
 				{
 					return std::log10(x);
 				}
 
+				/// @brief ベクトルの各要素の10を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log10(v) を適用したベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v) const noexcept
 				{
 					return{ std::log10(v.x), std::log10(v.y) };
 				}
 
+				/// @brief ベクトルの各要素の10を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log10(v) を適用したベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v) const noexcept
 				{
 					return{ std::log10(v.x), std::log10(v.y) };
 				}
 
+				/// @brief ベクトルの各要素の10を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log10(v) を適用したベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v) const noexcept
 				{
 					return{ std::log10(v.x), std::log10(v.y), std::log10(v.z) };
 				}
 
+				/// @brief ベクトルの各要素の10を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log10(v) を適用したベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v) const noexcept
 				{
 					return{ std::log10(v.x), std::log10(v.y), std::log10(v.z) };
 				}
 
+				/// @brief ベクトルの各要素の10を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log10(v) を適用したベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v) const noexcept
 				{
 					return{ std::log10(v.x), std::log10(v.y), std::log10(v.z), std::log10(v.w) };
 				}
 
+				/// @brief ベクトルの各要素の10を底とする対数を計算します。
+				/// @param v 入力ベクトル
+				/// @return 各要素に対して log10(v) を適用したベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v) const noexcept
 				{
 					return{ std::log10(v.x), std::log10(v.y), std::log10(v.z), std::log10(v.w) };
 				}
 
+				/// @brief 高精度浮動小数点値の10を底とする対数を計算します。
+				/// @param x 入力値
+				/// @return log10(x)
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x) const;
 			};
@@ -475,54 +704,90 @@ namespace s3d
 
 			struct Modf_impl
 			{
+				/// @brief 浮動小数点値を整数部と小数部に分解します。
+				/// @param x 入力値
+				/// @param ip 整数部を格納する参照
+				/// @return 小数部
 				[[nodiscard]]
 				float operator ()(const float x, float& ip) const noexcept
 				{
 					return std::modf(x, &ip);
 				}
 
+				/// @brief 浮動小数点値を整数部と小数部に分解します。
+				/// @param x 入力値
+				/// @param ip 整数部を格納する参照
+				/// @return 小数部
 				[[nodiscard]]
 				double operator ()(const double x, double& ip) const noexcept
 				{
 					return std::modf(x, &ip);
 				}
 
+				/// @brief ベクトルの各要素を整数部と小数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param ip 整数部を格納するベクトルの参照
+				/// @return 小数部ベクトル
 				[[nodiscard]]
 				Float2 operator ()(const Float2 v, Float2& ip) const noexcept
 				{
 					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y) };
 				}
 
+				/// @brief ベクトルの各要素を整数部と小数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param ip 整数部を格納するベクトルの参照
+				/// @return 小数部ベクトル
 				[[nodiscard]]
 				Vec2 operator ()(const Vec2 v, Vec2& ip) const noexcept
 				{
 					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y) };
 				}
 
+				/// @brief ベクトルの各要素を整数部と小数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param ip 整数部を格納するベクトルの参照
+				/// @return 小数部ベクトル
 				[[nodiscard]]
 				Float3 operator ()(const Float3 v, Float3& ip) const noexcept
 				{
 					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y), std::modf(v.z, &ip.z) };
 				}
 
+				/// @brief ベクトルの各要素を整数部と小数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param ip 整数部を格納するベクトルの参照
+				/// @return 小数部ベクトル
 				[[nodiscard]]
 				Vec3 operator ()(const Vec3 v, Vec3& ip) const noexcept
 				{
 					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y), std::modf(v.z, &ip.z) };
 				}
 
+				/// @brief ベクトルの各要素を整数部と小数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param ip 整数部を格納するベクトルの参照
+				/// @return 小数部ベクトル
 				[[nodiscard]]
 				Float4 operator ()(const Float4 v, Float4& ip) const noexcept
 				{
 					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y), std::modf(v.z, &ip.z), std::modf(v.w, &ip.w) };
 				}
 
+				/// @brief ベクトルの各要素を整数部と小数部に分解します。
+				/// @param v 入力ベクトル
+				/// @param ip 整数部を格納するベクトルの参照
+				/// @return 小数部ベクトル
 				[[nodiscard]]
 				Vec4 operator ()(const Vec4 v, Vec4& ip) const noexcept
 				{
 					return{ std::modf(v.x, &ip.x), std::modf(v.y, &ip.y), std::modf(v.z, &ip.z), std::modf(v.w, &ip.w) };
 				}
 
+				/// @brief 高精度浮動小数点値を整数部と小数部に分解します。
+				/// @param x 入力値
+				/// @param ip 整数部を格納する参照
+				/// @return 小数部
 				[[nodiscard]]
 				BigFloat operator ()(const BigFloat& x, BigFloat& ip) const;
 			};
