@@ -85,6 +85,9 @@ namespace s3d
 		[[nodiscard]] 
 		constexpr StringView(const value_type* s) noexcept;
 
+		/// @brief 範囲から StringView を作成します。
+		/// @tparam Range 範囲の型
+		/// @param range 範囲
 		template <class Range>
 			requires(
 			!std::same_as<std::remove_cvref_t<Range>, StringView>
@@ -97,6 +100,9 @@ namespace s3d
 		[[nodiscard]]
 		explicit constexpr StringView(Range&& range);
 
+		/// @brief 範囲から StringView を作成します。
+		/// @tparam Range 範囲の型
+		/// @param range 範囲
 		template <class Range>
 			requires(
 		!std::same_as<std::remove_cvref_t<Range>, StringView>
@@ -242,6 +248,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列データへのポインタを返します。
+		/// @return 文字列データへのポインタ
 		[[nodiscard]]
 		constexpr const_pointer data() const noexcept;
 
@@ -297,6 +305,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列が保持できる最大の文字数を返します。
+		/// @return 文字列が保持できる最大の文字数
 		[[nodiscard]]
 		constexpr size_type max_size() const noexcept;
 
@@ -353,6 +363,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief std::u32string_view に変換します。
+		/// @return std::u32string_view オブジェクト
 		[[nodiscard]]
 		constexpr operator std::u32string_view() const noexcept;
 
@@ -362,6 +374,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列ビューの先頭から指定した文字数を削除します。
+		/// @param n 削除する文字数
 		constexpr void remove_prefix(size_type n) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -370,6 +384,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列ビューの末尾から指定した文字数を削除します。
+		/// @param n 削除する文字数
 		constexpr void remove_suffix(size_type n) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -378,6 +394,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列ビューを空にします。
 		constexpr void clear() noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -386,6 +403,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 他の文字列ビューと内容を交換します。
+		/// @param other 交換する文字列ビュー
 		constexpr void swap(StringView& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -394,6 +413,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列の一部を指定したバッファにコピーします。
+		/// @param dst コピー先のバッファ
+		/// @param n コピーする文字数
+		/// @param pos コピーを開始する位置 (デフォルトは 0)
+		/// @return 実際にコピーされた文字数
 		constexpr size_type copy(value_type* dst, size_type n, size_type pos = 0) const;
 
 		////////////////////////////////////////////////////////////////
@@ -402,6 +426,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 部分文字列を表す新しい StringView を返します。
+		/// @param pos 開始位置 (デフォルトは 0)
+		/// @param n 文字数 (npos の場合は末尾まで)
+		/// @return 部分文字列を表す StringView
 		[[nodiscard]]
 		constexpr StringView substr(size_type pos = 0, size_type n = npos) const;
 
@@ -411,21 +439,50 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 他の文字列ビューと比較します。
+		/// @param s 比較する文字列ビュー
+		/// @return 比較結果 (負の値: this < s, 0: this == s, 正の値: this > s)
 		[[nodiscard]]
 		constexpr int32 compare(StringView s) const noexcept;
 
+		/// @brief 文字列の一部を他の文字列ビューと比較します。
+		/// @param pos1 この文字列の比較開始位置
+		/// @param n1 この文字列の比較文字数
+		/// @param s 比較する文字列ビュー
+		/// @return 比較結果 (負の値: this < s, 0: this == s, 正の値: this > s)
 		[[nodiscard]]
 		constexpr int32 compare(size_type pos1, size_type n1, StringView s) const noexcept;
 
+		/// @brief 文字列の一部を他の文字列ビューの一部と比較します。
+		/// @param pos1 この文字列の比較開始位置
+		/// @param n1 この文字列の比較文字数
+		/// @param s 比較する文字列ビュー
+		/// @param pos2 比較する文字列の開始位置
+		/// @param n2 比較する文字列の文字数
+		/// @return 比較結果 (負の値: this < s, 0: this == s, 正の値: this > s)
 		[[nodiscard]]
 		constexpr int32 compare(size_type pos1, size_type n1, StringView s, size_type pos2, size_type n2) const noexcept;
 
+		/// @brief C スタイル文字列と比較します。
+		/// @param s 比較する C スタイル文字列
+		/// @return 比較結果 (負の値: this < s, 0: this == s, 正の値: this > s)
 		[[nodiscard]]
 		constexpr int32 compare(const value_type* s) const noexcept;
 
+		/// @brief 文字列の一部を C スタイル文字列と比較します。
+		/// @param pos1 この文字列の比較開始位置
+		/// @param n1 この文字列の比較文字数
+		/// @param s 比較する C スタイル文字列
+		/// @return 比較結果 (負の値: this < s, 0: this == s, 正の値: this > s)
 		[[nodiscard]]
 		constexpr int32 compare(size_type pos1, size_type n1, const value_type* s) const noexcept;
 
+		/// @brief 文字列の一部を C スタイル文字列の一部と比較します。
+		/// @param pos1 この文字列の比較開始位置
+		/// @param n1 この文字列の比較文字数
+		/// @param s 比較する C スタイル文字列
+		/// @param n2 比較する文字列の文字数
+		/// @return 比較結果 (負の値: this < s, 0: this == s, 正の値: this > s)
 		[[nodiscard]]
 		constexpr int32 compare(size_type pos1, size_type n1, const value_type* s, size_type n2) const noexcept;
 
@@ -507,15 +564,32 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列を先頭から検索します。
+		/// @param s 検索する文字列
+		/// @param pos 検索を開始する位置 (デフォルトは 0)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find(StringView s, size_type pos = 0) const noexcept;
 
+		/// @brief 指定した文字を先頭から検索します。
+		/// @param ch 検索する文字
+		/// @param pos 検索を開始する位置 (デフォルトは 0)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find(value_type ch, size_type pos = 0) const noexcept;
 
+		/// @brief 指定した C スタイル文字列の一部を先頭から検索します。
+		/// @param s 検索する C スタイル文字列
+		/// @param pos 検索を開始する位置
+		/// @param count 検索する文字数
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find(const value_type* s, size_type pos, size_type count) const noexcept;
 
+		/// @brief 指定した C スタイル文字列を先頭から検索します。
+		/// @param s 検索する C スタイル文字列
+		/// @param pos 検索を開始する位置 (デフォルトは 0)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find(const value_type* s, size_type pos = 0) const noexcept;
 
@@ -525,15 +599,32 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列を末尾から検索します。
+		/// @param s 検索する文字列
+		/// @param pos 検索を開始する位置 (デフォルトは npos)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type rfind(StringView s, size_type pos = npos) const noexcept;
 
+		/// @brief 指定した文字を末尾から検索します。
+		/// @param ch 検索する文字
+		/// @param pos 検索を開始する位置 (デフォルトは npos)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type rfind(value_type ch, size_type pos = npos) const noexcept;
 
+		/// @brief 指定した C スタイル文字列の一部を末尾から検索します。
+		/// @param s 検索する C スタイル文字列
+		/// @param pos 検索を開始する位置
+		/// @param count 検索する文字数
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type rfind(const value_type* s, size_type pos, size_type count) const noexcept;
 
+		/// @brief 指定した C スタイル文字列を末尾から検索します。
+		/// @param s 検索する C スタイル文字列
+		/// @param pos 検索を開始する位置 (デフォルトは npos)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type rfind(const value_type* s, size_type pos = npos) const noexcept;
 
@@ -543,15 +634,32 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列に含まれるいずれかの文字を先頭から検索します。
+		/// @param s 検索する文字の集合を表す文字列
+		/// @param pos 検索を開始する位置 (デフォルトは 0)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_first_of(StringView s, size_type pos = 0) const noexcept;
 		
+		/// @brief 指定した文字を先頭から検索します。
+		/// @param ch 検索する文字
+		/// @param pos 検索を開始する位置 (デフォルトは 0)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_first_of(value_type ch, size_type pos = 0) const noexcept;
 
+		/// @brief 指定した C スタイル文字列に含まれるいずれかの文字を先頭から検索します。
+		/// @param s 検索する文字の集合を表す C スタイル文字列
+		/// @param pos 検索を開始する位置
+		/// @param count 検索する文字数
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_first_of(const value_type* s, size_type pos, size_type count) const noexcept;
 
+		/// @brief 指定した C スタイル文字列に含まれるいずれかの文字を先頭から検索します。
+		/// @param s 検索する文字の集合を表す C スタイル文字列
+		/// @param pos 検索を開始する位置 (デフォルトは 0)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_first_of(const value_type* s, size_type pos = 0) const noexcept;
 
@@ -561,15 +669,32 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列に含まれるいずれかの文字を末尾から検索します。
+		/// @param s 検索する文字の集合を表す文字列
+		/// @param pos 検索を開始する位置 (デフォルトは npos)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_last_of(StringView s, size_type pos = npos) const noexcept;
 
+		/// @brief 指定した文字を末尾から検索します。
+		/// @param ch 検索する文字
+		/// @param pos 検索を開始する位置 (デフォルトは npos)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_last_of(value_type ch, size_type pos = npos) const noexcept;
 
+		/// @brief 指定した C スタイル文字列に含まれるいずれかの文字を末尾から検索します。
+		/// @param s 検索する文字の集合を表す C スタイル文字列
+		/// @param pos 検索を開始する位置
+		/// @param count 検索する文字数
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_last_of(const value_type* s, size_type pos, size_type count) const noexcept;
 
+		/// @brief 指定した C スタイル文字列に含まれるいずれかの文字を末尾から検索します。
+		/// @param s 検索する文字の集合を表す C スタイル文字列
+		/// @param pos 検索を開始する位置 (デフォルトは npos)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_last_of(const value_type* s, size_type pos = npos) const noexcept;
 
@@ -579,15 +704,32 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列に含まれない文字を先頭から検索します。
+		/// @param s 除外する文字の集合を表す文字列
+		/// @param pos 検索を開始する位置 (デフォルトは 0)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_first_not_of(StringView s, size_type pos = 0) const noexcept;
 
+		/// @brief 指定した文字以外の文字を先頭から検索します。
+		/// @param ch 除外する文字
+		/// @param pos 検索を開始する位置 (デフォルトは 0)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_first_not_of(value_type ch, size_type pos = 0) const noexcept;
 
+		/// @brief 指定した C スタイル文字列に含まれない文字を先頭から検索します。
+		/// @param s 除外する文字の集合を表す C スタイル文字列
+		/// @param pos 検索を開始する位置
+		/// @param count 検索する文字数
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_first_not_of(const value_type* s, size_type pos, size_type count) const;
 
+		/// @brief 指定した C スタイル文字列に含まれない文字を先頭から検索します。
+		/// @param s 除外する文字の集合を表す C スタイル文字列
+		/// @param pos 検索を開始する位置 (デフォルトは 0)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_first_not_of(const value_type* s, size_type pos = 0) const;
 
@@ -597,15 +739,32 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列に含まれない文字を末尾から検索します。
+		/// @param s 除外する文字の集合を表す文字列
+		/// @param pos 検索を開始する位置 (デフォルトは npos)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_last_not_of(StringView s, size_type pos = npos) const noexcept;
 
+		/// @brief 指定した文字以外の文字を末尾から検索します。
+		/// @param ch 除外する文字
+		/// @param pos 検索を開始する位置 (デフォルトは npos)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_last_not_of(value_type ch, size_type pos = npos) const noexcept;
 
+		/// @brief 指定した C スタイル文字列に含まれない文字を末尾から検索します。
+		/// @param s 除外する文字の集合を表す C スタイル文字列
+		/// @param pos 検索を開始する位置
+		/// @param count 検索する文字数
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_last_not_of(const value_type* s, size_type pos, size_type count) const noexcept;
 
+		/// @brief 指定した C スタイル文字列に含まれない文字を末尾から検索します。
+		/// @param s 除外する文字の集合を表す C スタイル文字列
+		/// @param pos 検索を開始する位置 (デフォルトは npos)
+		/// @return 見つかった位置、見つからなかった場合は npos
 		[[nodiscard]]
 		constexpr size_type find_last_not_of(const value_type* s, size_type pos = npos) const noexcept;
 
