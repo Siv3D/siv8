@@ -67,21 +67,33 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ。空の StringView を作成します。
 		[[nodiscard]]
 		constexpr StringView() = default;
 
+		/// @brief コピーコンストラクタ
+		/// @param other コピー元の StringView
 		[[nodiscard]] 
 		constexpr StringView(const StringView&) = default;
 
+		/// @brief std::u32string から StringView を作成します。
+		/// @param s 元となる文字列
 		[[nodiscard]] 
 		constexpr StringView(const std::u32string& s SIV3D_LIFETIMEBOUND) noexcept;
 
+		/// @brief std::u32string_view から StringView を作成します。
+		/// @param s 元となる文字列ビュー
 		[[nodiscard]] 
 		constexpr StringView(std::u32string_view s) noexcept;
 
+		/// @brief ポインタと長さから StringView を作成します。
+		/// @param s 文字列の先頭ポインタ
+		/// @param length 文字列の長さ
 		[[nodiscard]] 
 		constexpr StringView(const value_type* s, size_type length) noexcept;
 
+		/// @brief C スタイル文字列から StringView を作成します。
+		/// @param s null 終端文字列のポインタ
 		[[nodiscard]] 
 		constexpr StringView(const value_type* s) noexcept;
 
@@ -547,13 +559,13 @@ namespace s3d
 		constexpr bool contains(value_type ch) const noexcept;
 
 		/// @brief 文字列が指定した文字列を含むかを返します。 | Returns whether the string contains the specified string.
-		/// @param ch 検索する文字列 | String to search for
+		/// @param s 検索する文字列 | String to search for
 		/// @return 指定した文字列を含む場合 true, それ以外の場合は false | If the string contains the specified string, true, otherwise false
 		[[nodiscard]]
 		constexpr bool contains(const value_type* s) const noexcept;
 
 		/// @brief 文字列が指定した文字列を含むかを返します。 | Returns whether the string contains the specified string.
-		/// @param ch 検索する文字列 | String to search for
+		/// @param s 検索する文字列 | String to search for
 		/// @return 指定した文字列を含む場合 true, それ以外の場合は false | If the string contains the specified string, true, otherwise false
 		[[nodiscard]]
 		constexpr bool contains(StringView s) const noexcept;
@@ -867,7 +879,7 @@ namespace s3d
 		/// @brief 条件を満たす要素があるかを返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return 条件を満たす要素が 1 つでもあれば true, 俺以外の場合は false
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		/// @remark `.contains_if(f)` と同じです。
 		template <class Fty>
 		[[nodiscard]]
@@ -920,6 +932,7 @@ namespace s3d
 		value_type choice() const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
+		/// @tparam URBG 乱数エンジンの型
 		/// @param rbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
@@ -935,7 +948,7 @@ namespace s3d
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
 		/// @remark `.any(f)` と同じです。
-		/// @return 条件を満たす要素が 1 つでもあれば true, 俺以外の場合は false
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
 		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
@@ -1385,6 +1398,7 @@ namespace s3d
 		String shuffled() const;
 
 		/// @brief 指定された乱数生成器を使って要素をシャッフルした新しい文字列を返します。
+		/// @tparam URBG 乱数生成器の型
 		/// @param rbg 乱数生成器
 		/// @return 新しい文字列
 		[[nodiscard]]
@@ -1634,14 +1648,34 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 二つの文字列ビューを連結した新しい文字列を返します。
+		/// @param lhs 左側の文字列ビュー
+		/// @param rhs 右側の文字列ビュー
+		/// @return 連結された新しい文字列
 		friend String operator +(StringView lhs, StringView rhs);
 
+		/// @brief 文字列ビューと C スタイル文字列を連結した新しい文字列を返します。
+		/// @param lhs 左側の文字列ビュー
+		/// @param rhs 右側の C スタイル文字列
+		/// @return 連結された新しい文字列
 		friend String operator +(StringView lhs, const value_type* rhs);
 
+		/// @brief 文字列ビューと文字を連結した新しい文字列を返します。
+		/// @param lhs 左側の文字列ビュー
+		/// @param rhs 右側の文字
+		/// @return 連結された新しい文字列
 		friend String operator +(StringView lhs, value_type rhs);
 
+		/// @brief C スタイル文字列と文字列ビューを連結した新しい文字列を返します。
+		/// @param lhs 左側の C スタイル文字列
+		/// @param rhs 右側の文字列ビュー
+		/// @return 連結された新しい文字列
 		friend String operator +(const value_type* lhs, StringView rhs);
 
+		/// @brief 文字と文字列ビューを連結した新しい文字列を返します。
+		/// @param lhs 左側の文字
+		/// @param rhs 右側の文字列ビュー
+		/// @return 連結された新しい文字列
 		friend String operator +(value_type lhs, StringView rhs);
 
 		////////////////////////////////////////////////////////////////
@@ -1650,10 +1684,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列ビューを出力ストリームに出力します。
+		/// @param output 出力ストリーム
+		/// @param value 出力する文字列ビュー
+		/// @return 出力ストリーム
 		friend std::ostream& operator <<(std::ostream& output, const StringView& value);
 
+		/// @brief 文字列ビューを出力ストリームに出力します。
+		/// @param output ワイド文字出力ストリーム
+		/// @param value 出力する文字列ビュー
+		/// @return 出力ストリーム
 		friend std::wostream& operator <<(std::wostream& output, const StringView& value);
 
+		/// @brief 文字列ビューを出力ストリームに出力します。
+		/// @param output char32 出力ストリーム
+		/// @param value 出力する文字列ビュー
+		/// @return 出力ストリーム
 		friend std::basic_ostream<char32>& operator <<(std::basic_ostream<char32>& output, const StringView& value);
 
 		////////////////////////////////////////////////////////////////
@@ -1662,6 +1708,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 文字列ビューをフォーマットします。
+		/// @param formatData フォーマットデータ
+		/// @param s フォーマットする文字列ビュー
 		friend void Formatter(FormatData& formatData, StringView s);
 
 		////////////////////////////////////////////////////////////////
@@ -1670,6 +1719,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 二つの文字列が等しいかを比較します。
+		/// @param s1 第一の文字列
+		/// @param s2 第二の文字列
+		/// @param length 比較する文字数
+		/// @return 文字列が等しい場合 true, それ以外の場合は false
 		static bool StringEquals(const char32* s1, const char32* s2, size_t length) noexcept;
 
 	private:
@@ -1699,6 +1753,11 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
+			/// @brief 文字列リテラルから StringView オブジェクトを作成します。
+			/// @param s 文字列リテラル
+			/// @param length 文字列の長さ
+			/// @return StringView オブジェクト
+			/// @remark 使用例: auto sv = U"Hello"_sv;
 			[[nodiscard]]
 			inline constexpr StringView operator ""_sv(const char32_t* s, size_t length) noexcept;
 		}

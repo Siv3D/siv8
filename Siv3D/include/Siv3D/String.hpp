@@ -1533,7 +1533,7 @@ namespace s3d
 		/// @brief 条件を満たす要素があるかを返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return 条件を満たす要素が 1 つでもあれば true, 俺以外の場合は false
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		/// @remark `.contains_if(f)` と同じです。
 		template <class Fty>
 		[[nodiscard]]
@@ -1637,7 +1637,7 @@ namespace s3d
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
 		/// @remark `.any(f)` と同じです。
-		/// @return 条件を満たす要素が 1 つでもあれば true, 俺以外の場合は false
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
 		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
