@@ -18,9 +18,6 @@
 
 namespace s3d
 {
-	template <class Type, class Allocator>
-	class Grid;
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	Grid

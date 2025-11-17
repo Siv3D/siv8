@@ -15,31 +15,6 @@
 # include "Concepts.hpp"
 # include "detail/UtilityClass.ipp"
 
-//////////////////////////////////////////////////
-//
-//	ユーティリティ関数 | Utility functions
-//
-//	Scalar Min(Scalar a, Scalar b);
-//	const Type& Min(const Type& a, const Type& b);
-//	Scalar Max(Scalar a, Scalar b);
-//	const Type& Max(const Type& a, const Type& b);
-//	Scalar Clamp(Scalar v, Scalar min, Scalar max);
-//	Type& Clamp(const Type& v, const Type& min, const Type& max);
-//	bool InRange(Scalar v, Scalar min, Scalar max);
-//	bool InRange(const Type& v, const Type& min, const Type& max);
-//	bool InOpenRange(Scalar v, Scalar min, Scalar max);
-//	bool InOpenRange(const Type& v, const Type& min, const Type& max);
-//	Signed Abs(Signed a);
-//	Arithmetic AbsDiff(Arithmetic a, Arithmetic b);
-//	auto FromEnum(Enum x);
-//	Enum ToEnum(std::underlying_type_t<Enum> x);
-//	bool IsOdd(Integral x);
-//	bool IsEven(Integral x);
-//	Type Identity(Type x);
-//	
-// 
-//////////////////////////////////////////////////
-
 namespace s3d
 {
 	////////////////////////////////////////////////////////////////
