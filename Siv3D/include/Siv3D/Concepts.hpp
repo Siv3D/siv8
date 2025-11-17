@@ -222,7 +222,7 @@ namespace s3d
 		/// @brief `+=` 演算子による加算が可能な型のコンセプト | Add-assignable type concept
 		/// @tparam Type 型 | Type
 		template <class Type>
-		concept AddAssignable = requires(Type& a, const Type & b)
+		concept AddAssignable = requires(Type& a, const Type& b)
 		{
 			{ a += b } -> std::convertible_to<Type>;
 		};

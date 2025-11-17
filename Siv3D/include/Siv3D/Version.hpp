@@ -21,14 +21,14 @@
 # define SIV3D_VERSION_REVISION			0
 
 /// @brief プレリリースタグ | Pre-release tag
-# define SIV3D_VERSION_PRERELEASE_TAG	U"dev"
+# define SIV3D_VERSION_PRERELEASE_TAG	U"-dev"
 
 /// @brief ライブラリのバージョン（数値表現） | Library version (numeric representation)
 # define SIV3D_VERSION					((SIV3D_VERSION_MAJOR * 100 * 100) + (SIV3D_VERSION_MINOR * 100) + (SIV3D_VERSION_REVISION))
 
 // バージョン文字列の自動生成
-# define _SIV3D_STRINGIFY(x)			U ## #x
-# define SIV3D_STRINGIFY(x)				_SIV3D_STRINGIFY(x)
+# define SIV3D_STRINGIFY_(x)			U ## #x
+# define SIV3D_STRINGIFY(x)				SIV3D_STRINGIFY_(x)
 
 /// @brief ライブラリのバージョンの文字列（簡易版） | Short library version string
 # define SIV3D_VERSION_SHORT_STRING		SIV3D_STRINGIFY(SIV3D_VERSION_MAJOR) U"." \
