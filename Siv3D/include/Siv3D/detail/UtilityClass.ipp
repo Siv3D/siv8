@@ -72,7 +72,7 @@ namespace s3d::detail
 		/// @param x 数 | Number
 		/// @return 数が奇数の場合 true, それ以外の場合は false | Returns true if the number is odd, false otherwise
 		[[nodiscard]]
-		constexpr bool operator()(const Concept::Integral auto& x) const noexcept
+		constexpr bool operator()(const Concept::Integral auto x) const noexcept
 		{
 			return ((x % 2) != 0);
 		}
@@ -90,7 +90,7 @@ namespace s3d::detail
 		/// @param x 数 | Number
 		/// @return 数が偶数の場合 true, それ以外の場合は false | Returns true if the number is even, false otherwise
 		[[nodiscard]]
-		constexpr bool operator()(const Concept::Integral auto& x) const noexcept
+		constexpr bool operator()(const Concept::Integral auto x) const noexcept
 		{
 			return ((x % 2) == 0);
 		}

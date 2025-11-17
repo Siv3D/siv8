@@ -137,6 +137,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 最小値と最大値の範囲にクランプした値を返します。 | Clamps the value to the specified minimum and maximum range.
+	/// @tparam Scalar クランプする値の型 | The type of the value to clamp
 	/// @param v クランプする値 | A value to clamp
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
@@ -146,13 +147,14 @@ namespace s3d
 	constexpr auto Clamp(Scalar v, Scalar min, Scalar max) noexcept;
 
 	/// @brief 最小値と最大値の範囲にクランプした値を返します。 | Clamps the value to the specified minimum and maximum range.
+	/// @tparam Type クランプする値の型 | The type of the value to clamp
 	/// @param v クランプする値 | A value to clamp
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return v をクランプした値 | The clamped value for the v
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Clamp(const Type& v SIV3D_LIFETIMEBOUND, const Type& min SIV3D_LIFETIMEBOUND, const Type& max SIV3D_LIFETIMEBOUND) noexcept(noexcept(max < v));
+	constexpr const Type& Clamp(const Type& v SIV3D_LIFETIMEBOUND, const Type& min SIV3D_LIFETIMEBOUND, const Type& max SIV3D_LIFETIMEBOUND) noexcept(noexcept(max < v) && noexcept(v < min));
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -161,21 +163,24 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 値が閉区間 [min, max] にあるかを返します。 | Returns true if the value is in the closed interval [min, max].
+	/// @tparam Scalar 比較する値の型 | The type of the values to compare
 	/// @param v 比較する値 | A value to compare
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 閉区間 [min, max] にある場合 true, それ以外の場合は false | Returns true if the value is in the closed interval [min, max], false otherwise
+	template <Concept::Scalar Scalar>
 	[[nodiscard]]
-	constexpr bool InRange(Concept::Scalar auto v, Concept::Scalar auto min, Concept::Scalar auto max) noexcept;
+	constexpr bool InRange(Scalar v, Scalar min, Scalar max) noexcept;
 
 	/// @brief 値が閉区間 [min, max] にあるかを返します。 | Returns true if the value is in the closed interval [min, max].
+	/// @tparam Scalar 比較する値の型 | The type of the values to compare
 	/// @param v 比較する値 | A value to compare
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 閉区間 [min, max] にある場合 true, それ以外の場合は false | Returns true if the value is in the closed interval [min, max], false otherwise
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr bool InRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min));
+	constexpr bool InRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(min <= v) && noexcept(v <= max));
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -184,21 +189,24 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 値が開区間 (min, max) にあるかを返します。 | Returns true if the value is in the open interval (min, max).
+	/// @tparam Scalar 比較する値の型 | The type of the values to compare
 	/// @param v 比較する値 | A value to compare
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 開区間 (min, max) にある場合 true, それ以外の場合は false | Returns true if the value is in the open interval (min, max), false otherwise
+	template <Concept::Scalar Scalar>
 	[[nodiscard]]
-	constexpr bool InOpenRange(Concept::Scalar auto v, Concept::Scalar auto min, Concept::Scalar auto max) noexcept;
+	constexpr bool InOpenRange(Scalar v, Scalar min, Scalar max) noexcept;
 
 	/// @brief 値が開区間 (min, max) にあるかを返します。 | Returns true if the value is in the open interval (min, max).
+	/// @tparam Type 比較する値の型 | The type of the values to compare
 	/// @param v 比較する値 | A value to compare
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 開区間 (min, max) にある場合 true, それ以外の場合は false | Returns true if the value is in the open interval (min, max), false otherwise
 	template <class Type> requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min));
+	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(min < v) && noexcept(v < max));
 
 	////////////////////////////////////////////////////////////////
 	//

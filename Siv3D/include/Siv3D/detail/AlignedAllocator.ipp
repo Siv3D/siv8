@@ -19,12 +19,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type, size_t Alignment>	
-	Type* AlignedAllocator<Type, Alignment>::allocate(const size_t n)
+	template <class Type, size_t Alignment>
+	Type* AlignedAllocator<Type, Alignment>::allocate(const size_type n)
 	{   
-		const size_t size = (n * sizeof(Type));
+		const size_type size = (n * sizeof(Type));
 
-		size_t padding = 0;
+		size_type padding = 0;
 
 		if (size % alignment)
 		{
@@ -48,7 +48,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, size_t Alignment>	
-	void AlignedAllocator<Type, Alignment>::deallocate(Type* const p, const size_t) noexcept
+	void AlignedAllocator<Type, Alignment>::deallocate(Type* const p, const size_type) noexcept
 	{
 		AlignedFree(p, alignment);
 	}
