@@ -63,7 +63,7 @@ namespace s3d
 
 		/// @brief 指定されたパスのファイルまたはディレクトリが存在するかを返します。
 		/// @param path パス
-		/// @return 指定されたパスのファイルまたはディレクトリが存在場合 true, それ以外の場合は false
+		/// @return 指定されたパスのファイルまたはディレクトリが存在する場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool Exists(FilePathView path);
 
@@ -247,7 +247,7 @@ namespace s3d
 		/// @param path パス
 		/// @return ファイルやディレクトリのサイズ
 		[[nodiscard]]
-		size_t Size(FilePathView path);
+		uint64 Size(FilePathView path);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -261,7 +261,7 @@ namespace s3d
 		/// @remark ファイルが存在しなかったり、空である場合は 0 を返します。
 		/// @return ファイルのサイズ
 		[[nodiscard]]
-		size_t FileSize(FilePathView path);
+		uint64 FileSize(FilePathView path);
 
 		////////////////////////////////////////////////////////////////
 		//

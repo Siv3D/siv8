@@ -163,6 +163,8 @@
 # include <Siv3D/StringRandom.hpp>
 # include <Siv3D/StringAlgorithm.hpp>
 
+# include <Siv3D/NaturalSort.hpp>
+
 // Unicode | Unicode
 # include <Siv3D/Unicode.hpp>
 

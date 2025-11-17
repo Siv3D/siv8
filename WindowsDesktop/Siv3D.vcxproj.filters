@@ -1144,6 +1144,9 @@
     <Filter Include="include\Siv3D\SimpleGUI">
       <UniqueIdentifier>{d6c7622b-6b14-4c89-af26-325ec50bbd88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\NaturalSort">
+      <UniqueIdentifier>{89281b28-df21-449e-baf5-102b18e746e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4695,6 +4698,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleHueSlider.ipp">
       <Filter>include\Siv3D\SimpleGUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7393,6 +7399,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SimpleHueSlider.cpp">
       <Filter>src\Siv3D\SimpleGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\NaturalSort\SivNaturalSort.cpp">
+      <Filter>src\Siv3D\NaturalSort</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
