@@ -1599,6 +1599,7 @@
 # include <Siv3D/ScreenCapture.hpp> // ToDo
 
 
+# include <Siv3D/NativeShare.hpp>
 
 //////////////////////////////////////////////////
 //

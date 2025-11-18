@@ -149,6 +149,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Print.hpp" />
@@ -659,6 +660,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare\CNativeShare.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\BatchInfo2D.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11Renderer2DCommand.hpp" />
@@ -756,6 +758,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\NativeShare\INativeShare.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.hpp" />
@@ -1226,6 +1229,7 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo\SivMonitorInfo_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare\CNativeShare.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11Renderer2DCommandManager.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11VertexBufferManager2D.cpp" />
@@ -1442,6 +1446,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mouse\SivMouse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSAASampleCount\SivMSAASampleCount.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSL\SivMSL.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\NativeShareFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\SivNativeShare.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NaturalSort\SivNaturalSort.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBoolExtended\SivParseBoolExtended.cpp" />

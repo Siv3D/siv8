@@ -1147,6 +1147,12 @@
     <Filter Include="src\Siv3D\NaturalSort">
       <UniqueIdentifier>{89281b28-df21-449e-baf5-102b18e746e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare">
+      <UniqueIdentifier>{fe888fd1-7ac1-4778-b89f-73720df62156}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\NativeShare">
+      <UniqueIdentifier>{40e089ef-00a8-4dc4-870b-b5841e74d802}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4701,6 +4707,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare\CNativeShare.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\NativeShare\INativeShare.hpp">
+      <Filter>src\Siv3D\NativeShare</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7402,6 +7417,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\NaturalSort\SivNaturalSort.cpp">
       <Filter>src\Siv3D\NaturalSort</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare\CNativeShare.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\NativeShareFactory.cpp">
+      <Filter>src\Siv3D\NativeShare</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\SivNativeShare.cpp">
+      <Filter>src\Siv3D\NativeShare</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
