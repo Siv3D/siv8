@@ -773,8 +773,8 @@
 //// ランダムなサンプリング | Random sampling
 //# include <Siv3D/Sample.hpp>
 
-//// Improved Perlin ノイズ | Improved Perlin noise
-//# include <Siv3D/PerlinNoise.hpp>
+// Improved Perlin ノイズ | Improved Perlin noise
+# include <Siv3D/PerlinNoise.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
