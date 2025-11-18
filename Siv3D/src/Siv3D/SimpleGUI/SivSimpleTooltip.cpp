@@ -176,11 +176,16 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	update
+	//	updateBase, updateOverlay
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool SimpleTooltip::update()
+	bool SimpleTooltip::updateBase()
+	{
+		return false;
+	}
+
+	bool SimpleTooltip::updateOverlay()
 	{
 		const RectF rect = regionOverlay();
 		const MouseState oldMouseState = m_mouseState;

@@ -19,6 +19,18 @@ namespace s3d
 		, m_enabled{ enabled }
 		, m_theme{ theme } {}
 
+	inline bool ISimpleGUIElement::update(const SimpleGUILayer layer)
+	{
+		if (layer == SimpleGUILayer::Base)
+		{
+			return updateBase();
+		}
+		else
+		{
+			return updateOverlay();
+		}
+	}
+
 	inline void ISimpleGUIElement::draw(const SimpleGUILayer layer) const
 	{
 		if (layer == SimpleGUILayer::Base)
@@ -114,6 +126,11 @@ namespace s3d
 	constexpr Theme ISimpleGUIElement::getTheme() const noexcept
 	{
 		return m_theme;
+	}
+
+	inline bool ISimpleGUIElement::updateOverlay()
+	{
+		return false;
 	}
 
 	inline void ISimpleGUIElement::drawOverlay() const {}

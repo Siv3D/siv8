@@ -97,17 +97,17 @@ namespace s3d
 		[[nodiscard]]
 		virtual RectF region() const override;
 
+	protected:
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	update
+		//	updateBase
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 状態を更新します。
 		/// @return このフレームでボタンが押下された場合 true, それ以外は false
-		virtual bool update() override;
-
-	protected:
+		virtual bool updateBase() override;
 
 		////////////////////////////////////////////////////////////////
 		//

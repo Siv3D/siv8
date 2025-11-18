@@ -101,11 +101,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	update
+	//	updateBase
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool SimpleHueSlider::update()
+	bool SimpleHueSlider::updateBase()
 	{
 		const RectF rect = region();
 		const MouseState oldMouseState = m_mouseState;

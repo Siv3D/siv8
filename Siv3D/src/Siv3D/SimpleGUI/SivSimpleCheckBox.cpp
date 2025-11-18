@@ -150,11 +150,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	update
+	//	updateBase
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool SimpleCheckBox::update()
+	bool SimpleCheckBox::updateBase()
 	{
 		const RectF rect = region();
 		const MouseState oldMouseState = m_mouseState;

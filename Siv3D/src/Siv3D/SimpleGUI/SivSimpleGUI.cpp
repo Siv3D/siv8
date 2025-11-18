@@ -77,7 +77,12 @@ namespace s3d
 		{
 			SimpleButton button{ text, pos, anchor, width, enabled, theme };
 			
-			const bool result = button.update();
+			bool result = false;
+
+			for (const auto layer : SimpleGUI::AllLayers)
+			{
+				result |= button.update(layer);
+			}
 
 			for (const auto layer : SimpleGUI::AllLayers)
 			{
@@ -122,7 +127,13 @@ namespace s3d
 		{
 			SimpleCheckBox checkBox{ checked, text, pos, anchor, width, enabled, theme };
 			
-			const bool result = checkBox.update();
+			bool result = false;
+
+			for (const auto layer : SimpleGUI::AllLayers)
+			{
+				result |= checkBox.update(layer);
+			}
+
 			checked = checkBox.isChecked();
 
 			for (const auto layer : SimpleGUI::AllLayers)

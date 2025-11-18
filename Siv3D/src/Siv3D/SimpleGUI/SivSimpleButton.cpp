@@ -112,11 +112,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	update
+	//	updateBase
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool SimpleButton::update()
+	bool SimpleButton::updateBase()
 	{
 		const RectF rect = region();
 		const MouseState oldMouseState = m_mouseState;
