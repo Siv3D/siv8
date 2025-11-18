@@ -14,6 +14,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Image.hpp>
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/CacheDirectory/CacheDirectory.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 # include <winrt/Windows.Storage.h>
@@ -37,10 +38,7 @@ namespace s3d
 			}
 		}
 
-		if (FileSystem::Exists(m_imagePath))
-		{
-			FileSystem::Remove(m_imagePath);
-		}
+		FileSystem::Remove(m_imageCachePath);
 	}
 
 	void CNativeShare::init()
@@ -58,17 +56,15 @@ namespace s3d
 			{ this, &CNativeShare::onDataRequested }
 		);
 
-		m_imagePath = (FileSystem::TemporaryDirectoryPath() + U"Siv3D/NativeShare/image.png");
+		// キャッシュ画像ファイルのパスを設定
+		m_imageCachePath = (CacheDirectory::Temporary() + U"NativeShare/image.png");
 	}
 
 	bool CNativeShare::show(const Image& image)
 	{
-		if (FileSystem::Exists(m_imagePath))
-		{
-			FileSystem::Remove(m_imagePath);
-		}
+		FileSystem::Remove(m_imageCachePath);
 
-		if (not image.save(m_imagePath))
+		if (not image.save(m_imageCachePath))
 		{
 			return false;
 		}
@@ -85,7 +81,7 @@ namespace s3d
 	{
 		auto request = args.Request();
 		auto deferral = request.GetDeferral();
-		auto fileOp = StorageFile::GetFileFromPathAsync(FileSystem::NativePath(m_imagePath));
+		auto fileOp = StorageFile::GetFileFromPathAsync(FileSystem::NativePath(m_imageCachePath));
 		fileOp.Completed([request, deferral](auto asyncInfo, auto asyncStatus)
 			{
 				if (asyncStatus == AsyncStatus::Completed)

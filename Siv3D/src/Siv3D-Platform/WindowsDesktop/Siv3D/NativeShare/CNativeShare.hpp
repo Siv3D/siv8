@@ -44,7 +44,7 @@ namespace s3d
 
 		winrt::event_token m_dataRequestedToken;
 
-		FilePath m_imagePath;
+		FilePath m_imageCachePath;
 
 		void onDataRequested(const DataTransferManager&, const DataRequestedEventArgs& args);
 	};

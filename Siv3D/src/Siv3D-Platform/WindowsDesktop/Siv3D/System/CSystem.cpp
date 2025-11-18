@@ -35,6 +35,8 @@
 # include <Siv3D/Print/IPrint.hpp>
 # include <Siv3D/NativeShare/INativeShare.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/FileSystem.hpp>
+# include <Siv3D/CacheDirectory/CacheDirectory.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -48,6 +50,7 @@ namespace s3d
 	CSystem::~CSystem()
 	{
 		LOG_SCOPED_DEBUG("CSystem::~CSystem()");
+		FileSystem::Remove(CacheDirectory::Temporary());
 	}
 
 	////////////////////////////////////////////////////////////////
