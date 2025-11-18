@@ -37,6 +37,6 @@ namespace s3d
 		
 		NSWindow* m_window = nullptr;
 
-		FilePath m_imagePath;
+		FilePath m_imageCachePath;
 	};
 }

@@ -15,6 +15,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Image.hpp>
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/CacheDirectory/CacheDirectory.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -23,10 +24,7 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CNativeShare::~CNativeShare()");
 
-		if (FileSystem::Exists(m_imagePath))
-		{
-			FileSystem::Remove(m_imagePath);
-		}
+		FileSystem::Remove(m_imageCachePath);
 	}
 
 	void CNativeShare::init()
@@ -36,17 +34,14 @@ namespace s3d
 		GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 		m_window = ::glfwGetCocoaWindow(glfwWindow);
 
-		m_imagePath = (FileSystem::TemporaryDirectoryPath() + U"Siv3D/NativeShare/image.png");
+		m_imageCachePath = (CacheDirectory::Temporary() + U"NativeShare/image.png");
 	}
 
 	bool CNativeShare::show(const Image& image)
 	{
-		if (FileSystem::Exists(m_imagePath))
-		{
-			FileSystem::Remove(m_imagePath);
-		}
+		FileSystem::Remove(m_imageCachePath);
 
-		if (not image.save(m_imagePath))
+		if (not image.save(m_imageCachePath))
 		{
 			return false;
 		}
@@ -54,7 +49,7 @@ namespace s3d
 		@autoreleasepool
 		{
 			// ファイルパスを NSURL に変換
-			NSString* nsPath = [NSString stringWithUTF8String:m_imagePath.toUTF8().c_str()];
+			NSString* nsPath = [NSString stringWithUTF8String:m_imageCachePath.toUTF8().c_str()];
 			NSURL* fileURL = [NSURL fileURLWithPath:nsPath];
 			
 			// ファイルの存在確認
