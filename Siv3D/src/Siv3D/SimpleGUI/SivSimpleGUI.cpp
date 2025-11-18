@@ -129,22 +129,32 @@ namespace s3d
 
 		void ProgressBar(const double progress, const Vec2& pos, const Theme theme)
 		{
-			return ProgressBar(progress, pos, Anchor::TopLeft, SimpleProgressBar::DefaultWidth, theme);
+			return ProgressBar(progress, pos, Anchor::TopLeft, SimpleProgressBar::DefaultWidth, true, theme);
 		}
 
 		void ProgressBar(const double progress, const Vec2& pos, const double width, const Theme theme)
 		{
-			return ProgressBar(progress, pos, Anchor::TopLeft, width, theme);
+			return ProgressBar(progress, pos, Anchor::TopLeft, width, true, theme);
+		}
+
+		void ProgressBar(const double progress, const Vec2& pos, const double width, const bool enabled, const Theme theme)
+		{
+			return ProgressBar(progress, pos, Anchor::TopLeft, width, enabled, theme);
 		}
 
 		void ProgressBar(const double progress, const Vec2& pos, const Anchor anchor, const Theme theme)
 		{
-			return ProgressBar(progress, pos, anchor, SimpleProgressBar::DefaultWidth, theme);
+			return ProgressBar(progress, pos, anchor, SimpleProgressBar::DefaultWidth, true, theme);
 		}
 
 		void ProgressBar(const double progress, const Vec2& pos, const Anchor anchor, const double width, const Theme theme)
 		{
-			SimpleProgressBar{ progress, pos, anchor, width, theme }.draw();
+			return ProgressBar(progress, pos, anchor, width, true, theme);
+		}
+
+		void ProgressBar(const double progress, const Vec2& pos, const Anchor anchor, const double width, const bool enabled, const Theme theme)
+		{
+			SimpleProgressBar{ progress, pos, anchor, width, enabled, theme }.draw();
 		}
 	}
 }

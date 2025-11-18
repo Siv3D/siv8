@@ -58,6 +58,9 @@ namespace s3d
 		bool Button(StringView text, const Vec2& pos, Theme theme = Theme::Light);
 
 		[[nodiscard]]
+		bool Button(StringView text, const Vec2& pos, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
+		[[nodiscard]]
 		bool Button(StringView text, const Vec2& pos, const Optional<double>& width, Theme theme = Theme::Light);
 
 		[[nodiscard]]
@@ -67,16 +70,13 @@ namespace s3d
 		bool Button(StringView text, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
 		[[nodiscard]]
+		bool Button(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
+		[[nodiscard]]
 		bool Button(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, Theme theme = Theme::Light);
 
 		[[nodiscard]]
 		bool Button(StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, bool enabled, Theme theme = Theme::Light);
-
-		/// @brief 誤用防止用
-		bool Button(StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light) = delete;
-
-		/// @brief 誤用防止用
-		bool Button(StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light) = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -86,23 +86,19 @@ namespace s3d
 
 		bool CheckBox(bool& checked, StringView text, const Vec2& pos, Theme theme = Theme::Light);
 
+		bool CheckBox(bool& checked, StringView text, const Vec2& pos, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
 		bool CheckBox(bool& checked, StringView text, const Vec2& pos, const Optional<double>& width, Theme theme = Theme::Light);
 
 		bool CheckBox(bool& checked, StringView text, const Vec2& pos, const Optional<double>& width, bool enabled, Theme theme = Theme::Light);
 
 		bool CheckBox(bool& checked, StringView text, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
+		bool CheckBox(bool& checked, StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
 		bool CheckBox(bool& checked, StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, Theme theme = Theme::Light);
 
 		bool CheckBox(bool& checked, StringView text, const Vec2& pos, Anchor anchor, const Optional<double>& width, bool enabled, Theme theme = Theme::Light);
-
-		/// @brief 誤用防止用
-		bool CheckBox(bool& checked, StringView text, const Vec2& pos, Concept::ExactlyBool auto param, Theme theme = Theme::Light) = delete;
-
-		/// @brief 誤用防止用
-		bool CheckBox(bool& checked, StringView text, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto param, bool enabled = true, Theme theme = Theme::Light) = delete;
-
-
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -112,19 +108,35 @@ namespace s3d
 
 		void ProgressBar(double progress, const Vec2& pos, Theme theme = Theme::Light);
 
+		void ProgressBar(double progress, const Vec2& pos, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
 		void ProgressBar(double progress, const Vec2& pos, double width, Theme theme = Theme::Light);
+
+		void ProgressBar(double progress, const Vec2& pos, double width, bool enabled, Theme theme = Theme::Light);
 
 		void ProgressBar(double progress, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
+		void ProgressBar(double progress, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
 		void ProgressBar(double progress, const Vec2& pos, Anchor anchor, double width, Theme theme = Theme::Light);
+
+		void ProgressBar(double progress, const Vec2& pos, Anchor anchor, double width, bool enabled, Theme theme = Theme::Light);
 
 		void ProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Theme theme = Theme::Light);
 
+		void ProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
 		void ProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, double width, Theme theme = Theme::Light);
+
+		void ProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, double width, bool enabled, Theme theme = Theme::Light);
 
 		void ProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, Theme theme = Theme::Light);
 
+		void ProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, Concept::ExactlyBool auto enabled, Theme theme = Theme::Light);
+
 		void ProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, double width, Theme theme = Theme::Light);
+
+		void ProgressBar(Concept::Arithmetic auto current, Concept::Arithmetic auto total, const Vec2& pos, Anchor anchor, double width, bool enabled, Theme theme = Theme::Light);
 	}
 }
 
