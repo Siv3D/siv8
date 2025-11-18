@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -12,6 +12,12 @@
 # pragma once
 # include <Siv3D/String.hpp>
 # include <Siv3D/NativeShare/INativeShare.hpp>
+
+# ifdef __OBJC__
+	@class NSWindow;
+# else
+	typedef struct objc_object NSWindow;
+# endif
 
 namespace s3d
 {
@@ -28,6 +34,8 @@ namespace s3d
 		bool show(const Image& image) override;
 
 	private:
+		
+		NSWindow* m_window = nullptr;
 
 		FilePath m_imagePath;
 	};
