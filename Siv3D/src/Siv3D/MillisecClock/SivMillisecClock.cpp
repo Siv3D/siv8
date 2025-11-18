@@ -13,7 +13,7 @@
 # include <Siv3D/Duration.hpp>
 # include <Siv3D/Logger.hpp>
 # include <Siv3D/Console.hpp>
-//# include <Siv3D/Print.hpp>
+# include <Siv3D/Print.hpp>
 
 namespace s3d
 {
@@ -45,8 +45,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//void MillisecClock::print() const
-	//{
-	//	Print(Milliseconds{ ms() });
-	//}
+	void MillisecClock::print() const
+	{
+		Print(Milliseconds{ ms() });
+	}
 }
