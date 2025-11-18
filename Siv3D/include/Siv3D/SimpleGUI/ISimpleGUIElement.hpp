@@ -16,6 +16,7 @@
 # include "../Theme.hpp"
 # include "../Cursor.hpp"
 # include "../2DShapes.hpp"
+# include "SimpleGUILayer.hpp"
 
 namespace s3d
 {
@@ -33,9 +34,7 @@ namespace s3d
 
 		virtual bool update() = 0;
 
-		virtual void draw() const = 0;
-
-		virtual void drawOverlay() const;
+		void draw(SimpleGUILayer layer) const;
 
 		virtual void show();
 
@@ -44,14 +43,6 @@ namespace s3d
 		virtual bool isHovered() const noexcept;
 
 		virtual bool isPressed() const noexcept;
-
-		virtual void onMouseEnter();
-
-		virtual void onMouseLeave();
-
-		virtual void onMouseDown();
-
-		virtual void onMouseUp();
 
 		template <class Self>
 		constexpr Self& setPos(this Self& self, const Vec2& pos) noexcept;
@@ -85,6 +76,10 @@ namespace s3d
 
 	protected:
 
+		virtual void drawBase() const = 0;
+
+		virtual void drawOverlay() const;
+
 		template <class Self>
 		constexpr Self& setDirty(this Self& self) noexcept;
 
@@ -93,6 +88,14 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr bool isDirty() const noexcept;
+
+		virtual void onMouseEnter();
+
+		virtual void onMouseLeave();
+
+		virtual void onMouseDown();
+
+		virtual void onMouseUp();
 
 	private:
 

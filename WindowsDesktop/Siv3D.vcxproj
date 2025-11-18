@@ -524,6 +524,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleCheckBox.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleCheckBox.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleDismissibleTooltip.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleGUILayer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleHueSlider.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleHueSlider.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleProgressBar.hpp" />

@@ -76,8 +76,14 @@ namespace s3d
 		bool Button(const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const bool enabled, const Theme theme)
 		{
 			SimpleButton button{ text, pos, anchor, width, enabled, theme };
+			
 			const bool result = button.update();
-			button.draw();
+
+			for (const auto layer : SimpleGUI::AllLayers)
+			{
+				button.draw(layer);
+			}
+
 			return result;
 		}
 
@@ -115,9 +121,15 @@ namespace s3d
 		bool CheckBox(bool& checked, const StringView text, const Vec2& pos, const Anchor anchor, const Optional<double>& width, const bool enabled, const Theme theme)
 		{
 			SimpleCheckBox checkBox{ checked, text, pos, anchor, width, enabled, theme };
+			
 			const bool result = checkBox.update();
 			checked = checkBox.isChecked();
-			checkBox.draw();
+
+			for (const auto layer : SimpleGUI::AllLayers)
+			{
+				checkBox.draw(layer);
+			}
+
 			return result;
 		}
 
@@ -154,7 +166,12 @@ namespace s3d
 
 		void ProgressBar(const double progress, const Vec2& pos, const Anchor anchor, const double width, const bool enabled, const Theme theme)
 		{
-			SimpleProgressBar{ progress, pos, anchor, width, enabled, theme }.draw();
+			const SimpleProgressBar progressBar{ progress, pos, anchor, width, enabled, theme };
+
+			for (const auto layer : SimpleGUI::AllLayers)
+			{
+				progressBar.draw(layer);
+			}
 		}
 	}
 }

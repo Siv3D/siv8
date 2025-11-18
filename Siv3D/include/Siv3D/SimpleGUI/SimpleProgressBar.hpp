@@ -134,13 +134,15 @@ namespace s3d
 
 		virtual bool update() override;
 
+	protected:
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	draw
+		//	drawBase
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual void draw() const override;
+		virtual void drawBase() const override;
 
 	private:
 

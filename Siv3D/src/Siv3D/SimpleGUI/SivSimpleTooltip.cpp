@@ -195,11 +195,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	draw, drawOverlay
+	//	drawBase, drawOverlay
 	//
 	////////////////////////////////////////////////////////////////
 
-	void SimpleTooltip::draw() const {}
+	void SimpleTooltip::drawBase() const {}
 
 	void SimpleTooltip::drawOverlay() const
 	{

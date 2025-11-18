@@ -19,7 +19,17 @@ namespace s3d
 		, m_enabled{ enabled }
 		, m_theme{ theme } {}
 
-	inline void ISimpleGUIElement::drawOverlay() const {}
+	inline void ISimpleGUIElement::draw(const SimpleGUILayer layer) const
+	{
+		if (layer == SimpleGUILayer::Base)
+		{
+			drawBase();
+		}
+		else
+		{
+			drawOverlay();
+		}
+	}
 
 	inline void ISimpleGUIElement::show()
 	{
@@ -39,26 +49,6 @@ namespace s3d
 	inline bool ISimpleGUIElement::isPressed() const noexcept
 	{
 		return m_mouseState.pressed;
-	}
-
-	inline void ISimpleGUIElement::onMouseEnter()
-	{
-
-	}
-
-	inline void ISimpleGUIElement::onMouseLeave()
-	{
-
-	}
-
-	inline void ISimpleGUIElement::onMouseDown()
-	{
-
-	}
-
-	inline void ISimpleGUIElement::onMouseUp()
-	{
-
 	}
 
 	template <class Self>
@@ -126,6 +116,8 @@ namespace s3d
 		return m_theme;
 	}
 
+	inline void ISimpleGUIElement::drawOverlay() const {}
+
 	template <class Self>
 	constexpr Self& ISimpleGUIElement::setDirty(this Self& self) noexcept
 	{
@@ -144,6 +136,14 @@ namespace s3d
 	{
 		return m_isDirty;
 	}
+
+	inline void ISimpleGUIElement::onMouseEnter() {}
+
+	inline void ISimpleGUIElement::onMouseLeave() {}
+
+	inline void ISimpleGUIElement::onMouseDown() {}
+
+	inline void ISimpleGUIElement::onMouseUp() {}
 
 	inline void ISimpleGUIElement::updateMouseEvent(const MouseState& oldState, const MouseState& newState)
 	{

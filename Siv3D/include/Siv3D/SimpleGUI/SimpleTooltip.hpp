@@ -108,17 +108,17 @@ namespace s3d
 
 		virtual bool update() override;
 
+	protected:
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	draw, drawOverlay
+		//	drawBase, drawOverlay
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual void draw() const override;
+		virtual void drawBase() const override;
 
 		virtual void drawOverlay() const override;
-
-	protected:
 
 		Array<DrawableText> m_drawableTexts;
 
