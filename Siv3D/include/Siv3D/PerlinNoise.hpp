@@ -12,6 +12,7 @@
 # pragma once
 # include <array>
 # include <cmath>
+# include <numeric>
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "PointVector.hpp"

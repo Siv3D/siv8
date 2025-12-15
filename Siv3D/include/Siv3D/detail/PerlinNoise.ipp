@@ -62,7 +62,7 @@ namespace s3d
 	template <Concept::FloatingPoint Float>
 	void BasicPerlinNoise<Float>::reseed(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		std::ranges::iota(m_perm, static_cast<uint8>(0));
+		std::iota(m_perm.begin(), m_perm.end(), static_cast<uint8>(0));
 		Shuffle(m_perm.begin(), m_perm.end(), std::forward<decltype(urbg)>(urbg));
 	}
 

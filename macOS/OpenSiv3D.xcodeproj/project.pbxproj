@@ -2467,6 +2467,9 @@
 		F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABB2BCFBB53006A4C0F /* SkBBHFactory.h */; };
 		F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABC2BCFBB53006A4C0F /* SkBitmap.h */; };
 		F986FFFF2BCFBB53006A4C0F /* SkBlender.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABD2BCFBB53006A4C0F /* SkBlender.h */; };
+		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
+		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
+		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
 		F9AEA4F82E6B3E27003734E7 /* Print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F62E6B3E27003734E7 /* Print.hpp */; };
 		F9AEA4F92E6B3E27003734E7 /* PrintBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */; };
 		F9AEA4FC2E6B3E48003734E7 /* Print.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4FA2E6B3E48003734E7 /* Print.ipp */; };
@@ -5260,6 +5263,9 @@
 		F986FFDA2BCFBB53006A4C0F /* SkPatchUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkPatchUtils.cpp; sourceTree = "<group>"; };
 		F986FFE22BCFBB53006A4C0F /* SkShadowUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkShadowUtils.cpp; sourceTree = "<group>"; };
 		F986FFE52BCFBB53006A4C0F /* SkTextUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkTextUtils.cpp; sourceTree = "<group>"; };
+		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
+		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
+		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
 		F9AEA4F62E6B3E27003734E7 /* Print.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.hpp; sourceTree = "<group>"; };
 		F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PrintBuffer.hpp; sourceTree = "<group>"; };
 		F9AEA4FA2E6B3E48003734E7 /* Print.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.ipp; sourceTree = "<group>"; };
@@ -6213,6 +6219,7 @@
 				F9070B952B9F175000383E4D /* ParseInt.ipp */,
 				F9070B962B9F175000383E4D /* PCG64.ipp */,
 				F9E7944E2C197417002615BA /* Periodic.ipp */,
+				F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */,
 				F9070B972B9F175000383E4D /* Point.ipp */,
 				F9528B982BBC76EA00222F45 /* Point3D.ipp */,
 				F9F00A4C2CD2993F0097C165 /* PointsPerCircle.ipp */,
@@ -6520,6 +6527,7 @@
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
 				F9E794472C1973FC002615BA /* Periodic.hpp */,
+				F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */,
 				F944BAA92CEACF4300CC4D42 /* Pipe.hpp */,
 				F934BD6E2BF880330003EAD5 /* PixelShader.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
@@ -9065,17 +9073,18 @@
 			isa = PBXGroup;
 			children = (
 				F981119D2EC8C6CA00C50DD1 /* ISimpleGUIElement.hpp */,
-				F981119E2EC8C6CA00C50DD1 /* ISimpleGUIElement.ipp */,
 				F981119F2EC8C6CA00C50DD1 /* SimpleButton.hpp */,
-				F98111A02EC8C6CA00C50DD1 /* SimpleButton.ipp */,
 				F98111A12EC8C6CA00C50DD1 /* SimpleCheckBox.hpp */,
-				F98111A22EC8C6CA00C50DD1 /* SimpleCheckBox.ipp */,
 				F98111A32EC8C6CA00C50DD1 /* SimpleDismissibleTooltip.hpp */,
+				F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */,
 				F98111A42EC8C6CA00C50DD1 /* SimpleHueSlider.hpp */,
-				F98111A52EC8C6CA00C50DD1 /* SimpleHueSlider.ipp */,
 				F98111A62EC8C6CA00C50DD1 /* SimpleProgressBar.hpp */,
-				F98111A72EC8C6CA00C50DD1 /* SimpleProgressBar.ipp */,
 				F98111A82EC8C6CA00C50DD1 /* SimpleTooltip.hpp */,
+				F981119E2EC8C6CA00C50DD1 /* ISimpleGUIElement.ipp */,
+				F98111A02EC8C6CA00C50DD1 /* SimpleButton.ipp */,
+				F98111A22EC8C6CA00C50DD1 /* SimpleCheckBox.ipp */,
+				F98111A52EC8C6CA00C50DD1 /* SimpleHueSlider.ipp */,
+				F98111A72EC8C6CA00C50DD1 /* SimpleProgressBar.ipp */,
 				F98111A92EC8C6CA00C50DD1 /* SimpleTooltip.ipp */,
 			);
 			path = SimpleGUI;
@@ -11749,6 +11758,7 @@
 				F986059A2BE3314D006A4C0F /* CCursorStyle.hpp in Headers */,
 				F986FA6E2BCFB53B006A4C0F /* svginterface.h in Headers */,
 				F986004F2BCFBB53006A4C0F /* SkUnPreMultiply.h in Headers */,
+				F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */,
 				F986F8B22BC806DB006A4C0F /* exif.h in Headers */,
 				F98603812BCFBB54006A4C0F /* SkOTTable_maxp.h in Headers */,
 				F9070CCD2B9F175100383E4D /* Int128.hpp in Headers */,
@@ -12475,6 +12485,7 @@
 				F986042A2BCFBB54006A4C0F /* SkSLPoison.h in Headers */,
 				F986FA622BCFB53B006A4C0F /* ftmemory.h in Headers */,
 				F98602322BCFBB54006A4C0F /* SkRasterClip.h in Headers */,
+				F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */,
 				F98604392BCFBB54006A4C0F /* SkSLSwitchCase.h in Headers */,
 				F96F96032C359ED90033353E /* morton_common.h in Headers */,
 				F9070DFB2B9F175E00383E4D /* IUserAction.hpp in Headers */,
@@ -12711,6 +12722,7 @@
 				F9FD0B992D1D334700A584CE /* MTLFunctionHandle.hpp in Headers */,
 				F9FD0B9A2D1D334700A584CE /* MTLRenderCommandEncoder.hpp in Headers */,
 				F9FD0B9B2D1D334700A584CE /* MTLCaptureManager.hpp in Headers */,
+				F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */,
 				F9FD0B9C2D1D334700A584CE /* MTLSampler.hpp in Headers */,
 				F9FD0B9D2D1D334700A584CE /* MTLCommandEncoder.hpp in Headers */,
 				F9FD0B9E2D1D334700A584CE /* MTLAccelerationStructure.hpp in Headers */,
