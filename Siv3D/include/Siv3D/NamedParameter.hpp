@@ -12,7 +12,8 @@
 # pragma once
 # include <memory>		// std::addressof
 # include <tuple>		// std::make_from_tuple
-# include <type_traits>	// std::is_convertible_v, std::is_constructible_v, std::decay_t
+# include <concepts>	// std::convertible_to, std::constructible_from
+# include <type_traits>	// std::decay_t
 # include <utility>		// std::forward
 
 namespace s3d
@@ -35,17 +36,21 @@ namespace s3d
 		NamedParameter() = default;
 
 		[[nodiscard]]
-		constexpr NamedParameter(const Type& value)
+		constexpr NamedParameter(const Type& value) noexcept(std::is_nothrow_copy_constructible_v<Type>)
 			: m_value{ value } {}
 
+		[[nodiscard]]
+		constexpr NamedParameter(Type&& value) noexcept(std::is_nothrow_move_constructible_v<Type>)
+			: m_value{ std::move(value) } {}
+
 		template <class U>
-			requires std::is_convertible_v<U, Type>
+			requires std::convertible_to<U, Type>
 		[[nodiscard]]
 		constexpr NamedParameter(const NamedParameter<Tag, U>& other)
 			: m_value{ static_cast<Type>(other.value()) } {}
 
 		template <class... Args>
-			requires std::is_constructible_v<Type, Args...>
+			requires std::constructible_from<Type, Args...>
 		[[nodiscard]]
 		constexpr NamedParameter(const NamedParameter<Tag, std::tuple<Args...>>& tuple)
 			: m_value{ std::make_from_tuple<Type>(tuple.value()) } {}
@@ -70,12 +75,12 @@ namespace s3d
 
 	private:
 
-		Type m_value;
+		Type m_value{};
 	};
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	NameParameterHelper
+	//	NamedParameterHelper
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -87,16 +92,16 @@ namespace s3d
 
 		template <class Type>
 		[[nodiscard]]
-		constexpr NamedParameter<Tag, std::decay_t<Type>> operator =(Type&& value) const
+		constexpr named_argument_type<std::decay_t<Type>> operator =(Type&& value) const
 		{
-			return NamedParameter<Tag, std::decay_t<Type>>{ std::forward<Type>(value) };
+			return{ std::forward<Type>(value) };
 		}
 
 		template <class... Args>
 		[[nodiscard]]
-		constexpr NamedParameter<Tag, std::tuple<std::decay_t<Args>...>> operator ()(Args&&... args) const
+		constexpr named_argument_type<std::tuple<std::decay_t<Args>...>> operator ()(Args&&... args) const
 		{
-			return NamedParameter<Tag, std::tuple<std::decay_t<Args>...>>{ std::make_tuple(std::forward<Args>(args)...) };
+			return{ std::make_tuple(std::forward<Args>(args)...) };
 		}
 	};
 }

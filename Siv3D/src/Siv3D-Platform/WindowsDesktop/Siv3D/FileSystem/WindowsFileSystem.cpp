@@ -103,7 +103,7 @@ namespace s3d
 			return (::FindResourceW(::GetModuleHandleW(nullptr), Platform::Windows::ToResourceName(path).c_str(), L"FILE") != nullptr);
 		}
 
-		size_t ResourceSize(const FilePathView path)
+		uint64 ResourceSize(const FilePathView path)
 		{
 			HMODULE hModule = ::GetModuleHandleW(nullptr);
 
@@ -164,7 +164,7 @@ namespace s3d
 			return path;
 		}
 
-		int64 DirectorySizeRecursive(const std::wstring& directoryPath)
+		uint64 DirectorySizeRecursive(const std::wstring& directoryPath)
 		{
 			assert(directoryPath.ends_with(L'/'));
 
@@ -176,7 +176,7 @@ namespace s3d
 				return 0;
 			}
 
-			int64 result = 0;
+			uint64 result = 0;
 
 			do
 			{

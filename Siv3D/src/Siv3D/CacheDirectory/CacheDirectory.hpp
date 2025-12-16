@@ -21,5 +21,8 @@ namespace s3d
 
 		[[nodiscard]]
 		FilePath Apps(StringView applicationName);
+
+		[[nodiscard]]
+		FilePath Temporary();
 	}
 }

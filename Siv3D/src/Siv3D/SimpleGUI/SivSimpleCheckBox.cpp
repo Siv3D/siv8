@@ -150,11 +150,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	update
+	//	updateBase
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool SimpleCheckBox::update()
+	bool SimpleCheckBox::updateBase()
 	{
 		const RectF rect = region();
 		const MouseState oldMouseState = m_mouseState;
@@ -171,11 +171,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	draw
+	//	drawBase
 	//
 	////////////////////////////////////////////////////////////////
 
-	void SimpleCheckBox::draw() const 
+	void SimpleCheckBox::drawBase() const
 	{
 		if (not isVisible())
 		{

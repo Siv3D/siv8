@@ -11,6 +11,7 @@
 
 # include <Siv3D/SpecialFolder.hpp>
 # include <Siv3D/String.hpp>
+# include <Siv3D/UUIDValue.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/StringViewAlgorithm.hpp>
 # include <Siv3D/FileSystem.hpp>
@@ -75,6 +76,23 @@ namespace s3d
 		{
 			FilePath path = FileSystem::GetFolderPath(SpecialFolder::LocalAppData);
 			path += U"Siv3DApps/" + GetUniqueID(applicationName) + U"/";
+			return path;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Temporary
+		//
+		////////////////////////////////////////////////////////////////
+
+		FilePath Temporary()
+		{
+			static const FilePath path = []()
+			{
+				FilePath tempPath = FileSystem::GetFolderPath(SpecialFolder::LocalAppData);
+				tempPath += (U"Siv3DApps/" + UUIDValue::Generate().str() + U"/");
+				return tempPath;
+			}();
 			return path;
 		}
 	}

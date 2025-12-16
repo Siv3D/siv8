@@ -158,7 +158,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		size_t Size(const FilePathView path)
+		uint64 Size(const FilePathView path)
 		{
 			if (not path)
 			{
@@ -179,7 +179,7 @@ namespace s3d
 			}
 			else if (S_ISDIR(s.st_mode))
 			{
-				size_t result = 0;
+				uint64 result = 0;
 
 				for (const auto& v : std::filesystem::recursive_directory_iterator(Unicode::ToUTF8(path)))
 				{
@@ -207,7 +207,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 	
-		size_t FileSize(const FilePathView path)
+		uint64 FileSize(const FilePathView path)
 		{
 			if (path.isEmpty())
 			{

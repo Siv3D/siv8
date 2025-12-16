@@ -190,7 +190,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		size_t Size(const FilePathView path)
+		uint64 Size(const FilePathView path)
 		{
 			if (path.isEmpty())
 			{
@@ -232,7 +232,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		size_t FileSize(const FilePathView path)
+		uint64 FileSize(const FilePathView path)
 		{
 			if (path.isEmpty())
 			{

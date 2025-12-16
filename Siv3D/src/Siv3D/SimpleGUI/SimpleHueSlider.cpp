@@ -101,11 +101,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	update
+	//	updateBase
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool SimpleHueSlider::update()
+	bool SimpleHueSlider::updateBase()
 	{
 		const RectF rect = region();
 		const MouseState oldMouseState = m_mouseState;
@@ -130,11 +130,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	draw
+	//	drawBase
 	//
 	////////////////////////////////////////////////////////////////
 
-	void SimpleHueSlider::draw() const
+	void SimpleHueSlider::drawBase() const
 	{
 		if (not isVisible())
 		{

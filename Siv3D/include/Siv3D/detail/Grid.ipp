@@ -16,7 +16,21 @@ namespace s3d
 	namespace detail
 	{
 		[[nodiscard]]
-		constexpr Size ValidGridSizeOrEmpty(const Size size) noexcept
+		constexpr Size CheckedSize(const size_t width, const size_t height) noexcept
+		{
+			if (static_cast<size_t>(std::numeric_limits<int32>::max() < width)
+				|| static_cast<size_t>(std::numeric_limits<int32>::max() < height))
+			{
+				return{ 0, 0 };
+			}
+			else
+			{
+				return{ static_cast<int32>(width), static_cast<int32>(height) };
+			}
+		}
+
+		[[nodiscard]]
+		constexpr Size CheckedSize(const Size size) noexcept
 		{
 			if ((size.x < 0) || (size.y < 0))
 			{
@@ -79,23 +93,23 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const size_type w, const size_type h)
-		: m_size{ w, h }
-		, m_container(w * h) {}
+		: m_size{ detail::CheckedSize(w, h) }
+		, m_container(m_size.area()) {}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const size_type w, const size_type h, const value_type& value)
-		: m_size{ w, h } 
-		, m_container((w * h), value) {}
+		: m_size{ detail::CheckedSize(w, h) }
+		, m_container(m_size.area(), value) {}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const Size size)
-		: m_size{ detail::ValidGridSizeOrEmpty(size) }
-		, m_container(m_size.x * m_size.y) {}
+		: m_size{ detail::CheckedSize(size) }
+		, m_container(m_size.area()) {}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const Size size, const value_type& value)
-		: m_size{ detail::ValidGridSizeOrEmpty(size) }
-		, m_container((m_size.x * m_size.y), value) {}
+		: m_size{ detail::CheckedSize(size) }
+		, m_container(m_size.area(), value) {}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const size_type w, const size_type h, const Array<value_type>& data)
@@ -107,7 +121,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const size_type w, const size_type h, Array<value_type>&& data)
-		: m_size{ w, h }
+		: m_size{ detail::CheckedSize(w, h) }
 		, m_container(std::move(data))
 	{
 		m_container.resize(w * h);
@@ -115,18 +129,18 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(Size size, const Array<value_type>& data)
-		: m_size{ detail::ValidGridSizeOrEmpty(size) }
+		: m_size{ detail::CheckedSize(size) }
 		, m_container(data)
 	{
-		m_container.resize(m_size.x * m_size.y);
+		m_container.resize(m_size.area());
 	}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(Size size, Array<value_type>&& data)
-		: m_size{ detail::ValidGridSizeOrEmpty(size) }
+		: m_size{ detail::CheckedSize(size) }
 		, m_container(std::move(data))
 	{
-		m_container.resize(m_size.x * m_size.y);
+		m_container.resize(m_size.area());
 	}
 
 	template <class Type, class Allocator>
@@ -157,8 +171,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const Size size, Arg::generator_<FunctionRef<value_type()>> generator)
-		: m_size{ detail::ValidGridSizeOrEmpty(size) }
-		, m_container(m_size.x * m_size.y)
+		: m_size{ detail::CheckedSize(size) }
+		, m_container(m_size.area())
 	{
 		const auto& f = *generator;
 
@@ -173,8 +187,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const Size size, Arg::generator_<FunctionRef<value_type(int32, int32)>> generator)
-		: m_size{ detail::ValidGridSizeOrEmpty(size) }
-		, m_container(m_size.x * m_size.y)
+		: m_size{ detail::CheckedSize(size) }
+		, m_container(m_size.area())
 	{
 		const auto& f = *generator;
 
@@ -191,8 +205,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const Size size, Arg::generator_<FunctionRef<value_type(Point)>> generator)
-		: m_size{ detail::ValidGridSizeOrEmpty(size) }
-		, m_container(m_size.x * m_size.y)
+		: m_size{ detail::CheckedSize(size) }
+		, m_container(m_size.area())
 	{
 		const auto& f = *generator;
 
@@ -216,15 +230,15 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::assign(const size_type w, const size_type h, const value_type& value)
 	{
-		m_size = { w, h };
-		m_container.assign((m_size.x * m_size.y), value);
+		m_size = detail::CheckedSize(w, h);
+		m_container.assign(m_size.area(), value);
 	}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::assign(const Size size, const value_type& value)
 	{
-		m_size = detail::ValidGridSizeOrEmpty(size);
-		m_container.assign((m_size.x * m_size.y), value);
+		m_size = detail::CheckedSize(size);
+		m_container.assign(m_size.area(), value);
 	}
 
 	template <class Type, class Allocator>
@@ -708,8 +722,8 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::reserve(const Size size)
 	{
-		const Size newSize = detail::ValidGridSizeOrEmpty(size);
-		m_container.reserve(newSize.x * newSize.y);
+		const Size newSize = detail::CheckedSize(size);
+		m_container.reserve(newSize.area());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1230,7 +1244,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::resizeWidth(const size_type w, const value_type& value)
 	{
-		const int32 newWidth = static_cast<int32>(w);
+		const int32 newWidth = detail::CheckedSize(w, m_size.y).x;
 
 		if (m_size.x == newWidth)
 		{
@@ -1269,8 +1283,8 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::resizeHeight(const size_type h, const value_type& value)
 	{
-		m_container.resize((m_size.x * h), value);
-		m_size.y = static_cast<int32>(h);
+		m_size = detail::CheckedSize(m_size.x, h);
+		m_container.resize(m_size.area(), value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1295,8 +1309,9 @@ namespace s3d
 	constexpr void Grid<Type, Allocator>::resize(const size_type w, const size_type h, const value_type& value)
 	{
 		const int32 oldHeight = m_size.y;
-		const int32 newWidth = static_cast<int32>(w);
-		const int32 newHeight = static_cast<int32>(h);
+		const Size newSize = detail::CheckedSize(w, h);
+		const int32 newWidth = newSize.x;
+		const int32 newHeight = newSize.y;
 
 		if ((newWidth == 0) || (newHeight == 0))
 		{

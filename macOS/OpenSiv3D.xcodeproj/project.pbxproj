@@ -670,7 +670,6 @@
 		F943AB4C2E2A2E4F001B4D43 /* any_invocable.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB022E2A2E4F001B4D43 /* any_invocable.h */; };
 		F943AB4D2E2A2E4F001B4D43 /* uniform_int_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB1F2E2A2E4F001B4D43 /* uniform_int_distribution.h */; };
 		F943AB4E2E2A2E4F001B4D43 /* wide_multiply.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB152E2A2E4F001B4D43 /* wide_multiply.h */; };
-		F943AB4F2E2A2E4F001B4D43 /* nullability_deprecated.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AAF12E2A2E4F001B4D43 /* nullability_deprecated.h */; };
 		F943AB502E2A2E4F001B4D43 /* compare.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB232E2A2E4F001B4D43 /* compare.h */; };
 		F943AB512E2A2E4F001B4D43 /* poisson_distribution.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB1E2E2A2E4F001B4D43 /* poisson_distribution.h */; };
 		F943AB522E2A2E4F001B4D43 /* generate_real.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB112E2A2E4F001B4D43 /* generate_real.h */; };
@@ -1108,6 +1107,14 @@
 		F98111C82EC8C77100C50DD1 /* SimpleProgressBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111C02EC8C77100C50DD1 /* SimpleProgressBar.cpp */; };
 		F98111C92EC8C77100C50DD1 /* SivSimpleButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111C12EC8C77100C50DD1 /* SivSimpleButton.cpp */; };
 		F98111CA2EC8C77100C50DD1 /* SivSimpleCheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111C22EC8C77100C50DD1 /* SivSimpleCheckBox.cpp */; };
+		F98111CC2ECC088400C50DD1 /* NaturalSort.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111CB2ECC088400C50DD1 /* NaturalSort.hpp */; };
+		F98111CE2ECC089300C50DD1 /* NativeShare.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111CD2ECC089300C50DD1 /* NativeShare.hpp */; };
+		F98111D12ECC08C200C50DD1 /* SivNaturalSort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111CF2ECC08C200C50DD1 /* SivNaturalSort.cpp */; };
+		F98111D62ECC08CA00C50DD1 /* NativeShareFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111D32ECC08CA00C50DD1 /* NativeShareFactory.cpp */; };
+		F98111D72ECC08CA00C50DD1 /* SivNativeShare.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F98111D42ECC08CA00C50DD1 /* SivNativeShare.cpp */; };
+		F98111D82ECC08CA00C50DD1 /* INativeShare.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111D22ECC08CA00C50DD1 /* INativeShare.hpp */; };
+		F98111DC2ECC08E300C50DD1 /* CNativeShare.mm in Sources */ = {isa = PBXBuildFile; fileRef = F98111DA2ECC08E300C50DD1 /* CNativeShare.mm */; };
+		F98111DD2ECC08E300C50DD1 /* CNativeShare.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98111D92ECC08E300C50DD1 /* CNativeShare.hpp */; };
 		F981F6DB2D1BDF9B009F6627 /* MetalSamplerState.mm in Sources */ = {isa = PBXBuildFile; fileRef = F981F6D92D1BDF9B009F6627 /* MetalSamplerState.mm */; };
 		F981F6DC2D1BDF9B009F6627 /* MetalSamplerState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F981F6D82D1BDF9B009F6627 /* MetalSamplerState.hpp */; };
 		F9838AD52BFF793C001EB6C5 /* SceneUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */; };
@@ -2460,6 +2467,9 @@
 		F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABB2BCFBB53006A4C0F /* SkBBHFactory.h */; };
 		F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABC2BCFBB53006A4C0F /* SkBitmap.h */; };
 		F986FFFF2BCFBB53006A4C0F /* SkBlender.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABD2BCFBB53006A4C0F /* SkBlender.h */; };
+		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
+		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
+		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
 		F9AEA4F82E6B3E27003734E7 /* Print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F62E6B3E27003734E7 /* Print.hpp */; };
 		F9AEA4F92E6B3E27003734E7 /* PrintBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */; };
 		F9AEA4FC2E6B3E48003734E7 /* Print.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4FA2E6B3E48003734E7 /* Print.ipp */; };
@@ -3381,7 +3391,6 @@
 		F943AAEC2E2A0B05001B4D43 /* TypefaceUtility.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TypefaceUtility.cpp; sourceTree = "<group>"; };
 		F943AAEF2E2A2E4F001B4D43 /* endian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = endian.h; sourceTree = "<group>"; };
 		F943AAF02E2A2E4F001B4D43 /* identity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = identity.h; sourceTree = "<group>"; };
-		F943AAF12E2A2E4F001B4D43 /* nullability_deprecated.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nullability_deprecated.h; sourceTree = "<group>"; };
 		F943AAF22E2A2E4F001B4D43 /* unaligned_access.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unaligned_access.h; sourceTree = "<group>"; };
 		F943AAF42E2A2E4F001B4D43 /* attributes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
 		F943AAF52E2A2E4F001B4D43 /* casts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = casts.h; sourceTree = "<group>"; };
@@ -3883,6 +3892,14 @@
 		F98111C22EC8C77100C50DD1 /* SivSimpleCheckBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimpleCheckBox.cpp; sourceTree = "<group>"; };
 		F98111C32EC8C77100C50DD1 /* SivSimpleDismissibleTooltip.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimpleDismissibleTooltip.cpp; sourceTree = "<group>"; };
 		F98111C42EC8C77100C50DD1 /* SivSimpleTooltip.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimpleTooltip.cpp; sourceTree = "<group>"; };
+		F98111CB2ECC088400C50DD1 /* NaturalSort.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NaturalSort.hpp; sourceTree = "<group>"; };
+		F98111CD2ECC089300C50DD1 /* NativeShare.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NativeShare.hpp; sourceTree = "<group>"; };
+		F98111CF2ECC08C200C50DD1 /* SivNaturalSort.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivNaturalSort.cpp; sourceTree = "<group>"; };
+		F98111D22ECC08CA00C50DD1 /* INativeShare.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = INativeShare.hpp; sourceTree = "<group>"; };
+		F98111D32ECC08CA00C50DD1 /* NativeShareFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NativeShareFactory.cpp; sourceTree = "<group>"; };
+		F98111D42ECC08CA00C50DD1 /* SivNativeShare.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivNativeShare.cpp; sourceTree = "<group>"; };
+		F98111D92ECC08E300C50DD1 /* CNativeShare.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CNativeShare.hpp; sourceTree = "<group>"; };
+		F98111DA2ECC08E300C50DD1 /* CNativeShare.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CNativeShare.mm; sourceTree = "<group>"; };
 		F981F6D82D1BDF9B009F6627 /* MetalSamplerState.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetalSamplerState.hpp; sourceTree = "<group>"; };
 		F981F6D92D1BDF9B009F6627 /* MetalSamplerState.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalSamplerState.mm; sourceTree = "<group>"; };
 		F9838AD32BFF793C001EB6C5 /* SceneUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneUtility.hpp; sourceTree = "<group>"; };
@@ -5246,6 +5263,9 @@
 		F986FFDA2BCFBB53006A4C0F /* SkPatchUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkPatchUtils.cpp; sourceTree = "<group>"; };
 		F986FFE22BCFBB53006A4C0F /* SkShadowUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkShadowUtils.cpp; sourceTree = "<group>"; };
 		F986FFE52BCFBB53006A4C0F /* SkTextUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkTextUtils.cpp; sourceTree = "<group>"; };
+		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
+		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
+		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
 		F9AEA4F62E6B3E27003734E7 /* Print.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.hpp; sourceTree = "<group>"; };
 		F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PrintBuffer.hpp; sourceTree = "<group>"; };
 		F9AEA4FA2E6B3E48003734E7 /* Print.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.ipp; sourceTree = "<group>"; };
@@ -6199,6 +6219,7 @@
 				F9070B952B9F175000383E4D /* ParseInt.ipp */,
 				F9070B962B9F175000383E4D /* PCG64.ipp */,
 				F9E7944E2C197417002615BA /* Periodic.ipp */,
+				F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */,
 				F9070B972B9F175000383E4D /* Point.ipp */,
 				F9528B982BBC76EA00222F45 /* Point3D.ipp */,
 				F9F00A4C2CD2993F0097C165 /* PointsPerCircle.ipp */,
@@ -6488,6 +6509,8 @@
 				F9E794292C12B861002615BA /* MSL.hpp */,
 				F951220E2CB62E6B00151291 /* MultiPolygon.hpp */,
 				F9070C042B9F175000383E4D /* NamedParameter.hpp */,
+				F98111CD2ECC089300C50DD1 /* NativeShare.hpp */,
+				F98111CB2ECC088400C50DD1 /* NaturalSort.hpp */,
 				F9070C052B9F175000383E4D /* NonNull.hpp */,
 				F9070C062B9F175000383E4D /* Number.hpp */,
 				F9070C072B9F175000383E4D /* Obfuscation.hpp */,
@@ -6504,6 +6527,7 @@
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
 				F9E794472C1973FC002615BA /* Periodic.hpp */,
+				F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */,
 				F944BAA92CEACF4300CC4D42 /* Pipe.hpp */,
 				F934BD6E2BF880330003EAD5 /* PixelShader.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
@@ -7251,6 +7275,8 @@
 				F98605AD2BE49BE0006A4C0F /* Mouse */,
 				F980C4202C004B5000A86B68 /* MSAASampleCount */,
 				F9E794352C12BAC5002615BA /* MSL */,
+				F98111D52ECC08CA00C50DD1 /* NativeShare */,
+				F98111D02ECC08C200C50DD1 /* NaturalSort */,
 				F9070D6E2B9F175E00383E4D /* Optional */,
 				F9E5FCE32BC59E7E0081A4F7 /* Parse */,
 				F9070D702B9F175E00383E4D /* ParseBool */,
@@ -7369,6 +7395,7 @@
 				F95289C62B9FEA0D00222F45 /* GLFW */,
 				F9807D9F2BF6690B00D9B590 /* MessageBox */,
 				F986058D2BDCAF65006A4C0F /* MonitorInfo */,
+				F98111DB2ECC08E300C50DD1 /* NativeShare */,
 				F97203202BF09E80000E21DD /* Renderer */,
 				F980C49C2C04B6DB00A86B68 /* Renderer2D */,
 				F986F8432BC7E84D006A4C0F /* Resource */,
@@ -7921,7 +7948,6 @@
 			children = (
 				F943AAEF2E2A2E4F001B4D43 /* endian.h */,
 				F943AAF02E2A2E4F001B4D43 /* identity.h */,
-				F943AAF12E2A2E4F001B4D43 /* nullability_deprecated.h */,
 				F943AAF22E2A2E4F001B4D43 /* unaligned_access.h */,
 			);
 			path = internal;
@@ -9047,17 +9073,18 @@
 			isa = PBXGroup;
 			children = (
 				F981119D2EC8C6CA00C50DD1 /* ISimpleGUIElement.hpp */,
-				F981119E2EC8C6CA00C50DD1 /* ISimpleGUIElement.ipp */,
 				F981119F2EC8C6CA00C50DD1 /* SimpleButton.hpp */,
-				F98111A02EC8C6CA00C50DD1 /* SimpleButton.ipp */,
 				F98111A12EC8C6CA00C50DD1 /* SimpleCheckBox.hpp */,
-				F98111A22EC8C6CA00C50DD1 /* SimpleCheckBox.ipp */,
 				F98111A32EC8C6CA00C50DD1 /* SimpleDismissibleTooltip.hpp */,
+				F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */,
 				F98111A42EC8C6CA00C50DD1 /* SimpleHueSlider.hpp */,
-				F98111A52EC8C6CA00C50DD1 /* SimpleHueSlider.ipp */,
 				F98111A62EC8C6CA00C50DD1 /* SimpleProgressBar.hpp */,
-				F98111A72EC8C6CA00C50DD1 /* SimpleProgressBar.ipp */,
 				F98111A82EC8C6CA00C50DD1 /* SimpleTooltip.hpp */,
+				F981119E2EC8C6CA00C50DD1 /* ISimpleGUIElement.ipp */,
+				F98111A02EC8C6CA00C50DD1 /* SimpleButton.ipp */,
+				F98111A22EC8C6CA00C50DD1 /* SimpleCheckBox.ipp */,
+				F98111A52EC8C6CA00C50DD1 /* SimpleHueSlider.ipp */,
+				F98111A72EC8C6CA00C50DD1 /* SimpleProgressBar.ipp */,
 				F98111A92EC8C6CA00C50DD1 /* SimpleTooltip.ipp */,
 			);
 			path = SimpleGUI;
@@ -9069,6 +9096,33 @@
 				F98111BC2EC8C75300C50DD1 /* SivTheme.cpp */,
 			);
 			path = Theme;
+			sourceTree = "<group>";
+		};
+		F98111D02ECC08C200C50DD1 /* NaturalSort */ = {
+			isa = PBXGroup;
+			children = (
+				F98111CF2ECC08C200C50DD1 /* SivNaturalSort.cpp */,
+			);
+			path = NaturalSort;
+			sourceTree = "<group>";
+		};
+		F98111D52ECC08CA00C50DD1 /* NativeShare */ = {
+			isa = PBXGroup;
+			children = (
+				F98111D22ECC08CA00C50DD1 /* INativeShare.hpp */,
+				F98111D32ECC08CA00C50DD1 /* NativeShareFactory.cpp */,
+				F98111D42ECC08CA00C50DD1 /* SivNativeShare.cpp */,
+			);
+			path = NativeShare;
+			sourceTree = "<group>";
+		};
+		F98111DB2ECC08E300C50DD1 /* NativeShare */ = {
+			isa = PBXGroup;
+			children = (
+				F98111D92ECC08E300C50DD1 /* CNativeShare.hpp */,
+				F98111DA2ECC08E300C50DD1 /* CNativeShare.mm */,
+			);
+			path = NativeShare;
 			sourceTree = "<group>";
 		};
 		F981F6DA2D1BDF9B009F6627 /* SamplerState */ = {
@@ -11704,6 +11758,7 @@
 				F986059A2BE3314D006A4C0F /* CCursorStyle.hpp in Headers */,
 				F986FA6E2BCFB53B006A4C0F /* svginterface.h in Headers */,
 				F986004F2BCFBB53006A4C0F /* SkUnPreMultiply.h in Headers */,
+				F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */,
 				F986F8B22BC806DB006A4C0F /* exif.h in Headers */,
 				F98603812BCFBB54006A4C0F /* SkOTTable_maxp.h in Headers */,
 				F9070CCD2B9F175100383E4D /* Int128.hpp in Headers */,
@@ -11906,6 +11961,7 @@
 				F95122152CB62E6B00151291 /* Bezier2.hpp in Headers */,
 				F98600002BCFBB53006A4C0F /* SkBlendMode.h in Headers */,
 				F98600A22BCFBB53006A4C0F /* SkXmp.h in Headers */,
+				F98111DD2ECC08E300C50DD1 /* CNativeShare.hpp in Headers */,
 				F98602602BCFBB54006A4C0F /* SkScaleToSides.h in Headers */,
 				F9E794672C19B6D7002615BA /* ArrayAlgorithm.hpp in Headers */,
 				F98601742BCFBB53006A4C0F /* SkBlurMask.h in Headers */,
@@ -12076,6 +12132,7 @@
 				F9070F342B9F252E00383E4D /* null_joystick.h in Headers */,
 				F98605642BD203D4006A4C0F /* muParserFixes.h in Headers */,
 				F9070D102B9F175100383E4D /* Vector3D.hpp in Headers */,
+				F98111CC2ECC088400C50DD1 /* NaturalSort.hpp in Headers */,
 				F986002E2BCFBB53006A4C0F /* SkPathTypes.h in Headers */,
 				F986FA462BCFB53B006A4C0F /* svcfftl.h in Headers */,
 				F98605662BD203D4006A4C0F /* muParserInt.h in Headers */,
@@ -12133,7 +12190,6 @@
 				F943AB4C2E2A2E4F001B4D43 /* any_invocable.h in Headers */,
 				F943AB4D2E2A2E4F001B4D43 /* uniform_int_distribution.h in Headers */,
 				F943AB4E2E2A2E4F001B4D43 /* wide_multiply.h in Headers */,
-				F943AB4F2E2A2E4F001B4D43 /* nullability_deprecated.h in Headers */,
 				F943AB502E2A2E4F001B4D43 /* compare.h in Headers */,
 				F943AB512E2A2E4F001B4D43 /* poisson_distribution.h in Headers */,
 				F943AB522E2A2E4F001B4D43 /* generate_real.h in Headers */,
@@ -12429,6 +12485,7 @@
 				F986042A2BCFBB54006A4C0F /* SkSLPoison.h in Headers */,
 				F986FA622BCFB53B006A4C0F /* ftmemory.h in Headers */,
 				F98602322BCFBB54006A4C0F /* SkRasterClip.h in Headers */,
+				F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */,
 				F98604392BCFBB54006A4C0F /* SkSLSwitchCase.h in Headers */,
 				F96F96032C359ED90033353E /* morton_common.h in Headers */,
 				F9070DFB2B9F175E00383E4D /* IUserAction.hpp in Headers */,
@@ -12650,6 +12707,7 @@
 				F9FD0B8B2D1D334700A584CE /* MTLComputePass.hpp in Headers */,
 				F9FD0B8C2D1D334700A584CE /* MTLVersion.hpp in Headers */,
 				F9FD0B8D2D1D334700A584CE /* MTLBlitPass.hpp in Headers */,
+				F98111CE2ECC089300C50DD1 /* NativeShare.hpp in Headers */,
 				F9FD0B8E2D1D334700A584CE /* MTLTexture.hpp in Headers */,
 				F9FD0B8F2D1D334700A584CE /* MTLAccelerationStructureCommandEncoder.hpp in Headers */,
 				F9FD0B902D1D334700A584CE /* MTLResourceStateCommandEncoder.hpp in Headers */,
@@ -12664,6 +12722,7 @@
 				F9FD0B992D1D334700A584CE /* MTLFunctionHandle.hpp in Headers */,
 				F9FD0B9A2D1D334700A584CE /* MTLRenderCommandEncoder.hpp in Headers */,
 				F9FD0B9B2D1D334700A584CE /* MTLCaptureManager.hpp in Headers */,
+				F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */,
 				F9FD0B9C2D1D334700A584CE /* MTLSampler.hpp in Headers */,
 				F9FD0B9D2D1D334700A584CE /* MTLCommandEncoder.hpp in Headers */,
 				F9FD0B9E2D1D334700A584CE /* MTLAccelerationStructure.hpp in Headers */,
@@ -12900,6 +12959,7 @@
 				F98604162BCFBB54006A4C0F /* SkSLFunctionReference.h in Headers */,
 				F986F8982BC7FB32006A4C0F /* ColorScale.hpp in Headers */,
 				F98602952BCFBB54006A4C0F /* SkValidationUtils.h in Headers */,
+				F98111D82ECC08CA00C50DD1 /* INativeShare.hpp in Headers */,
 				F9070CCE2B9F175100383E4D /* IntFormatter.hpp in Headers */,
 				F9070CC32B9F175000383E4D /* Formatter.hpp in Headers */,
 				F986F9B12BCA9D0A006A4C0F /* maskelement.h in Headers */,
@@ -13647,6 +13707,7 @@
 				F933AD9F2E54A375005624D7 /* Scanline.cpp in Sources */,
 				F933ADA02E54A375005624D7 /* shape-description.cpp in Sources */,
 				F933ADA12E54A375005624D7 /* save-tiff.cpp in Sources */,
+				F98111DC2ECC08E300C50DD1 /* CNativeShare.mm in Sources */,
 				F933ADA22E54A375005624D7 /* resolve-shape-geometry.cpp in Sources */,
 				F933ADA32E54A375005624D7 /* contour-combiners.cpp in Sources */,
 				F933ADA42E54A375005624D7 /* EdgeHolder.cpp in Sources */,
@@ -13969,6 +14030,7 @@
 				F986062F2BEBBBC7006A4C0F /* CProfiler.cpp in Sources */,
 				F9528B9D2BBC771000222F45 /* SivPoint3D.cpp in Sources */,
 				F98602BA2BCFBB54006A4C0F /* SkBlurImageFilter.cpp in Sources */,
+				F98111D12ECC08C200C50DD1 /* SivNaturalSort.cpp in Sources */,
 				F986F9512BCA9CEC006A4C0F /* SVGDecoder.cpp in Sources */,
 				F98602EC2BCFBB54006A4C0F /* SkRescaleAndReadPixels.cpp in Sources */,
 				F98601D42BCFBB53006A4C0F /* SkImageInfo.cpp in Sources */,
@@ -14422,6 +14484,8 @@
 				F98605622BD203D4006A4C0F /* muParserError.cpp in Sources */,
 				F98602F32BCFBB54006A4C0F /* SkSurface.cpp in Sources */,
 				F986022B2BCFBB54006A4C0F /* SkPoint3.cpp in Sources */,
+				F98111D62ECC08CA00C50DD1 /* NativeShareFactory.cpp in Sources */,
+				F98111D72ECC08CA00C50DD1 /* SivNativeShare.cpp in Sources */,
 				F98603A92BCFBB54006A4C0F /* SkImageShader.cpp in Sources */,
 				F98603C42BCFBB54006A4C0F /* SkSLHasSideEffects.cpp in Sources */,
 				F98600CB2BCFBB53006A4C0F /* SkContainers.cpp in Sources */,

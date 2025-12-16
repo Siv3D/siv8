@@ -68,7 +68,7 @@ namespace s3d
 		bool ResourceExists(FilePathView path);
 
 		[[nodiscard]]
-		size_t ResourceSize(FilePathView path);
+		uint64 ResourceSize(FilePathView path);
 
 		[[nodiscard]]
 		std::wstring GetNativeFullPath(FilePathView path);
@@ -77,7 +77,7 @@ namespace s3d
 		std::wstring NormalizePath(std::wstring path, PathType pathType);
 		
 		[[nodiscard]]
-		int64 DirectorySizeRecursive(const std::wstring& directoryPath);
+		uint64 DirectorySizeRecursive(const std::wstring& directoryPath);
 
 		[[nodiscard]]
 		Optional<WIN32_FILE_ATTRIBUTE_DATA> GetFileAttributeData(const std::wstring& path);

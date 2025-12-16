@@ -163,6 +163,8 @@
 # include <Siv3D/StringRandom.hpp>
 # include <Siv3D/StringAlgorithm.hpp>
 
+# include <Siv3D/NaturalSort.hpp>
+
 // Unicode | Unicode
 # include <Siv3D/Unicode.hpp>
 
@@ -771,8 +773,8 @@
 //// ランダムなサンプリング | Random sampling
 //# include <Siv3D/Sample.hpp>
 
-//// Improved Perlin ノイズ | Improved Perlin noise
-//# include <Siv3D/PerlinNoise.hpp>
+// Improved Perlin ノイズ | Improved Perlin noise
+# include <Siv3D/PerlinNoise.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1597,6 +1599,7 @@
 # include <Siv3D/ScreenCapture.hpp> // ToDo
 
 
+# include <Siv3D/NativeShare.hpp>
 
 //////////////////////////////////////////////////
 //

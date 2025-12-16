@@ -96,7 +96,7 @@ namespace s3d
 	}
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-	constexpr const Type& Clamp(const Type& v SIV3D_LIFETIMEBOUND, const Type& min SIV3D_LIFETIMEBOUND, const Type& max SIV3D_LIFETIMEBOUND) noexcept(noexcept(max < v))
+	constexpr const Type& Clamp(const Type& v SIV3D_LIFETIMEBOUND, const Type& min SIV3D_LIFETIMEBOUND, const Type& max SIV3D_LIFETIMEBOUND) noexcept(noexcept(max < v) && noexcept(v < min))
 	{
 		if (max < v)
 		{
@@ -117,13 +117,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr bool InRange(const Concept::Scalar auto v, const Concept::Scalar auto min, const Concept::Scalar auto max) noexcept
+	template <Concept::Scalar Scalar>
+	constexpr bool InRange(const Scalar v, const Scalar min, const Scalar max) noexcept
 	{
 		return ((min <= v) && (v <= max));
 	}
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-	constexpr bool InRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min))
+	constexpr bool InRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(min <= v) && noexcept(v <= max))
 	{
 		return ((min <= v) && (v <= max));
 	}
@@ -134,13 +135,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr bool InOpenRange(const Concept::Scalar auto v, const Concept::Scalar auto min, const Concept::Scalar auto max) noexcept
+	template <Concept::Scalar Scalar>
+	constexpr bool InOpenRange(const Scalar v, const Scalar min, const Scalar max) noexcept
 	{
 		return ((min < v) && (v < max));
 	}
 
 	template <class Type> requires (not Concept::Scalar<Type>)
-	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(v < min))
+	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(min < v) && noexcept(v < max))
 	{
 		return ((min < v) && (v < max));
 	}
@@ -162,7 +164,7 @@ namespace s3d
 		}
 		else
 		{
-			return detail::Abs_impl{}(a - b);
+			return Abs(a - b);
 		}
 	}
 }

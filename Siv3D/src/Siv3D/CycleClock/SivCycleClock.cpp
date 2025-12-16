@@ -13,7 +13,7 @@
 # include <Siv3D/Logger.hpp>
 # include <Siv3D/Console.hpp>
 # include <Siv3D/IntToString.hpp>
-//# include <Siv3D/Print.hpp>
+# include <Siv3D/Print.hpp>
 
 namespace s3d
 {
@@ -49,10 +49,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//void CycleClock::print() const
-	//{
-	//	const auto c = cycles();
+	void CycleClock::print() const
+	{
+		const auto c = cycles();
 
-	//	Print.writeln(ToString(c).append(U" cycles"_sv));
-	//}
+		Print.writeln(ToString(c).append(U" cycles"_sv));
+	}
 }

@@ -29,9 +29,12 @@
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/ScreenCapture/IScreenCapture.hpp>
 # include <Siv3D/Font/IFont.hpp>
-# include <Siv3D/Print/IPrint.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
+# include <Siv3D/Print/IPrint.hpp>
+# include <Siv3D/NativeShare/INativeShare.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/FileSystem.hpp>
+# include <Siv3D/CacheDirectory/CacheDirectory.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -39,6 +42,7 @@ namespace s3d
 	CSystem::~CSystem()
 	{
 		LOG_SCOPED_DEBUG("CSystem::~CSystem()");
+		FileSystem::Remove(CacheDirectory::Temporary());
 	}
 
 	void CSystem::init()
@@ -62,6 +66,7 @@ namespace s3d
 		SIV3D_ENGINE(Font)->init();
 		SIV3D_ENGINE(GUI)->init();
 		SIV3D_ENGINE(Print)->init();
+		SIV3D_ENGINE(NativeShare)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}

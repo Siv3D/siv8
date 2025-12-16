@@ -28,11 +28,16 @@ namespace s3d
 	{
 	public:
 
+		static_assert((alignof(Type) <= Alignment), "Alignment must be at least alignof(Type)");
+
 		using value_type								= Type;
 		using size_type									= std::size_t;
 		using difference_type							= std::ptrdiff_t;
+
+		using propagate_on_container_copy_assignment	= std::false_type;
 		using propagate_on_container_move_assignment	= std::true_type;
 		using propagate_on_container_swap				= std::true_type;
+		using is_always_equal							= std::true_type;
 
 		static constexpr size_t alignment = Alignment;
 
@@ -56,7 +61,7 @@ namespace s3d
 		template <class U, size_t A>
 		friend constexpr bool operator ==(const AlignedAllocator<Type, Alignment>& lhs, const AlignedAllocator<U, A>& rhs) noexcept
 		{
-			return (lhs.alignment == rhs.alignment);
+			return (Alignment == A);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -66,7 +71,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Type* allocate(size_t n);
+		Type* allocate(size_type n);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -74,7 +79,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void deallocate(Type* const p, const size_t) noexcept;
+		void deallocate(Type* const p, const size_type) noexcept;
 
 		template <class U>
 		struct rebind

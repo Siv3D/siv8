@@ -10,10 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/StringView.hpp>
-
-# if SIV3D_CPU(X86_64)
-#	include <emmintrin.h>
-# endif
+# include <Siv3D/SIMD.hpp>
 
 namespace s3d
 {
@@ -25,7 +22,7 @@ namespace s3d
 
 	bool StringView::StringEquals(const char32* s1, const char32* s2, size_t length) noexcept
 	{
-	# if SIV3D_CPU(X86_64)
+	# if SIV3D_INTRINSIC(SSE)
 
 		const uint32* p1 = reinterpret_cast<const uint32*>(s1);
 		const uint32* p2 = reinterpret_cast<const uint32*>(s2);

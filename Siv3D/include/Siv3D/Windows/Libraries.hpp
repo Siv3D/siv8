@@ -23,6 +23,7 @@
 
 	# pragma comment (linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
 	# pragma comment (lib, "dwmapi")
+	# pragma comment (lib, "mincore")
 	# pragma comment (lib, "Secur32")
 	# pragma comment (lib, "winmm")
 	# pragma comment (lib, "freetype/freetype" SIV3D_DEBUG_LIB_SUFFIX(_d))

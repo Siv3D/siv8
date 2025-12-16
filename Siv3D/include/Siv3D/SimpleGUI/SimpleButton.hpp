@@ -97,25 +97,25 @@ namespace s3d
 		[[nodiscard]]
 		virtual RectF region() const override;
 
+	protected:
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	update
+		//	updateBase
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 状態を更新します。
 		/// @return このフレームでボタンが押下された場合 true, それ以外は false
-		virtual bool update() override;
+		virtual bool updateBase() override;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	draw
+		//	drawBase
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual void draw() const override;
-
-	protected:
+		virtual void drawBase() const override;
 
 		DrawableText m_drawableText;
 
