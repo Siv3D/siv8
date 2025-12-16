@@ -98,6 +98,7 @@ namespace s3d
 		m_dxgiDevice1 = device.getDXGIDevice1();
 		m_tearingSupport = CheckTearingSupport(device);
 
+		const bool useFlipModel = device.supportsDXGI1_4();
 		const DXGI_SWAP_CHAIN_DESC1 desc =
 		{
 			.Width				= static_cast<uint32>(frameBufferSize.x),
@@ -108,9 +109,9 @@ namespace s3d
 			.BufferUsage		= DXGI_USAGE_RENDER_TARGET_OUTPUT,
 			.BufferCount		= 3,
 			.Scaling			= DXGI_SCALING_STRETCH,
-			.SwapEffect			= (device.supportsDXGI1_4() ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD),
+			.SwapEffect			= (useFlipModel ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD),
 			.AlphaMode			= DXGI_ALPHA_MODE_IGNORE,
-			.Flags				= static_cast<uint32>(m_tearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0),
+			.Flags				= static_cast<uint32>((useFlipModel && m_tearingSupport) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0),
 		};
 
 		// Swap chain を作成する

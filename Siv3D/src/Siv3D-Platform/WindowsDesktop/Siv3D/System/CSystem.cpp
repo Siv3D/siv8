@@ -135,6 +135,7 @@ namespace s3d
 		
 		if (not SIV3D_ENGINE(Renderer)->present())
 		{
+			m_shouldTerminate = true;
 			return false;
 		}
 
