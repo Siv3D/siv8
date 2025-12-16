@@ -1,0 +1,9 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="Siv3D-Test.vcxproj" Id="e443b0bd-c483-417c-84c3-cce018f5929d">
+    <BuildDependency Project="Siv3D.vcxproj" />
+  </Project>
+  <Project Path="Siv3D.vcxproj" Id="03256274-d889-4d93-bbf2-f6b1997db570" />
+</Solution>
