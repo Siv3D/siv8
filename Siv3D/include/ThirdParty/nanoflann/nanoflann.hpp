@@ -56,12 +56,13 @@
 #include <istream>
 #include <limits>  // std::numeric_limits
 #include <ostream>
+#include <stack>
 #include <stdexcept>
 #include <unordered_set>
 #include <vector>
 
 /** Library version: 0xMmP (M=Major,m=minor,P=patch) */
-#define NANOFLANN_VERSION 0x171
+#define NANOFLANN_VERSION 0x180
 
 // Avoid conflicting declaration of min/max macros in Windows headers
 #if !defined(NOMINMAX) && \
@@ -495,7 +496,7 @@ struct Metric
  */
 template <
     class T, class DataSource, typename _DistanceType = T,
-    typename IndexType = uint32_t>
+    typename IndexType = size_t>
 struct L1_Adaptor
 {
     using ElementType  = T;
@@ -557,7 +558,7 @@ struct L1_Adaptor
  */
 template <
     class T, class DataSource, typename _DistanceType = T,
-    typename IndexType = uint32_t>
+    typename IndexType = size_t>
 struct L2_Adaptor
 {
     using ElementType  = T;
@@ -622,7 +623,7 @@ struct L2_Adaptor
  */
 template <
     class T, class DataSource, typename _DistanceType = T,
-    typename IndexType = uint32_t>
+    typename IndexType = size_t>
 struct L2_Simple_Adaptor
 {
     using ElementType  = T;
@@ -667,7 +668,7 @@ struct L2_Simple_Adaptor
  */
 template <
     class T, class DataSource, typename _DistanceType = T,
-    typename IndexType = uint32_t>
+    typename IndexType = size_t>
 struct SO2_Adaptor
 {
     using ElementType  = T;
@@ -712,7 +713,7 @@ struct SO2_Adaptor
  */
 template <
     class T, class DataSource, typename _DistanceType = T,
-    typename IndexType = uint32_t>
+    typename IndexType = size_t>
 struct SO3_Adaptor
 {
     using ElementType  = T;
@@ -742,7 +743,7 @@ struct SO3_Adaptor
 /** Metaprogramming helper traits class for the L1 (Manhattan) metric */
 struct metric_L1 : public Metric
 {
-    template <class T, class DataSource, typename IndexType = uint32_t>
+    template <class T, class DataSource, typename IndexType = size_t>
     struct traits
     {
         using distance_t = L1_Adaptor<T, DataSource, T, IndexType>;
@@ -752,7 +753,7 @@ struct metric_L1 : public Metric
  * distance metric */
 struct metric_L2 : public Metric
 {
-    template <class T, class DataSource, typename IndexType = uint32_t>
+    template <class T, class DataSource, typename IndexType = size_t>
     struct traits
     {
         using distance_t = L2_Adaptor<T, DataSource, T, IndexType>;
@@ -762,7 +763,7 @@ struct metric_L2 : public Metric
  * **squared** distance metric */
 struct metric_L2_Simple : public Metric
 {
-    template <class T, class DataSource, typename IndexType = uint32_t>
+    template <class T, class DataSource, typename IndexType = size_t>
     struct traits
     {
         using distance_t = L2_Simple_Adaptor<T, DataSource, T, IndexType>;
@@ -771,7 +772,7 @@ struct metric_L2_Simple : public Metric
 /** Metaprogramming helper traits class for the SO3_InnerProdQuat metric */
 struct metric_SO2 : public Metric
 {
-    template <class T, class DataSource, typename IndexType = uint32_t>
+    template <class T, class DataSource, typename IndexType = size_t>
     struct traits
     {
         using distance_t = SO2_Adaptor<T, DataSource, T, IndexType>;
@@ -780,7 +781,7 @@ struct metric_SO2 : public Metric
 /** Metaprogramming helper traits class for the SO3_InnerProdQuat metric */
 struct metric_SO3 : public Metric
 {
-    template <class T, class DataSource, typename IndexType = uint32_t>
+    template <class T, class DataSource, typename IndexType = size_t>
     struct traits
     {
         using distance_t = SO3_Adaptor<T, DataSource, T, IndexType>;
@@ -864,7 +865,7 @@ class PooledAllocator
     /* We maintain memory alignment to word boundaries by requiring that all
         allocations be in multiples of the machine wordsize.  */
     /* Size of machine word in bytes.  Must be power of 2. */
-    /* Minimum number of bytes requested at a time from	the system.  Must be
+    /* Minimum number of bytes requested at a time from the system.  Must be
      * multiple of WORDSIZE. */
 
     using Size = size_t;
@@ -933,11 +934,7 @@ class PooledAllocator
 
             // use the standard C malloc to allocate memory
             void* m = ::malloc(blocksize);
-            if (!m)
-            {
-                fprintf(stderr, "Failed to allocate memory.\n");
-                throw std::bad_alloc();
-            }
+            if (!m) { throw std::bad_alloc(); }
 
             /* Fill first word of new block with pointer to previous block. */
             static_cast<void**>(m)[0] = base_;
@@ -1102,7 +1099,7 @@ class KDTreeBaseClass
     Size size(const Derived& obj) const { return obj.size_; }
 
     /** Returns the length of each point in the dataset */
-    Size veclen(const Derived& obj) { return DIM > 0 ? DIM : obj.dim; }
+    Size veclen(const Derived& obj) const { return DIM > 0 ? DIM : obj.dim_; }
 
     /// Helper accessor to the dataset points:
     ElementType dataset_get(
@@ -1112,19 +1109,22 @@ class KDTreeBaseClass
     }
 
     /**
-     * Computes the inde memory usage
+     * Computes the index memory usage
      * Returns: memory used by the index
      */
-    Size usedMemory(Derived& obj)
+    Size usedMemory(const Derived& obj) const
     {
         return obj.pool_.usedMemory + obj.pool_.wastedMemory +
                obj.dataset_.kdtree_get_point_count() *
                    sizeof(IndexType);  // pool memory and vind array memory
     }
 
+    /**
+     * Compute the minimum and maximum element values in the specified dimension
+     */
     void computeMinMax(
         const Derived& obj, Offset ind, Size count, Dimension element,
-        ElementType& min_elem, ElementType& max_elem)
+        ElementType& min_elem, ElementType& max_elem) const
     {
         min_elem = dataset_get(obj, vAcc_[ind], element);
         max_elem = min_elem;
@@ -1142,6 +1142,8 @@ class KDTreeBaseClass
      *
      * @param left index of the first vector
      * @param right index of the last vector
+     * @param bbox bounding box used as input for splitting and output for
+     * parent node
      */
     NodePtr divideTree(
         Derived& obj, const Offset left, const Offset right, BoundingBox& bbox)
@@ -1176,6 +1178,7 @@ class KDTreeBaseClass
         }
         else
         {
+            /* Determine the index, dimension and value for split plane */
             Offset       idx;
             Dimension    cutfeat;
             DistanceType cutval;
@@ -1183,10 +1186,12 @@ class KDTreeBaseClass
 
             node->node_type.sub.divfeat = cutfeat;
 
+            /* Recurse on left */
             BoundingBox left_bbox(bbox);
             left_bbox[cutfeat].high = cutval;
             node->child1 = this->divideTree(obj, left, left + idx, left_bbox);
 
+            /* Recurse on right */
             BoundingBox right_bbox(bbox);
             right_bbox[cutfeat].low = cutval;
             node->child2 = this->divideTree(obj, left + idx, right, right_bbox);
@@ -1211,6 +1216,8 @@ class KDTreeBaseClass
      *
      * @param left index of the first vector
      * @param right index of the last vector
+     * @param bbox bounding box used as input for splitting and output for
+     * parent node
      * @param thread_count count of std::async threads
      * @param mutex mutex for mempool allocation
      */
@@ -1249,6 +1256,7 @@ class KDTreeBaseClass
         }
         else
         {
+            /* Determine the index, dimension and value for split plane */
             Offset       idx;
             Dimension    cutfeat;
             DistanceType cutval;
@@ -1258,11 +1266,14 @@ class KDTreeBaseClass
 
             std::future<NodePtr> right_future;
 
+            /* Recurse on right concurrently, if possible */
+
             BoundingBox right_bbox(bbox);
             right_bbox[cutfeat].low = cutval;
             if (++thread_count < n_thread_build_)
             {
-                // Concurrent right sub-tree
+                /* Concurrent thread for right recursion */
+
                 right_future = std::async(
                     std::launch::async, &KDTreeBaseClass::divideTreeConcurrent,
                     this, std::ref(obj), left + idx, right,
@@ -1271,6 +1282,8 @@ class KDTreeBaseClass
             }
             else { --thread_count; }
 
+            /* Recurse on left in this thread */
+
             BoundingBox left_bbox(bbox);
             left_bbox[cutfeat].high = cutval;
             node->child1            = this->divideTreeConcurrent(
@@ -1278,12 +1291,15 @@ class KDTreeBaseClass
 
             if (right_future.valid())
             {
-                // Block and wait for concurrent right sub-tree
+                /* Block and wait for concurrent right from above */
+
                 node->child2 = right_future.get();
                 --thread_count;
             }
             else
             {
+                /* Otherwise, recurse on right in this thread */
+
                 node->child2 = this->divideTreeConcurrent(
                     obj, left + idx, right, right_bbox, thread_count, mutex);
             }
@@ -1359,16 +1375,18 @@ class KDTreeBaseClass
      * corresponding to the 'cutfeat' dimension at 'cutval' position.
      *
      *  On return:
-     *  dataset[ind[0..lim1-1]][cutfeat]<cutval
-     *  dataset[ind[lim1..lim2-1]][cutfeat]==cutval
-     *  dataset[ind[lim2..count]][cutfeat]>cutval
+     *  dataset[ind[0..lim1-1]][cutfeat] < cutval
+     *  dataset[ind[lim1..lim2-1]][cutfeat] == cutval
+     *  dataset[ind[lim2..count]][cutfeat] > cutval
      */
     void planeSplit(
         const Derived& obj, const Offset ind, const Size count,
         const Dimension cutfeat, const DistanceType& cutval, Offset& lim1,
         Offset& lim2)
     {
-        /* Move vector indices for left subtree to front of list. */
+        /* First pass.
+         * Determine lim1 with all values less than cutval to the left.
+         */
         Offset left  = 0;
         Offset right = count - 1;
         for (;;)
@@ -1385,8 +1403,9 @@ class KDTreeBaseClass
             ++left;
             --right;
         }
-        /* If either list is empty, it means that all remaining features
-         * are identical. Split in the middle to maintain a balanced tree.
+        /* Second pass
+         * Determine lim2 with all values greater than cutval to the right
+         * The middle is used for balancing the tree
          */
         lim1  = left;
         right = count - 1;
@@ -1712,6 +1731,69 @@ class KDTreeSingleIndexAdaptor
     }
 
     /**
+     * Find all points contained within the specified bounding box. Their
+     * indices are stored inside the result object.
+     *
+     * Params:
+     *     result = the result object in which the indices of the points
+     *              within the bounding box are stored
+     *     bbox = the bounding box defining the search region
+     *
+     * \tparam RESULTSET Should be any ResultSet<DistanceType>
+     * \return  Number of points found within the bounding box.
+     * \sa findNeighbors, knnSearch, radiusSearch
+     *
+     * \note The search is inclusive - points on the boundary are included.
+     */
+    template <typename RESULTSET>
+    Size findWithinBox(RESULTSET& result, const BoundingBox& bbox) const
+    {
+        if (this->size(*this) == 0) return 0;
+        if (!Base::root_node_)
+            throw std::runtime_error(
+                "[nanoflann] findWithinBox() called before building the "
+                "index.");
+
+        std::stack<NodePtr> stack;
+        stack.push(Base::root_node_);
+
+        while (!stack.empty())
+        {
+            const NodePtr node = stack.top();
+            stack.pop();
+
+            // If this is a leaf node, then do check and return.
+            if (!node->child1)  // (if one node is nullptr, both are)
+            {
+                for (Offset i = node->node_type.lr.left;
+                     i < node->node_type.lr.right; ++i)
+                {
+                    if (contains(bbox, Base::vAcc_[i]))
+                    {
+                        if (!result.addPoint(0, Base::vAcc_[i]))
+                        {
+                            // the resultset doesn't want to receive any more
+                            // points, we're done searching!
+                            return result.size();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                const int  idx        = node->node_type.sub.divfeat;
+                const auto low_bound  = node->node_type.sub.divlow;
+                const auto high_bound = node->node_type.sub.divhigh;
+
+                if (bbox[idx].low <= low_bound) stack.push(node->child1);
+                if (bbox[idx].high >= high_bound) stack.push(node->child2);
+            }
+        }
+
+        return result.size();
+    }
+
+    /**
      * Find the "num_closest" nearest neighbors to the \a query_point[0:dim-1].
      * Their indices and distances are stored in the provided pointers to
      * array/vector.
@@ -1812,8 +1894,8 @@ class KDTreeSingleIndexAdaptor
     /** @} */
 
    public:
-    /** Make sure the auxiliary list \a vind has the same size than the current
-     * dataset, and re-generate if size has changed. */
+    /** Make sure the auxiliary list \a vind has the same size than the
+     * current dataset, and re-generate if size has changed. */
     void init_vind()
     {
         // Create a permutable array of indices to the input vectors.
@@ -1856,6 +1938,17 @@ class KDTreeSingleIndexAdaptor
         }
     }
 
+    bool contains(const BoundingBox& bbox, IndexType idx) const
+    {
+        const auto dims = (DIM > 0 ? DIM : Base::dim_);
+        for (Dimension i = 0; i < dims; ++i)
+        {
+            const auto point = this->dataset_.kdtree_get_pt(idx, i);
+            if (point < bbox[i].low || point > bbox[i].high) return false;
+        }
+        return true;
+    }
+
     /**
      * Performs an exact search in the tree starting from a node.
      * \tparam RESULTSET Should be any ResultSet<DistanceType>
@@ -1868,17 +1961,16 @@ class KDTreeSingleIndexAdaptor
         DistanceType mindist, distance_vector_t& dists,
         const float epsError) const
     {
-        /* If this is a leaf node, then do check and return. */
-        if ((node->child1 == nullptr) && (node->child2 == nullptr))
+        // If this is a leaf node, then do check and return.
+        if (!node->child1)  // (if one node is nullptr, both are)
         {
-            DistanceType worst_dist = result_set.worstDist();
             for (Offset i = node->node_type.lr.left;
                  i < node->node_type.lr.right; ++i)
             {
                 const IndexType accessor = Base::vAcc_[i];  // reorder... : i;
                 DistanceType    dist     = distance_.evalMetric(
                            vec, accessor, (DIM > 0 ? DIM : Base::dim_));
-                if (dist < worst_dist)
+                if (dist < result_set.worstDist())
                 {
                     if (!result_set.addPoint(dist, Base::vAcc_[i]))
                     {
@@ -2295,10 +2387,9 @@ class KDTreeSingleIndexDynamicAdaptor_
         DistanceType mindist, distance_vector_t& dists,
         const float epsError) const
     {
-        /* If this is a leaf node, then do check and return. */
-        if ((node->child1 == nullptr) && (node->child2 == nullptr))
+        // If this is a leaf node, then do check and return.
+        if (!node->child1)  // (if one node is nullptr, both are)
         {
-            DistanceType worst_dist = result_set.worstDist();
             for (Offset i = node->node_type.lr.left;
                  i < node->node_type.lr.right; ++i)
             {
@@ -2306,7 +2397,7 @@ class KDTreeSingleIndexDynamicAdaptor_
                 if (treeIndex_[index] == -1) continue;
                 DistanceType dist = distance_.evalMetric(
                     vec, index, (DIM > 0 ? DIM : Base::dim_));
-                if (dist < worst_dist)
+                if (dist < result_set.worstDist())
                 {
                     if (!result_set.addPoint(
                             static_cast<typename RESULTSET::DistanceType>(dist),

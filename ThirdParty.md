@@ -36,7 +36,7 @@ Name | Version
 [msdfgen](https://github.com/Chlumsky/msdfgen) | 
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
-[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.7.1
+[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.8.0
 [Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.048
 [Noto Sans CJK](https://github.com/notofonts/noto-cjk) | Version 2.004
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
@@ -47,9 +47,9 @@ Name | Version
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 7.3.3
+[simdutf](https://github.com/simdutf/simdutf) | Version 7.7.0
 [skia](https://github.com/google/skia) |
-[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.14
+[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.17
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
