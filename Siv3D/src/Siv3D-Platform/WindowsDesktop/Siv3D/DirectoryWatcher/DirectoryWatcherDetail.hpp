@@ -88,6 +88,11 @@ namespace s3d
 
 	private:
 
+		struct OverlappedWrapper : OVERLAPPED
+		{
+			DirectoryWatcherDetail* pThis = nullptr;
+		};
+
 		static constexpr size_t BufferSize = (128 * 1024);
 
 		static constexpr bool WatchSubtree = true;
@@ -104,15 +109,22 @@ namespace s3d
 
 		std::jthread m_thread;
 
-		std::atomic<bool> m_initCalled = false;
+		/// @brief 初期化完了通知用のフラグ
+		std::atomic<bool> m_initSignal = false;
+
+		/// @brief 初期化の成否
+		std::atomic<bool> m_initResult = false;
 
 		HANDLE m_directoryHandle = INVALID_HANDLE_VALUE;
+
+		/// @brief 停止通知用のイベントハンドル
+		HANDLE m_stopEvent = INVALID_HANDLE_VALUE;
 
 		Array<uint8> m_buffer;
 
 		Array<uint8> m_backBuffer;
 
-		OVERLAPPED m_overlapped{};
+		OverlappedWrapper m_overlapped{};
 
 		struct FileChanges
 		{

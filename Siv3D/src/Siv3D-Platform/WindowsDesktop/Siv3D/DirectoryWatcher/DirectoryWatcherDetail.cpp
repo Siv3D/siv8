@@ -78,21 +78,39 @@ namespace s3d
 
 	DirectoryWatcher::DirectoryWatcherDetail::~DirectoryWatcherDetail()
 	{
+		// スレッドに終了シグナルを送る
+		if (m_stopEvent != INVALID_HANDLE_VALUE)
+		{
+			::SetEvent(m_stopEvent);
+		}
+
+		// 実行中の I/O をキャンセルする
+		if (m_directoryHandle != INVALID_HANDLE_VALUE)
+		{
+			::CancelIoEx(m_directoryHandle, &m_overlapped);
+		}
+
+		// スレッドの終了を待機する
 		if (m_thread.joinable())
 		{
 			m_thread.request_stop();
 			m_thread.join();
 		}
 
-		if (m_directoryHandle == INVALID_HANDLE_VALUE)
+		// リソースの破棄
 		{
-			return;
-		}
+			if (m_directoryHandle != INVALID_HANDLE_VALUE)
+			{
+				::CloseHandle(m_directoryHandle);
+				m_directoryHandle = INVALID_HANDLE_VALUE;
+			}
 
-		::CancelIoEx(m_directoryHandle, &m_overlapped);
-		HANDLE tempDirectoryHandle = std::exchange(m_directoryHandle, INVALID_HANDLE_VALUE);
-		::WaitForSingleObjectEx(tempDirectoryHandle, 1000, true);
-		::CloseHandle(tempDirectoryHandle);
+			if (m_stopEvent != INVALID_HANDLE_VALUE)
+			{
+				::CloseHandle(m_stopEvent);
+				m_stopEvent = INVALID_HANDLE_VALUE;
+			}
+		}
 
 		LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Stopped watching `{}`", m_directory));
 	}
@@ -114,14 +132,14 @@ namespace s3d
 
 		m_directory = FileSystem::FullPath(directory);
 		m_extensionFilter.set(applicableExtensions);
+
+		m_initSignal = false;
+		m_initResult = false;
+
 		m_thread = std::jthread{ DirectoryWatcherDetail::Run, this };
+		m_initSignal.wait(false);
 
-		while (not m_initCalled)
-		{
-			::Sleep(1);
-		}
-
-		return isActive();
+		return m_initResult;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -145,7 +163,7 @@ namespace s3d
 	{
 		std::lock_guard lock{ m_fileChanges.mutex };
 
-		fileChanges.assign(m_fileChanges.fileChanges.begin(), m_fileChanges.fileChanges.end());
+		fileChanges.swap(m_fileChanges.fileChanges);
 
 		m_fileChanges.fileChanges.clear();
 	}
@@ -193,6 +211,15 @@ namespace s3d
 
 	bool DirectoryWatcher::DirectoryWatcherDetail::init()
 	{
+		// 手動リセットイベントを作成 (初期状態: 非シグナル)
+		m_stopEvent = ::CreateEventW(nullptr, TRUE, FALSE, nullptr);
+
+		if (m_stopEvent == INVALID_HANDLE_VALUE)
+		{
+			LOG_FAIL(fmt::format("❌ DirectoryWatcherDetail::init(): Failed to create event. `{}`", m_directory));
+			return false;
+		}
+
 		m_directoryHandle = ::CreateFileW(
 			Unicode::ToWstring(m_directory).c_str(),
 			FILE_LIST_DIRECTORY,
@@ -205,13 +232,22 @@ namespace s3d
 
 		if (m_directoryHandle == INVALID_HANDLE_VALUE)
 		{
+			::CloseHandle(m_stopEvent);
+			m_stopEvent = INVALID_HANDLE_VALUE;
+
 			LOG_FAIL(fmt::format("❌ DirectoryWatcherDetail::start(): Failed to create a directory handle `{}`", m_directory));
 			return false;
 		}
 
 		m_buffer.resize(BufferSize);
 		m_backBuffer.resize(BufferSize);
-		m_overlapped.hEvent = this;
+
+		m_overlapped.Internal = 0;
+		m_overlapped.InternalHigh = 0;
+		m_overlapped.Offset = 0;
+		m_overlapped.OffsetHigh = 0;
+		m_overlapped.hEvent = nullptr;
+		m_overlapped.pThis = this;
 
 		bool result = false;
 
@@ -245,6 +281,9 @@ namespace s3d
 		{
 			::CloseHandle(m_directoryHandle);
 			m_directoryHandle = INVALID_HANDLE_VALUE;
+
+			::CloseHandle(m_stopEvent);
+			m_stopEvent = INVALID_HANDLE_VALUE;
 
 			LOG_FAIL(fmt::format("❌ DirectoryWatcher: ReadDirectoryChangesW() failed. `{}`", m_directory));
 			return false;
@@ -358,15 +397,19 @@ namespace s3d
 			{
 				const FILE_NOTIFY_INFORMATION* notifyInfo = reinterpret_cast<const FILE_NOTIFY_INFORMATION*>(pInfo);
 				const std::wstring_view localPathView{ notifyInfo->FileName, (notifyInfo->FileNameLength / sizeof(WCHAR)) };
+				
 				const String localPath = Unicode::FromWstring(localPathView).replace('\\', '/');
 				FilePath fullPath = (m_directory + localPath);
-				
-				if (FileSystem::IsDirectory(fullPath))
-				{
-					fullPath += U'/';
-				}
-		
+
 				const FileAction action = ToFileAction(notifyInfo->Action);
+
+				if (action != FileAction::Removed)
+				{
+					if (FileSystem::IsDirectory(fullPath))
+					{
+						fullPath += U'/';
+					}
+				}
 
 				if (m_extensionFilter) // 拡張子フィルタがある場合
 				{
@@ -394,21 +437,39 @@ namespace s3d
 	{
 		if (not watcher->init())
 		{
-			watcher->m_initCalled = true;
+			// 失敗を通知
+			watcher->m_initResult = false;
+			watcher->m_initSignal = true;
+			watcher->m_initSignal.notify_all();
 			return;
 		}
 
-		watcher->m_initCalled = true;
+		// 成功を通知
+		{
+			watcher->m_initResult = true;
+			watcher->m_initSignal = true;
+			watcher->m_initSignal.notify_all();
+		}
 
 		while (not stop_token.stop_requested())
 		{
-			::SleepEx(15, true);
+			// イベントがシグナルになる（終了）か、I/O 完了ルーチンが呼ばれるまでスリープ待機
+			// 第 3 引数 TRUE（bAlertable）により、I/O 完了時にコールバックが実行され、
+			// その後 WAIT_IO_COMPLETION が返りループが継続する
+			const DWORD result = ::WaitForSingleObjectEx(watcher->m_stopEvent, INFINITE, TRUE);
+
+			if (result == WAIT_OBJECT_0) // m_stopEvent がシグナル状態になった -> 終了
+			{
+				break;
+			}
+			// result == WAIT_IO_COMPLETION の場合はループを継続
 		}
 	}
 
 	void DirectoryWatcher::DirectoryWatcherDetail::OnChangeNotification(const DWORD dwErrorCode, const DWORD dwNumberOfBytesTransfered, const LPOVERLAPPED lpOverlapped)
 	{
-		DirectoryWatcherDetail* directoryWatcher = static_cast<DirectoryWatcherDetail*>(lpOverlapped->hEvent);
+		OverlappedWrapper* wrapper = static_cast<OverlappedWrapper*>(lpOverlapped);
+		DirectoryWatcherDetail* directoryWatcher = wrapper->pThis;
 		directoryWatcher->onChangeNotification(dwErrorCode, dwNumberOfBytesTransfered);
 	}
 }
