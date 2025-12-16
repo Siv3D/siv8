@@ -15,7 +15,7 @@ Name | Version
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 8.0.2
+[fast_float](https://github.com/fastfloat/fast_float) | Version 8.1.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
@@ -33,7 +33,7 @@ Name | Version
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
-[msdfgen](https://github.com/Chlumsky/msdfgen) | 
+[msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
 [nanoflann](https://github.com/jlblancoc/nanoflann) | v1.8.0

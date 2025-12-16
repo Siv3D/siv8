@@ -1078,6 +1078,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\ShapeDistanceFinder.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\SignedDistance.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\Vector2.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\YAxisOrientation.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\ext\resolve-shape-geometry.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\msdfgen-config.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\msdfgen.h" />
