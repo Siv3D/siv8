@@ -21,10 +21,14 @@ namespace s3d
 	{
 	public:
 
+		~D3D11SwapChain();
+
 		void init(const HWND hWnd, const D3D11Device& device, const Size& frameBufferSize);
 
 		[[nodiscard]]
 		bool present();
+
+		void waitForFrame();
 
 		[[nodiscard]]
 		IDXGISwapChain1* getSwapChain1() const noexcept
@@ -37,16 +41,9 @@ namespace s3d
 		[[nodiscard]]
 		bool isVSyncEnabled() const noexcept;
 
-		void setLowLatencyMode(const bool enabled) noexcept;
-
-		[[nodiscard]]
-		bool isLowLatencyMode() const noexcept;
-
 	private:
 
-		static constexpr uint32 MaximumFrameLatency_Default = 2;
-
-		static constexpr uint32 MaximumFrameLatency_LowLatency = 1;
+		static constexpr uint32 DefaultMaximumFrameLatency = 1;
 		
 		HWND m_hWnd						= nullptr;
 		
@@ -60,11 +57,15 @@ namespace s3d
 
 		ComPtr<IDXGISwapChain1> m_swapChain1;
 
+		ComPtr<IDXGISwapChain2> m_swapChain2;
+
+		HANDLE m_waitableObject = nullptr;
+
 		double m_displayFrequency		= 60.0;
 
 		Rect m_previousWindowBounds		= Rect::Empty();
 
-		uint32 m_maximumFrameLatency	= MaximumFrameLatency_Default;
+		uint32 m_maximumFrameLatency	= DefaultMaximumFrameLatency;
 
 		bool m_vSyncEnabled				= true;
 

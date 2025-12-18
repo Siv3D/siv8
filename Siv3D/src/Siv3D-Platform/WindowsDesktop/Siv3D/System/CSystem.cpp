@@ -149,6 +149,7 @@ namespace s3d
 		//	current frame
 		//
 
+		SIV3D_ENGINE(Renderer)->waitForFrame();
 		SIV3D_ENGINE(Profiler)->beginFrame();
 
 		if (not SIV3D_ENGINE(AssetMonitor)->update())

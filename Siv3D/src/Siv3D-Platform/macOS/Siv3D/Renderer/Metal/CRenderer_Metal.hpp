@@ -69,11 +69,6 @@ namespace s3d
 		[[nodiscard]]
 		bool isVSyncEnabled() const override;
 
-		void setLowLatencyMode(bool enabled) override;
-
-		[[nodiscard]]
-		bool isLowLatencyMode() const override;
-	
 		void captureScreenshot() override;
 
 		[[nodiscard]]
