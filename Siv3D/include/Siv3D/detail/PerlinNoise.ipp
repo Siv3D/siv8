@@ -236,15 +236,15 @@ namespace s3d
 				const int32 BA = (m_perm[B] + iz);
 				const int32 BB = (m_perm[B + 1] + iz);
 
-				const value_type p0 = GradFast(m_perm[AA], pCache->fx, fy, fz);
-				const value_type p1 = GradFast(m_perm[BA], pCache->fx_minus_1, fy, fz);
-				const value_type p2 = GradFast(m_perm[AB], pCache->fx, fy_minus_1, fz);
-				const value_type p3 = GradFast(m_perm[BB], pCache->fx_minus_1, fy_minus_1, fz);
+				const value_type p0 = Grad(m_perm[AA], pCache->fx, fy, fz);
+				const value_type p1 = Grad(m_perm[BA], pCache->fx_minus_1, fy, fz);
+				const value_type p2 = Grad(m_perm[AB], pCache->fx, fy_minus_1, fz);
+				const value_type p3 = Grad(m_perm[BB], pCache->fx_minus_1, fy_minus_1, fz);
 
-				const value_type p4 = GradFast(m_perm[AA + 1], pCache->fx, fy, fz_minus_1);
-				const value_type p5 = GradFast(m_perm[BA + 1], pCache->fx_minus_1, fy, fz_minus_1);
-				const value_type p6 = GradFast(m_perm[AB + 1], pCache->fx, fy_minus_1, fz_minus_1);
-				const value_type p7 = GradFast(m_perm[BB + 1], pCache->fx_minus_1, fy_minus_1, fz_minus_1);
+				const value_type p4 = Grad(m_perm[AA + 1], pCache->fx, fy, fz_minus_1);
+				const value_type p5 = Grad(m_perm[BA + 1], pCache->fx_minus_1, fy, fz_minus_1);
+				const value_type p6 = Grad(m_perm[AB + 1], pCache->fx, fy_minus_1, fz_minus_1);
+				const value_type p7 = Grad(m_perm[BB + 1], pCache->fx_minus_1, fy_minus_1, fz_minus_1);
 
 				const value_type q0 = Lerp(p0, p1, pCache->u);
 				const value_type q1 = Lerp(p2, p3, pCache->u);
@@ -561,15 +561,15 @@ namespace s3d
 					const int32 BA = (m_perm[B & 255] + layer.iz);
 					const int32 BB = (m_perm[(B + 1) & 255] + layer.iz);
 
-					const value_type p0 = GradFast(m_perm[AA & 255], xCache.fx, yState.fy, layer.fz);
-					const value_type p1 = GradFast(m_perm[BA & 255], xCache.fx_minus_1, yState.fy, layer.fz);
-					const value_type p2 = GradFast(m_perm[AB & 255], xCache.fx, yState.fy_minus_1, layer.fz);
-					const value_type p3 = GradFast(m_perm[BB & 255], xCache.fx_minus_1, yState.fy_minus_1, layer.fz);
+					const value_type p0 = Grad(m_perm[AA & 255], xCache.fx, yState.fy, layer.fz);
+					const value_type p1 = Grad(m_perm[BA & 255], xCache.fx_minus_1, yState.fy, layer.fz);
+					const value_type p2 = Grad(m_perm[AB & 255], xCache.fx, yState.fy_minus_1, layer.fz);
+					const value_type p3 = Grad(m_perm[BB & 255], xCache.fx_minus_1, yState.fy_minus_1, layer.fz);
 
-					const value_type p4 = GradFast(m_perm[(AA + 1) & 255], xCache.fx, yState.fy, layer.fz_minus_1);
-					const value_type p5 = GradFast(m_perm[(BA + 1) & 255], xCache.fx_minus_1, yState.fy, layer.fz_minus_1);
-					const value_type p6 = GradFast(m_perm[(AB + 1) & 255], xCache.fx, yState.fy_minus_1, layer.fz_minus_1);
-					const value_type p7 = GradFast(m_perm[(BB + 1) & 255], xCache.fx_minus_1, yState.fy_minus_1, layer.fz_minus_1);
+					const value_type p4 = Grad(m_perm[(AA + 1) & 255], xCache.fx, yState.fy, layer.fz_minus_1);
+					const value_type p5 = Grad(m_perm[(BA + 1) & 255], xCache.fx_minus_1, yState.fy, layer.fz_minus_1);
+					const value_type p6 = Grad(m_perm[(AB + 1) & 255], xCache.fx, yState.fy_minus_1, layer.fz_minus_1);
+					const value_type p7 = Grad(m_perm[(BB + 1) & 255], xCache.fx_minus_1, yState.fy_minus_1, layer.fz_minus_1);
 
 					const value_type q0 = Lerp(p0, p1, xCache.u);
 					const value_type q1 = Lerp(p2, p3, xCache.u);
@@ -860,16 +860,7 @@ namespace s3d
 	template <Concept::FloatingPoint Float>
 	constexpr BasicPerlinNoise<Float>::value_type BasicPerlinNoise<Float>::Grad(const uint8 hash, const value_type x, const value_type y, const value_type z) noexcept
 	{
-		const uint8 h = (hash & 15);
-		const value_type u = (h < 8 ? x : y);
-		const value_type v = (h < 4 ? y : h == 12 || h == 14 ? x : z);
-		return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
-	}
-
-	template <Concept::FloatingPoint Float>
-	constexpr BasicPerlinNoise<Float>::value_type BasicPerlinNoise<Float>::GradFast(const uint8 hash, const value_type x, const value_type y, const value_type z) noexcept
-	{
-		const auto& g = kGradients[hash & 15];
+		const auto g = Gradients[hash & 15];
 		return (g[0] * x + g[1] * y + g[2] * z);
 	}
 

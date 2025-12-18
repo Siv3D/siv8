@@ -293,7 +293,7 @@ namespace s3d
 
 	private:
 
-		static constexpr value_type kGradients[16][3] = {
+		static constexpr value_type Gradients[16][3] = {
 			{ 1, 1, 0}, {-1, 1, 0}, { 1,-1, 0}, {-1,-1, 0},
 			{ 1, 0, 1}, {-1, 0, 1}, { 1, 0,-1}, {-1, 0,-1},
 			{ 0, 1, 1}, { 0,-1, 1}, { 0, 1,-1}, { 0,-1,-1},
@@ -307,8 +307,6 @@ namespace s3d
 		static constexpr value_type Lerp(value_type a, value_type b, value_type t) noexcept;
 
 		static constexpr value_type Grad(uint8 hash, value_type x, value_type y, value_type z) noexcept;
-
-		static constexpr value_type GradFast(uint8 hash, value_type x, value_type y, value_type z) noexcept;
 
 		static constexpr value_type To01(value_type x) noexcept;
 
