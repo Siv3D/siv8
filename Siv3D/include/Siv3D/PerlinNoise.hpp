@@ -12,6 +12,7 @@
 # pragma once
 # include <array>
 # include <cmath>
+# include <algorithm>
 # include <numeric>
 # include "Common.hpp"
 # include "Concepts.hpp"
@@ -33,8 +34,9 @@ namespace s3d
 	{
 	public:
 
-		using value_type = Float;
-		using state_type = std::array<uint8, 256>;
+		using value_type			= Float;
+		using state_type			= std::array<uint8, 256>;
+		using internal_state_type	= std::array<uint8, 512>;
 
 		struct Parameters
 		{
@@ -91,6 +93,20 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	batchNoise
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class OutputIterator, class Converter>
+		void batchNoise(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchNoise(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Converter convert) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	noise01
 		//
 		////////////////////////////////////////////////////////////////
@@ -109,6 +125,20 @@ namespace s3d
 
 		[[nodiscard]]
 		value_type noise01(Vector3D<value_type> xyz) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	batchNoise01
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class OutputIterator, class Converter>
+		void batchNoise01(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchNoise01(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Converter convert) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -133,6 +163,20 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	batchOctaveNoise
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoise(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoise(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	octaveNoise01
 		//
 		////////////////////////////////////////////////////////////////
@@ -151,6 +195,20 @@ namespace s3d
 
 		[[nodiscard]]
 		value_type octaveNoise01(Vector3D<value_type> xyz, Parameters parameters) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	batchOctaveNoise01
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoise01(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoise01(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -175,6 +233,20 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	batchOctaveNoiseNormalized
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoiseNormalized(OutputIterator first, int32 width, int32 height,
+			value_type baseX, const value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoiseNormalized(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	octaveNoiseNormalized01
 		//
 		////////////////////////////////////////////////////////////////
@@ -196,6 +268,20 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	batchOctaveNoiseNormalized01
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoiseNormalized01(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoiseNormalized01(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	serialize, deserialize
 		//
 		////////////////////////////////////////////////////////////////
@@ -207,13 +293,22 @@ namespace s3d
 
 	private:
 
-		state_type m_perm;
+		static constexpr value_type kGradients[16][3] = {
+			{ 1, 1, 0}, {-1, 1, 0}, { 1,-1, 0}, {-1,-1, 0},
+			{ 1, 0, 1}, {-1, 0, 1}, { 1, 0,-1}, {-1, 0,-1},
+			{ 0, 1, 1}, { 0,-1, 1}, { 0, 1,-1}, { 0,-1,-1},
+			{ 1, 1, 0}, { 0,-1, 1}, {-1, 1, 0}, { 0,-1,-1}
+		};
+
+		internal_state_type m_perm;
 
 		static constexpr value_type Fade(value_type t) noexcept;
 
 		static constexpr value_type Lerp(value_type a, value_type b, value_type t) noexcept;
 
 		static constexpr value_type Grad(uint8 hash, value_type x, value_type y, value_type z) noexcept;
+
+		static constexpr value_type GradFast(uint8 hash, value_type x, value_type y, value_type z) noexcept;
 
 		static constexpr value_type To01(value_type x) noexcept;
 

@@ -100,12 +100,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		String FileName(const FilePathView path_)
+		String FileName(FilePathView path_)
 		{
 			if (path_.isEmpty())
 			{
 				return{};
 			}
+
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			if (IsResourcePath(path_))
+			{
+				path_.remove_prefix(1);
+			}
+
+		# endif
 
 			FilePath path = FilePath{ path_ }.replace(U'\\', U'/');
 
