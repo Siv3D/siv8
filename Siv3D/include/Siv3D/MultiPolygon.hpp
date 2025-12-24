@@ -564,13 +564,7 @@ namespace s3d
 		/// @brief 範囲の要素を配列の末尾に追加します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
-		template <Concept::ContainerCompatibleRange<Vec2> Range>
-		void append_range(Range&& range);
-
-		/// @brief 範囲の要素を配列の末尾に追加します。
-		/// @tparam Range 範囲の型
-		/// @param range 範囲
-		template <Concept::ContainerCompatibleRange<Point> Range>
+		template <Concept::ContainerCompatibleRange<Polygon> Range>
 		void append_range(Range&& range);
 
 		////////////////////////////////////////////////////////////////
@@ -760,3 +754,5 @@ namespace s3d
 		container_type m_polygons;
 	};
 }
+
+# include "detail/MultiPolygon.ipp"

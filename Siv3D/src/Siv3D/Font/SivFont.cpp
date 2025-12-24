@@ -571,7 +571,56 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->renderOutlineByGlyphIndex(m_handle->id(), glyphIndex, closeRing, readingDirection);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderOutlines
+	//
+	////////////////////////////////////////////////////////////////
 
+	Array<OutlineGlyph> Font::renderOutlines(const StringView s, const CloseRing closeRing, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->renderOutlines(m_handle->id(), s, closeRing, enableLigatures, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	PolygonGlyph Font::renderPolygon(const char32 codePoint, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
+		return renderPolygonByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	PolygonGlyph Font::renderPolygon(const StringView ch, const ReadingDirection readingDirection) const
+	{
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
+		return renderPolygonByGlyphIndex(glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderPolygonByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	PolygonGlyph Font::renderPolygonByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->renderPolygonByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderPolygons
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<PolygonGlyph> Font::renderPolygons(const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->renderPolygons(m_handle->id(), s, enableLigatures, readingDirection);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

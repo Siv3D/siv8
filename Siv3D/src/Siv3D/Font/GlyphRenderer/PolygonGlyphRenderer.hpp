@@ -10,20 +10,11 @@
 //-----------------------------------------------
 
 # pragma once
+# include <Siv3D/PolygonGlyph.hpp>
+# include "../FontUtility.hpp"
 
 namespace s3d
 {
-	namespace Geometry2D
-	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	Contains
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		bool Contains(const Polygon& a, const Vec2& b) noexcept;
-	}
+	[[nodiscard]]
+	PolygonGlyph RenderPolygonGlyph(::FT_Face face, GlyphIndex glyphIndex, const FontFaceInfo& info, ReadingDirection readingDirection);
 }
-
-# include "Contains.ipp"

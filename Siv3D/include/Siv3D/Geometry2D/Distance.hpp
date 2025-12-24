@@ -21,5 +21,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		double Distance(const Vec2& a, const Line& b);
 	}
 }

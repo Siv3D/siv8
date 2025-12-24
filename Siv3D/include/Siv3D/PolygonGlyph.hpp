@@ -10,20 +10,14 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
+# include "MultiPolygon.hpp"
+# include "GlyphInfo.hpp"
 
 namespace s3d
 {
-	namespace Geometry2D
+	struct PolygonGlyph : GlyphInfo
 	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	Contains
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		bool Contains(const Polygon& a, const Vec2& b) noexcept;
-	}
+		MultiPolygon polygons;
+	};
 }
-
-# include "Contains.ipp"

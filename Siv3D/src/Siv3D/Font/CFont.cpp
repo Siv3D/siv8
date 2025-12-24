@@ -21,6 +21,7 @@
 # include "FontUtility.hpp"
 # include "TypefaceUtility.hpp"
 # include "GlyphRenderer/OutlineGlyphRenderer.hpp"
+# include "GlyphRenderer/PolygonGlyphRenderer.hpp"
 # include "GlyphRenderer/BitmapGlyphRenderer.hpp"
 # include "GlyphCache/IGlyphCache.hpp"
 
@@ -399,6 +400,59 @@ namespace s3d
 	{
 		const auto& font = m_fonts[handleID];
 		return RenderOutlineGlyph(font->getFace(), glyphIndex, closeRing, font->getInfo(), readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderOutlines
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<OutlineGlyph> CFont::renderOutlines(const Font::IDType handleID, const StringView s, const CloseRing closeRing, const EnableLigatures enableLigatures, const ReadingDirection readingDirection)
+	{
+		const Array<ResolvedGlyph> resolvedGlyphs = m_fonts[handleID]->getResolvedGlyphs(s, readingDirection, EnableFallback::Yes, enableLigatures);
+		
+		Array<OutlineGlyph> outlineGlyphs(Arg::reserve = resolvedGlyphs.size());
+
+		for (const auto& resolvedGlyph : resolvedGlyphs)
+		{
+			outlineGlyphs.emplace_back(RenderOutlineGlyph(m_fonts[handleID]->getFace(), resolvedGlyph.glyphIndex, closeRing, m_fonts[handleID]->getInfo(), readingDirection));
+		}
+
+		return outlineGlyphs;
+	}
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderPolygonByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	PolygonGlyph CFont::renderPolygonByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	{
+		const auto& font = m_fonts[handleID];
+		return RenderPolygonGlyph(font->getFace(), glyphIndex, font->getInfo(), readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderPolygons
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<PolygonGlyph> CFont::renderPolygons(const Font::IDType handleID, const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection)
+	{
+		const Array<ResolvedGlyph> resolvedGlyphs = m_fonts[handleID]->getResolvedGlyphs(s, readingDirection, EnableFallback::Yes, enableLigatures);
+		
+		Array<PolygonGlyph> polygonGlyphs(Arg::reserve = resolvedGlyphs.size());
+		
+		for (const auto& resolvedGlyph : resolvedGlyphs)
+		{
+			polygonGlyphs.emplace_back(RenderPolygonGlyph(m_fonts[handleID]->getFace(), resolvedGlyph.glyphIndex, m_fonts[handleID]->getInfo(), readingDirection));
+		}
+
+		return polygonGlyphs;
 	}
 
 	////////////////////////////////////////////////////////////////

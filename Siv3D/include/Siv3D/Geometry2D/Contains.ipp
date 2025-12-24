@@ -21,9 +21,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		[[nodiscard]]
-		bool Contains(const Polygon& a, const Vec2& b) noexcept;
+		inline bool Contains(const Polygon& a, const Vec2& b) noexcept
+		{
+			return Intersect(b, a);
+		}
 	}
 }
-
-# include "Contains.ipp"

@@ -19,6 +19,7 @@
 # include "GlyphIndex.hpp"
 # include "GlyphInfo.hpp"
 # include "OutlineGlyph.hpp"
+# include "PolygonGlyph.hpp"
 # include "BitmapGlyph.hpp"
 # include "MSDFGlyph.hpp"
 # include "ResolvedGlyph.hpp"
@@ -325,7 +326,7 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return グリフを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool hasGlyph(char32 codePoint, ReadingDirection readingDirection) const;
+		bool hasGlyph(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		/// @brief 指定した文字のグリフを持つかを返します。
 		/// @param ch 文字
@@ -333,7 +334,7 @@ namespace s3d
 		/// @remark char32 型の要素 1 つでは表現できない文字のための関数です。
 		/// @return グリフを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool hasGlyph(StringView ch, ReadingDirection readingDirection) const;
+		bool hasGlyph(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -476,8 +477,38 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Array<OutlineGlyph> renderOutlines(StringView s, CloseRing closeRing = CloseRing::No, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		[[nodiscard]]
+		Array<OutlineGlyph> renderOutlines(StringView s, CloseRing closeRing = CloseRing::No, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		PolygonGlyph renderPolygon(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		[[nodiscard]]
+		PolygonGlyph renderPolygon(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderPolygonByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		PolygonGlyph renderPolygonByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderPolygons
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Array<PolygonGlyph> renderPolygons(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//

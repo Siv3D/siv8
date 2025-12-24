@@ -999,23 +999,35 @@ namespace s3d
 //		/// @return  指定した線分における進行方向左手の単位ベクトル
 //		[[nodiscard]]
 //		Vec2 normalAtLine(size_t index, CloseRing closeRing = CloseRing::No) const;
-//
-//		[[nodiscard]]
-//		LineString movedBy(double x, double y) const&;
-//
-//		[[nodiscard]]
-//		LineString movedBy(double x, double y) && noexcept;
-//
-//		[[nodiscard]]
-//		LineString movedBy(Vec2 v) const&;
-//
-//		[[nodiscard]]
-//		LineString movedBy(Vec2 v) && noexcept;
-//
-//		LineString& moveBy(double x, double y) noexcept;
-//
-//		LineString& moveBy(Vec2 v) noexcept;
-//
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	movedBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr LineString movedBy(double x, double y) const&;
+
+		[[nodiscard]]
+		constexpr LineString movedBy(double x, double y) && noexcept;
+
+		[[nodiscard]]
+		constexpr LineString movedBy(Vec2 v) const&;
+
+		[[nodiscard]]
+		constexpr LineString movedBy(Vec2 v) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	moveBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr LineString& moveBy(double x, double y) noexcept;
+
+		constexpr LineString& moveBy(Vec2 v) noexcept;
+
 //		[[nodiscard]]
 //		LineString scaled(double s) const&;
 //

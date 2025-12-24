@@ -90,6 +90,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat3x3.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MultiPolygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\OffsetCircular.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PerlinNoise.ipp" />
@@ -132,6 +133,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\BoundingRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Center.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Contains.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Contains.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ConvexHull.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.hpp" />
@@ -154,6 +156,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PerlinNoise.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PolygonGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Print.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PrintBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ReadingDirection.hpp" />
@@ -741,6 +744,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\BitmapGlyphRenderer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\MSDFGlyphRenderer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\OutlineGlyphRenderer.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\PolygonGlyphRenderer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\IFont.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp" />
@@ -1359,12 +1363,14 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\BitmapGlyphRenderer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\MSDFGlyphRenderer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\OutlineGlyphRenderer.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\PolygonGlyphRenderer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\SivFont.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FormatUtility\SivFormatUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_BoundingRect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_ConvexHull.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Distance.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_IsClockwise.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Misc.cpp" />

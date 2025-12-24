@@ -84,6 +84,15 @@ namespace s3d
 		virtual OutlineGlyph renderOutlineByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, CloseRing closeRing, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
+		virtual Array<OutlineGlyph> renderOutlines(Font::IDType handleID, StringView s, CloseRing closeRing, EnableLigatures enableLigatures, ReadingDirection readingDirection) = 0;
+
+		[[nodiscard]]
+		virtual PolygonGlyph renderPolygonByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
+
+		[[nodiscard]]
+		virtual Array<PolygonGlyph> renderPolygons(Font::IDType handleID, StringView s, EnableLigatures enableLigatures, ReadingDirection readingDirection) = 0;
+
+		[[nodiscard]]
 		virtual BitmapGlyph renderBitmapByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]

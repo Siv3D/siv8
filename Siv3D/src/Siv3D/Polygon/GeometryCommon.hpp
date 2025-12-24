@@ -24,6 +24,8 @@ namespace s3d
 	using CwOpenPolygon	= boost::geometry::model::polygon<Vec2, false, false, Array, Array>;
 	using CWOpenRing	= boost::geometry::model::ring<Vec2, false, false, Array>;
 	using GLineString	= boost::geometry::model::linestring<Vec2, Array>;
+	using GSegment		= boost::geometry::model::segment<Vec2>;
+	using GVec2			= boost::geometry::model::d2::point_xy<double>;
 	using InnersType	= Array<boost::geometry::model::ring<Vec2, false, false, Array>>;
 	
 	namespace detail

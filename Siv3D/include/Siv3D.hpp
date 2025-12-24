@@ -1622,11 +1622,13 @@
 
 # include <Siv3D/ReadingDirection.hpp>
 # include <Siv3D/OutlineGlyph.hpp>
+# include <Siv3D/PolygonGlyph.hpp>
 # include <Siv3D/BitmapGlyph.hpp>
 
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/TextStyle.hpp>
 
+# include <Siv3D/GlyphContext.hpp>
 # include <Siv3D/ITextEffect.hpp>
 # include <Siv3D/TextEffect/NullTextEffect.hpp>
 # include <Siv3D/TextEffect/BasicTextEffect.hpp>

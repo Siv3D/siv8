@@ -381,31 +381,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 平行移動した多角形を返します。
-		///// @param x X 方向の移動量
-		///// @param y Y 方向の移動量
-		///// @return 平行移動した多角形
-		//[[nodiscard]]
-		//Polygon movedBy(double x, double y) const&;
+		/// @brief 平行移動した多角形を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形
+		[[nodiscard]]
+		Polygon movedBy(double x, double y) const&;
 
-		///// @brief 平行移動した多角形を返します。
-		///// @param v 移動量
-		///// @return 平行移動した多角形
-		//[[nodiscard]]
-		//Polygon movedBy(Vec2 v) const&;
+		/// @brief 平行移動した多角形を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形
+		[[nodiscard]]
+		Polygon movedBy(Vec2 v) const&;
 
-		///// @brief 平行移動した多角形を返します。
-		///// @param x X 方向の移動量
-		///// @param y Y 方向の移動量
-		///// @return 平行移動した多角形
-		//[[nodiscard]]
-		//Polygon movedBy(double x, double y) && noexcept;
+		/// @brief 平行移動した多角形を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形
+		[[nodiscard]]
+		Polygon movedBy(double x, double y) && noexcept;
 
-		///// @brief 平行移動した多角形を返します。
-		///// @param v 移動量
-		///// @return 平行移動した多角形
-		//[[nodiscard]]
-		//Polygon movedBy(Vec2 v) && noexcept;
+		/// @brief 平行移動した多角形を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形
+		[[nodiscard]]
+		Polygon movedBy(Vec2 v) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -413,16 +413,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形を平行移動します。
-		///// @param x X 方向の移動量
-		///// @param y Y 方向の移動量
-		///// @return *this
-		//Polygon& moveBy(double x, double y) noexcept;
+		/// @brief 多角形を平行移動します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return *this
+		Polygon& moveBy(double x, double y) noexcept;
 
-		///// @brief 多角形を平行移動します。
-		///// @param v 移動量
-		///// @return *this
-		//Polygon& moveBy(Vec2 v) noexcept;
+		/// @brief 多角形を平行移動します。
+		/// @param v 移動量
+		/// @return *this
+		Polygon& moveBy(Vec2 v) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
