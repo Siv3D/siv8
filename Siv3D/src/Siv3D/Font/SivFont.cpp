@@ -699,8 +699,7 @@ namespace s3d
 
 	bool Font::preload(const StringView chars, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
 	{
-		const DrawableText drawableText{ *this, String{ chars }, readingDirection, enableLigatures };
-		return SIV3D_ENGINE(Font)->preload(m_handle->id(), drawableText.resolvedGlyphs, readingDirection);
+		return SIV3D_ENGINE(Font)->preload(m_handle->id(), getResolvedGlyphs(chars, readingDirection, EnableFallback::No, enableLigatures), readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////

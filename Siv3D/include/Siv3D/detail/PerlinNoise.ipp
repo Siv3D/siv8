@@ -193,7 +193,7 @@ namespace s3d
 			value_type u;
 		};
 
-		std::vector<XCache> xCaches(width);
+		Array<XCache> xCaches(width);
 		{
 			XCache* pCache = xCaches.data();
 			value_type currentX = baseX;
@@ -454,11 +454,11 @@ namespace s3d
 			value_type yStep;
 
 			// X座標関連キャッシュ（事前に計算）
-			std::vector<XCache> xCaches;
+			Array<XCache> xCaches;
 		};
 
 		// 各オクターブの初期化と X キャッシュの事前計算
-		std::vector<OctaveLayer> layers(parameters.octaves);
+		Array<OctaveLayer> layers(parameters.octaves);
 		{
 			value_type frequency = 1.0;
 			value_type amplitude = 1.0;
@@ -521,7 +521,7 @@ namespace s3d
 			value_type fy_minus_1;
 			value_type v;
 		};
-		std::vector<LayerYState> layerYStates(layers.size());
+		Array<LayerYState> layerYStates(layers.size());
 
 		for (int32 y = 0; y < height; ++y)
 		{
