@@ -32,6 +32,8 @@ namespace s3d
 
 		virtual ~IGlyphCache() = default;
 
+		virtual bool preload(FontData& font, const Array<ResolvedGlyph>& resolvedGlyphs, const ReadingDirection readingDirection) = 0;
+
 		[[nodiscard]]
 		virtual const Texture& getTexture() noexcept = 0;
 
@@ -61,12 +63,8 @@ namespace s3d
 		virtual int32 getBufferThickness() const noexcept = 0;
 
 		/*
-		virtual bool preload(const FontData& font, StringView s) = 0;
-
 		[[nodiscard]]
 		virtual TextureRegion getTextureRegion(const FontData& font, GlyphIndex glyphIndex) = 0;
-
-		[[nodiscard]]
-		virtual int32 getBufferThickness(GlyphIndex glyphIndex) = 0*/;
+		*/;
 	};
 }

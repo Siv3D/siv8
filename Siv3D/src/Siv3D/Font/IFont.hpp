@@ -98,6 +98,8 @@ namespace s3d
 		[[nodiscard]]
 		virtual MSDFGlyph renderMSDFByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 
+		virtual bool preload(Font::IDType handleID, const Array<ResolvedGlyph>& resolvedGlyphs, ReadingDirection readingDirection) = 0;
+
 		virtual const Texture& getTexture(Font::IDType handleID) = 0;
 
 		virtual Array<double> getXAdvances(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) = 0;

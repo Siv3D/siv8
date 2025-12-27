@@ -552,9 +552,18 @@ namespace s3d
 		[[nodiscard]]
 		MSDFGlyph renderMSDFByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	preload
+		//
+		////////////////////////////////////////////////////////////////
 
-
-
+		/// @brief 指定した文字列のグリフをキャッシュします。
+		/// @param chars 文字列
+		/// @param enableLigatures 合字を有効にするかどうか
+		/// @param readingDirection テキストの方向
+		/// @return キャッシュに成功した場合 true, それ以外の場合は false
+		bool preload(StringView chars, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -566,8 +575,6 @@ namespace s3d
 		/// @return フォントの内部でキャッシュされているテクスチャ
 		[[nodiscard]]
 		const Texture& getTexture() const;
-
-
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -621,8 +628,6 @@ namespace s3d
 		template <class... Args>
 		DrawableText operator ()(ReadingDirection readingDirection, const Args&...) const = delete;
 
-
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	swap
@@ -636,7 +641,6 @@ namespace s3d
 		{
 			lhs.swap(rhs);
 		}
-
 
 		////////////////////////////////////////////////////////////////
 		//

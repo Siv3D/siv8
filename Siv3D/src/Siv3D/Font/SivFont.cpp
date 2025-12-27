@@ -680,7 +680,6 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->renderMSDFByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
 	}
 
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	getTexture
@@ -692,7 +691,17 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->getTexture(m_handle->id());
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	preload
+	//
+	////////////////////////////////////////////////////////////////
 
+	bool Font::preload(const StringView chars, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
+	{
+		const DrawableText drawableText{ *this, String{ chars }, readingDirection, enableLigatures };
+		return SIV3D_ENGINE(Font)->preload(m_handle->id(), drawableText.resolvedGlyphs, readingDirection);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -731,9 +740,6 @@ namespace s3d
 		return{ *this, std::move(text), readingDirection };
 	}
 
-
-
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	GetFaces
@@ -754,7 +760,6 @@ namespace s3d
 	bool Font::IsAvailable(const Typeface typeface)
 	{
 		const FilePath fontFilePath = GetTypefaceInfo(typeface, FontMethod::Bitmap).path;
-
 		return FileSystem::Exists(fontFilePath);
 	}
 }
