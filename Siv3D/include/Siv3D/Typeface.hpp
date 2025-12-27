@@ -34,61 +34,49 @@ namespace s3d
 		/// @brief カラー絵文字フォント
 		ColorEmoji,
 
-		/// @brief 非常に細いサイズの M PLUS 2 フォント
-		MPlus2_Thin,
+		/// @brief 非常に細いサイズの M+ 1p フォント
+		Mplus_Thin,
 
-		/// @brief 細いサイズの M PLUS 2 フォント	
-		MPlus2_ExtraLight,
+		/// @brief やや細いサイズの M+ 1p フォント	
+		Mplus_Light,
 
-		/// @brief やや細いサイズの M PLUS 2 フォント	
-		MPlus2_Light,
+		/// @brief 通常サイズの M+ 1p フォント	
+		Mplus_Regular,
 
-		/// @brief 通常サイズの M PLUS 2 フォント	
-		MPlus2_Regular,
+		/// @brief 少し太いサイズの M+ 1p フォント	
+		Mplus_Medium,
 
-		/// @brief 少し太いサイズの M PLUS 2 フォント	
-		MPlus2_Medium,
+		/// @brief 太いサイズの M+ 1p フォント
+		Mplus_Bold,
 
-		/// @brief やや太いサイズの M PLUS 2 フォント	
-		MPlus2_SemiBold,
+		/// @brief とても太いサイズの M+ 1p フォント
+		Mplus_Heavy,
 
-		/// @brief 太いサイズの M PLUS 2 フォント
-		MPlus2_Bold,
-
-		/// @brief とても太いサイズの M PLUS 2 フォント
-		MPlus2_ExtraBold,
-
-		/// @brief 最も太いサイズの M PLUS 2 フォント	
-		MPlus2_Black,
+		/// @brief 最も太いサイズの M+ 1p フォント	
+		Mplus_Black,
 
 		///// @brief マテリアルデザイン・アイコンフォント
 		Icon_MaterialDesign,
 
-		/// @brief 非常に細いサイズの M PLUS 2 フォント
-		Thin		= MPlus2_Thin,
+		/// @brief 非常に細いサイズの M+ 1p フォント
+		Thin		= Mplus_Thin,
 
-		/// @brief 細いサイズの M PLUS 2 フォント	
-		ExtraLight	= MPlus2_ExtraLight,
+		/// @brief やや細いサイズの M+ 1p フォント
+		Light		= Mplus_Light,
 
-		/// @brief やや細いサイズの M PLUS 2 フォント
-		Light		= MPlus2_Light,
+		/// @brief 通常サイズの M+ 1p フォント
+		Regular		= Mplus_Regular,
 
-		/// @brief 通常サイズの M PLUS 2 フォント
-		Regular		= MPlus2_Regular,
+		/// @brief 少し太いサイズの M+ 1p フォント
+		Medium		= Mplus_Medium,
 
-		/// @brief 少し太いサイズの M PLUS 2 フォント
-		Medium		= MPlus2_Medium,
+		/// @brief 太いサイズの M+ 1p フォント
+		Bold		= Mplus_Bold,
 
-		/// @brief やや太いサイズの M PLUS 2 フォント	
-		SemiBold	= MPlus2_SemiBold,
+		/// @brief とても太いサイズの M+ 1p フォント
+		Heavy		= Mplus_Heavy,
 
-		/// @brief 太いサイズの M PLUS 2 フォント
-		Bold		= MPlus2_Bold,
-
-		/// @brief とても太いサイズの M PLUS 2 フォント
-		Heavy		= MPlus2_ExtraBold,
-
-		/// @brief 最も太いサイズの M PLUS 2 フォント
-		Black		= MPlus2_Black,
+		/// @brief 最も太いサイズの M+ 1p フォント
+		Black		= Mplus_Black,
 	};
 }
