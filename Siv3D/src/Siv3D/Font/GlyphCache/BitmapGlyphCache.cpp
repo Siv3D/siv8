@@ -271,10 +271,11 @@ namespace s3d
 			}
 
 			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			const int32 bufferThickness = m_glyphCacheManager.getBufferThickness();
 			double h = 0.0;
 			{
-				const TextureRegion textureRegion	= m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);		
-				const Vec2 posOffset{ cache.info.left, cache.info.top };
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);		
+				const Vec2 posOffset{ (cache.info.left - bufferThickness), (cache.info.top - bufferThickness) };
 				const Vec2 drawPos = (penPos + posOffset * scale);
 				const double top = penPos.y;
 				const double bottom = (top + ((cache.info.top + textureRegion.size.y) * scale));
