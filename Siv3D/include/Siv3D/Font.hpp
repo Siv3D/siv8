@@ -18,6 +18,7 @@
 # include "ReadingDirection.hpp"
 # include "GlyphIndex.hpp"
 # include "GlyphInfo.hpp"
+# include "Glyph.hpp"
 # include "OutlineGlyph.hpp"
 # include "PolygonGlyph.hpp"
 # include "BitmapGlyph.hpp"
@@ -25,11 +26,13 @@
 # include "ResolvedGlyph.hpp"
 # include "PredefinedYesNo.hpp"
 # include "Typeface.hpp"
+# include "TextStyle.hpp"
 
 namespace s3d
 {
 	struct FontFaceProperties;
 	struct DrawableText;
+	class PixelShader;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -431,27 +434,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getGlyphInfo
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		GlyphInfo getGlyphInfo(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
-
-		[[nodiscard]]
-		GlyphInfo getGlyphInfo(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getGlyphInfoByGlyphIndex
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		GlyphInfo getGlyphInfoByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	renderOutline
 		//
 		////////////////////////////////////////////////////////////////
@@ -578,6 +560,39 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	getGlyph
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Glyph getGlyph(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		[[nodiscard]]
+		Glyph getGlyph(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlyphByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した文字の描画用のグリフを返します。
+		/// @param glyphIndex 文字のグリフインデックス
+		/// @return 描画用グリフ
+		[[nodiscard]]
+		Glyph getGlyphByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlyphs
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Array<Glyph> getGlyphs(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	swap
 		//
 		////////////////////////////////////////////////////////////////
@@ -659,6 +674,20 @@ namespace s3d
 
 		[[nodiscard]]
 		static bool IsAvailable(Typeface typeface);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetPixelShader
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief テキスト描画用の標準ピクセルシェーダを返します。
+		/// @param method フォントのレンダリング方式
+		/// @param type テキストのスタイル
+		/// @param hasColor カラー情報をもつフォント（カラー絵文字など）であるか
+		/// @return 指定した設定でのテキスト描画用の標準ピクセルシェーダ
+		[[nodiscard]]
+		static const PixelShader& GetPixelShader(FontMethod method, TextStyle::Type type = TextStyle::Type::Default);
 	};
 }
 

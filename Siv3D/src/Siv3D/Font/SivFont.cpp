@@ -515,35 +515,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getGlyphInfo
-	//
-	////////////////////////////////////////////////////////////////
-
-	GlyphInfo Font::getGlyphInfo(const char32 codePoint, const ReadingDirection readingDirection) const
-	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
-		return getGlyphInfoByGlyphIndex(glyphIndex, readingDirection);
-	}
-
-	GlyphInfo Font::getGlyphInfo(const StringView ch, const ReadingDirection readingDirection) const
-	{
-		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
-		return getGlyphInfoByGlyphIndex(glyphIndex, readingDirection);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getGlyphInfoByGlyphIndex
-	//
-	////////////////////////////////////////////////////////////////
-
-	GlyphInfo Font::getGlyphInfoByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
-	{
-		return SIV3D_ENGINE(Font)->getGlyphInfoByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	renderOutline
 	//
 	////////////////////////////////////////////////////////////////
@@ -682,6 +653,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	preload
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Font::preload(const StringView chars, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->preload(m_handle->id(), getResolvedGlyphs(chars, readingDirection, EnableFallback::No, enableLigatures), readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getTexture
 	//
 	////////////////////////////////////////////////////////////////
@@ -693,13 +675,44 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	preload
+	//	getGlyph
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Font::preload(const StringView chars, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
+	Glyph Font::getGlyph(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->preload(m_handle->id(), getResolvedGlyphs(chars, readingDirection, EnableFallback::No, enableLigatures), readingDirection);
+		const auto handleID = m_handle->id();
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(handleID, codePoint, readingDirection);
+		return SIV3D_ENGINE(Font)->getGlyphByGlyphIndex(handleID, glyphIndex, readingDirection);
+	}
+
+	Glyph Font::getGlyph(const StringView ch, const ReadingDirection readingDirection) const
+	{
+		const auto handleID = m_handle->id();
+		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(handleID, ch, readingDirection);
+		return SIV3D_ENGINE(Font)->getGlyphByGlyphIndex(handleID, glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	Glyph Font::getGlyphByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->getGlyphByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphs
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Glyph> Font::getGlyphs(const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
+	{
+		return SIV3D_ENGINE(Font)->getGlyphs(m_handle->id(), s, getResolvedGlyphs(s, readingDirection, EnableFallback::Yes, enableLigatures), readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -760,6 +773,17 @@ namespace s3d
 	{
 		const FilePath fontFilePath = GetTypefaceInfo(typeface, FontMethod::Bitmap).path;
 		return FileSystem::Exists(fontFilePath);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	GetPixelShader
+	//
+	////////////////////////////////////////////////////////////////
+
+	const PixelShader& Font::GetPixelShader(const FontMethod method, const TextStyle::Type type)
+	{
+		return SIV3D_ENGINE(Font)->getFontShader(method, type);
 	}
 }
 

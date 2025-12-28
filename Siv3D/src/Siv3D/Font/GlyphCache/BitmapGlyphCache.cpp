@@ -752,6 +752,19 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getGlyph
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::pair<GlyphInfo, TextureRegion> BitmapGlyphCache::getGlyph(const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	{
+		const auto& cache = m_glyphCacheManager.get(glyphIndex, readingDirection);
+		const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+		return{ cache.info, textureRegion };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	prerender
 	//
 	////////////////////////////////////////////////////////////////

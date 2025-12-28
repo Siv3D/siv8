@@ -60,11 +60,10 @@ namespace s3d
 	
 		virtual void setBufferThickness(int32 thickness) = 0;
 
+		[[nodiscard]]
 		virtual int32 getBufferThickness() const noexcept = 0;
 
-		/*
 		[[nodiscard]]
-		virtual TextureRegion getTextureRegion(const FontData& font, GlyphIndex glyphIndex) = 0;
-		*/;
+		virtual std::pair<GlyphInfo, TextureRegion> getGlyph(GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 	};
 }

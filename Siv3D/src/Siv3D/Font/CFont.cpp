@@ -381,17 +381,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getGlyphInfoByGlyphIndex
-	//
-	////////////////////////////////////////////////////////////////
-
-	GlyphInfo CFont::getGlyphInfoByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
-	{
-		return m_fonts[handleID]->getGlyphInfoByGlyphIndex(glyphIndex, readingDirection);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	renderOutlineByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
@@ -425,7 +414,6 @@ namespace s3d
 
 		return outlineGlyphs;
 	}
-
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -508,6 +496,51 @@ namespace s3d
 	const Texture& CFont::getTexture(const Font::IDType handleID)
 	{
 		return m_fonts[handleID]->getGlyphCache().getTexture();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphByGlyphIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	Glyph CFont::getGlyphByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	{
+		const auto& font = m_fonts[handleID];
+		auto& cache = font->getGlyphCache();
+		cache.preload(*font, Array<ResolvedGlyph>{ ResolvedGlyph{ glyphIndex, 0 } }, readingDirection);
+		const auto& [glyphInfo, textureRegion] = cache.getGlyph(glyphIndex, readingDirection);
+		Glyph glyph{ glyphInfo };
+		glyph.codePoint = 0; // 逆引きは不可能（1 つのグリフが複数のコードポイントを持つ場合があるため）
+		glyph.texture = textureRegion;
+		return glyph;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyphs
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Glyph> CFont::getGlyphs(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const ReadingDirection readingDirection)
+	{
+		const auto& font = m_fonts[handleID];
+		auto& cache = font->getGlyphCache();
+		cache.preload(*font, resolvedGlyphs, readingDirection);
+
+		Array<Glyph> glyphs(Arg::reserve = resolvedGlyphs.size());
+		{
+			for (const auto& resolvedGlyph : resolvedGlyphs)
+			{
+				const auto& [glyphInfo, textureRegion] = cache.getGlyph(resolvedGlyph.glyphIndex, readingDirection);
+				Glyph glyph{ glyphInfo };
+				glyph.codePoint = s[resolvedGlyph.pos];
+				glyph.texture = textureRegion;
+				glyphs.push_back(std::move(glyph));
+			}
+		}
+
+		return glyphs;
 	}
 
 	////////////////////////////////////////////////////////////////

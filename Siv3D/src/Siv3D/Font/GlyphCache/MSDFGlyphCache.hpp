@@ -120,6 +120,15 @@ namespace s3d
 		[[nodiscard]]
 		int32 getBufferThickness() const noexcept override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGlyph
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		std::pair<GlyphInfo, TextureRegion> getGlyph(GlyphIndex glyphIndex, ReadingDirection readingDirection) override;
+
 	private:
 
 		static constexpr int32 DefaultBufferThickness = 2;

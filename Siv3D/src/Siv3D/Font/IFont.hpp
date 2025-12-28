@@ -77,8 +77,8 @@ namespace s3d
 		[[nodiscard]]
 		virtual Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, ReadingDirection readingDirection, EnableFallback enableFallback, EnableLigatures enableLigatures) = 0;
 
-		[[nodiscard]]
-		virtual GlyphInfo getGlyphInfoByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
+		//[[nodiscard]]
+		//virtual GlyphInfo getGlyphInfoByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 
 		[[nodiscard]]
 		virtual OutlineGlyph renderOutlineByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, CloseRing closeRing, ReadingDirection readingDirection) = 0;
@@ -101,6 +101,10 @@ namespace s3d
 		virtual bool preload(Font::IDType handleID, const Array<ResolvedGlyph>& resolvedGlyphs, ReadingDirection readingDirection) = 0;
 
 		virtual const Texture& getTexture(Font::IDType handleID) = 0;
+
+		virtual Glyph getGlyphByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
+
+		virtual Array<Glyph> getGlyphs(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, ReadingDirection readingDirection) = 0;
 
 		virtual Array<double> getXAdvances(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, double fontSize) = 0;
 
