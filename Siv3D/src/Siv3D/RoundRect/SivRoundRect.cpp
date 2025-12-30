@@ -537,12 +537,6 @@ namespace s3d
 
 	const RoundRect& RoundRect::drawShadow(const Vec2& offset, const double blur, const double spread, const ColorF& color, const bool fill) const
 	{
-		// ブラー半径が 0 未満なら描画しない
-		if (blur < 0.0)
-		{
-			return *this;
-		}
-
 		// 角丸でなければ長方形へ
 		if (r == 0.0)
 		{
@@ -551,6 +545,17 @@ namespace s3d
 		}
 
 		RoundRect baseRoundRect = movedBy(offset).stretched(spread);
+
+		if (blur <= 0.0)
+		{
+			if (fill)
+			{
+				baseRoundRect.draw(color);
+			}
+
+			return *this;
+		}
+
 		baseRoundRect.r += spread;
 		baseRoundRect.r = Min(baseRoundRect.r, (baseRoundRect.rect.size.minComponent() * 0.5));
 		const double blurClamped = Min(baseRoundRect.w, baseRoundRect.h, blur);

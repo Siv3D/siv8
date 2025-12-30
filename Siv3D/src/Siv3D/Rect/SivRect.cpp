@@ -526,13 +526,18 @@ namespace s3d
 
 	const Rect& Rect::drawShadow(const Vec2& offset, const double blur, const double spread, const ColorF& color, const bool fill) const
 	{
-		// ブラー半径が 0 未満なら描画しない
-		if (blur < 0.0)
+		const RectF baseRect = movedBy(offset).stretched(spread);
+
+		if (blur <= 0.0)
 		{
+			if (fill)
+			{
+				baseRect.draw(color);
+			}
+
 			return *this;
 		}
 
-		const RectF baseRect = movedBy(offset).stretched(spread);
 		const double blurClamped = Min<double>(baseRect.w, baseRect.h, blur);
 
 		SIV3D_ENGINE(Renderer2D)->addRectShadow(FloatRect{ baseRect.x, baseRect.y, (baseRect.x + baseRect.w), (baseRect.y + baseRect.h) },
