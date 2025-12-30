@@ -40,7 +40,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief 頂点シェーダ
+	/// @brief フォント
 	class Font : public AssetHandle<Font>
 	{
 	public:
@@ -55,48 +55,135 @@ namespace s3d
 		[[nodiscard]]
 		Font();
 
+		/// @brief フォントを作成します。
+		/// @param baseSize 基本サイズ
+		/// @param typeface 標準同梱フォントの種類
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		explicit Font(int32 baseSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(int32 baseSize, FilePathView path, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(int32 baseSize, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param styleName Variable Font の定義済みスタイル名
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(int32 baseSize, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
+		/// @param styleName Variable Font の定義済みスタイル名
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param typeface 標準同梱フォントの種類
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param styleName Variable Font の定義済みスタイル名
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
+		/// @param styleName Variable Font の定義済みスタイル名
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
+		/// @param typeface 標準同梱フォントの種類
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
+		/// @param path フォントファイルのパス
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
+		/// @param path フォントファイルのパス
+		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
+		/// @param path フォントファイルのパス
+		/// @param styleName Variable Font の定義済みスタイル名
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
 
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
+		/// @param path フォントファイルのパス
+		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
+		/// @param styleName Variable Font の定義済みスタイル名
+		/// @param style フォントスタイル
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
 
@@ -159,6 +246,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief フォントのプロパティを返します。
+		/// @return フォントのプロパティ
 		[[nodiscard]]
 		const FontFaceProperties& properties() const;
 
@@ -168,6 +257,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief フォントのファミリー名を返します。
+		/// @return フォントのファミリー名
+		[[nodiscard]]
 		const String& familyName() const;
 
 		////////////////////////////////////////////////////////////////
@@ -176,6 +268,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief フォントのスタイル名を返します。
+		/// @return フォントのスタイル名
+		[[nodiscard]]
 		const String& styleName() const;
 
 		////////////////////////////////////////////////////////////////
@@ -184,6 +279,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief フォントのポストスクリプト名を返します。
+		/// @return フォントのポストスクリプト名
+		[[nodiscard]]
 		const String& postscriptName() const;
 
 		////////////////////////////////////////////////////////////////
@@ -192,6 +290,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief フォントのバージョンを返します。
+		/// @return フォントのバージョン
+		[[nodiscard]]
 		const String& version() const;
 
 		////////////////////////////////////////////////////////////////
@@ -200,6 +301,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief カラーグリフであるかを返します。
+		/// @return カラーグリフである場合 true, それ以外の場合は false
+		[[nodiscard]]
 		bool hasColor() const;
 
 		////////////////////////////////////////////////////////////////
@@ -208,6 +312,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief グリフ名を持つかを返します。
+		/// @return グリフ名を持つ場合 true, それ以外の場合は false
+		[[nodiscard]]
 		bool hasGlyphNames() const;
 
 		////////////////////////////////////////////////////////////////
@@ -216,8 +323,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief フォントのアセンダーの高さ（ピクセル）を返します。
-		/// @return フォントのアセンダーの高さ（ピクセル）
+		/// @brief アセンダーの高さ（ピクセル）を返します。
+		/// @return アセンダーの高さ（ピクセル）
 		[[nodiscard]]
 		double ascender() const;
 
@@ -227,8 +334,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief フォントのディセンダーの高さ（ピクセル）を返します。
-		/// @return フォントのディセンダーの高さ（ピクセル）
+		/// @brief ディセンダーの高さ（ピクセル）を返します。
+		/// @return ディセンダーの高さ（ピクセル）
 		[[nodiscard]]
 		double descender() const;
 
@@ -256,6 +363,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 水平方向のスペースの幅を返します。
+		/// @return 水平方向のスペースの幅
 		[[nodiscard]]
 		double spaceXAdvance() const;
 
@@ -265,6 +374,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 垂直方向のスペースの幅を返します。
+		/// @return 垂直方向のスペースの幅
 		[[nodiscard]]
 		double spaceYAdvance() const;
 
@@ -274,8 +385,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief インデントに含まれるスペースの数を返します。
-		/// @return インデントに含まれるスペースの数
+		/// @brief インデントに含まれるスペースの個数を返します。
+		/// @return インデントに含まれるスペースの個数
 		[[nodiscard]]
 		int32 tabSize() const;
 
@@ -285,8 +396,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief インデントに含まれるスペースの数を設定します。
-		/// @param tabSize インデントに含まれるスペースの数
+		/// @brief インデントに含まれるスペースの個数を設定します。
+		/// @param tabSize インデントに含まれるスペースの個数
 		/// @return *this
 		const Font& setTabSize(int32 tabSize) const;
 
@@ -296,6 +407,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief SDF バッファの大きさ（ピクセル）を返します。
+		/// @return SDF バッファの大きさ（ピクセル）
 		[[nodiscard]]
 		int32 getBufferThickness() const;
 
@@ -305,6 +418,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief SDF バッファの大きさ（ピクセル）を設定します。
+		/// @param thickness SDF バッファの大きさ（ピクセル）
+		/// @return *this
 		const Font& setBufferThickness(int32 thickness) const;
 
 		////////////////////////////////////////////////////////////////
@@ -366,9 +482,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字のグリフ名を返します。
+		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
+		/// @return グリフ名
 		[[nodiscard]]
 		String getGlyphName(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		/// @brief 指定した文字のグリフ名を返します。
+		/// @param ch 文字
+		/// @param readingDirection テキストの方向
+		/// @return グリフ名
 		[[nodiscard]]
 		String getGlyphName(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -378,6 +502,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したグリフのグリフ名を返します。
+		/// @param glyphIndex グリフインデックス
+		/// @return グリフ名
 		[[nodiscard]]
 		String getGlyphNameByGlyphIndex(GlyphIndex glyphIndex) const;
 
@@ -387,9 +514,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字のグリフの水平方向のアドバンス幅を返します。
+		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
+		/// @return 水平方向のアドバンス幅
 		[[nodiscard]]
 		double getXAdvance(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		/// @brief 指定した文字のグリフの水平方向のアドバンス幅を返します。
+		/// @param ch 文字
+		/// @param readingDirection テキストの方向
+		/// @return 水平方向のアドバンス幅
 		[[nodiscard]]
 		double getXAdvance(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -399,6 +534,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したグリフの水平方向のアドバンス幅を返します。
+		/// @param glyphIndex グリフインデックス
+		/// @return 水平方向のアドバンス幅
 		[[nodiscard]]
 		double getXAdvanceByGlyphIndex(GlyphIndex glyphIndex) const;
 
@@ -408,9 +546,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字のグリフの垂直方向のアドバンス幅を返します。
+		/// @param codePoint 文字
+		/// @return 垂直方向のアドバンス幅
 		[[nodiscard]]
 		double getYAdvance(char32 codePoint) const;
 
+		/// @brief 指定した文字のグリフの垂直方向のアドバンス幅を返します。
+		/// @param ch 文字
+		/// @return 垂直方向のアドバンス幅
 		[[nodiscard]]
 		double getYAdvance(StringView ch) const;
 
@@ -420,6 +564,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したグリフの垂直方向のアドバンス幅を返します。
+		/// @param glyphIndex グリフインデックス
+		/// @return 垂直方向のアドバンス幅
 		[[nodiscard]]
 		double getYAdvanceByGlyphIndex(GlyphIndex glyphIndex) const;
 
@@ -429,6 +576,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列に対するグリフインデックスの配列を返します。
+		/// @param s 文字列
+		/// @param readingDirection テキストの方向
+		/// @param enableFallback フォールバックを有効にするか
+		/// @param enableLigatures 合字を有効にするか
+		/// @return グリフインデックスの配列
 		[[nodiscard]]
 		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, ReadingDirection readingDirection = ReadingDirection::LeftToRight, EnableFallback enableFallback = EnableFallback::Yes, EnableLigatures enableLigatures = EnableLigatures::Yes) const;
 
@@ -438,9 +591,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字のアウトライングリフを返します。
+		/// @param codePoint 文字
+		/// @param closeRing 頂点配列の終点を始点と重ねるか
+		/// @param readingDirection テキストの方向
+		/// @return アウトライングリフ
 		[[nodiscard]]
 		OutlineGlyph renderOutline(char32 codePoint, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		/// @brief 指定した文字のアウトライングリフを返します。
+		/// @param ch 文字
+		/// @param closeRing 頂点配列の終点を始点と重ねるか
+		/// @param readingDirection テキストの方向
+		/// @return アウトライングリフ
 		[[nodiscard]]
 		OutlineGlyph renderOutline(StringView ch, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -450,6 +613,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したグリフのアウトライングリフを返します。
+		/// @param glyphIndex グリフインデックス
+		/// @param closeRing 頂点配列の終点を始点と重ねるか
+		/// @param readingDirection テキストの方向
+		/// @return アウトライングリフ
 		[[nodiscard]]
 		OutlineGlyph renderOutlineByGlyphIndex(GlyphIndex glyphIndex, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -459,6 +627,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列のアウトライングリフの配列を返します。
+		/// @param s 文字列
+		/// @param closeRing 頂点配列の終点を始点と重ねるか
+		/// @param enableLigatures 合字を有効にするか
+		/// @param readingDirection テキストの方向
+		/// @return アウトライングリフの配列
 		[[nodiscard]]
 		Array<OutlineGlyph> renderOutlines(StringView s, CloseRing closeRing = CloseRing::No, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -468,9 +642,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字のポリゴングリフを返します。
+		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
+		/// @return ポリゴングリフ
 		[[nodiscard]]
 		PolygonGlyph renderPolygon(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		/// @brief 指定した文字のポリゴングリフを返します。
+		/// @param ch 文字
+		/// @param readingDirection テキストの方向
+		/// @return ポリゴングリフ
 		[[nodiscard]]
 		PolygonGlyph renderPolygon(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -480,6 +662,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したグリフのポリゴングリフを返します。
+		/// @param glyphIndex グリフインデックス
+		/// @param readingDirection テキストの方向
+		/// @return ポリゴングリフ
 		[[nodiscard]]
 		PolygonGlyph renderPolygonByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -489,8 +675,43 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列のポリゴングリフの配列を返します。
+		/// @param s 文字列
+		/// @param enableLigatures 合字を有効にするか
+		/// @param readingDirection テキストの方向
+		/// @return ポリゴングリフの配列
 		[[nodiscard]]
 		Array<PolygonGlyph> renderPolygons(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	renderMesh
+		////
+		//////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//MeshGlyph renderMesh(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		//[[nodiscard]]
+		//MeshGlyph renderMesh(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	renderMeshByGlyphIndex
+		////
+		//////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//MeshGlyph renderMeshByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	renderMeshes
+		////
+		//////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//Array<MeshGlyph> renderMeshes(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -498,9 +719,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字のビットマップグリフを返します。
+		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
+		/// @return ビットマップグリフ
 		[[nodiscard]]
 		BitmapGlyph renderBitmap(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		/// @brief 指定した文字のビットマップグリフを返します。
+		/// @param ch 文字
+		/// @param readingDirection テキストの方向
+		/// @return ビットマップグリフ
 		[[nodiscard]]
 		BitmapGlyph renderBitmap(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -510,6 +739,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したグリフのビットマップグリフを返します。
+		/// @param glyphIndex グリフインデックス
+		/// @param readingDirection テキストの方向
+		/// @return ビットマップグリフ
 		[[nodiscard]]
 		BitmapGlyph renderBitmapByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -519,9 +752,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字の MSDF グリフを返します。
+		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
+		/// @return MSDF グリフ
 		[[nodiscard]]
 		MSDFGlyph renderMSDF(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		/// @brief 指定した文字の MSDF グリフを返します。
+		/// @param ch 文字
+		/// @param readingDirection テキストの方向
+		/// @return MSDF グリフ
 		[[nodiscard]]
 		MSDFGlyph renderMSDF(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -531,6 +772,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したグリフの MSDF グリフを返します。
+		/// @param glyphIndex グリフインデックス
+		/// @param readingDirection テキストの方向
+		/// @return MSDF グリフ
 		[[nodiscard]]
 		MSDFGlyph renderMSDFByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -542,9 +787,10 @@ namespace s3d
 
 		/// @brief 指定した文字列のグリフをキャッシュします。
 		/// @param chars 文字列
-		/// @param enableLigatures 合字を有効にするかどうか
+		/// @param enableLigatures 合字を有効にするか
 		/// @param readingDirection テキストの方向
 		/// @return キャッシュに成功した場合 true, それ以外の場合は false
+		/// @remark 重複は自動的に除外されます。
 		bool preload(StringView chars, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
@@ -564,9 +810,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字の描画用のグリフを返します。
+		/// @param codePoint 文字
+		/// @param readingDirection テキストの方向
+		/// @return 描画用グリフ
 		[[nodiscard]]
 		Glyph getGlyph(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
+		/// @brief 指定した文字の描画用のグリフを返します。
+		/// @param ch 文字
+		/// @param readingDirection テキストの方向
+		/// @return 描画用グリフ
 		[[nodiscard]]
 		Glyph getGlyph(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -588,6 +842,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した文字列の描画用のグリフの配列を返します。
+		/// @param s 文字列
+		/// @param enableLigatures 合字を有効にするか
+		/// @param readingDirection テキストの方向
+		/// @return 描画用グリフの配列
 		[[nodiscard]]
 		Array<Glyph> getGlyphs(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
@@ -607,41 +866,63 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief フォントを描画するために必要な DrawableText を、文字列から構築します。
+		/// @brief DrawableText を文字列から構築します。
 		/// @param text 文字列
 		/// @return DrawableText
 		[[nodiscard]]
 		DrawableText operator ()(const String& text) const;
 
-		/// @brief フォントを描画するために必要な DrawableText を、文字列から構築します。
+		/// @brief DrawableText を文字列から構築します。
 		/// @param text 文字列
 		/// @return DrawableText
 		[[nodiscard]]
 		DrawableText operator ()(String&& text) const;
 
-		/// @brief フォントを描画するために必要な DrawableText を、一連の引数を文字列に変換することで構築します。
+		/// @brief DrawableText を一連の値から構築します。
+		/// @tparam ...Args 一連の値の型
 		/// @param ...args 文字列に変換する値
 		/// @return DrawableText
 		template <Concept::Formattable... Args>
 		[[nodiscard]]
-		DrawableText operator ()(const Args& ... args) const;
+		DrawableText operator ()(const Args&... args) const;
 
-		/// @brief Format できない値が Format() に渡されたときに発生するエラーです
+		/// @brief Format できない値を渡した際にエラーになります。
+		/// @tparam ...Args 一連の値の型
+		/// @param ...args 文字列に変換する値
+		/// @return DrawableText
 		template <class... Args>
-		DrawableText operator ()(const Args&...) const = delete;
+		DrawableText operator ()(const Args&... args) const = delete;
 
+		/// @brief DrawableText を文字列から構築します。
+		/// @param readingDirection テキストの方向
+		/// @param text 文字列
+		/// @return DrawableText
 		[[nodiscard]]
 		DrawableText operator ()(ReadingDirection readingDirection, const String& text) const;
 
+		/// @brief DrawableText を文字列から構築します。
+		/// @param readingDirection テキストの方向
+		/// @param text 文字列
+		/// @return DrawableText
 		[[nodiscard]]
 		DrawableText operator ()(ReadingDirection readingDirection, String&& text) const;
 
+		/// @brief DrawableText を一連の値から構築します。
+		/// @tparam ...Args 一連の値の型
+		/// @param readingDirection テキストの方向
+		/// @param ...args 文字列に変換する値
+		/// @return DrawableText
 		template <Concept::Formattable... Args>
 		[[nodiscard]]
-		DrawableText operator ()(ReadingDirection readingDirection, const Args& ... args) const;
+		DrawableText operator ()(ReadingDirection readingDirection, const Args&... args) const;
 
+		/// @brief Format できない値を渡した際にエラーになります。
+		/// @tparam ...Args 一連の値の型
+		/// @param readingDirection テキストの方向
+		/// @param ...args 文字列に変換する値
+		/// @return DrawableText
 		template <class... Args>
-		DrawableText operator ()(ReadingDirection readingDirection, const Args&...) const = delete;
+		DrawableText operator ()(ReadingDirection readingDirection, const Args&... args) const = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -663,6 +944,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したフォントファイルに含まれる書体の一覧を返します。
+		/// @param path フォントファイルのパス
+		/// @return 書体の一覧
 		[[nodiscard]]
 		static Array<FontFaceProperties> GetFaces(FilePathView path);
 
@@ -672,6 +956,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した標準同梱フォントが利用可能であるかを返します。
+		/// @param typeface 標準同梱フォントの種類
+		/// @return 利用可能である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		static bool IsAvailable(Typeface typeface);
 
@@ -684,10 +971,9 @@ namespace s3d
 		/// @brief テキスト描画用の標準ピクセルシェーダを返します。
 		/// @param method フォントのレンダリング方式
 		/// @param type テキストのスタイル
-		/// @param hasColor カラー情報をもつフォント（カラー絵文字など）であるか
+		/// @param hasColor カラー情報をもつフォントか
 		/// @return 指定した設定でのテキスト描画用の標準ピクセルシェーダ
 		[[nodiscard]]
 		static const PixelShader& GetPixelShader(FontMethod method, TextStyle::Type type = TextStyle::Type::Default);
 	};
 }
-

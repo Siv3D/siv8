@@ -291,7 +291,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief うるう年かどうかを返します。 | Returns whether it is a leap year.
+		/// @brief うるう年であるかを返します。 | Returns whether it is a leap year.
 		/// @param year 年 | Year
 		/// @return うるう年の場合 true, それ以外の場合は false | Returns true if it is a leap year, false otherwise
 		[[nodiscard]]

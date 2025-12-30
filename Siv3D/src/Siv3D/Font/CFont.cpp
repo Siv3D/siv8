@@ -22,7 +22,6 @@
 # include "TypefaceUtility.hpp"
 # include "GlyphRenderer/OutlineGlyphRenderer.hpp"
 # include "GlyphRenderer/PolygonGlyphRenderer.hpp"
-# include "GlyphRenderer/BitmapGlyphRenderer.hpp"
 # include "GlyphCache/IGlyphCache.hpp"
 
 namespace s3d
@@ -244,11 +243,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addFallbackFont
+	//	addFallback
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CFont::addFallbackFont(const Font::IDType handleID, const Font& font)
+	void CFont::addFallback(const Font::IDType handleID, const Font& font)
 	{
 		const Font::IDType fallbackFontID = font.id();
 		

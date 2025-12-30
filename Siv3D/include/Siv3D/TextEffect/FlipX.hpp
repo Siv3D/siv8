@@ -30,7 +30,7 @@ namespace s3d
 			explicit constexpr FlipX(const ColorF& color) noexcept;
 
 			/// @brief コンストラクタ
-			/// @param flipX 鏡文字にするかどうか
+			/// @param flipX 鏡文字にするか
 			/// @param color 描画時に使用する色
 			[[nodiscard]]
 			explicit constexpr FlipX(bool flipX, const ColorF& color = Palette::White) noexcept;

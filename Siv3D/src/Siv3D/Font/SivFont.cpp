@@ -147,7 +147,7 @@ namespace s3d
 			return false;
 		}
 
-		SIV3D_ENGINE(Font)->addFallbackFont(m_handle->id(), font);
+		SIV3D_ENGINE(Font)->addFallback(m_handle->id(), font);
 
 		return true;
 	}

@@ -381,14 +381,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定したインデックスが範囲内かどうかを返します。
+		/// @brief 指定したインデックスが範囲内であるかを返します。
 		/// @param y 行番号
 		/// @param x 列番号
 		/// @return 範囲内の場合 true、そうでない場合 false
 		[[nodiscard]]
 		constexpr bool indexInBounds(size_type y, size_type x) const noexcept;
 
-		/// @brief 指定したインデックスが範囲内かどうかを返します。
+		/// @brief 指定したインデックスが範囲内であるかを返します。
 		/// @param pos 位置
 		/// @return 範囲内の場合 true、そうでない場合 false
 		[[nodiscard]]

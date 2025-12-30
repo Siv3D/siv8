@@ -1654,7 +1654,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		///// @brief 長方形の輪郭を LineString として返します。
-		///// @param closeRing 頂点配列の終点を始点と重ねるかどうか
+		///// @param closeRing 頂点配列の終点を始点と重ねるか
 		///// @return 長方形の輪郭の LineString
 		//[[nodiscard]]
 		//LineString outline(CloseRing closeRing = CloseRing::No) const;
