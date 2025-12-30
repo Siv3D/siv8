@@ -40,6 +40,8 @@ namespace s3d
 
 		void init() override;
 
+		void waitForFrame() override;
+
 		void beginFrame() override;
 
 		void flush() override;

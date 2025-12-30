@@ -59,7 +59,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		template <class U, size_t A>
-		friend constexpr bool operator ==(const AlignedAllocator<Type, Alignment>& lhs, const AlignedAllocator<U, A>& rhs) noexcept
+		friend constexpr bool operator ==(const AlignedAllocator<Type, Alignment>&, const AlignedAllocator<U, A>&) noexcept
 		{
 			return (Alignment == A);
 		}
