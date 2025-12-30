@@ -112,7 +112,7 @@ namespace s3d
 			return;
 		}
 
-		if (const FT_Error error = FT_Init_FreeType(&m_freeType))
+		if (const FT_Error error = ::FT_Init_FreeType(&m_freeType))
 		{
 			throw InternalEngineError{ "FT_Init_FreeType() failed" };
 		}

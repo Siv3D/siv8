@@ -1190,17 +1190,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addRectShadow
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_Metal::addRectShadow(const FloatRect& rect, const float blur, const Float4& color, const bool fill)
-	{
-
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	addCircleShadow
 	//
 	////////////////////////////////////////////////////////////////
@@ -1226,13 +1215,52 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addRectShadow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addRectShadow(const FloatRect& rect, const float blur, const Float4& color, const bool fill)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRectShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, blur, color, fill))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+
+			m_commandManager.pushPSTexture(0, getShadowTexture());
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addRoundRectShadow
 	//
 	////////////////////////////////////////////////////////////////
 
 	void CRenderer2D_Metal::addRoundRectShadow(const RoundRect& roundRect, const float blur, const Float4& color, const bool fill)
 	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), roundRect, blur, color, getMaxScaling(), fill))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
 
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+			
+			m_commandManager.pushPSTexture(0, getShadowTexture());
+			m_commandManager.pushDraw(indexCount);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

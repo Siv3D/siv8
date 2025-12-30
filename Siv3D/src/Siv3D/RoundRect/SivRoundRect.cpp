@@ -531,6 +531,37 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawShadow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::drawShadow(const Vec2& offset, const double blur, const double spread, const ColorF& color, const bool fill) const
+	{
+		// ブラー半径が 0 未満なら描画しない
+		if (blur < 0.0)
+		{
+			return *this;
+		}
+
+		// 角丸でなければ長方形へ
+		if (r == 0.0)
+		{
+			rect.drawShadow(offset, blur, spread, color, fill);
+			return *this;
+		}
+
+		RoundRect baseRoundRect = movedBy(offset).stretched(spread);
+		baseRoundRect.r += spread;
+		baseRoundRect.r = Min(baseRoundRect.r, (baseRoundRect.rect.size.minComponent() * 0.5));
+		const double blurClamped = Min(baseRoundRect.w, baseRoundRect.h, blur);
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectShadow(baseRoundRect, static_cast<float>(blurClamped), color.toFloat4(), fill);
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	operator ()
 	//
 	////////////////////////////////////////////////////////////////

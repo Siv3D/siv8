@@ -50,7 +50,6 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		[[nodiscard]]
 		virtual bool preload(FontData& font, const Array<ResolvedGlyph>& resolvedGlyphs, const ReadingDirection readingDirection) = 0;
 
 		////////////////////////////////////////////////////////////////
