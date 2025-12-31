@@ -81,6 +81,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Graphics2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIColorStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIShapeStyle.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IEffect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageProcessing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\KDTree.ipp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\DrawableText.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Effect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatQuad.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtOptional.hpp" />
@@ -149,6 +151,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIColorStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIShapeStyle.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
@@ -716,6 +719,8 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\CursorTransform.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\HighTemporalResolutionCursor.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\ICursor.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Effect\CEffect.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Effect\IEffect.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Emoji\CEmoji.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Emoji\IEmoji.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\EngineResource\CEngineResource.hpp" />
@@ -1330,6 +1335,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\DrawableText\SivDrawableText.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DynamicTexture\SivDynamicTexture.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Effect\CEffect.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Effect\EffectFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Ellipse\SivEllipse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\CEmoji.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Emoji\EmojiFactory.cpp" />

@@ -73,4 +73,7 @@ namespace s3d
 
 	/// @brief ヒンティングを使うかどうかを指定 | Whether to use hinting
 	using EnableHinting = YesNo<struct EnableHinting_tag>;
+
+	/// @brief 描画順序のソートを有効にするかどうかを指定 | Whether to enable sorting of draw order
+	using SortingEnabled = YesNo<struct SortingEnabled_tag>;
 }

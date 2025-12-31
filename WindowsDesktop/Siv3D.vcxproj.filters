@@ -1153,6 +1153,9 @@
     <Filter Include="src\Siv3D\NativeShare">
       <UniqueIdentifier>{40e089ef-00a8-4dc4-870b-b5841e74d802}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Effect">
+      <UniqueIdentifier>{b97d452f-a4d9-4f0d-bc99-7d6d361ac26c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4740,6 +4743,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Contains.ipp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Effect.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IEffect.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Effect\CEffect.hpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Effect\IEffect.hpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7456,6 +7474,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Distance.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Effect\CEffect.cpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Effect\EffectFactory.cpp">
+      <Filter>src\Siv3D\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
