@@ -31,6 +31,7 @@
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Print/IPrint.hpp>
+# include <Siv3D/Effect/IEffect.hpp>
 # include <Siv3D/NativeShare/INativeShare.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FileSystem.hpp>
@@ -66,6 +67,7 @@ namespace s3d
 		SIV3D_ENGINE(Font)->init();
 		SIV3D_ENGINE(GUI)->init();
 		SIV3D_ENGINE(Print)->init();
+		SIV3D_ENGINE(Effect)->init();
 		SIV3D_ENGINE(NativeShare)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
@@ -114,6 +116,7 @@ namespace s3d
 		SIV3D_ENGINE(Keyboard)->update();
 		SIV3D_ENGINE(Mouse)->update();
 		SIV3D_ENGINE(LicenseManager)->update();
+		SIV3D_ENGINE(Effect)->update();
 
 		return true;
 	}

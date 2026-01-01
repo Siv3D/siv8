@@ -37,6 +37,7 @@
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Print/IPrint.hpp>
+# include <Siv3D/Effect/IEffect.hpp>
 # include <Siv3D/NativeShare/INativeShare.hpp>
 
 namespace s3d

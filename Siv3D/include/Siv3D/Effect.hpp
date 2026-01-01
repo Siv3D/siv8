@@ -31,6 +31,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	DefaultMaxLifeTimeSec
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief エフェクトの最大継続時間のデフォルト値（秒）
+		static constexpr double DefaultMaxLifeTimeSec = 10.0;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	(constructor)
 		//
 		////////////////////////////////////////////////////////////////
@@ -44,7 +53,7 @@ namespace s3d
 		/// @param maxLifeTimeSec このエフェクトグループでのエフェクトの最大継続時間（秒）
 		/// @param sortingEnabled 描画順序のソートを有効にするか
 		[[nodiscard]]
-		Effect(double maxLifeTimeSec = 10.0, SortingEnabled sortingEnabled = SortingEnabled::Yes);
+		Effect(double maxLifeTimeSec = DefaultMaxLifeTimeSec, SortingEnabled sortingEnabled = SortingEnabled::Yes);
 
 		/// @brief エフェクトグループを作成します。
 		/// @param maxLifeTimeSec このエフェクトグループでのエフェクトの最大継続時間（秒）
@@ -75,15 +84,18 @@ namespace s3d
 		/// @tparam IEffectType 追加するエフェクトの型
 		/// @tparam ...Args コンストラクタ引数の型
 		/// @param ...args コンストラクタ引数
-		template <class IEffectType, class... Args> requires std::derived_from<IEffectType, IEffect>
+		template <class IEffectType, class... Args>
+			requires std::derived_from<IEffectType, IEffect>
 		const Effect& add(Args&&... args) const;
 
 		/// @brief エフェクトグループに新しいエフェクトを追加します
 		/// @remark 関数オブジェクトは double 型を受け取り bool 型を返す必要があります。
 		/// @tparam Fty エフェクト（関数オブジェクト）の型
 		/// @param f エフェクトの関数オブジェクト
-		template <class Fty> requires std::invocable<Fty, double>&& std::same_as<std::invoke_result_t<Fty, double>, bool>
-		const Effect& add(Fty f) const;
+		template <class Fty>
+			requires std::invocable<Fty, double> &&
+					 std::same_as<std::invoke_result_t<Fty, double>, bool>
+		const Effect& add(Fty&& f) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -150,19 +162,13 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	setSpeed
+		//	setSpeed, getSpeed
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief このエフェクトグループの時間経過の速さを、実時間に対する倍率 (2.0 で 2 倍早く経過）で設定します。
 		/// @param speed 時間経過の速さ
 		const Effect& setSpeed(double speed) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getSpeed
-		//
-		////////////////////////////////////////////////////////////////
 
 		/// @brief このエフェクトグループの時間経過の速さを返します。
 		/// @return 時間経過の速さ
@@ -171,7 +177,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	setMaxLifeTime
+		//	setMaxLifeTime, getMaxLifeTime
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -185,12 +191,6 @@ namespace s3d
 		/// @return *this
 		const Effect& setMaxLifeTime(const Duration& maxLifeTimeSec) const;
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	getMaxLifeTime
-		//
-		////////////////////////////////////////////////////////////////
-
 		/// @brief このエフェクトグループでのエフェクトの最大継続時間（秒）を返します。
 		/// @return このエフェクトグループでのエフェクトの最大継続時間（秒）
 		[[nodiscard]]
@@ -198,7 +198,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	setSortingEnabled
+		//	setSortingEnabled, isSortingEnabled
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -206,12 +206,6 @@ namespace s3d
 		/// @param enabled 描画順序のソートを有効化する場合 true, 無効化する場合は false
 		/// @return *this
 		const Effect& setSortingEnabled(bool enabled) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	isSortingEnabled
-		//
-		////////////////////////////////////////////////////////////////
 
 		/// @brief このエフェクトグループでの描画順序のソートが有効化されているかを返します。
 		/// @return 描画順序のソートが有効化されている場合 true, それ以外の場合は false
@@ -235,5 +229,25 @@ namespace s3d
 
 		/// @brief このエフェクトグループ内の全てのエフェクトを、経過時間に関わらず消去します。
 		void clear() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	swap
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の Effect と内容を交換します。
+		/// @param other 別の Effect
+		void swap(Effect& other) noexcept;
+
+		/// @brief 2 つの Effect を入れ替えます。
+		/// @param lhs 一方の Effect
+		/// @param rhs もう一方の Effect
+		friend void swap(Effect& lhs, Effect& rhs) noexcept
+		{
+			lhs.swap(rhs);
+		}
 	};
 }
+
+# include "detail/Effect.ipp"
