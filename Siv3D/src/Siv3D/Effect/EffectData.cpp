@@ -45,22 +45,33 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void EffectData::add(std::unique_ptr<IEffect>&& effect)
+	void EffectData::add(std::unique_ptr<IEffect>&& effect, const double initialElapsedTimeSec)
 	{
 		assert(effect != nullptr);
+
+		if (m_maxLifeTimeSec <= initialElapsedTimeSec)
+		{
+			return;
+		}
 
 		if (m_sortingEnabled)
 		{
 			m_sortDirty = true;
 		}
 
+		EffectHolder holder
+		{
+			.effect = std::move(effect),
+			.elapsedTimeSec = initialElapsedTimeSec
+		};
+
 		if (not m_locked)
 		{
-			m_effects.emplace_back(std::move(effect));
+			m_effects.emplace_back(std::move(holder));
 		}
 		else // エフェクトの更新中に追加された場合はペンディングに回す
 		{
-			m_pendingEffects.emplace_back(std::move(effect));
+			m_pendingEffects.emplace_back(std::move(holder));
 		}
 	}
 

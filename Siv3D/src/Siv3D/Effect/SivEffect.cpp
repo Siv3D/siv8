@@ -78,11 +78,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Effect& Effect::add(std::unique_ptr<IEffect>&& effect) const
+	const Effect& Effect::add(std::unique_ptr<IEffect>&& effect, const double initialElapsedTimeSec) const
 	{
 		if (effect)
 		{
-			SIV3D_ENGINE(Effect)->add(m_handle->id(), std::move(effect));
+			SIV3D_ENGINE(Effect)->add(m_handle->id(), std::move(effect), initialElapsedTimeSec);
 		}
 
 		return *this;

@@ -32,7 +32,7 @@ namespace s3d
 
 		void release(Effect::IDType handleID) override;
 
-		void add(Effect::IDType handleID, std::unique_ptr<IEffect>&& effect) override;
+		void add(Effect::IDType handleID, std::unique_ptr<IEffect>&& effect, double initialElapsedTimeSec) override;
 
 		size_t size(Effect::IDType handleID) override;
 
