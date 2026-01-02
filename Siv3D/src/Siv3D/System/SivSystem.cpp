@@ -11,6 +11,7 @@
 
 # include <Siv3D/System.hpp>
 # include <Siv3D/System/ISystem.hpp>
+# include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -27,6 +28,44 @@ namespace s3d
 		bool Update()
 		{
 			return SIV3D_ENGINE(System)->update();
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Exit
+		//
+		////////////////////////////////////////////////////////////////
+
+		void Exit() noexcept
+		{
+			SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::SystemExitCalled);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetTerminationTriggers, GetTerminationTriggers
+		//
+		////////////////////////////////////////////////////////////////
+
+		void SetTerminationTriggers(const uint32 userActionFlags) noexcept
+		{
+			SIV3D_ENGINE(UserAction)->setTerminationTriggers(userActionFlags);
+		}
+
+		uint32 GetTerminationTriggers() noexcept
+		{
+			return SIV3D_ENGINE(UserAction)->getTerminationTriggers();
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	GetUserActions
+		//
+		////////////////////////////////////////////////////////////////
+
+		uint32 GetUserActions() noexcept
+		{
+			return SIV3D_ENGINE(UserAction)->getPreviousUserActions();
 		}
 
 		////////////////////////////////////////////////////////////////

@@ -37,7 +37,7 @@ namespace s3d
 
 		/// @brief プログラムを終了させるために、この直後の `System::Update()` が false を返すように設定します。
 		/// @remark この関数自体は終了処理を行わないため、この関数の呼び出しは必須ではありません。
-		//void Exit() noexcept;
+		void Exit() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -48,13 +48,13 @@ namespace s3d
 		/// @brief アプリケーション終了トリガーに設定するユーザアクションを設定します。
 		/// @param userActionFlags アプリケーション終了トリガーに設定するユーザアクションのフラグ
 		/// @remark フラグには `UserAction` の値の組み合わせを使います。
-		//void SetTerminationTriggers(uint32 userActionFlags) noexcept;
+		void SetTerminationTriggers(uint32 userActionFlags) noexcept;
 
 		/// @brief アプリケーション終了トリガーに設定したユーザアクションのフラグの現在の設定を返します。
 		/// @remark フラグには `UserAction` の値の組み合わせが使われています。
 		/// @return プリケーション終了トリガーに設定したユーザアクションのフラグの組み合わせ
-		//[[nodiscard]]
-		//uint32 GetTerminationTriggers() noexcept;
+		[[nodiscard]]
+		uint32 GetTerminationTriggers() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -65,8 +65,8 @@ namespace s3d
 		/// @brief 前回のフレームで発生したユーザアクションを返します。
 		/// @remarkフラグには `UserAction` の値の組み合わせが使われています。
 		/// @return 前のフレームで発生したユーザアクションのフラグの組み合わせ
-		//[[nodiscard]]
-		//uint32 GetUserActions() noexcept;
+		[[nodiscard]]
+		uint32 GetUserActions() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
