@@ -932,7 +932,7 @@ namespace s3d
 		value_type choice() const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
-		/// @tparam URBG 乱数エンジンの型
+		/// @tparam URBG 乱数生成器の型
 		/// @param rbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]

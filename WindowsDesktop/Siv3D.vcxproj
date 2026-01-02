@@ -104,6 +104,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\QualityFactor.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectanglePack.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Sample.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Shape2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SimpleGUI.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp" />
@@ -507,6 +508,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedNamedParameter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedYesNo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RoundRect.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Sample.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SampleBorderColor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerStateBuilder.hpp" />
