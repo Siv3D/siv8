@@ -1674,6 +1674,8 @@
 
 # include <Siv3D/Pipe.hpp>
 
+# include <Siv3D/URL.hpp>
+# include <Siv3D/Twitter.hpp>
 
 # include <Siv3D/EngineOption.hpp>
 

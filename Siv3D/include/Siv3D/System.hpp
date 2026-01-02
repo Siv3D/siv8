@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "Duration.hpp"
+# include "URL.hpp"
 # include "EngineOption.hpp"
 
 namespace s3d
@@ -91,7 +92,7 @@ namespace s3d
 		/// @brief 指定した URL をデフォルトの Web ブラウザでオープンします。
 		/// @param url URL
 		/// @return オープンに成功した場合 true, それ以外の場合は false
-		bool LaunchBrowser(FilePathView url);
+		bool LaunchBrowser(URLView url);
 
 		////////////////////////////////////////////////////////////////
 		//
