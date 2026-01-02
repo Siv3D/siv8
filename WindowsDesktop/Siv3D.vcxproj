@@ -159,6 +159,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PerlinNoise.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolygonGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Print.hpp" />
@@ -1477,6 +1478,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseFloat\SivParseFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseInt\SivParseInt.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\PercentEncode\SivPercentEncode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Pipe\SivPipe.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PixelShader\SivPixelShader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point3D\SivPoint3D.cpp" />

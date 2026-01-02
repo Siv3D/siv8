@@ -296,6 +296,9 @@
 // 桁区切り | Digit separator
 # include <Siv3D/ThousandSeparate.hpp>
 
+// パーセントエンコーディング | Percent encoding
+# include <Siv3D/PercentEncode.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	文字列パーサ | Parser

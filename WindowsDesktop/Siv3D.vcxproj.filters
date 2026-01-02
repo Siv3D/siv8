@@ -1156,6 +1156,9 @@
     <Filter Include="src\Siv3D\Effect">
       <UniqueIdentifier>{b97d452f-a4d9-4f0d-bc99-7d6d361ac26c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\PercentEncode">
+      <UniqueIdentifier>{a60577ee-bd47-4c7f-b53d-8c4dd594532d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4764,6 +4767,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Effect.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7492,6 +7498,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Effect\SivEffect.cpp">
       <Filter>src\Siv3D\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PercentEncode\SivPercentEncode.cpp">
+      <Filter>src\Siv3D\PercentEncode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
