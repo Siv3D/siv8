@@ -2553,6 +2553,24 @@
 		F9DD962D2F03C2590026DFA5 /* PolygonGlyphRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9DD962B2F03C2590026DFA5 /* PolygonGlyphRenderer.cpp */; };
 		F9DD962F2F03C2730026DFA5 /* SivGeometry2D_Distance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9DD962E2F03C2730026DFA5 /* SivGeometry2D_Distance.cpp */; };
 		F9DD96312F03C2990026DFA5 /* Glyph.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96302F03C2990026DFA5 /* Glyph.hpp */; };
+		F9DD96332F0965700026DFA5 /* Effect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96322F0965700026DFA5 /* Effect.hpp */; };
+		F9DD96352F0965890026DFA5 /* IEffect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96342F0965890026DFA5 /* IEffect.hpp */; };
+		F9DD96372F0965A30026DFA5 /* IEffect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96362F0965A30026DFA5 /* IEffect.ipp */; };
+		F9DD96402F0965C60026DFA5 /* IEffect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD963D2F0965C60026DFA5 /* IEffect.hpp */; };
+		F9DD96412F0965C60026DFA5 /* EffectData.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD963A2F0965C60026DFA5 /* EffectData.hpp */; };
+		F9DD96422F0965C60026DFA5 /* CEffect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96382F0965C60026DFA5 /* CEffect.hpp */; };
+		F9DD96432F0965C60026DFA5 /* CEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9DD96392F0965C60026DFA5 /* CEffect.cpp */; };
+		F9DD96442F0965C60026DFA5 /* SivEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9DD963E2F0965C60026DFA5 /* SivEffect.cpp */; };
+		F9DD96452F0965C60026DFA5 /* EffectFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9DD963C2F0965C60026DFA5 /* EffectFactory.cpp */; };
+		F9DD96462F0965C60026DFA5 /* EffectData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9DD963B2F0965C60026DFA5 /* EffectData.cpp */; };
+		F9DD964B2F0965D00026DFA5 /* SivTwitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9DD96492F0965D00026DFA5 /* SivTwitter.cpp */; };
+		F9DD964C2F0965D00026DFA5 /* SivPercentEncode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9DD96472F0965D00026DFA5 /* SivPercentEncode.cpp */; };
+		F9DD964E2F0965EE0026DFA5 /* Effect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD964D2F0965EE0026DFA5 /* Effect.ipp */; };
+		F9DD96502F0965F50026DFA5 /* Sample.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD964F2F0965F50026DFA5 /* Sample.ipp */; };
+		F9DD96522F09661B0026DFA5 /* PercentEncode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96512F09661B0026DFA5 /* PercentEncode.hpp */; };
+		F9DD96552F09662C0026DFA5 /* Twitter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96532F09662C0026DFA5 /* Twitter.hpp */; };
+		F9DD96562F09662C0026DFA5 /* URL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96542F09662C0026DFA5 /* URL.hpp */; };
+		F9DD96582F0966400026DFA5 /* Sample.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96572F0966400026DFA5 /* Sample.hpp */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -5358,6 +5376,24 @@
 		F9DD962B2F03C2590026DFA5 /* PolygonGlyphRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonGlyphRenderer.cpp; sourceTree = "<group>"; };
 		F9DD962E2F03C2730026DFA5 /* SivGeometry2D_Distance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_Distance.cpp; sourceTree = "<group>"; };
 		F9DD96302F03C2990026DFA5 /* Glyph.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Glyph.hpp; sourceTree = "<group>"; };
+		F9DD96322F0965700026DFA5 /* Effect.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Effect.hpp; sourceTree = "<group>"; };
+		F9DD96342F0965890026DFA5 /* IEffect.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IEffect.hpp; sourceTree = "<group>"; };
+		F9DD96362F0965A30026DFA5 /* IEffect.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IEffect.ipp; sourceTree = "<group>"; };
+		F9DD96382F0965C60026DFA5 /* CEffect.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CEffect.hpp; sourceTree = "<group>"; };
+		F9DD96392F0965C60026DFA5 /* CEffect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CEffect.cpp; sourceTree = "<group>"; };
+		F9DD963A2F0965C60026DFA5 /* EffectData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = EffectData.hpp; sourceTree = "<group>"; };
+		F9DD963B2F0965C60026DFA5 /* EffectData.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EffectData.cpp; sourceTree = "<group>"; };
+		F9DD963C2F0965C60026DFA5 /* EffectFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EffectFactory.cpp; sourceTree = "<group>"; };
+		F9DD963D2F0965C60026DFA5 /* IEffect.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IEffect.hpp; sourceTree = "<group>"; };
+		F9DD963E2F0965C60026DFA5 /* SivEffect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivEffect.cpp; sourceTree = "<group>"; };
+		F9DD96472F0965D00026DFA5 /* SivPercentEncode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPercentEncode.cpp; sourceTree = "<group>"; };
+		F9DD96492F0965D00026DFA5 /* SivTwitter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTwitter.cpp; sourceTree = "<group>"; };
+		F9DD964D2F0965EE0026DFA5 /* Effect.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Effect.ipp; sourceTree = "<group>"; };
+		F9DD964F2F0965F50026DFA5 /* Sample.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Sample.ipp; sourceTree = "<group>"; };
+		F9DD96512F09661B0026DFA5 /* PercentEncode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PercentEncode.hpp; sourceTree = "<group>"; };
+		F9DD96532F09662C0026DFA5 /* Twitter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Twitter.hpp; sourceTree = "<group>"; };
+		F9DD96542F09662C0026DFA5 /* URL.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = URL.hpp; sourceTree = "<group>"; };
+		F9DD96572F0966400026DFA5 /* Sample.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Sample.hpp; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -6163,6 +6199,7 @@
 				F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */,
 				F9070B762B9F175000383E4D /* Duration.ipp */,
 				F9E7942D2C12B87A002615BA /* Easing.ipp */,
+				F9DD964D2F0965EE0026DFA5 /* Effect.ipp */,
 				F98606122BEB760C006A4C0F /* Ellipse.ipp */,
 				F9070B772B9F175000383E4D /* Endian.ipp */,
 				F9070B782B9F175000383E4D /* EscapedFormatter.ipp */,
@@ -6182,6 +6219,7 @@
 				F9070B802B9F175000383E4D /* HardwareRNG.ipp */,
 				F9070B812B9F175000383E4D /* Hash.ipp */,
 				F9070B822B9F175000383E4D /* HSV.ipp */,
+				F9DD96362F0965A30026DFA5 /* IEffect.ipp */,
 				F9528B3B2BB69C2800222F45 /* Image.ipp */,
 				F9528C6B2BC05B1A00222F45 /* ImageDecoder.ipp */,
 				F9528C6C2BC05B1A00222F45 /* ImageEncoder.ipp */,
@@ -6260,6 +6298,7 @@
 				F986F9392BCA7996006A4C0F /* RectF.ipp */,
 				F9070B9B2B9F175000383E4D /* Result.ipp */,
 				F98606112BEB760C006A4C0F /* RoundRect.ipp */,
+				F9DD964F2F0965F50026DFA5 /* Sample.ipp */,
 				F980C44C2C00E29000A86B68 /* SamplerState.ipp */,
 				F980C4622C01B22900A86B68 /* SamplerStateBuilder.ipp */,
 				F97203192BF09E51000E21DD /* Scene.ipp */,
@@ -6400,6 +6439,7 @@
 				F9070BDB2B9F175000383E4D /* Duration.hpp */,
 				F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */,
 				F9E794282C12B861002615BA /* Easing.hpp */,
+				F9DD96322F0965700026DFA5 /* Effect.hpp */,
 				F98606172BEB7651006A4C0F /* Ellipse.hpp */,
 				F98605162BCFF7C2006A4C0F /* Emoji.hpp */,
 				F9070BDC2B9F175000383E4D /* Endian.hpp */,
@@ -6450,6 +6490,7 @@
 				F934BD9E2BFA59320003EAD5 /* HLSL.hpp */,
 				F9070BF22B9F175000383E4D /* HSV.hpp */,
 				F980C48C2C04B41300A86B68 /* IConstantBuffer.hpp */,
+				F9DD96342F0965890026DFA5 /* IEffect.hpp */,
 				F9528C5F2BC05B0200222F45 /* IImageDecoder.hpp */,
 				F9528C612BC05B0200222F45 /* IImageEncoder.hpp */,
 				F9528B392BB69C1800222F45 /* Image.hpp */,
@@ -6544,6 +6585,7 @@
 				F9070C112B9F175000383E4D /* ParseFloat.hpp */,
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
+				F9DD96512F09661B0026DFA5 /* PercentEncode.hpp */,
 				F9E794472C1973FC002615BA /* Periodic.hpp */,
 				F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */,
 				F944BAA92CEACF4300CC4D42 /* Pipe.hpp */,
@@ -6587,6 +6629,7 @@
 				F986F83D2BC7DF06006A4C0F /* Resource.hpp */,
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
 				F98606182BEB7651006A4C0F /* RoundRect.hpp */,
+				F9DD96572F0966400026DFA5 /* Sample.hpp */,
 				F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */,
 				F980C4262C00D2B500A86B68 /* SamplerState.hpp */,
 				F980C4572C01B20F00A86B68 /* SamplerStateBuilder.hpp */,
@@ -6646,11 +6689,13 @@
 				F951221A2CB8227E00151291 /* TriangleIndex.hpp */,
 				F951221D2CB8227E00151291 /* TriangleIndex32.hpp */,
 				F9070C2E2B9F175000383E4D /* TupleFormatter.hpp */,
+				F9DD96532F09662C0026DFA5 /* Twitter.hpp */,
 				F943AAE92E2A0AB1001B4D43 /* Typeface.hpp */,
 				F9070C2F2B9F175000383E4D /* Types.hpp */,
 				F9070C302B9F175000383E4D /* Unicode.hpp */,
 				F9070C312B9F175000383E4D /* UnicodeConverter.hpp */,
 				F9070C322B9F175000383E4D /* UniqueResource.hpp */,
+				F9DD96542F09662C0026DFA5 /* URL.hpp */,
 				F9070C332B9F175000383E4D /* UserAction.hpp */,
 				F98606032BE7173F006A4C0F /* UserInfo.hpp */,
 				F9070C342B9F175000383E4D /* Utility.hpp */,
@@ -7214,6 +7259,7 @@
 				F943AACA2E2A09BB001B4D43 /* DrawableText */,
 				F9070D3B2B9F175E00383E4D /* Duration */,
 				F9B7D9F22D8C722A002ABACE /* DynamicTexture */,
+				F9DD963F2F0965C60026DFA5 /* Effect */,
 				F9D41CEF2C9AB1D500290998 /* Ellipse */,
 				F986F9CF2BCFB514006A4C0F /* Emoji */,
 				F9070D402B9F175E00383E4D /* Empty */,
@@ -7303,6 +7349,7 @@
 				F9070D742B9F175E00383E4D /* ParseErrorReason */,
 				F9070D762B9F175E00383E4D /* ParseFloat */,
 				F9070D782B9F175E00383E4D /* ParseInt */,
+				F9DD96482F0965D00026DFA5 /* PercentEncode */,
 				F944BAAF2CEACF6C00CC4D42 /* Pipe */,
 				F934BD772BF880620003EAD5 /* PixelShader */,
 				F9070D7A2B9F175E00383E4D /* Point */,
@@ -7367,6 +7414,7 @@
 				F980C4812C04B3EB00A86B68 /* Triangle */,
 				F980C4392C00D31000A86B68 /* TriangleFillMode */,
 				F9807D952BF667C200D9B590 /* Troubleshooting */,
+				F9DD964A2F0965D00026DFA5 /* Twitter */,
 				F9070D972B9F175E00383E4D /* Unicode */,
 				F9070D9B2B9F175E00383E4D /* UnicodeConverter */,
 				F9070DA02B9F175E00383E4D /* UserAction */,
@@ -11284,6 +11332,36 @@
 			path = RoundRect;
 			sourceTree = "<group>";
 		};
+		F9DD963F2F0965C60026DFA5 /* Effect */ = {
+			isa = PBXGroup;
+			children = (
+				F9DD96382F0965C60026DFA5 /* CEffect.hpp */,
+				F9DD96392F0965C60026DFA5 /* CEffect.cpp */,
+				F9DD963A2F0965C60026DFA5 /* EffectData.hpp */,
+				F9DD963B2F0965C60026DFA5 /* EffectData.cpp */,
+				F9DD963C2F0965C60026DFA5 /* EffectFactory.cpp */,
+				F9DD963D2F0965C60026DFA5 /* IEffect.hpp */,
+				F9DD963E2F0965C60026DFA5 /* SivEffect.cpp */,
+			);
+			path = Effect;
+			sourceTree = "<group>";
+		};
+		F9DD96482F0965D00026DFA5 /* PercentEncode */ = {
+			isa = PBXGroup;
+			children = (
+				F9DD96472F0965D00026DFA5 /* SivPercentEncode.cpp */,
+			);
+			path = PercentEncode;
+			sourceTree = "<group>";
+		};
+		F9DD964A2F0965D00026DFA5 /* Twitter */ = {
+			isa = PBXGroup;
+			children = (
+				F9DD96492F0965D00026DFA5 /* SivTwitter.cpp */,
+			);
+			path = Twitter;
+			sourceTree = "<group>";
+		};
 		F9E5FC172BC12C340081A4F7 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -12201,11 +12279,13 @@
 				F943AB3F2E2A2E4F001B4D43 /* distributions.h in Headers */,
 				F943AB402E2A2E4F001B4D43 /* bits.h in Headers */,
 				F943AB412E2A2E4F001B4D43 /* function_ref.h in Headers */,
+				F9DD964E2F0965EE0026DFA5 /* Effect.ipp in Headers */,
 				F943AB422E2A2E4F001B4D43 /* options.h in Headers */,
 				F943AB432E2A2E4F001B4D43 /* bernoulli_distribution.h in Headers */,
 				F943AB442E2A2E4F001B4D43 /* function_ref.h in Headers */,
 				F943AB452E2A2E4F001B4D43 /* uniform_helper.h in Headers */,
 				F943AB462E2A2E4F001B4D43 /* utility.h in Headers */,
+				F9DD96522F09661B0026DFA5 /* PercentEncode.hpp in Headers */,
 				F943AB472E2A2E4F001B4D43 /* type_traits.h in Headers */,
 				F943AB482E2A2E4F001B4D43 /* casts.h in Headers */,
 				F943AB492E2A2E4F001B4D43 /* identity.h in Headers */,
@@ -12330,6 +12410,7 @@
 				F986FFF32BCFBB53006A4C0F /* SkJpegxlDecoder.h in Headers */,
 				F95122202CB8227F00151291 /* PolygonFailureType.hpp in Headers */,
 				F9E5FC3E2BC15B260081A4F7 /* DirectXMath.h in Headers */,
+				F9DD96332F0965700026DFA5 /* Effect.hpp in Headers */,
 				F986032B2BCFBB54006A4C0F /* SkPathOpsRect.h in Headers */,
 				F9070B032B9DEB5900383E4D /* levenshtein-sse.hpp in Headers */,
 				F986FA642BCFB53B006A4C0F /* ftobjs.h in Headers */,
@@ -12349,6 +12430,7 @@
 				F9528C462BBF026F00222F45 /* zstd_errors.h in Headers */,
 				F98603E92BCFBB54006A4C0F /* SkSLChildCall.h in Headers */,
 				F9070C942B9F175000383E4D /* 2DShapes.hpp in Headers */,
+				F9DD96582F0966400026DFA5 /* Sample.hpp in Headers */,
 				F986052F2BD10478006A4C0F /* TGADecoder.hpp in Headers */,
 				F986F9982BCA9D0A006A4C0F /* plutovg-private.h in Headers */,
 				F9528C0E2BBF026F00222F45 /* fse.h in Headers */,
@@ -12545,6 +12627,8 @@
 				F986FA5D2BCFB53B006A4C0F /* ftcalc.h in Headers */,
 				F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */,
 				F980C4852C04B3EB00A86B68 /* Renderer2DCommon.hpp in Headers */,
+				F9DD96552F09662C0026DFA5 /* Twitter.hpp in Headers */,
+				F9DD96562F09662C0026DFA5 /* URL.hpp in Headers */,
 				F981F6DC2D1BDF9B009F6627 /* MetalSamplerState.hpp in Headers */,
 				F98605292BD10459006A4C0F /* Triangle.hpp in Headers */,
 				F96F95F12C359E7D0033353E /* nanoflann.hpp in Headers */,
@@ -12910,6 +12994,7 @@
 				F986030E2BCFBB54006A4C0F /* SkOpCoincidence.h in Headers */,
 				F98600602BCFBB53006A4C0F /* SkHighContrastFilter.h in Headers */,
 				F986000A2BCFBB53006A4C0F /* SkColorTable.h in Headers */,
+				F9DD96372F0965A30026DFA5 /* IEffect.ipp in Headers */,
 				F9D41B642C534D8900290998 /* LineType.hpp in Headers */,
 				F980C4642C01B22900A86B68 /* RasterizerStateBuilder.ipp in Headers */,
 				F986F9C62BCA9D25006A4C0F /* SVG.hpp in Headers */,
@@ -12966,6 +13051,7 @@
 				F986029F2BCFBB54006A4C0F /* SkWriter32.h in Headers */,
 				F986F9A52BCA9D0A006A4C0F /* gelement.h in Headers */,
 				F9528C692BC05B0200222F45 /* ImageFormat.hpp in Headers */,
+				F9DD96502F0965F50026DFA5 /* Sample.ipp in Headers */,
 				F97E6DB32D7A89CF0066E408 /* RangeFormatter.hpp in Headers */,
 				F9ED45B62CC156EC006BA10F /* midpoints.hpp in Headers */,
 				F986003D2BCFBB53006A4C0F /* SkScalar.h in Headers */,
@@ -13255,6 +13341,9 @@
 				F986FFFA2BCFBB53006A4C0F /* SkUserConfig.h in Headers */,
 				F986026E2BCFBB54006A4C0F /* SkSpriteBlitter.h in Headers */,
 				F9E5FCD22BC3AD410081A4F7 /* JSON.hpp in Headers */,
+				F9DD96402F0965C60026DFA5 /* IEffect.hpp in Headers */,
+				F9DD96412F0965C60026DFA5 /* EffectData.hpp in Headers */,
+				F9DD96422F0965C60026DFA5 /* CEffect.hpp in Headers */,
 				F907075B2B9DAEC900383E4D /* Siv3D.hpp in Headers */,
 				F98604262BCFBB54006A4C0F /* SkSLModifiers.h in Headers */,
 				F986057C2BDA7DFC006A4C0F /* CursorState.hpp in Headers */,
@@ -13352,6 +13441,7 @@
 				F951221E2CB8227F00151291 /* TriangleIndex.hpp in Headers */,
 				F9070C8C2B9F175000383E4D /* InternalEngineError.hpp in Headers */,
 				F98600422BCFBB53006A4C0F /* SkStream.h in Headers */,
+				F9DD96352F0965890026DFA5 /* IEffect.hpp in Headers */,
 				F98600702BCFBB53006A4C0F /* SkAttributes.h in Headers */,
 				F9528B202BAFB66200222F45 /* Base64Value.hpp in Headers */,
 				F98603132BCFBB54006A4C0F /* SkOpEdgeBuilder.h in Headers */,
@@ -13897,6 +13987,8 @@
 				F98602202BCFBB54006A4C0F /* SkPicturePlayback.cpp in Sources */,
 				F98602642BCFBB54006A4C0F /* SkScan_Hairline.cpp in Sources */,
 				F9070EF12B9F1C8900383E4D /* posix_poll.c in Sources */,
+				F9DD964B2F0965D00026DFA5 /* SivTwitter.cpp in Sources */,
+				F9DD964C2F0965D00026DFA5 /* SivPercentEncode.cpp in Sources */,
 				F98605132BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp in Sources */,
 				F98603E52BCFBB54006A4C0F /* SkSLBlock.cpp in Sources */,
 				F9E794872C2493FF002615BA /* ConstantBufferFactory.mm in Sources */,
@@ -14001,6 +14093,10 @@
 				F98601B82BCFBB53006A4C0F /* SkFont.cpp in Sources */,
 				F986F9292BC8441F006A4C0F /* st.c in Sources */,
 				F980C4732C01B4B600A86B68 /* SivDepthStencilStateBuilder.cpp in Sources */,
+				F9DD96432F0965C60026DFA5 /* CEffect.cpp in Sources */,
+				F9DD96442F0965C60026DFA5 /* SivEffect.cpp in Sources */,
+				F9DD96452F0965C60026DFA5 /* EffectFactory.cpp in Sources */,
+				F9DD96462F0965C60026DFA5 /* EffectData.cpp in Sources */,
 				F98601E72BCFBB53006A4C0F /* SkMaskCache.cpp in Sources */,
 				F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */,
 				F9F00A442CD298D50097C165 /* SivGeometry2D_PoleOfInaccessibility.cpp in Sources */,
