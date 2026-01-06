@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "Concepts.hpp"
+# include "Utility.hpp"
 
 namespace s3d
 {
@@ -21,7 +22,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief カハンの加算アルゴリズム | Kahan summation algorithm
+	/// @brief Kahan-Babuska の加算アルゴリズム | Kahan-Babuska summation algorithm
 	/// @tparam Float 浮動小数点型 | Floating point type
 	template <Concept::FloatingPoint Float>
 	class KahanSummation
@@ -39,6 +40,14 @@ namespace s3d
 
 		[[nodiscard]] 
 		constexpr KahanSummation(Float init) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reset
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr void reset(Float init = 0) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -73,11 +82,22 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Float value() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	correction
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 現在の補正値を返します。 | Returns the current correction.
+		/// @return 現在の補正値 | Current correction
+		[[nodiscard]]
+		constexpr Float correction() const noexcept;
+
 	private:
 
 		Float m_sum = 0;
 
-		Float m_err = 0;
+		Float m_c = 0;
 	};
 }
 
