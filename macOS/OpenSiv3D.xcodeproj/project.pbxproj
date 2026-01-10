@@ -779,7 +779,6 @@
 		F9528B7A2BB708A700222F45 /* LicenseList.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B732BB708A700222F45 /* LicenseList.hpp */; };
 		F9528B7B2BB708A700222F45 /* LicenseManagerFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B742BB708A700222F45 /* LicenseManagerFactory.cpp */; };
 		F9528B7C2BB708A700222F45 /* SivLicenseManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B752BB708A700222F45 /* SivLicenseManager.cpp */; };
-		F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */; };
 		F9528B802BB71F9900222F45 /* Profiler.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B7E2BB71F9900222F45 /* Profiler.hpp */; };
 		F9528B822BBC164800222F45 /* Test_ScopeExit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */; };
 		F9528B842BBC5D3100222F45 /* Step2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B832BBC5D3100222F45 /* Step2D.hpp */; };
@@ -2571,6 +2570,9 @@
 		F9DD96552F09662C0026DFA5 /* Twitter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96532F09662C0026DFA5 /* Twitter.hpp */; };
 		F9DD96562F09662C0026DFA5 /* URL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96542F09662C0026DFA5 /* URL.hpp */; };
 		F9DD96582F0966400026DFA5 /* Sample.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96572F0966400026DFA5 /* Sample.hpp */; };
+		F9DD965A2F1238B70026DFA5 /* FrameMetrics.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD96592F1238B70026DFA5 /* FrameMetrics.hpp */; };
+		F9DD965D2F1238D70026DFA5 /* SivFrameMetrics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9DD965B2F1238D70026DFA5 /* SivFrameMetrics.cpp */; };
+		F9DD965F2F1239000026DFA5 /* ProfilerEvent.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9DD965E2F1239000026DFA5 /* ProfilerEvent.hpp */; };
 		F9E5FC1A2BC12C370081A4F7 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC182BC12C340081A4F7 /* libpng16.a */; };
 		F9E5FC1B2BC12C3D0081A4F7 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9E5FC162BC12C340081A4F7 /* libz.a */; };
 		F9E5FC1E2BC13CAB0081A4F7 /* JPEGDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */; };
@@ -3562,7 +3564,6 @@
 		F9528B732BB708A700222F45 /* LicenseList.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LicenseList.hpp; sourceTree = "<group>"; };
 		F9528B742BB708A700222F45 /* LicenseManagerFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LicenseManagerFactory.cpp; sourceTree = "<group>"; };
 		F9528B752BB708A700222F45 /* SivLicenseManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLicenseManager.cpp; sourceTree = "<group>"; };
-		F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ProfilerStat.hpp; sourceTree = "<group>"; };
 		F9528B7E2BB71F9900222F45 /* Profiler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Profiler.hpp; sourceTree = "<group>"; };
 		F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ScopeExit.cpp; sourceTree = "<group>"; };
 		F9528B832BBC5D3100222F45 /* Step2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Step2D.hpp; sourceTree = "<group>"; };
@@ -5394,6 +5395,9 @@
 		F9DD96532F09662C0026DFA5 /* Twitter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Twitter.hpp; sourceTree = "<group>"; };
 		F9DD96542F09662C0026DFA5 /* URL.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = URL.hpp; sourceTree = "<group>"; };
 		F9DD96572F0966400026DFA5 /* Sample.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Sample.hpp; sourceTree = "<group>"; };
+		F9DD96592F1238B70026DFA5 /* FrameMetrics.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FrameMetrics.hpp; sourceTree = "<group>"; };
+		F9DD965B2F1238D70026DFA5 /* SivFrameMetrics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivFrameMetrics.cpp; sourceTree = "<group>"; };
+		F9DD965E2F1239000026DFA5 /* ProfilerEvent.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProfilerEvent.hpp; sourceTree = "<group>"; };
 		F9E5FC162BC12C340081A4F7 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz.a; sourceTree = "<group>"; };
 		F9E5FC182BC12C340081A4F7 /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng16.a; sourceTree = "<group>"; };
 		F9E5FC1C2BC13CAB0081A4F7 /* JPEGDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JPEGDecoder.hpp; sourceTree = "<group>"; };
@@ -6471,6 +6475,7 @@
 				F98606012BE615C5006A4C0F /* FormatLiteralObject.hpp */,
 				F9070BEA2B9F175000383E4D /* Formatter.hpp */,
 				F9070BEB2B9F175000383E4D /* FormatUtility.hpp */,
+				F9DD96592F1238B70026DFA5 /* FrameMetrics.hpp */,
 				F9070BEC2B9F175000383E4D /* FunctionRef.hpp */,
 				F9DD96302F03C2990026DFA5 /* Glyph.hpp */,
 				F933AD2F2E54A345005624D7 /* GlyphContext.hpp */,
@@ -6605,7 +6610,6 @@
 				F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */,
 				F9070C192B9F175000383E4D /* PRNG.hpp */,
 				F9528B7E2BB71F9900222F45 /* Profiler.hpp */,
-				F9528B7D2BB71F9900222F45 /* ProfilerStat.hpp */,
 				F98605262BD10459006A4C0F /* Quad.hpp */,
 				F9F00A492CD299120097C165 /* QualityFactor.hpp */,
 				F9070C1A2B9F175000383E4D /* Random.hpp */,
@@ -7282,6 +7286,7 @@
 				F91171122DCBBF0B000A22E6 /* FontStyle */,
 				F9070D562B9F175E00383E4D /* Formatter */,
 				F9070D582B9F175E00383E4D /* FormatUtility */,
+				F9DD965C2F1238D70026DFA5 /* FrameMetrics */,
 				F98606082BE71763006A4C0F /* FreestandingMessageBox */,
 				F96F960F2C3712DC0033353E /* Geometry2D */,
 				F934BD962BFA59000003EAD5 /* Graphics */,
@@ -9466,10 +9471,11 @@
 			isa = PBXGroup;
 			children = (
 				F98606292BEBBBC7006A4C0F /* CProfiler.cpp */,
-				F986062A2BEBBBC7006A4C0F /* CProfiler.hpp */,
-				F986062B2BEBBBC7006A4C0F /* IProfiler.hpp */,
 				F986062C2BEBBBC7006A4C0F /* ProfilerFactory.cpp */,
 				F986062D2BEBBBC7006A4C0F /* SivProfiler.cpp */,
+				F986062A2BEBBBC7006A4C0F /* CProfiler.hpp */,
+				F986062B2BEBBBC7006A4C0F /* IProfiler.hpp */,
+				F9DD965E2F1239000026DFA5 /* ProfilerEvent.hpp */,
 			);
 			path = Profiler;
 			sourceTree = "<group>";
@@ -11362,6 +11368,14 @@
 			path = Twitter;
 			sourceTree = "<group>";
 		};
+		F9DD965C2F1238D70026DFA5 /* FrameMetrics */ = {
+			isa = PBXGroup;
+			children = (
+				F9DD965B2F1238D70026DFA5 /* SivFrameMetrics.cpp */,
+			);
+			path = FrameMetrics;
+			sourceTree = "<group>";
+		};
 		F9E5FC172BC12C340081A4F7 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -11956,6 +11970,7 @@
 				F98603892BCFBB54006A4C0F /* SkOTTable_OS_2_VA.h in Headers */,
 				F9E794632C198147002615BA /* ListUtility.ipp in Headers */,
 				F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */,
+				F9DD965A2F1238B70026DFA5 /* FrameMetrics.hpp in Headers */,
 				F986019D2BCFBB53006A4C0F /* SkDevice.h in Headers */,
 				F98600722BCFBB53006A4C0F /* SkCPUTypes.h in Headers */,
 				F98600552BCFBB53006A4C0F /* SkXPSDocument.h in Headers */,
@@ -12301,7 +12316,6 @@
 				F943AB542E2A2E4F001B4D43 /* fastmath.h in Headers */,
 				F9B7D9F62D8C7269002ABACE /* BCnDecoder.hpp in Headers */,
 				F9B7D9F72D8C7269002ABACE /* BCnEncoder.hpp in Headers */,
-				F9528B7F2BB71F9900222F45 /* ProfilerStat.hpp in Headers */,
 				F9528CA52BC1209900222F45 /* zconf.h in Headers */,
 				F98604032BCFBB54006A4C0F /* SkSLEmptyExpression.h in Headers */,
 				F986022E2BCFBB54006A4C0F /* SkPtrRecorder.h in Headers */,
@@ -13288,6 +13302,7 @@
 				F9070CDD2B9F175100383E4D /* NamedParameter.hpp in Headers */,
 				F98601912BCFBB53006A4C0F /* SkCoreBlitters.h in Headers */,
 				F986FA6A2BCFB53B006A4C0F /* ftvalid.h in Headers */,
+				F9DD965F2F1239000026DFA5 /* ProfilerEvent.hpp in Headers */,
 				F9070C892B9F175000383E4D /* UUIDValue.ipp in Headers */,
 				F986F8332BC7B024006A4C0F /* INISection.ipp in Headers */,
 				F9070EE12B9F1C8900383E4D /* internal.h in Headers */,
@@ -14365,6 +14380,7 @@
 				F98602502BCFBB54006A4C0F /* SkResourceCache.cpp in Sources */,
 				F986017D2BCFBB53006A4C0F /* SkCapabilities.cpp in Sources */,
 				F98601472BCFBB53006A4C0F /* SkAlphaRuns.cpp in Sources */,
+				F9DD965D2F1238D70026DFA5 /* SivFrameMetrics.cpp in Sources */,
 				F986038D2BCFBB54006A4C0F /* SkOTUtils.cpp in Sources */,
 				F98600BD2BCFBB53006A4C0F /* SkArenaAlloc.cpp in Sources */,
 				F98602312BCFBB54006A4C0F /* SkRasterClip.cpp in Sources */,
