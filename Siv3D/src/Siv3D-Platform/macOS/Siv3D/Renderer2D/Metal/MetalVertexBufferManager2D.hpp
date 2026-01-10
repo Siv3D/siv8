@@ -27,7 +27,7 @@ namespace s3d
 	
 		void init(MTL::Device* device);
 
-		void updateContent();
+		void waitForFrame();
 		
 		dispatch_semaphore_t getSemaphore() const
 		{

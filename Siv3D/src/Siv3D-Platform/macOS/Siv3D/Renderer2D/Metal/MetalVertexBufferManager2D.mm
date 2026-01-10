@@ -40,7 +40,7 @@ namespace s3d
 		}
 	}
 
-	void MetalVertexBufferManager2D::updateContent()
+	void MetalVertexBufferManager2D::waitForFrame()
 	{
 		dispatch_semaphore_wait(m_frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
 			
