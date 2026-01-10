@@ -110,8 +110,6 @@ namespace s3d
 		{
 			m_backBuffer.resizeBackBuffer(windowFrameBufferSize);
 		}
-
-		m_pRenderer2D->beginFrame();
 	}
 
 	////////////////////////////////////////////////////////////////

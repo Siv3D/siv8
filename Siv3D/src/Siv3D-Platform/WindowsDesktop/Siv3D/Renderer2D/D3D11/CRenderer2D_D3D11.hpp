@@ -451,14 +451,6 @@ namespace s3d
 
 		const Texture& getShadowTexture() const noexcept override;
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	beginFrame
-		//
-		////////////////////////////////////////////////////////////////
-
-		void beginFrame();
-
 	private:
 
 		CRenderer_D3D11* m_pRenderer	= nullptr;
