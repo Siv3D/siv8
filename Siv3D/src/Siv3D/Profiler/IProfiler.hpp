@@ -11,10 +11,13 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
-# include <Siv3D/ProfilerStat.hpp>
+# include <Siv3D/String.hpp>
+# include "ProfilerEvent.hpp"
 
 namespace s3d
 {
+	struct FrameMetrics;
+
 	class SIV3D_NOVTABLE ISiv3DProfiler
 	{
 	public:
@@ -34,6 +37,8 @@ namespace s3d
 
 		virtual String getSimpleStatistics() const = 0;
 
-		virtual const ProfilerStat& getStat() const = 0;
+		virtual const FrameMetrics& getFrameMetrics() const = 0;
+
+		virtual void reportEvent(ProfilerEvent event) = 0;
 	};
 }

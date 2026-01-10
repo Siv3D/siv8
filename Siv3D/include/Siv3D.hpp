@@ -390,8 +390,7 @@
 //
 ////////////////////////////////////////////////////////////////
 
-// プロファイラーの統計情報 | Profiler statistics
-# include <Siv3D/ProfilerStat.hpp> // ToDo
+# include <Siv3D/FrameMetrics.hpp>
 
 // プロファイラー | Profiler
 # include <Siv3D/Profiler.hpp> // ToDo

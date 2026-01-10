@@ -452,7 +452,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\IsPrime.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PRNG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Profiler.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\ProfilerStat.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FrameMetrics.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Quad.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\QualityFactor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Random.hpp" />
@@ -788,6 +788,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\PrintFont.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\IProfiler.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\ProfilerEvent.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\IRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
@@ -1384,6 +1385,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FormatUtility\SivFormatUtility.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\FrameMetrics\SivFrameMetrics.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_BoundingRect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_ConvexHull.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Distance.cpp" />

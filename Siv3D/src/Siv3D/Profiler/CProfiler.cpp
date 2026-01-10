@@ -41,6 +41,8 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CProfiler::init()");
 
 		m_fpsCounter.timeStampMillisec = Time::GetMillisec();
+
+		m_timestamps.fill(0);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -66,19 +68,28 @@ namespace s3d
 			}
 		}
 
-		//// Stat
-		//{
-		//	{
-		//		const auto stat = SIV3D_ENGINE(Renderer2D)->getStat();
-		//		m_stat.drawCalls = stat.drawCalls;
-		//		m_stat.triangleCount = stat.triangleCount;
-		//	}
+		// Stat
+		{
+			++m_frameMetrics.frameIndex;
 
-		//	m_stat.textureCount = static_cast<uint32>(SIV3D_ENGINE(Texture)->getTextureCount());
-		//	m_stat.fontCount = static_cast<uint32>(SIV3D_ENGINE(Font)->getFontCount());
-		//	m_stat.audioCount = static_cast<uint32>(SIV3D_ENGINE(Audio)->getAudioCount());
-		//	m_stat.activeVoice = static_cast<uint32>(GlobalAudio::GetActiveVoiceCount());
-		//}
+			m_frameMetrics.engineBeginTimeUs = (m_timestamps[FromEnum(ProfilerEvent::EngineBegin_End)]
+				- m_timestamps[FromEnum(ProfilerEvent::EngineBegin_Start)]);
+
+			m_frameMetrics.userUpdateTimeUs = (m_timestamps[FromEnum(ProfilerEvent::UserUpdate_End)]
+				- m_timestamps[FromEnum(ProfilerEvent::UserUpdate_Start)]);
+
+			m_frameMetrics.engineEndTimeUs = (m_timestamps[FromEnum(ProfilerEvent::EngineEnd_End)]
+				- m_timestamps[FromEnum(ProfilerEvent::EngineEnd_Start)]);
+
+			m_frameMetrics.gpuWaitTimeUs = (m_timestamps[FromEnum(ProfilerEvent::GPUWait_End)]
+				- m_timestamps[FromEnum(ProfilerEvent::GPUWait_Start)]);
+
+			//{
+			//	const auto stat = SIV3D_ENGINE(Renderer2D)->getStat();
+			//	m_stat.drawCalls = stat.drawCalls;
+			//	m_stat.triangleCount = stat.triangleCount;
+			//}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -120,12 +131,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getStat
+	//	getFrameMetrics
 	//
 	////////////////////////////////////////////////////////////////
 
-	const ProfilerStat& CProfiler::getStat() const
+	const FrameMetrics& CProfiler::getFrameMetrics() const
 	{
-		return m_stat;
+		return m_frameMetrics;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reportEvent
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CProfiler::reportEvent(const ProfilerEvent event)
+	{
+		const uint64 timestamp = Time::GetMicrosec();
+		m_timestamps[FromEnum(event)] = timestamp;
 	}
 }

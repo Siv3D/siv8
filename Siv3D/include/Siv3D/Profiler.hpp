@@ -14,7 +14,7 @@
 
 namespace s3d
 {
-	struct ProfilerStat;
+	struct FrameMetrics;
 
 	namespace Profiler
 	{
@@ -42,11 +42,11 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	GetStat
+		//	GetFrameMetrics
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		const ProfilerStat& GetStat();
+		const FrameMetrics& GetFrameMetrics();
 	}
 }

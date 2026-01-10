@@ -17,33 +17,32 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	ProfilerStat
+	//	FrameMetrics
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief プロファイラの統計情報 | Profiler statistics
-	struct ProfilerStat
+	struct FrameMetrics
 	{
-		/// @brief Draw コール回数 | Number of draw calls
-		int32 drawCalls = 0;
+		/// @brief フレームのインデックス
+		int64 frameIndex = 0;
 
-		/// @brief 描画された三角形の数 | Number of drawn triangles
-		int32 triangleCount = 0;
+		/// @brief Draw call の回数
+		int64 drawCalls = 0;
 
-		/// @brief テクスチャの数 | Number of textures
-		int32 textureCount = 0;
+		/// @brief 描画した三角形の総数
+		int64 triangleCount = 0;
 
-		/// @brief フォントの数 | Number of fonts
-		int32 fontCount = 0;
+		/// @brief メインループ開始処理（エンジンコード）の CPU 時間（マイクロ秒）
+		int64 engineBeginTimeUs = 0;
 
-		/// @brief メッシュの数 | Number of meshes
-		int32 meshCount = 0;
+		/// @brief メインループ（ユーザーコード）の CPU 時間（マイクロ秒）
+		int64 userUpdateTimeUs = 0;
 
-		/// @brief オーディオの数 | Number of audio objects
-		int32 audioCount = 0;
+		/// @brief メインループ終了処理（エンジンコード）の CPU 時間（マイクロ秒）
+		int64 engineEndTimeUs = 0;
 
-		/// @brief アクティブな音声の数 | Number of active audio objects
-		int32 activeVoice = 0;
+		/// @brief 次フレーム開始待ちの CPU 時間（マイクロ秒）
+		int64 gpuWaitTimeUs = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -52,7 +51,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		String format() const noexcept;
+		String format() const;
 
 		////////////////////////////////////////////////////////////////
 		//

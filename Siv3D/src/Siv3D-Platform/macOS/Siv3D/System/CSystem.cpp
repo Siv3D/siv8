@@ -75,23 +75,27 @@ namespace s3d
 	
 	bool CSystem::update()
 	{
-		if (m_shouldTerminate)
+		SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::UserUpdate_End);
+
 		{
-			return false;
+			if (m_shouldTerminate)
+			{
+				return false;
+			}
+
+			if (SIV3D_ENGINE(UserAction)->shouldTerminate())
+			{
+				m_shouldTerminate = true;
+				return false;
+			}
+		
+			SIV3D_ENGINE(Print)->draw();
+			SIV3D_ENGINE(Renderer)->flush();
+			SIV3D_ENGINE(Profiler)->endFrame();
+			SIV3D_ENGINE(Renderer)->present();
+			SIV3D_ENGINE(ScreenCapture)->update();
 		}
 
-		if (SIV3D_ENGINE(UserAction)->shouldTerminate())
-		{
-			m_shouldTerminate = true;
-			return false;
-		}
-	
-		SIV3D_ENGINE(Print)->draw();
-		SIV3D_ENGINE(Renderer)->flush();
-		SIV3D_ENGINE(Profiler)->endFrame();
-		SIV3D_ENGINE(Renderer)->present();
-		SIV3D_ENGINE(ScreenCapture)->update();
-	
 		//
 		//	previous frame
 		//
@@ -99,24 +103,38 @@ namespace s3d
 		//
 		//	current frame
 		//
-		
+	
+		{
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::GPUWait_Start);
+			SIV3D_ENGINE(Renderer)->waitForFrame();
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::GPUWait_End);
+		}
+	
 		SIV3D_ENGINE(Profiler)->beginFrame();
 
-		if (not SIV3D_ENGINE(AssetMonitor)->update())
 		{
-			m_shouldTerminate = true;
-			return false;
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::EngineBegin_Start);
+			
+			if (not SIV3D_ENGINE(AssetMonitor)->update())
+			{
+				m_shouldTerminate = true;
+				return false;
+			}
+
+			SIV3D_ENGINE(Window)->update();
+			SIV3D_ENGINE(Scene)->update();
+			SIV3D_ENGINE(Renderer)->beginFrame();
+			SIV3D_ENGINE(Cursor)->update();
+			SIV3D_ENGINE(CursorStyle)->update();
+			SIV3D_ENGINE(Keyboard)->update();
+			SIV3D_ENGINE(Mouse)->update();
+			SIV3D_ENGINE(LicenseManager)->update();
+			SIV3D_ENGINE(Effect)->update();
+
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::EngineBegin_End);
 		}
 
-		SIV3D_ENGINE(Window)->update();
-		SIV3D_ENGINE(Scene)->update();
-		SIV3D_ENGINE(Renderer)->beginFrame();
-		SIV3D_ENGINE(Cursor)->update();
-		SIV3D_ENGINE(CursorStyle)->update();
-		SIV3D_ENGINE(Keyboard)->update();
-		SIV3D_ENGINE(Mouse)->update();
-		SIV3D_ENGINE(LicenseManager)->update();
-		SIV3D_ENGINE(Effect)->update();
+		SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::UserUpdate_Start);
 
 		return true;
 	}
