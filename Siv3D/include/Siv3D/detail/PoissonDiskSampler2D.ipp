@@ -20,10 +20,10 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	inline PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, const Precompute precompute)
-		: PoissonDiskSampler2D{ size, r, ((size / 2.0) + RandomVec2(r / Math::Sqrt2)), precompute } {}
+		: PoissonDiskSampler2D{ size, r, RandomVec2(RectF{ size }), precompute } {}
 
 	PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, Concept::UniformRandomBitGenerator auto&& urbg, const Precompute precompute)
-		: PoissonDiskSampler2D{ size, r, ((size / 2.0) + RandomVec2((r / Math::Sqrt2), std::forward<decltype(urbg)>(urbg))), std::forward<decltype(urbg)>(urbg), precompute } {}
+		: PoissonDiskSampler2D{ size, r, RandomVec2(RectF{ size }, std::forward<decltype(urbg)>(urbg)), std::forward<decltype(urbg)>(urbg), precompute } {}
 
 	inline PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, const Vec2& initialPos, const Precompute precompute)
 		: PoissonDiskSampler2D{ size, r, initialPos, GetDefaultRNG(), precompute } {}
