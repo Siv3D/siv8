@@ -13,6 +13,51 @@
 # include <Siv3D/Subdivision2D.hpp>
 # include <Siv3D/Error.hpp>
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+//	https://github.com/opencv/opencv/blob/master/modules/imgproc/src/subdivision2d.cpp
+//
+/*M///////////////////////////////////////////////////////////////////////////////////////
+//
+//  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
+//
+//  By downloading, copying, installing or using the software you agree to this license.
+//  If you do not agree to this license, do not download, install,
+//  copy or use the software.
+//
+//
+//                        Intel License Agreement
+//                For Open Source Computer Vision Library
+//
+// Copyright (C) 2000, Intel Corporation, all rights reserved.
+// Third party copyrights are property of their respective owners.
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+//   * Redistribution's of source code must retain the above copyright notice,
+//     this list of conditions and the following disclaimer.
+//
+//   * Redistribution's in binary form must reproduce the above copyright notice,
+//     this list of conditions and the following disclaimer in the documentation
+//     and/or other materials provided with the distribution.
+//
+//   * The name of Intel Corporation may not be used to endorse or promote products
+//     derived from this software without specific prior written permission.
+//
+// This software is provided by the copyright holders and contributors "as is" and
+// any express or implied warranties, including, but not limited to, the implied
+// warranties of merchantability and fitness for a particular purpose are disclaimed.
+// In no event shall the Intel Corporation or contributors be liable for any direct,
+// indirect, incidental, special, exemplary, or consequential damages
+// (including, but not limited to, procurement of substitute goods or services;
+// loss of use, data, or profits; or business interruption) however caused
+// and on any theory of liability, whether in contract, strict liability,
+// or tort (including negligence or otherwise) arising in any way out of
+// the use of this software, even if advised of the possibility of such damage.
+//
+//M*/
+
 namespace s3d
 {
 	namespace
@@ -74,7 +119,7 @@ namespace s3d
 
 	Subdivision2D::Subdivision2D(const RectF& rect, const Array<Vec2>& points)
 	{
-		initDelaunay(rect);
+		reset(rect);
 
 		if (points)
 		{
@@ -106,11 +151,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	initDelaunay
+	//	reset
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Subdivision2D::initDelaunay(const RectF& rect)
+	void Subdivision2D::reset(const RectF& rect)
 	{
 		const double bigCoord = (6.0 * Max(rect.w, rect.h));
 		const double rx = rect.x;
@@ -170,7 +215,7 @@ namespace s3d
 		{
 			throw Error{ "Subdivision2D::addPoint(): The point is outside of the triangulation specified rect" };
 		}
-		else if (location == PointLocation::Vertex)
+		else if (location == PointLocation::OnVertex)
 		{
 			return curr_point;
 		}
@@ -258,7 +303,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<Subdivision2D::VertexID> Subdivision2D::findNearest(const Vec2& point, Vec2* nearestPt)
+	Optional<Subdivision2D::VertexID> Subdivision2D::findNearest(const Vec2& point, Vec2* nearestPos)
 	{
 		if (isEmpty() || (not m_internal.rect().contains(point)))
 		{
@@ -276,9 +321,9 @@ namespace s3d
 
 		if ((loc != PointLocation::OnEdge) && (loc != PointLocation::Inside))
 		{
-			if (nearestPt && (loc == PointLocation::Vertex))
+			if (nearestPos && (loc == PointLocation::OnVertex))
 			{
-				*nearestPt = m_internal.vertices[vertex].pt;
+				*nearestPos = m_internal.vertices[vertex].pt;
 			}
 
 			return vertex;
@@ -336,9 +381,9 @@ namespace s3d
 			edge = symEdge(edge);
 		}
 
-		if (nearestPt && (0 < vertex))
+		if (nearestPos && (0 < vertex))
 		{
-			*nearestPt = m_internal.vertices[vertex].pt;
+			*nearestPos = m_internal.vertices[vertex].pt;
 		}
 
 		return vertex;
@@ -346,18 +391,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateEdges
+	//	computeEdges
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Line> Subdivision2D::calculateEdges() const
+	Array<Line> Subdivision2D::computeEdges() const
 	{
 		Array<Line> edges;
-		calculateEdges(edges);
+		computeEdges(edges);
 		return edges;
 	}
 
-	void Subdivision2D::calculateEdges(Array<Line>& edgeList) const
+	void Subdivision2D::computeEdges(Array<Line>& edgeList) const
 	{
 		edgeList.clear();
 
@@ -379,18 +424,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateLeadingEdges
+	//	computeLeadingEdges
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Subdivision2D::EdgeID> Subdivision2D::calculateLeadingEdges() const
+	Array<Subdivision2D::EdgeID> Subdivision2D::computeLeadingEdges() const
 	{
 		Array<EdgeID> leadingEdgeList;
-		calculateLeadingEdges(leadingEdgeList);
+		computeLeadingEdges(leadingEdgeList);
 		return leadingEdgeList;
 	}
 
-	void Subdivision2D::calculateLeadingEdges(Array<EdgeID>& leadingEdgeList) const
+	void Subdivision2D::computeLeadingEdges(Array<EdgeID>& leadingEdgeList) const
 	{
 		leadingEdgeList.clear();
 		
@@ -416,18 +461,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateTriangles
+	//	computeTriangles
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Triangle> Subdivision2D::calculateTriangles() const
+	Array<Triangle> Subdivision2D::computeTriangles() const
 	{
 		Array<Triangle> triangleList;
-		calculateTriangles(triangleList);
+		computeTriangles(triangleList);
 		return triangleList;
 	}
 
-	void Subdivision2D::calculateTriangles(Array<Triangle>& triangleList) const
+	void Subdivision2D::computeTriangles(Array<Triangle>& triangleList) const
 	{
 		triangleList.clear();
 		
@@ -474,26 +519,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateVoronoiFacets
+	//	computeVoronoiCells
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Subdivision2D::VoronoiFacet> Subdivision2D::calculateVoronoiFacets()
+	Array<VoronoiCell> Subdivision2D::computeVoronoiCells()
 	{
-		Array<VoronoiFacet> facets;
-		calculateVoronoiFacets({}, facets);
-		return facets;
+		Array<VoronoiCell> cellList;
+		computeVoronoiCells({}, cellList);
+		return cellList;
 	}
 
-	void Subdivision2D::calculateVoronoiFacets(Array<VoronoiFacet>& facetList)
+	void Subdivision2D::computeVoronoiCells(Array<VoronoiCell>& cellList)
 	{
-		calculateVoronoiFacets({}, facetList);
+		computeVoronoiCells({}, cellList);
 	}
 
-	void Subdivision2D::calculateVoronoiFacets(const Array<VertexID>& indices, Array<VoronoiFacet>& facetList)
+	void Subdivision2D::computeVoronoiCells(const Array<VertexID>& indices, Array<VoronoiCell>& cellList)
 	{
 		calcVoronoi();
-		facetList.clear();
+		cellList.clear();
 
 		size_t i, total;
 		if (indices.isEmpty())
@@ -529,7 +574,7 @@ namespace s3d
 				t = getEdge(t, EdgeType::NextAroundLeft);
 			} while (t != edge);
 
-			facetList.emplace_back(std::move(buf), m_internal.vertices[k].pt);
+			cellList.emplace_back(std::move(buf), m_internal.vertices[k].pt);
 		}
 	}
 
@@ -759,13 +804,13 @@ namespace s3d
 
 			if (t1 < DBL_EPSILON)
 			{
-				location = PointLocation::Vertex;
+				location = PointLocation::OnVertex;
 				vertex = edgeBegin(edge);
 				edge = 0;
 			}
 			else if (t2 < DBL_EPSILON)
 			{
-				location = PointLocation::Vertex;
+				location = PointLocation::OnVertex;
 				vertex = edgeEnd(edge);
 				edge = 0;
 			}

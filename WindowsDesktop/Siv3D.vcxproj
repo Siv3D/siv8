@@ -623,6 +623,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Version.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Vertex2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\VertexShader.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\VoronoiCell.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WebBrowser.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Window.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WindowState.hpp" />

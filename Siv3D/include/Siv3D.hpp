@@ -917,7 +917,11 @@
 // 長方形詰込み | Rectangle packing
 # include <Siv3D/RectanglePack.hpp>
 
+
+
 // 平面分割 | Planar subdivisions
+
+# include <Siv3D/VoronoiCell.hpp>
 # include <Siv3D/Subdivision2D.hpp>
 
 ////////////////////////////////////////////////////////////////
