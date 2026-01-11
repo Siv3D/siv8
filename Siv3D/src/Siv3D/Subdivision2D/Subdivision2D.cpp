@@ -299,11 +299,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	findNearest
+	//	findNearestVertex
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<Subdivision2D::VertexID> Subdivision2D::findNearest(const Vec2& point, Vec2* nearestPos)
+	Optional<Subdivision2D::NearestVertex> Subdivision2D::findNearestVertex(const Vec2& point)
 	{
 		if (isEmpty() || (not m_internal.rect().contains(point)))
 		{
@@ -321,12 +321,7 @@ namespace s3d
 
 		if ((loc != PointLocation::OnEdge) && (loc != PointLocation::Inside))
 		{
-			if (nearestPos && (loc == PointLocation::OnVertex))
-			{
-				*nearestPos = m_internal.vertices[vertex].pt;
-			}
-
-			return vertex;
+			return NearestVertex{ vertex, m_internal.vertices[vertex].pt };
 		}
 
 		vertex = 0;
@@ -381,28 +376,28 @@ namespace s3d
 			edge = symEdge(edge);
 		}
 
-		if (nearestPos && (0 < vertex))
+		if (0 < vertex)
 		{
-			*nearestPos = m_internal.vertices[vertex].pt;
+			return NearestVertex{ vertex, m_internal.vertices[vertex].pt };
 		}
-
-		return vertex;
+	
+		return none;
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	computeEdges
+	//	computeDelaunayEdges
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Line> Subdivision2D::computeEdges() const
+	Array<Line> Subdivision2D::computeDelaunayEdges() const
 	{
 		Array<Line> edges;
-		computeEdges(edges);
+		computeDelaunayEdges(edges);
 		return edges;
 	}
 
-	void Subdivision2D::computeEdges(Array<Line>& edgeList) const
+	void Subdivision2D::computeDelaunayEdges(Array<Line>& edgeList) const
 	{
 		edgeList.clear();
 
@@ -424,55 +419,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	computeLeadingEdges
+	//	computeDelaunayTriangles
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Subdivision2D::EdgeID> Subdivision2D::computeLeadingEdges() const
-	{
-		Array<EdgeID> leadingEdgeList;
-		computeLeadingEdges(leadingEdgeList);
-		return leadingEdgeList;
-	}
-
-	void Subdivision2D::computeLeadingEdges(Array<EdgeID>& leadingEdgeList) const
-	{
-		leadingEdgeList.clear();
-		
-		const int32 total = static_cast<int32>(m_internal.qEdges.size() * 4);
-		std::vector<bool> edgemask(total);
-
-		for (int32 i = 4; i < total; i += 2)
-		{
-			if (edgemask[i])
-			{
-				continue;
-			}
-
-			EdgeID edge = i;
-			edgemask[edge] = true;
-			edge = getEdge(edge, EdgeType::NextAroundLeft);
-			edgemask[edge] = true;
-			edge = getEdge(edge, EdgeType::NextAroundLeft);
-			edgemask[edge] = true;
-			leadingEdgeList.push_back(i);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	computeTriangles
-	//
-	////////////////////////////////////////////////////////////////
-
-	Array<Triangle> Subdivision2D::computeTriangles() const
+	Array<Triangle> Subdivision2D::computeDelaunayTriangles() const
 	{
 		Array<Triangle> triangleList;
-		computeTriangles(triangleList);
+		computeDelaunayTriangles(triangleList);
 		return triangleList;
 	}
 
-	void Subdivision2D::computeTriangles(Array<Triangle>& triangleList) const
+	void Subdivision2D::computeDelaunayTriangles(Array<Triangle>& triangleList) const
 	{
 		triangleList.clear();
 		
@@ -535,13 +493,13 @@ namespace s3d
 		computeVoronoiCells({}, cellList);
 	}
 
-	void Subdivision2D::computeVoronoiCells(const Array<VertexID>& indices, Array<VoronoiCell>& cellList)
+	void Subdivision2D::computeVoronoiCells(const Array<VertexID>& vertexIDs, Array<VoronoiCell>& cellList)
 	{
 		calcVoronoi();
 		cellList.clear();
 
 		size_t i, total;
-		if (indices.isEmpty())
+		if (vertexIDs.isEmpty())
 		{
 			i = 4;
 			total = m_internal.vertices.size();
@@ -549,14 +507,14 @@ namespace s3d
 		else
 		{
 			i = 0;
-			total = indices.size();
+			total = vertexIDs.size();
 		}
 
 		Array<Vec2> buf;
 
 		for (; i < total; i++)
 		{
-			const int32 k = (indices.empty() ? static_cast<int32>(i) : indices[i]);
+			const int32 k = (vertexIDs.empty() ? static_cast<int32>(i) : vertexIDs[i]);
 
 			if (m_internal.vertices[k].isFree() || m_internal.vertices[k].isVirtual())
 			{
@@ -575,6 +533,43 @@ namespace s3d
 			} while (t != edge);
 
 			cellList.emplace_back(std::move(buf), m_internal.vertices[k].pt);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeLeadingEdges
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Subdivision2D::EdgeID> Subdivision2D::computeLeadingEdges() const
+	{
+		Array<EdgeID> leadingEdgeList;
+		computeLeadingEdges(leadingEdgeList);
+		return leadingEdgeList;
+	}
+
+	void Subdivision2D::computeLeadingEdges(Array<EdgeID>& leadingEdgeList) const
+	{
+		leadingEdgeList.clear();
+
+		const int32 total = static_cast<int32>(m_internal.qEdges.size() * 4);
+		std::vector<bool> edgemask(total);
+
+		for (int32 i = 4; i < total; i += 2)
+		{
+			if (edgemask[i])
+			{
+				continue;
+			}
+
+			EdgeID edge = i;
+			edgemask[edge] = true;
+			edge = getEdge(edge, EdgeType::NextAroundLeft);
+			edgemask[edge] = true;
+			edge = getEdge(edge, EdgeType::NextAroundLeft);
+			edgemask[edge] = true;
+			leadingEdgeList.push_back(i);
 		}
 	}
 
@@ -879,7 +874,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Subdivision2D::VertexID Subdivision2D::newPoint(const Vec2& pt, bool isvirtual, EdgeID firstEdge)
+	Subdivision2D::VertexID Subdivision2D::newPoint(const Vec2& pt, bool isVirtual, EdgeID firstEdge)
 	{
 		if (m_internal.freePoint == 0)
 		{
@@ -889,7 +884,7 @@ namespace s3d
 
 		const VertexID vidx = m_internal.freePoint;
 		m_internal.freePoint = m_internal.vertices[vidx].firstEdge;
-		m_internal.vertices[vidx] = Vertex{ pt, isvirtual, firstEdge };
+		m_internal.vertices[vidx] = Vertex{ pt, isVirtual, firstEdge };
 
 		return vidx;
 	}

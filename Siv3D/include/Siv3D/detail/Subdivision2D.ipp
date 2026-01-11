@@ -19,9 +19,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Subdivision2D::Vertex::Vertex(const Vec2& _pt, const bool _isvirtual, const EdgeID _firstEdge) noexcept
+	constexpr Subdivision2D::Vertex::Vertex(const Vec2& _pt, const bool _isVirtual, const EdgeID _firstEdge) noexcept
 		: firstEdge{ _firstEdge }
-		, type{ _isvirtual }
+		, type{ _isVirtual }
 		, pt{ _pt } {}
 
 	////////////////////////////////////////////////////////////////

@@ -18,6 +18,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	Subdivision2D
+	//
+	////////////////////////////////////////////////////////////////
+
 	class Subdivision2D
 	{
 	public:
@@ -61,6 +67,13 @@ namespace s3d
 			PreviousAroundLeft = 0x20,
 
 			PreviousAroundRight = 0x02
+		};
+
+		struct NearestVertex
+		{
+			VertexID id;
+			
+			Vec2 pos;
 		};
 
 		////////////////////////////////////////////////////////////////
@@ -122,45 +135,34 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	findNearest
+		//	findNearestVertex
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Optional<VertexID> findNearest(const Vec2& point, Vec2* nearestPos = nullptr);
+		Optional<NearestVertex> findNearestVertex(const Vec2& point);
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	computeEdges
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		Array<Line> computeEdges() const;
-
-		void computeEdges(Array<Line>& edgeList) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	computeLeadingEdges
+		//	computeDelaunayEdges
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Array<EdgeID> computeLeadingEdges() const;
+		Array<Line> computeDelaunayEdges() const;
 
-		void computeLeadingEdges(Array<EdgeID>& leadingEdgeList) const;
+		void computeDelaunayEdges(Array<Line>& edgeList) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	computeTriangles
+		//	computeDelaunayTriangles
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Array<Triangle> computeTriangles() const;
+		Array<Triangle> computeDelaunayTriangles() const;
 
-		void computeTriangles(Array<Triangle>& triangleList) const;
+		void computeDelaunayTriangles(Array<Triangle>& triangleList) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -173,7 +175,18 @@ namespace s3d
 
 		void computeVoronoiCells(Array<VoronoiCell>& cellList);
 
-		void computeVoronoiCells(const Array<VertexID>& indices, Array<VoronoiCell>& cellList);
+		void computeVoronoiCells(const Array<VertexID>& vertexIDs, Array<VoronoiCell>& cellList);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeLeadingEdges
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Array<EdgeID> computeLeadingEdges() const;
+
+		void computeLeadingEdges(Array<EdgeID>& leadingEdgeList) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -248,7 +261,7 @@ namespace s3d
 
 			Vertex() = default;
 
-			constexpr Vertex(const Vec2& _pt, bool _isvirtual, EdgeID _firstEdge = 0) noexcept;
+			constexpr Vertex(const Vec2& _pt, bool _isVirtual, EdgeID _firstEdge = 0) noexcept;
 
 			[[nodiscard]]
 			constexpr bool isVirtual() const noexcept;
@@ -331,7 +344,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		VertexID newPoint(const Vec2& pt, bool isvirtual, EdgeID firstEdge = 0);
+		VertexID newPoint(const Vec2& pt, bool isVirtual, EdgeID firstEdge = 0);
 
 		////////////////////////////////////////////////////////////////
 		//
