@@ -45,6 +45,18 @@ namespace s3d
 		[[nodiscard]]
 		explicit PoissonDiskSampler2D(const Size& size, double r, const Vec2& initialPos, Concept::UniformRandomBitGenerator auto&& urbg, Precompute precompute = Precompute::Yes);
 
+		[[nodiscard]]
+		explicit PoissonDiskSampler2D(const Rect& rect, double r, Precompute precompute = Precompute::Yes);
+
+		[[nodiscard]]
+		explicit PoissonDiskSampler2D(const Rect& rect, double r, Concept::UniformRandomBitGenerator auto&& urbg, Precompute precompute = Precompute::Yes);
+
+		[[nodiscard]]
+		explicit PoissonDiskSampler2D(const Rect& rect, double r, const Vec2& initialPos, Precompute precompute = Precompute::Yes);
+
+		[[nodiscard]]
+		explicit PoissonDiskSampler2D(const Rect& rect, double r, const Vec2& initialPos, Concept::UniformRandomBitGenerator auto&& urbg, Precompute precompute = Precompute::Yes);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	isComplete
@@ -73,11 +85,22 @@ namespace s3d
 		[[nodiscard]]
 		const Array<Vec2>& getPoints() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	getPoints
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Rect region() const noexcept;
+
 	private:
 
 		static constexpr size_t k = 30;
 
 		Size m_size{ 0, 0 };
+
+		Point m_offset{ 0, 0 };
 
 		double m_r = 0.0;
 

@@ -20,21 +20,34 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	inline PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, const Precompute precompute)
-		: PoissonDiskSampler2D{ size, r, RandomVec2(RectF{ size }), precompute } {}
+		: PoissonDiskSampler2D{ Rect{ size }, r, RandomVec2(RectF{ size }), precompute } {}
 
 	PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, Concept::UniformRandomBitGenerator auto&& urbg, const Precompute precompute)
-		: PoissonDiskSampler2D{ size, r, RandomVec2(RectF{ size }, std::forward<decltype(urbg)>(urbg)), std::forward<decltype(urbg)>(urbg), precompute } {}
+		: PoissonDiskSampler2D{ Rect{ size }, r, RandomVec2(RectF{ size }, std::forward<decltype(urbg)>(urbg)), std::forward<decltype(urbg)>(urbg), precompute } {}
 
 	inline PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, const Vec2& initialPos, const Precompute precompute)
-		: PoissonDiskSampler2D{ size, r, initialPos, GetDefaultRNG(), precompute } {}
+		: PoissonDiskSampler2D{ Rect{ size }, r, initialPos, GetDefaultRNG(), precompute } {}
 
 	PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, const Vec2& initialPos, Concept::UniformRandomBitGenerator auto&& urbg, const Precompute precompute)
-		: m_size{ size }
+		: PoissonDiskSampler2D{ Rect{ size }, r, initialPos, std::forward<decltype(urbg)>(urbg), precompute } {}
+
+	inline PoissonDiskSampler2D::PoissonDiskSampler2D(const Rect& rect, const double r, const Precompute precompute)
+		: PoissonDiskSampler2D{ rect, r, RandomVec2(rect), precompute } {}
+
+	PoissonDiskSampler2D::PoissonDiskSampler2D(const Rect& rect, const double r, Concept::UniformRandomBitGenerator auto&& urbg, const Precompute precompute)
+		: PoissonDiskSampler2D{ rect, r, RandomVec2(rect, std::forward<decltype(urbg)>(urbg)), std::forward<decltype(urbg)>(urbg), precompute } {}
+
+	inline PoissonDiskSampler2D::PoissonDiskSampler2D(const Rect& rect, const double r, const Vec2& initialPos, const Precompute precompute)
+		: PoissonDiskSampler2D{ rect, r, initialPos, GetDefaultRNG(), precompute } {}
+
+	PoissonDiskSampler2D::PoissonDiskSampler2D(const Rect& rect, const double r, const Vec2& initialPos, Concept::UniformRandomBitGenerator auto&& urbg, const Precompute precompute)
+		: m_size{ rect.size }
+		, m_offset{ rect.pos }
 		, m_r{ r }
 		, m_cellSize{ (m_r / Math::Sqrt2) }
 		, m_grid((static_cast<int32>(m_size.x / m_cellSize) + 1), (static_cast<int32>(m_size.y / m_cellSize) + 1))
 	{
-		const Vec2 pos = initialPos;
+		const Vec2 pos = (initialPos - m_offset);
 		const int32 indexY = (static_cast<int32>(pos.y / m_cellSize));
 		const int32 indexX = (static_cast<int32>(pos.x / m_cellSize));
 
@@ -45,7 +58,7 @@ namespace s3d
 
 		m_grid[indexY][indexX] = pos;
 		m_activeList << pos;
-		m_results << pos;
+		m_results << (m_offset + pos);
 
 		if (precompute)
 		{
@@ -140,7 +153,7 @@ namespace s3d
 				found = true;
 				m_grid[y][x] = sample;
 				m_activeList << sample;
-				m_results << sample;
+				m_results << (m_offset + sample);
 				break;
 
 			TooClose:
@@ -174,5 +187,16 @@ namespace s3d
 	inline const Array<Vec2>& PoissonDiskSampler2D::getPoints() const noexcept
 	{
 		return m_results;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getPoints
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Rect PoissonDiskSampler2D::region() const noexcept
+	{
+		return{ m_offset, m_size };
 	}
 }

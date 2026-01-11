@@ -47,36 +47,6 @@ namespace s3d
 	[[nodiscard]]
 	Vec2 RandomVec2(double length, Concept::UniformRandomBitGenerator auto&& urbg);
 
-	/// @brief 現在のスレッドの乱数エンジンを用いて、固定の X 成分と、ランダムな Y 成分を持つ 2 次元ベクトルを返します。
-	/// @param x 固定の X 成分
-	/// @param yMinMax Y 成分の最小値と最大値
-	/// @return 固定の X 成分と、ランダムな Y 成分を持つ 2 次元ベクトル
-	[[nodiscard]]
-	Vec2 RandomVec2(double x, const std::pair<double, double>& yMinMax);
-
-	/// @brief 固定の X 成分と、ランダムな Y 成分を持つ 2 次元ベクトルを返します。
-	/// @param x 固定の X 成分
-	/// @param yMinMax Y 成分の最小値と最大値
-	/// @param urbg 乱数エンジン
-	/// @return 固定の X 成分と、ランダムな Y 成分を持つ 2 次元ベクトル
-	[[nodiscard]]
-	Vec2 RandomVec2(double x, const std::pair<double, double>& yMinMax, Concept::UniformRandomBitGenerator auto&& urbg);
-
-	/// @brief 現在のスレッドの乱数エンジンを用いて、ランダムな X 成分と、固定の Y 成分を持つ 2 次元ベクトルを返します。
-	/// @param xMinMax X 成分の最小値と最大値
-	/// @param y 固定の Y 成分
-	/// @return ランダムな X 成分と、固定の Y 成分を持つ 2 次元ベクトル
-	[[nodiscard]]
-	Vec2 RandomVec2(const std::pair<double, double>& xMinMax, double y);
-
-	/// @brief ランダムな X 成分と、固定の Y 成分を持つ 2 次元ベクトルを返します。
-	/// @param xMinMax X 成分の最小値と最大値
-	/// @param y 固定の Y 成分
-	/// @param urbg 乱数エンジン
-	/// @return ランダムな X 成分と、固定の Y 成分を持つ 2 次元ベクトル
-	[[nodiscard]]
-	Vec2 RandomVec2(const std::pair<double, double>& xMinMax, double y, Concept::UniformRandomBitGenerator auto&& urbg);
-
 	/// @brief 現在のスレッドの乱数エンジンを用いて、ランダムな X 成分、Y 成分を持つ 2 次元ベクトルを返します。
 	/// @param xMinMax X 成分の最小値と最大値
 	/// @param yMinMax Y 成分の最小値と最大値

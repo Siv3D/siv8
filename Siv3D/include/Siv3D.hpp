@@ -917,8 +917,8 @@
 // 長方形詰込み | Rectangle packing
 # include <Siv3D/RectanglePack.hpp>
 
-//// 平面分割 | Planar subdivisions
-//# include <Siv3D/Subdivision2D.hpp>
+// 平面分割 | Planar subdivisions
+# include <Siv3D/Subdivision2D.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -981,9 +981,9 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// Twitter | Twitter
-//# include <Siv3D/Twitter.hpp>
-//
+// Twitter | Twitter
+# include <Siv3D/Twitter.hpp>
+
 //// IPv4 アドレス | IPv4 address
 //# include <Siv3D/IPv4Address.hpp>
 //
@@ -1035,11 +1035,9 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// URL | URL
-//# include <Siv3D/URL.hpp>
-//
-//# include <Siv3D/URLView.hpp>
-//
+// URL | URL
+# include <Siv3D/URL.hpp>
+
 //# include <Siv3D/HTTPStatusCode.hpp>
 //
 //# include <Siv3D/HTTPResponse.hpp>

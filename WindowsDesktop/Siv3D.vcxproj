@@ -557,6 +557,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\StringView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringViewAlgorithm.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringViewRandom.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Subdivision2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SuperEllipse.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SVG.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\System.hpp" />
