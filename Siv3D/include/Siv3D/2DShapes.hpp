@@ -23,6 +23,7 @@
 # include "Quad.hpp"
 # include "RoundRect.hpp"
 # include "Geometry2D/Intersect.hpp"
+# include "Geometry2D/Contains.hpp"
 # include "Geometry2D/IsClockwise.hpp"
 # include "detail/Circular.ipp"
 # include "detail/OffsetCircular.ipp"

@@ -1153,6 +1153,21 @@
     <Filter Include="src\Siv3D\NativeShare">
       <UniqueIdentifier>{40e089ef-00a8-4dc4-870b-b5841e74d802}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Effect">
+      <UniqueIdentifier>{b97d452f-a4d9-4f0d-bc99-7d6d361ac26c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\PercentEncode">
+      <UniqueIdentifier>{a60577ee-bd47-4c7f-b53d-8c4dd594532d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Twitter">
+      <UniqueIdentifier>{3c70c2f7-d19c-4586-a130-c71ac4c8c111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\FrameMetrics">
+      <UniqueIdentifier>{002aba21-7ae1-4b1f-b55c-0d6da3fb5732}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Subdivision2D">
+      <UniqueIdentifier>{6f98be4e-967c-49f0-aa45-c82f49b38797}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -2076,7 +2091,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Profiler.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\ProfilerStat.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\FrameMetrics.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Step2D.hpp">
@@ -4724,6 +4739,78 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PerlinNoise.ipp">
       <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\YAxisOrientation.h">
+      <Filter>src\ThirdParty\msdfgen\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PolygonGlyph.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\PolygonGlyphRenderer.hpp">
+      <Filter>src\Siv3D\Font\GlyphRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\MultiPolygon.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Contains.ipp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Effect.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IEffect.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Effect\CEffect.hpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Effect\IEffect.hpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Effect\EffectData.hpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Effect.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Twitter.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\URL.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Sample.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Sample.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\ProfilerEvent.hpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\ProfilerStat.hpp">
+      <Filter>src\Siv3D\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PoissonDiskSampler2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PoissonDiskSampler2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Subdivision2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Subdivision2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\VoronoiCell.hpp">
+      <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -7435,6 +7522,36 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\SivNativeShare.cpp">
       <Filter>src\Siv3D\NativeShare</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\PolygonGlyphRenderer.cpp">
+      <Filter>src\Siv3D\Font\GlyphRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Distance.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Effect\CEffect.cpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Effect\EffectFactory.cpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Effect\EffectData.cpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Effect\SivEffect.cpp">
+      <Filter>src\Siv3D\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PercentEncode\SivPercentEncode.cpp">
+      <Filter>src\Siv3D\PercentEncode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Twitter\SivTwitter.cpp">
+      <Filter>src\Siv3D\Twitter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FrameMetrics\SivFrameMetrics.cpp">
+      <Filter>src\Siv3D\FrameMetrics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Subdivision2D\Subdivision2D.cpp">
+      <Filter>src\Siv3D\Subdivision2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

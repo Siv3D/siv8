@@ -478,6 +478,53 @@ namespace s3d
 
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	movedBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::movedBy(const double x, const double y) const&
+	{
+		return movedBy(Vec2{ x, y });
+	}
+
+	Polygon Polygon::movedBy(const Vec2 v) const&
+	{
+		Polygon result{ *this };
+		result.moveBy(v);
+		return result;
+	}
+
+	Polygon Polygon::movedBy(const double x, const double y) && noexcept
+	{
+		moveBy(x, y);
+		return std::move(*this);
+	}
+
+	Polygon Polygon::movedBy(const Vec2 v) && noexcept
+	{
+		moveBy(v);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	movedBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon& Polygon::moveBy(const double x, const double y) noexcept
+	{
+		return moveBy(Vec2{ x, y });
+	}
+
+	Polygon& Polygon::moveBy(const Vec2 v) noexcept
+	{
+		pImpl->moveBy(v);
+		return *this;
+	}
+
 
 
 	////////////////////////////////////////////////////////////////

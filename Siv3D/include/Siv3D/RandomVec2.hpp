@@ -47,36 +47,6 @@ namespace s3d
 	[[nodiscard]]
 	Vec2 RandomVec2(double length, Concept::UniformRandomBitGenerator auto&& urbg);
 
-	/// @brief 現在のスレッドの乱数エンジンを用いて、固定の X 成分と、ランダムな Y 成分を持つ 2 次元ベクトルを返します。
-	/// @param x 固定の X 成分
-	/// @param yMinMax Y 成分の最小値と最大値
-	/// @return 固定の X 成分と、ランダムな Y 成分を持つ 2 次元ベクトル
-	[[nodiscard]]
-	Vec2 RandomVec2(double x, const std::pair<double, double>& yMinMax);
-
-	/// @brief 固定の X 成分と、ランダムな Y 成分を持つ 2 次元ベクトルを返します。
-	/// @param x 固定の X 成分
-	/// @param yMinMax Y 成分の最小値と最大値
-	/// @param urbg 乱数エンジン
-	/// @return 固定の X 成分と、ランダムな Y 成分を持つ 2 次元ベクトル
-	[[nodiscard]]
-	Vec2 RandomVec2(double x, const std::pair<double, double>& yMinMax, Concept::UniformRandomBitGenerator auto&& urbg);
-
-	/// @brief 現在のスレッドの乱数エンジンを用いて、ランダムな X 成分と、固定の Y 成分を持つ 2 次元ベクトルを返します。
-	/// @param xMinMax X 成分の最小値と最大値
-	/// @param y 固定の Y 成分
-	/// @return ランダムな X 成分と、固定の Y 成分を持つ 2 次元ベクトル
-	[[nodiscard]]
-	Vec2 RandomVec2(const std::pair<double, double>& xMinMax, double y);
-
-	/// @brief ランダムな X 成分と、固定の Y 成分を持つ 2 次元ベクトルを返します。
-	/// @param xMinMax X 成分の最小値と最大値
-	/// @param y 固定の Y 成分
-	/// @param urbg 乱数エンジン
-	/// @return ランダムな X 成分と、固定の Y 成分を持つ 2 次元ベクトル
-	[[nodiscard]]
-	Vec2 RandomVec2(const std::pair<double, double>& xMinMax, double y, Concept::UniformRandomBitGenerator auto&& urbg);
-
 	/// @brief 現在のスレッドの乱数エンジンを用いて、ランダムな X 成分、Y 成分を持つ 2 次元ベクトルを返します。
 	/// @param xMinMax X 成分の最小値と最大値
 	/// @param yMinMax Y 成分の最小値と最大値
@@ -209,6 +179,27 @@ namespace s3d
 	/// @return `RandomVec2(Circle{ 1.0 }, urbg)` と同じです。
 	[[nodiscard]]
 	Vec2 RandomVec2InsideUnitCircle(Concept::UniformRandomBitGenerator auto&& urbg);
+	
+	////////////////////////////////////////////////////////////////
+	//
+	//	RandomVec2InsideAnnulus
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 現在のスレッドの乱数エンジンを用いて、指定した内径と外径を持つ環状領域の内部のランダムな位置ベクトルを返します。
+	/// @param innerRadius 内径
+	/// @param outerRadius 外径
+	/// @return 指定した内径と外径を持つ環状領域の内部のランダムな位置ベクトル
+	[[nodiscard]]
+	Vec2 RandomVec2InsideAnnulus(double innerRadius, double outerRadius);
+
+	/// @brief 指定した内径と外径を持つ環状領域の内部のランダムな位置ベクトルを返します。
+	/// @param innerRadius 内径
+	///	@param outerRadius 外径
+	/// @param urbg 乱数エンジン
+	/// @return 指定した内径と外径を持つ環状領域の内部のランダムな位置ベクトル
+	[[nodiscard]]
+	Vec2 RandomVec2InsideAnnulus(double innerRadius, double outerRadius, Concept::UniformRandomBitGenerator auto&& urbg);
 }
 
 # include "detail/RandomVec2.ipp"

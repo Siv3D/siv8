@@ -198,7 +198,7 @@ namespace s3d
 		// タイマーの解像度を上げることで Sleep() の精度を上げる
 		::timeBeginPeriod(1);
 
-		if (FAILED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
+		if (FAILED(::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
 		{
 			::OutputDebugStringW(L"CoInitializeEx() failed\n");
 		}

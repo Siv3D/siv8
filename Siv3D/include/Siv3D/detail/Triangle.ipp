@@ -391,7 +391,7 @@ namespace s3d
 		const double v1y = (p1.y - p2.y);
 		const double c = (v0x * v1y - v1x * v0y);
 		const double errorBound = ((Abs(v0x) * Abs(v1y) + Abs(v1x) * Abs(v0y)) * std::numeric_limits<double>::epsilon() * 2.0);
-		return (Abs(c) <= errorBound);
+		return (errorBound < Abs(c));
 	}
 
 	////////////////////////////////////////////////////////////////

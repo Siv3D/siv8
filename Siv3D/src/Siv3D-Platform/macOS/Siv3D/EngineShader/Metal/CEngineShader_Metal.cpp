@@ -44,7 +44,7 @@ namespace s3d
 			
 			if (not m_vertexShaders.all([](const auto& vs) { return static_cast<bool>(vs); })) // もしロードに失敗したシェーダがあれば
 			{
-				throw InternalEngineError{ U"Failed to load a engine shader" };
+				throw InternalEngineError{ "Failed to load a engine shader" };
 			}
 		}
 		
@@ -73,7 +73,7 @@ namespace s3d
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{
-				throw InternalEngineError{ U"Failed to load a engine shader" };
+				throw InternalEngineError{ "Failed to load a engine shader" };
 			}
 		}
 	}

@@ -561,6 +561,34 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawShadow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::drawShadow(const Vec2& offset, const double blur, const double spread, const ColorF& color, const bool fill) const
+	{
+		const RectF baseRect = movedBy(offset).stretched(spread);
+
+		if (blur <= 0.0)
+		{
+			if (fill)
+			{
+				baseRect.draw(color);
+			}
+
+			return *this;
+		}
+
+		const double blurClamped = Min(baseRect.w, baseRect.h, blur);
+
+		SIV3D_ENGINE(Renderer2D)->addRectShadow(FloatRect{ baseRect.x, baseRect.y, (baseRect.x + baseRect.w), (baseRect.y + baseRect.h) },
+			static_cast<float>(blurClamped), color.toFloat4(), fill);
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	operator ()
 	//
 	////////////////////////////////////////////////////////////////

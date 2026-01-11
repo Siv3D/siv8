@@ -41,26 +41,6 @@ namespace s3d
 		return (RandomVec2(std::forward<decltype(urbg)>(urbg)) * length);
 	}
 
-	inline Vec2 RandomVec2(const double x, const std::pair<double, double>& yMinMax)
-	{
-		return RandomVec2(x, yMinMax, GetDefaultRNG());
-	}
-
-	Vec2 RandomVec2(const double x, const std::pair<double, double>& yMinMax, Concept::UniformRandomBitGenerator auto&& urbg)
-	{
-		return{ x, RandomClosed(yMinMax.first, yMinMax.second, std::forward<decltype(urbg)>(urbg)) };
-	}
-
-	inline Vec2 RandomVec2(const std::pair<double, double>& xMinMax, const double y)
-	{
-		return RandomVec2(xMinMax, y, GetDefaultRNG());
-	}
-
-	Vec2 RandomVec2(const std::pair<double, double>& xMinMax, const double y, Concept::UniformRandomBitGenerator auto&& urbg)
-	{
-		return{ RandomClosed(xMinMax.first, xMinMax.second, std::forward<decltype(urbg)>(urbg)), y };
-	}
-
 	inline Vec2 RandomVec2(const std::pair<double, double>& xMinMax, const std::pair<double, double>& yMinMax)
 	{
 		return RandomVec2(xMinMax, yMinMax, GetDefaultRNG());
@@ -68,8 +48,8 @@ namespace s3d
 
 	Vec2 RandomVec2(const std::pair<double, double>& xMinMax, const std::pair<double, double>& yMinMax, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return{ RandomClosed(xMinMax.first, xMinMax.second, std::forward<decltype(urbg)>(urbg)),
-				RandomClosed(yMinMax.first, yMinMax.second, std::forward<decltype(urbg)>(urbg)) };
+		return{ RandomClosedOpen(xMinMax.first, xMinMax.second, std::forward<decltype(urbg)>(urbg)),
+				RandomClosedOpen(yMinMax.first, yMinMax.second, std::forward<decltype(urbg)>(urbg)) };
 	}
 
 	inline Vec2 RandomVec2(const double xMax, const double yMax)
@@ -79,8 +59,8 @@ namespace s3d
 
 	Vec2 RandomVec2(const double xMax, const double yMax, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return{ RandomClosed(0.0, xMax, std::forward<decltype(urbg)>(urbg)),
-				RandomClosed(0.0, yMax, std::forward<decltype(urbg)>(urbg)) };
+		return{ RandomClosedOpen(0.0, xMax, std::forward<decltype(urbg)>(urbg)),
+				RandomClosedOpen(0.0, yMax, std::forward<decltype(urbg)>(urbg)) };
 	}
 
 	inline Vec2 RandomVec2(const Line& line)
@@ -193,6 +173,30 @@ namespace s3d
 		
 		const double theta = RandomClosedOpen(0.0, Math::TwoPi, std::forward<decltype(urbg)>(urbg));
 		
+		return{ (std::cos(theta) * r), (std::sin(theta) * r) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	RandomVec2InsideAnnulus
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Vec2 RandomVec2InsideAnnulus(const double innerRadius, const double outerRadius)
+	{
+		return RandomVec2InsideAnnulus(innerRadius, outerRadius, GetDefaultRNG());
+	}
+
+	Vec2 RandomVec2InsideAnnulus(const double innerRadius, const double outerRadius, Concept::UniformRandomBitGenerator auto&& urbg)
+	{
+		// u ∈ [0, 1)
+		const double u = Random(std::forward<decltype(urbg)>(urbg));
+
+		// 2D area-uniform radius
+		const double r = std::sqrt((u * (outerRadius * outerRadius - innerRadius * innerRadius)) + (innerRadius * innerRadius));
+
+		const double theta = RandomClosedOpen(0.0, Math::TwoPi, std::forward<decltype(urbg)>(urbg));
+
 		return{ (std::cos(theta) * r), (std::sin(theta) * r) };
 	}
 }

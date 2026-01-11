@@ -908,7 +908,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		///// @brief 角丸長方形の輪郭を LineString として返します。
-		///// @param closeRing 頂点配列の終点を始点と重ねるかどうか
+		///// @param closeRing 頂点配列の終点を始点と重ねるか
 		///// @return 角丸長方形の輪郭の LineString
 		//[[nodiscard]]
 		//LineString outline(CloseRing closeRing = CloseRing::No) const;
@@ -1189,7 +1189,7 @@ namespace s3d
 		/// @param color 影の色
 		/// @param fill 影の内部を塗りつぶすか
 		/// @return *this
-		//const RoundRect& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
+		const RoundRect& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -23,13 +23,13 @@ namespace s3d
 		[[noreturn]]
 		static void ThrowVSSamplerIndexOutOfRange()
 		{
-			throw Error{ U"VSSampler index out of range" };
+			throw Error{ "VSSampler index out of range" };
 		}
 
 		[[noreturn]]
 		static void ThrowPSSamplerIndexOutOfRange()
 		{
-			throw Error{ U"PSSampler index out of range" };
+			throw Error{ "PSSampler index out of range" };
 		}
 	}
 

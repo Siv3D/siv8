@@ -296,6 +296,9 @@
 // 桁区切り | Digit separator
 # include <Siv3D/ThousandSeparate.hpp>
 
+// パーセントエンコーディング | Percent encoding
+# include <Siv3D/PercentEncode.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	文字列パーサ | Parser
@@ -387,11 +390,10 @@
 //
 ////////////////////////////////////////////////////////////////
 
-// プロファイラーの統計情報 | Profiler statistics
-# include <Siv3D/ProfilerStat.hpp> // ToDo
+# include <Siv3D/FrameMetrics.hpp>
 
 // プロファイラー | Profiler
-# include <Siv3D/Profiler.hpp> // ToDo
+# include <Siv3D/Profiler.hpp>
 
 // 処理にかかった時間の測定 | Clock counter in milliseconds
 # include <Siv3D/MillisecClock.hpp>
@@ -652,9 +654,9 @@
 // 周期関数 | Periodic functions
 # include <Siv3D/Periodic.hpp>
 
-//// Poisson Disk 2D | Poisson disk 2D
-//# include <Siv3D/PoissonDisk2D.hpp>
-//
+// Poisson Disk 2D | Poisson disk 2D
+# include <Siv3D/PoissonDiskSampler2D.hpp>
+
 //// スプライン | Spline
 //# include <Siv3D/Spline.hpp>
 
@@ -771,7 +773,7 @@
 # include <Siv3D/RandomColor.hpp>
 
 //// ランダムなサンプリング | Random sampling
-//# include <Siv3D/Sample.hpp>
+# include <Siv3D/Sample.hpp>
 
 // Improved Perlin ノイズ | Improved Perlin noise
 # include <Siv3D/PerlinNoise.hpp>
@@ -915,8 +917,12 @@
 // 長方形詰込み | Rectangle packing
 # include <Siv3D/RectanglePack.hpp>
 
-//// 平面分割 | Planar subdivisions
-//# include <Siv3D/Subdivision2D.hpp>
+
+
+// 平面分割 | Planar subdivisions
+
+# include <Siv3D/VoronoiCell.hpp>
+# include <Siv3D/Subdivision2D.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -979,9 +985,9 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// Twitter | Twitter
-//# include <Siv3D/Twitter.hpp>
-//
+// Twitter | Twitter
+# include <Siv3D/Twitter.hpp>
+
 //// IPv4 アドレス | IPv4 address
 //# include <Siv3D/IPv4Address.hpp>
 //
@@ -1033,11 +1039,9 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// URL | URL
-//# include <Siv3D/URL.hpp>
-//
-//# include <Siv3D/URLView.hpp>
-//
+// URL | URL
+# include <Siv3D/URL.hpp>
+
 //# include <Siv3D/HTTPStatusCode.hpp>
 //
 //# include <Siv3D/HTTPResponse.hpp>
@@ -1589,11 +1593,11 @@
 
 
 
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 //
 //	スクリーンキャプチャ | Screen Capture
 //
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
 // スクリーンキャプチャ | Screen capture
 # include <Siv3D/ScreenCapture.hpp> // ToDo
@@ -1601,11 +1605,11 @@
 
 # include <Siv3D/NativeShare.hpp>
 
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 //
 //	フォント | Font
 //
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
 // グリフインデックス | Glyph index
 # include <Siv3D/GlyphIndex.hpp>
@@ -1622,11 +1626,13 @@
 
 # include <Siv3D/ReadingDirection.hpp>
 # include <Siv3D/OutlineGlyph.hpp>
+# include <Siv3D/PolygonGlyph.hpp>
 # include <Siv3D/BitmapGlyph.hpp>
 
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/TextStyle.hpp>
 
+# include <Siv3D/GlyphContext.hpp>
 # include <Siv3D/ITextEffect.hpp>
 # include <Siv3D/TextEffect/NullTextEffect.hpp>
 # include <Siv3D/TextEffect/BasicTextEffect.hpp>
@@ -1649,12 +1655,28 @@
 # include <Siv3D/SimpleGUI/SimpleProgressBar.hpp>
 # include <Siv3D/SimpleGUI/SimpleHueSlider.hpp>
 
+
+////////////////////////////////////////////////////////////////
+//
+//	エフェクト | Effect
+//
+////////////////////////////////////////////////////////////////
+
+// エフェクト基本クラス | Effect base class
+# include <Siv3D/IEffect.hpp>
+
+// エフェクト | Effect
+# include <Siv3D/Effect.hpp>
+
+
 # include <Siv3D/Print.hpp>
 # include <Siv3D/PrintBuffer.hpp>
 
 
 # include <Siv3D/Pipe.hpp>
 
+# include <Siv3D/URL.hpp>
+# include <Siv3D/Twitter.hpp>
 
 # include <Siv3D/EngineOption.hpp>
 

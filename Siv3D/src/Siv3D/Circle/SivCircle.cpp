@@ -673,7 +673,11 @@ namespace s3d
 
 		if (blur <= 0.0)
 		{
-			baseCircle.draw(color);
+			if (fill)
+			{
+				baseCircle.draw(color);
+			}
+
 			return *this;
 		}
 

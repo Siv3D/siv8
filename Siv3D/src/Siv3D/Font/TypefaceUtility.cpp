@@ -27,18 +27,18 @@ namespace s3d
 		case Typeface::CJK_Regular_TC:
 		case Typeface::CJK_Regular_HK:
 			{
-				if (const FilePath pathCJK = (fontFilePath + U"NotoSansCJK-Medium.ttc"); FileSystem::Exists(pathCJK))
+				if (const FilePath pathCJK = (fontFilePath + U"noto-cjk/NotoSansCJK-Medium.ttc"); FileSystem::Exists(pathCJK))
 				{
 					const uint32 index = (FromEnum(typeface) - FromEnum(Typeface::CJK_Regular_JP));
 					return{ pathCJK, index, U"", fontMethod };
 				}
 
-				if (const FilePath pathJP = (fontFilePath + U"NotoSansJP-Medium.otf"); FileSystem::Exists(pathJP))
+				if (const FilePath pathJP = (fontFilePath + U"noto-cjk/NotoSansJP-Medium.otf"); FileSystem::Exists(pathJP))
 				{
 					return{ pathJP, 0, U"", fontMethod };
 				}
 
-				if (const FilePath pathMin = (fontFilePath + U"siv3d-min.otf"); FileSystem::Exists(pathMin))
+				if (const FilePath pathMin = (fontFilePath + U"min/siv3d-min.otf"); FileSystem::Exists(pathMin))
 				{
 					return{ pathMin, 0, U"", fontMethod };
 				}
@@ -46,27 +46,23 @@ namespace s3d
 				break;
 			}
 		case Typeface::ColorEmoji:
-			return{ (fontFilePath + U"Noto-COLRv1.ttf"), 0, U"", FontMethod::Bitmap };
-		case Typeface::MPlus2_Thin:
-			return{ (fontFilePath + U"MPLUS2.ttf"), 0,  U"Thin", fontMethod };
-		case Typeface::MPlus2_ExtraLight:
-			return{ (fontFilePath + U"MPLUS2.ttf"), 0, U"ExtraLight", fontMethod };
-		case Typeface::MPlus2_Light:
-			return{ (fontFilePath + U"MPLUS2.ttf"), 0, U"Light", fontMethod };
-		case Typeface::MPlus2_Regular:
-			return{ (fontFilePath + U"MPLUS2.ttf"), 0, U"Regular", fontMethod };
-		case Typeface::MPlus2_Medium:
-			return{ (fontFilePath + U"MPLUS2.ttf"), 0, U"Medium", fontMethod };
-		case Typeface::MPlus2_SemiBold:
-			return{ (fontFilePath + U"MPLUS2.ttf"), 0, U"SemiBold", fontMethod };
-		case Typeface::MPlus2_Bold:
-			return{ (fontFilePath + U"MPLUS2.ttf"), 0, U"Bold", fontMethod };
-		case Typeface::MPlus2_ExtraBold:
-			return{ (fontFilePath + U"MPLUS2.ttf"), 0, U"ExtraBold", fontMethod };
-		case Typeface::MPlus2_Black:
-			return{ (fontFilePath + U"MPLUS2.ttf"), 0, U"Black", fontMethod };
+			return{ (fontFilePath + U"noto-emoji/Noto-COLRv1.ttf"), 0, U"", FontMethod::Bitmap };
+		case Typeface::Mplus_Thin:
+			return{ (fontFilePath + U"mplus/mplus-1p-thin.ttf"), 0,  U"", fontMethod };
+		case Typeface::Mplus_Light:
+			return{ (fontFilePath + U"mplus/mplus-1p-light.ttf"), 0, U"", fontMethod };
+		case Typeface::Mplus_Regular:
+			return{ (fontFilePath + U"mplus/mplus-1p-regular.ttf"), 0, U"", fontMethod };
+		case Typeface::Mplus_Medium:
+			return{ (fontFilePath + U"mplus/mplus-1p-medium.ttf"), 0, U"", fontMethod };
+		case Typeface::Mplus_Bold:
+			return{ (fontFilePath + U"mplus/mplus-1p-bold.ttf"), 0, U"", fontMethod };
+		case Typeface::Mplus_Heavy:
+			return{ (fontFilePath + U"mplus/mplus-1p-heavy.ttf"), 0, U"", fontMethod };
+		case Typeface::Mplus_Black:
+			return{ (fontFilePath + U"mplus/mplus-1p-black.ttf"), 0, U"", fontMethod };
 		case Typeface::Icon_MaterialDesign:
-			return{ (fontFilePath + U"materialdesignicons-webfont.ttf"), 0, U"", fontMethod };
+			return{ (fontFilePath + U"materialdesignicons/materialdesignicons-webfont.ttf"), 0, U"", fontMethod };
 		}
 
 		return{ U"", 0, U"", FontMethod::Bitmap };

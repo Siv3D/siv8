@@ -669,6 +669,24 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	FromFloat
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 浮動小数点数を [0.0, 1.0] にクランプしたあと Color に変換します。
+		/// @param rgb 浮動小数点数
+		/// @return 変換された Color
+		[[nodiscard]]
+		static constexpr Color FromFloat(float rgb) noexcept;
+
+		/// @brief 浮動小数点数を [0.0, 1.0] にクランプしたあと Color に変換します。
+		/// @param rgb 浮動小数点数
+		/// @return 変換された Color
+		[[nodiscard]]
+		static constexpr Color FromFloat(double rgb) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	FromRGBA
 		//
 		////////////////////////////////////////////////////////////////

@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
+# include <Siv3D/FrameMetrics.hpp>
 # include "IProfiler.hpp"
 
 namespace s3d
@@ -30,7 +32,11 @@ namespace s3d
 
 		String getSimpleStatistics() const override;
 
-		const ProfilerStat& getStat() const override;
+		const FrameMetrics& getFrameMetrics() const override;
+
+		void reportEvent(ProfilerEvent event) override;
+
+		void reportStat(ProfilerStat stat, int64 delta) override;
 
 	private:
 
@@ -44,6 +50,10 @@ namespace s3d
 		
 		} m_fpsCounter;
 
-		ProfilerStat m_stat;
+		FrameMetrics m_frameMetrics{ .frameIndex = -1 };
+
+		std::array<uint64, 8> m_timestamps{};
+
+		std::array<int64, 2> m_stats{};
 	};
 }

@@ -34,6 +34,8 @@ namespace s3d
 
 		virtual void init() = 0;
 
+		virtual void waitForFrame() = 0;
+
 		virtual void beginFrame() = 0;
 
 		virtual void flush() = 0;
@@ -57,10 +59,6 @@ namespace s3d
 		virtual void setVSyncEnabled(bool enabled) = 0;
 
 		virtual bool isVSyncEnabled() const = 0;
-
-		virtual void setLowLatencyMode(bool enabled) = 0;
-
-		virtual bool isLowLatencyMode() const = 0;
 
 		virtual void captureScreenshot() = 0;
 

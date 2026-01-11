@@ -56,13 +56,4 @@ namespace s3d
 
 	[[nodiscard]]
 	FontFaceProperties GetFontFaceProperties(::FT_Face face, const FT_Fixed* namedStyleCoords);
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	GetGlyphInfo
-	//
-	////////////////////////////////////////////////////////////////
-
-	[[nodiscard]]
-	GlyphInfo GetGlyphInfo(::FT_Face face, GlyphIndex glyphIndex, const FontFaceInfo& info, int16 bufferThickness, ReadingDirection readingDirection);
 }

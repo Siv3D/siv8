@@ -24,6 +24,7 @@
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Texture/Metal/CTexture_Metal.hpp>
+# include <Siv3D/Profiler/IProfiler.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FmtOptional.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -1190,17 +1191,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addRectShadow
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_Metal::addRectShadow(const FloatRect& rect, const float blur, const Float4& color, const bool fill)
-	{
-
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	addCircleShadow
 	//
 	////////////////////////////////////////////////////////////////
@@ -1226,13 +1216,52 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addRectShadow
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addRectShadow(const FloatRect& rect, const float blur, const Float4& color, const bool fill)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRectShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, blur, color, fill))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+
+			m_commandManager.pushPSTexture(0, getShadowTexture());
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addRoundRectShadow
 	//
 	////////////////////////////////////////////////////////////////
 
 	void CRenderer2D_Metal::addRoundRectShadow(const RoundRect& roundRect, const float blur, const Float4& color, const bool fill)
 	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), roundRect, blur, color, getMaxScaling(), fill))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
 
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+			
+			m_commandManager.pushPSTexture(0, getShadowTexture());
+			m_commandManager.pushDraw(indexCount);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1302,6 +1331,12 @@ namespace s3d
 			m_currentCustomShader.vs.reset();
 			m_currentCustomShader.ps.reset();
 		};
+
+		struct Stat
+		{
+			uint32 drawCalls = 0;
+			uint32 triangleCount = 0;
+		} stat;
 		
 		m_commandManager.flush();
 		
@@ -1389,8 +1424,8 @@ namespace s3d
 						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), (sizeof(Vertex2D::IndexType) * commandState.startIndexLocation));
 						commandState.startIndexLocation += indexCount;
 						
-						//++m_stat.drawCalls;
-						//m_stat.triangleCount += (indexCount / 3);
+						++stat.drawCalls;
+						stat.triangleCount += (indexCount / 3);
 
 						break;
 					}
@@ -1622,6 +1657,9 @@ namespace s3d
 						
 			renderCommandEncoder->endEncoding();
 		}
+
+		SIV3D_ENGINE(Profiler)->reportStat(ProfilerStat::Renderer2D_DrawCalls, stat.drawCalls);
+		SIV3D_ENGINE(Profiler)->reportStat(ProfilerStat::Renderer2D_TriangleCount, stat.triangleCount);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1867,6 +1905,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	waitForFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::waitForFrame()
+	{
+		m_vertexBufferManager.waitForFrame();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	beginFrame
 	//
 	////////////////////////////////////////////////////////////////
@@ -1874,8 +1923,6 @@ namespace s3d
 	void CRenderer2D_Metal::beginFrame(MTL::CommandBuffer* commandBuffer)
 	{
 		m_commandBuffer = commandBuffer;
-
-		m_vertexBufferManager.updateContent();
 	}
 
 	////////////////////////////////////////////////////////////////

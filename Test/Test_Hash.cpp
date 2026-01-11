@@ -69,21 +69,17 @@ TEST_CASE("Hash.Benchmark")
 	const ScopedLogSilencer logSilencer;
 	
 	{
-		const uint8 u8 = 123;
-		const uint32 u32 = 123456789u;
-		const uint64 u64 = 1234567890123456789ull;
+		Bench{}.title("Hash uint8").run("std::hash", [&]() { doNotOptimizeAway(std::hash<uint8>{}(uint8(123))); });
+		Bench{}.title("Hash uint8").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(uint8(123))); });
+		Bench{}.title("Hash uint8").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(uint8(123))); });
 
-		Bench{}.title("Hash uint8").run("std::hash", [&]() { doNotOptimizeAway(std::hash<uint8>{}(u8)); });
-		Bench{}.title("Hash uint8").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(u8)); });
-		Bench{}.title("Hash uint8").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(u8)); });
+		Bench{}.title("Hash uint32").run("std::hash", [&]() { doNotOptimizeAway(std::hash<uint32>{}(uint32(123456789))); });
+		Bench{}.title("Hash uint32").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(uint32(123456789))); });
+		Bench{}.title("Hash uint32").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(uint32(123456789))); });
 
-		Bench{}.title("Hash uint32").run("std::hash", [&]() { doNotOptimizeAway(std::hash<uint32>{}(u32)); });
-		Bench{}.title("Hash uint32").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(u32)); });
-		Bench{}.title("Hash uint32").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(u32)); });
-
-		Bench{}.title("Hash uint64").run("std::hash", [&]() { doNotOptimizeAway(std::hash<uint64>{}(u64)); });
-		Bench{}.title("Hash uint64").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(u64)); });
-		Bench{}.title("Hash uint64").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(u64)); });
+		Bench{}.title("Hash uint64").run("std::hash", [&]() { doNotOptimizeAway(std::hash<uint64>{}(uint64(1234567890123456789))); });
+		Bench{}.title("Hash uint64").run("rapidhash::Hash", [&]() { doNotOptimizeAway(rapidhash::Hash(uint64(1234567890123456789))); });
+		Bench{}.title("Hash uint64").run("xxHash3::Hash", [&]() { doNotOptimizeAway(xxHash3::Hash(uint64(1234567890123456789))); });
 	}
 
 	{

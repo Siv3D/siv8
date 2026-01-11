@@ -7,7 +7,6 @@ void Main()
 	//RunTest();
 	Scene::SetBackground(ColorF{ 0.6, 0.8, 0.7 });
 	//Window::SetStyle(WindowStyle::Sizable);
-	//Graphics::SetLowLatencyMode(true);
 	//Scene::SetResizeMode(ResizeMode::Keep);
 
 	const Texture texture{ U"example/windmill.png" };

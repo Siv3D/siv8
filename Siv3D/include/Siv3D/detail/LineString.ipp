@@ -780,6 +780,82 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	movedBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::movedBy(const double x, const double y) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.moveBy(x, y);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::movedBy(const double x, const double y) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.moveBy(x, y);
+		}
+
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::movedBy(const Vec2 v) const&
+	{
+		LineString result{ *this };
+	
+		for (auto& point : result.m_points)
+		{
+			point.moveBy(v);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::movedBy(const Vec2 v) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.moveBy(v);
+		}
+	
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	moveBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::moveBy(const double x, const double y) noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.moveBy(x, y);
+		}
+
+		return *this;
+	}
+
+	constexpr LineString& LineString::moveBy(const Vec2 v) noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.moveBy(v);
+		}
+	
+		return *this;
+	}
+
 
 	////////////////////////////////////////////////////////////////
 	//

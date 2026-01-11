@@ -33,6 +33,7 @@
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Print/IPrint.hpp>
+# include <Siv3D/Effect/IEffect.hpp>
 # include <Siv3D/NativeShare/INativeShare.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FileSystem.hpp>
@@ -95,6 +96,7 @@ namespace s3d
 		SIV3D_ENGINE(Font)->init();
 		SIV3D_ENGINE(GUI)->init();
 		SIV3D_ENGINE(Print)->init();
+		SIV3D_ENGINE(Effect)->init();
 		SIV3D_ENGINE(NativeShare)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
@@ -108,37 +110,46 @@ namespace s3d
 
 	bool CSystem::update()
 	{
-		if (m_shouldTerminate)
-		{
-			return false;
-		}
+		SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::UserUpdate_End);
 
-		if (m_setupProgress == SetupProgress::EngineInitialized)
 		{
-			if (auto pWindow = static_cast<CWindow*>(SIV3D_ENGINE(Window)))
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::EngineEnd_Start);
+
+			if (m_shouldTerminate)
 			{
-				pWindow->show();
+				return false;
 			}
 
-			m_setupProgress = SetupProgress::WindowDisplayed;
-		}
+			if (m_setupProgress == SetupProgress::EngineInitialized)
+			{
+				if (auto pWindow = static_cast<CWindow*>(SIV3D_ENGINE(Window)))
+				{
+					pWindow->show();
+				}
 
-		if (SIV3D_ENGINE(UserAction)->shouldTerminate())
-		{
-			m_shouldTerminate = true;		
-			return false;
-		}
+				m_setupProgress = SetupProgress::WindowDisplayed;
+			}
 
-		SIV3D_ENGINE(Print)->draw();
-		SIV3D_ENGINE(Renderer)->flush();
-		SIV3D_ENGINE(Profiler)->endFrame();
-		
-		if (not SIV3D_ENGINE(Renderer)->present())
-		{
-			return false;
-		}
+			if (SIV3D_ENGINE(UserAction)->shouldTerminate())
+			{
+				m_shouldTerminate = true;
+				return false;
+			}
 
-		SIV3D_ENGINE(ScreenCapture)->update();
+			SIV3D_ENGINE(Print)->draw();
+			SIV3D_ENGINE(Renderer)->flush();
+			SIV3D_ENGINE(Profiler)->endFrame();
+
+			if (not SIV3D_ENGINE(Renderer)->present())
+			{
+				m_shouldTerminate = true;
+				return false;
+			}
+
+			SIV3D_ENGINE(ScreenCapture)->update();
+
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::EngineEnd_End);
+		}
 
 		//
 		//	previous frame
@@ -148,22 +159,37 @@ namespace s3d
 		//	current frame
 		//
 
-		SIV3D_ENGINE(Profiler)->beginFrame();
-
-		if (not SIV3D_ENGINE(AssetMonitor)->update())
 		{
-			m_shouldTerminate = true;
-			return false;
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::GPUWait_Start);
+			SIV3D_ENGINE(Renderer)->waitForFrame();
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::GPUWait_End);
 		}
 
-		SIV3D_ENGINE(Window)->update();
-		SIV3D_ENGINE(Scene)->update();
-		SIV3D_ENGINE(Renderer)->beginFrame();
-		SIV3D_ENGINE(Cursor)->update();
-		SIV3D_ENGINE(CursorStyle)->update();
-		SIV3D_ENGINE(Keyboard)->update();
-		SIV3D_ENGINE(Mouse)->update();
-		SIV3D_ENGINE(LicenseManager)->update();
+		SIV3D_ENGINE(Profiler)->beginFrame();
+
+		{
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::EngineBegin_Start);
+
+			if (not SIV3D_ENGINE(AssetMonitor)->update())
+			{
+				m_shouldTerminate = true;
+				return false;
+			}
+
+			SIV3D_ENGINE(Window)->update();
+			SIV3D_ENGINE(Scene)->update();
+			SIV3D_ENGINE(Renderer)->beginFrame();
+			SIV3D_ENGINE(Cursor)->update();
+			SIV3D_ENGINE(CursorStyle)->update();
+			SIV3D_ENGINE(Keyboard)->update();
+			SIV3D_ENGINE(Mouse)->update();
+			SIV3D_ENGINE(LicenseManager)->update();
+			SIV3D_ENGINE(Effect)->update();
+
+			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::EngineBegin_End);
+		}
+
+		SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::UserUpdate_Start);
 
 		return true;
 	}

@@ -68,14 +68,20 @@ namespace s3d
 		};
 
 		/// @brief エンジンで使用するリソースの一覧
-		static constexpr std::array<EngineResourceDetail, 6> EngineResources
+		static constexpr std::array<EngineResourceDetail, 12> EngineResources
 		{{
-			{ U"font/", U"siv3d-min.otf", true, true },
-			{ U"font/", U"NotoSansCJK-Medium.ttc", false, true },
-			{ U"font/", U"NotoSansJP-Medium.otf", false, true },
-			{ U"font/", U"Noto-COLRv1.ttf", false, true },
-			{ U"font/", U"MPLUS2.ttf", false, true },
-			{ U"font/", U"materialdesignicons-webfont.ttf", false, true },
+			{ U"font/", U"min/siv3d-min.otf", true, true },
+			{ U"font/", U"noto-cjk/NotoSansCJK-Medium.ttc", false, true },
+			{ U"font/", U"noto-cjk/NotoSansJP-Medium.otf", false, true },
+			{ U"font/", U"noto-emoji/Noto-COLRv1.ttf", false, true },
+			{ U"font/", U"mplus/mplus-1p-thin.ttf", false, true },
+			{ U"font/", U"mplus/mplus-1p-light.ttf", false, true },
+			{ U"font/", U"mplus/mplus-1p-regular.ttf", false, true },
+			{ U"font/", U"mplus/mplus-1p-medium.ttf", false, true },
+			{ U"font/", U"mplus/mplus-1p-bold.ttf", false, true },
+			{ U"font/", U"mplus/mplus-1p-heavy.ttf", false, true },
+			{ U"font/", U"mplus/mplus-1p-black.ttf", false, true },
+			{ U"font/", U"materialdesignicons/materialdesignicons-webfont.ttf", false, true },
 		}};
 	}
 

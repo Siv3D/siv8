@@ -12,6 +12,7 @@
 # pragma once
 # include "../Array.hpp"
 # include "../Polygon.hpp"
+# include "../MultiPolygon.hpp"
 
 namespace s3d
 {
@@ -43,5 +44,21 @@ namespace s3d
 		/// @return 2 つの図形の重なる領域
 		[[nodiscard]]
 		Array<Polygon> And(const Polygon& a, const Polygon& b);
+
+
+
+
+
+		//////////////////////////////////////////////////
+		//
+		//	ComposePolygons
+		//
+		//////////////////////////////////////////////////
+
+		/// @brief 入力されたリングをもとに、多角形 `Polygon` を組み立てます。
+		/// @param rings リングの配列。穴になるリングは反時計回り、外側になるリングは時計回りにします。
+		/// @return 組み立て得られた多角形 `Polygon` の配列
+		[[nodiscard]]
+		MultiPolygon ComposePolygons(const Array<LineString>& rings);
 	}
 }

@@ -104,7 +104,7 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CEmoji::init()");
 
-		const FilePath emojiFilePath = (CacheDirectory::Engine() + U"font/Noto-COLRv1.ttf");
+		const FilePath emojiFilePath = (CacheDirectory::Engine() + U"font/noto-emoji/Noto-COLRv1.ttf");
 
 		if (not FileSystem::Exists(emojiFilePath))
 		{
@@ -112,7 +112,7 @@ namespace s3d
 			return;
 		}
 
-		if (const FT_Error error = FT_Init_FreeType(&m_freeType))
+		if (const FT_Error error = ::FT_Init_FreeType(&m_freeType))
 		{
 			throw InternalEngineError{ "FT_Init_FreeType() failed" };
 		}

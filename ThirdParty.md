@@ -10,12 +10,12 @@ Name | Version
 [cpu_features](https://github.com/google/cpu_features) | v0.10.1
 [DirectXMath](https://github.com/microsoft/DirectXMath) | April 2025
 [doctest](https://github.com/doctest/doctest) | v2.4.12
-[double-conversion](https://github.com/google/double-conversion) | v3.3.1
+[double-conversion](https://github.com/google/double-conversion) | v3.4.0
 [Easing Equations](http://robertpenner.com/easing/) | 
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 8.0.2
+[fast_float](https://github.com/fastfloat/fast_float) | Version 8.1.0
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
@@ -33,11 +33,11 @@ Name | Version
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
 [miniutf](https://github.com/dropbox/miniutf) | 
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
-[msdfgen](https://github.com/Chlumsky/msdfgen) | 
+[msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
-[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.7.1
-[Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.048
+[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.8.0
+[Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.051
 [Noto Sans CJK](https://github.com/notofonts/noto-cjk) | Version 2.004
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
@@ -47,9 +47,9 @@ Name | Version
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 7.3.3
+[simdutf](https://github.com/simdutf/simdutf) | Version 7.7.0
 [skia](https://github.com/google/skia) |
-[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.14
+[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.17
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 

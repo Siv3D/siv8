@@ -82,6 +82,16 @@ namespace s3d
 		}
 	}
 
+
+	D3D11SwapChain::~D3D11SwapChain()
+	{
+		if (m_waitableObject)
+		{
+			::CloseHandle(m_waitableObject);
+			m_waitableObject = nullptr;
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	init
@@ -98,6 +108,9 @@ namespace s3d
 		m_dxgiDevice1 = device.getDXGIDevice1();
 		m_tearingSupport = CheckTearingSupport(device);
 
+		const bool useFlipModel = device.supportsDXGI1_4();
+		const bool useWaitableObject = useFlipModel;
+
 		const DXGI_SWAP_CHAIN_DESC1 desc =
 		{
 			.Width				= static_cast<uint32>(frameBufferSize.x),
@@ -108,9 +121,11 @@ namespace s3d
 			.BufferUsage		= DXGI_USAGE_RENDER_TARGET_OUTPUT,
 			.BufferCount		= 3,
 			.Scaling			= DXGI_SCALING_STRETCH,
-			.SwapEffect			= (device.supportsDXGI1_4() ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD),
+			.SwapEffect			= (useFlipModel ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD),
 			.AlphaMode			= DXGI_ALPHA_MODE_IGNORE,
-			.Flags				= static_cast<uint32>(m_tearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0),
+			.Flags				= static_cast<uint32>(
+									 (useFlipModel && m_tearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0) |
+									 (useWaitableObject ? DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT : 0))
 		};
 
 		// Swap chain を作成する
@@ -129,6 +144,18 @@ namespace s3d
 			}
 		}
 
+		if (useWaitableObject)
+		{
+			if (SUCCEEDED(m_swapChain1.As(&m_swapChain2)))
+			{
+				LOG_TRACE(fmt::format("IDXGISwapChain2::SetMaximumFrameLatency({})", m_maximumFrameLatency));
+				m_swapChain2->SetMaximumFrameLatency(m_maximumFrameLatency);
+
+				LOG_TRACE("IDXGISwapChain2::GetFrameLatencyWaitableObject()");
+				m_waitableObject = m_swapChain2->GetFrameLatencyWaitableObject();
+			}
+		}
+
 		{
 			LOG_TRACE("IDXGIFactory::MakeWindowAssociation()");
 
@@ -140,6 +167,7 @@ namespace s3d
 			}
 		}
 
+		if (not m_waitableObject)
 		{
 			LOG_TRACE(fmt::format("IDXGIDevice1::SetMaximumFrameLatency({})", m_maximumFrameLatency));
 			m_dxgiDevice1->SetMaximumFrameLatency(m_maximumFrameLatency);
@@ -180,6 +208,20 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	waitForFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void D3D11SwapChain::waitForFrame()
+	{
+		if (m_waitableObject)
+		{
+			::WaitForSingleObjectEx(m_waitableObject, 1000, true);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	setVSyncEnabled
 	//
 	////////////////////////////////////////////////////////////////
@@ -198,38 +240,6 @@ namespace s3d
 	bool D3D11SwapChain::isVSyncEnabled() const noexcept
 	{
 		return m_vSyncEnabled;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	setLowLatencyMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	void D3D11SwapChain::setLowLatencyMode(const bool enabled) noexcept
-	{
-		const uint32 maximumFrameLatency = (enabled ? MaximumFrameLatency_LowLatency : MaximumFrameLatency_Default);
-
-		if (m_maximumFrameLatency != maximumFrameLatency)
-		{
-			m_maximumFrameLatency = maximumFrameLatency;
-
-			{
-				LOG_TRACE(fmt::format("IDXGIDevice1::SetMaximumFrameLatency({})", m_maximumFrameLatency));
-				m_dxgiDevice1->SetMaximumFrameLatency(m_maximumFrameLatency);
-			}
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	isLowLatencyMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	bool D3D11SwapChain::isLowLatencyMode() const noexcept
-	{
-		return (m_maximumFrameLatency == MaximumFrameLatency_LowLatency);
 	}
 
 	////////////////////////////////////////////////////////////////

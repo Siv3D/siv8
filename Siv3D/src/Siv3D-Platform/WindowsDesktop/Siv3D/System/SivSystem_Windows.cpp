@@ -33,7 +33,7 @@ namespace s3d
 			::timeEndPeriod(1);
 		}
 
-		bool LaunchBrowser(const FilePathView url)
+		bool LaunchBrowser(const URLView url)
 		{
 			String target;
 

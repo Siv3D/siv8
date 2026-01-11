@@ -23,6 +23,17 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
+	//	preload
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool BitmapGlyphCache::preload(FontData& font, const Array<ResolvedGlyph>& resolvedGlyphs, const ReadingDirection readingDirection)
+	{
+		return prerender(font, resolvedGlyphs, true, readingDirection);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getTexture
 	//
 	////////////////////////////////////////////////////////////////
@@ -260,11 +271,12 @@ namespace s3d
 			}
 
 			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
+			const int32 bufferThickness = m_glyphCacheManager.getBufferThickness();
 			double h = 0.0;
 			{
-				const TextureRegion textureRegion	= m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);		
-				const Vec2 posOffset{ cache.info.left, cache.info.top };
-				const Vec2 drawPos = (penPos + posOffset);
+				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);		
+				const Vec2 posOffset{ (cache.info.left - bufferThickness), (cache.info.top - bufferThickness) };
+				const Vec2 drawPos = (penPos + posOffset * scale);
 				const double top = penPos.y;
 				const double bottom = (top + ((cache.info.top + textureRegion.size.y) * scale));
 
@@ -331,7 +343,8 @@ namespace s3d
 			const auto& cache = m_glyphCacheManager.get(resolvedGlyph.glyphIndex, readingDirection);
 			{
 				const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
-				const Vec2 posOffset{ cache.info.left, cache.info.top };
+				const int32 bufferThickness = m_glyphCacheManager.getBufferThickness();
+				const Vec2 posOffset{ (cache.info.left - bufferThickness), (cache.info.top - bufferThickness) };
 				const Vec2 drawPos = (penPos + posOffset * scale);
 				const double top = penPos.y;
 				const double bottom = (top + ((cache.info.top + textureRegion.size.y) * scale));
@@ -737,6 +750,19 @@ namespace s3d
 	int32 BitmapGlyphCache::getBufferThickness() const noexcept
 	{
 		return m_glyphCacheManager.getBufferThickness();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getGlyph
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::pair<GlyphInfo, TextureRegion> BitmapGlyphCache::getGlyph(const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	{
+		const auto& cache = m_glyphCacheManager.get(glyphIndex, readingDirection);
+		const TextureRegion textureRegion = m_glyphCacheManager.getTexture()(cache.textureRegionLeft, cache.textureRegionTop, cache.textureRegionWidth, cache.textureRegionHeight);
+		return{ cache.info, textureRegion };
 	}
 
 	////////////////////////////////////////////////////////////////

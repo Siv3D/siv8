@@ -64,7 +64,7 @@ DefineResource(100, ICON, icon.ico)
 //
 //	Fonts
 //
-Resource("engine/font/siv3d-min.otf.zstdcmp")
+Resource("engine/font/min/siv3d-min.otf.zstdcmp")
 
 //
 //	Box-shadow Textures
@@ -93,11 +93,17 @@ Resource("engine/texture/box-shadow/8.png")
 //
 //	Fonts
 //
-Resource("engine/font/MPLUS2.ttf.zstdcmp")
-Resource("engine/font/Noto-COLRv1.ttf.zstdcmp")
-Resource("engine/font/materialdesignicons-webfont.ttf.zstdcmp")
-Resource("engine/font/NotoSansCJK-Medium.ttc.zstdcmp")
-Resource("engine/font/NotoSansJP-Medium.otf.zstdcmp")
+Resource("engine/font/mplus/mplus-1p-thin.ttf.zstdcmp")
+Resource("engine/font/mplus/mplus-1p-light.ttf.zstdcmp")
+Resource("engine/font/mplus/mplus-1p-regular.ttf.zstdcmp")
+Resource("engine/font/mplus/mplus-1p-medium.ttf.zstdcmp")
+Resource("engine/font/mplus/mplus-1p-bold.ttf.zstdcmp")
+Resource("engine/font/mplus/mplus-1p-heavy.ttf.zstdcmp")
+Resource("engine/font/mplus/mplus-1p-black.ttf.zstdcmp")
+Resource("engine/font/noto-cjk/NotoSansCJK-Medium.ttc.zstdcmp")
+Resource("engine/font/noto-cjk/NotoSansJP-Medium.otf.zstdcmp")
+Resource("engine/font/noto-emoji/Noto-COLRv1.ttf.zstdcmp")
+Resource("engine/font/materialdesignicons/materialdesignicons-webfont.ttf.zstdcmp")
 
 //
 //	Sound Font

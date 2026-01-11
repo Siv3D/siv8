@@ -42,6 +42,7 @@ namespace s3d
 	class ISiv3DFont;
 	class ISiv3DGUI;
 	class ISiv3DPrint;
+	class ISiv3DEffect;
 	class ISiv3DNativeShare;
 
 	class Siv3DEngine
@@ -78,6 +79,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DFont>,
 			Siv3DComponent<ISiv3DGUI>,
 			Siv3DComponent<ISiv3DPrint>,
+			Siv3DComponent<ISiv3DEffect>,
 			Siv3DComponent<ISiv3DNativeShare>
 		> m_components;
 
