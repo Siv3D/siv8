@@ -41,8 +41,6 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CProfiler::init()");
 
 		m_fpsCounter.timeStampMillisec = Time::GetMillisec();
-
-		m_timestamps.fill(0);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -72,6 +70,9 @@ namespace s3d
 		{
 			++m_frameMetrics.frameIndex;
 
+			m_frameMetrics.drawCalls = std::exchange(m_stats[FromEnum(ProfilerStat::Renderer2D_DrawCalls)], 0);
+			m_frameMetrics.triangleCount = std::exchange(m_stats[FromEnum(ProfilerStat::Renderer2D_TriangleCount)], 0);
+
 			m_frameMetrics.engineBeginTimeUs = (m_timestamps[FromEnum(ProfilerEvent::EngineBegin_End)]
 				- m_timestamps[FromEnum(ProfilerEvent::EngineBegin_Start)]);
 
@@ -83,12 +84,6 @@ namespace s3d
 
 			m_frameMetrics.gpuWaitTimeUs = (m_timestamps[FromEnum(ProfilerEvent::GPUWait_End)]
 				- m_timestamps[FromEnum(ProfilerEvent::GPUWait_Start)]);
-
-			//{
-			//	const auto stat = SIV3D_ENGINE(Renderer2D)->getStat();
-			//	m_stat.drawCalls = stat.drawCalls;
-			//	m_stat.triangleCount = stat.triangleCount;
-			//}
 		}
 	}
 
@@ -150,5 +145,16 @@ namespace s3d
 	{
 		const uint64 timestamp = Time::GetMicrosec();
 		m_timestamps[FromEnum(event)] = timestamp;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reportStat
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CProfiler::reportStat(const ProfilerStat stat, const int64 delta)
+	{
+		m_stats[FromEnum(stat)] += delta;
 	}
 }

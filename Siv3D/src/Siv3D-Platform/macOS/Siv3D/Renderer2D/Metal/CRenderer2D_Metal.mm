@@ -24,6 +24,7 @@
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/Texture/Metal/CTexture_Metal.hpp>
+# include <Siv3D/Profiler/IProfiler.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FmtOptional.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -1330,6 +1331,12 @@ namespace s3d
 			m_currentCustomShader.vs.reset();
 			m_currentCustomShader.ps.reset();
 		};
+
+		struct Stat
+		{
+			uint32 drawCalls = 0;
+			uint32 triangleCount = 0;
+		} stat;
 		
 		m_commandManager.flush();
 		
@@ -1417,8 +1424,8 @@ namespace s3d
 						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), (sizeof(Vertex2D::IndexType) * commandState.startIndexLocation));
 						commandState.startIndexLocation += indexCount;
 						
-						//++m_stat.drawCalls;
-						//m_stat.triangleCount += (indexCount / 3);
+						++stat.drawCalls;
+						stat.triangleCount += (indexCount / 3);
 
 						break;
 					}
@@ -1650,6 +1657,9 @@ namespace s3d
 						
 			renderCommandEncoder->endEncoding();
 		}
+
+		SIV3D_ENGINE(Profiler)->reportStat(ProfilerStat::Renderer2D_DrawCalls, stat.drawCalls);
+		SIV3D_ENGINE(Profiler)->reportStat(ProfilerStat::Renderer2D_TriangleCount, stat.triangleCount);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -22,6 +22,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
+# include <Siv3D/Profiler/IProfiler.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FmtOptional.hpp>
 # include <Siv3D/EngineLog.hpp>
@@ -1347,6 +1348,12 @@ namespace s3d
 			m_currentCustomShader.ps.reset();
 		};
 
+		struct Stat
+		{
+			uint32 drawCalls = 0;
+			uint32 triangleCount = 0;
+		} stat;
+
 		m_commandManager.flush();
 		m_context->IASetInputLayout(m_inputLayout.Get());
 		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
@@ -1403,8 +1410,8 @@ namespace s3d
 					m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
 					commandState.batchInfo.startIndexLocation += indexCount;
 					
-					//++m_stat.drawCalls;
-					//m_stat.triangleCount += (indexCount / 3);
+					++stat.drawCalls;
+					stat.triangleCount += (indexCount / 3);
 					LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
 					break;
 				}
@@ -1631,6 +1638,9 @@ namespace s3d
 				}
 			}
 		}
+
+		SIV3D_ENGINE(Profiler)->reportStat(ProfilerStat::Renderer2D_DrawCalls, stat.drawCalls);
+		SIV3D_ENGINE(Profiler)->reportStat(ProfilerStat::Renderer2D_TriangleCount, stat.triangleCount);
 	}
 
 	////////////////////////////////////////////////////////////////

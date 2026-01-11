@@ -36,6 +36,8 @@ namespace s3d
 
 		void reportEvent(ProfilerEvent event) override;
 
+		void reportStat(ProfilerStat stat, int64 delta) override;
+
 	private:
 
 		struct FPSCounter
@@ -50,6 +52,8 @@ namespace s3d
 
 		FrameMetrics m_frameMetrics{ .frameIndex = -1 };
 
-		std::array<uint64, 8> m_timestamps;
+		std::array<uint64, 8> m_timestamps{};
+
+		std::array<int64, 2> m_stats{};
 	};
 }

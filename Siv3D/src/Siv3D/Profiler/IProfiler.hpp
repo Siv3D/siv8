@@ -13,6 +13,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/String.hpp>
 # include "ProfilerEvent.hpp"
+# include "ProfilerStat.hpp"
 
 namespace s3d
 {
@@ -40,5 +41,7 @@ namespace s3d
 		virtual const FrameMetrics& getFrameMetrics() const = 0;
 
 		virtual void reportEvent(ProfilerEvent event) = 0;
+
+		virtual void reportStat(ProfilerStat stat, int64 delta) = 0;
 	};
 }

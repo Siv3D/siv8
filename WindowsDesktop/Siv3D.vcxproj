@@ -789,6 +789,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\CProfiler.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\IProfiler.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\ProfilerEvent.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\ProfilerStat.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\CRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\IRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
