@@ -113,6 +113,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewRandom.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Subdivision2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SuperEllipse.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp" />
@@ -1555,6 +1556,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView_SIMD.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\Levenshtein.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\String\SivString.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Subdivision2D\Subdivision2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SuperEllipse\SivSuperEllipse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SVG\SivSVG.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.cpp" />

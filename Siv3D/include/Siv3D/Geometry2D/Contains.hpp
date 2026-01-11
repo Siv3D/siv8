@@ -22,6 +22,20 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
+		constexpr bool Contains(const Rect& a, const Point& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Contains(const Rect& a, const Vec2& b) noexcept;
+
+
+		[[nodiscard]]
+		constexpr bool Contains(const RectF& a, const Point& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Contains(const RectF& a, const Vec2& b) noexcept;
+
+
+		[[nodiscard]]
 		bool Contains(const Polygon& a, const Vec2& b) noexcept;
 	}
 }

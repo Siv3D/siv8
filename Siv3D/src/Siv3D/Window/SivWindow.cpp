@@ -235,7 +235,7 @@ namespace s3d
 			if ((not InRange(size.x, 1, 8192))
 				|| (not InRange(size.y, 1, 8192)))
 			{
-				throw Error{ U"Window::ResizeVirtual(): width and height must be in the range [1, 8192]" };
+				throw Error{ "Window::ResizeVirtual(): width and height must be in the range [1, 8192]" };
 			}
 
 			if (not SIV3D_ENGINE(Window)->resizeByVirtualSize(size))
@@ -277,7 +277,7 @@ namespace s3d
 			if ((not InRange(size.x, 1, 8192))
 				|| (not InRange(size.y, 1, 8192)))
 			{
-				throw Error{ U"Window::ResizeActual(): width and height must be in the range [1, 8192]" };
+				throw Error{ "Window::ResizeActual(): width and height must be in the range [1, 8192]" };
 			}
 
 			if (not SIV3D_ENGINE(Window)->resizeByFrameBufferSize(size))

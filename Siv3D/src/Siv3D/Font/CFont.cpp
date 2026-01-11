@@ -105,7 +105,7 @@ namespace s3d
 
 		if (const FT_Error error = ::FT_Init_FreeType(&m_freeType))
 		{
-			throw InternalEngineError{ U"FT_Init_FreeType() failed" };
+			throw InternalEngineError{ "FT_Init_FreeType() failed" };
 		}
 
 		// null Font を管理に登録

@@ -1392,6 +1392,18 @@ namespace s3d
 
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Rect::contains(const Shape2DType& other) const
+	{
+		return Geometry2D::Contains(*this, other);
+	}
+
 
 
 
