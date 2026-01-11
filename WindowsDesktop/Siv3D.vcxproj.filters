@@ -4794,6 +4794,12 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Profiler\ProfilerStat.hpp">
       <Filter>src\Siv3D\Profiler</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PoissonDiskSampler2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PoissonDiskSampler2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">

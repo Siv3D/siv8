@@ -393,7 +393,7 @@
 # include <Siv3D/FrameMetrics.hpp>
 
 // プロファイラー | Profiler
-# include <Siv3D/Profiler.hpp> // ToDo
+# include <Siv3D/Profiler.hpp>
 
 // 処理にかかった時間の測定 | Clock counter in milliseconds
 # include <Siv3D/MillisecClock.hpp>
@@ -654,9 +654,9 @@
 // 周期関数 | Periodic functions
 # include <Siv3D/Periodic.hpp>
 
-//// Poisson Disk 2D | Poisson disk 2D
-//# include <Siv3D/PoissonDisk2D.hpp>
-//
+// Poisson Disk 2D | Poisson disk 2D
+# include <Siv3D/PoissonDiskSampler2D.hpp>
+
 //// スプライン | Spline
 //# include <Siv3D/Spline.hpp>
 

@@ -195,4 +195,28 @@ namespace s3d
 		
 		return{ (std::cos(theta) * r), (std::sin(theta) * r) };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	RandomVec2InsideAnnulus
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Vec2 RandomVec2InsideAnnulus(const double innerRadius, const double outerRadius)
+	{
+		return RandomVec2InsideAnnulus(innerRadius, outerRadius, GetDefaultRNG());
+	}
+
+	Vec2 RandomVec2InsideAnnulus(const double innerRadius, const double outerRadius, Concept::UniformRandomBitGenerator auto&& urbg)
+	{
+		// u ∈ [0, 1)
+		const double u = Random(std::forward<decltype(urbg)>(urbg));
+
+		// 2D area-uniform radius
+		const double r = std::sqrt((u * (outerRadius * outerRadius - innerRadius * innerRadius)) + (innerRadius * innerRadius));
+
+		const double theta = RandomClosedOpen(0.0, Math::TwoPi, std::forward<decltype(urbg)>(urbg));
+
+		return{ (std::cos(theta) * r), (std::sin(theta) * r) };
+	}
 }

@@ -97,6 +97,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PerlinNoise.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PointsPerCircle.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PoissonDiskSampler2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Polygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IsPrime_impl.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Print.ipp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PerlinNoise.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PoissonDiskSampler2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolygonGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Print.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PrintBuffer.hpp" />

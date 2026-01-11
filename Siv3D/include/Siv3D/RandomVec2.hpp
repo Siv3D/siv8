@@ -209,6 +209,27 @@ namespace s3d
 	/// @return `RandomVec2(Circle{ 1.0 }, urbg)` と同じです。
 	[[nodiscard]]
 	Vec2 RandomVec2InsideUnitCircle(Concept::UniformRandomBitGenerator auto&& urbg);
+	
+	////////////////////////////////////////////////////////////////
+	//
+	//	RandomVec2InsideAnnulus
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 現在のスレッドの乱数エンジンを用いて、指定した内径と外径を持つ環状領域の内部のランダムな位置ベクトルを返します。
+	/// @param innerRadius 内径
+	/// @param outerRadius 外径
+	/// @return 指定した内径と外径を持つ環状領域の内部のランダムな位置ベクトル
+	[[nodiscard]]
+	Vec2 RandomVec2InsideAnnulus(double innerRadius, double outerRadius);
+
+	/// @brief 指定した内径と外径を持つ環状領域の内部のランダムな位置ベクトルを返します。
+	/// @param innerRadius 内径
+	///	@param outerRadius 外径
+	/// @param urbg 乱数エンジン
+	/// @return 指定した内径と外径を持つ環状領域の内部のランダムな位置ベクトル
+	[[nodiscard]]
+	Vec2 RandomVec2InsideAnnulus(double innerRadius, double outerRadius, Concept::UniformRandomBitGenerator auto&& urbg);
 }
 
 # include "detail/RandomVec2.ipp"

@@ -76,4 +76,7 @@ namespace s3d
 
 	/// @brief 描画順序のソートを有効にするかどうかを指定 | Whether to enable sorting of draw order
 	using SortingEnabled = YesNo<struct SortingEnabled_tag>;
+
+	/// @brief 事前に計算を行うかどうかを指定 | Whether to perform precomputation
+	using Precompute = YesNo<struct Precompute_tag>;
 }
