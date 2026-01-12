@@ -7599,5 +7599,8 @@
     <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeTable10.txt">
       <Filter>include\ThirdParty\libcpprime\internal</Filter>
     </Text>
+    <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeBases32.txt">
+      <Filter>include\ThirdParty\libcpprime\internal</Filter>
+    </Text>
   </ItemGroup>
 </Project>

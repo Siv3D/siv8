@@ -21,7 +21,9 @@
 #	pragma clang diagnostic push
 #	pragma clang diagnostic ignored "-Wcomma"
 # endif
+SIV3D_DISABLE_MSVC_WARNINGS_PUSH(26454)
 # include <ThirdParty/libcpprime/IsPrimeNoTable.hpp>
+SIV3D_DISABLE_MSVC_WARNINGS_POP()
 # if SIV3D_COMPILER(APPLE_CLANG)
 #	pragma clang diagnostic pop
 # endif

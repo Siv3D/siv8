@@ -44,20 +44,20 @@ namespace s3d
 			return DatasetAdapter::GetPointer(point);
 		}
 
-		template <class DistanceType, class IndexType>
+		template <class _DistanceType, class _IndexType>
 		class RadiusResultsAdapter
 		{
 		public:
 
-			using distance_type	= DistanceType;
+			using DistanceType = _DistanceType;
 
-			using index_type	= IndexType;
+			using IndexType = _IndexType;
 
-			const distance_type m_radius;
+			const DistanceType m_radius;
 
-			Array<index_type>& m_results;
+			Array<IndexType>& m_results;
 
-			RadiusResultsAdapter(distance_type radius, Array<index_type>& results)
+			RadiusResultsAdapter(DistanceType radius, Array<IndexType>& results)
 				: m_radius{ radius }
 				, m_results{ results }
 			{
@@ -79,38 +79,45 @@ namespace s3d
 				return m_results.size();
 			}
 
+			bool empty() const
+			{
+				return m_results.empty();
+			}
+
 			constexpr bool full() const
 			{
 				return true;
 			}
 
-			bool addPoint(const distance_type, const index_type index)
+			bool addPoint(const DistanceType, const IndexType index)
 			{
 				m_results.push_back(index);
 
 				return true;
 			}
 
-			distance_type worstDist() const
+			DistanceType worstDist() const
 			{
 				return m_radius;
 			}
+
+			void sort() {}
 		};
 
-		template <class DistanceType, class IndexType>
+		template <class _DistanceType, class _IndexType>
 		class RadiusResultsPairAdapter
 		{
 		public:
 
-			using distance_type = DistanceType;
+			using DistanceType = _DistanceType;
 
-			using index_type = IndexType;
+			using IndexType = _IndexType;
 
-			const distance_type m_radius;
+			const DistanceType m_radius;
 
-			Array<std::pair<index_type, distance_type>>& m_results;
+			Array<std::pair<IndexType, DistanceType>>& m_results;
 
-			RadiusResultsPairAdapter(distance_type radius, Array<std::pair<index_type, distance_type>>& results)
+			RadiusResultsPairAdapter(DistanceType radius, Array<std::pair<IndexType, DistanceType>>& results)
 				: m_radius{ radius }
 				, m_results{ results }
 			{
@@ -132,21 +139,31 @@ namespace s3d
 				return m_results.size();
 			}
 
+			bool empty() const
+			{
+				return m_results.empty();
+			}
+
 			constexpr bool full() const
 			{
 				return true;
 			}
 
-			bool addPoint(const distance_type distanceSq, const index_type index)
+			bool addPoint(const DistanceType distanceSq, const IndexType index)
 			{
 				m_results.emplace_back(index, distanceSq);
 
 				return true;
 			}
 
-			distance_type worstDist() const
+			DistanceType worstDist() const
 			{
 				return m_radius;
+			}
+
+			void sort()
+			{
+				std::ranges::sort(m_results, nanoflann::IndexDist_Sorter{});
 			}
 		};
 	}
@@ -278,7 +295,7 @@ namespace s3d
 
 			if (searchParams.sorted)
 			{
-				std::sort(matches.begin(), matches.end(), nanoflann::IndexDist_Sorter());
+				std::ranges::sort(matches, nanoflann::IndexDist_Sorter{});
 			}
 
 			results.resize(num_matches);
@@ -315,7 +332,7 @@ namespace s3d
 
 			if (searchParams.sorted)
 			{
-				std::sort(matches.begin(), matches.end(), nanoflann::IndexDist_Sorter());
+				std::ranges::sort(matches, nanoflann::IndexDist_Sorter{});
 			}
 
 			results.resize(num_matches);
