@@ -15,7 +15,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
-# include <Siv3D/Bezier2.hpp>
+# include <Siv3D/Bezier.hpp>
 # include <Siv3D/Geometry2D/Distance.hpp>
 # include <Siv3D/Polygon/GeometryCommon.hpp>
 

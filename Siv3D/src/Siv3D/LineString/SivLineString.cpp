@@ -19,6 +19,31 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
+	//	computeLength
+	//
+	////////////////////////////////////////////////////////////////
+
+	double LineString::computeLength(const CloseRing closeRing) const noexcept
+	{
+		const size_t n = m_points.size();
+		const Vec2* pData = m_points.data();
+
+		double length = 0.0;
+		for (size_t i = 0; i < (n - 1); ++i)
+		{
+			length += (pData[i].distanceFrom(pData[i + 1]));
+		}
+
+		if (closeRing)
+		{
+			length += (pData[n - 1]).distanceFrom(pData[0]);
+		}
+
+		return length;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////

@@ -875,6 +875,9 @@
 // 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
 # include <Siv3D/LineString.hpp> // ToDo
 
+
+# include <Siv3D/Bezier.hpp>
+
 // 2 次ベジェ曲線 | Quadratic Bézier curve
 # include <Siv3D/Bezier2.hpp> // ToDo
 

@@ -972,13 +972,21 @@ namespace s3d
 //		/// @return LineString を構成する頂点の数
 //		[[nodiscard]]
 //		size_t num_points() const noexcept;
-//
-//		/// @brief LineString を構成する線分の数を返します。
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return LineString を構成する線分の数
-//		[[nodiscard]]
-//		size_t num_lines(CloseRing closeRing = CloseRing::No) const noexcept;
-//
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	num_segments
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief LineString を構成する線分の数を返します。
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return LineString を構成する線分の数
+		[[nodiscard]]
+		constexpr size_t num_segments(CloseRing closeRing = CloseRing::No) const noexcept;
+
+
 //		/// @brief LineString を構成する線分を返します。
 //		/// @param index 線分のインデックス
 //		/// @param closeRing 終点と始点を結ぶか
@@ -1106,12 +1114,12 @@ namespace s3d
 //		[[nodiscard]]
 //		LineString catmullRom(CloseRing closeRing, int32 interpolation = 24) const;
 //
-//		/// @brief 連続する線分全体の長さを返します。
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 連続する線分全体の長さ
-//		[[nodiscard]]
-//		double calculateLength(CloseRing closeRing = CloseRing::No) const noexcept;
-//
+		/// @brief 連続する線分全体の長さを返します。
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 連続する線分全体の長さ
+		[[nodiscard]]
+		double computeLength(CloseRing closeRing = CloseRing::No) const noexcept;
+
 //		/// @brief 始点から指定した距離にある、線分上の点を返します
 //		/// @param distanceFromOrigin 始点からの距離
 //		/// @param closeRing 終点と始点を結ぶか

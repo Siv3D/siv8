@@ -9,10 +9,8 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/Bezier.hpp>
-# include <Siv3D/FloatFormatter.hpp>
-
-namespace s3d
-{
-
-}
+# pragma once
+# include "Bezier2.hpp"
+# include "Bezier3.hpp"
+# include "detail/Bezier2.ipp"
+# include "detail/Bezier3.ipp"

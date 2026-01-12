@@ -780,6 +780,24 @@ namespace s3d
 		return *this;
 	}
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	num_segments
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr size_t LineString::num_segments(const CloseRing closeRing) const noexcept
+	{
+		if (m_points.size() < 2)
+		{
+			return 0;
+		}
+		
+		return (closeRing ? m_points.size() : (m_points.size() - 1));
+	}
+
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	movedBy

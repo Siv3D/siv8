@@ -18,12 +18,28 @@ namespace s3d
 	/// @brief 三次ベジェ曲線
 	struct Bezier3
 	{
-		Vec2 p0;
+		using position_type = Vec2;
 
-		Vec2 p1;
+		using value_type = position_type::value_type;
 
-		Vec2 p2;
+		position_type p0;
 
-		Vec2 p3;
+		position_type p1;
+
+		position_type p2;
+
+		position_type p3;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Bezier3() = default;
+
+		[[nodiscard]]
+		constexpr Bezier3(const position_type& _p0, const position_type& _p1, const position_type& _p2, const position_type& _p3) noexcept;
 	};
 }
