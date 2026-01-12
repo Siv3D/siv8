@@ -18,6 +18,7 @@
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/ListUtility.hpp>
 # include <Siv3D/Geometry2D/Intersect.hpp>
+# include <Siv3D/Geometry2D/Distance.hpp>
 
 namespace s3d
 {
@@ -218,6 +219,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		bool Intersect(const Point& a, const Bezier2& b)
+		{
+			return Intersect(Vec2{ a }, b);
+		}
+
 		bool Intersect(const Point& a, const RoundRect& b) noexcept
 		{
 			return Intersect(Vec2{ a }, b);
@@ -238,6 +244,12 @@ namespace s3d
 		//	Intersect(Vec2, _)
 		//
 		////////////////////////////////////////////////////////////////
+
+		bool Intersect(const Vec2& a, const Bezier2& b)
+		{
+			// 距離が 1 未満なら交差と判定
+			return (Distance(a, b) < 1.0);
+		}
 
 		bool Intersect(const Vec2& a, const RoundRect& b) noexcept
 		{

@@ -40,8 +40,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool Intersect(const Point& a, const Line& b) noexcept;
 
-		//[[nodiscard]]
-		//bool Intersect(const Point& a, const Bezier2& b);
+		[[nodiscard]]
+		bool Intersect(const Point& a, const Bezier2& b);
 
 		////[[nodiscard]]
 		////bool Intersect(const Point& a, const Bezier3& b) noexcept;
@@ -94,8 +94,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool Intersect(const Vec2& a, const Line& b) noexcept;
 
-		//[[nodiscard]]
-		//bool Intersect(const Vec2& a, const Bezier2& b);
+		[[nodiscard]]
+		bool Intersect(const Vec2& a, const Bezier2& b);
 
 		////[[nodiscard]]
 		////bool Intersect(const Vec2& a, const Bezier3& b) noexcept;

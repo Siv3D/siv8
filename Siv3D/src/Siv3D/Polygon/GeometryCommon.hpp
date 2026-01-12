@@ -12,8 +12,11 @@
 # pragma once
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/Array.hpp>
+
+SIV3D_DISABLE_MSVC_WARNINGS_PUSH(5311)
 # include <boost/geometry.hpp>
 # include <boost/geometry/geometries/register/point.hpp>
+SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Point, s3d::int32, boost::geometry::cs::cartesian, x, y)
 BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Float2, float, boost::geometry::cs::cartesian, x, y)

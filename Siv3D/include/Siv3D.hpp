@@ -855,6 +855,8 @@
 // 楕円 | Ellipse
 # include <Siv3D/Ellipse.hpp> // ToDo
 
+# include <Siv3D/SuperEllipse.hpp> // ToDo
+
 // 三角形 | Triangle
 # include <Siv3D/Triangle.hpp> // ToDo
 
@@ -864,16 +866,14 @@
 // 角丸長方形 | Rounded rectangle
 # include <Siv3D/RoundRect.hpp> // ToDo
 
-# include <Siv3D/SuperEllipse.hpp> // ToDo
-
-// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
-# include <Siv3D/LineString.hpp> // ToDo
-
 // 多角形 | Polygon
 # include <Siv3D/Polygon.hpp> // ToDo
 
 // 複数の多角形 | Multi-polygon
 # include <Siv3D/MultiPolygon.hpp> // ToDo
+
+// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
+# include <Siv3D/LineString.hpp> // ToDo
 
 // 2 次ベジェ曲線 | Quadratic Bézier curve
 # include <Siv3D/Bezier2.hpp> // ToDo

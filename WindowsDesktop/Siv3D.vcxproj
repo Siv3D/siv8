@@ -70,6 +70,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BasicCamera2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BCnData.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier2.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier3.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Choice.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Circular.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConstantBuffer.ipp" />
@@ -142,6 +144,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Contains.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ConvexHull.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IntersectAt.hpp" />
@@ -1303,6 +1306,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\AssetMonitorFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\CAssetMonitor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Base64Value\SivBase64Value.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Bezier2\SivBezier2.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Bezier3\SivBezier3.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigFloat\SivBigFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigInt\SivBigInt.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BigNumMath\SivBigNumMath.cpp" />

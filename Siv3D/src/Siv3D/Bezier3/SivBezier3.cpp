@@ -9,21 +9,8 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include "Common.hpp"
-# include "PointVector.hpp"
 
 namespace s3d
 {
-	/// @brief 三次ベジェ曲線
-	struct Bezier3
-	{
-		Vec2 p0;
 
-		Vec2 p1;
-
-		Vec2 p2;
-
-		Vec2 p3;
-	};
 }

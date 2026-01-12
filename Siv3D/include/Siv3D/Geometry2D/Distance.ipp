@@ -21,30 +21,30 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		[[nodiscard]]
-		double Distance(const Point& a, const Point& b) noexcept;
+		inline double Distance(const Point& a, const Point& b) noexcept
+		{
+			return a.distanceFrom(b);
+		}
 
-		[[nodiscard]]
-		double Distance(const Point& a, const Vec2& b) noexcept;
+		inline double Distance(const Point& a, const Vec2& b) noexcept
+		{
+			return a.distanceFrom(b);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Distance(Vec2, _)
+		//	Distance(Point, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		[[nodiscard]]
-		double Distance(const Vec2& a, const Point& b) noexcept;
+		inline double Distance(const Vec2& a, const Point& b) noexcept
+		{
+			return a.distanceFrom(b);
+		}
 
-		[[nodiscard]]
-		double Distance(const Vec2& a, const Vec2& b) noexcept;
-
-		[[nodiscard]]
-		double Distance(const Vec2& a, const Line& b);
-		
-		[[nodiscard]]
-		double Distance(const Vec2& a, const Bezier2& b);
+		inline double Distance(const Vec2& a, const Vec2& b) noexcept
+		{
+			return a.distanceFrom(b);
+		}
 	}
 }
-
-# include "Distance.ipp"

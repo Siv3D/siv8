@@ -1168,6 +1168,12 @@
     <Filter Include="src\Siv3D\Subdivision2D">
       <UniqueIdentifier>{6f98be4e-967c-49f0-aa45-c82f49b38797}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Bezier2">
+      <UniqueIdentifier>{a928fa14-1d4f-483c-be8c-4c39334f03a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Bezier3">
+      <UniqueIdentifier>{f7ae3f39-fc38-4a60-99a0-6f281a47a576}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4815,6 +4821,15 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\Utils.hpp">
       <Filter>include\ThirdParty\libcpprime\internal</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.ipp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier2.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier3.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7555,6 +7570,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Subdivision2D\Subdivision2D.cpp">
       <Filter>src\Siv3D\Subdivision2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Bezier2\SivBezier2.cpp">
+      <Filter>src\Siv3D\Bezier2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Bezier3\SivBezier3.cpp">
+      <Filter>src\Siv3D\Bezier3</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
