@@ -647,6 +647,7 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\format.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeCommon.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\Utils.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\IsPrimeNoTable.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\nanobench\nanobench.h" />
@@ -3687,6 +3688,9 @@
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86__base_implementation.inl" />
     <None Include="..\Siv3D\src\ThirdParty\skia\src\opts\SkSwizzler_opts.inc" />
     <None Include="..\Siv3D\src\ThirdParty\zstd\decompress\huf_decompress_amd64.S" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeTable10.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
