@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Bezier.hpp>
+# include <Siv3D/PolynomialSolver.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
 namespace s3d
@@ -33,16 +34,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getUnitTangent
+	//	getTangent
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vec2 Bezier2::getUnitTangent(const double t) const noexcept
+	Vec2 Bezier2::getTangent(double t) const noexcept
 	{
 		const Vec2 v0 = (p1 - p0);
 		const Vec2 v1 = (p2 - p1);
 		const Vec2 d = (v0 * (1.0 - t) + v1 * t);
 		return d.normalized();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getNormal
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 Bezier2::getNormal(double t) const noexcept
+	{
+		const Vec2 d = getDerivative(t);
+		return Vec2{ d.y, -d.x }.normalized();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -185,6 +198,90 @@ namespace s3d
 	Bezier2::position_type Bezier2::getPosAtLength(const double length) const noexcept
 	{
 		return getPos(tAtLength(length));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//  closestT
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Bezier2::closestT(const position_type& point) const noexcept
+	{
+		constexpr double Eps = 1e-12;
+		constexpr double DegenerateRel = 1e-24; // relative threshold for M.dot(M)
+
+		const Vec2 M = (p0 - 2.0 * p1 + p2);
+		const Vec2 N = (p1 - p0);
+		const Vec2 K = (point - p0);
+
+		// 退化: (ほぼ)直線 → 線分 [p0, p2] への射影
+		{
+			const Vec2 chord = (p2 - p0);
+			const double chordLenSq = chord.dot(chord);
+			const double scale = Max(1.0, chordLenSq);
+
+			if (M.dot(M) <= (DegenerateRel * scale))
+			{
+				if (chordLenSq <= Eps)
+				{
+					return 0.0; // ほぼ一点
+				}
+
+				const double t = (K.dot(chord) / chordLenSq);
+				return Clamp(t, 0.0, 1.0);
+			}
+		}
+
+		// 端点を初期最良に
+		double bestT = 0.0;
+		double bestDistSq = point.distanceFromSq(p0);
+
+		{
+			const double d2 = point.distanceFromSq(p2);
+			if (d2 < bestDistSq)
+			{
+				bestDistSq = d2;
+				bestT = 1.0;
+			}
+		}
+
+		// D'(t)=0 の 3次方程式:
+		// (M·M)t^3 + 3(M·N)t^2 + (2N·N - M·K)t - N·K = 0
+		const double c3 = M.dot(M);
+		const double c2 = 3.0 * M.dot(N);
+		const double c1 = (2.0 * N.dot(N) - M.dot(K));
+		const double c0 = -N.dot(K);
+
+		if (const auto opt = Math::SolveCubicEquation(c3, c2, c1, c0))
+		{
+			for (const double x : *opt)
+			{
+				if (InRange(x, -Eps, (1.0 + Eps)))
+				{
+					const double t = Clamp(x, 0.0, 1.0);
+					const double d2 = point.distanceFromSq(getPos(t));
+					if (d2 < bestDistSq)
+					{
+						bestDistSq = d2;
+						bestT = t;
+					}
+				}
+			}
+		}
+
+		return bestT; // 既に [0,1]
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//  closestPoint
+	//
+	////////////////////////////////////////////////////////////////
+
+	Bezier2::position_type Bezier2::closestPoint(const position_type& point) const noexcept
+	{
+		return getPos(closestT(point));
 	}
 
 	////////////////////////////////////////////////////////////////

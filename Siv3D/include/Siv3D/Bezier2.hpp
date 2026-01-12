@@ -17,16 +17,23 @@
 namespace s3d
 {
 	/// @brief 二次ベジェ曲線
+	/// 3 点（開始点 p0、制御点 p1、終了点 p2）で定義される二次ベジェ曲線です。
+	/// パラメータ t（0.0～1.0）に対して曲線上の座標・導関数（接線/法線）・長さ・分割などを提供します。
 	struct Bezier2
 	{
+		/// @brief 座標型
 		using position_type = Vec2;
 
+		/// @brief 要素型
 		using value_type = position_type::value_type;
 
+		/// @brief 開始点
 		position_type p0;
 
+		/// @brief 制御点
 		position_type p1;
 
+		/// @brief 終了点
 		position_type p2;
 
 		////////////////////////////////////////////////////////////////
@@ -35,9 +42,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		Bezier2() = default;
 
+		/// @brief 3 点から二次ベジェ曲線を作成します。
+		/// @param _p0 開始点
+		/// @param _p1 制御点
+		/// @param _p2 終了点
 		[[nodiscard]]
 		constexpr Bezier2(const position_type& _p0, const position_type& _p1, const position_type& _p2) noexcept;
 
@@ -47,9 +59,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 開始点 p0 を変更した新しい曲線を返します。
+		/// @param _x 開始点の X 座標
+		/// @param _y 開始点の Y 座標
+		/// @return p0 を変更した二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withP0(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 開始点 p0 を変更した新しい曲線を返します。
+		/// @param _p0 開始点
+		/// @return p0 を変更した二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withP0(position_type _p0) const noexcept;
 
@@ -59,9 +78,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 制御点 p1 を変更した新しい曲線を返します。
+		/// @param _x 制御点の X 座標
+		/// @param _y 制御点の Y 座標
+		/// @return p1 を変更した二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withP1(value_type _x, value_type _y) const noexcept;
 		
+		/// @brief 制御点 p1 を変更した新しい曲線を返します。
+		/// @param _p1 制御点
+		/// @return p1 を変更した二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withP1(position_type _p1) const noexcept;
 
@@ -71,9 +97,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 終了点 p2 を変更した新しい曲線を返します。
+		/// @param _x 終了点の X 座標
+		/// @param _y 終了点の Y 座標
+		/// @return p2 を変更した二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withP2(value_type _x, value_type _y) const noexcept;
-		
+
+		/// @brief 終了点 p2 を変更した新しい曲線を返します。
+		/// @param _p2 終了点
+		/// @return p2 を変更した二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withP2(position_type _p2) const noexcept;
 
@@ -83,9 +116,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 3 点すべてにオフセットを加えた新しい曲線を返します。
+		/// @param x X 方向のオフセット
+		/// @param y Y 方向のオフセット
+		/// @return オフセット後の二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withOffset(value_type x, value_type y) const noexcept;
 
+		/// @brief 3 点すべてにオフセットを加えた新しい曲線を返します。
+		/// @param v オフセット
+		/// @return オフセット後の二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withOffset(position_type v) const noexcept;
 
@@ -95,9 +135,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 3 点すべてに X 方向のオフセットを加えた新しい曲線を返します。
+		/// @param x X 方向のオフセット
+		/// @return オフセット後の二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withOffsetX(value_type x) const noexcept;
 
+		/// @brief 3 点すべてに Y 方向のオフセットを加えた新しい曲線を返します。
+		/// @param y Y 方向のオフセット
+		/// @return オフセット後の二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 withOffsetY(value_type y) const noexcept;
 
@@ -107,9 +153,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief インデックスで制御点を取得します。
+		/// @param index 0: p0, 1: p1, 2: p2
+		/// @return 指定した点への参照
+		/// @throw std::out_of_range index が 0～2 の範囲外の場合
 		[[nodiscard]]
 		position_type& pointAtIndex(size_t index);
 
+		/// @brief インデックスで制御点を取得します。
+		/// @param index 0: p0, 1: p1, 2: p2
+		/// @return 指定した点への参照
+		/// @throw std::out_of_range index が 0～2 の範囲外の場合
 		[[nodiscard]]
 		const position_type& pointAtIndex(size_t index) const;
 
@@ -119,6 +173,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief パラメータ t に対応する曲線上の座標を返します。
+		/// @param t パラメータ（0.0～1.0）
+		/// @return 曲線上の座標
 		[[nodiscard]]
 		constexpr position_type getPos(const double t) const noexcept;
 
@@ -128,6 +185,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief パラメータ t における 1 階導関数（速度ベクトル）を返します。
+		/// @param t パラメータ（0.0～1.0）
+		/// @return 1 階導関数ベクトル
 		[[nodiscard]]
 		constexpr Vec2 getDerivative(double t) const noexcept;
 
@@ -137,17 +197,34 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 階導関数（加速度ベクトル）を返します。
+		/// @return 2 階導関数ベクトル
 		[[nodiscard]]
 		constexpr Vec2 getSecondDerivative() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getUnitTangent
+		//	getTangent
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 正規化された接線ベクトルを返します。
+		/// @param t パラメータ（0.0 ～ 1.0）
+		/// @return 接線ベクトル
 		[[nodiscard]]
-		Vec2 getUnitTangent(double t) const noexcept;
+		Vec2 getTangent(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getNormal
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 正規化された法線ベクトルを返します。
+		/// @param t パラメータ（0.0 ～ 1.0）
+		/// @return 法線ベクトル
+		[[nodiscard]]
+		Vec2 getNormal(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -186,10 +263,37 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//  closestT
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した点に最も近い曲線上の位置のパラメータ t を返します。
+		/// @param point 点
+		/// @return パラメータ t（0.0～1.0）
+		[[nodiscard]]
+		double closestT(const position_type& point) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//  closestPoint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した点に最も近い曲線上の点を返します。
+		/// @param point 点
+		/// @return 曲線上の最近傍点
+		[[nodiscard]]
+		position_type closestPoint(const position_type& point) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	getLineString
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線を等間隔の t で分割した LineString を返します。
+		/// @param segments 分割数（最低 1）
+		/// @return LineString
 		[[nodiscard]]
 		LineString getLineString(const int32 segments = 24) const;
 
@@ -199,6 +303,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 誤差に応じて適応的に分割した LineString を返します。
+		/// @param maxError 許容誤差
+		/// @param maxDepth 最大再帰深度
+		/// @return LineString
 		LineString getLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 5) const;
 
 		////////////////////////////////////////////////////////////////
@@ -207,6 +315,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した t で曲線を 2 つに分割します（De Casteljau 法）。
+		/// @param t 分割位置（0.0～1.0）
+		/// @return 分割された 2 つの二次ベジェ曲線（first: [0,t], second: [t,1]）
 		[[nodiscard]]
 		constexpr std::pair<Bezier2, Bezier2> split(double t) const noexcept;
 
@@ -216,6 +327,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 区間 [t0, t1] に対応する部分曲線を返します。
+		/// @param t0 開始パラメータ
+		/// @param t1 終了パラメータ
+		/// @return 部分曲線（t1 < t0 の場合は反転して返されます）
 		[[nodiscard]]
 		Bezier2 subcurve(double t0, double t1) const noexcept;
 
@@ -225,9 +340,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 平行移動した新しい曲線を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 移動後の二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 movedBy(value_type x, value_type y) const noexcept;
 
+		/// @brief 平行移動した新しい曲線を返します。
+		/// @param v 移動量
+		/// @return 移動後の二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 movedBy(position_type v) const noexcept;
 
@@ -237,8 +359,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線を平行移動します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return *this
 		constexpr Bezier2& moveBy(value_type x, value_type y) noexcept;
 
+		/// @brief 曲線を平行移動します。
+		/// @param v 移動量
+		/// @return *this
 		constexpr Bezier2& moveBy(position_type v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -247,8 +376,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線の向きを反転します（p0 と p2 を入れ替えます）。
+		/// @return *this
 		constexpr Bezier2& reverse() noexcept;
 
+		/// @brief 反転した新しい曲線を返します。
+		/// @return 反転後の二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 reversed() const noexcept;
 
@@ -258,6 +391,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線を包含する軸平行矩形（AABB）を返します。
+		/// @return バウンディングボックス
 		[[nodiscard]]
 		RectF boundingRect() const noexcept;
 
@@ -333,6 +468,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief ハッシュ値を返します。
+		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
@@ -362,10 +499,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線を描画します。
+		/// @param color 色
+		/// @param segments 分割数（最低 1）
+		/// @return *this
 		const Bezier2& draw(const ColorF& color = Palette::White, int32 segments = 24) const;
 
+		/// @brief 曲線を描画します。
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param segments 分割数（最低 1）
+		/// @return *this
 		const Bezier2& draw(double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
 
+		/// @brief 曲線を描画します。
+		/// @param lineCap 線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param segments 分割数（最低 1）
+		/// @return *this
 		const Bezier2& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
 
 		////////////////////////////////////////////////////////////////
@@ -374,10 +526,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線を適応分割で描画します。
+		/// @param color 色
+		/// @param maxError 許容誤差
+		/// @param maxDepth 最大再帰深度
+		/// @return *this
 		const Bezier2& drawAdaptive(const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
 
+		/// @brief 曲線を適応分割で描画します。
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param maxError 許容誤差
+		/// @param maxDepth 最大再帰深度
+		/// @return *this
 		const Bezier2& drawAdaptive(double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
 
+		/// @brief 曲線を適応分割で描画します。
+		/// @param lineCap 線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param maxError 許容誤差
+		/// @param maxDepth 最大再帰深度
+		/// @return *this
 		const Bezier2& drawAdaptive(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
 
 		////////////////////////////////////////////////////////////////
@@ -449,10 +619,18 @@ namespace s3d
 
 	private:
 
+		/// @brief パラメータ t における速度（|B'(t)|）を返します。
+		/// @param t パラメータ
+		/// @return 速度
 		double speed(double t) const noexcept;
 
+		/// @brief 区間 [a, b] の速度を数値積分して弧長を求めます。
+		/// @param a 区間開始（0.0～1.0）
+		/// @param b 区間終了（0.0～1.0）
+		/// @return 弧長
 		double integrateSpeed(double a, double b) const noexcept;
 
+		/// @brief pointAtIndex() の範囲外アクセス時に例外を送出します。
 		[[noreturn]]
 		static void ThrowPointAtIndexOutOfRange();
 	};

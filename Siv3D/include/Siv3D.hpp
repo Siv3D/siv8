@@ -675,6 +675,8 @@
 // 素数判定 | Primality test
 # include <Siv3D/IsPrime.hpp>
 
+# include <Siv3D/PolynomialSolver.hpp>
+
 ////////////////////////////////////////////////////////////////
 //
 //	色 | Color

@@ -170,6 +170,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PerlinNoise.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PoissonDiskSampler2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolygonGlyph.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PolynomialSolver.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Print.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PrintBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ReadingDirection.hpp" />
@@ -1509,6 +1510,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\SivPolygon.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\PolynomialSolver\SivPolynomialSolver.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PrintBuffer\SivPrintBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Print\CPrint.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Print\PrintFactory.cpp" />
