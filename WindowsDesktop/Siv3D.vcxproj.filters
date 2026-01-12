@@ -1177,6 +1177,9 @@
     <Filter Include="src\Siv3D\PolynomialSolver">
       <UniqueIdentifier>{b91bc0df-5757-45c1-a9d6-9e85fabe17c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Bezier2Walker">
+      <UniqueIdentifier>{0a834e5c-31e9-414a-8f9e-2826fb2c9466}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4839,6 +4842,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PolynomialSolver.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Bezier2Walker.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier2Walker.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7588,6 +7597,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\PolynomialSolver\SivPolynomialSolver.cpp">
       <Filter>src\Siv3D\PolynomialSolver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Bezier2Walker\SivBezier2Walker.cpp">
+      <Filter>src\Siv3D\Bezier2Walker</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -881,7 +881,9 @@
 # include <Siv3D/Bezier.hpp>
 
 // 2 次ベジェ曲線 | Quadratic Bézier curve
-# include <Siv3D/Bezier2.hpp> // ToDo
+# include <Siv3D/Bezier2.hpp>
+
+# include <Siv3D/Bezier2Walker.hpp>
 
 // 3 次ベジェ曲線 | Cubic Bézier curve
 # include <Siv3D/Bezier3.hpp> // ToDo
