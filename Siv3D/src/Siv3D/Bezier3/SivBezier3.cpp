@@ -454,6 +454,144 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getLineStringAdaptive
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString Bezier3::getLineStringAdaptive(const double maxError, const int32 maxDepth) const
+	{
+		LineString polyline;
+		polyline.reserve(65);
+
+		polyline.push_back(p0);
+		Vec2 lastPushed = p0;
+
+		const double kNearlyZeroSq = 1e-12;
+		const double maxErrorSq = (maxError * maxError);
+		const int32  depthLimit = Max(0, maxDepth);
+
+		// 平坦度判定の閾値（ (cross^2) <= (error^2*|chord|^2) ）
+		// ※ Bezier2 版は係数 4 を使っているが、Bezier3 は制御点が2つなので安全側に 4 を維持
+		const double flatnessK = (4.0 * maxErrorSq);
+
+		// 極短区間の早期終了
+		const double shortSegmentSq = (maxErrorSq * 0.25);
+
+		auto PushUnique = [&](const Vec2& p)
+		{
+			if (lastPushed != p)
+			{
+				polyline.push_back(p);
+				lastPushed = p;
+			}
+		};
+
+		auto SubdivideFlatten = [&](auto&& self, const Bezier3& curve, const int32 depth) -> void
+		{
+			const Vec2   chord = (curve.p3 - curve.p0);
+			const double chordLenSq = chord.lengthSq();
+
+			// ケースA: 弦がほぼゼロ長（p0 ≒ p3）
+			if (chordLenSq < kNearlyZeroSq)
+			{
+				const double p0p1LenSq = (curve.p1 - curve.p0).lengthSq();
+				const double p1p2LenSq = (curve.p2 - curve.p1).lengthSq();
+				const double p2p3LenSq = (curve.p3 - curve.p2).lengthSq();
+				const double ctrlSpanSq = Max({ p0p1LenSq, p1p2LenSq, p2p3LenSq });
+
+				// 4点ともほぼ同一点なら退化
+				if (ctrlSpanSq < kNearlyZeroSq)
+				{
+					PushUnique(curve.p3);
+					return;
+				}
+
+				// 深さ上限に達しているなら制御点を残して潰れを防ぐ
+				if (depthLimit <= depth)
+				{
+					PushUnique(curve.p1);
+					PushUnique(curve.p2);
+					PushUnique(curve.p3);
+					return;
+				}
+
+				// 弦がほぼゼロなので平坦度判定は不安定：とにかく分割（t=0.5）
+				const Vec2 p01 = ((curve.p0 + curve.p1) * 0.5);
+				const Vec2 p12 = ((curve.p1 + curve.p2) * 0.5);
+				const Vec2 p23 = ((curve.p2 + curve.p3) * 0.5);
+				const Vec2 p012 = ((p01 + p12) * 0.5);
+				const Vec2 p123 = ((p12 + p23) * 0.5);
+				const Vec2 p0123 = ((p012 + p123) * 0.5);
+
+				self(self, Bezier3{ curve.p0, p01,  p012,  p0123 }, (depth + 1));
+				self(self, Bezier3{ p0123,    p123, p23,   curve.p3 }, (depth + 1));
+				return;
+			}
+
+			// ケースB: 通常の平坦度判定
+			// p1, p2 の弦からのズレを cross で評価（最大のものを採用）
+			const Vec2 v1 = (curve.p1 - curve.p0);
+			const Vec2 v2 = (curve.p2 - curve.p0);
+
+			const double cross1 = chord.cross(v1);
+			const double cross2 = chord.cross(v2);
+
+			double maxCrossAbsSq = (cross1 * cross1);
+			maxCrossAbsSq = Max(maxCrossAbsSq, (cross2 * cross2));
+
+			bool acceptSegment = (maxCrossAbsSq <= (flatnessK * chordLenSq));
+
+			if (acceptSegment)
+			{
+				// 両制御点の射影が弦区間 [p0,p3] に収まることを確認（折り返し/ループ対策）
+				const double dot1 = v1.dot(chord);
+				const double dot2 = v2.dot(chord);
+
+				if ((dot1 < 0.0) || (chordLenSq < dot1) || (dot2 < 0.0) || (chordLenSq < dot2))
+				{
+					acceptSegment = false;
+				}
+			}
+
+			// 平坦とみなせる、または深さ上限に達しているなら p3 を採用
+			if (acceptSegment || (depthLimit <= depth))
+			{
+				PushUnique(curve.p3);
+				return;
+			}
+
+			// 追加の早期終了：弦＋制御多角形が極短ならこれ以上分割しない
+			const double p0p1LenSq = (curve.p1 - curve.p0).lengthSq();
+			const double p1p2LenSq = (curve.p2 - curve.p1).lengthSq();
+			const double p2p3LenSq = (curve.p3 - curve.p2).lengthSq();
+
+			if ((chordLenSq <= shortSegmentSq)
+				&& (p0p1LenSq <= shortSegmentSq)
+				&& (p1p2LenSq <= shortSegmentSq)
+				&& (p2p3LenSq <= shortSegmentSq))
+			{
+				PushUnique(curve.p3);
+				return;
+			}
+
+			// 分割（De Casteljau 法で t=0.5 の中点分割）
+			const Vec2 p01 = ((curve.p0 + curve.p1) * 0.5);
+			const Vec2 p12 = ((curve.p1 + curve.p2) * 0.5);
+			const Vec2 p23 = ((curve.p2 + curve.p3) * 0.5);
+			const Vec2 p012 = ((p01 + p12) * 0.5);
+			const Vec2 p123 = ((p12 + p23) * 0.5);
+			const Vec2 p0123 = ((p012 + p123) * 0.5);
+
+			self(self, Bezier3{ curve.p0, p01,  p012,  p0123 }, (depth + 1));
+			self(self, Bezier3{ p0123,    p123, p23,   curve.p3 }, (depth + 1));
+		};
+
+		SubdivideFlatten(SubdivideFlatten, *this, 0);
+		return polyline;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	subcurve
 	//
 	////////////////////////////////////////////////////////////////
@@ -577,6 +715,107 @@ namespace s3d
 		Update1D(p0.x, p1.x, p2.x, p3.x, minX, maxX);
 		Update1D(p0.y, p1.y, p2.y, p3.y, minY, maxY);
 		return{ minX, minY, (maxX - minX), (maxY - minY) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	inflectionTs
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<double> Bezier3::inflectionTs() const
+	{
+		constexpr double Eps = 1e-12;
+
+		Array<double> ts;
+
+		// B'(t) = 3(A t^2 + B t + C)
+		// B''(t)= 6(A t + B)
+		// where
+		// A = -p0 + 3p1 - 3p2 + p3
+		// B =  p0 - 2p1 + p2
+		// C =  p1 - p0
+		//
+		// Inflection (2D): cross(B'(t), B''(t)) = 0
+		// => cross(A,B) t^2 + cross(A,C) t + cross(B,C) = 0
+		const Vec2 A = (-p0 + (p1 * 3.0) - (p2 * 3.0) + p3);
+		const Vec2 B = (p0 - (p1 * 2.0) + p2);
+		const Vec2 C = (p1 - p0);
+
+		const double c2 = A.cross(B);
+		const double c1 = A.cross(C);
+		const double c0 = B.cross(C);
+
+		// Degenerate -> no reliable inflection candidates
+		const double scale = Max({ Abs(c2), Abs(c1), Abs(c0), 1.0 });
+		if (Abs(c2) <= (Eps * scale) && Abs(c1) <= (Eps * scale) && Abs(c0) <= (Eps * scale))
+		{
+			return ts;
+		}
+
+		auto PushIf01 = [&](double t) noexcept
+		{
+			if (InRange(t, 0.0, 1.0))
+			{
+				// avoid near-duplicates
+				for (const double u : ts)
+				{
+					if (Abs(u - t) <= 1e-10)
+					{
+						return;
+					}
+				}
+				ts.push_back(t);
+			}
+		};
+
+		// If quadratic term is tiny -> linear
+		if (Abs(c2) <= (Eps * scale))
+		{
+			if (Abs(c1) <= (Eps * scale))
+			{
+				return ts; // constant != 0 => no roots; constant ~ 0 handled above
+			}
+
+			const double t = (-c0 / c1);
+			PushIf01(t);
+			return ts;
+		}
+
+		// Quadratic roots
+		const double disc = (c1 * c1 - 4.0 * c2 * c0);
+		if (disc < 0.0)
+		{
+			return ts;
+		}
+
+		const double s = std::sqrt(disc);
+
+		// Stable quadratic formula
+		const double q = (-0.5) * (c1 + (c1 >= 0.0 ? s : -s));
+
+		if (q == 0.0)
+		{
+			const double t = (-c1 / (2.0 * c2));
+			PushIf01(t);
+			return ts;
+		}
+
+		const double t0 = (q / c2);
+		const double t1 = (c0 / q);
+
+		PushIf01(t0);
+		PushIf01(t1);
+
+		if (ts.size() == 2)
+		{
+			if (ts[1] < ts[0])
+			{
+				std::swap(ts[0], ts[1]);
+			}
+		}
+
+		return ts;
 	}
 
 	////////////////////////////////////////////////////////////////
