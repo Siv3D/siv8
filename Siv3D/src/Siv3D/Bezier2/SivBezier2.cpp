@@ -528,46 +528,58 @@ namespace s3d
 
 	RectF Bezier2::boundingRect() const noexcept
 	{
+		// 許容誤差の設定
 		constexpr double Eps = (64.0 * std::numeric_limits<double>::epsilon());
+		constexpr double tTol = (16.0 * Eps);
 
 		auto Update1D = [](double p0, double p1, double p2, double& mn, double& mx) noexcept
 		{
-			const double a = (p0 - 2.0 * p1 + p2);
-			const double b = (2.0 * (p1 - p0));
-			const double c = p0;
+			// 多項式 P(t) = A t^2 + B t + C
+			const double A = (p0 - 2.0 * p1 + p2);
+			const double B = (2.0 * (p1 - p0));
+			const double C = p0;
 
+			// まず端点で初期化
 			mn = Min(p0, p2);
 			mx = Max(p0, p2);
 
-			// 係数が極小のときに「ほぼ線形」とみなすためのスケール
+			// 評価関数: P(t) の計算 (Horner's method with FMA)
+			auto Eval = [&](double t) noexcept
+			{
+				return std::fma(std::fma(A, t, B), t, C);
+			};
+
+			// 候補 t の採用判定
+			auto ConsiderT = [&](double t) noexcept
+			{
+				// 境界判定を少し緩め、採用する場合は [0,1] に clamp
+				if (InRange(t, -tTol, (1.0 + tTol)))
+				{
+					t = Clamp(t, 0.0, 1.0);
+					const double v = Eval(t);
+					mn = Min(mn, v);
+					mx = Max(mx, v);
+				}
+			};
+
+			// 係数のスケール（微小値判定用）
 			const double scale = Max({ Abs(p0), Abs(p1), Abs(p2), 1.0 });
 
-			if (Abs(a) <= (Eps * scale))
+			// 導関数 P'(t) = 2A t + B = 0 を解く
+			// A が極小の場合は線形とみなす（極値なし、端点のみ）
+			if (Abs(A) <= (Eps * scale))
 			{
-				return; // ほぼ線形: 端点だけで十分
+				return;
 			}
 
-			double t = (-b / (2.0 * a));
-
-			// t の境界判定を少し緩め、採用する場合は [0,1] に clamp
-			constexpr double tTol = (16.0 * Eps);
-			
-			if (InRange(t, -tTol, (1.0 + tTol)))
-			{
-				t = Clamp(t, 0.0, 1.0);
-
-				// k = a t^2 + b t + c
-				const double k = std::fma(std::fma(a, t, b), t, c);
-
-				mn = Min(mn, k);
-				mx = Max(mx, k);
-			}
+			// t = -B / 2A
+			ConsiderT(-B / (2.0 * A));
 		};
 
 		double minX, maxX, minY, maxY;
 		Update1D(p0.x, p1.x, p2.x, minX, maxX);
 		Update1D(p0.y, p1.y, p2.y, minY, maxY);
-		return { minX, minY, (maxX - minX), (maxY - minY) };
+		return{ minX, minY, (maxX - minX), (maxY - minY) };
 	}
 
 	////////////////////////////////////////////////////////////////

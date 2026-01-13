@@ -488,6 +488,99 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	boundingRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	RectF Bezier3::boundingRect() const noexcept
+	{
+		constexpr double Eps = (64.0 * std::numeric_limits<double>::epsilon());
+		constexpr double tTol = (16.0 * Eps);
+
+		auto Update1D = [](double p0, double p1, double p2, double p3, double& mn, double& mx) noexcept
+		{
+			// 多項式 P(t) = A t^3 + B t^2 + C t + D
+			const double A = (-p0 + 3.0 * p1 - 3.0 * p2 + p3);
+			const double B = (3.0 * p0 - 6.0 * p1 + 3.0 * p2);
+			const double C = (-3.0 * p0 + 3.0 * p1);
+			const double D = p0;
+
+			// まず端点で初期化
+			mn = Min(p0, p3);
+			mx = Max(p0, p3);
+
+			// 評価関数: P(t) の計算
+			auto Eval = [&](double t) noexcept
+			{
+				return std::fma(std::fma(std::fma(A, t, B), t, C), t, D);
+			};
+
+			// 候補 t の採用判定
+			auto ConsiderT = [&](double t) noexcept
+			{
+				if (InRange(t, -tTol, (1.0 + tTol)))
+				{
+					t = Clamp(t, 0.0, 1.0);
+					const double v = Eval(t);
+					mn = Min(mn, v);
+					mx = Max(mx, v);
+				}
+			};
+
+			// 係数のスケール
+			const double scale = Max({ Abs(p0), Abs(p1), Abs(p2), Abs(p3), 1.0 });
+
+			// 導関数 P'(t) = 3A t^2 + 2B t + C = 0 を解く
+			const double qa = (3.0 * A);
+			const double qb = (2.0 * B);
+			const double qc = C;
+
+			// qa が極小なら、P'(t) は一次以下
+			if (Abs(qa) <= (Eps * scale))
+			{
+				// qb も極小なら P'(t) は定数 → 極値なし
+				if (Abs(qb) <= (Eps * scale))
+				{
+					return;
+				}
+
+				// 一次方程式 2B t + C = 0 を解く
+				ConsiderT(-qc / qb);
+				return;
+			}
+
+			// 二次方程式 qa t^2 + qb t + qc = 0 を解く
+			const double disc = std::fma(qb, qb, -4.0 * qa * qc);
+			if (disc < 0.0)
+			{
+				return; // 実根なし
+			}
+
+			const double s = std::sqrt(disc);
+			// 桁落ちを防ぐための符号選択
+			const double q = (-0.5) * (qb + (qb >= 0.0 ? s : -s));
+
+			if (q == 0.0) // qb=0 かつ s=0 のケース等
+			{
+				ConsiderT(-qb / (2.0 * qa));
+				return;
+			}
+
+			const double t0 = (q / qa);
+			const double t1 = (qc / q);
+
+			ConsiderT(t0);
+			ConsiderT(t1);
+		};
+
+		double minX, maxX, minY, maxY;
+		Update1D(p0.x, p1.x, p2.x, p3.x, minX, maxX);
+		Update1D(p0.y, p1.y, p2.y, p3.y, minY, maxY);
+		return{ minX, minY, (maxX - minX), (maxY - minY) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
