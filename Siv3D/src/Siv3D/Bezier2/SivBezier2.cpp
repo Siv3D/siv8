@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Bezier.hpp>
+# include <Siv3D/ListUtility.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
@@ -487,7 +488,7 @@ namespace s3d
 			mx = Max(p0, p2);
 
 			// 係数が極小のときに「ほぼ線形」とみなすためのスケール
-			const double scale = std::max({ Abs(p0), Abs(p1), Abs(p2), 1.0 });
+			const double scale = Max({ Abs(p0), Abs(p1), Abs(p2), 1.0 });
 
 			if (Abs(a) <= (Eps * scale))
 			{

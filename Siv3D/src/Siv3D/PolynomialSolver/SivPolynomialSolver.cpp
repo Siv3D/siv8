@@ -136,7 +136,7 @@ namespace s3d
 
 				if (-Epsilon <= -p)
 				{
-					const double r = std::sqrt(std::max(0.0, -p));
+					const double r = std::sqrt(Max(0.0, -p));
 					result.push_back(-r);
 					result.push_back(r);
 				}
@@ -180,7 +180,7 @@ namespace s3d
 			// cos(phi) = -q/2 / sqrt(-(p/3)^3)
 			const double denom = std::sqrt(-(p3 * p3 * p3));
 			double cosphi = ((-q2) / denom);
-			cosphi = std::max(-1.0, std::min(1.0, cosphi));
+			cosphi = Max(-1.0, Min(1.0, cosphi));
 			const double phi = std::acos(cosphi);
 
 			result.push_back(r * std::cos(phi / 3.0));

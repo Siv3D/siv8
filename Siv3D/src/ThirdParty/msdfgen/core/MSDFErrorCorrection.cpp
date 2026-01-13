@@ -39,7 +39,7 @@ public:
         return 0;
     }
     /// Returns true if the combined results of the tests performed on the median value m interpolated at t indicate an artifact.
-    inline bool evaluate(double t, float m, int flags) const {
+    inline bool evaluate([[maybe_unused]] double t, [[maybe_unused]] float m, int flags) const {
         return (flags&2) != 0;
     }
 private:
@@ -55,7 +55,7 @@ public:
     public:
         inline ArtifactClassifier(ShapeDistanceChecker *parent, const Vector2 &direction, double span) : BaseArtifactClassifier(span, parent->protectedFlag), parent(parent), direction(direction) { }
         /// Returns true if the combined results of the tests performed on the median value m interpolated at t indicate an artifact.
-        inline bool evaluate(double t, float m, int flags) const {
+        inline bool evaluate(double t, [[maybe_unused]] float m, int flags) const {
             if (flags&CLASSIFIER_FLAG_CANDIDATE) {
                 // Skip expensive distance evaluation if the point has already been classified as an artifact by the base classifier.
                 if (flags&CLASSIFIER_FLAG_ARTIFACT)

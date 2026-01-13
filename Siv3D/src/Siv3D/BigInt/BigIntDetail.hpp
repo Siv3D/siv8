@@ -10,7 +10,9 @@
 //-----------------------------------------------
 
 # pragma once
+SIV3D_DISABLE_MSVC_WARNINGS_PUSH(5311)
 # include <boost/multiprecision/cpp_int.hpp>
+SIV3D_DISABLE_MSVC_WARNINGS_POP()
 # include <Siv3D/BigInt.hpp>
 
 namespace s3d
