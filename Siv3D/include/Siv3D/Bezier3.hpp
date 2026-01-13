@@ -650,11 +650,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief p0/p3 と端点接線（速度ベクトル）から曲線を作成します（Hermite → Bezier）。
+		/// @brief 始点・終点の位置と速度（接線）から曲線を作成します（Hermite → Bezier）。
 		/// @param p0 開始点
-		/// @param v0 開始点の接線（速度）ベクトル
+		/// @param v0 開始点の速度ベクトル
 		/// @param p3 終了点
-		/// @param v3 終了点の接線（速度）ベクトル
+		/// @param v3 終了点の速度ベクトル
 		[[nodiscard]]
 		static constexpr Bezier3 FromHermite(const position_type& p0, const Vec2& v0, const position_type& p3, const Vec2& v3) noexcept;
 
@@ -664,14 +664,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Catmull-Rom の 1 セグメントを三次ベジェ曲線に変換します（スプライン経路生成向け）。
-		/// @param pPrev 前の点
-		/// @param p0 セグメント開始点
-		/// @param p3 セグメント終了点
-		/// @param pNext 次の点
-		/// @param tension テンション（0.0: 標準 Catmull-Rom 相当）
+		/// @brief Catmull-Rom スプラインの 1 区間を計算し、ベジェ曲線に変換します。
+		/// @param pPrev 前の制御点（カーブの進入角度に影響します）
+		/// @param p0 セグメント開始点（実際の描画開始位置）
+		/// @param p3 セグメント終了点（実際の描画終了位置）
+		/// @param pNext 次の制御点（カーブの脱出角度に影響します）
+		/// @param tension テンション（0.0: 標準。1.0 に近づくほど直線的になり、負の値だと緩く膨らみます）
 		[[nodiscard]]
-		static Bezier3 FromCatmullRom(const position_type& pPrev, const position_type& p0, const position_type& p3, const position_type& pNext, double tension = 0.0) noexcept;
+		static constexpr Bezier3 FromCatmullRom(const position_type& pPrev, const position_type& p0, const position_type& p3, const position_type& pNext, double tension = 0.0) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

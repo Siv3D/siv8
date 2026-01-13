@@ -373,4 +373,29 @@ namespace s3d
 	{
 		return BitwiseHash(*this);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromHermite
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier3 Bezier3::FromHermite(const position_type& p0, const Vec2& v0, const position_type& p3, const Vec2& v3) noexcept
+	{
+		return{ p0, (p0 + v0 / 3.0), (p3 - v3 / 3.0), p3 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromCatmullRom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier3 Bezier3::FromCatmullRom(const position_type& pPrev, const position_type& p0, const position_type& p3, const position_type& pNext, const double tension) noexcept
+	{
+		const double s = ((1.0 - tension) * 0.5);
+		const Vec2 v0 = ((p3 - pPrev) * s);
+		const Vec2 v3 = ((pNext - p0) * s);
+		return FromHermite(p0, v0, p3, v3);
+	}
 }
