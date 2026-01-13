@@ -59,6 +59,59 @@ namespace s3d
 		return Vec2{ d.y, -d.x }.normalized();
 	}
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getHeading
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Bezier2::getHeading(const double t) const noexcept
+	{
+		return getDerivative(t).getAngle();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCurvature
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Bezier2::getCurvature(const double t) const noexcept
+	{
+		const Vec2 d1 = getDerivative(t);        // B'(t)
+		const Vec2 d2 = getSecondDerivative();   // B''(t)（定数）
+
+		const double speed2 = d1.lengthSq();
+
+		if (speed2 == 0.0)
+		{
+			return 0.0;
+		}
+
+		const double cross = d1.cross(d2);
+		const double denom = (speed2 * std::sqrt(speed2));
+		return (cross / denom);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCurvatureRadius
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Bezier2::getCurvatureRadius(const double t) const noexcept
+	{
+		const double curvature = getCurvature(t);
+		
+		if (curvature == 0.0)
+		{
+			return Math::Inf;
+		}
+		
+		return (1.0 / Abs(curvature));
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	computeLength

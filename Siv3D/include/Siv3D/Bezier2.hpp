@@ -18,7 +18,7 @@ namespace s3d
 {
 	/// @brief 二次ベジェ曲線
 	/// 3 点（開始点 p0、制御点 p1、終了点 p2）で定義される二次ベジェ曲線です。
-	/// パラメータ t（0.0～1.0）に対して曲線上の座標・導関数（接線/法線）・長さ・分割などを提供します。
+	/// パラメータ t（0.0～1.0）に対して曲線上の座標・導関数（接線 / 法線）・長さ・分割などを提供します。
 	struct Bezier2
 	{
 		/// @brief 座標型
@@ -228,6 +228,51 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	getHeading
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲線上の進行方向（接線方向）の角度を返します。
+		/// @param t パラメータ（0.0 ～ 1.0）
+		/// @return 角度（ラジアン）
+		[[nodiscard]]
+		double getHeading(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getCurvature
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲線の曲率 κ(t)（どれだけ曲がっているか）を返します（符号付き）。
+		/// @param t パラメータ（0.0 ～ 1.0）
+		/// @return 曲率 κ（単位: 1 / 長さ）
+		/// @remark
+		/// - 曲率は「半径 R の円」と同じ曲がり具合なら `κ = 1 / R` になります。
+		/// - 値が大きいほど急カーブ、小さいほど直線に近いことを意味します。
+		/// - 符号は 2D の回転方向を表し、Siv3D では
+		///   - 負: 左回り（反時計回り）に曲がる
+		///   - 正: 右回り（時計回り）に曲がる
+		///   - 0: 直線
+		///   を意味します。
+		/// - ゲーム用途では「カーブがきついほど速度を落とす」「操舵量を決める」などに使えます
+		[[nodiscard]]
+		double getCurvature(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getCurvatureRadius
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲率半径 ρ(t)（その場で接する円の半径）を返します。
+		/// @param t パラメータ（0.0 ～ 1.0）
+		/// @return 曲率半径 ρ（単位: 長さ）
+		[[nodiscard]]
+		double getCurvatureRadius(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	computeLength
 		//
 		////////////////////////////////////////////////////////////////
@@ -295,7 +340,7 @@ namespace s3d
 		/// @param segments 分割数（最低 1）
 		/// @return LineString
 		[[nodiscard]]
-		LineString getLineString(const int32 segments = 24) const;
+		LineString getLineString(int32 segments = 24) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -403,17 +448,17 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief p0 から p1 への線分を返します。
-		/// @return p0 から p1 への線分
+		/// @return Line{ p0, p1 }
 		[[nodiscard]]
 		constexpr Line p0p1() const noexcept;
 
 		/// @brief p1 から p2 への線分を返します。
-		/// @return p1 から p2 への線分
+		/// @return Line{ p1, p2 }
 		[[nodiscard]]
 		constexpr Line p1p2() const noexcept;
 
 		/// @brief p0 から p2 への線分を返します。
-		/// @return p0 から p2 への線分
+		/// @return Line{ p0, p2 }
 		[[nodiscard]]
 		constexpr Line p0p2() const noexcept;
 
@@ -424,17 +469,17 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief p1 から p0 への線分を返します。
-		/// @return p1 から p0 への線分
+		/// @return Line{ p1, p0 }
 		[[nodiscard]]
 		constexpr Line p1p0() const noexcept;
 
 		/// @brief p2 から p1 への線分を返します。
-		/// @return p2 から p1 への線分
+		/// @return Line{ p2, p1 }
 		[[nodiscard]]
 		constexpr Line p2p1() const noexcept;
 
 		/// @brief p2 から p0 への線分を返します。
-		/// @return p2 から p0 への線分
+		/// @return Line{ p2, p0 }
 		[[nodiscard]]
 		constexpr Line p2p0() const noexcept;
 
