@@ -206,6 +206,49 @@ namespace s3d
 			+ (t * t * t) * p3);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getDerivative
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier3::position_type Bezier3::getDerivative(const double t) const noexcept
+	{
+		const double u = (1.0 - t);
+		const position_type a = (p1 - p0);
+		const position_type b = (p2 - p1);
+		const position_type c = (p3 - p2);
+		return (3.0 * (u * u) * a
+			+ 6.0 * (u * t) * b
+			+ 3.0 * (t * t) * c);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getSecondDerivative
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier3::position_type Bezier3::getSecondDerivative(const double t) const noexcept
+	{
+		const double u = (1.0 - t);
+		const position_type a = (p2 - (p1 * 2.0) + p0);
+		const position_type b = (p3 - (p2 * 2.0) + p1);
+		return (6.0 * u * a + 6.0 * t * b);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getThirdDerivative
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier3::position_type Bezier3::getThirdDerivative() const noexcept
+	{
+		return ((p3 - (p2 * 3.0) + (p1 * 3.0) - p0) * 6.0);
+	}
+
+
 
 
 

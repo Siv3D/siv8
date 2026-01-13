@@ -59,7 +59,6 @@ namespace s3d
 		return Vec2{ d.y, -d.x }.normalized();
 	}
 
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	getHeading
