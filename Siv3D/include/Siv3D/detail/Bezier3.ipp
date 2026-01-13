@@ -104,7 +104,7 @@ namespace s3d
 	{
 		return{ p0.withOffset(v), p1.withOffset(v), p2.withOffset(v), p3.withOffset(v) };
 	}
-	
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	withOffsetX, withOffsetY
@@ -119,6 +119,46 @@ namespace s3d
 	constexpr Bezier3 Bezier3::withOffsetY(const value_type y) const noexcept
 	{
 		return{ p0.withOffsetY(y), p1.withOffsetY(y), p2.withOffsetY(y), p3.withOffsetY(y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	movedBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier3 Bezier3::movedBy(const value_type x, const value_type y) const noexcept
+	{
+		return{ p0.movedBy(x, y), p1.movedBy(x, y), p2.movedBy(x, y), p3.movedBy(x, y) };
+	}
+
+	constexpr Bezier3 Bezier3::movedBy(const position_type v) const noexcept
+	{
+		return{ p0.movedBy(v), p1.movedBy(v), p2.movedBy(v), p3.movedBy(v) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	moveBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier3& Bezier3::moveBy(const value_type x, const value_type y) noexcept
+	{
+		p0.moveBy(x, y);
+		p1.moveBy(x, y);
+		p2.moveBy(x, y);
+		p3.moveBy(x, y);
+		return *this;
+	}
+
+	constexpr Bezier3& Bezier3::moveBy(const position_type v) noexcept
+	{
+		p0.moveBy(v);
+		p1.moveBy(v);
+		p2.moveBy(v);
+		p3.moveBy(v);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -164,5 +204,95 @@ namespace s3d
 			+ (3.0 * u * u * t) * p1
 			+ (3.0 * u * t * t) * p2
 			+ (t * t * t) * p3);
+	}
+
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	controlPointsBoundingRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF Bezier3::controlPointsBoundingRect() const noexcept
+	{
+		const auto x = MinMax({ p0.x, p1.x, p2.x, p3.x });
+		const auto y = MinMax({ p0.y, p1.y, p2.y, p3.y });
+		return{ x.min, y.min, (x.max - x.min), (y.max - y.min) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	p0p1, p1p2, p2p3, p0p3
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Bezier3::p0p1() const noexcept
+	{
+		return{ p0, p1 };
+	}
+
+	constexpr Line Bezier3::p1p2() const noexcept
+	{
+		return{ p1, p2 };
+	}
+
+	constexpr Line Bezier3::p2p3() const noexcept
+	{
+		return{ p2, p3 };
+	}
+
+	constexpr Line Bezier3::p0p3() const noexcept
+	{
+		return{ p0, p3 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	p1p0, p2p1, p3p2, p3p0
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Bezier3::p1p0() const noexcept
+	{
+		return{ p1, p0 };
+	}
+
+	constexpr Line Bezier3::p2p1() const noexcept
+	{
+		return{ p2, p1 };
+	}
+
+	constexpr Line Bezier3::p3p2() const noexcept
+	{
+		return{ p3, p2 };
+	}
+
+	constexpr Line Bezier3::p3p0() const noexcept
+	{
+		return{ p3, p0 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	lerp
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier3 Bezier3::lerp(const Bezier3& other, const double f) const noexcept
+	{
+		return{ p0.lerp(other.p0, f), p1.lerp(other.p1, f), p2.lerp(other.p2, f), p3.lerp(other.p3, f) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hash
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline uint64 Bezier3::hash() const noexcept
+	{
+		return BitwiseHash(*this);
 	}
 }

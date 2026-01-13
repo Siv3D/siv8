@@ -150,6 +150,42 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	movedBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 平行移動した新しい曲線を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 移動後の二次ベジェ曲線
+		[[nodiscard]]
+		constexpr Bezier2 movedBy(value_type x, value_type y) const noexcept;
+
+		/// @brief 平行移動した新しい曲線を返します。
+		/// @param v 移動量
+		/// @return 移動後の二次ベジェ曲線
+		[[nodiscard]]
+		constexpr Bezier2 movedBy(position_type v) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	moveBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲線を平行移動します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return *this
+		constexpr Bezier2& moveBy(value_type x, value_type y) noexcept;
+
+		/// @brief 曲線を平行移動します。
+		/// @param v 移動量
+		/// @return *this
+		constexpr Bezier2& moveBy(position_type v) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	pointAtIndex
 		//
 		////////////////////////////////////////////////////////////////
@@ -379,42 +415,6 @@ namespace s3d
 		/// @return 部分曲線（t1 < t0 の場合は反転して返されます）
 		[[nodiscard]]
 		Bezier2 subcurve(double t0, double t1) const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	movedBy
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 平行移動した新しい曲線を返します。
-		/// @param x X 方向の移動量
-		/// @param y Y 方向の移動量
-		/// @return 移動後の二次ベジェ曲線
-		[[nodiscard]]
-		constexpr Bezier2 movedBy(value_type x, value_type y) const noexcept;
-
-		/// @brief 平行移動した新しい曲線を返します。
-		/// @param v 移動量
-		/// @return 移動後の二次ベジェ曲線
-		[[nodiscard]]
-		constexpr Bezier2 movedBy(position_type v) const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	moveBy
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 曲線を平行移動します。
-		/// @param x X 方向の移動量
-		/// @param y Y 方向の移動量
-		/// @return *this
-		constexpr Bezier2& moveBy(value_type x, value_type y) noexcept;
-
-		/// @brief 曲線を平行移動します。
-		/// @param v 移動量
-		/// @return *this
-		constexpr Bezier2& moveBy(position_type v) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

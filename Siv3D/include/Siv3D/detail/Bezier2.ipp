@@ -106,6 +106,44 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	movedBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier2 Bezier2::movedBy(const value_type x, const value_type y) const noexcept
+	{
+		return{ p0.movedBy(x, y), p1.movedBy(x, y), p2.movedBy(x, y) };
+	}
+
+	constexpr Bezier2 Bezier2::movedBy(const position_type v) const noexcept
+	{
+		return{ p0.movedBy(v), p1.movedBy(v), p2.movedBy(v) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	moveBy
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier2& Bezier2::moveBy(const value_type x, const value_type y) noexcept
+	{
+		p0.moveBy(x, y);
+		p1.moveBy(x, y);
+		p2.moveBy(x, y);
+		return *this;
+	}
+
+	constexpr Bezier2& Bezier2::moveBy(const position_type v) noexcept
+	{
+		p0.moveBy(v);
+		p1.moveBy(v);
+		p2.moveBy(v);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	pointAtIndex
 	//
 	////////////////////////////////////////////////////////////////
@@ -179,44 +217,6 @@ namespace s3d
 		const Vec2 p12 = Math::Lerp(p1, p2, t);
 		const Vec2 p012 = Math::Lerp(p01, p12, t);
 		return{ Bezier2{ p0, p01, p012 }, Bezier2{ p012, p12, p2 } };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	movedBy
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr Bezier2 Bezier2::movedBy(const value_type x, const value_type y) const noexcept
-	{
-		return{ p0.movedBy(x, y), p1.movedBy(x, y), p2.movedBy(x, y) };
-	}
-
-	constexpr Bezier2 Bezier2::movedBy(const position_type v) const noexcept
-	{
-		return{ p0.movedBy(v), p1.movedBy(v), p2.movedBy(v) };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	moveBy
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr Bezier2& Bezier2::moveBy(const value_type x, const value_type y) noexcept
-	{
-		p0.moveBy(x, y);
-		p1.moveBy(x, y);
-		p2.moveBy(x, y);
-		return *this;
-	}
-
-	constexpr Bezier2& Bezier2::moveBy(const position_type v) noexcept
-	{
-		p0.moveBy(v);
-		p1.moveBy(v);
-		p2.moveBy(v);
-		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
