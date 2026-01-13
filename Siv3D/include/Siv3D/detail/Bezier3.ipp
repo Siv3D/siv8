@@ -248,9 +248,44 @@ namespace s3d
 		return ((p3 - (p2 * 3.0) + (p1 * 3.0) - p0) * 6.0);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	split
+	//
+	////////////////////////////////////////////////////////////////
 
+	constexpr std::pair<Bezier3, Bezier3> Bezier3::split(const double t) const noexcept
+	{
+		const Vec2 p01 = Math::Lerp(p0, p1, t);
+		const Vec2 p12 = Math::Lerp(p1, p2, t);
+		const Vec2 p23 = Math::Lerp(p2, p3, t);
 
+		const Vec2 p012 = Math::Lerp(p01, p12, t);
+		const Vec2 p123 = Math::Lerp(p12, p23, t);
 
+		const Vec2 p0123 = Math::Lerp(p012, p123, t);
+
+		return{ Bezier3{ p0, p01,  p012,  p0123 },
+				Bezier3{ p0123, p123, p23,  p3    } };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse, reversed
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Bezier3& Bezier3::reverse() noexcept
+	{
+		std::swap(p0, p3);
+		std::swap(p1, p2);
+		return *this;
+	}
+
+	constexpr Bezier3 Bezier3::reversed() const noexcept
+	{
+		return{ p3, p2, p1, p0 };
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

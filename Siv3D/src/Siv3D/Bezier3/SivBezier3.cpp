@@ -56,6 +56,47 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	getCurvature
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Bezier3::getCurvature(const double t) const noexcept
+	{
+		const Vec2 d1 = getDerivative(t);          // B'(t)
+		const Vec2 d2 = getSecondDerivative(t);    // B''(t)
+
+		const double speed2 = d1.lengthSq();
+
+		if (speed2 == 0.0)
+		{
+			return 0.0;
+		}
+
+		const double cross = d1.cross(d2);
+		const double denom = (speed2 * std::sqrt(speed2));
+		return (cross / denom);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getCurvatureRadius
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Bezier3::getCurvatureRadius(const double t) const noexcept
+	{
+		const double curvature = getCurvature(t);
+
+		if (curvature == 0.0)
+		{
+			return Math::Inf;
+		}
+
+		return (1.0 / Abs(curvature));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	getHeading
 	//
 	////////////////////////////////////////////////////////////////
@@ -405,7 +446,7 @@ namespace s3d
 			}
 
 			// 終点
-			*pDst = p2;
+			*pDst = p3;
 		}
 
 		return pts;
@@ -413,43 +454,36 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getCurvature
+	//	subcurve
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Bezier3::getCurvature(const double t) const noexcept
+	Bezier3 Bezier3::subcurve(double t0, double t1) const noexcept
 	{
-		const Vec2 d1 = getDerivative(t);          // B'(t)
-		const Vec2 d2 = getSecondDerivative(t);    // B''(t)
+		t0 = Clamp(t0, 0.0, 1.0);
+		t1 = Clamp(t1, 0.0, 1.0);
 
-		const double speed2 = d1.lengthSq();
-
-		if (speed2 == 0.0)
+		if ((t0 == 0.0) && (t1 == 1.0))
 		{
-			return 0.0;
+			return *this;
 		}
 
-		const double cross = d1.cross(d2);
-		const double denom = (speed2 * std::sqrt(speed2));
-		return (cross / denom);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getCurvatureRadius
-	//
-	////////////////////////////////////////////////////////////////
-
-	double Bezier3::getCurvatureRadius(const double t) const noexcept
-	{
-		const double curvature = getCurvature(t);
-
-		if (curvature == 0.0)
+		if (t0 == t1)
 		{
-			return Math::Inf;
+			const Vec2 p = getPos(t0);
+			return{ p, p, p, p };
 		}
 
-		return (1.0 / Abs(curvature));
+		if (t1 < t0)
+		{
+			return subcurve(t1, t0).reversed();
+		}
+
+		// まず t1 で split して左側 [0, t1] を取る
+		const auto [left, _unused1] = split(t1);
+
+		// 次に left を (t0/t1) で split して右側 [t0, t1] を取る
+		return left.split(t0 / t1).second;
 	}
 
 	////////////////////////////////////////////////////////////////
