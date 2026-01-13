@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "LineString.hpp"
+# include "ListUtility.hpp"
 
 namespace s3d
 {
@@ -429,6 +430,17 @@ namespace s3d
 		/// @return 反転後の二次ベジェ曲線
 		[[nodiscard]]
 		constexpr Bezier2 reversed() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	controlPointsBoundingRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 制御点を包含する軸平行矩形（AABB）を返します。
+		/// @return バウンディングボックス
+		[[nodiscard]]
+		constexpr RectF controlPointsBoundingRect() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
