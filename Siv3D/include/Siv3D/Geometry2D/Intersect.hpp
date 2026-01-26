@@ -175,8 +175,8 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Line& a, const RoundRect& b) noexcept;
 
-		//[[nodiscard]]
-		//bool Intersect(const Line& a, const SuperEllipse& b) noexcept;
+		[[nodiscard]]
+		bool Intersect(const Line& a, const SuperEllipse& b) noexcept;
 
 		[[nodiscard]]
 		bool Intersect(const Line& a, const Polygon& b) noexcept;
@@ -187,11 +187,11 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Line& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Bezier2, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		bool Intersect(const Bezier2& a, const Point& b);
@@ -241,11 +241,11 @@ namespace s3d
 		////[[nodiscard]]
 		////bool Intersect(const Bezier2& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Bezier3, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		bool Intersect(const Bezier3& a, const Point& b);
@@ -295,11 +295,11 @@ namespace s3d
 		////[[nodiscard]]
 		////bool Intersect(const Bezier3& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Rect, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		constexpr bool Intersect(const Rect& a, const Point& b) noexcept;
@@ -337,6 +337,9 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Rect& a, const RoundRect& b) noexcept;
 
+		//[[nodiscard]]
+		//bool Intersect(const Rect& a, const SuperEllipse& b) noexcept;
+
 		[[nodiscard]]
 		bool Intersect(const Rect& a, const Polygon& b) noexcept;
 
@@ -346,11 +349,11 @@ namespace s3d
 		//[[nodiscard]]
 		//inline bool Intersect(const Rect& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(RectF, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		constexpr bool Intersect(const RectF& a, const Point& b) noexcept;
@@ -388,6 +391,9 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const RectF& a, const RoundRect& b) noexcept;
 
+		//[[nodiscard]]
+		//bool Intersect(const RectF& a, const SuperEllipse& b) noexcept;
+
 		[[nodiscard]]
 		bool Intersect(const RectF& a, const Polygon& b) noexcept;
 
@@ -397,11 +403,11 @@ namespace s3d
 		//[[nodiscard]]
 		//bool Intersect(const RectF& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Circle, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		constexpr bool Intersect(const Circle& a, const Point& b) noexcept;
@@ -439,6 +445,9 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Circle& a, const RoundRect& b) noexcept;
 
+		//[[nodiscard]]
+		//bool Intersect(const Circle& a, const SuperEllipse& b) noexcept;
+
 		[[nodiscard]]
 		bool Intersect(const Circle& a, const Polygon& b) noexcept;
 
@@ -448,11 +457,11 @@ namespace s3d
 		//[[nodiscard]]
 		//bool Intersect(const Circle& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Ellipse, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		constexpr bool Intersect(const Ellipse& a, const Point& b) noexcept;
@@ -490,6 +499,9 @@ namespace s3d
 		//[[nodiscard]]
 		//bool Intersect(const Ellipse& a, const RoundRect& b);
 
+		//[[nodiscard]]
+		//bool Intersect(const Ellipse& a, const SuperEllipse& b) noexcept;
+
 		[[nodiscard]]
 		bool Intersect(const Ellipse& a, const Polygon& b) noexcept;
 
@@ -499,11 +511,11 @@ namespace s3d
 		//[[nodiscard]]
 		//bool Intersect(const Ellipse& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Triangle, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		constexpr bool Intersect(const Triangle& a, const Point& b) noexcept;
@@ -541,6 +553,9 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Triangle& a, const RoundRect& b) noexcept;
 
+		//[[nodiscard]]
+		//bool Intersect(const Triangle& a, const SuperEllipse& b) noexcept;
+
 		[[nodiscard]]
 		bool Intersect(const Triangle& a, const Polygon& b) noexcept;
 
@@ -550,11 +565,11 @@ namespace s3d
 		//[[nodiscard]]
 		//bool Intersect(const Triangle& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Quad, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		constexpr bool Intersect(const Quad& a, const Point& b) noexcept;
@@ -592,6 +607,9 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Quad& a, const RoundRect& b) noexcept;
 
+		//[[nodiscard]]
+		//bool Intersect(const Quad& a, const SuperEllipse& b) noexcept;
+
 		[[nodiscard]]
 		bool Intersect(const Quad& a, const Polygon& b) noexcept;
 
@@ -601,11 +619,11 @@ namespace s3d
 		//[[nodiscard]]
 		//bool Intersect(const Quad& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(RoundRect, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		bool Intersect(const RoundRect& a, const Point& b) noexcept;
@@ -643,6 +661,9 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const RoundRect& a, const RoundRect& b) noexcept;
 
+		//[[nodiscard]]
+		//bool Intersect(const RoundRect& a, const SuperEllipse& b) noexcept;
+
 		[[nodiscard]]
 		bool Intersect(const RoundRect& a, const Polygon& b) noexcept;
 
@@ -652,11 +673,17 @@ namespace s3d
 		//[[nodiscard]]
 		//bool Intersect(const RoundRect& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersect(SuperEllipse, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Polygon, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		bool Intersect(const Polygon& a, const Point& b) noexcept;
@@ -694,6 +721,9 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Polygon& a, const RoundRect& b) noexcept;
 
+		//[[nodiscard]]
+		//bool Intersect(const Polygon& a, const SuperEllipse& b) noexcept;
+
 		[[nodiscard]]
 		bool Intersect(const Polygon& a, const Polygon& b) noexcept;
 
@@ -703,11 +733,11 @@ namespace s3d
 		//[[nodiscard]]
 		//bool Intersect(const Polygon& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(MultiPolygon, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//inline bool Intersect(const MultiPolygon& a, const Point& b) noexcept;
@@ -746,6 +776,9 @@ namespace s3d
 		//inline bool Intersect(const MultiPolygon& a, const RoundRect& b) noexcept;
 
 		//[[nodiscard]]
+		//bool Intersect(const MultiPolygon& a, const SuperEllipse& b) noexcept;
+
+		//[[nodiscard]]
 		//inline bool Intersect(const MultiPolygon& a, const Polygon& b) noexcept;
 
 		//[[nodiscard]]
@@ -754,11 +787,11 @@ namespace s3d
 		//[[nodiscard]]
 		//bool Intersect(const MultiPolygon& a, const LineString& b) noexcept;
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(LineString, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
 		//inline bool Intersect(const LineString& a, const Point& b) noexcept;
@@ -795,6 +828,9 @@ namespace s3d
 
 		//[[nodiscard]]
 		//inline bool Intersect(const LineString& a, const RoundRect& b) noexcept;
+
+		//[[nodiscard]]
+		//bool Intersect(const LineString& a, const SuperEllipse& b) noexcept;
 
 		//[[nodiscard]]
 		//inline bool Intersect(const LineString& a, const Polygon& b) noexcept;

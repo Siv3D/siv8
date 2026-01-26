@@ -564,22 +564,22 @@ namespace s3d
 			const Vec2 ab = (a.end - a.start);
 			const Vec2 ac = (b.center - a.start);
 			const double e = ac.dot(ab);
-			const double rr = b.r * b.r;
+			const double rr = (b.r * b.r);
 
 			if (e <= 0.0)
 			{
-				return ac.dot(ac) <= rr;
+				return (ac.dot(ac) <= rr);
 			}
 
 			const double f = ab.dot(ab);
 
-			if (e >= f)
+			if (f <= e)
 			{
-				const Vec2 bc = b.center - a.end;
-				return bc.dot(bc) <= rr;
+				const Vec2 bc = (b.center - a.end);
+				return (bc.dot(bc) <= rr);
 			}
 
-			return (ac.dot(ac) - e * e / f) <= rr;
+			return ((ac.dot(ac) - e * e / f) <= rr);
 		}
 
 		//
@@ -662,6 +662,90 @@ namespace s3d
 		bool Intersect(const Line& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
+		}
+
+		bool Intersect(const Line& a, const SuperEllipse& b) noexcept
+		{
+			const double ax = Abs(b.axes.x);
+			const double by = Abs(b.axes.y);
+
+			if ((ax == 0.0) || (by == 0.0) || (b.n <= 0.0))
+			{
+				return false;
+			}
+
+			// 線分が点なら点判定
+			if (a.start == a.end)
+			{
+				return Intersect(a.start, b);
+			}
+
+			// AABB
+			if (not Intersect(a, b.boundingRect()))
+			{
+				return false;
+			}
+
+			// bounding circle
+			if (not Intersect(a, b.boundingCircle()))
+			{
+				return false;
+			}
+
+			// 線分の両端が内部にあるか
+			if (Intersect(a.start, b) || Intersect(a.end, b))
+			{
+				return true;
+			}
+
+			const Vec2 p0 = ((a.start - b.center) / Vec2{ ax, by });
+			const Vec2 p1 = ((a.end - b.center) / Vec2{ ax, by });
+			const Vec2 dir = (p1 - p0);
+
+			const auto Eval = [&](double t) noexcept -> double
+			{
+				const double x = (p0.x + dir.x * t);
+				const double y = (p0.y + dir.y * t);
+				return (std::pow(Abs(x), b.n) + std::pow(Abs(y), b.n));
+			};
+
+			double lo = 0.0;
+			double hi = 1.0;
+			constexpr double phi = 0.6180339887498948482;
+
+			double c = (hi - (hi - lo) * phi);
+			double d = (lo + (hi - lo) * phi);
+
+			double fc = Eval(c);
+			double fd = Eval(d);
+
+			for (int32 i = 0; i < 24; ++i)
+			{
+				if ((fc <= 1.0) || (fd <= 1.0))
+				{
+					return true;
+				}
+
+				if (fc < fd)
+				{
+					hi = d;
+					d = c;
+					fd = fc;
+					c = (hi - (hi - lo) * phi);
+					fc = Eval(c);
+				}
+				else
+				{
+					lo = c;
+					c = d;
+					fc = fd;
+					d = (lo + (hi - lo) * phi);
+					fd = Eval(d);
+				}
+			}
+
+			const double tMin = (0.5 * (lo + hi));
+			return (Eval(tMin) <= 1.0);
 		}
 
 		bool Intersect(const Line& a, const Polygon& b) noexcept
