@@ -28,6 +28,7 @@
 # include "LineString.hpp"
 # include "Polygon.hpp"
 # include "MultiPolygon.hpp"
+# include "Bezier.hpp"
 # include "TriangleIndex.hpp"
 # include "TriangleIndex32.hpp"
 # include "Shape2D.hpp"
@@ -620,8 +621,22 @@ struct JSONSerializer<s3d::RoundRect>
 //
 ////////////////////////////////////////////////////////////////
 
+template <>
+struct JSONSerializer<s3d::Bezier2>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::Bezier2& value);
+	static void from_json(const s3d::JSON::json_base& j, s3d::Bezier2& value);
+};
+
 ////////////////////////////////////////////////////////////////
 //
 //	Bezier3
 //
 ////////////////////////////////////////////////////////////////
+
+template <>
+struct JSONSerializer<s3d::Bezier3>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::Bezier3& value);
+	static void from_json(const s3d::JSON::json_base& j, s3d::Bezier3& value);
+};

@@ -844,6 +844,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawAdaptive
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier3& Bezier3::drawAdaptive(const ColorF& color, const double maxError, const int32 maxDepth) const
+	{
+		getLineStringAdaptive(maxError, maxDepth).draw(color);
+		return *this;
+	}
+
+	const Bezier3& Bezier3::drawAdaptive(const double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
+	{
+		getLineStringAdaptive(maxError, maxDepth).draw(thickness, color);
+		return *this;
+	}
+
+	const Bezier3& Bezier3::drawAdaptive(const LineCap linaCap, const double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
+	{
+		getLineStringAdaptive(maxError, maxDepth).draw(linaCap, thickness, color);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Formatter
 	//
 	////////////////////////////////////////////////////////////////

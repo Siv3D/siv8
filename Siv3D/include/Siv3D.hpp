@@ -886,7 +886,9 @@
 # include <Siv3D/Bezier2Walker.hpp>
 
 // 3 次ベジェ曲線 | Cubic Bézier curve
-# include <Siv3D/Bezier3.hpp> // ToDo
+# include <Siv3D/Bezier3.hpp>
+
+# include <Siv3D/Bezier3Walker.hpp>
 
 //// Catmull-Rom スプライン曲線 | Catmull-Rom spline curves
 //# include <Siv3D/Spline2D.hpp>
