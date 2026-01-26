@@ -1563,7 +1563,6 @@ namespace s3d
 			constexpr Vertex2D::IndexType VertexCount = 4;
 			constexpr Vertex2D::IndexType IndexCount = 6;
 			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
-
 			if (not pVertex)
 			{
 				return 0;
@@ -1615,6 +1614,87 @@ namespace s3d
 			if (endCap == LineCap::Round)
 			{
 				roundIndexCount += BuildRoundCap(bufferCreator, end, halfThickness, (startAngle + Math::PiF), colors[1], scale);
+			}
+
+			return (IndexCount + roundIndexCount);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildArrow(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const Float2& start, const Float2& end, const float thickness, const Float2& headSize, const Float4(&colors)[2], const float scale)
+		{
+			const float length = start.distanceFrom(end);
+
+			if (length == 0.0f)
+			{
+				if (startCap == LineCap::Round)
+				{
+					return BuildCircle(bufferCreator, start, (thickness * 0.5f), ColorFillDirection::InOut, colors[0], colors[0], scale);
+				}
+
+				return 0;
+			}
+
+			const float clampedRatio = (Min(headSize.y, length) / headSize.y);
+			const Float2 direction = ((end - start) / length);
+			const Float2 normalDirection{ direction.y, -direction.x };
+			const float halfThickness = (thickness * 0.5f);
+			const Float2 leftOffset = (normalDirection * halfThickness);
+			const Float2 clampedHeadSize = (clampedRatio * headSize);
+			const Float2 gutterOffset = (direction * clampedHeadSize.y);
+			const Float2 edgeOffset = (normalDirection * clampedHeadSize.x * 0.5f);
+
+			// startCap: Square は始点を後ろに伸ばす
+			const Float2 startOffset = (direction * halfThickness);
+			const Float2 start2 = ((startCap == LineCap::Square) ? (start - startOffset) : start);
+
+			const float headBaseT = Clamp(((length - clampedHeadSize.y) / length), 0.0f, 1.0f);
+			const Float4 headBaseColor = colors[0].lerp(colors[1], headBaseT);
+
+			constexpr Vertex2D::IndexType VertexCount = 7;
+			constexpr Vertex2D::IndexType IndexCount = 9;
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			{
+				pVertex[0].set((start2 + leftOffset), colors[0]);
+				pVertex[1].set((end + leftOffset - gutterOffset), headBaseColor);
+				pVertex[2].set((end + leftOffset - gutterOffset + edgeOffset), headBaseColor);
+
+				pVertex[3].set(end, colors[1]);
+
+				pVertex[4].set((end - leftOffset - gutterOffset - edgeOffset), headBaseColor);
+				pVertex[5].set((end - leftOffset - gutterOffset), headBaseColor);
+				pVertex[6].set((start2 - leftOffset), colors[0]);
+			}
+
+			{
+				pIndex[0] = (indexOffset + 1);
+				pIndex[1] = (indexOffset + 5);
+				pIndex[2] = (indexOffset + 0);
+
+				pIndex[3] = (indexOffset + 0);
+				pIndex[4] = (indexOffset + 5);
+				pIndex[5] = (indexOffset + 6);
+
+				pIndex[6] = (indexOffset + 3);
+				pIndex[7] = (indexOffset + 4);
+				pIndex[8] = (indexOffset + 2);
+			}
+
+			Vertex2D::IndexType roundIndexCount = 0;
+
+			if (startCap == LineCap::Round)
+			{
+				const float startAngle = std::atan2(leftOffset.x, -leftOffset.y);
+				roundIndexCount += BuildRoundCap(bufferCreator, start, halfThickness, (startAngle + Math::PiF), colors[0], scale);
 			}
 
 			return (IndexCount + roundIndexCount);
@@ -2119,6 +2199,77 @@ namespace s3d
 				{
 					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
 				}
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildEllipsePie
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildEllipsePie(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rx, const float ry, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			if (angle == 0.0f)
+			{
+				return 0;
+			}
+
+			const float srx = (rx * scale);
+			const float sry = (ry * scale);
+
+			Vertex2D::IndexType Quality = CalculateCirclePieQuality(Max(srx, sry), Abs(angle));
+
+			if (Quality < 2)
+			{
+				Quality = 2;
+			}
+
+			const Vertex2D::IndexType VertexCount = (Quality + 1);
+			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+
+			// 中心
+			pVertex[0].pos.set(centerX, centerY);
+
+			// 周（楕円）
+			{
+				const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
+				const float radDelta = (Abs(angle) / (Quality - 1));
+				Vertex2D* pDst = &pVertex[1];
+
+				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+				{
+					const float rad = (start + (radDelta * i));
+					const auto [s, c] = FastMath::SinCos(rad);
+					(pDst++)->pos.set((centerX + srx * s), (centerY - sry * c));
+				}
+			}
+
+			// 色
+			{
+				(pVertex++)->color = innerColor;
+
+				for (size_t i = 1; i < VertexCount; ++i)
+				{
+					(pVertex++)->color = outerColor;
+				}
+			}
+
+			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+			{
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + i + 1);
+				*pIndex++ = (indexOffset + i + 2);
 			}
 
 			return IndexCount;

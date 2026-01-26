@@ -872,6 +872,34 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawPie
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 楕円の扇形を描きます。
+		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 扇形の角度（ラジアン）
+		/// @param color 扇形の色
+		/// @return *this
+		const Ellipse& drawPie(double startAngle, double angle, const ColorF& color = Palette::White) const;
+
+		/// @brief 楕円の扇形を描きます。
+		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 扇形の角度（ラジアン）
+		/// @param innerColor 扇の中心部分の色
+		/// @param outerColor 扇の外側部分の色
+		/// @return *this
+		const Ellipse& drawPie(double startAngle, double angle, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 楕円の扇形を描きます。
+		/// @param startAngle 扇形の開始角度（ラジアン, 0 時の方向から時計回り）
+		/// @param angle 扇形の角度（ラジアン）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const Ellipse& drawPie(double startAngle, double angle, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	operator <<
 		//
 		////////////////////////////////////////////////////////////////

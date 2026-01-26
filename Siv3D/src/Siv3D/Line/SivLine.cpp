@@ -13,6 +13,7 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -419,6 +420,67 @@ namespace s3d
 		}
 
 		SIV3D_ENGINE(Renderer2D)->addLine(LineCap::Round, LineCap::Round, start, end, static_cast<float>(thickness), { colorStart.toFloat4(), colorEnd.toFloat4() });
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::drawArrow(const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		return drawArrow(LineCap::Flat, thickness, headSize, color);
+	}
+
+	const Line& Line::drawArrow(const double thickness, const SizeF& headSize, const ColorF& colorStart, const ColorF& colorEnd) const
+	{
+		return drawArrow(LineCap::Flat, thickness, headSize, colorStart, colorEnd);
+	}
+
+	const Line& Line::drawArrow(const LineCap startCap, const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		if (thickness <= 0.0)
+		{
+			return *this;
+		}
+
+		if ((headSize.x <= 0.0) || (headSize.y <= 0.0))
+		{
+			return *this;
+		}
+
+		const Float4 colorF = color.toFloat4();
+		SIV3D_ENGINE(Renderer2D)->addArrow(startCap, start, end, static_cast<float>(thickness), headSize, { colorF, colorF });
+		return *this;
+	}
+
+	const Line& Line::drawArrow(const LineCap startCap, const double thickness, const SizeF& headSize, const ColorF& colorStart, const ColorF& colorEnd) const
+	{
+		if (thickness <= 0.0)
+		{
+			return *this;
+		}
+
+		if ((headSize.x <= 0.0) || (headSize.y <= 0.0))
+		{
+			return *this;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addArrow(startCap, start, end, static_cast<float>(thickness), headSize, { colorStart.toFloat4(), colorEnd.toFloat4() });
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::drawDoubleHeadedArrow(const double thickness, const SizeF& headSize, const ColorF& color) const
+	{
+		Shape2D::DoubleHeadedArrow(start, end, thickness, headSize).draw(color);
 		return *this;
 	}
 

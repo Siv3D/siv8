@@ -21,6 +21,47 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static std::pair<float, float> AdjustEllipsePieAngles(const float rx, const float ry, const float startAngle, const float angle) noexcept
+		{
+			auto AngleToParam = [&](float theta)
+			{
+				const auto [s, c] = FastMath::SinCos(theta);
+				return std::atan2((ry * s), (rx * c));
+			};
+
+			const float t0 = AngleToParam(startAngle);
+			const float t1 = AngleToParam(startAngle + angle);
+
+			float dt = (t1 - t0);
+
+			// [-pi, +pi] に畳む
+			if (dt > Math::PiF)
+			{
+				dt -= Math::TwoPiF;
+			}
+			else if (dt < -Math::PiF)
+			{
+				dt += Math::TwoPiF;
+			}
+
+			// sweep の符号を入力 angle に合わせる
+			if ((angle > 0.0f) && (dt < 0.0f))
+			{
+				dt += Math::TwoPiF;
+			}
+			
+			if ((angle < 0.0f) && (dt > 0.0f))
+			{
+				dt -= Math::TwoPiF;
+			}
+
+			return { t0, dt };
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	getPointByAngle
@@ -346,6 +387,81 @@ namespace s3d
 			static_cast<float>(Abs(axes.x) - innerThickness),
 			static_cast<float>(Abs(axes.y) - innerThickness),
 			thickness,
+			pattern
+		);
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawPie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::drawPie(const double startAngle, const double angle, const ColorF& color) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (angle == 0.0))
+		{
+			return *this;
+		}
+
+		const float rx = Abs(static_cast<float>(a));
+		const float ry = Abs(static_cast<float>(b));
+		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
+		const Float4 color0 = color.toFloat4();
+
+		SIV3D_ENGINE(Renderer2D)->addEllipsePie(
+			center,
+			rx, ry,
+			startAngleF,
+			angleF,
+			color0,
+			color0
+		);
+
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawPie(const double startAngle, const double angle, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (angle == 0.0))
+		{
+			return *this;
+		}
+
+		const float rx = Abs(static_cast<float>(a));
+		const float ry = Abs(static_cast<float>(b));
+		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
+
+		SIV3D_ENGINE(Renderer2D)->addEllipsePie(
+			center,
+			rx, ry,
+			startAngleF,
+			angleF,
+			innerColor.toFloat4(),
+			outerColor.toFloat4()
+		);
+
+		return *this;
+	}
+
+	const Ellipse& Ellipse::drawPie(const double startAngle, const double angle, const PatternParameters& pattern) const
+	{
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (angle == 0.0))
+		{
+			return *this;
+		}
+
+		const float rx = Abs(static_cast<float>(a));
+		const float ry = Abs(static_cast<float>(b));
+		const auto& [startAngleF, angleF] = AdjustEllipsePieAngles(rx, ry, static_cast<float>(startAngle), static_cast<float>(angle));
+
+		SIV3D_ENGINE(Renderer2D)->addEllipsePie(
+			center,
+			rx, ry,
+			startAngleF,
+			angleF,
 			pattern
 		);
 
