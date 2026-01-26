@@ -343,7 +343,8 @@ namespace s3d
 				return false;
 			}
 
-			const RectF boundingRect = b.computeBoundingRect().stretched(1.0);
+			constexpr double Pad = 1.0;
+			const RectF boundingRect = b.computeBoundingRect().stretched(Pad);
 
 			if (not boundingRect.contains(a))
 			{
@@ -355,15 +356,13 @@ namespace s3d
 
 			for (size_t i = 0; i < (n - 1); ++i)
 			{
-				Vec2 p1 = *(++pPoint);
+				const Vec2 p1 = *(++pPoint);
 
 				auto [minX, maxX] = MinMax(p0.x, p1.x);
-				minX -= 1.0;
-				maxX += 1.0;
+				minX -= Pad; maxX += Pad;
 
 				auto [minY, maxY] = MinMax(p0.y, p1.y);
-				minY -= 1.0;
-				maxY += 1.0;
+				minY -= Pad; maxY += Pad;
 
 				if ((a.x < minX) || (maxX < a.x) || (a.y < minY) || (maxY < a.y))
 				{
@@ -670,11 +669,165 @@ namespace s3d
 			return b.intersects(a);
 		}
 
-		//////////////////////////////////////////////////
+		bool Intersect(const Line& a, const MultiPolygon& b) noexcept
+		{
+			for (const auto& polygon : b)
+			{
+				if (Intersect(a, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool Intersect(const Line& a, const LineString& b) noexcept
+		{
+			const size_t n = b.size();
+
+			if (n < 2)
+			{
+				return false;
+			}
+
+			// AABB による判定
+			constexpr double Pad = 1.0;
+			const RectF br = b.computeBoundingRect().stretched(Pad);
+			const RectF ar = RectF::FromPoints(a.start, a.end).stretched(Pad);
+			const double aLeft		= ar.leftX();
+			const double aRight		= ar.rightX();
+			const double aTop		= ar.topY();
+			const double aBottom	= ar.bottomY();
+
+			if (not br.intersects(ar))
+			{
+				return false;
+			}
+
+			const Vec2* pPoint = b.data();
+			Vec2 p0 = pPoint[0];
+
+			for (size_t i = 0; i < (n - 1); ++i)
+			{
+				const Vec2 p1 = *(++pPoint);
+
+				// 各セグメントの AABB で足切り
+				auto [minX, maxX] = MinMax(p0.x, p1.x);
+				auto [minY, maxY] = MinMax(p0.y, p1.y);
+				minX -= Pad; maxX += Pad;
+				minY -= Pad; maxY += Pad;
+
+				// Line a の AABB と重ならないなら交差しない
+				if ((aRight < minX) || (maxX < aLeft) || (aBottom < minY) || (maxY < aTop))
+				{
+					p0 = p1;
+					continue;
+				}
+
+				// 本判定
+				if (Intersect(a, Line{ p0, p1 }))
+				{
+					return true;
+				}
+
+				p0 = p1;
+			}
+
+			return false;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersect(Bezier2, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersect(const Bezier2& a, const Point& b)
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Bezier2& a, const Vec2& b)
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Bezier2& a, const Line& b)
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Bezier2& a, const Bezier2& b)
+		{
+			const RectF aRect = a.boundingRect();
+			const RectF bRect = b.boundingRect();
+
+			if (not Intersect(aRect, bRect))
+			{
+				return false;
+			}
+
+			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
+		}
+
+		bool Intersect(const Bezier2& a, const Bezier3& b)
+		{
+			const RectF aRect = a.boundingRect();
+			const RectF bRect = b.boundingRect();
+
+			if (not Intersect(aRect, bRect))
+			{
+				return false;
+			}
+
+			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersect(Bezier3, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersect(const Bezier3& a, const Point& b)
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Bezier3& a, const Vec2& b)
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Bezier3& a, const Line& b)
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Bezier3& a, const Bezier2& b)
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Bezier3& a, const Bezier3& b)
+		{
+			const RectF aRect = a.boundingRect();
+			const RectF bRect = b.boundingRect();
+
+			if (not Intersect(aRect, bRect))
+			{
+				return false;
+			}
+
+			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
+		}
+
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Rect, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const Rect& a, const Line& b) noexcept
 		{
@@ -703,11 +856,11 @@ namespace s3d
 			return b.intersects(a);
 		}
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(RectF, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const RectF& a, const Line& b) noexcept
 		{
@@ -736,11 +889,11 @@ namespace s3d
 			return b.intersects(a);
 		}
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Circle, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const Circle& a, const Line& b) noexcept
 		{
@@ -768,11 +921,11 @@ namespace s3d
 			return b.intersects(a);
 		}
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Ellipse, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const Ellipse& a, const Line& b) noexcept
 		{
@@ -812,11 +965,11 @@ namespace s3d
 			return b.intersects(a);
 		}
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Triangle, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const Triangle& a, const Line& b) noexcept
 		{
@@ -922,11 +1075,11 @@ namespace s3d
 			return b.intersects(a);
 		}
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Quad, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const Quad& a, const Line& b) noexcept
 		{
@@ -974,11 +1127,11 @@ namespace s3d
 			return b.intersects(a);
 		}
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(RoundRect, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const RoundRect& a, const Point& b) noexcept
 		{
@@ -1065,11 +1218,11 @@ namespace s3d
 			return false;
 		}
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Polygon, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const Polygon& a, const Point& b) noexcept
 		{
@@ -1126,17 +1279,117 @@ namespace s3d
 			return a.intersects(b);
 		}
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(MultiPolygon, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
-		//////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(LineString, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
+		bool Intersect(const LineString& a, const LineString& b) noexcept
+		{
+			const size_t an = a.size();
+			const size_t bn = b.size();
+
+			if ((an < 2) || (bn < 2))
+			{
+				return false;
+			}
+
+			constexpr double Pad = 1.0;
+
+			// 全体 AABB による足切り
+			const RectF ar = a.computeBoundingRect().stretched(Pad);
+			const RectF br = b.computeBoundingRect().stretched(Pad);
+
+			if (not ar.intersects(br))
+			{
+				return false;
+			}
+
+			// 外側ループを短い方にすると少し得
+			const LineString* pOuter = &a;
+			const LineString* pInner = &b;
+			size_t on = an;
+			size_t in = bn;
+
+			if (bn < an)
+			{
+				pOuter = &b;
+				pInner = &a;
+				on = bn;
+				in = an;
+			}
+
+			const Vec2* oPtr = pOuter->data();
+			Vec2 o0 = oPtr[0];
+
+			for (size_t oi = 0; oi < (on - 1); ++oi)
+			{
+				const Vec2 o1 = *(++oPtr);
+
+				// Outer セグメント AABB
+				auto [oMinX, oMaxX] = MinMax(o0.x, o1.x);
+				auto [oMinY, oMaxY] = MinMax(o0.y, o1.y);
+				oMinX -= Pad; oMaxX += Pad;
+				oMinY -= Pad; oMaxY += Pad;
+
+				// Inner 全体 AABB と重ならないなら、この Outer セグメントは無視
+				{
+					const double iLeft = br.leftX();
+					const double iRight = br.rightX();
+					const double iTop = br.topY();
+					const double iBottom = br.bottomY();
+
+					if ((oMaxX < iLeft) || (iRight < oMinX) || (oMaxY < iTop) || (iBottom < oMinY))
+					{
+						o0 = o1;
+						continue;
+					}
+				}
+
+				const Line outerSeg{ o0, o1 };
+
+				// Inner の全セグメントと突き合わせ
+				const Vec2* iPtr = pInner->data();
+				Vec2 i0 = iPtr[0];
+
+				for (size_t ii = 0; ii < (in - 1); ++ii)
+				{
+					const Vec2 i1 = *(++iPtr);
+
+					// Inner セグメント AABB
+					auto [iMinX, iMaxX] = MinMax(i0.x, i1.x);
+					auto [iMinY, iMaxY] = MinMax(i0.y, i1.y);
+					iMinX -= Pad; iMaxX += Pad;
+					iMinY -= Pad; iMaxY += Pad;
+
+					// AABB が重ならないなら交差しない
+					if ((oMaxX < iMinX) || (iMaxX < oMinX) || (oMaxY < iMinY) || (iMaxY < oMinY))
+					{
+						i0 = i1;
+						continue;
+					}
+
+					// 本判定（Line vs Line）
+					if (Intersect(outerSeg, Line{ i0, i1 }))
+					{
+						return true;
+					}
+
+					i0 = i1;
+				}
+
+				o0 = o1;
+			}
+
+			return false;
+		}
 	}
 }
