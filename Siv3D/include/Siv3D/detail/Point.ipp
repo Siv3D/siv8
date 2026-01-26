@@ -27,8 +27,8 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Point& a, const Bezier2& b);
 
-		////[[nodiscard]]
-		////bool Intersect(const Point& a, const Bezier3& b) noexcept;
+		[[nodiscard]]
+		bool Intersect(const Point& a, const Bezier3& b);
 
 		[[nodiscard]]
 		constexpr bool Intersect(const Point& a, const Rect& b) noexcept;
@@ -50,6 +50,9 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersect(const Point& a, const RoundRect& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersect(const Point& a, const SuperEllipse& b) noexcept;
 
 		[[nodiscard]]
 		bool Intersect(const Point& a, const Polygon& b) noexcept;

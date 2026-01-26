@@ -1083,10 +1083,16 @@ namespace s3d
 //		LineString& scaleAt(Vec2 pos, double sx, double sy);
 //
 //		LineString& scaleAt(Vec2 pos, Vec2 s);
-//
-//		[[nodiscard]]
-//		RectF computeBoundingRect() const noexcept;
-//
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeBoundingRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		RectF computeBoundingRect() const noexcept;
+
 //		/// @brief 連続する線分を単純化した LineString を返します。
 //		/// @param maxDistance 単純化の大きさ
 //		/// @param closeRing 終点と始点を結ぶか

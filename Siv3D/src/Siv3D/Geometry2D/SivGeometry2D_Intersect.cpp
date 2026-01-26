@@ -15,8 +15,12 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/Bezier.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/MultiPolygon.hpp>
+# include <Siv3D/LineString.hpp>
 # include <Siv3D/ListUtility.hpp>
+# include <Siv3D/PolynomialSolver.hpp>
 # include <Siv3D/Geometry2D/Intersect.hpp>
 # include <Siv3D/Geometry2D/Distance.hpp>
 
@@ -24,10 +28,18 @@ namespace s3d
 {
 	namespace
 	{
+		constexpr double Epsilon = 1e-12;
+
 		[[nodiscard]]
-		static constexpr bool IsZero(const double x) noexcept
+		static constexpr bool NearZero(const double v) noexcept
 		{
-			return (Abs(x) < 1e-10);
+			return (Abs(v) <= Epsilon);
+		}
+
+		[[nodiscard]]
+		static constexpr bool In01(const double t) noexcept
+		{
+			return ((-Epsilon <= t) && (t <= (1.0 + Epsilon)));
 		}
 
 		struct RoundRectParts
@@ -224,6 +236,11 @@ namespace s3d
 			return Intersect(Vec2{ a }, b);
 		}
 
+		bool Intersect(const Point& a, const Bezier3& b)
+		{
+			return Intersect(Vec2{ a }, b);
+		}
+
 		bool Intersect(const Point& a, const RoundRect& b) noexcept
 		{
 			return Intersect(Vec2{ a }, b);
@@ -239,6 +256,16 @@ namespace s3d
 			return b.intersects(Vec2{ a });
 		}
 
+		bool Intersect(const Point& a, const MultiPolygon& b) noexcept
+		{
+			return Intersect(Vec2{ a }, b);
+		}
+
+		bool Intersect(const Point& a, const LineString& b) noexcept
+		{
+			return Intersect(Vec2{ a }, b);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Vec2, _)
@@ -246,6 +273,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const Vec2& a, const Bezier2& b)
+		{
+			// 距離が 1 未満なら交差と判定
+			return (Distance(a, b) < 1.0);
+		}
+
+		bool Intersect(const Vec2& a, const Bezier3& b)
 		{
 			// 距離が 1 未満なら交差と判定
 			return (Distance(a, b) < 1.0);
@@ -288,75 +321,213 @@ namespace s3d
 			return b.intersects(a);
 		}
 
+		bool Intersect(const Vec2& a, const MultiPolygon& b) noexcept
+		{
+			for (const auto& polygon : b)
+			{
+				if (Intersect(a, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool Intersect(const Vec2& a, const LineString& b) noexcept
+		{
+			const size_t n = b.size();
+			
+			if (n < 2)
+			{
+				return false;
+			}
+
+			const RectF boundingRect = b.computeBoundingRect().stretched(1.0);
+
+			if (not boundingRect.contains(a))
+			{
+				return false;
+			}
+
+			const Vec2* pPoint = b.data();
+			Vec2 p0 = pPoint[0];
+
+			for (size_t i = 0; i < (n - 1); ++i)
+			{
+				Vec2 p1 = *(++pPoint);
+
+				auto [minX, maxX] = MinMax(p0.x, p1.x);
+				minX -= 1.0;
+				maxX += 1.0;
+
+				auto [minY, maxY] = MinMax(p0.y, p1.y);
+				minY -= 1.0;
+				maxY += 1.0;
+
+				if ((a.x < minX) || (maxX < a.x) || (a.y < minY) || (maxY < a.y))
+				{
+					p0 = p1;
+					continue;
+				}
+
+				if (detail::DistanceSq(p0, p1, a) < 1.0)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Line, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		//
-		// `Intersect(const Line& a, const Line& b)` is based on
-		// https://www.codeproject.com/Tips/862988/Find-the-Intersection-Point-of-Two-Line-Segments
-		//
-		// Licenced with the Code Project Open Licence (CPOL)
-		// http://www.codeproject.com/info/cpol10.aspx
-		//
 		bool Intersect(const Line& a, const Line& b) noexcept
 		{
+			const Vec2 p = a.start;
 			const Vec2 r = (a.end - a.start);
+			const Vec2 q = b.start;
 			const Vec2 s = (b.end - b.start);
-			const Vec2 qp = (b.start - a.start);
+
+			const Vec2 qp = (q - p);
+
 			const double rxs = (r.x * s.y - r.y * s.x);
 			const double qpxr = (qp.x * r.y - qp.y * r.x);
-			const double qpxs = (qp.x * s.y - qp.y * s.x);
 
-			if (IsZero(rxs))
+			const double rr = r.dot(r);
+			const double ss = s.dot(s);
+
+			const bool rIsPoint = NearZero(rr);
+			const bool sIsPoint = NearZero(ss);
+
+			// a, b 両方が点
+			if (rIsPoint && sIsPoint)
 			{
-				if (IsZero(qpxr) && IsZero(qpxs))
+				return NearZero((a.start - b.start).dot(a.start - b.start));
+			}
+
+			// a が点（点が b 上にあるか）
+			if (rIsPoint)
+			{
+				// b も点は上で処理済みなのでここでは sIsPoint=false
+				const Vec2 ap = (a.start - b.start);
+				const double cross = (ap.x * s.y - ap.y * s.x);
+				
+				if (not NearZero(cross))
 				{
-					const double qpr = qp.dot(r);
-					const double q2pr = (b.end - a.start).dot(r);
-					const double pqs = (a.start - b.start).dot(s);
-					const double p2qs = (a.end - b.start).dot(s);
-
-					const double rr = r.dot(r);
-					const bool rrIsZero = IsZero(rr);
-					const double ss = s.dot(s);
-					const bool ssIsZero = IsZero(ss);
-
-					if (rrIsZero && ssIsZero && IsZero(qp.dot(qp)))
-					{
-						// The two lines are both zero length and in the same position
-						return true;
-					}
-
-					if (((not rrIsZero) && ((0 <= qpr && qpr <= rr) || (0 <= q2pr && q2pr <= rr)))
-						|| ((not ssIsZero) && ((0 <= pqs && pqs <= ss) || (0 <= p2qs && p2qs <= ss))))
-					{
-						// Two lines are overlapping
-						return true;
-					}
-
-					// Two lines are collinear but disjoint.
 					return false;
 				}
 
-				// Two lines are parallel and non-intersecting.
-				return false;
+				const double t = (ap.dot(s) / ss);
+				return In01(t);
 			}
-			else
+
+			// b が点（点が a 上にあるか）
+			if (sIsPoint)
 			{
-				const double t = qpxs / rxs;
-				const double u = qpxr / rxs;
-				if ((0.0 <= t && t <= 1.0) && (0.0 <= u && u <= 1.0))
+				const Vec2 bp = (b.start - a.start);
+				const double cross = (bp.x * r.y - bp.y * r.x);
+				
+				if (not NearZero(cross))
 				{
-					// An intersection was found
-					return true;
+					return false;
 				}
 
-				// Two line segments are not parallel but do not intersect
-				return false;
+				const double t = (bp.dot(r) / rr);
+				return In01(t);
 			}
+
+			// 平行
+			if (NearZero(rxs))
+			{
+				if (not NearZero(qpxr))
+				{
+					return false; // 平行で別線
+				}
+
+				// 同一直線：a 上の 1D 区間重なり判定
+				const double t0 = ((b.start - a.start).dot(r)) / rr;
+				const double t1 = ((b.end - a.start).dot(r)) / rr;
+
+				const auto [lo, hi] = MinMax(t0, t1);
+
+				// [lo,hi] と [0,1] が重なるか
+				return ((-Epsilon <= hi) && (lo <= (1.0 + Epsilon)));
+			}
+
+			// 一般位置
+			const double qpxs = (qp.x * s.y - qp.y * s.x);
+			const double t = (qpxs / rxs);
+			const double u = (qpxr / rxs);
+
+			return (In01(t) && In01(u));
+		}
+
+		bool Intersect(const Line& a, const Bezier2& b)
+		{
+			const double a1 = (a.start.y - a.end.y);
+			const double b1 = (a.end.x - a.start.x);
+			const double c1 = a.start.cross(a.end);
+
+			const double a2 = (a1 * (b.p0.x - 2 * b.p1.x + b.p2.x) + b1 * (b.p0.y - 2 * b.p1.y + b.p2.y));
+			const double b2 = (2 * (a1 * (b.p1 - b.p0).x + b1 * (b.p1 - b.p0).y));
+			const double c2 = std::fma(a1, b.p0.x, std::fma(b1, b.p0.y, c1));
+
+			if (const auto opt = Math::SolveQuadraticEquation(a2, b2, c2))
+			{
+				for (const double x : *opt)
+				{
+					if (In01(x))
+					{
+						const Vec2 intersection = b.getPos(Clamp(x, 0.0, 1.0));
+
+						if (Intersect(a, intersection))
+						{
+							return true;
+						}
+					}
+				}
+			}
+
+			return false;
+		}
+
+		bool Intersect(const Line& a, const Bezier3& b)
+		{
+			const Vec2 p0 = b.p0, p1 = b.p1, p2 = b.p2, p3 = b.p3;
+			const double a1 = (a.start.y - a.end.y);
+			const double b1 = (a.end.x - a.start.x);
+			const double c1 = a.start.cross(a.end);
+
+			std::array<Vec2, 4> v = { (-p0 + 3 * p1 - 3 * p2 + p3), (3 * p0 - 6 * p1 + 3 * p2), (-3 * p0 + 3 * p1), p0 };
+			std::array<double, 4> t;
+			for (size_t i = 0; i < 4; ++i)
+			{
+				t[i] = (a1 * v[i].x + b1 * v[i].y);
+			}
+			t[3] += c1;
+
+			if (const auto opt = Math::SolveCubicEquation(t[0], t[1], t[2], t[3]))
+			{
+				for (const double x : *opt)
+				{
+					if (In01(x))
+					{
+						const Vec2 intersection = b.getPos(Clamp(x, 0.0, 1.0));
+
+						if (Intersect(a, intersection))
+						{
+							return true;
+						}
+					}
+				}
+			}
+
+			return false;
 		}
 
 		bool Intersect(const Line& a, const Rect& b) noexcept
@@ -672,65 +843,67 @@ namespace s3d
 			return Intersect(b, a);
 		}
 
-		//
-		//	http://marupeke296.com/COL_2D_TriTri.html
-		//
 		bool Intersect(const Triangle& a, const Triangle& b) noexcept
 		{
-			constexpr size_t other[3] = { 1, 2, 0 };
-			constexpr size_t pindex[4] = { 1, 2, 0, 1 };
-			const Triangle* tri[3] = { &a, &b, &a };
-
-			for (int32 t = 0; t < 2; ++t)
+			auto Project = [](const Triangle& t, const Vec2& axis) noexcept -> std::pair<double, double>
 			{
-				const Triangle& ta = *tri[t];
-				const Triangle& tb = *tri[t + 1];
+				double mn = axis.dot(t.pointAtIndex(0));
+				double mx = mn;
 
+				for (int32 i = 1; i < 3; ++i)
+				{
+					const double d = axis.dot(t.pointAtIndex(i));
+					
+					if (d < mn)
+					{
+						mn = d;
+					}
+					
+					if (mx < d)
+					{
+						mx = d;
+					}
+				}
+
+				return{ mn, mx };
+			};
+
+			auto Overlap = [](double minA, double maxA, double minB, double maxB) noexcept
+			{
+				return not((maxA < minB) || (maxB < minA));
+			};
+
+			auto TestAxesFrom = [&](const Triangle& t0, const Triangle& t1) noexcept -> bool
+			{
 				for (int32 i = 0; i < 3; ++i)
 				{
-					const Vec2 vec = (ta.pointAtIndex(pindex[i + 1]) - ta.pointAtIndex(pindex[i])).normalized();
-					const Vec2 sepVec(vec.y, -vec.x);
+					const Vec2 p0 = t0.pointAtIndex(i);
+					const Vec2 p1 = t0.pointAtIndex((i + 1) % 3);
 
-					double s1min = sepVec.dot(ta.pointAtIndex(i));
-					double s1max = sepVec.dot(ta.pointAtIndex(other[i]));
+					const Vec2 edge = (p1 - p0);
 
-					if (s1max < s1min)
-					{
-						std::ranges::swap(s1min, s1max);
-					}
+					// 軸 = edge の垂直
+					const Vec2 axis(edge.y, -edge.x);
 
-					double s2min = sepVec.dot(tb.pointAtIndex(0));
-					double s2max = sepVec.dot(tb.pointAtIndex(1));
-
-					if (s2max < s2min)
-					{
-						std::ranges::swap(s2min, s2max);
-					}
-
-					const double d3 = sepVec.dot(tb.pointAtIndex(2));
-
-					if (d3 < s2min)
-					{
-						s2min = d3;
-					}
-					else if (s2max < d3)
-					{
-						s2max = d3;
-					}
-
-					if (((s2min <= s1min) && (s1min <= s2max))
-						|| ((s2min <= s1max) && (s1max <= s2max))
-						|| ((s1min <= s2min) && (s2min <= s1max))
-						|| ((s1min <= s2max) && (s2max <= s1max)))
+					// 退化（三角形が潰れている/辺がゼロ）
+					if ((axis.x == 0.0) && (axis.y == 0.0))
 					{
 						continue;
 					}
 
-					return false;
-				}
-			}
+					const auto [min0, max0] = Project(t0, axis);
+					const auto [min1, max1] = Project(t1, axis);
 
-			return true;
+					if (not Overlap(min0, max0, min1, max1))
+					{
+						return false; // 分離軸あり
+					}
+				}
+				return true;
+			};
+
+			// a の3軸 + b の3軸（合計6軸）
+			return (TestAxesFrom(a, b) && TestAxesFrom(b, a));
 		}
 
 		bool Intersect(const Triangle& a, const Quad& b) noexcept

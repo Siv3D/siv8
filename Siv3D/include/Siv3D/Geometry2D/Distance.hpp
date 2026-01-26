@@ -44,6 +44,9 @@ namespace s3d
 		
 		[[nodiscard]]
 		double Distance(const Vec2& a, const Bezier2& b);
+
+		[[nodiscard]]
+		double Distance(const Vec2& a, const Bezier3& b);
 	}
 }
 
