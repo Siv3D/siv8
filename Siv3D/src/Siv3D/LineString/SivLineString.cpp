@@ -12,6 +12,7 @@
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/RangeFormatter.hpp>
+# include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -25,45 +26,7 @@ namespace s3d
 
 	RectF LineString::computeBoundingRect() const noexcept
 	{
-		const size_t n = m_points.size();
-		const Vec2* pData = m_points.data();
-
-		if (n == 0)
-		{
-			return RectF::Empty();
-		}
-
-		double left		= pData->x;
-		double right	= pData->x;
-		double top		= pData->y;
-		double bottom	= pData->y;
-
-		++pData;
-
-		for (size_t i = 0; i < (n - 1); ++i)
-		{
-			if (pData->x < left)
-			{
-				left = pData->x;
-			}
-			else if (right < pData->x)
-			{
-				right = pData->x;
-			}
-
-			if (pData->y < top)
-			{
-				top = pData->y;
-			}
-			else if (bottom < pData->y)
-			{
-				bottom = pData->y;
-			}
-
-			++pData;
-		}
-
-		return{ left, top, (right - left), (bottom - top) };
+		return Geometry2D::BoundingRect(m_points);
 	}
 
 	////////////////////////////////////////////////////////////////
