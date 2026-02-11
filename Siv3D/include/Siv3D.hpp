@@ -890,6 +890,8 @@
 
 # include <Siv3D/Bezier3Walker.hpp>
 
+# include <Siv3D/Spline.hpp>
+
 //// Catmull-Rom スプライン曲線 | Catmull-Rom spline curves
 //# include <Siv3D/Spline2D.hpp>
 

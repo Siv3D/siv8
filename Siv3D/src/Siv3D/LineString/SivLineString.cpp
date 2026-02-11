@@ -11,6 +11,7 @@
 
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/Spline.hpp>
 # include <Siv3D/RangeFormatter.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -18,6 +19,68 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static LineString CatmullRom(const LineString& lines, const int32 interpolation, const CloseRing closeRing)
+		{
+			const size_t n = lines.size();
+
+			if ((n < 2) || (interpolation < 2))
+			{
+				return lines;
+			}
+
+			const Vec2* src = lines.data();
+			const size_t segments = (closeRing ? n : (n - 1));
+
+			LineString out;
+			out.reserve(segments * static_cast<size_t>(interpolation) + 1);
+
+			auto At = [&](std::ptrdiff_t i) -> const Vec2&
+			{
+				if (closeRing)
+				{
+					// i は [-1 .. n+1] 程度を想定。安全に循環させる
+					const ptrdiff_t m = static_cast<std::ptrdiff_t>(n);
+					ptrdiff_t k = i % m;
+					if (k < 0) k += m;
+					return src[k];
+				}
+				else
+				{
+					// 端はクランプ（-1=>0, n=>n-1, n+1=>n-1）
+					if (i <= 0) return src[0];
+					if (i >= static_cast<std::ptrdiff_t>(n - 1)) return src[n - 1];
+					return src[i];
+				}
+			};
+
+			const double inv = (1.0 / static_cast<double>(interpolation));
+
+			for (size_t i = 0; i < segments; ++i)
+			{
+				const std::ptrdiff_t ii = static_cast<std::ptrdiff_t>(i);
+
+				const Vec2& p0 = At(ii - 1);
+				const Vec2& p1 = At(ii);
+				const Vec2& p2 = At(ii + 1);
+				const Vec2& p3 = At(ii + 2);
+
+				const bool lastSeg = (i + 1 == segments);
+				const int32 count = (interpolation + (lastSeg ? 1 : 0));
+
+				for (int32 t = 0; t < count; ++t)
+				{
+					const double u = (t * inv);
+					out.push_back(Spline::CatmullRom(p0, p1, p2, p3, u));
+				}
+			}
+
+			return out;
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	computeBoundingRect
@@ -27,6 +90,16 @@ namespace s3d
 	RectF LineString::computeBoundingRect() const noexcept
 	{
 		return Geometry2D::BoundingRect(m_points);
+	}
+
+	LineString LineString::catmullRom(const int32 interpolation) const
+	{
+		return CatmullRom(*this, interpolation, CloseRing::No);
+	}
+
+	LineString LineString::catmullRom(const CloseRing closeRing, const int32 interpolation) const
+	{
+		return CatmullRom(*this, interpolation, closeRing);
 	}
 
 	////////////////////////////////////////////////////////////////

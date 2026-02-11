@@ -116,6 +116,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Shape2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SimpleGUI.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewAlgorithm.ipp" />
@@ -557,6 +558,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleTooltip.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Smooth.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SpecialFolder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Spline.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step3D.hpp" />

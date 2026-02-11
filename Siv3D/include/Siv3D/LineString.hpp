@@ -1106,20 +1106,20 @@ namespace s3d
 //		/// @return 分割した結果
 //		[[nodiscard]]
 //		LineString densified(double maxDistance, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief Catmull-Rom スプライン曲線を返します。
-//		/// @param interpolation 分割の品質
-//		/// @return Catmull-Rom スプライン曲線
-//		[[nodiscard]]
-//		LineString catmullRom(int32 interpolation = 24) const;
-//
-//		/// @brief Catmull-Rom スプライン曲線を返します。
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @param interpolation 分割の品質
-//		/// @return Catmull-Rom スプライン曲線
-//		[[nodiscard]]
-//		LineString catmullRom(CloseRing closeRing, int32 interpolation = 24) const;
-//
+
+		/// @brief Catmull-Rom スプライン曲線を返します。
+		/// @param interpolation 分割の品質
+		/// @return Catmull-Rom スプライン曲線
+		[[nodiscard]]
+		LineString catmullRom(int32 interpolation = 24) const;
+
+		/// @brief Catmull-Rom スプライン曲線を返します。
+		/// @param closeRing 終点と始点を結ぶか
+		/// @param interpolation 分割の品質
+		/// @return Catmull-Rom スプライン曲線
+		[[nodiscard]]
+		LineString catmullRom(CloseRing closeRing, int32 interpolation = 24) const;
+
 		/// @brief 連続する線分全体の長さを返します。
 		/// @param closeRing 終点と始点を結ぶか
 		/// @return 連続する線分全体の長さ
