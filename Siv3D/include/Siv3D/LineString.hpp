@@ -1038,6 +1038,42 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr LineString withOffset(double x, double y) const&;
+		
+		[[nodiscard]]
+		constexpr LineString withOffset(double x, double y) && noexcept;
+		
+		[[nodiscard]]
+		constexpr LineString withOffset(Vec2 v) const&;
+		
+		[[nodiscard]]
+		constexpr LineString withOffset(Vec2 v) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr LineString withOffsetX(double x) const&;
+		
+		[[nodiscard]]
+		constexpr LineString withOffsetX(double x) && noexcept;
+		
+		[[nodiscard]]
+		constexpr LineString withOffsetY(double y) const&;
+		
+		[[nodiscard]]
+		constexpr LineString withOffsetY(double y) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	scaled
 		//
 		////////////////////////////////////////////////////////////////

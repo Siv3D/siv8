@@ -172,6 +172,38 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad Quad::withOffset(const value_type x, const value_type y) const noexcept
+	{
+		return{ p0.withOffset(x, y), p1.withOffset(x, y), p2.withOffset(x, y), p3.withOffset(x, y) };
+	}
+
+	constexpr Quad Quad::withOffset(const position_type v) const noexcept
+	{
+		return withOffset(v.x, v.y);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad Quad::withOffsetX(const value_type x) const noexcept
+	{
+		return{ p0.withOffsetX(x), p1.withOffsetX(x), p2.withOffsetX(x), p3.withOffsetX(x) };
+	}
+
+	constexpr Quad Quad::withOffsetY(const value_type y) const noexcept
+	{
+		return{ p0.withOffsetY(y), p1.withOffsetY(y), p2.withOffsetY(y), p3.withOffsetY(y) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	scaledFromOrigin
 	//
 	////////////////////////////////////////////////////////////////

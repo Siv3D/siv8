@@ -876,6 +876,106 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::withOffset(const double x, const double y) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.moveBy(x, y);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::withOffset(const double x, const double y) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.moveBy(x, y);
+		}
+	
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::withOffset(const Vec2 v) const&
+	{
+		LineString result{ *this };
+	
+		for (auto& point : result.m_points)
+		{
+			point.moveBy(v);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::withOffset(const Vec2 v) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.moveBy(v);
+		}
+	
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::withOffsetX(const double x) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.x += x;
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::withOffsetX(const double x) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.x += x;
+		}
+	
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::withOffsetY(const double y) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.y += y;
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::withOffsetY(const double y) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.y += y;
+		}
+	
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	scaled
 	//
 	////////////////////////////////////////////////////////////////

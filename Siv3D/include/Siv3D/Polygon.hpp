@@ -370,10 +370,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形に穴を追加します。
-		///// @param holes 穴を構成する頂点配列の配列（複数の穴）
-		///// @return 穴の追加に成功したら true, それ以外の場合は false
-		//bool addHoles(Array<Array<Vec2>> holes);
+		/// @brief 多角形に穴を追加します。
+		/// @param holes 穴を構成する頂点配列の配列（複数の穴）
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
+		bool addHoles(Array<Array<Vec2>> holes);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -426,15 +426,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		Polygon withOffset(double x, double y) const&;
+
+		Polygon withOffset(Vec2 v) const&;
+
+		Polygon withOffset(double x, double y) && noexcept;
+
+		Polygon withOffset(Vec2 v) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		Polygon withOffsetX(double x) const&;
+
+		Polygon withOffsetX(double x) && noexcept;
+
+		Polygon withOffsetY(double y) const&;
+
+		Polygon withOffsetY(double y) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	rotated
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Polygon rotated(double angle) const&;
+		[[nodiscard]]
+		Polygon rotated(double angle) const&;
 
-		//[[nodiscard]]
-		//Polygon rotated(double angle) &&;
+		[[nodiscard]]
+		Polygon rotated(double angle) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -442,17 +470,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Polygon rotatedAt(double x, double y, double angle) const&;
+		[[nodiscard]]
+		Polygon rotatedAt(double x, double y, double angle) const&;
 
-		//[[nodiscard]]
-		//Polygon rotatedAt(double x, double y, double angle) &&;
+		[[nodiscard]]
+		Polygon rotatedAt(double x, double y, double angle) &&;
 
-		//[[nodiscard]]
-		//Polygon rotatedAt(Vec2 pos, double angle) const&;
+		[[nodiscard]]
+		Polygon rotatedAt(Vec2 pos, double angle) const&;
 
-		//[[nodiscard]]
-		//Polygon rotatedAt(Vec2 pos, double angle) &&;
+		[[nodiscard]]
+		Polygon rotatedAt(Vec2 pos, double angle) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -460,7 +488,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//Polygon& rotate(double angle);
+		Polygon& rotate(double angle);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -468,9 +496,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//Polygon& rotateAt(double x, double y, double angle);
+		Polygon& rotateAt(double x, double y, double angle);
 
-		//Polygon& rotateAt(Vec2 pos, double angle);
+		Polygon& rotateAt(Vec2 pos, double angle);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -478,11 +506,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Polygon transformed(double s, double c, const Vec2& pos) const&;
+		[[nodiscard]]
+		Polygon transformed(double s, double c, const Vec2& pos) const&;
 
-		//[[nodiscard]]
-		//Polygon transformed(double s, double c, const Vec2& pos) &&;
+		[[nodiscard]]
+		Polygon transformed(double s, double c, const Vec2& pos) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -490,148 +518,148 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//Polygon& transform(double s, double c, const Vec2& pos);
+		Polygon& transform(double s, double c, const Vec2& pos);
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	scaled
+		//	scaledFromOrigin
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
-		///// @param s 拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaled(double s) const&;
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFromOrigin(double s) const&;
 
-		///// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
-		///// @param s 拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaled(double s) &&;
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFromOrigin(double s) &&;
 
-		///// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
-		///// @param sx X 方向の拡大率
-		///// @param sy Y 方向の拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaled(double sx, double sy) const&;
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFromOrigin(double sx, double sy) const&;
 
-		///// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
-		///// @param sx X 方向の拡大率
-		///// @param sy Y 方向の拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaled(double sx, double sy) &&;
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFromOrigin(double sx, double sy) &&;
 
-		///// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
-		///// @param s 拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaled(Vec2 s) const&;
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFromOrigin(Vec2 s) const&;
 
-		///// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
-		///// @param s 拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaled(Vec2 s) &&;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	scale
-		//
-		////////////////////////////////////////////////////////////////
-
-		///// @brief 原点 (0, 0) を中心に拡大・縮小します。
-		///// @param s 拡大率
-		///// @return *this
-		//Polygon& scale(double s);
-
-		///// @brief 原点 (0, 0) を中心に拡大・縮小します。
-		///// @param sx X 方向の拡大率
-		///// @param sy Y 方向の拡大率
-		///// @return *this
-		//Polygon& scale(double sx, double sy);
-
-		///// @brief 原点 (0, 0) を中心に拡大・縮小します。
-		///// @param s 拡大率
-		///// @return *this
-		//Polygon& scale(Vec2 s);
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFromOrigin(Vec2 s) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	scaledAt
+		//	scaleFromOrigin
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
-		///// @param pos 拡大・縮小の中心位置
-		///// @param s 拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaledAt(Vec2 pos, double s) const&;
+		/// @brief 原点 (0, 0) を中心に拡大・縮小します。
+		/// @param s 拡大率
+		/// @return *this
+		Polygon& scaleFromOrigin(double s);
 
-		///// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
-		///// @param pos 拡大・縮小の中心位置
-		///// @param s 拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaledAt(Vec2 pos, double s) &&;
+		/// @brief 原点 (0, 0) を中心に拡大・縮小します。
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return *this
+		Polygon& scaleFromOrigin(double sx, double sy);
 
-		///// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
-		///// @param pos 拡大・縮小の中心位置
-		///// @param sx X 方向の拡大率
-		///// @param sy Y 方向の拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaledAt(Vec2 pos, double sx, double sy) const&;
-
-		///// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
-		///// @param pos 拡大・縮小の中心位置
-		///// @param sx X 方向の拡大率
-		///// @param sy Y 方向の拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaledAt(Vec2 pos, double sx, double sy) &&;
-
-		///// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
-		///// @param pos 拡大・縮小の中心位置
-		///// @param s 拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaledAt(Vec2 pos, Vec2 s) const&;
-
-		///// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
-		///// @param pos 拡大・縮小の中心位置
-		///// @param s 拡大率
-		///// @return 拡大・縮小した多角形
-		//[[nodiscard]]
-		//Polygon scaledAt(Vec2 pos, Vec2 s) &&;
+		/// @brief 原点 (0, 0) を中心に拡大・縮小します。
+		/// @param s 拡大率
+		/// @return *this
+		Polygon& scaleFromOrigin(Vec2 s);
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	scaleAt
+		//	scaledFrom
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 指定した位置を中心に拡大・縮小します。
-		///// @param pos 拡大・縮小の中心位置
-		///// @param s 拡大率
-		///// @return *this
-		//Polygon& scaleAt(Vec2 pos, double s);
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFrom(Vec2 pos, double s) const&;
 
-		///// @brief 指定した位置を中心に拡大・縮小します。
-		///// @param pos 拡大・縮小の中心位置
-		///// @param sx X 方向の拡大率
-		///// @param sy Y 方向の拡大率
-		///// @return *this
-		//Polygon& scaleAt(Vec2 pos, double sx, double sy);
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFrom(Vec2 pos, double s) &&;
 
-		///// @brief 指定した位置を中心に拡大・縮小します。
-		///// @param pos 拡大・縮小の中心位置
-		///// @param s 拡大率
-		///// @return *this
-		//Polygon& scaleAt(Vec2 pos, Vec2 s);
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFrom(Vec2 pos, double sx, double sy) const&;
+
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFrom(Vec2 pos, double sx, double sy) &&;
+
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFrom(Vec2 pos, Vec2 s) const&;
+
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		Polygon scaledFrom(Vec2 pos, Vec2 s) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaleFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を中心に拡大・縮小します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return *this
+		Polygon& scaleFrom(Vec2 pos, double s);
+
+		/// @brief 指定した位置を中心に拡大・縮小します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return *this
+		Polygon& scaleFrom(Vec2 pos, double sx, double sy);
+
+		/// @brief 指定した位置を中心に拡大・縮小します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return *this
+		Polygon& scaleFrom(Vec2 pos, Vec2 s);
 
 		////////////////////////////////////////////////////////////////
 		//

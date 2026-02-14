@@ -277,8 +277,16 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief X 軸方向にオフセットした新しい四角形を返します。
+		/// @param x X 軸方向のオフセット量
+		/// @return オフセットした新しい四角形
+		[[nodiscard]]
+		constexpr Quad withOffsetX(value_type x) const noexcept;
 
-
+		/// @brief Y 軸方向にオフセットした新しい四角形を返します。
+		/// @param y Y 軸方向のオフセット量
+		/// @return オフセットした新しい四角形
+		[[nodiscard]]
+		constexpr Quad withOffsetY(value_type y) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

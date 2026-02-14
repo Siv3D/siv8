@@ -474,9 +474,51 @@ namespace s3d
 		}
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	addHoles
+	//
+	////////////////////////////////////////////////////////////////
 
+	bool Polygon::addHoles(Array<Array<Vec2>> holes)
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
 
+		holes.remove_if([](const Array<Vec2>& hole) { return (hole.size() < 3); });
 
+		if (not holes)
+		{
+			return false;
+		}
+
+		for (auto& hole : holes)
+		{
+			if (Geometry2D::IsClockwise(hole))
+			{
+				hole.reverse();
+			}
+		}
+
+		Array<Array<Vec2>> inners(Arg::reserve = (pImpl->inners().size() + holes.size()));
+		{
+			inners.append(pImpl->inners());
+			inners.append(holes);
+		}
+
+		Polygon result{ pImpl->outer(), std::move(inners) };
+
+		if (not result)
+		{
+			return false;
+		}
+
+		*this = std::move(result);
+
+		return true;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -525,7 +567,309 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
 
+	Polygon Polygon::withOffset(const double x, const double y) const&
+	{
+		return withOffset(Vec2{ x, y });
+	}
+
+	Polygon Polygon::withOffset(const Vec2 v) const&
+	{
+		Polygon result{ *this };
+		result.moveBy(v);
+		return result;
+	}
+
+	Polygon Polygon::withOffset(const double x, const double y) && noexcept
+	{
+		moveBy(x, y);
+		return std::move(*this);
+	}
+
+	Polygon Polygon::withOffset(const Vec2 v) && noexcept
+	{
+		moveBy(v);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::withOffsetX(const double x) const&
+	{
+		Polygon result{ *this };
+		result.moveBy(Vec2{ x, 0.0 });
+		return result;
+	}
+
+	Polygon Polygon::withOffsetX(const double x) && noexcept
+	{
+		moveBy(Vec2{ x, 0.0 });
+		return std::move(*this);
+	}
+
+	Polygon Polygon::withOffsetY(const double y) const&
+	{
+		Polygon result{ *this };
+		result.moveBy(Vec2{ 0.0, y });
+		return result;
+	}
+
+	Polygon Polygon::withOffsetY(const double y) && noexcept
+	{
+		moveBy(Vec2{ 0.0, y });
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::rotated(const double angle) const&
+	{
+		return rotatedAt(Vec2{ 0, 0 }, angle);
+	}
+
+	Polygon Polygon::rotated(const double angle)&&
+	{
+		return std::move(*this).rotatedAt(Vec2{ 0, 0 }, angle);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotatedAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::rotatedAt(const double x, const double y, const double angle) const&
+	{
+		return rotatedAt(Vec2{ x, y }, angle);
+	}
+
+	Polygon Polygon::rotatedAt(const double x, const double y, const double angle)&&
+	{
+		return std::move(*this).rotatedAt(Vec2{ x, y }, angle);
+	}
+
+	Polygon Polygon::rotatedAt(const Vec2 pos, const double angle) const&
+	{
+		Polygon result{ *this };
+		result.rotateAt(pos, angle);
+		return result;
+	}
+
+	Polygon Polygon::rotatedAt(const Vec2 pos, const double angle)&&
+	{
+		rotateAt(pos, angle);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon& Polygon::rotate(const double angle)
+	{
+		return rotateAt(Vec2{ 0, 0 }, angle);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotateAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon& Polygon::rotateAt(const double x, const double y, const double angle)
+	{
+		return rotateAt(Vec2{ x, y }, angle);
+	}
+
+	Polygon& Polygon::rotateAt(const Vec2 pos, const double angle)
+	{
+		pImpl->rotateAt(pos, angle);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	transformed
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::transformed(const double s, const double c, const Vec2& pos) const&
+	{
+		Polygon result{ *this };
+		result.transform(s, c, pos);
+		return result;
+	}
+
+	Polygon Polygon::transformed(const double s, const double c, const Vec2& pos)&&
+	{
+		transform(s, c, pos);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	transform
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon& Polygon::transform(const double s, const double c, const Vec2& pos)
+	{
+		pImpl->transform(s, c, pos);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFromOrigin
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::scaledFromOrigin(const double s) const&
+	{
+		Polygon result{ *this };
+		result.scaleFromOrigin(s);
+		return result;
+	}
+
+	Polygon Polygon::scaledFromOrigin(const double s)&&
+	{
+		scaleFromOrigin(s);
+		return std::move(*this);
+	}
+
+	Polygon Polygon::scaledFromOrigin(const double sx, const double sy) const&
+	{
+		Polygon result{ *this };
+		result.scaleFromOrigin(sx, sy);
+		return result;
+	}
+
+	Polygon Polygon::scaledFromOrigin(const double sx, const double sy)&&
+	{
+		scaleFromOrigin(sx, sy);
+		return std::move(*this);
+	}
+
+	Polygon Polygon::scaledFromOrigin(const Vec2 s) const&
+	{
+		Polygon result{ *this };
+		result.scaleFromOrigin(s);
+		return result;
+	}
+
+	Polygon Polygon::scaledFromOrigin(const Vec2 s)&&
+	{
+		scaleFromOrigin(s);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFromOrigin
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon& Polygon::scaleFromOrigin(const double s)
+	{
+		pImpl->scaleFromOrigin(s);
+		return *this;
+	}
+
+	Polygon& Polygon::scaleFromOrigin(const double sx, const double sy)
+	{
+		pImpl->scaleFromOrigin(Vec2{ sx, sy });
+		return *this;
+	}
+
+	Polygon& Polygon::scaleFromOrigin(const Vec2 s)
+	{
+		pImpl->scaleFromOrigin(s);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::scaledFrom(const Vec2 pos, const double s) const&
+	{
+		Polygon result{ *this };
+		result.scaleFrom(pos, s);
+		return result;
+	}
+
+	Polygon Polygon::scaledFrom(const Vec2 pos, const double s)&&
+	{
+		scaleFrom(pos, s);
+		return std::move(*this);
+	}
+
+	Polygon Polygon::scaledFrom(const Vec2 pos, const double sx, const double sy) const&
+	{
+		Polygon result{ *this };
+		result.scaleFrom(pos, Vec2{ sx, sy });
+		return result;
+	}
+
+	Polygon Polygon::scaledFrom(const Vec2 pos, const double sx, const double sy)&&
+	{
+		scaleFrom(pos, Vec2{ sx, sy });
+		return std::move(*this);
+	}
+
+	Polygon Polygon::scaledFrom(const Vec2 pos, const Vec2 s) const&
+	{
+		Polygon result{ *this };
+		result.scaleFrom(pos, s);
+		return result;
+	}
+
+	Polygon Polygon::scaledFrom(const Vec2 pos, const Vec2 s)&&
+	{
+		scaleFrom(pos, s);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon& Polygon::scaleFrom(const Vec2 pos, const double s)
+	{
+		pImpl->scaleFrom(pos, s);
+		return *this;
+	}
+
+	Polygon& Polygon::scaleFrom(const Vec2 pos, const double sx, const double sy)
+	{
+		pImpl->scaleFrom(pos, Vec2{ sx, sy });
+		return *this;
+	}
+
+	Polygon& Polygon::scaleFrom(const Vec2 pos, const Vec2 s)
+	{
+		pImpl->scaleFrom(pos, s);
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
