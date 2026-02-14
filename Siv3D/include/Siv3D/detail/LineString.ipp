@@ -757,10 +757,27 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::reverse()
+	constexpr LineString& LineString::reverse() noexcept
 	{
 		m_points.reverse();
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reversed
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::reversed() const&
+	{
+		return LineString{ m_points.rbegin(), m_points.rend() };
+	}
+
+	constexpr LineString LineString::reversed() && noexcept
+	{
+		std::ranges::reverse(m_points);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -772,10 +789,19 @@ namespace s3d
 	constexpr LineString& LineString::unique_consecutive()
 	{
 		m_points.unique_consecutive();
-
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	num_points
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr size_t LineString::num_points() const noexcept
+	{
+		return m_points.size();
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1069,7 +1095,7 @@ namespace s3d
 		return result;
 	}
 
-	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double s) &&
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double s) && noexcept
 	{
 		scaleFrom(pos, s);
 		return std::move(*this);
@@ -1088,7 +1114,7 @@ namespace s3d
 		return result;
 	}
 
-	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double sx, const double sy) &&
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double sx, const double sy) && noexcept
 	{
 		scaleFrom(pos, sx, sy);
 		return std::move(*this);
@@ -1107,7 +1133,7 @@ namespace s3d
 		return result;
 	}
 
-	constexpr LineString LineString::scaledFrom(const Vec2 pos, const Vec2 s) &&
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const Vec2 s) && noexcept
 	{
 		scaleFrom(pos, s);
 		return std::move(*this);

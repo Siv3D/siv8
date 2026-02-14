@@ -256,7 +256,7 @@ namespace s3d
 		return *this;
 	}
 
-	inline Image Image::cloned()&&
+	inline Image Image::cloned() && noexcept
 	{
 		return std::move(*this);
 	}

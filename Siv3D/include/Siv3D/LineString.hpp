@@ -936,18 +936,30 @@ namespace s3d
 //		template <class Fty>
 //		LineString& remove_if(Fty f);
 
-		constexpr LineString& reverse();
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse
+		//
+		////////////////////////////////////////////////////////////////
 
-//		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
-//		/// @return 連続する線分の向きを反転した新しい LineString
-//		[[nodiscard]]
-//		LineString reversed() const&;
-//
-//		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
-//		/// @return 連続する線分の向きを反転した新しい LineString
-//		[[nodiscard]]
-//		LineString reversed()&&;
-//
+		constexpr LineString& reverse() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reversed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
+		/// @return 連続する線分の向きを反転した新しい LineString
+		[[nodiscard]]
+		constexpr LineString reversed() const&;
+
+		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
+		/// @return 連続する線分の向きを反転した新しい LineString
+		[[nodiscard]]
+		constexpr LineString reversed() && noexcept;
+
 //		LineString& shuffle();
 //
 //		SIV3D_CONCEPT_URBG
@@ -966,12 +978,19 @@ namespace s3d
 //
 //		[[nodiscard]]
 //		LineString uniqued_consecutive()&&;
-//
-//		/// @brief LineString を構成する頂点の数を返します。
-//		/// @remark `size()` と同じです。
-//		/// @return LineString を構成する頂点の数
-//		[[nodiscard]]
-//		size_t num_points() const noexcept;
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	num_points
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief LineString を構成する頂点の数を返します。
+		/// @remark `size()` と同じです。
+		/// @return LineString を構成する頂点の数
+		[[nodiscard]]
+		constexpr size_t num_points() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1162,19 +1181,19 @@ namespace s3d
 		constexpr LineString scaledFrom(Vec2 pos, double s) const&;
 
 		[[nodiscard]]
-		constexpr LineString scaledFrom(Vec2 pos, double s) &&;
+		constexpr LineString scaledFrom(Vec2 pos, double s) && noexcept;
 
 		[[nodiscard]]
 		constexpr LineString scaledFrom(Vec2 pos, double sx, double sy) const&;
 
 		[[nodiscard]]
-		constexpr LineString scaledFrom(Vec2 pos, double sx, double sy) &&;
+		constexpr LineString scaledFrom(Vec2 pos, double sx, double sy) && noexcept;
 
 		[[nodiscard]]
 		constexpr LineString scaledFrom(Vec2 pos, Vec2 s) const&;
 
 		[[nodiscard]]
-		constexpr LineString scaledFrom(Vec2 pos, Vec2 s) &&;
+		constexpr LineString scaledFrom(Vec2 pos, Vec2 s) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
