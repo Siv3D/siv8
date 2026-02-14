@@ -181,57 +181,57 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderOutlineByGlyphIndex
+		//	renderOutlineGlyphByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual OutlineGlyph renderOutlineByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, CloseRing closeRing, ReadingDirection readingDirection) = 0;
+		virtual OutlineGlyph renderOutlineGlyphByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, CloseRing closeRing, ReadingDirection readingDirection) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderOutlines
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		virtual Array<OutlineGlyph> renderOutlines(Font::IDType handleID, StringView s, CloseRing closeRing, EnableLigatures enableLigatures, ReadingDirection readingDirection) = 0;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	renderPolygonByGlyphIndex
+		//	renderOutlineGlyphs
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual PolygonGlyph renderPolygonByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
+		virtual Array<OutlineGlyph> renderOutlineGlyphs(Font::IDType handleID, StringView s, CloseRing closeRing, EnableLigatures enableLigatures, ReadingDirection readingDirection) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderPolygons
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		virtual Array<PolygonGlyph> renderPolygons(Font::IDType handleID, StringView s, EnableLigatures enableLigatures, ReadingDirection readingDirection) = 0;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	renderBitmapByGlyphIndex
+		//	renderPolygonGlyphByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual BitmapGlyph renderBitmapByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
+		virtual PolygonGlyph renderPolygonGlyphByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderMSDFByGlyphIndex
+		//	renderPolygonGlyphs
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual MSDFGlyph renderMSDFByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
+		virtual Array<PolygonGlyph> renderPolygonGlyphs(Font::IDType handleID, StringView s, EnableLigatures enableLigatures, ReadingDirection readingDirection) = 0;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderBitmapGlyphByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		virtual BitmapGlyph renderBitmapGlyphByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderMSDFGlyphByGlyphIndex
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		virtual MSDFGlyph renderMSDFGlyphByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, ReadingDirection readingDirection) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//

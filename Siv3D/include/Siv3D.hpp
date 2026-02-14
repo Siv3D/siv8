@@ -648,8 +648,8 @@
 //// キーフレームによるアニメーション | Keyframe animation
 //# include <Siv3D/SimpleAnimation.hpp>
 //
-//// トランジション | Transition
-//# include <Siv3D/Transition.hpp>
+// トランジション | Transition
+# include <Siv3D/Transition.hpp>
 
 // 周期関数 | Periodic functions
 # include <Siv3D/Periodic.hpp>

@@ -587,7 +587,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderOutline
+		//	renderOutlineGlyph
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -597,7 +597,7 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return アウトライングリフ
 		[[nodiscard]]
-		OutlineGlyph renderOutline(char32 codePoint, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		OutlineGlyph renderOutlineGlyph(char32 codePoint, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		/// @brief 指定した文字のアウトライングリフを返します。
 		/// @param ch 文字
@@ -605,11 +605,11 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return アウトライングリフ
 		[[nodiscard]]
-		OutlineGlyph renderOutline(StringView ch, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		OutlineGlyph renderOutlineGlyph(StringView ch, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderOutlineByGlyphIndex
+		//	renderOutlineGlyphByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -619,11 +619,11 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return アウトライングリフ
 		[[nodiscard]]
-		OutlineGlyph renderOutlineByGlyphIndex(GlyphIndex glyphIndex, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		OutlineGlyph renderOutlineGlyphByGlyphIndex(GlyphIndex glyphIndex, CloseRing closeRing = CloseRing::No, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderOutlines
+		//	renderOutlineGlyphs
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -634,11 +634,11 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return アウトライングリフの配列
 		[[nodiscard]]
-		Array<OutlineGlyph> renderOutlines(StringView s, CloseRing closeRing = CloseRing::No, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		Array<OutlineGlyph> renderOutlineGlyphs(StringView s, CloseRing closeRing = CloseRing::No, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderPolygon
+		//	renderPolygonGlyph
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -647,18 +647,18 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return ポリゴングリフ
 		[[nodiscard]]
-		PolygonGlyph renderPolygon(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		PolygonGlyph renderPolygonGlyph(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		/// @brief 指定した文字のポリゴングリフを返します。
 		/// @param ch 文字
 		/// @param readingDirection テキストの方向
 		/// @return ポリゴングリフ
 		[[nodiscard]]
-		PolygonGlyph renderPolygon(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		PolygonGlyph renderPolygonGlyph(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderPolygonByGlyphIndex
+		//	renderPolygonGlyphByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -667,11 +667,11 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return ポリゴングリフ
 		[[nodiscard]]
-		PolygonGlyph renderPolygonByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		PolygonGlyph renderPolygonGlyphByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderPolygons
+		//	renderPolygonGlyphs
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -681,41 +681,41 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return ポリゴングリフの配列
 		[[nodiscard]]
-		Array<PolygonGlyph> renderPolygons(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		Array<PolygonGlyph> renderPolygonGlyphs(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		//////////////////////////////////////////////////////////////////
 		////
-		////	renderMesh
-		////
-		//////////////////////////////////////////////////////////////////
-
-		//[[nodiscard]]
-		//MeshGlyph renderMesh(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
-
-		//[[nodiscard]]
-		//MeshGlyph renderMesh(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
-
-		//////////////////////////////////////////////////////////////////
-		////
-		////	renderMeshByGlyphIndex
+		////	renderMeshGlyph
 		////
 		//////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
-		//MeshGlyph renderMeshByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		//MeshGlyph renderMeshGlyph(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		//[[nodiscard]]
+		//MeshGlyph renderMeshGlyph(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		//////////////////////////////////////////////////////////////////
 		////
-		////	renderMeshes
+		////	renderMeshGlyphByGlyphIndex
 		////
 		//////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
-		//Array<MeshGlyph> renderMeshes(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		//MeshGlyph renderMeshGlyphByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	renderMesheGlyphs
+		////
+		//////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//Array<MeshGlyph> renderMesheGlyphs(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderBitmap
+		//	renderBitmapGlyph
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -724,18 +724,18 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return ビットマップグリフ
 		[[nodiscard]]
-		BitmapGlyph renderBitmap(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		BitmapGlyph renderBitmapGlyph(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		/// @brief 指定した文字のビットマップグリフを返します。
 		/// @param ch 文字
 		/// @param readingDirection テキストの方向
 		/// @return ビットマップグリフ
 		[[nodiscard]]
-		BitmapGlyph renderBitmap(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		BitmapGlyph renderBitmapGlyph(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderBitmapByGlyphIndex
+		//	renderBitmapGlyphByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -744,11 +744,11 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return ビットマップグリフ
 		[[nodiscard]]
-		BitmapGlyph renderBitmapByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		BitmapGlyph renderBitmapGlyphByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderMSDF
+		//	renderMSDFGlyph
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -757,18 +757,18 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return MSDF グリフ
 		[[nodiscard]]
-		MSDFGlyph renderMSDF(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		MSDFGlyph renderMSDFGlyph(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		/// @brief 指定した文字の MSDF グリフを返します。
 		/// @param ch 文字
 		/// @param readingDirection テキストの方向
 		/// @return MSDF グリフ
 		[[nodiscard]]
-		MSDFGlyph renderMSDF(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		MSDFGlyph renderMSDFGlyph(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderMSDFByGlyphIndex
+		//	renderMSDFGlyphByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -777,7 +777,7 @@ namespace s3d
 		/// @param readingDirection テキストの方向
 		/// @return MSDF グリフ
 		[[nodiscard]]
-		MSDFGlyph renderMSDFByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		MSDFGlyph renderMSDFGlyphByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//

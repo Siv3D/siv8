@@ -380,11 +380,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderOutlineByGlyphIndex
+	//	renderOutlineGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	OutlineGlyph CFont::renderOutlineByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection)
+	OutlineGlyph CFont::renderOutlineGlyphByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		return RenderOutlineGlyph(font->getFace(), glyphIndex, closeRing, font->getInfo(), readingDirection);
@@ -392,11 +392,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderOutlines
+	//	renderOutlineGlyphs
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<OutlineGlyph> CFont::renderOutlines(const Font::IDType handleID, const StringView s, const CloseRing closeRing, const EnableLigatures enableLigatures, const ReadingDirection readingDirection)
+	Array<OutlineGlyph> CFont::renderOutlineGlyphs(const Font::IDType handleID, const StringView s, const CloseRing closeRing, const EnableLigatures enableLigatures, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const FT_Face face = font->getFace();
@@ -416,11 +416,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderPolygonByGlyphIndex
+	//	renderPolygonGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	PolygonGlyph CFont::renderPolygonByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	PolygonGlyph CFont::renderPolygonGlyphByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		return RenderPolygonGlyph(font->getFace(), glyphIndex, font->getInfo(), readingDirection);
@@ -432,7 +432,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<PolygonGlyph> CFont::renderPolygons(const Font::IDType handleID, const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection)
+	Array<PolygonGlyph> CFont::renderPolygonGlyphs(const Font::IDType handleID, const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const FT_Face face = font->getFace();
@@ -452,22 +452,22 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderBitmapByGlyphIndex
+	//	renderBitmapGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	BitmapGlyph CFont::renderBitmapByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	BitmapGlyph CFont::renderBitmapGlyphByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		return m_fonts[handleID]->renderBitmapByGlyphIndex(glyphIndex, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderMSDFByGlyphIndex
+	//	renderMSDFGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	MSDFGlyph CFont::renderMSDFByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	MSDFGlyph CFont::renderMSDFGlyphByGlyphIndex(const Font::IDType handleID, const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		return m_fonts[handleID]->renderMSDFByGlyphIndex(glyphIndex, getBufferThickness(handleID), readingDirection);
 	}
