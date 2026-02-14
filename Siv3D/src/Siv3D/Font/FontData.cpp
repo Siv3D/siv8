@@ -367,22 +367,22 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderBitmapByGlyphIndex
+	//	generateBitmapGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	BitmapGlyph FontData::renderBitmapByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
+	BitmapGlyph FontData::generateBitmapGlyphByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection)
 	{
 		return RenderBitmapGlyph(m_face->getFace(), glyphIndex, m_face->getInfo(), readingDirection, m_face->getSkFont());
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderMSDFByGlyphIndex
+	//	generateMSDFGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 	
-	MSDFGlyph FontData::renderMSDFByGlyphIndex(const GlyphIndex glyphIndex, const int32 bufferThickness, const ReadingDirection readingDirection)
+	MSDFGlyph FontData::generateMSDFGlyphByGlyphIndex(const GlyphIndex glyphIndex, const int32 bufferThickness, const ReadingDirection readingDirection)
 	{
 		return RenderMSDFGlyph(m_face->getFace(), glyphIndex, m_face->getInfo(), bufferThickness, readingDirection);
 	}

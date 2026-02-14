@@ -111,7 +111,7 @@ namespace s3d
 			return true;
 		}
 
-		const BitmapGlyph bitmapGlyph = font.renderBitmapByGlyphIndex(glyphIndex, readingDirection);
+		const BitmapGlyph bitmapGlyph = font.generateBitmapGlyphByGlyphIndex(glyphIndex, readingDirection);
 
 		// グリフのレンダリングに失敗した場合
 		if (bitmapGlyph.glyphIndex != glyphIndex)
@@ -144,7 +144,7 @@ namespace s3d
 			return true;
 		}
 
-		const MSDFGlyph msdfGlyph = font.renderMSDFByGlyphIndex(glyphIndex, m_bufferThickness, readingDirection);
+		const MSDFGlyph msdfGlyph = font.generateMSDFGlyphByGlyphIndex(glyphIndex, m_bufferThickness, readingDirection);
 
 		// グリフのレンダリングに失敗した場合
 		if (msdfGlyph.glyphIndex != glyphIndex)

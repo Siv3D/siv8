@@ -182,21 +182,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderBitmapByGlyphIndex
+		//	generateBitmapGlyphByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		BitmapGlyph renderBitmapByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection);
+		BitmapGlyph generateBitmapGlyphByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection);
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	renderMSDFByGlyphIndex
+		//	renderMSDFGlyphByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		MSDFGlyph renderMSDFByGlyphIndex(GlyphIndex glyphIndex, int32 bufferThickness, ReadingDirection readingDirection);
+		MSDFGlyph generateMSDFGlyphByGlyphIndex(GlyphIndex glyphIndex, int32 bufferThickness, ReadingDirection readingDirection);
 
 	private:
 
