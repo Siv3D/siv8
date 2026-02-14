@@ -751,10 +751,6 @@ namespace s3d
 		return BitwiseHash(m_points.data(), m_points.size_bytes());
 	}
 
-
-
-
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	reverse
@@ -797,7 +793,6 @@ namespace s3d
 		return (closeRing ? m_points.size() : (m_points.size() - 1));
 	}
 
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	movedBy
@@ -818,11 +813,7 @@ namespace s3d
 
 	constexpr LineString LineString::movedBy(const double x, const double y) && noexcept
 	{
-		for (auto& point : m_points)
-		{
-			point.moveBy(x, y);
-		}
-
+		moveBy(x, y);
 		return std::move(*this);
 	}
 
@@ -840,11 +831,7 @@ namespace s3d
 
 	constexpr LineString LineString::movedBy(const Vec2 v) && noexcept
 	{
-		for (auto& point : m_points)
-		{
-			point.moveBy(v);
-		}
-	
+		moveBy(v);
 		return std::move(*this);
 	}
 
@@ -894,11 +881,7 @@ namespace s3d
 
 	constexpr LineString LineString::withOffset(const double x, const double y) && noexcept
 	{
-		for (auto& point : m_points)
-		{
-			point.moveBy(x, y);
-		}
-	
+		moveBy(x, y);
 		return std::move(*this);
 	}
 
@@ -916,11 +899,7 @@ namespace s3d
 
 	constexpr LineString LineString::withOffset(const Vec2 v) && noexcept
 	{
-		for (auto& point : m_points)
-		{
-			point.moveBy(v);
-		}
-	
+		moveBy(v);
 		return std::move(*this);
 	}
 
@@ -976,11 +955,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	scaled
+	//	scaledFromOrigin
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString LineString::scaled(const double s) const&
+	constexpr LineString LineString::scaledFromOrigin(const double s) const&
 	{
 		LineString result{ *this };
 
@@ -992,17 +971,13 @@ namespace s3d
 		return result;
 	}
 
-	constexpr LineString LineString::scaled(const double s) && noexcept
+	constexpr LineString LineString::scaledFromOrigin(const double s) && noexcept
 	{
-		for (auto& point : m_points)
-		{
-			point *= s;
-		}
-
+		scaleFromOrigin(s);
 		return std::move(*this);
 	}
 
-	constexpr LineString LineString::scaled(const double sx, const double sy) const&
+	constexpr LineString LineString::scaledFromOrigin(const double sx, const double sy) const&
 	{
 		LineString result{ *this };
 
@@ -1015,18 +990,13 @@ namespace s3d
 		return result;
 	}
 
-	constexpr LineString LineString::scaled(const double sx, const double sy) && noexcept
+	constexpr LineString LineString::scaledFromOrigin(const double sx, const double sy) && noexcept
 	{
-		for (auto& point : m_points)
-		{
-			point.x *= sx;
-			point.y *= sy;
-		}
-
+		scaleFromOrigin(sx, sy);
 		return std::move(*this);
 	}
 
-	constexpr LineString LineString::scaled(const Vec2 s) const&
+	constexpr LineString LineString::scaledFromOrigin(const Vec2 s) const&
 	{
 		LineString result{ *this };
 
@@ -1038,17 +1008,148 @@ namespace s3d
 		return result;
 	}
 
-	constexpr LineString LineString::scaled(const Vec2 s) && noexcept
+	constexpr LineString LineString::scaledFromOrigin(const Vec2 s) && noexcept
+	{
+		scaleFromOrigin(s);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFromOrigin
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::scaleFromOrigin(const double s)
 	{
 		for (auto& point : m_points)
 		{
 			point *= s;
 		}
 
+		return *this;
+	}
+
+	constexpr LineString& LineString::scaleFromOrigin(const double sx, const double sy)
+	{
+		for (auto& point : m_points)
+		{
+			point.x *= sx;
+			point.y *= sy;
+		}
+
+		return *this;
+	}
+
+	constexpr LineString& LineString::scaleFromOrigin(const Vec2 s)
+	{
+		for (auto& point : m_points)
+		{
+			point *= s;
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double s) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point = pos + ((point - pos) * s);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double s) &&
+	{
+		scaleFrom(pos, s);
 		return std::move(*this);
 	}
 
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double sx, const double sy) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.x = pos.x + ((point.x - pos.x) * sx);
+			point.y = pos.y + ((point.y - pos.y) * sy);
+		}
+		
+		return result;
+	}
 
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double sx, const double sy) &&
+	{
+		scaleFrom(pos, sx, sy);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const Vec2 s) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.x = pos.x + ((point.x - pos.x) * s.x);
+			point.y = pos.y + ((point.y - pos.y) * s.y);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const Vec2 s) &&
+	{
+		scaleFrom(pos, s);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double s)
+	{
+		for (auto& point : m_points)
+		{
+			point = pos + ((point - pos) * s);
+		}
+	
+		return *this;
+	}
+
+	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double sx, const double sy)
+	{
+		for (auto& point : m_points)
+		{
+			point.x = pos.x + ((point.x - pos.x) * sx);
+			point.y = pos.y + ((point.y - pos.y) * sy);
+		}
+	
+		return *this;
+	}
+
+	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const Vec2 s)
+	{
+		for (auto& point : m_points)
+		{
+			point.x = pos.x + ((point.x - pos.x) * s.x);
+			point.y = pos.y + ((point.y - pos.y) * s.y);
+		}
+	
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

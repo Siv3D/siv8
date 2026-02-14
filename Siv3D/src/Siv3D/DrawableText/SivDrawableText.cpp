@@ -1329,7 +1329,7 @@ namespace s3d
 			{
 				const Vec2 posOffset = outlineGlyph.getOffset(scale);
 				const Vec2 drawPos = (penPos + posOffset);
-				glyphOutlines.push_back(ring.scaled(scale).movedBy(drawPos));
+				glyphOutlines.push_back(ring.scaledFromOrigin(scale).movedBy(drawPos));
 			}
 
 			penPos.x += (outlineGlyph.advance * scale);

@@ -1118,63 +1118,75 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	scaled
+		//	scaledFromOrigin
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr LineString scaled(double s) const&;
+		constexpr LineString scaledFromOrigin(double s) const&;
 
 		[[nodiscard]]
-		constexpr LineString scaled(double s) && noexcept;
+		constexpr LineString scaledFromOrigin(double s) && noexcept;
 
 		[[nodiscard]]
-		constexpr LineString scaled(double sx, double sy) const&;
+		constexpr LineString scaledFromOrigin(double sx, double sy) const&;
 
 		[[nodiscard]]
-		constexpr LineString scaled(double sx, double sy) && noexcept;
+		constexpr LineString scaledFromOrigin(double sx, double sy) && noexcept;
 
 		[[nodiscard]]
-		constexpr LineString scaled(Vec2 s) const&;
+		constexpr LineString scaledFromOrigin(Vec2 s) const&;
 
 		[[nodiscard]]
-		constexpr LineString scaled(Vec2 s) && noexcept;
+		constexpr LineString scaledFromOrigin(Vec2 s) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	scale
+		//	scaleFromOrigin
 		//
 		////////////////////////////////////////////////////////////////
 
-//		LineString& scale(double s);
-//
-//		LineString& scale(double sx, double sy);
-//
-//		LineString& scale(Vec2 s);
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, double s) const&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, double s)&&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, double sx, double sy) const&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, double sx, double sy)&&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, Vec2 s) const&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, Vec2 s)&&;
-//
-//		LineString& scaleAt(Vec2 pos, double s);
-//
-//		LineString& scaleAt(Vec2 pos, double sx, double sy);
-//
-//		LineString& scaleAt(Vec2 pos, Vec2 s);
+		constexpr LineString& scaleFromOrigin(double s);
+
+		constexpr LineString& scaleFromOrigin(double sx, double sy);
+
+		constexpr LineString& scaleFromOrigin(Vec2 s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaledFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, double s) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, double s) &&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, double sx, double sy) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, double sx, double sy) &&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, Vec2 s) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, Vec2 s) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaleFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr LineString& scaleFrom(Vec2 pos, double s);
+
+		constexpr LineString& scaleFrom(Vec2 pos, double sx, double sy);
+
+		constexpr LineString& scaleFrom(Vec2 pos, Vec2 s);
 
 		////////////////////////////////////////////////////////////////
 		//
