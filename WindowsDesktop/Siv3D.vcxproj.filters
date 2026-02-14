@@ -1183,6 +1183,9 @@
     <Filter Include="src\Siv3D\Bezier3Walker">
       <UniqueIdentifier>{ae1266ce-6e20-4d95-818f-60c6990a2308}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\MultiPolygon">
+      <UniqueIdentifier>{f265e751-86ec-4566-8bec-d2085509c8a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -7624,6 +7627,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Bezier3Walker\SivBezier3Walker.cpp">
       <Filter>src\Siv3D\Bezier3Walker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MultiPolygon\SivMultiPolygon.cpp">
+      <Filter>src\Siv3D\MultiPolygon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

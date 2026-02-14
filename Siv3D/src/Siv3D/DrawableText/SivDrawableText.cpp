@@ -1355,4 +1355,64 @@ namespace s3d
 		const RectF textRegion = region(fontSize);
 		return renderOutlines(fontSize, (center - textRegion.center()), closeRing);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderPolygons
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<MultiPolygon> DrawableText::renderPolygons(const Vec2& pos) const
+	{
+		return renderPolygons(font.baseSize(), pos);
+	}
+
+	Array<MultiPolygon> DrawableText::renderPolygons(const double fontSize, const Vec2& pos) const
+	{
+		const auto id = font.id();
+		const double baseSize = font.baseSize();
+		const double scale = (fontSize / baseSize);
+		const double baseLineHeight = (font.height() * scale);
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+		
+		Array<MultiPolygon> polygons;
+		
+		for (const auto& resolvedGlyph : resolvedGlyphs)
+		{
+			if (const char32 ch = text[resolvedGlyph.pos];
+				ch == U'\n')
+			{
+				penPos.x = basePos.x;
+				penPos.y += baseLineHeight;
+				continue;
+			}
+			
+			const PolygonGlyph polygonGlyph = SIV3D_ENGINE(Font)->generatePolygonGlyphByGlyphIndex(id, resolvedGlyph.glyphIndex, readingDirection);
+			const Vec2 posOffset = polygonGlyph.getOffset(scale);
+			const Vec2 drawPos = (penPos + posOffset);
+			polygons.push_back(polygonGlyph.polygons.scaledFromOrigin(scale).movedBy(drawPos));
+
+			penPos.x += (polygonGlyph.advance * scale);
+		}
+
+		return polygons;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderPolygonsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<MultiPolygon> DrawableText::renderPolygonsAt(const Vec2& center) const
+	{
+		return renderPolygonsAt(font.baseSize(), center);
+	}
+
+	Array<MultiPolygon> DrawableText::renderPolygonsAt(const double fontSize, const Vec2& center) const
+	{
+		const RectF textRegion = region(fontSize);
+		return renderPolygons(fontSize, (center - textRegion.center()));
+	}
 }

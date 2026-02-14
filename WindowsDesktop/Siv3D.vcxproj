@@ -1498,6 +1498,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mouse\SivMouse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSAASampleCount\SivMSAASampleCount.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSL\SivMSL.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MultiPolygon\SivMultiPolygon.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\NativeShareFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\SivNativeShare.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NaturalSort\SivNaturalSort.cpp" />

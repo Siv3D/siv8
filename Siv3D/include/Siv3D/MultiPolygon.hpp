@@ -729,6 +729,289 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	movedBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 平行移動した多角形を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形
+		[[nodiscard]]
+		MultiPolygon movedBy(double x, double y) const&;
+
+		/// @brief 平行移動した多角形を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形
+		[[nodiscard]]
+		MultiPolygon movedBy(double x, double y) && noexcept;
+
+		/// @brief 平行移動した多角形を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形
+		[[nodiscard]]
+		MultiPolygon movedBy(Vec2 v) const&;
+
+		/// @brief 平行移動した多角形を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形
+		[[nodiscard]]
+		MultiPolygon movedBy(Vec2 v) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	moveBy
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形を平行移動します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return *this
+		MultiPolygon& moveBy(double x, double y) noexcept;
+
+		/// @brief 多角形を平行移動します。
+		/// @param v 移動量
+		/// @return *this
+		MultiPolygon& moveBy(Vec2 v) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		MultiPolygon withOffset(double x, double y) const&;
+
+		MultiPolygon withOffset(double x, double y) && noexcept;
+
+		MultiPolygon withOffset(Vec2 v) const&;
+
+		MultiPolygon withOffset(Vec2 v) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		MultiPolygon withOffsetX(double x) const&;
+
+		MultiPolygon withOffsetX(double x) && noexcept;
+
+		MultiPolygon withOffsetY(double y) const&;
+
+		MultiPolygon withOffsetY(double y) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MultiPolygon rotated(double angle) const&;
+
+		[[nodiscard]]
+		MultiPolygon rotated(double angle)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotatedAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MultiPolygon rotatedAt(Vec2 pos, double angle) const&;
+
+		[[nodiscard]]
+		MultiPolygon rotatedAt(Vec2 pos, double angle)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotate
+		//
+		////////////////////////////////////////////////////////////////
+
+		MultiPolygon& rotate(double angle);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotateAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		MultiPolygon& rotateAt(Vec2 pos, double angle);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	transformed
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MultiPolygon transformed(double s, double c, const Vec2& pos) const&;
+
+		[[nodiscard]]
+		MultiPolygon transformed(double s, double c, const Vec2& pos)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	transform
+		//
+		////////////////////////////////////////////////////////////////
+
+		MultiPolygon& transform(double s, double c, const Vec2& pos);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaledFromOrigin
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFromOrigin(double s) const&;
+
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFromOrigin(double s)&&;
+
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFromOrigin(double sx, double sy) const&;
+
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFromOrigin(double sx, double sy)&&;
+
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFromOrigin(Vec2 s) const&;
+
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した多角形を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFromOrigin(Vec2 s)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaleFromOrigin
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点 (0, 0) を中心に拡大・縮小します。
+		/// @param s 拡大率
+		/// @return *this
+		MultiPolygon& scaleFromOrigin(double s);
+
+		/// @brief 原点 (0, 0) を中心に拡大・縮小します。
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return *this
+		MultiPolygon& scaleFromOrigin(double sx, double sy);
+
+		/// @brief 原点 (0, 0) を中心に拡大・縮小します。
+		/// @param s 拡大率
+		/// @return *this
+		MultiPolygon& scaleFromOrigin(Vec2 s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaledFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFrom(Vec2 pos, double s) const&;
+
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFrom(Vec2 pos, double s)&&;
+
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFrom(Vec2 pos, double sx, double sy) const&;
+
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFrom(Vec2 pos, double sx, double sy)&&;
+
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFrom(Vec2 pos, Vec2 s) const&;
+
+		/// @brief 指定した位置を中心に拡大・縮小した多角形を返します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return 拡大・縮小した多角形
+		[[nodiscard]]
+		MultiPolygon scaledFrom(Vec2 pos, Vec2 s)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaleFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を中心に拡大・縮小します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return *this
+		MultiPolygon& scaleFrom(Vec2 pos, double s);
+
+		/// @brief 指定した位置を中心に拡大・縮小します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return *this
+		MultiPolygon& scaleFrom(Vec2 pos, double sx, double sy);
+
+		/// @brief 指定した位置を中心に拡大・縮小します。
+		/// @param pos 拡大・縮小の中心位置
+		/// @param s 拡大率
+		/// @return *this
+		MultiPolygon& scaleFrom(Vec2 pos, Vec2 s);
+
+
+
+
+
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	swap
 		//
 		////////////////////////////////////////////////////////////////

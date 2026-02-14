@@ -531,17 +531,17 @@ namespace s3d
 		return movedBy(Vec2{ x, y });
 	}
 
+	Polygon Polygon::movedBy(const double x, const double y) && noexcept
+	{
+		moveBy(x, y);
+		return std::move(*this);
+	}
+
 	Polygon Polygon::movedBy(const Vec2 v) const&
 	{
 		Polygon result{ *this };
 		result.moveBy(v);
 		return result;
-	}
-
-	Polygon Polygon::movedBy(const double x, const double y) && noexcept
-	{
-		moveBy(x, y);
-		return std::move(*this);
 	}
 
 	Polygon Polygon::movedBy(const Vec2 v) && noexcept
@@ -578,17 +578,17 @@ namespace s3d
 		return withOffset(Vec2{ x, y });
 	}
 
+	Polygon Polygon::withOffset(const double x, const double y) && noexcept
+	{
+		moveBy(x, y);
+		return std::move(*this);
+	}
+
 	Polygon Polygon::withOffset(const Vec2 v) const&
 	{
 		Polygon result{ *this };
 		result.moveBy(v);
 		return result;
-	}
-
-	Polygon Polygon::withOffset(const double x, const double y) && noexcept
-	{
-		moveBy(x, y);
-		return std::move(*this);
 	}
 
 	Polygon Polygon::withOffset(const Vec2 v) && noexcept
@@ -651,16 +651,6 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::rotatedAt(const double x, const double y, const double angle) const&
-	{
-		return rotatedAt(Vec2{ x, y }, angle);
-	}
-
-	Polygon Polygon::rotatedAt(const double x, const double y, const double angle)&&
-	{
-		return std::move(*this).rotatedAt(Vec2{ x, y }, angle);
-	}
-
 	Polygon Polygon::rotatedAt(const Vec2 pos, const double angle) const&
 	{
 		Polygon result{ *this };
@@ -690,11 +680,6 @@ namespace s3d
 	//	rotateAt
 	//
 	////////////////////////////////////////////////////////////////
-
-	Polygon& Polygon::rotateAt(const double x, const double y, const double angle)
-	{
-		return rotateAt(Vec2{ x, y }, angle);
-	}
 
 	Polygon& Polygon::rotateAt(const Vec2 pos, const double angle)
 	{

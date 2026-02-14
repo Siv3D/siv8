@@ -389,12 +389,6 @@ namespace s3d
 		Polygon movedBy(double x, double y) const&;
 
 		/// @brief 平行移動した多角形を返します。
-		/// @param v 移動量
-		/// @return 平行移動した多角形
-		[[nodiscard]]
-		Polygon movedBy(Vec2 v) const&;
-
-		/// @brief 平行移動した多角形を返します。
 		/// @param x X 方向の移動量
 		/// @param y Y 方向の移動量
 		/// @return 平行移動した多角形
@@ -405,11 +399,17 @@ namespace s3d
 		/// @param v 移動量
 		/// @return 平行移動した多角形
 		[[nodiscard]]
+		Polygon movedBy(Vec2 v) const&;
+
+		/// @brief 平行移動した多角形を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形
+		[[nodiscard]]
 		Polygon movedBy(Vec2 v) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	movedBy
+		//	moveBy
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -432,9 +432,9 @@ namespace s3d
 
 		Polygon withOffset(double x, double y) const&;
 
-		Polygon withOffset(Vec2 v) const&;
-
 		Polygon withOffset(double x, double y) && noexcept;
+
+		Polygon withOffset(Vec2 v) const&;
 
 		Polygon withOffset(Vec2 v) && noexcept;
 
@@ -471,12 +471,6 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Polygon rotatedAt(double x, double y, double angle) const&;
-
-		[[nodiscard]]
-		Polygon rotatedAt(double x, double y, double angle) &&;
-
-		[[nodiscard]]
 		Polygon rotatedAt(Vec2 pos, double angle) const&;
 
 		[[nodiscard]]
@@ -495,8 +489,6 @@ namespace s3d
 		//	rotateAt
 		//
 		////////////////////////////////////////////////////////////////
-
-		Polygon& rotateAt(double x, double y, double angle);
 
 		Polygon& rotateAt(Vec2 pos, double angle);
 

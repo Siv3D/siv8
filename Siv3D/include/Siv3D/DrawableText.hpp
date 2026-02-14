@@ -668,6 +668,26 @@ namespace s3d
 		Array<Array<LineString>> renderOutlinesAt(const Vec2& pos = Vec2{ 0, 0 }, CloseRing closeRing = CloseRing::No) const;
 
 		Array<Array<LineString>> renderOutlinesAt(double size, const Vec2& pos = Vec2{ 0, 0 }, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderPolygons
+		//
+		////////////////////////////////////////////////////////////////
+
+		Array<MultiPolygon> renderPolygons(const Vec2& pos = Vec2{ 0, 0 }) const;
+
+		Array<MultiPolygon> renderPolygons(double size, const Vec2& pos = Vec2{ 0, 0 }) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderPolygonsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		Array<MultiPolygon> renderPolygonsAt(const Vec2& pos = Vec2{ 0, 0 }) const;
+
+		Array<MultiPolygon> renderPolygonsAt(double size, const Vec2& pos = Vec2{ 0, 0 }) const;
 	};
 }
 
