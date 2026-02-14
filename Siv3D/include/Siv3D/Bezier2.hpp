@@ -353,7 +353,7 @@ namespace s3d
 		/// @param point 点
 		/// @return パラメータ t（0.0～1.0）
 		[[nodiscard]]
-		double closestT(const position_type& point) const noexcept;
+		double closestT(const position_type& point) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -365,7 +365,7 @@ namespace s3d
 		/// @param point 点
 		/// @return 曲線上の最近傍点
 		[[nodiscard]]
-		position_type closestPoint(const position_type& point) const noexcept;
+		position_type closestPoint(const position_type& point) const;
 
 		////////////////////////////////////////////////////////////////
 		//

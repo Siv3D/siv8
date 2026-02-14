@@ -259,7 +259,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Bezier2::closestT(const position_type& point) const noexcept
+	double Bezier2::closestT(const position_type& point) const
 	{
 		constexpr double Eps = 1e-12;
 		constexpr double DegenerateRel = 1e-24; // relative threshold for M.dot(M)
@@ -332,7 +332,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Bezier2::position_type Bezier2::closestPoint(const position_type& point) const noexcept
+	Bezier2::position_type Bezier2::closestPoint(const position_type& point) const
 	{
 		return getPos(closestT(point));
 	}

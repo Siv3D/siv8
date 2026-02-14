@@ -418,8 +418,8 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Circle& a, const Line& b) noexcept;
 
-		//[[nodiscard]]
-		//inline bool Intersect(const Circle& a, const Bezier2& b) noexcept;
+		[[nodiscard]]
+		bool Intersect(const Circle& a, const Bezier2& b);
 
 		//[[nodiscard]]
 		//inline bool Intersect(const Circle& a, const Bezier3& b) noexcept;
@@ -472,8 +472,8 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersect(const Ellipse& a, const Line& b) noexcept;
 
-		//[[nodiscard]]
-		//inline bool Intersect(const Ellipse& a, const Bezier2& b);
+		[[nodiscard]]
+		bool Intersect(const Ellipse& a, const Bezier2& b);
 
 		//[[nodiscard]]
 		//inline bool Intersect(const Ellipse& a, const Bezier3& b);

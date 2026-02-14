@@ -1084,6 +1084,11 @@ namespace s3d
 			return Intersect(b, a);
 		}
 
+		bool Intersect(const Circle& a, const Bezier2& b)
+		{
+			return Intersect(b, a);
+		}
+
 		bool Intersect(const Circle& a, const Triangle& b) noexcept
 		{
 			return CircleTriangleIntersection(a, b);
@@ -1112,6 +1117,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const Ellipse& a, const Line& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const Ellipse& a, const Bezier2& b)
 		{
 			return Intersect(b, a);
 		}
