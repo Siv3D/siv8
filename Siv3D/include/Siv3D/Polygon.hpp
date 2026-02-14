@@ -759,15 +759,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形に新しい領域を追加します。新しい領域は既存の多角形と接続していなければなりません。
-		///// @param other 新しい領域
-		///// @return 新しい領域の追加に成功した場合 true, それ以外の場合は false
-		//bool append(const RectF& other);
+		/// @brief 多角形に新しい領域を追加します。新しい領域は既存の多角形と接続していなければなりません。
+		/// @param other 新しい領域
+		/// @return 新しい領域の追加に成功した場合 true, それ以外の場合は false
+		bool append(const RectF& other);
 
-		///// @brief 多角形に新しい領域を追加します。新しい領域は既存の多角形と接続していなければなりません。
-		///// @param other 新しい領域
-		///// @return 新しい領域の追加に成功した場合 true, それ以外の場合は false
-		//bool append(const Polygon& other);
+		/// @brief 多角形に新しい領域を追加します。新しい領域は既存の多角形と接続していなければなりません。
+		/// @param other 新しい領域
+		/// @return 新しい領域の追加に成功した場合 true, それ以外の場合は false
+		bool append(const Polygon& other);
 
 		////////////////////////////////////////////////////////////////
 		//

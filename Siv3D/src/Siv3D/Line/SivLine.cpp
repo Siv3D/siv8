@@ -454,6 +454,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	const Line& Line::drawArrow(const double thickness, const double headSize, const ColorF& color) const
+	{
+		return drawArrow(thickness, SizeF{ headSize, headSize }, color);
+	}
+
+	const Line& Line::drawArrow(const double thickness, const double headSize, const ColorF& colorStart, const ColorF& colorEnd) const
+	{
+		return drawArrow(thickness, SizeF{ headSize, headSize }, colorStart, colorEnd);
+	}
+
 	const Line& Line::drawArrow(const double thickness, const SizeF& headSize, const ColorF& color) const
 	{
 		return drawArrow(LineCap::Flat, thickness, headSize, color);
@@ -462,6 +472,16 @@ namespace s3d
 	const Line& Line::drawArrow(const double thickness, const SizeF& headSize, const ColorF& colorStart, const ColorF& colorEnd) const
 	{
 		return drawArrow(LineCap::Flat, thickness, headSize, colorStart, colorEnd);
+	}
+
+	const Line& Line::drawArrow(const LineCap startCap, const double thickness, const double headSize, const ColorF& color) const
+	{
+		return drawArrow(startCap, thickness, SizeF{ headSize, headSize }, color);
+	}
+
+	const Line& Line::drawArrow(const LineCap startCap, const double thickness, const double headSize, const ColorF& colorStart, const ColorF& colorEnd) const
+	{
+		return drawArrow(startCap, thickness, SizeF{ headSize, headSize }, colorStart, colorEnd);
 	}
 
 	const Line& Line::drawArrow(const LineCap startCap, const double thickness, const SizeF& headSize, const ColorF& color) const
@@ -502,6 +522,11 @@ namespace s3d
 	//	drawDoubleHeadedArrow
 	//
 	////////////////////////////////////////////////////////////////
+
+	const Line& Line::drawDoubleHeadedArrow(const double thickness, const double headSize, const ColorF& color) const
+	{
+		return drawDoubleHeadedArrow(thickness, SizeF{ headSize, headSize }, color);
+	}
 
 	const Line& Line::drawDoubleHeadedArrow(const double thickness, const SizeF& headSize, const ColorF& color) const
 	{

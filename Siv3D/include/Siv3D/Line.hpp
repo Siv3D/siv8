@@ -1040,14 +1040,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		const Line& drawArrow(double thickness = 1.0, double headSize = 5.0, const ColorF& color = Palette::White) const;
+
+		const Line& drawArrow(double thickness, double headSize, const ColorF& colorStart, const ColorF& colorEnd) const;
+
 		/// @brief 矢印を描きます。
 		/// @param thickness 矢印の線の幅
 		/// @param headSize 矢印の三角形のサイズ
 		/// @param color 色
 		/// @return *this
-		const Line& drawArrow(double thickness = 1.0, const SizeF& headSize = SizeF{ 5.0, 5.0 }, const ColorF& color = Palette::White) const;
+		const Line& drawArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
 
 		const Line& drawArrow(double thickness, const SizeF& headSize, const ColorF& colorStart, const ColorF& colorEnd) const;
+
+		const Line& drawArrow(LineCap startCap, double thickness = 1.0, double headSize = 5.0, const ColorF& color = Palette::White) const;
+
+		const Line& drawArrow(LineCap startCap, double thickness, double headSize, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 矢印を描きます。
 		/// @param startCap 始点側の形状
@@ -1055,7 +1063,7 @@ namespace s3d
 		/// @param headSize 矢印の三角形のサイズ
 		/// @param color 色
 		/// @return *this
-		const Line& drawArrow(LineCap startCap, double thickness, const SizeF& headSize = SizeF{ 5.0, 5.0 }, const ColorF& color = Palette::White) const;
+		const Line& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
 
 		const Line& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& colorStart, const ColorF& colorEnd) const;
 
@@ -1065,12 +1073,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		const Line& drawDoubleHeadedArrow(double thickness = 1.0, double headSize = 5.0, const ColorF& color = Palette::White) const;
+
 		/// @brief 線分をもとに両方向矢印を描きます。
 		/// @param thickness 矢印の線の幅
 		/// @param headSize 矢印の三角形のサイズ
 		/// @param color 色
 		/// @return *this
-		const Line& drawDoubleHeadedArrow(double thickness = 1.0, const SizeF& headSize = SizeF{ 5.0, 5.0 }, const ColorF& color = Palette::White) const;
+		const Line& drawDoubleHeadedArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

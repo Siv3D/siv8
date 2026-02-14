@@ -842,6 +842,12 @@ namespace s3d
 		return *this;
 	}
 
+	const Bezier3& Bezier3::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color, const int32 segments) const
+	{
+		getLineString(segments).draw(startCap, endCap, thickness, color);
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	drawAdaptive
@@ -863,6 +869,12 @@ namespace s3d
 	const Bezier3& Bezier3::drawAdaptive(const LineCap linaCap, const double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
 	{
 		getLineStringAdaptive(maxError, maxDepth).draw(linaCap, thickness, color);
+		return *this;
+	}
+
+	const Bezier3& Bezier3::drawAdaptive(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
+	{
+		getLineStringAdaptive(maxError, maxDepth).draw(startCap, endCap, thickness, color);
 		return *this;
 	}
 

@@ -577,6 +577,8 @@ namespace s3d
 		/// @return *this
 		const Bezier2& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
 
+		const Bezier2& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	drawAdaptive
@@ -606,6 +608,8 @@ namespace s3d
 		/// @param maxDepth 最大再帰深度
 		/// @return *this
 		const Bezier2& drawAdaptive(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
+
+		const Bezier2& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
 
 		////////////////////////////////////////////////////////////////
 		//

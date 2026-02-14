@@ -868,6 +868,96 @@ namespace s3d
 			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
 		}
 
+		bool Intersect(const Bezier2& a, const Rect& b)
+		{
+			return Intersect(a, RectF{ b });
+		}
+
+		bool Intersect(const Bezier2& a, const RectF& b)
+		{
+			// 端点が内側にある場合
+			if (Intersect(a.p0, b) || Intersect(a.p2, b))
+			{
+				return true;
+			}
+
+			// 制御点の AABB と矩形が交差しない場合は交差しない
+			const RectF bezierAABB = a.controlPointsBoundingRect();
+			
+			if (not Intersect(bezierAABB, b))
+			{
+				return false;
+			}
+
+			// 長方形の各辺と交差するか
+			for (const Line& line : { b.top(), b.right(), b.bottom(), b.left() })
+			{
+				// 線分の AABB と制御点の AABB が交差しない場合は交差しない
+				if (not Intersect(bezierAABB, line))
+				{
+					continue;
+				}
+
+				// 線分とベジェ曲線の交差判定（計算コスト高）
+				if (Intersect(line, a))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool Intersect(const Bezier2& a, const Circle& b)
+		{
+			// 制御点の AABB が交差しない場合は交差しない
+			{
+				const RectF bezierAABB = a.controlPointsBoundingRect();
+
+				if (not Intersect(bezierAABB, b))
+				{
+					return false;
+				}
+			}
+
+			// 端点が円の内側にあれば交差
+			if (Intersect(a.p0, b) || Intersect(a.p2, b))
+			{
+				return true;
+			}
+
+			const Vec2 closestPoint = a.closestPoint(b.center);
+			return (closestPoint.distanceFromSq(b.center) <= (b.r * b.r));
+		}
+
+		bool Intersect(const Bezier2& a, const Ellipse& b)
+		{
+			// 制御点の AABB が交差しない場合は交差しない
+			{
+				const RectF bezierAABB = a.controlPointsBoundingRect();
+
+				if (not Intersect(bezierAABB, b))
+				{
+					return false;
+				}
+			}
+
+			// 端点のいずれかが楕円の内側にあれば交差
+			if (Intersect(a.p0, b) || Intersect(a.p2, b))
+			{
+				return true;
+			}
+			
+			const Vec2 invR{ (1.0 / b.a), (1.0 / b.b) };
+			Bezier2 localBezier;
+			localBezier.p0 = ((a.p0 - b.center) * invR);
+			localBezier.p1 = ((a.p1 - b.center) * invR);
+			localBezier.p2 = ((a.p2 - b.center) * invR);
+
+			const double distanceSq = localBezier.closestPoint(Vec2{ 0, 0 }).lengthSq();
+			return (distanceSq <= 1.0);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersect(Bezier3, _)
@@ -918,6 +1008,11 @@ namespace s3d
 			return Intersect(b, a);
 		}
 
+		bool Intersect(const Rect& a, const Bezier2& b)
+		{
+			return Intersect(b, a);
+		}
+
 		bool Intersect(const Rect& a, const Triangle& b) noexcept
 		{
 			return (Intersect(a.triangleAtIndex(0), b)
@@ -947,6 +1042,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		bool Intersect(const RectF& a, const Line& b) noexcept
+		{
+			return Intersect(b, a);
+		}
+
+		bool Intersect(const RectF& a, const Bezier2& b)
 		{
 			return Intersect(b, a);
 		}
