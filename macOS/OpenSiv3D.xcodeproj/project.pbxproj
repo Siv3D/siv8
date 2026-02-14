@@ -2466,6 +2466,26 @@
 		F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABB2BCFBB53006A4C0F /* SkBBHFactory.h */; };
 		F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABC2BCFBB53006A4C0F /* SkBitmap.h */; };
 		F986FFFF2BCFBB53006A4C0F /* SkBlender.h in Headers */ = {isa = PBXBuildFile; fileRef = F986FABD2BCFBB53006A4C0F /* SkBlender.h */; };
+		F99881382F40B4A200C8991D /* Utils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881372F40B4A100C8991D /* Utils.hpp */; };
+		F998813A2F40B4CD00C8991D /* Distance.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F99881392F40B4CD00C8991D /* Distance.ipp */; };
+		F998813C2F40B4EB00C8991D /* Bezier2.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998813B2F40B4EB00C8991D /* Bezier2.ipp */; };
+		F998813E2F40B4F600C8991D /* Bezier3.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998813D2F40B4F600C8991D /* Bezier3.ipp */; };
+		F99881412F40B51200C8991D /* SivBezier2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998813F2F40B51200C8991D /* SivBezier2.cpp */; };
+		F99881442F40B51A00C8991D /* SivBezier3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881422F40B51A00C8991D /* SivBezier3.cpp */; };
+		F99881462F40B53300C8991D /* Bezier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881452F40B53300C8991D /* Bezier.hpp */; };
+		F99881482F40B54A00C8991D /* PolynomialSolver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881472F40B54A00C8991D /* PolynomialSolver.hpp */; };
+		F998814B2F40B55E00C8991D /* SivPolynomialSolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881492F40B55E00C8991D /* SivPolynomialSolver.cpp */; };
+		F998814E2F40B56800C8991D /* SivMultiPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998814C2F40B56800C8991D /* SivMultiPolygon.cpp */; };
+		F99881512F40B57800C8991D /* SivBezier2Walker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998814F2F40B57800C8991D /* SivBezier2Walker.cpp */; };
+		F99881542F40B57F00C8991D /* SivBezier3Walker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881522F40B57F00C8991D /* SivBezier3Walker.cpp */; };
+		F99881562F40B59A00C8991D /* Bezier2Walker.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881552F40B59A00C8991D /* Bezier2Walker.hpp */; };
+		F99881582F40B5A500C8991D /* Bezier3Walker.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881572F40B5A500C8991D /* Bezier3Walker.hpp */; };
+		F998815A2F40B5B900C8991D /* Bezier2Walker.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F99881592F40B5B900C8991D /* Bezier2Walker.ipp */; };
+		F998815C2F40B5C200C8991D /* Bezier3Walker.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998815B2F40B5C200C8991D /* Bezier3Walker.ipp */; };
+		F998815E2F40B5F200C8991D /* Spline.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998815D2F40B5F200C8991D /* Spline.ipp */; };
+		F99881602F40B5FD00C8991D /* Spline.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998815F2F40B5FD00C8991D /* Spline.hpp */; };
+		F99881622F40B61700C8991D /* Transition.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881612F40B61700C8991D /* Transition.hpp */; };
+		F99881642F40B62400C8991D /* Transition.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F99881632F40B62400C8991D /* Transition.ipp */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5297,6 +5317,28 @@
 		F986FFDA2BCFBB53006A4C0F /* SkPatchUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkPatchUtils.cpp; sourceTree = "<group>"; };
 		F986FFE22BCFBB53006A4C0F /* SkShadowUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkShadowUtils.cpp; sourceTree = "<group>"; };
 		F986FFE52BCFBB53006A4C0F /* SkTextUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkTextUtils.cpp; sourceTree = "<group>"; };
+		F99881352F40B4A100C8991D /* IsPrimeBases32.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = IsPrimeBases32.txt; sourceTree = "<group>"; };
+		F99881362F40B4A100C8991D /* IsPrimeTable10.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = IsPrimeTable10.txt; sourceTree = "<group>"; };
+		F99881372F40B4A100C8991D /* Utils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Utils.hpp; sourceTree = "<group>"; };
+		F99881392F40B4CD00C8991D /* Distance.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Distance.ipp; sourceTree = "<group>"; };
+		F998813B2F40B4EB00C8991D /* Bezier2.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier2.ipp; sourceTree = "<group>"; };
+		F998813D2F40B4F600C8991D /* Bezier3.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3.ipp; sourceTree = "<group>"; };
+		F998813F2F40B51200C8991D /* SivBezier2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBezier2.cpp; sourceTree = "<group>"; };
+		F99881422F40B51A00C8991D /* SivBezier3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBezier3.cpp; sourceTree = "<group>"; };
+		F99881452F40B53300C8991D /* Bezier.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier.hpp; sourceTree = "<group>"; };
+		F99881472F40B54A00C8991D /* PolynomialSolver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PolynomialSolver.hpp; sourceTree = "<group>"; };
+		F99881492F40B55E00C8991D /* SivPolynomialSolver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPolynomialSolver.cpp; sourceTree = "<group>"; };
+		F998814C2F40B56800C8991D /* SivMultiPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMultiPolygon.cpp; sourceTree = "<group>"; };
+		F998814F2F40B57800C8991D /* SivBezier2Walker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBezier2Walker.cpp; sourceTree = "<group>"; };
+		F99881522F40B57F00C8991D /* SivBezier3Walker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBezier3Walker.cpp; sourceTree = "<group>"; };
+		F99881552F40B59A00C8991D /* Bezier2Walker.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier2Walker.hpp; sourceTree = "<group>"; };
+		F99881572F40B5A500C8991D /* Bezier3Walker.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3Walker.hpp; sourceTree = "<group>"; };
+		F99881592F40B5B900C8991D /* Bezier2Walker.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier2Walker.ipp; sourceTree = "<group>"; };
+		F998815B2F40B5C200C8991D /* Bezier3Walker.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3Walker.ipp; sourceTree = "<group>"; };
+		F998815D2F40B5F200C8991D /* Spline.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline.ipp; sourceTree = "<group>"; };
+		F998815F2F40B5FD00C8991D /* Spline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline.hpp; sourceTree = "<group>"; };
+		F99881612F40B61700C8991D /* Transition.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Transition.hpp; sourceTree = "<group>"; };
+		F99881632F40B62400C8991D /* Transition.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Transition.ipp; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -6188,6 +6230,10 @@
 				F9528B1D2BAFB65000222F45 /* Base64Value.ipp */,
 				F9766B792C29C78800DE4107 /* BasicCamera2D.ipp */,
 				F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */,
+				F998813B2F40B4EB00C8991D /* Bezier2.ipp */,
+				F99881592F40B5B900C8991D /* Bezier2Walker.ipp */,
+				F998813D2F40B4F600C8991D /* Bezier3.ipp */,
+				F998815B2F40B5C200C8991D /* Bezier3Walker.ipp */,
 				F9528B442BB69D8500222F45 /* BigFloat.ipp */,
 				F9070B672B9F175000383E4D /* BigInt.ipp */,
 				F902E0E32E9E70B3002C6B92 /* BinaryFileReader.ipp */,
@@ -6326,6 +6372,7 @@
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
 				F98111BA2EC8C71A00C50DD1 /* SimpleGUI.ipp */,
 				F9712A562C289A6D0049CC26 /* Smooth.ipp */,
+				F998815D2F40B5F200C8991D /* Spline.ipp */,
 				F9070B9F2B9F175000383E4D /* Step.ipp */,
 				F9528B852BBC5D4B00222F45 /* Step2D.ipp */,
 				F9528B972BBC76EA00222F45 /* Step3D.ipp */,
@@ -6350,6 +6397,7 @@
 				F98111B82EC8C70600C50DD1 /* Theme.ipp */,
 				F9070BA62B9F175000383E4D /* ThousandSeparate.ipp */,
 				F9528BA02BBD6F8800222F45 /* Timer.ipp */,
+				F99881632F40B62400C8991D /* Transition.ipp */,
 				F98605F72BE61586006A4C0F /* Triangle.ipp */,
 				F95122232CB8229300151291 /* TriangleIndex.ipp */,
 				F95122222CB8229300151291 /* TriangleIndex32.ipp */,
@@ -6398,8 +6446,11 @@
 				F9528B1F2BAFB66200222F45 /* Base64Value.hpp */,
 				F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */,
 				F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */,
+				F99881452F40B53300C8991D /* Bezier.hpp */,
 				F95122102CB62E6B00151291 /* Bezier2.hpp */,
+				F99881552F40B59A00C8991D /* Bezier2Walker.hpp */,
 				F95122112CB62E6B00151291 /* Bezier3.hpp */,
+				F99881572F40B5A500C8991D /* Bezier3Walker.hpp */,
 				F9528B422BB69CA900222F45 /* BigFloat.hpp */,
 				F9070BC02B9F175000383E4D /* BigInt.hpp */,
 				F902E0DB2E9E707F002C6B92 /* BinaryFileReader.hpp */,
@@ -6621,6 +6672,7 @@
 				F95122122CB62E6B00151291 /* Polygon.hpp */,
 				F951221C2CB8227E00151291 /* PolygonFailureType.hpp */,
 				F9DD96262F03C2100026DFA5 /* PolygonGlyph.hpp */,
+				F99881472F40B54A00C8991D /* PolynomialSolver.hpp */,
 				F9070C172B9F175000383E4D /* PredefinedNamedParameter.hpp */,
 				F9070C182B9F175000383E4D /* PredefinedYesNo.hpp */,
 				F9AEA4F62E6B3E27003734E7 /* Print.hpp */,
@@ -6672,6 +6724,7 @@
 				F902E1092EA8B368002C6B92 /* SimpleGUI.hpp */,
 				F9712A542C289A5C0049CC26 /* Smooth.hpp */,
 				F9070C222B9F175000383E4D /* SpecialFolder.hpp */,
+				F998815F2F40B5FD00C8991D /* Spline.hpp */,
 				F9070C232B9F175000383E4D /* Step.hpp */,
 				F9528B832BBC5D3100222F45 /* Step2D.hpp */,
 				F9528B932BBC76D300222F45 /* Step3D.hpp */,
@@ -6706,6 +6759,7 @@
 				F9070C2C2B9F175000383E4D /* Threading.hpp */,
 				F9070C2D2B9F175000383E4D /* Time.hpp */,
 				F9712A462C25B8360049CC26 /* Transformer2D.hpp */,
+				F99881612F40B61700C8991D /* Transition.hpp */,
 				F98605252BD10459006A4C0F /* Triangle.hpp */,
 				F980C4252C00D2B500A86B68 /* TriangleFillMode.hpp */,
 				F951221A2CB8227E00151291 /* TriangleIndex.hpp */,
@@ -7235,11 +7289,17 @@
 		F9070DAC2B9F175E00383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
+				F99881532F40B57F00C8991D /* Bezier3Walker */,
+				F99881502F40B57800C8991D /* Bezier2Walker */,
+				F998814D2F40B56800C8991D /* MultiPolygon */,
+				F998814A2F40B55E00C8991D /* PolynomialSolver */,
 				F98111932EC8C60200C50DD1 /* Anchor */,
 				F9E794712C19B720002615BA /* Array */,
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
 				F9FD0D282D21693100A584CE /* AssetMonitor */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
+				F99881402F40B51200C8991D /* Bezier2 */,
+				F99881432F40B51A00C8991D /* Bezier3 */,
 				F9528B4A2BB69EAD00222F45 /* BigFloat */,
 				F9070D1B2B9F175E00383E4D /* BigInt */,
 				F9528B4E2BB69EC500222F45 /* BigNumMath */,
@@ -7719,6 +7779,9 @@
 		F90F2BE92D9278DE00CC89CA /* internal */ = {
 			isa = PBXGroup;
 			children = (
+				F99881352F40B4A100C8991D /* IsPrimeBases32.txt */,
+				F99881362F40B4A100C8991D /* IsPrimeTable10.txt */,
+				F99881372F40B4A100C8991D /* Utils.hpp */,
 				F90F2BE82D9278DE00CC89CA /* IsPrimeCommon.hpp */,
 			);
 			path = internal;
@@ -8694,6 +8757,7 @@
 				F9F00A532CD299910097C165 /* PoleOfInaccessibility.hpp */,
 				F90DA03E2D1945190003E1E8 /* SmallestEnclosingCircle.hpp */,
 				F9DD96242F03C1D10026DFA5 /* Contains.ipp */,
+				F99881392F40B4CD00C8991D /* Distance.ipp */,
 				F96F960A2C359F070033353E /* Intersect.ipp */,
 				F9D41B5B2C4BCCDD00290998 /* IsClockwise.ipp */,
 				F90DA03F2D1945190003E1E8 /* SmallestEnclosingCircle.ipp */,
@@ -11198,6 +11262,54 @@
 			path = skia;
 			sourceTree = "<group>";
 		};
+		F99881402F40B51200C8991D /* Bezier2 */ = {
+			isa = PBXGroup;
+			children = (
+				F998813F2F40B51200C8991D /* SivBezier2.cpp */,
+			);
+			path = Bezier2;
+			sourceTree = "<group>";
+		};
+		F99881432F40B51A00C8991D /* Bezier3 */ = {
+			isa = PBXGroup;
+			children = (
+				F99881422F40B51A00C8991D /* SivBezier3.cpp */,
+			);
+			path = Bezier3;
+			sourceTree = "<group>";
+		};
+		F998814A2F40B55E00C8991D /* PolynomialSolver */ = {
+			isa = PBXGroup;
+			children = (
+				F99881492F40B55E00C8991D /* SivPolynomialSolver.cpp */,
+			);
+			path = PolynomialSolver;
+			sourceTree = "<group>";
+		};
+		F998814D2F40B56800C8991D /* MultiPolygon */ = {
+			isa = PBXGroup;
+			children = (
+				F998814C2F40B56800C8991D /* SivMultiPolygon.cpp */,
+			);
+			path = MultiPolygon;
+			sourceTree = "<group>";
+		};
+		F99881502F40B57800C8991D /* Bezier2Walker */ = {
+			isa = PBXGroup;
+			children = (
+				F998814F2F40B57800C8991D /* SivBezier2Walker.cpp */,
+			);
+			path = Bezier2Walker;
+			sourceTree = "<group>";
+		};
+		F99881532F40B57F00C8991D /* Bezier3Walker */ = {
+			isa = PBXGroup;
+			children = (
+				F99881522F40B57F00C8991D /* SivBezier3Walker.cpp */,
+			);
+			path = Bezier3Walker;
+			sourceTree = "<group>";
+		};
 		F9AEA5042E6B3E71003734E7 /* Print */ = {
 			isa = PBXGroup;
 			children = (
@@ -11962,6 +12074,7 @@
 				F980C45B2C01B20F00A86B68 /* SamplerStateBuilder.hpp in Headers */,
 				F98600052BCFBB53006A4C0F /* SkClipOp.h in Headers */,
 				F9070C5B2B9F175000383E4D /* FormatUtility.ipp in Headers */,
+				F99881622F40B61700C8991D /* Transition.hpp in Headers */,
 				F986007B2BCFBB53006A4C0F /* SkMalloc.h in Headers */,
 				F98604682BCFBB54006A4C0F /* SkSLBuiltinTypes.h in Headers */,
 				F933ACF72E54A2A2005624D7 /* MSDFGlyphRenderer.hpp in Headers */,
@@ -12072,6 +12185,7 @@
 				F9D41B862C56057700290998 /* PatternParameters.ipp in Headers */,
 				F9FD0BB02D1DA6B900A584CE /* Mat3x3.hpp in Headers */,
 				F98600062BCFBB53006A4C0F /* SkColor.h in Headers */,
+				F99881602F40B5FD00C8991D /* Spline.hpp in Headers */,
 				F98602412BCFBB54006A4C0F /* SkRecordDraw.h in Headers */,
 				F96F95EA2C359E390033353E /* InputDeviceType.hpp in Headers */,
 				F98600662BCFBB53006A4C0F /* SkShaderMaskFilter.h in Headers */,
@@ -12166,6 +12280,7 @@
 				F9070EF42B9F1C8900383E4D /* posix_thread.h in Headers */,
 				F9070C7F2B9F175000383E4D /* TextEncoding.ipp in Headers */,
 				F986FA7D2BCFB53B006A4C0F /* fterrdef.h in Headers */,
+				F998813E2F40B4F600C8991D /* Bezier3.ipp in Headers */,
 				F986037B2BCFBB54006A4C0F /* SkOTTable_head.h in Headers */,
 				F9070C8A2B9F175000383E4D /* Vector2D.ipp in Headers */,
 				F98603D42BCFBB54006A4C0F /* SkSLHLSLCodeGenerator.h in Headers */,
@@ -12355,6 +12470,7 @@
 				F986F9C42BCA9D0A006A4C0F /* useelement.h in Headers */,
 				F986F9B82BCA9D0A006A4C0F /* property.h in Headers */,
 				F9528C452BBF026F00222F45 /* zdict.h in Headers */,
+				F99881482F40B54A00C8991D /* PolynomialSolver.hpp in Headers */,
 				F9070C5F2B9F175000383E4D /* Indexed.ipp in Headers */,
 				F9070B072B9DEB5900383E4D /* simdutf.h in Headers */,
 				F90DA0612D1A92180003E1E8 /* ImageProcessing.ipp in Headers */,
@@ -12461,8 +12577,10 @@
 				F986FA642BCFB53B006A4C0F /* ftobjs.h in Headers */,
 				F9070CFA2B9F175100383E4D /* SIMD.hpp in Headers */,
 				F902E0F72E9E715C002C6B92 /* TextFileWriterDetail.hpp in Headers */,
+				F998815C2F40B5C200C8991D /* Bezier3Walker.ipp in Headers */,
 				F902E0F82E9E715C002C6B92 /* TextFileReaderDetail.hpp in Headers */,
 				F986023F2BCFBB54006A4C0F /* SkRecord.h in Headers */,
+				F99881462F40B53300C8991D /* Bezier.hpp in Headers */,
 				F9712A422C2599090049CC26 /* ScopedRenderStates2D.hpp in Headers */,
 				F9FD0B312D1D315D00A584CE /* TextureRegion.hpp in Headers */,
 				F98600A42BCFBB53006A4C0F /* SkSLVersion.h in Headers */,
@@ -12700,6 +12818,7 @@
 				F9D41CED2C9AB1BC00290998 /* rapidhash.h in Headers */,
 				F986FA5C2BCFB53B006A4C0F /* compiler-macros.h in Headers */,
 				F96F96042C359ED90033353E /* morton.h in Headers */,
+				F99881562F40B59A00C8991D /* Bezier2Walker.hpp in Headers */,
 				F9528C402BBF026F00222F45 /* cover.h in Headers */,
 				F9070CE02B9F175100383E4D /* Obfuscation.hpp in Headers */,
 				F9070C832B9F175000383E4D /* TupleFormatter.ipp in Headers */,
@@ -12895,6 +13014,7 @@
 				F9FD0BA52D1D334700A584CE /* MTLIndirectCommandEncoder.hpp in Headers */,
 				F9FD0BA62D1D334700A584CE /* MTLFence.hpp in Headers */,
 				F9FD0D0D2D20434C00A584CE /* RandomAngle.hpp in Headers */,
+				F99881382F40B4A200C8991D /* Utils.hpp in Headers */,
 				F9FD0BA72D1D334700A584CE /* MTLIOCommandQueue.hpp in Headers */,
 				F9FD0BA82D1D334700A584CE /* MTLCounters.hpp in Headers */,
 				F9FD0BA92D1D334700A584CE /* MTLResidencySet.hpp in Headers */,
@@ -12982,6 +13102,7 @@
 				F933AD9D2E54A375005624D7 /* Bitmap.h in Headers */,
 				F933AD9E2E54A375005624D7 /* edge-segments.h in Headers */,
 				F986006F2BCFBB53006A4C0F /* SkAssert.h in Headers */,
+				F998813A2F40B4CD00C8991D /* Distance.ipp in Headers */,
 				F98604322BCFBB54006A4C0F /* SkSLReturnStatement.h in Headers */,
 				F980C4312C00D2B500A86B68 /* BlendState.hpp in Headers */,
 				F9528B2A2BAFCDB400222F45 /* MemoryMappedFile.hpp in Headers */,
@@ -13082,6 +13203,7 @@
 				F986046F2BCFBB54006A4C0F /* SkSLDefines.h in Headers */,
 				F98604832BCFBB54006A4C0F /* SkSLOutputStream.h in Headers */,
 				F98601862BCFBB53006A4C0F /* SkColorFilterPriv.h in Headers */,
+				F998815E2F40B5F200C8991D /* Spline.ipp in Headers */,
 				F986006B2BCFBB53006A4C0F /* SkAlign.h in Headers */,
 				F98601432BCFBB53006A4C0F /* Sk4px.h in Headers */,
 				F9070CAF2B9F175000383E4D /* DiscreteDistribution.hpp in Headers */,
@@ -13156,6 +13278,7 @@
 				F98602582BCFBB54006A4C0F /* SkRuntimeBlender.h in Headers */,
 				F96F95E32C2B0F430033353E /* FloatQuad.ipp in Headers */,
 				F986FA652BCFB53B006A4C0F /* ftpsprop.h in Headers */,
+				F998813C2F40B4EB00C8991D /* Bezier2.ipp in Headers */,
 				F98602512BCFBB54006A4C0F /* SkResourceCache.h in Headers */,
 				F90DA0402D1945190003E1E8 /* SmallestEnclosingCircle.ipp in Headers */,
 				F90DA0412D1945190003E1E8 /* SmallestEnclosingCircle.hpp in Headers */,
@@ -13197,6 +13320,7 @@
 				F98606142BEB760D006A4C0F /* RoundRect.ipp in Headers */,
 				F98603232BCFBB54006A4C0F /* SkPathOpsDebug.h in Headers */,
 				F9712A472C25B8360049CC26 /* Transformer2D.hpp in Headers */,
+				F99881642F40B62400C8991D /* Transition.ipp in Headers */,
 				F9712A502C269B9E0049CC26 /* Zip.ipp in Headers */,
 				F98603C92BCFBB54006A4C0F /* SkSLNoOpErrorReporter.h in Headers */,
 				F98603292BCFBB54006A4C0F /* SkPathOpsQuad.h in Headers */,
@@ -13233,6 +13357,7 @@
 				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,
 				F98605EE2BE61564006A4C0F /* RandomColor.hpp in Headers */,
+				F998815A2F40B5B900C8991D /* Bezier2Walker.ipp in Headers */,
 				F98603862BCFBB54006A4C0F /* SkOTTable_OS_2_V2.h in Headers */,
 				F98604752BCFBB54006A4C0F /* SkSLInliner.h in Headers */,
 				F9F00A542CD299910097C165 /* PoleOfInaccessibility.hpp in Headers */,
@@ -13567,6 +13692,7 @@
 				F98600142BCFBB53006A4C0F /* SkFlattenable.h in Headers */,
 				F96F95EC2C359E390033353E /* KDTree.hpp in Headers */,
 				F98605ED2BE61564006A4C0F /* RandomVec4.hpp in Headers */,
+				F99881582F40B5A500C8991D /* Bezier3Walker.hpp in Headers */,
 				F986F8462BC7EA13006A4C0F /* macOSFileSystem.hpp in Headers */,
 				F986F8A12BC8003B006A4C0F /* CommandLine.hpp in Headers */,
 				F986F8A22BC8003B006A4C0F /* EnvironmentVariable.hpp in Headers */,
@@ -13867,6 +13993,7 @@
 				F9528C142BBF026F00222F45 /* threading.c in Sources */,
 				F98601B42BCFBB53006A4C0F /* SkExecutor.cpp in Sources */,
 				F98603D12BCFBB54006A4C0F /* SkSLGLSLCodeGenerator.cpp in Sources */,
+				F99881412F40B51200C8991D /* SivBezier2.cpp in Sources */,
 				F9E5FC432BC19B110081A4F7 /* SivHalfFloat.cpp in Sources */,
 				F98602732BCFBB54006A4C0F /* SkStrikeCache.cpp in Sources */,
 				F98603CE2BCFBB54006A4C0F /* SkSLSwitchCaseContainsExit.cpp in Sources */,
@@ -13999,6 +14126,7 @@
 				F98604782BCFBB54006A4C0F /* SkSLLexer.cpp in Sources */,
 				F98605B42BE49C00006A4C0F /* CMouse.cpp in Sources */,
 				F9F4A7202CE1B58400FC5119 /* SivWebBrowser_macOS.cpp in Sources */,
+				F998814B2F40B55E00C8991D /* SivPolynomialSolver.cpp in Sources */,
 				F986041F2BCFBB54006A4C0F /* SkSLLayout.cpp in Sources */,
 				F9070DC62B9F175E00383E4D /* Siv3DEngine.cpp in Sources */,
 				F98602FE2BCFBB54006A4C0F /* SkSwizzler_opts.inc in Sources */,
@@ -14165,6 +14293,7 @@
 				F986044A2BCFBB54006A4C0F /* SkSLVariable.cpp in Sources */,
 				F9070DCC2B9F175E00383E4D /* SivFileSystem.cpp in Sources */,
 				F902E0D82E9E5ECD002C6B92 /* SivJSONSerialization.cpp in Sources */,
+				F998814E2F40B56800C8991D /* SivMultiPolygon.cpp in Sources */,
 				F986015C2BCFBB53006A4C0F /* SkBitmapProcState_opts.cpp in Sources */,
 				F9070DBB2B9F175E00383E4D /* SivCPUInfo.cpp in Sources */,
 				F98604D42BCFBB54006A4C0F /* SkDashPath.cpp in Sources */,
@@ -14404,6 +14533,7 @@
 				F986030F2BCFBB54006A4C0F /* SkOpContour.cpp in Sources */,
 				F986F98F2BCA9D0A006A4C0F /* plutovg-ft-math.c in Sources */,
 				F986029A2BCFBB54006A4C0F /* SkWriteBuffer.cpp in Sources */,
+				F99881542F40B57F00C8991D /* SivBezier3Walker.cpp in Sources */,
 				F9528C0B2BBF026F00222F45 /* error_private.c in Sources */,
 				F9070DD92B9F175E00383E4D /* SivLogger.cpp in Sources */,
 				F9528C0D2BBF026F00222F45 /* fse_decompress.c in Sources */,
@@ -14477,6 +14607,7 @@
 				F98601A12BCFBB53006A4C0F /* SkDraw_atlas.cpp in Sources */,
 				F9070DDA2B9F175E00383E4D /* SivLoggerBuffer.cpp in Sources */,
 				F9070E552B9F176B00383E4D /* SivFileSystem_macOS.mm in Sources */,
+				F99881442F40B51A00C8991D /* SivBezier3.cpp in Sources */,
 				F98603162BCFBB54006A4C0F /* SkOpSpan.cpp in Sources */,
 				F986F9A02BCA9D0A006A4C0F /* defselement.cpp in Sources */,
 				F98602E82BCFBB54006A4C0F /* SkImage.cpp in Sources */,
@@ -14743,6 +14874,7 @@
 				F9070DD82B9F175E00383E4D /* LoggerFactory.cpp in Sources */,
 				F9E794232C118681002615BA /* MetalVertexBufferManager2D.mm in Sources */,
 				F9F00A3F2CC7F5FB0097C165 /* PolygonBuffer.cpp in Sources */,
+				F99881512F40B57800C8991D /* SivBezier2Walker.cpp in Sources */,
 				F986024B2BCFBB54006A4C0F /* SkRect.cpp in Sources */,
 				F98605382BD1049D006A4C0F /* TGAEncoder.cpp in Sources */,
 				F986046D2BCFBB54006A4C0F /* SkSLContext.cpp in Sources */,
