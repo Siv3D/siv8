@@ -12,6 +12,7 @@
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Number.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/LineString.hpp>
 # include "ClosedLineString.hpp"
 # include "GeometryCommon.hpp"
 # include "Triangulate.hpp"
@@ -101,16 +102,15 @@ namespace s3d
 		};
 
 		[[nodiscard]]
-		static boost::geometry::model::multi_polygon<CwOpenPolygon> MakeBuffer(const std::span<const Vec2> points, const JoinStyle joinStyle, const double thickness)
+		static boost::geometry::model::multi_polygon<CwOpenPolygon> MakeBuffer(const LineString& points, const JoinStyle joinStyle, const double thickness)
 		{
 			const double halfThickness = (thickness * 0.5);
 			const boost::geometry::strategy::buffer::distance_symmetric<double> distanceStrategy{ halfThickness };
-			const GLineString ls{ points.begin(), points.end() };
 			boost::geometry::model::multi_polygon<CwOpenPolygon> polygon;
 
 			if (joinStyle == JoinStyle::Bevel)
 			{
-				boost::geometry::buffer(ls, polygon,
+				boost::geometry::buffer(points, polygon,
 					distanceStrategy,
 					boost::geometry::strategy::buffer::side_straight{},
 					JoinDefaultSymmetric{},
@@ -119,7 +119,7 @@ namespace s3d
 			}
 			else if (joinStyle == JoinStyle::Round)
 			{
-				boost::geometry::buffer(ls, polygon,
+				boost::geometry::buffer(points, polygon,
 					distanceStrategy,
 					boost::geometry::strategy::buffer::side_straight{},
 					boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(thickness) },
@@ -128,7 +128,7 @@ namespace s3d
 			}
 			else // JoinStyle::Miter
 			{
-				boost::geometry::buffer(ls, polygon,
+				boost::geometry::buffer(points, polygon,
 					distanceStrategy,
 					boost::geometry::strategy::buffer::side_straight{},
 					boost::geometry::strategy::buffer::join_miter{ Largest<double> },

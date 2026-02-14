@@ -11,6 +11,7 @@
 
 # include <Siv3D/HashSet.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/LineString.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -1333,5 +1334,67 @@ namespace s3d
 		}
 
 		return results;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	simplified
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::simplified(const double maxDistance, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return *this;
+		}
+
+		LineString result;
+
+		if (closeRing && (front() != back()))
+		{
+			LineString input(begin(), end());
+			input.push_back(input.front());
+
+			boost::geometry::simplify(input, result, maxDistance);
+			result.pop_back();
+		}
+		else
+		{
+			boost::geometry::simplify(*this, result, maxDistance);
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	densified
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::densified(const double maxDistance, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return *this;
+		}
+
+		LineString result;
+
+		if (closeRing && (front() != back()))
+		{
+			LineString input(begin(), end());
+			input.push_back(input.front());
+
+			boost::geometry::densify(input, result, maxDistance);
+			result.pop_back();
+		}
+		else
+		{
+			boost::geometry::densify(*this, result, maxDistance);
+		}
+
+		return result;
 	}
 }

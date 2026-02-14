@@ -16,17 +16,18 @@
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(5311)
 # include <boost/geometry.hpp>
 # include <boost/geometry/geometries/register/point.hpp>
+# include <boost/geometry/geometries/register/linestring.hpp>
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Point, s3d::int32, boost::geometry::cs::cartesian, x, y)
 BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Float2, float, boost::geometry::cs::cartesian, x, y)
 BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Vec2, double, boost::geometry::cs::cartesian, x, y)
+BOOST_GEOMETRY_REGISTER_LINESTRING(s3d::LineString)
 
 namespace s3d
 {
 	using CwOpenPolygon	= boost::geometry::model::polygon<Vec2, false, false, Array, Array>;
 	using CWOpenRing	= boost::geometry::model::ring<Vec2, false, false, Array>;
-	using GLineString	= boost::geometry::model::linestring<Vec2, Array>;
 	using GSegment		= boost::geometry::model::segment<Vec2>;
 	using GVec2			= boost::geometry::model::d2::point_xy<double>;
 	using InnersType	= Array<boost::geometry::model::ring<Vec2, false, false, Array>>;

@@ -521,6 +521,63 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawPoints
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::drawPoints(const double r, const ColorF& color) const
+	{
+		const Float4 color0 = color.toFloat4();
+		const float rF = static_cast<float>(Abs(r));
+
+		for (const auto& p : m_points)
+		{
+			SIV3D_ENGINE(Renderer2D)->addCircle(
+				p,
+				rF,
+				color0,
+				color0,
+				ColorFillDirection::InOut
+			);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawPointsFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::drawPointsFrame(const double r, const double thickness, const ColorF& color) const
+	{
+		return drawPointsFrame(r, (thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const LineString& LineString::drawPointsFrame(const double r, const double innerThickness, const double outerThickness, const ColorF& color) const
+	{
+		const Float4 color0 = color.toFloat4();
+		const float rInner = static_cast<float>(Abs(r) - innerThickness);
+		const float thickness = static_cast<float>(innerThickness + outerThickness);
+
+		for (const auto& p : m_points)
+		{
+			SIV3D_ENGINE(Renderer2D)->addCircleFrame(
+				p,
+				rInner,
+				thickness,
+				color0,
+				color0
+			);
+		}
+
+		return *this;
+	}
+
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Formatter
 	//
 	////////////////////////////////////////////////////////////////

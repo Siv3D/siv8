@@ -1185,19 +1185,37 @@ namespace s3d
 		[[nodiscard]]
 		RectF computeBoundingRect() const noexcept;
 
-//		/// @brief 連続する線分を単純化した LineString を返します。
-//		/// @param maxDistance 単純化の大きさ
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 単純化した LineString
-//		[[nodiscard]]
-//		LineString simplified(double maxDistance = 2.0, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief 点と点の間の距離が `maxDistance` より大きくならないよう、区間ごとに最小回数で均等に分割した結果を返します。
-//		/// @param maxDistance 点と点の間の最大距離
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 分割した結果
-//		[[nodiscard]]
-//		LineString densified(double maxDistance, CloseRing closeRing = CloseRing::No) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	simplified
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 連続する線分を単純化した LineString を返します。
+		/// @param maxDistance 単純化の大きさ
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 単純化した LineString
+		[[nodiscard]]
+		LineString simplified(double maxDistance = 2.0, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	densified
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点と点の間の距離が `maxDistance` より大きくならないよう、区間ごとに最小回数で均等に分割した結果を返します。
+		/// @param maxDistance 点と点の間の最大距離
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 分割した結果
+		[[nodiscard]]
+		LineString densified(double maxDistance, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	catmullRom
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief Catmull-Rom スプライン曲線を返します。
 		/// @param interpolation 分割の品質
@@ -1383,6 +1401,26 @@ namespace s3d
 		const LineString& drawClosed(std::span<const ColorF> colors) const;
 
 		const LineString& drawClosed(double thickness, std::span<const ColorF> colors) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawPoints
+		//
+		////////////////////////////////////////////////////////////////
+
+		const LineString& drawPoints(double r, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawPointsFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		const LineString& drawPointsFrame(double r, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		const LineString& drawPointsFrame(double r, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+
+
 
 
 		////////////////////////////////////////////////////////////////
