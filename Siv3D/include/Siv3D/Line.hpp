@@ -111,22 +111,22 @@ namespace s3d
 		/// @brief 線分を作成します。
 		/// @param originX 始点の X 座標
 		/// @param originY 始点の Y 座標
-		/// @param vector 始点から終点までの移動量
+		/// @param offset 始点から終点までの移動量
 		[[nodiscard]]
-		constexpr Line(value_type originX, value_type originY, Arg::direction_<vector_type> vector) noexcept;
+		constexpr Line(value_type originX, value_type originY, Arg::offset_<vector_type> offset) noexcept;
 
 		/// @brief 線分を作成します。
 		/// @param originX 始点の X 座標
 		/// @param originY 始点の Y 座標
-		/// @param vector 始点から終点までの移動量
+		/// @param offset 始点から終点までの移動量
 		[[nodiscard]]
-		constexpr Line(Concept::Arithmetic auto originX, Concept::Arithmetic auto originY, Arg::direction_<vector_type> vector) noexcept;
+		constexpr Line(Concept::Arithmetic auto originX, Concept::Arithmetic auto originY, Arg::offset_<vector_type> offset) noexcept;
 
 		/// @brief 線分を作成します。
 		/// @param origin 始点の座標
-		/// @param vector 始点から終点までの移動量
+		/// @param offset 始点から終点までの移動量
 		[[nodiscard]]
-		constexpr Line(position_type origin, Arg::direction_<vector_type> vector) noexcept;
+		constexpr Line(position_type origin, Arg::offset_<vector_type> offset) noexcept;
 
 		/// @brief 線分を作成します。
 		/// @param originX 始点の X 座標

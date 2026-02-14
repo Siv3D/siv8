@@ -83,6 +83,234 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	segment
+	//
+	////////////////////////////////////////////////////////////////
+
+	Line LineString::segment(const size_t index, const CloseRing closeRing) const
+	{
+		if (num_segments(closeRing) <= index)
+		{
+			throw std::out_of_range{ "LineString::segment() index out of range" };
+		}
+
+		const Vec2* pData = data();
+		const size_t next = ((closeRing && ((index + 1) == size())) ? 0 : (index + 1));
+		return{ pData[index], pData[next] };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getNormalAtPoint
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 LineString::getNormalAtPoint(const size_t index, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return{ Math::NaN, Math::NaN };
+		}
+
+		if (size() <= index)
+		{
+			throw std::out_of_range{ "LineString::getNormalAtPoint() index out of range" };
+		}
+
+		const size_t n = size();
+		const Vec2* pSrc = data();
+		const Vec2 curr = pSrc[index];
+		Vec2 prev, next;
+
+		if (index == 0)
+		{
+			if (closeRing)
+			{
+				prev = pSrc[n - 1];
+				next = pSrc[index + 1];
+			}
+			else
+			{
+				const Vec2 forward = (pSrc[1] - pSrc[0]).normalized();
+				return{ forward.y, -forward.x };
+			}
+		}
+		else if (index == (n - 1))
+		{
+			if (closeRing)
+			{
+				prev = pSrc[index - 1];
+				next = pSrc[0];
+			}
+			else
+			{
+				const Vec2 forward = (pSrc[n - 1] - pSrc[n - 2]).normalized();
+				return{ forward.y, -forward.x };
+			}
+		}
+		else
+		{
+			prev = pSrc[index - 1];
+			next = pSrc[index + 1];
+		}
+
+		const double a0 = (curr - prev).getAngle();
+		const double a1 = (next - curr).getAngle();
+		return Circular{ 1, (Math::LerpAngle(a0, a1, 0.5) - Math::HalfPi) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getNormalAtSegment
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 LineString::getNormalAtSegment(const size_t index, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return{ Math::NaN, Math::NaN };
+		}
+
+		const bool hasCloseLine = static_cast<bool>(closeRing);
+
+		if ((size() - 1 + hasCloseLine) <= index)
+		{
+			throw std::out_of_range{ "LineString::getNormalAtSegment() index out of range" };
+		}
+
+		const size_t num_lines = (size() - 1);
+		const Vec2* pSrc = data();
+		const Vec2 curr = pSrc[index];
+		Vec2 next;
+
+		if (closeRing)
+		{
+			if (index == num_lines)
+			{
+				next = pSrc[0];
+			}
+			else
+			{
+				next = pSrc[index + 1];
+			}
+		}
+		else
+		{
+			next = pSrc[index + 1];
+		}
+
+		const Vec2 v = (next - curr).normalized();
+		return{ v.y, -v.x };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getTangentAtPoint
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 LineString::getTangentAtPoint(const size_t index, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return{ Math::NaN, Math::NaN };
+		}
+
+		if (size() <= index)
+		{
+			throw std::out_of_range{ "LineString::getTangentAtPoint() index out of range" };
+		}
+
+		const size_t n = size();
+		const Vec2* pSrc = data();
+		const Vec2 curr = pSrc[index];
+		Vec2 prev, next;
+
+		if (index == 0)
+		{
+			if (closeRing)
+			{
+				prev = pSrc[n - 1];
+				next = pSrc[index + 1];
+			}
+			else
+			{
+				// 先頭は前方差分
+				return (pSrc[1] - pSrc[0]).normalized();
+			}
+		}
+		else if (index == (n - 1))
+		{
+			if (closeRing)
+			{
+				prev = pSrc[index - 1];
+				next = pSrc[0];
+			}
+			else
+			{
+				// 末尾は後方差分
+				return (pSrc[n - 1] - pSrc[n - 2]).normalized();
+			}
+		}
+		else
+		{
+			prev = pSrc[index - 1];
+			next = pSrc[index + 1];
+		}
+
+		// 法線と同じく、前後のセグメント角度の中間を接線方向にする
+		const double a0 = (curr - prev).getAngle();
+		const double a1 = (next - curr).getAngle();
+		return Circular{ 1, Math::LerpAngle(a0, a1, 0.5) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getTangentAtSegment
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 LineString::getTangentAtSegment(const size_t index, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return{ Math::NaN, Math::NaN };
+		}
+
+		const bool hasCloseLine = static_cast<bool>(closeRing);
+
+		if ((size() - 1 + hasCloseLine) <= index)
+		{
+			throw std::out_of_range{ "LineString::getTangentAtSegment() index out of range" };
+		}
+
+		const size_t num_lines = (size() - 1);
+		const Vec2* pSrc = data();
+		const Vec2 curr = pSrc[index];
+		Vec2 next;
+
+		if (closeRing)
+		{
+			if (index == num_lines)
+			{
+				next = pSrc[0];
+			}
+			else
+			{
+				next = pSrc[index + 1];
+			}
+		}
+		else
+		{
+			next = pSrc[index + 1];
+		}
+
+		return (next - curr).normalized();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	computeBoundingRect
 	//
 	////////////////////////////////////////////////////////////////

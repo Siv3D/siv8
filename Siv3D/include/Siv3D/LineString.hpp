@@ -973,7 +973,6 @@ namespace s3d
 //		[[nodiscard]]
 //		size_t num_points() const noexcept;
 
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	num_segments
@@ -986,27 +985,72 @@ namespace s3d
 		[[nodiscard]]
 		constexpr size_t num_segments(CloseRing closeRing = CloseRing::No) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	segment
+		//
+		////////////////////////////////////////////////////////////////
 
-//		/// @brief LineString を構成する線分を返します。
-//		/// @param index 線分のインデックス
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return LineString を構成する線分
-//		[[nodiscard]]
-//		Line line(size_t index, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief 指定した頂点における進行方向左手の単位ベクトルを返します。
-//		/// @param index 頂点のインデックス
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 指定した頂点における進行方向左手の単位ベクトル
-//		[[nodiscard]]
-//		Vec2 normalAtPoint(size_t index, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief 指定した線分における進行方向左手の単位ベクトルを返します。
-//		/// @param index 線分のインデックス
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return  指定した線分における進行方向左手の単位ベクトル
-//		[[nodiscard]]
-//		Vec2 normalAtLine(size_t index, CloseRing closeRing = CloseRing::No) const;
+		/// @brief LineString を構成する線分を返します。
+		/// @param index 線分のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return LineString を構成する線分
+		[[nodiscard]]
+		Line segment(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getNormalAtPoint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した頂点における進行方向左手の単位ベクトルを返します。
+		/// @param index 頂点のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 指定した頂点における進行方向左手の単位ベクトル
+		[[nodiscard]]
+		Vec2 getNormalAtPoint(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getNormalAtSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した線分における進行方向左手の単位ベクトルを返します。
+		/// @param index 線分のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return  指定した線分における進行方向左手の単位ベクトル
+		[[nodiscard]]
+		Vec2 getNormalAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getTangentAtPoint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した頂点における進行方向の単位ベクトルを返します。
+		/// @param index 頂点のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 指定した頂点における進行方向の単位ベクトル
+		[[nodiscard]]
+		Vec2 getTangentAtPoint(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getTangentAtSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した線分における進行方向の単位ベクトルを返します。
+		/// @param index 線分のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 指定した線分における進行方向の単位ベクトル
+		[[nodiscard]]
+		Vec2 getTangentAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+
 
 		////////////////////////////////////////////////////////////////
 		//
