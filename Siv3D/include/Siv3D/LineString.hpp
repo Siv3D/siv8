@@ -1036,24 +1036,36 @@ namespace s3d
 
 		constexpr LineString& moveBy(Vec2 v) noexcept;
 
-//		[[nodiscard]]
-//		LineString scaled(double s) const&;
-//
-//		[[nodiscard]]
-//		LineString scaled(double s)&&;
-//
-//		[[nodiscard]]
-//		LineString scaled(double sx, double sy) const&;
-//
-//		[[nodiscard]]
-//		LineString scaled(double sx, double sy)&&;
-//
-//		[[nodiscard]]
-//		LineString scaled(Vec2 s) const&;
-//
-//		[[nodiscard]]
-//		LineString scaled(Vec2 s)&&;
-//
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaled
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr LineString scaled(double s) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaled(double s) && noexcept;
+
+		[[nodiscard]]
+		constexpr LineString scaled(double sx, double sy) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaled(double sx, double sy) && noexcept;
+
+		[[nodiscard]]
+		constexpr LineString scaled(Vec2 s) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaled(Vec2 s) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scale
+		//
+		////////////////////////////////////////////////////////////////
+
 //		LineString& scale(double s);
 //
 //		LineString& scale(double sx, double sy);

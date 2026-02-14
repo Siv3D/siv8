@@ -1288,4 +1288,71 @@ namespace s3d
 	{
 		return SIV3D_ENGINE(Font)->fitsRect(font.id(), text, resolvedGlyphs, area, size, textStyle, readingDirection);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderOutlines
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Array<LineString>> DrawableText::renderOutlines(const Vec2& pos, const CloseRing closeRing) const
+	{
+		return renderOutlines(font.baseSize(), pos, closeRing);
+	}
+
+	Array<Array<LineString>> DrawableText::renderOutlines(const double fontSize, const Vec2& pos, const CloseRing closeRing) const
+	{
+		const auto id = font.id();
+		const double baseSize = font.baseSize();
+		const double scale = (fontSize / baseSize);
+		const double baseLineHeight = (font.height() * scale);
+		const Vec2 basePos{ pos };
+		Vec2 penPos{ basePos };
+
+		Array<Array<LineString>> outlines;
+
+		for (const auto& resolvedGlyph : resolvedGlyphs)
+		{
+			if (const char32 ch = text[resolvedGlyph.pos];
+				ch == U'\n')
+			{
+				penPos.x = basePos.x;
+				penPos.y += baseLineHeight;
+				continue;
+			}
+
+			const OutlineGlyph outlineGlyph = SIV3D_ENGINE(Font)->generateOutlineGlyphByGlyphIndex(id, resolvedGlyph.glyphIndex, closeRing, readingDirection);
+
+			Array<LineString> glyphOutlines;
+
+			for (const LineString& ring : outlineGlyph.rings)
+			{
+				const Vec2 posOffset = outlineGlyph.getOffset(scale);
+				const Vec2 drawPos = (penPos + posOffset);
+				glyphOutlines.push_back(ring.scaled(scale).movedBy(drawPos));
+			}
+
+			penPos.x += (outlineGlyph.advance * scale);
+			outlines.push_back(std::move(glyphOutlines));
+		}
+
+		return outlines;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	renderOutlinesAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Array<LineString>> DrawableText::renderOutlinesAt(const Vec2& center, const CloseRing closeRing) const
+	{
+		return renderOutlinesAt(font.baseSize(), center, closeRing);
+	}
+
+	Array<Array<LineString>> DrawableText::renderOutlinesAt(const double fontSize, const Vec2& center, const CloseRing closeRing) const
+	{
+		const RectF textRegion = region(fontSize);
+		return renderOutlines(fontSize, (center - textRegion.center()), closeRing);
+	}
 }

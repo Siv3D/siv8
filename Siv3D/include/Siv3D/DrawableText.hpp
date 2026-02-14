@@ -648,6 +648,26 @@ namespace s3d
 		bool fits(const TextStyle& textStyle, const RectF& area) const;
 
 		bool fits(const TextStyle& textStyle, double size, const RectF& area) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderOutlines
+		//
+		////////////////////////////////////////////////////////////////
+
+		Array<Array<LineString>> renderOutlines(const Vec2& pos = Vec2{ 0, 0 }, CloseRing closeRing = CloseRing::No) const;
+
+		Array<Array<LineString>> renderOutlines(double size, const Vec2& pos = Vec2{ 0, 0 }, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	renderOutlinesAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		Array<Array<LineString>> renderOutlinesAt(const Vec2& pos = Vec2{ 0, 0 }, CloseRing closeRing = CloseRing::No) const;
+
+		Array<Array<LineString>> renderOutlinesAt(double size, const Vec2& pos = Vec2{ 0, 0 }, CloseRing closeRing = CloseRing::No) const;
 	};
 }
 

@@ -26,6 +26,11 @@ namespace s3d
 			throw std::out_of_range{ "Array::removed_at(): index out of range" };
 		}
 
+		void ThrowArraySliceIndexOutOfRange()
+		{
+			throw std::out_of_range{ "Array::slice(): index out of range" };
+		}
+
 		void ThrowArrayChoiceOutOfRange()
 		{
 			throw std::out_of_range{ "Array::choice(): Array is empty" };

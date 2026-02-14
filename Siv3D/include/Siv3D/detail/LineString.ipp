@@ -874,6 +874,81 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaled
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::scaled(const double s) const&
+	{
+		LineString result{ *this };
+
+		for (auto& point : result.m_points)
+		{
+			point *= s;
+		}
+
+		return result;
+	}
+
+	constexpr LineString LineString::scaled(const double s) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point *= s;
+		}
+
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaled(const double sx, const double sy) const&
+	{
+		LineString result{ *this };
+
+		for (auto& point : result.m_points)
+		{
+			point.x *= sx;
+			point.y *= sy;
+		}
+
+		return result;
+	}
+
+	constexpr LineString LineString::scaled(const double sx, const double sy) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.x *= sx;
+			point.y *= sy;
+		}
+
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaled(const Vec2 s) const&
+	{
+		LineString result{ *this };
+
+		for (auto& point : result.m_points)
+		{
+			point *= s;
+		}
+
+		return result;
+	}
+
+	constexpr LineString LineString::scaled(const Vec2 s) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point *= s;
+		}
+
+		return std::move(*this);
+	}
+
+
 
 	////////////////////////////////////////////////////////////////
 	//

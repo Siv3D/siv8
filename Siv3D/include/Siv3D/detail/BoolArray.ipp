@@ -1310,8 +1310,17 @@ namespace s3d
 		/// @return *this
 		constexpr Array& append(const Array& other) SIV3D_LIFETIMEBOUND
 		{
-			m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
-			return *this;
+			if (std::addressof(other) == this)
+			{
+				Array copy{ other };
+				m_container.insert(m_container.end(), copy.m_container.begin(), copy.m_container.end());
+				return *this;
+			}
+			else
+			{
+				m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
+				return *this;
+			}
 		}
 
 		/// @brief 配列の末尾に別の範囲の要素を追加します。
@@ -2306,6 +2315,18 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array slice(size_type index, size_type length) const
 		{
+			if (m_container.size() < index)
+			{
+				detail::ThrowArraySliceIndexOutOfRange();
+			}
+
+			const size_type maxLength = (m_container.size() - index);
+
+			if (maxLength < length)
+			{
+				detail::ThrowArraySliceIndexOutOfRange();
+			}
+
 			return Array((m_container.begin() + index), (m_container.begin() + index + length));
 		}
 

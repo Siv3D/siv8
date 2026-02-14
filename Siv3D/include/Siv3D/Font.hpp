@@ -685,33 +685,33 @@ namespace s3d
 
 		//////////////////////////////////////////////////////////////////
 		////
-		////	renderMeshGlyph
+		////	generateMeshGlyph
 		////
 		//////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
-		//MeshGlyph renderMeshGlyph(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		//MeshGlyph generateMeshGlyph(char32 codePoint, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		//[[nodiscard]]
-		//MeshGlyph renderMeshGlyph(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		//MeshGlyph generateMeshGlyph(StringView ch, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		//////////////////////////////////////////////////////////////////
 		////
-		////	renderMeshGlyphByGlyphIndex
-		////
-		//////////////////////////////////////////////////////////////////
-
-		//[[nodiscard]]
-		//MeshGlyph renderMeshGlyphByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
-
-		//////////////////////////////////////////////////////////////////
-		////
-		////	renderMesheGlyphs
+		////	generateMeshGlyphByGlyphIndex
 		////
 		//////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
-		//Array<MeshGlyph> renderMesheGlyphs(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+		//MeshGlyph generateMeshGlyphByGlyphIndex(GlyphIndex glyphIndex, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
+
+		//////////////////////////////////////////////////////////////////
+		////
+		////	generateMesheGlyphs
+		////
+		//////////////////////////////////////////////////////////////////
+
+		//[[nodiscard]]
+		//Array<MeshGlyph> generateMesheGlyphs(StringView s, EnableLigatures enableLigatures = EnableLigatures::Yes, ReadingDirection readingDirection = ReadingDirection::LeftToRight) const;
 
 		////////////////////////////////////////////////////////////////
 		//
