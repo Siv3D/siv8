@@ -579,4 +579,22 @@ namespace s3d
 	{
 		return Geometry2D::Intersect(*this, other);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	FromPoints
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Triangle Triangle::FromPoints(const position_type& p0, const position_type& p1, const position_type& p2) noexcept
+	{
+		if (Geometry2D::IsClockwise(p0, p1, p2))
+		{
+			return{ p0, p1, p2 };
+		}
+		else
+		{
+			return{ p0, p2, p1 };
+		}
+	}
 }
