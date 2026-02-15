@@ -1396,7 +1396,6 @@ namespace s3d
 			return{ Polygon{ outer, holes, SkipValidation::Yes } };
 		}
 
-		using MultiCwOpenPolygon = boost::geometry::model::multi_polygon<CwOpenPolygon>;
 		boost::geometry::correct(polygon);
 		
 		MultiCwOpenPolygon solvedPolygons;
