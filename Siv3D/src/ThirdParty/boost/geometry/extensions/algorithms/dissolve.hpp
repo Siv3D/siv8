@@ -18,10 +18,8 @@
 #include <boost/range/size.hpp>
 #include <boost/range/value_type.hpp>
 #include <boost/geometry/algorithms/detail/overlay/get_turns.hpp>
-#include <boost/geometry/algorithms/detail/overlay/self_turn_points.hpp>
 #include <boost/geometry/algorithms/detail/overlay/overlay.hpp>
 #include <boost/geometry/algorithms/detail/overlay/turn_info.hpp>
-#include <boost/geometry/algorithms/detail/overlay/traversal_info.hpp>
 #include <boost/geometry/algorithms/detail/overlay/enrich_intersection_points.hpp>
 #include <boost/geometry/algorithms/detail/overlay/add_rings.hpp>
 #include <boost/geometry/algorithms/detail/overlay/assign_parents.hpp>
@@ -34,8 +32,6 @@
 #include <boost/geometry/algorithms/union.hpp>
 #include <boost/geometry/algorithms/reverse.hpp>
 #include <boost/geometry/policies/robustness/segment_ratio_type.hpp>
-#include <boost/geometry/core/tag.hpp>
-#include <boost/geometry/core/tags.hpp>
 #include <boost/geometry/core/point_type.hpp>
 #include <boost/geometry/core/exterior_ring.hpp>
 
@@ -45,39 +41,6 @@ namespace boost
 	{
 		namespace detail
 		{
-			namespace inserter
-			{
-				template<typename Tag1, typename Tag2>
-				struct insert_geometry {};
-
-				template<>
-				struct insert_geometry<ring_tag, polygon_tag>
-				{
-					template<typename Ring, typename Collection>
-					static void apply(Ring const& ring, Collection& collection)
-					{
-						collection.resize(collection.size() + 1);
-						geometry::exterior_ring(collection.back()) = ring;
-					}
-				};
-
-				template<>
-				struct insert_geometry<polygon_tag, polygon_tag>
-				{
-					template<typename Geometry, typename Collection>
-					static void apply(Geometry const& geometry, Collection& collection)
-					{
-						collection.push_back(geometry);
-					}
-				};
-
-				template<typename Geometry, typename Collection>
-				void insert(Geometry const& geometry, Collection& collection)
-				{
-					insert_geometry<typename geometry::tag<Geometry>::type, typename geometry::tag<typename boost::range_value<Collection>::type>::type>::apply(geometry, collection);
-				}
-			}
-
 			namespace dissolver
 			{
 				class plusmin_policy
@@ -130,7 +93,7 @@ namespace boost
 						// Add original a to output (NOT necessary! TODO avoid this)
 						{
 							geometry::reverse(a); // positive again
-							detail::inserter::insert(a, output_collection);
+							output_collection.push_back(a);
 						}
 
 						// Make negative output negative again
@@ -138,7 +101,7 @@ namespace boost
 						for (iterator_type it = boost::begin(difference); it != boost::end(difference); ++it)
 						{
 							geometry::reverse(*it);
-							detail::inserter::insert(*it, output_collection);
+							output_collection.push_back(*it);
 						}
 						return true;
 					}
@@ -410,14 +373,10 @@ namespace boost
 								switch (it->source)
 								{
 								case 0:
-									detail::inserter::insert(
-										get_geometry::apply(input_range, it->index),
-										output_collection);
+									output_collection.push_back(get_geometry::apply(input_range, it->index));
 									break;
 								case 1:
-									detail::inserter::insert(
-										get_geometry::apply(unioned_collection, it->index),
-										output_collection);
+									output_collection.push_back(get_geometry::apply(unioned_collection, it->index));
 									break;
 								}
 							}
