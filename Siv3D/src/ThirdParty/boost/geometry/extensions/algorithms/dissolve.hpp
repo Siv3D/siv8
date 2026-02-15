@@ -14,6 +14,7 @@
 #include <map>
 #include <deque>
 #include <vector>
+#include <algorithm>
 #include <boost/range/size.hpp>
 #include <boost/range/value_type.hpp>
 #include <boost/geometry/algorithms/detail/overlay/get_turns.hpp>
@@ -26,7 +27,6 @@
 #include <boost/geometry/algorithms/detail/overlay/assign_parents.hpp>
 #include <boost/geometry/algorithms/detail/overlay/ring_properties.hpp>
 #include <boost/geometry/algorithms/detail/overlay/select_rings.hpp>
-#include <boost/geometry/algorithms/detail/overlay/backtrack_check_si.hpp>
 #include <boost/geometry/algorithms/detail/overlay/traversal_ring_creator.hpp>
 #include <boost/geometry/algorithms/convert.hpp>
 #include <boost/geometry/algorithms/correct.hpp>
@@ -188,16 +188,14 @@ namespace boost
 						int index; // index in the original array
 						bool dissolved;
 						Box box;
-						double area;
 
 						dissolve_helper() {}
 
-						dissolve_helper(int i, Box b, double a, int s)
+						dissolve_helper(int i, Box b, int s)
 							: source(s)
 							, index(i)
 							, dissolved(false)
-							, box(b)
-							, area(a) {}
+							, box(b) {}
 					};
 
 					struct get_geometry
@@ -218,7 +216,7 @@ namespace boost
 
 						for (auto it = boost::begin(v); it != boost::end(v); ++it, ++index)
 						{
-							helper.push_back(dissolve_helper<box_type>(index, geometry::return_envelope<box_type>(*it, strategy), geometry::area(*it, strategy), source));
+							helper.push_back(dissolve_helper<box_type>(index, geometry::return_envelope<box_type>(*it, strategy), source));
 						}
 					}
 
@@ -242,7 +240,7 @@ namespace boost
 						return false;
 					}
 
-					template <int Dimension, typename HelperVector, typename IndexVector, typename InputRange, typename RescalePolicy, typename OutputCollection, typename Strategy>
+					template <typename HelperVector, typename IndexVector, typename InputRange, typename RescalePolicy, typename OutputCollection, typename Strategy>
 					static bool divide_and_conquer(HelperVector& helper_vector
 							, IndexVector& index_vector
 							, InputRange const& input_range
@@ -375,8 +373,7 @@ namespace boost
 						std::size_t n = 0;
 
 						bool changed = false;
-						while (divide_and_conquer<1>
-							(helper_vector, index_vector, input_range, rescale_policy, unioned_collection, strategy, changed) && n < 5)
+						while (divide_and_conquer(helper_vector, index_vector, input_range, rescale_policy, unioned_collection, strategy, changed) && n < 5)
 						{
 							// Remove everything which is already dissolved.
 							helper_vector.erase(
@@ -469,13 +466,7 @@ namespace boost
 						}
 					}
 				};
-			}
-		}
 
-		namespace detail
-		{
-			namespace dissolve
-			{
 				struct no_interrupt_policy
 				{
 					static bool const enabled = false;
@@ -683,8 +674,7 @@ namespace boost
 						multi_polygon exterior_out;
 						apply_ring(exterior_ring(polygon), rescale_policy, exterior_out, strategy, visitor);
 
-						// Dissolve all the (negative) interior rings into
-						// a (positive) mulpolygon. Do this per interior ring and combine them.
+						// Dissolve all the (negative) interior rings into a (positive) mulpolygon. Do this per interior ring and combine them.
 						multi_polygon interior_out_per_ring;
 						apply_rings(interior_rings(polygon), rescale_policy, interior_out_per_ring, strategy, visitor);
 
@@ -703,17 +693,6 @@ namespace boost
 			}
 		}
 
-		namespace dispatch
-		{
-			template <typename Geometry, typename GeometryOut, bool Reverse, typename GeometryTag = typename tag<Geometry>::type, typename GeometryOutTag = typename tag<GeometryOut>::type>
-			struct dissolve
-				: not_implemented<GeometryTag, GeometryOutTag> {};
-
-			template<typename Polygon, typename PolygonOut, bool Reverse>
-			struct dissolve<Polygon, PolygonOut, Reverse, polygon_tag, polygon_tag>
-				: detail::dissolve::dissolve_polygon<Polygon, PolygonOut, Reverse> {};
-		}
-
 		template <typename Geometry, typename Collection>
 		void dissolve(Geometry const& geometry, Collection& output_collection)
 		{
@@ -725,11 +704,9 @@ namespace boost
 			rescale_policy_type robust_policy = geometry::get_rescale_policy<rescale_policy_type>(geometry, strategy);
 
 			detail::overlay::overlay_null_visitor visitor;
-			dispatch::dissolve<
-				Geometry,
-				geometry_out,
-				detail::overlay::do_reverse<geometry::point_order<Geometry>::value>::value
-			>::apply(
+			constexpr bool Reverse = detail::overlay::do_reverse<geometry::point_order<Geometry>::value>::value;
+
+			detail::dissolve::dissolve_polygon<Geometry, geometry_out, Reverse>::apply(
 				geometry,
 				robust_policy,
 				std::back_inserter(output_collection),
