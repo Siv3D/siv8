@@ -12,9 +12,9 @@
 # pragma once
 # include <Siv3D/FileSystem.hpp>
 # include "ChildProcessDetail.hpp"
-# include <boost/process/io.hpp>
-# include <boost/process/start_dir.hpp>
-# include <boost/process/search_path.hpp>
+# include <boost/process/v1/io.hpp>
+# include <boost/process/v1/start_dir.hpp>
+# include <boost/process/v1/search_path.hpp>
 
 namespace s3d
 {
@@ -29,7 +29,7 @@ namespace s3d
 			}
 			else
 			{
-				return boost::process::search_path(path.toWstr()).wstring();
+				return boost::process::v1::search_path(path.toWstr()).wstring();
 			}
 		}
 	}
@@ -50,16 +50,16 @@ namespace s3d
 		switch (pipe)
 		{
 		case Pipe::None:
-			m_child = boost::process::child(args);
+			m_child = boost::process::v1::child(args);
 			break;
 		case Pipe::StdIn:
-			m_child = boost::process::child(args, boost::process::std_out > m_iPipeStream);
+			m_child = boost::process::v1::child(args, boost::process::v1::std_out > m_iPipeStream);
 			break;
 		case Pipe::StdOut:
-			m_child = boost::process::child(args, boost::process::std_in < m_oPipeStream);
+			m_child = boost::process::v1::child(args, boost::process::v1::std_in < m_oPipeStream);
 			break;
 		case Pipe::StdInOut:
-			m_child = boost::process::child(args, boost::process::std_out > m_iPipeStream, boost::process::std_in < m_oPipeStream);
+			m_child = boost::process::v1::child(args, boost::process::v1::std_out > m_iPipeStream, boost::process::v1::std_in < m_oPipeStream);
 			break;
 		}
 

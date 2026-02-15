@@ -12,11 +12,11 @@
 # pragma once
 # include <Siv3D/ChildProcess.hpp>
 # include <Siv3D/Windows/Windows.hpp>
-# include <boost/process/child.hpp>
+# include <boost/process/v1/child.hpp>
 
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4244)
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4297)
-# include <boost/process/pipe.hpp>
+# include <boost/process/v1/pipe.hpp>
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
@@ -48,11 +48,11 @@ namespace s3d
 
 	private:
 
-		boost::process::opstream m_oPipeStream;
+		boost::process::v1::opstream m_oPipeStream;
 
-		boost::process::ipstream m_iPipeStream;
+		boost::process::v1::ipstream m_iPipeStream;
 
-		boost::process::child m_child;
+		boost::process::v1::child m_child;
 
 		bool m_launched = false;
 	};

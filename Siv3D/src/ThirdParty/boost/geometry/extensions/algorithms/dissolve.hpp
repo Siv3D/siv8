@@ -30,7 +30,7 @@
 #include <boost/geometry/algorithms/sym_difference.hpp>
 #include <boost/geometry/algorithms/union.hpp>
 #include <boost/geometry/algorithms/reverse.hpp>
-#include <boost/geometry/policies/robustness/segment_ratio_type.hpp>
+#include <boost/geometry/policies/robustness/segment_ratio.hpp>
 #include <boost/geometry/core/point_type.hpp>
 #include <boost/geometry/core/exterior_ring.hpp>
 
@@ -44,8 +44,8 @@ namespace boost
 			{
 				class plusmin_policy
 				{
-					template <typename Geometry1, typename Geometry2, typename RescalePolicy, typename OutputCollection, typename Strategy>
-					static bool check_negative(Geometry1 a, Geometry2 b, RescalePolicy const& rescale_policy, OutputCollection& output_collection, Strategy const& strategy)
+					template <typename Geometry1, typename Geometry2, typename OutputCollection, typename Strategy>
+					static bool check_negative(Geometry1 a, Geometry2 b, OutputCollection& output_collection, Strategy const& strategy)
 					{
 						// Precondition: a = positive, b = negative
 
@@ -67,12 +67,12 @@ namespace boost
 
 						typedef typename geometry::point_type<Geometry2>::type point_type;
 
-						typedef overlay::turn_info<point_type, typename segment_ratio_type<point_type, RescalePolicy>::type> turn_info;
+						typedef overlay::turn_info<point_type, typename segment_ratio_type<point_type>::type> turn_info;
 						std::deque<turn_info> turns;
 
 						// Get (and stop on) any intersection
 						detail::disjoint::disjoint_interrupt_policy policy;
-						geometry::get_turns<false, false, overlay::assign_null_policy>(a, b, strategy, rescale_policy, turns, policy);
+						geometry::get_turns<false, false, overlay::assign_null_policy>(a, b, strategy, turns, policy);
 
 						if (!policy.has_intersections)
 						{
@@ -105,9 +105,9 @@ namespace boost
 						return true;
 					}
 
-					template <typename Geometry1, typename Geometry2, typename AreaType, typename RescalePolicy, typename OutputCollection, typename Strategy>
+					template <typename Geometry1, typename Geometry2, typename AreaType, typename OutputCollection, typename Strategy>
 					static bool check(Geometry1 const& a, Geometry2 const& b, AreaType const& area_a, AreaType const& area_b,
-						RescalePolicy const& rescale_policy, OutputCollection& output_collection, Strategy const& strategy)
+						OutputCollection& output_collection, Strategy const& strategy)
 					{
 						AreaType const zero = AreaType();
 						if (area_a > zero && area_b > zero)
@@ -117,21 +117,21 @@ namespace boost
 						}
 						else if (area_a > zero && area_b < zero)
 						{
-							return check_negative(a, b, rescale_policy, output_collection, strategy);
+							return check_negative(a, b, output_collection, strategy);
 						}
 						else if (area_a < zero && area_b > zero)
 						{
-							return check_negative(b, a, rescale_policy, output_collection, strategy);
+							return check_negative(b, a, output_collection, strategy);
 						}
 						return false;
 					}
 
 				public:
 
-					template <typename Geometry1, typename Geometry2, typename RescalePolicy, typename OutputCollection, typename Strategy>
-					static bool apply(Geometry1 const& a, Geometry2 const& b, RescalePolicy const& rescale_policy, OutputCollection& output_collection, Strategy const& strategy)
+					template <typename Geometry1, typename Geometry2, typename OutputCollection, typename Strategy>
+					static bool apply(Geometry1 const& a, Geometry2 const& b, OutputCollection& output_collection, Strategy const& strategy)
 					{
-						return check(a, b, geometry::area(a), geometry::area(b), rescale_policy, output_collection, strategy);
+						return check(a, b, geometry::area(a), geometry::area(b), output_collection, strategy);
 					}
 				};
 
@@ -179,7 +179,7 @@ namespace boost
 						}
 					}
 
-					template <typename Element, typename Geometry1, typename Geometry2, typename RescalePolicy, typename OutputCollection, typename Strategy>
+					template <typename Element, typename Geometry1, typename Geometry2, typename OutputCollection, typename Strategy>
 					static bool call_policy(
 							Element const&, Element const&,
 							// Both geometry1 and geometry2 are copied,
@@ -187,13 +187,12 @@ namespace boost
 							// which might change the collection itself and the address/contents of geometry1/geometry2
 							Geometry1 geometry1,
 							Geometry2 geometry2,
-							RescalePolicy const& rescale_policy,
 							OutputCollection& output_collection,
 							Strategy const& strategy)
 					{
 						if (!geometry::disjoint(geometry1, geometry2, strategy))
 						{
-							return CombinePolicy::apply(geometry1, geometry2, rescale_policy, output_collection, strategy);
+							return CombinePolicy::apply(geometry1, geometry2, output_collection, strategy);
 						}
 
 						return false;
@@ -207,8 +206,8 @@ namespace boost
 							 : get_geometry::apply(output_collection, index);
 					}
 
-					template <typename HelperVector, typename IndexVector, typename InputRange, typename RescalePolicy, typename OutputCollection, typename Strategy>
-					static bool divide_and_conquer(HelperVector& helper_vector, IndexVector& index_vector, InputRange const& input_range, RescalePolicy const& rescale_policy,
+					template <typename HelperVector, typename IndexVector, typename InputRange, typename OutputCollection, typename Strategy>
+					static bool divide_and_conquer(HelperVector& helper_vector, IndexVector& index_vector, InputRange const& input_range,
 						OutputCollection& output_collection, Strategy const& strategy, bool& changed)
 					{
 						typedef typename boost::range_value<HelperVector>::type helper_type;
@@ -233,7 +232,7 @@ namespace boost
 									auto const& g1 = select_geometry(element1.source, input_range, output_collection, element1.index);
 									auto const& g2 = select_geometry(element2.source, input_range, output_collection, element2.index);
 									
-									if (call_policy(element1, element2, g1, g2, rescale_policy, output_collection, strategy))
+									if (call_policy(element1, element2, g1, g2, output_collection, strategy))
 									{
 										changed = true;
 										element1.dissolved = true;
@@ -257,8 +256,8 @@ namespace boost
 						return t.dissolved;
 					}
 
-					template <typename InputRange, typename RescalePolicy, typename OutputCollection, typename Strategy>
-					static void apply(InputRange const& input_range, RescalePolicy const& rescale_policy, OutputCollection& output_collection, Strategy const& strategy)
+					template <typename InputRange, typename OutputCollection, typename Strategy>
+					static void apply(InputRange const& input_range, OutputCollection& output_collection, Strategy const& strategy)
 					{
 						typedef typename boost::range_value<OutputCollection>::type output_type;
 
@@ -291,7 +290,7 @@ namespace boost
 						std::size_t n = 0;
 
 						bool changed = false;
-						while (divide_and_conquer(helper_vector, index_vector, input_range, rescale_policy, unioned_collection, strategy, changed) && n < 5)
+						while (divide_and_conquer(helper_vector, index_vector, input_range, unioned_collection, strategy, changed) && n < 5)
 						{
 							// Remove everything which is already dissolved.
 							helper_vector.erase(
@@ -345,14 +344,14 @@ namespace boost
 				class traverse
 				{
 				public:
-					template <typename Geometry, typename IntersectionStrategy, typename RobustPolicy, typename Turns, typename Rings, typename TurnInfoMap, typename Clusters>
-					static void apply(Geometry const& geometry, IntersectionStrategy const& intersection_strategy, RobustPolicy const& robust_policy,
+					template <typename Geometry, typename IntersectionStrategy, typename Turns, typename Rings, typename TurnInfoMap, typename Clusters>
+					static void apply(Geometry const& geometry, IntersectionStrategy const& intersection_strategy,
 						Turns& turns, Rings& rings, TurnInfoMap& turn_info_map, Clusters& clusters)
 					{
 						detail::overlay::overlay_null_visitor visitor;
 						detail::overlay::traversal_ring_creator<Reverse, Reverse, overlay_dissolve, Geometry, Geometry,
-							Turns, TurnInfoMap, Clusters, IntersectionStrategy, RobustPolicy, detail::overlay::overlay_null_visitor, Backtrack>
-							trav(geometry, geometry, turns, turn_info_map, clusters, intersection_strategy, robust_policy, visitor);
+							Turns, TurnInfoMap, Clusters, IntersectionStrategy, detail::overlay::overlay_null_visitor, Backtrack>
+							trav(geometry, geometry, turns, turn_info_map, clusters, intersection_strategy, visitor);
 
 						std::size_t finalized_ring_size = boost::size(rings);
 
@@ -383,9 +382,9 @@ namespace boost
 				public :
 					typedef detail::overlay::backtrack_state state_type;
 
-					template <typename Operation, typename Rings, typename Turns, typename IntersectionStrategy, typename RobustPolicy, typename Visitor>
+					template <typename Operation, typename Rings, typename Turns, typename IntersectionStrategy, typename Visitor>
 					static void apply(std::size_t size_at_start, Rings& rings, typename boost::range_value<Rings>::type& ring, Turns& turns, typename boost::range_value<Turns>::type const&, Operation& operation,
-								detail::overlay::traverse_error_type, Geometry const&, Geometry const&, IntersectionStrategy const&, RobustPolicy const&, state_type& state, Visitor const&)
+								detail::overlay::traverse_error_type, Geometry const&, Geometry const&, IntersectionStrategy const&, state_type& state, Visitor const&)
 					{
 						state.m_good = false;
 
@@ -434,17 +433,17 @@ namespace boost
 						}
 					}
 
-					template <typename RescalePolicy, typename OutputIterator, typename Strategy>
-					static void apply_one(Ring const& input_ring, RescalePolicy const& rescale_policy, OutputIterator out, Strategy const& strategy)
+					template <typename OutputIterator, typename Strategy>
+					static void apply_one(Ring const& input_ring, OutputIterator out, Strategy const& strategy)
 					{
 						using point_type = typename point_type<Ring>::type;
 
 						// Get the self-intersection points, including turns
-						using turn_info = detail::overlay::traversal_turn_info<point_type, typename segment_ratio_type<point_type, RescalePolicy>::type>;
+						using turn_info = detail::overlay::traversal_turn_info<point_type, typename segment_ratio_type<point_type>::type>;
 
 						std::deque<turn_info> turns;
 						detail::dissolve::no_interrupt_policy policy;
-						detail::self_get_turn_points::self_turns<Reverse, detail::overlay::assign_null_policy>(input_ring, strategy, rescale_policy, turns, policy, 0, false);
+						detail::self_get_turn_points::self_turns<Reverse, detail::overlay::assign_null_policy>(input_ring, strategy, turns, policy, 0, false);
 
 						adapt_turns(turns);
 
@@ -461,12 +460,12 @@ namespace boost
 						std::map<signed_size_type, detail::overlay::cluster_info> clusters;
 
 						// Enrich/traverse the polygons
-						enrich_intersection_points<Reverse, Reverse, overlay_dissolve>(turns, clusters, input_ring, input_ring, rescale_policy, strategy);
+						enrich_intersection_points<Reverse, Reverse, overlay_dissolve>(turns, clusters, input_ring, input_ring, strategy);
 
 						std::deque<Ring> rings;
 						std::map<ring_identifier, overlay::ring_turn_info> turn_info_per_ring;
 
-						detail::dissolve::traverse<Reverse, backtrack_for_dissolve<Ring>>::apply(input_ring, strategy, rescale_policy, turns, rings, turn_info_per_ring, clusters);
+						detail::dissolve::traverse<Reverse, backtrack_for_dissolve<Ring>>::apply(input_ring, strategy, turns, rings, turn_info_per_ring, clusters);
 
 						detail::overlay::get_ring_turn_info<overlay_dissolve>(turn_info_per_ring, turns, clusters);
 
@@ -491,17 +490,17 @@ namespace boost
 						detail::overlay::add_rings<GeometryOut>(selected, input_ring, rings, out, strategy);
 					}
 
-					template <typename RescalePolicy, typename OutputIterator, typename Strategy>
-					static OutputIterator apply(Ring const& geometry, RescalePolicy const& rescale_policy, OutputIterator out, Strategy const& strategy)
+					template <typename OutputIterator, typename Strategy>
+					static OutputIterator apply(Ring const& geometry, OutputIterator out, Strategy const& strategy)
 					{
 						using multi_polygon = model::multi_polygon<GeometryOut>;
 						multi_polygon step1;
-						apply_one(geometry, rescale_policy, std::back_inserter(step1), strategy);
+						apply_one(geometry, std::back_inserter(step1), strategy);
 
 						// Step 2: remove mutual overlap
 						{
 							multi_polygon step2; // TODO avoid this, output to "out", if possible
-							detail::dissolver::dissolver_generic<detail::dissolver::plusmin_policy>::apply(step1, rescale_policy, step2, strategy);
+							detail::dissolver::dissolver_generic<detail::dissolver::plusmin_policy>::apply(step1, step2, strategy);
 
 							for (auto it = step2.begin(); it != step2.end(); ++it)
 							{
@@ -518,46 +517,46 @@ namespace boost
 				{
 					typedef typename ring_type<Polygon>::type ring_type;
 
-					template <typename RescalePolicy, typename OutputCollection, typename Strategy>
-					static void apply_ring(ring_type const& ring, RescalePolicy const& rescale_policy, OutputCollection& out, Strategy const& strategy)
+					template <typename OutputCollection, typename Strategy>
+					static void apply_ring(ring_type const& ring, OutputCollection& out, Strategy const& strategy)
 					{
 						bool const orientation_ok = geometry::area(ring) >= 0;
 						if (orientation_ok)
 						{
-							dissolve_ring<ring_type, GeometryOut, Reverse>::apply(ring, rescale_policy, std::back_inserter(out), strategy);
+							dissolve_ring<ring_type, GeometryOut, Reverse>::apply(ring, std::back_inserter(out), strategy);
 						}
 						else
 						{
 							// Apply the whole dissolve implementation reversed
-							dissolve_ring<ring_type, GeometryOut, !Reverse>::apply(ring, rescale_policy, std::back_inserter(out), strategy);
+							dissolve_ring<ring_type, GeometryOut, !Reverse>::apply(ring, std::back_inserter(out), strategy);
 						}
 					}
 
-					template <typename Rings, typename RescalePolicy, typename OutputCollection, typename Strategy>
-					static void apply_rings(Rings const& rings, RescalePolicy const& rescale_policy, OutputCollection& out, Strategy const& strategy)
+					template <typename Rings, typename OutputCollection, typename Strategy>
+					static void apply_rings(Rings const& rings, OutputCollection& out, Strategy const& strategy)
 					{
 						for (auto it = boost::begin(rings); it != boost::end(rings); ++it)
 						{
-							apply_ring(*it, rescale_policy, out, strategy);
+							apply_ring(*it, out, strategy);
 						}
 					}
 
-					template <typename RescalePolicy, typename OutputIterator, typename Strategy>
-					static OutputIterator apply(Polygon const& polygon, RescalePolicy const& rescale_policy, OutputIterator out, Strategy const& strategy)
+					template <typename OutputIterator, typename Strategy>
+					static OutputIterator apply(Polygon const& polygon, OutputIterator out, Strategy const& strategy)
 					{
 						using multi_polygon = model::multi_polygon<GeometryOut>;
 
 						// Handle exterior ring
 						multi_polygon exterior_out;
-						apply_ring(exterior_ring(polygon), rescale_policy, exterior_out, strategy);
+						apply_ring(exterior_ring(polygon), exterior_out, strategy);
 
 						// Dissolve all the (negative) interior rings into a (positive) mulpolygon. Do this per interior ring and combine them.
 						multi_polygon interior_out_per_ring;
-						apply_rings(interior_rings(polygon), rescale_policy, interior_out_per_ring, strategy);
+						apply_rings(interior_rings(polygon), interior_out_per_ring, strategy);
 
 						// Remove mutual overlap in the interior ring output
 						multi_polygon interior_out;
-						detail::dissolver::dissolver_generic<detail::dissolver::plusmin_policy>::apply(interior_out_per_ring, rescale_policy, interior_out, strategy);
+						detail::dissolver::dissolver_generic<detail::dissolver::plusmin_policy>::apply(interior_out_per_ring, interior_out, strategy);
 
 						// Subtract the interior rings from the output. Where interior rings
 						// are partly or completely outside the polygon, sym_difference will
@@ -575,13 +574,11 @@ namespace boost
 		{
 			using geometry_out = typename boost::range_value<Collection>::type;
 			using strategy_type = typename strategies::relate::services::default_strategy<Geometry, Geometry>::type;
-			using rescale_policy_type = typename geometry::rescale_policy_type<typename geometry::point_type<Geometry>::type, typename strategy_type::cs_tag>::type;
 
 			strategy_type strategy{};
-			rescale_policy_type robust_policy = geometry::get_rescale_policy<rescale_policy_type>(geometry, strategy);
 			constexpr bool Reverse = detail::overlay::do_reverse<geometry::point_order<Geometry>::value>::value;
 
-			detail::dissolve::dissolve_polygon<Geometry, geometry_out, Reverse>::apply(geometry, robust_policy, std::back_inserter(output_collection), strategy);
+			detail::dissolve::dissolve_polygon<Geometry, geometry_out, Reverse>::apply(geometry, std::back_inserter(output_collection), strategy);
 		}
 	}
 }
