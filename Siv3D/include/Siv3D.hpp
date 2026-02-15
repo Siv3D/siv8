@@ -842,6 +842,10 @@
 // 線のスタイル | Line style
 # include <Siv3D/LineStyle.hpp>
 
+# include <Siv3D/JitterEndpointMode.hpp>
+# include <Siv3D/JitterEndpointSettings.hpp>
+# include <Siv3D/JitterSettings.hpp>
+
 // 線分 | Line segment
 # include <Siv3D/Line.hpp> // ToDo
 

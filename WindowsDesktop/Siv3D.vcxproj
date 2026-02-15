@@ -92,6 +92,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IEffect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageProcessing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\JitterEndpointSettings.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\KDTree.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LineString.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LineStyle.ipp" />
@@ -167,6 +168,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIShapeStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointMode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointSettings.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\JitterSettings.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
