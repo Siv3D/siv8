@@ -18,7 +18,6 @@
 #include <boost/range/size.hpp>
 #include <boost/range/value_type.hpp>
 #include <boost/geometry/algorithms/detail/overlay/get_turns.hpp>
-#include <boost/geometry/algorithms/detail/overlay/overlay.hpp>
 #include <boost/geometry/algorithms/detail/overlay/turn_info.hpp>
 #include <boost/geometry/algorithms/detail/overlay/enrich_intersection_points.hpp>
 #include <boost/geometry/algorithms/detail/overlay/add_rings.hpp>
@@ -107,11 +106,8 @@ namespace boost
 					}
 
 					template <typename Geometry1, typename Geometry2, typename AreaType, typename RescalePolicy, typename OutputCollection, typename Strategy>
-					static bool check(Geometry1 const& a, Geometry2 const& b,
-							AreaType const& area_a, AreaType const& area_b,
-							RescalePolicy const& rescale_policy,
-							OutputCollection& output_collection,
-							Strategy const& strategy)
+					static bool check(Geometry1 const& a, Geometry2 const& b, AreaType const& area_a, AreaType const& area_b,
+						RescalePolicy const& rescale_policy, OutputCollection& output_collection, Strategy const& strategy)
 					{
 						AreaType const zero = AreaType();
 						if (area_a > zero && area_b > zero)
@@ -152,7 +148,7 @@ namespace boost
 						bool dissolved;
 						Box box;
 
-						dissolve_helper() {}
+						dissolve_helper() = default;
 
 						dissolve_helper(int i, Box b, int s)
 							: source(s)
@@ -212,18 +208,11 @@ namespace boost
 					}
 
 					template <typename HelperVector, typename IndexVector, typename InputRange, typename RescalePolicy, typename OutputCollection, typename Strategy>
-					static bool divide_and_conquer(HelperVector& helper_vector
-							, IndexVector& index_vector
-							, InputRange const& input_range
-							, RescalePolicy const& rescale_policy
-							, OutputCollection& output_collection
-							, Strategy const& strategy
-							, bool& changed)
+					static bool divide_and_conquer(HelperVector& helper_vector, IndexVector& index_vector, InputRange const& input_range, RescalePolicy const& rescale_policy,
+						OutputCollection& output_collection, Strategy const& strategy, bool& changed)
 					{
 						typedef typename boost::range_value<HelperVector>::type helper_type;
 						typedef typename boost::range_iterator<IndexVector const>::type iterator_type;
-
-						// There are less then 16 elements, handle them quadraticly
 
 						std::size_t n = boost::size(output_collection);
 
@@ -330,9 +319,7 @@ namespace boost
 
 						// Add input+output to real output
 						typedef typename boost::range_iterator<helper_vector_type>::type iterator_type;
-						for (iterator_type it = boost::begin(helper_vector);
-							it != boost::end(helper_vector);
-							++it)
+						for (iterator_type it = boost::begin(helper_vector); it != boost::end(helper_vector); ++it)
 						{
 							if (!it->dissolved)
 							{
@@ -359,23 +346,13 @@ namespace boost
 				{
 				public:
 					template <typename Geometry, typename IntersectionStrategy, typename RobustPolicy, typename Turns, typename Rings, typename TurnInfoMap, typename Clusters>
-					static void apply(Geometry const& geometry,
-							IntersectionStrategy const& intersection_strategy,
-							RobustPolicy const& robust_policy,
-							Turns& turns, Rings& rings,
-							TurnInfoMap& turn_info_map,
-							Clusters& clusters)
+					static void apply(Geometry const& geometry, IntersectionStrategy const& intersection_strategy, RobustPolicy const& robust_policy,
+						Turns& turns, Rings& rings, TurnInfoMap& turn_info_map, Clusters& clusters)
 					{
 						detail::overlay::overlay_null_visitor visitor;
-						detail::overlay::traversal_ring_creator
-							<
-							Reverse, Reverse, overlay_dissolve,
-							Geometry, Geometry,
-							Turns, TurnInfoMap, Clusters,
-							IntersectionStrategy,
-							RobustPolicy, detail::overlay::overlay_null_visitor,
-							Backtrack
-							> trav(geometry, geometry, turns, turn_info_map, clusters, intersection_strategy, robust_policy, visitor);
+						detail::overlay::traversal_ring_creator<Reverse, Reverse, overlay_dissolve, Geometry, Geometry,
+							Turns, TurnInfoMap, Clusters, IntersectionStrategy, RobustPolicy, detail::overlay::overlay_null_visitor, Backtrack>
+							trav(geometry, geometry, turns, turn_info_map, clusters, intersection_strategy, robust_policy, visitor);
 
 						std::size_t finalized_ring_size = boost::size(rings);
 
@@ -407,19 +384,8 @@ namespace boost
 					typedef detail::overlay::backtrack_state state_type;
 
 					template <typename Operation, typename Rings, typename Turns, typename IntersectionStrategy, typename RobustPolicy, typename Visitor>
-					static void apply(std::size_t size_at_start,
-								Rings& rings,
-								typename boost::range_value<Rings>::type& ring,
-								Turns& turns,
-								typename boost::range_value<Turns>::type const& /*turn*/,
-								Operation& operation,
-								detail::overlay::traverse_error_type,
-								Geometry const& ,
-								Geometry const& ,
-								IntersectionStrategy const& ,
-								RobustPolicy const& ,
-								state_type& state,
-								Visitor const&)
+					static void apply(std::size_t size_at_start, Rings& rings, typename boost::range_value<Rings>::type& ring, Turns& turns, typename boost::range_value<Turns>::type const&, Operation& operation,
+								detail::overlay::traverse_error_type, Geometry const&, Geometry const&, IntersectionStrategy const&, RobustPolicy const&, state_type& state, Visitor const&)
 					{
 						state.m_good = false;
 
@@ -613,15 +579,9 @@ namespace boost
 
 			strategy_type strategy{};
 			rescale_policy_type robust_policy = geometry::get_rescale_policy<rescale_policy_type>(geometry, strategy);
-
 			constexpr bool Reverse = detail::overlay::do_reverse<geometry::point_order<Geometry>::value>::value;
 
-			detail::dissolve::dissolve_polygon<Geometry, geometry_out, Reverse>::apply(
-				geometry,
-				robust_policy,
-				std::back_inserter(output_collection),
-				strategy
-			);
+			detail::dissolve::dissolve_polygon<Geometry, geometry_out, Reverse>::apply(geometry, robust_policy, std::back_inserter(output_collection), strategy);
 		}
 	}
 }
