@@ -426,6 +426,8 @@ gmon.out
 
 ## Ignore Boost
 /Dependencies/boost_1_83_0/boost/*
+/Dependencies/boost_1_86_0/boost/*
+/Dependencies/boost_1_88_0/boost/*
 
 ## Ignore compiled binaries
 /Siv3D/lib/Windows/siv3d/*.lib

@@ -936,18 +936,30 @@ namespace s3d
 //		template <class Fty>
 //		LineString& remove_if(Fty f);
 
-		constexpr LineString& reverse();
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse
+		//
+		////////////////////////////////////////////////////////////////
 
-//		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
-//		/// @return 連続する線分の向きを反転した新しい LineString
-//		[[nodiscard]]
-//		LineString reversed() const&;
-//
-//		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
-//		/// @return 連続する線分の向きを反転した新しい LineString
-//		[[nodiscard]]
-//		LineString reversed()&&;
-//
+		constexpr LineString& reverse() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reversed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
+		/// @return 連続する線分の向きを反転した新しい LineString
+		[[nodiscard]]
+		constexpr LineString reversed() const&;
+
+		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
+		/// @return 連続する線分の向きを反転した新しい LineString
+		[[nodiscard]]
+		constexpr LineString reversed() && noexcept;
+
 //		LineString& shuffle();
 //
 //		SIV3D_CONCEPT_URBG
@@ -966,39 +978,98 @@ namespace s3d
 //
 //		[[nodiscard]]
 //		LineString uniqued_consecutive()&&;
-//
-//		/// @brief LineString を構成する頂点の数を返します。
-//		/// @remark `size()` と同じです。
-//		/// @return LineString を構成する頂点の数
-//		[[nodiscard]]
-//		size_t num_points() const noexcept;
-//
-//		/// @brief LineString を構成する線分の数を返します。
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return LineString を構成する線分の数
-//		[[nodiscard]]
-//		size_t num_lines(CloseRing closeRing = CloseRing::No) const noexcept;
-//
-//		/// @brief LineString を構成する線分を返します。
-//		/// @param index 線分のインデックス
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return LineString を構成する線分
-//		[[nodiscard]]
-//		Line line(size_t index, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief 指定した頂点における進行方向左手の単位ベクトルを返します。
-//		/// @param index 頂点のインデックス
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 指定した頂点における進行方向左手の単位ベクトル
-//		[[nodiscard]]
-//		Vec2 normalAtPoint(size_t index, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief 指定した線分における進行方向左手の単位ベクトルを返します。
-//		/// @param index 線分のインデックス
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return  指定した線分における進行方向左手の単位ベクトル
-//		[[nodiscard]]
-//		Vec2 normalAtLine(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	num_points
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief LineString を構成する頂点の数を返します。
+		/// @remark `size()` と同じです。
+		/// @return LineString を構成する頂点の数
+		[[nodiscard]]
+		constexpr size_t num_points() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	num_segments
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief LineString を構成する線分の数を返します。
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return LineString を構成する線分の数
+		[[nodiscard]]
+		constexpr size_t num_segments(CloseRing closeRing = CloseRing::No) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	segment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief LineString を構成する線分を返します。
+		/// @param index 線分のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return LineString を構成する線分
+		[[nodiscard]]
+		Line segment(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getNormalAtPoint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した頂点における進行方向左手の単位ベクトルを返します。
+		/// @param index 頂点のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 指定した頂点における進行方向左手の単位ベクトル
+		[[nodiscard]]
+		Vec2 getNormalAtPoint(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getNormalAtSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した線分における進行方向左手の単位ベクトルを返します。
+		/// @param index 線分のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return  指定した線分における進行方向左手の単位ベクトル
+		[[nodiscard]]
+		Vec2 getNormalAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getTangentAtPoint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した頂点における進行方向の単位ベクトルを返します。
+		/// @param index 頂点のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 指定した頂点における進行方向の単位ベクトル
+		[[nodiscard]]
+		Vec2 getTangentAtPoint(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getTangentAtSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した線分における進行方向の単位ベクトルを返します。
+		/// @param index 線分のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 指定した線分における進行方向の単位ベクトル
+		[[nodiscard]]
+		Vec2 getTangentAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1028,90 +1099,174 @@ namespace s3d
 
 		constexpr LineString& moveBy(Vec2 v) noexcept;
 
-//		[[nodiscard]]
-//		LineString scaled(double s) const&;
-//
-//		[[nodiscard]]
-//		LineString scaled(double s)&&;
-//
-//		[[nodiscard]]
-//		LineString scaled(double sx, double sy) const&;
-//
-//		[[nodiscard]]
-//		LineString scaled(double sx, double sy)&&;
-//
-//		[[nodiscard]]
-//		LineString scaled(Vec2 s) const&;
-//
-//		[[nodiscard]]
-//		LineString scaled(Vec2 s)&&;
-//
-//		LineString& scale(double s);
-//
-//		LineString& scale(double sx, double sy);
-//
-//		LineString& scale(Vec2 s);
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, double s) const&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, double s)&&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, double sx, double sy) const&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, double sx, double sy)&&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, Vec2 s) const&;
-//
-//		[[nodiscard]]
-//		LineString scaledAt(Vec2 pos, Vec2 s)&&;
-//
-//		LineString& scaleAt(Vec2 pos, double s);
-//
-//		LineString& scaleAt(Vec2 pos, double sx, double sy);
-//
-//		LineString& scaleAt(Vec2 pos, Vec2 s);
-//
-//		[[nodiscard]]
-//		RectF computeBoundingRect() const noexcept;
-//
-//		/// @brief 連続する線分を単純化した LineString を返します。
-//		/// @param maxDistance 単純化の大きさ
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 単純化した LineString
-//		[[nodiscard]]
-//		LineString simplified(double maxDistance = 2.0, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief 点と点の間の距離が `maxDistance` より大きくならないよう、区間ごとに最小回数で均等に分割した結果を返します。
-//		/// @param maxDistance 点と点の間の最大距離
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 分割した結果
-//		[[nodiscard]]
-//		LineString densified(double maxDistance, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief Catmull-Rom スプライン曲線を返します。
-//		/// @param interpolation 分割の品質
-//		/// @return Catmull-Rom スプライン曲線
-//		[[nodiscard]]
-//		LineString catmullRom(int32 interpolation = 24) const;
-//
-//		/// @brief Catmull-Rom スプライン曲線を返します。
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @param interpolation 分割の品質
-//		/// @return Catmull-Rom スプライン曲線
-//		[[nodiscard]]
-//		LineString catmullRom(CloseRing closeRing, int32 interpolation = 24) const;
-//
-//		/// @brief 連続する線分全体の長さを返します。
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 連続する線分全体の長さ
-//		[[nodiscard]]
-//		double calculateLength(CloseRing closeRing = CloseRing::No) const noexcept;
-//
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffset
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr LineString withOffset(double x, double y) const&;
+		
+		[[nodiscard]]
+		constexpr LineString withOffset(double x, double y) && noexcept;
+		
+		[[nodiscard]]
+		constexpr LineString withOffset(Vec2 v) const&;
+		
+		[[nodiscard]]
+		constexpr LineString withOffset(Vec2 v) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	withOffsetX, withOffsetY
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr LineString withOffsetX(double x) const&;
+		
+		[[nodiscard]]
+		constexpr LineString withOffsetX(double x) && noexcept;
+		
+		[[nodiscard]]
+		constexpr LineString withOffsetY(double y) const&;
+		
+		[[nodiscard]]
+		constexpr LineString withOffsetY(double y) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaledFromOrigin
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr LineString scaledFromOrigin(double s) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFromOrigin(double s) && noexcept;
+
+		[[nodiscard]]
+		constexpr LineString scaledFromOrigin(double sx, double sy) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFromOrigin(double sx, double sy) && noexcept;
+
+		[[nodiscard]]
+		constexpr LineString scaledFromOrigin(Vec2 s) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFromOrigin(Vec2 s) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaleFromOrigin
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr LineString& scaleFromOrigin(double s);
+
+		constexpr LineString& scaleFromOrigin(double sx, double sy);
+
+		constexpr LineString& scaleFromOrigin(Vec2 s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaledFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, double s) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, double s) && noexcept;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, double sx, double sy) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, double sx, double sy) && noexcept;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, Vec2 s) const&;
+
+		[[nodiscard]]
+		constexpr LineString scaledFrom(Vec2 pos, Vec2 s) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaleFrom
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr LineString& scaleFrom(Vec2 pos, double s);
+
+		constexpr LineString& scaleFrom(Vec2 pos, double sx, double sy);
+
+		constexpr LineString& scaleFrom(Vec2 pos, Vec2 s);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeBoundingRect
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		RectF computeBoundingRect() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	simplified
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 連続する線分を単純化した LineString を返します。
+		/// @param maxDistance 単純化の大きさ
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 単純化した LineString
+		[[nodiscard]]
+		LineString simplified(double maxDistance = 2.0, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	densified
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点と点の間の距離が `maxDistance` より大きくならないよう、区間ごとに最小回数で均等に分割した結果を返します。
+		/// @param maxDistance 点と点の間の最大距離
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 分割した結果
+		[[nodiscard]]
+		LineString densified(double maxDistance, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	catmullRom
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Catmull-Rom スプライン曲線を返します。
+		/// @param interpolation 分割の品質
+		/// @return Catmull-Rom スプライン曲線
+		[[nodiscard]]
+		LineString catmullRom(int32 interpolation = 24) const;
+
+		/// @brief Catmull-Rom スプライン曲線を返します。
+		/// @param closeRing 終点と始点を結ぶか
+		/// @param interpolation 分割の品質
+		/// @return Catmull-Rom スプライン曲線
+		[[nodiscard]]
+		LineString catmullRom(CloseRing closeRing, int32 interpolation = 24) const;
+
+		/// @brief 連続する線分全体の長さを返します。
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 連続する線分全体の長さ
+		[[nodiscard]]
+		double computeLength(CloseRing closeRing = CloseRing::No) const noexcept;
+
 //		/// @brief 始点から指定した距離にある、線分上の点を返します
 //		/// @param distanceFromOrigin 始点からの距離
 //		/// @param closeRing 終点と始点を結ぶか
@@ -1277,6 +1432,26 @@ namespace s3d
 		const LineString& drawClosed(std::span<const ColorF> colors) const;
 
 		const LineString& drawClosed(double thickness, std::span<const ColorF> colors) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawPoints
+		//
+		////////////////////////////////////////////////////////////////
+
+		const LineString& drawPoints(double r, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawPointsFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		const LineString& drawPointsFrame(double r, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		const LineString& drawPointsFrame(double r, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+
+
 
 
 		////////////////////////////////////////////////////////////////

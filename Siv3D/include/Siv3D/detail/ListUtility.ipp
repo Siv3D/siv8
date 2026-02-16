@@ -22,7 +22,7 @@ namespace s3d
 	template <class Type>
 	constexpr Type Min(std::initializer_list<Type> values)
 	{
-		return *std::min_element(values.begin(), values.end());
+		return std::ranges::min(values);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ namespace s3d
 	template <class Type>
 	constexpr Type Max(std::initializer_list<Type> values)
 	{
-		return *std::max_element(values.begin(), values.end());
+		return std::ranges::max(values);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -44,9 +44,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	constexpr std::pair<Type, Type> MinMax(std::initializer_list<Type> values)
+	constexpr auto MinMax(std::initializer_list<Type> values)
 	{
-		const auto [minIt, maxIt] = std::minmax_element(values.begin(), values.end());
-		return{ *minIt, *maxIt };
+		return std::ranges::minmax(values);
 	}
 }

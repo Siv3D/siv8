@@ -277,8 +277,16 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief X 軸方向にオフセットした新しい四角形を返します。
+		/// @param x X 軸方向のオフセット量
+		/// @return オフセットした新しい四角形
+		[[nodiscard]]
+		constexpr Quad withOffsetX(value_type x) const noexcept;
 
-
+		/// @brief Y 軸方向にオフセットした新しい四角形を返します。
+		/// @param y Y 軸方向のオフセット量
+		/// @return オフセットした新しい四角形
+		[[nodiscard]]
+		constexpr Quad withOffsetY(value_type y) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -618,6 +626,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の頂点の配列 { p0, p1, p2, p3 } を返します。
+		/// @return 四角形の頂点の配列 { p0, p1, p2, p3 }
 		[[nodiscard]]
 		Array<Vec2> outer() const;
 

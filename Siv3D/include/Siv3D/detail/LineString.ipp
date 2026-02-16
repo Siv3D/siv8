@@ -751,20 +751,33 @@ namespace s3d
 		return BitwiseHash(m_points.data(), m_points.size_bytes());
 	}
 
-
-
-
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	reverse
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::reverse()
+	constexpr LineString& LineString::reverse() noexcept
 	{
 		m_points.reverse();
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reversed
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::reversed() const&
+	{
+		return LineString{ m_points.rbegin(), m_points.rend() };
+	}
+
+	constexpr LineString LineString::reversed() && noexcept
+	{
+		std::ranges::reverse(m_points);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -776,8 +789,34 @@ namespace s3d
 	constexpr LineString& LineString::unique_consecutive()
 	{
 		m_points.unique_consecutive();
-
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	num_points
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr size_t LineString::num_points() const noexcept
+	{
+		return m_points.size();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	num_segments
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr size_t LineString::num_segments(const CloseRing closeRing) const noexcept
+	{
+		if (m_points.size() < 2)
+		{
+			return 0;
+		}
+		
+		return (closeRing ? m_points.size() : (m_points.size() - 1));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -800,11 +839,7 @@ namespace s3d
 
 	constexpr LineString LineString::movedBy(const double x, const double y) && noexcept
 	{
-		for (auto& point : m_points)
-		{
-			point.moveBy(x, y);
-		}
-
+		moveBy(x, y);
 		return std::move(*this);
 	}
 
@@ -822,11 +857,7 @@ namespace s3d
 
 	constexpr LineString LineString::movedBy(const Vec2 v) && noexcept
 	{
-		for (auto& point : m_points)
-		{
-			point.moveBy(v);
-		}
-	
+		moveBy(v);
 		return std::move(*this);
 	}
 
@@ -856,6 +887,295 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffset
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::withOffset(const double x, const double y) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.moveBy(x, y);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::withOffset(const double x, const double y) && noexcept
+	{
+		moveBy(x, y);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::withOffset(const Vec2 v) const&
+	{
+		LineString result{ *this };
+	
+		for (auto& point : result.m_points)
+		{
+			point.moveBy(v);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::withOffset(const Vec2 v) && noexcept
+	{
+		moveBy(v);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	withOffsetX, withOffsetY
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::withOffsetX(const double x) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.x += x;
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::withOffsetX(const double x) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.x += x;
+		}
+	
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::withOffsetY(const double y) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.y += y;
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::withOffsetY(const double y) && noexcept
+	{
+		for (auto& point : m_points)
+		{
+			point.y += y;
+		}
+	
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFromOrigin
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::scaledFromOrigin(const double s) const&
+	{
+		LineString result{ *this };
+
+		for (auto& point : result.m_points)
+		{
+			point *= s;
+		}
+
+		return result;
+	}
+
+	constexpr LineString LineString::scaledFromOrigin(const double s) && noexcept
+	{
+		scaleFromOrigin(s);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaledFromOrigin(const double sx, const double sy) const&
+	{
+		LineString result{ *this };
+
+		for (auto& point : result.m_points)
+		{
+			point.x *= sx;
+			point.y *= sy;
+		}
+
+		return result;
+	}
+
+	constexpr LineString LineString::scaledFromOrigin(const double sx, const double sy) && noexcept
+	{
+		scaleFromOrigin(sx, sy);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaledFromOrigin(const Vec2 s) const&
+	{
+		LineString result{ *this };
+
+		for (auto& point : result.m_points)
+		{
+			point *= s;
+		}
+
+		return result;
+	}
+
+	constexpr LineString LineString::scaledFromOrigin(const Vec2 s) && noexcept
+	{
+		scaleFromOrigin(s);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFromOrigin
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::scaleFromOrigin(const double s)
+	{
+		for (auto& point : m_points)
+		{
+			point *= s;
+		}
+
+		return *this;
+	}
+
+	constexpr LineString& LineString::scaleFromOrigin(const double sx, const double sy)
+	{
+		for (auto& point : m_points)
+		{
+			point.x *= sx;
+			point.y *= sy;
+		}
+
+		return *this;
+	}
+
+	constexpr LineString& LineString::scaleFromOrigin(const Vec2 s)
+	{
+		for (auto& point : m_points)
+		{
+			point *= s;
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaledFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double s) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point = pos + ((point - pos) * s);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double s) && noexcept
+	{
+		scaleFrom(pos, s);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double sx, const double sy) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.x = pos.x + ((point.x - pos.x) * sx);
+			point.y = pos.y + ((point.y - pos.y) * sy);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const double sx, const double sy) && noexcept
+	{
+		scaleFrom(pos, sx, sy);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const Vec2 s) const&
+	{
+		LineString result{ *this };
+		
+		for (auto& point : result.m_points)
+		{
+			point.x = pos.x + ((point.x - pos.x) * s.x);
+			point.y = pos.y + ((point.y - pos.y) * s.y);
+		}
+		
+		return result;
+	}
+
+	constexpr LineString LineString::scaledFrom(const Vec2 pos, const Vec2 s) && noexcept
+	{
+		scaleFrom(pos, s);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double s)
+	{
+		for (auto& point : m_points)
+		{
+			point = pos + ((point - pos) * s);
+		}
+	
+		return *this;
+	}
+
+	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double sx, const double sy)
+	{
+		for (auto& point : m_points)
+		{
+			point.x = pos.x + ((point.x - pos.x) * sx);
+			point.y = pos.y + ((point.y - pos.y) * sy);
+		}
+	
+		return *this;
+	}
+
+	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const Vec2 s)
+	{
+		for (auto& point : m_points)
+		{
+			point.x = pos.x + ((point.x - pos.x) * s.x);
+			point.y = pos.y + ((point.y - pos.y) * s.y);
+		}
+	
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

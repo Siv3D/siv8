@@ -47,17 +47,17 @@ namespace s3d
 		: start{ _start }
 		, end{ _end } {}
 
-	constexpr Line::Line(const value_type originX, const value_type originY, const Arg::direction_<vector_type> vector) noexcept
+	constexpr Line::Line(const value_type originX, const value_type originY, const Arg::offset_<vector_type> offset) noexcept
 		: start{ originX, originY }
-		, end{ start + *vector } {}
+		, end{ start + *offset } {}
 
-	constexpr Line::Line(const Concept::Arithmetic auto originX, const Concept::Arithmetic auto originY, Arg::direction_<vector_type> vector) noexcept
+	constexpr Line::Line(const Concept::Arithmetic auto originX, const Concept::Arithmetic auto originY, Arg::offset_<vector_type> offset) noexcept
 		: start{ static_cast<value_type>(originX), static_cast<value_type>(originY) }
-		, end{ start + *vector } {}
+		, end{ start + *offset } {}
 
-	constexpr Line::Line(const position_type origin, const Arg::direction_<vector_type> vector) noexcept
+	constexpr Line::Line(const position_type origin, const Arg::offset_<vector_type> offset) noexcept
 		: start{ origin }
-		, end{ start + *vector } {}
+		, end{ start + *offset } {}
 
 	inline Line::Line(const value_type originX, const value_type originY, const Arg::angle_<value_type> angle, const value_type length) noexcept
 		: start{ originX, originY }

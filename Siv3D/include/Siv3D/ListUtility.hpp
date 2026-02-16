@@ -55,7 +55,7 @@ namespace s3d
 	/// @return 初期化リストの中で最小の値と最大の値 | The least and the greatest value in values
 	template <class Type>
 	[[nodiscard]]
-	constexpr std::pair<Type, Type> MinMax(std::initializer_list<Type> values);
+	constexpr auto MinMax(std::initializer_list<Type> values);
 }
 
 # include "detail/ListUtility.ipp"

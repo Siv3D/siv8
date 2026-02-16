@@ -258,7 +258,7 @@ void JSONSerializer<s3d::Polygon>::from_json(const s3d::JSON::json_base& j, s3d:
 	s3d::Array<s3d::TriangleIndex> indices = j.at("indices").get<s3d::Array<s3d::TriangleIndex>>();
 	s3d::RectF boundingRect = j.at("boundingRect").get<s3d::RectF>();
 
-	value = s3d::Polygon{ outer, std::move(inners), std::move(vertices), std::move(indices), boundingRect, s3d::SkipValidation::Yes };
+	value = s3d::Polygon{ outer, std::move(inners), std::move(vertices), std::move(indices), boundingRect, s3d::SkipValidation::No };
 }
 
 ////////////////////////////////////////////////////////////////
@@ -780,4 +780,59 @@ void JSONSerializer<s3d::RoundRect>::from_json(const s3d::JSON::json_base& j, s3
 	j.at("w").get_to(value.w);
 	j.at("h").get_to(value.h);
 	j.at("r").get_to(value.r);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Polygon
+//
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+//
+//	MultiPolygon
+//
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+//
+//	LineString
+//
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+//
+//	Bezier2
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Bezier2>::to_json(s3d::JSON::json_base& j, const s3d::Bezier2& value)
+{
+	j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 } };
+}
+
+void JSONSerializer<s3d::Bezier2>::from_json(const s3d::JSON::json_base& j, s3d::Bezier2& value)
+{
+	j.at("p0").get_to(value.p0);
+	j.at("p1").get_to(value.p1);
+	j.at("p2").get_to(value.p2);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Bezier3
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Bezier3>::to_json(s3d::JSON::json_base& j, const s3d::Bezier3& value)
+{
+	j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 }, { "p3", value.p3 } };
+}
+
+void JSONSerializer<s3d::Bezier3>::from_json(const s3d::JSON::json_base& j, s3d::Bezier3& value)
+{
+	j.at("p0").get_to(value.p0);
+	j.at("p1").get_to(value.p1);
+	j.at("p2").get_to(value.p2);
+	j.at("p3").get_to(value.p3);
 }

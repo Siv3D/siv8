@@ -56,6 +56,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addArrow
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addArrow(LineCap startCap, const Float2& start, const Float2& end, float thickness, const Float2& headSize, const Float4(&colors)[2]) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addTriangle
 		//
 		////////////////////////////////////////////////////////////////
@@ -157,6 +165,16 @@ namespace s3d
 		void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor) override;
 
 		void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addEllipsePie
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addEllipsePie(const Float2& center, float rx, float ry, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) override;
+
+		void addEllipsePie(const Float2& center, float rx, float ry, float startAngle, float angle, const PatternParameters& pattern) override;
 
 		////////////////////////////////////////////////////////////////
 		//

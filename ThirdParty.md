@@ -23,7 +23,7 @@ Name | Version
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 11.2.0
 [JSON for Modern C++](https://github.com/nlohmann/json) | v3.12.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
-[libcpprime](https://github.com/Rac75116/libcpprime) | ver 1.2.11
+[libcpprime](https://github.com/Rac75116/libcpprime) | v1.3.2
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
 [libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
@@ -36,7 +36,7 @@ Name | Version
 [msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13
 [muparser](https://github.com/beltoforion/muparser) | 
 [nanobench](https://github.com/martinus/nanobench) | v4.3.11
-[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.8.0
+[nanoflann](https://github.com/jlblancoc/nanoflann) | v1.9.0
 [Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.051
 [Noto Sans CJK](https://github.com/notofonts/noto-cjk) | Version 2.004
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 

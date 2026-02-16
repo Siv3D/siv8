@@ -955,12 +955,6 @@
     <Filter Include="src\ThirdParty\boost\geometry\extensions\algorithms">
       <UniqueIdentifier>{31546e0b-d3bc-4050-879f-6449311c96d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\ThirdParty\boost\geometry\extensions\algorithms\detail">
-      <UniqueIdentifier>{9c2ead0f-6158-43b8-97da-1d7bcb7976cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay">
-      <UniqueIdentifier>{0f178d3f-a61d-40d4-83e2-36f6cd57338b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D\ScreenCapture">
       <UniqueIdentifier>{1382dfb3-7f44-4800-8b20-478647512244}</UniqueIdentifier>
     </Filter>
@@ -1167,6 +1161,24 @@
     </Filter>
     <Filter Include="src\Siv3D\Subdivision2D">
       <UniqueIdentifier>{6f98be4e-967c-49f0-aa45-c82f49b38797}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Bezier2">
+      <UniqueIdentifier>{a928fa14-1d4f-483c-be8c-4c39334f03a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Bezier3">
+      <UniqueIdentifier>{f7ae3f39-fc38-4a60-99a0-6f281a47a576}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\PolynomialSolver">
+      <UniqueIdentifier>{b91bc0df-5757-45c1-a9d6-9e85fabe17c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Bezier2Walker">
+      <UniqueIdentifier>{0a834e5c-31e9-414a-8f9e-2826fb2c9466}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Bezier3Walker">
+      <UniqueIdentifier>{ae1266ce-6e20-4d95-818f-60c6990a2308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MultiPolygon">
+      <UniqueIdentifier>{f265e751-86ec-4566-8bec-d2085509c8a1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -3867,50 +3879,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\JoinStyle.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\connect.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\dissolve.hpp">
       <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\distance_info.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\inverse.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\midpoints.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\offset.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\offset_appender.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\parse.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\point_on_line.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\remove_holes_if.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\remove_marked.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\selected.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay\dissolve_traverse.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay\dissolver.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay\split_rings.hpp">
-      <Filter>src\ThirdParty\boost\geometry\extensions\algorithms\detail\overlay</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\ScreenCapture\CScreenCapture.hpp">
       <Filter>src\Siv3D\ScreenCapture</Filter>
@@ -4811,6 +4781,63 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\VoronoiCell.hpp">
       <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\Utils.hpp">
+      <Filter>include\ThirdParty\libcpprime\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.ipp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier2.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier3.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Bezier.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PolynomialSolver.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Bezier2Walker.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier2Walker.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Bezier3Walker.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier3Walker.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Spline.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Transition.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Transition.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointSettings.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\JitterSettings.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\JitterEndpointSettings.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Jitter.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -7553,6 +7580,27 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Subdivision2D\Subdivision2D.cpp">
       <Filter>src\Siv3D\Subdivision2D</Filter>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Bezier2\SivBezier2.cpp">
+      <Filter>src\Siv3D\Bezier2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Bezier3\SivBezier3.cpp">
+      <Filter>src\Siv3D\Bezier3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PolynomialSolver\SivPolynomialSolver.cpp">
+      <Filter>src\Siv3D\PolynomialSolver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Bezier2Walker\SivBezier2Walker.cpp">
+      <Filter>src\Siv3D\Bezier2Walker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Bezier3Walker\SivBezier3Walker.cpp">
+      <Filter>src\Siv3D\Bezier3Walker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MultiPolygon\SivMultiPolygon.cpp">
+      <Filter>src\Siv3D\MultiPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Jitter.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86__base_implementation.inl">
@@ -7591,5 +7639,13 @@
     <None Include="..\Siv3D\src\ThirdParty\skia\src\opts\SkSwizzler_opts.inc">
       <Filter>src\ThirdParty\skia\src\opts</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeTable10.txt">
+      <Filter>include\ThirdParty\libcpprime\internal</Filter>
+    </Text>
+    <Text Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeBases32.txt">
+      <Filter>include\ThirdParty\libcpprime\internal</Filter>
+    </Text>
   </ItemGroup>
 </Project>

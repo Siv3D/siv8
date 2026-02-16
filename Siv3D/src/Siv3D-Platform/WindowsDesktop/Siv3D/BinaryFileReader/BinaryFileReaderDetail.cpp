@@ -66,9 +66,17 @@ namespace s3d
 				return false;
 			}
 
+			const Byte* pData = static_cast<const Byte*>(::LockResource(pResource));
+
+			if (not pData)
+			{
+				LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to lock resource \"{0}\"", path));
+				return false;
+			}
+
 			m_resource =
 			{
-				.pointer = static_cast<const Byte*>(::LockResource(pResource)),
+				.pointer = pData,
 				.readPos = 0,
 			};
 

@@ -648,8 +648,8 @@
 //// キーフレームによるアニメーション | Keyframe animation
 //# include <Siv3D/SimpleAnimation.hpp>
 //
-//// トランジション | Transition
-//# include <Siv3D/Transition.hpp>
+// トランジション | Transition
+# include <Siv3D/Transition.hpp>
 
 // 周期関数 | Periodic functions
 # include <Siv3D/Periodic.hpp>
@@ -674,6 +674,8 @@
 //
 // 素数判定 | Primality test
 # include <Siv3D/IsPrime.hpp>
+
+# include <Siv3D/PolynomialSolver.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -855,6 +857,8 @@
 // 楕円 | Ellipse
 # include <Siv3D/Ellipse.hpp> // ToDo
 
+# include <Siv3D/SuperEllipse.hpp> // ToDo
+
 // 三角形 | Triangle
 # include <Siv3D/Triangle.hpp> // ToDo
 
@@ -864,22 +868,29 @@
 // 角丸長方形 | Rounded rectangle
 # include <Siv3D/RoundRect.hpp> // ToDo
 
-# include <Siv3D/SuperEllipse.hpp> // ToDo
-
-// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
-# include <Siv3D/LineString.hpp> // ToDo
-
 // 多角形 | Polygon
 # include <Siv3D/Polygon.hpp> // ToDo
 
 // 複数の多角形 | Multi-polygon
 # include <Siv3D/MultiPolygon.hpp> // ToDo
 
+// 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
+# include <Siv3D/LineString.hpp> // ToDo
+
+
+# include <Siv3D/Bezier.hpp>
+
 // 2 次ベジェ曲線 | Quadratic Bézier curve
-# include <Siv3D/Bezier2.hpp> // ToDo
+# include <Siv3D/Bezier2.hpp>
+
+# include <Siv3D/Bezier2Walker.hpp>
 
 // 3 次ベジェ曲線 | Cubic Bézier curve
-# include <Siv3D/Bezier3.hpp> // ToDo
+# include <Siv3D/Bezier3.hpp>
+
+# include <Siv3D/Bezier3Walker.hpp>
+
+# include <Siv3D/Spline.hpp>
 
 //// Catmull-Rom スプライン曲線 | Catmull-Rom spline curves
 //# include <Siv3D/Spline2D.hpp>
@@ -903,6 +914,11 @@
 //# include <Siv3D/Buffer2D.hpp>
 
 // 2D 幾何 | 2D geometry processing
+
+# include <Siv3D/JitterEndpointMode.hpp>
+# include <Siv3D/JitterEndpointSettings.hpp>
+# include <Siv3D/JitterSettings.hpp>
+
 # include <Siv3D/Geometry2D/Intersect.hpp> // ToDo
 # include <Siv3D/Geometry2D/IntersectAt.hpp> // ToDo
 # include <Siv3D/Geometry2D/Distance.hpp> // ToDo
@@ -913,6 +929,7 @@
 # include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
 # include <Siv3D/Geometry2D/SmallestEnclosingCircle.hpp>
 # include <Siv3D/Geometry2D/Misc.hpp> // ToDo
+# include <Siv3D/Geometry2D/Jitter.hpp>
 
 // 長方形詰込み | Rectangle packing
 # include <Siv3D/RectanglePack.hpp>

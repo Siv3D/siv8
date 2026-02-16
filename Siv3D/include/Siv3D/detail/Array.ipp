@@ -22,6 +22,9 @@ namespace s3d
 		void ThrowArrayRemovedAtIndexOutOfRange();
 
 		[[noreturn]]
+		void ThrowArraySliceIndexOutOfRange();
+
+		[[noreturn]]
 		void ThrowArrayChoiceOutOfRange();
 
 		[[noreturn]]
@@ -925,8 +928,29 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(const Array& other)
 	{
-		m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
-		return *this;
+		if (std::addressof(other) == this)
+		{
+			return append(Array{ other });
+		}
+		else
+		{
+			m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
+			return *this;
+		}
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(Array&& other)
+	{
+		if (std::addressof(other) == this)
+		{
+			return append(Array{ other });
+		}
+		else
+		{
+			m_container.insert(m_container.end(), std::make_move_iterator(other.m_container.begin()), std::make_move_iterator(other.m_container.end()));
+			return *this;
+		}
 	}
 
 	template <class Type, class Allocator>
@@ -1153,6 +1177,42 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	flatten
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::flatten() const& requires ArrayLike<value_type>
+	{
+		using element_type = typename value_type::value_type;
+
+		Array<element_type> result;
+
+		for (const auto& inner : m_container)
+		{
+			result.append(inner);
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::flatten() && requires ArrayLike<value_type>
+	{
+		using element_type = typename value_type::value_type;
+
+		Array<element_type> result;
+
+		for (auto&& inner : m_container)
+		{
+			result.append(std::move(inner));
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	in_groups
 	//
 	////////////////////////////////////////////////////////////////
@@ -1294,7 +1354,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr auto Array<Type, Allocator>::partition(Fty f) requires std::predicate<Fty&, const value_type&>
+	constexpr auto Array<Type, Allocator>::partition(Fty f) requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		return std::partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
@@ -1659,12 +1719,36 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::slice(const size_type index, const size_type length) const&
 	{
+		if (m_container.size() < index)
+		{
+			detail::ThrowArraySliceIndexOutOfRange();
+		}
+
+		const size_type maxLength = (m_container.size() - index);
+
+		if (maxLength < length)
+		{
+			detail::ThrowArraySliceIndexOutOfRange();
+		}
+
 		return Array((m_container.begin() + index), (m_container.begin() + index + length));
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::slice(const size_type index, const size_type length)&&
 	{
+		if (m_container.size() < index)
+		{
+			detail::ThrowArraySliceIndexOutOfRange();
+		}
+
+		const size_type maxLength = (m_container.size() - index);
+
+		if (maxLength < length)
+		{
+			detail::ThrowArraySliceIndexOutOfRange();
+		}
+
 		return Array(std::make_move_iterator(m_container.begin() + index), std::make_move_iterator(m_container.begin() + index + length));
 	}
 
@@ -1743,7 +1827,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort_by(Fty f)& requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		std::sort(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		return *this;
@@ -1751,14 +1835,14 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sort_by(Fty f) && requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(sort_by(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) const& requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		Array result(*this);
 		result.sort_by(std::forward<Fty>(f));
@@ -1767,7 +1851,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) && requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(sort_by(std::forward<Fty>(f)));
 	}
@@ -1780,7 +1864,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr auto Array<Type, Allocator>::stable_partition(Fty f) requires std::predicate<Fty&, const value_type&>
+	constexpr auto Array<Type, Allocator>::stable_partition(Fty f) requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		return std::stable_partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
@@ -1826,7 +1910,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort_by(Fty f)& requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		std::stable_sort(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 		return *this;
@@ -1834,14 +1918,14 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sort_by(Fty f) && requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(stable_sort_by(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) const& requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		Array result(*this);
 		result.stable_sort_by(std::forward<Fty>(f));
@@ -1850,7 +1934,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) && requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(stable_sort_by(std::forward<Fty>(f)));
 	}
@@ -2043,7 +2127,7 @@ namespace s3d
 	
 	# else
 		
-		 return Array<Elem>(range.begin(), range.end());
+		 return Array<Elem>(std::ranges::begin(range), std::ranges::end(range));
 	 
 	# endif
 	}

@@ -118,7 +118,7 @@ Point2 CubicSegment::point(double param) const {
     return mix(mix(mix(p[0], p[1], param), p12, param), mix(p12, mix(p[2], p[3], param), param), param);
 }
 
-Vector2 LinearSegment::direction(double param) const {
+Vector2 LinearSegment::direction([[maybe_unused]] double param) const {
     return p[1]-p[0];
 }
 
@@ -138,11 +138,11 @@ Vector2 CubicSegment::direction(double param) const {
     return tangent;
 }
 
-Vector2 LinearSegment::directionChange(double param) const {
+Vector2 LinearSegment::directionChange([[maybe_unused]] double param) const {
     return Vector2();
 }
 
-Vector2 QuadraticSegment::directionChange(double param) const {
+Vector2 QuadraticSegment::directionChange([[maybe_unused]] double param) const {
     return (p[2]-p[1])-(p[1]-p[0]);
 }
 

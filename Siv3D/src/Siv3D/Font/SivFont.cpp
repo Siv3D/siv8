@@ -519,67 +519,67 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	OutlineGlyph Font::renderOutline(const char32 codePoint, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	OutlineGlyph Font::generateOutlineGlyph(const char32 codePoint, const CloseRing closeRing, const ReadingDirection readingDirection) const
 	{
 		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
-		return renderOutlineByGlyphIndex(glyphIndex, closeRing, readingDirection);
+		return generateOutlineGlyphByGlyphIndex(glyphIndex, closeRing, readingDirection);
 	}
 
-	OutlineGlyph Font::renderOutline(const StringView ch, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	OutlineGlyph Font::generateOutlineGlyph(const StringView ch, const CloseRing closeRing, const ReadingDirection readingDirection) const
 	{
 		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
-		return renderOutlineByGlyphIndex(glyphIndex, closeRing, readingDirection);
+		return generateOutlineGlyphByGlyphIndex(glyphIndex, closeRing, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderOutline
+	//	generateOutlineGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	OutlineGlyph Font::renderOutlineByGlyphIndex(const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection) const
+	OutlineGlyph Font::generateOutlineGlyphByGlyphIndex(const GlyphIndex glyphIndex, const CloseRing closeRing, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->renderOutlineByGlyphIndex(m_handle->id(), glyphIndex, closeRing, readingDirection);
+		return SIV3D_ENGINE(Font)->generateOutlineGlyphByGlyphIndex(m_handle->id(), glyphIndex, closeRing, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderOutlines
+	//	generateOutlineGlyphs
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<OutlineGlyph> Font::renderOutlines(const StringView s, const CloseRing closeRing, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
+	Array<OutlineGlyph> Font::generateOutlineGlyphs(const StringView s, const CloseRing closeRing, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->renderOutlines(m_handle->id(), s, closeRing, enableLigatures, readingDirection);
+		return SIV3D_ENGINE(Font)->generateOutlineGlyphs(m_handle->id(), s, closeRing, enableLigatures, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderPolygon
+	//	generatePolygonGlyph
 	//
 	////////////////////////////////////////////////////////////////
 
-	PolygonGlyph Font::renderPolygon(const char32 codePoint, const ReadingDirection readingDirection) const
+	PolygonGlyph Font::generatePolygonGlyph(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
 		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
-		return renderPolygonByGlyphIndex(glyphIndex, readingDirection);
+		return generatePolygonGlyphByGlyphIndex(glyphIndex, readingDirection);
 	}
 
-	PolygonGlyph Font::renderPolygon(const StringView ch, const ReadingDirection readingDirection) const
+	PolygonGlyph Font::generatePolygonGlyph(const StringView ch, const ReadingDirection readingDirection) const
 	{
 		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
-		return renderPolygonByGlyphIndex(glyphIndex, readingDirection);
+		return generatePolygonGlyphByGlyphIndex(glyphIndex, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderPolygonByGlyphIndex
+	//	generatePolygonGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	PolygonGlyph Font::renderPolygonByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
+	PolygonGlyph Font::generatePolygonGlyphByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->renderPolygonByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
+		return SIV3D_ENGINE(Font)->generatePolygonGlyphByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -588,67 +588,67 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<PolygonGlyph> Font::renderPolygons(const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
+	Array<PolygonGlyph> Font::generatePolygonGlyphs(const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->renderPolygons(m_handle->id(), s, enableLigatures, readingDirection);
+		return SIV3D_ENGINE(Font)->generatePolygonGlyphs(m_handle->id(), s, enableLigatures, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderBitmap
+	//	generateBitmapGlyph
 	//
 	////////////////////////////////////////////////////////////////
 
-	BitmapGlyph Font::renderBitmap(const char32 codePoint, const ReadingDirection readingDirection) const
+	BitmapGlyph Font::generateBitmapGlyph(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
 		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
-		return renderBitmapByGlyphIndex(glyphIndex, readingDirection);
+		return generateBitmapGlyphByGlyphIndex(glyphIndex, readingDirection);
 	}
 
-	BitmapGlyph Font::renderBitmap(const StringView ch, const ReadingDirection readingDirection) const
+	BitmapGlyph Font::generateBitmapGlyph(const StringView ch, const ReadingDirection readingDirection) const
 	{
 		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
-		return renderBitmapByGlyphIndex(glyphIndex, readingDirection);
+		return generateBitmapGlyphByGlyphIndex(glyphIndex, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderBitmapByGlyphIndex
+	//	generateBitmapGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	BitmapGlyph Font::renderBitmapByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
+	BitmapGlyph Font::generateBitmapGlyphByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->renderBitmapByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
+		return SIV3D_ENGINE(Font)->generateBitmapGlyphByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderMSDF
+	//	generateMSDFGlyph
 	//
 	////////////////////////////////////////////////////////////////
 
-	MSDFGlyph Font::renderMSDF(const char32 codePoint, const ReadingDirection readingDirection) const
+	MSDFGlyph Font::generateMSDFGlyph(const char32 codePoint, const ReadingDirection readingDirection) const
 	{
 		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), codePoint, readingDirection);
-		return renderMSDFByGlyphIndex(glyphIndex, readingDirection);
+		return generateMSDFGlyphByGlyphIndex(glyphIndex, readingDirection);
 	}
 
-	MSDFGlyph Font::renderMSDF(const StringView ch, const ReadingDirection readingDirection) const
+	MSDFGlyph Font::generateMSDFGlyph(const StringView ch, const ReadingDirection readingDirection) const
 	{
 		const GlyphIndex glyphIndex = SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch, readingDirection);
-		return renderMSDFByGlyphIndex(glyphIndex, readingDirection);
+		return generateMSDFGlyphByGlyphIndex(glyphIndex, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderMSDFByGlyphIndex
+	//	generateMSDFGlyphByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	MSDFGlyph Font::renderMSDFByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
+	MSDFGlyph Font::generateMSDFGlyphByGlyphIndex(const GlyphIndex glyphIndex, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->renderMSDFByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
+		return SIV3D_ENGINE(Font)->generateMSDFGlyphByGlyphIndex(m_handle->id(), glyphIndex, readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////

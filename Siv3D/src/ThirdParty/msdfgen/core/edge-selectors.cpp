@@ -16,7 +16,7 @@ void TrueDistanceSelector::reset(const Point2 &p) {
     this->p = p;
 }
 
-void TrueDistanceSelector::addEdge(EdgeCache &cache, const EdgeSegment *prevEdge, const EdgeSegment *edge, const EdgeSegment *nextEdge) {
+void TrueDistanceSelector::addEdge(EdgeCache &cache, [[maybe_unused]] const EdgeSegment *prevEdge, const EdgeSegment *edge, [[maybe_unused]] const EdgeSegment *nextEdge) {
     double delta = DISTANCE_DELTA_FACTOR*(p-cache.point).length();
     if (cache.absDistance-delta <= fabs(minDistance.distance)) {
         double dummy;

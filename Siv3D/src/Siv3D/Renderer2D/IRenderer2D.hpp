@@ -47,6 +47,8 @@ namespace s3d
 
 		virtual void addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2]) = 0;
 
+		virtual void addArrow(LineCap startCap, const Float2& start, const Float2& end, float thickness, const Float2& headSize, const Float4(&colors)[2]) = 0;
+
 		virtual void addTriangle(const Float2(&points)[3], const Float4& color) = 0;
 
 		virtual void addTriangle(const Float2(&points)[3], const Float4(&colors)[3]) = 0;
@@ -90,6 +92,10 @@ namespace s3d
 		virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
 
 		virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) = 0;
+
+		virtual void addEllipsePie(const Float2& center, float rx, float ry, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) = 0;
+
+		virtual void addEllipsePie(const Float2& center, float rx, float ry, float startAngle, float angle, const PatternParameters& pattern) = 0;
 
 		virtual void addSuperEllipse(const Float2& center, float a, float b, float n, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 

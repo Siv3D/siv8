@@ -238,18 +238,18 @@ namespace s3d
 		return{ std::move(vertices), std::move(indices) };
 	}
 
+	Shape2D Shape2D::Arrow(const Line& line, const double width, const Vec2& headSize)
+	{
+		return Arrow(line.start, line.end, width, headSize);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	DoubleHeadedArrow
 	//
 	////////////////////////////////////////////////////////////////
 
-	Shape2D Shape2D::Arrow(const Line& line, const double width, const Vec2& headSize)
-	{
-		return Arrow(line.start, line.end, width, headSize);
-	}
-
-	Shape2D Shape2D::DoubleHeadedArrow(const Vec2& from, const Vec2& to, double width, const Vec2& headSize)
+	Shape2D Shape2D::DoubleHeadedArrow(const Vec2& from, const Vec2& to, const double width, const Vec2& headSize)
 	{
 		const double length = to.distanceFrom(from);
 

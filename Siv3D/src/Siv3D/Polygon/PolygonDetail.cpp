@@ -11,6 +11,7 @@
 
 # include <Siv3D/HashSet.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/LineString.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -448,6 +449,325 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	rotateAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Polygon::PolygonDetail::rotateAt(const Vec2 pos, const double angle)
+	{
+		if (outer().isEmpty())
+		{
+			return;
+		}
+
+		if (not pos.isZero())
+		{
+			for (auto& point : m_polygon.outer())
+			{
+				point -= pos;
+			}
+
+			for (auto& hole : m_polygon.inners())
+			{
+				for (auto& point : hole)
+				{
+					point -= pos;
+				}
+			}
+
+			const Float2 posF = pos;
+
+			for (auto& vertex : m_vertices)
+			{
+				vertex -= posF;
+			}
+		}
+
+		const double s = std::sin(angle);
+		const double c = std::cos(angle);
+
+		for (auto& point : m_polygon.outer())
+		{
+			const double x = (point.x * c - point.y * s);
+			const double y = (point.x * s + point.y * c);
+			point.set(x, y);
+		}
+
+		for (auto& hole : m_polygon.inners())
+		{
+			for (auto& point : hole)
+			{
+				const double x = (point.x * c - point.y * s);
+				const double y = (point.x * s + point.y * c);
+				point.set(x, y);
+			}
+		}
+
+		const float sF = static_cast<float>(s);
+		const float cF = static_cast<float>(c);
+
+		for (auto& vertex : m_vertices)
+		{
+			const float x = (vertex.x * cF - vertex.y * sF);
+			const float y = (vertex.x * sF + vertex.y * cF);
+			vertex.set(x, y);
+		}
+
+		if (not pos.isZero())
+		{
+			for (auto& point : m_polygon.outer())
+			{
+				point += pos;
+			}
+
+			for (auto& hole : m_polygon.inners())
+			{
+				for (auto& point : hole)
+				{
+					point += pos;
+				}
+			}
+
+			const Float2 posF = pos;
+
+			for (auto& vertex : m_vertices)
+			{
+				vertex += posF;
+			}
+		}
+
+		m_holes.clear();
+
+		for (auto& hole : m_polygon.inners())
+		{
+			m_holes.emplace_back();
+			m_holes.back().insert(m_holes.back().end(), hole.begin(), hole.end());
+		}
+
+		m_boundingRect = Geometry2D::BoundingRect(outer());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	transform
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Polygon::PolygonDetail::transform(const double s, const double c, const Vec2& pos)
+	{
+		if (outer().isEmpty())
+		{
+			return;
+		}
+
+		for (auto& point : m_polygon.outer())
+		{
+			const double x = (point.x * c - point.y * s + pos.x);
+			const double y = (point.x * s + point.y * c + pos.y);
+			point.set(x, y);
+		}
+
+		for (auto& hole : m_polygon.inners())
+		{
+			for (auto& point : hole)
+			{
+				const double x = (point.x * c - point.y * s + pos.x);
+				const double y = (point.x * s + point.y * c + pos.y);
+				point.set(x, y);
+			}
+		}
+
+		const float sF = static_cast<float>(s);
+		const float cF = static_cast<float>(c);
+		const float xF = static_cast<float>(pos.x);
+		const float yF = static_cast<float>(pos.y);
+
+		for (auto& vertex : m_vertices)
+		{
+			const float x = (vertex.x * cF - vertex.y * sF + xF);
+			const float y = (vertex.x * sF + vertex.y * cF + yF);
+			vertex.set(x, y);
+		}
+
+		m_holes.clear();
+
+		for (auto& hole : m_polygon.inners())
+		{
+			m_holes.emplace_back();
+			m_holes.back().insert(m_holes.back().end(), hole.begin(), hole.end());
+		}
+
+		m_boundingRect = Geometry2D::BoundingRect(outer());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFromOrigin
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Polygon::PolygonDetail::scaleFromOrigin(const double s)
+	{
+		if (outer().isEmpty())
+		{
+			return;
+		}
+
+		for (auto& point : m_polygon.outer())
+		{
+			point *= s;
+		}
+
+		for (auto& hole : m_polygon.inners())
+		{
+			for (auto& point : hole)
+			{
+				point *= s;
+			}
+		}
+
+		for (auto& hole : m_holes)
+		{
+			for (auto& point : hole)
+			{
+				point *= s;
+			}
+		}
+
+		const float sf = static_cast<float>(s);
+
+		for (auto& point : m_vertices)
+		{
+			point *= sf;
+		}
+
+		m_boundingRect = m_boundingRect.scaledFrom(Vec2{ 0, 0 }, s);
+	}
+
+	void Polygon::PolygonDetail::scaleFromOrigin(const Vec2 s)
+	{
+		if (outer().isEmpty())
+		{
+			return;
+		}
+		
+		for (auto& point : m_polygon.outer())
+		{
+			point *= s;
+		}
+		
+		for (auto& hole : m_polygon.inners())
+		{
+			for (auto& point : hole)
+			{
+				point *= s;
+			}
+		}
+		
+		for (auto& hole : m_holes)
+		{
+			for (auto& point : hole)
+			{
+				point *= s;
+			}
+		}
+		
+		const Float2 sf = s;
+		
+		for (auto& point : m_vertices)
+		{
+			point *= sf;
+		}
+		
+		m_boundingRect = m_boundingRect.scaledFrom(Vec2{ 0, 0 }, s);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaleFrom
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Polygon::PolygonDetail::scaleFrom(const Vec2 pos, const double s)
+	{
+		if (outer().isEmpty())
+		{
+			return;
+		}
+
+		for (auto& point : m_polygon.outer())
+		{
+			point = (pos + (point - pos) * s);
+		}
+
+		for (auto& hole : m_polygon.inners())
+		{
+			for (auto& point : hole)
+			{
+				point = (pos + (point - pos) * s);
+			}
+		}
+
+		for (auto& hole : m_holes)
+		{
+			for (auto& point : hole)
+			{
+				point = (pos + (point - pos) * s);
+			}
+		}
+
+		const float sf = static_cast<float>(s);
+		const Float2 posF{ pos };
+
+		for (auto& point : m_vertices)
+		{
+			point = (posF + (point - posF) * sf);
+		}
+
+		m_boundingRect = m_boundingRect.scaledFrom(pos, s);
+	}
+
+	void Polygon::PolygonDetail::scaleFrom(const Vec2 pos, const Vec2 s)
+	{
+		if (outer().isEmpty())
+		{
+			return;
+		}
+		
+		for (auto& point : m_polygon.outer())
+		{
+			point = (pos + (point - pos) * s);
+		}
+		
+		for (auto& hole : m_polygon.inners())
+		{
+			for (auto& point : hole)
+			{
+				point = (pos + (point - pos) * s);
+			}
+		}
+		
+		for (auto& hole : m_holes)
+		{
+			for (auto& point : hole)
+			{
+				point = (pos + (point - pos) * s);
+			}
+		}
+		
+		const Float2 sf = s;
+		const Float2 posF{ pos };
+		
+		for (auto& point : m_vertices)
+		{
+			point = (posF + (point - posF) * sf);
+		}
+		
+		m_boundingRect = m_boundingRect.scaledFrom(pos, s);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	area
 	//
 	////////////////////////////////////////////////////////////////
@@ -622,6 +942,92 @@ namespace s3d
 		}
 
 		return detail::ToPolygon(result);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	append
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Polygon::PolygonDetail::append(const RectF& other)
+	{
+		const boost::geometry::model::box<Vec2> box{ other.pos, other.br() };
+
+		Array<CwOpenPolygon> results;
+
+		boost::geometry::union_(m_polygon, box, results);
+
+		if (results.size() != 1)
+		{
+			return false;
+		}
+
+		auto& outer = results[0].outer();
+
+		if ((2 < outer.size())
+			&& (outer.front() == outer.back()))
+		{
+			outer.pop_back();
+		}
+
+		Array<Array<Vec2>> holes;
+
+		const auto& result = results[0];
+
+		if (const size_t num_holes = result.inners().size())
+		{
+			holes.resize(num_holes);
+
+			for (size_t i = 0; i < num_holes; ++i)
+			{
+				const auto& resultHole = result.inners()[i];
+				holes[i].assign(resultHole.begin(), resultHole.end());
+			}
+		}
+
+		*this = PolygonDetail{ outer, holes, SkipValidation::Yes };
+
+		return true;
+	}
+
+	bool Polygon::PolygonDetail::append(const Polygon& other)
+	{
+		Array<CwOpenPolygon> results;
+
+		boost::geometry::union_(m_polygon, other._detail()->getBoostPolygon(), results);
+
+		if (results.size() != 1)
+		{
+			return false;
+		}
+
+		auto& outer = results[0].outer();
+
+		if ((2 < outer.size())
+			&& (outer.front() == outer.back()))
+		{
+			outer.pop_back();
+		}
+
+		Array<Array<Vec2>> holes;
+
+		const auto& result = results[0];
+
+		if (const size_t num_holes = result.inners().size())
+		{
+			holes.resize(num_holes);
+
+			for (size_t i = 0; i < num_holes; ++i)
+			{
+				const auto& resultHole = result.inners()[i];
+				holes[i].assign(resultHole.begin(), resultHole.end());
+			}
+		}
+
+		*this = PolygonDetail{ outer, holes, SkipValidation::Yes };
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -990,7 +1396,6 @@ namespace s3d
 			return{ Polygon{ outer, holes, SkipValidation::Yes } };
 		}
 
-		using MultiCwOpenPolygon = boost::geometry::model::multi_polygon<CwOpenPolygon>;
 		boost::geometry::correct(polygon);
 		
 		MultiCwOpenPolygon solvedPolygons;
@@ -1014,5 +1419,67 @@ namespace s3d
 		}
 
 		return results;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	simplified
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::simplified(const double maxDistance, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return *this;
+		}
+
+		LineString result;
+
+		if (closeRing && (front() != back()))
+		{
+			LineString input(begin(), end());
+			input.push_back(input.front());
+
+			boost::geometry::simplify(input, result, maxDistance);
+			result.pop_back();
+		}
+		else
+		{
+			boost::geometry::simplify(*this, result, maxDistance);
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	densified
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::densified(const double maxDistance, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return *this;
+		}
+
+		LineString result;
+
+		if (closeRing && (front() != back()))
+		{
+			LineString input(begin(), end());
+			input.push_back(input.front());
+
+			boost::geometry::densify(input, result, maxDistance);
+			result.pop_back();
+		}
+		else
+		{
+			boost::geometry::densify(*this, result, maxDistance);
+		}
+
+		return result;
 	}
 }
