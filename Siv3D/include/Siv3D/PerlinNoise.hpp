@@ -18,6 +18,7 @@
 # include "Concepts.hpp"
 # include "PointVector.hpp"
 # include "Random.hpp"
+# include "Shuffle.hpp"
 
 namespace s3d
 {

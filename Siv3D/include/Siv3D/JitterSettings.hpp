@@ -32,18 +32,14 @@ namespace s3d
 		/// @brief 分割の細かさ（ピクセル） | Segment length in pixels
 		double segmentLength = 8.0;
 
-		/// @brief 弓なり量 | Bowing amount
-		/// @remark 線全体に曲げオフセットを与えます。 | Adds a bending offset along the entire stroke.
-		double bowing = 0.0;
-
 		/// @brief ノイズ周波数（入力スケール） | Noise frequency (input scale)
 		double noiseFrequency = 0.05;
 		
 		/// @brief 法線方向ジッターのスケール（ピクセル） | Normal jitter scale (pixels)
-		double normalScale = 10.0;
+		double normalScale = 4.0;
 		
 		/// @brief 接線方向ジッターのスケール（ピクセル） | Tangent jitter scale (pixels)
-		double tangentScale = 3.0;
+		double tangentScale = 2.0;
 
 		/// @brief FBM のオクターブ数 | Number of FBM octaves
 		int32 fbmOctaves = 3;

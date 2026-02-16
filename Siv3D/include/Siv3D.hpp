@@ -842,10 +842,6 @@
 // 線のスタイル | Line style
 # include <Siv3D/LineStyle.hpp>
 
-# include <Siv3D/JitterEndpointMode.hpp>
-# include <Siv3D/JitterEndpointSettings.hpp>
-# include <Siv3D/JitterSettings.hpp>
-
 // 線分 | Line segment
 # include <Siv3D/Line.hpp> // ToDo
 
@@ -918,6 +914,11 @@
 //# include <Siv3D/Buffer2D.hpp>
 
 // 2D 幾何 | 2D geometry processing
+
+# include <Siv3D/JitterEndpointMode.hpp>
+# include <Siv3D/JitterEndpointSettings.hpp>
+# include <Siv3D/JitterSettings.hpp>
+
 # include <Siv3D/Geometry2D/Intersect.hpp> // ToDo
 # include <Siv3D/Geometry2D/IntersectAt.hpp> // ToDo
 # include <Siv3D/Geometry2D/Distance.hpp> // ToDo
@@ -928,6 +929,7 @@
 # include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
 # include <Siv3D/Geometry2D/SmallestEnclosingCircle.hpp>
 # include <Siv3D/Geometry2D/Misc.hpp> // ToDo
+# include <Siv3D/Geometry2D/Jitter.hpp>
 
 // 長方形詰込み | Rectangle packing
 # include <Siv3D/RectanglePack.hpp>

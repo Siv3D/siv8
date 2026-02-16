@@ -158,6 +158,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IntersectAt.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Jitter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Misc.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PoleOfInaccessibility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.hpp" />
@@ -1405,6 +1406,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Distance.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersect.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_IsClockwise.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Jitter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Misc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_PoleOfInaccessibility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SmallestEnclosingCircle.cpp" />
