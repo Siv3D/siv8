@@ -34,6 +34,18 @@ namespace s3d
 			const JitterEndpointSettings& start, const JitterEndpointSettings& end);
 
 		[[nodiscard]]
+		LineString Jitter(const RectF& g, const JitterSettings& settings,
+			const JitterEndpointSettings& endPoint = JitterEndpointSettings::Free());
+
+		[[nodiscard]]
+		LineString Jitter(const Triangle& g, const JitterSettings& settings,
+			const JitterEndpointSettings& endPoint = JitterEndpointSettings::Free());
+
+		[[nodiscard]]
+		LineString Jitter(const Quad& g, const JitterSettings& settings,
+			const JitterEndpointSettings& endPoint = JitterEndpointSettings::Free());
+
+		[[nodiscard]]
 		LineString Jitter(const LineString& g, const JitterSettings& settings = {},
 			const JitterEndpointSettings& endPoint = JitterEndpointSettings::Free());
 

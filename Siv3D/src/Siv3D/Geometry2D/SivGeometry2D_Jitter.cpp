@@ -265,6 +265,21 @@ namespace s3d
 			return result;
 		}
 
+		LineString Jitter(const RectF& g, const JitterSettings& settings, const JitterEndpointSettings& endPoint)
+		{
+			return JitterImpl(g.outer(), settings, endPoint, endPoint, CloseRing::Yes);
+		}
+
+		LineString Jitter(const Triangle& g, const JitterSettings& settings, const JitterEndpointSettings& endPoint)
+		{
+			return JitterImpl(g.outer(), settings, endPoint, endPoint, CloseRing::Yes);
+		}
+
+		LineString Jitter(const Quad& g, const JitterSettings& settings, const JitterEndpointSettings& endPoint)
+		{
+			return JitterImpl(g.outer(), settings, endPoint, endPoint, CloseRing::Yes);
+		}
+
 		LineString Jitter(const LineString& g, const JitterSettings& settings, const JitterEndpointSettings& endPoint)
 		{
 			return Jitter(g, settings, endPoint, endPoint);
