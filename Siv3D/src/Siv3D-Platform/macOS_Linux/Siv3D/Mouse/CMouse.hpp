@@ -44,9 +44,11 @@ namespace s3d
 
 	private:
 
-		enum class MouseButtonState
+		enum class MouseButtonState : uint8
 		{
 			Released,
+			
+			PressedFirst,
 			
 			Pressed,
 			

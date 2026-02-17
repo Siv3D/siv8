@@ -65,7 +65,9 @@ namespace s3d
 			for (uint32 i = 0; i < Mouse::NumButtons; ++i)
 			{
 				auto& internalState = m_internalMouseButtonStates[i];
-				const bool pressed = (internalState == MouseButtonState::Pressed) || (internalState == MouseButtonState::Tapped);
+				const bool pressed = (internalState == MouseButtonState::PressedFirst)
+					|| (internalState == MouseButtonState::Pressed)
+					|| (internalState == MouseButtonState::Tapped);
 
 				m_mouseButton.states[i].update(pressed);
 				
@@ -151,21 +153,32 @@ namespace s3d
 		{
 			if (pressed)
 			{
+				internalState = MouseButtonState::PressedFirst;
+			}
+		}
+		else if (internalState == MouseButtonState::PressedFirst)
+		{
+			if (pressed)
+			{
 				internalState = MouseButtonState::Pressed;
+			}
+			else
+			{
+				internalState = MouseButtonState::Tapped;
 			}
 		}
 		else if (internalState == MouseButtonState::Pressed)
 		{
 			if (not pressed)
 			{
-				internalState = MouseButtonState::Tapped;
+				internalState = MouseButtonState::Released;
 			}
 		}
 		else // Tapped
 		{
 			if (pressed)
 			{
-				internalState = MouseButtonState::Pressed;
+				internalState = MouseButtonState::PressedFirst;
 			}
 		}
 	}
