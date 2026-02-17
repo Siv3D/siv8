@@ -60,12 +60,6 @@ namespace s3d
 	{
 		// マウスボタンの状態を更新
 		{
-			// for (int i = 0; i < static_cast<int32>(Mouse::NumButtons); ++i)
-			// {
-			// 	const bool pressed = (::glfwGetMouseButton(m_window, i) == GLFW_PRESS);
-			// 	m_mouseButton.states[i].update(pressed);
-			// }
-
 			std::lock_guard lock{ m_mouseButtonMutex };
 
 			for (uint32 i = 0; i < Mouse::NumButtons; ++i)
@@ -157,7 +151,7 @@ namespace s3d
 		{
 			if (pressed)
 			{
-				internalState = MouseButtonState::Tapped;
+				internalState = MouseButtonState::Pressed;
 			}
 		}
 		else if (internalState == MouseButtonState::Pressed)
