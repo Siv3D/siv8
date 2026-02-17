@@ -71,7 +71,11 @@ namespace s3d
 
 				m_mouseButton.states[i].update(pressed);
 				
-				if (internalState == MouseButtonState::Tapped)
+				if (internalState == MouseButtonState::PressedFirst)
+				{
+					internalState = MouseButtonState::Pressed;
+				}
+				else if (internalState == MouseButtonState::Tapped)
 				{
 					internalState = MouseButtonState::Released;
 				}
