@@ -25,6 +25,7 @@
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
+# include <Siv3D/Clipboard/IClipboard.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
@@ -88,6 +89,7 @@ namespace s3d
 		SIV3D_ENGINE(CursorStyle)->init();
 		SIV3D_ENGINE(Keyboard)->init();
 		SIV3D_ENGINE(Mouse)->init();
+		SIV3D_ENGINE(Clipboard)->init();
 		SIV3D_ENGINE(Renderer)->init();
 		SIV3D_ENGINE(Shader)->init();
 		SIV3D_ENGINE(EngineShader)->init();

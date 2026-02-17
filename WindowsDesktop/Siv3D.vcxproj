@@ -51,6 +51,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Choice.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Circle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Circular.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Clipboard.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Color.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorF.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorHSV.hpp" />
@@ -687,6 +688,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader\BinaryFileReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter\BinaryFileWriterDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess\ChildProcessDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard\CClipboard.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11\ConstantBuffer_D3D11.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\CursorStyle\CCursorStyle.hpp" />
@@ -743,6 +745,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\BigFloat\BigFloatDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\BigInt\BigIntDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Clipboard\IClipboard.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Console\IConsole.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\CursorStyle\ICursorStyle.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\CursorState.hpp" />
@@ -1235,6 +1238,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader\BinaryFileReaderDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter\BinaryFileWriterDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess\ChildProcessDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard\CClipboard.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Console\CConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\ConstantBufferFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\ConstantBuffer\D3D11\ConstantBuffer_D3D11.cpp" />
@@ -1329,6 +1333,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Camera2D\SivCamera2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ChildProcess\SivChildProcess.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Circle\SivCircle.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Clipboard\ClipboardFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Clipboard\SivClipboard.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ColorF\SivColorF.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Colormap\SivColormap.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ColorWriteMask\SivColorWriteMask.cpp" />

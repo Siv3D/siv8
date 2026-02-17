@@ -41,6 +41,9 @@ namespace s3d
 	/// @brief 乗算済みアルファが使用されているかどうかを指定 | Whether premultiplied alpha is being used
 	using IsAlphaPremultiplied = YesNo<struct IsAlphaPremultiplied_tag>;
 
+	/// @brief アルファチャンネルを含むかどうかを指定 | Whether to include an alpha channel
+	using HasAlpha = YesNo<struct HasAlpha_tag>;
+
 	/// @brief 要素を中心に配置するかどうかを指定 | Whether to center elements
 	using Centering = YesNo<struct Centering_tag>;
 

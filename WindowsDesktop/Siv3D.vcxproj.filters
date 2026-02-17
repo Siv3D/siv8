@@ -1180,6 +1180,12 @@
     <Filter Include="src\Siv3D\MultiPolygon">
       <UniqueIdentifier>{f265e751-86ec-4566-8bec-d2085509c8a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Clipboard">
+      <UniqueIdentifier>{a519f804-6778-4198-964f-67999ce901bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard">
+      <UniqueIdentifier>{112c0948-2187-40dd-aba7-a5046296421f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4839,6 +4845,15 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Clipboard.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Clipboard\IClipboard.hpp">
+      <Filter>src\Siv3D\Clipboard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard\CClipboard.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7600,6 +7615,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Jitter.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Clipboard\ClipboardFactory.cpp">
+      <Filter>src\Siv3D\Clipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard\CClipboard.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Clipboard\SivClipboard.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

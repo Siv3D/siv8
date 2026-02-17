@@ -971,9 +971,9 @@
 // システム | System
 # include <Siv3D/System.hpp> // ToDo
 
-//// クリップボード | Clipboard
-//# include <Siv3D/Clipboard.hpp>
-//
+// クリップボード | Clipboard
+# include <Siv3D/Clipboard.hpp>
+
 //// ドライブの種類 | Drive type
 //# include <Siv3D/DriveType.hpp>
 //
