@@ -149,7 +149,31 @@ namespace s3d
 
 	void CMouse::onMouseButtonUpdated(const int32 index, const bool pressed)
 	{
-		// do nothing
+		std::lock_guard lock{ m_mouseButtonMutex };
+		
+		auto& internalState = m_internalMouseButtonStates[index];
+		
+		if (internalState == MouseButtonState::Released)
+		{
+			if (pressed)
+			{
+				internalState = MouseButtonState::Tapped;
+			}
+		}
+		else if (internalState == MouseButtonState::Pressed)
+		{
+			if (not pressed)
+			{
+				internalState = MouseButtonState::Tapped;
+			}
+		}
+		else // Tapped
+		{
+			if (pressed)
+			{
+				internalState = MouseButtonState::Pressed;
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
