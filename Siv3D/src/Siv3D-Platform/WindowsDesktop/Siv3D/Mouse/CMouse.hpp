@@ -38,6 +38,8 @@ namespace s3d
 
 		Vec2 wheel() const noexcept override;
 
+		void onMouseButtonUpdated(int32 index, bool pressed) override;
+
 		void onScroll(double x, double y) override;
 
 		Optional<Point> getPrimaryTouchPos() override;

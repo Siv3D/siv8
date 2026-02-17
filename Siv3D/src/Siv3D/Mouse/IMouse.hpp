@@ -39,6 +39,8 @@ namespace s3d
 
 		virtual Vec2 wheel() const noexcept = 0;
 
+		virtual void onMouseButtonUpdated(int32 index, bool pressed) = 0;
+
 		virtual void onScroll(double x, double y) = 0;
 
 		virtual Optional<Point> getPrimaryTouchPos() = 0;

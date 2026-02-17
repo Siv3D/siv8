@@ -4698,9 +4698,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp">
-      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleGUILayer.hpp">
       <Filter>include\Siv3D\SimpleGUI</Filter>
     </ClInclude>
@@ -4838,6 +4835,9 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Jitter.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
