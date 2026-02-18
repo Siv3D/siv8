@@ -11,6 +11,7 @@
 
 # include "CClipboard.hpp"
 # include <Siv3D/Image.hpp>
+# include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/MemoryViewReader.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Window/IWindow.hpp>
@@ -52,7 +53,7 @@ namespace s3d
 						return true;
 					}
 
-					const int32 waitTimeMillisec = i;
+					const int32 waitTimeMillisec = (1 << i);
 					::Sleep(waitTimeMillisec);
 				}
 
@@ -123,7 +124,7 @@ namespace s3d
 
 			uint8_t* dstBase = p + sizeof(BITMAPINFOHEADER);
 
-			// Image: RGBA -> DIB
+			// Image: RGBA -> DIB（白背景合成）
 			const Color* src = image.data();
 			for (int32 y = 0; y < h; ++y)
 			{
@@ -447,12 +448,11 @@ namespace s3d
 				return false;
 			}
 
-			const auto Unlock = [&]() { ::GlobalUnlock(hData); };
+			ScopeExit unlock{ [&]() { ::GlobalUnlock(hData); } };
 
 			// DIB は先頭が BITMAPINFOHEADER / BITMAPV4HEADER / BITMAPV5HEADER のいずれか
 			if (sizeof(BITMAPINFOHEADER) > ::GlobalSize(hData))
 			{
-				Unlock();
 				return false;
 			}
 
@@ -466,7 +466,6 @@ namespace s3d
 				|| (bih->biWidth <= 0)
 				|| (bih->biHeight == 0))
 			{
-				Unlock();
 				return false;
 			}
 
@@ -479,7 +478,6 @@ namespace s3d
 
 			if ((bpp != 32) && (bpp != 24))
 			{
-				Unlock();
 				return false;
 			}
 
@@ -506,7 +504,6 @@ namespace s3d
 					// BITMAPINFOHEADER の BITFIELDS は直後に DWORD×3（RGB）
 					if (::GlobalSize(hData) < (offset + sizeof(DWORD) * 3))
 					{
-						Unlock();
 						return false;
 					}
 
@@ -525,7 +522,6 @@ namespace s3d
 			else
 			{
 				// RLE 等は非対応
-				Unlock();
 				return false;
 			}
 
@@ -536,7 +532,6 @@ namespace s3d
 			const size_t needed = offset + (srcStride * static_cast<size_t>(heightAbs));
 			if (::GlobalSize(hData) < needed)
 			{
-				Unlock();
 				return false;
 			}
 
@@ -589,8 +584,24 @@ namespace s3d
 							const uint8 r = ExtractChannel(v, redMask);
 							const uint8 g = ExtractChannel(v, greenMask);
 							const uint8 b = ExtractChannel(v, blueMask);
-							const uint8 a = (alphaMask ? ExtractChannel(v, alphaMask) : 255);
-							*dst++ = Color{ r, g, b, a };
+
+							if (alphaMask)
+							{
+								const uint8 a = ExtractChannel(v, alphaMask);
+								
+								if (premultiplyAlpha)
+								{
+									*dst++ = Color::PremultiplyAlpha(Color{ r, g, b, a });
+								}
+								else
+								{
+									*dst++ = Color{ r, g, b, a };
+								}
+							}
+							else
+							{
+								*dst++ = Color{ r, g, b, 255 };
+							}
 						}
 					}
 					else
@@ -602,17 +613,24 @@ namespace s3d
 							const uint8 g = *src++;
 							const uint8 r = *src++;
 							const uint8 a = *src++;
-							*dst++ = Color{ r, g, b, a };
+
+							if (premultiplyAlpha)
+							{
+								*dst++ = Color::PremultiplyAlpha(Color{ r, g, b, a });
+							}
+							else
+							{
+								*dst++ = Color{ r, g, b, a };
+							}
 						}
 					}
 				}
 			}
 
-			Unlock();
 			return true;
 		};
 
-		// 2) CF_DIBV5 を優先
+		// 2) CF_DIBV5
 		if (TryFromDIB(CF_DIBV5))
 		{
 			return true;
