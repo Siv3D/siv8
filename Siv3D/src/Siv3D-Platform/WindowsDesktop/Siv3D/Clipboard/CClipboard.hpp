@@ -62,5 +62,13 @@ namespace s3d
 		HWND m_hWnd = nullptr;
 
 		uint64 m_sequenceNumber = 0;
+
+		uint32 m_cfPNG = 0;
+
+		uint32 m_cfHTML = 0;
+
+		uint32 m_cfRTF = 0;
+
+		uint32 m_cfCSV = 0;
 	};
 }

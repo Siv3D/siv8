@@ -196,6 +196,11 @@ namespace s3d
 
 		m_hWnd = static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle());
 		m_sequenceNumber = ::GetClipboardSequenceNumber();
+
+		m_cfPNG		= ::RegisterClipboardFormatW(L"PNG");
+		m_cfHTML	= ::RegisterClipboardFormatW(L"HTML Format");
+		m_cfRTF		= ::RegisterClipboardFormatW(L"Rich Text Format");
+		m_cfCSV		= ::RegisterClipboardFormatW(L"CSV");
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -357,11 +362,11 @@ namespace s3d
 
 			if (const Blob png = image.encodePNG())
 			{
-				if (const UINT cfPNG = ::RegisterClipboardFormatW(L"PNG"))
+				if (m_cfPNG)
 				{
 					if (const HGLOBAL hPng = MakeGlobalCopy(png.data(), png.size_bytes()))
 					{
-						if (not ::SetClipboardData(cfPNG, hPng))
+						if (not ::SetClipboardData(m_cfPNG, hPng))
 						{
 							::GlobalFree(hPng); // 失敗時のみ解放（成功時は OS 所有）
 						}
@@ -400,9 +405,9 @@ namespace s3d
 		}
 
 		// 1) PNG 形式
-		if (const UINT cfPNG = ::RegisterClipboardFormatW(L"PNG"))
+		if (m_cfPNG)
 		{
-			HANDLE hData = ::GetClipboardData(cfPNG);
+			HANDLE hData = ::GetClipboardData(m_cfPNG);
 			if (hData)
 			{
 				const void* p = ::GlobalLock(hData);
@@ -635,9 +640,9 @@ namespace s3d
 			return true;
 		}
 
-		if (const UINT cfPNG = ::RegisterClipboardFormatW(L"PNG"))
+		if (m_cfPNG)
 		{
-			return (::IsClipboardFormatAvailable(cfPNG) != 0);
+			return (::IsClipboardFormatAvailable(m_cfPNG) != 0);
 		}
 
 		return false;
@@ -717,6 +722,109 @@ namespace s3d
 
 	Array<String> CClipboard::getAvailableMimeTypes()
 	{
-		return{};
+		Array<String> result;
+
+		ClipboardGuard clipboard{ m_hWnd };
+		if (not clipboard)
+		{
+			return result;
+		}
+
+		auto AddUnique = [&](const String& s)
+		{
+			if (s && (not result.contains(s)))
+			{
+				result << s;
+			}
+		};
+
+		UINT format = 0;
+		while ((format = ::EnumClipboardFormats(format)) != 0)
+		{
+			switch (format)
+			{
+			case CF_UNICODETEXT:
+			case CF_TEXT:
+				AddUnique(U"text/plain");
+				continue;
+
+			case CF_HDROP:
+				AddUnique(U"text/uri-list");
+				continue;
+
+			case CF_DIB:
+			case CF_DIBV5:
+			case CF_BITMAP:
+				AddUnique(U"image/bmp");
+				continue;
+
+			default:
+				break;
+			}
+
+			// --- 登録済みフォーマット名ベースのマッピング ---
+			if (format == m_cfPNG)
+			{
+				AddUnique(U"image/png");
+				continue;
+			}
+			else if (format == m_cfHTML)
+			{
+				AddUnique(U"text/html");
+				continue;
+			}
+			else if (format == m_cfRTF)
+			{
+				AddUnique(U"text/rtf");
+				continue;
+			}
+			else if (format == m_cfCSV)
+			{
+				AddUnique(U"text/csv");
+				continue;
+			}
+
+			// フォーマット名を取得（登録済みフォーマットのみ名前が取れる）
+			wchar_t nameW[256] = {};
+			
+			if (const int nameLen = ::GetClipboardFormatNameW(format, nameW, static_cast<int>(std::size(nameW))); 
+				0 < nameLen)
+			{
+				const String name = Unicode::FromWstring(std::wstring_view(nameW, nameLen));
+
+				// 追加で典型名を拾う
+				if (name == U"PNG")
+				{
+					AddUnique(U"image/png");
+					continue;
+				}
+				else if (name == U"HTML Format")
+				{
+					AddUnique(U"text/html");
+					continue;
+				}
+				else if (name == U"Rich Text Format")
+				{
+					AddUnique(U"text/rtf");
+					continue;
+				}
+				else if (name == U"CSV")
+				{
+					AddUnique(U"text/csv");
+					continue;
+				}
+				else if (name.contains(U'/'))
+				{
+					AddUnique(name);
+					continue;
+				}
+
+				// それ以外は必要なら Win32 形式として返す（任意）
+				//AddUnique(U"application/x-win32-clipboard;format=" + name);
+				continue;
+			}
+		}
+
+		return result;
 	}
 }
