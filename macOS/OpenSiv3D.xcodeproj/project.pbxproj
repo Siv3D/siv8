@@ -2498,6 +2498,8 @@
 		F99881792F45A22000C8991D /* IClipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881742F45A22000C8991D /* IClipboard.hpp */; };
 		F998817D2F45A23900C8991D /* CClipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998817B2F45A23900C8991D /* CClipboard.cpp */; };
 		F998817E2F45A23900C8991D /* CClipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817A2F45A23900C8991D /* CClipboard.hpp */; };
+		F99881812F45AA3200C8991D /* ExitCode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817F2F45AA3200C8991D /* ExitCode.hpp */; };
+		F99881822F45AA3200C8991D /* ExitCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881802F45AA3200C8991D /* ExitCode.cpp */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5349,6 +5351,8 @@
 		F99881752F45A22000C8991D /* SivClipboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivClipboard.cpp; sourceTree = "<group>"; };
 		F998817A2F45A23900C8991D /* CClipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CClipboard.hpp; sourceTree = "<group>"; };
 		F998817B2F45A23900C8991D /* CClipboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CClipboard.cpp; sourceTree = "<group>"; };
+		F998817F2F45AA3200C8991D /* ExitCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ExitCode.hpp; sourceTree = "<group>"; };
+		F99881802F45AA3200C8991D /* ExitCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExitCode.cpp; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -7185,9 +7189,11 @@
 		F9070D872B9F175E00383E4D /* System */ = {
 			isa = PBXGroup;
 			children = (
-				F9070D842B9F175E00383E4D /* ISystem.hpp */,
+				F99881802F45AA3200C8991D /* ExitCode.cpp */,
 				F9070D852B9F175E00383E4D /* SivSystem.cpp */,
 				F9070D862B9F175E00383E4D /* SystemFactory.cpp */,
+				F998817F2F45AA3200C8991D /* ExitCode.hpp */,
+				F9070D842B9F175E00383E4D /* ISystem.hpp */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -13200,6 +13206,7 @@
 				F998815E2F40B5F200C8991D /* Spline.ipp in Headers */,
 				F986006B2BCFBB53006A4C0F /* SkAlign.h in Headers */,
 				F98601432BCFBB53006A4C0F /* Sk4px.h in Headers */,
+				F99881812F45AA3200C8991D /* ExitCode.hpp in Headers */,
 				F9070CAF2B9F175000383E4D /* DiscreteDistribution.hpp in Headers */,
 				F986FA862BCFB53B006A4C0F /* ftlcdfil.h in Headers */,
 				F98605942BE33124006A4C0F /* ICursorStyle.hpp in Headers */,
@@ -14739,6 +14746,7 @@
 				F98603C62BCFBB54006A4C0F /* SkSLIsDynamicallyUniformExpression.cpp in Sources */,
 				F95122422CB8232300151291 /* SivGeometry2D_BoundingRect.cpp in Sources */,
 				F98604652BCFBB54006A4C0F /* SkSLAnalysis.cpp in Sources */,
+				F99881822F45AA3200C8991D /* ExitCode.cpp in Sources */,
 				F98604FC2BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp in Sources */,
 				F9F00A472CD298E60097C165 /* Shape2D.cpp in Sources */,
 				F9E7945D2C19743A002615BA /* SivStopwatch.cpp in Sources */,
