@@ -2492,6 +2492,12 @@
 		F998816C2F42F50100C8991D /* JitterEndpointSettings.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998816B2F42F50100C8991D /* JitterEndpointSettings.ipp */; };
 		F998816E2F42F52C00C8991D /* SivGeometry2D_Jitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998816D2F42F52C00C8991D /* SivGeometry2D_Jitter.cpp */; };
 		F99881702F42F54400C8991D /* Jitter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998816F2F42F54400C8991D /* Jitter.hpp */; };
+		F99881722F45A20600C8991D /* Clipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881712F45A20600C8991D /* Clipboard.hpp */; };
+		F99881772F45A22000C8991D /* ClipboardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881732F45A22000C8991D /* ClipboardFactory.cpp */; };
+		F99881782F45A22000C8991D /* SivClipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881752F45A22000C8991D /* SivClipboard.cpp */; };
+		F99881792F45A22000C8991D /* IClipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881742F45A22000C8991D /* IClipboard.hpp */; };
+		F998817D2F45A23900C8991D /* CClipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998817B2F45A23900C8991D /* CClipboard.cpp */; };
+		F998817E2F45A23900C8991D /* CClipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817A2F45A23900C8991D /* CClipboard.hpp */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5337,6 +5343,12 @@
 		F998816B2F42F50100C8991D /* JitterEndpointSettings.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JitterEndpointSettings.ipp; sourceTree = "<group>"; };
 		F998816D2F42F52C00C8991D /* SivGeometry2D_Jitter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_Jitter.cpp; sourceTree = "<group>"; };
 		F998816F2F42F54400C8991D /* Jitter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Jitter.hpp; sourceTree = "<group>"; };
+		F99881712F45A20600C8991D /* Clipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Clipboard.hpp; sourceTree = "<group>"; };
+		F99881732F45A22000C8991D /* ClipboardFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ClipboardFactory.cpp; sourceTree = "<group>"; };
+		F99881742F45A22000C8991D /* IClipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IClipboard.hpp; sourceTree = "<group>"; };
+		F99881752F45A22000C8991D /* SivClipboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivClipboard.cpp; sourceTree = "<group>"; };
+		F998817A2F45A23900C8991D /* CClipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CClipboard.hpp; sourceTree = "<group>"; };
+		F998817B2F45A23900C8991D /* CClipboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CClipboard.cpp; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -6458,6 +6470,7 @@
 				F9D41CE62C99730500290998 /* Choice.hpp */,
 				F98605272BD10459006A4C0F /* Circle.hpp */,
 				F9E7943E2C158B8F002615BA /* Circular.hpp */,
+				F99881712F45A20600C8991D /* Clipboard.hpp */,
 				F9070BC72B9F175000383E4D /* Color.hpp */,
 				F9070BC82B9F175000383E4D /* ColorF.hpp */,
 				F9070BC92B9F175000383E4D /* ColorHSV.hpp */,
@@ -7304,6 +7317,7 @@
 				F9766B802C29C7A700DE4107 /* Camera2DControlBuilder */,
 				F944BAAD2CEACF6C00CC4D42 /* ChildProcess */,
 				F9E794252C1203A3002615BA /* Circle */,
+				F99881762F45A22000C8991D /* Clipboard */,
 				F9070D272B9F175E00383E4D /* Color */,
 				F9070D292B9F175E00383E4D /* ColorF */,
 				F986F89A2BC7FB4D006A4C0F /* Colormap */,
@@ -7526,6 +7540,7 @@
 			children = (
 				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
 				F944BAB42CEACFAB00CC4D42 /* ChildProcess */,
+				F998817C2F45A23900C8991D /* Clipboard */,
 				F9E794842C2493FF002615BA /* ConstantBuffer */,
 				F98605812BDA7E32006A4C0F /* Cursor */,
 				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
@@ -11300,6 +11315,25 @@
 			path = Bezier3Walker;
 			sourceTree = "<group>";
 		};
+		F99881762F45A22000C8991D /* Clipboard */ = {
+			isa = PBXGroup;
+			children = (
+				F99881732F45A22000C8991D /* ClipboardFactory.cpp */,
+				F99881742F45A22000C8991D /* IClipboard.hpp */,
+				F99881752F45A22000C8991D /* SivClipboard.cpp */,
+			);
+			path = Clipboard;
+			sourceTree = "<group>";
+		};
+		F998817C2F45A23900C8991D /* Clipboard */ = {
+			isa = PBXGroup;
+			children = (
+				F998817A2F45A23900C8991D /* CClipboard.hpp */,
+				F998817B2F45A23900C8991D /* CClipboard.cpp */,
+			);
+			path = Clipboard;
+			sourceTree = "<group>";
+		};
 		F9AEA5042E6B3E71003734E7 /* Print */ = {
 			isa = PBXGroup;
 			children = (
@@ -12687,6 +12721,7 @@
 				F98600AC2BCFBB53006A4C0F /* SkNWayCanvas.h in Headers */,
 				F986007C2BCFBB53006A4C0F /* SkMath.h in Headers */,
 				F98601762BCFBB53006A4C0F /* SkBlurMaskFilterImpl.h in Headers */,
+				F99881722F45A20600C8991D /* Clipboard.hpp in Headers */,
 				F9070CEB2B9F175100383E4D /* ParseInt.hpp in Headers */,
 				F98603DC2BCFBB54006A4C0F /* SkSLRasterPipelineCodeGenerator.h in Headers */,
 				F98602002BCFBB53006A4C0F /* SkMipmapAccessor.h in Headers */,
@@ -12855,6 +12890,7 @@
 				F986FA942BCFB53B006A4C0F /* ftsnames.h in Headers */,
 				F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */,
 				F9D41B882C56057700290998 /* PolkaDot.hpp in Headers */,
+				F99881792F45A22000C8991D /* IClipboard.hpp in Headers */,
 				F98603F52BCFBB54006A4C0F /* SkSLConstructorDiagonalMatrix.h in Headers */,
 				F986003E2BCFBB53006A4C0F /* SkSerialProcs.h in Headers */,
 				F9070EEF2B9F1C8900383E4D /* platform.h in Headers */,
@@ -13110,6 +13146,7 @@
 				F986046A2BCFBB54006A4C0F /* SkSLCompiler.h in Headers */,
 				F98604232BCFBB54006A4C0F /* SkSLMethodReference.h in Headers */,
 				F986016B2BCFBB53006A4C0F /* SkBlitRow.h in Headers */,
+				F998817E2F45A23900C8991D /* CClipboard.hpp in Headers */,
 				F980C42F2C00D2B500A86B68 /* BlendFactor.hpp in Headers */,
 				F9528B292BAFCDB400222F45 /* MemoryMappedFileView.hpp in Headers */,
 				F934BD7D2BF880860003EAD5 /* AssetHandleManager.hpp in Headers */,
@@ -14136,6 +14173,7 @@
 				F98601842BCFBB53006A4C0F /* SkColor.cpp in Sources */,
 				F9070F332B9F252E00383E4D /* null_monitor.c in Sources */,
 				F9070DE02B9F175E00383E4D /* SivParseErrorReason.cpp in Sources */,
+				F998817D2F45A23900C8991D /* CClipboard.cpp in Sources */,
 				F9528C182BBF026F00222F45 /* zstd_common.c in Sources */,
 				F986042B2BCFBB54006A4C0F /* SkSLPostfixExpression.cpp in Sources */,
 				F980C4A22C04C91A00A86B68 /* CursorTransform.cpp in Sources */,
@@ -14528,6 +14566,8 @@
 				F9D41CF62C9FCDE900290998 /* Vertex2DBuilder_Rounded.cpp in Sources */,
 				F9070DB62B9F175E00383E4D /* SivColorF.cpp in Sources */,
 				F98601502BCFBB53006A4C0F /* SkAutoPixmapStorage.cpp in Sources */,
+				F99881772F45A22000C8991D /* ClipboardFactory.cpp in Sources */,
+				F99881782F45A22000C8991D /* SivClipboard.cpp in Sources */,
 				F944BAB02CEACF6C00CC4D42 /* SivChildProcess.cpp in Sources */,
 				F944BAB12CEACF6C00CC4D42 /* SivPipe.cpp in Sources */,
 				F9B7DA142D8C72C0002ABACE /* rgbcx.cpp in Sources */,
