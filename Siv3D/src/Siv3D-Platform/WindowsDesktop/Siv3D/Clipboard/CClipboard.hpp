@@ -37,7 +37,7 @@ namespace s3d
 
 		bool hasText() override;
 
-		void setImage(const Image& image, bool usePNG) override;
+		void setImage(const Image& image) override;
 
 		bool getImage(Image& image) override;
 

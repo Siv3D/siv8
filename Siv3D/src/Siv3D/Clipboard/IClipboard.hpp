@@ -42,7 +42,7 @@ namespace s3d
 
 		virtual bool hasText() = 0;
 
-		virtual void setImage(const Image& image, bool usePNG) = 0;
+		virtual void setImage(const Image& image) = 0;
 
 		virtual bool getImage(Image& image) = 0;
 

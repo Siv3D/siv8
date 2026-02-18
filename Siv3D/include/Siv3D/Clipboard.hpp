@@ -64,7 +64,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void SetImage(const Image& image, HasAlpha hasAlpha = HasAlpha::Yes);
+		void SetImage(const Image& image);
 
 		Optional<Image> GetImage();
 

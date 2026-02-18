@@ -89,10 +89,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void SetImage(const Image& image, const HasAlpha hasAlpha)
+		void SetImage(const Image& image)
 		{
-			const bool usePNG = (hasAlpha == HasAlpha::Yes);
-			SIV3D_ENGINE(Clipboard)->setImage(image, usePNG);
+			SIV3D_ENGINE(Clipboard)->setImage(image);
 		}
 
 		Optional<Image> GetImage()

@@ -76,8 +76,7 @@ namespace s3d
 				return nullptr;
 			}
 
-			std::memcpy(pDst, data, size_bytes);
-			
+			std::memcpy(pDst, data, size_bytes);			
 			::GlobalUnlock(h);
 			
 			return h;
@@ -247,7 +246,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CClipboard::setImage(const Image& image, const bool usePNG)
+	void CClipboard::setImage(const Image& image)
 	{
 		if (image.isEmpty())
 		{
@@ -265,75 +264,16 @@ namespace s3d
 			{
 				return;
 			}
-			
-			const int32 width = image.width();
-			const int32 height = image.height();
 
-			const size_t pixelBytes = static_cast<size_t>(width) * static_cast<size_t>(height) * 4;
-			const size_t totalBytes = sizeof(BITMAPV5HEADER) + pixelBytes;
-
-			// CF_DIBV5
-			if (const HGLOBAL hDib = ::GlobalAlloc(GMEM_MOVEABLE, totalBytes))
+			if (const Blob png = image.encodePNG())
 			{
-				if (void* p = ::GlobalLock(hDib))
+				if (const UINT cfPNG = ::RegisterClipboardFormatW(L"PNG"))
 				{
-					auto* header = static_cast<BITMAPV5HEADER*>(p);
-					std::memset(header, 0, sizeof(BITMAPV5HEADER));
-
-					header->bV5Size			= sizeof(BITMAPV5HEADER);
-					header->bV5Width		= width;
-					header->bV5Height		= -height; // top-down
-					header->bV5Planes		= 1;
-					header->bV5BitCount		= 32;
-					header->bV5Compression	= BI_BITFIELDS;
-
-					header->bV5RedMask		= 0x00FF0000;
-					header->bV5GreenMask	= 0x0000FF00;
-					header->bV5BlueMask		= 0x000000FF;
-					header->bV5AlphaMask	= 0xFF000000;
-
-					header->bV5CSType		= LCS_sRGB;
-
-					// RGBA -> BGRA
-					uint8* pDst = (reinterpret_cast<uint8*>(header) + sizeof(BITMAPV5HEADER));
-					const Color* pSrc = image.data();
-					const Color* const pSrcEnd = (pSrc + image.num_pixels());
-
-					while (pSrc != pSrcEnd)
+					if (const HGLOBAL hPng = MakeGlobalCopy(png.data(), png.size_bytes()))
 					{
-						*pDst++ = pSrc->b;
-						*pDst++ = pSrc->g;
-						*pDst++ = pSrc->r;
-						*pDst++ = pSrc->a;
-						++pSrc;
-					}
-
-					::GlobalUnlock(hDib);
-
-					if (not ::SetClipboardData(CF_DIBV5, hDib))
-					{
-						::GlobalFree(hDib); // 失敗時のみ解放（成功時は OS 所有）
-					}
-				}
-				else
-				{
-					::GlobalFree(hDib); // 失敗時のみ解放（成功時は OS 所有）
-				}
-			}
-
-			// PNG
-			if (usePNG)
-			{
-				if (const Blob png = image.encodePNG())
-				{
-					if (const UINT cfPNG = ::RegisterClipboardFormatW(L"PNG"))
-					{
-						if (const HGLOBAL hPng = MakeGlobalCopy(png.data(), png.size_bytes()))
+						if (not ::SetClipboardData(cfPNG, hPng))
 						{
-							if (not ::SetClipboardData(cfPNG, hPng))
-							{
-								::GlobalFree(hPng); // 失敗時のみ解放（成功時は OS 所有）
-							}
+							::GlobalFree(hPng); // 失敗時のみ解放（成功時は OS 所有）
 						}
 					}
 				}
@@ -611,10 +551,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//void CClipboard::setFilePaths(const Array<FilePath>& paths)
-	//{
+	void CClipboard::setFilePaths(const Array<FilePath>& paths)
+	{
 
-	//}
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -622,10 +562,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//bool CClipboard::getFilePaths(Array<FilePath>& paths)
-	//{
-
-	//}
+	bool CClipboard::getFilePaths(Array<FilePath>& paths)
+	{
+		return(false);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -633,10 +573,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//void CClipboard::setHTML(const StringView html)
-	//{
+	void CClipboard::setHTML(const StringView html)
+	{
 
-	//}
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -644,10 +584,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//bool CClipboard::getHTML(String& html)
-	//{
-
-	//}
+	bool CClipboard::getHTML(String& html)
+	{
+		return(false);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -655,10 +595,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//void CClipboard::setData(const StringView mimeType, const void* data, const size_t size)
-	//{
+	void CClipboard::setData(const StringView mimeType, const void* data, const size_t size)
+	{
 
-	//}
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -666,10 +606,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//bool CClipboard::getData(const StringView mimeType, Blob& data)
-	//{
-
-	//}
+	bool CClipboard::getData(const StringView mimeType, Blob& data)
+	{
+		return(false);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -677,8 +617,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//Array<String> CClipboard::getAvailableMimeTypes()
-	//{
-
-	//}
+	Array<String> CClipboard::getAvailableMimeTypes()
+	{
+		return{};
+	}
 }
