@@ -13,6 +13,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Array.hpp>
 # include <Siv3D/String.hpp>
+# include <Siv3D/PredefinedYesNo.hpp>
 
 namespace s3d
 {
@@ -44,7 +45,7 @@ namespace s3d
 
 		virtual void setImage(const Image& image) = 0;
 
-		virtual bool getImage(Image& image) = 0;
+		virtual bool getImage(Image& image, PremultiplyAlpha premultiplyAlpha) = 0;
 
 		virtual bool hasImage() = 0;
 

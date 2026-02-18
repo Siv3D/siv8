@@ -340,6 +340,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	premultiplied
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Color Color::premultiplied() const noexcept
+	{
+		return Color::PremultiplyAlpha(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	grayscale0_255
 	//
 	////////////////////////////////////////////////////////////////
@@ -702,13 +713,24 @@ namespace s3d
 	{
 		if (color.a == 0)
 		{
-			return Color{ 0, 0, 0, 0 };
+			return{ 0, 0, 0, 0 };
 		}
 
 		const uint8 r = static_cast<uint8>((static_cast<uint16>(color.r) * 255) / color.a);
 		const uint8 g = static_cast<uint8>((static_cast<uint16>(color.g) * 255) / color.a);
 		const uint8 b = static_cast<uint8>((static_cast<uint16>(color.b) * 255) / color.a);
 		return{ r, g, b, color.a };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Div255Round
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr uint8 Color::Div255Round(uint32 x) noexcept
+	{
+		return static_cast<uint8>(((x + 128u) * 257u) >> 16);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -720,13 +742,13 @@ namespace s3d
 	constexpr Color Color::Blend(const Color dst, const Color src) noexcept
 	{
 		const uint32 srcAlpha = src.a;
-		const uint32 invSrcAlpha = (255 - srcAlpha);
+		const uint32 invSrcAlpha = (255u - srcAlpha);
 
 		return
 		{
-			static_cast<uint8>(((dst.r * invSrcAlpha) + (src.r * srcAlpha)) / 255),
-			static_cast<uint8>(((dst.g * invSrcAlpha) + (src.g * srcAlpha)) / 255),
-			static_cast<uint8>(((dst.b * invSrcAlpha) + (src.b * srcAlpha)) / 255),
+			Div255Round((dst.r * invSrcAlpha) + (src.r * srcAlpha)),
+			Div255Round((dst.g * invSrcAlpha) + (src.g * srcAlpha)),
+			Div255Round((dst.b * invSrcAlpha) + (src.b * srcAlpha)),
 			dst.a
 		};
 	}

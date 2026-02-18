@@ -28,6 +28,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
 		bool HasChanged();
 
 		////////////////////////////////////////////////////////////////
@@ -36,6 +37,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
 		uint64 GetSequenceNumber();
 
 		////////////////////////////////////////////////////////////////
@@ -48,15 +50,19 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	SetText, GetText
+		//	SetText, GetText, HasText
 		//
 		////////////////////////////////////////////////////////////////
 
 		void SetText(StringView text);
 
+		[[nodiscard]]
 		Optional<String> GetText();
 
 		bool GetText(String& text);
+
+		[[nodiscard]]
+		bool HasText();
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -64,12 +70,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 画像をクリップボードにセットします。 | Sets the image to the clipboard.
+		/// @param image 画像（非アルファ乗算） | Image (non-premultiplied alpha)
 		void SetImage(const Image& image);
 
-		Optional<Image> GetImage();
+		[[nodiscard]]
+		Optional<Image> GetImage(PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes);
 
-		bool GetImage(Image& image);
+		bool GetImage(Image& image, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes);
 
+		[[nodiscard]]
 		bool HasImage();
 
 		////////////////////////////////////////////////////////////////
@@ -80,8 +90,10 @@ namespace s3d
 
 		void SetFilePaths(const Array<FilePath>& paths);
 
+		[[nodiscard]]
 		Optional<Array<FilePath>> GetFilePaths();
 
+		[[nodiscard]]
 		bool GetFilePaths(Array<FilePath>& paths);
 
 		////////////////////////////////////////////////////////////////
@@ -92,6 +104,7 @@ namespace s3d
 
 		void SetHTML(StringView html);
 
+		[[nodiscard]]
 		Optional<String> GetHTML();
 
 		bool GetHTML(String& html);
@@ -106,6 +119,7 @@ namespace s3d
 
 		void SetData(StringView mimeType, std::span<const Byte> data);
 
+		[[nodiscard]]
 		Optional<Blob> GetData(StringView mimeType);
 
 		bool GetData(StringView mimeType, Blob& data);
@@ -116,6 +130,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
 		Array<String> GetAvailableMimeTypes();
 	}
 }

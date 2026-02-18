@@ -94,9 +94,9 @@ namespace s3d
 			SIV3D_ENGINE(Clipboard)->setImage(image);
 		}
 
-		Optional<Image> GetImage()
+		Optional<Image> GetImage(const PremultiplyAlpha premultiplyAlpha)
 		{
-			if (Image image; SIV3D_ENGINE(Clipboard)->getImage(image))
+			if (Image image; SIV3D_ENGINE(Clipboard)->getImage(image, premultiplyAlpha))
 			{
 				return image;
 			}
@@ -106,9 +106,9 @@ namespace s3d
 			}
 		}
 
-		bool GetImage(Image& image)
+		bool GetImage(Image& image, const PremultiplyAlpha premultiplyAlpha)
 		{
-			return SIV3D_ENGINE(Clipboard)->getImage(image);
+			return SIV3D_ENGINE(Clipboard)->getImage(image, premultiplyAlpha);
 		}
 
 		bool HasImage()

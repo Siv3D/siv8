@@ -81,6 +81,96 @@ namespace s3d
 			
 			return h;
 		}
+
+		// 4byte境界
+		[[nodiscard]]
+		static constexpr size_t Align4(size_t x) noexcept
+		{
+			return (x + 3) & ~size_t(3);
+		}
+
+		// CF_DIB 用の HGLOBAL を作る（24bpp / top-down）
+		[[nodiscard]]
+		static HGLOBAL MakeCFDIB24(const Image& image)
+		{
+			const int32 w = image.width();
+			const int32 h = image.height();
+			if (w <= 0 || h <= 0) return nullptr;
+
+			const size_t rowBytes = Align4(static_cast<size_t>(w) * 3); // BGR 24bpp
+			const size_t pixelBytes = rowBytes * static_cast<size_t>(h);
+			const size_t totalBytes = sizeof(BITMAPINFOHEADER) + pixelBytes;
+
+			HGLOBAL hMem = ::GlobalAlloc(GMEM_MOVEABLE, totalBytes);
+			if (!hMem) return nullptr;
+
+			uint8_t* p = static_cast<uint8_t*>(::GlobalLock(hMem));
+			if (!p)
+			{
+				::GlobalFree(hMem);
+				return nullptr;
+			}
+
+			auto* bih = reinterpret_cast<BITMAPINFOHEADER*>(p);
+			std::memset(bih, 0, sizeof(BITMAPINFOHEADER));
+			bih->biSize			= sizeof(BITMAPINFOHEADER);
+			bih->biWidth		= w;
+			bih->biHeight		= -h; // top-down
+			bih->biPlanes		= 1;
+			bih->biBitCount		= 24;
+			bih->biCompression	= BI_RGB;
+			bih->biSizeImage	= static_cast<DWORD>(pixelBytes);
+
+			uint8_t* dstBase = p + sizeof(BITMAPINFOHEADER);
+
+			// Image: RGBA -> DIB
+			const Color* src = image.data();
+			for (int32 y = 0; y < h; ++y)
+			{
+				uint8* dst = dstBase + rowBytes * static_cast<size_t>(y);
+
+				for (int32 x = 0; x < w; ++x)
+				{
+					uint8 r, g, b;
+
+					if (src->a == 255)
+					{
+						r = src->r;
+						g = src->g;
+						b = src->b;
+					}
+					else if (src->a == 0)
+					{
+						r = 255;
+						g = 255;
+						b = 255;
+					}
+					else
+					{
+						const uint32 srcAlpha = src->a;
+						const uint32 invSrcAlpha = (255 - srcAlpha);
+						b = static_cast<uint8>(invSrcAlpha + Color::Div255Round(src->b * srcAlpha));
+						g = static_cast<uint8>(invSrcAlpha + Color::Div255Round(src->g * srcAlpha));
+						r = static_cast<uint8>(invSrcAlpha + Color::Div255Round(src->r * srcAlpha));
+					}
+
+					*dst++ = b;
+					*dst++ = g;
+					*dst++ = r;
+					++src;
+				}
+
+				// パディング（0で埋める）
+				const size_t pad = rowBytes - static_cast<size_t>(w) * 3;
+				if (pad)
+				{
+					std::memset(dst, 0, pad);
+				}
+			}
+
+			::GlobalUnlock(hMem);
+			return hMem;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -278,6 +368,16 @@ namespace s3d
 					}
 				}
 			}
+
+			// CF_DIB
+			if (HGLOBAL hDib = MakeCFDIB24(image))
+			{
+				// 成功時は OS 所有。失敗時のみ GlobalFree
+				if (!::SetClipboardData(CF_DIB, hDib))
+				{
+					::GlobalFree(hDib);
+				}
+			}
 		}
 
 		m_sequenceNumber = ::GetClipboardSequenceNumber();
@@ -289,7 +389,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CClipboard::getImage(Image& image)
+	bool CClipboard::getImage(Image& image, const PremultiplyAlpha premultiplyAlpha)
 	{
 		image.clear();
 
@@ -297,6 +397,35 @@ namespace s3d
 		if (not clipboard)
 		{
 			return false;
+		}
+
+		// 1) PNG 形式
+		if (const UINT cfPNG = ::RegisterClipboardFormatW(L"PNG"))
+		{
+			HANDLE hData = ::GetClipboardData(cfPNG);
+			if (hData)
+			{
+				const void* p = ::GlobalLock(hData);
+				if (p)
+				{
+					const size_t sizeBytes = static_cast<size_t>(::GlobalSize(hData));
+					if (sizeBytes > 0)
+					{
+						Image decoded{ MemoryViewReader { p, sizeBytes }, premultiplyAlpha, ImageFormat::PNG };
+						::GlobalUnlock(hData);
+
+						if (decoded)
+						{
+							image = std::move(decoded);
+							return true;
+						}
+					}
+					else
+					{
+						::GlobalUnlock(hData);
+					}
+				}
+			}
 		}
 
 		auto TryFromDIB = [&](UINT format) -> bool
@@ -313,12 +442,12 @@ namespace s3d
 				return false;
 			}
 
-			const auto unlock = [&]() { ::GlobalUnlock(hData); };
+			const auto Unlock = [&]() { ::GlobalUnlock(hData); };
 
 			// DIB は先頭が BITMAPINFOHEADER / BITMAPV4HEADER / BITMAPV5HEADER のいずれか
 			if (sizeof(BITMAPINFOHEADER) > ::GlobalSize(hData))
 			{
-				unlock();
+				Unlock();
 				return false;
 			}
 
@@ -332,7 +461,7 @@ namespace s3d
 				|| (bih->biWidth <= 0)
 				|| (bih->biHeight == 0))
 			{
-				unlock();
+				Unlock();
 				return false;
 			}
 
@@ -345,7 +474,7 @@ namespace s3d
 
 			if ((bpp != 32) && (bpp != 24))
 			{
-				unlock();
+				Unlock();
 				return false;
 			}
 
@@ -372,7 +501,7 @@ namespace s3d
 					// BITMAPINFOHEADER の BITFIELDS は直後に DWORD×3（RGB）
 					if (::GlobalSize(hData) < (offset + sizeof(DWORD) * 3))
 					{
-						unlock();
+						Unlock();
 						return false;
 					}
 
@@ -387,12 +516,11 @@ namespace s3d
 			else if (compression == BI_RGB)
 			{
 				// 24/32bit の BI_RGB は通常 BGR/BGRA
-				// ここでは “一般的な並び” として扱う（mask は使わない）
 			}
 			else
 			{
 				// RLE 等は非対応
-				unlock();
+				Unlock();
 				return false;
 			}
 
@@ -403,7 +531,7 @@ namespace s3d
 			const size_t needed = offset + (srcStride * static_cast<size_t>(heightAbs));
 			if (::GlobalSize(hData) < needed)
 			{
-				unlock();
+				Unlock();
 				return false;
 			}
 
@@ -413,21 +541,21 @@ namespace s3d
 			Color* dst = image.data();
 
 			// 32bit の mask 展開（BITFIELDS で一般化）
-			auto extractChannel = [](uint32 v, uint32 mask) -> uint8
-				{
-					if (mask == 0) return 0;
-					// 末尾の 1 の位置へ
-					uint32 shift = 0;
-					while ((mask & 1u) == 0u) { mask >>= 1u; ++shift; }
-					uint32 m = mask; // 連続 1 を仮定（現実的）
-					uint32 x = (v >> shift) & m;
+			auto ExtractChannel = [](uint32 v, uint32 mask) -> uint8
+			{
+				if (mask == 0) return 0;
+				// 末尾の 1 の位置へ
+				uint32 shift = 0;
+				while ((mask & 1u) == 0u) { mask >>= 1u; ++shift; }
+				uint32 m = mask; // 連続 1 を仮定（現実的）
+				uint32 x = (v >> shift) & m;
 
-					// x を 0..255 にスケール
-					// m は (2^bits-1) の形を期待
-					const uint32 denom = m;
-					if (denom == 0) return 0;
-					return static_cast<uint8>((x * 255u) / denom);
-				};
+				// x を 0..255 にスケール
+				// m は (2^bits-1) の形を期待
+				const uint32 denom = m;
+				if (denom == 0) return 0;
+				return static_cast<uint8>((x * 255u) / denom);
+			};
 
 			for (int32 y = 0; y < heightAbs; ++y)
 			{
@@ -453,11 +581,10 @@ namespace s3d
 							const uint32 v = *reinterpret_cast<const uint32*>(src);
 							src += 4;
 
-							const uint8 r = extractChannel(v, redMask);
-							const uint8 g = extractChannel(v, greenMask);
-							const uint8 b = extractChannel(v, blueMask);
-							const uint8 a = (alphaMask ? extractChannel(v, alphaMask) : 255);
-
+							const uint8 r = ExtractChannel(v, redMask);
+							const uint8 g = ExtractChannel(v, greenMask);
+							const uint8 b = ExtractChannel(v, blueMask);
+							const uint8 a = (alphaMask ? ExtractChannel(v, alphaMask) : 255);
 							*dst++ = Color{ r, g, b, a };
 						}
 					}
@@ -476,49 +603,20 @@ namespace s3d
 				}
 			}
 
-			unlock();
+			Unlock();
 			return true;
 		};
 
-		// 1) CF_DIBV5 を優先
+		// 2) CF_DIBV5 を優先
 		if (TryFromDIB(CF_DIBV5))
 		{
 			return true;
 		}
 
-		// 2) CF_DIB
+		// 3) CF_DIB
 		if (TryFromDIB(CF_DIB))
 		{
 			return true;
-		}
-
-		// 3) PNG 形式
-		if (const UINT cfPNG = ::RegisterClipboardFormatW(L"PNG"))
-		{
-			HANDLE hData = ::GetClipboardData(cfPNG);
-			if (hData)
-			{
-				const void* p = ::GlobalLock(hData);
-				if (p)
-				{
-					const size_t sizeBytes = static_cast<size_t>(::GlobalSize(hData));
-					if (sizeBytes > 0)
-					{
-						Image decoded{ MemoryViewReader { p, sizeBytes }, PremultiplyAlpha::Yes, ImageFormat::PNG };
-						::GlobalUnlock(hData);
-
-						if (decoded)
-						{
-							image = std::move(decoded);
-							return true;
-						}
-					}
-					else
-					{
-						::GlobalUnlock(hData);
-					}
-				}
-			}
 		}
 
 		return false;

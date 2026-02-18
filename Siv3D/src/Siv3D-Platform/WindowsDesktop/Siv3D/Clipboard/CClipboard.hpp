@@ -39,7 +39,7 @@ namespace s3d
 
 		void setImage(const Image& image) override;
 
-		bool getImage(Image& image) override;
+		bool getImage(Image& image, PremultiplyAlpha premultiplyAlpha) override;
 
 		bool hasImage() override;
 
