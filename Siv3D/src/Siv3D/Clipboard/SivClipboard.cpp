@@ -144,6 +144,11 @@ namespace s3d
 			return SIV3D_ENGINE(Clipboard)->getFilePaths(paths);
 		}
 
+		bool HasFilePaths()
+		{
+			return SIV3D_ENGINE(Clipboard)->hasFilePaths();
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	SetRichText

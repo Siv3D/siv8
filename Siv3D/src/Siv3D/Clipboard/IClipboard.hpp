@@ -53,6 +53,8 @@ namespace s3d
 
 		virtual bool getFilePaths(Array<FilePath>& paths) = 0;
 
+		virtual bool hasFilePaths() = 0;
+
 		virtual void setRichText(StringView richText, StringView plainTextFallback) = 0;
 
 		virtual void setHTML(StringView html, StringView plainTextFallback) = 0;

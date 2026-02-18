@@ -47,6 +47,8 @@ namespace s3d
 
 		bool getFilePaths(Array<FilePath>& paths) override;
 
+		bool hasFilePaths() override;
+
 		void setRichText(StringView richText, StringView plainTextFallback) override;
 
 		void setHTML(StringView html, StringView plainTextFallback) override;

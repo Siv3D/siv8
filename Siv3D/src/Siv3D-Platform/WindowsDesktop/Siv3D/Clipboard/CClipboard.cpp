@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include "CClipboard.hpp"
+# include <shlobj_core.h>
+# include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Image.hpp>
 # include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/MemoryViewReader.hpp>
@@ -100,7 +102,7 @@ namespace s3d
 
 			const size_t rowBytes = Align4(static_cast<size_t>(w) * 3); // BGR 24bpp
 			const size_t pixelBytes = rowBytes * static_cast<size_t>(h);
-			const size_t totalBytes = sizeof(BITMAPINFOHEADER) + pixelBytes;
+			const size_t totalBytes = (sizeof(BITMAPINFOHEADER) + pixelBytes);
 
 			HGLOBAL hMem = ::GlobalAlloc(GMEM_MOVEABLE, totalBytes);
 			if (!hMem) return nullptr;
@@ -508,21 +510,17 @@ namespace s3d
 				const void* p = ::GlobalLock(hData);
 				if (p)
 				{
-					const size_t sizeBytes = static_cast<size_t>(::GlobalSize(hData));
-					if (sizeBytes > 0)
+					ScopeExit unlock{ [&]() { ::GlobalUnlock(hData); } };
+					const size_t size_bytes = static_cast<size_t>(::GlobalSize(hData));
+					if (0 < size_bytes)
 					{
-						Image decoded{ MemoryViewReader { p, sizeBytes }, premultiplyAlpha, ImageFormat::PNG };
-						::GlobalUnlock(hData);
+						Image decoded{ MemoryViewReader { p, size_bytes }, premultiplyAlpha, ImageFormat::PNG };
 
 						if (decoded)
 						{
 							image = std::move(decoded);
 							return true;
 						}
-					}
-					else
-					{
-						::GlobalUnlock(hData);
 					}
 				}
 			}
@@ -566,6 +564,11 @@ namespace s3d
 			const int32 width = static_cast<int32>(bih->biWidth);
 			const int32 heightAbs = static_cast<int32>(std::abs(bih->biHeight));
 			const bool topDown = (bih->biHeight < 0);
+
+			if ((Image::MaxWidth < width) || (Image::MaxHeight < heightAbs))
+			{
+				return false;
+			}
 
 			const uint16 bpp = static_cast<uint16>(bih->biBitCount);
 			const DWORD compression = bih->biCompression;
@@ -700,22 +703,14 @@ namespace s3d
 					}
 					else
 					{
-						// BI_RGB の 32bit は一般的に BGRA
+						// BI_RGB の 32bit
 						for (int32 x = 0; x < width; ++x)
 						{
 							const uint8 b = *src++;
 							const uint8 g = *src++;
 							const uint8 r = *src++;
-							const uint8 a = *src++;
-
-							if (premultiplyAlpha)
-							{
-								*dst++ = Color::PremultiplyAlpha(Color{ r, g, b, a });
-							}
-							else
-							{
-								*dst++ = Color{ r, g, b, a };
-							}
+							++src; // A（予約領域の場合もあるため無視）
+							*dst++ = Color{ r, g, b, 255 };
 						}
 					}
 				}
@@ -768,7 +763,104 @@ namespace s3d
 
 	void CClipboard::setFilePaths(const Array<FilePath>& paths)
 	{
+		if (paths.isEmpty())
+		{
+			return;
+		}
 
+		{
+			ClipboardGuard clipboard{ m_hWnd };
+			if (not clipboard)
+			{
+				return;
+			}
+
+			if (not ::EmptyClipboard())
+			{
+				return;
+			}
+
+			// DROPFILES に続けて、wchar_t のファイルパス列（\0 区切り、最後は \0\0）
+			std::wstring all;
+			all.reserve(256);
+
+			for (const auto& p : paths)
+			{
+				if (p.isEmpty())
+				{
+					continue;
+				}
+
+				// Windows の CF_HDROP は通常、フルパスが無難（相対も動く場合はあるが推奨しない）
+				const std::wstring w = FileSystem::NativePath(p);
+				if (w.empty())
+				{
+					continue;
+				}
+
+				all.append(w);
+				all.push_back(L'\0');
+			}
+
+			// 有効なパスが無ければ何もしない
+			if (all.empty())
+			{
+				return;
+			}
+
+			// 二重 NUL 終端
+			all.push_back(L'\0');
+
+			const size_t dropfilesSize = sizeof(DROPFILES);
+			const size_t pathsSizeBytes = (all.size() * sizeof(wchar_t));
+			const size_t totalBytes = (dropfilesSize + pathsSizeBytes);
+
+			HGLOBAL hMem = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, totalBytes);
+			if (not hMem)
+			{
+				return;
+			}
+
+			auto* pMem = static_cast<uint8_t*>(::GlobalLock(hMem));
+			if (not pMem)
+			{
+				::GlobalFree(hMem);
+				return;
+			}
+
+			auto* df = reinterpret_cast<DROPFILES*>(pMem);
+			df->pFiles = static_cast<DWORD>(dropfilesSize); // 文字列列の開始オフセット
+			df->pt.x = 0;
+			df->pt.y = 0;
+			df->fNC = FALSE;
+			df->fWide = TRUE; // wchar_t
+
+			std::memcpy((pMem + dropfilesSize), all.data(), pathsSizeBytes);
+
+			::GlobalUnlock(hMem);
+
+			if (not ::SetClipboardData(CF_HDROP, hMem))
+			{
+				::GlobalFree(hMem); // 失敗時のみ解放（成功時は OS 所有）
+				return;
+			}
+
+			// 任意：コピー扱いを明示（Explorer などで挙動が安定する場合がある）
+			// CF_PREFERREDDROPEFFECT に DROPEFFECT_COPY を入れる
+			{
+				const DWORD effect = DROPEFFECT_COPY;
+				if (HGLOBAL hEffect = MakeGlobalCopy(&effect, sizeof(effect)))
+				{
+					const UINT cfPreferredDropEffect = ::RegisterClipboardFormatW(CFSTR_PREFERREDDROPEFFECT);
+					if (not ::SetClipboardData(cfPreferredDropEffect, hEffect))
+					{
+						::GlobalFree(hEffect);
+					}
+				}
+			}
+		}
+
+		m_sequenceNumber = ::GetClipboardSequenceNumber();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -779,7 +871,82 @@ namespace s3d
 
 	bool CClipboard::getFilePaths(Array<FilePath>& paths)
 	{
-		return(false);
+		paths.clear();
+
+		ClipboardGuard clipboard{ m_hWnd };
+		if (not clipboard)
+		{
+			return false;
+		}
+
+		if (::IsClipboardFormatAvailable(CF_HDROP) == 0)
+		{
+			return false;
+		}
+
+		HANDLE hData = ::GetClipboardData(CF_HDROP);
+		if (not hData)
+		{
+			return false;
+		}
+
+		HDROP hDrop = static_cast<HDROP>(hData);
+
+		// ファイル数取得
+		const UINT count = ::DragQueryFileW(hDrop, 0xFFFFFFFF, nullptr, 0);
+		if (count == 0)
+		{
+			return false;
+		}
+
+		paths.reserve(count);
+
+		std::wstring buf;
+		for (UINT i = 0; i < count; ++i)
+		{
+			// 文字数（終端 NUL を含まない）
+			const UINT len = ::DragQueryFileW(hDrop, i, nullptr, 0);
+			if (len == 0)
+			{
+				continue;
+			}
+
+			buf.resize(len + 1);
+
+			if (::DragQueryFileW(hDrop, i, buf.data(), len + 1) == 0)
+			{
+				continue;
+			}
+
+			// Win32 のパスを Siv3D の FilePath に変換
+			FilePath p = Unicode::FromWstring(std::wstring_view(buf.data(), len));
+
+			// 末尾が NUL のときに混ざるのを避ける（念のため）
+			if (p && (p.back() == U'\0'))
+			{
+				p.pop_back();
+			}
+
+			p = FileSystem::FullPath(p);
+
+			if (p)
+			{
+				paths << std::move(p);
+			}
+		}
+
+		return (not paths.isEmpty());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasFilePaths
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CClipboard::hasFilePaths()
+	{
+		return (::IsClipboardFormatAvailable(CF_HDROP) != 0);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -826,7 +993,7 @@ namespace s3d
 					if (not ::SetClipboardData(m_cfRTF, hMem))
 					{
 						::GlobalFree(hMem);
-						return;
+						// 失敗してもフォールバックは続行
 					}
 				}
 			}
@@ -871,12 +1038,8 @@ namespace s3d
 				return;
 			}
 
-			if (not m_cfHTML)
-			{
-				return;
-			}
-
 			// 1) HTML
+			if (m_cfHTML)
 			{
 				const std::string fragmentUtf8 = Unicode::ToUTF8(html);
 				const std::string cfhtml = BuildCFHTML(fragmentUtf8);
@@ -887,7 +1050,7 @@ namespace s3d
 					if (not ::SetClipboardData(m_cfHTML, hMem))
 					{
 						::GlobalFree(hMem);
-						return;
+						// 失敗してもフォールバックは続行
 					}
 				}
 			}
@@ -920,7 +1083,42 @@ namespace s3d
 
 	void CClipboard::setData(const StringView mimeType, const void* data, const size_t size)
 	{
+		if ((not mimeType) || (not data) || (size == 0))
+		{
+			return;
+		}
 
+		const std::wstring fmtName = mimeType.toWstr();
+		const UINT format = ::RegisterClipboardFormatW(fmtName.c_str());
+		if (format == 0)
+		{
+			return;
+		}
+
+		ClipboardGuard clipboard{ m_hWnd };
+		if (not clipboard)
+		{
+			return;
+		}
+
+		if (not ::EmptyClipboard())
+		{
+			return;
+		}
+
+		HGLOBAL hMem = MakeGlobalCopy(data, size);
+		if (not hMem)
+		{
+			return;
+		}
+
+		if (not ::SetClipboardData(format, hMem))
+		{
+			::GlobalFree(hMem); // 失敗時のみ解放（成功時は OS 所有）
+			return;
+		}
+
+		m_sequenceNumber = ::GetClipboardSequenceNumber();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -931,7 +1129,55 @@ namespace s3d
 
 	bool CClipboard::getData(const StringView mimeType, Blob& data)
 	{
-		return(false);
+		data.clear();
+
+		if (not mimeType)
+		{
+			return false;
+		}
+
+		const std::wstring fmtName = mimeType.toWstr();
+		const UINT format = ::RegisterClipboardFormatW(fmtName.c_str());
+		if (format == 0)
+		{
+			return false;
+		}
+
+		ClipboardGuard clipboard{ m_hWnd };
+		if (not clipboard)
+		{
+			return false;
+		}
+
+		if (::IsClipboardFormatAvailable(format) == 0)
+		{
+			return false;
+		}
+
+		HANDLE hData = ::GetClipboardData(format);
+		if (not hData)
+		{
+			return false;
+		}
+
+		const void* pSrc = ::GlobalLock(hData);
+		if (not pSrc)
+		{
+			return false;
+		}
+
+		ScopeExit unlock{ [&]() { ::GlobalUnlock(hData); } };
+
+		const size_t size_bytes = static_cast<size_t>(::GlobalSize(hData));
+		if (size_bytes == 0)
+		{
+			return false;
+		}
+
+		data.resize(size_bytes);
+		std::memcpy(data.data(), pSrc, size_bytes);
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
