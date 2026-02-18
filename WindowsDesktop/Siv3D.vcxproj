@@ -836,6 +836,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\ScreenCapture\IScreenCapture.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Shader\IShader.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\System\ExitCode.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextFileReader\TextFileReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextFileWriter\TextFileWriterDetail.hpp" />
@@ -1579,6 +1580,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\SuperEllipse\SivSuperEllipse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SVG\SivSVG.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\System\ExitCode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SivSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\System\SystemFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEffect\TextEffect_BasicTextEffect.cpp" />

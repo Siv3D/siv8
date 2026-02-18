@@ -4854,6 +4854,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard\CClipboard.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\System\ExitCode.hpp">
+      <Filter>src\Siv3D\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7624,6 +7627,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Clipboard\SivClipboard.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\System\ExitCode.cpp">
+      <Filter>src\Siv3D\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
