@@ -146,30 +146,24 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	SetHTML, GetHTML
+		//	SetRichText
 		//
 		////////////////////////////////////////////////////////////////
 
-		void SetHTML(const StringView html)
+		void SetRichText(const StringView richText, const StringView plainTextFallback)
 		{
-			SIV3D_ENGINE(Clipboard)->setHTML(html);
+			SIV3D_ENGINE(Clipboard)->setRichText(richText, plainTextFallback);
 		}
 
-		Optional<String> GetHTML()
-		{
-			if (String html; SIV3D_ENGINE(Clipboard)->getHTML(html))
-			{
-				return html;
-			}
-			else
-			{
-				return none;
-			}
-		}
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetHTML
+		//
+		////////////////////////////////////////////////////////////////
 
-		bool GetHTML(String& html)
+		void SetHTML(const StringView html, const StringView plainTextFallback)
 		{
-			return SIV3D_ENGINE(Clipboard)->getHTML(html);
+			SIV3D_ENGINE(Clipboard)->setHTML(html, plainTextFallback);
 		}
 
 		////////////////////////////////////////////////////////////////

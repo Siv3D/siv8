@@ -172,6 +172,100 @@ namespace s3d
 			::GlobalUnlock(hMem);
 			return hMem;
 		}
+
+		[[nodiscard]]
+		static std::string RTF_EscapeUnicodeToU(const std::wstring_view rtf)
+		{
+			std::string out;
+			out.reserve(rtf.size() * 2);
+
+			for (wchar_t wc : rtf)
+			{
+				// ASCII はそのまま（RTF の制御語や \ { } も含む）
+				if (wc >= 0x20 && wc <= 0x7E)
+				{
+					out.push_back(static_cast<char>(wc));
+					continue;
+				}
+
+				// CR/LF/TAB はそのまま通す（任意）
+				if (wc == L'\r' || wc == L'\n' || wc == L'\t')
+				{
+					out.push_back(static_cast<char>(wc));
+					continue;
+				}
+
+				// RTF の \u は 16-bit signed 値（UTF-16 code unit）を想定する実装が多い
+				const int16_t s = static_cast<int16_t>(wc);
+
+				char buf[32];
+				const int n = std::snprintf(buf, sizeof(buf), "\\u%d?", static_cast<int>(s));
+				out.append(buf, buf + n);
+			}
+
+			return out;
+		}
+
+		[[nodiscard]]
+		static std::string BuildCFHTML(const std::string& fragmentUtf8)
+		{
+			const std::string kStartMark = "<!--StartFragment-->";
+			const std::string kEndMark = "<!--EndFragment-->";
+
+			// フラグメントを HTML ドキュメントに埋める
+			std::string htmlDoc;
+			htmlDoc.reserve(fragmentUtf8.size() + 128);
+			htmlDoc += "<html><body>";
+			htmlDoc += kStartMark;
+			htmlDoc += fragmentUtf8;
+			htmlDoc += kEndMark;
+			htmlDoc += "</body></html>";
+
+			// ヘッダ（オフセットは後で埋める）
+			std::string header;
+			header += "Version:0.9\r\n";
+			header += "StartHTML:00000000\r\n";
+			header += "EndHTML:00000000\r\n";
+			header += "StartFragment:00000000\r\n";
+			header += "EndFragment:00000000\r\n";
+
+			const size_t startHTML = header.size();
+			const size_t endHTML = startHTML + htmlDoc.size();
+
+			const size_t fragStartInDoc = htmlDoc.find(kStartMark);
+			const size_t fragEndInDoc = htmlDoc.find(kEndMark);
+
+			const size_t startFragment = startHTML + (fragStartInDoc + kStartMark.size());
+			const size_t endFragment = startHTML + fragEndInDoc;
+
+			auto Patch8 = [&](const char* key, size_t value)
+			{
+				const size_t pos = header.find(key);
+				if (pos == std::string::npos) return;
+				const size_t colon = header.find(':', pos);
+				if (colon == std::string::npos) return;
+
+				char buf[16] = {};
+				std::snprintf(buf, sizeof(buf), "%08u", static_cast<unsigned>(value));
+
+				// ':' の直後（空白なし想定）に 8 桁を書き込む
+				const size_t wpos = colon + 1;
+				if (wpos + 8 <= header.size())
+				{
+					for (int i = 0; i < 8; ++i)
+					{
+						header[wpos + i] = buf[i];
+					}
+				}
+			};
+
+			Patch8("StartHTML", startHTML);
+			Patch8("EndHTML", endHTML);
+			Patch8("StartFragment", startFragment);
+			Patch8("EndFragment", endFragment);
+
+			return header + htmlDoc;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -236,7 +330,7 @@ namespace s3d
 	void CClipboard::clear()
 	{
 		{
-			ClipboardGuard clipboard(m_hWnd);
+			ClipboardGuard clipboard{ m_hWnd };
 			if (not clipboard)
 			{
 				return;
@@ -257,7 +351,7 @@ namespace s3d
 	void CClipboard::setText(const StringView text)
 	{
 		{
-			ClipboardGuard clipboard(m_hWnd);
+			ClipboardGuard clipboard{ m_hWnd };
 			if (not clipboard)
 			{
 				return;
@@ -350,7 +444,7 @@ namespace s3d
 		}
 
 		{
-			ClipboardGuard clipboard(m_hWnd);
+			ClipboardGuard clipboard{ m_hWnd };
 			if (not clipboard)
 			{
 				return;
@@ -690,24 +784,132 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setHTML
+	//	setRichText
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CClipboard::setHTML(const StringView html)
+	void CClipboard::setRichText(const StringView richText, const StringView plainTextFallback)
 	{
+		{
+			ClipboardGuard clipboard{ m_hWnd };
+			if (not clipboard)
+			{
+				return;
+			}
 
+			if (not ::EmptyClipboard())
+			{
+				return;
+			}
+
+			// 1) RTF
+			if (m_cfRTF && richText)
+			{
+				// 非 ASCII を \u に置換
+				const std::wstring w = richText.toWstr();
+				std::string rtfBytes = RTF_EscapeUnicodeToU(w);
+
+				// 念のため \uc1 が無い場合に追加（既にあるなら不要）
+				if (rtfBytes.find("\\uc") == std::string::npos)
+				{
+					if (const auto pos = rtfBytes.find("\\rtf1"); pos != std::string::npos)
+					{
+						// "\rtf1" の直後に入れる
+						const auto insertPos = pos + 5;
+						rtfBytes.insert(insertPos, "\\uc1");
+					}
+				}
+
+				const size_t size_bytes = (rtfBytes.size() + 1); // 終端のヌル文字分も含める
+				if (HGLOBAL hMem = MakeGlobalCopy(rtfBytes.c_str(), size_bytes))
+				{
+					if (not ::SetClipboardData(m_cfRTF, hMem))
+					{
+						::GlobalFree(hMem);
+						return;
+					}
+				}
+			}
+
+			// 2) プレーンテキスト（フォールバック）
+			if (plainTextFallback)
+			{
+				const std::wstring wstr = plainTextFallback.toWstr();
+				const size_t size_bytes = ((wstr.size() + 1) * sizeof(wchar_t));
+
+				if (HGLOBAL hMem = MakeGlobalCopy(wstr.data(), size_bytes))
+				{
+					if (not ::SetClipboardData(CF_UNICODETEXT, hMem))
+					{
+						::GlobalFree(hMem);
+						return;
+					}
+				}
+			}
+		}
+
+		m_sequenceNumber = ::GetClipboardSequenceNumber();
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getHTML
+	//	setHTML
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CClipboard::getHTML(String& html)
+	void CClipboard::setHTML(const StringView html, const StringView plainTextFallback)
 	{
-		return(false);
+		{
+			ClipboardGuard clipboard{ m_hWnd };
+			if (not clipboard)
+			{
+				return;
+			}
+
+			if (not ::EmptyClipboard())
+			{
+				return;
+			}
+
+			if (not m_cfHTML)
+			{
+				return;
+			}
+
+			// 1) HTML
+			{
+				const std::string fragmentUtf8 = Unicode::ToUTF8(html);
+				const std::string cfhtml = BuildCFHTML(fragmentUtf8);
+				const size_t size_bytes = (cfhtml.size() + 1); // 終端のヌル文字分も含める
+
+				if (HGLOBAL hMem = MakeGlobalCopy(cfhtml.c_str(), size_bytes))
+				{
+					if (not ::SetClipboardData(m_cfHTML, hMem))
+					{
+						::GlobalFree(hMem);
+						return;
+					}
+				}
+			}
+
+			// 2) プレーンテキスト（フォールバック）
+			if (plainTextFallback)
+			{
+				const std::wstring wstr = plainTextFallback.toWstr();
+				const size_t size_bytes = ((wstr.size() + 1) * sizeof(wchar_t)); // 終端のヌル文字分も含める
+				
+				if (HGLOBAL hMem = MakeGlobalCopy(wstr.data(), size_bytes))
+				{
+					if (not ::SetClipboardData(CF_UNICODETEXT, hMem))
+					{
+						::GlobalFree(hMem); // 失敗時のみ解放（成功時は OS 所有）
+						return;
+					}
+				}
+			}
+		}
+
+		m_sequenceNumber = ::GetClipboardSequenceNumber();
 	}
 
 	////////////////////////////////////////////////////////////////
