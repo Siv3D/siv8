@@ -2500,6 +2500,7 @@
 		F998817E2F45A23900C8991D /* CClipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817A2F45A23900C8991D /* CClipboard.hpp */; };
 		F99881812F45AA3200C8991D /* ExitCode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817F2F45AA3200C8991D /* ExitCode.hpp */; };
 		F99881822F45AA3200C8991D /* ExitCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881802F45AA3200C8991D /* ExitCode.cpp */; };
+		F99881842F476E8D00C8991D /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5353,6 +5354,7 @@
 		F998817B2F45A23900C8991D /* CClipboard.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CClipboard.mm; sourceTree = "<group>"; };
 		F998817F2F45AA3200C8991D /* ExitCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ExitCode.hpp; sourceTree = "<group>"; };
 		F99881802F45AA3200C8991D /* ExitCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExitCode.cpp; sourceTree = "<group>"; };
+		F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -5684,6 +5686,7 @@
 				F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */,
 				F97204312BF0A314000E21DD /* Metal.framework in Frameworks */,
 				F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */,
+				F99881842F476E8D00C8991D /* UniformTypeIdentifiers.framework in Frameworks */,
 				F944BABC2CEAF38D00CC4D42 /* libboost_filesystem.a in Frameworks */,
 				F986FAA22BCFB875006A4C0F /* libfreetype.a in Frameworks */,
 				F986FAA42BCFBB2E006A4C0F /* libharfbuzz.a in Frameworks */,
@@ -5709,6 +5712,7 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */,
 				F9FD0D082D1DABA000A584CE /* libopencv_core.a */,
 				F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */,
 				F97204322BF0A31C000E21DD /* QuartzCore.framework */,

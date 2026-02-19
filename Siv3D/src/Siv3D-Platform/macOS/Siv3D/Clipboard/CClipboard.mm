@@ -15,6 +15,7 @@
 # include <Siv3D/EngineLog.hpp>
 # include <AppKit/AppKit.h>
 # include <CoreGraphics/CoreGraphics.h>
+# include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 namespace s3d
 {
@@ -71,6 +72,60 @@ namespace s3d
 			doc += fragmentUtf8;
 			doc += "</body></html>";
 			return doc;
+		}
+	
+		static NSString* MakeCustomUTIFromMIME(const std::string& mimeUtf8)
+		{
+			std::string s = "org.siv3d.mime.";
+			s.reserve(s.size() + mimeUtf8.size());
+
+			for (unsigned char c : mimeUtf8)
+			{
+				if (('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9') || c == '.' || c == '-')
+				{
+					s.push_back(static_cast<char>(std::tolower(c)));
+				}
+				else if (c == '/')
+				{
+					s.push_back('-');
+				}
+				else
+				{
+					s.push_back('-');
+				}
+			}
+
+			return [[NSString alloc] initWithUTF8String:s.c_str()];
+		}
+
+		static NSString* PasteboardTypeFromMIME_UTF8(const std::string& mimeUtf8)
+		{
+			NSString* mime = [[NSString alloc] initWithBytes:mimeUtf8.data()
+													 length:mimeUtf8.size()
+												   encoding:NSUTF8StringEncoding];
+			if (!mime)
+			{
+				return nil;
+			}
+
+			UTType* t = [UTType typeWithMIMEType:mime];
+			if (t && t.identifier.length)
+			{
+				return t.identifier;
+			}
+
+			// 未知 MIME は自前 UTI に落とす
+			return MakeCustomUTIFromMIME(mimeUtf8);
+		}
+
+		static bool AddUnique(Array<String>& out, const String& s)
+		{
+			if (s && (not out.contains(s)))
+			{
+				out << s;
+				return true;
+			}
+			return false;
 		}
 	}
 
@@ -610,7 +665,33 @@ namespace s3d
 
 	void CClipboard::setData(const StringView mimeType, const void* data, const size_t size)
 	{
+		if ((not mimeType) || (not data) || (size == 0))
+		{
+			return;
+		}
 
+		const std::string mimeUtf8 = Unicode::ToUTF8(mimeType);
+
+		@autoreleasepool
+		{
+			NSString* pbType = PasteboardTypeFromMIME_UTF8(mimeUtf8);
+			if (!pbType)
+			{
+				return;
+			}
+
+			NSData* nsData = [NSData dataWithBytes:data length:size];
+			if (!nsData)
+			{
+				return;
+			}
+
+			[m_pImpl->pasteboard clearContents];
+
+			[m_pImpl->pasteboard setData:nsData forType:pbType];
+
+			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -621,7 +702,51 @@ namespace s3d
 
 	bool CClipboard::getData(const StringView mimeType, Blob& data)
 	{
-		return(false);
+		data.clear();
+
+		if (not mimeType)
+		{
+			return false;
+		}
+
+		const std::string mimeUtf8 = Unicode::ToUTF8(mimeType);
+
+		@autoreleasepool
+		{
+			NSString* pbType = PasteboardTypeFromMIME_UTF8(mimeUtf8);
+			if (pbType)
+			{
+				if (NSData* nsData = [m_pImpl->pasteboard dataForType:pbType])
+				{
+					const NSUInteger len = nsData.length;
+					if (len == 0)
+					{
+						return false;
+					}
+
+					data.resize(static_cast<size_t>(len));
+					std::memcpy(data.data(), nsData.bytes, static_cast<size_t>(len));
+					return true;
+				}
+			}
+
+			if (mimeUtf8 == "text/plain")
+			{
+				NSString* s = [m_pImpl->pasteboard stringForType:NSPasteboardTypeString];
+				if (s)
+				{
+					NSData* utf8 = [s dataUsingEncoding:NSUTF8StringEncoding];
+					if (utf8 && utf8.length)
+					{
+						data.resize(static_cast<size_t>(utf8.length));
+						std::memcpy(data.data(), utf8.bytes, static_cast<size_t>(utf8.length));
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -632,6 +757,70 @@ namespace s3d
 
 	Array<String> CClipboard::getAvailableMimeTypes()
 	{
-		return{};
+		Array<String> result;
+
+		@autoreleasepool
+		{
+			NSArray<NSPasteboardType>* types = [m_pImpl->pasteboard types];
+			if (!types)
+			{
+				return result;
+			}
+
+			for (NSPasteboardType t in types)
+			{
+				// 明示マッピング（安定）
+				if ([t isEqualToString:NSPasteboardTypeString])
+				{
+					AddUnique(result, U"text/plain");
+					continue;
+				}
+				if ([t isEqualToString:NSPasteboardTypeHTML])
+				{
+					AddUnique(result, U"text/html");
+					continue;
+				}
+				if ([t isEqualToString:NSPasteboardTypeRTF])
+				{
+					AddUnique(result, U"text/rtf");
+					continue;
+				}
+				if ([t isEqualToString:NSPasteboardTypePNG])
+				{
+					AddUnique(result, U"image/png");
+					continue;
+				}
+				if ([t isEqualToString:NSPasteboardTypeTIFF])
+				{
+					AddUnique(result, U"image/tiff");
+					continue;
+				}
+				if ([t isEqualToString:NSPasteboardTypeFileURL])
+				{
+					AddUnique(result, U"text/uri-list");
+					continue;
+				}
+
+				// 一般 UTI -> MIME
+				UTType* ut = [UTType typeWithIdentifier:t];
+				NSString* mime = ut.preferredMIMEType;
+
+				if (mime.length)
+				{
+					AddUnique(result, Unicode::FromUTF8(mime.UTF8String));
+				}
+				else
+				{
+					// MIME に落ちないものは UTI をそのまま返す（必要なら上位で扱えるように）
+					const char* utf8 = t.UTF8String;
+					if (utf8 && utf8[0])
+					{
+						AddUnique(result, Unicode::FromUTF8(utf8));
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 }
