@@ -18,6 +18,62 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static bool LooksLikeRTF(const StringView s)
+		{
+			if (not s) return false;
+			const std::wstring w = s.toWstr();
+			// ざっくり判定
+			return (w.rfind(L"{\\rtf", 0) == 0);
+		}
+
+		// Windows 版と同等の \u エスケープ（UTF-16 code unit 前提）
+		[[nodiscard]]
+		static std::string RTF_EscapeUnicodeToU(const std::wstring_view rtf)
+		{
+			std::string out;
+			out.reserve(rtf.size() * 2);
+			
+			for (wchar_t wc : rtf)
+			{
+				if (wc >= 0x20 && wc <= 0x7E)
+				{
+					out.push_back(static_cast<char>(wc));
+					continue;
+				}
+				
+				if (wc == L'\r' || wc == L'\n' || wc == L'\t')
+				{
+					out.push_back(static_cast<char>(wc));
+					continue;
+				}
+				
+				const int16_t s = static_cast<int16_t>(wc);
+				char buf[32];
+				const int n = std::snprintf(buf, sizeof(buf), "\\u%d?", static_cast<int>(s));
+				out.append(buf, buf + n);
+			}
+			
+			return out;
+		}
+	
+		[[nodiscard]]
+		static std::string WrapHTMLDocumentUTF8(const std::string& fragmentUtf8)
+		{
+			std::string doc;
+			doc.reserve(fragmentUtf8.size() + 256);
+			doc += "<html><head>";
+			doc += "<meta charset=\"utf-8\">";
+			doc += "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">";
+			doc += "</head><body>";
+			doc += fragmentUtf8;
+			doc += "</body></html>";
+			return doc;
+		}
+	}
+
 	struct CClipboard::Impl
 	{
 		NSPasteboard* pasteboard = nil;
@@ -455,7 +511,50 @@ namespace s3d
 
 	void CClipboard::setRichText(const StringView richText, const StringView plainTextFallback)
 	{
+		@autoreleasepool
+		{
+			[m_pImpl->pasteboard clearContents];
 
+			// 1) RTF
+			if (richText && LooksLikeRTF(richText))
+			{
+				const std::wstring w = richText.toWstr();
+				std::string rtfBytes = RTF_EscapeUnicodeToU(w);
+
+				// \ucN が無い場合は \uc1 を足す（Windows 版と同じ安全策）
+				if (rtfBytes.find("\\uc") == std::string::npos)
+				{
+					if (const auto pos = rtfBytes.find("\\rtf1"); pos != std::string::npos)
+					{
+						rtfBytes.insert(pos + 5, "\\uc1");
+					}
+				}
+
+				NSData* rtfData = [NSData dataWithBytes:rtfBytes.data() length:rtfBytes.size()];
+				if (rtfData)
+				{
+					[m_pImpl->pasteboard setData:rtfData forType:NSPasteboardTypeRTF];
+				}
+			}
+
+			// 2) plain text fallback
+			{
+				StringView fallback = plainTextFallback ? plainTextFallback : richText;
+				if (fallback)
+				{
+					const std::string utf8 = Unicode::ToUTF8(fallback);
+					NSString* ns = [[NSString alloc] initWithBytes:utf8.data()
+														   length:utf8.size()
+														 encoding:NSUTF8StringEncoding];
+					if (ns)
+					{
+						[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
+					}
+				}
+			}
+
+			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -466,7 +565,41 @@ namespace s3d
 
 	void CClipboard::setHTML(const StringView html, const StringView plainTextFallback)
 	{
+		@autoreleasepool
+		{
+			[m_pImpl->pasteboard clearContents];
 
+			// 1) HTML
+			if (html)
+			{
+				const std::string fragmentUtf8 = Unicode::ToUTF8(html);
+				const std::string docUtf8 = WrapHTMLDocumentUTF8(fragmentUtf8);
+
+				NSData* htmlData = [NSData dataWithBytes:docUtf8.data() length:docUtf8.size()];
+				if (htmlData)
+				{
+					[m_pImpl->pasteboard setData:htmlData forType:NSPasteboardTypeHTML];
+				}
+			}
+
+			// 2) plain text fallback
+			{
+				StringView fallback = plainTextFallback ? plainTextFallback : html;
+				if (fallback)
+				{
+					const std::string utf8 = Unicode::ToUTF8(fallback);
+					NSString* ns = [[NSString alloc] initWithBytes:utf8.data()
+														   length:utf8.size()
+														 encoding:NSUTF8StringEncoding];
+					if (ns)
+					{
+						[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
+					}
+				}
+			}
+
+			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
