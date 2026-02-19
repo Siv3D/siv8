@@ -11,6 +11,7 @@
 
 # include "CClipboard.hpp"
 # include <Siv3D/Image.hpp>
+# include <Siv3D/FileSystem.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <AppKit/AppKit.h>
 # include <CoreGraphics/CoreGraphics.h>
@@ -329,7 +330,51 @@ namespace s3d
 
 	void CClipboard::setFilePaths(const Array<FilePath>& paths)
 	{
+		if (paths.isEmpty())
+		{
+			return;
+		}
 
+		@autoreleasepool
+		{
+			NSMutableArray<NSURL*>* urls = [NSMutableArray array];
+			
+			for (const auto& path : paths)
+			{
+				if (path.isEmpty())
+				{
+					continue;
+				}
+				
+				const std::string utf8Path = FileSystem::NativePath(path);
+				if (utf8Path.empty())
+				{
+					continue;
+				}
+				
+				NSString* nsPath = [[NSString alloc] initWithBytes:utf8Path.data() length:utf8Path.size() encoding:NSUTF8StringEncoding];
+				if (not nsPath)
+				{
+					continue;
+				}
+				
+				if (NSURL* url = [NSURL fileURLWithPath:nsPath])
+				{
+					[urls addObject:url];
+				}
+			}
+			
+			if ([urls count] == 0)
+			{
+				return;
+			}
+			
+			[m_pImpl->pasteboard clearContents];
+			
+			[m_pImpl->pasteboard writeObjects:urls];
+			
+			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -340,7 +385,51 @@ namespace s3d
 
 	bool CClipboard::getFilePaths(Array<FilePath>& paths)
 	{
-		return(false);
+		paths.clear();
+		
+		@autoreleasepool
+		{
+			NSDictionary* options = @{ NSPasteboardURLReadingFileURLsOnlyKey: @YES };
+			
+			NSArray* objects = [m_pImpl->pasteboard readObjectsForClasses:@[[NSURL class]] options:options];
+			if (objects && (0 < [objects count]))
+			{
+				for (id obj in objects)
+				{
+					if (not [obj isKindOfClass:[NSURL class]])
+					{
+						continue;
+					}
+					
+					NSURL* url = (NSURL*)obj;
+					if (not [url isFileURL])
+					{
+						continue;
+					}
+					
+					NSString* nsPath = [url path];
+					if (not nsPath)
+					{
+						continue;
+					}
+					
+					const char* utf8Path = [nsPath UTF8String];
+					if (not utf8Path)
+					{
+						continue;
+					}
+					
+					if (FilePath path = FileSystem::FullPath(Unicode::FromUTF8(utf8Path)))
+					{
+						paths.push_back(std::move(path));
+					}
+				}
+				
+				return (not paths.empty());
+			}
+		}
+
+		return false;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -351,7 +440,11 @@ namespace s3d
 
 	bool CClipboard::hasFilePaths()
 	{
-		return(false);
+		@autoreleasepool
+		{
+			NSDictionary* options = @{ NSPasteboardURLReadingFileURLsOnlyKey: @YES };
+			return [m_pImpl->pasteboard canReadObjectForClasses:@[[NSURL class]] options:options];
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
