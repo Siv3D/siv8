@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -11,9 +11,25 @@
 
 # include "CClipboard.hpp"
 # include <Siv3D/EngineLog.hpp>
+# import <AppKit/AppKit.h>
 
 namespace s3d
 {
+	struct CClipboard::Impl
+	{
+		NSPasteboard* pasteboard = nil;
+		NSInteger sequenceNumber = 0;
+	};
+	
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	CClipboard::CClipboard()
+		: m_pImpl{ std::make_unique<CClipboard::Impl>() } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -34,6 +50,12 @@ namespace s3d
 	void CClipboard::init()
 	{
 		LOG_SCOPED_DEBUG("CClipboard::init()");
+		
+		@autoreleasepool
+		{
+			m_pImpl->pasteboard = [NSPasteboard generalPasteboard];
+			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -44,7 +66,11 @@ namespace s3d
 
 	bool CClipboard::hasChanged()
 	{
-		return(false);
+		@autoreleasepool
+		{
+			const NSInteger currentSequenceNumber = [m_pImpl->pasteboard changeCount];
+			return (std::exchange(m_pImpl->sequenceNumber, currentSequenceNumber) != currentSequenceNumber);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -55,7 +81,11 @@ namespace s3d
 
 	uint64 CClipboard::getSequenceNumber()
 	{
-		return(0);
+		@autoreleasepool
+		{
+			const NSInteger currentSequenceNumber = [m_pImpl->pasteboard changeCount];
+			return static_cast<uint64>(currentSequenceNumber);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

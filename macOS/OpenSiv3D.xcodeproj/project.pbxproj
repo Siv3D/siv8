@@ -2496,7 +2496,7 @@
 		F99881772F45A22000C8991D /* ClipboardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881732F45A22000C8991D /* ClipboardFactory.cpp */; };
 		F99881782F45A22000C8991D /* SivClipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881752F45A22000C8991D /* SivClipboard.cpp */; };
 		F99881792F45A22000C8991D /* IClipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881742F45A22000C8991D /* IClipboard.hpp */; };
-		F998817D2F45A23900C8991D /* CClipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998817B2F45A23900C8991D /* CClipboard.cpp */; };
+		F998817D2F45A23900C8991D /* CClipboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = F998817B2F45A23900C8991D /* CClipboard.mm */; };
 		F998817E2F45A23900C8991D /* CClipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817A2F45A23900C8991D /* CClipboard.hpp */; };
 		F99881812F45AA3200C8991D /* ExitCode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817F2F45AA3200C8991D /* ExitCode.hpp */; };
 		F99881822F45AA3200C8991D /* ExitCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881802F45AA3200C8991D /* ExitCode.cpp */; };
@@ -5350,7 +5350,7 @@
 		F99881742F45A22000C8991D /* IClipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IClipboard.hpp; sourceTree = "<group>"; };
 		F99881752F45A22000C8991D /* SivClipboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivClipboard.cpp; sourceTree = "<group>"; };
 		F998817A2F45A23900C8991D /* CClipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CClipboard.hpp; sourceTree = "<group>"; };
-		F998817B2F45A23900C8991D /* CClipboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CClipboard.cpp; sourceTree = "<group>"; };
+		F998817B2F45A23900C8991D /* CClipboard.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CClipboard.mm; sourceTree = "<group>"; };
 		F998817F2F45AA3200C8991D /* ExitCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ExitCode.hpp; sourceTree = "<group>"; };
 		F99881802F45AA3200C8991D /* ExitCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExitCode.cpp; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
@@ -11335,7 +11335,7 @@
 			isa = PBXGroup;
 			children = (
 				F998817A2F45A23900C8991D /* CClipboard.hpp */,
-				F998817B2F45A23900C8991D /* CClipboard.cpp */,
+				F998817B2F45A23900C8991D /* CClipboard.mm */,
 			);
 			path = Clipboard;
 			sourceTree = "<group>";
@@ -14180,7 +14180,7 @@
 				F98601842BCFBB53006A4C0F /* SkColor.cpp in Sources */,
 				F9070F332B9F252E00383E4D /* null_monitor.c in Sources */,
 				F9070DE02B9F175E00383E4D /* SivParseErrorReason.cpp in Sources */,
-				F998817D2F45A23900C8991D /* CClipboard.cpp in Sources */,
+				F998817D2F45A23900C8991D /* CClipboard.mm in Sources */,
 				F9528C182BBF026F00222F45 /* zstd_common.c in Sources */,
 				F986042B2BCFBB54006A4C0F /* SkSLPostfixExpression.cpp in Sources */,
 				F980C4A22C04C91A00A86B68 /* CursorTransform.cpp in Sources */,

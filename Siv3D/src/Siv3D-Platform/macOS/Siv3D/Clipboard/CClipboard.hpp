@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -18,7 +18,7 @@ namespace s3d
 	{
 	public:
 
-		CClipboard() = default;
+		CClipboard();
 
 		~CClipboard() override;
 
@@ -59,6 +59,9 @@ namespace s3d
 		Array<String> getAvailableMimeTypes() override;
 
 	private:
-
+		
+		struct Impl;
+		
+		std::unique_ptr<Impl> m_pImpl;
 	};
 }
