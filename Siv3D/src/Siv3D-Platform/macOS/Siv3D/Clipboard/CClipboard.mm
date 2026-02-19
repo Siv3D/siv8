@@ -111,7 +111,23 @@ namespace s3d
 
 	void CClipboard::setText(const StringView text)
 	{
+		const std::string utf8Text = Unicode::ToUTF8(text);
 		
+		@autoreleasepool
+		{
+			NSString* ns = [[NSString alloc] initWithBytes:utf8Text.data() length:utf8Text.size() encoding:NSUTF8StringEncoding];
+			
+			if (not ns)
+			{
+				// 変換失敗時は空文字列
+				ns = @"";
+			}
+			
+			[m_pImpl->pasteboard clearContents];
+			[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
+			
+			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -122,7 +138,25 @@ namespace s3d
 
 	bool CClipboard::getText(String& text)
 	{
-		return(false);
+		text.clear();
+		
+		@autoreleasepool
+		{
+			NSString* ns = [m_pImpl->pasteboard stringForType:NSPasteboardTypeString];
+			if (not ns)
+			{
+				return false;
+			}
+			
+			const char* utf8Text = [ns UTF8String];
+			if (not utf8Text)
+			{
+				return false;
+			}
+
+			text = Unicode::FromUTF8(utf8Text);
+			return true;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -133,7 +167,11 @@ namespace s3d
 
 	bool CClipboard::hasText()
 	{
-		return(false);
+		@autoreleasepool
+		{
+			NSArray<NSPasteboardType>* types = [m_pImpl->pasteboard types];
+			return [types containsObject:NSPasteboardTypeString];
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
