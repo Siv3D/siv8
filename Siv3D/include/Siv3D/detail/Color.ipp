@@ -697,9 +697,10 @@ namespace s3d
 
 	constexpr Color Color::PremultiplyAlpha(const Color color) noexcept
 	{
-		const uint8 r = static_cast<uint8>((static_cast<uint16>(color.r) * color.a) / 255);
-		const uint8 g = static_cast<uint8>((static_cast<uint16>(color.g) * color.a) / 255);
-		const uint8 b = static_cast<uint8>((static_cast<uint16>(color.b) * color.a) / 255);	
+		const uint32 a = color.a;
+		const uint8 r = Div255Round(static_cast<uint32>(color.r) * a);
+		const uint8 g = Div255Round(static_cast<uint32>(color.g) * a);
+		const uint8 b = Div255Round(static_cast<uint32>(color.b) * a);
 		return{ r, g, b, color.a };
 	}
 
@@ -716,9 +717,10 @@ namespace s3d
 			return{ 0, 0, 0, 0 };
 		}
 
-		const uint8 r = static_cast<uint8>((static_cast<uint16>(color.r) * 255) / color.a);
-		const uint8 g = static_cast<uint8>((static_cast<uint16>(color.g) * 255) / color.a);
-		const uint8 b = static_cast<uint8>((static_cast<uint16>(color.b) * 255) / color.a);
+		const uint32 a = color.a;
+		const uint8 r = static_cast<uint8>((static_cast<uint32>(color.r) * 255u) / a);
+		const uint8 g = static_cast<uint8>((static_cast<uint32>(color.g) * 255u) / a);
+		const uint8 b = static_cast<uint8>((static_cast<uint32>(color.b) * 255u) / a);
 		return{ r, g, b, color.a };
 	}
 

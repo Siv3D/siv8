@@ -657,9 +657,6 @@
 // Poisson Disk 2D | Poisson disk 2D
 # include <Siv3D/PoissonDiskSampler2D.hpp>
 
-//// スプライン | Spline
-//# include <Siv3D/Spline.hpp>
-
 // SIMD 演算 | SIMD
 # include <Siv3D/SIMDMath.hpp>
 
