@@ -96,7 +96,11 @@ namespace s3d
 
 	void CClipboard::clear()
 	{
-
+		@autoreleasepool
+		{
+			[m_pImpl->pasteboard clearContents];
+			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
