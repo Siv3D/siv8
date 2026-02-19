@@ -10,8 +10,10 @@
 //-----------------------------------------------
 
 # include "CClipboard.hpp"
+# include <Siv3D/Image.hpp>
 # include <Siv3D/EngineLog.hpp>
-# import <AppKit/AppKit.h>
+# include <AppKit/AppKit.h>
+# include <CoreGraphics/CoreGraphics.h>
 
 namespace s3d
 {
@@ -182,7 +184,58 @@ namespace s3d
 
 	void CClipboard::setImage(const Image& image)
 	{
-
+		if (image.isEmpty())
+		{
+			return;
+		}
+		
+		Image premultiplied{ image };
+		premultiplied.premultiplyAlpha();
+		
+		@autoreleasepool
+		{
+			const int32 w = premultiplied.width();
+			const int32 h = premultiplied.height();
+			
+			void* pSrc = premultiplied.data();
+			const size_t bytesPerRow = premultiplied.bytesPerRow();
+			const CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+			const CGBitmapInfo bitmapInfo = (kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast);
+			const CGContextRef context = CGBitmapContextCreate(pSrc, w, h, 8, bytesPerRow, colorSpace, bitmapInfo);
+			CGColorSpaceRelease(colorSpace);
+			
+			if (not context)
+			{
+				return;
+			}
+			
+			CGImageRef cg = CGBitmapContextCreateImage(context);
+			CGContextRelease(context);
+			
+			if (not cg)
+			{
+				return;
+			}
+			
+			NSImage* nsImage = [[NSImage alloc] initWithCGImage:cg size:NSMakeSize(w, h)];
+			CGImageRelease(cg);
+			
+			if (not nsImage)
+			{
+				return;
+			}
+			
+			[m_pImpl->pasteboard clearContents];
+			
+			// TIFF 形式でペーストボードに画像をセット
+			NSData* tiff = [nsImage TIFFRepresentation];
+			if (tiff)
+			{
+				[m_pImpl->pasteboard setData:tiff forType:NSPasteboardTypeTIFF];
+				
+				m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -193,7 +246,64 @@ namespace s3d
 
 	bool CClipboard::getImage(Image& image, const PremultiplyAlpha premultiplyAlpha)
 	{
-		return(false);
+		image.clear();
+		
+		@autoreleasepool
+		{
+			NSData* data = [m_pImpl->pasteboard dataForType:NSPasteboardTypeTIFF];
+			if (not data)
+			{
+				data = [m_pImpl->pasteboard dataForType:NSPasteboardTypePNG];
+				
+				if (not data)
+				{
+					return false;
+				}
+			}
+			
+			NSImage* nsImage = [[NSImage alloc] initWithData:data];
+			if (not nsImage)
+			{
+				return false;
+			}
+			
+			CGImageRef cg = [nsImage CGImageForProposedRect:nil context:nil hints:nil];
+			if (not cg)
+			{
+				return false;
+			}
+			
+			const size_t w = CGImageGetWidth(cg);
+			const size_t h = CGImageGetHeight(cg);
+			if ((w == 0) || (h == 0))
+			{
+				return false;
+			}
+			
+			Image dst{ Size{ w, h } };
+			const size_t bytesPerRow = dst.bytesPerRow();
+			void* pDst = dst.data();
+			const CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+			const CGBitmapInfo bitmapInfo = (kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast);
+			const CGContextRef context = CGBitmapContextCreate(pDst, w, h, 8, bytesPerRow, colorSpace, bitmapInfo);
+			CGColorSpaceRelease(colorSpace);
+			
+			if (not context)
+			{
+				return false;
+			}
+
+			CGContextDrawImage(context, CGRectMake(0, 0, (CGFloat)w, (CGFloat)h), cg);
+			CGContextRelease(context);
+			
+			if (premultiplyAlpha == PremultiplyAlpha::No)
+			{
+				dst.unpremultiplyAlpha();
+			}
+			
+			image = std::move(dst);
+			return true;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -204,7 +314,11 @@ namespace s3d
 
 	bool CClipboard::hasImage()
 	{
-		return(false);
+		@autoreleasepool
+		{
+			NSArray<NSPasteboardType>* types = [m_pImpl->pasteboard types];
+			return ([types containsObject:NSPasteboardTypeTIFF] || [types containsObject:NSPasteboardTypePNG]);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
