@@ -564,7 +564,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CClipboard::setRichText(const StringView richText, const StringView plainTextFallback)
+	void CClipboard::setRichText(const StringView richText, const Optional<StringView>& plainTextFallback)
 	{
 		@autoreleasepool
 		{
@@ -593,18 +593,15 @@ namespace s3d
 			}
 
 			// 2) plain text fallback
+			if (plainTextFallback)
 			{
-				StringView fallback = plainTextFallback ? plainTextFallback : richText;
-				if (fallback)
+				const std::string utf8 = Unicode::ToUTF8(*plainTextFallback);
+				NSString* ns = [[NSString alloc] initWithBytes:utf8.data()
+														length:utf8.size()
+													  encoding:NSUTF8StringEncoding];
+				if (ns)
 				{
-					const std::string utf8 = Unicode::ToUTF8(fallback);
-					NSString* ns = [[NSString alloc] initWithBytes:utf8.data()
-														   length:utf8.size()
-														 encoding:NSUTF8StringEncoding];
-					if (ns)
-					{
-						[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
-					}
+					[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
 				}
 			}
 
@@ -618,7 +615,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CClipboard::setHTML(const StringView html, const StringView plainTextFallback)
+	void CClipboard::setHTML(const StringView html, const Optional<StringView>& plainTextFallback)
 	{
 		@autoreleasepool
 		{
@@ -638,18 +635,15 @@ namespace s3d
 			}
 
 			// 2) plain text fallback
+			if (plainTextFallback)
 			{
-				StringView fallback = plainTextFallback ? plainTextFallback : html;
-				if (fallback)
+				const std::string utf8 = Unicode::ToUTF8(*plainTextFallback);
+				NSString* ns = [[NSString alloc] initWithBytes:utf8.data()
+														length:utf8.size()
+													  encoding:NSUTF8StringEncoding];
+				if (ns)
 				{
-					const std::string utf8 = Unicode::ToUTF8(fallback);
-					NSString* ns = [[NSString alloc] initWithBytes:utf8.data()
-														   length:utf8.size()
-														 encoding:NSUTF8StringEncoding];
-					if (ns)
-					{
-						[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
-					}
+					[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
 				}
 			}
 
@@ -663,7 +657,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CClipboard::setData(const StringView mimeType, const void* data, const size_t size)
+	void CClipboard::setData(const StringView mimeType, const void* data, const size_t size, const Optional<StringView>& plainTextFallback)
 	{
 		if ((not mimeType) || (not data) || (size == 0))
 		{
@@ -688,8 +682,23 @@ namespace s3d
 
 			[m_pImpl->pasteboard clearContents];
 
+			// 1) 任意 MIME データ
 			[m_pImpl->pasteboard setData:nsData forType:pbType];
 
+			// 2) plain text fallback
+			if (plainTextFallback)
+			{
+				const std::string utf8 = Unicode::ToUTF8(*plainTextFallback);
+				NSString* ns = [[NSString alloc] initWithBytes:utf8.data()
+														length:utf8.size()
+													  encoding:NSUTF8StringEncoding];
+				
+				if (ns)
+				{
+					[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
+				}
+			}
+			
 			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
 		}
 	}
