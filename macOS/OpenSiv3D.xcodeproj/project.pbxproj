@@ -2509,6 +2509,10 @@
 		F99881942F48800700C8991D /* SivBatteryChargeStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881922F48800700C8991D /* SivBatteryChargeStatus.cpp */; };
 		F99881972F48801900C8991D /* SivExternalPowerStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881952F48801900C8991D /* SivExternalPowerStatus.cpp */; };
 		F998819A2F4880B900C8991D /* SivPowerStatus.mm in Sources */ = {isa = PBXBuildFile; fileRef = F99881982F4880B900C8991D /* SivPowerStatus.mm */; };
+		F998819D2F48996200C8991D /* SerialPortInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998819C2F48996200C8991D /* SerialPortInfo.hpp */; };
+		F998819E2F48996200C8991D /* Serial.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998819B2F48996200C8991D /* Serial.hpp */; };
+		F99881A02F48997A00C8991D /* SerialPortInfo.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998819F2F48997A00C8991D /* SerialPortInfo.ipp */; };
+		F99881A32F48999600C8991D /* SivSerialPortInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881A12F48999600C8991D /* SivSerialPortInfo.cpp */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5371,6 +5375,10 @@
 		F99881922F48800700C8991D /* SivBatteryChargeStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBatteryChargeStatus.cpp; sourceTree = "<group>"; };
 		F99881952F48801900C8991D /* SivExternalPowerStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivExternalPowerStatus.cpp; sourceTree = "<group>"; };
 		F99881982F4880B900C8991D /* SivPowerStatus.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SivPowerStatus.mm; sourceTree = "<group>"; };
+		F998819B2F48996200C8991D /* Serial.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Serial.hpp; sourceTree = "<group>"; };
+		F998819C2F48996200C8991D /* SerialPortInfo.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SerialPortInfo.hpp; sourceTree = "<group>"; };
+		F998819F2F48997A00C8991D /* SerialPortInfo.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SerialPortInfo.ipp; sourceTree = "<group>"; };
+		F99881A12F48999600C8991D /* SivSerialPortInfo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSerialPortInfo.cpp; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -6389,6 +6397,7 @@
 				F980C4622C01B22900A86B68 /* SamplerStateBuilder.ipp */,
 				F97203192BF09E51000E21DD /* Scene.ipp */,
 				F9070B9C2B9F175000383E4D /* ScopeExit.ipp */,
+				F998819F2F48997A00C8991D /* SerialPortInfo.ipp */,
 				F95122242CB8229400151291 /* Shape2D.ipp */,
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
 				F98111BA2EC8C71A00C50DD1 /* SimpleGUI.ipp */,
@@ -6743,6 +6752,8 @@
 				F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */,
+				F998819B2F48996200C8991D /* Serial.hpp */,
+				F998819C2F48996200C8991D /* SerialPortInfo.hpp */,
 				F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */,
 				F934BD702BF880330003EAD5 /* ShaderStage.hpp */,
 				F951221B2CB8227E00151291 /* Shape2D.hpp */,
@@ -7586,6 +7597,7 @@
 				F97203202BF09E80000E21DD /* Renderer */,
 				F980C49C2C04B6DB00A86B68 /* Renderer2D */,
 				F986F8432BC7E84D006A4C0F /* Resource */,
+				F99881A22F48999600C8991D /* SerialPortInfo */,
 				F934BD862BF881110003EAD5 /* Shader */,
 				F9070E8E2B9F183100383E4D /* System */,
 				F90DA06A2D1A934E0003E1E8 /* Texture */,
@@ -11392,6 +11404,14 @@
 			path = PowerStatus;
 			sourceTree = "<group>";
 		};
+		F99881A22F48999600C8991D /* SerialPortInfo */ = {
+			isa = PBXGroup;
+			children = (
+				F99881A12F48999600C8991D /* SivSerialPortInfo.cpp */,
+			);
+			path = SerialPortInfo;
+			sourceTree = "<group>";
+		};
 		F9AEA5042E6B3E71003734E7 /* Print */ = {
 			isa = PBXGroup;
 			children = (
@@ -12175,6 +12195,8 @@
 				F98604732BCFBB54006A4C0F /* SkSLGLSL.h in Headers */,
 				F9070C412B9F175000383E4D /* Array.ipp in Headers */,
 				F98600A32BCFBB53006A4C0F /* SkSLDebugTrace.h in Headers */,
+				F998819D2F48996200C8991D /* SerialPortInfo.hpp in Headers */,
+				F998819E2F48996200C8991D /* Serial.hpp in Headers */,
 				F98603062BCFBB54006A4C0F /* SkIntersectionHelper.h in Headers */,
 				F9528C2B2BBF026F00222F45 /* zstd_double_fast.h in Headers */,
 				F95121FB2CB62DF400151291 /* RectanglePack.hpp in Headers */,
@@ -12719,6 +12741,7 @@
 				F9070B042B9DEB5900383E4D /* miniutf.hpp in Headers */,
 				F9807D8C2BF6677600D9B590 /* MessageBoxResult.hpp in Headers */,
 				F98600282BCFBB53006A4C0F /* SkOverdrawCanvas.h in Headers */,
+				F99881A02F48997A00C8991D /* SerialPortInfo.ipp in Headers */,
 				F9DD96612F13EF860026DFA5 /* ProfilerStat.hpp in Headers */,
 				F951220C2CB62E4300151291 /* insert_and_split.h in Headers */,
 				F98606022BE615C5006A4C0F /* FormatLiteralObject.hpp in Headers */,
@@ -14312,6 +14335,7 @@
 				F986F9962BCA9D0A006A4C0F /* plutovg-geometry.c in Sources */,
 				F98605112BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp in Sources */,
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
+				F99881A32F48999600C8991D /* SivSerialPortInfo.cpp in Sources */,
 				F986030D2BCFBB54006A4C0F /* SkOpCoincidence.cpp in Sources */,
 				F9B7D9F02D8C7215002ABACE /* TextureUtility.cpp in Sources */,
 				F98602DE2BCFBB54006A4C0F /* SkImage_Base.cpp in Sources */,
