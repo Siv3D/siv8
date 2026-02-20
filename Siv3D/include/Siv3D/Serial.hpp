@@ -55,6 +55,22 @@ namespace s3d
 			Hardware		= 2,
 		};
 
+		/// @brief シリアル通信の設定
+		struct Config
+		{
+			/// @brief データビット長
+			DataBits dataBits		= DataBits::Eight;
+			
+			/// @brief パリティ
+			Parity parity			= Parity::NoParity;
+			
+			/// @brief ストップビット
+			StopBits stopBits		= StopBits::One;
+			
+			/// @brief フロー制御
+			FlowControl flowControl	= FlowControl::NoFlowControl;
+		};
+
 		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		Serial();
@@ -62,15 +78,9 @@ namespace s3d
 		/// @brief シリアルポートに接続します。
 		/// @param port シリアルポートの名前
 		/// @param baudrate ボーレート
-		/// @param dataBits データビット長
-		/// @param parity パリティ
-		/// @param stopBits ストップビット
-		/// @param flowControl Flow Control
-		/// @remark シリアルポートの名前は `System::EnumerateSerialPorts()` で列挙できます。
+		/// @param config その他の通信設定
 		[[nodiscard]]
-		explicit Serial(StringView port, int32 baudrate = 9600,
-				DataBits dataBits = DataBits::Eight, Parity parity = Parity::NoParity,
-				StopBits stopBits = StopBits::One, FlowControl flowControl = FlowControl::NoFlowControl);
+		explicit Serial(StringView port, int32 baudrate = 9600, const Config& config = {});
 
 		/// @brief デストラクタ
 		/// @remark シリアルポートに接続している場合は切断します。
@@ -79,15 +89,9 @@ namespace s3d
 		/// @brief シリアルポートに接続します。
 		/// @param port シリアルポートの名前
 		/// @param baudrate ボーレート
-		/// @param dataBits データビット長
-		/// @param parity パリティ
-		/// @param stopBits ストップビット
-		/// @param flowControl Flow Control
-		/// @remark シリアルポートの名前は `System::EnumerateSerialPorts()` で列挙できます。
+		/// @param config その他の通信設定
 		/// @return 接続に成功した場合 true, それ以外の場合は false
-		bool open(StringView port, int32 baudrate = 9600,
-			DataBits dataBits = DataBits::Eight, Parity parity = Parity::NoParity,
-			StopBits stopBits = StopBits::One, FlowControl flowControl = FlowControl::NoFlowControl);
+		bool open(StringView port, int32 baudrate = 9600, const Config& config = {});
 
 		/// @brief シリアルポートとの接続を切断します。
 		void close();
