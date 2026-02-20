@@ -86,7 +86,8 @@ namespace s3d
 					}
 				}
 
-				if (sps.BatteryLifeTime != BATTERY_LIFE_UNKNOWN)
+				if ((status.chargeStatus == BatteryChargeStatus::Discharging) &&
+					(sps.BatteryLifeTime != BATTERY_LIFE_UNKNOWN))
 				{
 					status.timeToEmptySec = sps.BatteryLifeTime;
 				}
