@@ -137,22 +137,30 @@ namespace s3d
 		//	SetRichText
 		//
 		////////////////////////////////////////////////////////////////
-		
+
 		/// @brief リッチテキスト（RTF）をクリップボードにセットします。 | Sets rich text (RTF) to the clipboard.
 		/// @param richText リッチテキスト（RTF） | Rich text (RTF)
-		/// @param plainTextFallback 取得先アプリが RTF を扱えない場合に使われるプレーンテキスト（省略可） | Plain-text fallback used when the target application cannot consume RTF (optional)
-		void SetRichText(StringView richText, StringView plainTextFallback = U"");
+		void SetRichText(StringView richText);
+
+		/// @brief リッチテキスト（RTF）をクリップボードにセットします。 | Sets rich text (RTF) to the clipboard.
+		/// @param richText リッチテキスト（RTF） | Rich text (RTF)
+		/// @param plainTextFallback 取得先アプリが RTF を扱えない場合に使われるプレーンテキスト | Plain-text fallback used when the target application cannot consume RTF
+		void SetRichText(StringView richText, StringView plainTextFallback);
 
 		////////////////////////////////////////////////////////////////
 		//
 		//	SetHTML
 		//
 		////////////////////////////////////////////////////////////////
-		
+
 		/// @brief HTML をクリップボードにセットします。 | Sets HTML to the clipboard.
 		/// @param html HTML | HTML
-		/// @param plainTextFallback 取得先アプリが HTML を扱えない場合に使われるプレーンテキスト（省略可） | Plain-text fallback used when the target application cannot consume HTML (optional)
-		void SetHTML(StringView html, StringView plainTextFallback = U"");
+		void SetHTML(StringView html);
+
+		/// @brief HTML をクリップボードにセットします。 | Sets HTML to the clipboard.
+		/// @param html HTML | HTML
+		/// @param plainTextFallback 取得先アプリが HTML を扱えない場合に使われるプレーンテキスト | Plain-text fallback used when the target application cannot consume HTML
+		void SetHTML(StringView html, StringView plainTextFallback);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -170,6 +178,19 @@ namespace s3d
 		/// @param mimeType MIME タイプ（例: `application/octet-stream`） | MIME type (e.g., `application/octet-stream`)
 		/// @param data データ | Data
 		void SetData(StringView mimeType, std::span<const Byte> data);
+
+		/// @brief 任意のバイナリデータを MIME タイプ付きでクリップボードにセットします。 | Sets arbitrary binary data to the clipboard with a MIME type.
+		/// @param mimeType MIME タイプ（例: `application/octet-stream`） | MIME type (e.g., `application/octet-stream`)
+		/// @param data データ先頭へのポインタ | Pointer to the data
+		/// @param size データサイズ（バイト） | Data size in bytes
+		/// @param plainTextFallback 取得先アプリが RTF を扱えない場合に使われるプレーンテキスト | Plain-text fallback used when the target application cannot consume RTF
+		void SetData(StringView mimeType, const void* data, size_t size, StringView plainTextFallback);
+
+		/// @brief 任意のバイナリデータを MIME タイプ付きでクリップボードにセットします。 | Sets arbitrary binary data to the clipboard with a MIME type.
+		/// @param mimeType MIME タイプ（例: `application/octet-stream`） | MIME type (e.g., `application/octet-stream`)
+		/// @param data データ | Data
+		/// @param plainTextFallback 取得先アプリが RTF を扱えない場合に使われるプレーンテキスト | Plain-text fallback used when the target application cannot consume RTF
+		void SetData(StringView mimeType, std::span<const Byte> data, StringView plainTextFallback);
 
 		/// @brief 指定した MIME タイプのデータをクリップボードから取得します。 | Retrieves clipboard data for the specified MIME type.
 		/// @param mimeType MIME タイプ | MIME type

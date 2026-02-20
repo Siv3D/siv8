@@ -955,7 +955,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CClipboard::setRichText(const StringView richText, const StringView plainTextFallback)
+	void CClipboard::setRichText(const StringView richText, const Optional<StringView>& plainTextFallback)
 	{
 		{
 			ClipboardGuard clipboard{ m_hWnd };
@@ -1001,7 +1001,7 @@ namespace s3d
 			// 2) プレーンテキスト（フォールバック）
 			if (plainTextFallback)
 			{
-				const std::wstring wstr = plainTextFallback.toWstr();
+				const std::wstring wstr = plainTextFallback->toWstr();
 				const size_t size_bytes = ((wstr.size() + 1) * sizeof(wchar_t));
 
 				if (HGLOBAL hMem = MakeGlobalCopy(wstr.data(), size_bytes))
@@ -1024,7 +1024,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CClipboard::setHTML(const StringView html, const StringView plainTextFallback)
+	void CClipboard::setHTML(const StringView html, const Optional<StringView>& plainTextFallback)
 	{
 		{
 			ClipboardGuard clipboard{ m_hWnd };
@@ -1058,7 +1058,7 @@ namespace s3d
 			// 2) プレーンテキスト（フォールバック）
 			if (plainTextFallback)
 			{
-				const std::wstring wstr = plainTextFallback.toWstr();
+				const std::wstring wstr = plainTextFallback->toWstr();
 				const size_t size_bytes = ((wstr.size() + 1) * sizeof(wchar_t)); // 終端のヌル文字分も含める
 				
 				if (HGLOBAL hMem = MakeGlobalCopy(wstr.data(), size_bytes))
@@ -1081,7 +1081,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CClipboard::setData(const StringView mimeType, const void* data, const size_t size)
+	void CClipboard::setData(const StringView mimeType, const void* data, const size_t size, const Optional<StringView>& plainTextFallback)
 	{
 		if ((not mimeType) || (not data) || (size == 0))
 		{
@@ -1106,16 +1106,35 @@ namespace s3d
 			return;
 		}
 
-		HGLOBAL hMem = MakeGlobalCopy(data, size);
-		if (not hMem)
+		// 1) 任意 MIME データ
 		{
-			return;
+			HGLOBAL hMem = MakeGlobalCopy(data, size);
+			if (not hMem)
+			{
+				return;
+			}
+
+			if (not ::SetClipboardData(format, hMem))
+			{
+				::GlobalFree(hMem); // 失敗時のみ解放（成功時は OS 所有）
+				return;
+			}
 		}
 
-		if (not ::SetClipboardData(format, hMem))
+		// 2) プレーンテキスト（フォールバック）
+		if (plainTextFallback)
 		{
-			::GlobalFree(hMem); // 失敗時のみ解放（成功時は OS 所有）
-			return;
+			const std::wstring wstr = plainTextFallback->toWstr();
+			const size_t size_bytes = ((wstr.size() + 1) * sizeof(wchar_t)); // 終端のヌル文字分も含める
+			
+			if (HGLOBAL hMem = MakeGlobalCopy(wstr.data(), size_bytes))
+			{
+				if (not ::SetClipboardData(CF_UNICODETEXT, hMem))
+				{
+					::GlobalFree(hMem); // 失敗時のみ解放（成功時は OS 所有）
+					// MIME 側は既にセット済みなので return しない
+				}
+			}
 		}
 
 		m_sequenceNumber = ::GetClipboardSequenceNumber();

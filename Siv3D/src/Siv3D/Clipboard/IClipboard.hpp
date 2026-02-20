@@ -55,11 +55,11 @@ namespace s3d
 
 		virtual bool hasFilePaths() = 0;
 
-		virtual void setRichText(StringView richText, StringView plainTextFallback) = 0;
+		virtual void setRichText(StringView richText, const Optional<StringView>& plainTextFallback) = 0;
 
-		virtual void setHTML(StringView html, StringView plainTextFallback) = 0;
+		virtual void setHTML(StringView html, const Optional<StringView>& plainTextFallback) = 0;
 
-		virtual void setData(StringView mimeType, const void* data, size_t size) = 0;
+		virtual void setData(StringView mimeType, const void* data, size_t size, const Optional<StringView>& plainTextFallback) = 0;
 
 		virtual bool getData(StringView mimeType, Blob& data) = 0;
 		

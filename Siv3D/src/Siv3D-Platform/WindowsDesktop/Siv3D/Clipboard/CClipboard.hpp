@@ -49,11 +49,11 @@ namespace s3d
 
 		bool hasFilePaths() override;
 
-		void setRichText(StringView richText, StringView plainTextFallback) override;
+		void setRichText(StringView richText, const Optional<StringView>& plainTextFallback) override;
 
-		void setHTML(StringView html, StringView plainTextFallback) override;
+		void setHTML(StringView html, const Optional<StringView>& plainTextFallback) override;
 
-		void setData(StringView mimeType, const void* data, size_t size) override;
+		void setData(StringView mimeType, const void* data, size_t size, const Optional<StringView>& plainTextFallback) override;
 
 		bool getData(StringView mimeType, Blob& data) override;
 

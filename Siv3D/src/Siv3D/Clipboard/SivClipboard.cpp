@@ -155,6 +155,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		void SetRichText(const StringView richText)
+		{
+			SIV3D_ENGINE(Clipboard)->setRichText(richText, none);
+		}
+
 		void SetRichText(const StringView richText, const StringView plainTextFallback)
 		{
 			SIV3D_ENGINE(Clipboard)->setRichText(richText, plainTextFallback);
@@ -165,6 +170,11 @@ namespace s3d
 		//	SetHTML
 		//
 		////////////////////////////////////////////////////////////////
+
+		void SetHTML(const StringView html)
+		{
+			SIV3D_ENGINE(Clipboard)->setHTML(html, none);
+		}
 
 		void SetHTML(const StringView html, const StringView plainTextFallback)
 		{
@@ -179,12 +189,22 @@ namespace s3d
 
 		void SetData(const StringView mimeType, const void* data, const size_t size)
 		{
-			SIV3D_ENGINE(Clipboard)->setData(mimeType, data, size);
+			SIV3D_ENGINE(Clipboard)->setData(mimeType, data, size, none);
 		}
 
 		void SetData(const StringView mimeType, const std::span<const Byte> data)
 		{
-			SIV3D_ENGINE(Clipboard)->setData(mimeType, data.data(), data.size_bytes());
+			SIV3D_ENGINE(Clipboard)->setData(mimeType, data.data(), data.size_bytes(), none);
+		}
+
+		void SetData(const StringView mimeType, const void* data, const size_t size, const StringView plainTextFallback)
+		{
+			SIV3D_ENGINE(Clipboard)->setData(mimeType, data, size, plainTextFallback);
+		}
+
+		void SetData(const StringView mimeType, const std::span<const Byte> data, const StringView plainTextFallback)
+		{
+			SIV3D_ENGINE(Clipboard)->setData(mimeType, data.data(), data.size_bytes(), plainTextFallback);
 		}
 
 		Optional<Blob> GetData(const StringView mimeType)
