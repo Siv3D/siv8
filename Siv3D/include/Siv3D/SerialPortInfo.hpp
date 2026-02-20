@@ -45,6 +45,8 @@ namespace s3d
 
 	namespace System
 	{
+		/// @brief 利用可能なシリアルポートの一覧を返します。
+		/// @return シリアルポート情報のリスト
 		[[nodiscard]]
 		Array<SerialPortInfo> EnumerateSerialPorts();
 	}
