@@ -351,6 +351,17 @@ namespace s3d
 		{
 			return SIV3D_ENGINE(Window)->isToggleFullscreenEnabled();
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SetTaskbarProgressBar
+		//
+		////////////////////////////////////////////////////////////////
+
+		void SetTaskbarProgressBar(const double progress0_1)
+		{
+			SIV3D_ENGINE(Window)->setTaskbarProgressBar(progress0_1);
+		}
 	}
 
 # if SIV3D_PLATFORM(WINDOWS)
@@ -366,11 +377,6 @@ namespace s3d
 		void* GetHWND()
 		{
 			return SIV3D_ENGINE(Window)->getHandle();
-		}
-
-		void SetTaskbarProgressBar(const double progress0_1)
-		{
-			SIV3D_ENGINE(Window)->setTaskbarProgressBar(progress0_1);
 		}
 	}
 
