@@ -18,9 +18,10 @@
 
 namespace s3d
 {
-	namespace detail
+	namespace
 	{
 		// CFStringRef を Siv3D の String (UTF-32) に安全に変換するヘルパー
+		[[nodiscard]]
 		static String CFStringToString(CFStringRef cfString)
 		{
 			if (!cfString)
@@ -73,6 +74,7 @@ namespace s3d
 		}
 
 		// IORegistry のツリーから整数（16ビット）プロパティを取得する
+		[[nodiscard]]
 		static Optional<uint16> GetUint16Property(io_registry_entry_t entry, CFStringRef key)
 		{
 			CFTypeRef cfType = ::IORegistryEntrySearchCFProperty(
@@ -138,7 +140,7 @@ namespace s3d
 				{
 					if (CFGetTypeID(calloutPath) == CFStringGetTypeID())
 					{
-						info.port = detail::CFStringToString(static_cast<CFStringRef>(calloutPath)).trimmed();
+						info.port = CFStringToString(static_cast<CFStringRef>(calloutPath)).trimmed();
 					}
 					CFRelease(calloutPath);
 				}
@@ -151,12 +153,12 @@ namespace s3d
 				}
 
 				// 2. 親の USB デバイスから VID と PID を取得
-				info.vendorID  = detail::GetUint16Property(serialPort, CFSTR("idVendor"));
-				info.productID = detail::GetUint16Property(serialPort, CFSTR("idProduct"));
+				info.vendorID  = GetUint16Property(serialPort, CFSTR("idVendor"));
+				info.productID = GetUint16Property(serialPort, CFSTR("idProduct"));
 
 				// 3. メーカー名とプロダクト名を取得して結合
-				info.manufacturer  = detail::GetStringProperty(serialPort, CFSTR("USB Vendor Name"));
-				String productName = detail::GetStringProperty(serialPort, CFSTR("USB Product Name"));
+				info.manufacturer  = GetStringProperty(serialPort, CFSTR("USB Vendor Name"));
+				String productName = GetStringProperty(serialPort, CFSTR("USB Product Name"));
 
 				if (info.manufacturer && productName)
 				{
@@ -174,7 +176,7 @@ namespace s3d
 				// 4. ハードウェア ID の生成 (Siv3D の format を使用)
 				if (info.vendorID && info.productID)
 				{
-					String serialNum = detail::GetStringProperty(serialPort, CFSTR("USB Serial Number"));
+					String serialNum = GetStringProperty(serialPort, CFSTR("USB Serial Number"));
 					if (serialNum.isEmpty())
 					{
 						serialNum = U"None";
