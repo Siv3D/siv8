@@ -63,6 +63,8 @@ namespace s3d
 
 		bool isToggleFullscreenEnabled() const override;
 
+		void setTaskbarProgressBar(double progress0_1) override;
+
 	private:
 
 		GLFWwindow* m_glfwWindow = nullptr;
