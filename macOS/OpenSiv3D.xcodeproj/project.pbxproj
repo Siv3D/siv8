@@ -2503,6 +2503,12 @@
 		F99881842F476E8D00C8991D /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */; };
 		F99881872F4829D000C8991D /* DockProgressBar.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881852F4829D000C8991D /* DockProgressBar.hpp */; };
 		F99881882F4829D000C8991D /* DockProgressBar.mm in Sources */ = {isa = PBXBuildFile; fileRef = F99881862F4829D000C8991D /* DockProgressBar.mm */; };
+		F998818C2F487FCE00C8991D /* PowerStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998818B2F487FCE00C8991D /* PowerStatus.hpp */; };
+		F998818D2F487FCE00C8991D /* BatteryChargeStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881892F487FCE00C8991D /* BatteryChargeStatus.hpp */; };
+		F998818E2F487FCE00C8991D /* ExternalPowerStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998818A2F487FCE00C8991D /* ExternalPowerStatus.hpp */; };
+		F99881942F48800700C8991D /* SivBatteryChargeStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881922F48800700C8991D /* SivBatteryChargeStatus.cpp */; };
+		F99881972F48801900C8991D /* SivExternalPowerStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881952F48801900C8991D /* SivExternalPowerStatus.cpp */; };
+		F998819A2F4880B900C8991D /* SivPowerStatus.mm in Sources */ = {isa = PBXBuildFile; fileRef = F99881982F4880B900C8991D /* SivPowerStatus.mm */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5359,6 +5365,12 @@
 		F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
 		F99881852F4829D000C8991D /* DockProgressBar.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DockProgressBar.hpp; sourceTree = "<group>"; };
 		F99881862F4829D000C8991D /* DockProgressBar.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DockProgressBar.mm; sourceTree = "<group>"; };
+		F99881892F487FCE00C8991D /* BatteryChargeStatus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BatteryChargeStatus.hpp; sourceTree = "<group>"; };
+		F998818A2F487FCE00C8991D /* ExternalPowerStatus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ExternalPowerStatus.hpp; sourceTree = "<group>"; };
+		F998818B2F487FCE00C8991D /* PowerStatus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PowerStatus.hpp; sourceTree = "<group>"; };
+		F99881922F48800700C8991D /* SivBatteryChargeStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBatteryChargeStatus.cpp; sourceTree = "<group>"; };
+		F99881952F48801900C8991D /* SivExternalPowerStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivExternalPowerStatus.cpp; sourceTree = "<group>"; };
+		F99881982F4880B900C8991D /* SivPowerStatus.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SivPowerStatus.mm; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -6454,6 +6466,7 @@
 				F9070BBF2B9F175000383E4D /* AsyncTask.hpp */,
 				F9528B1F2BAFB66200222F45 /* Base64Value.hpp */,
 				F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */,
+				F99881892F487FCE00C8991D /* BatteryChargeStatus.hpp */,
 				F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */,
 				F99881452F40B53300C8991D /* Bezier.hpp */,
 				F95122102CB62E6B00151291 /* Bezier2.hpp */,
@@ -6530,6 +6543,7 @@
 				F9070BDE2B9F175000383E4D /* Error.hpp */,
 				F9070BDF2B9F175000383E4D /* EscapedFormatter.hpp */,
 				F986F8A92BC806A7006A4C0F /* Exif.hpp */,
+				F998818A2F487FCE00C8991D /* ExternalPowerStatus.hpp */,
 				F9070BE02B9F175000383E4D /* FastMath.hpp */,
 				F9070BE12B9F175000383E4D /* FileAction.hpp */,
 				F98606162BEB7651006A4C0F /* FileChange.hpp */,
@@ -6686,6 +6700,7 @@
 				F951221C2CB8227E00151291 /* PolygonFailureType.hpp */,
 				F9DD96262F03C2100026DFA5 /* PolygonGlyph.hpp */,
 				F99881472F40B54A00C8991D /* PolynomialSolver.hpp */,
+				F998818B2F487FCE00C8991D /* PowerStatus.hpp */,
 				F9070C172B9F175000383E4D /* PredefinedNamedParameter.hpp */,
 				F9070C182B9F175000383E4D /* PredefinedYesNo.hpp */,
 				F9AEA4F62E6B3E27003734E7 /* Print.hpp */,
@@ -7309,6 +7324,7 @@
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
 				F9FD0D282D21693100A584CE /* AssetMonitor */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
+				F99881932F48800700C8991D /* BatteryChargeStatus */,
 				F99881402F40B51200C8991D /* Bezier2 */,
 				F99881502F40B57800C8991D /* Bezier2Walker */,
 				F99881432F40B51A00C8991D /* Bezier3 */,
@@ -7369,6 +7385,7 @@
 				F9070D4A2B9F175E00383E4D /* EscapedFormatter */,
 				F986F8AC2BC806BF006A4C0F /* Exif */,
 				F98606262BEBA1B5006A4C0F /* ExtensionFilter */,
+				F99881962F48801900C8991D /* ExternalPowerStatus */,
 				F9070D4C2B9F175E00383E4D /* FileAction */,
 				F9070D4E2B9F175E00383E4D /* FileSystem */,
 				F9070D502B9F175E00383E4D /* FloatFormatter */,
@@ -7565,6 +7582,7 @@
 				F9807D9F2BF6690B00D9B590 /* MessageBox */,
 				F986058D2BDCAF65006A4C0F /* MonitorInfo */,
 				F98111DB2ECC08E300C50DD1 /* NativeShare */,
+				F99881992F4880B900C8991D /* PowerStatus */,
 				F97203202BF09E80000E21DD /* Renderer */,
 				F980C49C2C04B6DB00A86B68 /* Renderer2D */,
 				F986F8432BC7E84D006A4C0F /* Resource */,
@@ -11350,6 +11368,30 @@
 			path = Clipboard;
 			sourceTree = "<group>";
 		};
+		F99881932F48800700C8991D /* BatteryChargeStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F99881922F48800700C8991D /* SivBatteryChargeStatus.cpp */,
+			);
+			path = BatteryChargeStatus;
+			sourceTree = "<group>";
+		};
+		F99881962F48801900C8991D /* ExternalPowerStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F99881952F48801900C8991D /* SivExternalPowerStatus.cpp */,
+			);
+			path = ExternalPowerStatus;
+			sourceTree = "<group>";
+		};
+		F99881992F4880B900C8991D /* PowerStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F99881982F4880B900C8991D /* SivPowerStatus.mm */,
+			);
+			path = PowerStatus;
+			sourceTree = "<group>";
+		};
 		F9AEA5042E6B3E71003734E7 /* Print */ = {
 			isa = PBXGroup;
 			children = (
@@ -12314,6 +12356,9 @@
 				F9070C982B9F175000383E4D /* AsyncTask.hpp in Headers */,
 				F986FA802BCFB53B006A4C0F /* ftgasp.h in Headers */,
 				F9E7942A2C12B861002615BA /* Interpolation.hpp in Headers */,
+				F998818C2F487FCE00C8991D /* PowerStatus.hpp in Headers */,
+				F998818D2F487FCE00C8991D /* BatteryChargeStatus.hpp in Headers */,
+				F998818E2F487FCE00C8991D /* ExternalPowerStatus.hpp in Headers */,
 				F9528BA12BBD6F8800222F45 /* Timer.ipp in Headers */,
 				F986FA632BCFB53B006A4C0F /* ftmmtypes.h in Headers */,
 				F9E5FC2C2BC15AEE0081A4F7 /* HalfFloat.hpp in Headers */,
@@ -14081,6 +14126,7 @@
 				F98601792BCFBB53006A4C0F /* SkCanvas_Raster.cpp in Sources */,
 				F98602362BCFBB54006A4C0F /* SkRasterPipelineBlitter.cpp in Sources */,
 				F986F91B2BC8441F006A4C0F /* regenc.c in Sources */,
+				F998819A2F4880B900C8991D /* SivPowerStatus.mm in Sources */,
 				F9070F042B9F1C8900383E4D /* window.c in Sources */,
 				F98603222BCFBB54006A4C0F /* SkPathOpsDebug.cpp in Sources */,
 				F986016F2BCFBB53006A4C0F /* SkBlitter_Sprite.cpp in Sources */,
@@ -14417,6 +14463,7 @@
 				F986040F2BCFBB54006A4C0F /* SkSLFunctionCall.cpp in Sources */,
 				F943AADD2E2A0A14001B4D43 /* GlyphCacheCommon.cpp in Sources */,
 				F943AADE2E2A0A14001B4D43 /* GlyphCacheManager.cpp in Sources */,
+				F99881942F48800700C8991D /* SivBatteryChargeStatus.cpp in Sources */,
 				F943AADF2E2A0A14001B4D43 /* MSDFGlyphCache.cpp in Sources */,
 				F943AAE02E2A0A14001B4D43 /* BitmapGlyphCache.cpp in Sources */,
 				F9D41CF02C9AB1D500290998 /* SivEllipse.cpp in Sources */,
@@ -14790,6 +14837,7 @@
 				F98604462BCFBB54006A4C0F /* SkSLTypeReference.cpp in Sources */,
 				F980C4722C01B4B600A86B68 /* SivSamplerStateBuilder.cpp in Sources */,
 				F98601FD2BCFBB53006A4C0F /* SkMipmap.cpp in Sources */,
+				F99881972F48801900C8991D /* SivExternalPowerStatus.cpp in Sources */,
 				F98601DC2BCFBB53006A4C0F /* SkLineClipper.cpp in Sources */,
 				F98604042BCFBB54006A4C0F /* SkSLExpression.cpp in Sources */,
 				F98603A22BCFBB54006A4C0F /* SkColorShader.cpp in Sources */,
