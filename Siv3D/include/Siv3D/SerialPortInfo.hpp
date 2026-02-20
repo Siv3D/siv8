@@ -23,7 +23,7 @@ namespace s3d
 		/// @brief シリアルポートの名前（例: "COM3", "/dev/ttyUSB0"）
 		String port;
 
-		/// @brief OSから提供されるデバイスの説明（例: "USB Serial Device (COM3)"）
+		/// @brief OS から提供されるデバイスの説明（例: "USB Serial Device (COM3)"）
 		String description;
 
 		/// @brief ハードウェア ID
