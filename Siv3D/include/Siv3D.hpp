@@ -1075,11 +1075,11 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// シリアルポートの情報 | Serial port information
-//# include <Siv3D/SerialPortInfo.hpp>
-//
-//// シリアル通信 | Serial communication
-//# include <Siv3D/Serial.hpp>
+// シリアルポートの情報 | Serial port information
+# include <Siv3D/SerialPortInfo.hpp>
+
+// シリアル通信 | Serial communication
+# include <Siv3D/Serial.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
