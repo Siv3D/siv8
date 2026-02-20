@@ -16,6 +16,7 @@
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "WindowTitle.hpp"
+# include "DockProgressBar.hpp"
 
 namespace s3d
 {
@@ -76,6 +77,8 @@ namespace s3d
 		Stopwatch m_moveResizeStabilizer;
 		
 		Rect m_storedWindowRect = { 0, 0, 0, 0 };
+		
+		DockProgressBar m_dockProgress;
 
 		void updateState();
 		

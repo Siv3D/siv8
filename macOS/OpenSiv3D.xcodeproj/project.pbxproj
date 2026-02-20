@@ -2501,6 +2501,8 @@
 		F99881812F45AA3200C8991D /* ExitCode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817F2F45AA3200C8991D /* ExitCode.hpp */; };
 		F99881822F45AA3200C8991D /* ExitCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881802F45AA3200C8991D /* ExitCode.cpp */; };
 		F99881842F476E8D00C8991D /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */; };
+		F99881872F4829D000C8991D /* DockProgressBar.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881852F4829D000C8991D /* DockProgressBar.hpp */; };
+		F99881882F4829D000C8991D /* DockProgressBar.mm in Sources */ = {isa = PBXBuildFile; fileRef = F99881862F4829D000C8991D /* DockProgressBar.mm */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5355,6 +5357,8 @@
 		F998817F2F45AA3200C8991D /* ExitCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ExitCode.hpp; sourceTree = "<group>"; };
 		F99881802F45AA3200C8991D /* ExitCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExitCode.cpp; sourceTree = "<group>"; };
 		F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
+		F99881852F4829D000C8991D /* DockProgressBar.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DockProgressBar.hpp; sourceTree = "<group>"; };
+		F99881862F4829D000C8991D /* DockProgressBar.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DockProgressBar.mm; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -7674,6 +7678,8 @@
 		F9070E8A2B9F183100383E4D /* Window */ = {
 			isa = PBXGroup;
 			children = (
+				F99881852F4829D000C8991D /* DockProgressBar.hpp */,
+				F99881862F4829D000C8991D /* DockProgressBar.mm */,
 				F98605892BDBDB37006A4C0F /* WindowMisc.hpp */,
 				F98605882BDBDB37006A4C0F /* WindowMisc.mm */,
 				F9528A862BA018CF00222F45 /* WindowTitle.cpp */,
@@ -12810,6 +12816,7 @@
 				F9528C882BC05B5B00222F45 /* IImageEncoder.hpp in Headers */,
 				F99881682F42F4EE00C8991D /* JitterEndpointSettings.hpp in Headers */,
 				F99881692F42F4EE00C8991D /* JitterSettings.hpp in Headers */,
+				F99881872F4829D000C8991D /* DockProgressBar.hpp in Headers */,
 				F998816A2F42F4EE00C8991D /* JitterEndpointMode.hpp in Headers */,
 				F98600212BCFBB53006A4C0F /* SkM44.h in Headers */,
 				F98601902BCFBB53006A4C0F /* SkConvertPixels.h in Headers */,
@@ -14703,6 +14710,7 @@
 				F98603E32BCFBB54006A4C0F /* SkSLBinaryExpression.cpp in Sources */,
 				F9070E022B9F175E00383E4D /* WindowFactory.cpp in Sources */,
 				F98602012BCFBB53006A4C0F /* SkMipmapBuilder.cpp in Sources */,
+				F99881882F4829D000C8991D /* DockProgressBar.mm in Sources */,
 				F9528C222BBF026F00222F45 /* zstd_compress_literals.c in Sources */,
 				F98603DD2BCFBB54006A4C0F /* SkSLSPIRVCodeGenerator.cpp in Sources */,
 				F9528C992BC1206E00222F45 /* PNGDecoder.cpp in Sources */,
