@@ -69,6 +69,12 @@ namespace s3d
 			
 			/// @brief フロー制御
 			FlowControl flowControl	= FlowControl::NoFlowControl;
+
+			/// @brief 読み込みのタイムアウト時間（ミリ秒）
+			uint32 readTimeoutMillisec = 0;
+
+			/// @brief 書き込みのタイムアウト時間（ミリ秒）
+			uint32 writeTimeoutMillisec = 0;
 		};
 
 		/// @brief デフォルトコンストラクタ
@@ -112,6 +118,14 @@ namespace s3d
 		[[nodiscard]]
 		int32 baudrate() const noexcept;
 
+		/// @brief ボーレートを設定します。
+		/// @param baudrate ボーレート
+		void setBaudrate(int32 baudrate);
+
+		/// @brief 通信設定を変更します。
+		/// @param config 新しい通信設定
+		void setConfig(const Config& config);
+
 		/// @brief シリアルポートの名前を返します。
 		/// @return シリアルポートの名前
 		[[nodiscard]]
@@ -152,6 +166,10 @@ namespace s3d
 		/// @return 読み込みに成功した場合 true, それ以外の場合は false
 		bool read(Concept::TriviallyCopyable auto& to);
 
+		/// @brief 改行文字を受信するまで文字列を読み込みます。
+		/// @return 読み込んだ文字列
+		String readLine();
+
 		/// @brief バイナリデータを書き込みます。
 		/// @param src 書き込むデータの先頭ポインタ
 		/// @param size 書き込むデータのサイズ（バイト）
@@ -173,6 +191,23 @@ namespace s3d
 		/// @param from 書き込むデータ
 		/// @return 書き込みに成功した場合 true, それ以外の場合は false
 		bool write(const Concept::TriviallyCopyable auto& from);
+
+		/// @brief 文字列を書き込みます。
+		/// @param s 書き込む文字列
+		/// @return 書き込みに成功したバイト数
+		size_t write(std::string_view s);
+
+		/// @brief 文字列を書き込みます。
+		/// @param s 書き込む文字列
+		/// @return 書き込みに成功したバイト数
+		size_t write(StringView s);
+
+		/// @brief RS-232 のブレーク信号を送信します。
+		void sendBreak();
+
+		/// @brief RS-232 のブレーク信号の状態を変更します。
+		/// @param level on にする場合 true, off にする場合 false
+		void setBreak(bool level);
 
 		/// @brief RTS ハンドシェイクの状態を変更します。
 		/// @param level on にする場合 true, off にする場合 false
