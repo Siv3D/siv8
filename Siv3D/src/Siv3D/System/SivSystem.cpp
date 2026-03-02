@@ -14,6 +14,7 @@
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include "ExitCode.hpp"
 
 namespace s3d
 {
@@ -36,8 +37,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void Exit() noexcept
+		void Exit(const int32 exitCode) noexcept
 		{
+			SetExitCode(exitCode);
 			SIV3D_ENGINE(UserAction)->reportUserActions(UserAction::SystemExitCalled);
 		}
 

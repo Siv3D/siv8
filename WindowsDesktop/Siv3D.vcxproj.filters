@@ -1180,6 +1180,33 @@
     <Filter Include="src\Siv3D\MultiPolygon">
       <UniqueIdentifier>{f265e751-86ec-4566-8bec-d2085509c8a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Clipboard">
+      <UniqueIdentifier>{a519f804-6778-4198-964f-67999ce901bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard">
+      <UniqueIdentifier>{112c0948-2187-40dd-aba7-a5046296421f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ExternalPowerStatus">
+      <UniqueIdentifier>{105da8b3-eb30-4a76-991c-2b843a4a69bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\BatteryChargeStatus">
+      <UniqueIdentifier>{9da030db-5147-414d-8102-a11269235648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\PowerStatus">
+      <UniqueIdentifier>{03916735-6e88-4387-958a-ecb03295bfb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\SerialPortInfo">
+      <UniqueIdentifier>{fc4643e0-08dd-4a59-9ddd-00cde78db760}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\serial_cpp">
+      <UniqueIdentifier>{869521f5-9980-4fd1-9225-fffd7712c998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\serial_cpp\impl">
+      <UniqueIdentifier>{dfb9e6ef-7491-46ad-a2a1-ddca85da2308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Serial">
+      <UniqueIdentifier>{721c0c9c-db38-49db-8778-05ffda4bd40d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4698,9 +4725,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp">
-      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI\SimpleGUILayer.hpp">
       <Filter>include\Siv3D\SimpleGUI</Filter>
     </ClInclude>
@@ -4838,6 +4862,54 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Jitter.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Clipboard.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Clipboard\IClipboard.hpp">
+      <Filter>src\Siv3D\Clipboard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard\CClipboard.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\System\ExitCode.hpp">
+      <Filter>src\Siv3D\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ExternalPowerStatus.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PowerStatus.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\BatteryChargeStatus.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Serial.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SerialPortInfo.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SerialPortInfo.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\serial_cpp\serial.h">
+      <Filter>src\ThirdParty\serial_cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\serial_cpp\v8stdint.h">
+      <Filter>src\ThirdParty\serial_cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\serial_cpp\impl\win.h">
+      <Filter>src\ThirdParty\serial_cpp\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Serial\SerialDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Serial.ipp">
+      <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -7600,6 +7672,42 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Jitter.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Clipboard\ClipboardFactory.cpp">
+      <Filter>src\Siv3D\Clipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard\CClipboard.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Clipboard\SivClipboard.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Clipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\System\ExitCode.cpp">
+      <Filter>src\Siv3D\System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ExternalPowerStatus\SivExternalPowerStatus.cpp">
+      <Filter>src\Siv3D\ExternalPowerStatus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\BatteryChargeStatus\SivBatteryChargeStatus.cpp">
+      <Filter>src\Siv3D\BatteryChargeStatus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\PowerStatus\SivPowerStatus.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\PowerStatus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\SerialPortInfo\SivSerialPortInfo.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\SerialPortInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\serial_cpp\impl\win.cc">
+      <Filter>src\ThirdParty\serial_cpp\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Serial\SerialDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Serial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Serial\SivSerial.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Serial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\serial_cpp\serial.cc">
+      <Filter>src\ThirdParty\serial_cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

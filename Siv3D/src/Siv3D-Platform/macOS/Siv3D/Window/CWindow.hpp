@@ -16,6 +16,7 @@
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "WindowTitle.hpp"
+# include "DockProgressBar.hpp"
 
 namespace s3d
 {
@@ -63,6 +64,8 @@ namespace s3d
 
 		bool isToggleFullscreenEnabled() const override;
 
+		void setTaskbarProgressBar(double progress0_1) override;
+
 	private:
 
 		GLFWwindow* m_glfwWindow = nullptr;
@@ -74,6 +77,8 @@ namespace s3d
 		Stopwatch m_moveResizeStabilizer;
 		
 		Rect m_storedWindowRect = { 0, 0, 0, 0 };
+		
+		DockProgressBar m_dockProgress;
 
 		void updateState();
 		

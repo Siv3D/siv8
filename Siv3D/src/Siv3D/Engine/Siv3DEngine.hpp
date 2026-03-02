@@ -33,6 +33,7 @@ namespace s3d
 	class ISiv3DCursorStyle;
 	class ISiv3DKeyboard;
 	class ISiv3DMouse;
+	class ISiv3DClipboard;
 	class ISiv3DRenderer;
 	class ISiv3DTexture;
 	class ISiv3DShader;
@@ -70,6 +71,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DCursorStyle>,
 			Siv3DComponent<ISiv3DKeyboard>,
 			Siv3DComponent<ISiv3DMouse>,
+			Siv3DComponent<ISiv3DClipboard>,
 			Siv3DComponent<ISiv3DRenderer>,
 			Siv3DComponent<ISiv3DTexture>,
 			Siv3DComponent<ISiv3DShader>,

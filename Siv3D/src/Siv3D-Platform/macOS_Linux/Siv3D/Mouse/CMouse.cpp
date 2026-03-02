@@ -41,8 +41,11 @@ namespace s3d
 
 		m_window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 
+		m_internalMouseButtonStates.fill(MouseButtonState::Released);
+
 		if (m_window)
 		{
+			::glfwSetMouseButtonCallback(m_window, OnMouseButtonUpdated);
 			::glfwSetScrollCallback(m_window, OnScroll);
 		}
 	}
@@ -57,10 +60,25 @@ namespace s3d
 	{
 		// マウスボタンの状態を更新
 		{
-			for (int i = 0; i < static_cast<int32>(Mouse::NumButtons); ++i)
+			std::lock_guard lock{ m_mouseButtonMutex };
+
+			for (uint32 i = 0; i < Mouse::NumButtons; ++i)
 			{
-				const bool pressed = (::glfwGetMouseButton(m_window, i) == GLFW_PRESS);
+				auto& internalState = m_internalMouseButtonStates[i];
+				const bool pressed = (internalState == MouseButtonState::PressedFirst)
+					|| (internalState == MouseButtonState::Pressed)
+					|| (internalState == MouseButtonState::Tapped);
+
 				m_mouseButton.states[i].update(pressed);
+				
+				if (internalState == MouseButtonState::PressedFirst)
+				{
+					internalState = MouseButtonState::Pressed;
+				}
+				else if (internalState == MouseButtonState::Tapped)
+				{
+					internalState = MouseButtonState::Released;
+				}
 			}
 		}
 
@@ -125,6 +143,52 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	onMouseButtonUpdated
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CMouse::onMouseButtonUpdated(const int32 index, const bool pressed)
+	{
+		std::lock_guard lock{ m_mouseButtonMutex };
+		
+		auto& internalState = m_internalMouseButtonStates[index];
+		
+		if (internalState == MouseButtonState::Released)
+		{
+			if (pressed)
+			{
+				internalState = MouseButtonState::PressedFirst;
+			}
+		}
+		else if (internalState == MouseButtonState::PressedFirst)
+		{
+			if (pressed)
+			{
+				internalState = MouseButtonState::Pressed;
+			}
+			else
+			{
+				internalState = MouseButtonState::Tapped;
+			}
+		}
+		else if (internalState == MouseButtonState::Pressed)
+		{
+			if (not pressed)
+			{
+				internalState = MouseButtonState::Released;
+			}
+		}
+		else // Tapped
+		{
+			if (pressed)
+			{
+				internalState = MouseButtonState::PressedFirst;
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	onScroll
 	//
 	////////////////////////////////////////////////////////////////
@@ -151,6 +215,11 @@ namespace s3d
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
+
+	void CMouse::OnMouseButtonUpdated(GLFWwindow*, const int button, const int action, int)
+	{
+		SIV3D_ENGINE(Mouse)->onMouseButtonUpdated(button, (action == GLFW_PRESS));
+	}
 
 	void CMouse::OnScroll(GLFWwindow*, double xOffset, double yOffset)
 	{

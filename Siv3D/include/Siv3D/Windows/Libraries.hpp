@@ -25,6 +25,7 @@
 	# pragma comment (lib, "dwmapi")
 	# pragma comment (lib, "mincore")
 	# pragma comment (lib, "Secur32")
+	# pragma comment (lib, "setupapi")
 	# pragma comment (lib, "winmm")
 	# pragma comment (lib, "freetype/freetype" SIV3D_DEBUG_LIB_SUFFIX(_d))
 	# pragma comment (lib, "harfbuzz/harfbuzz" SIV3D_DEBUG_LIB_SUFFIX(_d))

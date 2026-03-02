@@ -19,6 +19,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
+# include <Siv3D/System/ExitCode.hpp>
 # include "Siv3DMainHelper.hpp"
 
 //        [THREAD #0]                        [THREAD #1]
@@ -216,5 +217,5 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 
 	WinMainExit();
 
-	return 0;
+	return GetExitCode();
 }

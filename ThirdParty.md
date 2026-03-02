@@ -47,6 +47,7 @@ Name | Version
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
+[serial_cpp](https://github.com/gbionics/serial_cpp) | 
 [simdutf](https://github.com/simdutf/simdutf) | Version 7.7.0
 [skia](https://github.com/google/skia) |
 [stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.17

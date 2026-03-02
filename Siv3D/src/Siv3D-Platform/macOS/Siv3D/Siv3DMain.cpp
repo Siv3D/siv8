@@ -14,6 +14,7 @@
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
+# include <Siv3D/System/ExitCode.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 void Main();
@@ -27,7 +28,7 @@ int main(int argc, char* argv[])
 {
 	using namespace s3d;
 	
-	std::clog << "OpenSiv3D for macOS\n";
+	std::clog << "Siv3D for macOS\n";
 	
 	detail::init::InitCommandLines(argc, argv);
 	
@@ -49,4 +50,6 @@ int main(int argc, char* argv[])
 	Main();
 	
 	LOG_DEBUG("--- Main()");
+	
+	return GetExitCode();
 }

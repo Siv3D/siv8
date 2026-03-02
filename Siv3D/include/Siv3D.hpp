@@ -657,9 +657,6 @@
 // Poisson Disk 2D | Poisson disk 2D
 # include <Siv3D/PoissonDiskSampler2D.hpp>
 
-//// スプライン | Spline
-//# include <Siv3D/Spline.hpp>
-
 // SIMD 演算 | SIMD
 # include <Siv3D/SIMDMath.hpp>
 
@@ -971,9 +968,9 @@
 // システム | System
 # include <Siv3D/System.hpp> // ToDo
 
-//// クリップボード | Clipboard
-//# include <Siv3D/Clipboard.hpp>
-//
+// クリップボード | Clipboard
+# include <Siv3D/Clipboard.hpp>
+
 //// ドライブの種類 | Drive type
 //# include <Siv3D/DriveType.hpp>
 //
@@ -1078,11 +1075,11 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// シリアルポートの情報 | Serial port information
-//# include <Siv3D/SerialPortInfo.hpp>
-//
-//// シリアル通信 | Serial communication
-//# include <Siv3D/Serial.hpp>
+// シリアルポートの情報 | Serial port information
+# include <Siv3D/SerialPortInfo.hpp>
+
+// シリアル通信 | Serial communication
+# include <Siv3D/Serial.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1126,14 +1123,11 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// 電源の接続状態 | AC line status
-//# include <Siv3D/ACLineStatus.hpp>
-//
-//// バッテリーの残量 | Battery status
-//# include <Siv3D/BatteryStatus.hpp>
-//
-//// 電源の状態 | Power status
-//# include <Siv3D/PowerStatus.hpp>
+# include <Siv3D/ExternalPowerStatus.hpp>
+
+# include <Siv3D/BatteryChargeStatus.hpp>
+
+# include <Siv3D/PowerStatus.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

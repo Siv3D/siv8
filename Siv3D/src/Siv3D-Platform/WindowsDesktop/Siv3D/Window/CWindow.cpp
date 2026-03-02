@@ -469,6 +469,31 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	setTaskbarProgressBar
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CWindow::setTaskbarProgressBar(double progress0_1)
+	{
+		if (not m_taskbarList)
+		{
+			return;
+		}
+
+		progress0_1 = Clamp(progress0_1, 0.0, 1.0);
+		
+		if (progress0_1 < 1.0)
+		{
+			m_taskbarList->SetProgressValue(m_hWnd, static_cast<int32>(progress0_1 * 100), 100);
+		}
+		else
+		{
+			m_taskbarList->SetProgressState(m_hWnd, TBPF_NOPROGRESS);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	destroy
 	//
 	////////////////////////////////////////////////////////////////

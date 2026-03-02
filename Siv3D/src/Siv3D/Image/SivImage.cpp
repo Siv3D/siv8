@@ -13,6 +13,7 @@
 # include <Siv3D/Emoji.hpp>
 # include <Siv3D/ImageDecoder.hpp>
 # include <Siv3D/ImageEncoder.hpp>
+# include <Siv3D/ImageFormat/PNGEncoder.hpp>
 # include "ImagePainting.hpp"
 
 namespace s3d
@@ -280,6 +281,16 @@ namespace s3d
 
 
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	encodePNG
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob Image::encodePNG(const PNGFilter filter) const
+	{
+		return PNGEncoder{}.encode(*this, filter);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

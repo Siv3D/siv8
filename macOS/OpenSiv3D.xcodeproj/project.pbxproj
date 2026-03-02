@@ -2492,6 +2492,36 @@
 		F998816C2F42F50100C8991D /* JitterEndpointSettings.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998816B2F42F50100C8991D /* JitterEndpointSettings.ipp */; };
 		F998816E2F42F52C00C8991D /* SivGeometry2D_Jitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998816D2F42F52C00C8991D /* SivGeometry2D_Jitter.cpp */; };
 		F99881702F42F54400C8991D /* Jitter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998816F2F42F54400C8991D /* Jitter.hpp */; };
+		F99881722F45A20600C8991D /* Clipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881712F45A20600C8991D /* Clipboard.hpp */; };
+		F99881772F45A22000C8991D /* ClipboardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881732F45A22000C8991D /* ClipboardFactory.cpp */; };
+		F99881782F45A22000C8991D /* SivClipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881752F45A22000C8991D /* SivClipboard.cpp */; };
+		F99881792F45A22000C8991D /* IClipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881742F45A22000C8991D /* IClipboard.hpp */; };
+		F998817D2F45A23900C8991D /* CClipboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = F998817B2F45A23900C8991D /* CClipboard.mm */; };
+		F998817E2F45A23900C8991D /* CClipboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817A2F45A23900C8991D /* CClipboard.hpp */; };
+		F99881812F45AA3200C8991D /* ExitCode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998817F2F45AA3200C8991D /* ExitCode.hpp */; };
+		F99881822F45AA3200C8991D /* ExitCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881802F45AA3200C8991D /* ExitCode.cpp */; };
+		F99881842F476E8D00C8991D /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */; };
+		F99881872F4829D000C8991D /* DockProgressBar.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881852F4829D000C8991D /* DockProgressBar.hpp */; };
+		F99881882F4829D000C8991D /* DockProgressBar.mm in Sources */ = {isa = PBXBuildFile; fileRef = F99881862F4829D000C8991D /* DockProgressBar.mm */; };
+		F998818C2F487FCE00C8991D /* PowerStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998818B2F487FCE00C8991D /* PowerStatus.hpp */; };
+		F998818D2F487FCE00C8991D /* BatteryChargeStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881892F487FCE00C8991D /* BatteryChargeStatus.hpp */; };
+		F998818E2F487FCE00C8991D /* ExternalPowerStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998818A2F487FCE00C8991D /* ExternalPowerStatus.hpp */; };
+		F99881942F48800700C8991D /* SivBatteryChargeStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881922F48800700C8991D /* SivBatteryChargeStatus.cpp */; };
+		F99881972F48801900C8991D /* SivExternalPowerStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881952F48801900C8991D /* SivExternalPowerStatus.cpp */; };
+		F998819A2F4880B900C8991D /* SivPowerStatus.mm in Sources */ = {isa = PBXBuildFile; fileRef = F99881982F4880B900C8991D /* SivPowerStatus.mm */; };
+		F998819D2F48996200C8991D /* SerialPortInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998819C2F48996200C8991D /* SerialPortInfo.hpp */; };
+		F998819E2F48996200C8991D /* Serial.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998819B2F48996200C8991D /* Serial.hpp */; };
+		F99881A02F48997A00C8991D /* SerialPortInfo.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F998819F2F48997A00C8991D /* SerialPortInfo.ipp */; };
+		F99881A32F48999600C8991D /* SivSerialPortInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881A12F48999600C8991D /* SivSerialPortInfo.cpp */; };
+		F99881A52F5587D800C8991D /* Serial.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F99881A42F5587D800C8991D /* Serial.ipp */; };
+		F99881AA2F5587F800C8991D /* SerialDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881A72F5587F800C8991D /* SerialDetail.cpp */; };
+		F99881AB2F5587F800C8991D /* SivSerial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881A82F5587F800C8991D /* SivSerial.cpp */; };
+		F99881AC2F5587F800C8991D /* SerialDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881A62F5587F800C8991D /* SerialDetail.hpp */; };
+		F99881B62F55882C00C8991D /* serial.h in Headers */ = {isa = PBXBuildFile; fileRef = F99881B22F55882C00C8991D /* serial.h */; };
+		F99881B72F55882C00C8991D /* v8stdint.h in Headers */ = {isa = PBXBuildFile; fileRef = F99881B42F55882C00C8991D /* v8stdint.h */; };
+		F99881B92F55882C00C8991D /* unix.h in Headers */ = {isa = PBXBuildFile; fileRef = F99881AD2F55882C00C8991D /* unix.h */; };
+		F99881BA2F55882C00C8991D /* unix.cc in Sources */ = {isa = PBXBuildFile; fileRef = F99881AE2F55882C00C8991D /* unix.cc */; };
+		F99881BB2F55882C00C8991D /* serial.cc in Sources */ = {isa = PBXBuildFile; fileRef = F99881B32F55882C00C8991D /* serial.cc */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5337,6 +5367,36 @@
 		F998816B2F42F50100C8991D /* JitterEndpointSettings.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JitterEndpointSettings.ipp; sourceTree = "<group>"; };
 		F998816D2F42F52C00C8991D /* SivGeometry2D_Jitter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivGeometry2D_Jitter.cpp; sourceTree = "<group>"; };
 		F998816F2F42F54400C8991D /* Jitter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Jitter.hpp; sourceTree = "<group>"; };
+		F99881712F45A20600C8991D /* Clipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Clipboard.hpp; sourceTree = "<group>"; };
+		F99881732F45A22000C8991D /* ClipboardFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ClipboardFactory.cpp; sourceTree = "<group>"; };
+		F99881742F45A22000C8991D /* IClipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IClipboard.hpp; sourceTree = "<group>"; };
+		F99881752F45A22000C8991D /* SivClipboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivClipboard.cpp; sourceTree = "<group>"; };
+		F998817A2F45A23900C8991D /* CClipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CClipboard.hpp; sourceTree = "<group>"; };
+		F998817B2F45A23900C8991D /* CClipboard.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CClipboard.mm; sourceTree = "<group>"; };
+		F998817F2F45AA3200C8991D /* ExitCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ExitCode.hpp; sourceTree = "<group>"; };
+		F99881802F45AA3200C8991D /* ExitCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExitCode.cpp; sourceTree = "<group>"; };
+		F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
+		F99881852F4829D000C8991D /* DockProgressBar.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DockProgressBar.hpp; sourceTree = "<group>"; };
+		F99881862F4829D000C8991D /* DockProgressBar.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DockProgressBar.mm; sourceTree = "<group>"; };
+		F99881892F487FCE00C8991D /* BatteryChargeStatus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BatteryChargeStatus.hpp; sourceTree = "<group>"; };
+		F998818A2F487FCE00C8991D /* ExternalPowerStatus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ExternalPowerStatus.hpp; sourceTree = "<group>"; };
+		F998818B2F487FCE00C8991D /* PowerStatus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PowerStatus.hpp; sourceTree = "<group>"; };
+		F99881922F48800700C8991D /* SivBatteryChargeStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBatteryChargeStatus.cpp; sourceTree = "<group>"; };
+		F99881952F48801900C8991D /* SivExternalPowerStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivExternalPowerStatus.cpp; sourceTree = "<group>"; };
+		F99881982F4880B900C8991D /* SivPowerStatus.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SivPowerStatus.mm; sourceTree = "<group>"; };
+		F998819B2F48996200C8991D /* Serial.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Serial.hpp; sourceTree = "<group>"; };
+		F998819C2F48996200C8991D /* SerialPortInfo.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SerialPortInfo.hpp; sourceTree = "<group>"; };
+		F998819F2F48997A00C8991D /* SerialPortInfo.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SerialPortInfo.ipp; sourceTree = "<group>"; };
+		F99881A12F48999600C8991D /* SivSerialPortInfo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSerialPortInfo.cpp; sourceTree = "<group>"; };
+		F99881A42F5587D800C8991D /* Serial.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Serial.ipp; sourceTree = "<group>"; };
+		F99881A62F5587F800C8991D /* SerialDetail.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SerialDetail.hpp; sourceTree = "<group>"; };
+		F99881A72F5587F800C8991D /* SerialDetail.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SerialDetail.cpp; sourceTree = "<group>"; };
+		F99881A82F5587F800C8991D /* SivSerial.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSerial.cpp; sourceTree = "<group>"; };
+		F99881AD2F55882C00C8991D /* unix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unix.h; sourceTree = "<group>"; };
+		F99881AE2F55882C00C8991D /* unix.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = unix.cc; sourceTree = "<group>"; };
+		F99881B22F55882C00C8991D /* serial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = serial.h; sourceTree = "<group>"; };
+		F99881B32F55882C00C8991D /* serial.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = serial.cc; sourceTree = "<group>"; };
+		F99881B42F55882C00C8991D /* v8stdint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = v8stdint.h; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -5668,6 +5728,7 @@
 				F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */,
 				F97204312BF0A314000E21DD /* Metal.framework in Frameworks */,
 				F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */,
+				F99881842F476E8D00C8991D /* UniformTypeIdentifiers.framework in Frameworks */,
 				F944BABC2CEAF38D00CC4D42 /* libboost_filesystem.a in Frameworks */,
 				F986FAA22BCFB875006A4C0F /* libfreetype.a in Frameworks */,
 				F986FAA42BCFBB2E006A4C0F /* libharfbuzz.a in Frameworks */,
@@ -5693,6 +5754,7 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */,
 				F9FD0D082D1DABA000A584CE /* libopencv_core.a */,
 				F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */,
 				F97204322BF0A31C000E21DD /* QuartzCore.framework */,
@@ -6156,6 +6218,7 @@
 				F9D41CEC2C9AB1BB00290998 /* rapidhash */,
 				F95122072CB62E4300151291 /* rectpack2D */,
 				F9070A752B9DEB5900383E4D /* RFC1321 */,
+				F99881B52F55882C00C8991D /* serial_cpp */,
 				F9070A782B9DEB5900383E4D /* simdutf */,
 				F986FFE82BCFBB53006A4C0F /* skia */,
 				F9070A7A2B9DEB5900383E4D /* stduuid */,
@@ -6353,6 +6416,8 @@
 				F980C4622C01B22900A86B68 /* SamplerStateBuilder.ipp */,
 				F97203192BF09E51000E21DD /* Scene.ipp */,
 				F9070B9C2B9F175000383E4D /* ScopeExit.ipp */,
+				F99881A42F5587D800C8991D /* Serial.ipp */,
+				F998819F2F48997A00C8991D /* SerialPortInfo.ipp */,
 				F95122242CB8229400151291 /* Shape2D.ipp */,
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
 				F98111BA2EC8C71A00C50DD1 /* SimpleGUI.ipp */,
@@ -6430,6 +6495,7 @@
 				F9070BBF2B9F175000383E4D /* AsyncTask.hpp */,
 				F9528B1F2BAFB66200222F45 /* Base64Value.hpp */,
 				F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */,
+				F99881892F487FCE00C8991D /* BatteryChargeStatus.hpp */,
 				F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */,
 				F99881452F40B53300C8991D /* Bezier.hpp */,
 				F95122102CB62E6B00151291 /* Bezier2.hpp */,
@@ -6458,6 +6524,7 @@
 				F9D41CE62C99730500290998 /* Choice.hpp */,
 				F98605272BD10459006A4C0F /* Circle.hpp */,
 				F9E7943E2C158B8F002615BA /* Circular.hpp */,
+				F99881712F45A20600C8991D /* Clipboard.hpp */,
 				F9070BC72B9F175000383E4D /* Color.hpp */,
 				F9070BC82B9F175000383E4D /* ColorF.hpp */,
 				F9070BC92B9F175000383E4D /* ColorHSV.hpp */,
@@ -6505,6 +6572,7 @@
 				F9070BDE2B9F175000383E4D /* Error.hpp */,
 				F9070BDF2B9F175000383E4D /* EscapedFormatter.hpp */,
 				F986F8A92BC806A7006A4C0F /* Exif.hpp */,
+				F998818A2F487FCE00C8991D /* ExternalPowerStatus.hpp */,
 				F9070BE02B9F175000383E4D /* FastMath.hpp */,
 				F9070BE12B9F175000383E4D /* FileAction.hpp */,
 				F98606162BEB7651006A4C0F /* FileChange.hpp */,
@@ -6661,6 +6729,7 @@
 				F951221C2CB8227E00151291 /* PolygonFailureType.hpp */,
 				F9DD96262F03C2100026DFA5 /* PolygonGlyph.hpp */,
 				F99881472F40B54A00C8991D /* PolynomialSolver.hpp */,
+				F998818B2F487FCE00C8991D /* PowerStatus.hpp */,
 				F9070C172B9F175000383E4D /* PredefinedNamedParameter.hpp */,
 				F9070C182B9F175000383E4D /* PredefinedYesNo.hpp */,
 				F9AEA4F62E6B3E27003734E7 /* Print.hpp */,
@@ -6703,6 +6772,8 @@
 				F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */,
+				F998819B2F48996200C8991D /* Serial.hpp */,
+				F998819C2F48996200C8991D /* SerialPortInfo.hpp */,
 				F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */,
 				F934BD702BF880330003EAD5 /* ShaderStage.hpp */,
 				F951221B2CB8227E00151291 /* Shape2D.hpp */,
@@ -7172,9 +7243,11 @@
 		F9070D872B9F175E00383E4D /* System */ = {
 			isa = PBXGroup;
 			children = (
-				F9070D842B9F175E00383E4D /* ISystem.hpp */,
+				F99881802F45AA3200C8991D /* ExitCode.cpp */,
 				F9070D852B9F175E00383E4D /* SivSystem.cpp */,
 				F9070D862B9F175E00383E4D /* SystemFactory.cpp */,
+				F998817F2F45AA3200C8991D /* ExitCode.hpp */,
+				F9070D842B9F175E00383E4D /* ISystem.hpp */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -7282,6 +7355,7 @@
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
 				F9FD0D282D21693100A584CE /* AssetMonitor */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
+				F99881932F48800700C8991D /* BatteryChargeStatus */,
 				F99881402F40B51200C8991D /* Bezier2 */,
 				F99881502F40B57800C8991D /* Bezier2Walker */,
 				F99881432F40B51A00C8991D /* Bezier3 */,
@@ -7304,6 +7378,7 @@
 				F9766B802C29C7A700DE4107 /* Camera2DControlBuilder */,
 				F944BAAD2CEACF6C00CC4D42 /* ChildProcess */,
 				F9E794252C1203A3002615BA /* Circle */,
+				F99881762F45A22000C8991D /* Clipboard */,
 				F9070D272B9F175E00383E4D /* Color */,
 				F9070D292B9F175E00383E4D /* ColorF */,
 				F986F89A2BC7FB4D006A4C0F /* Colormap */,
@@ -7341,6 +7416,7 @@
 				F9070D4A2B9F175E00383E4D /* EscapedFormatter */,
 				F986F8AC2BC806BF006A4C0F /* Exif */,
 				F98606262BEBA1B5006A4C0F /* ExtensionFilter */,
+				F99881962F48801900C8991D /* ExternalPowerStatus */,
 				F9070D4C2B9F175E00383E4D /* FileAction */,
 				F9070D4E2B9F175E00383E4D /* FileSystem */,
 				F9070D502B9F175E00383E4D /* FloatFormatter */,
@@ -7455,6 +7531,7 @@
 				F9712A2E2C252EFE0049CC26 /* ScopedScissorRect2D */,
 				F9712A352C25501C0049CC26 /* ScopedViewport2D */,
 				F9ED45C32CC2B06D006BA10F /* ScreenCapture */,
+				F99881A92F5587F800C8991D /* Serial */,
 				F934BD802BF880A10003EAD5 /* Shader */,
 				F9AEA5082E6B3E71003734E7 /* ShaderGroup */,
 				F9F00A462CD298E60097C165 /* Shape2D */,
@@ -7526,6 +7603,7 @@
 			children = (
 				F9070E072B9F176B00383E4D /* Siv3DMain.cpp */,
 				F944BAB42CEACFAB00CC4D42 /* ChildProcess */,
+				F998817C2F45A23900C8991D /* Clipboard */,
 				F9E794842C2493FF002615BA /* ConstantBuffer */,
 				F98605812BDA7E32006A4C0F /* Cursor */,
 				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
@@ -7536,9 +7614,11 @@
 				F9807D9F2BF6690B00D9B590 /* MessageBox */,
 				F986058D2BDCAF65006A4C0F /* MonitorInfo */,
 				F98111DB2ECC08E300C50DD1 /* NativeShare */,
+				F99881992F4880B900C8991D /* PowerStatus */,
 				F97203202BF09E80000E21DD /* Renderer */,
 				F980C49C2C04B6DB00A86B68 /* Renderer2D */,
 				F986F8432BC7E84D006A4C0F /* Resource */,
+				F99881A22F48999600C8991D /* SerialPortInfo */,
 				F934BD862BF881110003EAD5 /* Shader */,
 				F9070E8E2B9F183100383E4D /* System */,
 				F90DA06A2D1A934E0003E1E8 /* Texture */,
@@ -7649,6 +7729,8 @@
 		F9070E8A2B9F183100383E4D /* Window */ = {
 			isa = PBXGroup;
 			children = (
+				F99881852F4829D000C8991D /* DockProgressBar.hpp */,
+				F99881862F4829D000C8991D /* DockProgressBar.mm */,
 				F98605892BDBDB37006A4C0F /* WindowMisc.hpp */,
 				F98605882BDBDB37006A4C0F /* WindowMisc.mm */,
 				F9528A862BA018CF00222F45 /* WindowTitle.cpp */,
@@ -11300,6 +11382,87 @@
 			path = Bezier3Walker;
 			sourceTree = "<group>";
 		};
+		F99881762F45A22000C8991D /* Clipboard */ = {
+			isa = PBXGroup;
+			children = (
+				F99881732F45A22000C8991D /* ClipboardFactory.cpp */,
+				F99881742F45A22000C8991D /* IClipboard.hpp */,
+				F99881752F45A22000C8991D /* SivClipboard.cpp */,
+			);
+			path = Clipboard;
+			sourceTree = "<group>";
+		};
+		F998817C2F45A23900C8991D /* Clipboard */ = {
+			isa = PBXGroup;
+			children = (
+				F998817A2F45A23900C8991D /* CClipboard.hpp */,
+				F998817B2F45A23900C8991D /* CClipboard.mm */,
+			);
+			path = Clipboard;
+			sourceTree = "<group>";
+		};
+		F99881932F48800700C8991D /* BatteryChargeStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F99881922F48800700C8991D /* SivBatteryChargeStatus.cpp */,
+			);
+			path = BatteryChargeStatus;
+			sourceTree = "<group>";
+		};
+		F99881962F48801900C8991D /* ExternalPowerStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F99881952F48801900C8991D /* SivExternalPowerStatus.cpp */,
+			);
+			path = ExternalPowerStatus;
+			sourceTree = "<group>";
+		};
+		F99881992F4880B900C8991D /* PowerStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F99881982F4880B900C8991D /* SivPowerStatus.mm */,
+			);
+			path = PowerStatus;
+			sourceTree = "<group>";
+		};
+		F99881A22F48999600C8991D /* SerialPortInfo */ = {
+			isa = PBXGroup;
+			children = (
+				F99881A12F48999600C8991D /* SivSerialPortInfo.cpp */,
+			);
+			path = SerialPortInfo;
+			sourceTree = "<group>";
+		};
+		F99881A92F5587F800C8991D /* Serial */ = {
+			isa = PBXGroup;
+			children = (
+				F99881A62F5587F800C8991D /* SerialDetail.hpp */,
+				F99881A72F5587F800C8991D /* SerialDetail.cpp */,
+				F99881A82F5587F800C8991D /* SivSerial.cpp */,
+			);
+			path = Serial;
+			sourceTree = "<group>";
+		};
+		F99881B12F55882C00C8991D /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				F99881AD2F55882C00C8991D /* unix.h */,
+				F99881AE2F55882C00C8991D /* unix.cc */,
+			);
+			path = impl;
+			sourceTree = "<group>";
+		};
+		F99881B52F55882C00C8991D /* serial_cpp */ = {
+			isa = PBXGroup;
+			children = (
+				F99881B12F55882C00C8991D /* impl */,
+				F99881B22F55882C00C8991D /* serial.h */,
+				F99881B32F55882C00C8991D /* serial.cc */,
+				F99881B42F55882C00C8991D /* v8stdint.h */,
+			);
+			path = serial_cpp;
+			sourceTree = "<group>";
+		};
 		F9AEA5042E6B3E71003734E7 /* Print */ = {
 			isa = PBXGroup;
 			children = (
@@ -12083,6 +12246,8 @@
 				F98604732BCFBB54006A4C0F /* SkSLGLSL.h in Headers */,
 				F9070C412B9F175000383E4D /* Array.ipp in Headers */,
 				F98600A32BCFBB53006A4C0F /* SkSLDebugTrace.h in Headers */,
+				F998819D2F48996200C8991D /* SerialPortInfo.hpp in Headers */,
+				F998819E2F48996200C8991D /* Serial.hpp in Headers */,
 				F98603062BCFBB54006A4C0F /* SkIntersectionHelper.h in Headers */,
 				F9528C2B2BBF026F00222F45 /* zstd_double_fast.h in Headers */,
 				F95121FB2CB62DF400151291 /* RectanglePack.hpp in Headers */,
@@ -12264,6 +12429,9 @@
 				F9070C982B9F175000383E4D /* AsyncTask.hpp in Headers */,
 				F986FA802BCFB53B006A4C0F /* ftgasp.h in Headers */,
 				F9E7942A2C12B861002615BA /* Interpolation.hpp in Headers */,
+				F998818C2F487FCE00C8991D /* PowerStatus.hpp in Headers */,
+				F998818D2F487FCE00C8991D /* BatteryChargeStatus.hpp in Headers */,
+				F998818E2F487FCE00C8991D /* ExternalPowerStatus.hpp in Headers */,
 				F9528BA12BBD6F8800222F45 /* Timer.ipp in Headers */,
 				F986FA632BCFB53B006A4C0F /* ftmmtypes.h in Headers */,
 				F9E5FC2C2BC15AEE0081A4F7 /* HalfFloat.hpp in Headers */,
@@ -12301,6 +12469,9 @@
 				F98602F62BCFBB54006A4C0F /* SkBlitMask_opts.h in Headers */,
 				F98600A02BCFBB53006A4C0F /* SkSLSampleUsage.h in Headers */,
 				F986FA9F2BCFB53B006A4C0F /* tttags.h in Headers */,
+				F99881B62F55882C00C8991D /* serial.h in Headers */,
+				F99881B72F55882C00C8991D /* v8stdint.h in Headers */,
+				F99881B92F55882C00C8991D /* unix.h in Headers */,
 				F98602452BCFBB54006A4C0F /* SkRecorder.h in Headers */,
 				F98600862BCFBB53006A4C0F /* SkTemplates.h in Headers */,
 				F98605302BD10478006A4C0F /* TGAEncoder.hpp in Headers */,
@@ -12515,6 +12686,7 @@
 				F95122572CB8239800151291 /* PolygonDetail.hpp in Headers */,
 				F986FA772BCFB53B006A4C0F /* ftbzip2.h in Headers */,
 				F986043F2BCFBB54006A4C0F /* SkSLSymbol.h in Headers */,
+				F99881A52F5587D800C8991D /* Serial.ipp in Headers */,
 				F98604202BCFBB54006A4C0F /* SkSLLayout.h in Headers */,
 				F9E7944C2C1973FD002615BA /* StringRandom.hpp in Headers */,
 				F9070CBE2B9F175000383E4D /* FmtExtension.hpp in Headers */,
@@ -12624,6 +12796,7 @@
 				F9070B042B9DEB5900383E4D /* miniutf.hpp in Headers */,
 				F9807D8C2BF6677600D9B590 /* MessageBoxResult.hpp in Headers */,
 				F98600282BCFBB53006A4C0F /* SkOverdrawCanvas.h in Headers */,
+				F99881A02F48997A00C8991D /* SerialPortInfo.ipp in Headers */,
 				F9DD96612F13EF860026DFA5 /* ProfilerStat.hpp in Headers */,
 				F951220C2CB62E4300151291 /* insert_and_split.h in Headers */,
 				F98606022BE615C5006A4C0F /* FormatLiteralObject.hpp in Headers */,
@@ -12687,6 +12860,7 @@
 				F98600AC2BCFBB53006A4C0F /* SkNWayCanvas.h in Headers */,
 				F986007C2BCFBB53006A4C0F /* SkMath.h in Headers */,
 				F98601762BCFBB53006A4C0F /* SkBlurMaskFilterImpl.h in Headers */,
+				F99881722F45A20600C8991D /* Clipboard.hpp in Headers */,
 				F9070CEB2B9F175100383E4D /* ParseInt.hpp in Headers */,
 				F98603DC2BCFBB54006A4C0F /* SkSLRasterPipelineCodeGenerator.h in Headers */,
 				F98602002BCFBB53006A4C0F /* SkMipmapAccessor.h in Headers */,
@@ -12765,6 +12939,7 @@
 				F9528C882BC05B5B00222F45 /* IImageEncoder.hpp in Headers */,
 				F99881682F42F4EE00C8991D /* JitterEndpointSettings.hpp in Headers */,
 				F99881692F42F4EE00C8991D /* JitterSettings.hpp in Headers */,
+				F99881872F4829D000C8991D /* DockProgressBar.hpp in Headers */,
 				F998816A2F42F4EE00C8991D /* JitterEndpointMode.hpp in Headers */,
 				F98600212BCFBB53006A4C0F /* SkM44.h in Headers */,
 				F98601902BCFBB53006A4C0F /* SkConvertPixels.h in Headers */,
@@ -12855,6 +13030,7 @@
 				F986FA942BCFB53B006A4C0F /* ftsnames.h in Headers */,
 				F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */,
 				F9D41B882C56057700290998 /* PolkaDot.hpp in Headers */,
+				F99881792F45A22000C8991D /* IClipboard.hpp in Headers */,
 				F98603F52BCFBB54006A4C0F /* SkSLConstructorDiagonalMatrix.h in Headers */,
 				F986003E2BCFBB53006A4C0F /* SkSerialProcs.h in Headers */,
 				F9070EEF2B9F1C8900383E4D /* platform.h in Headers */,
@@ -13110,6 +13286,7 @@
 				F986046A2BCFBB54006A4C0F /* SkSLCompiler.h in Headers */,
 				F98604232BCFBB54006A4C0F /* SkSLMethodReference.h in Headers */,
 				F986016B2BCFBB53006A4C0F /* SkBlitRow.h in Headers */,
+				F998817E2F45A23900C8991D /* CClipboard.hpp in Headers */,
 				F980C42F2C00D2B500A86B68 /* BlendFactor.hpp in Headers */,
 				F9528B292BAFCDB400222F45 /* MemoryMappedFileView.hpp in Headers */,
 				F934BD7D2BF880860003EAD5 /* AssetHandleManager.hpp in Headers */,
@@ -13163,6 +13340,7 @@
 				F998815E2F40B5F200C8991D /* Spline.ipp in Headers */,
 				F986006B2BCFBB53006A4C0F /* SkAlign.h in Headers */,
 				F98601432BCFBB53006A4C0F /* Sk4px.h in Headers */,
+				F99881812F45AA3200C8991D /* ExitCode.hpp in Headers */,
 				F9070CAF2B9F175000383E4D /* DiscreteDistribution.hpp in Headers */,
 				F986FA862BCFB53B006A4C0F /* ftlcdfil.h in Headers */,
 				F98605942BE33124006A4C0F /* ICursorStyle.hpp in Headers */,
@@ -13398,6 +13576,7 @@
 				F986FA4D2BCFB53B006A4C0F /* svmm.h in Headers */,
 				F986FA4A2BCFB53B006A4C0F /* svgxval.h in Headers */,
 				F902E0D22E9E5E5E002C6B92 /* SuperEllipse.ipp in Headers */,
+				F99881AC2F5587F800C8991D /* SerialDetail.hpp in Headers */,
 				F980C48F2C04B41300A86B68 /* FloatRect.hpp in Headers */,
 				F9070C492B9F175000383E4D /* Char.ipp in Headers */,
 				F986031B2BCFBB54006A4C0F /* SkPathOpsCommon.h in Headers */,
@@ -14026,6 +14205,7 @@
 				F98601792BCFBB53006A4C0F /* SkCanvas_Raster.cpp in Sources */,
 				F98602362BCFBB54006A4C0F /* SkRasterPipelineBlitter.cpp in Sources */,
 				F986F91B2BC8441F006A4C0F /* regenc.c in Sources */,
+				F998819A2F4880B900C8991D /* SivPowerStatus.mm in Sources */,
 				F9070F042B9F1C8900383E4D /* window.c in Sources */,
 				F98603222BCFBB54006A4C0F /* SkPathOpsDebug.cpp in Sources */,
 				F986016F2BCFBB53006A4C0F /* SkBlitter_Sprite.cpp in Sources */,
@@ -14136,6 +14316,7 @@
 				F98601842BCFBB53006A4C0F /* SkColor.cpp in Sources */,
 				F9070F332B9F252E00383E4D /* null_monitor.c in Sources */,
 				F9070DE02B9F175E00383E4D /* SivParseErrorReason.cpp in Sources */,
+				F998817D2F45A23900C8991D /* CClipboard.mm in Sources */,
 				F9528C182BBF026F00222F45 /* zstd_common.c in Sources */,
 				F986042B2BCFBB54006A4C0F /* SkSLPostfixExpression.cpp in Sources */,
 				F980C4A22C04C91A00A86B68 /* CursorTransform.cpp in Sources */,
@@ -14210,6 +14391,7 @@
 				F986F9962BCA9D0A006A4C0F /* plutovg-geometry.c in Sources */,
 				F98605112BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp in Sources */,
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
+				F99881A32F48999600C8991D /* SivSerialPortInfo.cpp in Sources */,
 				F986030D2BCFBB54006A4C0F /* SkOpCoincidence.cpp in Sources */,
 				F9B7D9F02D8C7215002ABACE /* TextureUtility.cpp in Sources */,
 				F98602DE2BCFBB54006A4C0F /* SkImage_Base.cpp in Sources */,
@@ -14361,6 +14543,7 @@
 				F986040F2BCFBB54006A4C0F /* SkSLFunctionCall.cpp in Sources */,
 				F943AADD2E2A0A14001B4D43 /* GlyphCacheCommon.cpp in Sources */,
 				F943AADE2E2A0A14001B4D43 /* GlyphCacheManager.cpp in Sources */,
+				F99881942F48800700C8991D /* SivBatteryChargeStatus.cpp in Sources */,
 				F943AADF2E2A0A14001B4D43 /* MSDFGlyphCache.cpp in Sources */,
 				F943AAE02E2A0A14001B4D43 /* BitmapGlyphCache.cpp in Sources */,
 				F9D41CF02C9AB1D500290998 /* SivEllipse.cpp in Sources */,
@@ -14386,6 +14569,8 @@
 				F9DD966E2F13F0000026DFA5 /* Subdivision2D.cpp in Sources */,
 				F98603D92BCFBB54006A4C0F /* SkSLRasterPipelineBuilder.cpp in Sources */,
 				F98604562BCFBB54006A4C0F /* SkSLEliminateDeadGlobalVariables.cpp in Sources */,
+				F99881BA2F55882C00C8991D /* unix.cc in Sources */,
+				F99881BB2F55882C00C8991D /* serial.cc in Sources */,
 				F98601562BCFBB53006A4C0F /* SkBitmapCache.cpp in Sources */,
 				F98111C52EC8C77100C50DD1 /* SivSimpleDismissibleTooltip.cpp in Sources */,
 				F98111C62EC8C77100C50DD1 /* SivSimpleTooltip.cpp in Sources */,
@@ -14528,6 +14713,8 @@
 				F9D41CF62C9FCDE900290998 /* Vertex2DBuilder_Rounded.cpp in Sources */,
 				F9070DB62B9F175E00383E4D /* SivColorF.cpp in Sources */,
 				F98601502BCFBB53006A4C0F /* SkAutoPixmapStorage.cpp in Sources */,
+				F99881772F45A22000C8991D /* ClipboardFactory.cpp in Sources */,
+				F99881782F45A22000C8991D /* SivClipboard.cpp in Sources */,
 				F944BAB02CEACF6C00CC4D42 /* SivChildProcess.cpp in Sources */,
 				F944BAB12CEACF6C00CC4D42 /* SivPipe.cpp in Sources */,
 				F9B7DA142D8C72C0002ABACE /* rgbcx.cpp in Sources */,
@@ -14652,6 +14839,7 @@
 				F98603E32BCFBB54006A4C0F /* SkSLBinaryExpression.cpp in Sources */,
 				F9070E022B9F175E00383E4D /* WindowFactory.cpp in Sources */,
 				F98602012BCFBB53006A4C0F /* SkMipmapBuilder.cpp in Sources */,
+				F99881882F4829D000C8991D /* DockProgressBar.mm in Sources */,
 				F9528C222BBF026F00222F45 /* zstd_compress_literals.c in Sources */,
 				F98603DD2BCFBB54006A4C0F /* SkSLSPIRVCodeGenerator.cpp in Sources */,
 				F9528C992BC1206E00222F45 /* PNGDecoder.cpp in Sources */,
@@ -14699,6 +14887,7 @@
 				F98603C62BCFBB54006A4C0F /* SkSLIsDynamicallyUniformExpression.cpp in Sources */,
 				F95122422CB8232300151291 /* SivGeometry2D_BoundingRect.cpp in Sources */,
 				F98604652BCFBB54006A4C0F /* SkSLAnalysis.cpp in Sources */,
+				F99881822F45AA3200C8991D /* ExitCode.cpp in Sources */,
 				F98604FC2BCFBBA1006A4C0F /* SkFontHost_FreeType.cpp in Sources */,
 				F9F00A472CD298E60097C165 /* Shape2D.cpp in Sources */,
 				F9E7945D2C19743A002615BA /* SivStopwatch.cpp in Sources */,
@@ -14730,6 +14919,7 @@
 				F98604462BCFBB54006A4C0F /* SkSLTypeReference.cpp in Sources */,
 				F980C4722C01B4B600A86B68 /* SivSamplerStateBuilder.cpp in Sources */,
 				F98601FD2BCFBB53006A4C0F /* SkMipmap.cpp in Sources */,
+				F99881972F48801900C8991D /* SivExternalPowerStatus.cpp in Sources */,
 				F98601DC2BCFBB53006A4C0F /* SkLineClipper.cpp in Sources */,
 				F98604042BCFBB54006A4C0F /* SkSLExpression.cpp in Sources */,
 				F98603A22BCFBB54006A4C0F /* SkColorShader.cpp in Sources */,
@@ -14743,6 +14933,8 @@
 				F98604212BCFBB54006A4C0F /* SkSLLiteral.cpp in Sources */,
 				F98600DB2BCFBB53006A4C0F /* SkQuads.cpp in Sources */,
 				F98604382BCFBB54006A4C0F /* SkSLSwitchCase.cpp in Sources */,
+				F99881AA2F5587F800C8991D /* SerialDetail.cpp in Sources */,
+				F99881AB2F5587F800C8991D /* SivSerial.cpp in Sources */,
 				F9070DCE2B9F175E00383E4D /* SivFloatToString.cpp in Sources */,
 				F98605622BD203D4006A4C0F /* muParserError.cpp in Sources */,
 				F98602F32BCFBB54006A4C0F /* SkSurface.cpp in Sources */,
