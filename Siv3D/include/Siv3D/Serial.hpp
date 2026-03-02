@@ -115,6 +115,8 @@ namespace s3d
 
 			/// @brief タイムアウトの設定
 			Timeout timeout = Timeout::Blocking();
+
+			Config();
 		};
 
 		/// @brief デフォルトコンストラクタ

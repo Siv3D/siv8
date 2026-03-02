@@ -13,6 +13,8 @@
 
 namespace s3d
 {
+	inline Serial::Config::Config() = default;
+
 	constexpr Serial::Timeout Serial::Timeout::Blocking()
 	{
 		return{ 0, 0, 0, 0, 0 };

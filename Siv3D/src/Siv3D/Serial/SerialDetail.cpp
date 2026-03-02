@@ -98,6 +98,7 @@ namespace s3d
 		}
 
 		m_baudrate = baudrate;
+		return true;
 	}
 
 	bool Serial::SerialDetail::setConfig(const Config& config)
