@@ -12,6 +12,9 @@
 # pragma once
 # include <memory>
 # include "Common.hpp"
+# include "Array.hpp"
+# include "String.hpp"
+# include "Number.hpp"
 
 namespace s3d
 {
@@ -55,26 +58,63 @@ namespace s3d
 			Hardware		= 2,
 		};
 
+		/// @brief タイムアウトの設定
+		struct Timeout
+		{
+			/// @brief 最初の 1 バイトの受信後に次のバイトが到着するまでの最大経過時間（ミリ秒）。この時間を超えるとタイムアウトになります。
+			/// @remark この値を `Timeout::Max`, 他の read タイムアウトを 0 に設定すると、ノンブロッキングモードになります。
+			uint32 readIntervalTimeoutMillisec = 0;
+
+			/// @brief 読み込み全体の固定タイムアウト追加時間（ミリ秒）
+			uint32 readTotalTimeoutMillisec = 0;
+
+			/// @brief 読み込み 1 バイトあたりのタイムアウト追加乗数（ミリ秒）
+			uint32 readTotalTimeoutMultiplier = 0;
+
+			/// @brief 書き込み全体の固定タイムアウト追加時間（ミリ秒）
+			uint32 writeTotalTimeoutMillisec = 0;
+
+			/// @brief 書き込み 1 バイトあたりのタイムアウト追加乗数（ミリ秒）
+			uint32 writeTotalTimeoutMultiplier = 0;
+
+			/// @brief タイムアウトの最大値
+			static constexpr uint32 Max = Largest<uint32>;
+
+			/// @brief ブロッキングモードのタイムアウト設定を返します。
+			/// @return ブロッキングモードのタイムアウト設定
+			[[nodiscard]]
+			static constexpr Timeout Blocking();
+
+			/// @brief 読み込みをノンブロッキングモードにするタイムアウト設定を返します。
+			/// @return 読み込みをノンブロッキングモードにするタイムアウト設定
+			[[nodiscard]]
+			static constexpr Timeout NonBlocking();
+
+			/// @brief 固定タイムアウトの設定を返します。
+			/// @param timeout タイムアウト時間（ミリ秒）
+			/// @return 固定タイムアウトの設定
+			/// @remark 要求したバイト数が揃うまで、最大 `timeout` ミリ秒待ちます。
+			[[nodiscard]]
+			static constexpr Timeout Fixed(uint32 timeout);
+		};
+
 		/// @brief シリアル通信の設定
 		struct Config
 		{
 			/// @brief データビット長
-			DataBits dataBits		= DataBits::Eight;
-			
+			DataBits dataBits = DataBits::Eight;
+
 			/// @brief パリティ
-			Parity parity			= Parity::NoParity;
-			
+			Parity parity = Parity::NoParity;
+
 			/// @brief ストップビット
-			StopBits stopBits		= StopBits::One;
-			
+			StopBits stopBits = StopBits::One;
+
 			/// @brief フロー制御
-			FlowControl flowControl	= FlowControl::NoFlowControl;
+			FlowControl flowControl = FlowControl::NoFlowControl;
 
-			/// @brief 読み込みのタイムアウト時間（ミリ秒）
-			uint32 readTimeoutMillisec = 0;
-
-			/// @brief 書き込みのタイムアウト時間（ミリ秒）
-			uint32 writeTimeoutMillisec = 0;
+			/// @brief タイムアウトの設定
+			Timeout timeout = Timeout::Blocking();
 		};
 
 		/// @brief デフォルトコンストラクタ
@@ -85,6 +125,7 @@ namespace s3d
 		/// @param port シリアルポートの名前
 		/// @param baudrate ボーレート
 		/// @param config その他の通信設定
+		/// @remark Arduino IDE のシリアルモニターを開いている場合、接続に失敗することがあります。シリアルモニターを閉じてから再度接続してください。
 		[[nodiscard]]
 		explicit Serial(StringView port, int32 baudrate = 9600, const Config& config = {});
 
@@ -97,6 +138,7 @@ namespace s3d
 		/// @param baudrate ボーレート
 		/// @param config その他の通信設定
 		/// @return 接続に成功した場合 true, それ以外の場合は false
+		/// @remark Arduino IDE のシリアルモニターを開いている場合、接続に失敗することがあります。シリアルモニターを閉じてから再度接続してください。
 		bool open(StringView port, int32 baudrate = 9600, const Config& config = {});
 
 		/// @brief シリアルポートとの接続を切断します。
@@ -120,55 +162,63 @@ namespace s3d
 
 		/// @brief ボーレートを設定します。
 		/// @param baudrate ボーレート
-		void setBaudrate(int32 baudrate);
+		/// @return 設定に成功した場合 true, それ以外の場合は false
+		bool setBaudrate(int32 baudrate);
 
 		/// @brief 通信設定を変更します。
 		/// @param config 新しい通信設定
-		void setConfig(const Config& config);
+		/// @return 設定に成功した場合 true, それ以外の場合は false
+		bool setConfig(const Config& config);
 
 		/// @brief シリアルポートの名前を返します。
 		/// @return シリアルポートの名前
 		[[nodiscard]]
 		const String& port() const noexcept;
 
-		/// @brief 受信済みで読み込み可能なデータのサイズ（バイト）を返します。
-		/// @return 読み込み可能なデータのサイズ（バイト）
+		/// @brief 受信済みのデータ（読み込みバッファ）のサイズ（バイト）を返します。
+		/// @return 受信済みのデータ（読み込みバッファ）のサイズ（バイト）
+		/// @remark この関数は即時に結果を返します。
 		[[nodiscard]]
 		size_t available();
 
-		/// @brief 読み込みバッファを消去します。
+		/// @brief 読み込みバッファの内容を消去します。
 		void clearInput();
 
-		/// @brief 書き込みバッファを消去します。
+		/// @brief 書き込みバッファの内容を消去します。
 		void clearOutput();
 
-		/// @brief 読み込みバッファと書き込みバッファを消去します。
+		/// @brief 読み込みバッファと書き込みバッファの内容を消去します。
 		void clear();
 
-		/// @brief 受信したデータを読み込みます。
+		/// @brief 指定した最大サイズ分だけデータを読み込みます。
 		/// @param dst 読み込み先
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
+		/// @remark `.available() < size` の場合、タイムアウト設定にしたがって動作します。
 		size_t read(void* dst, size_t size);
 
-		/// @brief 受信したデータを読み込みます。
+		/// @brief 受信済みのデータ（読み込みバッファ）をブロッキングせずに読み込みます。
 		/// @return 読み込んだデータ
 		Array<uint8> readBytes();
 
-		/// @brief 受信したデータを読み込みます。
+		/// @brief 受信済みのデータ（読み込みバッファ）をブロッキングせずに読み込みます。
 		/// @param dst 読み込み先
 		/// @return 読み込みに成功した場合 true, それ以外の場合は false
 		bool readBytes(Array<uint8>& dst);
 
-		/// @brief 受信したデータを読み込みます。
+		/// @brief 受信済みのデータ（読み込みバッファ）からブロッキングせずに読み込みます。
 		/// @tparam TriviallyCopyable 読み込む値の型
 		/// @param to 読み込み先
 		/// @return 読み込みに成功した場合 true, それ以外の場合は false
+		/// @remark `.available() < sizeof(to)` の場合、読み込みに失敗します。
 		bool read(Concept::TriviallyCopyable auto& to);
 
-		/// @brief 改行文字を受信するまで文字列を読み込みます。
-		/// @return 読み込んだ文字列
-		String readLine();
+		/// @brief 受信済みのデータ（読み込みバッファ）からブロッキングせずに 1 行分の文字列を読み込みます。
+		/// @param line 読み込み先（上書きされます）
+		/// @return 読み込みに成功した場合 true, それ以外の場合は false
+		/// @remark 受信済みのデータに '\n' が含まれていない場合、読み込みに失敗し、line の内容は消去されます。
+		/// @remark 行末の改行コード '\n' および '\r' は格納されません。
+		bool readLine(String& line);
 
 		/// @brief バイナリデータを書き込みます。
 		/// @param src 書き込むデータの先頭ポインタ
@@ -194,16 +244,13 @@ namespace s3d
 
 		/// @brief 文字列を書き込みます。
 		/// @param s 書き込む文字列
-		/// @return 書き込みに成功したバイト数
-		size_t write(std::string_view s);
+		/// @return 書き込みに成功した場合 true, それ以外の場合は false
+		bool write(StringView s);
 
-		/// @brief 文字列を書き込みます。
+		/// @brief 文字列を書き込み、最後に改行コードを付加します。
 		/// @param s 書き込む文字列
-		/// @return 書き込みに成功したバイト数
-		size_t write(StringView s);
-
-		/// @brief RS-232 のブレーク信号を送信します。
-		void sendBreak();
+		/// @return 書き込みに成功した場合 true, それ以外の場合は false
+		bool writeln(StringView s);
 
 		/// @brief RS-232 のブレーク信号の状態を変更します。
 		/// @param level on にする場合 true, off にする場合 false
@@ -226,22 +273,22 @@ namespace s3d
 		/// @brief CTS の状態を返します。
 		/// @return CTS の状態
 		[[nodiscard]]
-		bool getCTS();
+		bool getCTS() const;
 
 		/// @brief DSR の状態を返します。
 		/// @return DSR の状態
 		[[nodiscard]]
-		bool getDSR();
+		bool getDSR() const;
 
 		/// @brief RI の状態を返します。
 		/// @return RI の状態
 		[[nodiscard]]
-		bool getRI();
+		bool getRI() const;
 
 		/// @brief CD の状態を返します。
 		/// @return CD の状態
 		[[nodiscard]]
-		bool getCD();
+		bool getCD() const;
 
 	private:
 
@@ -250,3 +297,5 @@ namespace s3d
 		std::shared_ptr<SerialDetail> pImpl;
 	};
 }
+
+# include "detail/Serial.ipp"

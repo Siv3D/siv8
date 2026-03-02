@@ -2,42 +2,76 @@
 # include "../Test/Siv3DTest.hpp"
 //SIV3D_SET(EngineOption::D3D11Driver::WARP);
 
+
+
 void Main()
 {
-	//RunTest();
-	Scene::SetBackground(ColorF{ 0.6, 0.8, 0.7 });
-	//Window::SetStyle(WindowStyle::Sizable);
-	//Scene::SetResizeMode(ResizeMode::Keep);
+	String port;
 
-	const Texture texture{ U"example/windmill.png" };
-	const Texture emoji{ U"🔥"_emoji, 200 };
-	const Font font{ 40, Typeface::Bold };
-	font.addFallback(Font{ 40, Typeface::ColorEmoji });
+	for (const auto& info : System::EnumerateSerialPorts())
+	{
+		Print << info.description;
+		Print << info.port;
+		Print << info.hardwareID;
+	}
 
-	Print << U"Hello, Siv3D! 🐥";
+	Serial::Config config;
+	config.timeout = Serial::Timeout::Blocking();
+
+	Serial serial{ U"COM3", 9600, config };
+	Print << serial.isOpen();
 
 	while (System::Update())
 	{
-		const double t = Scene::Time();
+		//ClearPrint();
+		//Print << Profiler::FPS();
+		//Print << serial.available();
+		//if (const auto available = serial.available())
+		//{
+		//	Print << U"Available: " << available;
 
-		Scene::Rect().draw(Pattern::Checker{ ColorF{ 0.2 }, ColorF{ 0.25 }, 40 });
+		//	int32 n = 0;
+		//	if (serial.read(n))
+		//	{
+		//		Print << n;
+		//	}
+		//}
 
-		texture.draw(10, 10);
-		RectF{ 40, 40, 120 }.draw();
-		RectF{ 200, 40, 120 }.draw(Pattern::PolkaDot{ ColorF{ 0.2, 1.0, 0.5 }, ColorF{ 0.2, 0.2, 0.8 }, 18, 0.8, 45_deg, Vec2::All(t) });
-		Circle{ 420, 100, 60 }.draw(Pattern::Grid{ ColorF{ 0.2, 1.0, 0.5 }, ColorF{ 0.2, 0.2, 0.8 }, 20.0, 0.4, (t * 10_deg) });
-		Line{ 40, 220, 360, 200 }.draw(LineStyle::Round, 6, ColorF{ 0.2, 0.2, 0.8 }, ColorF{ 0.2, 1.0, 0.5 });
-		Line{ 40, 260, 360, 240 }.draw(LineStyle::Dashed(t * 3), 6, ColorF{ 0.2, 0.2, 0.8 }, ColorF{0.2, 1.0, 0.5});
-		Line{ 40, 300, 360, 280 }.draw(LineStyle::DashDot(t * 3), 6, ColorF{ 0.2, 0.2, 0.8 }, ColorF{ 0.2, 1.0, 0.5 });
+		if (Key1.down())
+		{
+			serial.writeln(U"One");
+		}
 
-		Circle{ 140, 440, 80 }.drawArc(LineCap::Round, (t * 90_deg), 240_deg, 20, 20, Arg::start(0.2, 0.2, 0.8), Arg::end(0.2, 1.0, 0.5));
-		Circle{ 140, 440, 30 }.draw(Arg::left(0.2, 1.0, 0.5), Arg::right(0.2, 0.2, 0.8));
-		emoji.scaled(1.0 + Periodic::Sine1_1(4s) * 0.2).drawAt(360, 440);
+		if (Key2.down())
+		{
+			serial.writeln(U"Two");
+		}
 
-		font(U"Hello, Siv3D!\nあいうえお🐥").draw(Vec2{ 520, 40 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
-		font(U"Siv3D v0.8").drawBase(Vec2{ 520, 240 }, TextEffect::VerticalGradient{ ColorF{ 0.8, 0.9, 1.0 }, ColorF{ 0.0, 0.8, 0.4 }, 0.5, 0.9 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
-		font(ReadingDirection::TopToBottom, U"縦書き、文章。").draw(Vec2{ 520, 280 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
+		if (Key3.down())
+		{
+			serial.writeln(U"Three");
+		}
 
-		Circle{ Cursor::Pos(), 100 }.draw(ColorF{ 1.0, 0.0, 0.0, 0.5 });
+		for (String line; serial.readLine(line); )
+		{
+			Print << U"[{}] {} ({})"_fmt(Scene::FrameCount(), line, line.size());
+		}
+
+		//if (serial.readLine()
+
+
+
+		//if (const auto available = serial.available())
+		//{
+		//	Print << available;
+
+		//	if (4 <= available)
+		//	{
+		//		int32 t = -1;
+		//		serial.read(&t, 4);
+		//		Print << U"t: " << t;
+		//	}
+		//}
+
 	}
 }

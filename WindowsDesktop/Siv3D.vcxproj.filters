@@ -1198,6 +1198,15 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\SerialPortInfo">
       <UniqueIdentifier>{fc4643e0-08dd-4a59-9ddd-00cde78db760}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\serial_cpp">
+      <UniqueIdentifier>{869521f5-9980-4fd1-9225-fffd7712c998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\serial_cpp\impl">
+      <UniqueIdentifier>{dfb9e6ef-7491-46ad-a2a1-ddca85da2308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Serial">
+      <UniqueIdentifier>{721c0c9c-db38-49db-8778-05ffda4bd40d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -4887,6 +4896,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SerialPortInfo.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\serial_cpp\serial.h">
+      <Filter>src\ThirdParty\serial_cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\serial_cpp\v8stdint.h">
+      <Filter>src\ThirdParty\serial_cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\serial_cpp\impl\win.h">
+      <Filter>src\ThirdParty\serial_cpp\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Serial\SerialDetail.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Serial.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7672,6 +7696,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\SerialPortInfo\SivSerialPortInfo.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\SerialPortInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\serial_cpp\impl\win.cc">
+      <Filter>src\ThirdParty\serial_cpp\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Serial\SerialDetail.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Serial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Serial\SivSerial.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Serial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\serial_cpp\serial.cc">
+      <Filter>src\ThirdParty\serial_cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

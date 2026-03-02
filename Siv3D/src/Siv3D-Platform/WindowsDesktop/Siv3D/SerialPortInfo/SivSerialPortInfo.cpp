@@ -139,8 +139,8 @@ namespace s3d
 					continue;
 				}
 
-				WCHAR portNameBuffer = { 0 };
-				DWORD portNameSize = sizeof(portNameBuffer);
+				WCHAR portNameBuffer[256] = {};
+				DWORD portNameSize = sizeof(portNameBuffer); // バイト数
 				LSTATUS status = ::RegQueryValueExW(hKey, L"PortName", nullptr, nullptr, reinterpret_cast<LPBYTE>(portNameBuffer), &portNameSize);
 				::RegCloseKey(hKey);
 

@@ -116,6 +116,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectanglePack.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Sample.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Serial.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SerialPortInfo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Shape2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SimpleGUI.ipp" />
@@ -840,6 +841,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Scene\SceneUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ScreenCapture\CScreenCapture.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ScreenCapture\IScreenCapture.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Serial\SerialDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Shader\IShader.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\SVG\SVGDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ExitCode.hpp" />
@@ -1152,6 +1154,9 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\insert_and_split.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\rect_structs.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\RFC1321\RFC1321.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\serial_cpp\impl\win.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\serial_cpp\serial.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\serial_cpp\v8stdint.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\modules\skcms\skcms.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\skia\modules\skcms\src\skcms_internals.h" />
@@ -1571,6 +1576,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ScreenCapture\CScreenCapture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ScreenCapture\ScreenCaptureFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ScreenCapture\SivScreenCapture.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Serial\SerialDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Serial\SivSerial.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ShaderGroup\SivShaderGroup.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Shape2D\Shape2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SIMDMath\SivSIMDMath.cpp" />
@@ -1815,6 +1822,8 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-paint.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-rle.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\serial_cpp\impl\win.cc" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\serial_cpp\serial.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp">
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4127; 4310; 4505</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4127; 4310; 4505</DisableSpecificWarnings>
