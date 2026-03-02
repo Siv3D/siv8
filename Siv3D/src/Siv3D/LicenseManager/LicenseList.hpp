@@ -761,6 +761,12 @@ MIT_LICENSE
 },
 
 {
+R"-(serial_cpp)-",
+R"-(Copyright (c) 2012 William Woodall, John Harrison)-",
+MIT_LICENSE
+},
+
+{
 R"-(simdutf)-",
 R"-(Copyright 2021 The simdutf authors)-",
 MIT_LICENSE
