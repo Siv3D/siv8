@@ -97,7 +97,7 @@ namespace s3d
 		/// @tparam Iterator イテレータ
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		[[nodiscard]]
 		MultiPolygon(Iterator first, Iterator last);
 
@@ -134,7 +134,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		MultiPolygon& assign(Iterator first, Iterator last);
 
 		/// @brief リストから配列を作成します。
@@ -532,7 +532,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return 挿入された要素の先頭を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		iterator insert(const_iterator pos, Iterator first, Iterator last);
 
 		/// @brief 指定した位置にリストの要素を挿入します。

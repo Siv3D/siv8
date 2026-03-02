@@ -434,7 +434,7 @@ namespace s3d
 		return m_data.insert(pos, value);
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr Blob::iterator Blob::insert(const_iterator pos, Iterator first, Iterator last)
 	{
 		return m_data.insert(pos, first, last);

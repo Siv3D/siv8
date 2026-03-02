@@ -67,7 +67,7 @@ namespace s3d
 		[[nodiscard]]
 		JSON(JSON::json_base::initializer_list_t init, bool typeDeduction = true, JSONValueType manualType = JSONValueType::Array);
 
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		[[nodiscard]]
 		JSON(Iterator first, Iterator last);
 

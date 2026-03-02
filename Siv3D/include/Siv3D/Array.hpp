@@ -145,7 +145,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @param alloc アロケータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		[[nodiscard]]
 		constexpr Array(Iterator first, Iterator last, const Allocator& alloc = Allocator{});
 
@@ -276,7 +276,7 @@ namespace s3d
 		/// @tparam Iterator イテレータ
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr void assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief リストから配列を作成します。
@@ -693,7 +693,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return 挿入された要素の先頭を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した位置にリストの要素を挿入します。
@@ -966,7 +966,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr Array& append(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 配列の末尾にリストの要素を追加します。
@@ -1216,6 +1216,88 @@ namespace s3d
 		[[nodiscard]]
 		constexpr auto flatten() &&
 			requires ArrayLike<value_type>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい配列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr Array head(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい配列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr Array head(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
+		[[nodiscard]]
+		constexpr std::span<value_type> head_span(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
+		[[nodiscard]]
+		constexpr std::span<const value_type> head_span(size_type n) const& noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
+		constexpr std::span<value_type> head_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		/// @remark 左辺値から呼ばれた場合は元の配列を参照するビューを返します。
+		/// @remark 右辺値から呼ばれた場合は `owning_view` によって配列の所有権ごとビューに移譲されるため、ダングリングを安全に回避します。
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		/// @remark 左辺値から呼ばれた場合は元の配列を参照するビューを返します。
+		/// @remark 右辺値から呼ばれた場合は `owning_view` によって配列の所有権ごとビューに移譲されるため、ダングリングを安全に回避します。
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) const& noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		/// @remark 左辺値から呼ばれた場合は元の配列を参照するビューを返します。
+		/// @remark 右辺値から呼ばれた場合は `owning_view` によって配列の所有権ごとビューに移譲されるため、ダングリングを安全に回避します。
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1554,19 +1636,24 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	reverseView
+		//	reverse_view
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 配列の逆順ビューを返します。
 		/// @return 配列の逆順ビュー
 		[[nodiscard]]
-		constexpr auto reverseView();
+		constexpr auto reverse_view() &;
 
 		/// @brief 配列の逆順ビューを返します。
 		/// @return 配列の逆順ビュー
 		[[nodiscard]]
-		constexpr auto reverseView() const;
+		constexpr auto reverse_view() const &;
+
+		/// @brief 配列の逆順ビューを返します。
+		/// @return 配列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1873,7 +1960,7 @@ namespace s3d
 		/// @return 区分化された境界を指すイテレータ
 		template <class Fty>
 		constexpr auto stable_partition(Fty f) SIV3D_LIFETIMEBOUND
-			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1922,23 +2009,103 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	tail
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 末尾から最大 n 個の要素を含む新しい配列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr Array tail(size_type n) const&;
+
+		/// @brief 末尾から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 末尾から最大 n 個の要素を含む新しい配列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr Array tail(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾から最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
+		[[nodiscard]]
+		constexpr std::span<value_type> tail_span(size_type n) & noexcept;
+
+		/// @brief 末尾から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾から最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
+		[[nodiscard]]
+		constexpr std::span<const value_type> tail_span(size_type n) const& noexcept;
+
+		/// @brief 末尾から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾から最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
+		constexpr std::span<value_type> tail_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		/// @remark 左辺値から呼ばれた場合は元の配列を参照するビューを返します。
+		/// @remark 右辺値から呼ばれた場合は `owning_view` によって配列の所有権ごとビューに移譲されるため、ダングリングを安全に回避します。
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) & noexcept;
+
+		/// @brief 末尾から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		/// @remark 左辺値から呼ばれた場合は元の配列を参照するビューを返します。
+		/// @remark 右辺値から呼ばれた場合は `owning_view` によって配列の所有権ごとビューに移譲されるため、ダングリングを安全に回避します。
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) const& noexcept;
+
+		/// @brief 末尾から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		/// @remark 左辺値から呼ばれた場合は元の配列を参照するビューを返します。
+		/// @remark 右辺値から呼ばれた場合は `owning_view` によって配列の所有権ごとビューに移譲されるため、ダングリングを安全に回避します。
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	take
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 先頭から指定した個数の要素からなる新しい配列を返します。
-		/// @param n 取り出す要素数
-		/// @return 新しい配列
-		/// @remark n が配列の要素数以上の場合、配列全体を返します。
-		/// @remark `Array(begin(), (begin() + Min(n, size())))` と同じです。
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい配列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
 		[[nodiscard]]
 		constexpr Array take(size_type n) const&;
 
-		/// @brief 先頭から指定した個数の要素からなる新しい配列を返します。
-		/// @param n 取り出す要素数
-		/// @return 新しい配列
-		/// @remark n が配列の要素数以上の場合、配列全体を返します。
-		/// @remark `Array(begin(), (begin() + Min(n, size())))` と同じです。
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい配列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
 		[[nodiscard]]
 		constexpr Array take(size_type n) &&;
 

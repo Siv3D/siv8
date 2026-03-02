@@ -253,7 +253,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @param alloc アロケータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		[[nodiscard]]
 		constexpr Array(Iterator first, Iterator last, const Allocator& alloc = Allocator{})
 			: m_container(first, last, alloc) {}
@@ -423,7 +423,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr void assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			m_container.assign(first, last);
@@ -981,7 +981,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return 挿入された要素の先頭を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, first, last);
@@ -1330,7 +1330,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr Array& append(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			m_container.insert(m_container.end(), first, last);
@@ -1643,6 +1643,58 @@ namespace s3d
 			}
 
 			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 先頭から最大 n 個を含む新しい配列
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr Array head(size_type n) const&
+		{
+			return take(n);
+		}
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 先頭から最大 n 個を含む新しい配列
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr Array head(size_type n)&&
+		{
+			return std::move(*this).take(n);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	headView
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
+		/// @param n 参照する要素数
+		/// @return 先頭から最大 n 個を参照する span
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr std::span<value_type> headView(size_type n) & noexcept
+		{
+			return std::span<value_type>{ m_container }.first(Min(n, size()));
+		}
+
+		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
+		/// @param n 参照する要素数
+		/// @return 先頭から最大 n 個を参照する span
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr std::span<const value_type> headView(size_type n) const& noexcept
+		{
+			return std::span<const value_type>{ m_container }.first(Min(n, size()));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2628,6 +2680,62 @@ namespace s3d
 			return std::count(m_container.begin(), m_container.end(), true);
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 末尾から最大 n 個を含む新しい配列
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr Array tail(size_type n) const&
+		{
+			const auto k = Min(n, m_container.size());
+			return Array(m_container.end() - k, m_container.end());
+		}
+
+		/// @brief 末尾から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 末尾から最大 n 個を含む新しい配列
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr Array tail(size_type n)&&
+		{
+			const auto k = Min(n, m_container.size());
+			return Array(std::make_move_iterator(m_container.end() - k), std::make_move_iterator(m_container.end()));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tailView
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から最大 n 個の要素を参照するビューを返します。
+		/// @param n 参照する要素数
+		/// @return 末尾から最大 n 個を参照する span
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr std::span<value_type> tailView(size_type n) & noexcept
+		{
+			const auto k = Min(n, m_container.size());
+			return std::span<value_type>{ m_container }.last(k);
+		}
+
+		/// @brief 末尾から最大 n 個の要素を参照するビューを返します。
+		/// @param n 参照する要素数
+		/// @return 末尾から最大 n 個を参照する span
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr std::span<const value_type> tailView(size_type n) const& noexcept
+		{
+			const auto k = Min(n, m_container.size());
+			return std::span<const value_type>{ m_container }.last(k);
+		}
+		
 		////////////////////////////////////////////////////////////////
 		//
 		//	take

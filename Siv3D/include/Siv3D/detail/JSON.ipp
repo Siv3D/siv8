@@ -30,7 +30,7 @@ namespace s3d
 	JSON::JSON(Type&& value)
 		: m_json(std::forward<Type>(value)) {}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	JSON::JSON(Iterator first, Iterator last)
 		: m_json(first, last) {}
 

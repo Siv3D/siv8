@@ -475,7 +475,7 @@ namespace s3d
 
 		constexpr iterator insert(const_iterator pos, Byte value);
 
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last);
 
 		////////////////////////////////////////////////////////////////

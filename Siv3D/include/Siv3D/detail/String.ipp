@@ -43,7 +43,7 @@ namespace s3d
 	constexpr String::String(const std::initializer_list<value_type> list)
 		: m_string(list) {}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr String::String(Iterator first, Iterator last)
 		: m_string(first, last) {}
 
@@ -170,7 +170,7 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr String& String::assign(Iterator first, Iterator last)
 	{
 		m_string.assign(first, last);
@@ -668,7 +668,7 @@ namespace s3d
 		return m_string.insert(pos, count, ch);
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr String::iterator String::insert(const_iterator pos, Iterator first, Iterator last)
 	{
 		return m_string.insert(pos, first, last);
@@ -861,7 +861,7 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr String& String::append(Iterator first, Iterator last)
 	{
 		m_string.append(first, last);

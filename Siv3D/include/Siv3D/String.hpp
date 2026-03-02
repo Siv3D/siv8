@@ -124,7 +124,7 @@ namespace s3d
 		/// @tparam Iterator イテレータの型
 		/// @param first イテレータの開始位置
 		/// @param last イテレータの終端位置
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		[[nodiscard]]
 		constexpr String(Iterator first, Iterator last);
 
@@ -261,7 +261,7 @@ namespace s3d
 		/// @param first イテレータの開始位置
 		/// @param last イテレータの終端位置
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr String& assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字のリストを文字列に代入します。
@@ -764,7 +764,7 @@ namespace s3d
 		/// @param first 範囲の開始イテレータ
 		/// @param last 範囲の終端イテレータ
 		/// @return 最初に挿入された要素を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した位置に文字のリストを挿入します。
@@ -946,7 +946,7 @@ namespace s3d
 		/// @param first 範囲の開始イテレータ
 		/// @param last 範囲の終端イテレータ
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr String& append(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字のリストを末尾に追加します。

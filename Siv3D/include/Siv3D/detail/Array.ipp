@@ -58,7 +58,7 @@ namespace s3d
 		: m_container(count, alloc) {}
 
 	template <class Type, class Allocator>
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr Array<Type, Allocator>::Array(Iterator first, Iterator last, const Allocator& alloc)
 		: m_container(first, last, alloc) {}
 
@@ -167,7 +167,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr void Array<Type, Allocator>::assign(Iterator first, Iterator last)
 	{
 		m_container.assign(first, last);
@@ -623,7 +623,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, Iterator first, Iterator last)
 	{
 		return m_container.insert(pos, first, last);
@@ -918,13 +918,12 @@ namespace s3d
 	{
 		if (std::addressof(other) == this)
 		{
-			return append(Array{ other });
+			Array tmp(other);
+			return append(tmp);
 		}
-		else
-		{
-			m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
-			return *this;
-		}
+
+		m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
+		return *this;
 	}
 
 	template <class Type, class Allocator>
@@ -932,17 +931,16 @@ namespace s3d
 	{
 		if (std::addressof(other) == this)
 		{
-			return append(Array{ other });
+			Array tmp(other);
+			return append(tmp);
 		}
-		else
-		{
-			m_container.insert(m_container.end(), std::make_move_iterator(other.m_container.begin()), std::make_move_iterator(other.m_container.end()));
-			return *this;
-		}
+
+		m_container.insert(m_container.end(), std::make_move_iterator(other.m_container.begin()), std::make_move_iterator(other.m_container.end()));
+		return *this;
 	}
 
 	template <class Type, class Allocator>
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(Iterator first, Iterator last)
 	{
 		m_container.insert(m_container.end(), first, last);
@@ -1216,6 +1214,71 @@ namespace s3d
 		}
 
 		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::head(const size_type n) const&
+	{
+		const auto k = Min(n, m_container.size());
+		return Array(m_container.begin(), m_container.begin() + k);
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::head(const size_type n) &&
+	{
+		const auto k = Min(n, m_container.size());
+		m_container.resize(k);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head_span
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr std::span<typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::head_span(const size_type n) & noexcept
+	{
+		const auto k = Min(n, size());
+		return std::span<value_type>{ m_container }.first(k);
+	}
+
+	template <class Type, class Allocator>
+	constexpr std::span<const typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::head_span(const size_type n) const& noexcept
+	{
+		const auto k = Min(n, size());
+		return std::span<const value_type>{ m_container }.first(k);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::head_view(const size_type n) & noexcept
+	{
+		return std::views::take(m_container, n);
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::head_view(const size_type n) const & noexcept
+	{
+		return std::views::take(m_container, n);
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::head_view(const size_type n) && noexcept
+	{
+		return std::views::take(std::move(*this), n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1562,7 +1625,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::replace_if(Fty f, const value_type& newValue)&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		std::replace_if(m_container.begin(), m_container.end(), f, newValue);
+		std::replace_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)), newValue);
 		return *this;
 	}
 
@@ -1625,7 +1688,8 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::reversed()&&
 	{
-		return std::move(reverse());
+		std::reverse(m_container.begin(), m_container.end());
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1652,20 +1716,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	reverseView
+	//	reverse_view
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr auto Array<Type, Allocator>::reverseView()
+	constexpr auto Array<Type, Allocator>::reverse_view() &
 	{
 		return std::views::reverse(m_container);
 	}
 
 	template <class Type, class Allocator>
-	constexpr auto Array<Type, Allocator>::reverseView() const
+	constexpr auto Array<Type, Allocator>::reverse_view() const &
 	{
 		return std::views::reverse(m_container);
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::reverse_view() &&
+	{
+		return std::views::reverse(std::move(*this));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1905,7 +1975,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	template <class Fty>
 	constexpr auto Array<Type, Allocator>::stable_partition(Fty f)
-		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return std::stable_partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
 	}
@@ -2040,6 +2110,73 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	tail
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::tail(const size_type n) const&
+	{
+		const auto k = Min(n, size());
+		return Array((m_container.end() - k), m_container.end());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::tail(const size_type n) &&
+	{
+		const auto k = Min(n, size());
+		m_container.erase(m_container.begin(), (m_container.end() - k));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail_span
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr std::span<typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::tail_span(const size_type n) & noexcept
+	{
+		const auto k = Min(n, size());
+		return std::span<value_type>{ m_container }.last(k);
+	}
+
+	template <class Type, class Allocator>
+	constexpr std::span<const typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::tail_span(const size_type n) const& noexcept
+	{
+		const auto k = Min(n, size());
+		return std::span<const value_type>{ m_container }.last(k);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::tail_view(const size_type n) & noexcept
+	{
+		const auto dropCount = (n < size()) ? (size() - n) : 0;
+		return std::views::drop(m_container, dropCount);
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::tail_view(const size_type n) const& noexcept
+	{
+		const auto dropCount = (n < size()) ? (size() - n) : 0;
+		return std::views::drop(m_container, dropCount);
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Array<Type, Allocator>::tail_view(const size_type n) && noexcept
+	{
+		const auto dropCount = (n < size()) ? (size() - n) : 0;
+		return std::views::drop(std::move(*this), dropCount);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	take
 	//
 	////////////////////////////////////////////////////////////////
@@ -2047,13 +2184,16 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::take(const size_type n) const&
 	{
-		return Array(m_container.begin(), (m_container.begin() + Min(n, m_container.size())));
+		const auto k = Min(n, m_container.size());
+		return Array(m_container.begin(), m_container.begin() + k);
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::take(const size_type n)&&
 	{
-		return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(m_container.begin() + Min(n, m_container.size())));
+		const auto k = Min(n, m_container.size());
+		m_container.resize(k);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
