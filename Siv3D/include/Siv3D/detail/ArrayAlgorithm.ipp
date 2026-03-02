@@ -52,13 +52,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_unique() & noexcept
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_unique() &
 	{
 		return (*this = stable_uniqued());
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_unique() && noexcept
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_unique() &&
 	{
 		return stable_uniqued();
 	}
@@ -82,14 +82,14 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::unique_consecutive() & noexcept
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::unique_consecutive() &
 	{
 		m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::unique_consecutive() && noexcept
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::unique_consecutive() &&
 	{
 		return std::move(unique_consecutive());
 	}

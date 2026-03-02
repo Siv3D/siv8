@@ -54,7 +54,8 @@ namespace s3d
 		constexpr Point3D(Concept::Integral auto _x, Concept::Integral auto _y, Concept::Integral auto _z) noexcept;
 
 		template <class X, class Y, class Z>
-		constexpr Point3D(X _x, Y _y, Z _z) noexcept requires((not Concept::Integral<X>) || (not Concept::Integral<Y>) || (not Concept::Integral<Z>)) = delete;
+		constexpr Point3D(X _x, Y _y, Z _z) noexcept
+			requires((not Concept::Integral<X>) || (not Concept::Integral<Y>) || (not Concept::Integral<Z>)) = delete;
 
 
 

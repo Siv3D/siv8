@@ -58,7 +58,8 @@ namespace s3d
 	/// @param s パースする文字列 | String to parse
 	/// @param defaultValue パースに失敗した場合に返す値 | Value to return if parsing fails
 	/// @return パースによって得られた値。パースに失敗した場合は defaultValue | The value obtained by parsing, or defaultValue if parsing fails
-	template <class Type, class U> requires std::is_convertible_v<U, Type>
+	template <class Type, class U>
+		requires std::is_convertible_v<U, Type>
 	[[nodiscard]]
 	Type ParseOr(std::string_view s, U&& defaultValue);
 
@@ -68,7 +69,8 @@ namespace s3d
 	/// @param s パースする文字列 | String to parse
 	/// @param defaultValue パースに失敗した場合に返す値 | Value to return if parsing fails
 	/// @return パースによって得られた値。パースに失敗した場合は defaultValue | The value obtained by parsing, or defaultValue if parsing fails
-	template <class Type, class U> requires std::is_convertible_v<U, Type>
+	template <class Type, class U>
+		requires std::is_convertible_v<U, Type>
 	[[nodiscard]]
 	Type ParseOr(StringView s, U&& defaultValue);
 

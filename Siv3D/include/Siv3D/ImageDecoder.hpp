@@ -88,7 +88,8 @@ namespace s3d
 		/// @brief 画像デコーダを登録します。
 		/// @tparam ImageDecoder 画像デコーダの型
 		/// @return 登録に成功した場合 true, それ以外の場合は false
-		template <class ImageDecoder> requires std::derived_from<ImageDecoder, IImageDecoder>
+		template <class ImageDecoder>
+			requires std::derived_from<ImageDecoder, IImageDecoder>
 		bool Add();
 
 		/// @brief 画像デコーダを登録します。

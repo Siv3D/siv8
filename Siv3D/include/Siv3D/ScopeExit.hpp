@@ -46,7 +46,8 @@ namespace s3d
 		ScopeExit& operator =(const ScopeExit&) = delete;
 
 		[[nodiscard]]
-		constexpr ScopeExit(ScopeExit&& other) noexcept(std::is_nothrow_copy_constructible_v<ExitFunction>);
+		constexpr ScopeExit(ScopeExit&& other)
+			noexcept(std::is_nothrow_copy_constructible_v<ExitFunction>);
 
 		[[nodiscard]]
 		constexpr ScopeExit(ScopeExit&& other) noexcept
@@ -54,7 +55,8 @@ namespace s3d
 
 		template <class Fty>
 		[[nodiscard]]
-		constexpr ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>)
+		constexpr ScopeExit(Fty&& exitFunction)
+			noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>)
 			requires detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit>;
 
 		template <class Fty>
@@ -62,7 +64,8 @@ namespace s3d
 		constexpr ScopeExit(Fty&& exitFunction) noexcept
 			requires (detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit> && (not std::is_lvalue_reference_v<Fty>) && std::is_nothrow_constructible_v<ExitFunction, Fty>);
 
-		constexpr ~ScopeExit() noexcept(std::is_nothrow_invocable_v<ExitFunction&>
+		constexpr ~ScopeExit()
+			noexcept(std::is_nothrow_invocable_v<ExitFunction&>
 			&& std::is_nothrow_destructible_v<ExitFunction>);
 
 		/// @brief ScopeExit を非アクティブにします。 | Deactivates the ScopeExit.

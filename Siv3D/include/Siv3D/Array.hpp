@@ -324,20 +324,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	operator container_type
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief std::vector への暗黙の変換を行います。
-		[[nodiscard]]
-		constexpr operator container_type() const& noexcept;
-
-		/// @brief std::vector への暗黙の変換を行います。
-		[[nodiscard]]
-		constexpr operator container_type() && noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	at
 		//
 		////////////////////////////////////////////////////////////////
@@ -382,7 +368,8 @@ namespace s3d
 		/// @param index 要素へのインデックス
 		/// @return 要素
 		[[nodiscard]]
-		constexpr value_type operator [](size_type index) && noexcept;
+		constexpr value_type operator [](size_type index) &&
+			noexcept(std::is_nothrow_move_constructible_v<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -403,7 +390,8 @@ namespace s3d
 		/// @brief 先頭の要素を返します。
 		/// @return 先頭の要素
 		[[nodiscard]]
-		constexpr value_type front() && noexcept;
+		constexpr value_type front() &&
+			noexcept(std::is_nothrow_move_constructible_v<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -424,7 +412,8 @@ namespace s3d
 		/// @brief 末尾の要素を返します。
 		/// @return 末尾の要素
 		[[nodiscard]]
-		constexpr value_type back() && noexcept;
+		constexpr value_type back() &&
+			noexcept(std::is_nothrow_move_constructible_v<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -610,7 +599,8 @@ namespace s3d
 		/// @brief 配列の要素の合計サイズ（バイト）を返します。
 		/// @return 配列の要素の合計サイズ（バイト）
 		[[nodiscard]]
-		constexpr size_t size_bytes() const noexcept requires (Concept::TriviallyCopyable<value_type>);
+		constexpr size_t size_bytes() const noexcept
+			requires (Concept::TriviallyCopyable<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -937,7 +927,8 @@ namespace s3d
 		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool all(Fty f = Identity) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -951,7 +942,8 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool any(Fty f = Identity) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1067,7 +1059,8 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool contains_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1093,7 +1086,8 @@ namespace s3d
 		/// @return 条件を満たす要素の個数
 		template <class Fty>
 		[[nodiscard]]
-		constexpr isize count_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr isize count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1106,14 +1100,16 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) requires std::invocable<Fty&, value_type&>;
+		constexpr void each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
 
 		/// @brief すべての要素を順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr void each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1126,14 +1122,16 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) requires std::invocable<Fty&, size_t, value_type&>;
+		constexpr void each_index(Fty f)
+			requires std::invocable<Fty&, size_t, value_type&>;
 
 		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) const requires std::invocable<Fty&, size_t, const value_type&>;
+		constexpr void each_index(Fty f) const
+			requires std::invocable<Fty&, size_t, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1146,14 +1144,16 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto& x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) requires std::invocable<Fty&, isize, value_type&>;
+		constexpr void each_sindex(Fty f)
+			requires std::invocable<Fty&, isize, value_type&>;
 
 		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) const requires std::invocable<Fty&, isize, const value_type&>;
+		constexpr void each_sindex(Fty f) const
+			requires std::invocable<Fty&, isize, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1168,7 +1168,9 @@ namespace s3d
 		/// @return 指定したインデックスにある要素。範囲外の場合は defaultValue
 		template <class U>
 		[[nodiscard]]
-		constexpr value_type fetch(size_type index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>;
+		constexpr value_type fetch(size_type index, U&& defaultValue) const
+			noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
+			requires std::constructible_from<value_type, U>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1194,7 +1196,8 @@ namespace s3d
 		/// @return 指定した条件を満たす要素を集めた新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array filter(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr Array filter(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1205,12 +1208,14 @@ namespace s3d
 		/// @brief 配列の要素が配列である場合、すべての要素を 1 つの配列にまとめます。
 		/// @return 配列の要素が配列である場合、すべての要素を 1 つの配列にまとめた配列
 		[[nodiscard]]
-		constexpr auto flatten() const& requires ArrayLike<value_type>;
+		constexpr auto flatten() const&
+			requires ArrayLike<value_type>;
 
 		/// @brief 配列の要素が配列である場合、すべての要素を 1 つの配列にまとめます。
 		/// @return 配列の要素が配列である場合、すべての要素を 1 つの配列にまとめた配列
 		[[nodiscard]]
-		constexpr auto flatten() && requires ArrayLike<value_type>;
+		constexpr auto flatten() &&
+			requires ArrayLike<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1221,6 +1226,7 @@ namespace s3d
 		/// @brief 要素を指定したグループ数に分割します。
 		/// @param group グループ数
 		/// @remark { 0, 1, 2, 3, 4, 5, 6 } を 3 グループに分割すると { { 0, 1, 2 }, { 3, 4 }, { 5, 6 }} になります。
+		/// @remark group が要素数より大きい場合、空のグループは作られず、返されるグループ数は要素数になります。
 		/// @return 分割したグループ
 		[[nodiscard]]
 		constexpr Array<Array<value_type>> in_groups(size_type group) const;
@@ -1246,7 +1252,8 @@ namespace s3d
 		/// @brief 配列の要素が昇順にソートされているかを返します。
 		/// @return 配列の要素が昇順にソートされている場合 true, それ以外の場合は false
 		[[nodiscard]]
-		constexpr bool isSorted() const requires Concept::LessThanComparable<value_type>;
+		constexpr bool isSorted() const
+			requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1274,7 +1281,8 @@ namespace s3d
 		/// @return 各要素に関数を適用した戻り値からなる新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr auto map(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr auto map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1288,7 +1296,8 @@ namespace s3d
 		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool none(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool none(Fty f = Identity) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1301,7 +1310,8 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return 区分化された境界を指すイテレータ
 		template <class Fty>
-		constexpr auto partition(Fty f) SIV3D_LIFETIMEBOUND requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr auto partition(Fty f) SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1387,7 +1397,8 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& remove_if(Fty f) & SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&> ;
+		constexpr Array& remove_if(Fty f) & SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&> ;
 
 		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1395,7 +1406,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array remove_if(Fty f) && requires std::predicate<Fty&, const value_type&>;
+		constexpr Array remove_if(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1403,7 +1415,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array removed_if(Fty f) const& requires std::predicate<Fty&, const value_type&>;
+		constexpr Array removed_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1411,7 +1424,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array removed_if(Fty f) && requires std::predicate<Fty&, const value_type&>;
+		constexpr Array removed_if(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1458,7 +1472,8 @@ namespace s3d
 		/// @param newValue 新しい値
 		/// @return *this
 		template <class Fty>
-		constexpr Array& replace_if(Fty f, const value_type& newValue) & SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>;
+		constexpr Array& replace_if(Fty f, const value_type& newValue) & SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>;
 		
 		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1467,7 +1482,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array replace_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>;
+		constexpr Array replace_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1476,7 +1492,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty&, const value_type&>;
+		constexpr Array replaced_if(Fty f, const value_type& newValue) const&
+			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1485,7 +1502,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array replaced_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>;
+		constexpr Array replaced_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1523,14 +1541,16 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void reverse_each(Fty f) requires std::invocable<Fty&, value_type&>;
+		constexpr void reverse_each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
 
 		/// @brief 末尾から順番に、すべての要素に対して関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1540,10 +1560,12 @@ namespace s3d
 
 		/// @brief 配列の逆順ビューを返します。
 		/// @return 配列の逆順ビュー
+		[[nodiscard]]
 		constexpr auto reverseView();
 
 		/// @brief 配列の逆順ビューを返します。
 		/// @return 配列の逆順ビュー
+		[[nodiscard]]
 		constexpr auto reverseView() const;
 
 		////////////////////////////////////////////////////////////////
@@ -1583,22 +1605,26 @@ namespace s3d
 
 		/// @brief 要素を降順に並び替えます。
 		/// @return *this
-		constexpr Array& rsort() & SIV3D_LIFETIMEBOUND requires Concept::LessThanComparable<value_type>;
+		constexpr Array& rsort() & SIV3D_LIFETIMEBOUND
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を降順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array rsort() && requires Concept::LessThanComparable<value_type>;
+		constexpr Array rsort() &&
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を降順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array rsorted() const& requires Concept::LessThanComparable<value_type>;
+		constexpr Array rsorted() const&
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を降順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array rsorted() && requires Concept::LessThanComparable<value_type>;
+		constexpr Array rsorted() &&
+			requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1678,22 +1704,26 @@ namespace s3d
 
 		/// @brief 要素を昇順に並び替えます。
 		/// @return *this
-		constexpr Array& sort() & SIV3D_LIFETIMEBOUND requires Concept::LessThanComparable<value_type>;
+		constexpr Array& sort() & SIV3D_LIFETIMEBOUND
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sort() && requires Concept::LessThanComparable<value_type>;
+		constexpr Array sort() &&
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sorted() const& requires Concept::LessThanComparable<value_type>;
+		constexpr Array sorted() const&
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sorted() && requires Concept::LessThanComparable<value_type>;
+		constexpr Array sorted() &&
+			requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1731,7 +1761,8 @@ namespace s3d
 		/// @param f 比較に使用する関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& sort_by(Fty f)& SIV3D_LIFETIMEBOUND requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr Array& sort_by(Fty f)& SIV3D_LIFETIMEBOUND
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1739,7 +1770,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array sort_by(Fty f) && requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr Array sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1747,7 +1779,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array sorted_by(Fty f) const& requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr Array sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1755,7 +1788,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array sorted_by(Fty f) && requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr Array sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1765,22 +1799,26 @@ namespace s3d
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えます。
 		/// @return *this
-		constexpr Array& stable_sort() & SIV3D_LIFETIMEBOUND requires Concept::LessThanComparable<value_type>;
+		constexpr Array& stable_sort() & SIV3D_LIFETIMEBOUND
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array stable_sort() && requires Concept::LessThanComparable<value_type>;
+		constexpr Array stable_sort() &&
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array stable_sorted() const& requires Concept::LessThanComparable<value_type>;
+		constexpr Array stable_sorted() const&
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array stable_sorted() && requires Concept::LessThanComparable<value_type>;
+		constexpr Array stable_sorted() &&
+			requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1793,7 +1831,8 @@ namespace s3d
 		/// @param f 比較に使用する関数
 		/// @return *this
 		template <class Fty>
-		constexpr Array& stable_sort_by(Fty f) & SIV3D_LIFETIMEBOUND requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr Array& stable_sort_by(Fty f) & SIV3D_LIFETIMEBOUND
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1801,7 +1840,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array stable_sort_by(Fty f) && requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr Array stable_sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1809,7 +1849,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array stable_sorted_by(Fty f) const& requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr Array stable_sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
 		/// @tparam Fty 比較に使用する関数の型
@@ -1817,7 +1858,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array stable_sorted_by(Fty f) && requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr Array stable_sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1830,7 +1872,8 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return 区分化された境界を指すイテレータ
 		template <class Fty>
-		constexpr auto stable_partition(Fty f) SIV3D_LIFETIMEBOUND requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+		constexpr auto stable_partition(Fty f) SIV3D_LIFETIMEBOUND
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1840,12 +1883,12 @@ namespace s3d
 
 		/// @brief 要素をソートせずに、重複する要素を削除します。
 		/// @return *this
-		constexpr Array& stable_unique() & noexcept SIV3D_LIFETIMEBOUND;
+		constexpr Array& stable_unique() & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 要素をソートせずに、重複する要素を削除した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array stable_unique() && noexcept;
+		constexpr Array stable_unique() &&;
 
 		/// @brief 要素をソートせずに、重複する要素を削除した新しい配列を返します。
 		/// @return 新しい配列
@@ -1861,7 +1904,8 @@ namespace s3d
 		/// @brief 要素を `+` 演算子を用いて合計します。
 		/// @return 合計値
 		[[nodiscard]]
-		constexpr auto sum() const requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>);
+		constexpr auto sum() const
+			requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1873,7 +1917,8 @@ namespace s3d
 		/// @remark `sum()` よりも浮動小数点数誤差が小さくなります。
 		/// @return 合計値
 		[[nodiscard]]
-		constexpr auto sumF() const requires Concept::FloatingPoint<value_type>;
+		constexpr auto sumF() const
+			requires Concept::FloatingPoint<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1909,7 +1954,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array take_while(Fty f) const& requires std::predicate<Fty&, const value_type&>;
+		constexpr Array take_while(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい配列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -1917,7 +1963,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array take_while(Fty f) && requires std::predicate<Fty&, const value_type&>;
+		constexpr Array take_while(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1927,12 +1974,12 @@ namespace s3d
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去します。
 		/// @return *this
-		constexpr Array& unique_consecutive() & noexcept SIV3D_LIFETIMEBOUND;
+		constexpr Array& unique_consecutive() & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array unique_consecutive() && noexcept;
+		constexpr Array unique_consecutive() &&;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
@@ -1968,7 +2015,8 @@ namespace s3d
 		/// @return 条件を満たす要素の個数
 		template <class Fty>
 		[[nodiscard]]
-		isize parallel_count_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		isize parallel_count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1980,13 +2028,15 @@ namespace s3d
 		/// @tparam Fty 関数の型
 		/// @param f 関数
 		template <class Fty>
-		void parallel_each(Fty f) requires std::invocable<Fty&, value_type&>;
+		void parallel_each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
 
 		/// @brief すべての要素に対して関数を並列実行します。
 		/// @tparam Fty 関数の型
 		/// @param f 関数
 		template <class Fty>
-		void parallel_each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		void parallel_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2000,7 +2050,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		auto parallel_map(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		auto parallel_map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2014,7 +2065,8 @@ namespace s3d
 		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
 		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
 		template <class Fty>
-		constexpr auto operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr auto operator >>(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2111,7 +2163,8 @@ namespace s3d
 	/// @param range range
 	/// @return 作成した Array
 	template <class Range, class Elem = std::ranges::range_value_t<Range>>
-	constexpr Array<Elem> ToArray(Range&& range) requires Concept::ContainerCompatibleRange<Range, Elem>;
+	constexpr Array<Elem> ToArray(Range&& range)
+		requires Concept::ContainerCompatibleRange<Range, Elem>;
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -1184,7 +1184,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr auto LineString::operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>
+	constexpr auto LineString::operator >>(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
 		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 

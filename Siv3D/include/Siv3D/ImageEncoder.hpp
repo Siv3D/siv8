@@ -80,7 +80,8 @@ namespace s3d
 		/// @brief 画像エンコーダを登録します。
 		/// @tparam ImageEncoder 画像エンコーダの型
 		/// @return 登録に成功した場合 true, それ以外の場合は false
-		template <class ImageEncoder> requires std::derived_from<ImageEncoder, IImageEncoder>
+		template <class ImageEncoder>
+			requires std::derived_from<ImageEncoder, IImageEncoder>
 		bool Add();
 
 		/// @brief 画像エンコーダを登録します。

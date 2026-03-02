@@ -868,7 +868,8 @@ namespace s3d
 		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool all(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool all(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -883,7 +884,8 @@ namespace s3d
 		/// @remark `.contains_if(f)` と同じです。
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool any(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool any(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -951,7 +953,8 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool contains_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -984,7 +987,8 @@ namespace s3d
 		/// @return 条件を満たす要素の個数	
 		template <class Fty>
 		[[nodiscard]]
-		constexpr int64 count_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr int64 count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -997,7 +1001,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& ch : s) f(ch);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr void each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1010,7 +1015,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) const requires std::invocable<Fty&, size_t, const value_type&>;
+		constexpr void each_index(Fty f) const
+			requires std::invocable<Fty&, size_t, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1023,7 +1029,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) const requires std::invocable<Fty&, isize, const value_type&>;
+		constexpr void each_sindex(Fty f) const
+			requires std::invocable<Fty&, isize, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1062,7 +1069,8 @@ namespace s3d
 		/// @return 指定した条件を満たす要素を集めた新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr String filter(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr String filter(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1167,7 +1175,8 @@ namespace s3d
 		/// @return 文字列の各要素に関数を適用した戻り値からなる配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr auto map(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr auto map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1181,7 +1190,8 @@ namespace s3d
 		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool none(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool none(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1226,7 +1236,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr String removed_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr String removed_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1273,7 +1284,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr String replaced_if(Fty f, value_type newChar) const requires std::predicate<Fty&, const value_type&>;
+		constexpr String replaced_if(Fty f, value_type newChar) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1329,7 +1341,8 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		template <class Fty>
-		constexpr void reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1427,7 +1440,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String sorted_by(Fty f) const requires std::predicate<Fty&, const value_type&, const value_type&>;
+		String sorted_by(Fty f) const
+			requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1514,7 +1528,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String take_while(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		String take_while(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

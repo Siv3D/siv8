@@ -1363,7 +1363,8 @@ namespace s3d
 		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
 		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
 		template <class Fty>
-		constexpr auto operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr auto operator >>(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

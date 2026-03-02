@@ -100,13 +100,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type, class U> requires std::is_convertible_v<U, Type>
+	template <class Type, class U>
+		requires std::is_convertible_v<U, Type>
 	Type ParseOr(const std::string_view s, U&& defaultValue)
 	{
 		return ParseWithReason<Type>(s).value_or(std::forward<U>(defaultValue));
 	}
 
-	template <class Type, class U> requires std::is_convertible_v<U, Type>
+	template <class Type, class U>
+		requires std::is_convertible_v<U, Type>
 	Type ParseOr(const StringView s, U&& defaultValue)
 	{
 		return ParseWithReason<Type>(s).value_or(std::forward<U>(defaultValue));
