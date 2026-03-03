@@ -48,11 +48,11 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	FetchPublicIPv4Address
+		//	QueryPublicIPv4Address
 		//
 		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
-		//Optional<IPv4Address> FetchPublicIPv4Address();
+		//Optional<IPv4Address> QueryPublicIPv4Address();
 	}
 }

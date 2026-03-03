@@ -33,7 +33,7 @@ namespace s3d
 	public:
 
 		/// @brief オクテット（0～255）を表す型です。
-		using value_type = uint8;
+		using octet_type = uint8;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -52,12 +52,12 @@ namespace s3d
 		/// @param d 末尾オクテット
 		/// @remark それぞれ 0～255 で表現されます。
 		[[nodiscard]]
-		constexpr IPv4Address(value_type a, value_type b, value_type c, value_type d) noexcept;
+		constexpr IPv4Address(octet_type a, octet_type b, octet_type c, octet_type d) noexcept;
 
 		/// @brief 4 要素の span から IPv4 アドレスを作成します。
 		/// @param ipv4 オクテット列
 		[[nodiscard]]
-		explicit constexpr IPv4Address(std::span<const value_type, 4> ipv4);
+		explicit constexpr IPv4Address(std::span<const octet_type, 4> ipv4);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -186,7 +186,7 @@ namespace s3d
 		/// @brief 4 つのオクテットを返します。
 		/// @return IPv4 アドレスのオクテット列
 		[[nodiscard]]
-		constexpr const std::array<value_type, 4>& octets() const noexcept;
+		constexpr const std::array<octet_type, 4>& octets() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -294,7 +294,7 @@ namespace s3d
 		/// @param ip パースする文字列
 		/// @return パースに成功した場合 IPv4Address、失敗した場合 none
 		/// @remark 各オクテットは 0～255 の 10 進数です。
-		/// @remark ゼロ埋めや空白は許容されません。
+		/// @remark 前後空白、ゼロ埋め、符号、+, 空文字は許容されません。
 		[[nodiscard]]
 		static Optional<IPv4Address> Parse(std::string_view ip);
 
@@ -302,7 +302,7 @@ namespace s3d
 		/// @param ip パースする文字列
 		/// @return パースに成功した場合 IPv4Address、失敗した場合 none
 		/// @remark 各オクテットは 0～255 の 10 進数です。
-		/// @remark ゼロ埋めや空白は許容されません。
+		/// @remark 前後空白、ゼロ埋め、符号、+, 空文字は許容されません。
 		[[nodiscard]]
 		static Optional<IPv4Address> Parse(StringView ip);
 
@@ -334,38 +334,9 @@ namespace s3d
 
 	private:
 
-		std::array<value_type, 4> m_octets{};
+		std::array<octet_type, 4> m_octets{};
 	};
 }
-
-////////////////////////////////////////////////////////////////
-//
-//	fmt
-//
-////////////////////////////////////////////////////////////////
-
-template <>
-struct fmt::formatter<s3d::IPv4Address>
-{
-	std::string tag;
-
-	constexpr auto parse(format_parse_context& ctx)
-	{
-		return s3d::FmtHelper::GetFormatTag(tag, ctx);
-	}
-
-	format_context::iterator format(const s3d::IPv4Address& value, format_context& ctx);
-};
-
-template <>
-struct fmt::formatter<s3d::IPv4Address, s3d::char32>
-{
-	std::u32string tag;
-
-	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
-
-	s3d::BufferContext::iterator format(const s3d::IPv4Address& value, s3d::BufferContext& ctx);
-};
 
 ////////////////////////////////////////////////////////////////
 //

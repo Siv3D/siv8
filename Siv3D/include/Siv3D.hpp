@@ -1005,6 +1005,9 @@
 // IPv4 アドレス | IPv4 address
 # include <Siv3D/IPv4Address.hpp>
 
+// IPv4 エンドポイント | IPv4 endpoint
+# include <Siv3D/IPv4Endpoint.hpp>
+
 // ネットワーク | Networking
 # include <Siv3D/Network.hpp>
 

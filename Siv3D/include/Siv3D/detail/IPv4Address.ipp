@@ -19,10 +19,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr IPv4Address::IPv4Address(const value_type a, const value_type b, const value_type c, const value_type d) noexcept
+	constexpr IPv4Address::IPv4Address(const octet_type a, const octet_type b, const octet_type c, const octet_type d) noexcept
 		: m_octets{ a, b, c, d } {}
 
-	constexpr IPv4Address::IPv4Address(const std::span<const value_type, 4> ipv4)
+	constexpr IPv4Address::IPv4Address(const std::span<const octet_type, 4> ipv4)
 		: m_octets{ ipv4[0], ipv4[1], ipv4[2], ipv4[3] } {}
 
 	////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ namespace s3d
 
 	constexpr bool IPv4Address::isUnspecified() const noexcept
 	{
-		return (m_octets == std::array<value_type, 4>{ 0, 0, 0, 0 });
+		return (m_octets == std::array<octet_type, 4>{ 0, 0, 0, 0 });
 	}
 
 	constexpr bool IPv4Address::isAny() const noexcept
@@ -125,7 +125,7 @@ namespace s3d
 
 	constexpr bool IPv4Address::isBroadcast() const noexcept
 	{
-		return (m_octets == std::array<value_type, 4>{ 255, 255, 255, 255 });
+		return (m_octets == std::array<octet_type, 4>{ 255, 255, 255, 255 });
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr const std::array<IPv4Address::value_type, 4>& IPv4Address::octets() const noexcept
+	constexpr const std::array<IPv4Address::octet_type, 4>& IPv4Address::octets() const noexcept
 	{
 		return m_octets;
 	}
@@ -211,10 +211,10 @@ namespace s3d
 	constexpr IPv4Address IPv4Address::FromNetworkUint32(const uint32 value) noexcept
 	{
 		return{
-			static_cast<value_type>((value >> 24) & 0xFF),
-			static_cast<value_type>((value >> 16) & 0xFF),
-			static_cast<value_type>((value >> 8) & 0xFF),
-			static_cast<value_type>((value >> 0) & 0xFF),
+			static_cast<octet_type>((value >> 24) & 0xFF),
+			static_cast<octet_type>((value >> 16) & 0xFF),
+			static_cast<octet_type>((value >> 8) & 0xFF),
+			static_cast<octet_type>((value >> 0) & 0xFF),
 		};
 	}
 }
