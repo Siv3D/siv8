@@ -1226,7 +1226,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::head(const size_type n) const&
 	{
 		const auto k = Min(n, m_container.size());
-		return Array(m_container.begin(), m_container.begin() + k);
+		return Array(m_container.begin(), (m_container.begin() + k));
 	}
 
 	template <class Type, class Allocator>
@@ -1246,14 +1246,14 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr std::span<typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::head_span(const size_type n) & noexcept
 	{
-		const auto k = Min(n, size());
+		const auto k = Min(n, m_container.size());
 		return std::span<value_type>{ m_container }.first(k);
 	}
 
 	template <class Type, class Allocator>
 	constexpr std::span<const typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::head_span(const size_type n) const& noexcept
 	{
-		const auto k = Min(n, size());
+		const auto k = Min(n, m_container.size());
 		return std::span<const value_type>{ m_container }.first(k);
 	}
 
@@ -2117,14 +2117,14 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::tail(const size_type n) const&
 	{
-		const auto k = Min(n, size());
+		const auto k = Min(n, m_container.size());
 		return Array((m_container.end() - k), m_container.end());
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::tail(const size_type n) &&
 	{
-		const auto k = Min(n, size());
+		const auto k = Min(n, m_container.size());
 		m_container.erase(m_container.begin(), (m_container.end() - k));
 	}
 
@@ -2137,14 +2137,14 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr std::span<typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::tail_span(const size_type n) & noexcept
 	{
-		const auto k = Min(n, size());
+		const auto k = Min(n, m_container.size());
 		return std::span<value_type>{ m_container }.last(k);
 	}
 
 	template <class Type, class Allocator>
 	constexpr std::span<const typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::tail_span(const size_type n) const& noexcept
 	{
-		const auto k = Min(n, size());
+		const auto k = Min(n, m_container.size());
 		return std::span<const value_type>{ m_container }.last(k);
 	}
 

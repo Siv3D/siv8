@@ -200,6 +200,25 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	head
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr String String::head(const size_type n) const&
+	{
+		const auto k = Min(n, m_string.size());
+		return String(m_string, 0, k);
+	}
+
+	constexpr String String::head(const size_type n) && noexcept
+	{
+		const auto k = Min(n, m_string.size());
+		m_string.resize(k);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	isSorted
 	//
 	////////////////////////////////////////////////////////////////
@@ -383,6 +402,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	reverse_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr auto String::reverse_view() &
+	{
+		return std::views::reverse(m_string);
+	}
+
+	constexpr auto String::reverse_view() const&
+	{
+		return std::views::reverse(m_string);
+	}
+
+	constexpr auto String::reverse_view() &&
+	{
+		return std::views::reverse(std::move(*this));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	sort_by, sorted_by
 	//
 	////////////////////////////////////////////////////////////////
@@ -417,6 +457,44 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(sort_by(std::forward<Fty>(f)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr String String::tail(const size_type n) const&
+	{
+		const auto k = Min(n, m_string.size());
+		return String(m_string, (m_string.size() - k), k);
+	}
+
+	constexpr String String::tail(const size_type n) && noexcept
+	{
+		const auto k = Min(n, m_string.size());
+		m_string.erase(0, (m_string.size() - k));
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr String String::take(const size_type n) const&
+	{
+		const auto k = Min(n, m_string.size());
+		return String(m_string, 0, k);
+	}
+
+	constexpr String String::take(const size_type n) && noexcept
+	{
+		const auto k = Min(n, m_string.size());
+		m_string.resize(k);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
