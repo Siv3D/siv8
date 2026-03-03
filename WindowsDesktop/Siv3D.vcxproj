@@ -175,6 +175,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIColorStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIShapeStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Address.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointSettings.hpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Network.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PerlinNoise.hpp" />

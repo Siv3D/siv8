@@ -1002,11 +1002,11 @@
 // Twitter | Twitter
 # include <Siv3D/Twitter.hpp>
 
-//// IPv4 アドレス | IPv4 address
-//# include <Siv3D/IPv4Address.hpp>
-//
-//// ネットワーク | Networking
-//# include <Siv3D/Network.hpp>
+// IPv4 アドレス | IPv4 address
+# include <Siv3D/IPv4Address.hpp>
+
+// ネットワーク | Networking
+# include <Siv3D/Network.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
