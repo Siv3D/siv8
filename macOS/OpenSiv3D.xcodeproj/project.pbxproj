@@ -2522,6 +2522,10 @@
 		F99881B92F55882C00C8991D /* unix.h in Headers */ = {isa = PBXBuildFile; fileRef = F99881AD2F55882C00C8991D /* unix.h */; };
 		F99881BA2F55882C00C8991D /* unix.cc in Sources */ = {isa = PBXBuildFile; fileRef = F99881AE2F55882C00C8991D /* unix.cc */; };
 		F99881BB2F55882C00C8991D /* serial.cc in Sources */ = {isa = PBXBuildFile; fileRef = F99881B32F55882C00C8991D /* serial.cc */; };
+		F99881BF2F56CA5400C8991D /* DriveInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881BD2F56CA5400C8991D /* DriveInfo.hpp */; };
+		F99881C02F56CA5400C8991D /* DriveType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881BE2F56CA5400C8991D /* DriveType.hpp */; };
+		F99881C32F56CA7700C8991D /* SivDriveType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881C12F56CA7600C8991D /* SivDriveType.cpp */; };
+		F99881C62F56CAB700C8991D /* SivDriveInfo.mm in Sources */ = {isa = PBXBuildFile; fileRef = F99881C42F56CAB700C8991D /* SivDriveInfo.mm */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5397,6 +5401,10 @@
 		F99881B22F55882C00C8991D /* serial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = serial.h; sourceTree = "<group>"; };
 		F99881B32F55882C00C8991D /* serial.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = serial.cc; sourceTree = "<group>"; };
 		F99881B42F55882C00C8991D /* v8stdint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = v8stdint.h; sourceTree = "<group>"; };
+		F99881BD2F56CA5400C8991D /* DriveInfo.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DriveInfo.hpp; sourceTree = "<group>"; };
+		F99881BE2F56CA5400C8991D /* DriveType.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DriveType.hpp; sourceTree = "<group>"; };
+		F99881C12F56CA7600C8991D /* SivDriveType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDriveType.cpp; sourceTree = "<group>"; };
+		F99881C42F56CAB700C8991D /* SivDriveInfo.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SivDriveInfo.mm; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -6559,6 +6567,8 @@
 				F9070BD92B9F175000383E4D /* Distribution.hpp */,
 				F9070BDA2B9F175000383E4D /* DLL.hpp */,
 				F943AAC72E2A099E001B4D43 /* DrawableText.hpp */,
+				F99881BD2F56CA5400C8991D /* DriveInfo.hpp */,
+				F99881BE2F56CA5400C8991D /* DriveType.hpp */,
 				F9070BDB2B9F175000383E4D /* Duration.hpp */,
 				F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */,
 				F9E794282C12B861002615BA /* Easing.hpp */,
@@ -7401,6 +7411,7 @@
 				F980C46C2C01B4B600A86B68 /* DepthStencilStateBuilder */,
 				F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */,
 				F943AACA2E2A09BB001B4D43 /* DrawableText */,
+				F99881C22F56CA7600C8991D /* DriveType */,
 				F9070D3B2B9F175E00383E4D /* Duration */,
 				F9B7D9F22D8C722A002ABACE /* DynamicTexture */,
 				F9DD963F2F0965C60026DFA5 /* Effect */,
@@ -7607,6 +7618,7 @@
 				F9E794842C2493FF002615BA /* ConstantBuffer */,
 				F98605812BDA7E32006A4C0F /* Cursor */,
 				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
+				F99881C52F56CAB700C8991D /* DriveInfo */,
 				F934BD912BF8824B0003EAD5 /* EngineShader */,
 				F9070E042B9F176B00383E4D /* FileSystem */,
 				F9807D9C2BF667E600D9B590 /* FreestandingMessageBox */,
@@ -11463,6 +11475,22 @@
 			path = serial_cpp;
 			sourceTree = "<group>";
 		};
+		F99881C22F56CA7600C8991D /* DriveType */ = {
+			isa = PBXGroup;
+			children = (
+				F99881C12F56CA7600C8991D /* SivDriveType.cpp */,
+			);
+			path = DriveType;
+			sourceTree = "<group>";
+		};
+		F99881C52F56CAB700C8991D /* DriveInfo */ = {
+			isa = PBXGroup;
+			children = (
+				F99881C42F56CAB700C8991D /* SivDriveInfo.mm */,
+			);
+			path = DriveInfo;
+			sourceTree = "<group>";
+		};
 		F9AEA5042E6B3E71003734E7 /* Print */ = {
 			isa = PBXGroup;
 			children = (
@@ -12963,6 +12991,8 @@
 				F986029B2BCFBB54006A4C0F /* SkWriteBuffer.h in Headers */,
 				F98604812BCFBB54006A4C0F /* SkSLOperator.h in Headers */,
 				F9528C362BBF026F00222F45 /* zstdmt_compress.h in Headers */,
+				F99881BF2F56CA5400C8991D /* DriveInfo.hpp in Headers */,
+				F99881C02F56CA5400C8991D /* DriveType.hpp in Headers */,
 				F98601D72BCFBB53006A4C0F /* SkIPoint16.h in Headers */,
 				F98600AB2BCFBB53006A4C0F /* SkNullCanvas.h in Headers */,
 				F986FA752BCFB53B006A4C0F /* ftbdf.h in Headers */,
@@ -14310,6 +14340,7 @@
 				F986030A2BCFBB54006A4C0F /* SkOpAngle.cpp in Sources */,
 				F986022A2BCFBB54006A4C0F /* SkPoint.cpp in Sources */,
 				F986041B2BCFBB54006A4C0F /* SkSLInterfaceBlock.cpp in Sources */,
+				F99881C32F56CA7700C8991D /* SivDriveType.cpp in Sources */,
 				F98601FF2BCFBB53006A4C0F /* SkMipmapAccessor.cpp in Sources */,
 				F98604AF2BCFBB54006A4C0F /* StrikeForGPU.cpp in Sources */,
 				F9528B412BB69C8200222F45 /* SivImage.cpp in Sources */,
@@ -14703,6 +14734,7 @@
 				F9528C2C2BBF026F00222F45 /* zstd_fast.c in Sources */,
 				F9528C432BBF026F00222F45 /* fastcover.c in Sources */,
 				F98602A22BCFBB54006A4C0F /* SkYUVAPixmaps.cpp in Sources */,
+				F99881C62F56CAB700C8991D /* SivDriveInfo.mm in Sources */,
 				F98601E22BCFBB53006A4C0F /* SkMallocPixelRef.cpp in Sources */,
 				F986050F2BCFBE69006A4C0F /* SkOSFile_posix.cpp in Sources */,
 				F98602632BCFBB54006A4C0F /* SkScan_AntiPath.cpp in Sources */,
