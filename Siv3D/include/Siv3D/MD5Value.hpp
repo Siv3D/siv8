@@ -45,7 +45,7 @@ namespace s3d
 		/// @brief MD5 ハッシュ値を作成します。
 		/// @param md5 MD5 ハッシュ値
 		[[nodiscard]]
-		explicit constexpr MD5Value(const std::array<uint8, 16>& md5) noexcept;
+		explicit constexpr MD5Value(std::span<const uint8, 16> md5) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -60,14 +60,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getData
+		//	digest
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief MD5 ハッシュ値への参照を返します。
 		/// @return MD5 ハッシュ値への参照
 		[[nodiscard]]
-		constexpr const std::array<uint8, 16>& getData() const noexcept;
+		constexpr const std::array<uint8, 16>& digest() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -246,7 +246,7 @@ namespace s3d
 
 	private:
 
-		std::array<uint8, 16> m_values{};
+		std::array<uint8, 16> m_digest{};
 	};
 }
 

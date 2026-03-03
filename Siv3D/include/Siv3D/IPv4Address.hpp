@@ -13,6 +13,8 @@
 # include <array>
 # include "Common.hpp"
 # include "String.hpp"
+# include "Optional.hpp"
+# include "FormatLiteral.hpp"
 
 namespace s3d
 {
@@ -177,14 +179,24 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getData
+		//	octets
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 4 つのオクテットを返します。
 		/// @return IPv4 アドレスのオクテット列
 		[[nodiscard]]
-		constexpr const std::array<value_type, 4>& getData() const noexcept;
+		constexpr const std::array<value_type, 4>& octets() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	swap
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の IPv4 アドレスと入れ替えます。
+		/// @param other 別の IPv4 アドレス
+		constexpr void swap(IPv4Address& other);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -215,23 +227,17 @@ namespace s3d
 		/// @param rhs もう一方の IPv4 アドレス
 		/// @return 比較結果
 		[[nodiscard]]
-		friend constexpr bool operator <=>(const IPv4Address& lhs, const IPv4Address& rhs) = default;
+		friend constexpr auto operator <=>(const IPv4Address& lhs, const IPv4Address& rhs) = default;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Unspecified
+		//	Unspecified, Any
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 0.0.0.0 を返します。
 		[[nodiscard]]
 		static constexpr IPv4Address Unspecified() noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Any
-		//
-		////////////////////////////////////////////////////////////////
 
 		/// @brief 0.0.0.0 を返します。
 		[[nodiscard]]
@@ -262,6 +268,20 @@ namespace s3d
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const IPv4Address& value)
 		{
 			return (output << value.str());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	swap
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2 つの IPv4 アドレスの内容を交換します。
+		/// @param lhs 一方の IPv4 アドレス
+		/// @param rhs もう一方の IPv4 アドレス
+		friend void swap(IPv4Address& lhs, IPv4Address& rhs) noexcept
+		{
+			lhs.swap(rhs);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -314,7 +334,7 @@ namespace s3d
 
 	private:
 
-		std::array<value_type, 4> m_data{};
+		std::array<value_type, 4> m_octets{};
 	};
 }
 
@@ -353,6 +373,7 @@ struct fmt::formatter<s3d::IPv4Address, s3d::char32>
 //
 ////////////////////////////////////////////////////////////////
 
+template <>
 struct std::hash<s3d::IPv4Address>
 {
 	[[nodiscard]]
@@ -361,3 +382,5 @@ struct std::hash<s3d::IPv4Address>
 		return value.hash();
 	}
 };
+
+# include "detail/IPv4Address.ipp"

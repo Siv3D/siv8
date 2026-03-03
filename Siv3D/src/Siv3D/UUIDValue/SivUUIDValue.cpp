@@ -42,24 +42,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	(constructor)
-	//
-	////////////////////////////////////////////////////////////////
-
-	UUIDValue::UUIDValue(const value_type(&uuid)[16]) noexcept
-	{
-		std::memcpy(m_data.data(), uuid, sizeof(m_data));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	variant
 	//
 	////////////////////////////////////////////////////////////////
 
 	UUIDValue::Variant UUIDValue::variant() const noexcept
 	{
-		return UUIDValue::Variant{ static_cast<uint8>(FromEnum(uuids::uuid{ m_data }.variant())) };
+		return UUIDValue::Variant{ static_cast<uint8>(FromEnum(uuids::uuid{ m_bytes }.variant())) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -70,7 +59,7 @@ namespace s3d
 
 	UUIDValue::Version UUIDValue::version() const noexcept
 	{
-		return UUIDValue::Version{ static_cast<uint8>(FromEnum(uuids::uuid{ m_data }.version())) };
+		return UUIDValue::Version{ static_cast<uint8>(FromEnum(uuids::uuid{ m_bytes }.version())) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -82,26 +71,26 @@ namespace s3d
 	std::string UUIDValue::to_string() const
 	{
 		std::string s(36, '-');
-		ToHex(&s[0], m_data[0]);
-		ToHex(&s[2], m_data[1]);
-		ToHex(&s[4], m_data[2]);
-		ToHex(&s[6], m_data[3]);
+		ToHex(&s[0], m_bytes[0]);
+		ToHex(&s[2], m_bytes[1]);
+		ToHex(&s[4], m_bytes[2]);
+		ToHex(&s[6], m_bytes[3]);
 
-		ToHex(&s[9], m_data[4]);
-		ToHex(&s[11], m_data[5]);
+		ToHex(&s[9], m_bytes[4]);
+		ToHex(&s[11], m_bytes[5]);
 
-		ToHex(&s[14], m_data[6]);
-		ToHex(&s[16], m_data[7]);
+		ToHex(&s[14], m_bytes[6]);
+		ToHex(&s[16], m_bytes[7]);
 
-		ToHex(&s[19], m_data[8]);
-		ToHex(&s[21], m_data[9]);
+		ToHex(&s[19], m_bytes[8]);
+		ToHex(&s[21], m_bytes[9]);
 
-		ToHex(&s[24], m_data[10]);
-		ToHex(&s[26], m_data[11]);
-		ToHex(&s[28], m_data[12]);
-		ToHex(&s[30], m_data[13]);
-		ToHex(&s[32], m_data[14]);
-		ToHex(&s[34], m_data[15]);
+		ToHex(&s[24], m_bytes[10]);
+		ToHex(&s[26], m_bytes[11]);
+		ToHex(&s[28], m_bytes[12]);
+		ToHex(&s[30], m_bytes[13]);
+		ToHex(&s[32], m_bytes[14]);
+		ToHex(&s[34], m_bytes[15]);
 
 		return s;
 	}
@@ -115,26 +104,26 @@ namespace s3d
 	String UUIDValue::str() const
 	{
 		String s(36, U'-');
-		ToHex(&s[0], m_data[0]);
-		ToHex(&s[2], m_data[1]);
-		ToHex(&s[4], m_data[2]);
-		ToHex(&s[6], m_data[3]);
+		ToHex(&s[0], m_bytes[0]);
+		ToHex(&s[2], m_bytes[1]);
+		ToHex(&s[4], m_bytes[2]);
+		ToHex(&s[6], m_bytes[3]);
 
-		ToHex(&s[9], m_data[4]);
-		ToHex(&s[11], m_data[5]);
+		ToHex(&s[9], m_bytes[4]);
+		ToHex(&s[11], m_bytes[5]);
 
-		ToHex(&s[14], m_data[6]);
-		ToHex(&s[16], m_data[7]);
+		ToHex(&s[14], m_bytes[6]);
+		ToHex(&s[16], m_bytes[7]);
 
-		ToHex(&s[19], m_data[8]);
-		ToHex(&s[21], m_data[9]);
+		ToHex(&s[19], m_bytes[8]);
+		ToHex(&s[21], m_bytes[9]);
 
-		ToHex(&s[24], m_data[10]);
-		ToHex(&s[26], m_data[11]);
-		ToHex(&s[28], m_data[12]);
-		ToHex(&s[30], m_data[13]);
-		ToHex(&s[32], m_data[14]);
-		ToHex(&s[34], m_data[15]);
+		ToHex(&s[24], m_bytes[10]);
+		ToHex(&s[26], m_bytes[11]);
+		ToHex(&s[28], m_bytes[12]);
+		ToHex(&s[30], m_bytes[13]);
+		ToHex(&s[32], m_bytes[14]);
+		ToHex(&s[34], m_bytes[15]);
 
 		return s;
 	}
@@ -169,7 +158,7 @@ namespace s3d
 
 	UUIDValue UUIDValue::GenerateFromName(const UUIDValue& namespaceUUID, const std::string_view name)
 	{
-		return ToUUIDValue(uuids::uuid_name_generator{ namespaceUUID.m_data }(name));
+		return ToUUIDValue(uuids::uuid_name_generator{ namespaceUUID.m_bytes }(name));
 	}
 
 	UUIDValue UUIDValue::GenerateFromName(const UUIDValue& namespaceUUID, const StringView name)

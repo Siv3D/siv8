@@ -77,12 +77,7 @@ namespace s3d
 		/// @brief UUID を作成します。
 		/// @param uuid UUID のデータ
 		[[nodiscard]]
-		explicit UUIDValue(const value_type(&uuid)[16]) noexcept;
-
-		/// @brief UUID を作成します。
-		/// @param uuid UUID のデータ
-		[[nodiscard]]
-		explicit constexpr UUIDValue(const std::array<value_type, 16>& uuid) noexcept;
+		explicit constexpr UUIDValue(std::span<const value_type, 16> uuid) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -142,14 +137,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getData
+		//	bytes
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief UUID のデータを返します。
 		/// @return UUID のデータ
 		[[nodiscard]]
-		constexpr const std::array<value_type, 16>& getData() const noexcept;
+		constexpr const std::array<value_type, 16>& bytes() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -371,7 +366,7 @@ namespace s3d
 
 	private:
 
-		std::array<value_type, 16> m_data{};
+		std::array<value_type, 16> m_bytes{};
 	};
 }
 

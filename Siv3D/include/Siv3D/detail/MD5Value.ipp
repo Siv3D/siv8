@@ -58,10 +58,11 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	constexpr MD5Value::MD5Value() noexcept
-		: m_values{{ 0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e }} {}
+		: m_digest{{ 0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e }} {}
 
-	constexpr MD5Value::MD5Value(const std::array<uint8, 16>& md5) noexcept
-		: m_values{ md5 } {}
+	constexpr MD5Value::MD5Value(const std::span<const uint8, 16> md5) noexcept
+		: m_digest{ md5[0], md5[1], md5[2], md5[3], md5[4], md5[5], md5[6], md5[7],
+				 md5[8], md5[9], md5[10], md5[11], md5[12], md5[13], md5[14], md5[15] } {}
 		
 	////////////////////////////////////////////////////////////////
 	//
@@ -71,7 +72,7 @@ namespace s3d
 
 	constexpr bool MD5Value::isEmptyHash() const noexcept
 	{
-		return (m_values == MD5Value::EmptyHash().m_values);
+		return (m_digest == MD5Value::EmptyHash().m_digest);
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -80,9 +81,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr const std::array<uint8, 16>& MD5Value::getData() const noexcept
+	constexpr const std::array<uint8, 16>& MD5Value::digest() const noexcept
 	{
-		return m_values;
+		return m_digest;
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -93,7 +94,7 @@ namespace s3d
 
 	constexpr void MD5Value::swap(MD5Value& other)
 	{
-		m_values.swap(other.m_values);
+		m_digest.swap(other.m_digest);
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -104,7 +105,7 @@ namespace s3d
 
 	inline uint64 MD5Value::hash() const noexcept
 	{
-		return Hash(m_values);
+		return Hash(m_digest);
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -115,7 +116,7 @@ namespace s3d
 
 	constexpr MD5Value MD5Value::EmptyHash() noexcept
 	{
-		return MD5Value{ { 0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e } };
+		return MD5Value{ std::array<uint8, 16>{ 0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e } };
 	}
 		
 	////////////////////////////////////////////////////////////////

@@ -94,6 +94,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IEffect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageProcessing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IPv4Address.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\JitterEndpointSettings.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\KDTree.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LineString.ipp" />
@@ -1483,6 +1484,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Interpolation\SivInterpolation.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\IPv4Address\SivIPv4Address.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JoinStyle\SivJoinStyle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JSONIterator\SivJSONIterator.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JSONSerialization\SivJSONSerialization.cpp" />
