@@ -2526,6 +2526,10 @@
 		F99881C02F56CA5400C8991D /* DriveType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881BE2F56CA5400C8991D /* DriveType.hpp */; };
 		F99881C32F56CA7700C8991D /* SivDriveType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881C12F56CA7600C8991D /* SivDriveType.cpp */; };
 		F99881C62F56CAB700C8991D /* SivDriveInfo.mm in Sources */ = {isa = PBXBuildFile; fileRef = F99881C42F56CAB700C8991D /* SivDriveInfo.mm */; };
+		F99881C82F57180B00C8991D /* Network.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881C72F57180B00C8991D /* Network.hpp */; };
+		F99881CA2F57181100C8991D /* IPv4Address.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881C92F57181100C8991D /* IPv4Address.hpp */; };
+		F99881CC2F57182A00C8991D /* IPv4Address.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F99881CB2F57182A00C8991D /* IPv4Address.ipp */; };
+		F99881CF2F57184300C8991D /* SivIPv4Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881CD2F57184300C8991D /* SivIPv4Address.cpp */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5405,6 +5409,10 @@
 		F99881BE2F56CA5400C8991D /* DriveType.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DriveType.hpp; sourceTree = "<group>"; };
 		F99881C12F56CA7600C8991D /* SivDriveType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDriveType.cpp; sourceTree = "<group>"; };
 		F99881C42F56CAB700C8991D /* SivDriveInfo.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SivDriveInfo.mm; sourceTree = "<group>"; };
+		F99881C72F57180B00C8991D /* Network.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Network.hpp; sourceTree = "<group>"; };
+		F99881C92F57181100C8991D /* IPv4Address.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IPv4Address.hpp; sourceTree = "<group>"; };
+		F99881CB2F57182A00C8991D /* IPv4Address.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IPv4Address.ipp; sourceTree = "<group>"; };
+		F99881CD2F57184300C8991D /* SivIPv4Address.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivIPv4Address.cpp; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -6355,6 +6363,7 @@
 				F9E7942E2C12B87A002615BA /* Interpolation.ipp */,
 				F9070B852B9F175000383E4D /* IntFormatter.ipp */,
 				F9070B862B9F175000383E4D /* IntToString.ipp */,
+				F99881CB2F57182A00C8991D /* IPv4Address.ipp */,
 				F9070B872B9F175000383E4D /* IReader.ipp */,
 				F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */,
 				F9070B882B9F175000383E4D /* ISteadyClock.ipp */,
@@ -6649,6 +6658,7 @@
 				F9E794272C12B861002615BA /* Interpolation.hpp */,
 				F9070BF52B9F175000383E4D /* IntFormatter.hpp */,
 				F9070BF62B9F175000383E4D /* IntToString.hpp */,
+				F99881C92F57181100C8991D /* IPv4Address.hpp */,
 				F9070BF72B9F175000383E4D /* IReader.hpp */,
 				F90F2BE42D9278A400CC89CA /* IsPrime.hpp */,
 				F9070BF82B9F175000383E4D /* ISteadyClock.hpp */,
@@ -6708,6 +6718,7 @@
 				F9070C042B9F175000383E4D /* NamedParameter.hpp */,
 				F98111CD2ECC089300C50DD1 /* NativeShare.hpp */,
 				F98111CB2ECC088400C50DD1 /* NaturalSort.hpp */,
+				F99881C72F57180B00C8991D /* Network.hpp */,
 				F9070C052B9F175000383E4D /* NonNull.hpp */,
 				F9070C062B9F175000383E4D /* Number.hpp */,
 				F9070C072B9F175000383E4D /* Obfuscation.hpp */,
@@ -7468,6 +7479,7 @@
 				F9E794322C12B898002615BA /* Interpolation */,
 				F9070D602B9F175E00383E4D /* IntFormatter */,
 				F9070D622B9F175E00383E4D /* IntToString */,
+				F99881CE2F57184300C8991D /* IPv4Address */,
 				F95122482CB8237900151291 /* JoinStyle */,
 				F9E5FCD92BC3AD820081A4F7 /* JSON */,
 				F9E5FCEA2BC59EB50081A4F7 /* JSONIterator */,
@@ -11491,6 +11503,14 @@
 			path = DriveInfo;
 			sourceTree = "<group>";
 		};
+		F99881CE2F57184300C8991D /* IPv4Address */ = {
+			isa = PBXGroup;
+			children = (
+				F99881CD2F57184300C8991D /* SivIPv4Address.cpp */,
+			);
+			path = IPv4Address;
+			sourceTree = "<group>";
+		};
 		F9AEA5042E6B3E71003734E7 /* Print */ = {
 			isa = PBXGroup;
 			children = (
@@ -12931,6 +12951,7 @@
 				F986FA492BCFB53B006A4C0F /* svgldict.h in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
 				F97203182BF09E2E000E21DD /* SceneStyle.hpp in Headers */,
+				F99881CC2F57182A00C8991D /* IPv4Address.ipp in Headers */,
 				F986F8B82BC843E0006A4C0F /* MatchResults.ipp in Headers */,
 				F9E5FCD32BC3AD410081A4F7 /* JSONValueType.hpp in Headers */,
 				F980C4A92C0F6D2C00A86B68 /* MetalRenderPipelineState.hpp in Headers */,
@@ -13796,6 +13817,7 @@
 				F98604642BCFBB54006A4C0F /* GLSL.std.450.h in Headers */,
 				F986FFF72BCFBB53006A4C0F /* SkRawDecoder.h in Headers */,
 				F98603F72BCFBB54006A4C0F /* SkSLConstructorMatrixResize.h in Headers */,
+				F99881CA2F57181100C8991D /* IPv4Address.hpp in Headers */,
 				F9766B762C29C75F00DE4107 /* Camera2DControlBuilder.hpp in Headers */,
 				F980C4302C00D2B500A86B68 /* RasterizerState.hpp in Headers */,
 				F98603802BCFBB54006A4C0F /* SkOTTable_maxp_TT.h in Headers */,
@@ -13900,6 +13922,7 @@
 				F98601B32BCFBB53006A4C0F /* SkEnumerate.h in Headers */,
 				F98600512BCFBB53006A4C0F /* SkYUVAInfo.h in Headers */,
 				F9070C7D2B9F175000383E4D /* String.ipp in Headers */,
+				F99881C82F57180B00C8991D /* Network.hpp in Headers */,
 				F986F9A32BCA9D0A006A4C0F /* element.h in Headers */,
 				F98603302BCFBB54006A4C0F /* SkPathOpsTSect.h in Headers */,
 				F9E5FC2F2BC15B060081A4F7 /* HalfFloat.ipp in Headers */,
@@ -14231,6 +14254,7 @@
 				F986032A2BCFBB54006A4C0F /* SkPathOpsRect.cpp in Sources */,
 				F98605042BCFBC12006A4C0F /* SkCodecImageGenerator.cpp in Sources */,
 				F986026F2BCFBB54006A4C0F /* SkStream.cpp in Sources */,
+				F99881CF2F57184300C8991D /* SivIPv4Address.cpp in Sources */,
 				F986044C2BCFBB54006A4C0F /* SkSLVariableReference.cpp in Sources */,
 				F98601792BCFBB53006A4C0F /* SkCanvas_Raster.cpp in Sources */,
 				F98602362BCFBB54006A4C0F /* SkRasterPipelineBlitter.cpp in Sources */,
