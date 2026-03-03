@@ -1216,6 +1216,9 @@
     <Filter Include="src\Siv3D\IPv4Address">
       <UniqueIdentifier>{0e9c5900-fc26-418b-a1a9-e706b6b548e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Network">
+      <UniqueIdentifier>{5b39be0d-1c45-48a0-9572-47679a94e4d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -7741,6 +7744,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\IPv4Address\SivIPv4Address.cpp">
       <Filter>src\Siv3D\IPv4Address</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Network\SivNetwork.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
