@@ -106,6 +106,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MultiPolygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\OffsetCircular.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\OSCArgument.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PerlinNoise.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PointsPerCircle.ipp" />
@@ -188,6 +189,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Network.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCArgument.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCMessage.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCReceivedMessage.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCReceiver.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCSender.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCTypeTag.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PerlinNoise.hpp" />
@@ -819,6 +826,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\NativeShare\INativeShare.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\OSCMessage\OSCMessageDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCPacketListener.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCReceiverDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.hpp" />
@@ -1147,6 +1157,19 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\regint.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\regparse.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\st.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\IpEndpointName.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\NetworkingUtils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\PacketListener.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\TimerListener.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\UdpSocket.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\MessageMappingOscPacketListener.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscException.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscHostEndianness.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscOutboundPacketStream.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscPacketListener.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscPrintReceivedElements.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscReceivedElements.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscTypes.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-math.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-raster.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-stroker.h" />
@@ -1529,6 +1552,13 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\SivNativeShare.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NaturalSort\SivNaturalSort.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCMessage\OSCMessageDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCMessage\SivOSCMessage.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCPacketListener.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCReceiverDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCReceiver\SivOSCReceiver.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCSender\SivOSCSender.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCTypeTag\SivOSCTypeTag.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBoolExtended\SivParseBoolExtended.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBool\SivParseBool.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseErrorReason\SivParseErrorReason.cpp" />
@@ -1819,6 +1849,13 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\ip\IpEndpointName.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\ip\win32\NetworkingUtils.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\ip\win32\UdpSocket.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscOutboundPacketStream.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscPrintReceivedElements.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscReceivedElements.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscTypes.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-blend.c">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
@@ -3794,7 +3831,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;OSC_HOST_LITTLE_ENDIAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -3819,7 +3856,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;OSC_HOST_LITTLE_ENDIAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>

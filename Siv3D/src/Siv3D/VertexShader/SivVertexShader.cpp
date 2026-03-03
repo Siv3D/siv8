@@ -113,7 +113,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
 		//{
-		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
 		//}
 
 		return VertexShader{ path, entryPoint };
@@ -123,7 +123,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
 		//{
-		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
 		//}
 
 		return VertexShader{ bytecode };
@@ -133,7 +133,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
 		//{
-		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
 		//}
 
 		return VertexShader{ source, entryPoint };
@@ -149,7 +149,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
-		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
 		//}
 
 		return VertexShader{ FilePathView{}, entryPoint };
@@ -159,7 +159,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
-		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
 		//}
 
 		return VertexShader{ path, entryPoint };
@@ -169,7 +169,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
-		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
 		//}
 
 		return VertexShader{ source, entryPoint };

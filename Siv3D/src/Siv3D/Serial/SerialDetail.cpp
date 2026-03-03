@@ -388,8 +388,8 @@ namespace s3d
 
 		if ((MaxInternalReadBufferBytes < oldSize) || ((MaxInternalReadBufferBytes - oldSize) < bytesAvailable))
 		{
-			throw Error{ U"Serial internal read buffer overflow: no newline received for too long (exceeded 64KB). "
-						 U"Check sender protocol / line termination, or consume the stream with read()." };
+			throw Error{ "Serial internal read buffer overflow: no newline received for too long (exceeded 64KB). "
+						 "Check sender protocol / line termination, or consume the stream with read()." };
 		}
 
 		m_internalReadBuffer.resize(oldSize + bytesAvailable);

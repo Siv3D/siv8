@@ -730,6 +730,12 @@ APACHE_2_LICENSE
 },
 
 {
+R"-(oscpack)-",
+R"-(Copyright (c) 2004-2013 Ross Bencina <rossb@audiomulch.com>)-",
+MIT_LICENSE
+},
+
+{
 R"-(pcg-cpp)-",
 R"-(Copyright (c) 2014-2017 Melissa O'Neill and PCG Project contributors)-",
 MIT_LICENSE

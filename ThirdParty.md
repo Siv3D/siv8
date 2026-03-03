@@ -42,6 +42,7 @@ Name | Version
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [OpenCV](https://github.com/opencv/opencv) | 4.10.0
+[oscpack](http://www.rossbencina.com/code/oscpack) | 1.1.0
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
 [plutovg](https://github.com/sammycage/plutovg) | 
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
