@@ -2577,6 +2577,11 @@
 		F99882382F58093E00C8991D /* NetworkingUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99882092F58093E00C8991D /* NetworkingUtils.cpp */; };
 		F998823D2F5809A900C8991D /* CPentablet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998823B2F5809A900C8991D /* CPentablet.cpp */; };
 		F998823E2F5809A900C8991D /* CPentablet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998823A2F5809A900C8991D /* CPentablet.hpp */; };
+		F99882412F587C6800C8991D /* PenCaps.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998823F2F587C6800C8991D /* PenCaps.hpp */; };
+		F99882422F587C6800C8991D /* PenState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99882402F587C6800C8991D /* PenState.hpp */; };
+		F99882472F587C8000C8991D /* PentabletFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99882442F587C8000C8991D /* PentabletFactory.cpp */; };
+		F99882482F587C8000C8991D /* SivPentablet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99882452F587C8000C8991D /* SivPentablet.cpp */; };
+		F99882492F587C8000C8991D /* IPentablet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99882432F587C8000C8991D /* IPentablet.hpp */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5507,6 +5512,11 @@
 		F99882212F58093E00C8991D /* OscTypes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OscTypes.cpp; sourceTree = "<group>"; };
 		F998823A2F5809A900C8991D /* CPentablet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CPentablet.hpp; sourceTree = "<group>"; };
 		F998823B2F5809A900C8991D /* CPentablet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPentablet.cpp; sourceTree = "<group>"; };
+		F998823F2F587C6800C8991D /* PenCaps.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PenCaps.hpp; sourceTree = "<group>"; };
+		F99882402F587C6800C8991D /* PenState.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PenState.hpp; sourceTree = "<group>"; };
+		F99882432F587C8000C8991D /* IPentablet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IPentablet.hpp; sourceTree = "<group>"; };
+		F99882442F587C8000C8991D /* PentabletFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PentabletFactory.cpp; sourceTree = "<group>"; };
+		F99882452F587C8000C8991D /* SivPentablet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPentablet.cpp; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -6840,6 +6850,8 @@
 				F9070C112B9F175000383E4D /* ParseFloat.hpp */,
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
+				F998823F2F587C6800C8991D /* PenCaps.hpp */,
+				F99882402F587C6800C8991D /* PenState.hpp */,
 				F99881E22F5808C500C8991D /* Pentablet.hpp */,
 				F9DD96512F09661B0026DFA5 /* PercentEncode.hpp */,
 				F9E794472C1973FC002615BA /* Periodic.hpp */,
@@ -7631,6 +7643,7 @@
 				F9070D742B9F175E00383E4D /* ParseErrorReason */,
 				F9070D762B9F175E00383E4D /* ParseFloat */,
 				F9070D782B9F175E00383E4D /* ParseInt */,
+				F99882462F587C8000C8991D /* Pentablet */,
 				F99881FC2F58091000C8991D /* Pentablet */,
 				F9DD96482F0965D00026DFA5 /* PercentEncode */,
 				F944BAAF2CEACF6C00CC4D42 /* Pipe */,
@@ -11749,6 +11762,16 @@
 			path = Pentablet;
 			sourceTree = "<group>";
 		};
+		F99882462F587C8000C8991D /* Pentablet */ = {
+			isa = PBXGroup;
+			children = (
+				F99882432F587C8000C8991D /* IPentablet.hpp */,
+				F99882442F587C8000C8991D /* PentabletFactory.cpp */,
+				F99882452F587C8000C8991D /* SivPentablet.cpp */,
+			);
+			path = Pentablet;
+			sourceTree = "<group>";
+		};
 		F9AEA5042E6B3E71003734E7 /* Print */ = {
 			isa = PBXGroup;
 			children = (
@@ -12919,6 +12942,8 @@
 				F911712C2DCBBF67000A22E6 /* FontMethod.hpp in Headers */,
 				F911712D2DCBBF67000A22E6 /* FontFaceProperties.hpp in Headers */,
 				F911712F2DCBBF67000A22E6 /* FontVariationAxis.hpp in Headers */,
+				F99882412F587C6800C8991D /* PenCaps.hpp in Headers */,
+				F99882422F587C6800C8991D /* PenState.hpp in Headers */,
 				F9070CF72B9F175100383E4D /* ScopeExit.hpp in Headers */,
 				F9E7942F2C12B87A002615BA /* Easing.ipp in Headers */,
 				F9070CA32B9F175000383E4D /* Common.hpp in Headers */,
@@ -12962,6 +12987,7 @@
 				F980C41C2C0023BB00A86B68 /* MetalPixelShader.hpp in Headers */,
 				F986FA542BCFB53B006A4C0F /* svsfnt.h in Headers */,
 				F98601B22BCFBB53006A4C0F /* SkEffectPriv.h in Headers */,
+				F99882492F587C8000C8991D /* IPentablet.hpp in Headers */,
 				F9070C8B2B9F175000383E4D /* YesNo.ipp in Headers */,
 				F986FFFE2BCFBB53006A4C0F /* SkBitmap.h in Headers */,
 				F98605442BD203BC006A4C0F /* MathParserDetail.hpp in Headers */,
@@ -14776,6 +14802,8 @@
 				F986F9172BC8441F006A4C0F /* onig_init.c in Sources */,
 				F9070DEC2B9F175E00383E4D /* SivTextEncoding.cpp in Sources */,
 				F98604D32BCFBB54006A4C0F /* SkCustomTypeface.cpp in Sources */,
+				F99882472F587C8000C8991D /* PentabletFactory.cpp in Sources */,
+				F99882482F587C8000C8991D /* SivPentablet.cpp in Sources */,
 				F986016E2BCFBB53006A4C0F /* SkBlitter_ARGB32.cpp in Sources */,
 				F98606222BEB7CFF006A4C0F /* DirectoryWatcherDetail.cpp in Sources */,
 				F986025E2BCFBB54006A4C0F /* SkScalerContext.cpp in Sources */,

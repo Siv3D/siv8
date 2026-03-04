@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -23,10 +23,6 @@ namespace s3d
 	CPentablet::~CPentablet()
 	{
 		LOG_SCOPED_DEBUG("CPentablet::~CPentablet()");
-
-		closeContext();
-
-		DLL::Unload(m_wintab.library);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -25,6 +25,7 @@
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
+# include <Siv3D/Pentablet/IPentablet.hpp>
 # include <Siv3D/Clipboard/IClipboard.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -134,6 +135,7 @@ namespace s3d
 			SIV3D_ENGINE(CursorStyle)->update();
 			SIV3D_ENGINE(Keyboard)->update();
 			SIV3D_ENGINE(Mouse)->update();
+			SIV3D_ENGINE(Pentablet)->update();
 			SIV3D_ENGINE(LicenseManager)->update();
 			SIV3D_ENGINE(Effect)->update();
 
