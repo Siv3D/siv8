@@ -14,6 +14,9 @@
 
 namespace s3d
 {
+	struct PenCaps;
+	struct PenState;
+
 	class SIV3D_NOVTABLE ISiv3DPentablet
 	{
 	public:
@@ -22,5 +25,28 @@ namespace s3d
 		static ISiv3DPentablet* Create();
 
 		virtual ~ISiv3DPentablet() = default;
+
+		virtual void initLibrary() = 0;
+
+		virtual void resetDevice() = 0;
+
+		virtual void update() = 0;
+
+		virtual void onProximity(bool inProximity) = 0;
+
+		[[nodiscard]]
+		virtual bool isAvailable() = 0;
+
+		[[nodiscard]]
+		virtual bool isConnected() = 0;
+
+		[[nodiscard]]
+		virtual const String& getName() = 0;
+
+		[[nodiscard]]
+		virtual const PenCaps& getCaps() = 0;
+
+		[[nodiscard]]
+		virtual const PenState& getState() = 0;
 	};
 }

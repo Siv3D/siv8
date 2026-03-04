@@ -5,7 +5,7 @@
 The text and information contained in this file may be freely used,
 copied, or distributed without compensation or licensing restrictions.
 
-This file is Copyright (c) Wacom Company, Ltd. 2010 All Rights Reserved
+This file is copyright 1998-2008 by Wacom Technology
 with portions copyright 1991-1998 by LCS/Telegraphics.
 ------------------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@ extern "C" {
 	#define _WT_CSRCHANGE(b)	((b)+7) /* 1.1 */
 	#define _WT_PACKETEXT(b)	((b)+8) /* 1.4 */
 	#define _WT_MAX(b)			((b)+WT_MAXOFFSET)
-	
+
 	#define WT_PACKET				_WT_PACKET(WT_DEFBASE)
 	#define WT_CTXOPEN			_WT_CTXOPEN(WT_DEFBASE)
 	#define WT_CTXCLOSE			_WT_CTXCLOSE(WT_DEFBASE)
@@ -197,7 +197,7 @@ typedef struct tagAXIS {
 #define CRC_AGGREGATE	0x0002 /* 1.1 */
 #define CRC_INVERT		0x0004 /* 1.1 */
 
-#endif 
+#endif
 
 /* info categories */
 #define WTI_INTERFACE		1
@@ -624,7 +624,7 @@ typedef struct tagSLIDERDATA { /* 1.4 */
 typedef struct tagEXTPROPERTY { /* 1.4 */
 	BYTE		version;				// Structure version, 0 for now
 	BYTE		tabletIndex;		// 0-based index for tablet
-	BYTE		controlIndex;		// 0-based index for control 
+	BYTE		controlIndex;		// 0-based index for control
 	BYTE		functionIndex;		// 0-based index for control's sub-function
 	WORD		propertyID;			// property ID
 	WORD		reserved;			// DWORD-alignment filler
@@ -639,7 +639,14 @@ typedef struct tagEXTPROPERTY { /* 1.4 */
 #define TABLET_PROPERTY_MAX				 4			// UINT32: maximum value
 #define TABLET_PROPERTY_OVERRIDE			 5			// BOOL: control is overridden
 #define TABLET_PROPERTY_OVERRIDE_NAME	 6			// UTF-8: Displayable name when control is overridden
+#define TABLET_PROPERTY_OVERRIDE_ICON	 7			// Image: Icon to show when control is overridden
+#define TABLET_PROPERTY_ICON_WIDTH		 8			// UINT32: Pixel width of icon display
+#define TABLET_PROPERTY_ICON_HEIGHT		 9			// UINT32: Pixel height of icon display
+#define TABLET_PROPERTY_ICON_FORMAT		 10		// UINT32: UINT32: Pixel format of icon display (see TABLET_ICON_FMT_*)
 #define TABLET_PROPERTY_LOCATION			 11		// UINT32: Physical location of control (see TABLET_LOC_*)
+
+#define TABLET_ICON_FMT_NONE				 0			// No display
+#define TABLET_ICON_FMT_4BPP_GRAY		 1			// 4bpp grayscale
 
 #define TABLET_LOC_LEFT				0
 #define TABLET_LOC_RIGHT			1
@@ -814,7 +821,7 @@ typedef struct tagEXTPROPERTY { /* 1.4 */
 	HCTX API WTMgrDefContextEx(HMGR, UINT, BOOL); /* 1.1 */
 	#define ORD_WTMgrDefContextEx				206
 	#endif
-	
+
 	#ifndef NOWTMGRCONFIGFXNS
 	/* MANAGER CONFIG BOX  FUNCTIONS */
 	UINT API WTMgrDeviceConfig(HMGR, UINT, HWND);
@@ -917,4 +924,3 @@ typedef struct tagEXTPROPERTY { /* 1.4 */
 #endif	/* __cplusplus */
 
 #endif /* #define _INC_WINTAB */
-

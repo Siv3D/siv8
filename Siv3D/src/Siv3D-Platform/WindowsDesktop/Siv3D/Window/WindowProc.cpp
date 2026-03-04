@@ -17,8 +17,10 @@
 # include <Siv3D/Mouse/CMouse.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/UserAction/IUSerAction.hpp>
+# include <Siv3D/Pentablet/IPentablet.hpp>
 # include "CWindow.hpp"
 # include <windowsx.h>
+# include <ThirdParty/Wintab/WINTAB.H>
 
 namespace s3d
 {
@@ -252,9 +254,9 @@ namespace s3d
 			
 		//		return 0;
 		//	}
-		//case WM_DEVICECHANGE:
-		//	{
-		//		LOG_VERBOSE(U"WM_DEVICECHANGE {:#X}"_fmt(wParam));
+		case WM_DEVICECHANGE:
+			{
+				LOG_DEBUG(fmt::format("WM_DEVICECHANGE {:#X}", wParam));
 
 				//if (engineAvailable)
 				//{
@@ -292,8 +294,8 @@ namespace s3d
 				//	}
 				//}
 
-		//		break;
-		//	}
+				break;
+			}
 		case WM_MOUSEMOVE:
 			{
 				if (engineAvailable)
@@ -382,6 +384,22 @@ namespace s3d
 				}
 
 				return true;
+			}
+		case WT_PROXIMITY:
+			{
+				LOG_DEBUG("WT_PROXIMITY");
+
+				if (const bool hwProxChanged = (HIWORD(lParam) != 0))
+				{
+					const bool inProximity = (LOWORD(lParam) != 0);
+
+					if (engineAvailable)
+					{
+						SIV3D_ENGINE(Pentablet)->onProximity(inProximity);
+					}
+				}
+
+				break;
 			}
 		}
 

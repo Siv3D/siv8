@@ -5067,6 +5067,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Pentablet.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PenCaps.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PenState.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7926,6 +7932,9 @@
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Pentablet\PentabletFactory.cpp">
+      <Filter>src\Siv3D\Pentablet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Pentablet\SivPentablet.cpp">
       <Filter>src\Siv3D\Pentablet</Filter>
     </ClCompile>
   </ItemGroup>

@@ -196,6 +196,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\OSCSender.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OSCTypeTag.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PenCaps.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PenState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Pentablet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PerlinNoise.hpp" />
@@ -1573,6 +1575,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseInt\SivParseInt.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Pentablet\PentabletFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Pentablet\SivPentablet.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PercentEncode\SivPercentEncode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Pipe\SivPipe.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PixelShader\SivPixelShader.cpp" />

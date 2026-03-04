@@ -1400,10 +1400,12 @@
 //
 //// XInput コントローラ | XInput controller
 //# include <Siv3D/XInput.hpp>
-//
-//// ペンタブレット | Digitizer
-//# include <Siv3D/Pentablet.hpp>
-//
+
+// ペンタブレット | Digitizer
+# include <Siv3D/PenCaps.hpp>
+# include <Siv3D/PenState.hpp>
+# include <Siv3D/Pentablet.hpp>
+
 //// Leap デバイス | Leap Device
 //# include <Siv3D/Leap.hpp>
 

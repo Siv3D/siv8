@@ -10,3 +10,31 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
+# include "String.hpp"
+
+namespace s3d
+{
+	struct PenCaps;
+	struct PenState;
+
+	namespace Pentablet
+	{
+		/// @brief ペンタブレットのドライバがインストールされているかを返します。
+		/// @return ペンタブレットのドライバがインストールされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool IsAvailable();
+
+		[[nodiscard]]
+		bool IsConnected();
+
+		[[nodiscard]]
+		const String& GetName();
+
+		[[nodiscard]]
+		const PenCaps& GetCaps();
+
+		[[nodiscard]]
+		const PenState& GetState();
+	}
+}
