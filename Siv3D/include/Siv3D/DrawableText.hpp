@@ -20,15 +20,26 @@ namespace s3d
 {
 	struct TextStyle;
 	struct ITextEffect;
+	
+	////////////////////////////////////////////////////////////////
+	//
+	//	DrawableText
+	//
+	////////////////////////////////////////////////////////////////
 
+	/// @brief 描画可能なテキスト
 	struct DrawableText
 	{
+		/// @brief フォント
 		Font font;
 
+		/// @brief テキスト
 		String text;
 
+		/// @brief グリフの解決結果
 		Array<ResolvedGlyph> resolvedGlyphs;
 
+		/// @brief 読み方向
 		ReadingDirection readingDirection = ReadingDirection::LeftToRight;
 
 		////////////////////////////////////////////////////////////////

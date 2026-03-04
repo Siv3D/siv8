@@ -17,11 +17,23 @@
 # include "Math.hpp"
 
 namespace s3d
-{
+{		
+	////////////////////////////////////////////////////////////////
+	//
+	//	Camera2D
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief 2D カメラ
 	class Camera2D : public BasicCamera2D
 	{
 	public:
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
 		explicit Camera2D(const Camera2DControl& cameraControl = Camera2DControl::Default);
@@ -35,8 +47,20 @@ namespace s3d
 		/// @param cameraControl カメラの操作設定
 		[[nodiscard]]
 		Camera2D(const Vec2& center, double scale, const Camera2DControl& cameraControl = Camera2DControl::Default);
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	setControl
+		//
+		////////////////////////////////////////////////////////////////
 
 		void setControl(const Camera2DControl& cameraControl);
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	setTargetCenter, getTargetCenter
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief カメラが見る中心座標の目標を設定します。
 		/// @param targetCenter カメラが見る中心座標の目標
@@ -46,6 +70,12 @@ namespace s3d
 		/// @brief 現在の目標中心座標を返します。
 		/// @return 現在の目標中心座標
 		const Vec2& getTargetCenter() const noexcept;
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	setTargetScale, getTargetScale
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief カメラのズームアップ倍率の目標を設定します。
 		/// @param targetScale カメラのズーム倍率の目標
@@ -55,21 +85,45 @@ namespace s3d
 		/// @brief 現在の目標ズームアップ倍率を返します。
 		/// @return 現在の目標ズームアップ倍率
 		double getTargetScale() const noexcept;
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	getGrabbedPos
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 右クリックによる移動の開始座標を返します。
 		/// @return 右クリックによる移動の開始座標。右クリックによる移動が開始されていない場合は none
 		[[nodiscard]]
 		const Optional<Vec2>& getGrabbedPos() const noexcept;
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	jumpTo
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した中心座標とズーム倍率を即座に適用します。
 		/// @param center カメラが見る中心座標
 		/// @param scale カメラのズーム倍率
 		void jumpTo(Vec2 center, double scale) noexcept;
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	update
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 2D カメラの状態を更新します。
 		/// @param deltaTime 前回のフレームからの経過時間（秒）
 		/// @param sceneSize レンダーターゲットのサイズ（ピクセル）
 		void update(double deltaTime = Scene::DeltaTime(), SizeF sceneSize = Graphics2D::GetRenderTargetSize());
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 2D カメラの右クリック・ドラッグによる移動の UI を表示します。
 		/// @param color UI の色

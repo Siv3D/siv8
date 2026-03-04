@@ -16,7 +16,13 @@
 # include "Array.hpp"
 
 namespace s3d
-{
+{		
+	////////////////////////////////////////////////////////////////
+	//
+	//	DriveInfo
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief ドライブの情報 | Represents information about a drive.
 	struct DriveInfo
 	{
@@ -61,7 +67,13 @@ namespace s3d
 	};
 
 	namespace System
-	{
+	{		
+		////////////////////////////////////////////////////////////////
+		//
+		//	EnumerateDrives
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief ドライブの情報を列挙します。 | Enumerates the drive information.
 		/// @return ドライブの情報の配列 | Array of drive information
 		[[nodiscard]]

@@ -15,9 +15,17 @@
 # include "GlyphInfo.hpp"
 
 namespace s3d
-{
+{		
+	////////////////////////////////////////////////////////////////
+	//
+	//	BitmapGlyph
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief ビットマップグリフ
 	struct BitmapGlyph : GlyphInfo
 	{
+		/// @brief グリフのビットマップ画像
 		Image image;
 	};
 }
