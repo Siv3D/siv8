@@ -20,20 +20,29 @@ namespace s3d
 
 	namespace Pentablet
 	{
-		/// @brief ペンタブレットのドライバがインストールされているかを返します。
-		/// @return ペンタブレットのドライバがインストールされている場合 true, それ以外の場合は false
+		/// @brief ペンタブレット機能が利用可能かを返します。
+		/// @return 利用可能な場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool IsAvailable();
-
+		
+		/// @brief ペンタブレットが PC に接続されているかを返します。
+		/// @return 接続されている場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool IsConnected();
 
+		/// @brief ペンタブレットのデバイス名を返します。
+		/// @return デバイス名
 		[[nodiscard]]
 		const String& GetName();
 
+		/// @brief ペンタブレットがサポートする機能（取得可能な項目）を返します。
+		/// @return 機能サポート情報
 		[[nodiscard]]
 		const PenCaps& GetCaps();
 
+		/// @brief ペンタブレットの入力状態を返します。
+		/// @return ペンタブレットの入力状態
+		/// @remark `System::Update()` の呼び出しごとに更新されます。
 		[[nodiscard]]
 		const PenState& GetState();
 	}
