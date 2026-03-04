@@ -1246,6 +1246,15 @@
     <Filter Include="src\Siv3D\OSCReceiver">
       <UniqueIdentifier>{100ebcf4-5055-4631-aa28-2c6b08c04b5a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\Wintab">
+      <UniqueIdentifier>{ef85fa2a-ffbe-4809-9b62-6cb457be50ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet">
+      <UniqueIdentifier>{f3c95f99-aaf7-47ad-97ea-179d86fd7584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Pentablet">
+      <UniqueIdentifier>{a6793fdf-961a-4e0d-a8df-6e544c3125c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5040,6 +5049,24 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCReceiverDetail.hpp">
       <Filter>src\Siv3D\OSCReceiver</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\Wintab\MSGPACK.H">
+      <Filter>src\ThirdParty\Wintab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\Wintab\PKTDEF.H">
+      <Filter>src\ThirdParty\Wintab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\Wintab\WINTAB.H">
+      <Filter>src\ThirdParty\Wintab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet\CPentablet.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Pentablet\IPentablet.hpp">
+      <Filter>src\Siv3D\Pentablet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pentablet.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7894,6 +7921,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\OSCReceiver\SivOSCReceiver.cpp">
       <Filter>src\Siv3D\OSCReceiver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet\CPentablet.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Pentablet\PentabletFactory.cpp">
+      <Filter>src\Siv3D\Pentablet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
