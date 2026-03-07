@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include "CPentablet.hpp"
+# include <Siv3D/Pentablet/IPentablet.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -18,13 +20,12 @@ namespace s3d
 	{
 		void ReportPenEnter(const bool enter, const bool isPen)
 		{
-			LOG_INFO(fmt::format(U"ReportPenEnter: enter={}, isPen={}", enter, isPen));
+			SIV3D_ENGINE(Pentablet)->onProximity(enter, isPen);
 		}
 
 		void ReportTabletPoint(const double normalPressure, const double tangentialPressure, const double tiltX, const double tiltY)
 		{
-			LOG_INFO(fmt::format(U"ReportTabletPoint: normalPressure={}, tangentialPressure={}, tiltX={}, tiltY={}",
-				normalPressure, tangentialPressure, tiltX, tiltY));
+			SIV3D_ENGINE(Pentablet)->onPenMove(normalPressure, tangentialPressure, tiltX, tiltY);
 		}
 	}
 
@@ -45,10 +46,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CPentablet::initLibrary()
-	{
-
-	}
+	void CPentablet::initLibrary() {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -56,10 +54,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CPentablet::resetDevice()
-	{
-		
-	}
+	void CPentablet::resetDevice() {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -83,7 +78,7 @@ namespace s3d
 
 	void CPentablet::onProximity(const bool inProximity, const Optional<bool>& isPen)
 	{
-
+		LOG_INFO(fmt::format("onProximity: enter={}, isPen={}", inProximity, isPen.value_or(true)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -94,7 +89,7 @@ namespace s3d
 
 	void CPentablet::onPenMove(const double normalPressure, const double tangentialPressure, const double tiltX, const double tiltY)
 	{
-
+		LOG_INFO(fmt::format("onPenMove: normalPressure={}, tangentialPressure={}, tiltX={}, tiltY={}", normalPressure, tangentialPressure, tiltX, tiltY));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -105,7 +100,7 @@ namespace s3d
 
 	bool CPentablet::isAvailable()
 	{
-		return false;
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
