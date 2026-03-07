@@ -16,6 +16,13 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	FileDialogFilter
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief ファイル選択ダイアログのフィルタを表す構造体
     struct FileDialogFilter
     {
 		/// @brief ダイアログのドロップダウンに表示される説明文（例: "すべての画像ファイル"）
@@ -77,7 +84,7 @@ namespace s3d
 		static constexpr FileDialogFilter WebP();
 
 		/// @brief すべての画像ファイル用の拡張子フィルタを返します。
-		/// @return `FileDialogFilter{ U"All Picture Files",{ U"png", U"jpg", U"jpeg", U"bmp", U"gif", U"tga", U"svg", U"webp", U"ppm", U"pgm", U"pbm", U"pnm" } }`
+		/// @return `FileDialogFilter{ U"All Picture Files",{ U"png", U"jpg", U"jpeg", U"bmp", U"gif", U"tga", U"svg", U"webp", U"tiff", U"tif", U"ppm", U"pgm", U"pbm", U"pnm" } }`
 		[[nodiscard]]
 		static constexpr FileDialogFilter AllImageFiles();
 

@@ -67,7 +67,7 @@ namespace s3d
 
 	constexpr FileDialogFilter FileDialogFilter::AllImageFiles()
 	{
-		return{ U"All Image Files", { U"png", U"jpg", U"jpeg", U"bmp", U"gif", U"tga", U"svg", U"webp", U"ppm", U"pgm", U"pbm", U"pnm", U"tiff", U"tif" } };
+		return{ U"All Image Files", { U"png", U"jpg", U"jpeg", U"bmp", U"gif", U"tga", U"svg", U"webp", U"tiff", U"tif", U"ppm", U"pgm", U"pbm", U"pnm" } };
 	}
 
 	////////////////////////////////////////////////////////////////
