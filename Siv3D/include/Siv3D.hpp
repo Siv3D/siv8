@@ -1117,6 +1117,12 @@
 // ファイルダイアログのフィルタ | File dialog filter
 # include <Siv3D/FileDialogFilter.hpp>
 
+# include <Siv3D/OpenFileDialogOptions.hpp>
+
+# include <Siv3D/SaveFileDialogOptions.hpp>
+
+# include <Siv3D/SelectFolderDialogOptions.hpp>
+
 //// ファイルダイアログ | File dialog
 //# include <Siv3D/Dialog.hpp>
 

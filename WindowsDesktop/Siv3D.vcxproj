@@ -191,6 +191,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Network.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OpenFileDialogOptions.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OSCArgument.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OSCMessage.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OSCReceivedMessage.hpp" />
@@ -556,6 +557,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SampleBorderColor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerStateBuilder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SaveFileDialogOptions.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Scene.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedColorAdd2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedColorMul2D.hpp" />
@@ -566,6 +568,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ScreenCapture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RangeFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopeExit.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SelectFolderDialogOptions.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Serial.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SerialPortInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ShaderGroup.hpp" />
