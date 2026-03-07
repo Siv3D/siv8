@@ -19,6 +19,9 @@ namespace s3d
 		/// @brief ペンがタブレットの検出範囲内（近接中）であるか
 		bool inProximity = false;
 
+		/// @brief ペンが消しゴムであるか
+		bool isEraser = false;
+
 		/// @brief 法線方向（ペン先）の筆圧（0.0～1.0）
 		double normalPressure = 0.0;
 

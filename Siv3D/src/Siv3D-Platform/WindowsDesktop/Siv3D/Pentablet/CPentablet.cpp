@@ -303,6 +303,15 @@ namespace s3d
 		{
 			const auto& packet = m_packetsBuffer[n - 1];
 
+			if (packet.pkCursor == 1) // ペン
+			{
+				m_deviceInfo.state.isEraser = false;
+			}
+			if (packet.pkCursor == 2) // 消しゴム
+			{
+				m_deviceInfo.state.isEraser = true;
+			}
+
 			if (m_deviceInfo.caps.normalPressure)
 			{
 				m_deviceInfo.state.normalPressure = GetValue(packet.pkNormalPressure, m_deviceInfo.pressureCaps);

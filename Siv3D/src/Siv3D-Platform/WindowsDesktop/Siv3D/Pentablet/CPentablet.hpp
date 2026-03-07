@@ -17,7 +17,7 @@
 # include <Siv3D/Pentablet/IPentablet.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 
-# define PACKETDATA	(PK_NORMAL_PRESSURE | PK_TANGENT_PRESSURE | PK_ORIENTATION | PK_ROTATION)
+# define PACKETDATA	(PK_CURSOR | PK_NORMAL_PRESSURE | PK_TANGENT_PRESSURE | PK_ORIENTATION | PK_ROTATION)
 # define PACKETMODE	PK_BUTTONS
 # include <ThirdParty/Wintab/MSGPACK.H>
 # include <ThirdParty/Wintab/WINTAB.H>
