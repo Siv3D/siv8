@@ -150,7 +150,8 @@ namespace s3d
 	{
 		m_connected = true;
 		m_deviceInfo.state.inProximity = inProximity;
-		m_deviceInfo.state.isEraser = (not isPen.value_or(true));
+		m_deviceInfo.state.isPen = isPen.value_or(true);
+		m_deviceInfo.state.isEraser = (not m_deviceInfo.state.isPen);
 		
 		if (not inProximity)
 		{

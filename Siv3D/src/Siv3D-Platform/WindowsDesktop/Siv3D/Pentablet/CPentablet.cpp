@@ -305,10 +305,12 @@ namespace s3d
 
 			if (packet.pkCursor == 1) // ペン
 			{
+				m_deviceInfo.state.isPen = true;
 				m_deviceInfo.state.isEraser = false;
 			}
 			if (packet.pkCursor == 2) // 消しゴム
 			{
+				m_deviceInfo.state.isPen = false;
 				m_deviceInfo.state.isEraser = true;
 			}
 
