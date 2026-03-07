@@ -14,6 +14,20 @@
 
 namespace s3d
 {
+	namespace
+	{
+		void ReportPenEnter(const bool enter, const bool isPen)
+		{
+			LOG_INFO(fmt::format(U"ReportPenEnter: enter={}, isPen={}", enter, isPen));
+		}
+
+		void ReportTabletPoint(const double normalPressure, const double tangentialPressure, const double tiltX, const double tiltY)
+		{
+			LOG_INFO(fmt::format(U"ReportTabletPoint: normalPressure={}, tangentialPressure={}, tiltX={}, tiltY={}",
+				normalPressure, tangentialPressure, tiltX, tiltY));
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)
@@ -125,5 +139,18 @@ namespace s3d
 	const PenState& CPentablet::getState()
 	{
 		return m_deviceInfo.state;
+	}
+}
+
+extern "C"
+{
+	void GLFW_Siv3D_ReportPenEnter(const bool enter, const bool isPen)
+	{
+		s3d::ReportPenEnter(enter, isPen);
+	}
+
+	void GLFW_Siv3D_ReportTabletPoint(const double normalPressure, const double tangentialPressure, const double tiltX, const double tiltY)
+	{
+		s3d::ReportTabletPoint(normalPressure, tangentialPressure, tiltX, tiltY);
 	}
 }

@@ -46,6 +46,17 @@
 //       having been (according to documentation) added in Mac OS X 10.7
 #define NSWindowCollectionBehaviorFullScreenNone (1 << 9)
 
+
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+void GLFW_Siv3D_ReportPenEnter(bool enter, bool isPen);
+
+void GLFW_Siv3D_ReportTabletPoint(double normalPressure, double tangentialPressure, double tiltX, double tiltY);
+//
+//-----------------------------------------------
+
 // Returns whether the cursor is in the content area of the specified window
 //
 static GLFWbool cursorInContentArea(_GLFWwindow* window)
@@ -423,6 +434,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseDown:(NSEvent *)event
 {
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+	[self handlePointerEvent:event];
+	//
+	//-----------------------------------------------
+	
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_PRESS,
@@ -436,6 +455,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseUp:(NSEvent *)event
 {
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+	[self handlePointerEvent:event];
+	//
+	//-----------------------------------------------
+	
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_RELEASE,
@@ -444,6 +471,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseMoved:(NSEvent *)event
 {
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+	[self handlePointerEvent:event];
+	//
+	//-----------------------------------------------
+	
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         const double dx = [event deltaX] - window->ns.cursorWarpDeltaX;
@@ -523,6 +558,56 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
     _glfwInputCursorEnter(window, GLFW_TRUE);
 }
+
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+- (void)tabletPoint:(NSEvent *)event {
+	[self handlePointerEvent:event];
+}
+
+- (void)tabletProximity:(NSEvent *)event {
+	const bool enter = event.isEnteringProximity;
+	const bool isPen = (event.pointingDeviceType != NSPointingDeviceTypeEraser);
+	GLFW_Siv3D_ReportPenEnter(enter, isPen);
+	[self handlePointerEvent:event];
+}
+
+- (void)handleTabletPointEvent:(NSEvent *)event {
+	CGFloat normalPressure		= event.pressure; // 0.0 ... 1.0
+	CGFloat tangentialPressure	= event.tangentialPressure; // 対応デバイスのみ
+	NSPoint tilt				= event.tilt; // x, y は -1.0 ... 1.0
+	GLFW_Siv3D_ReportTabletPoint(normalPressure, tangentialPressure, tilt.x, tilt.y);
+}
+
+- (void)handlePointerEvent:(NSEvent *)event {
+	// ネイティブ tablet proximity
+	if (event.type == NSEventTypeTabletProximity) {
+		return;
+	}
+
+	// ネイティブ tablet point
+	if (event.type == NSEventTypeTabletPoint) {
+		[self handleTabletPointEvent:event];
+		return;
+	}
+
+	// mouse event に tablet subtype が載っているケース
+	switch (event.subtype) {
+		case NSEventSubtypeTabletProximity:
+			return;
+
+		case NSEventSubtypeTabletPoint:
+			[self handleTabletPointEvent:event];
+			return;
+
+		default:
+			return;
+	}
+}
+//
+//-----------------------------------------------
 
 - (void)viewDidChangeBackingProperties
 {
