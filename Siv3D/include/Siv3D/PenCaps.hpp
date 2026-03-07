@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Types.hpp"
+# include "Optional.hpp"
 
 namespace s3d
 {
@@ -31,9 +32,9 @@ namespace s3d
 		bool rotation = false;
 
 		/// @brief 法線方向（ペン先）の筆圧の段階数
-		int32 normalPressureLevels = 0;
+		Optional<int32> normalPressureLevels;
 
 		/// @brief 接線方向（バレル／タンジェント）の筆圧の段階数
-		int32 tangentialPressureLevels = 0;
+		Optional<int32> tangentialPressureLevels;
 	};
 }

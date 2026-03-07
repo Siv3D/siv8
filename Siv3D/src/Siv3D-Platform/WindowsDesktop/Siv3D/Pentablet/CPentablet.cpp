@@ -208,7 +208,7 @@ namespace s3d
 				if (m_deviceInfo.caps.normalPressure)
 				{
 					m_deviceInfo.caps.normalPressureLevels = static_cast<int32>(m_deviceInfo.pressureCaps.axMax - m_deviceInfo.pressureCaps.axMin + 1);
-					LOG_INFO(fmt::format("ℹ️ Normal Pressure: {} levels", m_deviceInfo.caps.normalPressureLevels));
+					LOG_INFO(fmt::format("ℹ️ Normal Pressure: {} levels", *m_deviceInfo.caps.normalPressureLevels));
 				}
 			}
 
@@ -219,7 +219,7 @@ namespace s3d
 				if (m_deviceInfo.caps.tangentialPressure)
 				{
 					m_deviceInfo.caps.tangentialPressureLevels = static_cast<int32>(m_deviceInfo.tangentPressureCaps.axMax - m_deviceInfo.tangentPressureCaps.axMin + 1);
-					LOG_INFO(fmt::format("ℹ️ Tangential Pressure: {} levels", m_deviceInfo.caps.tangentialPressureLevels));
+					LOG_INFO(fmt::format("ℹ️ Tangential Pressure: {} levels", *m_deviceInfo.caps.tangentialPressureLevels));
 				}
 			}
 
