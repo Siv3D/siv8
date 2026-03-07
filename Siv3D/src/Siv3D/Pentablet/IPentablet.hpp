@@ -11,6 +11,7 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <Siv3D/Optional.hpp>
 
 namespace s3d
 {
@@ -32,7 +33,9 @@ namespace s3d
 
 		virtual void update() = 0;
 
-		virtual void onProximity(bool inProximity) = 0;
+		virtual void onProximity(bool inProximity, const Optional<bool>& isPen) = 0;
+
+		virtual void onPenMove(double normalPressure, double tangentialPressure, double tiltX, double tiltY) = 0;
 
 		[[nodiscard]]
 		virtual bool isAvailable() = 0;

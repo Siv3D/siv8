@@ -395,7 +395,7 @@ namespace s3d
 
 					if (engineAvailable)
 					{
-						SIV3D_ENGINE(Pentablet)->onProximity(inProximity);
+						SIV3D_ENGINE(Pentablet)->onProximity(inProximity, unspecified);
 					}
 				}
 

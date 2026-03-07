@@ -1,4 +1,4 @@
-//-----------------------------------------------
+﻿//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -81,9 +81,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CPentablet::onProximity(const bool inProximity)
+	void CPentablet::onProximity(const bool inProximity, const Optional<bool>& isPen)
 	{
-		
+
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	onPenMove
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CPentablet::onPenMove(const double normalPressure, const double tangentialPressure, const double tiltX, const double tiltY)
+	{
+
 	}
 
 	////////////////////////////////////////////////////////////////

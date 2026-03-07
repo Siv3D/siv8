@@ -30,7 +30,9 @@ namespace s3d
 
 		void update() override;
 
-		void onProximity(bool inProximity) override;
+		void onProximity(bool inProximity, const Optional<bool>& isPen) override;
+
+		void onPenMove(double normalPressure, double tangentialPressure, double tiltX, double tiltY) override;
 
 		bool isAvailable() override;
 
