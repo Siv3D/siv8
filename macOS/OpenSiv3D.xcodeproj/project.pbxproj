@@ -2575,7 +2575,7 @@
 		F99882362F58093E00C8991D /* OscOutboundPacketStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998821A2F58093E00C8991D /* OscOutboundPacketStream.cpp */; };
 		F99882372F58093E00C8991D /* UdpSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998820A2F58093E00C8991D /* UdpSocket.cpp */; };
 		F99882382F58093E00C8991D /* NetworkingUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99882092F58093E00C8991D /* NetworkingUtils.cpp */; };
-		F998823D2F5809A900C8991D /* CPentablet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F998823B2F5809A900C8991D /* CPentablet.cpp */; };
+		F998823D2F5809A900C8991D /* CPentablet.mm in Sources */ = {isa = PBXBuildFile; fileRef = F998823B2F5809A900C8991D /* CPentablet.mm */; };
 		F998823E2F5809A900C8991D /* CPentablet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998823A2F5809A900C8991D /* CPentablet.hpp */; };
 		F99882412F587C6800C8991D /* PenCaps.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F998823F2F587C6800C8991D /* PenCaps.hpp */; };
 		F99882422F587C6800C8991D /* PenState.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99882402F587C6800C8991D /* PenState.hpp */; };
@@ -5511,7 +5511,7 @@
 		F99882202F58093E00C8991D /* OscTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscTypes.h; sourceTree = "<group>"; };
 		F99882212F58093E00C8991D /* OscTypes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OscTypes.cpp; sourceTree = "<group>"; };
 		F998823A2F5809A900C8991D /* CPentablet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CPentablet.hpp; sourceTree = "<group>"; };
-		F998823B2F5809A900C8991D /* CPentablet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPentablet.cpp; sourceTree = "<group>"; };
+		F998823B2F5809A900C8991D /* CPentablet.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CPentablet.mm; sourceTree = "<group>"; };
 		F998823F2F587C6800C8991D /* PenCaps.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PenCaps.hpp; sourceTree = "<group>"; };
 		F99882402F587C6800C8991D /* PenState.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PenState.hpp; sourceTree = "<group>"; };
 		F99882432F587C8000C8991D /* IPentablet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IPentablet.hpp; sourceTree = "<group>"; };
@@ -11757,7 +11757,7 @@
 			isa = PBXGroup;
 			children = (
 				F998823A2F5809A900C8991D /* CPentablet.hpp */,
-				F998823B2F5809A900C8991D /* CPentablet.cpp */,
+				F998823B2F5809A900C8991D /* CPentablet.mm */,
 			);
 			path = Pentablet;
 			sourceTree = "<group>";
@@ -14769,7 +14769,7 @@
 				F98605D82BE4BE80006A4C0F /* KeyboardFactory.cpp in Sources */,
 				F98605CD2BE4B6A4006A4C0F /* SivInput.cpp in Sources */,
 				F98602542BCFBB54006A4C0F /* SkRSXform.cpp in Sources */,
-				F998823D2F5809A900C8991D /* CPentablet.cpp in Sources */,
+				F998823D2F5809A900C8991D /* CPentablet.mm in Sources */,
 				F986039C2BCFBB54006A4C0F /* SkBitmapProcShader.cpp in Sources */,
 				F9712A402C2572DF0049CC26 /* SivScopedColorMul2D.cpp in Sources */,
 				F986044A2BCFBB54006A4C0F /* SkSLVariable.cpp in Sources */,

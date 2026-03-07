@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -14,6 +14,8 @@
 # include <Siv3D/Array.hpp>
 # include <Siv3D/PenCaps.hpp>
 # include <Siv3D/PenState.hpp>
+# include <Siv3D/Stopwatch.hpp>
+# include <Siv3D/Duration.hpp>
 # include <Siv3D/Pentablet/IPentablet.hpp>
 
 namespace s3d
@@ -45,8 +47,13 @@ namespace s3d
 		const PenState& getState() override;
 
 	private:
-
-		bool m_initialized = false;
+		
+		// この時間以上 tablet のイベントが発生しなかった場合、ペンが離れたと判断する閾値
+		static constexpr Duration ProximityTimeout{ 0.25 };
+		
+		bool m_available = false;
+		
+		Stopwatch m_proximityStopwatch;
 
 		struct DeviceInfo
 		{
