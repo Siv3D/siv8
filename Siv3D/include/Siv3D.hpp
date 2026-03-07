@@ -1114,11 +1114,11 @@
 //
 ////////////////////////////////////////////////////////////////
 
+// ファイルダイアログのフィルタ | File dialog filter
+# include <Siv3D/FileDialogFilter.hpp>
+
 //// ファイルダイアログ | File dialog
 //# include <Siv3D/Dialog.hpp>
-//
-//// ファイル拡張子フィルタ | File extension filter
-//# include <Siv3D/FileFilter.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
