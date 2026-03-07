@@ -32,7 +32,8 @@ namespace s3d
 			double altitude = 0.0;
 		};
 	
-		PenOrientation CalcAzimuthAltitudeFromTilt(double tiltX, double tiltY)
+		[[nodiscard]]
+		static PenOrientation CalcAzimuthAltitudeFromTilt(double tiltX, double tiltY)
 		{
 			constexpr double Eps = 1e-6;
 
@@ -84,12 +85,12 @@ namespace s3d
 			return out;
 		}
 	
-		void ReportPenEnter(const bool enter, const bool isPen)
+		static void ReportPenEnter(const bool enter, const bool isPen)
 		{
 			SIV3D_ENGINE(Pentablet)->onProximity(enter, isPen);
 		}
 
-		void ReportTabletPoint(const double normalPressure, const double tangentialPressure, const double tiltX, const double tiltY)
+		static void ReportTabletPoint(const double normalPressure, const double tangentialPressure, const double tiltX, const double tiltY)
 		{
 			SIV3D_ENGINE(Pentablet)->onPenMove(normalPressure, tangentialPressure, tiltX, tiltY);
 		}
@@ -147,7 +148,7 @@ namespace s3d
 
 	void CPentablet::onProximity(const bool inProximity, const Optional<bool>& isPen)
 	{
-		m_available = true;
+		m_connected = true;
 		m_deviceInfo.state.inProximity = inProximity;
 		m_deviceInfo.state.isEraser = (not isPen.value_or(true));
 		
@@ -167,7 +168,7 @@ namespace s3d
 
 	void CPentablet::onPenMove(const double normalPressure, const double tangentialPressure, const double tiltX, const double tiltY)
 	{
-		m_available = true;
+		m_connected = true;
 		m_deviceInfo.caps.normalPressure |= (normalPressure != 0.0);
 		m_deviceInfo.caps.tangentialPressure |= (tangentialPressure != 0.0);
 		m_deviceInfo.caps.orientation |= ((tiltX != 0.0) || (tiltY != 0.0));
@@ -195,7 +196,7 @@ namespace s3d
 
 	bool CPentablet::isAvailable()
 	{
-		return m_available;
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -206,7 +207,7 @@ namespace s3d
 
 	bool CPentablet::isConnected()
 	{
-		return m_available;
+		return m_connected;
 	}
 
 	////////////////////////////////////////////////////////////////

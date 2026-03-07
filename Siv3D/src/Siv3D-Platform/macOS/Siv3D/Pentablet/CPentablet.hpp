@@ -1,4 +1,4 @@
-//-----------------------------------------------
+﻿//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -51,7 +51,7 @@ namespace s3d
 		// この時間以上 tablet のイベントが発生しなかった場合、ペンが離れたと判断する閾値
 		static constexpr Duration ProximityTimeout{ 0.25 };
 		
-		bool m_available = false;
+		bool m_connected = false;
 		
 		Stopwatch m_proximityStopwatch;
 

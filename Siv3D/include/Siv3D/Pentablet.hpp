@@ -39,6 +39,7 @@ namespace s3d
 
 		/// @brief ペンタブレットが PC に接続されているかを返します。
 		/// @return 接続されている場合 true, それ以外の場合は false
+		/// @remark macOS 版では、ペンを実際に使用することで true を返すようになります。
 		[[nodiscard]]
 		bool IsConnected();
 
@@ -61,6 +62,7 @@ namespace s3d
 
 		/// @brief ペンタブレットがサポートする機能（取得可能な項目）を返します。
 		/// @return 機能サポート情報
+		/// @remark macOS 版では、ペンを実際に使用することで、サポートする機能を正しく返すようになります。
 		[[nodiscard]]
 		const PenCaps& GetCaps();
 
