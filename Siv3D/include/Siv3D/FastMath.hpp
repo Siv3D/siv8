@@ -13,6 +13,7 @@
 # include <utility>
 # include "Common.hpp"
 # include "MathConstants.hpp"
+# include "SIMD.hpp"
 
 namespace s3d
 {
@@ -43,49 +44,16 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 逆平方根を高速に近似計算します。
-		/// @param x 逆平方根を計算する値
+		/// @param value 逆平方根を計算する値
 		/// @return 逆平方根の近似結果
 		[[nodiscard]]
-		constexpr float InvSqrt(float x) noexcept;
+		float InvSqrt(float value) noexcept;
 
 		/// @brief 逆平方根を高速に近似計算します。
-		/// @param x 逆平方根を計算する値
+		/// @param value 逆平方根を計算する値
 		/// @return 逆平方根の近似結果
 		[[nodiscard]]
-		constexpr double InvSqrt(double x) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	InvSqrtQuality
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 精度の高い逆平方根を高速に近似計算します。
-		/// @param x 逆平方根を計算する値
-		/// @remark `FastMath::InvSqrt()` よりもコストがかかりますが、結果の精度が向上します
-		/// @return 逆平方根の近似結果
-		[[nodiscard]]
-		constexpr double InvSqrtQuality(double x) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Sqrt
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 平方根を高速に近似計算します。
-		/// @remark `x * FastMath::InvSqrt(x)` を返します。
-		/// @param x 平方根を計算する値
-		/// @return 平方根の近似結果
-		[[nodiscard]]
-		constexpr float Sqrt(float x) noexcept;
-
-		/// @brief 平方根を高速に近似計算します。
-		/// @remark `x * FastMath::InvSqrt(x)` を返します。
-		/// @param x 平方根を計算する値
-		/// @return 平方根の近似結果
-		[[nodiscard]]
-		constexpr double Sqrt(double x) noexcept;
+		double InvSqrt(double value) noexcept;
 	}
 }
 
